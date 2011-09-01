@@ -8,13 +8,13 @@ The goal of track analysis is to reduce the run-time effort of the lexical
 analyzer. In particular, acceptance and input position storages may be 
 spared depending on the constitution of the state machine.
 
-The result of the track analysis is a 'Trace' objects for each state. That is
-at the end there is a dictionary:
+The result of the track analysis is a list of 'Trace' objects for each state. 
+That is at the end there is a dictionary:
 
-            map:    state index --> Trace
+            map:    state index --> list of Trace objects.
 
-The Trace object contains for each path through the state a TraceEntry object.
-The TraceEntry tells what has to happen in a state, if there was only the
+A Trace object contains for one path through the state a set of TraceEntry 
+objects. The TraceEntry tells what has to happen in a state, if there was only the
 currently considered path. The consideration of effects from multiple path in a
 state happens in upper layer, the 'core.py' module of this directory.
 
@@ -62,7 +62,7 @@ class TrackAnalysis:
         """SM -- state machine to be investigated."""
         self.sm = SM
 
-        # -- Determined Set of 'Loop States'.
+        # (*) Determined Set of 'Loop States'.
         #
         #    Collect states that are part of a loop in the state machine.  If a
         #    path from state A to state B contains one of those states, then the
@@ -71,35 +71,49 @@ class TrackAnalysis:
         #
         #    set of state indices that are part of a loop.
         #
-        self.loop_state_set = set([])
+        self.__loop_state_set = set([])
         #    NOTE: The investigation about loop states must be done **before**
         #          the analysis of the acceptance traces. The acceptance trace
         #          analysis requires the loop state set to be complete!
         self.__loop_search_done_set = set()
         self.__loop_search(self.sm.init_state_index, [])
 
-        # -- Collect Trace Information
+        # (*) Collect Trace Information
         # 
         #    map:  state_index  --> list of Trace objects.
         #
         self.__map_state_to_trace = dict([(i, []) for i in self.sm.states.iterkeys()])
         self.__trace_walk(self.sm.init_state_index, 
-                          path             = [], 
-                          acceptance_trace = Trace(self.sm.init_state_index))
+                          path  = [], 
+                          trace = Trace(self.sm.init_state_index))
 
-        # For further treatment the storage informations are not relevant
+        # Analysis is terminated. Now, for the outer user only the traces are
+        # relevant which contain information about acceptances.
         for trace_list in self.__map_state_to_trace.itervalues():
             for trace in trace_list:
                 trace.delete_non_accepting_traces()
 
     @property
+    def loop_state_set(self):
+        """A set of indices of those states which are part of a loop 
+           in the given state machine. Whenever such a state appears
+           on a path, the length of the path cannot be determined from
+           the state machine structure itself.
+
+           Result of "self.__loop_search(...)"
+        """
+        return self.__loop_state_set
+
+    @property
     def acceptance_trace_db(self):
-        """RETURNS: A dictionary that maps 
+        """A dictionary that maps 
 
                     state index --> object of class Trace
 
            All auxiliary trace objects for positioning have been deleted at this 
            point in time. So, the traces concern only acceptance information.
+
+           Result of self.__trace_walk(...)
         """
         return self.__map_state_to_trace
 
@@ -128,7 +142,7 @@ class TrackAnalysis:
                 # Mark all states that are part of a loop. The length of a path that 
                 # contains such a state can only be determined at run-time.
                 idx = path.index(StateIndex)
-                self.loop_state_set.update(path[idx:])
+                self.__loop_state_set.update(path[idx:])
                 continue # Do not dive into done states
 
             self.__loop_search(state_index, path)
@@ -138,18 +152,9 @@ class TrackAnalysis:
         self.__loop_search_done_set.add(StateIndex)
         assert x == StateIndex
 
-    def __trace_walk(self, StateIndex, path, acceptance_trace):
+    def __trace_walk(self, StateIndex, path, trace):
         """StateIndex -- current state
            path       -- path from init state to current state (state index list)
-
-           last_acceptance_i -- index in 'path' of the last acceptance state. 
-                                path[last_acceptance_i] == state index of 
-                                last acceptance state.
-
-           last_post_context_i_db[k] -- index in 'path' of the last state where post context 
-                                        'k' begins. 
-                                        path[last_post_context_i_db[k] == state index 
-                                        of last state where post context k begins.
 
            Recursion Terminal: When state has no target state that has not yet been
                                handled in the 'path'.
@@ -158,13 +163,13 @@ class TrackAnalysis:
         path.append(StateIndex)
 
         # (2) Update the information about the 'trace of acceptances'
-        acceptance_trace.update(self, path) 
+        trace.update(self, path) 
 
         # (3) Mark the current state with its acceptance trace
-        #     NOTE: When this function is called, acceptance_trace is already
+        #     NOTE: When this function is called, trace is already
         #           an independent object, i.e. constructed or deepcopy()-ed.
         if     self.__map_state_to_trace.has_key(StateIndex):
-            if acceptance_trace in self.__map_state_to_trace[StateIndex]:
+            if trace in self.__map_state_to_trace[StateIndex]:
                 # If a state has been analyzed and we pass it a second time:
                 # If the acceptance trace is already in there, we do not need 
                 # further investigations.
@@ -177,9 +182,9 @@ class TrackAnalysis:
         for target_index in self.sm.states[StateIndex].transitions().get_target_state_index_list():
             # Do not dive into done states / prevents recursion along loops.
             if target_index in path: continue 
-            self.__trace_walk(target_index, path, deepcopy(acceptance_trace))
+            self.__trace_walk(target_index, path, deepcopy(trace))
 
-        self.__map_state_to_trace[StateIndex].append(acceptance_trace)
+        self.__map_state_to_trace[StateIndex].append(trace)
 
         # (5) Remove current state index --> path is as before
         x = path.pop()
@@ -192,11 +197,11 @@ class Trace(object):
 
        This behavior may depend on pre-contexts being fulfilled.
 
-       In other words, an Trace of a state provides information about what
+       In other words, a Trace of a state provides information about what
        pattern would be accepted and what the input positioning should be if
        the current path was the only path to the state.
 
-       The acceptance information is **priorized**. That means, that it is
+       The acceptance information is **prioritized**. That means, that it is
        important in what order the pre-contexts are checked. 
 
        Example:
@@ -237,6 +242,36 @@ class Trace(object):
         return len(self.__trace_db)
 
     def update(self, track_info, Path):
+        """Assume: 'self.__trace_db' contains accumulated information of passed 
+                   states until the current state has been reached. 
+
+           Now, the current state is reached. It contains 'origins', i.e. information
+           that witness from what patterns the state evolves and what has to happen
+           in the state so that it represents those original states. In brief, 
+           the origins tell if a pattern is accepted, what input position is to
+           be stored and what pre-context has to be fulfilled for a pattern
+           to trigger acceptance.
+           
+           The 'self.__trace_db' contains two types of elements:
+
+              -- TraceEntry objects that tell about an acceptance.
+                 => .accepting_state_index = index of the accepting state
+
+                 The remaining members tell about what state stores the
+                 position, how many transitions it lies backwards, the 
+                 min. number of transitions until an acceptance is reached
+                 etc.
+
+              -- TraceEntry objects that tell about an input position to be stored.
+                 => .accepting_state_index = E_StateIndices.VOID
+
+                 There no information about an acceptance yet--only information
+                 about a input position storage for a certain post context. 
+                 Inside these objects the counters are incremented during 
+                 further development, so that the distance between positioning 
+                 state and accepting state can be determined as soon as the 
+                 accepting state arrives that belongs to the storage info.
+        """
         # It is essential for a meaningful accumulation of the match information
         # that the entries are accumulated from the begin of a path towards its 
         # end. Otherwise, the 'longest match' cannot be applied by overwriting
@@ -368,6 +403,9 @@ class Trace(object):
         return True
 
     def delete_non_accepting_traces(self):
+        """Delete the additional traces from the analysis procedure. Now, only
+           traces are required that tell about acceptances.
+        """
         for pattern_id in self.__trace_db.keys():
             if self.__trace_db[pattern_id].accepting_state_index == E_StateIndices.VOID:
                 del self.__trace_db[pattern_id]
@@ -383,25 +421,17 @@ class Trace(object):
     def get_priorized_list(self):
         def my_key(X):
             # Failure always sorts to the bottom ...
-            if X[1].pattern_id == E_AcceptanceIDs.FAILURE: return (sys.maxint, sys.maxint)
+            if X.pattern_id == E_AcceptanceIDs.FAILURE: return (sys.maxint, sys.maxint)
             # Longest pattern sort on top
             # Lowest pattern ids sort on top
-            return (- X[1].min_transition_n_to_acceptance, X[1].pattern_id)
+            return (- X.min_transition_n_to_acceptance, X.pattern_id)
 
-        result = map(lambda x: (x[1].pre_context_id, x[1]), self.__trace_db.iteritems())
-        result.sort(key=my_key)
-        return result
+        return sorted(self.__trace_db.itervalues(), key=my_key)
 
     def get_priorized_pre_context_id_list(self):
-        return map(lambda x: x[0], self.get_priorized_list())
+        return map(lambda x: x.pre_context_id, self.get_priorized_list())
 
-    def __repr__(self):
-        txt = []
-        for x in self.__trace_db.itervalues():
-            txt.append(repr(x))
-        return "".join(txt)
-
-    def __eq__(self, Other):
+    def is_equal(self, Other):
         """Compare two acceptance trace objects. Note, that __last_transition_n_to_acceptance
            is only for debug purposes.
         """
@@ -412,11 +442,24 @@ class Trace(object):
                 return False
         return True
 
+    def __repr__(self):
+        txt = []
+        for x in self.__trace_db.itervalues():
+            txt.append(repr(x))
+        return "".join(txt)
+
     def __iter__(self):
         for x in self.__trace_db.itervalues():
             yield x
 
+    def __eq__(self):  assert False
+    def __neq__(self): assert False
+
+
 class TraceEntry(object):
+    """Information about a trace element. That is what pre-context is
+       required, what pattern id is referred, transition counters etc.
+    """
     __slots__ = ("pre_context_id", 
                  "pattern_id", 
                  "transition_n_since_positioning", 
