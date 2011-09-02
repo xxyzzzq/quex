@@ -363,6 +363,13 @@ global_extension_db = {
               FileTypes.SOURCE:              ".c",
               FileTypes.HEADER:              ".h",
               FileTypes.HEADER_IMPLEMTATION: ".c",
+        },
+   },
+    "DOT": {
+        "": {
+              FileTypes.SOURCE:              ".dot",
+              FileTypes.HEADER:              None,
+              FileTypes.HEADER_IMPLEMTATION: None,
         }
    }
 }

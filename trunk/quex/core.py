@@ -28,6 +28,9 @@ def do():
        a separate state machine that is stuck into a virtual function
        of a class derived from class 'quex_mode'.
     """
+    if Setup.language == "DOT": 
+        return do_plot()
+
     token_id_maker.prepare_default_standard_token_ids()
 
     mode_db = quex_file_parser.do(Setup.input_mode_files)
