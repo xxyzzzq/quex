@@ -13,14 +13,51 @@ That is at the end there is a dictionary:
 
             map:    state index --> list of Trace objects.
 
-A Trace object contains for one path through the state a set of TraceEntry 
-objects. The TraceEntry tells what has to happen in a state, if there was only the
-currently considered path. The consideration of effects from multiple path in a
-state happens in upper layer, the 'core.py' module of this directory.
+A Trace object contains for one path through a state a set of TraceEntry 
+objects. The set of TraceEntry-s tells what has to happen in a state, if 
+there was only the currently considered path.
+
+The consideration of effects from multiple path in a state happens in upper
+layer: the 'core.py' module of this directory.
 
 Further Info:   class TrackAnalysis 
                 class Trace
                 class TraceEntry
+
+-------------------------------------------------------------------------------
+EXAMPLE:
+
+            (0)--- a --->(1)--- b --->(2)--- c --->(3)
+                           A12                       A3/Restore7
+                           Store7
+                           A5
+
+The annotations originate from states that were combined during the
+construction of a single state machine from multiple pattern detectors.
+For state 0, it can only be said that, in case of drop out the 
+analyzer needs to notify 'Failure'. 
+
+       State 0 --> [ TraceEntry(Failure) ]
+
+State 1 accepts pattern 12 and 5, pattern 5, though has precedence (lower
+pattern id). Further the input position for post-context 7 needs to be stored.
+
+       State 1 --> [ TraceEntry(Accept Pattern 5), 
+                     TraceEntry(Store Input Position in '7') ]
+
+If the state machine drops out in State 2, then the last acceptance is
+restored which was pattern 5. It lies now one position backwards. So
+the input position needs to be decremented by one.
+
+       State 2 --> [ TraceEntry(Accept Pattern 5, input_p -= 1) ]
+
+In state 3, finally pattern 3 is accepted. However, it is a post-context
+so that the input position needs to be set to what was stored in '7'. 
+Since the distance from storage to restore can be determined from the
+number of transitions, the adaption of the input position can happen
+without actual storing of input positions:
+
+       State 3 --> [ TraceEntry(Accept Pattern 7, input_p -= 2) ]
 
 ===============================================================================
 """
@@ -52,7 +89,7 @@ class TrackAnalysis:
        The result of the process is presented by property 'acceptance_trace_db'. 
        It delivers for each state of the state machine a trace object that maps:
 
-                   state index --> object of class Trace
+                   state index --> list of Trace objects
        
        The acceptance_trace_db is basically the accumulated trace information 
        which is cleaned of auxiliary information from the analysis process.
@@ -431,7 +468,7 @@ class Trace(object):
     def get_priorized_pre_context_id_list(self):
         return map(lambda x: x.pre_context_id, self.get_priorized_list())
 
-    def is_equal(self, Other):
+    def __eq__(self, Other):
         """Compare two acceptance trace objects. Note, that __last_transition_n_to_acceptance
            is only for debug purposes.
         """
@@ -442,6 +479,9 @@ class Trace(object):
                 return False
         return True
 
+    def __neq__(self):
+        return not self.__eq__(self)
+
     def __repr__(self):
         txt = []
         for x in self.__trace_db.itervalues():
@@ -451,10 +491,6 @@ class Trace(object):
     def __iter__(self):
         for x in self.__trace_db.itervalues():
             yield x
-
-    def __eq__(self):  assert False
-    def __neq__(self): assert False
-
 
 class TraceEntry(object):
     """Information about a trace element. That is what pre-context is

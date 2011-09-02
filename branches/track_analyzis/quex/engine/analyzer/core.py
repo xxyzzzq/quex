@@ -18,39 +18,17 @@
     For administrative purposes, other data such as the 'state_index' is 
     stored along with the AnalyzerState object.
 
+    The track analysis in 'track_analysis.py' provides the basis for the 
+    construction of AnalyzerState objects. It produces the 'acceptance_trace_db'.
+    It maps:
 
-================================================================================
-================================================================================
-The implementation of the state has the following basic elements:
-
-*-----------------------------------------------------------------------------*
-
-   Input:       Access the input character.
-
-   Entry:       [OPTIONAL] Store information to be used by successor states.
-
-   TriggerMap:  All triggers that transit on a character to specific 
-                successor state.
-
-   DropOut:     Handle the case that input character does not trigger in
-                trigger map.
-
-*-----------------------------------------------------------------------------*
-
-Accordingly, each state will be represented by a new 'state' consisting
-of four objects:
-
-    .input          <-- class Input
-    .successor_info <-- class SuccessorInfo
-    .trigger_map    <-- list of pairs (interval, target_state_index)
-    .drop_out       <-- class DropOut
-
-The following sections elaborate on the these objects and how they have
-to perform. The classes 'Input', 'SuccessorInfo' and 'DropOut' allow
-to access the information that resulted from the track analyzis. After
-reading the following, review their class interfaces.
-
-
+                    state index --> list of Trace objects
+    
+    Each trace object relates to a particular path through the given state. It
+    tells how the state should behave, if there was only this particular path. 
+    The task of this module is to combine the list of Trace objects and generate
+    a AnalyzerState objects with the aforementioned components.
+    
 _____________________
                      |
 Acceptance Detection |__________________________________________________________
@@ -331,6 +309,7 @@ import quex.engine.analyzer.position_register_map as     position_register_map
 from   quex.engine.analyzer.track_analysis        import \
                                                          extract_pre_context_id, \
                                                          E_TransitionN
+from   quex.engine.state_machine.core             import StateMachine
 from   quex.engine.state_machine.state_core_info  import E_PostContextIDs, \
                                                          E_AcceptanceIDs, \
                                                          E_EngineTypes, \
@@ -344,14 +323,26 @@ from operator         import attrgetter, itemgetter
 from itertools        import islice, ifilter, imap
 
 class Analyzer:
+    """Objects of class Analyzer contain information for code generation of a
+       lexical analyzer. This information is derived from a given state machine
+       that is expected to combine all active pattern detectors. 
+       
+       In the given state machine, information about a states behavior is
+       stored along with the states in so called 'origins'. An 'origin' is some
+       data that originates in the single pattern detectors before they were
+       combined. Those origins are used by the track analysis to determine
+       traces. Based on the traces the AnalyzerState objects are created.
+    """
     def __init__(self, SM, EngineType=E_EngineTypes.FORWARD):
         assert EngineType in E_EngineTypes
-
-        acceptance_db = track_analysis.do(SM)
+        assert isinstance(SM, StateMachine)
 
         self.__init_state_index = SM.init_state_index
         self.__state_machine_id = SM.get_id()
         self.__engine_type      = EngineType
+
+        # (1) Track Analysis: Get the 'Trace' objects for each state
+        acceptance_db = track_analysis.do(SM)
 
         from_db = defaultdict(set)
         for state_index, state in SM.states.iteritems():
