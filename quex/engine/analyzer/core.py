@@ -315,12 +315,11 @@ from   quex.engine.state_machine.state_core_info  import E_PostContextIDs, \
                                                          E_EngineTypes, \
                                                          E_PreContextIDs
 from   quex.engine.misc.enum                      import Enum
+from   quex.blackboard  import E_StateIndices
 
-
-from quex.blackboard  import E_StateIndices
-from collections      import defaultdict
-from operator         import attrgetter, itemgetter
-from itertools        import islice, ifilter, imap
+from   collections      import defaultdict
+from   operator         import attrgetter, itemgetter
+from   itertools        import islice, ifilter, imap
 
 class Analyzer:
     """Objects of class Analyzer contain information for code generation of a
@@ -400,35 +399,34 @@ class Analyzer:
     def state_machine_id(self):      return self.__state_machine_id
 
     def get_drop_out_object(self, state, TheTraceList):
-        """A state may be reached via multiple paths. For each path there is 
-           a separate Trace. Each Trace tells what has to
-           happen in the state depending on the pre-contexts being fulfilled 
-           or not (if there are even any pre-context patterns).
+        """This class computes a 'DropOut' object, i.e. some data that tells
+           what has to happen if nothing in the transition map triggers.  It
+           does so based on the computed traces produced by the track analysis.
 
-           This function computes a single object that indicates what has to
-           happen in the current state based on the given list of acceptance
-           traces. And, the two rule are simple:
+           DropOut objects contain two elements:
 
-             (1) If there is the slightest difference between the acceptances
-                 of the acceptance traces, then the acceptance depends on the 
-                 path.
+               -- An Acceptance Detector: Dependent on the fulfilled 
+                  pre-contexts a winning pattern is determined.
 
-                 -- all pre-context-ids must be the same
-                 -- the precedence of the pre-context-ids must be the same
+               -- Terminal Routing: Dependent on the acceptance the 
+                  input position is modified and the terminal containing
+                  the pattern action is entered.
 
-                 ===========================================================
-                 | Note, that precedence is first of all subject to length |
-                 | of the match, then it is subject to the pattern id.     |
-                 ===========================================================
+           The input position modification may contain a 'restore'. In that
+           case the correspondent Entry objects of the storing states are
+           modified, so that they store the input position.
 
-             (2) For a given pre-context, if the positioning backwards differs
-                 for one entry, or is undetermined, then the positions must be
-                 stored by the related state and restored in the current state.
+           --------------------------------------------------------------------
+        
+           A state may be reached via multiple paths. For each path there is a
+           separate Trace. Each Trace tells what has to happen in the state
+           depending on the pre-contexts being fulfilled or not (if there are
+           even any pre-context patterns).
         """
         assert len(TheTraceList) != 0
 
-        checker = []  # map: pre-context-flag --> acceptance_id
-        router  = []  # map: acceptance_id    --> (positioning, 'goto terminal_id')
+        acceptance_checker = []  # map: pre-context-flag --> acceptance_id
+        terminal_router  = []  # map: acceptance_id    --> (positioning, 'goto terminal_id')
 
         # (*) Acceptance Detector
         if self.analyze_acceptance_uniformity(TheTraceList):
@@ -436,7 +434,7 @@ class Analyzer:
             #     Use one trace as prototype to generate the mapping of 
             #     pre-context flag vs. acceptance.
             prototype = TheTraceList[0]
-            checker   = map(lambda x: DropOut_CheckerElement(x.pre_context_id, x.pattern_id), 
+            acceptance_checker   = map(lambda x: DropOut_AcceptanceCheckerElement(x.pre_context_id, x.pattern_id), 
                             prototype.get_priorized_list())
             # Note: (1.1) Unconditional Acceptance Exists, and
             #       (1.2) No Unconditional Acceptance 
@@ -453,16 +451,16 @@ class Analyzer:
             # (2.2) No Unconditional Acceptance
             #       => past acceptances can be communicated via 'last_acceptance' instead of Failure.
             #          but all current pre-contexts must be checked.
-            checker = []
+            acceptance_checker = []
             for origin in sorted(ifilter(lambda x: x.is_acceptance(), state._origin_list),
                                  key=attrgetter("state_machine_id")):
-                checker.append(DropOut_CheckerElement(extract_pre_context_id(origin),
+                acceptance_checker.append(DropOut_AcceptanceCheckerElement(extract_pre_context_id(origin),
                                                       origin.state_machine_id))
                 ## Is this right?: According to (2.1) the following must hold
                 ## assert origin.pre_context_id() != -1
 
             # No pre-context --> restore last acceptance
-            checker.append(DropOut_CheckerElement(E_PreContextIDs.NONE, E_AcceptanceIDs.VOID))
+            acceptance_checker.append(DropOut_AcceptanceCheckerElement(E_PreContextIDs.NONE, E_AcceptanceIDs.VOID))
 
             # Triggering states need to store acceptance as soon as they are entered
             for trace in TheTraceList:
@@ -470,10 +468,10 @@ class Analyzer:
                     accepting_state = self.__state_db[element.accepting_state_index]
                     accepting_state.entry.accepter[element.pre_context_id] = element.pattern_id
 
-        # Terminal Router
+        # Terminal TerminalRouter
         for pattern_id, info in self.analyze_positioning(TheTraceList).iteritems():
             assert pattern_id != E_AcceptanceIDs.VOID
-            router.append(DropOut_RouterElement(pattern_id, 
+            terminal_router.append(DropOut_TerminalRouterElement(pattern_id, 
                                                 info.transition_n_since_positioning, 
                                                 info.post_context_id))
 
@@ -499,28 +497,28 @@ class Analyzer:
                     # from state: pos_state_index (the state before)
                     entry.positioner_db[pos_state_index][info.post_context_id].add(info.pre_context_id)
 
-        # Clean Up the checker and the router:
+        # Clean Up the acceptance_checker and the terminal_router:
         # (1) there is no check after the unconditional acceptance
         result = DropOut()
         for i, dummy in ifilter(lambda x:     x[1].pre_context_id == E_PreContextIDs.NONE   \
                                           and x[1].acceptance_id  != E_AcceptanceIDs.FAILURE, 
-                                enumerate(checker)):
-            result.checker = checker[:i+1]
+                                enumerate(acceptance_checker)):
+            result.acceptance_checker = acceptance_checker[:i+1]
             break
         else:
-            result.checker = checker
+            result.acceptance_checker = acceptance_checker
 
         # (2) Acceptances that are not referred do not need to be routed.
-        for dummy in ifilter(lambda x: x.acceptance_id == E_AcceptanceIDs.VOID, checker):
+        for dummy in ifilter(lambda x: x.acceptance_id == E_AcceptanceIDs.VOID, acceptance_checker):
             # The 'accept = last_acceptance' appears, thus all possible cases
             # need to be considered.
-            result.router = router
+            result.terminal_router = terminal_router
             break
         else:
-            # Only the acceptances that appear in the checker are considered
-            checked_pattern_id_list = map(lambda x: x.acceptance_id, checker)
-            result.router = filter(lambda x: x.acceptance_id in checked_pattern_id_list, 
-                                   router)
+            # Only the acceptances that appear in the acceptance_checker are considered
+            checked_pattern_id_list = map(lambda x: x.acceptance_id, acceptance_checker)
+            result.terminal_router = filter(lambda x: x.acceptance_id in checked_pattern_id_list, 
+                                   terminal_router)
 
         ##DEBUG:
         result.trivialize()
@@ -718,7 +716,7 @@ class Analyzer:
                 target_state = self.state_db[target_index]
                 for dummy in ifilter(lambda x:     x.positioning     == E_TransitionN.VOID \
                                                and x.post_context_id == PostContextID,
-                                     target_state.drop_out.router):
+                                     target_state.drop_out.terminal_router):
                     collection.update(path)
                     break
                 path.append(target_index)
@@ -803,9 +801,9 @@ class AnalyzerState(object):
             self.drop_out = None 
         elif EngineType == E_EngineTypes.BACKWARD_PRE_CONTEXT:
             self.drop_out = DropOut()
-            self.drop_out.checker.append(DropOut_CheckerElement(E_PreContextIDs.NONE, 
+            self.drop_out.acceptance_checker.append(DropOut_AcceptanceCheckerElement(E_PreContextIDs.NONE, 
                                                                 E_AcceptanceIDs.VOID))
-            self.drop_out.router.append(DropOut_RouterElement(E_AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK, 
+            self.drop_out.terminal_router.append(DropOut_TerminalRouterElement(E_AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK, 
                                                               E_TransitionN.IRRELEVANT, 
                                                               E_PostContextIDs.IRRELEVANT))
         elif EngineType == E_EngineTypes.BACKWARD_INPUT_POSITION:
@@ -1114,12 +1112,12 @@ class DropOut(object):
                 case 45: input_p  = last_acceptance_position; goto TERMINAL_45;
                 }
 
-       The first sub-task is described by the member '.checker' which is a list
-       of objects of class 'DropOut_CheckerElement'. An empty list means that
+       The first sub-task is described by the member '.acceptance_checker' which is a list
+       of objects of class 'DropOut_AcceptanceCheckerElement'. An empty list means that
        there is no check and the acceptance has to be restored from 'last_acceptance'.
        
-       The second sub-task is described by member '.router' which is a list of 
-       objects of class 'DropOut_RouterElement'.
+       The second sub-task is described by member '.terminal_router' which is a list of 
+       objects of class 'DropOut_TerminalRouterElement'.
 
        The exact content of both lists is determined by analysis of the acceptance
        trances.
@@ -1127,21 +1125,21 @@ class DropOut(object):
        NOTE: This type supports being a dictionary key by '__hash__' and '__eq__'.
              Required for the optional 'template compression'.
     """
-    __slots__ = ("checker", "router")
+    __slots__ = ("acceptance_checker", "terminal_router")
 
     def __init__(self):
-        self.checker = []
-        self.router  = []
+        self.acceptance_checker = []
+        self.terminal_router  = []
 
     def __hash__(self):
-        return hash(len(self.checker) * 10 + len(self.router))
+        return hash(len(self.acceptance_checker) * 10 + len(self.terminal_router))
 
     def __eq__(self, Other):
-        if   len(self.checker) != len(Other.checker): return False
-        elif len(self.router)  != len(Other.router):  return False
-        for dummy, dummy in ifilter(lambda x: not x[0].is_equal(x[1]), zip(self.checker, Other.checker)):
+        if   len(self.acceptance_checker) != len(Other.acceptance_checker): return False
+        elif len(self.terminal_router)  != len(Other.terminal_router):  return False
+        for dummy, dummy in ifilter(lambda x: not x[0].is_equal(x[1]), zip(self.acceptance_checker, Other.acceptance_checker)):
             return False
-        for dummy, dummy in ifilter(lambda x: not x[0].is_equal(x[1]), zip(self.router, Other.router)):
+        for dummy, dummy in ifilter(lambda x: not x[0].is_equal(x[1]), zip(self.terminal_router, Other.terminal_router)):
             return False
         return True
 
@@ -1153,36 +1151,36 @@ class DropOut(object):
            then the drop-out action can be trivialized.
 
            RETURNS: None                  -- if the drop out is not trivial
-                    DropOut_RouterElement -- if the drop-out is trivial
+                    DropOut_TerminalRouterElement -- if the drop-out is trivial
         """
-        if E_AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK in imap(lambda x: x.acceptance_id, self.router):
-            assert len(self.checker) == 1
-            assert self.checker[0].pre_context_id == E_PreContextIDs.NONE
-            assert self.checker[0].acceptance_id  == E_AcceptanceIDs.VOID
-            assert len(self.router) == 1
-            return [None, self.router[0]]
+        if E_AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK in imap(lambda x: x.acceptance_id, self.terminal_router):
+            assert len(self.acceptance_checker) == 1
+            assert self.acceptance_checker[0].pre_context_id == E_PreContextIDs.NONE
+            assert self.acceptance_checker[0].acceptance_id  == E_AcceptanceIDs.VOID
+            assert len(self.terminal_router) == 1
+            return [None, self.terminal_router[0]]
 
-        for dummy in ifilter(lambda x: x.acceptance_id == E_AcceptanceIDs.VOID, self.checker):
-            # There is a stored acceptance involved, thus need checker + router.
+        for dummy in ifilter(lambda x: x.acceptance_id == E_AcceptanceIDs.VOID, self.acceptance_checker):
+            # There is a stored acceptance involved, thus need acceptance_checker + terminal_router.
             return None
 
         result = []
-        for check in self.checker:
-            for route in self.router:
+        for check in self.acceptance_checker:
+            for route in self.terminal_router:
                 if route.acceptance_id == check.acceptance_id: break
             else:
                 assert False, \
-                       "Acceptance ID '%s' not found in router.\nFound: %s" % \
-                       (check.acceptance_id, map(lambda x: x.acceptance_id, self.router))
+                       "Acceptance ID '%s' not found in terminal_router.\nFound: %s" % \
+                       (check.acceptance_id, map(lambda x: x.acceptance_id, self.terminal_router))
             result.append((check, route))
             # NOTE: "if check.pre_context_id is None: break"
-            #       is not necessary since get_drop_out_object() makes sure that the checker
+            #       is not necessary since get_drop_out_object() makes sure that the acceptance_checker
             #       stops after the first non-pre-context drop-out.
 
         return result
 
     def __repr__(self):
-        if len(self.checker) == 0 and len(self.router) == 0:
+        if len(self.acceptance_checker) == 0 and len(self.terminal_router) == 0:
             return "    <unreachable code>"
         info = self.trivialize()
         if info is not None:
@@ -1207,7 +1205,7 @@ class DropOut(object):
 
         txt = ["    Checker:\n"]
         if_str = "if     "
-        for element in self.checker:
+        for element in self.acceptance_checker:
             if element.pre_context_id != E_PreContextIDs.NONE:
                 txt.append("        %s %s\n" % (if_str, repr(element)))
             else:
@@ -1218,12 +1216,12 @@ class DropOut(object):
             if_str = "else if"
 
         txt.append("    Router:\n")
-        for element in self.router:
+        for element in self.terminal_router:
             txt.append("        %s\n" % repr(element))
 
         return "".join(txt)
 
-class DropOut_CheckerElement(object):
+class DropOut_AcceptanceCheckerElement(object):
     """Objects of this class shall describe a check sequence such as
 
             if     ( pre_condition_5_f ) last_acceptance = 34;
@@ -1271,7 +1269,7 @@ class DropOut_CheckerElement(object):
                                         repr_acceptance_id(self.acceptance_id)))
         return "".join(txt)
 
-class DropOut_RouterElement(object):
+class DropOut_TerminalRouterElement(object):
     """Objects of this class shall be elements to build a router to the terminal
        based on the setting 'last_acceptance', i.e.
 
