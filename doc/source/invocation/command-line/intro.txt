@@ -85,8 +85,19 @@ as described in :ref:`sec-number-format`.
 
          * ``C`` for plain C code.
          * ``C++`` for C++ code.
+         * ``dot`` for plotting information in graphviz format.
 
         DEFAULT = ``C++``
+
+.. cmdoption:: --character-display  ['hex', 'utf8']
+
+        Specifies how the character of the state transition are to be displayed
+        when `--language dot` is used. If ``hex`` is specified then character
+        will be displayed with the Unicode code point in hexadecimal notation. If
+        ``utf8`` is specified the character will be displayed 'as is' in UTF8
+        notation. 
+
+        DEFAULT=`"utf8"`
 
 .. cmdoption:: `--debug`
 
@@ -592,31 +603,6 @@ the following.
    In this case sets of adjacent characters are displayed as intervals. This provides
    a somewhat more abbreviated display.
 
-Additionally, quex provides the ability to display transition diagrams of
-produced state machines graphically. The following command line options support
-this feature:
-
-.. cmdoption:: --plot graphic-format
-
-        Runs quex in the plotting mode. Rather than producing source code, quex
-        produces transition diagrams of the defined modes. For querying possible graphic
-        formats, run quex with the ``--plot-format-list`` command line option.
-        Note, for this option to work, the graphviz package needs to be installed 
-        (see www.graphviz.org).
-
-.. cmdoption:: --plot-character-display, --pcd  ['hex', 'utf8']
-
-        Specifies how the character of the state transition are to be displayed. When ``hex``
-        is specified then character will be displayed with the Unicode code point in 
-        hexidecimal. If ``utf8`` is specified the character will be displayed 'as is' 
-        in UTF8 notation. 
-
-        DEFAULT=`"utf8"`
-
-.. cmdoption:: --plot-format-list
-
-        Lists all possible graphic formats for which quex can produce transition
-        graphs.
 
 The following options control the comment which is added to the generated code:
 

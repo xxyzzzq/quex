@@ -20,15 +20,10 @@ def do(setup, command_line, argv):
         if os.access(setup.output_directory, os.W_OK) == False:
             error_msg("The directory %s was specified for output, but is not writeable." % setup.output_directory)
 
-    # if the mode is 'plotting', then check wether a graphic format is speicified
-    for plot_option in SETUP_INFO["plot_graphic_format"][0]:
-        if plot_option in argv and setup.plot_graphic_format == "":
-            error_msg("Option '%s' must be followed by a graphic format specifier (bmp, svg, jpg, ...)" % \
-                      plot_option)
-
-    if setup.plot_character_display not in ["hex", "utf8"]:
-        error_msg("Plot character display must be either 'hex' or 'utf8'.\nFound: '%s'" % 
-                  setup.plot_character_display)
+    # if the mode is '--language dot' => check character display options. 
+    if setup.character_display not in ["hex", "utf8"]:
+        error_msg("Character display must be either 'hex' or 'utf8'.\nFound: '%s'" % 
+                  setup.character_display)
 
     # ensure that options are not specified twice
     for parameter, info in SETUP_INFO.items():
