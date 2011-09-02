@@ -362,3 +362,13 @@ db["VisualBasic6"] = {
     "$return_false": "$the_function = True: Exit Function",
     }
 
+db["DOT"] = {
+        "$token-default-file":     "/token/CDefault.qx",
+        "$token_template_file":    "/token/TXT-C",
+        "$token_template_i_file":  "/token/TXT-C.i",
+        "$analyzer_template_file": "/analyzer/TXT-C",
+        "$file_extension":         ".dot",
+    "$code_base":               "/quex/code_base/",
+    "$require-terminating-zero-preparation": cpp.__require_terminating_zero_preparation,
+    "$comment-delimiters": [["/*", "*/", ""], ["//", "\n", ""], ["\"", "\"", "\\\""]],
+}
