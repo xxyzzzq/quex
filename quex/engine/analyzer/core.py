@@ -305,6 +305,7 @@ A new rule concerning the reload behavior can be defined:
 """
 
 import quex.engine.analyzer.track_analysis        as     track_analysis
+import quex.engine.analyzer.optimizer             as     optimizer
 import quex.engine.analyzer.position_register_map as     position_register_map
 from   quex.engine.analyzer.track_analysis        import \
                                                          extract_pre_context_id, \
@@ -321,6 +322,11 @@ from   collections      import defaultdict
 from   operator         import attrgetter, itemgetter
 from   itertools        import islice, ifilter, imap
 
+def do(SM, EngineType=E_EngineTypes.FORWARD):
+    analyzer = Analyzer(SM, EngineType)
+
+    return optimizer.do(analyzer)
+
 class Analyzer:
     """Objects of class Analyzer contain information for code generation of a
        lexical analyzer. This information is derived from a given state machine
@@ -332,7 +338,7 @@ class Analyzer:
        combined. Those origins are used by the track analysis to determine
        traces. Based on the traces the AnalyzerState objects are created.
     """
-    def __init__(self, SM, EngineType=E_EngineTypes.FORWARD):
+    def __init__(self, SM, EngineType):
         assert EngineType in E_EngineTypes
         assert isinstance(SM, StateMachine)
 
@@ -343,6 +349,7 @@ class Analyzer:
         # (1) Track Analysis: Get the 'Trace' objects for each state
         acceptance_db = track_analysis.do(SM)
 
+        # (2) Prepare AnalyzerState Objects
         from_db = defaultdict(set)
         for state_index, state in SM.states.iteritems():
             self.transition_map = state.transitions().get_trigger_map()
@@ -352,42 +359,28 @@ class Analyzer:
         self.__state_db = dict([(state_index, AnalyzerState(state_index, SM, EngineType, from_db[state_index])) 
                                  for state_index in acceptance_db.iterkeys()])
 
+        # (3) Successor Database
+        #     Store for each state the set of all possible successor states.
         self.__successor_db          = defaultdict(set)
         self.__successor_db_done_set = set()
         self.__successor_db_get(self.__init_state_index, [], self.__successor_db)
 
-        if EngineType == E_EngineTypes.FORWARD:
-            for state_index, acceptance_trace_list in acceptance_db.iteritems():
-                state = self.__state_db[state_index]
-                # acceptance_trace_list: 
-                # Trace objects for each path that guides through state.
-                state.drop_out = self.get_drop_out_object(state, acceptance_trace_list)
-
-            # -- After the preceding dependency implementation:
-            #    If a state has no successor state, or only transitions to itself,
-            #    => No accepter check is necessary, done in drop-out
-            for state_index, sm_state in SM.states.iteritems():
-                transition_map = sm_state.transitions().get_map()
-                if     len(transition_map) == 0 \
-                   or (len(transition_map) == 1 and transition_map.keys()[0] == state_index):
-                   ## self.__state_db[state_index].entry.positioner_db.clear()
-                   self.__state_db[state_index].entry.accepter.clear()
-        else:
-            # NOTE: For backward analysis, drop_out and entry do not require any construction 
-            #       beyond what is triggered inside the constructor of 'AnalyzerState'.
-            #       This is so, since no dependencies exists between states that require
-            #       stored acceptances and stored positions and those state that store it.
-            #       
-            #       For backward analysis, the behavior of a state can be determined in 
-            #       isolation and it is not dependent on other states.
-            pass
-
-        if EngineType == E_EngineTypes.FORWARD:
-            self.__position_register_map = position_register_map.do(self)
-            for entry in imap(lambda x: x.entry, self.__state_db.itervalues()):
-                entry.try_unify_positioner_db()
-        else:
+        if EngineType != E_EngineTypes.FORWARD:
+            # BACKWARD_INPUT_POSITION, BACKWARD_PRE_CONTEXT:
+            #
+            # DropOut and Entry do not require any construction beyond what is
+            # accomplished inside the constructor of 'AnalyzerState'. No positions
+            # need to be stored and restored.
             self.__position_register_map = None
+            return
+
+        for state_index, acceptance_trace_list in acceptance_db.iteritems():
+            state = self.__state_db[state_index]
+            # acceptance_trace_list: 
+            # Trace objects for each path that guides through state.
+            state.drop_out = self.get_drop_out_object(state, acceptance_trace_list)
+
+        self.__position_register_map = position_register_map.do(self)
 
     @property
     def state_db(self):              return self.__state_db
@@ -397,6 +390,8 @@ class Analyzer:
     def position_register_map(self): return self.__position_register_map
     @property
     def state_machine_id(self):      return self.__state_machine_id
+    @property
+    def engine_type(self):           return self.__engine_type
 
     def get_drop_out_object(self, state, TheTraceList):
         """This class computes a 'DropOut' object, i.e. some data that tells
@@ -435,7 +430,7 @@ class Analyzer:
             #     pre-context flag vs. acceptance.
             prototype = TheTraceList[0]
             acceptance_checker   = map(lambda x: DropOut_AcceptanceCheckerElement(x.pre_context_id, x.pattern_id), 
-                            prototype.get_priorized_list())
+                                       prototype.get_priorized_list())
             # Note: (1.1) Unconditional Acceptance Exists, and
             #       (1.2) No Unconditional Acceptance 
             #       are already well-handled because the current states acceptance behavior
@@ -455,7 +450,7 @@ class Analyzer:
             for origin in sorted(ifilter(lambda x: x.is_acceptance(), state._origin_list),
                                  key=attrgetter("state_machine_id")):
                 acceptance_checker.append(DropOut_AcceptanceCheckerElement(extract_pre_context_id(origin),
-                                                      origin.state_machine_id))
+                                          origin.state_machine_id))
                 ## Is this right?: According to (2.1) the following must hold
                 ## assert origin.pre_context_id() != -1
 
@@ -745,9 +740,23 @@ class Analyzer:
         for x in self.__state_db.values():
             yield x
 
-InputActions = Enum("INCREMENT_THEN_DEREF", "DEREF", "DECREMENT_THEN_DEREF")
+E_InputActions = Enum("INCREMENT_THEN_DEREF", "DEREF", "DECREMENT_THEN_DEREF")
 
 class AnalyzerState(object):
+    """AnalyzerState consists of the following major components:
+
+       entry -- tells what has to happen at entry to the state (depending 
+                on the state from which it is entered).
+
+       input -- determined how to access the character that is used for 
+                transition triggering.
+
+       transition_map -- telling what subsequent state is to be entered
+                         dependent on the triggering character.
+
+       drop_out -- contains information about what happens when the 
+                   transition map cannot trigger on the character.
+    """
     __slots__ = ("__index", 
                  "__init_state_f", 
                  "__target_index_list", 
@@ -770,9 +779,9 @@ class AnalyzerState(object):
 
         # (*) Input
         if EngineType == E_EngineTypes.FORWARD:
-            if StateIndex == SM.init_state_index: self.input = InputActions.DEREF
-            else:                                 self.input = InputActions.INCREMENT_THEN_DEREF
-        else:                                     self.input = InputActions.DECREMENT_THEN_DEREF
+            if StateIndex == SM.init_state_index: self.input = E_InputActions.DEREF
+            else:                                 self.input = E_InputActions.INCREMENT_THEN_DEREF
+        else:                                     self.input = E_InputActions.DECREMENT_THEN_DEREF
 
         # (*) Entry Action
         if   EngineType == E_EngineTypes.FORWARD: 
@@ -799,13 +808,14 @@ class AnalyzerState(object):
             # DropOut and Entry interact and require sophisticated analysis
             # => See "Analyzer.get_drop_out_object(...)"
             self.drop_out = None 
+
         elif EngineType == E_EngineTypes.BACKWARD_PRE_CONTEXT:
             self.drop_out = DropOut()
             self.drop_out.acceptance_checker.append(DropOut_AcceptanceCheckerElement(E_PreContextIDs.NONE, 
-                                                                E_AcceptanceIDs.VOID))
+                                                                                     E_AcceptanceIDs.VOID))
             self.drop_out.terminal_router.append(DropOut_TerminalRouterElement(E_AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK, 
-                                                              E_TransitionN.IRRELEVANT, 
-                                                              E_PostContextIDs.IRRELEVANT))
+                                                                               E_TransitionN.IRRELEVANT, 
+                                                                               E_PostContextIDs.IRRELEVANT))
         elif EngineType == E_EngineTypes.BACKWARD_INPUT_POSITION:
             # The drop-out should never be reached, since we walk a path backwards
             # that has been walked forward before.
