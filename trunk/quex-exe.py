@@ -92,8 +92,7 @@ if __name__ == "__main__":
         #     and no further processing has to be done. If 'True' start the process.
         if command_line.do(sys.argv):
             # (*) Run Quex ___________________________________________________________________
-            if Setup.plot_graphic_format == "": core.do()       # 'normal' code generation
-            else:                               core.do_plot()  # plot transition graphs
+            core.do() 
 
     except AssertionError, x:
        on_exception(x, "Assertion error -- please report a bug under\n" + \

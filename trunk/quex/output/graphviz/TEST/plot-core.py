@@ -20,11 +20,11 @@ sm = regex.do("a(((b+ee(fe)*)+(b+cd)?)|(b+cd))", {})
 pattern_action_pair_list = [ PatternActionInfo(sm, "Don't worry, be happy!") ]
 
 # HWUT consideres '##' as comment
-my_plotter = plotter.Generator(pattern_action_pair_list, "test-plot", "fig")
+my_plotter = plotter.Generator(pattern_action_pair_list, "test-plot")
 
 my_plotter.do()
-print open("test-plot.fig").read() # .replace("#", "##")
-os.remove("test-plot.fig")
+print open("test-plot.dot").read() # .replace("#", "##")
+os.remove("test-plot.dot")
 
 
 
