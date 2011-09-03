@@ -1,0 +1,3 @@
+Note: the important phrase is 'no leaks are possible'.
+ All heap blocks were freed -- no leaks are possible
+

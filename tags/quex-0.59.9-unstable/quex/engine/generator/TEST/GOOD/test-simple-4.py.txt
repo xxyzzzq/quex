@@ -1,0 +1,8 @@
+(*) Lexical Analyser Patterns:
+             <<EOF>> --> EOF STOP
+                  x* --> X*
+Regular expression parsing:
+Pattern results in a 'nothing is acceptable' state machine.
+This means, that no step forward in the input still sets the analyzer
+into an acceptance state. Thus, as soon as no other input matches
+the analyzer ends up in an infinite loop.

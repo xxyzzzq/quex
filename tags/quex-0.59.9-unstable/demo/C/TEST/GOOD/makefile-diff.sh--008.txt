@@ -1,0 +1,35 @@
+< LEXER_SOURCES  = $(LEXER_NAME).cpp         
+---
+> LEXER_SOURCES	= $(LEXER_NAME).c         
+< PARSER_SOURCES = $(PARSER_NAME).tab.cpp	
+---
+> PARSER_SOURCES = $(PARSER_NAME).tab.c
+< COMPILER = g++ -ggdb -Wall
+---
+> COMPILER = gcc -ggdb -Wall
+< 	$(LD) -o $(APPLICATION) main.o $(LEXER_NAME).o $(PARSER_NAME).tab.o
+---
+> 	$(LD) -o $(APPLICATION) main.o $(LEXER_NAME).o $(PARSER_NAME).tab.o -lm
+< %.o: %.cpp $(LEXER_SOURCES) $(PARSER_SOURCES)
+---
+> %.o: %.c $(LEXER_SOURCES) $(PARSER_SOURCES)
+<           --foreign-token-id-file Calc_token-ids.h
+---
+>           --foreign-token-id-file Calc_token-ids.h                   \
+> 		  --language C         
+< GENERATE_PARSER: Calc_parser.ypp
+---
+> GENERATE_PARSER:  Calc_parser.y
+< 	rm -f Calc_lexer
+< 	rm -f Calc_lexer-configuration
+< 	rm -f Calc_lexer-token
+< 	rm -f Calc_lexer-token_ids
+< 	rm -f Calc_parser.tab.cpp
+< 	rm -f Calc_parser.tab.hpp
+---
+> 	rm -f Calc_lexer.h
+> 	rm -f Calc_lexer-configuration.h
+> 	rm -f Calc_lexer-token.h
+> 	rm -f Calc_lexer-token_ids.h
+> 	rm -f Calc_parser.tab.c
+> 	rm -f Calc_parser.tab.h
