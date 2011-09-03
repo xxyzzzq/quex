@@ -1,8 +1,8 @@
 from   quex.engine.analyzer.core import Entry, \
                                         EntryBackward, \
                                         EntryBackwardInputPositionDetection
-from   quex.engine.state_machine.state_core_info import E_EngineTypes
-from   quex.blackboard import setup as Setup
+from   quex.blackboard import setup as Setup, \
+                              E_EngineTypes
 
 from   itertools import imap
 

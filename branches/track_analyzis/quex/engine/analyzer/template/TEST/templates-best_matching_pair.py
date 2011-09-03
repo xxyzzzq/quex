@@ -8,7 +8,7 @@ from   quex.engine.analyzer.core                        import Analyzer
 import quex.engine.analyzer.template.core               as     templates 
 from   quex.engine.analyzer.template.TEST.templates_aux import *
 from   quex.engine.state_machine.core                   import StateMachine
-from   quex.engine.state_machine.state_core_info        import E_EngineTypes
+from   quex.blackboard                                  import E_EngineTypes
 from   quex.engine.interval_handling                    import *
 
 

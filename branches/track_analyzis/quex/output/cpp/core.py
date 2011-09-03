@@ -1,4 +1,3 @@
-from   quex.engine.state_machine.state_core_info       import E_EngineTypes
 from   quex.engine.generator.languages.variable_db     import variable_db
 from   quex.engine.generator.languages.address         import get_address, \
                                                               get_plain_strings, \
@@ -11,6 +10,7 @@ import quex.engine.generator.state_router              as     state_router_gener
 from   quex.engine.generator.base                      import GeneratorBase
 from   quex.engine.analyzer.core                       import Analyzer
 from   quex.blackboard                                 import E_StateIndices, \
+                                                              E_EngineTypes,  \
                                                               setup as Setup
 
 class Generator(GeneratorBase):

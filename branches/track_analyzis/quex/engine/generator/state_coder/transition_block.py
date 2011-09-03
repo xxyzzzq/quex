@@ -1,8 +1,8 @@
 import quex.engine.generator.state_coder.transition_code as     transition_code
 from   quex.engine.interval_handling                     import Interval
-from   quex.engine.state_machine.state_core_info         import E_EngineTypes
-from   quex.blackboard                                   import E_StateIndices, \
-                                                                 setup as Setup
+from   quex.blackboard                                   import E_EngineTypes, \
+                                                                E_StateIndices, \
+                                                                setup as Setup
 import sys
 from   math      import log
 from   copy      import copy

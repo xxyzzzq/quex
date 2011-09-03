@@ -61,20 +61,14 @@ without actual storing of input positions:
 
 ===============================================================================
 """
-from   quex.engine.state_machine.state_core_info import E_PostContextIDs, E_AcceptanceIDs, E_PreContextIDs
-from   quex.blackboard                           import E_StateIndices
-from   quex.engine.misc.enum                     import Enum
+from   quex.blackboard        import E_StateIndices, E_PostContextIDs, E_AcceptanceIDs, E_PreContextIDs, E_TransitionN
+from   quex.engine.misc.enum  import Enum
 
 from   collections import defaultdict
 from   copy        import deepcopy
 from   operator    import attrgetter
 from   itertools   import ifilter
 import sys
-
-E_TransitionN = Enum("VOID", 
-                     "LEXEME_START_PLUS_ONE",
-                     "IRRELEVANT",
-                     "_DEBUG_NAME_TransitionNs")
 
 def do(SM):
     """Determines a database of Trace lists for each state.
@@ -109,9 +103,8 @@ class TrackAnalysis:
         #    set of state indices that are part of a loop.
         #
         self.__loop_state_set = set([])
-        #    NOTE: The investigation about loop states must be done **before**
-        #          the analysis of the acceptance traces. The acceptance trace
-        #          analysis requires the loop state set to be complete!
+        # NOTE: The investigation about loop states must be done **before** the
+        #       analysis of traces. The trace analysis requires the loop state set!
         self.__loop_search_done_set = set()
         self.__loop_search(self.sm.init_state_index, [])
 
@@ -124,8 +117,10 @@ class TrackAnalysis:
                           path  = [], 
                           trace = Trace(self.sm.init_state_index))
 
-        # Analysis is terminated. Now, for the outer user only the traces are
-        # relevant which contain information about acceptances.
+        # (*) Clean-Up
+        # 
+        #    Now, for the outer user only the traces are relevant which contain 
+        #    information about acceptances.
         for trace_list in self.__map_state_to_trace.itervalues():
             for trace in trace_list:
                 trace.delete_non_accepting_traces()
@@ -164,8 +159,6 @@ class TrackAnalysis:
                                yet been handled in the path. This is implemented
                                int the loop itself.
         """
-        # if StateIndex in path: return
-
         # (1) Add current state index to path
         path.append(StateIndex)
 

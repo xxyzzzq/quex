@@ -16,13 +16,13 @@ if "--hwut-info" in sys.argv:
 sm = regex.do("a(((b+ee(fe)*)+(b+cd)?)|(b+cd))/bbb(cb)*(eebc)?de", {})
 pattern_action_pair_list = [ PatternActionInfo(sm, "Don't worry, be happy!") ]
 
-my_plotter = plotter.Generator(pattern_action_pair_list, "test-plot", "fig")
+my_plotter = plotter.Generator(pattern_action_pair_list, "test-plot")
 
 my_plotter.do()
 
 # HWUT consideres '##' as comment
 print open(my_plotter.backward_detector_file_name[0]).read() # .replace("#", "##")
-os.remove("test-plot.fig")
+os.remove("test-plot.dot")
 os.remove(my_plotter.backward_detector_file_name[0])
 
 

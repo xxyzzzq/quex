@@ -25,6 +25,9 @@ def do():
        a separate state machine that is stuck into a virtual function
        of a class derived from class 'quex_mode'.
     """
+    if Setup.language == "DOT": 
+        return do_plot()
+
     token_id_maker.prepare_default_standard_token_ids()
 
     mode_db = quex_file_parser.do(Setup.input_mode_files)
@@ -139,9 +142,8 @@ def do_plot():
         if len(pattern_action_pair_list) == 0: continue
 
         plotter = grapviz_generator.Generator(pattern_action_pair_list,
-                                              StateMachineName = mode.name,
-                                              GraphicFormat    = Setup.plot_graphic_format)
-        plotter.do(Option=Setup.plot_character_display)
+                                              StateMachineName = mode.name)
+        plotter.do(Option=Setup.character_display)
 
 def _exception_checker():
     """Allow to check wether the exception handlers are all in place.

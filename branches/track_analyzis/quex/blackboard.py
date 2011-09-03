@@ -45,6 +45,39 @@ E_StateIndices = Enum("DROP_OUT",
                       "NONE", 
                       "VOID") 
 
+E_PreContextIDs  = Enum("NONE",    
+                        "BEGIN_OF_LINE", 
+                        "_DEBUG_NAME_PreContextIDs")
+
+E_AcceptanceIDs  = Enum("FAILURE", 
+                      "PRE_CONTEXT_FULFILLED", 
+                      "TERMINAL_PRE_CONTEXT_CHECK", 
+                      "TERMINAL_BACKWARD_INPUT_POSITION", 
+                      "VOID", 
+                      "_DEBUG_NAME_E_AcceptanceIDs")
+
+E_PostContextIDs = Enum("NONE", 
+                        "IRRELEVANT",
+                        "_DEBUG_NAME_E_PostContextIDs")
+
+E_EngineTypes    = Enum("FORWARD", 
+                      "BACKWARD_PRE_CONTEXT", 
+                      "BACKWARD_INPUT_POSITION",
+                      "INDENTATION_COUNTER",
+                      "ELSE",                       # skipper, or whatever ...
+                      "_DEBUG_E_EngineTypes")
+
+E_TransitionN = Enum("VOID", 
+                     "LEXEME_START_PLUS_ONE",
+                     "IRRELEVANT",
+                     "_DEBUG_NAME_TransitionNs")
+
+E_InputActions = Enum("INCREMENT_THEN_DEREF", 
+                      "DEREF", 
+                      "DECREMENT_THEN_DEREF",
+                      "_DEBUG_InputActions")
+
+
 #-----------------------------------------------------------------------------------------
 # mode_db: storing the mode information into a dictionary:
 #            key  = mode name
