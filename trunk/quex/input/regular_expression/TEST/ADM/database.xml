@@ -1,9 +1,9 @@
-<test-database execution-time-sec="2.97" date="Sat Aug 20 02:18:28 2011">
+<test-database execution-time-sec="3.09" date="Sat Sep  3 07:32:48 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Case Folding" time-sum-sec="0.23"> 
+    <test title="Case Folding" time-sum-sec="0.20"> 
         <application file-name="test-case_fold.py" info-request-time="1309079243L" vanished="False"/>
         <choice-list number="2" same_result="False">
-           <choice name="set" result="OK" time_sec="0.12" crc="1832220665"/>
+           <choice name="set" result="OK" time_sec="0.09" crc="1832220665"/>
            <choice name="pattern" result="OK" time_sec="0.11" crc="2048360827"/>
         </choice-list>
     </test>
@@ -13,17 +13,17 @@
            <choice name="" result="OK" time_sec="0.08" crc="-1122071086"/>
         </choice-list>
     </test>
-    <test title="Transformations" time-sum-sec="0.00"> 
+    <test title="Transformations" time-sum-sec="0.15"> 
         <application file-name="test-transformation.py" info-request-time="1313705896L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.00" crc="-1880310539"/>
+           <choice name="" result="OK" time_sec="0.15" crc="-1880310539"/>
         </choice-list>
     </test>
     <group name="Backslashed Characters">
-        <test title="General" time-sum-sec="0.07"> 
+        <test title="General" time-sum-sec="0.05"> 
             <application file-name="test-snap_backslashed_character.py" info-request-time="1305001372L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.07" crc="-2137551833"/>
+               <choice name="" result="OK" time_sec="0.05" crc="-2137551833"/>
             </choice-list>
         </test>
     </group>
@@ -34,10 +34,10 @@
                <choice name="" result="OK" time_sec="0.13" crc="580762815"/>
             </choice-list>
         </test>
-        <test title="Map character *string* to state machine" time-sum-sec="0.07"> 
+        <test title="Map character *string* to state machine" time-sum-sec="0.05"> 
             <application file-name="test-string.py" info-request-time="1301139208L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.07" crc="-751008829"/>
+               <choice name="" result="OK" time_sec="0.05" crc="-751008829"/>
             </choice-list>
         </test>
         <test title="Map character *range* to state machine" time-sum-sec="0.06"> 
@@ -46,10 +46,10 @@
                <choice name="" result="OK" time_sec="0.06" crc="1454754068"/>
             </choice-list>
         </test>
-        <test title="Snap string until (low level function)" time-sum-sec="0.07"> 
+        <test title="Snap string until (low level function)" time-sum-sec="0.06"> 
             <application file-name="test-snap_until.py" info-request-time="1305001316L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.07" crc="-1055637304"/>
+               <choice name="" result="OK" time_sec="0.06" crc="-1055637304"/>
             </choice-list>
         </test>
     </group>
@@ -60,26 +60,20 @@
                <choice name="" result="OK" time_sec="0.10" crc="315440503"/>
             </choice-list>
         </test>
-        <test title="Simple repeated expressions" time-sum-sec="0.11"> 
+        <test title="Simple repeated expressions" time-sum-sec="0.13"> 
             <application file-name="test-repeated-expressions.py" info-request-time="1309079261L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.11" crc="-1359575045"/>
+               <choice name="" result="OK" time_sec="0.13" crc="-1359575045"/>
             </choice-list>
         </test>
-        <test title="Alternative Expressions" time-sum-sec="0.07"> 
+        <test title="Alternative Expressions" time-sum-sec="0.06"> 
             <application file-name="test-set-expressions.py" info-request-time="1305001316L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.07" crc="1698415770"/>
+               <choice name="" result="OK" time_sec="0.06" crc="1698415770"/>
             </choice-list>
         </test>
     </group>
     <group name="Conditional Analysis">
-        <test title="pre- and post-conditions" time-sum-sec="0.09"> 
-            <application file-name="test-pre-and-post-condition.py" info-request-time="1313565112L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.09" crc="423562782"/>
-            </choice-list>
-        </test>
         <test title="pre conditions" time-sum-sec="0.09"> 
             <application file-name="test-pre-condition.py" info-request-time="1309079245L" vanished="False"/>
             <choice-list number="1" same_result="False">
@@ -92,10 +86,16 @@
                <choice name="" result="OK" time_sec="0.09" crc="-561669938"/>
             </choice-list>
         </test>
-        <test title="post conditions" time-sum-sec="0.08"> 
+        <test title="post conditions" time-sum-sec="0.09"> 
             <application file-name="test-post-condition.py" info-request-time="1309079268L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.08" crc="30145240"/>
+               <choice name="" result="OK" time_sec="0.09" crc="30145240"/>
+            </choice-list>
+        </test>
+        <test title="pre- and post-conditions" time-sum-sec="0.09"> 
+            <application file-name="test-pre-and-post-condition.py" info-request-time="1313565112L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.09" crc="423562782"/>
             </choice-list>
         </test>
         <test title="End of Line '$' (with DOS/Windows '\r\n')" time-sum-sec="0.07"> 
@@ -120,10 +120,10 @@
         </test>
     </group>
     <group name="Unicode properties">
-        <test title="Simple" time-sum-sec="0.66"> 
+        <test title="Simple" time-sum-sec="0.69"> 
             <application file-name="test-properties.py" info-request-time="1305001316L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.66" crc="-2049050227"/>
+               <choice name="" result="OK" time_sec="0.69" crc="-2049050227"/>
             </choice-list>
         </test>
         <test title="Set Operations" time-sum-sec="0.68"> 

@@ -1,16 +1,16 @@
 (*) Exceptions during 'import'
   -- AssertionError:
-command line: Module Assertion error -- please report a bug under
+command line: Assertion error -- please report a bug under
 command line:  https://sourceforge.net/tracker/?group_id=168259&atid=846112
 
   -- KeyboardInterrupt:
 
 command line: #
-command line: # Keyboard interrupt -- exiting while loading modules unfinished.
+command line: # Keyboard Interrupt -- Processing unfinished.
 command line: #
 
   -- Exception:
-command line: Module Exception occured -- please, report a bug under
+command line: Exception occured -- please, report a bug under
 command line:  https://sourceforge.net/tracker/?group_id=168259&atid=846112
 
 (*) Exceptions during 'function'
@@ -21,7 +21,7 @@ command line:  https://sourceforge.net/tracker/?group_id=168259&atid=846112
   -- KeyboardInterrupt:
 
 command line: #
-command line: # Keyboard interrupt -- exiting while processing unfinished.
+command line: # Keyboard Interrupt -- Processing unfinished.
 command line: #
 
   -- Exception:
