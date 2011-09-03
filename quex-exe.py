@@ -17,6 +17,7 @@
 #
 ################################################################################
 import sys
+
 try:    
     if False: print ""
 except: 
@@ -24,27 +25,26 @@ except:
     print("error: Please, use Python versions 2.x.")
     sys.exit(-1)
 
-#def __exeption_handler(TheException):
-#    if isinstance(TheException, AssertionError):
-#        error_msg("Assertion error -- please report a bug under\n" + \
-#                  " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
-#
-#    elif isinstance(TheException, KeyboardInterrupt): 
-#        print
-#        error_msg("#\n# Keyboard interrupt -- exiting while processing unfinished.\n#")
-#
-#    #elif isinstance(TheException, Exception):
-#    else:
-#        error_msg("Unknown exception occured -- please, report a bug under\n" + \
-#                  " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
-    
 from quex.engine.misc.file_in  import error_msg
 
-def on_exception(x, Txt):
-    if "--debug-exception" in sys.argv: 
-        raise x
-    error_msg(Txt)
+def __exeption_handler(TheException):
+    def on_exception(x, Txt):
+        if "--debug-exception" in sys.argv: 
+            raise x
+        error_msg(Txt)
 
+    if isinstance(TheException, AssertionError):
+        on_exception(TheException, "Assertion error -- please report a bug under\n" + \
+                     " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+
+    elif isinstance(TheException, KeyboardInterrupt): 
+        print
+        error_msg("#\n# Keyboard Interrupt -- Processing unfinished.\n#")
+
+    else:
+        on_exception(TheException, "Exception occured -- please, report a bug under\n" + \
+                  " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+    
 try:
     # (*) Check if everything is correctly installed
     import quex.DEFINITIONS
@@ -60,17 +60,8 @@ try:
     import quex.core                     as core
 
 
-except AssertionError, x:
-    on_exception(x, "Module Assertion error -- please report a bug under\n" + \
-                    " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
-
-except KeyboardInterrupt: 
-    print
-    error_msg("#\n# Keyboard interrupt -- exiting while loading modules unfinished.\n#")
-
-#except Exception, x:
-#   on_exception(x, "Module Exception occured -- please, report a bug under\n" + \
-#                " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+except BaseException as instance:
+    __exeption_handler(instance)
     
 try:
     pass
@@ -94,15 +85,7 @@ if __name__ == "__main__":
             # (*) Run Quex ___________________________________________________________________
             core.do() 
 
-    except AssertionError, x:
-       on_exception(x, "Assertion error -- please report a bug under\n" + \
-                       " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+    except BaseException as instance:
+        __exeption_handler(instance)
 
-    except KeyboardInterrupt: 
-        print
-        error_msg("#\n# Keyboard interrupt -- exiting while processing unfinished.\n#")
-
-    #except Exception, x:
-    #   on_exception(x, "Exception occured -- please, report a bug under\n" + \
-    #                   " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
 
