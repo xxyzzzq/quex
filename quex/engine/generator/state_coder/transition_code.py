@@ -1,6 +1,6 @@
 from quex.blackboard import E_StateIndices, \
+                            E_EngineTypes,  \
                             setup as Setup
-from quex.engine.state_machine.state_core_info import E_EngineTypes
 
 def do(Target, StateIndex, InitStateF, EngineType, ReturnToState_Str, GotoReload_Str):
     """Generate a 'real' target action object based on a given Target that 

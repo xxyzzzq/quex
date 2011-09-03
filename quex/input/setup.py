@@ -122,6 +122,7 @@ SETUP_INFO = {
     "compression_path_uniform_f":     [["--path-compression-uniform"],         SetupParTypes.FLAG],
     "count_column_number_f":          [["--no-count-lines"],                   SetupParTypes.NEGATED_FLAG],
     "count_line_number_f":            [["--no-count-columns"],                 SetupParTypes.NEGATED_FLAG],
+    "character_display":              [["--character-display"],                "utf8"],
     "path_limit_code":                [["--path-termination"],                 0x1],
     "dos_carriage_return_newline_f":  [["--no-DOS"],                           SetupParTypes.NEGATED_FLAG],
     "string_accumulator_f":           [["--no-string-accumulator", "--nsacc"], SetupParTypes.NEGATED_FLAG],
@@ -148,9 +149,6 @@ SETUP_INFO = {
     "post_categorizer_f":             [["--post-categorizer"],               SetupParTypes.FLAG],
     "output_directory":               [["--output-directory", "--odir"],     ""],
     "source_package_directory":       [["--source-package", "--sp"],         ""],
-    "plot_graphic_format":            [["--plot"],                           ""],
-    "plot_character_display":         [["--plot-character-display", "--pcd"],  "utf8"],
-    "plot_graphic_format_list_f":     [["--plot-format-list"],               SetupParTypes.FLAG],
     "single_mode_analyzer_f":         [["--single-mode-analyzer", "--sma"],  SetupParTypes.FLAG],
     "user_application_version_id":    [["--version-id"],                     "0.0.0-pre-release"],
     #
@@ -204,6 +202,9 @@ SETUP_INFO = {
     "XX_token_id_uninitialized":         [["--token-id-uninitialized"],         "1"],            
     "XX_token_id_indentation_error":     [["--token-id-indentation-error"],     "2"],            
     "XX_output_debug_f":                 [["--debug"],                          SetupParTypes.FLAG],
+    "XX_plot_graphic_format":            [["--plot"],                           ""],
+    "XX_plot_character_display":         [["--plot-character-display", "--pcd"],  "utf8"],
+    "XX_plot_graphic_format_list_f":     [["--plot-format-list"],               SetupParTypes.FLAG],
 }
 
 DEPRECATED = { 
@@ -298,7 +299,20 @@ DEPRECATED = {
   "XX_output_debug_f":
       ("Option '--debug' is no longer supported. Column and line number counting\n" \
        "is supported by the compile option '-DQUEX_OPTION_DEBUG_SHOW'.",            \
-       "0.58.3")
+       "0.58.3"),
+  "XX_plot_graphic_format":         
+      ("Option '--plot' no longer supported, use '--language dot' for example\n" \
+       "to generate source code for the plot utility 'graphviz'\n"               \
+       "(See http://www.graphviz.org)", 
+       "0.59.9"),
+  "XX_plot_character_display": 
+      ("Option '--plot-character-display' and '--pcd' are no longer supported.\n" \
+       "Please, use '--character-display' instead.", 
+       "0.59.9"), 
+  "XX_plot_graphic_format_list_f":     
+      ("Option '--plot-format-list' is no longer supported. Note, that since 0.59.9\n" \
+       "Quex does no longer call the GraphViz utility directly. Use '--language dot'.\n",
+       "0.59.9"),
 }
  
 global_character_type_db = {
@@ -349,6 +363,13 @@ global_extension_db = {
               FileTypes.SOURCE:              ".c",
               FileTypes.HEADER:              ".h",
               FileTypes.HEADER_IMPLEMTATION: ".c",
+        },
+   },
+    "DOT": {
+        "": {
+              FileTypes.SOURCE:              ".dot",
+              FileTypes.HEADER:              None,
+              FileTypes.HEADER_IMPLEMTATION: None,
         }
    }
 }

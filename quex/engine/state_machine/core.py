@@ -935,15 +935,13 @@ class StateMachine:
         index_map, inverse_index_map, index_sequence = self.get_state_index_normalization(NormalizeF)
 
         # (*) Border of plot block
-        frame_txt = """
-        digraph state_machine_%i {
-	       rankdir=LR;
-	       size="8,5"
-	       node [shape = doublecircle]; $$ACCEPTANCE_STATES$$
-           node [shape = circle];
-        $$TRANSITIONS$$
-        }
-        """ % self.get_id()
+        frame_txt  = "digraph state_machine_%i {\n" % self.get_id()
+        frame_txt += "rankdir=LR;\n"
+        frame_txt += "size=\"8,5\"\n"
+        frame_txt += "node [shape = doublecircle]; $$ACCEPTANCE_STATES$$\n"
+        frame_txt += "node [shape = circle];\n"
+        frame_txt += "$$TRANSITIONS$$"
+        frame_txt += "}\n"
 
         transition_str       = ""
         acceptance_state_str = ""

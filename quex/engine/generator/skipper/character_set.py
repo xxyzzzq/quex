@@ -4,8 +4,7 @@ from   quex.engine.generator.languages.address            import get_label, get_
 import quex.engine.generator.languages.variable_db        as     variable_db
 from   quex.engine.generator.skipper.common               import *
 from   quex.engine.state_machine.transition_map           import TransitionMap 
-from   quex.engine.state_machine.state_core_info          import E_EngineTypes 
-from   quex.blackboard                                    import setup as Setup
+from   quex.blackboard                                    import E_EngineTypes, setup as Setup
 from   quex.engine.misc.string_handling                   import blue_print
 
 def do(Data):

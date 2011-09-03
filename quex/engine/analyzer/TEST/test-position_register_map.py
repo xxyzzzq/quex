@@ -8,7 +8,7 @@ import quex.input.regular_expression.engine       as regex
 import quex.engine.analyzer.core                  as core
 import quex.engine.analyzer.position_register_map as position_register_map
 from   quex.engine.generator.base                 import get_combined_state_machine
-from   quex.engine.state_machine.state_core_info  import E_EngineTypes
+from   quex.blackboard                            import E_EngineTypes
 import help_drawing
 
 if "--hwut-info" in sys.argv:

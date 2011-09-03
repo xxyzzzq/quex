@@ -1,11 +1,11 @@
 from   quex.engine.analyzer.core import Analyzer, \
                                         AnalyzerState
-from   quex.engine.state_machine.state_core_info          import E_EngineTypes, E_AcceptanceIDs
 from   quex.engine.generator.languages.address            import Address
 import quex.engine.generator.state_coder.transition_block as transition_block
 import quex.engine.generator.state_coder.entry            as entry
 import quex.engine.generator.state_coder.drop_out         as drop_out
 from   quex.blackboard import E_StateIndices, \
+                              E_EngineTypes, E_AcceptanceIDs, \
                               setup as Setup
 
 def do(txt, TheState, TheAnalyzer):

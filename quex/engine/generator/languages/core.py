@@ -15,9 +15,7 @@
 import quex.engine.generator.languages.cpp       as     cpp
 import quex.engine.generator.languages.python    as     python
 from   quex.engine.generator.languages.address   import *
-from   quex.engine.state_machine.state_core_info import E_EngineTypes, E_AcceptanceIDs
-from   quex.blackboard                           import E_StateIndices
-from   quex.engine.analyzer.core                 import InputActions
+from   quex.blackboard                           import E_StateIndices, E_EngineTypes, E_AcceptanceIDs, E_InputActions, E_TransitionN, E_PreContextIDs
 from   copy                                      import copy
 
 #________________________________________________________________________________
@@ -246,8 +244,10 @@ class LDB(dict):
         else:      return "} else if( input %s 0x%X ) {\n" % (Condition, Value)
 
     def PRE_CONTEXT_CONDITION(self, PreContextID):
-        if PreContextID == -1: 
+        if PreContextID == E_PreContextIDs.BEGIN_OF_LINE: 
             return "me->buffer._character_before_lexeme_start == '\\n'"
+        elif PreContextID == E_PreContextIDs.NONE:
+            return "true"
         elif isinstance(PreContextID, (int, long)):
             return "pre_context_%i_fulfilled_f" % PreContextID
         else:
@@ -280,11 +280,11 @@ class LDB(dict):
 
     def ACCESS_INPUT(self, txt, InputAction):
         txt.append({
-            InputActions.DEREF:                "    input = *(me->buffer._input_p);\n",
-            InputActions.INCREMENT_THEN_DEREF: "    ++(me->buffer._input_p);\n"
-                                               "    input = *(me->buffer._input_p);\n",
-            InputActions.DECREMENT_THEN_DEREF: "    --(me->buffer._input_p);\n"
-                                               "    input = *(me->buffer._input_p);\n",
+            E_InputActions.DEREF:                "    input = *(me->buffer._input_p);\n",
+            E_InputActions.INCREMENT_THEN_DEREF: "    ++(me->buffer._input_p);\n"
+                                                 "    input = *(me->buffer._input_p);\n",
+            E_InputActions.DECREMENT_THEN_DEREF: "    --(me->buffer._input_p);\n"
+                                                 "    input = *(me->buffer._input_p);\n",
         }[InputAction])
 
     def STATE_ENTRY(self, txt, TheState, FromStateIndex=None, NewlineF=True, BIPD_ID=None):
@@ -316,11 +316,17 @@ class LDB(dict):
         return "position[%i]" % Index
 
     def POSITIONING(self, Positioning, Register):
-        if   Positioning is None: return "me->buffer._input_p = position[%i];" % Register
-        elif Positioning > 0:     return "me->buffer._input_p -= %i; "         % Positioning
-        elif Positioning == 0:    return ""
-        elif Positioning == -1:   return "" # "_input_p = lexeme_start_p + 1" is done by TERMINAL_FAILURE. 
-        else:                     assert False 
+        if   Positioning == E_TransitionN.VOID: 
+            return "me->buffer._input_p = position[%i];" % Register
+        # "_input_p = lexeme_start_p + 1" is done by TERMINAL_FAILURE. 
+        elif Positioning == E_TransitionN.LEXEME_START_PLUS_ONE: 
+            return "" 
+        elif Positioning > 0:     
+            return "me->buffer._input_p -= %i; " % Positioning
+        elif Positioning == 0:    
+            return ""
+        else:
+            assert False 
 
     def SELECTION(self, Selector, CaseList, BreakF=False):
         txt     = [ None ] * (len(CaseList) * 2 + 4) 
@@ -488,3 +494,13 @@ db["VisualBasic6"] = {
     "$return_false": "$the_function = True: Exit Function",
     }
 
+db["DOT"] = {
+        "$token-default-file":     "/token/CDefault.qx",
+        "$token_template_file":    "/token/TXT-C",
+        "$token_template_i_file":  "/token/TXT-C.i",
+        "$analyzer_template_file": "/analyzer/TXT-C",
+        "$file_extension":         ".dot",
+    "$code_base":               "/quex/code_base/",
+    "$require-terminating-zero-preparation": cpp.__require_terminating_zero_preparation,
+    "$comment-delimiters": [["/*", "*/", ""], ["//", "\n", ""], ["\"", "\"", "\\\""]],
+}

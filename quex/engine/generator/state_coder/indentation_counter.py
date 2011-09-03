@@ -1,6 +1,8 @@
-from   quex.blackboard                         import       setup as Setup, E_StateIndices
-import quex.engine.state_machine.index          as           sm_index
-from   quex.engine.state_machine.state_core_info          import E_EngineTypes
+from   quex.blackboard                              import setup as Setup, \
+                                                           E_StateIndices, \
+                                                           E_EngineTypes
+import quex.blackboard                              as     blackboard
+import quex.engine.state_machine.index                    as           sm_index
 import quex.engine.generator.state_coder.transition_block as transition_block
 from   quex.engine.generator.state_coder.transition_code  import TransitionCode
 from   quex.engine.generator.languages.variable_db  import Variable
@@ -8,7 +10,6 @@ from   quex.engine.generator.languages.address      import get_label, Address
 from   quex.engine.interval_handling                import Interval
 from   quex.engine.misc.string_handling             import blue_print
 import quex.output.cpp.action_preparation           as     action_preparation
-import quex.blackboard                              as     blackboard
 
 from   math import log
 import sys

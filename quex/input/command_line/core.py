@@ -197,7 +197,8 @@ def do(argv):
         setup.buffer_element_size_irrelevant = True
     
     # (*) Output files
-    prepare_file_names(setup)
+    if setup.language not in ["DOT"]:
+        prepare_file_names(setup)
 
     if setup.buffer_byte_order == "<system>": 
         setup.buffer_byte_order = sys.byteorder 
