@@ -67,7 +67,7 @@ from   quex.engine.misc.enum  import Enum
 from   collections import defaultdict
 from   copy        import deepcopy
 from   operator    import attrgetter
-from   itertools   import ifilter
+from   itertools   import ifilter, chain
 import sys
 
 def do(SM):
@@ -116,14 +116,6 @@ class TrackAnalysis:
         self.__trace_walk(self.sm.init_state_index, 
                           path  = [], 
                           trace = Trace(self.sm.init_state_index))
-
-        # (*) Clean-Up
-        # 
-        #    Now, for the outer user only the traces are relevant which contain 
-        #    information about acceptances.
-        for trace_list in self.__map_state_to_trace.itervalues():
-            for trace in trace_list:
-                trace.delete_non_accepting_traces()
 
     @property
     def loop_state_set(self):
@@ -253,7 +245,7 @@ class Trace(object):
                 (else,                       8 wins, input position = current - 3)
        ...
     """
-    __slots__ = ("__trace_db", "__last_transition_n_to_acceptance")
+    __slots__ = ("__trace_db", "__storage_db", "__last_transition_n_to_acceptance")
 
     def __init__(self, InitStateIndex):
         self.__trace_db = { 
@@ -266,6 +258,7 @@ class Trace(object):
                              PositioningStateIndex        = E_StateIndices.NONE, 
                              PostContextID                = E_PostContextIDs.NONE),
         }
+        self.__storage_db = {}
         self.__last_transition_n_to_acceptance = 0
 
     def __len__(self):
@@ -327,7 +320,7 @@ class Trace(object):
             operation = lambda transition_n: transition_n + 1
 
         # Loop controlled by 'operation'
-        for entry in self.__trace_db.itervalues():
+        for entry in chain(self.__trace_db.itervalues(), self.__storage_db.itervalues()):
             # 'lexeme_start_p + 1', 'void' --> are not updated
             if     entry.transition_n_since_positioning != E_TransitionN.LEXEME_START_PLUS_ONE \
                and entry.transition_n_since_positioning != E_TransitionN.VOID:
@@ -356,17 +349,27 @@ class Trace(object):
                 if not self.__sift(StateIndex, origin): 
                     continue
                 if origin.post_context_id() != E_PostContextIDs.NONE:  # Restore --> adapt the 'store trace'
-                    self.__trace_db[pattern_id].pre_context_id                 = pre_context_id
-                    self.__trace_db[pattern_id].accepting_state_index          = StateIndex
-                    self.__trace_db[pattern_id].min_transition_n_to_acceptance = CurrentPathLength
+                    entry = deepcopy(self.__storage_db[pattern_id])
+                    entry.pre_context_id                 = pre_context_id
+                    entry.accepting_state_index          = StateIndex
+                    entry.min_transition_n_to_acceptance = CurrentPathLength
+                    self.__trace_db[pattern_id] = entry
                     continue
-                accepting_state_index          = StateIndex
-                min_transition_n_to_acceptance = CurrentPathLength
+                else:
+                    accepting_state_index          = StateIndex
+                    min_transition_n_to_acceptance = CurrentPathLength
             else:
-                if not origin.store_input_position_f(): continue
-                pre_context_id                 = E_PreContextIDs.NONE
-                accepting_state_index          = E_StateIndices.VOID
-                min_transition_n_to_acceptance = E_TransitionN.VOID
+                if not origin.store_input_position_f(): 
+                    continue
+                else:
+                    self.__storage_db[pattern_id] = TraceEntry(E_PreContextIDs.NONE, 
+                                                               pattern_id,
+                                                               MinTransitionN_ToAcceptance  = E_TransitionN.VOID,
+                                                               AcceptingStateIndex          = E_StateIndices.VOID, 
+                                                               TransitionN_SincePositioning = 0,
+                                                               PositioningStateIndex        = StateIndex, 
+                                                               PostContextID                = post_context_id)
+                continue
 
             # Add entry to the Database 
             self.__trace_db[pattern_id] = \
@@ -407,8 +410,8 @@ class Trace(object):
             # Abolish:
             # -- all previous traces (accepting_state_index != StateIndex)
             # -- traces of same state, if they are dominated (pattern_id > ThePatternID)
-            for entry in ifilter(lambda x: x.accepting_state_index != E_StateIndices.VOID, 
-                                 self.__trace_db.values()):
+            for entry in self.__trace_db.values():
+                assert entry.accepting_state_index != E_StateIndices.VOID 
                 if   entry.accepting_state_index != StateIndex:
                     del self.__trace_db[entry.pattern_id]
                 elif entry.pattern_id == E_AcceptanceIDs.FAILURE or entry.pattern_id >= ThePatternID:
@@ -420,9 +423,9 @@ class Trace(object):
             ThePreContextID = extract_pre_context_id(Origin)
             # -- all previous traces (accepting_state_index != StateIndex)
             # -- traces of same state, if they are dominated (pattern_id > ThePatternID)
-            for entry in ifilter(lambda x:     x.pre_context_id        == ThePreContextID \
-                                           and x.accepting_state_index != E_StateIndices.VOID,
+            for entry in ifilter(lambda x: x.pre_context_id == ThePreContextID, \
                                  self.__trace_db.values()):
+                assert entry.accepting_state_index != E_StateIndices.VOID 
                 if entry.accepting_state_index != StateIndex:
                     del self.__trace_db[entry.pattern_id]
                 elif entry.pattern_id >= ThePatternID:
@@ -432,14 +435,6 @@ class Trace(object):
 
         return True
 
-    def delete_non_accepting_traces(self):
-        """Delete the additional traces from the analysis procedure. Now, only
-           traces are required that tell about acceptances.
-        """
-        for pattern_id in self.__trace_db.keys():
-            if self.__trace_db[pattern_id].accepting_state_index == E_StateIndices.VOID:
-                del self.__trace_db[pattern_id]
-    
     def __getitem__(self, PreContextID):
         return self.get(PreContextID)
 

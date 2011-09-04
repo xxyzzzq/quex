@@ -135,15 +135,14 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
     closer_length = len(CloserSequence)
 
     if not end_delimiter_is_subset_of_indentation_counter_newline(Mode, CloserSequence):
-        goto_after_end_of_skipping_str = "goto %s;" % get_label("$start", U=True)
+        goto_after_end_of_skipping_str = LanguageDB.GOTO(get_address("$start", U=True))
     else:
         # If there is indentation counting involved, then the counter's terminal id must
         # be determined at this place.
         assert IndentationCounterTerminalID is not None
         # If the ending delimiter is a subset of what the 'newline' pattern triggers 
         # in indentation counting => move on to the indentation counter.
-        goto_after_end_of_skipping_str = "goto %s;" % get_label("$terminal-direct", 
-                                                                IndentationCounterTerminalID, U=True)
+        goto_after_end_of_skipping_str = LanguageDB.GOTO_TERMINAL(IndentationCounterTerminalID)
 
     if OnSkipRangeOpenStr != "": on_skip_range_open_str = OnSkipRangeOpenStr
     else:                        on_skip_range_open_str = get_on_skip_range_open(Mode, CloserSequence)

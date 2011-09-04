@@ -9,7 +9,7 @@ qx_file=src/with-skip-$1.qx
 txt_file=data/with-skip-$1.txt
 buffer_size=1024
 
-quex -i $qx_file -o EasyLexer --language C
+quex -i $qx_file -o EasyLexer --language C --debug-exception
 
 gcc \
  -I$QUEX_PATH -I.                                 \
@@ -23,7 +23,7 @@ gcc \
 
 cat tmp.txt
 
-rm -f ./EasyLexer*
+# rm -f ./EasyLexer*
 rm -f ./lexer
 rm -f tmp.txt
 

@@ -25,24 +25,25 @@ except:
     print("error: Please, use Python versions 2.x.")
     sys.exit(-1)
 
-from quex.engine.misc.file_in  import error_msg
 
 def __exeption_handler(TheException):
-    def on_exception(x, Txt):
-        if "--debug-exception" in sys.argv: 
-            raise x
-        error_msg(Txt)
+    from quex.engine.misc.file_in  import error_msg
 
-    if isinstance(TheException, AssertionError):
-        on_exception(TheException, "Assertion error -- please report a bug under\n" + \
-                     " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+    if "--debug-exception" in sys.argv:
+        import traceback 
+        print traceback.format_exc()
+        return
+
+    if   isinstance(TheException, AssertionError):
+        error_msg("Assertion error -- please report a bug under\n" + \
+                  " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
 
     elif isinstance(TheException, KeyboardInterrupt): 
         print
         error_msg("#\n# Keyboard Interrupt -- Processing unfinished.\n#")
 
-    else:
-        on_exception(TheException, "Exception occured -- please, report a bug under\n" + \
+    elif isinstance(TheException, Exception):
+        error_msg("Exception occured -- please, report a bug under\n" + \
                   " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
     
 try:

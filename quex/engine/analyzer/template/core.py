@@ -227,10 +227,12 @@ class TriggerMapDB:
         # Pre-allocate the result array to avoid frequent allocations
         #
         # NOTE: L * (L - 1) is always even, i.e. dividable by 2.
+        #       Proof:
         #       (a) L even = k * 2:     -> k * 2 ( k * 2 - 1 )            = k * k * 4 - k * 2
         #                                = even - even = even
         #       (b) L odd  = k * 2 + 1: -> (k * 2 + 1) * ( k * 2 + 1 - 1) = k * k * 4 + k * 2
         #                                = even + even = even
+        # 
         #       => division by two without remainder 
         MaxSize = (L * (L - 1)) / 2
         result  = [None] * MaxSize
