@@ -1,6 +1,6 @@
 import quex.engine.state_machine.index             as     sm_index
 from   quex.engine.generator.skipper.common        import *
-from   quex.engine.generator.languages.address     import __nice, get_label
+from   quex.engine.generator.languages.address     import __nice, get_label, get_address
 import quex.engine.generator.languages.variable_db as     variable_db
 from   quex.blackboard                            import setup as Setup
 from   quex.engine.misc.string_handling            import blue_print
@@ -166,19 +166,19 @@ def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSki
             i += 1
             txt += "    " + LanguageDB["$input/get-offset"](i-1) + "\n"
             txt += "    " + LanguageDB["$if !="]("Skipper$$SKIPPER_INDEX$$[%i]" % i)
-            txt += "         goto %s;" % get_label("$entry", skipper_index, U=True) 
+            txt += "         " + LanguageDB.GOTO(get_address("$entry", skipper_index, U=True))
             txt += "    " + LanguageDB["$endif"]
         delimiter_remainder_test_str = txt
 
     if not end_delimiter_is_subset_of_indentation_counter_newline(Mode, EndSequence):
-        goto_after_end_of_skipping_str = "goto %s;" % get_label("$start", U=True)
+        goto_after_end_of_skipping_str = LanguageDB.GOTO(get_address("$start", U=True))
     else:
         # If there is indentation counting involved, then the counter's terminal id must
         # be determined at this place.
         assert IndentationCounterTerminalID is not None
         # If the ending delimiter is a subset of what the 'newline' pattern triggers 
         # in indentation counting => move on to the indentation counter.
-        goto_after_end_of_skipping_str = "goto %s;" % get_label("$terminal-direct", IndentationCounterTerminalID, U=True)
+        goto_after_end_of_skipping_str = LanguageDB.GOTO_TERMINAL(IndentationCounterTerminalID)
 
     if OnSkipRangeOpenStr != "": on_skip_range_open_str = OnSkipRangeOpenStr
     else:                        on_skip_range_open_str = get_on_skip_range_open(Mode, EndSequence)

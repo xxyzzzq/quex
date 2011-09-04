@@ -87,10 +87,9 @@ def __accepter(txt, Accepter):
 
     first_f = True
     for pre_context_id_list, acceptance_id in Accepter:
-        assert isinstance(acceptance_id, (int, long))
         txt.append(
             LanguageDB.IF_PRE_CONTEXT(first_f, pre_context_id_list, 
-                                      LanguageDB.ASSIGN("last_acceptance", "%i" % acceptance_id))
+                                      LanguageDB.ASSIGN("last_acceptance", LanguageDB.ACCEPTANCE(acceptance_id)))
         )
         first_f = False
             

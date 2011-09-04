@@ -256,7 +256,7 @@ class LDB(dict):
     def IF_PRE_CONTEXT(self, FirstF, PreContextList, Consequence):
         if not isinstance(PreContextList, (list, set)): PreContextList = [ PreContextList ]
 
-        if None in PreContextList: 
+        if E_PreContextIDs.NONE in PreContextList: 
             if FirstF: opening = "";             indent = "    ";     closing = ""
             else:      opening = "    else {\n"; indent = "        "; closing = "    }\n"
             return "%s%s%s%s\n" % (opening, indent, Consequence.replace("\n", "\n    "), closing)

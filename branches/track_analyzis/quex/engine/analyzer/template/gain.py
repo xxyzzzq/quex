@@ -5,6 +5,8 @@ from quex.engine.analyzer.core import AnalyzerState, \
 import quex.engine.analyzer.template.combine_maps as combine_maps
 from   quex.engine.analyzer.template.common       import get_state_list 
 """
+(C) 2010-2011 Frank-Rene Schäfer
+
 If two states with non-uniform frames (entries and drop-outs) are 
 to be combined, then this requires extra effort. Consider the following
 case:

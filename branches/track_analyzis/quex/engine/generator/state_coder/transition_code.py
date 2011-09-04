@@ -72,19 +72,3 @@ class TransitionCode:
     @property
     def drop_out_f(self): return self.__drop_out_f
 
-def get_transition_to_terminal(Origin):
-    LanguageDB = Setup.language_db
-
-    # No unconditional case of acceptance 
-    if type(Origin) == type(None): 
-        get_label("$terminal-router", U=True) # Mark __TERMINAL_ROUTER as used
-        return [ LanguageDB["$goto-last_acceptance"] ]
-
-    assert Origin.is_acceptance()
-    # The seek for the end of the core pattern is part of the 'normal' terminal
-    # if the terminal 'is' a post conditioned pattern acceptance.
-    if Origin.post_context_id() == E_PostContextIDs.NONE:
-        return [ "goto %s;" % get_label("$terminal", Origin.state_machine_id, U=True) ]
-    else:
-        return [ "goto %s;" % get_label("$terminal-direct", Origin.state_machine_id, U=True) ]
-

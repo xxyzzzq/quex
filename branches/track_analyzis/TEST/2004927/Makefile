@@ -3,7 +3,7 @@ LIB_CONV  = `icu-config --ldflags`
 
 lex_iconv: 
 	@echo "Call to quex"
-	@quex -i simple.qx -o $(X) --bet wchar_t --iconv 
+	@quex -i simple.qx -o $(X) --bet wchar_t --iconv --debug-exception
 	@echo "Compiling"
 	g++ -I./ -I$(QUEX_PATH) \
 		$(X).cpp                      \
