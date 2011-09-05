@@ -22,6 +22,8 @@ main(int argc, char** argv)
 
     printf(",------------------------------------------------------------------------------------\n");
     printf("| [START]\n");
+    fflush(stdout);
+    fflush(stderr);
 
     /* Loop until the 'termination' token arrives */
     token_n = 0;

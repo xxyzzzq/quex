@@ -7,15 +7,16 @@ CFLAGS = \
 	 #-DQUEX_OPTION_DEBUG_SHOW
 
 lexer:
-	quex -i $(INPUT) -o Simple --token-policy single
+	quex -i $(INPUT) -o Simple --token-policy single --language C
 	g++ -I$(QUEX_PATH) -I. \
+		-DPRINT_TOKEN \
 		$(CFLAGS) \
-		../lexer-simply.cpp Simple*.cpp \
+		../lexer.c Simple*.c \
 		-ggdb -o lexer
 
 lexer.E:
-	quex -i $(INPUT) -o Simple --token-policy single
+	quex -i $(INPUT) -o Simple --token-policy single --language C
 	g++ -I$(QUEX_PATH) -I. \
 		-E $(CFLAGS) \
-		../lexer-simply.cpp \
+		../lexer.c \
 		-ggdb -o lexer.E
