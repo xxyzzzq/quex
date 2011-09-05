@@ -7,7 +7,7 @@ token {
 mode BASE :
 <skip: [ \n\t]> 
 {
-    EOF => QUEX_TKN_TERMINATION(LexemeNull);
+    <<EOF>> => QUEX_TKN_TERMINATION(LexemeNull);
 }
 mode ONE : BASE {
     2 => GOTO(TWO);
@@ -35,5 +35,4 @@ mode FOUR : BASE {
     2 => GOTO(TWO);
     3 => GOTO(THREE);
     . => QUEX_TKN_LETTER(Lexeme);
-    
 }

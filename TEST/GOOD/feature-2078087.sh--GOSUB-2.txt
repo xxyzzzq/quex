@@ -22,7 +22,7 @@ g++ -I<<QUEX_PATH>> -I. \
 ,------------------------------------------------------------------------------------
 | [START]
 LETTER '1'
-LETTER 'one' 
+LETTER 'one'
 | Mode change from ONE
 |             to   TWO
 LETTER 'two'

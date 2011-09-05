@@ -15,7 +15,7 @@ def do(txt, TheState, TheAnalyzer):
     LanguageDB = Setup.language_db
 
     if TheState.init_state_forward_f:
-        init_state_forward_entry(txt)
+        init_state_forward_entry(txt, TheState.entry.get_accepter())
         transition_block_f = True
     else:
         transition_block_f = entry.do(txt, TheState, TheAnalyzer)
@@ -50,9 +50,10 @@ def input_do(txt, TheState):
     LanguageDB = Setup.language_db
     LanguageDB.ACCESS_INPUT(txt, TheState.input)
 
-def init_state_forward_entry(txt):
+def init_state_forward_entry(txt, Accepter):
     LanguageDB = Setup.language_db
 
+    entry._accepter(txt, Accepter)
     txt.append(LanguageDB.LABEL_INIT_STATE_TRANSITION_BLOCK())
 
 def init_state_forward_epilog(txt, TheState, TheAnalyzer):

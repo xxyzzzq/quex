@@ -1,4 +1,4 @@
-<history date="Mon Sep  5 06:43:57 2011" element-n="909">
+<history date="Mon Sep  5 21:53:33 2011" element-n="916">
     <day year="2008" month="02" day="10">
         <history-init time="09:50:03"/>
         <crc-error time="09:50:07" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="118547486"/>
@@ -1733,5 +1733,12 @@
         <crc-error time="04:42:33" application="feature-2078087.sh" choice="GOTO-2" database-crc="1345162389" real-crc="340418157"/>
         <crc-error time="04:42:56" application="feature-2078087.sh" choice="GOSUB" database-crc="-2022508254" real-crc="-14838782"/>
         <crc-error time="04:43:56" application="feature-2078087.sh" choice="GOSUB-2" database-crc="-505034788" real-crc="676421329"/>
+        <crc-error time="19:38:37" application="feature-2078087.sh" choice="GOTO" database-crc="-544771801" real-crc="-1308415202"/>
+        <crc-error time="19:39:01" application="feature-2078087.sh" choice="GOSUB-2" database-crc="676421329" real-crc="1745013127"/>
+        <crc-error time="19:40:12" application="feature-2078087.sh" choice="GOTO" database-crc="-1308415202" real-crc="53158503"/>
+        <crc-error time="19:40:20" application="feature-2078087.sh" choice="GOTO-2" database-crc="340418157" real-crc="-975037083"/>
+        <crc-error time="19:41:05" application="feature-2078087.sh" choice="GOTO-2" database-crc="-975037083" real-crc="525626839"/>
+        <crc-error time="19:51:13" application="bug-2163753.sh" choice="" database-crc="1900270082" real-crc="1865723536"/>
+        <crc-error time="19:52:46" application="bug-2163753.sh" choice="" database-crc="1865723536" real-crc="-1384300693"/>
     </day>
 </history>

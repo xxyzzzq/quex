@@ -25,8 +25,8 @@ def do(txt, TheState, TheAnalyzer):
     entry = TheState.entry
 
     if isinstance(entry, Entry):
-        __doors(txt, TheState, PositionRegisterMap)
-        __accepter(txt, TheState.entry.get_accepter())
+        _doors(txt, TheState, PositionRegisterMap)
+        _accepter(txt, TheState.entry.get_accepter())
 
     elif isinstance(entry, EntryBackward):
         LanguageDB.STATE_ENTRY(txt, TheState)
@@ -44,7 +44,7 @@ def do(txt, TheState, TheAnalyzer):
             return False
     return True
 
-def __doors(txt, TheState, PositionRegisterMap):
+def _doors(txt, TheState, PositionRegisterMap):
     LanguageDB = Setup.language_db
     TheEntry   = TheState.entry
 
@@ -81,7 +81,7 @@ def __doors(txt, TheState, PositionRegisterMap):
             txt.append(" %s\n" % LanguageDB.GOTO(TheState.index))
         LanguageDB.STATE_ENTRY(txt, TheState)
 
-def __accepter(txt, Accepter):
+def _accepter(txt, Accepter):
     LanguageDB = Setup.language_db
     if len(Accepter) == 0: return
 
