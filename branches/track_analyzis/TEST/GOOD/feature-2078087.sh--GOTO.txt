@@ -23,7 +23,7 @@ g++ -I<<QUEX_PATH>> -I. \
 | [START]
 LETTER '1'
 LETTER '1'
-LETTER '1' 
+LETTER '1'
 | Mode change from ONE
 |             to   TWO
 LETTER '2'
@@ -46,6 +46,6 @@ LETTER '4'
 |             to   FOUR
 | Mode change from FOUR
 |             to   ONE
-<TERMINATION>
+<TERMINATION> ''
 | [END] number of token = 10
 `------------------------------------------------------------------------------------

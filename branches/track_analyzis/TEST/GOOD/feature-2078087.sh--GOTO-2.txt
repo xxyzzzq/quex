@@ -62,4 +62,6 @@ FOUR 'to4'
 | Mode change from FOUR
 |             to   TWO
 ONE 'to1'
-<TERMINATION>
+<TERMINATION> ''
+| [END] number of token = 28
+`------------------------------------------------------------------------------------

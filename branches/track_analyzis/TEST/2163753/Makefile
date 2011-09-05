@@ -1,19 +1,20 @@
 X = Simple
 
-all: $(X).cpp 
+all: $(X).c 
 	@echo "Compiling"
-	@g++ -I./ -I$(QUEX_PATH) \
-		$(X).cpp             \
-		../lexer-simply.cpp  \
+	@gcc -I./ -I$(QUEX_PATH) \
+		$(X).c             \
+		../lexer.c  \
 		-ggdb \
 		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
-	   	-DQUEX_OPTION_DEBUG_SHOW 
+		-DPRINT_TOKEN
+	   	# -DQUEX_OPTION_DEBUG_SHOW 
 		# -D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV 
 
 
-$(X).cpp: simple.qx
+$(X).c: simple.qx
 	@echo "Call to quex"
-	quex -i $< -o $(X) 
+	quex -i $< -o $(X) --language C
 
 
 clean:
