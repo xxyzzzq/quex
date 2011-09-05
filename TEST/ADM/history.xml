@@ -1,4 +1,4 @@
-<history date="Sun Sep  4 09:36:42 2011" element-n="897">
+<history date="Mon Sep  5 06:43:57 2011" element-n="909">
     <day year="2008" month="02" day="10">
         <history-init time="09:50:03"/>
         <crc-error time="09:50:07" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="118547486"/>
@@ -1719,5 +1719,19 @@
         <crc-error time="05:40:30" application="bug-1885304.sh" choice="" database-crc="-443043108" real-crc="-978738556"/>
         <crc-error time="05:40:32" application="bug-1889086.sh" choice="" database-crc="1814757686" real-crc="-719842035"/>
         <crc-error time="05:40:38" application="bug-1895066.sh" choice="" database-crc="-1715157199" real-crc="734096231"/>
+    </day>
+    <day year="2011" month="09" day="05">
+        <crc-error time="04:24:09" application="feature-2078087.sh" choice="GOTO-2" database-crc="-213473949" real-crc="-1937628016"/>
+        <crc-error time="04:24:22" application="feature-2078087.sh" choice="GOSUB" database-crc="788521398" real-crc="-1033444600"/>
+        <crc-error time="04:24:32" application="feature-2078087.sh" choice="GOSUB-2" database-crc="-453959243" real-crc="-1753769948"/>
+        <crc-error time="04:34:28" application="feature-2078087.sh" choice="GOSUB" database-crc="-1033444600" real-crc="-2022508254"/>
+        <crc-error time="04:36:11" application="feature-2078087.sh" choice="GOTO" database-crc="-389711507" real-crc="-1764067582"/>
+        <crc-error time="04:37:00" application="feature-2078087.sh" choice="GOTO-2" database-crc="-1937628016" real-crc="1345162389"/>
+        <crc-error time="04:37:29" application="feature-2078087.sh" choice="GOSUB-2" database-crc="-1753769948" real-crc="-505034788"/>
+        <crc-error time="04:39:43" application="feature-2078087.sh" choice="GOTO" database-crc="-1764067582" real-crc="-1657006230"/>
+        <crc-error time="04:41:39" application="feature-2078087.sh" choice="GOTO" database-crc="-1657006230" real-crc="-544771801"/>
+        <crc-error time="04:42:33" application="feature-2078087.sh" choice="GOTO-2" database-crc="1345162389" real-crc="340418157"/>
+        <crc-error time="04:42:56" application="feature-2078087.sh" choice="GOSUB" database-crc="-2022508254" real-crc="-14838782"/>
+        <crc-error time="04:43:56" application="feature-2078087.sh" choice="GOSUB-2" database-crc="-505034788" real-crc="676421329"/>
     </day>
 </history>

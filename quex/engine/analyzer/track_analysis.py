@@ -195,10 +195,9 @@ class TrackAnalysis:
                 # If a state has been analyzed and we pass it a second time:
                 # If the acceptance trace is already in there, we do not need 
                 # further investigations.
-                #x = path.pop()
-                #assert x == StateIndex
-                #return
-                pass
+                x = path.pop()
+                assert x == StateIndex
+                return
         
         # (4) Recurse to all (undone) target states. 
         for target_index in self.sm.states[StateIndex].transitions().get_target_state_index_list():
@@ -462,8 +461,13 @@ class Trace(object):
         """
         if set(self.__trace_db.iterkeys()) != set(Other.__trace_db.iterkeys()):
             return False
+        if set(self.__storage_db.iterkeys()) != set(Other.__storage_db.iterkeys()):
+            return False
         for pattern_id, trace in self.__trace_db.iteritems():
             if not trace.is_equal(Other.__trace_db[pattern_id]):
+                return False
+        for pattern_id, trace in self.__storage_db.iteritems():
+            if not trace.is_equal(Other.__storage_db[pattern_id]):
                 return False
         return True
 
