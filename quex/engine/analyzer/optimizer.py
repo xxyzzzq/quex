@@ -1,5 +1,9 @@
 """TODO:
 
+    NOTE: Acceptance Pruning of 'Pre-Contexts', 'Non-Ambigous Post Context'
+          and 'Backward Input Position Detectors' happens with the original
+          state machines: Module 'state_machine/acceptance_pruning.py'
+
     (*) Post-pone acceptance storage and position storage as much as 
         possible. This decreases the probability that a transition
         sequence ever hits such places.
@@ -14,7 +18,7 @@
          the first state on that path can drop-out 
          on the condition that the pre-context is not met.
 
-    (12) When a terminal is reached where the pathes took 
+    (12) When a terminal is reached where the paths took 
          care of the pre-context checks, then there is no
          need to check it again in the terminal.
 

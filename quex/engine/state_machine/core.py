@@ -326,14 +326,14 @@ class StateMachine:
            by any other state. This indicates most likely a lack off efficiency 
            or an error in the algorithms.
         """
-        unique = set([])
+        targets = set([])
         for state in self.states.values():
-            unique.update(state.transitions().get_target_state_index_list())
+            targets.update(state.transitions().get_target_state_index_list())
 
         result = []
         for state_index in self.states.keys():
             # The init state is never considered to be an 'orphan'
-            if state_index not in unique and state_index != self.init_state_index: 
+            if state_index not in targets and state_index != self.init_state_index: 
                 result.append(state_index)
 
         return result

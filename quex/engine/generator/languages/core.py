@@ -164,6 +164,7 @@ class LDB(dict):
             return {
                 E_StateIndices.INIT_STATE_TRANSITION_BLOCK: "INIT_STATE_TRANSITION_BLOCK",
                 E_StateIndices.END_OF_PRE_CONTEXT_CHECK:    "END_OF_PRE_CONTEXT_CHECK",
+                E_StateIndices.ANALYZER_REENTRY:            "__REENTRY",
             }[StateIndex]
 
         elif FromStateIndex is not None: 

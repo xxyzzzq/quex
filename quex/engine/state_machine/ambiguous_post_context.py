@@ -15,6 +15,7 @@
 import quex.engine.state_machine.sequentialize         as sequentialize
 import quex.engine.state_machine.nfa_to_dfa            as nfa_to_dfa
 import quex.engine.state_machine.hopcroft_minimization as hopcroft
+import quex.engine.state_machine.acceptance_pruning    as acceptance_pruning
 from   copy import deepcopy
 
 
@@ -226,6 +227,7 @@ def mount(the_state_machine, PostConditionSM):
     #     of the core pattern.
     backward_detector_sm    = __get_inverse_state_machine_that_finds_end_of_core_expression(PostConditionSM)
     backward_detector_sm_id = backward_detector_sm.get_id()
+    acceptance_pruning.do(backward_detector_sm)
 
     # NOTE: We do not need to mark any origins in the backward detector,
     #       since it is not concerned with acceptance states. Its only

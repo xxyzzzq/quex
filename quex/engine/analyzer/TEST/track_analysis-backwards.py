@@ -5,6 +5,7 @@ import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine  as regex
+import quex.engine.state_machine.acceptance_pruning as     acceptance_pruning
 from   quex.engine.generator.base            import get_combined_state_machine
 import quex.engine.analyzer.core             as core
 from   quex.blackboard                       import E_InputActions, \
@@ -29,6 +30,7 @@ elif "1" in sys.argv:
 else:
     assert False
 
+acceptance_pruning._deactivated_for_unit_test_f = True
 state_machine_list = map(lambda x: 
                          regex.do(x, {}).core().pre_context_sm(), 
                          pattern_list)

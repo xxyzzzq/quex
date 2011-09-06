@@ -42,6 +42,7 @@ E_StateIndices = Enum("DROP_OUT",
                       "END_OF_PRE_CONTEXT_CHECK",
                       "RECURSIVE",
                       "ALL", 
+                      "ANALYZER_REENTRY", 
                       "NONE", 
                       "VOID") 
 
