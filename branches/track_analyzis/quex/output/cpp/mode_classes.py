@@ -132,7 +132,7 @@ def  get_implementation_of_mode_functions(mode, Modes):
     # (*) has base mode
     if mode.has_base_mode():
         base_mode_list    = __filter_out_inheritable_only(mode.get_base_mode_name_list())
-        has_base_mode_str = get_IsOneOfThoseCode(base_mode_list)
+        has_base_mode_str = get_IsOneOfThoseCode(base_mode_list, CheckBaseModeF=True)
     else:
         has_base_mode_str = "    return false;"
         
@@ -170,6 +170,7 @@ def  get_implementation_of_mode_functions(mode, Modes):
     return txt
 
 def get_IsOneOfThoseCode(ThoseModes, Indentation="    ",
+                         CheckBaseModeF = False,
                          ConsiderDerivedClassesF=False):
     txt = Indentation
     if len(ThoseModes) == 0:
@@ -185,19 +186,20 @@ def get_IsOneOfThoseCode(ThoseModes, Indentation="    ",
     txt += "default:\n"
     if ConsiderDerivedClassesF:
         for mode_name in ThoseModes:
-            txt += "    if( Mode->has_base(%s) ) return true;\n" % mode_name
+            txt += "    if( Mode->has_base(&QUEX_NAME(%s)) ) return true;\n" % mode_name
     else:
         txt += ";\n"
     txt += "}\n"
 
-    txt += "QUEX_ERROR_EXIT("
-    if ConsiderDerivedClassesF:
-        txt += "\"mode '%s' is not one of (and not a a derived mode of): " % mode_name
+    txt += "__QUEX_STD_fprintf(stderr, "
+    if ConsiderDerivedClassesF or CheckBaseModeF:
+        txt += "\"mode '%s' is not one of (and not a derived mode of): " 
     else:
-        txt += "\"mode '%s' is not one of: " % mode_name
+        txt += "\"mode '%s' is not one of: " 
     for mode_name in ThoseModes:
         txt += "%s, " % mode_name
-    txt += "\\n\");\n"
+    txt += "\\n\", Mode->name);\n"
+    txt += "__quex_assert(false);\n"
     txt += "return false;\n"
 
     return txt.replace("\n", "\n" + Indentation)

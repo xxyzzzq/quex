@@ -2,9 +2,10 @@ import quex.engine.state_machine.index             as     sm_index
 from   quex.engine.generator.skipper.common        import *
 from   quex.engine.generator.languages.address     import __nice, get_label, get_address
 import quex.engine.generator.languages.variable_db as     variable_db
-from   quex.blackboard                            import setup as Setup
+from   quex.blackboard                             import setup as Setup
 from   quex.engine.misc.string_handling            import blue_print
 import quex.blackboard                             as     blackboard
+from   quex.blackboard                             import E_StateIndices
 from   copy                                        import copy
 
 def do(Data):
@@ -171,7 +172,7 @@ def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSki
         delimiter_remainder_test_str = txt
 
     if not end_delimiter_is_subset_of_indentation_counter_newline(Mode, EndSequence):
-        goto_after_end_of_skipping_str = LanguageDB.GOTO(get_address("$start", U=True))
+        goto_after_end_of_skipping_str = LanguageDB.GOTO(E_StateIndices.ANALYZER_REENTRY)
     else:
         # If there is indentation counting involved, then the counter's terminal id must
         # be determined at this place.

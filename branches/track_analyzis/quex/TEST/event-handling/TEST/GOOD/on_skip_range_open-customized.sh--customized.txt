@@ -14,5 +14,5 @@
 ##        http://sourceforge.net/tracker/?group_id=168259&atid=846112
 | [START]
 We miss the '*/'
-TOKEN: <TERMINATION> '' 
+TOKEN: <TERMINATION> ''
 | [END]
