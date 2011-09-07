@@ -15,15 +15,13 @@ def do(txt, TheState, TheAnalyzer):
     LanguageDB = Setup.language_db
 
     if TheState.init_state_forward_f:
-        init_state_forward_entry(txt, TheState.entry.get_accepter())
-        transition_block_f = True
+        init_state_forward_entry(txt, TheState)
     else:
-        transition_block_f = entry.do(txt, TheState, TheAnalyzer)
+        entry.do(txt, TheState, TheAnalyzer)
 
-    if transition_block_f:
-        input_do(txt, TheState)
-        transition_block.do(txt, TheState.transition_map, TheState.index, TheState.engine_type, TheState.init_state_f)
-        drop_out.do(txt, TheState, TheAnalyzer)
+    input_do(txt, TheState)
+    transition_block.do(txt, TheState.transition_map, TheState.index, TheState.engine_type, TheState.init_state_f)
+    drop_out.do(txt, TheState, TheAnalyzer)
 
     if TheState.init_state_forward_f:
         init_state_forward_epilog(txt, TheState, TheAnalyzer)
@@ -50,10 +48,11 @@ def input_do(txt, TheState):
     LanguageDB = Setup.language_db
     LanguageDB.ACCESS_INPUT(txt, TheState.input)
 
-def init_state_forward_entry(txt, Accepter):
+def init_state_forward_entry(txt, TheState):
     LanguageDB = Setup.language_db
 
-    entry._accepter(txt, Accepter)
+    LanguageDB.STATE_DEBUG_INFO(txt, TheState)
+    entry._accepter(txt, TheState.entry.get_accepter())
     txt.append(LanguageDB.LABEL_INIT_STATE_TRANSITION_BLOCK())
 
 def init_state_forward_epilog(txt, TheState, TheAnalyzer):

@@ -90,7 +90,8 @@ def do(the_state_machine, post_context_sm, fh=-1):
     post_clone = post_context_sm.clone() 
 
     # -- Once an acceptance state is reached no further analysis is necessary.
-    acceptance_pruning.do(post_clone)
+    ## NO: acceptance_pruning.do(post_clone)
+    ## BECAUSE: it may have to compete with a pseudo-ambiguous post context
 
     # (*) collect all transitions from both state machines into a single one
     #
