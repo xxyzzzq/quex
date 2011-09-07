@@ -141,50 +141,6 @@ class TrackAnalysis:
         """
         return self.__map_state_to_trace
 
-    def __PROPOSAL_loop_search(self, arg):
-        """Determine the indices of states that are part of a loop. Whenever
-           such a state appears in a path from one state A to another state B, 
-           then the number of transitions from A to B cannot be determined 
-           from the state machine itself.
-
-           Recursion Terminal: When a state has no target state that has not
-                               yet been handled in the path. This is implemented
-                               int the loop itself.
-        """
-        while 1 + 1 == 2:
-            try:    arg = todo.pop()
-            except: return
-
-            StateIndex = arg[0]
-            path       = arg[1]
-            # (1) Add current state index to path
-            path.append(StateIndex)
-
-            state = self.sm.states[StateIndex]
-
-            # (2) Iterate over all target states
-            deeper_f = False
-            for state_index in state.transitions().get_target_state_index_list():
-                if state_index in self.__loop_search_done_set:
-                    continue
-                elif state_index in path: 
-                    # Mark all states that are part of a loop. The length of a path that 
-                    # contains such a state can only be determined at run-time.
-                    idx = path.index(StateIndex)
-                    self.__loop_state_set.update(path[idx:])
-                    continue # Do not dive into done states
-
-                todo.append((state_index, path))
-                deeper_f = True
-                break
-
-            if deeper_f: continue
-
-            # (3) Remove current state index --> path is as before
-            x = path.pop()
-            self.__loop_search_done_set.add(StateIndex)
-            assert x == StateIndex
-
     def __loop_search(self, StateIndex, path):
         """Determine the indices of states that are part of a loop. Whenever
            such a state appears in a path from one state A to another state B, 
