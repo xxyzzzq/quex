@@ -304,12 +304,16 @@ class LDB(dict):
         else:                 txt.append(self.LABEL(index, FromStateIndex, NewlineF))
 
         if FromStateIndex is None:
-            if TheState.init_state_forward_f: 
-                txt.append("    __quex_debug_init_state();\n")
-            elif TheState.engine_type == E_EngineTypes.FORWARD:
-                txt.append("    __quex_debug_state(%i);\n" % TheState.index)
-            else:
-                txt.append("    __quex_debug_state_backward(%i);\n" % TheState.index)
+            if not TheState.init_state_forward_f:
+                self.STATE_DEBUG_INFO(txt, TheState)
+
+    def STATE_DEBUG_INFO(self, txt, TheState):
+        if TheState.init_state_forward_f: 
+            txt.append("    __quex_debug_init_state();\n")
+        elif TheState.engine_type == E_EngineTypes.FORWARD:
+            txt.append("    __quex_debug_state(%i);\n" % TheState.index)
+        else:
+            txt.append("    __quex_debug_state_backward(%i);\n" % TheState.index)
 
         return 
 

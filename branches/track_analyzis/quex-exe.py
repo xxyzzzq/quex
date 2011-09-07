@@ -46,6 +46,9 @@ def __exeption_handler(TheException):
         error_msg("Exception occured -- please, report a bug under\n" + \
                   " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
     
+    # Indicate Error For 'make'-procedures, etc.
+    sys.exit(-1)
+
 try:
     # (*) Check if everything is correctly installed
     import quex.DEFINITIONS

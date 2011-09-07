@@ -34,14 +34,9 @@ def do(txt, TheState, TheAnalyzer):
             txt.append("    %s\n" % LanguageDB.ASSIGN("pre_context_%i_fulfilled_f" % pre_context_id, "true"))
 
     elif isinstance(entry, EntryBackwardInputPositionDetection):
-        LanguageDB.STATE_ENTRY(txt, TheState, BIPD_ID=entry.backward_input_positon_detector_sm_id)
-        if entry.terminated_f: 
-            txt.append('    __quex_debug("backward input position %i detected");\n' % \
-                       entry.backward_input_positon_detector_sm_id)
-            txt.append("    goto %s;\n" \
-                       % LanguageDB.LABEL_NAME_BACKWARD_INPUT_POSITION_RETURN(entry.backward_input_positon_detector_sm_id))
-            # No drop-out, no transition map required
-            return False
+        # Backward input position detectors are always isolated state machines.
+        # => TheAnalyzer.state_machine_id = id of the backward input position detector.
+        LanguageDB.STATE_ENTRY(txt, TheState, BIPD_ID=TheAnalyzer.state_machine_id)
     return True
 
 def _doors(txt, TheState, PositionRegisterMap):

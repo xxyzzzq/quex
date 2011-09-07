@@ -485,6 +485,7 @@ class AnalyzerState(object):
                  "__init_state_f", 
                  "__target_index_list", 
                  "__engine_type", 
+                 "__state_machine_id",
                  "input", 
                  "entry", 
                  "transition_map", 
@@ -497,9 +498,9 @@ class AnalyzerState(object):
 
         state = SM.states[StateIndex]
 
-        self.__index              = StateIndex
-        self.__init_state_f       = SM.init_state_index == StateIndex
-        self.__engine_type        = EngineType
+        self.__index            = StateIndex
+        self.__init_state_f     = SM.init_state_index == StateIndex
+        self.__engine_type      = EngineType
 
         # (*) Input
         if EngineType == E_EngineTypes.FORWARD:
@@ -513,7 +514,7 @@ class AnalyzerState(object):
         elif EngineType == E_EngineTypes.BACKWARD_PRE_CONTEXT: 
             self.entry = EntryBackward(state.origins())
         elif EngineType == E_EngineTypes.BACKWARD_INPUT_POSITION: 
-            self.entry = EntryBackwardInputPositionDetection(state.origins(), SM.core().id())
+            self.entry = EntryBackwardInputPositionDetection(state.origins(), state.is_acceptance())
         else:
             assert False
 
@@ -522,7 +523,8 @@ class AnalyzerState(object):
             # During backward input detection, an acceptance state triggers a
             # return from the searcher, thus no further transitions are necessary.
             # (orphaned states, also, need to be deleted).
-            if state.is_acceptance(): assert state.transitions().is_empty()
+            ## if state.is_acceptance(): assert state.transitions().is_empty()
+            pass
 
         self.transition_map      = state.transitions().get_trigger_map()
         self.__target_index_list = state.transitions().get_map().keys()
@@ -541,9 +543,7 @@ class AnalyzerState(object):
                                                                                E_TransitionN.IRRELEVANT, 
                                                                                E_PostContextIDs.IRRELEVANT))
         elif EngineType == E_EngineTypes.BACKWARD_INPUT_POSITION:
-            # The drop-out should never be reached, since we walk a path backwards
-            # that has been walked forward before.
-            self.drop_out = DropOut()
+            self.drop_out = DropOutBackwardInputPositionDetection(state.is_acceptance())
 
         self._origin_list = state.origins().get_list()
 
@@ -759,21 +759,19 @@ class EntryBackwardInputPositionDetection(object):
        NOTE: This type supports being a dictionary key by '__hash__' and '__eq__'.
              Required for the optional 'template compression'.
     """
-    __slots__ = ("__terminated_f", "__detector_sm_id")
+    __slots__ = ("__terminated_f")
 
     def __init__(self, OriginList, StateMachineID):
-        self.__detector_sm_id = StateMachineID
         self.__terminated_f = False
         for origin in ifilter(lambda origin: origin.is_acceptance(), OriginList):
             self.__terminated_f = True
             return
 
     def __hash__(self):
-        return hash(self.__detector_sm_id * 2 + int(self.__terminated_f))
+        return hash(int(self.__terminated_f))
 
     def __eq__(self, Other):
-        return     self.__terminated_f   == Other.__terminated_f \
-               and self.__detector_sm_id == Other.__detector_sm_id
+        return self.__terminated_f == Other.__terminated_f 
 
     def is_equal(self, Other):
         return self.__eq__(Other)
@@ -781,11 +779,8 @@ class EntryBackwardInputPositionDetection(object):
     @property
     def terminated_f(self): return self.__terminated_f
 
-    @property
-    def backward_input_positon_detector_sm_id(self): return self.__detector_sm_id
-
     def __repr__(self):
-        if self.__terminated_f: return "    Terminated (%i)\n" % self.__detector_sm_id
+        if self.__terminated_f: return "    Terminated\n"
         else:                   return ""
 
 class EntryBackward(object):
@@ -1078,6 +1073,21 @@ class DropOut_TerminalRouterElement(object):
             return "case %s: goto %s;" % (repr_acceptance_id(self.acceptance_id, PatternStrF=False),
                                           repr_acceptance_id(self.acceptance_id))
         
+class DropOutBackwardInputPositionDetection(object):
+    __slots__ = ("__reachable_f")
+    def __init__(self, AcceptanceF):
+        """A non-acceptance drop-out can never be reached, because we walk a 
+           path backward, that we walked forward before.
+        """
+        self.__reachable_f = AcceptanceF
+
+    @property
+    def reachable_f(self): return self.__reachable_f
+
+    def __repr__(self):
+        if self.__reachable_f is None: return "<unreachable>"
+        else:                          return "<backward input position detected>"
+
 def repr_pre_context_id(Value):
     if   Value == E_PreContextIDs.NONE:          return "Always"
     elif Value == E_PreContextIDs.BEGIN_OF_LINE: return "BeginOfLine"
