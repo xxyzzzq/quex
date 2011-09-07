@@ -1,4 +1,4 @@
-<history date="Tue Sep  6 21:24:24 2011" element-n="489">
+<history date="Wed Sep  7 21:02:57 2011" element-n="490">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1167,5 +1167,8 @@
         <crc-error time="05:54:10" application="test-get_trigger_map.py" choice="4" database-crc="-1314274089" real-crc="-1207648438"/>
         <crc-error time="05:54:11" application="test-get_trigger_map.py" choice="6" database-crc="-619276326" real-crc="1275227102"/>
         <crc-error time="05:54:11" application="test-get_trigger_map.py" choice="7" database-crc="-653144285" real-crc="-1417916909"/>
+    </day>
+    <day year="2011" month="09" day="07">
+        <crc-error time="19:02:47" application="test-subset_checker.py" choice="Pre-Post-Conditions" database-crc="54741919" real-crc="-752691781"/>
     </day>
 </history>
