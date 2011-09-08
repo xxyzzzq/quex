@@ -1,9 +1,9 @@
+# vim:set encoding=utf8:
 from quex.engine.analyzer.core import AnalyzerState, \
                                       Entry, \
                                       EntryBackward, \
                                       EntryBackwardInputPositionDetection
 import quex.engine.analyzer.template.combine_maps as combine_maps
-from   quex.engine.analyzer.template.common       import get_state_list 
 """
 (C) 2010-2011 Frank-Rene Schäfer
 

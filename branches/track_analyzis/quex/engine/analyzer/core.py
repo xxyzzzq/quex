@@ -1085,8 +1085,8 @@ class DropOutBackwardInputPositionDetection(object):
     def reachable_f(self): return self.__reachable_f
 
     def __repr__(self):
-        if self.__reachable_f is None: return "<unreachable>"
-        else:                          return "<backward input position detected>"
+        if not self.__reachable_f: return "<unreachable>"
+        else:                      return "<backward input position detected>"
 
 def repr_pre_context_id(Value):
     if   Value == E_PreContextIDs.NONE:          return "Always"
