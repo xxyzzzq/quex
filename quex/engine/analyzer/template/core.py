@@ -63,9 +63,9 @@ import sys
 
    The result of analyzis of template state compression is:
     
-              A list of 'TemplateCombination' objects. 
+              A list of 'TemplateState' objects. 
 
-   A TemplateCombination carries:
+   A TemplateState carries:
    
      -- A trigger map, i.e. a list of intervals together with target state
         lists to which they trigger. If there is only one associated target
@@ -182,35 +182,21 @@ def do(TheAnalyzer, CostCoefficient):
     """
     assert isinstance(CostCoefficient, (int, long, float))
 
-    trigger_map_db = TriggerMapDB(TheAnalyzer, CostCoefficient)
+    # CombinationDB: -- Keep track of possible combinations between states.
+    #                -- Can determine best matching state candidates for combination.
+    #                -- Replaces two combined states by TemplateState.
+    #
+    # (A 'state' in the above sense can also be a TemplateState)
+    trigger_map_db = CombinationDB(TheAnalyzer, CostCoefficient)
 
-    # Build templated combinations by finding best pairs, until there is no meaningful way to
-    # build any clusters. TemplateCombinations of states also take part in the race.
-    while 1 + 1 == 2:
-        i, i_state, k, k_state = trigger_map_db.pop_best_matching_pair()
-        if i is None: break
-
-        # Add new element: The combined pair
-        new_index = index.get()
-        trigger_map_db[new_index] = TemplateState(new_index, i_state, k_state)
+    # Loop: Combine states until there is nothing that can be reasonably be combined.
+    while trigger_map_db.combine_best_candidates():
+        pass
 
     return ifilter(lambda x: isinstance(x, TemplateState), 
                    trigger_map_db.itervalues())
 
-def get_combined_scheme(StateIndexA, A, StateIndexB, B, Type):
-    def get_scheme(StateIndex, X): 
-        if isinstance(X, Type): return X.scheme
-        else:                   return defaultdict([(X, [StateIndex])])
-
-    scheme_a = get_scheme(StateIndexA, A)
-    scheme_b = get_scheme(StateIndexB, B)
-
-    result = defaultdict(list)
-    for element, state_index_list in chain(scheme_a.iteritems(), scheme_b.iteritems()):
-        result[element].extend(state_index_list)
-    return result
-
-class TriggerMapDB:
+class CombinationDB:
     def __init__(self, TheAnalyzer, CostCoefficient):
         # (1) Get the trigger maps of all states of the state machine
         self.__db = dict([(state_index, state) for state_index, state in \
@@ -219,6 +205,13 @@ class TriggerMapDB:
         self.__cost_coefficient      = float(CostCoefficient)
         self.__init_state_index      = TheAnalyzer.init_state_index
         self.__combination_gain_list = self.__initial_combination_gain()
+
+    def combine_best_candidates(self):
+        # Get the two best matching state candidates
+        i_state, k_state = trigger_map_db.__pop_best_matching_pair()
+        if i_state is None: return False
+        trigger_map_db.__combine(i_state, k_state)
+        return True
 
     def __initial_combination_gain(self):
         state_list = self.__db.values()
@@ -279,7 +272,7 @@ class TriggerMapDB:
 
         self.__combination_gain_list.sort(key=itemgetter(0))
 
-    def pop_best_matching_pair(self):
+    def __pop_best_matching_pair(self):
         """Determines the two trigger maps that are closest to each
            other. The consideration includes the trigger maps of
            combined trigger maps. Thus this function supports the
@@ -289,7 +282,7 @@ class TriggerMapDB:
            If no pair can be found with a gain > 0, then this function
            returns 'None, None'.
         """
-        if len(self.__combination_gain_list) == 0: return (None, None, None, None)
+        if len(self.__combination_gain_list) == 0: return (None, None)
 
         # (0) The entry with the highest gain is at the tail of the list.
         #     Element 0 contains the combination gain.
@@ -326,6 +319,13 @@ class TriggerMapDB:
 
         return i_state, k_state
 
+    def __combine(self, StateI, StateK):
+        new_index = index.get()
+        new_state = TemplateState(new_index, StateI, StateK)
+
+        self.__db[new_index] = new_state
+        self.__adapt_combination_gain(new_state)
+
     def __len__(self):
         return len(self.__db)
 
@@ -333,13 +333,8 @@ class TriggerMapDB:
         assert type(Key) == long
         return self.__db[Key]
 
-    def __setitem__(self, Key, Value):
-        assert type(Key) == long
-        assert isinstance(Value, TemplateCombination)
-        self.__adapt_combination_gain(Value)
-        self.__db[Key] = Value
-
-    def items(self):
-        return self.__db.items()
+    def iteritems(self):
+        for x in self.__db.iteritems():
+            yield x
 
 

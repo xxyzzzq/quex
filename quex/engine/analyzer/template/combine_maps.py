@@ -6,8 +6,16 @@ from quex.blackboard                                    import E_StateIndices
 import sys
 
 def do(StateA, StateB):
-    """This function combines two transition maps. A transition map is 
-       a list of tuples:
+    """RETURNS:
+
+          -- Transition map = combined transition map of StateA and StateB.
+
+          -- List of target schemes that have been identified.
+
+       EXPLANATION:
+    
+       This function combines two transition maps. A transition map is a list
+       of tuples:
 
             [
               ...
@@ -15,37 +23,53 @@ def do(StateA, StateB):
               ...
             ]
 
-       where each tuple tells about a character range [interval.begin, interval.end)
-       where the state triggers to the given target. Usually the target is 
-       the index of the target state. With template compression, though, multiple
-       states are combined. The templates operates on behalf of a state which
-       is identified by its 'state_key'. The target may be depend on the state
-       key and is thus implemented as an array.
+       Each tuple tells about a character range [interval.begin, interval.end)
+       where the state triggers to the given target. In a normal AnalyzerState
+       the target is the index of the target state. In a TemplateState, though,
+       multiple states are combined. A TemplateState operates on behalf of a
+       state which is identified by its 'state_key'. 
+       
+       If two states (even TemplateStates) are combined the trigger maps
+       are observed, e.g.
 
-       When two states are combined such information occurs, if the two states
-       trigger on the same interval to different targets. Then the entry in the
-       transition map must contain where the target triggers dependent on the
-       state key, i.e.
+            Trigger Map A                    Trigger Map B
+                                                                          
+            [                                [
+              ([0,  10),   DropOut)            ([0,  10),   State_4)
+              ([10, 15),   State_0)            ([10, 15),   State_1)
+              ([15, 20),   DropOut)            ([15, 20),   State_0)
+              ([20, 21),   State_1)            ([20, 21),   DropOut)
+              ([21, 255),  DropOut)            ([21, 255),  State_0)
+            ]                                ]                           
 
-            [
-              ...
-              (interval, target_db)
-              ...
-            ]
 
-       where the target_db maps:  state_key --> target state
+       For some intervals, the target is the same. But for some it is different.
+       In a TemplateState, the intervals are associated with TargetScheme 
+       objects. A TargetScheme object tells the target state dependent
+       on the 'state_key'. The above example may result in a transition map
+       as below:
 
-       So, when the templates operates on behalf of a state given by key 'x'
-       the target state for a given 'interval' is 'target_db[x]'. Now, this
-       mapping may be exactly the same for multiple intervals. Instead of
-       storing multiple times the same mapping, an object of class
-       TemplateTargetScheme is stored along with the intervals.
+            Trigger Map A                   
+                                                                          
+            [     # intervals:   target schemes:                           
+                  ( [0,  10),    { A: DropOut,   B: State_4, },
+                  ( [10, 15),    { A: State_0,   B: State_1, },
+                  ( [15, 20),    { A: DropOut,   B: State_0, },
+                  ( [20, 21),    { A: State_1,   B: DropOut, },
+                  ( [21, 255),   { A: DropOut,   B: State_0, },
+            ]                                                           
 
-       A template state, again, may be combined with other states and other 
-       template states. Here, this means that the initial target for an 
-       interval in StateA or StateB may already be a TemplateTargetScheme.
+       Note, that the 'scheme' for interval [12, 20) and [21, 255) are identical.
+       We try to profit from it by storing only it only once. A template scheme
+       is associated with an 'index' for reference.
 
-       The resulting target map results of the combination of both target
+       TemplateStates may be combined with AnalyzerStates and other TemplateStates.
+       Thus, TemplateTargetSchemes must be combined with trigger targets
+       and other TemplateTargetSchemes.
+
+       NOTE:
+
+       The resulting target map results from the combination of both transition
        maps, which may introduce new borders, e.g.
     
                      |----------------|           (where A triggers to X)
@@ -60,31 +84,25 @@ def do(StateA, StateB):
                  2              X                  Y
                  3           Nothing               Y
 
-       RETURNS:
-
-               -- resulting transition map.
-               -- list of target schemes that have been identified.
     """
-    def help(State):
+    def __help(State):
         state_list = get_state_list(State)
         tm         = State.transition_map
         assert_adjacency(tm, TotalRangeF=True)
-        return state_list, len(state_list), tm
+        return state_list, len(state_list), tm, len(tm)
 
-    StateListA, StateListA_Len, TransitionMapA = help(StateA)
-    StateListB, StateListB_Len, TransitionMapB = help(StateB)
+    StateListA, StateListA_Len, TransitionMapA, LenA = __help(StateA)
+    StateListB, StateListB_Len, TransitionMapB, LenB = __help(StateB)
 
-    i  = 0 # iterator over interval list 0
-    k  = 0 # iterator over interval list 1
-    Li = len(TransitionMapA)
-    Lk = len(TransitionMapB)
+    i  = 0 # iterator over TransitionMapA
+    k  = 0 # iterator over TransitionMapB
 
-    # Intervals in trigger map are always adjacent, so the '.begin'
-    # member is not required.
+    # Intervals in trigger map are always adjacent, so the '.begin' member is
+    # not required.
     scheme_db = TemplateTargetSchemeDB()
     result    = []
     prev_end  = - sys.maxint
-    while not (i == Li-1 and k == Lk-1):
+    while not (i == LenA - 1 and k == LenB - 1):
         i_trigger = TransitionMapA[i]
         i_end     = i_trigger[0].end
         i_target  = i_trigger[1]
@@ -124,81 +142,107 @@ class TemplateTargetScheme(object):
                 [ X, T ]
                 ...
 
-       then the tuple 'T.scheme[key]' tells the target state index for
-       the case the template operates with the given 'key'. A key in turn,
-       stands for a particular state.
+       then 'T.scheme[key]' tells the target state index for the case the
+       template operates with the given 'key'. A key in turn, stands for a
+       particular state.
 
        There might be multiple intervals following the same target scheme,
-       so the function 'identify_target_schemes()' takes care of making 
+       so the function 'TemplateTargetSchemeDB.get()' takes care of making 
        those schemes unique.
 
-       .index  = unique index of the target scheme
-                 (unique for the current combination)
-       .scheme = target state index scheme as explained above.
-    """
-    __slots__ = ('index', 'scheme')
+           .scheme = Target state index scheme as explained above.
 
-    def __init__(self, SchemeIndex, TargetScheme):
-        self.index  = SchemeIndex
-        self.scheme = TargetScheme
+           .index  = Unique index of the target scheme. This value is 
+                     determined by 'TemplateTargetSchemeDB.get()'. It helps
+                     later to define the scheme only once, even it appears
+                     twice or more.
+    """
+    __slots__ = ('__index', '__scheme')
+
+    def __init__(self, UniqueIndex, TargetScheme):
+        assert isinstance(TargetScheme, tuple)
+
+        self.__scheme = TargetScheme
+        self.__index  = UniqueIndex
+
+    @property
+    def scheme(self): return self.__scheme
+
+    @property
+    def index(self):  return self.__index
 
     def __repr__(self):
-        return repr(self.scheme)
+        return repr(self.__scheme)
 
 class TemplateTargetSchemeDB(dict):
+    """A TemplateTargetSchemeDB keeps track of existing target state combinations.
+       If a scheme appears more than once, it does not get a new index. By means
+       of the index it is possible to avoid multiple definitions of the same 
+       scheme, later.
+    """
     def __init__(self):
         dict.__init__(self)
         
-    def get(self, Combination):
+    def get(self, TargetScheme):
         """Checks whether the combination is already present. If so, the reference
            to the existing target scheme is returned. If not a new scheme is created
            and entered into the database.
+
+           The TargetScheme must be a tuple, such as 
+
+              (1, E_StateIndices.DROP_OUT, 4, E_StateIndices.DROP_OUT, 1)
+
+           which tells that if the template operates on behalf of state_key 0
+           there must be a transition to state 1, if state_key = 1, then there
+           must be a 'drop-out', etc.
         """
-        result = dict.get(self, Combination)
+        assert isinstance(TargetScheme, tuple)
+
+        result = dict.get(self, TargetScheme)
         if result is None: 
-            result            = TemplateTargetScheme(len(self), Combination)
-            self[Combination] = result
+            result             = TemplateTargetScheme(len(self), TargetScheme)
+            self[TargetScheme] = result
         return result
 
     def get_scheme_list(self):
         return self.values()
 
 def __get_target(TA, StateAIndex, StateListA_Len, TB, StateBIndex, StateListB_Len, scheme_db):
-    """Generate a target entry for a transition map of combined 
-       transition maps for StateA and StateB. 
+    """Generate a target entry for a transition map of combined transition maps
+       for StateA and StateB. 
 
-       TA, TB = Targets of StateA and StateB for one particular 
-                character interval.
+           TA, TB = Targets of StateA and StateB for one particular character
+                    interval.
 
-       RETURNS: An object that tells for what states trigger
-                here to what target state. That is:
+       RETURNS: 
+       
+       An object that tells for what states trigger here to what target state.
+       That is:
 
-                -- E_StateIndices.RECURSIVE
+        -- E_StateIndices.RECURSIVE
 
-                   All related states trigger here to itself.
-                   Thus, the template combination triggers to itself.
+           All related states trigger here to itself.  Thus, the template
+           combination triggers to itself.
 
-                -- A scalar integer 'T'
+        -- A scalar integer 'T'
 
-                   All related states trigger to the same target state
-                   whose state index is given by the integer T.
+           All related states trigger to the same target state whose state
+           index is given by the integer T.
 
-                -- A list of integers 'TL'
+        -- A list of integers 'TL'
 
-                   States trigger to different targets. The target state
-                   of an involved state with index 'X' is 
+           States trigger to different targets. The target state of an involved
+           state with index 'X' is 
 
-                                          TL[i]
+                                  TL[i]
 
-                   provided that 
-                   
-                            (StateListA + StateListB)[i] == X
+           provided that 
 
-                   The 'schemes' may be the same for multiple intervals.
-                   Thus, they are store in TemplateTargetScheme objects.
-                   This is accomplished by function
-                   'identify_target_schemes()'.
-                
+                    (StateListA + StateListB)[i] == X
+
+           The 'schemes' may be the same for multiple intervals.  Thus, they
+           are store in TemplateTargetScheme objects.  This is accomplished by
+           function 'TemplateTargetSchemeDB.get()'.
     """
     recursion_n = 0
     # IS RECURSIVE ?

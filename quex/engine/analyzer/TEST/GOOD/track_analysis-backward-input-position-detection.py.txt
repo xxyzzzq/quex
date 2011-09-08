@@ -11,16 +11,16 @@ init-state = 0L
 State 0:
   .entry:
   .drop_out:
-    <unreachable code>
+<unreachable>
 
 State 1:
   .entry:
   .drop_out:
-    <unreachable code>
+<unreachable>
 
 State 2:
   .entry:
-    Terminated (5)
+    Terminated
   .drop_out:
-    <unreachable code>
+<backward input position detected>
 
