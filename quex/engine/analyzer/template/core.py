@@ -2,7 +2,6 @@ import quex.engine.state_machine.index            as     index
 import quex.engine.state_machine.core             as     state_machine
 import quex.engine.analyzer.template.gain         as     templates_gain
 from   quex.engine.analyzer.template.common       import get_state_list, TemplateState
-import quex.engine.analyzer.template.combine_maps as     combine_maps
 from   quex.blackboard                            import E_StateIndices
 
 from   collections import defaultdict
@@ -187,13 +186,13 @@ def do(TheAnalyzer, CostCoefficient):
     #                -- Replaces two combined states by TemplateState.
     #
     # (A 'state' in the above sense can also be a TemplateState)
-    trigger_map_db = CombinationDB(TheAnalyzer, CostCoefficient)
+    combiner = CombinationDB(TheAnalyzer, CostCoefficient)
 
     # Combine states until there is nothing that can be reasonably be combined.
-    while trigger_map_db.combine_best():
+    while combiner.combine_best():
         pass
 
-    return trigger_map_db.result()
+    return combiner.result()
 
 class CombinationDB:
     """Contains the 'Gain' for each possible combination of states. This includes
@@ -222,12 +221,37 @@ class CombinationDB:
     """
     def __init__(self, TheAnalyzer, CostCoefficient):
         # (1) Get the trigger maps of all states of the state machine
-        self.__db = dict([(state_index, state) for state_index, state in \
-                                                   ifilter(lambda x: len(x[1].transition_map) != 0, 
-                                                           TheAnalyzer.state_db.iteritems())])
+        #     (Never template the init state, never template states without transition map)
+        self.__db = dict([(state_index, state) 
+                          for state_index, state in 
+                              ifilter(lambda x:     len(x[1].transition_map) != 0 
+                                                and x[1].index != Analyzer.init_state_index,
+                                      TheAnalyzer.state_db.iteritems())
+                         ])
         self.__cost_coefficient = float(CostCoefficient)
-        self.__init_state_index = TheAnalyzer.init_state_index
         self.__gain_matrix      = self.__base()
+
+    def combine_best(self):
+        """Finds the two best matching states and combines them into one.
+           If no adequate state pair can be found 'False' is returned.
+           Else, 'True'.
+        """
+        # Get the two best matching state candidates
+        i, k = self.pop_best_pair()
+        if i is None: return False
+
+        # Combine the two
+        new_index = index.get()
+        new_state = TemplateState(new_index, self.__db[i], self.__db[k])
+
+        self.enter(new_state)
+        return True
+
+    def result(self):
+        """RETURNS: List of TemplateStates. Those are the states that have been 
+                    generated from combinations of analyzer states.
+        """
+        return filter(lambda x: isinstance(x, TemplateState), self.itervalues())
 
     def __base(self, StateDB):
         state_list = StateDB.values()
@@ -287,6 +311,7 @@ class CombinationDB:
             del self.__gain_matrix[n:]
 
         self.__gain_matrix.sort(key=itemgetter(0))
+        self.__db[new_index] = new_state
 
     def pop_best_pair(self):
         """Determines the two trigger maps that are closest to each
@@ -335,29 +360,6 @@ class CombinationDB:
                 p += 1
 
         return i, k
-
-    def combine_best(self):
-        """Finds the two best matching states and combines them into one.
-           If no adequate state pair can be found 'False' is returned.
-           Else, 'True'.
-        """
-        # Get the two best matching state candidates
-        i, k = self.__matrix.pop_best_pair()
-        if i is None: return False
-
-        # Combine the two
-        new_index = index.get()
-        new_state = TemplateState(new_index, self.__db[i], self.__db[k])
-
-        self.__db[new_index] = new_state
-        self.__matrix.enter(new_state)
-        return True
-
-    def result(self):
-        """RETURNS: List of TemplateStates. Those are the states that have been 
-                    generated from combinations of analyzer states.
-        """
-        return filter(lambda x: isinstance(x, TemplateState), self.itervalues())
 
     def __len__(self):
         return len(self.__db)

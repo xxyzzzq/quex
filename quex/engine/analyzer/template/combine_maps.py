@@ -64,8 +64,8 @@ def do(StateA, StateB):
        is associated with an 'index' for reference.
 
        TemplateStates may be combined with AnalyzerStates and other TemplateStates.
-       Thus, TemplateTargetSchemes must be combined with trigger targets
-       and other TemplateTargetSchemes.
+       Thus, TargetSchemes must be combined with trigger targets
+       and other TargetSchemes.
 
        NOTE:
 
@@ -99,7 +99,7 @@ def do(StateA, StateB):
 
     # Intervals in trigger map are always adjacent, so the '.begin' member is
     # not required.
-    scheme_db = TemplateTargetSchemeDB()
+    scheme_db = TargetSchemeDB()
     result    = []
     prev_end  = - sys.maxint
     while not (i == LenA - 1 and k == LenB - 1):
@@ -132,7 +132,7 @@ def do(StateA, StateB):
 
     return result, scheme_db.get_scheme_list()
 
-class TemplateTargetScheme(object):
+class TargetScheme(object):
     """A target scheme contains the information about what the target
        state is inside an interval for a given template key. For example,
        a given interval X triggers to target scheme T, i.e. there is an
@@ -147,13 +147,13 @@ class TemplateTargetScheme(object):
        particular state.
 
        There might be multiple intervals following the same target scheme,
-       so the function 'TemplateTargetSchemeDB.get()' takes care of making 
+       so the function 'TargetSchemeDB.get()' takes care of making 
        those schemes unique.
 
            .scheme = Target state index scheme as explained above.
 
            .index  = Unique index of the target scheme. This value is 
-                     determined by 'TemplateTargetSchemeDB.get()'. It helps
+                     determined by 'TargetSchemeDB.get()'. It helps
                      later to define the scheme only once, even it appears
                      twice or more.
     """
@@ -174,8 +174,8 @@ class TemplateTargetScheme(object):
     def __repr__(self):
         return repr(self.__scheme)
 
-class TemplateTargetSchemeDB(dict):
-    """A TemplateTargetSchemeDB keeps track of existing target state combinations.
+class TargetSchemeDB(dict):
+    """A TargetSchemeDB keeps track of existing target state combinations.
        If a scheme appears more than once, it does not get a new index. By means
        of the index it is possible to avoid multiple definitions of the same 
        scheme, later.
@@ -200,7 +200,8 @@ class TemplateTargetSchemeDB(dict):
 
         result = dict.get(self, TargetScheme)
         if result is None: 
-            result             = TemplateTargetScheme(len(self), TargetScheme)
+            new_index          = len(self)
+            result             = TargetScheme(new_index, TargetScheme)
             self[TargetScheme] = result
         return result
 
@@ -209,7 +210,7 @@ class TemplateTargetSchemeDB(dict):
 
 def __get_target(TA, StateAIndex, StateListA_Len, TB, StateBIndex, StateListB_Len, scheme_db):
     """Generate a target entry for a transition map of combined transition maps
-       for StateA and StateB. 
+       of StateA and StateB. 
 
            TA, TB = Targets of StateA and StateB for one particular character
                     interval.
@@ -241,8 +242,8 @@ def __get_target(TA, StateAIndex, StateListA_Len, TB, StateBIndex, StateListB_Le
                     (StateListA + StateListB)[i] == X
 
            The 'schemes' may be the same for multiple intervals.  Thus, they
-           are store in TemplateTargetScheme objects.  This is accomplished by
-           function 'TemplateTargetSchemeDB.get()'.
+           are store in TargetScheme objects.  This is accomplished by
+           function 'TargetSchemeDB.get()'.
     """
     recursion_n = 0
     # IS RECURSIVE ?
