@@ -3,6 +3,7 @@ from quex.engine.analyzer.core import AnalyzerState, \
                                       Entry, \
                                       EntryBackward, \
                                       EntryBackwardInputPositionDetection
+from quex.engine.analyzer.template.common import get_iterable, get_state_list
 import quex.engine.analyzer.template.combine_maps as combine_maps
 """
 (C) 2010-2011 Frank-Rene Schäfer
@@ -103,106 +104,84 @@ class CombinationGain:
         # Assume 2 core instructions for the setup of the switch case ...
         return result + 2 + self.__case_n
 
-def do(StateA, StateB):
-    entry_gain    = get_entry_gain(StateA, StateB).total()
-    drop_out_gain = get_drop_out_gain(StateA, StateB).total()
+def do(CombinedState, StateA, StateB):
+    """Compute the 'gain' that results from combining entries, drop_outs
+       and transition maps. We start with a multi-attribute gain as 
+       given by 'CombinationGain' objects. At the end a scalar value
+       is computed by the '.total()' member function.
+    """
+    entry_gain          = __compute_gain(__entry_cost, CombinedState.entry,    
+                                         StateA.entry, StateB.entry)
+    drop_out_gain       = __compute_gain(__drop_out_cost, CombinedState.drop_out, 
+                                         StateA.drop_out, StateB.drop_out)
+    transition_map_gain = __transition_map_gain(CombinedState, StateA, StateB)
 
-    border_n, same_target_n = get_transition_map_metric(StateA, StateB)
+    return (entry_gain + drop_out_gain + transition_map_gain).total()
+
+def __compute_gain(__cost, Combined, A, B):
+    """Computes the gain of combining two objects 'A' and 'B' into the combined
+       object 'Combined'. Objects can be state Entry-s or state DropOut-s. By
+       means of the function 'get_iterable' a list of tuples is obtained as 
+       below:
+
+             [ ...
+               (X, [state_index_list])
+               ...
+             ]
+
+       The 'X' contains an unique object and 'state_index_list' contains the
+       list of indices from the original state machine that require this
+       particular object (be it 'DropOut' or 'Entry'). For original states this
+       list is, of course, simply [ (Object, [state_index]) ]. But, by this
+       adaption it is possible to treat TemplateState-s and AnalyzerState-s in
+       a unified manner.
+    """
+    combined = sum(map(lambda element: __cost(element[0]), get_iterable(Combined)))
+    a_cost   = sum(map(lambda element: __cost(element[0]), get_iterable(A)))
+    b_cost   = sum(map(lambda element: __cost(element[0]), get_iterable(B)))
+
+    return (a_cost + b_cost) - combined_cost
+
+def __entry_cost(X):
+    if   isinstance(X, Entry):
+        pass
+
+    elif isinstance(X, EntryBackward):
+        pass
+
+    elif isinstance(X, EntryBackwardInputPositionDetection):
+        pass
+
+def __drop_out_cost(X):
+    if   isinstance(X, DropOut):
+        La = len(X.acceptance_checker)
+        Lt = len(X.terminal_router)
+        assignment_n  = len(ifilter(lambda x: x.acceptance_id != E_AcceptanceIDs.NONE, X.acceptance_checker)) 
+        case_n       += La + Lt    # each case must be distinguished
+        goto_n        = Lt         # goto terminal ...
+
+    elif isinstance(X, DropOutBackward):
+        # Drop outs in pre-context checks all simply transit to the begin 
+        # of the forward analyzer. No difference.
+        return 0
+
+    elif isinstance(X, DropOutBackwardInputPositionDetection):
+        # Drop outs of backward input position handling either do not
+        # happen or terminate input position detection.
+        return 0
+
+    else:
+        assert False
+
+def __transition_map_gain(CombinedState, StateA, StateB):
     assert border_n >= same_target_n
 
     avrg_interval_n   = int((len(StateA.transition_map) + len(StateB.transition_map)) / 2.0)
     border_increase_n = border_n - avrg_interval_n
-
+- border_increase_n * 4 * (1.0 - same_target_ratio)
     if border_n == 0: same_target_ratio = 1.0
     else:             same_target_ratio = same_target_n / float(border_n)
     # From assert above, it follows that same_target_ratio >= 0  and <= 1
-
-    return entry_gain + drop_out_gain - border_increase_n * 4 * (1.0 - same_target_ratio)
-
-def get_entry_gain(StateA, StateB):
-    """If the two states have the same entries, then the one entry 
-       can be spared. Then, the 'entry gain' is the what can be spared the
-       the function entry. Otherwise, the combination gain is simply zero.
-
-       The same is true, if a template state already contains the entry 
-       scheme of the other.
-    """
-    def __cost_of_entry(TheEntry):
-        if isinstance(TheEntry, Entry):
-            if TheEntry.is_uniform(): 
-                return CombinationGain(1, 0, 0).neg()
-            else:
-                Lp = len(TheEntry.positioner)
-                La = len(TheEntry.accepter)
-                return CombinationGain(AdditionN = Lp, AssignmentN = La, CaseN = Lp + La).neg()
-
-        elif isinstance(TheEntry, EntryBackward):
-            return CombinationGain(AssignmentN = len(TheEntry.pre_context_fulfilled_set))
-
-        elif isinstance(TheEntry, EntryBackwardInputPositionDetection):
-            if TheEntry.terminated_f: return CombinationGain(CaseN=1).neg()
-            else:                     return CombinationGain(0, 0, 0)
-
-    if isinstance(StateA, AnalyzerState):
-        if isinstance(StateB, AnalyzerState):
-            if StateA.entry.is_equal(StateB.entry):        return __cost_of_entry(StateA.entry).neg() # gain = - cost
-            else:                                          return CombinationGain(0, 0, 0)
-        else:
-            # StateB is a TemplateState, it may contain the scheme of StateA's entry
-            if StateB.entry.scheme.contains(StateA.entry): return __cost_of_entry(StateA.entry).neg() # gain = - cost
-            else:                                          return CombinationGain(0, 0, 0)
-    else:
-        if isinstance(StateB, AnalyzerState):
-            # StateA is a TemplateState, it may contain the scheme of StateB's entry
-            if StateA.entry.scheme.contains(StateB.entry): return __cost_of_entry(StateB.entry).neg() # gain = - cost
-            else:                                          return CombinationGain(0, 0, 0)
-
-    # StateA and StateB are template states.
-    bigger, smaller = sorted([StateA.entry, StateB.entry], key=lambda x: len(x.scheme))
-
-    result = 0
-    for entry in smaller.scheme:
-        if bigger.contains(entry): result -= __cost_of_entry(entry)
-    return result
-
-def get_drop_out_gain(StateA, StateB):
-    """If the two states have the same drop_out handling, then the one entry 
-       can be spared. Otherwise, the combination gain is the actually negative,
-       because for each drop-out a switch case must be implemented based on
-       the template key.
-    """
-    def __cost_of_switch_case_construct(DropOutSchemeA, DropOutSchemeB):
-        return CombinationGain(CaseN=len(DropOutSchemeA) + len(DropOutSchemeB)).neg()
-    def __cost_of_drop_out(TheDropOut):
-        return CombinationGain(AssignmentN=len(TheDropOut.checker), CaseN=len(TheDropOut.router)).neg()
-
-    if isinstance(StateA, AnalyzerState):
-        if isinstance(StateB, AnalyzerState):
-            if StateA.drop_out.is_equal(StateB.drop_out):        return __cost_of_drop_out(StateA.drop_out).neg() # gain = - cost
-            else:                                                return __cost_of_switch_case_construct([StateA.drop_out], [StateB.drop_out])
-        else:
-            # StateB is a TemplateState, it may contain the scheme of StateA's entry
-            if StateB.drop_out.scheme.contains(StateA.drop_out): return __cost_of_drop_out(StateA.drop_out).neg() # gain = - cost
-            else:                                                return __cost_of_switch_case_construct([StateA.drop_out], StateB.drop_out.scheme)
-    else:
-        if isinstance(StateB, AnalyzerState):
-            # StateA is a TemplateState, it may contain the scheme of StateB's entry
-            if StateA.drop_out.scheme.contains(StateB.entry):    return __cost_of_drop_out(StateB.drop_out).neg() # gain = - cost
-            else:                                                return __cost_of_switch_case_construct(StateA.drop_out.scheme, [StateB.drop_out])
-
-    # StateA and StateB are template states.
-    bigger, smaller = sorted([StateA.drop_out, StateB.drop_out], key=lambda x: len(x.scheme))
-
-    result = __cost_of_switch_case_construct(DropOutSchemeA, DropOutSchemeB)
-    # If a drop_out handling is in both schemes, than we actually gain something by 
-    # combining them into one. If the handling in both schemes is different, then
-    # we do not loose anything, because if the states were treated separately we
-    # would have to pay the price anyway.
-    for drop_out in smaller.scheme:
-        if bigger.contains(entry): result -= __cost_of_drop_out(entry)
-    return result
-
-def get_transition_map_metric(StateA, StateB):
     result, scheme_list = combine_maps.do(StateA, StateB)
     return len(result), len(scheme_list)
 

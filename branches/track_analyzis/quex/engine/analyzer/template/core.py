@@ -276,9 +276,9 @@ class CombinationDB:
             for k_state in islice(state_list, i + 1, None):
                 if k_state.init_state_f: continue
 
-                combination_gain = templates_gain.do(i_state, k_state)
-                if combination_gain > 0:
-                    result[n] = (combination_gain, i_state.index, k_state.index)
+                candidate = TemplateStateCandidate(i_state, k_state)
+                if candidate.gain > 0:
+                    result[n] = candidate
                     n += 1
 
         if n != MaxSize:
@@ -301,10 +301,10 @@ class CombinationDB:
         for state in self.__db.itervalues():
             if state.init_state_f: continue
 
-            combination_gain  = templates_gain.do(NewState, state)
+            candidate = TemplateStateCandidate(NewState, state)
 
-            if combination_gain > 0:
-                self.__gain_matrix[n] = (combination_gain, NewState.index, state.index)
+            if candidate.gain > 0:
+                self.__gain_matrix[n] = candidate
                 n += 1
 
         if n != MaxSize:
@@ -334,6 +334,8 @@ class CombinationDB:
         i, k = self.__gain_matrix.pop()
         self.__delete_pair(i, k)
         return i, k
+
+    def __get_combination_candidate(self, I, K):
 
     def __delete_pair(self, I, K):
         # (1) Delete both states from the database: state-index  --> trigger_map
