@@ -536,12 +536,7 @@ class AnalyzerState(object):
             self.drop_out = None 
 
         elif EngineType == E_EngineTypes.BACKWARD_PRE_CONTEXT:
-            self.drop_out = DropOut()
-            self.drop_out.acceptance_checker.append(DropOut_AcceptanceCheckerElement(E_PreContextIDs.NONE, 
-                                                                                     E_AcceptanceIDs.VOID))
-            self.drop_out.terminal_router.append(DropOut_TerminalRouterElement(E_AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK, 
-                                                                               E_TransitionN.IRRELEVANT, 
-                                                                               E_PostContextIDs.IRRELEVANT))
+            self.drop_out = DropOutBackward()
         elif EngineType == E_EngineTypes.BACKWARD_INPUT_POSITION:
             self.drop_out = DropOutBackwardInputPositionDetection(state.is_acceptance())
 
@@ -1073,6 +1068,16 @@ class DropOut_TerminalRouterElement(object):
             return "case %s: goto %s;" % (repr_acceptance_id(self.acceptance_id, PatternStrF=False),
                                           repr_acceptance_id(self.acceptance_id))
         
+class DropOutBackward(DropOut):
+    def __init__(self):
+        DropOut.__init__(self)
+
+        self.acceptance_checker.append(DropOut_AcceptanceCheckerElement(E_PreContextIDs.NONE, 
+                                                                        E_AcceptanceIDs.VOID))
+        self.terminal_router.append(DropOut_TerminalRouterElement(E_AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK, 
+                                                                  E_TransitionN.IRRELEVANT, 
+                                                                  E_PostContextIDs.IRRELEVANT))
+
 class DropOutBackwardInputPositionDetection(object):
     __slots__ = ("__reachable_f")
     def __init__(self, AcceptanceF):
