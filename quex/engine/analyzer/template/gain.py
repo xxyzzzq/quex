@@ -73,25 +73,20 @@ and we only want to find out what is getting better (if actually) in case both
 are combined.  
 """
 
-class CombinationGain:
-    """We start of with a multi-attribute gain, that is then 
-       translated into a scalar value through function 'total()'.
+class Cost:
+    """We start of with a multi-attribute cost, that is then translated into a
+       scalar value through function 'total()'.
     """
-    def __init__(self, AdditionN=0, AssignmentN=0, CaseN=0):
-        self.__addition_n   = AdditionN
+    def __init__(self, AssignmentN=0, ComparisonN=0, JumpN=0):
         self.__assignment_n = AssignmentN
-        self.__case_n       = CaseN
+        self.__comparison_n = ComparisonN
+        self.__jump_n       = JumpN
 
     def add(self, Other):
-        assert isinstance(Other, CombinationGain)
-        self.__addition_n   += Other.__addition_n
+        assert isinstance(Other, Cost)
         self.__assignment_n += Other.__assignment_n
-        self.__case_n       += Other.__case_n
-
-    def neg(self):
-        return CombinationGain(AdditionN   = - self.__addition_n, 
-                               AssignmentN = - self.__assignment_n, 
-                               CaseN       = - self.__case_n)
+        self.__comparison_n += Other.__comparison_n
+        self.__jump_n       += Other.__jump_n
 
     def total(self):
         """The following is only a heuristic with no claim to be perfect.
@@ -99,15 +94,15 @@ class CombinationGain:
            But, it may fail to distinguish properly between cases that 
            are close to each other in quality. So, no too much to worry about.
         """
-        result = self.__addition_n * 2 + self.__assignment_n
-        if self.__case_n == 0: return result
-        # Assume 2 core instructions for the setup of the switch case ...
-        return result + 2 + self.__case_n
-
+        result  = self.__assignment_n * 12 # Bytes (= 4 bytes command + 4 bytes address + 4 bytes value) 
+        result += self.__comparison_n * 12 # Bytes (= 4 bytes command + 4 bytes address + 4 bytes value) 
+        result += self.__jump_n       * 8  # Bytes (= 4 bytes command + 4 bytes address)
+        return result
+               
 def do(CombinedState, StateA, StateB):
     """Compute the 'gain' that results from combining entries, drop_outs
        and transition maps. We start with a multi-attribute gain as 
-       given by 'CombinationGain' objects. At the end a scalar value
+       given by 'Cost' objects. At the end a scalar value
        is computed by the '.total()' member function.
     """
     entry_gain          = __compute_gain(__entry_cost, CombinedState.entry,    
@@ -117,6 +112,19 @@ def do(CombinedState, StateA, StateB):
     transition_map_gain = __transition_map_gain(CombinedState, StateA, StateB)
 
     return (entry_gain + drop_out_gain + transition_map_gain).total()
+
+def __transition_map_gain(CombinedMap, TM_A, TM_B):
+    """Estimate the gain that can be achieved by combining two transition
+       maps into a signle one.
+    """
+    assert border_n >= same_target_n
+
+    a_cost        = __transition_cost(TM_A)
+    b_cost        = __transition_cost(TM_B)
+    combined_cost = __transition_cost(CombinedTM)
+
+    return (a_cost + b_cost) - combined_cost
+
 
 def __compute_gain(__cost, Combined, A, B):
     """Computes the gain of combining two objects 'A' and 'B' into the combined
@@ -136,53 +144,91 @@ def __compute_gain(__cost, Combined, A, B):
        adaption it is possible to treat TemplateState-s and AnalyzerState-s in
        a unified manner.
     """
-    combined = sum(map(lambda element: __cost(element[0]), get_iterable(Combined)))
+    # Cost of each object if separated in two states
     a_cost   = sum(map(lambda element: __cost(element[0]), get_iterable(A)))
     b_cost   = sum(map(lambda element: __cost(element[0]), get_iterable(B)))
+    # Cost if it is combined
+    combined = sum(map(lambda element: __cost(element[0]), get_iterable(Combined)))
 
     return (a_cost + b_cost) - combined_cost
 
 def __entry_cost(X):
     if   isinstance(X, Entry):
-        pass
+        La = len(ifilter(lambda x: x.acceptance_id != E_AcceptanceIDs.NONE, X.accepter))
+        # Number of accepter elements: if(pre-context) acceptance = ...
+        assignment_n  = La
+        goto_n        = La
+        cmp_n         = La
+        Lp = len(X.positioner)
+        # Assume that we store the positions without watching for pre-contexts
+        assignment_n += Lp
+
+        return Cost(AssignmentN = assignment_n, 
+                    ComparisonN = cmp_p, 
+                    JumpN       = goto_n).total()
 
     elif isinstance(X, EntryBackward):
-        pass
+        La = len(ifilter(lambda x: x.acceptance_id != E_AcceptanceIDs.NONE, X.accepter))
+        # Number of accepter elements: if(pre-context) acceptance = ...
+        # (No positions will ever be stored with Backward Analyzis for pre-contexts ...
+        #  remember, we go back to the initial position to start forward analyzis.)
+        return Cost(La, La, La).total()
 
     elif isinstance(X, EntryBackwardInputPositionDetection):
-        pass
+        return Cost(0, 0, 0).total()
 
 def __drop_out_cost(X):
     if   isinstance(X, DropOut):
-        La = len(X.acceptance_checker)
+        # (1) One Acceptance Check implies:
+        #        if( pre_condition == Const ) acceptance = const; 
+        #     in pseudo-assembler:
+        #        jump-if-not (pre_condition == Const) --> goto After
+        #        acceptance = Const;
+        #     After:
+        #        ...
+        La = len(ifilter(lambda x: x.acceptance_id != E_AcceptanceIDs.NONE, X.acceptance_checker))
+        assignment_n  = La
+        goto_n        = La
+        cmp_n         = La
+        # (2) Terminal Routing:
+        #         jump-if-not (acceptance == Const0 ) --> Next0
+        #         goto TerminalXY
+        #     Next0:
+        #         jump-if-not (acceptance == Const0 ) --> Next1
+        #         position = something;
+        #         goto TerminalYZ
+        #     Next1:
+        #         ...
         Lt = len(X.terminal_router)
-        assignment_n  = len(ifilter(lambda x: x.acceptance_id != E_AcceptanceIDs.NONE, X.acceptance_checker)) 
-        case_n       += La + Lt    # each case must be distinguished
-        goto_n        = Lt         # goto terminal ...
+        assignment_n += len(ifilter(lambda x:     x.position    != E_TransitionN.VOID 
+                                              and x.positioning != E_TransitionN.LEXEME_START_PLUS_ONE, 
+                            X.terminal_router))
+        cmp_p  += Lt
+        goto_n += Lt  
+
+        return Cost(AssignmentN = assignment_n, 
+                    ComparisonN = cmp_p, 
+                    JumpN       = goto_n).total()
 
     elif isinstance(X, DropOutBackward):
         # Drop outs in pre-context checks all simply transit to the begin 
         # of the forward analyzer. No difference.
-        return 0
+        return Cost(0, 0, 0).total()
 
     elif isinstance(X, DropOutBackwardInputPositionDetection):
         # Drop outs of backward input position handling either do not
         # happen or terminate input position detection.
-        return 0
+        return Cost(0, 0, 0).total()
 
     else:
         assert False
 
-def __transition_map_gain(CombinedState, StateA, StateB):
-    assert border_n >= same_target_n
-
-    avrg_interval_n   = int((len(StateA.transition_map) + len(StateB.transition_map)) / 2.0)
-    border_increase_n = border_n - avrg_interval_n
-- border_increase_n * 4 * (1.0 - same_target_ratio)
-    if border_n == 0: same_target_ratio = 1.0
-    else:             same_target_ratio = same_target_n / float(border_n)
-    # From assert above, it follows that same_target_ratio >= 0  and <= 1
-    result, scheme_list = combine_maps.do(StateA, StateB)
-    return len(result), len(scheme_list)
+def __transition_cost(TM):
+    interval_n = len(TM)
+    border_n   = interval_n - 1
+    # 
+    jump_n     = interval_n
+    cmp_n      = border_n
+    return Cost(ComparisonN=cmp_n, JumpN=jump_n).total()
 
 
