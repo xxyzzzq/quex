@@ -5,8 +5,9 @@ from   quex.engine.analyzer.core import Entry, \
                                         DropOut, \
                                         DropOutBackward, \
                                         DropOutBackwardInputPositionDetection
-from   quex.engine.analyzer.template.common       import get_iterable, get_state_list
-import quex.engine.analyzer.template.combine_maps as     combine_maps
+from   quex.engine.analyzer.template.state import TemplateState, \
+                                                  get_iterable, \
+                                                  get_state_list
 """
 (C) 2010-2011 Frank-Rene Schäfer
 
@@ -79,16 +80,18 @@ class Cost:
     """We start of with a multi-attribute cost, that is then translated into a
        scalar value through function 'total()'.
     """
-    def __init__(self, AssignmentN=0, ComparisonN=0, JumpN=0):
+    def __init__(self, AssignmentN=0, ComparisonN=0, JumpN=0, ByteN=0):
         self.__assignment_n = AssignmentN
         self.__comparison_n = ComparisonN
         self.__jump_n       = JumpN
+        self.__byte_n       = ByteN
 
     def add(self, Other):
         assert isinstance(Other, Cost)
         self.__assignment_n += Other.__assignment_n
         self.__comparison_n += Other.__comparison_n
         self.__jump_n       += Other.__jump_n
+        self.__byte_n       += Other.__byte_n
 
     def total(self):
         """The following is only a heuristic with no claim to be perfect.
@@ -96,7 +99,8 @@ class Cost:
            But, it may fail to distinguish properly between cases that 
            are close to each other in quality. So, no too much to worry about.
         """
-        result  = self.__assignment_n * 12 # Bytes (= 4 bytes command + 4 bytes address + 4 bytes value) 
+        result  = self.__byte_n
+        result += self.__assignment_n * 12 # Bytes (= 4 bytes command + 4 bytes address + 4 bytes value) 
         result += self.__comparison_n * 12 # Bytes (= 4 bytes command + 4 bytes address + 4 bytes value) 
         result += self.__jump_n       * 8  # Bytes (= 4 bytes command + 4 bytes address)
         return result
@@ -110,12 +114,12 @@ class TemplateStateCandidate(TemplateState):
         """
         TemplateState.__init__(self, StateA, StateB)
 
-        entry_gain          = self.__compute_gain(__entry_cost, self.entry,    
-                                                  StateA.entry, StateB.entry)
-        drop_out_gain       = self.__compute_gain(__drop_out_cost, self.drop_out, 
-                                                  StateA.drop_out, StateB.drop_out)
-        transition_map_gain = self.__transition_map_gain(self.transition_map, 
-                                                         StateA.transition_map, StateB.transition_map)
+        entry_gain          = __compute_gain(__entry_cost, self.entry,    
+                                             StateA.entry, StateB.entry)
+        drop_out_gain       = __compute_gain(__drop_out_cost, self.drop_out, 
+                                             StateA.drop_out, StateB.drop_out)
+        transition_map_gain = __transition_map_gain(self.transition_map, 
+                                                    StateA.transition_map, StateB.transition_map)
 
         self.__gain = (entry_gain + drop_out_gain + transition_map_gain).total()
 
@@ -135,110 +139,120 @@ class TemplateStateCandidate(TemplateState):
 
         return (a_cost + b_cost) - combined_cost
 
+def __compute_gain(__cost, Combined, A, B):
+    """Computes the gain of combining two objects 'A' and 'B' into the combined
+       object 'Combined'. Objects can be state Entry-s or state DropOut-s. By
+       means of the function 'get_iterable' a list of tuples is obtained as 
+       below:
 
-    def __compute_gain(__cost, Combined, A, B):
-        """Computes the gain of combining two objects 'A' and 'B' into the combined
-           object 'Combined'. Objects can be state Entry-s or state DropOut-s. By
-           means of the function 'get_iterable' a list of tuples is obtained as 
-           below:
+             [ ...
+               (X, [state_index_list])
+               ...
+             ]
 
-                 [ ...
-                   (X, [state_index_list])
-                   ...
-                 ]
+       The 'X' contains an unique object and 'state_index_list' contains the
+       list of indices from the original state machine that require this
+       particular object (be it 'DropOut' or 'Entry'). For original states this
+       list is, of course, simply [ (Object, [state_index]) ]. But, by this
+       adaption it is possible to treat TemplateState-s and AnalyzerState-s in
+       a unified manner.
+    """
+    # Cost of each object if separated in two states
+    a_cost   = sum(map(lambda element: __cost(element[0]), get_iterable(A)))
+    b_cost   = sum(map(lambda element: __cost(element[0]), get_iterable(B)))
+    # Cost if it is combined
+    combined = sum(map(lambda element: __cost(element[0]), get_iterable(Combined)))
 
-           The 'X' contains an unique object and 'state_index_list' contains the
-           list of indices from the original state machine that require this
-           particular object (be it 'DropOut' or 'Entry'). For original states this
-           list is, of course, simply [ (Object, [state_index]) ]. But, by this
-           adaption it is possible to treat TemplateState-s and AnalyzerState-s in
-           a unified manner.
-        """
-        # Cost of each object if separated in two states
-        a_cost   = sum(map(lambda element: __cost(element[0]), get_iterable(A)))
-        b_cost   = sum(map(lambda element: __cost(element[0]), get_iterable(B)))
-        # Cost if it is combined
-        combined = sum(map(lambda element: __cost(element[0]), get_iterable(Combined)))
+    return (a_cost + b_cost) - combined_cost
 
-        return (a_cost + b_cost) - combined_cost
+def __entry_cost(X):
+    if   isinstance(X, Entry):
+        La = len(ifilter(lambda x: x.acceptance_id != E_AcceptanceIDs.NONE, X.accepter))
+        # Number of accepter elements: if(pre-context) acceptance = ...
+        assignment_n  = La
+        goto_n        = La
+        cmp_n         = La
+        Lp = len(X.positioner)
+        # Assume that we store the positions without watching for pre-contexts
+        assignment_n += Lp
 
-    def __entry_cost(X):
-        if   isinstance(X, Entry):
-            La = len(ifilter(lambda x: x.acceptance_id != E_AcceptanceIDs.NONE, X.accepter))
-            # Number of accepter elements: if(pre-context) acceptance = ...
-            assignment_n  = La
-            goto_n        = La
-            cmp_n         = La
-            Lp = len(X.positioner)
-            # Assume that we store the positions without watching for pre-contexts
-            assignment_n += Lp
+        return Cost(AssignmentN = assignment_n, 
+                    ComparisonN = cmp_p, 
+                    JumpN       = goto_n).total()
 
-            return Cost(AssignmentN = assignment_n, 
-                        ComparisonN = cmp_p, 
-                        JumpN       = goto_n).total()
+    elif isinstance(X, EntryBackward):
+        La = len(ifilter(lambda x: x.acceptance_id != E_AcceptanceIDs.NONE, X.accepter))
+        # Number of accepter elements: if(pre-context) acceptance = ...
+        # (No positions will ever be stored with Backward Analyzis for pre-contexts ...
+        #  remember, we go back to the initial position to start forward analyzis.)
+        return Cost(La, La, La).total()
 
-        elif isinstance(X, EntryBackward):
-            La = len(ifilter(lambda x: x.acceptance_id != E_AcceptanceIDs.NONE, X.accepter))
-            # Number of accepter elements: if(pre-context) acceptance = ...
-            # (No positions will ever be stored with Backward Analyzis for pre-contexts ...
-            #  remember, we go back to the initial position to start forward analyzis.)
-            return Cost(La, La, La).total()
+    elif isinstance(X, EntryBackwardInputPositionDetection):
+        return Cost(0, 0, 0).total()
 
-        elif isinstance(X, EntryBackwardInputPositionDetection):
-            return Cost(0, 0, 0).total()
+def __drop_out_cost(X):
+    if   isinstance(X, DropOut):
+        # (1) One Acceptance Check implies:
+        #        if( pre_condition == Const ) acceptance = const; 
+        #     in pseudo-assembler:
+        #        jump-if-not (pre_condition == Const) --> goto After
+        #        acceptance = Const;
+        #     After:
+        #        ...
+        La = len(ifilter(lambda x: x.acceptance_id != E_AcceptanceIDs.NONE, X.acceptance_checker))
+        assignment_n  = La
+        goto_n        = La
+        cmp_n         = La
+        # (2) Terminal Routing:
+        #         jump-if-not (acceptance == Const0 ) --> Next0
+        #         goto TerminalXY
+        #     Next0:
+        #         jump-if-not (acceptance == Const0 ) --> Next1
+        #         position = something;
+        #         goto TerminalYZ
+        #     Next1:
+        #         ...
+        Lt = len(X.terminal_router)
+        assignment_n += len(ifilter(lambda x:     x.position    != E_TransitionN.VOID 
+                                              and x.positioning != E_TransitionN.LEXEME_START_PLUS_ONE, 
+                            X.terminal_router))
+        cmp_p  += Lt
+        goto_n += Lt  
 
-    def __drop_out_cost(X):
-        if   isinstance(X, DropOut):
-            # (1) One Acceptance Check implies:
-            #        if( pre_condition == Const ) acceptance = const; 
-            #     in pseudo-assembler:
-            #        jump-if-not (pre_condition == Const) --> goto After
-            #        acceptance = Const;
-            #     After:
-            #        ...
-            La = len(ifilter(lambda x: x.acceptance_id != E_AcceptanceIDs.NONE, X.acceptance_checker))
-            assignment_n  = La
-            goto_n        = La
-            cmp_n         = La
-            # (2) Terminal Routing:
-            #         jump-if-not (acceptance == Const0 ) --> Next0
-            #         goto TerminalXY
-            #     Next0:
-            #         jump-if-not (acceptance == Const0 ) --> Next1
-            #         position = something;
-            #         goto TerminalYZ
-            #     Next1:
-            #         ...
-            Lt = len(X.terminal_router)
-            assignment_n += len(ifilter(lambda x:     x.position    != E_TransitionN.VOID 
-                                                  and x.positioning != E_TransitionN.LEXEME_START_PLUS_ONE, 
-                                X.terminal_router))
-            cmp_p  += Lt
-            goto_n += Lt  
+        return Cost(AssignmentN = assignment_n, 
+                    ComparisonN = cmp_p, 
+                    JumpN       = goto_n).total()
 
-            return Cost(AssignmentN = assignment_n, 
-                        ComparisonN = cmp_p, 
-                        JumpN       = goto_n).total()
+    elif isinstance(X, DropOutBackward):
+        # Drop outs in pre-context checks all simply transit to the begin 
+        # of the forward analyzer. No difference.
+        return Cost(0, 0, 0).total()
 
-        elif isinstance(X, DropOutBackward):
-            # Drop outs in pre-context checks all simply transit to the begin 
-            # of the forward analyzer. No difference.
-            return Cost(0, 0, 0).total()
+    elif isinstance(X, DropOutBackwardInputPositionDetection):
+        # Drop outs of backward input position handling either do not
+        # happen or terminate input position detection.
+        return Cost(0, 0, 0).total()
 
-        elif isinstance(X, DropOutBackwardInputPositionDetection):
-            # Drop outs of backward input position handling either do not
-            # happen or terminate input position detection.
-            return Cost(0, 0, 0).total()
+    else:
+        assert False
 
-        else:
-            assert False
+def __transition_cost(TM):
+    """Computes the storage consumption of a transition map."""
+    interval_n = len(TM)
+    border_n   = interval_n - 1
+    # 
+    jump_n     = interval_n * 2  # because: if 'jump', else 'jump'
+    cmp_n      = border_n
+    # For each target scheme, the target state needs to be stored for each state_key.
+    target_scheme_n  = 0
+    involved_state_n = 0
+    for interval, target in ifilter(lambda x: isinstance(x, TargetScheme), TM):
+        if involved_state_n == 0:
+            # The number of involved states is the same for all target schemes.
+            involved_state_n = len(target.scheme)
+        target_scheme_n += 1
 
-    def __transition_cost(TM):
-        interval_n = len(TM)
-        border_n   = interval_n - 1
-        # 
-        jump_n     = interval_n
-        cmp_n      = border_n
-        return Cost(ComparisonN=cmp_n, JumpN=jump_n).total()
+    byte_n = (target_scheme_n * involved_state_n) * 4
+    return Cost(ComparisonN=cmp_n, JumpN=jump_n, ByteN=byte_n).total()
 
 
