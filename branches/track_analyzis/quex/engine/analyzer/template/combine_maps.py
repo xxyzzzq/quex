@@ -174,6 +174,12 @@ class TargetScheme(object):
     def __repr__(self):
         return repr(self.__scheme)
 
+    def __hash__(self):
+        return self.__index
+
+    def __eq__(self, Other):
+        return self.__scheme == Other.__scheme
+
 class TargetSchemeDB(dict):
     """A TargetSchemeDB keeps track of existing target state combinations.
        If a scheme appears more than once, it does not get a new index. By means
