@@ -190,6 +190,9 @@ def __entry_cost(X):
     elif isinstance(X, EntryBackwardInputPositionDetection):
         return Cost(0, 0, 0).total()
 
+    else:
+        assert False
+
 def __drop_out_cost(X):
     if   isinstance(X, DropOut):
         # (1) One Acceptance Check implies:
