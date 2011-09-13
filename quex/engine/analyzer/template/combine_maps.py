@@ -5,6 +5,24 @@ from quex.blackboard                                    import E_StateIndices
 
 import sys
 
+"""
+Transition maps of TemplateState-s function based on 'state_keys'. Those state
+keys are used as indices into TemplateTargetSchemes. The 'state_key' of a given
+state relates to the 'state_index' by
+
+    (1)    self.state_index_list[state_key] == state_index
+
+where 'state_index' is the number by which the state is identified inside
+its state machine. Correspondingly, for a given TemplateTargetScheme T 
+
+    (2)                   T[state_key]
+
+gives the target of the template if it operates for 'state_index' determined
+from 'state_key' by relation (1). The state index list approach facilitates the
+computation of target schemes. For this reason no dictionary
+{state_index->target} is used.
+"""
+
 def do(StateA, StateB):
     """RETURNS:
 

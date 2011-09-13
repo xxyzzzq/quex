@@ -167,17 +167,19 @@ import sys
 """
 
 def do(TheAnalyzer, CostCoefficient):
-    """
-       sm:              StateMachine object containing all states
+    """RETURNS: List of TemplateState-s that were identified from states in
+                TheAnalyzer.
 
-                        NOTE: The init state is **never** part of a template 
-                              combination.
+       ALGORITHM: 
 
-       CostCoefficient: Coefficient that indicates how 'costy' it is differentiate
-                        between target states when it is different in states that
-                        are combined into a template. Meaningful range: 0 to 3.
-
-       RETURNS: List of TemplateStates
+       The CombinationDB computes for all possible combinations of states A and
+       B an object of class TemplateStateCandidate. That is a template state that
+       represents the combination of A and B. By means of a call to '.combine_best()'
+       the candidate with the highest expected gain replaces the two states that 
+       it represents. This candidate enters the CombinationDB as any other state
+       and candidates of combinations with other states are computed. In this sense
+       the iteration of calls to '.combine_next()' happen until no meaningful
+       combination of states can be identified.
     """
     assert isinstance(CostCoefficient, (int, long, float))
 
@@ -219,32 +221,28 @@ class CombinationDB:
                      combination with the other states in the 'matrix' 
                      is computed.
     """
-    def __init__(self, TheAnalyzer, CostCoefficient):
-        # (1) Get the trigger maps of all states of the state machine
-        #     (Never template the init state, never template states without transition map)
-        self.__db = dict([(state_index, state) 
-                          for state_index, state in 
-                              ifilter(lambda x:     len(x[1].transition_map) != 0 
-                                                and x[1].index != Analyzer.init_state_index,
-                                      TheAnalyzer.state_db.iteritems())
-                         ])
-        self.__cost_coefficient = float(CostCoefficient)
-        self.__gain_matrix      = self.__base()
+    def __init__(self, TheAnalyzer, MinGain):
+        # Database of states that are subject to combination tries.
+        # The init state and states without transition map are excluded.
+        self.__db = dict(ifilter(lambda x:     len(x[1].transition_map) != 0 
+                                           and not x[1].init_state_f,
+                                 TheAnalyzer.state_db.iteritems()))
+        self.__min_gain    = float(MinGain)
+        self.__gain_matrix = self.__base()
 
     def combine_best(self):
         """Finds the two best matching states and combines them into one.
            If no adequate state pair can be found 'False' is returned.
            Else, 'True'.
         """
-        # Get the two best matching state candidates
-        i, k = self.pop_best_pair()
-        if i is None: return False
+        candidate = self.pop_best()
+        if candidate is None: return False
 
-        # Combine the two
-        new_index = index.get()
-        new_state = TemplateState(new_index, self.__db[i], self.__db[k])
-
-        self.enter(new_state)
+        # The 'candidate' is a TemplateStateCandidate which is derived from 
+        # TemplateState. Thus, it can play the TemplateState role without
+        # modification. Only, a meaningful index has to be assigned to it.
+        candidate.set_index(index.get())
+        self.enter(candidate)
         return True
 
     def result(self):
@@ -254,6 +252,10 @@ class CombinationDB:
         return filter(lambda x: isinstance(x, TemplateState), self.itervalues())
 
     def __base(self, StateDB):
+        """Compute TemplateStateCandidate-s for each possible combination of 
+           two states in the StateDB. If the gain of a combination is less 
+           that 'self.__min_gain' then it is not considered.
+        """
         state_list = StateDB.values()
         L          = len(state_list)
 
@@ -271,14 +273,11 @@ class CombinationDB:
         result  = [None] * MaxSize
         n       = 0
         for i, i_state in enumerate(state_list):
-            if i_state.init_state_f: continue
-
             for k_state in islice(state_list, i + 1, None):
-                if k_state.init_state_f: continue
 
                 candidate = TemplateStateCandidate(i_state, k_state)
-                if candidate.gain > 0:
-                    result[n] = candidate
+                if candidate.gain >= self.__min_gain:
+                    result[n] = (i_state.index, k_state.index, candidate)
                     n += 1
 
         if n != MaxSize:
@@ -289,7 +288,9 @@ class CombinationDB:
         return result
 
     def enter(self, NewState):
-        """Adapt the delta cost list **before** adding the trigger map to __db!"""
+        """Adapt the __gain_matrix to include candidates of combinations with
+           the NewState.
+        """
         assert isinstance(NewState, TemplateState)
 
         # Avoid extensive 'appends' by single allocation (see initial computation)
@@ -299,12 +300,10 @@ class CombinationDB:
         self.__gain_matrix.extend([None] * MaxIncrease)
 
         for state in self.__db.itervalues():
-            if state.init_state_f: continue
-
             candidate = TemplateStateCandidate(NewState, state)
 
-            if candidate.gain > 0:
-                self.__gain_matrix[n] = candidate
+            if candidate.gain >= self.__min_gain:
+                self.__gain_matrix[n] = (state.index, NewState.index, candidate)
                 n += 1
 
         if n != MaxSize:
@@ -313,34 +312,36 @@ class CombinationDB:
         self.__gain_matrix.sort(key=itemgetter(0))
         self.__db[new_index] = new_state
 
-    def pop_best_pair(self):
-        """Determines the two trigger maps that are closest to each
-           other. The consideration includes the trigger maps of
-           combined trigger maps. Thus this function supports the
-           clustering of the best trigger maps into combined trigger
-           maps.
+    def pop_best(self):
+        """Determines the two states that result in the greatest gain if they are 
+           combined into a TemplateState. 
 
-           If no pair can be found with a gain > 0, then this function
-           returns 'None, None'.
+           If no combination has a "gain >= self.__min_gain", then None
+           is returned. This is ensured, by not letting any entry enter the
+           __gain_matrix, where 'gain < self.__min_gain'.
 
-           RETURNS: (state_index_a, state_index_b) of the best matching
+           RETURNS: (state_index_a, state_index_b, candidate) of the best matching
                     pair that was registered in the matrix.
         """
-        if len(self.__gain_matrix) == 0: return (None, None)
 
-        # (0) The entry with the highest gain is at the tail of the list.
-        #     Element 0 contains the combination gain.
-        #     Element 1 and 2 contain the state indices of the states to be combined
-        i, k = self.__gain_matrix.pop()
-        self.__delete_pair(i, k)
-        return i, k
+        if len(self.__gain_matrix) == 0: return (None, None, None)
 
-    def __get_combination_candidate(self, I, K):
+        # The entry with the highest gain is at the tail of the list.
+        i, k, candidate = self.__gain_matrix.pop()
 
-    def __delete_pair(self, I, K):
-        # (1) Delete both states from the database: state-index  --> trigger_map
-        # (2) Delete all entries from the 'combination gain' list that relate
-        #     to the states 'i' and 'k'. They are no longer available.
+        # Delete related entries in __gain_matrix and database 
+        self.__gain_matrix_delete(i, k)
+        del self.__db[i]
+        del self.__db[k]
+
+        return candidate
+
+    def __gain_matrix_delete(self, I, K):
+        """Delete all related entries in the '__gain_matrix' that relate to states
+           I and K. This function is used after the decision has been made that 
+           I and K are combined into a TemplateState. None of them can be combined
+           with another state anymore.
+        """
         X = (I, K)
         L = len(self.__gain_matrix)
         p = 0
