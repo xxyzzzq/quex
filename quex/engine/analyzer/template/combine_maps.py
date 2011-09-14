@@ -1,29 +1,12 @@
 from quex.engine.generator.state_coder.transition_block import assert_adjacency
-from quex.engine.analyzer.template.common               import get_state_list
 from quex.engine.interval_handling                      import Interval
+from quex.engine.analyzer.core                          import AnalyzerState
 from quex.blackboard                                    import E_StateIndices
 
 import sys
 
-"""
-Transition maps of TemplateState-s function based on 'state_keys'. Those state
-keys are used as indices into TemplateTargetSchemes. The 'state_key' of a given
-state relates to the 'state_index' by
 
-    (1)    self.state_index_list[state_key] == state_index
-
-where 'state_index' is the number by which the state is identified inside
-its state machine. Correspondingly, for a given TemplateTargetScheme T 
-
-    (2)                   T[state_key]
-
-gives the target of the template if it operates for 'state_index' determined
-from 'state_key' by relation (1). The state index list approach facilitates the
-computation of target schemes. For this reason no dictionary
-{state_index->target} is used.
-"""
-
-def do(StateA, StateB):
+def combine_map(StateA, StateB):
     """RETURNS:
 
           -- Transition map = combined transition map of StateA and StateB.
@@ -102,6 +85,22 @@ def do(StateA, StateB):
                  2              X                  Y
                  3           Nothing               Y
 
+    -----------------------------------------------------------------------------
+    Transition maps of TemplateState-s function based on 'state_keys'. Those state
+    keys are used as indices into TemplateTargetSchemes. The 'state_key' of a given
+    state relates to the 'state_index' by
+
+        (1)    self.state_index_list[state_key] == state_index
+
+    where 'state_index' is the number by which the state is identified inside
+    its state machine. Correspondingly, for a given TemplateTargetScheme T 
+
+        (2)                   T[state_key]
+
+    gives the target of the template if it operates for 'state_index' determined
+    from 'state_key' by relation (1). The state index list approach facilitates the
+    computation of target schemes. For this reason no dictionary
+    {state_index->target} is used.
     """
     def __help(State):
         state_list = get_state_list(State)
@@ -148,7 +147,7 @@ def do(StateA, StateB):
 
     result.append((Interval(prev_end, sys.maxint), target))
 
-    return result, scheme_db.get_scheme_list()
+    return result
 
 class TargetScheme(object):
     """A target scheme contains the information about what the target
@@ -207,7 +206,7 @@ class TargetSchemeDB(dict):
     def __init__(self):
         dict.__init__(self)
         
-    def get(self, TargetScheme):
+    def get(self, Targets):
         """Checks whether the combination is already present. If so, the reference
            to the existing target scheme is returned. If not a new scheme is created
            and entered into the database.
@@ -220,13 +219,13 @@ class TargetSchemeDB(dict):
            there must be a transition to state 1, if state_key = 1, then there
            must be a 'drop-out', etc.
         """
-        assert isinstance(TargetScheme, tuple)
+        assert isinstance(Targets, tuple)
 
-        result = dict.get(self, TargetScheme)
+        result = dict.get(self, Targets)
         if result is None: 
-            new_index          = len(self)
-            result             = TargetScheme(new_index, TargetScheme)
-            self[TargetScheme] = result
+            new_index     = len(self)
+            result        = TargetScheme(new_index, Targets)
+            self[Targets] = result
         return result
 
     def get_scheme_list(self):
@@ -298,4 +297,7 @@ def __get_target(TA, StateAIndex, StateListA_Len, TB, StateBIndex, StateListB_Le
         elif TA != TB:        return scheme_db.get((TA,) * StateListA_Len + (TB,) * StateListB_Len)
         else:                 return TA # Same Target => Scalar Value
 
+def get_state_list(X): 
+    if X.__class__ == AnalyzerState: return [ X.index ]
+    else:                            return X.state_index_list 
 

@@ -33,11 +33,19 @@ def test(TriggerMapList):
 
     # Backward analyzers do not consider so much entry and drop-out ...
     analyzer = Analyzer(sm, E_EngineTypes.BACKWARD_PRE_CONTEXT)
-    print "##", analyzer
-    db       = templates.TriggerMapDB(analyzer, 1.0)
+    db       = templates.CombinationDB(analyzer, 33)
 
-    info = db.pop_best_matching_pair()
-    print "Best matching pair: ", (info[0].index, info[1].index) 
+    for element in db.gain_matrix:
+        print
+        # print_tm(element[2].transition_map)
+        print "Combination: %i & %i"  % (element[0], element[1])
+        print_metric(element[2].transition_map)
+        print "Gain:        %i" % element[2].gain
+
+    info = db.pop_best()
+    print "Best matching pair: ",
+    if info is None: print "None"
+    else:            print tuple(info.state_index_list)
 
 if "0" in sys.argv:
     trigger_map_list = [
