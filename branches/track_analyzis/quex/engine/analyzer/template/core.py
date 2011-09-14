@@ -1,12 +1,11 @@
-import quex.engine.state_machine.index            as     index
-import quex.engine.state_machine.core             as     state_machine
-import quex.engine.analyzer.template.gain         as     templates_gain
-from   quex.engine.analyzer.template.common       import get_state_list, TemplateState
-from   quex.blackboard                            import E_StateIndices
+import quex.engine.state_machine.index         as     index
+import quex.engine.state_machine.core          as     state_machine
+from   quex.engine.analyzer.template.state     import TemplateState
+from   quex.engine.analyzer.template.candidate import TemplateStateCandidate
+from   quex.blackboard                         import E_StateIndices
 
 from   collections import defaultdict
-from   itertools   import ifilter, chain
-from   operator    import itemgetter
+from   itertools   import ifilter, chain, islice
 from   copy        import copy
 import sys
 
@@ -251,12 +250,16 @@ class CombinationDB:
         """
         return filter(lambda x: isinstance(x, TemplateState), self.itervalues())
 
-    def __base(self, StateDB):
+    @property
+    def gain_matrix(self):
+        return self.__gain_matrix
+
+    def __base(self):
         """Compute TemplateStateCandidate-s for each possible combination of 
            two states in the StateDB. If the gain of a combination is less 
            that 'self.__min_gain' then it is not considered.
         """
-        state_list = StateDB.values()
+        state_list = self.__db.values()
         L          = len(state_list)
 
         # Pre-allocate the result array to avoid frequent allocations
@@ -284,7 +287,7 @@ class CombinationDB:
             del result[n:]
 
         # Sort according to delta cost
-        result.sort(key=itemgetter(0))
+        result.sort(key=lambda x: x[2].gain)
         return result
 
     def enter(self, NewState):
@@ -309,7 +312,7 @@ class CombinationDB:
         if n != MaxSize:
             del self.__gain_matrix[n:]
 
-        self.__gain_matrix.sort(key=itemgetter(0))
+        self.__gain_matrix.sort(key=lambda x: x[2].gain)
         self.__db[new_index] = new_state
 
     def pop_best(self):
@@ -320,11 +323,12 @@ class CombinationDB:
            is returned. This is ensured, by not letting any entry enter the
            __gain_matrix, where 'gain < self.__min_gain'.
 
-           RETURNS: (state_index_a, state_index_b, candidate) of the best matching
-                    pair that was registered in the matrix.
+           RETURNS: TemplateStateCandidate of combination of states with the 
+                    greatest gain. 
+                    None, if there is no more.
         """
 
-        if len(self.__gain_matrix) == 0: return (None, None, None)
+        if len(self.__gain_matrix) == 0: return None
 
         # The entry with the highest gain is at the tail of the list.
         i, k, candidate = self.__gain_matrix.pop()
@@ -362,7 +366,7 @@ class CombinationDB:
             else:
                 p += 1
 
-        return i, k
+        return 
 
     def __len__(self):
         return len(self.__db)

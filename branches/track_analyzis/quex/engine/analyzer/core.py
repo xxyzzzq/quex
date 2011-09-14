@@ -554,8 +554,8 @@ class AnalyzerState(object):
     def target_index_list(self):    return self.__target_index_list
 
     def get_string_array(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
-        txt = [ "State %i:\n" % self.index ]
-        if InputF:         txt.append("  .input: move position %i\n" % self.input.move_input_position())
+        txt = [ "State %s:\n" % repr(self.index) ]
+        if InputF:         txt.append("  .input: move position %s\n" % repr(self.input))
         if EntryF:         txt.append("  .entry:\n"); txt.append(repr(self.entry))
         if TransitionMapF: txt.append("  .transition_map:\n")
         if DropOutF:       txt.extend(["  .drop_out:\n",    repr(self.drop_out)])

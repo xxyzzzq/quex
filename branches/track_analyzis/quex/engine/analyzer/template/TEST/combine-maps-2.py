@@ -4,9 +4,12 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
+import quex.engine.analyzer.template.combine_maps       as combine_maps
+import quex.engine.analyzer.template.core               as templates
+from   quex.engine.analyzer.template.state              import TemplateState
+from   quex.engine.analyzer.template.TEST.templates_aux import *
+
 from   quex.engine.interval_handling import *
-import quex.engine.state_machine.compression.templates as templates 
-from   quex.engine.state_machine.compression.TEST.templates_aux import *
 
 
 if "--hwut-info" in sys.argv:
@@ -14,29 +17,47 @@ if "--hwut-info" in sys.argv:
     print "CHOICES: 1, 2, recursive, recursive-2, recursive-3;"
     sys.exit(0)
 
+class TestTemplateState(TemplateState):
+    def __init__(self, TriggerMap, StateIndexList):
+        self.__transition_map = TriggerMap
+        self.__state_index_list = StateIndexList
+
+    @property 
+    def transition_map(self): return self.__transition_map
+    @property
+    def state_index_list(self): return self.__state_index_list
+
+class TestState:
+    def __init__(self, TM, Index=None, StateIndexList=None):
+        self.transition_map = TM
+        self.index          = Index
+        self.state_index_list = StateIndexList
+
 def test(TriggerMapA, StateN_A, TriggerMapB, StateN_B, DoNotMakeCombinationF=True):
     StateListA = range(10, 10 + StateN_A)
-    if StateN_A > 1: CombinationA = get_combination(TriggerMapA, StateListA)
-    else:            CombinationA = TriggerMapA
+    if StateN_A > 1: CombinationA = TestTemplateState(TriggerMapA, StateListA)
+    else:            CombinationA = TestState(TriggerMapA, 10)
+
     StateListB = range(20, 20 + StateN_B)
-    if StateN_B > 1: CombinationB = get_combination(TriggerMapB, StateListB)
-    else:            CombinationB = TriggerMapB
+    if StateN_B > 1: CombinationB = TestTemplateState(TriggerMapB, StateListB)
+    else:            CombinationB = TestState(TriggerMapB, 20)
 
     print
     print "(Straight)---------------------------------------"
     print
-    print_tm(CombinationA)
-    print_tm(CombinationB)
+    print_tm(TriggerMapA)
+    print_tm(TriggerMapB)
     print
-    result = templates.get_combined_trigger_map(CombinationA, StateListA, CombinationB, StateListB)
+    result = combine_maps.do(CombinationA, CombinationB)
     print_tm(result)
     print
     print "(Vice Versa)-------------------------------------"
     print
-    print_tm(CombinationB)
-    print_tm(CombinationA)
+    print_tm(TriggerMapB)
+    print_tm(TriggerMapA)
     print
-    print_tm(templates.get_combined_trigger_map(CombinationB, StateListB, CombinationA, StateListA))
+    result = combine_maps.do(CombinationB, CombinationA)
+    print_tm(result)
     print
 
 tm0 = [ 

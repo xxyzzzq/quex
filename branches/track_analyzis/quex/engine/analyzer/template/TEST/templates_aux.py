@@ -1,4 +1,6 @@
 import quex.engine.analyzer.template.core as templates 
+from   quex.engine.analyzer.template.combine_maps import TargetScheme
+from   quex.engine.analyzer.template.combine_maps import TargetScheme
 from   operator import attrgetter
 
 def get_combination(TriggerMap, StateList):
@@ -46,12 +48,21 @@ def print_tm(TM):
 
     txt = ""
     for info in TM:
-        if type(info[1]) != list: txt += "%i, " % info[1]
-        else:                     txt += "%s, " % repr(info[1])
+        if not isinstance(info[1], TargetScheme): txt += "%s, " % repr(info[1]).replace("L", "")
+        else:                                     txt += "%s, " % repr(info[1].scheme)
     txt = txt[:-2] + ";"
     print "   " + txt
 
-def print_metric(M):
-    print "BorderN    = %i" % (len(M[0]) - 1)
-    print "TargetComb = %s" % str(sorted(M[1], key=attrgetter("scheme")))[1:-1].replace("[", "(").replace("]", ")")
+def print_metric(TM):
+    def get_target_scheme_list(TM):
+        result = []
+        for interval, target in TM:
+            if isinstance(target, TargetScheme):
+                result.append(target)
+        return result
+
+    SL = get_target_scheme_list(TM)
+
+    print "BorderN    = %i" % (len(TM) - 1)
+    print "TargetComb = %s" % str(sorted(SL, key=attrgetter("scheme")))[1:-1].replace("[", "(").replace("]", ")")
 
