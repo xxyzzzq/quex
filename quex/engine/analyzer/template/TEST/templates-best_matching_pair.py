@@ -37,7 +37,7 @@ def test(TriggerMapList):
 
     for element in db.gain_matrix:
         print
-        print_tm(element[2].transition_map)
+        ## print_tm(element[2].transition_map)
         print "Combination: %i & %i"  % (element[0], element[1])
         print_metric(element[2].transition_map)
         print "##Gain:        %i" % element[2].gain
