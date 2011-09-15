@@ -14,24 +14,26 @@ if "--hwut-info" in sys.argv:
     print "CHOICES: 1, 2, 2b, 3, 4, recursive;"
     sys.exit(0)
 
-def test(TriggerMapA, TriggerMapB, StateListA=[10L], StateListB=[20L]):
-    CombinationA = get_combination(TriggerMapA, StateListA)
-    CombinationB = get_combination(TriggerMapB, StateListB)
+def test(TriggerMapA, TriggerMapB, StateListA=[10L], StateListB=[20L], UniformEntriesF=True):
+    StateA = TestTemplateState(TriggerMapA, StateListA)
+    StateB = TestTemplateState(TriggerMapB, StateListB)
 
     print
     print "(Straight)---------------------------------------"
     print
-    print_tm(CombinationA)
-    print_tm(CombinationB)
+    print_tm(StateA)
+    print_tm(StateB)
     print
-    print_metric(templates.get_metric(CombinationA, StateListA, CombinationB, StateListB))
+    result = combine_maps(StateA, StateB, UniformEntriesF)
+    print_metric(result)
     print
     print "(Vice Versa)-------------------------------------"
     print
-    print_tm(CombinationB)
-    print_tm(CombinationA)
+    print_tm(StateB)
+    print_tm(StateA)
     print
-    print_metric(templates.get_metric(CombinationB, StateListB, CombinationA, StateListA))
+    result = combine_maps(StateB, StateA, UniformEntriesF)
+    print_metric(result)
     print
 
 tm0 = [ 
