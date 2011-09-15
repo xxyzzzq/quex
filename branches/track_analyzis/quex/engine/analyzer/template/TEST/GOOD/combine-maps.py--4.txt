@@ -5,7 +5,7 @@
 |                   |                  |    2, 1;
 
 BorderN    = 1
-TargetComb = (2L, 1L)
+TargetComb = (2, 1)
 
 (Vice Versa)-------------------------------------
 
@@ -13,5 +13,5 @@ TargetComb = (2L, 1L)
 |                                      |    2;
 
 BorderN    = 1
-TargetComb = (1L, 2L)
+TargetComb = (1, 2)
 

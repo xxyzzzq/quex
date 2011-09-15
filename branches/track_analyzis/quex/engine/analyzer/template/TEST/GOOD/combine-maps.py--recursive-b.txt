@@ -10,7 +10,7 @@ BUT: HERE STATE ENTRIES ARE NOT UNIFORM --> NO RECURSION DETECTION
 |                                      |    2;
 
 BorderN    = 1
-TargetComb = (1L, 2L)
+TargetComb = (1, 2)
 
 (Vice Versa)-------------------------------------
 
@@ -18,5 +18,5 @@ TargetComb = (1L, 2L)
 |         |                            |    1, 2;
 
 BorderN    = 1
-TargetComb = (2L, 1L)
+TargetComb = (2, 1)
 

@@ -45,7 +45,7 @@ def test(TriggerMapList):
     info = db.pop_best()
     print "Best matching pair: ",
     if info is None: print "None"
-    else:            print tuple(info.state_index_list)
+    else:            print str(tuple(info.state_index_list)).replace("L", "")
 
 if "0" in sys.argv:
     trigger_map_list = [

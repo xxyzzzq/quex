@@ -20,13 +20,13 @@ class TestState:
         self.index          = Index
 
 def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L], UniformEntryF=True):
+    StateA = TestState(TMa, InvolvedStateListA[0])
+    StateB = TestState(TMb, InvolvedStateListB[0])
     print
     print "(Straight)---------------------------------------"
     print
     print_tm(TMa)
     print_tm(TMb)
-    StateA = TestState(TMa, InvolvedStateListA[0])
-    StateB = TestState(TMb, InvolvedStateListB[0])
     print
     print_metric(combine_maps(StateA, StateB, UniformEntryF))
     print
