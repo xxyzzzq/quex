@@ -1,6 +1,6 @@
 
 Combination: 1 & 2
 BorderN    = 5
-TargetComb = (10L, 11L), (20L, 21L), (30L, 31L), (40L, 41L)
+TargetComb = (10, 11), (20, 21), (30, 31), (40, 41)
 ##Gain:        188
-Best matching pair:  (1L, 2L)
+Best matching pair:  (1, 2)

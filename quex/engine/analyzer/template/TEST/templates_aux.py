@@ -5,6 +5,10 @@ from   operator import attrgetter
 class TestTemplateState(TemplateState):
     def __init__(self, TriggerMap, StateIndexList):
         self.__transition_map   = TriggerMap
+        for i, element in enumerate(self.__transition_map):
+            if isinstance(element[1], list):
+                self.__transition_map[i] = (element[0], tuple(element[1]))
+
         self.__state_index_list = StateIndexList
 
     @property 
@@ -80,7 +84,8 @@ def print_metric(TM):
         return result
 
     SL = get_target_scheme_list(TM)
+    SL.sort(key=attrgetter("scheme"))
 
     print "BorderN    = %i" % (len(TM) - 1)
-    print "TargetComb = %s" % str(sorted(SL, key=attrgetter("scheme")))[1:-1].replace("[", "(").replace("]", ")")
+    print "TargetComb = %s" % str(SL)[1:-1].replace("[", "(").replace("]", ")").replace("L", "")
 

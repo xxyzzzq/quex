@@ -3,10 +3,12 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-
+from   quex.engine.analyzer.template.state              import combine_maps
+from   quex.engine.analyzer.template.TEST.templates_aux import *
 from   quex.engine.interval_handling import *
-import quex.engine.state_machine.compression.templates as templates 
-from   quex.engine.state_machine.compression.TEST.templates_aux import *
+
+from   quex.blackboard  import E_StateIndices
+
 
 
 if "--hwut-info" in sys.argv:
@@ -21,16 +23,16 @@ def test(TriggerMapA, TriggerMapB, StateListA=[10L], StateListB=[20L], UniformEn
     print
     print "(Straight)---------------------------------------"
     print
-    print_tm(StateA)
-    print_tm(StateB)
+    print_tm(TriggerMapA)
+    print_tm(TriggerMapB)
     print
     result = combine_maps(StateA, StateB, UniformEntriesF)
     print_metric(result)
     print
     print "(Vice Versa)-------------------------------------"
     print
-    print_tm(StateB)
-    print_tm(StateA)
+    print_tm(TriggerMapB)
+    print_tm(TriggerMapA)
     print
     result = combine_maps(StateB, StateA, UniformEntriesF)
     print_metric(result)
@@ -86,7 +88,7 @@ elif "recursive" in sys.argv:
     print "Involved states in First  = [10L, 11L]"
     print "Involved states in Second = [20L, 21L]"
     tm1 = [ 
-            (Interval(-sys.maxint, sys.maxint), -2L),
+            (Interval(-sys.maxint, sys.maxint), E_StateIndices.RECURSIVE),
           ]
     test(tm0, tm1, [10L, 11L], [20L, 21L])
 
