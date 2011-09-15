@@ -6,9 +6,9 @@ from   quex.engine.analyzer.core import Entry, \
                                         DropOutBackward, \
                                         DropOutBackwardInputPositionDetection
 from   quex.engine.analyzer.template.state import TemplateState, \
+                                                  TargetScheme, \
                                                   get_iterable, \
                                                   get_state_list
-from   quex.engine.analyzer.template.combine_maps import TargetScheme
 from   quex.blackboard import E_AcceptanceIDs, \
                               E_TransitionN
 

@@ -1,7 +1,25 @@
-import quex.engine.analyzer.template.core as templates 
-from   quex.engine.analyzer.template.combine_maps import TargetScheme
-from   quex.engine.analyzer.template.combine_maps import TargetScheme
+import quex.engine.analyzer.template.core  as templates 
+from   quex.engine.analyzer.template.state import TargetScheme, TemplateState
 from   operator import attrgetter
+
+class TestTemplateState(TemplateState):
+    def __init__(self, TriggerMap, StateIndexList):
+        self.__transition_map   = TriggerMap
+        self.__state_index_list = StateIndexList
+
+    @property 
+    def transition_map(self): return self.__transition_map
+    @property
+    def state_index_list(self): return self.__state_index_list
+    @property
+    def index(self): return None
+
+
+class TestState:
+    def __init__(self, TM, Index=None, StateIndexList=None):
+        self.transition_map = TM
+        self.index          = Index
+        self.state_index_list = StateIndexList
 
 def get_combination(TriggerMap, StateList):
     """Creates A Template Combination Object for the given Trigger Map
@@ -49,7 +67,7 @@ def print_tm(TM):
     txt = ""
     for info in TM:
         if not isinstance(info[1], TargetScheme): txt += "%s, " % repr(info[1]).replace("L", "")
-        else:                                     txt += "%s, " % repr(info[1].scheme)
+        else:                                     txt += "%s, " % repr(info[1].scheme).replace("L", "")
     txt = txt[:-2] + ";"
     print "   " + txt
 
