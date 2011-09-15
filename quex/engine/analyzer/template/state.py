@@ -1,7 +1,11 @@
-from   quex.engine.analyzer.core import AnalyzerState
+from quex.engine.generator.state_coder.transition_block import assert_adjacency
+from quex.engine.interval_handling                      import Interval
+from quex.engine.analyzer.core                          import AnalyzerState
+from quex.blackboard                                    import E_StateIndices
 
 from itertools   import chain
 from collections import defaultdict
+import sys
 
 class TemplateState(AnalyzerState):
     """A TemplateState is a state that is implemented to represent two states.
@@ -33,7 +37,7 @@ class TemplateState(AnalyzerState):
         #
         #      target[i] = target of state 'state_index_list[i]' for interval X.
         #
-        self.__transition_map   = combine_maps(StateA, StateB)
+        self.__transition_map   = combine_maps(StateA, StateB, UniformEntryF=len(self.__entry) == 1)
         self.__state_index_list = get_state_list(StateA) + get_state_list(StateB)
         # Compatible with AnalyzerState
         self.input              = None
@@ -94,12 +98,18 @@ def combine_scheme(StateIndexA, A, StateIndexB, B):
         result[element].extend(state_index_list)
     return result
 
-def combine_map(StateA, StateB):
+def combine_maps(StateA, StateB, UniformEntryF):
     """RETURNS:
 
           -- Transition map = combined transition map of StateA and StateB.
 
           -- List of target schemes that have been identified.
+
+       NOTE: 
+
+       If the entries of both states are uniform, then a transition to itself
+       of both states can be implemented as a recursion of the template state
+       without knowing the particular states.
 
        EXPLANATION:
     
@@ -190,21 +200,22 @@ def combine_map(StateA, StateB):
     computation of target schemes. For this reason no dictionary
     {state_index->target} is used.
     """
+    assert isinstance(UniformEntryF, bool)
+
     def __help(State):
-        state_list = get_state_list(State)
         tm         = State.transition_map
         assert_adjacency(tm, TotalRangeF=True)
-        return state_list, len(state_list), tm, len(tm)
+        return tm, len(tm)
 
-    StateListA, StateListA_Len, TransitionMapA, LenA = __help(StateA)
-    StateListB, StateListB_Len, TransitionMapB, LenB = __help(StateB)
+    TransitionMapA, LenA = __help(StateA)
+    TransitionMapB, LenB = __help(StateB)
 
     i  = 0 # iterator over TransitionMapA
     k  = 0 # iterator over TransitionMapB
 
     # Intervals in trigger map are always adjacent, so the '.begin' member is
     # not required.
-    scheme_db = TargetSchemeDB()
+    scheme_db = TargetSchemeDB(StateA, StateB, UniformEntryF)
     result    = []
     prev_end  = - sys.maxint
     while not (i == LenA - 1 and k == LenB - 1):
@@ -217,9 +228,7 @@ def combine_map(StateA, StateB):
         k_target  = k_trigger[1]
 
         end       = min(i_end, k_end)
-        target    = __get_target(i_target, StateA.index, StateListA_Len,
-                                 k_target, StateB.index, StateListB_Len,
-                                 scheme_db)
+        target    = scheme_db.get_target(i_target, k_target)
 
         result.append((Interval(prev_end, end), target))
         prev_end  = end
@@ -229,9 +238,7 @@ def combine_map(StateA, StateB):
         else:                k += 1;
 
     # Treat the last trigger interval
-    target = __get_target(TransitionMapA[-1][1], StateA.index, StateListA_Len,
-                          TransitionMapB[-1][1], StateB.index, StateListB_Len,
-                          scheme_db)
+    target = scheme_db.get_target(TransitionMapA[-1][1], TransitionMapB[-1][1])
 
     result.append((Interval(prev_end, sys.maxint), target))
 
@@ -291,8 +298,15 @@ class TargetSchemeDB(dict):
        of the index it is possible to avoid multiple definitions of the same 
        scheme, later.
     """
-    def __init__(self):
+    def __init__(self, StateA, StateB, UniformEntryF):
         dict.__init__(self)
+        self.__state_a_index                   = StateA.index
+        self.__state_a_state_index_list        = get_state_list(StateA)
+        self.__state_a_state_index_list_length = len(self.__state_a_state_index_list)
+        self.__state_b_index                   = StateB.index
+        self.__state_b_state_index_list        = get_state_list(StateB)
+        self.__state_b_state_index_list_length = len(self.__state_b_state_index_list)
+        self.__uniform_entries_f               = UniformEntryF
         
     def get(self, Targets):
         """Checks whether the combination is already present. If so, the reference
@@ -319,71 +333,90 @@ class TargetSchemeDB(dict):
     def get_scheme_list(self):
         return self.values()
 
-def __get_target(TA, StateAIndex, StateListA_Len, TB, StateBIndex, StateListB_Len, scheme_db):
-    """Generate a target entry for a transition map of combined transition maps
-       of StateA and StateB. 
+    def get_target(self, TA, TB):
+        """Generate a target entry for a transition map of combined transition maps
+           of StateA and StateB. 
 
-           TA, TB = Targets of StateA and StateB for one particular character
-                    interval.
+               TA, TB = Targets of StateA and StateB for one particular character
+                        interval.
 
-       RETURNS: 
-       
-       An object that tells for what states trigger here to what target state.
-       That is:
+           RETURNS: 
+           
+           An object that tells for what states trigger here to what target state.
+           That is:
 
-        -- E_StateIndices.RECURSIVE
+            -- E_StateIndices.RECURSIVE
 
-           All related states trigger here to itself.  Thus, the template
-           combination triggers to itself.
+               All related states trigger here to itself.  Thus, the template
+               combination triggers to itself.
 
-        -- A scalar integer 'T'
+            -- A scalar integer 'T'
 
-           All related states trigger to the same target state whose state
-           index is given by the integer T.
+               All related states trigger to the same target state whose state
+               index is given by the integer T.
 
-        -- A list of integers 'TL'
+            -- A list of integers 'TL'
 
-           States trigger to different targets. The target state of an involved
-           state with index 'X' is 
+               States trigger to different targets. The target state of an involved
+               state with index 'X' is 
 
-                                  TL[i]
+                                      TL[i]
 
-           provided that 
+               provided that 
 
-                    (StateListA + StateListB)[i] == X
+                        (StateListA + StateListB)[i] == X
 
-           The 'schemes' may be the same for multiple intervals.  Thus, they
-           are store in TargetScheme objects.  This is accomplished by
-           function 'TargetSchemeDB.get()'.
-    """
-    recursion_n = 0
-    # IS RECURSIVE ?
-    # -- In a 'normal trigger map' the target needs to be equal to the
-    #   state that it contains.
-    # -- In a trigger map combination, the recursive target is 
-    #    identifier by the value 'E_StateIndices.SAME_STATE'.
-    if TA == StateAIndex: TA = E_StateIndices.RECURSIVE
-    if TB == StateBIndex: TB = E_StateIndices.RECURSIVE
+               The 'schemes' may be the same for multiple intervals.  Thus, they
+               are store in TargetScheme objects.  This is accomplished by
+               function 'TargetSchemeDB.get()'.
+        """
+        assert isinstance(TA, (long, tuple)) or TA in E_StateIndices, "%s" % TA.__class__.__name__
+        assert isinstance(TB, (long, tuple)) or TB in E_StateIndices, "%s" % TB.__class__.__name__
 
-    # If both transitions are recursive, then the template will
-    # contain only a 'recursion flag'. 
-    if TA == E_StateIndices.RECURSIVE and TB == E_StateIndices.RECURSIVE:
-        return E_StateIndices.RECURSIVE
+        StateAIndex = self.__state_a_index
+        StateListA  = self.__state_a_state_index_list
+        StateBIndex = self.__state_b_index
+        StateListB  = self.__state_b_state_index_list
 
-    # Here: At least one of the targets is not recursive, so we need to expand
-    #       any RECURSIVE target to a list of target state indices.
-    if TA == E_StateIndices.RECURSIVE: TA = StateAIndex
-    if TB == E_StateIndices.RECURSIVE: TB = StateBIndex
+        # IS RECURSIVE ?
+        # -- In a 'normal trigger map' the target needs to be equal to the
+        #   state that it contains.
+        # -- In a trigger map combination, the recursive target is 
+        #    identifier by the value 'E_StateIndices.SAME_STATE'.
+        # (If a "StateIndex is None" then it must be a TemplateStateCandidate.
+        #  Those cannot be recursive, except explicitly by a target = E_StateIndices.RECURSIVE)
+        if self.__uniform_entries_f:
+            if StateAIndex is not None and TA == StateAIndex: TA = E_StateIndices.RECURSIVE
+            if StateBIndex is not None and TB == StateBIndex: TB = E_StateIndices.RECURSIVE
 
-    # T = list   -> combination is a 'involved state list'.
-    # T = scalar -> same target state for TargetCombinationN in all cases.
-    if type(TA) == tuple:
-        if type(TB) == tuple: return scheme_db.get(TA                     +  TB                   )
-        else:                 return scheme_db.get(TA                     + (TB,) * StateListB_Len)
-    else:
-        if type(TB) == tuple: return scheme_db.get((TA,) * StateListA_Len +  TB                   )
-        elif TA != TB:        return scheme_db.get((TA,) * StateListA_Len + (TB,) * StateListB_Len)
-        else:                 return TA # Same Target => Scalar Value
+            # If both transitions are recursive, then the template will
+            # contain only a 'recursion flag'. 
+            if TA == E_StateIndices.RECURSIVE and TB == E_StateIndices.RECURSIVE:
+                return E_StateIndices.RECURSIVE
+
+        # Here: At least one of the targets is not recursive, so we need to expand
+        #       any RECURSIVE target to a list of target state indices. For recursive
+        #       states, the target states are the states itself in the order they
+        #       are listed in 'state_index_list'.
+        if TA == E_StateIndices.RECURSIVE: 
+            if len(StateListA) == 1: TA = StateListA[0]
+            else:                    TA = tuple(StateListA)
+        if TB == E_StateIndices.RECURSIVE: 
+            if len(StateListB) == 1: TB = StateListB[0]
+            else:                    TB = tuple(StateListB)
+
+        # T = list   -> combination is a 'involved state list'.
+        # T = scalar -> same target state for TargetCombinationN in all cases.
+        StateListA_Len = self.__state_a_state_index_list_length
+        StateListB_Len = self.__state_b_state_index_list_length
+
+        if type(TA) == tuple:
+            if type(TB) == tuple: return self.get(TA                     +  TB                   )
+            else:                 return self.get(TA                     + (TB,) * StateListB_Len)
+        else:
+            if type(TB) == tuple: return self.get((TA,) * StateListA_Len +  TB                   )
+            elif TA != TB:        return self.get((TA,) * StateListA_Len + (TB,) * StateListB_Len)
+            else:                 return TA # Same Target => Scalar Value
 
 def get_state_list(X): 
     if isinstance(X, TemplateState): return X.state_index_list 
