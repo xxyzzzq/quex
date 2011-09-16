@@ -66,10 +66,15 @@ elif "2b" in sys.argv:
 
 elif "3" in sys.argv:
     tm1 = [ 
+            # (Interval(-sys.maxint, 5),  [20L, 21L]),
+            # (Interval(5, 15),           [30L, 31L]),
+            # (Interval(20, 25),          [40L, 41L]),
+            # (Interval(25, 30),          [50L, 51L]),
+            # (Interval(35, sys.maxint),  [10L, 20L]),
             (Interval(-sys.maxint, 5),  [20L, 21L]),
-            (Interval(5, 15),           [30L, 31L]),
+            (Interval(5, 20),           [30L, 31L]),
             (Interval(20, 25),          [40L, 41L]),
-            (Interval(25, 30),          [50L, 51L]),
+            (Interval(25, 35),          [50L, 51L]),
             (Interval(35, sys.maxint),  [10L, 20L]),
           ]
     test(tm0, tm1)
