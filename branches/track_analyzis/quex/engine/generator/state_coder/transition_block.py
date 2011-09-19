@@ -12,12 +12,16 @@ from   itertools import imap
 def do(txt, TransitionMap, 
        StateIndex       = None,  EngineType     = E_EngineTypes.FORWARD, 
        InitStateF       = False, 
-       ReturnToState_Str= None,  GotoReload_Str = None):
+       OnReloadOK_Str   = None,  
+       GotoReload_Str   = None, 
+       OnReloadFail_Str = None,  
+       TheAnalyzer      = None):
     assert isinstance(TransitionMap, list)
     assert EngineType        in E_EngineTypes
     assert isinstance(InitStateF, bool)
     assert StateIndex        is None or isinstance(StateIndex, (int, long))
-    assert ReturnToState_Str is None or isinstance(ReturnToState_Str, (str, unicode))
+    assert OnReloadOK_Str    is None or isinstance(OnReloadOK_Str, (str, unicode))
+    assert OnReloadFail_Str  is None or isinstance(OnReloadFail_Str, (str, unicode))
     assert GotoReload_Str    is None or isinstance(GotoReload_Str, (str, unicode))
     assert_adjacency(TransitionMap)
 
@@ -42,7 +46,8 @@ def do(txt, TransitionMap,
     # All transition information related to intervals become proper objects of 
     # class TransitionCode.
     transition_map = [ (entry[0], transition_code.do(entry[1], StateIndex, InitStateF, EngineType, 
-                                                     ReturnToState_Str, GotoReload_Str)) 
+                                                     OnReloadOK_Str, GotoReload_Str, OnReloadFail_Str, 
+                                                     TheAnalyzer)) 
                        for entry in TransitionMap ]
 
     txt.extend(__get_code(transition_map))
@@ -268,10 +273,10 @@ def __get_switch(txt, TriggerMap):
     for interval, target in TriggerMap:
         if target.drop_out_f: continue
         target_code = target.code
-        for i in range(interval.begin, interval.end):
-            case_code_list.append((i, target_code))
+        case_code_list.append((range(interval.begin, interval.end), target_code))
 
     txt.extend(LanguageDB.SELECTION("input", case_code_list))
+    txt.append("\n")
     return True
 
 def __get_switch_cases_info(TriggerMap):

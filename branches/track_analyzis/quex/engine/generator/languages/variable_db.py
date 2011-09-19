@@ -40,7 +40,7 @@ candidate_db = {
 # (*) Template Compression
 "template_state_key":                       ["ptrdiff_t",                     "(ptrdiff_t)0",           False],
 "template_%i_target_%i":                    ["const QUEX_TYPE_GOTO_LABEL",    None,                     False],
-"template_%i_map_state_key_to_state_index": ["const QUEX_TYPE_GOTO_LABEL",    None,                     False],
+"template_%i_map_state_key_to_entry_index": ["const QUEX_TYPE_GOTO_LABEL",    None,                     False],
 #
 # (*) Skipper etc.
 "reference_p":                    ["QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", False],

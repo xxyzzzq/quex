@@ -6,7 +6,7 @@ from   quex.blackboard import setup as Setup, \
 
 from   itertools import imap
 
-def do(txt, TheState, TheAnalyzer):
+def do(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
     """Writes code for the state entry into 'txt'.
 
        RETURNS: True -- if further code for the transition block and the 
@@ -16,8 +16,9 @@ def do(txt, TheState, TheAnalyzer):
     LanguageDB          = Setup.language_db
     PositionRegisterMap = TheAnalyzer.position_register_map
 
-    if  (not TheState.init_state_f) or \
-        (TheState.engine_type == E_EngineTypes.BACKWARD_INPUT_POSITION): 
+    if      UnreachablePrefixF \
+        and (    (not TheState.init_state_f) \
+              or (TheState.engine_type == E_EngineTypes.BACKWARD_INPUT_POSITION)): 
         txt.append("\n\n    %s\n" % LanguageDB.UNREACHABLE)
     else:
         txt.append("\n\n")
@@ -25,7 +26,7 @@ def do(txt, TheState, TheAnalyzer):
     entry = TheState.entry
 
     if isinstance(entry, Entry):
-        _doors(txt, TheState, PositionRegisterMap)
+        _doors(txt, TheState, PositionRegisterMap, LabelF)
         _accepter(txt, TheState.entry.get_accepter())
 
     elif isinstance(entry, EntryBackward):
@@ -39,12 +40,12 @@ def do(txt, TheState, TheAnalyzer):
         LanguageDB.STATE_ENTRY(txt, TheState, BIPD_ID=TheAnalyzer.state_machine_id)
     return True
 
-def _doors(txt, TheState, PositionRegisterMap):
+def _doors(txt, TheState, PositionRegisterMap, LabelF):
     LanguageDB = Setup.language_db
     TheEntry   = TheState.entry
 
     if len(TheEntry.positioner_db) == 0:
-        LanguageDB.STATE_ENTRY(txt, TheState)
+        if LabelF: LanguageDB.STATE_ENTRY(txt, TheState)
         return
 
     def __do(txt, Positioner):
@@ -58,23 +59,23 @@ def _doors(txt, TheState, PositionRegisterMap):
                 " %s" % LanguageDB.ASSIGN(LanguageDB.POSITION_REGISTER(register), LanguageDB.INPUT_P), 
             )
 
-    if TheEntry.is_uniform():
+    if TheEntry.is_independent_of_source_state():
         # (*) Uniform state entries from all entering states.
-        #     Assume that 'GOTO' can identify its uniform target states. Thus, no separate
+        #     Assume that 'GOTO' can identify its independent_of_source_state target states. Thus, no separate
         #     entries are required.
-        for from_state_index, positioner in TheEntry.positioner_db.iteritems():
-            LanguageDB.STATE_ENTRY(txt, TheState, from_state_index, NewlineF=False)
-            txt.append("%s\n" % LanguageDB.GOTO(TheState.index))
-        LanguageDB.STATE_ENTRY(txt, TheState)
-        __do(txt, TheEntry.uniform_positioner())
+        ##for from_state_index, positioner in TheEntry.positioner_db.iteritems():
+        ##    LanguageDB.STATE_ENTRY(txt, TheState, from_state_index, NewlineF=False)
+        ##    txt.append("%s\n" % LanguageDB.GOTO(TheState.index))
+        if LabelF: LanguageDB.STATE_ENTRY(txt, TheState)
+        __do(txt, TheEntry.positioner_prototype())
         return
     else:
-        # (*) Non-uniform state entries
+        # (*) Non-independent_of_source_state state entries
         for from_state_index, positioner in TheEntry.get_positioner_db().iteritems():
             LanguageDB.STATE_ENTRY(txt, TheState, from_state_index, NewlineF=False)
             __do(txt, positioner)
             txt.append(" %s\n" % LanguageDB.GOTO(TheState.index))
-        LanguageDB.STATE_ENTRY(txt, TheState)
+        if LabelF: LanguageDB.STATE_ENTRY(txt, TheState)
 
 def _accepter(txt, Accepter):
     LanguageDB = Setup.language_db

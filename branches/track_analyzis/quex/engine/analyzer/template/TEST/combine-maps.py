@@ -28,14 +28,14 @@ def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L], UniformEn
     print_tm(TMa)
     print_tm(TMb)
     print
-    print_metric(combine_maps(StateA, StateB, UniformEntryF))
+    print_metric(combine_maps(StateA, StateB, UniformEntryF)[0])
     print
     print "(Vice Versa)-------------------------------------"
     print
     print_tm(TMb)
     print_tm(TMa)
     print
-    print_metric(combine_maps(StateB, StateA,  UniformEntryF))
+    print_metric(combine_maps(StateB, StateA,  UniformEntryF)[0])
     print
 
 tm0 = [ 

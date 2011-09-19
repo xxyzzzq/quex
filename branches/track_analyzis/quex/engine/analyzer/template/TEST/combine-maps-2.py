@@ -33,7 +33,7 @@ def test(TriggerMapA, StateN_A, TriggerMapB, StateN_B, UniformEntriesF=True):
     print "States: %s" % StateListB
     print_tm(TriggerMapB)
     print
-    result = combine_maps(CombinationA, CombinationB, UniformEntriesF)
+    result = combine_maps(CombinationA, CombinationB, UniformEntriesF)[0]
     print_tm(result)
     print
     print "(Vice Versa)-------------------------------------"
@@ -43,7 +43,7 @@ def test(TriggerMapA, StateN_A, TriggerMapB, StateN_B, UniformEntriesF=True):
     print "States: %s" % StateListA
     print_tm(TriggerMapA)
     print
-    result = combine_maps(CombinationB, CombinationA, UniformEntriesF)
+    result = combine_maps(CombinationB, CombinationA, UniformEntriesF)[0]
     print_tm(result)
     print
 

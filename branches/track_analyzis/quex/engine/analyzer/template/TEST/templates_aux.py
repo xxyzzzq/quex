@@ -2,13 +2,18 @@ import quex.engine.analyzer.template.core  as templates
 from   quex.engine.analyzer.template.state import TargetScheme, TemplateState
 from   operator import attrgetter
 
+def clean_transition_map(tm):
+    for i, element in enumerate(tm):
+        x = element[1]
+        if isinstance(element[1], list): 
+            x = tuple(x)
+        if isinstance(x, tuple):
+            tm[i] = (element[0], TargetScheme(0, x))
+
 class TestTemplateState(TemplateState):
     def __init__(self, TriggerMap, StateIndexList):
         self.__transition_map   = TriggerMap
-        for i, element in enumerate(self.__transition_map):
-            if isinstance(element[1], list):
-                self.__transition_map[i] = (element[0], tuple(element[1]))
-
+        clean_transition_map(self.__transition_map)
         self.__state_index_list = StateIndexList
 
     @property 
@@ -21,8 +26,8 @@ class TestTemplateState(TemplateState):
 
 class TestState:
     def __init__(self, TM, Index=None, StateIndexList=None):
-        self.transition_map = TM
-        self.index          = Index
+        self.transition_map   = TM
+        self.index            = Index
         self.state_index_list = StateIndexList
 
 def get_combination(TriggerMap, StateList):
