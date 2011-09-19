@@ -1,6 +1,9 @@
 # (C) 2009-2011 Frank-Rene Schaefer
 import quex.engine.generator.state_coder.transition_block as transition_block
-import quex.engine.generator.state_coder.drop_out         as drop_out
+from   quex.engine.generator.state_coder.transition_code  import TransitionCode, TextTransitionCode
+import quex.engine.generator.state_coder.drop_out         as drop_out_coder
+import quex.engine.generator.state_coder.entry            as entry_coder
+from   quex.engine.generator.state_coder.core             import input_do
 from   quex.engine.generator.languages.address            import get_address, get_label, get_label_of_address
 from   quex.engine.generator.languages.variable_db        import variable_db
 import quex.engine.state_machine.index                    as     index
@@ -10,12 +13,14 @@ import quex.engine.state_machine.core                     as     state_machine
 import quex.engine.analyzer.template.core                 as templates 
 
 from   copy            import deepcopy
-from   quex.blackboard import setup as Setup
+from   quex.blackboard import setup as Setup, E_StateIndices
+from   itertools       import imap
+from   operator        import attrgetter
+
 """Template Compression _______________________________________________________
 
-   Consider the file 'core_engine/state_machine/compression/templates.py' for 
-   a detailed explanation of template compression
-
+   Consider the file 'analyzer/template/core.py' for a detailed explanation of 
+   template compression.
 
    Code Generation ____________________________________________________________
 
@@ -90,82 +95,87 @@ from   quex.blackboard import setup as Setup
 """
 LanguageDB = None # Set during call to 'do()', not earlier
 
-def do(TheAnalyzer, CostCoefficient):
-    """RETURNS: Array 'x'
+def do(txt, TheAnalyzer, CostCoefficient):
+    """RETURNS: 
+       [0] Code
+       [1] State index list of what has been combined into template states.
 
-       x[0] transition target definitions in terms of a 
-            local variable database
-       x[1] code for templates and state entries
-       x[2] state router for template targets
-       x[3] involved_state_index_list
     """
-    # (1) Find possible state combinations
-    combination_list = templates.do(TheAnalyzer, CostCoefficient)
-
-    # (2) Implement code for template combinations
-    code,                     \
-    involved_state_index_list = _do(combination_list, TheAnalyzer)
-
-    if len(involved_state_index_list) != 0:
-        variable_db.require("template_state_key")
-
-    return code, involved_state_index_list
-
-def _do(CombinationList, TheAnalyzer):
-    """-- Returns generated code for all templates.
-    """
-    assert type(CombinationList) == list
-    global LanguageDB 
-
+    global LanguageDB
     LanguageDB = Setup.language_db
 
-    # -- Collect all indices of states involved in templates
-    involved_state_index_list = set([])
-    # -- Generate 'TemplatedState's for each TemplateCombination
-    template_list             = []
-    for combination in CombinationList:
-        assert isinstance(combination, templates.TemplateCombination)
+    # (*) Analysis:
+    #     Determine TemplateState-s as combinations of AnalyzerState-s.
+    template_state_list = templates.do(TheAnalyzer, CostCoefficient)
 
-        # Two Scenarios for settings at state entry (last_acceptance_position, ...)
-        # 
-        #   (i) All state entries are uniform: 
-        #       -- Then, a representative state entry can be implemented at the 
-        #          template entry. 
-        #       -- Recursion happens to the template entry.
-        #
-        #   (ii) One or more state entry are different (non-uniform):
-        #       -- The particularities of each state entry need to be implemented
-        #          at state entry.
-        #       -- Recursion is routed to entries of involved states.
-        #      
-        involved_state_list = combination.involved_state_list()
-        prototype           = get_uniform_prototype(TheAnalyzer, involved_state_list)
+    # (*) Involved States:
+    #     Collect 'templated states' so that they can be treated as 'done'.
+    done_list = set([])
+    for template_state in template_state_list:
+        done_list.update(template_state.state_index_list)
 
-        # -- create template state for combination object
-        #    prototype is None, tells that there state entries differ and there
-        #                       is no representive state.
-        template = TemplateState(combination, TheAnalyzer.state_machine_id, index.get(), 
-                                 prototype)
-        template_list.append(template)
+    if len(done_list) != 0:
+        variable_db.require("template_state_key")
 
-        # -- collect indices of involved states
-        involved_state_index_list.update(involved_state_list)
+    # (*) Code Generation:
+    for t_state in template_state_list:
+        state_coder_do(txt, t_state, TheAnalyzer)
 
-    # -- transition target definition for each template
-    for template in template_list:
-        __transition_target_data_structures(template, TheAnalyzer)
+    return done_list
 
-    # -- template state entries
-    # -- template state
-    code = []
-    for template in template_list:
-        __templated_state_entries(code, template, TheAnalyzer)
-        __template_state(code, template, TheAnalyzer)
+def state_coder_do(txt, TState, TheAnalyzer):
+    # (*) Entry _______________________________________________________________
+    __entry(txt, TState, TheAnalyzer)
 
-    return code, involved_state_index_list
+    # (*) Access input character ______________________________________________
+    input_do(txt, TState) 
 
-class TemplateTarget(transition_block.TriggerAction):
-    def __init__(self, TemplateIndex, TargetIndex=None, UniformStateEntriesF=False):
+    # (*) Transition Map ______________________________________________________
+    replace_TargetScheme_by_TemplateTransitionCode(TState, TheAnalyzer)
+    on_reload_ok_str, on_reload_fail_str = get_reload_info(TState)
+
+    transition_block.do(txt, 
+                        TState.transition_map, 
+                        TState.index, 
+                        TState.engine_type, 
+                        TState.init_state_f, 
+                        OnReloadOK_Str   = on_reload_ok_str,
+                        OnReloadFail_Str = on_reload_fail_str,
+                        TheAnalyzer      = TheAnalyzer)
+
+    # (*) Drop Out ____________________________________________________________
+    __drop_out(txt, TState, TheAnalyzer)
+
+    # (*) Request necessary variable definition _______________________________
+    __require_target_scheme_data(TState, TheAnalyzer)
+
+    return 
+
+def get_reload_info(TState):
+    """The 'reload' must know where to go in case that the reload succeeds 
+       and in case that it fails:
+       
+       -- If the reload succeeds it must reenter the same state. If the 
+          entries are not uniform, the entry must be identified by 'state key'. 
+          
+       -- If the reload fails the current state's drop out section must be 
+          entered. The routing to state's particular drop out section happens
+          from the templates central drop out at the end of the transition map.
+    """
+    if TState.uniform_entries_f:
+        ok_state_str = None # Default: Template's common entry
+    else:
+        ok_state_str = "template_%i_map_state_key_to_entry_index[template_state_key]" \
+                       % TState.index
+
+    # DropOut is handled at the end of the transition map.
+    # From there, it is routed by the state_key to the particular drop out.
+    fail_state_str = "QUEX_LABEL(%i)" % get_address("$drop-out", TState.index, U=True, R=True)
+
+    return ok_state_str, fail_state_str
+
+class TemplateTransitionCode(TransitionCode):
+    def __init__(self, TState, TargetSchemeIndex):
         """TemplateIndex identifies the template that 'hosts' the transition.
 
            TargetIndex identifies the target number (Target0, Target1, ... in
@@ -179,235 +189,235 @@ class TemplateTarget(transition_block.TriggerAction):
            Where '$X$' is replaced with TemplateIndex and $Y$ is replaced
            with TargetIndex.
         """
-        self.template_index = TemplateIndex
-        self.target_index   = TargetIndex
-        self.__uniform_state_entries_f = UniformStateEntriesF
+        self.template_index      = TState.index
+        self.target_scheme_index = TargetSchemeIndex
+        self.__uniform_entries_f = TState.uniform_entries_f
+
+        TransitionCode.__init__(self, 
+                                Target=None, 
+                                StateIndex=TState.index,
+                                InitStateF=False, 
+                                EngineType=TState.engine_type, 
+                                OnReloadOK_Str=None, 
+                                GotoReload_Str=None, 
+                                OnReloadFail_Str=None, 
+                                TheAnalyzer=None)
 
     def __eq__(self, Other):
         """Equal/Not Equal comparison operators are required for effective 
            transition code generation.
         """
-        if Other.__class__ != TemplateTarget: return False
-        return     self.template_index == Other.template_index \
-               and self.target_index   == Other.target_index \
-               and self.__uniform_state_entries_f == Other.__uniform_state_entries_f
+        if Other.__class__ != TemplateTransitionCode: return False
+        return     self.template_index            == Other.template_index \
+               and self.target_scheme_index       == Other.target_scheme_index \
+               and self.__uniform_entries_f == Other.__uniform_entries_f
 
     def __ne__(self, Other):
         return not self.__eq__(Other)
 
-    def recursive(self):
-        return self.target_index is None
-
     @property
-    def uniform_state_entries_f(self):
-        """If the state entries are not uniform, then recursion must
-           jump to state entries, rather the template entry.
-        """
-        return self.__uniform_state_entries_f
-
-    def get_code(self):
+    def code(self):
         """Template transition target states. The target state is determined at 
            run-time based on a 'state_key' for the template.
            NOTE: This handles also the recursive case.
         """
-        if not self.recursive():
-            label = "template_%i_target_%i[template_state_key]" % (self.template_index, self.target_index)
+        if self.target_scheme_index != E_StateIndices.RECURSIVE:
+            # (*) Normal Case: 
+            #     Transition target depends on state key
+            label = "template_%i_target_%i[template_state_key]" % (self.template_index, self.target_scheme_index)
             get_label("$state-router", U=True) # Ensure reference of state router
-            return [ "QUEX_GOTO_STATE(%s);\n" % label ]
+            return "QUEX_GOTO_STATE(%s);" % label 
 
-        elif not self.uniform_state_entries_f:
-            label = "template_%i_map_state_key_to_state_index[template_state_key]" % self.template_index
+        elif not self.__uniform_entries_f:
+            # (*) Recursive Case 1:
+            #     Jump to dedicated entry determined by 'state_key'.
+            label = "template_%i_map_state_key_to_entry_index[template_state_key]" % self.template_index
             get_label("$state-router", U=True) # Ensure reference of state router
-            return [ "QUEX_GOTO_STATE(%s);\n" % label ]
+            return "QUEX_GOTO_STATE(%s);" % label 
 
         else:
-            return [ "goto %s;" % get_label_of_address(self.template_index, U=True) ]
+            # (*) Recursive Case 2:
+            #     All states have same entry, thus simply enter the template again.
+            return "goto %s;" % get_label_of_address(self.template_index, U=True) 
 
-    def is_drop_out(self):
-        return False
+    @property
+    def drop_out_f(self): return False
 
-def get_transition_map(TemplateIndex, TriggerMap, UniformStateEntriesF):
-    trigger_map          = []
-    target_state_list_db = []
-    i = 0
-    for interval, target in TriggerMap:
-
-        if target == templates.TARGET_RECURSIVE:
-            # Normal Recursion: 
-            #   Return to the entry of the template
-            # Dedicated Recursion: 
-            #   This holds if one or more involved states require things to be set
-            #   at state entry (e.g. last_acceptance = ..). Then, the recursion 
-            #   needs to happen to the state entries.
-            target = TemplateTarget(TemplateIndex,  
-                                    TargetIndex          = None, # says recursion!
-                                    UniformStateEntriesF = UniformStateEntriesF) 
-
-        elif type(target) == list:
-            if target not in target_state_list_db: 
-                # Register a new target state combination
-                target_state_list_db.append(target)
-                target_index = i
-                i += 1
-            else:
-                # Target state combination has been registered before => get the index.
-                target_index = target_state_list_db.index(target)
-            target = TemplateTarget(TemplateIndex, target_index)
-
-        trigger_map.append([interval, target])
-    return trigger_map, target_state_list_db
-
-
-class TemplateState(state_machine.State):
-    """Implementation of a Template that is able to play the role of a
-       state machine state. It is constructed on the basis of a 
-       TemplateCombination object that is create by module
-       
-                state_machine.compression.templates
-
-       Goal of this definition is to have a state that is able to 
-       comply the requirements of 'state_coder.core'. Thus, the
-       template can be generated through the same procedure as 
-       all state machine states.
+def replace_TargetScheme_by_TemplateTransitionCode(TState, TheAnalyzer):
+    """-- Replace TargetScheme objects by TemplateTransitionCode objects in transition map.
     """
-    def __init__(self, Combi, StateMachineID, StateIndex, RepresentiveState):
-        """Combi contains all information about the states of a template
-                 and the template itself.
-           
-           StateIndex is the state index that is assigned to the template.
-
-           RepresentiveState is a state that can represent all states in
-                             the template. All states of a template must
-                             be equivalent, so any of them can do.
-
-                             If is None, then it means that state entries
-                             differ and there is no representive state.
-        """
-        assert isinstance(Combi, templates.TemplateCombination)
-        assert isinstance(RepresentiveState, state_machine.State) or RepresentiveState is None
-        assert type(StateIndex) == long
-
-        # (0) Components required to be a 'State'
-        if RepresentiveState is not None:
-            self.__uniform_state_entries_f = True
-            core        = deepcopy(RepresentiveState.core())
-            origin_list = deepcopy(RepresentiveState.origins())
+    global LanguageDB
+    
+    for i, info in enumerate(TState.transition_map):
+        interval, target_scheme = info
+        if isinstance(target_scheme, (int, long)): 
+            target_index = target_scheme
+            if TheAnalyzer.state_db[target_index].entry.is_independent_of_source_state():
+                continue
+            case_list = []
+            # A common target state of a template is targeted by all involved states.
+            # => If the target state's entries depend on the source state all
+            #    states in the template's state_index_list must be mentioned as entry.
+            for state_key, from_state_index in enumerate(TState.state_index_list):
+                case_list.append((state_key, LanguageDB.GOTO(target_index, from_state_index, TState.engine_type))) 
+            code = LanguageDB.SELECTION("template_state_key", case_list)
+            LanguageDB.INDENT(code, 2)
+            target = TextTransitionCode(["\n"] + code)
         else:
-            self.__uniform_state_entries_f = False
-            # Empty core and origins, since the particularities are handled at individual 
-            # state entries.
-            core        = state_machine.StateCoreInfo(StateMachineID, StateIndex, 
-                                                      AcceptanceF=False)   
-            origin_list = state_machine.StateOriginList()          
+            if   target_scheme == E_StateIndices.DROP_OUT:  continue
+            elif target_scheme == E_StateIndices.RECURSIVE: scheme_index = E_StateIndices.RECURSIVE 
+            else:                                           scheme_index = target_scheme.index
+            target = TemplateTransitionCode(TState, scheme_index)
 
-        self.__transition_map,   \
-        self.__target_state_list_db = get_transition_map(StateIndex, 
-                                                         Combi.get_trigger_map(), 
-                                                         self.__uniform_state_entries_f)
+        TState.transition_map[i] = (interval, target)
 
-        # (1) Template related information
-        self.__involved_state_list = map(lambda i: TheAnalyzer.state_db[i], 
-                                         set(Combi.involved_state_list()))
+    return 
 
-    @property
-    def uniform_state_entries_f(self): return self.__uniform_state_entries_f
-    @property
-    def involved_state_list(self):     return self.__involved_state_list
-    @property
-    def target_state_list_db(self):    return self.__target_state_list_db
-    @property
-    def transition_map(self):          return self.__transition_map
-
-def __transition_target_data_structures(TheTemplate, TheAnalyzer):
+def __require_target_scheme_data(TState, TheAnalyzer):
     """Defines the transition targets for each involved state.
     """
-    template_index = TheTemplate.core().state_index
+    def help(AdrList):
+        return "".join(["{ "] + map(lambda adr: "QUEX_LABEL(%i), " % adr, AdrList) + [" }"])
 
-    def __array_to_code(Array):
-        txt = ["{ "]
-        for index in Array:
-            if index is not None: elm = get_address("$entry", index, U=True, R=True)
-            else:                 elm = get_address("$drop-out", template_index, U=True, R=True)
-            txt.append("QUEX_LABEL(%i), " % elm)
-        txt.append("}")
-        return "".join(txt)
+    for target_scheme in sorted(TState.target_scheme_list, key=attrgetter("index")):
+        assert len(target_scheme.scheme) == len(TState.state_index_list)
+        address_list = []
+        for state_key, target in enumerate(target_scheme.scheme):
+            if target == E_StateIndices.DROP_OUT:
+                elm = get_address("$drop-out", TState.index, U=True)
+            else:
+                # Quex's whole infrastructure does not allow to have target schemes where
+                # we need to differentiate at state entries with respect to the source state.
+                # It **must** be assumed that no transition map is generated that contains
+                # target states that have different doors for different source states.
+                assert TheAnalyzer.state_db[target].entry.is_independent_of_source_state()
+                elm = get_address("$entry", target, U=True, R=True)
 
-    for target_index, target_state_index_list in enumerate(TheTemplate.target_state_list_db):
-        assert len(target_state_index_list) == TheTemplate.involved_state_n
+            address_list.append(elm)
 
         variable_db.require_array("template_%i_target_%i", 
-                                  ElementN = TheTemplate.involved_state_n, 
-                                  Initial  = __array_to_code(target_state_index_list), 
-                                  Index    = (template_index, target_index))
+                                  ElementN = len(TState.state_index_list), 
+                                  Initial  = help(address_list),
+                                  Index    = (TState.index, target_scheme.index))
 
     # If the template does not have uniform state entries, the entries
     # need to be routed on recursion, for example. Thus we need to map 
     # from state-key to state.
-    if not TheTemplate.uniform_state_entries_f:
-        variable_db.require_array("template_%i_map_state_key_to_state_index", 
-                                  ElementN = TheTemplate.involved_state_n, 
-                                  Initial  = __array_to_code(TheTemplate.involved_state_list),
-                                  Index    = template_index)
+    if not TState.uniform_entries_f:
+        address_list = map(lambda i: get_address("$entry", i, U=True, R=True), 
+                           TState.state_index_list)
+        variable_db.require_array("template_%i_map_state_key_to_entry_index", 
+                                  ElementN = len(TState.state_index_list), 
+                                  Initial  = help(address_list),
+                                  Index    = TState.index)
 
-def __templated_state_entries(txt, TheTemplate, TheAnalyzer):
+    # Drop outs: all drop outs end up at the end of the transition map, where
+    # it is routed via the state_key to the state's particular drop out.
+
+
+def __entry(txt, TState, TheAnalyzer):
     """Defines the entries of templated states, so that the state key
        for the template is set, before the jump into the template. E.g.
 
             STATE_4711: 
-               key = 0; goto TEMPLATE_STATE_111;
+               state_key = 0; goto TEMPLATE_STATE_111;
             STATE_3123: 
-               key = 1; goto TEMPLATE_STATE_111;
+               state_key = 1; goto TEMPLATE_STATE_111;
             STATE_8912: 
-               key = 2; goto TEMPLATE_STATE_111;
+               state_key = 2; goto TEMPLATE_STATE_111;
     """
-    for key, state_index in enumerate(TheTemplate.template_combination.involved_state_list()):
-        state = TheAnalyzer.state_db[state_index]
+    global LanguageDB
+    def help(StateIndexList):
+        return imap(lambda i: 
+                    (i, TState.state_index_list.index(i), TheAnalyzer.state_db[i]), 
+                    StateIndexList)
 
-        if TheTemplate.uniform_state_entries_f:
-            # Very much simplified state entry, since all states in the template are uniform.
-            txt.extend(LanguageDB.STATE_ENTRY(txt, state))
+    if TState.uniform_entries_f:
+        entry, state_index_list = TState.entry.iteritems().next()
+        # Assign the state keys for each state involved
+        for state_index, state_key, state in help(state_index_list): 
+            LanguageDB.STATE_ENTRY(txt, state)
+            txt.append("    %s\n" % LanguageDB.ASSIGN("template_state_key", "%i" % state_key))
+            txt.append("    %s\n" % LanguageDB.GOTO(TState.index))
+
+        # Implement the common entry
+        txt.extend("%s\n" % LanguageDB.LABEL(TState.index))
+        entry_coder.do(txt, TState, TheAnalyzer, UnreachablePrefixF=False, LabelF=False)
+        return
+
+    # Non-Uniform Entries
+    i = -1
+    for entry, state_index_list in TState.entry.iteritems():
+        if entry.is_independent_of_source_state():
+            i += 1
+            # Assign the state keys for each state involved
+            for state_index, state_key, state in help(state_index_list): 
+                LanguageDB.STATE_ENTRY(txt, state)
+                txt.append("    %s\n" % LanguageDB.ASSIGN("template_state_key", "%i" % state_key))
+                if len(state_index_list) != 1:
+                    txt.append("    %s\n" % LanguageDB.GOTO_TEMPLATE_ENTRY(TState.index, i))
+            # Implement the common entry
+            if len(state_index_list) != 1:
+                txt.extend("%s\n" % LanguageDB.LABEL_TEMPLATE_ENTRY(TState.index, i))
+            prototype = TheAnalyzer.state_db[state_index_list[0]]
+            entry_coder.do(txt, prototype, TheAnalyzer, UnreachablePrefixF=False, LabelF=False)
+            txt.append("    %s\n" % LanguageDB.GOTO(TState.index))
+            txt.append("/*Mark 0*/\n")
         else:
-            entry.do(state, PositionRegisterMap)
+            for state_index, state_key, state in help(state_index_list): 
+                # Implement the particular entry
+                tmp = []
+                entry_coder.do(tmp, state, TheAnalyzer) # , UnreachablePrefixF=(i==0))
+                txt.extend(tmp)
+                # Assign the state keys for each state involved
+                txt.append("    %s\n" % LanguageDB.ASSIGN("template_state_key", "%i" % state_key))
+                txt.append("    %s\n" % LanguageDB.GOTO(TState.index))
+                txt.append("/*Mark 1*/\n")
 
-        txt.append("    %s\n" % LanguageDB.ASSIGN("template_state_key", "%i" % key))
-        txt.append("    %s\n" % LanguageDB.GOTO(TheTemplate.core().state_index))
-        txt.append("\n")
+    # Implement entry point
+    txt.extend("%s\n" % LanguageDB.LABEL(TState.index))
 
-def __template_state(txt, TheTemplate, TheAnalyzer):
-    """Generate the template state that 'hosts' the templated states.
+def __drop_out(txt, TState, TheAnalyzer):
+    """DropOut Section:
+
+       The drop out section is the place where we come if the transition map
+       does not trigger to another state. We also land here if the reload fails.
+       The routing to the different drop-outs of the related states happens by 
+       means of a switch statement, e.g.
+       
+       _4711: /* Address of the drop out */
+           switch( state_key ) {
+           case 0:
+                 ... drop out of state 815 ...
+           case 1: 
+                 ... drop out of state 541 ...
+           }
+
+       The switch statement is not necessary if all drop outs are uniform, of course.
+
     """
-    state       = TheTemplate
-    state_index = TheTemplate.core().state_index
-    TriggerMap  = state.transitions().get_trigger_map()
+    # (*) Central Label for the Templates Drop Out
+    txt.append("%s:\n" % get_label("$drop-out", TState.index, U=True, R=True))
 
-    if TheTemplate.uniform_state_entries_f: 
-        state_index_str = None
-        entry.do(state)
-    else:
-        LanguageDB.STATE_ENTRY(txt, state_index) 
-        # Templates that need to implement more than one state need to return to
-        # dedicated state entries, if the state entries are not uniform.
-        state_index_str = "template_%i_map_state_key_to_state_index[template_state_key]" % state_index
+    # (*) Drop Out Section(s)
+    if TState.uniform_drop_outs_f:
+        # -- uniform drop outs => no switch required
+        prototype = TheAnalyzer.state_db[TState.state_index_list[0]]
+        drop_out_coder.do(txt, prototype, TheAnalyzer, DefineLabelF=False)
+        return
 
-    txt.extend(transition_block.do(TriggerMap, state_index, TheAnalyzer, ReturnToState_Str=state_index_str))
+    # -- non-uniform drop outs => route by 'state_key'
+    case_list = []
+    for drop_out, state_index_list in TState.drop_out.iteritems():
+        # state keys related to drop out
+        state_key_list = map(lambda i: TState.state_index_list.index(i), state_index_list)
+        # drop out action
+        prototype = TheAnalyzer.state_db[state_index_list[0]]
+        action = []
+        drop_out_coder.do(action, prototype, TheAnalyzer, DefineLabelF=False)
+        case_list.append( (state_key_list, action) )
 
-    txt.extend(drop_out.do(state, state_index, TheAnalyzer))
-
-def get_uniform_prototype(TheAnalyzer, InvolvedStateIndexList):
-    """Gets the prototype of a state in case that the involved states 
-       are all uniform. If not it returns 'None'.
-    """
-    if TheAnalyzer.init_state_index in InvolvedStateIndexList:
-        # It is conceivable, that even the init state is part of 
-        # a template. In this case, the template **must** be non-uniform.
-        # The unit state requires a special entry.
-        return None
-
-    if type(InvolvedStateIndexList) == set:
-        InvolvedStateIndexList = list(InvolvedStateIndexList)
-
-    if TheAnalyzer.check_uniformity(InvolvedStateIndexList):
-        return TheAnalyzer.state_db.get(InvolvedStateIndexList[0])
-    else:
-        return None
-
+    case_txt = LanguageDB.SELECTION("template_state_key", case_list)
+    LanguageDB.INDENT(case_txt)
+    txt.extend(case_txt)
+    ## txt.append("    %s\n" % LanguageDB.UNREACHABLE)

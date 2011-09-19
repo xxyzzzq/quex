@@ -49,7 +49,7 @@ def do(analyzer):
             state.entry.accepter.clear()
 
     for entry in imap(lambda x: x.entry, analyzer.state_db.itervalues()):
-        entry.try_unify_positioner_db()
+        entry.finish()
 
     return analyzer
 

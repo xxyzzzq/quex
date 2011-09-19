@@ -454,14 +454,6 @@ class Analyzer:
 
         return result
 
-    def check_state_uniformity(self, StateIndexList):
-        assert len(StateIndexList) != 0
-        iterable  = [self.state_db[i] for i in StateIndexList].__iter__()
-        prototype = iterable.next()
-        for dummy in ifilter(lambda state: not state.is_uniform(prototype), iterable):
-            return False
-        return True
-
     def __iter__(self):
         for x in self.__state_db.values():
             yield x
@@ -503,10 +495,7 @@ class AnalyzerState(object):
         self.__engine_type      = EngineType
 
         # (*) Input
-        if EngineType == E_EngineTypes.FORWARD:
-            if StateIndex == SM.init_state_index: self.input = E_InputActions.DEREF
-            else:                                 self.input = E_InputActions.INCREMENT_THEN_DEREF
-        else:                                     self.input = E_InputActions.DECREMENT_THEN_DEREF
+        self.input = get_input_action(EngineType, self.__init_state_f)
 
         # (*) Entry Action
         if   EngineType == E_EngineTypes.FORWARD: 
@@ -554,7 +543,7 @@ class AnalyzerState(object):
     def target_index_list(self):    return self.__target_index_list
 
     def get_string_array(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
-        txt = [ "State %s:\n" % repr(self.index) ]
+        txt = [ "State %s:\n" % repr(self.index).replace("L", "") ]
         if InputF:         txt.append("  .input: move position %s\n" % repr(self.input))
         if EntryF:         txt.append("  .entry:\n"); txt.append(repr(self.entry))
         if TransitionMapF: txt.append("  .transition_map:\n")
@@ -568,17 +557,77 @@ class AnalyzerState(object):
     def __repr__(self):
         return self.get_string()
 
-class Entry(object):
+class BASE_Entry:
+    def is_independent_of_source_state(self):
+        assert False
+
+class Entry(BASE_Entry):
     """An entry has potentially two tasks:
     
-          (1) storing information about an acceptance. 
-          (2) storing information about positioning.
+          (1) Storing information about positioning. This action may depend
+              on the state where we come from. There are two possibilities:
 
-       Both are pre-context dependent. 
+              (i) The entries to the state differ in their 'position storage 
+                  behavior'. In this case, the origin of the states must be
+                  mentioned, i.e.
+
+                     _4711_from_815:  position[34] = input_p; goto _4711;
+                     _4711_from_17:   position[3]  = input_p; goto _4711;
+                     _4711_from_147:  position[41] = input_p; goto _4711;
+                     _4711_from_461:  position[71] = input_p; goto _4711;
+                     _4711:
+                         ...
+                        (it follows: accepter)
+
+              (ii) All states enter with the same 'position storage behavior'.
+                    
+                    _4711:
+                        position[3] = _input_p;
+                        position[7] = _input_p;
+                        ...
+                        (it follows: accepter)
+
+              The positioner may also be pre-context dependent, i.e. something like
+
+                       if( pre_context_34_f ) position[12] = _input_p;
+                       ...
+                  
+          (2) Storing information about an acceptance. This action is independent
+              from the state that we come from. It may depend, though, on the 
+              pre-context, i.e.
+
+                    (positioning terminated)
+                    ...
+                    if( pre_context_341_f ) last_acceptance = 34;
+                    if( pre_context_12_f )  last_acceptance = 31;
+                    if( pre_context_55_f )  last_acceptance = 34;
+
+       (*) Positioner
+
+       Depending on the post-context any pre-context may later on win. Thus, 
+
+                /* 'Positioner' */
+                if( pre_context_5_f ) { position[LastAcceptance] = input_p; }
+                if( pre_context_7_f ) { position_register[23]    = input_p; }
+                if( pre_context_9_f ) { position[LastAcceptance] = input_p; }
+                position[LastAcceptance] = input_p; 
        
+       The list is not sorted and it is not exclusive, line 1 and 2 are redundant
+       since the same job is done by line 4 for both in any case. The information
+       about position storage is done by a dictionary '.positioner' which maps:
+
+                .positioner:  post-context-id  --> list of pre-context-ids
+
+       Note: 
+       
+       "post-context-id == E_PostContextIDs.NONE" stands for no post-context 
+                           ('normal' pattern)  
+       "pre-context-id == E_PreContextIDs.NONE" in the pre-context-id list 
+                          stands for the unconditional case (also 'normal').
+
        (*) Accepter:
 
-       For the first task mentioned, some 'accepter' sequence needs to be applied, 
+       For the second task mentioned, some 'accepter' sequence needs to be applied, 
        such as
 
                 /* 'Accepter' */
@@ -613,30 +662,10 @@ class Entry(object):
        To facilitate this, the function '.get_accepter' delivers a sorted list
        of accepting entries.
 
-       (*) Positioner
-
-       For the positioning this is different. Depending on the post-context any
-       pre-context may later on win. Thus, 
-
-                /* 'Positioner' */
-                if( pre_context_5_f ) { last_acceptance_pos   = input_p; }
-                if( pre_context_7_f ) { position_register[23] = input_p; }
-                if( pre_context_9_f ) { last_acceptance_pos   = input_p; }
-                last_acceptance_pos = input_p; 
-       
-       The list is not sorted and it is not exclusive, line 1 and 2 are redundant
-       since the same job is done by line 4 for both in any case. The information
-       about position storage is done by a dictionary '.positioner' which maps:
-
-                .positioner:  post-context-id  --> list of pre-context-ids
-
-       Where "post-context-id == -1" stands for no post-context (normal pattern)
-       and a "None" in the pre-context-id list stands for the unconditional case.
-
        NOTE: This type supports being a dictionary key by '__hash__' and '__eq__'.
              Required for the optional 'template compression'.
     """
-    __slots__ = ("__uniform_f", "accepter", "positioner_db")
+    __slots__ = ("__independent_of_source_state_f", "accepter", "positioner_db")
 
     def __init__(self, FromStateIndexList):
         # By default, we do not do store anything about acceptance at state entry
@@ -645,28 +674,41 @@ class Entry(object):
         # map:  (from_state_index, pre_context_id) --> post_context_id where to store position
         self.positioner_db = dict([ (i, defaultdict(set)) for i in FromStateIndexList ])
 
-        # Are all positionings uniform?
-        # This flag is to be determined after the analyzis by function 'try_unify_positioner_db()'
-        self.__uniform_f = None 
+        # Are all positionings independent_of_source_state?
+        # This flag is to be determined after the analysis by function 'finish()'
+        self.__independent_of_source_state_f = None 
+
+    def _positioner_n(self):
+        total_size = len(self.positioner_db)
+        # Note, that total_size can be '0' in the 'independent_of_source_state' case
+        if self.__independent_of_source_state_f: return min(1, total_size)
+        else:                                    return total_size
+
+    def _positioner_eq(self, Other):
+        if not self.__independent_of_source_state_f:
+            return self.positioner_db == Other.positioner_db
+        if len(self.positioner_db) == 0: return True
+        prototype_A = self.positioner_db.itervalues().next()
+        prototype_B = Other.positioner_db.itervalues().next()
+        return prototype_A == prototype_B
 
     def __hash__(self):
-        return hash(len(self.accepter) * 10 + len(positioner_db) * 2 + int(self.__uniform_f))
+        return len(self.accepter) * 10 + self._positioner_n()
 
     def __eq__(self, Other):
-        return     self.accepter      == Other.accepter \
-               and self.positioner_db == Other.positioner_db
+        if not self._positioner_eq(Other): return False
+        return self.accepter == Other.accepter 
 
     def is_equal(self, Other):
         # Maybe, we can delete this ...
-        return     self.accepter      == Other.accepter \
-               and self.positioner_db == Other.positioner_db
+        return self.__eq__(self, Other)
 
-    def is_uniform(self): 
-        return self.__uniform_f
+    def is_independent_of_source_state(self): 
+        return self.__independent_of_source_state_f
 
-    def uniform_positioner(self):
-        assert self.__uniform_f
-        # All positioners are uniform, so simply return the first.
+    def positioner_prototype(self):
+        assert self.__independent_of_source_state_f
+        # All positioners are independent_of_source_state, so simply return the first.
         return self.positioner_db.itervalues().next()
 
     def get_accepter(self):
@@ -697,21 +739,44 @@ class Entry(object):
         """
         return self.positioner_db
 
-    def try_unify_positioner_db(self):
-        """At state entry the positioning might differ dependent on the 
-           the state from which it is entered. If the positioning is the
-           same for each source state, then the positioning can be unified.
+    def finish(self):
+        """Once the whole state machine is analyzed and positioner and accepters
+           are set, the entry can be 'finished'. That means that some simplifications
+           may be accomplished:
+
+           (1) If a position for a post-context is stored in the unconditional
+               case, then all pre-contexted position storages of the same post-
+               context are superfluous.
+
+           (2) If the entry into the state behaves the same for all 'from'
+               states then the entry is independent_of_source_state.
+        
+        
+           At state entry the positioning might differ dependent on the the
+           state from which it is entered. If the positioning is the same for
+           each source state, then the positioning can be unified.
 
            A unified entry is coded as 'ALL' --> common positioning.
         """
-        if len(self.positioner_db) == 0: return
+        if len(self.positioner_db) == 0: 
+            self.__independent_of_source_state_f = True
+            return
+
+        # (1) Search for Unconditional Case ... If found other conditions are redundant
+        for positioner in self.positioner_db.itervalues():
+            for post_context_id, pre_context_id_set in positioner.iteritems():
+                if E_PreContextIDs.NONE not in pre_context_id_set: continue
+                positioner[post_context_id] = set([E_PreContextIDs.NONE])
+
+        # (2) Check whether state entries are independent_of_source_state
         itervalues = self.positioner_db.itervalues()
 
-        self.__uniform_f = True
+        self.__independent_of_source_state_f = True
         prototype        = itervalues.next()
         for dummy in ifilter(lambda x: x != prototype, itervalues):
-            self.__uniform_f = False
+            self.__independent_of_source_state_f = False
             return
+        return 
 
     def __repr__(self):
         txt = []
@@ -742,7 +807,7 @@ class Entry(object):
 
         return "".join(txt)
 
-class EntryBackwardInputPositionDetection(object):
+class EntryBackwardInputPositionDetection(BASE_Entry):
     """There is not much more to say then: 
 
        Acceptance State 
@@ -762,6 +827,10 @@ class EntryBackwardInputPositionDetection(object):
             self.__terminated_f = True
             return
 
+    def is_independent_of_source_state(self):
+        # There is no difference from which state we enter
+        return True
+
     def __hash__(self):
         return hash(int(self.__terminated_f))
 
@@ -778,7 +847,7 @@ class EntryBackwardInputPositionDetection(object):
         if self.__terminated_f: return "    Terminated\n"
         else:                   return ""
 
-class EntryBackward(object):
+class EntryBackward(BASE_Entry):
     """(*) Backward Lexing
 
        Backward lexing has the task to find out whether a pre-context is fulfilled.
@@ -805,6 +874,9 @@ class EntryBackward(object):
         # NOTE: set([0, 1, 2]) == set([2, 1, 0]) 
         #       ... equal if elements are the same, order not important
         return self.pre_context_fulfilled_set == Other.pre_context_fulfilled_set
+
+    def is_independent_of_source_state(self):
+        return True
 
     def is_equal(self, Other):
         return self.__eq__(Other)
@@ -1089,6 +1161,9 @@ class DropOutBackwardInputPositionDetection(object):
     @property
     def reachable_f(self): return self.__reachable_f
 
+    def __hash__(self):      return self.__reachable_f
+    def __eq__(self, Other): return self.__reachable_f == Other.__reachable_f
+
     def __repr__(self):
         if not self.__reachable_f: return "<unreachable>"
         else:                      return "<backward input position detected>"
@@ -1121,3 +1196,10 @@ def repr_positioning(Positioning, PostContextID):
     elif Positioning == 0:  return ""
     else: 
         assert False
+
+def get_input_action(EngineType, InitStateF):
+    if EngineType == E_EngineTypes.FORWARD:
+        if InitStateF: return E_InputActions.DEREF
+        else:          return E_InputActions.INCREMENT_THEN_DEREF
+    else:              return E_InputActions.DECREMENT_THEN_DEREF
+

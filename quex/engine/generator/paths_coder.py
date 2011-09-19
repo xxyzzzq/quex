@@ -475,7 +475,7 @@ def __path_walker(txt, PathWalker, SMD):
     if not PathWalker.uniform_state_entries_f():
         state_index_str = "path_walker_%i_state[path_iterator - path_walker_%i_base]" % (PathWalkerID, PathWalkerID)
 
-    txt.extend(transition_block.do(trigger_map, PathWalkerID, SMD, ReturnToState_Str=state_index_str))
+    txt.extend(transition_block.do(trigger_map, PathWalkerID, SMD, ReturnToState_Str=state_index_str, TheAnalyzer=analyzer))
 
     # (4) The drop out (nothing matched)
     #     (Path iterator has not been increased yet)

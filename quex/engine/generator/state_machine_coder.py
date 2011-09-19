@@ -1,6 +1,6 @@
 import quex.engine.generator.state_coder.core as     state_coder
 from   quex.blackboard                        import setup as Setup
-# import quex.engine.generator.template_coder   as template_coder
+import quex.engine.generator.template_coder   as template_coder
 # import quex.engine.generator.paths_coder      as paths_coder
 
 from   collections import defaultdict
@@ -19,17 +19,15 @@ def do(TheAnalyzer):
     remainder.discard(TheAnalyzer.init_state_index)
 
     # (*) [Optional] Path-Compressed States
-    path_compressed_states = []
     if Setup.compression_path_f or Setup.compression_path_uniform_f:
         assert False # We cannot deal with that yet
-        path_compressed_states, state_index_set = paths_coder.do(TheAnalyzer, Setup.compression_path_uniform_f)
-        remainder.difference_update(state_index_set)
+        done_list = paths_coder.do(TheAnalyzer, Setup.compression_path_uniform_f)
+        remainder.difference_update(done_list)
     
     # (*) [Optional] Template-Compressed States
-    template_compressed_states = []
     if Setup.compression_template_f:
-        template_compressed_states, state_index_set = template_coder.do(TheAnalyzer, Setup.compression_template_coef)
-        remainder.difference_update(state_index_set)
+        done_list = template_coder.do(txt, TheAnalyzer, Setup.compression_template_coef)
+        remainder.difference_update(done_list)
     
     # (*) All other (normal) states (sorted by their frequency of appearance
     frequency_db = get_frequency_db(TheAnalyzer.state_db, remainder)

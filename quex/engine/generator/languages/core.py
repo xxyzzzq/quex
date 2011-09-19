@@ -180,6 +180,10 @@ class LDB(dict):
     def LABEL_INIT_STATE_TRANSITION_BLOCK(self):
         return "%s:\n" % self.__label_name(E_StateIndices.INIT_STATE_TRANSITION_BLOCK)
 
+    def LABEL_TEMPLATE_ENTRY(self, TemplateIndex, EntryN=None):
+        if EntryN is None: return "template_%i_entry:\n"    % TemplateIndex
+        else:              return "template_%i_entry_%i:\n" % (TemplateIndex, EntryN)
+
     def LABEL_NAME_BACKWARD_INPUT_POSITION_DETECTOR(self, StateMachineID):
         return "BIP_DETECTOR_%i" % StateMachineID
 
@@ -198,7 +202,7 @@ class LDB(dict):
     def GOTO_DROP_OUT(self, StateIndex):
         return get_address("$drop-out", StateIndex, U=True)
 
-    def GOTO_RELOAD(self, StateIndex, InitStateIndexF, EngineType, ReturnStateIndexStr):
+    def GOTO_RELOAD(self, StateIndex, InitStateIndexF, EngineType, ReturnStateIndexStr, ElseStateIndexStr):
         if   EngineType == E_EngineTypes.FORWARD: 
             direction = "FORWARD"
         elif EngineType == E_EngineTypes.BACKWARD_PRE_CONTEXT:
@@ -210,14 +214,15 @@ class LDB(dict):
         else:
             assert False, repr(EngineType)
 
-        if ReturnStateIndexStr is not None: 
-            state_reference = ReturnStateIndexStr
-        elif InitStateIndexF and EngineType == E_EngineTypes.FORWARD:
+        if InitStateIndexF and EngineType == E_EngineTypes.FORWARD:
             state_reference = "QUEX_LABEL(%i)" % get_address("$entry",    StateIndex, U=True)
             else_reference  = "QUEX_LABEL(%i)" % get_address("$terminal-EOF", U=True) 
-        else:                           
+        else:
             state_reference = "QUEX_LABEL(%i)" % get_address("$entry",    StateIndex, R=True)
             else_reference  = "QUEX_LABEL(%i)" % get_address("$drop-out", StateIndex, U=True, R=True) 
+
+        if ReturnStateIndexStr is not None: state_reference = ReturnStateIndexStr
+        if ElseStateIndexStr   is not None: else_reference  = ElseStateIndexStr
 
         # Ensure that '__STATE_ROUTER' is marked as referenced
         get_label("$state-router", U=True)
@@ -233,6 +238,10 @@ class LDB(dict):
         else:
             assert isinstance(AcceptanceID, (int, long))
             return "goto TERMINAL_%i;" % AcceptanceID
+
+    def GOTO_TEMPLATE_ENTRY(self, TemplateIndex, EntryN=None):
+        if EntryN is None: return "goto template_%i_entry;"    % TemplateIndex
+        else:              return "goto template_%i_entry_%i;" % (TemplateIndex, EntryN)
 
     def ACCEPTANCE(self, AcceptanceID):
         if AcceptanceID == E_AcceptanceIDs.FAILURE:
@@ -334,41 +343,51 @@ class LDB(dict):
             assert False 
 
     def SELECTION(self, Selector, CaseList, BreakF=False):
-        txt     = [ None ] * (len(CaseList) * 2 + 4) 
-        txt[:2] = [ 0, "switch( %s ) {\n" % Selector ]
 
-        line_end = " break;\n" if BreakF else "\n"
+        def __case(txt, item, Content=""):
+            if isinstance(item, list):        
+                for elm in item[:-1]:
+                    txt.append(1) # 1 indentation
+                    txt.append("case 0x%X:\n" % elm)
+                txt.append(1) # 1 indentation
+                txt.append("case 0x%X: " % item[-1])
 
-        i = 2
+            elif isinstance(item, (int, long)): 
+                txt.append(1) # 1 indentation
+                txt.append("case 0x%X: " % item)
+
+            else: 
+                txt.append(1) # 1 indentation
+                txt.append("case %s: "  % item)
+
+            if type(Content) == list: txt.extend(Content)
+            elif len(Content) != 0:   txt.append(Content)
+            if BreakF: txt.append(" break;\n")
+            txt.append("\n")
+
+        txt = [ 0, "switch( %s ) {\n" % Selector ]
+
+
         item, consequence = CaseList[0]
         for item_ahead, consequence_ahead in CaseList[1:]:
-            txt[i] = 1   # 1 indentation
-            i += 1
-            if consequence_ahead == consequence:
-                if isinstance(item, (int, long)): txt[i] = "case 0x%X:\n" % item
-                else:                             txt[i] = "case %s:\n"  % item
-            else:
-                if isinstance(item, (int, long)): txt[i] = "case 0x%X: %s%s" % (item, consequence, line_end)
-                else:                             txt[i] = "case %s: %s%s"  % (item, consequence, line_end)
-            i += 1
+            if consequence_ahead == consequence: __case(txt, item)
+            else:                                __case(txt, item, consequence)
             item        = item_ahead
             consequence = consequence_ahead
 
-        txt[i] = 1   # 1 indentation
-        if isinstance(item, (int, long)): txt[i+1] = "case 0x%X: %s%s" % (item, consequence, line_end)
-        else:                             txt[i+1] = "case %s: %s%s"  % (item, consequence, line_end)
+        __case(txt, item, consequence)
 
-        txt[i+2] = 0  # 0 indentation
-        txt[i+3] = "}\n"
+        txt.append(0)       # 0 indentation
+        txt.append("}")
         return txt
 
     def REPLACE_INDENT(self, txt_list):
         for i, x in enumerate(txt_list):
             if isinstance(x, (int, long)): txt_list[i] = "    " * x
 
-    def INDENT(self, txt_list):
+    def INDENT(self, txt_list, Add=1):
         for i, x in enumerate(txt_list):
-            if isinstance(x, (int, long)): txt_list[i] += 1
+            if isinstance(x, (int, long)): txt_list[i] += Add
 
     def VARIABLE_DEFINITIONS(self, VariableDB):
         return cpp._local_variable_definitions(VariableDB.get()) 

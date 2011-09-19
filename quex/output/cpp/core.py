@@ -8,7 +8,7 @@ import quex.engine.generator.state_machine_coder       as     state_machine_code
 from   quex.engine.generator.state_machine_decorator   import StateMachineDecorator
 import quex.engine.generator.state_router              as     state_router_generator
 from   quex.engine.generator.base                      import GeneratorBase
-from   quex.engine.analyzer.core                       import Analyzer
+import quex.engine.analyzer.core                       as     analyzer_generator
 from   quex.blackboard                                 import E_StateIndices, \
                                                               E_EngineTypes,  \
                                                               setup as Setup
@@ -37,17 +37,11 @@ class Generator(GeneratorBase):
     def do(self, RequiredLocalVariablesDB):
         LanguageDB = Setup.language_db
 
-        dsm = StateMachineDecorator(self.sm, 
-                                    self.state_machine_name, 
-                                    self.post_contexted_sm_id_list, 
-                                    BackwardLexingF=False, 
-                                    BackwardInputPositionDetectionF=False)
-
         # (*) Initialize the label and variable trackers
         variable_db.init(RequiredLocalVariablesDB)
         variable_db.require("input") 
 
-        init_address_handling(dsm.get_direct_transition_to_terminal_db())
+        init_address_handling({})
 
         # (*) Pre Context State Machine
         #     (If present: All pre-context combined in single backward analyzer.)
@@ -119,7 +113,7 @@ class Generator(GeneratorBase):
             txt.append(comment)
             txt.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
 
-        analyzer = Analyzer(self.pre_context_sm, E_EngineTypes.BACKWARD_PRE_CONTEXT)
+        analyzer = analyzer_generator.do(self.pre_context_sm, E_EngineTypes.BACKWARD_PRE_CONTEXT)
         msg      = state_machine_coder.do(analyzer)
         txt.extend(msg)
 
@@ -148,7 +142,7 @@ class Generator(GeneratorBase):
             txt.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
 
         # -- implement the state machine itself
-        analyzer           = Analyzer(self.sm, E_EngineTypes.FORWARD)
+        analyzer           = analyzer_generator.do(self.sm, E_EngineTypes.FORWARD)
         state_machine_code = state_machine_coder.do(analyzer)
         txt.extend(state_machine_code)
 
@@ -198,7 +192,7 @@ class Generator(GeneratorBase):
                                                        "\nEND: BACKWARD DETECTOR STATE MACHINE"))
             txt.append("\n")
 
-        analyzer      = Analyzer(SM, E_EngineTypes.BACKWARD_INPUT_POSITION)
+        analyzer      = analyzer_generator.do(SM, E_EngineTypes.BACKWARD_INPUT_POSITION)
         function_body = state_machine_coder.do(analyzer)
 
         txt.extend(function_body)

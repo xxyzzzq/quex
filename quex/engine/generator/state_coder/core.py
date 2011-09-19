@@ -14,18 +14,34 @@ def do(txt, TheState, TheAnalyzer):
 
     LanguageDB = Setup.language_db
 
-    if TheState.init_state_forward_f:
-        init_state_forward_entry(txt, TheState)
-    else:
-        entry.do(txt, TheState, TheAnalyzer)
+    # (*) Entry _______________________________________________________________
+    #     There is something special about the init state in forward direction:
+    #     It does not increment the input pointer initially. But when it is entered
+    #     from other states, is has to do so. Solution: Implement init state entry
+    #     as 'prologue' here (without increment) and epilogue (with increment) after 
+    #     the state. 
+    if TheState.init_state_forward_f: init_state_forward_entry(txt, TheState)
+    else:                             entry.do(txt, TheState, TheAnalyzer)
 
+    # (*) Access the triggering character _____________________________________
     input_do(txt, TheState)
-    transition_block.do(txt, TheState.transition_map, TheState.index, TheState.engine_type, TheState.init_state_f)
+
+    # (*) Transition Map ______________________________________________________
+    transition_block.do(txt, 
+                        TheState.transition_map, 
+                        TheState.index, 
+                        TheState.engine_type, 
+                        TheState.init_state_f, 
+                        TheAnalyzer=TheAnalyzer)
+
+    # (*) Drop Out ____________________________________________________________
     drop_out.do(txt, TheState, TheAnalyzer)
 
+    # ( ) Init state prologue (if necessary)
     if TheState.init_state_forward_f:
         init_state_forward_epilog(txt, TheState, TheAnalyzer)
 
+    # (*) Cleaning Up _________________________________________________________
     LanguageDB.REPLACE_INDENT(txt)
 
     for i, x in enumerate(txt):

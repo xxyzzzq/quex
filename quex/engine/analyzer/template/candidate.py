@@ -10,7 +10,8 @@ from   quex.engine.analyzer.template.state import TemplateState, \
                                                   get_iterable, \
                                                   get_state_list
 from   quex.blackboard import E_AcceptanceIDs, \
-                              E_TransitionN
+                              E_TransitionN, \
+                              E_StateIndices
 
 from itertools import ifilter
 """
@@ -118,13 +119,39 @@ class Cost:
         return result
                
 class TemplateStateCandidate(TemplateState):
-    def __init__(self, StateA, StateB):
+    def __init__(self, StateA, StateB, TheAnalyzer):
         """Compute the 'gain' that results from combining entries, drop_outs
            and transition maps. We start with a multi-attribute gain as 
            given by 'Cost' objects. At the end a scalar value
            is computed by the '.total()' member function.
         """
         TemplateState.__init__(self, StateA, StateB)
+
+        if TheAnalyzer is not None:
+            # All states in the state_index_list must be from the original analyzer
+            def check(StateIndexList):
+                for state_index in StateIndexList:
+                    assert TheAnalyzer.state_db.has_key(state_index)
+            check(self.state_index_list)
+            for entry, state_index_list in self.entry.iteritems():
+                check(state_index_list)
+            for drop_out, state_index_list in self.drop_out.iteritems():
+                check(state_index_list)
+
+            # Current Restriction: 
+            #    A state that has different entries for different source states cannot
+            #    be the target of a template transition map.
+            # Solution:
+            #    Make TemplateStateCandidate-s that contain a transition map with such 
+            #    a target so expensive that no gain whatsoever can compensate for it.
+            for interval, target in ifilter(lambda x: isinstance(x[1], TargetScheme), 
+                                            self.transition_map):
+                for bad_guy in ifilter(lambda target:     
+                                              target != E_StateIndices.DROP_OUT \
+                                          and not TheAnalyzer.state_db[target].entry.is_independent_of_source_state(),
+                                       target.scheme):
+                    self.__gain = - 1e37 # Let's be careful not to cause floating point exception.
+                    return 
 
         entry_gain          = _compute_gain(_entry_cost, self.entry,    
                                             StateA.entry, StateA.index, 
@@ -144,6 +171,7 @@ class TemplateStateCandidate(TemplateState):
 def _transition_map_gain(CombinedTM, TM_A, TM_B):
     """Estimate the gain that can be achieved by combining two transition
        maps into a signle one.
+    
     """
     a_cost        = _transition_cost(TM_A)
     b_cost        = _transition_cost(TM_B)
@@ -179,17 +207,17 @@ def _compute_gain(cost_function, Combined, A, StateA_Index, B, StateB_Index):
 
 def _entry_cost(X):
     if   isinstance(X, Entry):
-        La = len(ifilter(lambda x: x.acceptance_id != E_AcceptanceIDs.VOID, X.accepter))
+        La = len(filter(lambda x: x != E_AcceptanceIDs.VOID, X.accepter.iterkeys()))
         # Number of accepter elements: if(pre-context) acceptance = ...
         assignment_n  = La
         goto_n        = La
         cmp_n         = La
-        Lp = len(X.positioner)
+        Lp = len(X.positioner_db)
         # Assume that we store the positions without watching for pre-contexts
         assignment_n += Lp
 
         return Cost(AssignmentN = assignment_n, 
-                    ComparisonN = cmp_p, 
+                    ComparisonN = cmp_n, 
                     JumpN       = goto_n)
 
     elif isinstance(X, EntryBackward):
@@ -252,7 +280,8 @@ def _drop_out_cost(X):
         assert False
 
 def _transition_cost(TM):
-    """Computes the storage consumption of a transition map."""
+    """Computes the storage consumption of a transition map.
+    """
     interval_n = len(TM)
     border_n   = interval_n - 1
     # 

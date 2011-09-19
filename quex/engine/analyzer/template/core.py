@@ -221,11 +221,13 @@ class CombinationDB:
                      is computed.
     """
     def __init__(self, TheAnalyzer, MinGain):
+        assert MinGain >= 0
         # Database of states that are subject to combination tries.
         # The init state and states without transition map are excluded.
         self.__db = dict(ifilter(lambda x:     len(x[1].transition_map) != 0 
                                            and not x[1].init_state_f,
                                  TheAnalyzer.state_db.iteritems()))
+        self.__analyzer    = TheAnalyzer
         self.__min_gain    = float(MinGain)
         self.__gain_matrix = self.__base()
 
@@ -240,7 +242,6 @@ class CombinationDB:
         # The 'candidate' is a TemplateStateCandidate which is derived from 
         # TemplateState. Thus, it can play the TemplateState role without
         # modification. Only, a meaningful index has to be assigned to it.
-        candidate.set_index(index.get())
         self.enter(candidate)
         return True
 
@@ -248,7 +249,7 @@ class CombinationDB:
         """RETURNS: List of TemplateStates. Those are the states that have been 
                     generated from combinations of analyzer states.
         """
-        return filter(lambda x: isinstance(x, TemplateState), self.itervalues())
+        return filter(lambda x: isinstance(x, TemplateState), self.__db.itervalues())
 
     @property
     def gain_matrix(self):
@@ -278,7 +279,8 @@ class CombinationDB:
         for i, i_state in enumerate(state_list):
             for k_state in islice(state_list, i + 1, None):
 
-                candidate = TemplateStateCandidate(i_state, k_state)
+                candidate = TemplateStateCandidate(i_state, k_state, self.__analyzer)
+
                 if candidate.gain >= self.__min_gain:
                     result[n] = (i_state.index, k_state.index, candidate)
                     n += 1
@@ -295,15 +297,18 @@ class CombinationDB:
            the NewState.
         """
         assert isinstance(NewState, TemplateState)
+        # The new state index must be known. It is used in the gain matrix.
+        # But, the new state does not need to be entered into the db, yet.
+        NewState.set_index(index.get())
 
         # Avoid extensive 'appends' by single allocation (see initial computation)
-        MaxIncrease = (len(self.__db) - 1)
+        MaxIncrease = len(self.__db) 
         n           = len(self.__gain_matrix)
         MaxSize     = len(self.__gain_matrix) + MaxIncrease
         self.__gain_matrix.extend([None] * MaxIncrease)
 
         for state in self.__db.itervalues():
-            candidate = TemplateStateCandidate(NewState, state)
+            candidate = TemplateStateCandidate(NewState, state, self.__analyzer)
 
             if candidate.gain >= self.__min_gain:
                 self.__gain_matrix[n] = (state.index, NewState.index, candidate)
@@ -313,7 +318,8 @@ class CombinationDB:
             del self.__gain_matrix[n:]
 
         self.__gain_matrix.sort(key=lambda x: x[2].gain)
-        self.__db[new_index] = new_state
+
+        self.__db[NewState.index] = NewState
 
     def pop_best(self):
         """Determines the two states that result in the greatest gain if they are 
@@ -334,37 +340,30 @@ class CombinationDB:
         i, k, candidate = self.__gain_matrix.pop()
 
         # Delete related entries in __gain_matrix and database 
-        self.__gain_matrix_delete(i, k)
+        self.__gain_matrix_delete(i)
+        self.__gain_matrix_delete(k)
+
+        # If the following fails, it means that states have been combined twice
         del self.__db[i]
         del self.__db[k]
 
         return candidate
 
-    def __gain_matrix_delete(self, I, K):
+    def __gain_matrix_delete(self, StateIndex):
         """Delete all related entries in the '__gain_matrix' that relate to states
            I and K. This function is used after the decision has been made that 
            I and K are combined into a TemplateState. None of them can be combined
            with another state anymore.
         """
-        X = (I, K)
-        L = len(self.__gain_matrix)
-        p = 0
-        while p < L:
-            entry = self.__gain_matrix[p]
-            # Does entry contain 'i' or 'k'? If so the subsequent entries are 
-            # likely to contain them two. Combine the 'del' for the chunk of
-            # adjacent entries.
-            if entry[1] in X or entry[2] in X:
-                # Determine the end of the region to be deleted
-                q = p + 1
-                while q < L:
-                    entry = self.__gain_matrix[q]
-                    if entry[1] not in X and entry[2] not in X: break
-                    q += 1
-                del self.__gain_matrix[p:q]
-                L -= (q - p)
+        size = len(self.__gain_matrix)
+        i    = 0
+        while i < size:
+            entry = self.__gain_matrix[i]
+            if entry[0] == StateIndex or entry[1] == StateIndex:
+                del self.__gain_matrix[i]
+                size -= 1
             else:
-                p += 1
+                i += 1
 
         return 
 
