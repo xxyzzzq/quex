@@ -63,18 +63,17 @@ def _doors(txt, TheState, PositionRegisterMap, LabelF):
         # (*) Uniform state entries from all entering states.
         #     Assume that 'GOTO' can identify its independent_of_source_state target states. Thus, no separate
         #     entries are required.
-        ##for from_state_index, positioner in TheEntry.positioner_db.iteritems():
-        ##    LanguageDB.STATE_ENTRY(txt, TheState, from_state_index, NewlineF=False)
-        ##    txt.append("%s\n" % LanguageDB.GOTO(TheState.index))
         if LabelF: LanguageDB.STATE_ENTRY(txt, TheState)
         __do(txt, TheEntry.positioner_prototype())
         return
     else:
         # (*) Non-independent_of_source_state state entries
         for from_state_index, positioner in TheEntry.get_positioner_db().iteritems():
-            LanguageDB.STATE_ENTRY(txt, TheState, from_state_index, NewlineF=False)
-            __do(txt, positioner)
-            txt.append(" %s\n" % LanguageDB.GOTO(TheState.index))
+            if TheEntry.special_door_from_state(from_state_index):
+                LanguageDB.STATE_ENTRY(txt, TheState, from_state_index, NewlineF=False)
+                __do(txt, positioner)
+                txt.append(" %s\n" % LanguageDB.GOTO(TheState.index))
+
         if LabelF: LanguageDB.STATE_ENTRY(txt, TheState)
 
 def _accepter(txt, Accepter):

@@ -8,9 +8,13 @@ from collections import defaultdict
 import sys
 
 class TemplateState(AnalyzerState):
-    """A TemplateState is a state that is implemented to represent two states.
-       Tt implements the general scheme of both states once, and keeps track of
-       the minor particularities. The TemplateState is constructed by 
+    """A TemplateState is a state that is implemented to represent multiple
+       states.  Tt implements the general scheme and keeps track of the
+       particularities. The TemplateState is constructed by 
+
+       The template states are combined successively by the combination of 
+       two states where each one of them may also be a TemplateState. The
+       combination happes by means of the functions:
        
           combine_maps(...) which combines the transition maps of the 
                             two states into a single transition map that
@@ -19,6 +23,8 @@ class TemplateState(AnalyzerState):
           combine_scheme(...) which combines DropOut and Entry schemes
                               of the two states.
 
+       Notably, the derived class TemplateStateCandidate takes an important
+       role in the construction of the TemplateState.
     """
     def __init__(self, StateA, StateB):
         # The 'index' remains None, as long as the TemplateState is not an 

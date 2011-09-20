@@ -40,6 +40,7 @@ class TransitionCode:
         assert OnReloadOK_Str    is None or isinstance(OnReloadOK_Str, (str, unicode))
         assert OnReloadFail_Str  is None or isinstance(OnReloadFail_Str, (str, unicode))
         assert GotoReload_Str    is None or isinstance(GotoReload_Str, (str, unicode))
+
         if GotoReload_Str is not None:
             assert OnReloadOK_Str is None
             assert OnReloadFail_Str is None
@@ -70,7 +71,8 @@ class TransitionCode:
             # If the entry of the target state is uniform (the same from every 'SourceState'),
             # then we do not need to goto it through a specific door (FromStateIndex = None).
             # If the 'Analyzer == None' we assume that all related states have independent_of_source_state entries.
-            if TheAnalyzer is None or TheAnalyzer.state_db[Target].entry.is_independent_of_source_state():
+            if    TheAnalyzer is None \
+               or not TheAnalyzer.state_db[Target].entry.special_door_from_state(StateIndex):
                 self.__code = LanguageDB.GOTO(Target, FromStateIndex=None, EngineType=EngineType)
             else:
                 self.__code = LanguageDB.GOTO(Target, StateIndex, EngineType)

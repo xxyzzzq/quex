@@ -42,8 +42,6 @@ def do(txt, TheState, TheAnalyzer):
         init_state_forward_epilog(txt, TheState, TheAnalyzer)
 
     # (*) Cleaning Up _________________________________________________________
-    LanguageDB.REPLACE_INDENT(txt)
-
     for i, x in enumerate(txt):
         assert not isinstance(x, list), repr(txt[i-2:i+2])
         assert not x is None, txt[i-2:i+2]

@@ -1,6 +1,6 @@
 import quex.engine.generator.state_coder.core as     state_coder
 from   quex.blackboard                        import setup as Setup
-import quex.engine.generator.template_coder   as template_coder
+import quex.engine.generator.template_coder   as     template_coder
 # import quex.engine.generator.paths_coder      as paths_coder
 
 from   collections import defaultdict
@@ -34,6 +34,9 @@ def do(TheAnalyzer):
     for state in sorted(ifilter(lambda x: x.index in remainder, TheAnalyzer.state_db.itervalues()), 
                         key=lambda x: frequency_db[x.index], reverse=True):
         state_coder.do(txt, state, TheAnalyzer) 
+
+    LanguageDB = Setup.language_db
+    LanguageDB.REPLACE_INDENT(txt)
 
     return txt
 
