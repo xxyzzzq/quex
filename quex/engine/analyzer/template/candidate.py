@@ -1,4 +1,7 @@
 # vim:set encoding=utf8:
+"""
+(C) 2010-2011 Frank-Rene Schäfer
+"""
 from   quex.engine.analyzer.core import Entry, \
                                         EntryBackward, \
                                         EntryBackwardInputPositionDetection, \
@@ -14,73 +17,65 @@ from   quex.blackboard import E_AcceptanceIDs, \
                               E_StateIndices
 
 from itertools import ifilter
-"""
-(C) 2010-2011 Frank-Rene Schäfer
 
-If two states with non-uniform frames (entries and drop-outs) are 
-to be combined, then this requires extra effort. Consider the following
-case:
+class TemplateStateCandidate(TemplateState):
+    """A TemplateStateCandidate determines a tentative template combination 
+       of two states (where each one of them may already be a TemplateState).
+       It sets up a TemplateState and determines the 'gain of combination'.
 
-        ENTRY0:                       ENTRY1:
-           pos[12] = input_p             pos[0] = input_p
-           pos[5]  = input_p          
-                                      
-        MAP:                          MAP:
-           ... recurse -> ENTRY0         ... recurse --> ENTRY1
-           ... reload(ENTRY0, DROP0)     ... reload(ENTRY1, DROP1)
-                                      
-        DROP0:                        DROP1:
-           goto TERMINAL_15;             goto TERMINAL_FAILURE;
+       The 'Cost' class is used to describe gain/cost as a multi-attribute
+       measure. The member '.total()' determines a scalar value by means
+       of a heuristics.
+    """
+    def __init__(self, StateA, StateB, TheAnalyzer):
+        TemplateState.__init__(self, StateA, StateB)
 
-Both states differ in the way they are entered, and the way that they
-are dropped out. Consequently, the reload procedure differs, too. The
-entries are still be routed by the label, RELOAD and DROP-OUT procedures
-are identified by the template key (given at entry). A combination may
-look like:
+        # Inadmissible TemplateState combinations will have a 'self.__gain < 0'
+        if not self.__admissibility_check(TheAnalyzer): return
 
-        ENTRY0:
-           template_key = 1
-        ENTRY0_intern:
-           pos[12] = input_p
-           pos[5]  = input_p
-           acceptance_id = 16;
-           goto MAP;
+        entry_gain          = _compute_gain(_entry_cost, self.entry,    
+                                            StateA.entry, StateA.index, 
+                                            StateB.entry, StateB.index)
+        drop_out_gain       = _compute_gain(_drop_out_cost, self.drop_out, 
+                                            StateA.drop_out, StateA.index, 
+                                            StateB.drop_out, StateB.index)
+        transition_map_gain = _transition_map_gain(self.transition_map, 
+                                                   StateA.transition_map, StateB.transition_map)
 
-        ENTRY1:
-           template_key = 2
-        ENTRY1_intern:
-           pos[0] = input_p
-           goto MAP;
+        self.__gain = (entry_gain + drop_out_gain + transition_map_gain).total()
 
-        MAP:
-           input_p++;
-           ... recurse:
-               -- simply: if all recursive states do not change position storage.
-               goto MAP; 
-               -- or:
-               switch( template_key ) {
-               case 1: RELOAD(ENTRY0_intern, DROP);
-               case 2: RELOAD(ENTRY1_intern, DROP);
-               }
-           ... reload:
-               switch( template_key ) {
-               case 1: RELOAD(ENTRY0_intern, DROP);
-               case 2: RELOAD(ENTRY1_intern, DROP);
-               }
+    def __admissibility_check(self, TheAnalyzer):
+        if TheAnalyzer is None: return True
 
-        DROP:
-           switch( template_key ) {
-           case 1: goto TERMINAL_15;
-           case 2: goto FAILURE;
-           }
-    
-This file contains functions that compute the 'gain' (= - 'cost') when two
-states (one or both of them may be template states) are combined. There is no
-reason to give a template state a 'weight' corresponding to the number of state
-it combines. At this point in time, both considered states are already 'states'
-and we only want to find out what is getting better (if actually) in case both
-are combined.  
-"""
+        # All states in the state_index_list must be from the original analyzer
+        def check(StateIndexList):
+            for state_index in StateIndexList:
+                assert TheAnalyzer.state_db.has_key(state_index)
+        check(self.state_index_list)
+        for entry, state_index_list in self.entry.iteritems():
+            check(state_index_list)
+        for drop_out, state_index_list in self.drop_out.iteritems():
+            check(state_index_list)
+
+        # Current Restriction: 
+        #    A state that has different entries for different source states cannot
+        #    be the target of a template transition map.
+        # Solution:
+        #    Set the of TemplateStateCandidate-s that contain a transition map with 
+        #    such a target to negative, so they are not considered.
+        for interval, target in ifilter(lambda x: isinstance(x[1], TargetScheme), 
+                                        self.transition_map):
+            for bad_guy in ifilter(lambda target:     
+                                          target != E_StateIndices.DROP_OUT \
+                                      and not TheAnalyzer.state_db[target].entry.is_independent_of_source_state(),
+                                   target.scheme):
+                self.__gain = - 1e37 # Let's be careful not to cause floating point exception.
+                return False
+        return True
+
+    @property 
+    def gain(self):
+        return self.__gain
 
 class Cost:
     """We start of with a multi-attribute cost, that is then translated into a
@@ -118,56 +113,6 @@ class Cost:
         result += self.__jump_n       * 8  # Bytes (= 4 bytes command + 4 bytes address)
         return result
                
-class TemplateStateCandidate(TemplateState):
-    def __init__(self, StateA, StateB, TheAnalyzer):
-        """Compute the 'gain' that results from combining entries, drop_outs
-           and transition maps. We start with a multi-attribute gain as 
-           given by 'Cost' objects. At the end a scalar value
-           is computed by the '.total()' member function.
-        """
-        TemplateState.__init__(self, StateA, StateB)
-
-        if TheAnalyzer is not None:
-            # All states in the state_index_list must be from the original analyzer
-            def check(StateIndexList):
-                for state_index in StateIndexList:
-                    assert TheAnalyzer.state_db.has_key(state_index)
-            check(self.state_index_list)
-            for entry, state_index_list in self.entry.iteritems():
-                check(state_index_list)
-            for drop_out, state_index_list in self.drop_out.iteritems():
-                check(state_index_list)
-
-            # Current Restriction: 
-            #    A state that has different entries for different source states cannot
-            #    be the target of a template transition map.
-            # Solution:
-            #    Make TemplateStateCandidate-s that contain a transition map with such 
-            #    a target so expensive that no gain whatsoever can compensate for it.
-            for interval, target in ifilter(lambda x: isinstance(x[1], TargetScheme), 
-                                            self.transition_map):
-                for bad_guy in ifilter(lambda target:     
-                                              target != E_StateIndices.DROP_OUT \
-                                          and not TheAnalyzer.state_db[target].entry.is_independent_of_source_state(),
-                                       target.scheme):
-                    self.__gain = - 1e37 # Let's be careful not to cause floating point exception.
-                    return 
-
-        entry_gain          = _compute_gain(_entry_cost, self.entry,    
-                                            StateA.entry, StateA.index, 
-                                            StateB.entry, StateB.index)
-        drop_out_gain       = _compute_gain(_drop_out_cost, self.drop_out, 
-                                            StateA.drop_out, StateA.index, 
-                                            StateB.drop_out, StateB.index)
-        transition_map_gain = _transition_map_gain(self.transition_map, 
-                                                   StateA.transition_map, StateB.transition_map)
-
-        self.__gain = (entry_gain + drop_out_gain + transition_map_gain).total()
-
-    @property 
-    def gain(self):
-        return self.__gain
-
 def _transition_map_gain(CombinedTM, TM_A, TM_B):
     """Estimate the gain that can be achieved by combining two transition
        maps into a signle one.
@@ -197,11 +142,14 @@ def _compute_gain(cost_function, Combined, A, StateA_Index, B, StateB_Index):
        adaption it is possible to treat TemplateState-s and AnalyzerState-s in
        a unified manner.
     """
+    def cost(Iterable):
+        return sum(map(lambda element: cost_function(element[0]), Iterable), Cost())
+
     # Cost of each object if separated in two states
-    a_cost   = sum(map(lambda element: cost_function(element[0]), get_iterable(A, StateA_Index)), Cost())
-    b_cost   = sum(map(lambda element: cost_function(element[0]), get_iterable(B, StateB_Index)), Cost())
+    a_cost        = cost(get_iterable(A, StateA_Index))
+    b_cost        = cost(get_iterable(B, StateB_Index))
     # Cost if it is combined
-    combined_cost = sum(map(lambda element: cost_function(element[0]), Combined.iteritems()), Cost())
+    combined_cost = cost(Combined.iteritems())
 
     return (a_cost + b_cost) - combined_cost
 

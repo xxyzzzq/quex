@@ -515,8 +515,9 @@ class AnalyzerState(object):
             ## if state.is_acceptance(): assert state.transitions().is_empty()
             pass
 
-        self.transition_map      = state.transitions().get_trigger_map()
-        self.__target_index_list = state.transitions().get_map().keys()
+        self.transition_map                    = state.transitions().get_trigger_map()
+        self.map_target_index_to_character_set = state.transitions().get_map()
+        self.__target_index_list               = state.map_target_index_to_character_set.keys()
 
         # (*) Drop Out
         if   EngineType == E_EngineTypes.FORWARD: 
@@ -560,6 +561,9 @@ class AnalyzerState(object):
 class BASE_Entry:
     def is_independent_of_source_state(self):
         assert False
+    def special_door_from_state(self, StateIndex):
+        """Require derived classes to be more specific, if necessary."""
+        return not self.is_independent_of_source_state()
 
 class Entry(BASE_Entry):
     """An entry has potentially two tasks:
@@ -705,6 +709,10 @@ class Entry(BASE_Entry):
 
     def is_independent_of_source_state(self): 
         return self.__independent_of_source_state_f
+
+    def special_door_from_state(self, StateIndex):
+        if self.__independent_of_source_state_f: return False
+        return len(self.positioner_db[StateIndex]) != 0
 
     def positioner_prototype(self):
         assert self.__independent_of_source_state_f

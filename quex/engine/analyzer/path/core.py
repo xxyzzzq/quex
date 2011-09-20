@@ -21,7 +21,7 @@ from operator    import itemgetter
 
 
    The states 0, 1, and 2 can be implemented by a 'path walker', that is 
-   a common transition map, that is preceeded by a single character check.
+   a common transition map, that is preceded by a single character check.
    The single character check changes along a fixed path: the sequence of
    characters 'f', 'o', 'r'. This is shown in the following pseudo-code:
 
@@ -35,9 +35,10 @@ from operator    import itemgetter
         elif x > 'z': drop out
         else:         goto STATE_4
 
-   It is assumed that the array with the character sequence ends with a 
-   terminating charater (e.g. zero, but must be different from buffer limit code).
-   This way it can be detected when to trigger to the correspondent end state.
+   It is assumed that the array with the character sequence ends with a
+   terminating character (e.g. zero, but must be different from buffer limit
+   code).  This way it can be detected when to trigger to the correspondent end
+   state.
 
    For a state that is part of a 'path', a 'goto state' is transformed into a
    'set path_iterator' plus a 'goto path'. The path iterator determines the
@@ -60,7 +61,7 @@ from operator    import itemgetter
    Result ______________________________________________________________________
 
 
-   The result of analyzis of path compression is:
+   The result of analysis of path compression is:
     
                        A dictionary mapping  
                   
@@ -206,15 +207,32 @@ def filter_longest_options(path_list, equivalence_db):
     return
 
 class CharacterPath:
-    def __init__(self, StartStateIndex, Skeleton, StartCharacter):
-        """Skeleton = Transition map of the states in the path, i.e. a map
+    """In character path a transition map looks like the following:
 
-                      target state index ---> trigger set
-        """
-        assert isinstance(StartStateIndex, long)
+       PathWalker:
+           if input == path[i]: 
+              i += 1
+              goto PathWalker
+
+           elif path terminated:
+              goto PathEndState;
+
+           else:
+              ...
+              remaining transition map
+              ...
+
+       Skeleton = Transition map of the states in the path, i.e. a map
+
+                  target state index ---> trigger set
+    """
+    def __init__(self, StartState, StartCharacter, Skeleton):
+        assert isinstance(StartState, AnalyzerState)
+        assert isinstance(StartCharacter, (int, long))
         assert isinstance(Skeleton, dict)
-        self.__start_state_index = StartStateIndex
-        self.__sequence          = [ (StartStateIndex, StartCharacter) ]
+
+        self.__start_state_index = StartState.index
+        self.__sequence          = [ (StartState.index, StartCharacter) ]
 
         self.__skeleton          = Skeleton
         self.__skeleton_key_set  = set(Skeleton.keys())
@@ -326,7 +344,7 @@ class CharacterPath:
         ## ?? Why would it not? (fschaef9: 10y04m11d)
 
         if self.__wildcard is not None: wildcard_plug = None # unused
-        else:                       wildcard_plug = -1   # used before
+        else:                           wildcard_plug = -1   # used before
 
         transition_map_key_set = set(TransitionMap.keys())
         # (1) Target States In TransitionMap and Not in Skeleton
@@ -473,17 +491,18 @@ def __find_begin(sm, StateIndex, InitStateIndex):
        
        In any case, it is tried to find a path begin in the target state.
        Even if the target state is part of a path, it might have non-path
-       targets that lead to pathes. Thus,
+       targets that lead to paths. Thus,
 
-       IT CANNOT BE AVOIDED THAT THE RESULT CONTAINS PATHES WHICH ARE 
-                           SUB-PATHES OF OTHERS.
+       IT CANNOT BE AVOIDED THAT THE RESULT CONTAINS PATHS WHICH ARE 
+                           SUB-PATHS OF OTHERS.
     """
     global __find_begin_touched_state_idx_list
 
     State       = sm.states[StateIndex]
     result_list = []
 
-    transition_map = State.transitions().get_map()
+    transition_map = State.map_target_index_to_character_set
+
     for target_idx, trigger_set in transition_map.iteritems():
         if __find_begin_touched_state_idx_list.has_key(target_idx): continue
         __find_begin_touched_state_idx_list[target_idx] = True
@@ -505,7 +524,7 @@ def __find_begin(sm, StateIndex, InitStateIndex):
         # a 'deepcopy' is applied to disconnect it, see __find_continuation().
         del skeleton[target_idx]        # Delete reference to 'target_idx->trigger_set'
 
-        path = CharacterPath(StateIndex, skeleton, path_char)
+        path = CharacterPath(State, path_char, skeleton)
             
         result_list.extend(__find_continuation(sm, target_idx, path))
 
@@ -518,7 +537,7 @@ def __find_continuation(sm, StateIndex, the_path):
     State       = sm.states[StateIndex]
     result_list = []
 
-    transition_map = State.transitions().get_map()
+    transition_map = State.map_target_index_to_character_set
 
     single_char_transition_found_f = False
     for target_idx, trigger_set in transition_map.items():

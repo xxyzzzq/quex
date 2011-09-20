@@ -1,7 +1,9 @@
-"""Path Compression ___________________________________________________________
+"""(C) Frank-Rene Schaefer
 
-   Consider the file 'core_engine/state_machine/compression/paths.py' for 
-   a detailed explanation of path compression.
+   Path Compression ___________________________________________________________
+
+   Consider the file 'engine/analyzer/path/core.py' for a detailed explanation 
+   of path compression.
 
    Code Generation ____________________________________________________________
 
@@ -44,11 +46,11 @@
 
    (3) State entries
 
-       When pathes are keywords, then states that belong to a path are not
+       It is very plausible that states that belong to a path are not
        entered except through 'path walk' along the character sequence.
-       Theoretically, however, a state of a path might be entered from
-       everywhere. Thus, at least for those states that are entered from
-       somewhere, a path entry must be provided. 
+       In general, however, a state of a path might be entered from
+       anywhere. Thus, at least for those states that are entered from
+       elsewhere, a path entry must be provided. 
 
        A path entry consists of: setting the path iterator and goto the
        related path walker. Additionally, state attributes, such as 
@@ -65,7 +67,7 @@
             
     (4) State router, this might be necessary, if states are non-uniform.
         Because, after reload the current state entry must passed by again.
-        In buffer based analyzis no state router is required. Example of 
+        In buffer based analysis no state router is required. Example of 
         a state router (same as for template compression):
         
         
@@ -92,7 +94,6 @@ from   quex.blackboard import setup as Setup
 
 from   copy import deepcopy
 import sys
-
 
 LanguageDB = None # Set during call to 'do()', not earlier
 
@@ -131,49 +132,6 @@ def _do(PathList, TheAnalyzer, UniformOnlyF):
 
     assert type(PathList) == list
 
-    LanguageDB = Setup.language_db
-    state_db   = TheAnalyzer.state_db
-    SM_ID      = TheAnalyzer.state_machine_id
-
-    def __equal(SkeletonA, SkeletonB):
-        if len(SkeletonA) != len(SkeletonB): return False
-
-        for key, trigger_set in SkeletonA.items():
-            if SkeletonB.has_key(key) == False: return False
-            if not trigger_set.is_equal(SkeletonB[key]): return False
-        return True
-
-    def __add_to_matching_path(path, path_db):
-        assert isinstance(path, paths.CharacterPath)
-        assert isinstance(path_db, dict)
-
-        prototype_state = state_db[path.sequence()[0][0]]
-        for index, path_list in path_db.items():
-            # If uniformity is required, only such paths can be combined
-            # where the states are uniform with each other. Assume that 
-            # the states inside a path are 'uniform', so only one state
-            # of each as to be checked.
-            path_list_prototype_state = state_db[path_list[0].sequence()[0][0]] 
-            if UniformOnlyF and not prototype_state.is_equivalent(path_list_prototype_state): 
-                continue
-                
-            for candidate in path_list:
-                # Compare the skeletons (remaining trigger maps)
-                if __equal(path.skeleton(), candidate.skeleton()):
-                    path_list.append(path)
-                    return True
-        return False
-
-    # -- Sort the paths according their skeleton. Paths with the 
-    #    same skeleton will use the same pathwalker.
-    path_db                = {}
-    for candidate in PathList:
-        assert isinstance(candidate, paths.CharacterPath)
-        # Is there a path with the same skeleton?
-        if __add_to_matching_path(candidate, path_db): continue
-        # If there is no equivalent path, then add a new 'prototype'
-        path_walker_state_index = index.get()
-        path_db[path_walker_state_index] = [ candidate ]
 
     # -- Create 'PathWalkerState' objects that can mimik state machine states.
     # -- Collect all indices of states involved in paths

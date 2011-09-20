@@ -15,7 +15,7 @@ import sys
 
    The idea behind 'template compression' is to combine the transition maps of
    multiple similar states into a single transition map. The difference in the
-   transition maps are dealt with by an adaption table. For example the three
+   transition maps is dealt with by an adaption table. For example the three
    states
 
          .---- 'a' --> 2        .---- 'a' --> 2        .---- 'a' --> 2
@@ -43,12 +43,13 @@ import sys
                        Target1  5     5     drop
                        Target2  drop  drop  5
 
-   Practically, this means that a 'goto state' is transformed into a 'set state
-   key' plus a 'goto template'. The state key tells which column of the table
-   is to be used in the transition map. Thus, a state that is implemented in a
-   template is identified by 'template index' and 'state key', i.e.
+   The columns in the table tell how the template behaves if it operates on
+   behalf of a certain state--here A, B, and C. Practically, a state_key is
+   associated with each state, e.g. 0 for state A, 1 for state B, and 2 for
+   state C.  Thus, a state that is implemented in a template is identified by
+   'template index' and 'state key', i.e.
 
-            templated state <--> (template index, state key)
+            templated state <--> (template index, state_key)
 
    The combination of multiple states reduces memory consumption. The
    efficiency increases with the similarity of the transition maps involved.
@@ -81,87 +82,53 @@ import sys
    further useful combinations can be found. 
 
    Each state has a transition map, i.e. an object that tells on what character
-   code intervals the analyzer jump to what states:
+   code the analyzer jump to what states:
 
              transition map:  interval  --> target state
 
    The algorithm works as follows:
 
-      (1) Compute for each combination candidate of two states the 
-          expected 'gain' if they were combined. This happens by 
-          comparison of the transition maps.
+      (1) Compute for each possible pair of states a TemplateStateCandidate. 
 
-      (2.a) Do not consider to combine states where the 'gain' is negative.
+          (1.1) Compute the 'gain of combination' for candidate.
 
-      (2.b) Take the pair of states that provide the highest gain.
+          (1.2) Do not consider to combine states where the 'gain' is 
+                below MinGain.
+
+          (1.3) Register the candidate in 'gain_matrix'.
+
+      (4) Pop best candidate from gain_matrix. If no more reasonable
+          candidates present, then stop.
             
-            Create a TemplateCombination object based on the two states.
+      (5) With given candidate goto (1.1)
 
-            Enter the TemplateCombination as a normal 'state' into the database.
-
-            Goto (1)
+   The above algorithm is supported by TemplateStateCandidate being derived
+   from TemplateState.
 
    Measurement of the 'Gain Value' ____________________________________________
 
-   The 'gain' shall **represent** the amount of memory that can be spared if
-   two trigger maps are combined. The number does not necessarily relate
-   directly to a physical byte consumption. It is only required, that
-   if a combination of (A, B) spares more than a combination of (C, D) then
-   the gain value of (A, B) must be greater than the gain value for (C, D).
+   The measurement of the gain value happens inside a TemplateStateCandidate. 
+   It is a function of the similarity of the states. In particular the entries, 
+   the drop_outs and the transition map is considered. 
 
-   The measurement of 'gain' is done in two steps:
+   Transition Map of a TemplateState __________________________________________
 
-       (1) get_transition_map_metric(A, B): computes the number of borders of a
-           transition map that would combine the two trigger
-           maps A and B. Also, it combines the number of target
-           set combinations, i.e. the number of X0, X1, X3 ...
-           in the example above.
+   The transition map of a template state is a list of (interval, target)
+   tuples as it is in a normal AnalyzerState. In an AnalyzerState the target
+   can only be a scalar value indicating the target state. The target object of
+   a TemplateState, though, can be one of the following:
 
-       (2) compute_combination_gain(...): computes a scalar value that indicates
-           the 'gain' in terms of program space, if the two trigger
-           maps are combined. This function is controlled by the
-           coefficient 'CX' that indicates the ratio between the
-           'normal cost' of transition and the cost of routing, i.e.
-           entering the right target state according to the adapted
-           trigger map.
+        E_StateIndices.RECURSIVE -- which means that the template recurses
+                                    to itself.
 
-   both functions work with normal state trigger maps and objects of class
-   TemplateCombination.
+        Scalar Value X           -- All states that are involved in the template
+                                    trigger for the given interval to the same
+                                    state given by 'X'.
 
-   Class TemplateCombination __________________________________________________
-
-   Combined trigger maps are stored in objects of type 'TemplateCombination'.
-   As normal trigger maps they are built of a list of tuples:
-
-              (I0, TL0),       # meaning interval I0 triggers to TL0
-              (I1, TL1),       #                  I1 triggers to TL1
-              .... 
-              (In, TLn)        #                  In triggers to TLn
-
-   where the intervals I0 to In are adjacent intervals starting with 
-
-              I0.begin == - sys.maxint
-
-   and ending with 
-
-              In.end   == sys.maxint
-
-   In 'normal trigger maps' the target state indices TL0 to TLn are scalar
-   values. In a 'TemplateCombination' object, the 'target' can be a scalar
-   value or a list. Accordingly, this means that TLk is
-
-        a scalar, if Ik maps to the same target state for all involved 
-                  states.
-
-                  If TLk == E_StateIndices.RECURSIVE, then all involved states
-                  trigger recursively.
-
-        a list, if Ik maps to different target states for each involved
-                state. Then, Tlk[i] is the target state to which the 
-                state with key 'i' triggers.  
-
-   The state key has been mentioned above. It designates the column in the
-   adaption table that is required for each state involved.
+        TargetScheme T           -- which means that the target state depends 
+                                    on the state_key. 'T[state_key]' tells the
+                                    target state when the templates operates
+                                    for a state given by 'state_key'.
 
 """
 
