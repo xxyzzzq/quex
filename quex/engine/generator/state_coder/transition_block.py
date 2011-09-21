@@ -9,6 +9,12 @@ from   copy      import copy
 from   operator  import itemgetter
 from   itertools import imap
 
+def debug(TransitionMap, Function):
+    print "##--BEGIN %s" % Function
+    for entry in TransitionMap:
+        print entry[0]
+    print "##--END %s" % Function
+
 def do(txt, TransitionMap, 
        StateIndex       = None,  EngineType     = E_EngineTypes.FORWARD, 
        InitStateF       = False, 
@@ -30,7 +36,6 @@ def do(txt, TransitionMap,
     # NOTE: The only case where the buffer reload is not required are empty states,
     #       AND states during backward input position detection!
     if len(TransitionMap) == 0: return 
-
 
     # The range of possible characters may be restricted. It must be ensured,
     # that the occurring characters only belong to the admissible range.
@@ -83,6 +88,7 @@ def __get_code(TriggerMap):
         else: 
             if   __get_switch(txt, TriggerMap):    pass
             elif __get_bisection(txt, TriggerMap): pass
+            else:                                  assert False
 
     # (*) indent by four spaces (nested blocks are correctly indented)
     #     delete the last newline, to prevent additional indentation
@@ -90,6 +96,7 @@ def __get_code(TriggerMap):
     return txt
 
 def __get_bisection(txt, TriggerMap):
+
     L = len(TriggerMap)
     preferred_section_index = int(L / 2)
     section_index           = preferred_section_index
@@ -289,7 +296,7 @@ def __get_switch_cases_info(TriggerMap):
         sum_interval_size[i]          = sum_interval_size[i-1]
         sum_drop_out_interval_size[i] = sum_drop_out_interval_size[i-1]
         if target.drop_out_f: sum_drop_out_interval_size[i] += interval.size()
-        else:                    sum_interval_size[i]          += interval.size()
+        else:                 sum_interval_size[i]          += interval.size()
 
     switch_case_range_list = []
     p = 0
@@ -404,31 +411,29 @@ def __separate_buffer_limit_code_transition(TransitionMap, EngineType):
            "Found: %s" % repr(EngineType)
     return
 
-def __prune_character_range(TransitionMap):
-    assert len(TransitionMap) != 0
+def __prune_character_range(transition_map):
+    assert len(transition_map) != 0
 
     LowerLimit = 0
     UpperLimit = Setup.get_character_value_limit()
 
-    if UpperLimit == -1: return TransitionMap
+    if UpperLimit == -1: return transition_map
 
     # (*) Delete any entry that lies completely below the lower limit
-    for i, entry in enumerate(TransitionMap):
-        interval, target = entry
-        if interval.end >= LowerLimit: break
-    if i != 0: del TransitionMap[:i]
-
-    if TransitionMap[0][0].begin < LowerLimit:
-        TransitionMap[0][0].begin = LowerLimit
-
-    # (*) Delete any entry that lies completely above the upper limit
-    for i, entry in enumerate(reversed(TransitionMap)):
-        interval, target = entry
-        if interval.begin <= UpperLimit: break
-    if i != 0: TransitionMap[len(TransitionMap) - i:]
-
-    if TransitionMap[-1][0].end < UpperLimit + 1:
-        TransitionMap[-1][0].end = UpperLimit + 1
+    i    = 0
+    size = len(transition_map)
+    while i < size:
+        interval, target = transition_map[i]
+        if   interval.end < LowerLimit: 
+            del transition_map[i]
+            size -= 1
+        elif interval.begin >= UpperLimit:
+            del transition_map[i]
+            size -= 1
+        else:
+            if interval.begin < LowerLimit: interval.begin = LowerLimit
+            if interval.end   > UpperLimit: interval.end   = UpperLimit
+            i += 1
 
 def assert_adjacency(TransitionMap, TotalRangeF=False):
     """Check that the trigger map consist of sorted adjacent intervals 

@@ -1,9 +1,9 @@
 # (C) 2010 Frank-Rene Schaefer
-from quex.engine.interval_handling import Interval
-
-from copy        import deepcopy, copy
-from collections import defaultdict
-from operator    import itemgetter
+from   quex.engine.interval_handling         import Interval
+from   quex.engine.analyzer.path.path        import CharacterPath
+import quex.engine.analyzer.path.path_walker as     path_walker
+from   copy        import deepcopy, copy
+from   collections import defaultdict
 """
    Path Compression ___________________________________________________________
 
@@ -87,7 +87,7 @@ from operator    import itemgetter
 
 """
 def do(SM, UniformityF):
-    path_list = find_paths(SM)
+    path_list = find_begin(SM, SM.init_state_index, SM.init_state_index, UniformityF)
 
     __filter_redundant_paths(path_list)
 
@@ -95,18 +95,15 @@ def do(SM, UniformityF):
     # paths are avoided. Always choose the longest alternative.
     __select_longest_intersecting_paths(path_list)
 
-    # If uniformity is required, filter non-uniform paths. The last state 
-    # of a path can be non-uniform with the rest, since it is 'outside'
-    # the pathwalk implementation.
-    if UniformityF:
-        __filter_non_uniform_paths(SM, path_list)
-
-    # The filtering of intersecting paths implies that there are no pathes
-    # that have the same initial state. Thus, at this point we are done.
-    # 
+    # The filtering of intersecting paths implies that there are no paths
+    # that have the same initial state. 
     #    -- no paths appear twice.
     #    -- no state appears in two paths.
-    return path_list
+
+    # Group the paths according to their 'skeleton'. If uniformity is required
+    # then this is also a grouping criteria. The result is a list of path walkers
+    # that can walk the paths. They can act as AnalyzerState-s for code generation.
+    return path_walker.group(path_list)
 
 def __filter_redundant_paths(path_list):
     """Due to the search algorithm, it is not safe to assume that there are
@@ -162,25 +159,9 @@ def __select_longest_intersecting_paths(path_list):
             for state_index in intersection_state_list:
                 intersection_db[state_index].extend([i, k])
 
-    return filter_longest_options(path_list, intersection_db)
+    return __filter_longest_options(path_list, intersection_db)
 
-def __filter_non_uniform_paths(SM, path_list):
-    """Filter-out those paths which are not uniform. The last state can
-       be non-uniform, because it is not implemented via 'pathwalk'.
-    """
-    i = 0
-    size = len(path_list)
-    while i < size:
-        path = path_list[i]
-        # Again, the last state does not have to be uniform
-        involved_state_list = map(lambda x: x[0], path.sequence()[:-1])
-        if not SM.check_uniformity(involved_state_list):
-            del path_list[i]
-            size -= 1
-        else:
-            i += 1
-
-def filter_longest_options(path_list, equivalence_db):
+def __filter_longest_options(path_list, equivalence_db):
     def __longest_path(PathIndexList):
         max_i      = -1
         max_length = -1
@@ -206,283 +187,8 @@ def filter_longest_options(path_list, equivalence_db):
     # Content of path_list is changed
     return
 
-class CharacterPath:
-    """In character path a transition map looks like the following:
-
-       PathWalker:
-           if input == path[i]: 
-              i += 1
-              goto PathWalker
-
-           elif path terminated:
-              goto PathEndState;
-
-           else:
-              ...
-              remaining transition map
-              ...
-
-       Skeleton = Transition map of the states in the path, i.e. a map
-
-                  target state index ---> trigger set
-    """
-    def __init__(self, StartState, StartCharacter, Skeleton):
-        assert isinstance(StartState, AnalyzerState)
-        assert isinstance(StartCharacter, (int, long))
-        assert isinstance(Skeleton, dict)
-
-        self.__start_state_index = StartState.index
-        self.__sequence          = [ (StartState.index, StartCharacter) ]
-
-        self.__skeleton          = Skeleton
-        self.__skeleton_key_set  = set(Skeleton.keys())
-        # Character that may trigger to any state. This character is
-        # adapted when the first character of the path is different
-        # from the wildcard character. Then it must trigger to whatever
-        # the correspondent state triggers.
-        self.__wildcard          = StartCharacter
-
-    def sequence(self):
-        return self.__sequence
-
-    def index(self):
-        # Path index = index of the first state in the path
-        try:    
-            return self.__sequence[0][0]
-        except: 
-            assert False, \
-                   "Character with either no sequence or wrong setup sequence element."
-
-    def skeleton(self):
-        assert isinstance(self.__skeleton, dict)
-        return self.__skeleton
-
-    def end_state_index(self):
-        if len(self.__sequence) == 0: return -1
-        return self.__sequence[-1][0]
-
-    def set_end_state_index(self, StateIndex):
-        self.__sequence.append((StateIndex, None))
-
-    def append(self, StateIndex, Char):
-        self.__sequence.append((StateIndex, Char))
-
-    def contains(self, StateIndex):
-        for state_idx, char in self.__sequence:
-            if state_idx == StateIndex: return True
-        return False
-
-    def covers(self, Other):
-        assert isinstance(Other, CharacterPath)
-        assert len(self.__sequence) >= 2
-        assert len(Other.__sequence) >= 2
-        ## print "##covers:", self.__sequence, Other.__sequence
-
-        def __find(StateIndex):
-            for i, x in enumerate(self.__sequence):
-                if x[0] == StateIndex: return i
-            return -1
-
-        # Sequences should not be empty, but if (for some weird reason) it happens
-        # make sure it is deleted by __filter_redundant_paths()
-        if len(Other.__sequence) == 0: return False
-
-        start_state_index = Other.__sequence[0][0]
-        i = __find(start_state_index)
-        ## print "##i", start_state_index, i
-        if i == -1: return False
-
-        # Do the remaining indices fit?
-        L = len(self.__sequence)
-        for state_index, char in Other.__sequence[1:]:
-            i += 1
-            if i >= L: 
-                ##print "##out on ", self.__sequence, state_index; 
-                return False
-            if self.__sequence[i][0] != state_index: 
-                return False
-
-        return True
-
-    def get_intersections(self, Other):
-        """Determines the state at which the sequences intersect. This
-           is mathematically simple the 'intersection' of both sets.
-        """
-
-        # The end states are not considered 'intersections'. They are the target
-        # states that are transitted after the path is terminated. There is no
-        # harm in entering a path after exiting another.
-        set_a = set(map(lambda x: x[0], self.__sequence[:-1]))
-        set_b = set(map(lambda x: x[0], Other.__sequence[:-1]))
-
-        return set_a.intersection(set_b)
-
-    def match_skeleton(self, TransitionMap, TargetIdx, TriggerCharToTarget):
-        """A single character transition 
-
-                        TriggerCharToTarget --> TargetIdx
-
-           has been detected. The question is, if the remaining transitions of
-           the state match the skeleton of the current path. There might be a
-           wildcard, that is the character that is overlayed by the first
-           single character transition.  As long as a transition map is differs
-           only by this single character, the wildcard is plugged into the
-           position.
-
-           RETURNS: 
-                    int > 0, the character that the wildcard shall take so
-                             that the skeleton matches the TransitionMap.
-
-                        - 1, if skeleton and TransitionMap match anyway and
-                             no wildcard plug is necessary.
-
-                       None, if there is no way that the skeleton and the
-                             TransitionMap could match.
-        """
-        ## ?? The element of a path cannot be triggered by the skeleton! ??
-        ## ?? if self.__skeleton.has_key(TargetIdx): return False        ?? 
-        ## ?? Why would it not? (fschaef9: 10y04m11d)
-
-        if self.__wildcard is not None: wildcard_plug = None # unused
-        else:                           wildcard_plug = -1   # used before
-
-        transition_map_key_set = set(TransitionMap.keys())
-        # (1) Target States In TransitionMap and Not in Skeleton
-        #
-        #     All target states of TransitionMap must be in Skeleton,
-        #     except:
-        #
-        #      (1.1) The single char transition target TargetIdx.
-        #      (1.2) Maybe, one that is reached by a single char
-        #            transition of wildcard.
-        delta_set  = transition_map_key_set - self.__skeleton_key_set
-        delta_size = len(delta_set)
-        if delta_size > 2: return None
-
-        for target_idx in delta_set:
-            if   target_idx == TargetIdx:    continue # (1.1)
-            elif wildcard_plug is not None:                                        return None
-            elif not TransitionMap[target_idx].contains_only(self.__wildcard): return None
-            wildcard_plug = target_idx                # (1.2)
-
-        # (2) Target States In Skeleton and Not in TransitionMap
-        #
-        #     All target states of Skeleton must be in TransitionMap,
-        #     except:
-        #
-        #      (2.1) Transition to the target index in skeleton
-        #            is covered by current single transition.
-        delta_set  = self.__skeleton_key_set - transition_map_key_set
-        delta_size = len(delta_set)
-        if delta_size > 1: return None
-        if delta_size == 1:
-            for target_idx in delta_set:
-                if not self.__skeleton[target_idx].contains_only(TriggerCharToTarget): return None
-            # (2.1) OK, single char covers the transition in skeleton.
-
-        # (3) Target States in both, Skeleton and Transition Map
-        #
-        #     All correspondent trigger sets must be equal, except:
-        #
-        #      (3.1) single char transition covers the hole, i.e.
-        #            trigger set in transition map + single char ==
-        #            trigger set in skeleton. (check this first,
-        #            don't waste wildcard).
-        #      (3.2) trigger set in skeleton + wildcard == trigger set 
-        #            in transition map.
-        #       
-        common_set = self.__skeleton_key_set & transition_map_key_set
-        for target_idx in common_set:
-            sk_trigger_set = self.__skeleton[target_idx]
-            tm_trigger_set = TransitionMap[target_idx]
-
-            if sk_trigger_set.is_equal(tm_trigger_set): continue
-
-            # (3.1) Maybe the current single transition covers the 'hole'.
-            #       (check this first, we do not want to waste the wilcard)
-            if can_plug_to_equal(tm_trigger_set, TriggerCharToTarget, sk_trigger_set):
-                continue
-
-            elif wildcard_plug is None:
-                # (3.2) Can difference between trigger sets be plugged by the wildcard?
-                if can_plug_to_equal(sk_trigger_set, self.__wildcard, tm_trigger_set): 
-                    wildcard_plug = target_idx
-                    continue
-                # (3.3) A set extended by wilcard may have only a 'hole' of the
-                #       size of the single transition char.
-                if can_plug_to_equal(tm_trigger_set, 
-                                     TriggerCharToTarget,
-                                     sk_trigger_set.union(NumberSet(self.__wildcard))): 
-                    wildcard_plug = target_idx
-                    continue
-
-            # Trigger sets differ and no wildcard or single transition can
-            # 'explain' that => skeleton does not fit.
-            return None
-
-        if wildcard_plug is None: return -1 # No plugging necessary
-        return wildcard_plug
-
-    def plug_wildcard(self, WildcardPlug):
-        assert isinstance(WildcardPlug, (int, long))
-
-        # Finally, if there is a plugging to be performed, then do it.
-        if WildcardPlug == -1: return
-        
-        if self.__skeleton.has_key(WildcardPlug):
-            self.__skeleton[WildcardPlug].unite_with(NumberSet(self.__wildcard))
-        else:
-            self.__skeleton[WildcardPlug] = NumberSet(self.__wildcard)
-        self.__skeleton_key_set.add(WildcardPlug)
-        self.__wildcard = None # There is no more wildcard now
-        
-        return 
-
-    def get_string(self, NormalizeDB=None):
-        def norm(X):
-            return X if NormalizeDB is None else NormalizeDB[X]
-
-        skeleton_txt = ""
-        for target_idx, trigger_set in sorted(self.__skeleton.iteritems(), key=itemgetter(0)):
-            skeleton_txt += "(%i) by " % norm(target_idx)
-            skeleton_txt += trigger_set.get_utf8_string()
-            skeleton_txt += "; "
-
-        sequence_txt = ""
-        for state_idx, char in self.__sequence[:-1]:
-            state_idx = norm(state_idx)
-            sequence_txt += "(%i)--'%s'-->" % (state_idx, chr(char))
-        sequence_txt += "[%i]" % norm(self.__sequence[-1][0])
-
-        return "".join(["start    = %i;\n" % norm(self.__start_state_index),
-                        "path     = %s;\n" % sequence_txt,
-                        "skeleton = %s\n"  % skeleton_txt, 
-                        "wildcard = %s;\n" % repr(self.__wildcard is not None)])
-
-    def __repr__(self):
-        return self.get_string()
-
-    def __len__(self):
-        return len(self.__sequence)
-
-def find_paths(SM):
-    """SM = state machine of analyzer.
-
-       Try to identify 'pathes' that is state transitions in the state machine
-       so that a sequence of states can be combined into a single state of the
-       shape:
-
-           /* Pre-Test for walking on the path */
-           if( input == path_element ) {
-               ++path_element;
-               if( *path_element == PATH_TERMINATING_CHARACTER ) goto terminal_of_path;
-           }
-           /* Skeleton (transitions that are common for all elements of path) */
-    """
-    return __find_begin(SM, SM.init_state_index, SM.init_state_index)
-
-__find_begin_touched_state_idx_list = {}
-def __find_begin(sm, StateIndex, InitStateIndex):
+find_begin_touched_state_idx_list = {}
+def find_begin(analyzer, StateIndex, InitStateIndex, UniformityF):
     """Searches for the beginning of a path, i.e. a single character 
        transition to a subsequent state. If such a transition is found,
        a 'skeleton' is computed in the 'CharacterPath' object. With this
@@ -496,19 +202,19 @@ def __find_begin(sm, StateIndex, InitStateIndex):
        IT CANNOT BE AVOIDED THAT THE RESULT CONTAINS PATHS WHICH ARE 
                            SUB-PATHS OF OTHERS.
     """
-    global __find_begin_touched_state_idx_list
+    global find_begin_touched_state_idx_list
 
-    State       = sm.states[StateIndex]
+    State       = analyzer.state_db[StateIndex]
     result_list = []
 
     transition_map = State.map_target_index_to_character_set
 
     for target_idx, trigger_set in transition_map.iteritems():
-        if __find_begin_touched_state_idx_list.has_key(target_idx): continue
-        __find_begin_touched_state_idx_list[target_idx] = True
+        if find_begin_touched_state_idx_list.has_key(target_idx): continue
+        find_begin_touched_state_idx_list[target_idx] = True
 
         # IN ANY CASE: Check for paths in the subsequent state
-        result_list.extend(__find_begin(sm, target_idx, InitStateIndex))
+        result_list.extend(find_begin(analyzer, target_idx, InitStateIndex, UniformityF))
 
         # Never allow the init state to be part of the path
         if StateIndex == InitStateIndex: continue
@@ -526,15 +232,15 @@ def __find_begin(sm, StateIndex, InitStateIndex):
 
         path = CharacterPath(State, path_char, skeleton)
             
-        result_list.extend(__find_continuation(sm, target_idx, path))
+        result_list.extend(__find_continuation(analyzer, target_idx, path, UniformityF))
 
     return result_list
 
-def __find_continuation(sm, StateIndex, the_path):
+def __find_continuation(analyzer, StateIndex, the_path, UniformityF):
     """A basic skeleton of the path and the remaining trigger map is given. Now,
        try to find a subsequent path step.
     """
-    State       = sm.states[StateIndex]
+    State       = analyzer.state_db[StateIndex]
     result_list = []
 
     transition_map = State.map_target_index_to_character_set
@@ -552,18 +258,22 @@ def __find_continuation(sm, StateIndex, the_path):
         if the_path.contains(target_idx): continue # Recursion ahead! Don't go!
 
         # Does the rest of the transitions fit the 'skeleton'?
-        plug = the_path.match_skeleton(transition_map, target_idx, path_char)
-        if plug is None: continue # No possible match
+        if UniformityF and not the_path.match_entry_and_drop_out(State):
+            continue # No match possible
 
-        # Deepcopy is required to completely isolate the transition map that
-        # may now be changed by the wildcard plug.
+        plug = the_path.match_skeleton(transition_map, target_idx, path_char)
+        if plug is None: 
+            continue # No match possible 
+
+        # Deepcopy is required to completely isolate the transition map and the
+        # entry/drop_out schemes that may now be changed.
         path = deepcopy(the_path)
         if plug != -1: path.plug_wildcard(plug)
 
         # Find a continuation of the path
         single_char_transition_found_f = True
-        path.append(StateIndex, path_char)
-        result_list.extend(__find_continuation(sm, target_idx, path))
+        path.append(State, path_char)
+        result_list.extend(__find_continuation(analyzer, target_idx, path, UniformityF))
 
     if not single_char_transition_found_f and len(the_path) != 1:
         the_path.set_end_state_index(StateIndex)
@@ -571,35 +281,3 @@ def __find_continuation(sm, StateIndex, the_path):
 
     return result_list
 
-def can_plug_to_equal(Set0, Char, Set1):
-    """Determine whether the character 'Char' can be plugged
-       to Set0 to make both sets equal.
-
-       (1) If Set0 contains elements that are not in Set1, then 
-           this is impossible.
-       (2) If Set1 contains elements that are not in Set0, then
-           it is possible, if the difference is a single character.
-
-       NOTE:
-                Set subtraction: A - B != empty, 
-                                 A contains elements that are not in B.
-    """
-    # If interval number differs more than one, then no single
-    # character can do the job.
-    if Set1.interval_number() - Set0.interval_number() > 1: return False
-    # It is possible that Set0 has more intervals than Set1, e.g.
-    # Set0 = {[1,2], [4]}, and Set1={[1,4]}. In this example, '3'
-    # can plug Set0 to be equal to Set1. A difference > 1 is impossible,
-    # because, one character can plug at max. one 'hole'.
-    if Set0.interval_number() - Set1.interval_number() > 1: return False
-
-    # Does Set0 contain elements that are not in Set1?
-    # if not Set0.difference(Set1).is_empty(): return False
-    if not Set1.is_superset(Set0): return False
-
-    # If there is no difference to make up for, then no plugging possible.
-    # if Set1.difference(Set0).is_empty(): return False
-    if Set0.is_superset(Set1): return False
-
-    delta = Set1.difference(Set0)
-    return delta.contains_only(Char)

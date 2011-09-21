@@ -86,8 +86,6 @@ class TemplateState(AnalyzerState):
     @property
     def drop_out(self):            return self.__drop_out
 
-
-
 def combine_scheme(StateIndexListA, A, StateIndexListB, B):
     """A 'scheme' is a dictionary that maps:
              

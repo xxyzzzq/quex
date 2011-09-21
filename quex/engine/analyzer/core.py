@@ -481,6 +481,7 @@ class AnalyzerState(object):
                  "input", 
                  "entry", 
                  "transition_map", 
+                 "map_target_index_to_character_set", 
                  "drop_out", 
                  "_origin_list")
 
@@ -517,7 +518,7 @@ class AnalyzerState(object):
 
         self.transition_map                    = state.transitions().get_trigger_map()
         self.map_target_index_to_character_set = state.transitions().get_map()
-        self.__target_index_list               = state.map_target_index_to_character_set.keys()
+        self.__target_index_list               = self.map_target_index_to_character_set.keys()
 
         # (*) Drop Out
         if   EngineType == E_EngineTypes.FORWARD: 

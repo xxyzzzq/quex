@@ -77,9 +77,6 @@
             ...
             }
 """
-import quex.engine.generator.state_coder.transition       as transition
-import quex.engine.generator.state_coder.input_block      as input_block
-import quex.engine.generator.state_coder.acceptance_info  as acceptance_info
 import quex.engine.generator.state_coder.transition_block as transition_block
 import quex.engine.generator.state_coder.drop_out         as drop_out
 import quex.engine.generator.template_coder               as template_coder
@@ -87,7 +84,7 @@ from   quex.engine.generator.languages.address            import Address, get_la
 from   quex.engine.generator.languages.variable_db        import variable_db
 import quex.engine.state_machine.index                    as index
 import quex.engine.state_machine.core                     as state_machine
-import quex.engine.state_machine.compression.paths        as paths 
+import quex.engine.analyzer.path.core                     as path 
 from   quex.engine.interval_handling                      import Interval
 
 from   quex.blackboard import setup as Setup
@@ -109,12 +106,10 @@ def do(TheAnalyzer, UniformOnlyF):
        x[2] involved_state_index_list
     """
     # (1) Find possible state combinations
-    path_list = paths.do(TheAnalyzer.sm, UniformOnlyF)
-    for path in path_list:
-        involved_state_index_list = map(lambda info: info[0], path.sequence())
+    path_walker_list = paths.do(TheAnalyzer, UniformOnlyF)
 
     # (2) Implement code for path combinations
-    code, involved_state_index_list = _do(path_list, TheAnalyzer, UniformOnlyF)
+    code, involved_state_index_list = state_coder_do(path_list, TheAnalyzer, UniformOnlyF)
 
     if len(involved_state_index_list) != 0:
         variable_db.require("path_iterator")
@@ -124,14 +119,13 @@ def do(TheAnalyzer, UniformOnlyF):
     return code, \
            involved_state_index_list
 
-def _do(PathList, TheAnalyzer, UniformOnlyF):
+def state_coder_do(PathList, TheAnalyzer, UniformOnlyF):
     """-- Returns generated code for all templates.
        -- Sets the template_compression_db in SMD.
     """
     global LanguageDB 
 
     assert type(PathList) == list
-
 
     # -- Create 'PathWalkerState' objects that can mimik state machine states.
     # -- Collect all indices of states involved in paths
@@ -171,13 +165,15 @@ def _do(PathList, TheAnalyzer, UniformOnlyF):
     #      -- the pathwalkers
     code        = []
     router_code = []
-    for path_walker in path_walker_list:
-        __path_definition(path_walker, SMD) 
-        if __state_entries(code, path_walker, SMD): 
-            variable_db.require("path_end_state")
-        __path_walker(code, path_walker, SMD)
+    for pw_state in path_walker_list:
+        state_coder_do(pw_state, TheAnalyzer)
 
-    return code, involved_state_index_list
+def state_coder_do(PWState, TheAnalyzer):
+    __entry(code, path_walker, SMD) 
+    __path_walker(code, path_walker, SMD)
+    __drop_out(code, path_walker, SMD) 
+
+    return code
 
 class PathWalkerState(state_machine.State):
     """Implementation of a Path Walker that is able to play the role of a state
@@ -299,7 +295,7 @@ def __path_definition(PathWalker, SMD):
                                   Initial  = ["{"] + state_list + ["}"], 
                                   Index    = PathWalkerID)
 
-def __state_entries(txt, PathWalker, SMD):
+def __entry(txt, PathWalker, SMD):
     """Defines the entries of the path's states, so that the state key
        for the template is set, before the jump into the template. E.g.
 
@@ -313,7 +309,6 @@ def __state_entries(txt, PathWalker, SMD):
     sm = SMD.sm()
 
     PathN = len(PathWalker.path_list())
-    require_path_end_state_variable_f = False
     txt.append("\n")
     for path in PathWalker.path_list():
         prev_state_index = None
@@ -355,7 +350,7 @@ def __state_entries(txt, PathWalker, SMD):
                 entry_txt.extend(acceptance_info.do(state, state_index, SMD, ForceSaveLastAcceptanceF=True))
 
             if PathWalker.uniform_state_entries_f() and PathN != 1:
-                require_path_end_state_variable_f = True
+                variable_db.require("path_end_state")
                 end_state_index = path.sequence()[-1][0]
                 entry_txt.append("    path_end_state                 = QUEX_LABEL(%i);\n" \
                                  % get_address("$entry", end_state_index, U=True, R=True))
@@ -369,7 +364,7 @@ def __state_entries(txt, PathWalker, SMD):
             txt.append(Address("$entry", state_index, Code=entry_txt))
             prev_state_index = state_index
 
-    return require_path_end_state_variable_f
+    return 
 
 def __path_walker(txt, PathWalker, SMD):
     """Generates the path walker, that walks along the character sequence.

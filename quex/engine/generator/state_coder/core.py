@@ -8,11 +8,12 @@ from   quex.blackboard import E_StateIndices, \
                               E_EngineTypes, E_AcceptanceIDs, \
                               setup as Setup
 
-def do(txt, TheState, TheAnalyzer):
+def do(code, TheState, TheAnalyzer):
     assert isinstance(TheState, AnalyzerState)
     assert isinstance(TheAnalyzer, Analyzer)
 
     LanguageDB = Setup.language_db
+    txt        = []
 
     # (*) Entry _______________________________________________________________
     #     There is something special about the init state in forward direction:
@@ -45,6 +46,8 @@ def do(txt, TheState, TheAnalyzer):
     for i, x in enumerate(txt):
         assert not isinstance(x, list), repr(txt[i-2:i+2])
         assert not x is None, txt[i-2:i+2]
+
+    code.extend(txt)
 
 def input_do(txt, TheState):
     """Generate the code fragment that accesses the 'input' character for
