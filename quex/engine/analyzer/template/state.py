@@ -3,7 +3,7 @@ from quex.engine.interval_handling                      import Interval
 from quex.engine.analyzer.core                          import AnalyzerState, get_input_action
 from quex.blackboard                                    import E_StateIndices
 
-from itertools   import chain
+from itertools   import chain, imap
 from collections import defaultdict
 import sys
 
@@ -58,14 +58,6 @@ class TemplateState(AnalyzerState):
         self.__engine_type = StateA.engine_type
         self.input = get_input_action(StateA.engine_type, InitStateF=False)
 
-    def set_index(self, Value):
-        self.__index = Value
-
-    @property
-    def index(self):
-        # A non-accepted state should never be asked about its index
-        return self.__index
-
     @property
     def engine_type(self): return self.__engine_type
 
@@ -85,6 +77,13 @@ class TemplateState(AnalyzerState):
     def uniform_drop_outs_f(self): return self.__uniform_drop_outs_f
     @property
     def drop_out(self):            return self.__drop_out
+
+    def state_set_iterable(self, StateIndexList, TheAnalyzer):
+        return imap(lambda i: 
+                    (i,                                  # state_index
+                     self.state_index_list.index(i),   # 'state_key' of state (in array)
+                     TheAnalyzer.state_db[i]),           # state object
+                    StateIndexList)
 
 def combine_scheme(StateIndexListA, A, StateIndexListB, B):
     """A 'scheme' is a dictionary that maps:

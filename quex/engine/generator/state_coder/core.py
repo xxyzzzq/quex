@@ -5,7 +5,9 @@ import quex.engine.generator.state_coder.transition_block as transition_block
 import quex.engine.generator.state_coder.entry            as entry
 import quex.engine.generator.state_coder.drop_out         as drop_out
 from   quex.blackboard import E_StateIndices, \
-                              E_EngineTypes, E_AcceptanceIDs, \
+                              E_InputActions, \
+                              E_EngineTypes, \
+                              E_AcceptanceIDs, \
                               setup as Setup
 
 def do(code, TheState, TheAnalyzer):
@@ -49,7 +51,7 @@ def do(code, TheState, TheAnalyzer):
 
     code.extend(txt)
 
-def input_do(txt, TheState):
+def input_do(txt, TheState, ForceInputDereferencingF=False):
     """Generate the code fragment that accesses the 'input' character for
        the subsequent transition map. In general this consists of 
 
@@ -63,12 +65,24 @@ def input_do(txt, TheState):
        init_state_forward_epilog().
     """
     LanguageDB = Setup.language_db
-    LanguageDB.ACCESS_INPUT(txt, TheState.input)
+    input = TheState.input
+    if TheState.transition_map_empty_f:
+        # If the state has no further transitions then the input character does 
+        # not have to be read. This is so, since without a transition map, the 
+        # state immediately drops out. The drop out transits to a terminal. 
+        # Then, the next action will happen from the init state where we work
+        # on the same position. If required the reload happens at that moment.
+        #
+        # This is not true for Path Walker States, so we offer the option 
+        # 'ForceInputDereferencingF'
+        if not ForceInputDereferencingF:
+            if   input == E_InputActions.INCREMENT_THEN_DEREF: input = E_InputActions.INCREMENT
+            elif input == E_InputActions.DECREMENT_THEN_DEREF: input = E_InputActions.DECREMENT
+    LanguageDB.ACCESS_INPUT(txt, input)
 
 def init_state_forward_entry(txt, TheState):
     LanguageDB = Setup.language_db
 
-    LanguageDB.STATE_DEBUG_INFO(txt, TheState)
     entry._accepter(txt, TheState.entry.get_accepter())
     txt.append(LanguageDB.LABEL_INIT_STATE_TRANSITION_BLOCK())
 

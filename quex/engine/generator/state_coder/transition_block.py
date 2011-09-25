@@ -12,24 +12,25 @@ from   itertools import imap
 def debug(TransitionMap, Function):
     print "##--BEGIN %s" % Function
     for entry in TransitionMap:
-        print entry[0]
+        print "##", entry[0]
     print "##--END %s" % Function
 
 def do(txt, TransitionMap, 
-       StateIndex       = None,  EngineType     = E_EngineTypes.FORWARD, 
-       InitStateF       = False, 
-       OnReloadOK_Str   = None,  
-       GotoReload_Str   = None, 
-       OnReloadFail_Str = None,  
-       TheAnalyzer      = None):
+       StateIndex     = None,  
+       EngineType     = E_EngineTypes.FORWARD, 
+       InitStateF     = False, 
+       GotoReload_Str = None, 
+       TheAnalyzer    = None):
     assert isinstance(TransitionMap, list)
     assert EngineType        in E_EngineTypes
     assert isinstance(InitStateF, bool)
     assert StateIndex        is None or isinstance(StateIndex, (int, long))
-    assert OnReloadOK_Str    is None or isinstance(OnReloadOK_Str, (str, unicode))
-    assert OnReloadFail_Str  is None or isinstance(OnReloadFail_Str, (str, unicode))
     assert GotoReload_Str    is None or isinstance(GotoReload_Str, (str, unicode))
     assert_adjacency(TransitionMap)
+
+    LanguageDB = Setup.language_db
+
+    LanguageDB.STATE_DEBUG_INFO(txt, StateIndex, InitStateF and EngineType == E_EngineTypes.FORWARD)
 
     # If a state has no transitions, no new input needs to be eaten => no reload.
     #
@@ -51,8 +52,7 @@ def do(txt, TransitionMap,
     # All transition information related to intervals become proper objects of 
     # class TransitionCode.
     transition_map = [ (entry[0], transition_code.do(entry[1], StateIndex, InitStateF, EngineType, 
-                                                     OnReloadOK_Str, GotoReload_Str, OnReloadFail_Str, 
-                                                     TheAnalyzer)) 
+                                                     GotoReload_Str, TheAnalyzer)) 
                        for entry in TransitionMap ]
 
     txt.extend(__get_code(transition_map))

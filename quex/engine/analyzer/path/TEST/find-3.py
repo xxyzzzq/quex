@@ -11,7 +11,7 @@ from   quex.blackboard                 import E_EngineTypes
 
 if "--hwut-info" in sys.argv:
     print "Paths: Plugging Wild Cards;"
-    print "CHOICES: 1, 2, 3;"
+    print "CHOICES: 1, 2, 3, 4;"
     sys.exit(0)
 
 if len(sys.argv) < 2:
@@ -97,11 +97,31 @@ elif "3" in sys.argv:
     s3 = sm.add_transition(f1, ord('p'), AcceptanceF=True)        #         [p]
 
     # Wild card used; "pzw" possible because 'p' fits
-    f4 = sm.add_transition(f2, ord('w'), AcceptanceF=True)        #                   [w]
+    f3 = sm.add_transition(f2, ord('w'), AcceptanceF=True)        #                   [w]
     s1 = sm.add_transition(f2, ord2('a', 'o'), s1)                # [a ... o] [q ... v] [x ... z]
     no = sm.add_transition(f2, ord2('q', 'v'), s1)                #           
     no = sm.add_transition(f2, ord2('x', 'z'), s1)                #           
     no = sm.add_transition(f2, ord('p'), s3)                      #         [p]
+
+    test(sm)
+
+elif "4" in sys.argv: 
+    # Wild card at 'q', before --> s1, after --> s2
+    f1 = sm.add_transition(s0, ord('p'))                          #         [p]
+    s1 = sm.add_transition(s0, ord2('a', 'o'), AcceptanceF=True)  # [a ... o] [q ... z] 
+    no = sm.add_transition(s0, ord2('q', 'z'), s1)                #           
+
+    # Wild card used for 'p --> drop-out'; path "pz" is possible
+    f2 = sm.add_transition(f1, ord('z'))                          #                   [z]
+    # NOT: .add_transition(f1, ord('p'))                          #         [p]
+    s1 = sm.add_transition(f1, ord2('a', 'o'), s1)                # [a ... o] [q ... y]
+    no = sm.add_transition(f1, ord2('q', 'y'), s1)                #           
+
+    # Wild card used; "pzz" impossible because 'l' misfits
+    f3 = sm.add_transition(f2, ord('z'))                          #                   [z]
+    s1 = sm.add_transition(f2, ord2('a', 'k'), s1)                # [a ... k] [m ... y]
+    no = sm.add_transition(f2, ord2('m', 'y'), s1)                #           
+    no = sm.add_transition(f2, ord('l'), AcceptanceF=True)        #         [l]
 
     test(sm)
 

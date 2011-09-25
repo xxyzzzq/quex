@@ -310,11 +310,11 @@ class TransitionMap:
                                  E_StateIndices.DROP_OUT) )
 
         # double check:
-        # prev_interval = trigger_map[0][0]
-        # for interval, target_index in trigger_map[1:]:
-        #    if prev_interval.end != interval.begin:
-        #        print "##ERROR GAP: ", prev_interval, interval
-        #    prev_interval = interval
+        ## prev_interval = trigger_map[0][0]
+        ## for interval, target_index in trigger_map[1:]:
+        ##    if prev_interval.end != interval.begin:
+        ##        print "##ERROR GAP: ", prev_interval, interval
+        ##    prev_interval = interval
 
         return trigger_map
 

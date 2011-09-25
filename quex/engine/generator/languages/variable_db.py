@@ -23,7 +23,7 @@ candidate_db = {
 "input":                          ["QUEX_TYPE_CHARACTER",           "(QUEX_TYPE_CHARACTER)(0x00)",      False],
 "target_state_index":             ["QUEX_TYPE_GOTO_LABEL",          "((QUEX_TYPE_CHARACTER)0x0)",       False],
 "target_state_else_index":        ["QUEX_TYPE_GOTO_LABEL",          "((QUEX_TYPE_CHARACTER)0x0)",       False],
-"last_acceptance":                ["QUEX_TYPE_GOTO_LABEL",          None,                               False],
+"last_acceptance":                ["QUEX_TYPE_ACCEPTANCE_ID",       None,                               False],
 "PositionRegisterN":              ["const size_t",                  None,                               False],
 "position":                       ["QUEX_TYPE_CHARACTER_POSITION",  None,                               False],
 "pre_context_%i_fulfilled_f":     ["int",                           "0",                                False], 
@@ -31,16 +31,16 @@ candidate_db = {
 "end_of_core_pattern_position":   ["QUEX_TYPE_CHARACTER_POSITION",  "((QUEX_TYPE_CHARACTER*)0x0)",      False],
 #                                 
 # (*) Path Compression
-"path_iterator":                  ["const QUEX_TYPE_CHARACTER*",    "((QUEX_TYPE_CHARACTER*)0x0)",      False],
-"path_end_state":                 ["QUEX_TYPE_GOTO_LABEL",          "QUEX_GOTO_STATE_LABEL_INIT_VALUE", False], 
-"path_%i":                        ["const QUEX_TYPE_CHARACTER*",    None,                               False],
-"path_walker_%i_base":            ["const QUEX_TYPE_CHARACTER",     None,                               True],
-"path_walker_%i_state":           ["const QUEX_TYPE_GOTO_LABEL",    None,                               False],
+"path_iterator":                  ["const QUEX_TYPE_CHARACTER*",       "((const QUEX_TYPE_CHARACTER*)0x0)", False],
+"path_end_state":                 ["QUEX_TYPE_GOTO_LABEL",             "QUEX_GOTO_STATE_LABEL_INIT_VALUE",  False], 
+"path_walker_%i_path_%i":         ["const QUEX_TYPE_CHARACTER* const", None,                                False],
+"path_walker_%i_base":            ["const QUEX_TYPE_CHARACTER",        None,                                True],
+"path_walker_%i_state":           ["const QUEX_TYPE_GOTO_LABEL",       None,                                False],
 #
 # (*) Template Compression
-"template_state_key":                       ["ptrdiff_t",                     "(ptrdiff_t)0",           False],
-"template_%i_target_%i":                    ["const QUEX_TYPE_GOTO_LABEL",    None,                     False],
-"template_%i_map_state_key_to_entry_index": ["const QUEX_TYPE_GOTO_LABEL",    None,                     False],
+"state_key":                                    ["ptrdiff_t",                     "(ptrdiff_t)0",           False],
+"template_%i_target_%i":                        ["const QUEX_TYPE_GOTO_LABEL",    None,                     False],
+"template_%i_map_state_key_to_recursive_entry": ["const QUEX_TYPE_GOTO_LABEL",    None,                     False],
 #
 # (*) Skipper etc.
 "reference_p":                    ["QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", False],

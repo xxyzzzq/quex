@@ -73,8 +73,10 @@ E_TransitionN = Enum("VOID",
                      "IRRELEVANT",
                      "_DEBUG_NAME_TransitionNs")
 
-E_InputActions = Enum("INCREMENT_THEN_DEREF", 
-                      "DEREF", 
+E_InputActions = Enum("DEREF", 
+                      "INCREMENT", 
+                      "INCREMENT_THEN_DEREF", 
+                      "DECREMENT",
                       "DECREMENT_THEN_DEREF",
                       "_DEBUG_InputActions")
 

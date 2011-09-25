@@ -147,15 +147,50 @@ CppBase = {
     }
 
 class LDB(dict):
-    def __init__(self, DB):      self.update(DB)
-    def __getattr__(self, Attr): return self[Attr]
+    def __init__(self, DB):      
+        self.update(DB)
+        self.__analyzer = None
+
+    def register_analyzer(self, TheAnalyzer):
+        self.__analyzer = TheAnalyzer
+
+    @property
+    def analyzer(self):
+        return self.__analyzer
+
+    def __getattr__(self, Attr): 
+        return self[Attr]
 
     RETURN                  = "return;"
     UNREACHABLE             = "__quex_assert_no_passage();"
     ELSE                    = "} else {\n"
     INPUT_P                 = "me->buffer._input_p"
     INPUT_P_INCREMENT       = "++(me->buffer._input_p);"
+    PATH_ITERATOR_INCREMENT = "++(path_iterator);"
     INPUT_P_TO_LEXEME_START = "QUEX_NAME(Buffer_seek_lexeme_start)(&me->buffer);"
+
+    def ADDRESS(self, StateIndex, FromStateIndex):
+        if self.__analyzer is None:
+            FromStateIndex = None
+        elif self.__analyzer.engine_type != E_EngineTypes.FORWARD:
+            FromStateIndex = None
+        elif FromStateIndex is not None:
+            if self.__analyzer.state_db.has_key(StateIndex) == False:
+                # It must be a template/path walker state. Those are not real analyzer states
+                # but little engines that can be entered via an address.
+                FromStateIndex = None
+            elif not self.__analyzer.state_db[StateIndex].entry.special_door_from_state(FromStateIndex):
+                # If the entry of the target state is uniform (the same from every 'SourceState'),
+                # then we do not need to goto it through a specific door (FromStateIndex = None).
+                # If the 'Analyzer == None' we assume that all related states have 
+                # independent_of_source_state entries.
+                FromStateIndex = None
+
+        result = get_address("$entry", (StateIndex, FromStateIndex), U=True, R=True)
+        return result
+
+    def ADDRESS_DROP_OUT(self, StateIndex):
+        return get_address("$drop-out", StateIndex)
 
     def __label_name(self, StateIndex, FromStateIndex=None):
         if StateIndex in E_StateIndices:
@@ -167,22 +202,22 @@ class LDB(dict):
                 E_StateIndices.ANALYZER_REENTRY:            "__REENTRY",
             }[StateIndex]
 
-        elif FromStateIndex is not None: 
-            return "_%i_from_%i" % (StateIndex, FromStateIndex)
-
-        else:                            
-            return "_%i"         % StateIndex
+        return "_%i" % self.ADDRESS(StateIndex, FromStateIndex)
 
     def LABEL(self, StateIndex, FromStateIndex=None, NewlineF=True):
-        if NewlineF: return "%s:\n" % self.__label_name(StateIndex, FromStateIndex)
-        else:        return "%s: "  % self.__label_name(StateIndex, FromStateIndex)
+        label = self.__label_name(StateIndex, FromStateIndex)
+        if NewlineF: return label + ":\n"
+        return label + ":"
+
+    def LABEL_DROP_OUT(self, StateIndex):
+        return "_%s:" % self.ADDRESS_DROP_OUT(StateIndex)
 
     def LABEL_INIT_STATE_TRANSITION_BLOCK(self):
         return "%s:\n" % self.__label_name(E_StateIndices.INIT_STATE_TRANSITION_BLOCK)
 
-    def LABEL_TEMPLATE_ENTRY(self, TemplateIndex, EntryN=None):
-        if EntryN is None: return "template_%i_entry:\n"    % TemplateIndex
-        else:              return "template_%i_entry_%i:\n" % (TemplateIndex, EntryN)
+    def LABEL_SHARED_ENTRY(self, TemplateIndex, EntryN=None):
+        if EntryN is None: return "_%i_shared_entry:\n"    % TemplateIndex
+        else:              return "_%i_shared_entry_%i:\n" % (TemplateIndex, EntryN)
 
     def LABEL_NAME_BACKWARD_INPUT_POSITION_DETECTOR(self, StateMachineID):
         return "BIP_DETECTOR_%i" % StateMachineID
@@ -190,45 +225,49 @@ class LDB(dict):
     def LABEL_NAME_BACKWARD_INPUT_POSITION_RETURN(self, StateMachineID):
         return "BIP_DETECTOR_%i_DONE" % StateMachineID
 
-    def GOTO(self, TargetStateIndex, FromStateIndex=None, EngineType=None):
+    def GOTO(self, TargetStateIndex, FromStateIndex=None):
         # Only for normal 'forward analysis' the from state is of interest.
         # Because, only during forward analysis some actions depend on the 
         # state from where we come.
-        if FromStateIndex is not None and EngineType == E_EngineTypes.FORWARD:
-            return "goto %s;" % self.__label_name(TargetStateIndex, FromStateIndex)
-        else:
-            return "goto %s;" % self.__label_name(TargetStateIndex)
+        result = "goto %s;" % self.__label_name(TargetStateIndex, FromStateIndex)
+        return result
 
     def GOTO_DROP_OUT(self, StateIndex):
         return get_address("$drop-out", StateIndex, U=True)
 
-    def GOTO_RELOAD(self, StateIndex, InitStateIndexF, EngineType, ReturnStateIndexStr, ElseStateIndexStr):
-        if   EngineType == E_EngineTypes.FORWARD: 
-            direction = "FORWARD"
-        elif EngineType == E_EngineTypes.BACKWARD_PRE_CONTEXT:
-            direction = "BACKWARD"
-        elif EngineType == E_EngineTypes.BACKWARD_INPUT_POSITION:
+    def GOTO_RELOAD(self, StateIndex, InitStateIndexF, EngineType):
+        """On reload a special section is entered that tries to reload data. Reload
+           has two possible results:
+           
+           -- Data has been loaded: Now, a new input character can be determined
+              and the current transition map can be reentered. For convenience, 
+              'RELOAD' expects to jump to right before the place where the input
+              pointer is adapted.
+
+           -- No data available to be loaded: Then the current state's drop-out
+              section must be entered. The forward init state immediate jumps
+              to 'end of stream'.
+
+           Thus: The reload behavior can be determined based on **one** state index.
+                 The related drop-out label can be determined here.
+        """
+        direction = { 
+            E_EngineTypes.FORWARD:              "FORWARD",
+            E_EngineTypes.BACKWARD_PRE_CONTEXT: "BACKWARD",
+            E_EngineTypes.BACKWARD_INPUT_POSITION: "",
             # There is never a reload on backward input position detection.
             # The lexeme to parse must lie inside the borders!
-            return ""
-        else:
-            assert False, repr(EngineType)
+        }[EngineType]
 
+        on_success = get_address("$entry", StateIndex, U=True)
         if InitStateIndexF and EngineType == E_EngineTypes.FORWARD:
-            state_reference = "QUEX_LABEL(%i)" % get_address("$entry",    StateIndex, U=True)
-            else_reference  = "QUEX_LABEL(%i)" % get_address("$terminal-EOF", U=True) 
+            on_fail = get_address("$terminal-EOF", U=True) 
         else:
-            state_reference = "QUEX_LABEL(%i)" % get_address("$entry",    StateIndex, R=True)
-            else_reference  = "QUEX_LABEL(%i)" % get_address("$drop-out", StateIndex, U=True, R=True) 
+            on_fail = get_address("$drop-out", StateIndex, U=True, R=True) 
 
-        if ReturnStateIndexStr is not None: state_reference = ReturnStateIndexStr
-        if ElseStateIndexStr   is not None: else_reference  = ElseStateIndexStr
-
-        # Ensure that '__STATE_ROUTER' is marked as referenced
-        get_label("$state-router", U=True)
-
-        return "QUEX_GOTO_RELOAD(%s, %s, %s);" \
-               % (get_label("$reload-%s" % direction, U=True), state_reference, else_reference)
+        get_label("$state-router", U=True)            # Mark as 'referenced'
+        get_label("$reload-%s" % direction, U=True)   # ...
+        return "QUEX_GOTO_RELOAD_%s(%s, %s);" % (direction, on_success, on_fail)
 
     def GOTO_TERMINAL(self, AcceptanceID):
         if AcceptanceID == E_AcceptanceIDs.VOID: 
@@ -239,19 +278,22 @@ class LDB(dict):
             assert isinstance(AcceptanceID, (int, long))
             return "goto TERMINAL_%i;" % AcceptanceID
 
-    def GOTO_TEMPLATE_ENTRY(self, TemplateIndex, EntryN=None):
-        if EntryN is None: return "goto template_%i_entry;"    % TemplateIndex
-        else:              return "goto template_%i_entry_%i;" % (TemplateIndex, EntryN)
+    def GOTO_SHARED_ENTRY(self, TemplateIndex, EntryN=None):
+        if EntryN is None: return "goto _%i_shared_entry;"    % TemplateIndex
+        else:              return "goto _%i_shared_entry_%i;" % (TemplateIndex, EntryN)
 
     def ACCEPTANCE(self, AcceptanceID):
-        if AcceptanceID == E_AcceptanceIDs.FAILURE:
-            return "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")
-        else:
-            return "%i" % AcceptanceID
+        if AcceptanceID == E_AcceptanceIDs.FAILURE: return "((QUEX_TYPE_ACCEPTANCE_ID)-1)"
+        else:                                       return "%i" % AcceptanceID
+
+    def IF(self, LValue, Operator, RValue, FirstF=True):
+        if isinstance(RValue, (str,unicode)): test = "%s %s %s"   % (LValue, Operator, RValue)
+        else:                                 test = "%s %s 0x%X" % (LValue, Operator, RValue)
+        if FirstF: return "if( %s ) {\n"        % test
+        else:      return "} else if( %s ) {\n" % test
 
     def IF_INPUT(self, Condition, Value, FirstF=True):
-        if FirstF: return "if( input %s 0x%X ) {\n"        % (Condition, Value)
-        else:      return "} else if( input %s 0x%X ) {\n" % (Condition, Value)
+        return self.IF("input", Condition, Value, FirstF)
 
     def PRE_CONTEXT_CONDITION(self, PreContextID):
         if PreContextID == E_PreContextIDs.BEGIN_OF_LINE: 
@@ -291,8 +333,10 @@ class LDB(dict):
     def ACCESS_INPUT(self, txt, InputAction):
         txt.append({
             E_InputActions.DEREF:                "    input = *(me->buffer._input_p);\n",
+            E_InputActions.INCREMENT:            "    ++(me->buffer._input_p);\n",
             E_InputActions.INCREMENT_THEN_DEREF: "    ++(me->buffer._input_p);\n"
                                                  "    input = *(me->buffer._input_p);\n",
+            E_InputActions.DECREMENT:            "    --(me->buffer._input_p);\n",
             E_InputActions.DECREMENT_THEN_DEREF: "    --(me->buffer._input_p);\n"
                                                  "    input = *(me->buffer._input_p);\n",
         }[InputAction])
@@ -312,18 +356,11 @@ class LDB(dict):
         if label is not None: txt.append(label)
         else:                 txt.append(self.LABEL(index, FromStateIndex, NewlineF))
 
-        if FromStateIndex is None:
-            if not TheState.init_state_forward_f:
-                self.STATE_DEBUG_INFO(txt, TheState)
-
-    def STATE_DEBUG_INFO(self, txt, TheState):
-        if TheState.init_state_forward_f: 
-            txt.append("    __quex_debug_init_state();\n")
-        elif TheState.engine_type == E_EngineTypes.FORWARD:
-            txt.append("    __quex_debug_state(%i);\n" % TheState.index)
-        else:
-            txt.append("    __quex_debug_state_backward(%i);\n" % TheState.index)
-
+    def STATE_DEBUG_INFO(self, txt, StateIndex, InitStateForwardF):
+        assert type(InitStateForwardF) == bool
+        assert type(StateIndex) == long
+        if InitStateForwardF: txt.append("    __quex_debug_init_state();\n")
+        else:                 txt.append("    __quex_debug_state(%i);\n" % StateIndex)
         return 
 
     def POSITION_REGISTER(self, Index):
@@ -342,19 +379,23 @@ class LDB(dict):
         else:
             assert False 
 
-    def SELECTION(self, Selector, CaseList, BreakF=False):
+    def SELECTION(self, Selector, CaseList, BreakF=False, CaseFormat="hex"):
 
         def __case(txt, item, Content=""):
+            def format(N):
+                return {"hex": "case 0x%X: ", 
+                        "dec": "case %i: "}[CaseFormat] % N
+
             if isinstance(item, list):        
                 for elm in item[:-1]:
                     txt.append(1) # 1 indentation
-                    txt.append("case 0x%X:\n" % elm)
+                    txt.append("%s\n" % format(elm))
                 txt.append(1) # 1 indentation
-                txt.append("case 0x%X: " % item[-1])
+                txt.append(format(item[-1]))
 
             elif isinstance(item, (int, long)): 
                 txt.append(1) # 1 indentation
-                txt.append("case 0x%X: " % item)
+                txt.append(format(item))
 
             else: 
                 txt.append(1) # 1 indentation

@@ -29,9 +29,7 @@ class TemplateStateCandidate(TemplateState):
     """
     def __init__(self, StateA, StateB, TheAnalyzer):
         TemplateState.__init__(self, StateA, StateB)
-
-        # Inadmissible TemplateState combinations will have a 'self.__gain < 0'
-        if not self.__admissibility_check(TheAnalyzer): return
+        self.__asserts(TheAnalyzer)
 
         entry_gain          = _compute_gain(_entry_cost, self.entry,    
                                             StateA.entry, StateA.index, 
@@ -44,34 +42,19 @@ class TemplateStateCandidate(TemplateState):
 
         self.__gain = (entry_gain + drop_out_gain + transition_map_gain).total()
 
-    def __admissibility_check(self, TheAnalyzer):
-        if TheAnalyzer is None: return True
+    def __asserts(self, TheAnalyzer):
+        if TheAnalyzer is None: return
 
         # All states in the state_index_list must be from the original analyzer
         def check(StateIndexList):
             for state_index in StateIndexList:
                 assert TheAnalyzer.state_db.has_key(state_index)
+
         check(self.state_index_list)
         for entry, state_index_list in self.entry.iteritems():
             check(state_index_list)
         for drop_out, state_index_list in self.drop_out.iteritems():
             check(state_index_list)
-
-        # Current Restriction: 
-        #    A state that has different entries for different source states cannot
-        #    be the target of a template transition map.
-        # Solution:
-        #    Set the of TemplateStateCandidate-s that contain a transition map with 
-        #    such a target to negative, so they are not considered.
-        for interval, target in ifilter(lambda x: isinstance(x[1], TargetScheme), 
-                                        self.transition_map):
-            for bad_guy in ifilter(lambda target:     
-                                          target != E_StateIndices.DROP_OUT \
-                                      and not TheAnalyzer.state_db[target].entry.is_independent_of_source_state(),
-                                   target.scheme):
-                self.__gain = - 1e37 # Let's be careful not to cause floating point exception.
-                return False
-        return True
 
     @property 
     def gain(self):
