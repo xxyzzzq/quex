@@ -9,6 +9,8 @@ from   itertools   import ifilter
 def do(TheAnalyzer):
     """Generate source code for a given state machine 'SM'.
     """
+    assert id(Setup.language_db.analyzer) == id(TheAnalyzer)
+
     txt = []
 
     # Track what states are treated with different methods (see below)
@@ -20,7 +22,7 @@ def do(TheAnalyzer):
 
     # (*) [Optional] Path-Compressed States
     if Setup.compression_path_f or Setup.compression_path_uniform_f:
-        done_list = paths_coder.do(TheAnalyzer, Setup.compression_path_uniform_f)
+        done_list = paths_coder.do(txt, TheAnalyzer, Setup.compression_path_uniform_f)
         remainder.difference_update(done_list)
     
     # (*) [Optional] Template-Compressed States

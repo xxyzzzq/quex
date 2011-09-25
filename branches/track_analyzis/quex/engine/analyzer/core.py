@@ -47,9 +47,11 @@ from   quex.blackboard  import E_StateIndices, \
 from   collections      import defaultdict
 from   operator         import attrgetter, itemgetter
 from   itertools        import islice, ifilter, imap
+from   quex.blackboard  import setup as Setup
 
 def do(SM, EngineType=E_EngineTypes.FORWARD):
     analyzer = Analyzer(SM, EngineType)
+    Setup.language_db.register_analyzer(analyzer)
 
     return optimizer.do(analyzer)
 
@@ -90,6 +92,11 @@ class Analyzer:
         self.__successor_db          = defaultdict(set)
         self.__successor_db_done_set = set()
         self.__successor_db_get(self.__init_state_index, [], self.__successor_db)
+
+        # (3.1) 'From Database'
+        #       This is calculated on demand: For each state the list of states
+        #       which enter it. See: property 'from_db' below.
+        self.__from_db = None
 
         if EngineType != E_EngineTypes.FORWARD:
             # BACKWARD_INPUT_POSITION, BACKWARD_PRE_CONTEXT:
@@ -193,8 +200,8 @@ class Analyzer:
         for pattern_id, info in self.analyze_positioning(TheTraceList).iteritems():
             assert pattern_id != E_AcceptanceIDs.VOID
             terminal_router.append(DropOut_TerminalRouterElement(pattern_id, 
-                                                info.transition_n_since_positioning, 
-                                                info.post_context_id))
+                                                                 info.transition_n_since_positioning, 
+                                                                 info.post_context_id))
 
             # If the positioning is all determined, then no 'triggering' state
             # needs to be informed.
@@ -376,8 +383,23 @@ class Analyzer:
             if len(entry.accepter) != 0: return True
         return False
 
+    @property
+    def from_db(self):
+        """Determines the predecessor of each state, i.e. by
+
+             .predecessor_db[state_index] a list of states is returned that enter
+                                          the state of 'state_index'.
+        """
+        if self.__from_db is None: 
+            self.__from_db = defaultdict(set)
+            for state in self.__state_db.itervalues():
+                for target_index in state.target_index_list:
+                    self.__from_db[target_index].add(state.index)
+        return self.__from_db
+
+
     def __successor_db_get(self, StateIndex, path, result):
-        """Determine for each state the set of successor states.
+        """Determine for each state the total set of successor states.
         """
         state             = self.__state_db[StateIndex]
         target_index_list = state.target_index_list
@@ -480,8 +502,8 @@ class AnalyzerState(object):
                  "__state_machine_id",
                  "input", 
                  "entry", 
-                 "transition_map", 
                  "map_target_index_to_character_set", 
+                 "transition_map", 
                  "drop_out", 
                  "_origin_list")
 
@@ -517,8 +539,10 @@ class AnalyzerState(object):
             pass
 
         self.transition_map                    = state.transitions().get_trigger_map()
+        self.__target_index_list               = state.transitions().get_map().keys()
+        # Currently, the following is only used for path compression. If the alternative
+        # is implemented, then the following is no longer necessary.
         self.map_target_index_to_character_set = state.transitions().get_map()
-        self.__target_index_list               = self.map_target_index_to_character_set.keys()
 
         # (*) Drop Out
         if   EngineType == E_EngineTypes.FORWARD: 
@@ -534,13 +558,22 @@ class AnalyzerState(object):
         self._origin_list = state.origins().get_list()
 
     @property
+    def transition_map_empty_f(self): 
+        L = len(self.transition_map)
+        if   L > 1:  return False
+        elif L == 0: return True
+        elif self.transition_map[0][1] == E_StateIndices.DROP_OUT: return True
+        return False
+    @property
     def index(self):                return self.__index
+    def set_index(self, Value):     assert isinstance(Value, long); self.__index = Value
     @property
     def init_state_f(self):         return self.__init_state_f
     @property
     def init_state_forward_f(self): return self.__init_state_f and self.__engine_type == E_EngineTypes.FORWARD
     @property
-    def engine_type(self):          return self.__engine_type
+    def engine_type(self):            return self.__engine_type
+    def set_engine_type(self, Value): assert Value in E_EngineTypes; self.__engine_type = Value     
     @property
     def target_index_list(self):    return self.__target_index_list
 
@@ -712,8 +745,16 @@ class Entry(BASE_Entry):
         return self.__independent_of_source_state_f
 
     def special_door_from_state(self, StateIndex):
-        if self.__independent_of_source_state_f: return False
-        return len(self.positioner_db[StateIndex]) != 0
+        """Determines whether the state has a special entry from state 'StateIndex'.
+           RETURNS: False -- if entry is not at all source state dependent.
+                          -- if there is no single door for StateIndex to this entry.
+                          -- there is one or less door for the given StateIndex.
+                    True  -- If there is an entry that depends on StateIndex in exclusion
+                             of others.
+        """
+        if   self.__independent_of_source_state_f: return False
+        elif len(self.positioner_db) <= 1:         return False
+        return self.positioner_db.has_key(StateIndex)
 
     def positioner_prototype(self):
         assert self.__independent_of_source_state_f

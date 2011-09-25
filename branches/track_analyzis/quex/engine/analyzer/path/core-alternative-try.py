@@ -2,7 +2,7 @@
 from   quex.engine.interval_handling         import Interval
 from   quex.engine.analyzer.path.path        import CharacterPath
 import quex.engine.analyzer.path.path_walker as     path_walker
-
+from   quex.blackboard import E_StateIndices
 from   copy        import deepcopy, copy
 from   collections import defaultdict
 """
@@ -87,8 +87,8 @@ from   collections import defaultdict
    loss.
 
 """
-def do(TheAnalyzer, UniformityF):
-    path_list = find_begin(TheAnalyzer, TheAnalyzer.init_state_index, TheAnalyzer.init_state_index, UniformityF)
+def do(SM, UniformityF):
+    path_list = find_begin(SM, SM.init_state_index, SM.init_state_index, UniformityF)
 
     __filter_redundant_paths(path_list)
 
@@ -104,7 +104,7 @@ def do(TheAnalyzer, UniformityF):
     # Group the paths according to their 'skeleton'. If uniformity is required
     # then this is also a grouping criteria. The result is a list of path walkers
     # that can walk the paths. They can act as AnalyzerState-s for code generation.
-    return path_walker.group(path_list, TheAnalyzer, UniformityF)
+    return path_walker.group(path_list)
 
 def __filter_redundant_paths(path_list):
     """Due to the search algorithm, it is not safe to assume that there are
@@ -188,7 +188,7 @@ def __filter_longest_options(path_list, equivalence_db):
     # Content of path_list is changed
     return
 
-find_begin_touched_state_idx_list = {}
+find_begin_touched_state_idx_set = set()
 def find_begin(analyzer, StateIndex, InitStateIndex, UniformityF):
     """Searches for the beginning of a path, i.e. a single character 
        transition to a subsequent state. If such a transition is found,
@@ -203,78 +203,78 @@ def find_begin(analyzer, StateIndex, InitStateIndex, UniformityF):
        IT CANNOT BE AVOIDED THAT THE RESULT CONTAINS PATHS WHICH ARE 
                            SUB-PATHS OF OTHERS.
     """
-    global find_begin_touched_state_idx_list
+    global find_begin_touched_state_idx_set
 
     State       = analyzer.state_db[StateIndex]
     result_list = []
 
-    transition_map = State.map_target_index_to_character_set
+    candidate_db = find_single_character_transitions(State.transition_map)
+    print "##ck", candidate_db.items()
 
-    for target_idx, trigger_set in transition_map.iteritems():
-        if find_begin_touched_state_idx_list.has_key(target_idx): continue
-        find_begin_touched_state_idx_list[target_idx] = True
-
+    for target_idx, path_char in candidate_db.iteritems():
         # IN ANY CASE: Check for paths in the subsequent state
         result_list.extend(find_begin(analyzer, target_idx, InitStateIndex, UniformityF))
 
-        # Never allow the init state to be part of the path
+        # Never allow the init state to be the begin of the path
         if StateIndex == InitStateIndex: continue
 
-        # Only single character transitions can be element of a path.
-        path_char = trigger_set.get_the_only_element()
+        if target_idx in find_begin_touched_state_idx_set: continue
+        find_begin_touched_state_idx_set.add(target_idx)
+
         if path_char is None: continue
 
-        # A new path begins, find the 'skeleton'.
-        # The 'skeleton' is the transition map without the single transition
-        skeleton = copy(transition_map) # Shallow copy, i.e. copy references
-        # The skeleton is possibly changed in __find_continuation(), but then
+        # A new path begins, find the 'common transition map'.
+        common_transition_map = deepcopy(State.transition_map) # Deep copy, transition map values may be adapted
+        # The common_transition_map is possibly changed in __find_continuation(), but then
         # a 'deepcopy' is applied to disconnect it, see __find_continuation().
-        del skeleton[target_idx]        # Delete reference to 'target_idx->trigger_set'
-
-        path = CharacterPath(State, path_char, skeleton)
+        path = CharacterPath(State, path_char, common_transition_map)
             
-        result_list.extend(__find_continuation(analyzer, target_idx, path, UniformityF))
+        result_list.extend(__find_continuation(analyzer, target_idx, path, InitStateIndex, UniformityF))
 
     return result_list
 
-def __find_continuation(analyzer, StateIndex, the_path, UniformityF):
+def __find_continuation(analyzer, StateIndex, the_path, InitStateIndex, UniformityF):
     """A basic skeleton of the path and the remaining trigger map is given. Now,
        try to find a subsequent path step.
     """
     State       = analyzer.state_db[StateIndex]
     result_list = []
 
-    transition_map = State.map_target_index_to_character_set
-
     single_char_transition_found_f = False
-    for target_idx, trigger_set in transition_map.items():
+    print "##--", State.transition_map
+    candidate_db = find_single_character_transitions(State.transition_map)
+    print "##--ck2", candidate_db.items()
 
-        # Only consider single character transitions can be element of a path.
-        path_char = trigger_set.get_the_only_element()
-        if path_char is None: continue
-
+    for target_idx, path_char in candidate_db.iteritems():
         # A recursion cannot be covered by a 'path state'. We cannot extract a
-        # state that contains recursions and replace it with a skeleton plus a
+        # state that contains recursions and replace it with a common_transition_map plus a
         # 'character string position'. Omit this path!
         if the_path.contains(target_idx): continue # Recursion ahead! Don't go!
 
-        # Does the rest of the transitions fit the 'skeleton'?
+        # Check for paths in the subsequent state
+        result_list.extend(find_begin(analyzer, target_idx, InitStateIndex, UniformityF))
+        print "##>>", target_idx, chr(path_char)
+
+        # Does the rest of the transitions fit: 
+        #   -- entry/drop_out, and 
+        #   -- the 'common_transition_map'?
         if UniformityF and not the_path.match_entry_and_drop_out(State):
             continue # No match possible
 
-        plug = the_path.match_skeleton(transition_map, target_idx, path_char)
-        if plug is None: 
-            continue # No match possible 
+        plug = the_path.match_transition_map(State.transition_map, target_idx, path_char)
+        print "##", plug
+        if plug is None: continue # No match possible 
+
+        the_path.plug_wildcard_target(plug)
 
         # Deepcopy is required to completely isolate the transition map and the
         # entry/drop_out schemes that may now be changed.
         path = deepcopy(the_path)
-        if plug != -1: path.plug_wildcard(plug)
 
         # Find a continuation of the path
         single_char_transition_found_f = True
         path.append(State, path_char)
-        result_list.extend(__find_continuation(analyzer, target_idx, path, UniformityF))
+        result_list.extend(__find_continuation(analyzer, target_idx, path, InitStateIndex, UniformityF))
 
     if not single_char_transition_found_f and len(the_path) != 1:
         the_path.set_end_state_index(StateIndex)
@@ -282,3 +282,17 @@ def __find_continuation(analyzer, StateIndex, the_path, UniformityF):
 
     return result_list
 
+def find_single_character_transitions(transition_map):
+    candidate_db = {}
+
+    result_list = []
+    for interval, target_idx in transition_map:
+        # Only targets that are reached via interval size == 1, can be considered
+        if   interval.size() != 1:                  continue
+        elif target_idx == E_StateIndices.DROP_OUT: continue
+
+        # A target can also appear only once
+        if candidate_db.has_key(target_idx): candidate_db[target_idx] = None
+        else:                                candidate_db[target_idx] = interval.begin
+
+    return candidate_db

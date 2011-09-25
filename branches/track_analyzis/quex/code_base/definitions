@@ -95,9 +95,12 @@
                                                      goto __STATE_ROUTER;
 #endif
 
-#define    QUEX_GOTO_RELOAD(RELOAD_STATE, STATE, ELSE_STATE)   target_state_index      = STATE;      \
-                                                               target_state_else_index = ELSE_STATE; \
-                                                               goto RELOAD_STATE;
+#define    QUEX_GOTO_RELOAD_FORWARD(ON_SUCCESS, ON_FAIL)   target_state_index      = QUEX_LABEL(ON_SUCCESS); \
+                                                           target_state_else_index = QUEX_LABEL(ON_FAIL);    \
+                                                           goto __RELOAD_FORWARD;
+#define    QUEX_GOTO_RELOAD_BACKWARD(ON_SUCCESS, ON_FAIL)  target_state_index      = QUEX_LABEL(ON_SUCCESS); \
+                                                           target_state_else_index = QUEX_LABEL(ON_FAIL);    \
+                                                           goto __RELOAD_BACKWARD;
 
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
@@ -141,19 +144,9 @@
            __QUEX_STD_fprintf(stderr, "state %i ______________\n", (int)StateIdx);      \
            __QUEX_PRINT_SOURCE_POSITION();                                              \
            __QUEX_STD_fprintf(stderr, "input:           ");                             \
-           __QUEX_PRINT_CHAR(*(me->buffer._input_p + 1));                               \
+           __QUEX_PRINT_CHAR(*(me->buffer._input_p));                                   \
            __QUEX_PRINT_SOURCE_POSITION();                                              \
            __QUEX_STD_fprintf(stderr, "input position:  %i\n",                          \
-                              (int)(me->buffer._input_p - me->buffer._memory._front + 1)); 
-
-#   define __quex_debug_state_backward(StateIdx)                                    \
-           __QUEX_PRINT_SOURCE_POSITION();                                          \
-           __QUEX_STD_fprintf(stderr, "state %i (backward) ___\n", (int)StateIdx);  \
-           __QUEX_PRINT_SOURCE_POSITION();                                          \
-           __QUEX_STD_fprintf(stderr, "input:           ");                         \
-           __QUEX_PRINT_CHAR(*(me->buffer._input_p - 1));                           \
-           __QUEX_PRINT_SOURCE_POSITION();                                          \
-           __QUEX_STD_fprintf(stderr, "input position:  %i\n",                      \
                               (int)(me->buffer._input_p - me->buffer._memory._front)); 
 
 #   define __QUEX_PRINT_BUFFER_INFO()                                                   \
@@ -191,6 +184,28 @@
 #   define __quex_debug_counter()                        \
            QUEX_NAME(Counter_print_this)(&self.counter)
 
+#   define __quex_debug_path_walker_entry(PathWalkerID, PathID)           \
+           __QUEX_PRINT_SOURCE_POSITION();                                \
+           __QUEX_STD_fprintf(stderr, "path walker %i: <<Enter path %i>>\n",  \
+                              (int)PathWalkerID, (int)PathID)
+#   define __quex_debug_path_walker_exit(PathWalkerID)                    \
+           __QUEX_PRINT_SOURCE_POSITION();                                \
+           __QUEX_STD_fprintf(stderr, "path walker %i: <<Exit>>\n",       \
+                              (int)PathWalkerID)
+#   define __quex_debug_path_walker_drop_out(PathWalkerID)                \
+           __QUEX_PRINT_SOURCE_POSITION();                                \
+           __QUEX_STD_fprintf(stderr, "path walker %i: <<Drop Out>>\n",   \
+                              (int)PathWalkerID)
+#   define __quex_debug_path_walker_iteration(PathWalkerID, PathIterator) \
+           __QUEX_PRINT_SOURCE_POSITION();                                \
+           __QUEX_STD_fprintf(stderr, "path walker %i: [%i] ",            \
+                              (int)PathWalkerID,                          \
+                              (int)(PathIterator - path_walker_## PathWalkerID##_base)); \
+           __QUEX_PRINT_CHAR(*PathIterator);                              \
+           __QUEX_PRINT_SOURCE_POSITION();                                \
+           __QUEX_STD_fprintf(stderr, "input:           ");               \
+           __QUEX_PRINT_CHAR(*(me->buffer._input_p))                      \
+
 #else /* not defined(QUEX_OPTION_DEBUG_SHOW) */
 
 #   define __quex_debug(FormatStr)                /* empty */
@@ -202,6 +217,10 @@
 #   define __quex_debug2(FormatStr, Arg)          /* empty */
 #   define __quex_debug_input()                   /* empty */
 #   define __quex_debug_counter()                 /* empty */
+#   define __quex_debug_path_walker_entry(PathWalkerID, PathID)           /* empty */
+#   define __quex_debug_path_walker_exit(PathWalkerID)                    /* empty */
+#   define __quex_debug_path_walker_drop_out(PathWalkerID)                /* empty */
+#   define __quex_debug_path_walker_iteration(PathWalkerID, PathIterator) /* empty */
 
 #endif /* ! QUEX_OPTION_DEBUG_SHOW */
 

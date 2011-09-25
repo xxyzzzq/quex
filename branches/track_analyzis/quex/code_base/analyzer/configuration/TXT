@@ -271,6 +271,9 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_HELPER
 #ifndef    QUEX_TYPE_CHARACTER
 #   define QUEX_TYPE_CHARACTER       $$QUEX_TYPE_CHARACTER$$
 #endif 
+#ifndef    QUEX_TYPE_ACCEPTANCE_ID
+#   define QUEX_TYPE_ACCEPTANCE_ID   int
+#endif
 
 #if defined(__QUEX_OPTION_PLAIN_C)
 #   define QUEX_NAMESPACE_MAIN        

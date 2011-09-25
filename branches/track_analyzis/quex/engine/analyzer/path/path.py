@@ -30,6 +30,14 @@ class CharacterPath:
         # the correspondent state triggers.
         self.__wildcard_character = StartCharacter
 
+    @property
+    def state_index_list(self):
+        """Result **MUST** be a list, because, later on a state key may be 
+           associated with it.
+        """
+        assert len(self.__sequence) > 1
+        return map(lambda x: x[0], self.__sequence[:-1])
+
     def sequence(self):
         return self.__sequence
 

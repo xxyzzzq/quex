@@ -162,14 +162,14 @@ comment_on_post_context_position_init_str = """
     /* Post context positions do not have to be reset or initialized. If a state
      * is reached which is associated with 'end of post context' it is clear what
      * post context is meant. This results from the ways the state machine is 
-     * constructed. A post context positions live time looks like the following:
+     * constructed. Post context position's live cycle:
      *
      * (1)   unitialized (don't care)
      * (1.b) on buffer reload it may, or may not be adapted (don't care)
-     * (2)   when a post context begin state is passed, the it is **SET** (now: take care)
+     * (2)   when a post context begin state is passed, then it is **SET** (now: take care)
      * (2.b) on buffer reload it **is adapted**.
      * (3)   when a terminal state of the post context is reached (which can only be reached
-     *       for that particular post context, then the post context position is used
+     *       for that particular post context), then the post context position is used
      *       to reset the input position.                                              */
 """
 

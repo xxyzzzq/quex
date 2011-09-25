@@ -2,7 +2,7 @@ from quex.blackboard import E_StateIndices, \
                             E_EngineTypes,  \
                             setup as Setup
 
-def do(Target, StateIndex, InitStateF, EngineType, OnReloadOK_Str, GotoReload_Str, OnReloadFail_Str, TheAnalyzer=None):
+def do(Target, StateIndex, InitStateF, EngineType, GotoReload_Str, TheAnalyzer=None):
     """Generate a 'real' target action object based on a given Target that 
        may be an identifier or actually a real object already.
 
@@ -17,12 +17,11 @@ def do(Target, StateIndex, InitStateF, EngineType, OnReloadOK_Str, GotoReload_St
         return Target
     else:
         return TransitionCode(Target, StateIndex, InitStateF, EngineType, 
-                              OnReloadOK_Str, GotoReload_Str, OnReloadFail_Str, 
-                              TheAnalyzer)
+                              GotoReload_Str,  TheAnalyzer)
 
 class TransitionCode:
     def __init__(self, Target, StateIndex, InitStateF, EngineType, 
-                 OnReloadOK_Str, GotoReload_Str, OnReloadFail_Str, TheAnalyzer=None):
+                 GotoReload_Str, TheAnalyzer=None):
         """The generation of transition code is postponed to the moment when
            the code fragment is used. This happens in order to avoid the
            generation of references to 'goto-labels' that are later not used.
@@ -36,25 +35,13 @@ class TransitionCode:
 
         assert EngineType        in E_EngineTypes
         assert type(InitStateF)  == bool
-        assert StateIndex        is None or isinstance(StateIndex, (int, long))
-        assert OnReloadOK_Str    is None or isinstance(OnReloadOK_Str, (str, unicode))
-        assert OnReloadFail_Str  is None or isinstance(OnReloadFail_Str, (str, unicode))
+        assert StateIndex        is None or isinstance(StateIndex, long)
         assert GotoReload_Str    is None or isinstance(GotoReload_Str, (str, unicode))
-
-        if GotoReload_Str is not None:
-            assert OnReloadOK_Str is None
-            assert OnReloadFail_Str is None
-        if OnReloadOK_Str is not None or  OnReloadFail_Str is not None:
-            assert GotoReload_Str is None
-        if OnReloadOK_Str is not None and OnReloadFail_Str is not None:
-            assert OnReloadOK_Str != OnReloadFail_Str
 
         self.__target              = Target
         self.__state_index         = StateIndex
         self.__init_state_f        = InitStateF
         self.__engine_type         = EngineType
-        self.__on_reload_ok_str    = OnReloadOK_Str
-        self.__on_reload_fail_str  = OnReloadFail_Str
 
         if   Target == E_StateIndices.RELOAD_PROCEDURE:
             self.__drop_out_f = False
@@ -65,17 +52,13 @@ class TransitionCode:
             self.__code       = None # postponing
             self.__drop_out_f = True
 
-        elif isinstance(Target, (int, long)):
+        elif isinstance(Target, long):
             # The transition to another target state cannot possibly be cut out!
             # => no postponed code generation
-            # If the entry of the target state is uniform (the same from every 'SourceState'),
-            # then we do not need to goto it through a specific door (FromStateIndex = None).
-            # If the 'Analyzer == None' we assume that all related states have independent_of_source_state entries.
-            if    TheAnalyzer is None \
-               or not TheAnalyzer.state_db[Target].entry.special_door_from_state(StateIndex):
-                self.__code = LanguageDB.GOTO(Target, FromStateIndex=None, EngineType=EngineType)
-            else:
-                self.__code = LanguageDB.GOTO(Target, StateIndex, EngineType)
+            if TheAnalyzer is not None:
+                assert TheAnalyzer.state_db.has_key(Target)
+                ## assert TheAnalyzer.state_db.has_key(StateIndex)
+            self.__code       = LanguageDB.GOTO(Target, StateIndex)
             self.__drop_out_f = False
 
         else:
@@ -91,9 +74,7 @@ class TransitionCode:
         if   self.__target == E_StateIndices.RELOAD_PROCEDURE:
             return LanguageDB.GOTO_RELOAD(self.__state_index, 
                                           self.__init_state_f, 
-                                          self.__engine_type, 
-                                          self.__on_reload_ok_str, 
-                                          self.__on_reload_fail_str)
+                                          self.__engine_type) 
         elif self.__target == E_StateIndices.DROP_OUT:
             return LanguageDB.GOTO_DROP_OUT(self.__state_index)
         else:
@@ -101,6 +82,9 @@ class TransitionCode:
 
     @property
     def drop_out_f(self): return self.__drop_out_f
+
+    def __eq__(self): assert False
+    def __neq__(self): assert False
 
 class TextTransitionCode(TransitionCode):
     def __init__(self, Code, DropOutF=False):

@@ -16,9 +16,13 @@ class AddressDB:
     def __init__(self):
         self.__db = {}
         self.__special = set([
-            "__RELOAD_FORWARD", "__RELOAD_BACKWARD", "__STATE_ROUTER", "__TERMINAL_ROUTER",
+            "__RELOAD_FORWARD", 
+            "__RELOAD_BACKWARD", 
+            "__STATE_ROUTER", 
+            "__TERMINAL_ROUTER",
             "INIT_STATE_TRANSITION_BLOCK",
-            "__REENTRY_PREPARATION", "__REENTRY",
+            "__REENTRY_PREPARATION", 
+            "__REENTRY",
         ])
         self.__direct_transition_db = {}
 
@@ -56,11 +60,22 @@ class AddressDB:
 
         return StateIndex
 
+    def get_entry(self, Indices):
+        if type(Indices) == tuple: 
+            state_index = Indices[0]
+            from_index  = Indices[1]
+        else:
+            state_index = Indices
+            from_index  = None
+
+        if from_index is not None: return self.get("%i_from_%i" % (state_index, from_index))
+        else:                      return self.get_real(state_index)
+
 __address_db = AddressDB()
 
 __label_db = {
     # Let's make one thing clear: addresses of labels are aligned with state indices:
-    "$entry":                 lambda StateIdx:    __address_db.get_real(StateIdx),
+    "$entry":                 lambda Indices=None:  __address_db.get_entry(Indices),
     # 
     "$terminal":              lambda TerminalIdx: __address_db.get("TERMINAL_%s"        % __nice(TerminalIdx)),
     "$terminal-router":       lambda NoThing:     __address_db.get("__TERMINAL_ROUTER"),
