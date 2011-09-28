@@ -3,22 +3,21 @@ QUEX_OPTION_ASSERTS. These checks are sometimes nonsense in
 generated code. This test checks that no code is generated
 that referes to the Lexeme macros.
 
-/home/fschaef/prj/quex/trunk/quex/core.py:145:        txt += "                \"    Proposal: Define 'on_failure' and analyze 'Lexeme'.\\n\");\n"
-/home/fschaef/prj/quex/trunk/quex/input/files/code_fragment.py:251:        #  QUEX_TKN_XYZ(Lexeme)     --> call take_text(Lexeme, LexemeEnd)
-/home/fschaef/prj/quex/trunk/quex/input/files/code_fragment.py:259:            if argument_list[0] == "Lexeme":
-/home/fschaef/prj/quex/trunk/quex/input/files/code_fragment.py:266:                error_msg("When one unnamed argument is specified it must be 'Lexeme'\n"          + \
-/home/fschaef/prj/quex/trunk/quex/input/files/code_fragment.py:269:                          "QUEX_TKN_MY_ID(Lexeme + 1, LexemeEnd - 2);\n"                             + \
-/home/fschaef/prj/quex/trunk/quex/input/files/code_fragment.py:278:                      "     one argument:   'Lexeme'   =>  token.take_text(..., LexemeBegin, LexemeEnd);\n"
-/home/fschaef/prj/quex/trunk/quex/input/files/code_fragment.py:301:            idx = value.find("Lexeme")
-/home/fschaef/prj/quex/trunk/quex/input/files/code_fragment.py:306:                    error_msg("Assignment of token member '%s' with 'Lexeme' directly being involved. The\n" % member_name + 
-/home/fschaef/prj/quex/trunk/quex/input/files/code_fragment.py:307:                              "'Lexeme' points into the text buffer and it is not owned by the token object.\n"
-/home/fschaef/prj/quex/trunk/quex/input/files/code_fragment.py:310:                              "   (1) Use '(Lexeme)', i.e. surround 'Lexeme' by brackets to indicate\n"
-/home/fschaef/prj/quex/trunk/quex/input/files/code_fragment.py:313:                              "       is not directly dependent anymore on 'Lexeme'. This is particularly\n"
-/home/fschaef/prj/quex/trunk/quex/input/files/code_fragment.py:317:                              "          \"%s(Lexeme+1, LexemeEnd-2)\"\n" % TokenName + 
-/home/fschaef/prj/quex/trunk/quex/input/files/code_fragment.py:318:                              "          \"%s(Lexeme)\"\n" % TokenName + 
-/home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:366:    /* Lexeme setup: 
-/home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:369:     * references to the 'Lexeme'. 'LexemeNull' provides a reference to an empty
-/home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:693:    ObjectName = "Lexeme"
-/home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:713:        # Note: The variable must be named 'exactly' like the given name. 'xLexeme' or 'Lexemey'
-/home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:714:        #       shall not trigger a treatment of 'Lexeme'.
-/home/fschaef/prj/quex/trunk/quex/engine/analyzer/track_analysis.py:297:Lexeme Start Pointer |__________________________________________________________
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:249:        #  QUEX_TKN_XYZ(Lexeme)     --> call take_text(Lexeme, LexemeEnd)
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:257:            if argument_list[0] == "Lexeme":
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:264:                error_msg("When one unnamed argument is specified it must be 'Lexeme'\n"          + \
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:267:                          "QUEX_TKN_MY_ID(Lexeme + 1, LexemeEnd - 2);\n"                             + \
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:276:                      "     one argument:   'Lexeme'   =>  token.take_text(..., LexemeBegin, LexemeEnd);\n"
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:299:            idx = value.find("Lexeme")
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:304:                    error_msg("Assignment of token member '%s' with 'Lexeme' directly being involved. The\n" % member_name + 
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:305:                              "'Lexeme' points into the text buffer and it is not owned by the token object.\n"
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:308:                              "   (1) Use '(Lexeme)', i.e. surround 'Lexeme' by brackets to indicate\n"
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:311:                              "       is not directly dependent anymore on 'Lexeme'. This is particularly\n"
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:315:                              "          \"%s(Lexeme+1, LexemeEnd-2)\"\n" % TokenName + 
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:316:                              "          \"%s(Lexeme)\"\n" % TokenName + 
+<<QUEX_PATH>>/quex/output/cpp/action_preparation.py:174:        txt += "                \"    Proposal: Define 'on_failure' and analyze 'Lexeme'.\\n\");\n"
+<<QUEX_PATH>>/quex/engine/generator/languages/cpp.py:277:    /* Lexeme setup: 
+<<QUEX_PATH>>/quex/engine/generator/languages/cpp.py:280:     * references to the 'Lexeme'. 'LexemeNull' provides a reference to an empty
+<<QUEX_PATH>>/quex/engine/generator/languages/cpp.py:567:    ObjectName = "Lexeme"
+<<QUEX_PATH>>/quex/engine/generator/languages/cpp.py:587:        # Note: The variable must be named 'exactly' like the given name. 'xLexeme' or 'Lexemey'
+<<QUEX_PATH>>/quex/engine/generator/languages/cpp.py:588:        #       shall not trigger a treatment of 'Lexeme'.

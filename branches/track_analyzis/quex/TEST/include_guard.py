@@ -101,7 +101,7 @@ def check_include_guard_undefinition():
     stranger_list = filter(lambda x: x.name not in undef_list, include_guard_list)
     L = max(map(lambda x: len(x.name), stranger_list))
 
-    print "Following include guards are not undefined in %s:" % undef_file_name
+    print "Following include guards are not undefined in %s:" % undef_file_name.replace(os.environ["QUEX_PATH"], "<<QUEX_PATH>>")
     stranger_list.sort(lambda a,b: cmp(a.name, b.name))
     for x in stranger_list:
         ext = os.path.splitext(x.file_name)[1]

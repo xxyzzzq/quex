@@ -2,6 +2,7 @@
 from   quex.engine.interval_handling         import Interval
 from   quex.engine.analyzer.path.path        import CharacterPath
 import quex.engine.analyzer.path.path_walker as     path_walker
+from   quex.blackboard                       import E_Compression
 
 from   copy        import deepcopy, copy
 from   collections import defaultdict
@@ -87,8 +88,16 @@ from   collections import defaultdict
    loss.
 
 """
-def do(TheAnalyzer, UniformityF):
-    path_list = find_begin(TheAnalyzer, TheAnalyzer.init_state_index, TheAnalyzer.init_state_index, UniformityF)
+def do(TheAnalyzer, CompressionType, AvailableStateIndexList=None):
+    assert CompressionType in [E_Compression.PATH, E_Compression.PATH_UNIFORM]
+
+    if AvailableStateIndexList is None: AvailableStateIndexList = TheAnalyzer.state_db.keys()
+
+    path_list = find_begin(TheAnalyzer, 
+                           TheAnalyzer.init_state_index, 
+                           TheAnalyzer.init_state_index, 
+                           CompressionType, 
+                           AvailableStateIndexList)
 
     __filter_redundant_paths(path_list)
 
@@ -104,7 +113,7 @@ def do(TheAnalyzer, UniformityF):
     # Group the paths according to their 'skeleton'. If uniformity is required
     # then this is also a grouping criteria. The result is a list of path walkers
     # that can walk the paths. They can act as AnalyzerState-s for code generation.
-    return path_walker.group(path_list, TheAnalyzer, UniformityF)
+    return path_walker.group(path_list, TheAnalyzer, CompressionType)
 
 def __filter_redundant_paths(path_list):
     """Due to the search algorithm, it is not safe to assume that there are
@@ -189,7 +198,7 @@ def __filter_longest_options(path_list, equivalence_db):
     return
 
 find_begin_touched_state_idx_list = {}
-def find_begin(analyzer, StateIndex, InitStateIndex, UniformityF):
+def find_begin(analyzer, StateIndex, InitStateIndex, CompressionType, AvailableStateIndexList):
     """Searches for the beginning of a path, i.e. a single character 
        transition to a subsequent state. If such a transition is found,
        a 'skeleton' is computed in the 'CharacterPath' object. With this
@@ -205,20 +214,25 @@ def find_begin(analyzer, StateIndex, InitStateIndex, UniformityF):
     """
     global find_begin_touched_state_idx_list
 
-    State       = analyzer.state_db[StateIndex]
     result_list = []
 
+
+    State          = analyzer.state_db[StateIndex]
     transition_map = State.map_target_index_to_character_set
 
     for target_idx, trigger_set in transition_map.iteritems():
+        if target_idx not in AvailableStateIndexList: continue
+
         if find_begin_touched_state_idx_list.has_key(target_idx): continue
         find_begin_touched_state_idx_list[target_idx] = True
 
         # IN ANY CASE: Check for paths in the subsequent state
-        result_list.extend(find_begin(analyzer, target_idx, InitStateIndex, UniformityF))
+        result_list.extend(find_begin(analyzer, target_idx, InitStateIndex, CompressionType, AvailableStateIndexList))
 
         # Never allow the init state to be part of the path
         if StateIndex == InitStateIndex: continue
+        # Do not consider indices that are not available
+        if StateIndex not in AvailableStateIndexList: return result_list
 
         # Only single character transitions can be element of a path.
         path_char = trigger_set.get_the_only_element()
@@ -233,14 +247,16 @@ def find_begin(analyzer, StateIndex, InitStateIndex, UniformityF):
 
         path = CharacterPath(State, path_char, skeleton)
             
-        result_list.extend(__find_continuation(analyzer, target_idx, path, UniformityF))
+        result_list.extend(__find_continuation(analyzer, target_idx, path, CompressionType, AvailableStateIndexList))
 
     return result_list
 
-def __find_continuation(analyzer, StateIndex, the_path, UniformityF):
+def __find_continuation(analyzer, StateIndex, the_path, CompressionType, AvailableStateIndexList):
     """A basic skeleton of the path and the remaining trigger map is given. Now,
        try to find a subsequent path step.
     """
+    # Check "StateIndex in AvailableStateIndexList" is done by 'continue' in the 
+    # loops, if "target_idx not in AvailableStateIndexList".
     State       = analyzer.state_db[StateIndex]
     result_list = []
 
@@ -248,6 +264,7 @@ def __find_continuation(analyzer, StateIndex, the_path, UniformityF):
 
     single_char_transition_found_f = False
     for target_idx, trigger_set in transition_map.items():
+        if target_idx not in AvailableStateIndexList: continue
 
         # Only consider single character transitions can be element of a path.
         path_char = trigger_set.get_the_only_element()
@@ -259,7 +276,8 @@ def __find_continuation(analyzer, StateIndex, the_path, UniformityF):
         if the_path.contains(target_idx): continue # Recursion ahead! Don't go!
 
         # Does the rest of the transitions fit the 'skeleton'?
-        if UniformityF and not the_path.match_entry_and_drop_out(State):
+        if     CompressionType == E_Compression.PATH_UNIFORM \
+           and not the_path.match_entry_and_drop_out(State):
             continue # No match possible
 
         plug = the_path.match_skeleton(transition_map, target_idx, path_char)
@@ -274,7 +292,7 @@ def __find_continuation(analyzer, StateIndex, the_path, UniformityF):
         # Find a continuation of the path
         single_char_transition_found_f = True
         path.append(State, path_char)
-        result_list.extend(__find_continuation(analyzer, target_idx, path, UniformityF))
+        result_list.extend(__find_continuation(analyzer, target_idx, path, CompressionType, AvailableStateIndexList))
 
     if not single_char_transition_found_f and len(the_path) != 1:
         the_path.set_end_state_index(StateIndex)

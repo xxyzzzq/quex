@@ -3,7 +3,8 @@ from   quex.engine.state_machine.transition_map import TransitionMap
 import quex.engine.state_machine.index          as     index
 from   quex.blackboard                          import setup as Setup, \
                                                        E_EngineTypes, \
-                                                       E_InputActions
+                                                       E_InputActions, \
+                                                       E_Compression
 
 from itertools import imap, ifilter
 from operator  import itemgetter
@@ -12,10 +13,8 @@ class PathWalkerState(AnalyzerState):
     """A path walker state is a state that can walk along one or more paths 
        with the same 'skeleton', i.e. remaining transition map. Objects of
        this class are the basis for code generation.
-
-
     """
-    def __init__(self, FirstPath, EngineType):
+    def __init__(self, FirstPath, EngineType, CompressionType):
         self.__path_list      = [ FirstPath.sequence() ]
         self.entry            = FirstPath.entry      # map: entry    --> state_index_list
         self.drop_out         = FirstPath.drop_out   # map: drop_out --> state_index_list
@@ -30,6 +29,9 @@ class PathWalkerState(AnalyzerState):
             E_EngineTypes.BACKWARD_PRE_CONTEXT:    E_InputActions.DECREMENT_THEN_DEREF,
             E_EngineTypes.BACKWARD_INPUT_POSITION: E_InputActions.DECREMENT_THEN_DEREF,
         }[EngineType]
+
+        self.__uniformity_required_f = (CompressionType == E_Compression.PATH_UNIFORM)
+
         AnalyzerState.set_engine_type(self, EngineType)
 
         self.__state_index_list     = None # Computed on demand
@@ -38,7 +40,7 @@ class PathWalkerState(AnalyzerState):
     @property
     def init_state_f(self): return False
 
-    def accept(self, Path, UniformityF):
+    def accept(self, Path):
         """Accepts the given Path to be walked, if the skeleton matches.
            If additionally uniformity is required, then only states with
            same drop_out and entry are accepted.
@@ -55,7 +57,7 @@ class PathWalkerState(AnalyzerState):
 
         sequence = Path.sequence()
         # (2) Uniformity Test [Optional] 
-        if UniformityF:
+        if self.__uniformity_required_f:
             assert len(Path.entry)    == 1 # When uniformity is a requirement paths with more
             assert len(Path.drop_out) == 1 # then one entry scheme should have never been created.
             if   self.entry    != Path.entry:    return False
@@ -120,7 +122,7 @@ class PathWalkerState(AnalyzerState):
 
         return sorted(imap(help, StateIndexList), key=itemgetter(1, 2)) # Sort by 'path_id', 'path_offset'
 
-def group(CharacterPathList, TheAnalyzer, UniformityF):
+def group(CharacterPathList, TheAnalyzer, CompressionType):
     """Different character paths may be walked down by the same pathwalker, if
        certain conditions are met. This function groups the given list of
        character paths and assigns them to PathWalkerState-s. The PathWalkerState-s
@@ -134,8 +136,8 @@ def group(CharacterPathList, TheAnalyzer, UniformityF):
     path_walker_list = []
     for candidate in CharacterPathList:
         for path_walker in path_walker_list:
-            if path_walker.accept(candidate, UniformityF): break
+            if path_walker.accept(candidate): break
         else:
-            path_walker_list.append(PathWalkerState(candidate, TheAnalyzer.engine_type))
+            path_walker_list.append(PathWalkerState(candidate, TheAnalyzer.engine_type, CompressionType))
 
     return path_walker_list

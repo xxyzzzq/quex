@@ -61,8 +61,9 @@ without actual storing of input positions:
 
 ===============================================================================
 """
-from   quex.blackboard        import E_StateIndices, E_PostContextIDs, E_AcceptanceIDs, E_PreContextIDs, E_TransitionN
-from   quex.engine.misc.enum  import Enum
+from   quex.blackboard              import E_StateIndices, E_PostContextIDs, E_AcceptanceIDs, E_PreContextIDs, E_TransitionN
+from   quex.engine.misc.enum        import Enum
+from   quex.engine.misc.tree_walker import TreeWalker
 
 from   collections import defaultdict
 from   copy        import deepcopy
@@ -73,7 +74,8 @@ import sys
 def do(SM):
     """Determines a database of Trace lists for each state.
     """
-    return TrackAnalysis(SM).acceptance_trace_db
+    ta = TrackAnalysis(SM)
+    return ta.acceptance_trace_db, ta.successor_db
 
 class TrackAnalysis:
     """The init function of this class walks down each possible path trough a
@@ -102,20 +104,16 @@ class TrackAnalysis:
         #
         #    set of state indices that are part of a loop.
         #
-        self.__loop_state_set = set([])
         # NOTE: The investigation about loop states must be done **before** the
         #       analysis of traces. The trace analysis requires the loop state set!
-        self.__loop_search_done_set = set()
-        self.__loop_search(self.sm.init_state_index, [])
+        self.__loop_state_set, \
+        self.__successor_db     = self.__loop_search() # self.sm.init_state_index, [])
 
         # (*) Collect Trace Information
         # 
         #    map:  state_index  --> list of Trace objects.
         #
-        self.__map_state_to_trace = dict([(i, []) for i in self.sm.states.iterkeys()])
-        self.__trace_walk(self.sm.init_state_index, 
-                          path  = [], 
-                          trace = Trace(self.sm.init_state_index))
+        self.__map_state_to_trace = self.__trace_walk()
 
     @property
     def loop_state_set(self):
@@ -141,7 +139,11 @@ class TrackAnalysis:
         """
         return self.__map_state_to_trace
 
-    def __loop_search(self, StateIndex, path):
+    @property
+    def successor_db(self):
+        return self.__successor_db
+
+    def __loop_search(self):
         """Determine the indices of states that are part of a loop. Whenever
            such a state appears in a path from one state A to another state B, 
            then the number of transitions from A to B cannot be determined 
@@ -151,65 +153,90 @@ class TrackAnalysis:
                                yet been handled in the path. This is implemented
                                int the loop itself.
         """
-        # (1) Add current state index to path
-        path.append(StateIndex)
+        class LoopSearcher(TreeWalker):
+            def __init__(self, SM):
+                self.path         = []
+                self.sm           = SM
+                self.result       = set()
+                self.successor_db = dict([(i, set()) for i in SM.states.iterkeys()])
+                self.done_set     = set()
+                self.empty_list   = []
 
-        state = self.sm.states[StateIndex]
+            def on_enter(self, StateIndex):
+                found_f = False
+                for i in self.path:
+                    if StateIndex == i: found_f = True
+                    self.successor_db[i].add(StateIndex)
+                if StateIndex in self.done_set: 
+                    return None
+                elif found_f:
+                    self.done_set.add(StateIndex)
+                    idx = self.path.index(StateIndex)
+                    self.result.update(self.path[idx:])
+                    return None
 
-        # (2) Iterate over all target states
-        for state_index in state.transitions().get_target_state_index_list():
-            if state_index in self.__loop_search_done_set:
-                continue
-            elif state_index in path: 
-                # Mark all states that are part of a loop. The length of a path that 
-                # contains such a state can only be determined at run-time.
-                idx = path.index(StateIndex)
-                self.__loop_state_set.update(path[idx:])
-                continue # Do not dive into done states
+                self.path.append(StateIndex)
+                return self.sm.states[StateIndex].transitions().get_map().keys()
 
-            self.__loop_search(state_index, path)
+            def on_finished(self, StateIndex):
+                self.done_set.add(StateIndex)
+                self.path.pop()
 
-        # (3) Remove current state index --> path is as before
-        x = path.pop()
-        self.__loop_search_done_set.add(StateIndex)
-        assert x == StateIndex
+        searcher = LoopSearcher(self.sm)
+        searcher.do(self.sm.init_state_index)
+        return searcher.result, searcher.successor_db
 
-    def __trace_walk(self, StateIndex, path, trace):
+    def __trace_walk(self):
         """StateIndex -- current state
            path       -- path from init state to current state (state index list)
 
            Recursion Terminal: When state has no target state that has not yet been
                                handled in the 'path'.
         """
-        # (1) Add current state to path
-        path.append(StateIndex)
+        class TraceFinder(TreeWalker):
+            def __init__(self, track_info):
+                self.path       = []
+                self.track_info = track_info
+                self.sm         = track_info.sm
+                # self.done_set   = set()
+                self.empty_list = []
+                self.result     = dict([(i, []) for i in self.sm.states.iterkeys()])
 
-        # (2) Update the information about the 'trace of acceptances'
-        trace.update(self, path) 
+            def on_enter(self, StateIndex):
+                # (*) Update the information about the 'trace of acceptances'
+                if len(self.path) == 0: 
+                    trace = Trace(self.sm.init_state_index)
+                else: 
+                    trace = self.path[-1][1].clone()
+                    trace.update(StateIndex, self.track_info, self.path) 
 
-        # (3) Mark the current state with its acceptance trace
-        #     NOTE: When this function is called, trace is already
-        #           an independent object, i.e. constructed or deepcopy()-ed.
-        if     self.__map_state_to_trace.has_key(StateIndex):
-            if trace in self.__map_state_to_trace[StateIndex]:
-                # If a state has been analyzed and we pass it a second time:
-                # If the acceptance trace is already in there, we do not need 
-                # further investigations.
-                x = path.pop()
-                assert x == StateIndex
-                return
-        
-        # (4) Recurse to all (undone) target states. 
-        for target_index in self.sm.states[StateIndex].transitions().get_target_state_index_list():
-            # Do not dive into done states / prevents recursion along loops.
-            if target_index in path: continue 
-            self.__trace_walk(target_index, path, deepcopy(trace))
+                # (*) Mark the current state with its acceptance trace
+                existing_trace_list = self.result.get(StateIndex) 
+                if trace in existing_trace_list:
+                    # If a state has been analyzed before with the same trace as result,  
+                    # then it is not necessary dive into deeper investigations again.
+                    return None
+                self.result[StateIndex].append(trace)
 
-        self.__map_state_to_trace[StateIndex].append(trace)
+                # if StateIndex in self.done_set: return None
 
-        # (5) Remove current state index --> path is as before
-        x = path.pop()
-        assert x == StateIndex
+                for dummy in ifilter(lambda x: x[0] == StateIndex, self.path):
+                    return None # Refuse further processing of the node
+
+                # (*) Add current state to path
+                self.path.append((StateIndex, trace))
+
+                # (*) Recurse to all (undone) target states. 
+                return self.sm.states[StateIndex].transitions().get_map().keys()
+
+            def on_finished(self, StateIndex):
+                # self.done_set.add(StateIndex)
+                self.path.pop()
+
+        trace_finder = TraceFinder(self)
+        trace_finder.do(self.sm.init_state_index)
+        return trace_finder.result
+        return
 
 class Trace(object):
     """For one particular STATE that is reached via one particular PATH an
@@ -246,33 +273,43 @@ class Trace(object):
     """
     __slots__ = ("__trace_db", "__storage_db", "__last_transition_n_to_acceptance")
 
-    def __init__(self, InitStateIndex):
-        self.__trace_db = { 
-            E_AcceptanceIDs.FAILURE: 
-                  TraceEntry(PreContextID                 = E_PreContextIDs.NONE, 
-                             PatternID                    = E_AcceptanceIDs.FAILURE, 
-                             MinTransitionN_ToAcceptance  = 0,
-                             AcceptingStateIndex          = InitStateIndex, 
-                             TransitionN_SincePositioning = E_TransitionN.LEXEME_START_PLUS_ONE,              
-                             PositioningStateIndex        = E_StateIndices.NONE, 
-                             PostContextID                = E_PostContextIDs.NONE),
-        }
+    def __init__(self, InitStateIndex=None):
+        if InitStateIndex is None:
+            self.__trace_db = {}
+        else:
+            self.__trace_db = { 
+                E_AcceptanceIDs.FAILURE: 
+                      TraceEntry(PreContextID                 = E_PreContextIDs.NONE, 
+                                 PatternID                    = E_AcceptanceIDs.FAILURE, 
+                                 MinTransitionN_ToAcceptance  = 0,
+                                 AcceptingStateIndex          = InitStateIndex, 
+                                 TransitionN_SincePositioning = E_TransitionN.LEXEME_START_PLUS_ONE,              
+                                 PositioningStateIndex        = E_StateIndices.NONE, 
+                                 PostContextID                = E_PostContextIDs.NONE),
+            }
         self.__storage_db = {}
         self.__last_transition_n_to_acceptance = 0
+
+    def clone(self):
+        result = Trace()
+        result.__trace_db   = dict([ (i, x.clone()) for i, x in self.__trace_db.iteritems() ])
+        result.__storage_db = dict([ (i, x.clone()) for i, x in self.__storage_db.iteritems() ])
+        result.__last_transition_n_to_acceptance = self.__last_transition_n_to_acceptance
+        return result
 
     def __len__(self):
         return len(self.__trace_db)
 
-    def update(self, track_info, Path):
+    def update(self, StateIndex, track_info, Path):
         """Assume: 'self.__trace_db' contains accumulated information of passed 
                    states until the current state has been reached. 
 
-           Now, the current state is reached. It contains 'origins', i.e. information
-           that witness from what patterns the state evolves and what has to happen
-           in the state so that it represents those original states. In brief, 
-           the origins tell if a pattern is accepted, what input position is to
-           be stored and what pre-context has to be fulfilled for a pattern
-           to trigger acceptance.
+           Now, the current state is reached. It contains 'origins', i.e.
+           information that witness from what patterns the state evolves and
+           what has to happen in the state so that it represents those original
+           states. In brief, the origins tell if a pattern is accepted, what
+           input position is to be stored and what pre-context has to be
+           fulfilled for a pattern to trigger acceptance.
            
            The 'self.__trace_db' contains two types of elements:
 
@@ -294,16 +331,17 @@ class Trace(object):
                  state and accepting state can be determined as soon as the 
                  accepting state arrives that belongs to the storage info.
         """
+        CurrentPathLength = len(Path) + 1 # This is the length of the path considered
+        #                                 # the current state being added already.
+
         # It is essential for a meaningful accumulation of the match information
         # that the entries are accumulated from the begin of a path towards its 
         # end. Otherwise, the 'longest match' cannot be applied by overwriting
         # existing entries.
-        assert abs(self.__last_transition_n_to_acceptance) < len(Path)
+        assert abs(self.__last_transition_n_to_acceptance) < CurrentPathLength
         self.__last_transition_n_to_acceptance = len(Path)
 
         # Last element of the path is the index of the current state
-        StateIndex        = Path[-1]
-        CurrentPathLength = len(Path)
         Origins           = track_info.sm.states[StateIndex].origins()
 
         # (*) Update all path related Info
@@ -490,12 +528,12 @@ class TraceEntry(object):
     """
     __slots__ = ("pre_context_id", 
                  "pattern_id", 
-                 "transition_n_since_positioning", 
                  "min_transition_n_to_acceptance", 
                  "accepting_state_index", 
+                 "transition_n_since_positioning", 
                  "positioning_state_index",
-                 "positioning_state_successor_index",
-                 "post_context_id")
+                 "post_context_id",
+                 "positioning_state_successor_index")
 
     def __init__(self, PreContextID, PatternID, 
                  MinTransitionN_ToAcceptance, 
@@ -539,6 +577,17 @@ class TraceEntry(object):
         self.positioning_state_successor_index = None
         #
         self.post_context_id         = PostContextID
+
+    def clone(self):
+        result = TraceEntry(self.pre_context_id, 
+                            self.pattern_id, 
+                            self.min_transition_n_to_acceptance, 
+                            self.accepting_state_index, 
+                            self.transition_n_since_positioning, 
+                            self.positioning_state_index, 
+                            self.post_context_id)
+        result.positioning_state_successor_index = self.positioning_state_successor_index
+        return result
 
     def is_equal(self, Other):
         if   self.pre_context_id                    != Other.pre_context_id:                    return False

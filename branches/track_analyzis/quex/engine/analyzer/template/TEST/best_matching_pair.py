@@ -8,7 +8,7 @@ from   quex.engine.analyzer.core                        import Analyzer
 import quex.engine.analyzer.template.core               as     templates 
 from   quex.engine.analyzer.template.TEST.templates_aux import *
 from   quex.engine.state_machine.core                   import StateMachine
-from   quex.blackboard                                  import E_EngineTypes
+from   quex.blackboard                                  import E_EngineTypes, E_Compression
 from   quex.engine.interval_handling                    import *
 
 
@@ -33,7 +33,7 @@ def test(TriggerMapList):
 
     # Backward analyzers do not consider so much entry and drop-out ...
     analyzer = Analyzer(sm, E_EngineTypes.BACKWARD_PRE_CONTEXT)
-    db       = templates.CombinationDB(analyzer, 33)
+    db       = templates.CombinationDB(analyzer, 33, E_Compression.TEMPLATE, analyzer.state_db.keys())
 
     for element in db.gain_matrix:
         print

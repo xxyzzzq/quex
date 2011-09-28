@@ -20,6 +20,7 @@ class QuexSetup:
         self.language_db  = None
         self.extension_db = None
         self.buffer_codec_transformation_info = None
+        self.compression_type_list = []
 
     def get_character_value_limit(self):
         """RETURNS: Integer = supremo of possible character range, i.e.
@@ -117,7 +118,8 @@ SETUP_INFO = {
     "comment_state_machine_transitions_f": [["--comment-state-machine"],       SetupParTypes.FLAG],
     "comment_mode_patterns_f":             [["--comment-mode-patterns"],       SetupParTypes.FLAG],
     "compression_template_f":         [["--template-compression"],             SetupParTypes.FLAG],
-    "compression_template_coef":      [["--template-compression-coefficient"], 1.0],
+    "compression_template_uniform_f": [["--template-compression-uniform"],     SetupParTypes.FLAG],
+    "compression_template_min_gain":  [["--template-compression-min-gain"],    0],
     "compression_path_f":             [["--path-compression"],                 SetupParTypes.FLAG],
     "compression_path_uniform_f":     [["--path-compression-uniform"],         SetupParTypes.FLAG],
     "count_column_number_f":          [["--no-count-lines"],                   SetupParTypes.NEGATED_FLAG],
@@ -175,6 +177,7 @@ SETUP_INFO = {
     "language_db":                               None,
     "extension_db":                              None,
     "converter_helper_required_f":               True,
+    "compression_type_list":                     None,
     #______________________________________________________________________________________________________
     #
     # DEPRECATED
@@ -205,6 +208,7 @@ SETUP_INFO = {
     "XX_plot_graphic_format":            [["--plot"],                           ""],
     "XX_plot_character_display":         [["--plot-character-display", "--pcd"],  "utf8"],
     "XX_plot_graphic_format_list_f":     [["--plot-format-list"],               SetupParTypes.FLAG],
+    "XX_compression_template_coef":      [["--template-compression-coefficient"], 1.0],
 }
 
 DEPRECATED = { 
@@ -313,6 +317,11 @@ DEPRECATED = {
       ("Option '--plot-format-list' is no longer supported. Note, that since 0.59.9\n" \
        "Quex does no longer call the GraphViz utility directly. Use '--language dot'.\n",
        "0.59.9"),
+  "XX_compression_template_coef":      
+      ("Option '--template-compression-coefficient' has been replaced by \n" \
+       "'--template-compression-min-gain' which tells the minimum estimated number of\n" \
+       "bytes that can be spared before two states would be combined.",
+       "0.60.1"),
 }
  
 global_character_type_db = {

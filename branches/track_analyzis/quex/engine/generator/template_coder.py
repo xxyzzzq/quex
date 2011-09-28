@@ -13,7 +13,7 @@ import quex.engine.state_machine.core                     as     state_machine
 import quex.engine.analyzer.template.core                 as templates 
 
 from   copy            import deepcopy
-from   quex.blackboard import setup as Setup, E_StateIndices
+from   quex.blackboard import setup as Setup, E_StateIndices, E_Compression
 from   itertools       import imap, ifilter
 from   operator        import attrgetter
 
@@ -95,7 +95,7 @@ from   operator        import attrgetter
 """
 LanguageDB = None # Set during call to 'do()', not earlier
 
-def do(txt, TheAnalyzer, MinGain):
+def do(txt, TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList):
     """Tries to combine as many states as possible from TheAnalyzer
        into TemplateState-s. It uses an iterative stepwise algorithm
        were at each step two states are combined as long as the 
@@ -111,12 +111,13 @@ def do(txt, TheAnalyzer, MinGain):
        'Done List', i.e. a list of indices of states which have been 
                     combined into template states.
     """
+    assert CompressionType in (E_Compression.TEMPLATE, E_Compression.TEMPLATE_UNIFORM)
     global LanguageDB
     LanguageDB = Setup.language_db
 
     # (*) Analysis:
     #     Determine TemplateState-s as combinations of AnalyzerState-s.
-    template_state_list = templates.do(TheAnalyzer, MinGain)
+    template_state_list = templates.do(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList)
 
     if len(template_state_list) == 0: return []
 

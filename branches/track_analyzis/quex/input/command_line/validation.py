@@ -122,9 +122,12 @@ def do(setup, command_line, argv):
     # it defaults to '1 byte' which is most likely not what is desired for unicode.
     if     converter_n == 1 \
        and setup.buffer_element_size == 1 \
-       and not command_line_args_defined(command_line, "buffer_element_size"):
+       and not command_line_args_defined(command_line, "buffer_element_size") \
+       and not command_line_args_defined(command_line, "buffer_element_type"):
         error_msg("A converter has been specified, but the default buffer element size\n" + \
-                  "is left to 1 byte. Consider %s." % command_line_args_string("buffer_element_size"))
+                  "is left to 1 byte. Consider %s or %s." \
+                  % (command_line_args_string("buffer_element_size"),
+                     command_line_args_string("buffer_element_type")))
 
     # If a user defined type is specified for 'engine character type' and 
     # a converter, then the name of the target type must be specified explicitly.
@@ -174,13 +177,6 @@ def do(setup, command_line, argv):
                                 "Codec '%s' is not supported." % setup.buffer_codec)
         __codec_vs_buffer_element_size("utf8", 1)
         __codec_vs_buffer_element_size("utf16", 2)
-
-    # Path Compression
-    if setup.compression_path_uniform_f and setup.compression_path_f:
-        error_msg("Both flags for path compression were set: %s and\n"     \
-                  % command_line_args_string("compression_path_uniform_f")   \
-                  + "%s. Please, choose only one!" \
-                  % command_line_args_string("compression_path_f"))
 
 def __check_identifier(setup, Candidate, Name):
     value = setup.__dict__[Candidate]

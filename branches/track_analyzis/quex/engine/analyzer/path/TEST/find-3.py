@@ -7,7 +7,7 @@ from   quex.engine.interval_handling   import *
 import quex.engine.state_machine.core  as core
 import quex.engine.analyzer.path.core  as paths 
 from   quex.engine.analyzer.core       import Analyzer
-from   quex.blackboard                 import E_EngineTypes
+from   quex.blackboard                 import E_EngineTypes, E_Compression
 
 if "--hwut-info" in sys.argv:
     print "Paths: Plugging Wild Cards;"
@@ -29,7 +29,10 @@ def test(sm):
     print sm.get_graphviz_string(NormalizeF=False)
     print
     analyzer = Analyzer(sm, E_EngineTypes.FORWARD)
-    result   = paths.find_begin(analyzer, sm.init_state_index, sm.init_state_index, UniformityF=False)
+    result   = paths.find_begin(analyzer, 
+                                sm.init_state_index, sm.init_state_index, 
+                                CompressionType=E_Compression.PATH, 
+                                AvailableStateIndexList=analyzer.state_db.keys())
     for path in result:
         print "# " + repr(path).replace("\n", "\n# ")
 

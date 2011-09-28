@@ -88,6 +88,9 @@ class TransitionCode:
 
 class TextTransitionCode(TransitionCode):
     def __init__(self, Code, DropOutF=False):
+        assert isinstance(Code, list)
+        for elm in Code: 
+            assert isinstance(elm, (int, str, unicode))
         self.__code       = Code
         self.__drop_out_f = DropOutF
     @property

@@ -80,6 +80,11 @@ E_InputActions = Enum("DEREF",
                       "DECREMENT_THEN_DEREF",
                       "_DEBUG_InputActions")
 
+E_Compression = Enum("PATH", 
+                     "PATH_UNIFORM",
+                     "TEMPLATE",
+                     "TEMPLATE_UNIFORM",
+                     "_DEBUG_Compression")
 
 #-----------------------------------------------------------------------------------------
 # mode_db: storing the mode information into a dictionary:
