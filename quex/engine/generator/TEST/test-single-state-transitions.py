@@ -18,7 +18,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.blackboard import setup                as Setup
 import quex.engine.generator.languages.core    as languages
 from   quex.engine.generator.languages.address import __label_db
-Setup.language_db = languages.db["Python"]
+Setup.language_db = languages.db["C"]
 
 from quex.engine.interval_handling     import NumberSet, Interval
 from quex.engine.state_machine.core    import State, StateMachine
@@ -28,6 +28,8 @@ import quex.engine.generator.languages.core               as languages
 import quex.engine.generator.languages.address            as address
 import quex.engine.generator.state_coder.transition_block as transition_block
 from   quex.engine.generator.state_machine_decorator      import StateMachineDecorator
+
+from   quex.blackboard import E_EngineTypes
 
 address.init_address_handling({})
 
@@ -88,57 +90,87 @@ elif "C" in sys.argv:
             target_state_index = long(random.random() * 5)
             target_state_index_list.append(target_state_index)
 
-            for i in range(0, int(random.random() * 5) + 2):
+            for dummy in xrange(0, int(random.random() * 5) + 2):
                 state.add_transition(Interval(interval_start, interval_start + 1), target_state_index)
                 interval_start += 1 + int(random.random() * 2)
 
-# Make sure, that the 'goto state' is transformed into 'return index of target state'
-languages.db["Python"]["$goto"] = lambda x, y: "return %s" % repr(y)   
-
 states = []
-for state_index in target_state_index_list:
-    states.append("%s = %iL\n" % (address.get_label("$entry", state_index), state_index))
+for state_index in set(target_state_index_list):
+    states.append("%s: return (int)%i;\n" % (address.get_label("$entry", state_index), state_index))
     # increment the state index counter, so that the drop-out and reload labels 
     # get an appropriate label.
     index.get()
+index.get()
+index.get()
+reload   = "%s: return (int)-1;\n" % address.get_label("$reload", -1)
+states.insert(0, reload)
+drop_out = "%s: return (int)-1;\n" % address.get_label("$drop-out", -1)
+states.insert(0, drop_out)
 
 # One for the 'terminal'
 __label_db["$entry"](index.get())
 
-states.append("%s = -1\n" % address.get_label("$drop-out", -1))
-states.append("%s = -1\n" % address.get_label("$reload", -1))
-state_txt = "".join(states)
+function  = [ 
+    "#define __quex_debug_state(X) /* empty */\n",
+    "int transition(int input) {\n" 
+]
+transition_block.do(function, 
+                    state.transitions().get_trigger_map(), 
+                    StateIndex=6666L,
+                    EngineType=E_EngineTypes.BACKWARD_INPUT_POSITION,
+                    GotoReload_Str="return -1;")
 
-dsm = StateMachineDecorator(StateMachine(), "UnitTest", [], False, False)
-function  = "def example_func(input):\n"
-function += "".join(transition_block.do(state.transitions().get_trigger_map(), 
-                                        None, dsm, 
-                                        GotoReload_Str="return -1;"))
-function  = function.replace("_-1_", "_MINUS_1_").replace("goto", "return")
+function.extend(states)
+function.append("\n}\n")
 
-for line_n, line in enumerate((state_txt + function).split("\n")):
-    print "##%03i" % line_n, line
+main_txt = """
 
-exec(state_txt + function + "\n")
+#include <stdio.h>
+int
+main(int argc, char** argv) {
+#   define      InputSize                $$N$$ 
+    const int   input[InputSize]       = { $$CHARS$$ };
+    const int   expectation[InputSize] = { $$EXPECT$$ };
+    const int*  InputEnd = (const int*)input + InputSize;
+    int         result = 0;
+    const int*  iterator = 0;
+    const int*  eiterator = 0;
 
-differences = []    
-output_txt  = []
-for number in range(interval_end):
-    expected_state_index = state.transitions().get_resulting_target_state_index(number)
-    if expected_state_index is None: expected_state_index = -1
-    actual_state_index = example_func(number)
-    try: 
-        pass
-    except:
-        for line in function.split("\n"):
-            print "ERROR: %s" % line
-        sys.exit()
-    if actual_state_index is None: actual_state_index = -1
-    output_txt.append("%i %s %s\n" % (number, repr(actual_state_index), repr(expected_state_index)))
-    if actual_state_index != expected_state_index:
-        differences.append(number)
+    for(iterator = input, eiterator = expectation; 
+        iterator != InputEnd; 
+        ++iterator, ++eiterator) {
+        result = transition(*iterator);
+        printf("%i %i %i\\n", *iterator, result, *eiterator);
+        if( result != *eiterator ) {
+            printf("ERROR");
+            break;
+        }
+    }
+}
+"""
 
-sys.stdout.write("".join(output_txt))
-print "# errors = ", differences    
+# Prepare the main function
+input_list     = range(interval_end)
+input_array    = repr(input_list)[1:-1]
+expected_list  = [ state.transitions().get_resulting_target_state_index(number) for number in input_list ]
+expected_array = repr([ -1 if x is None else int(x) for x in expected_list])[1:-1]
+
+main_txt = main_txt.replace("$$N$$", repr(len(input_list)))
+main_txt = main_txt.replace("$$CHARS$$", input_array)
+main_txt = main_txt.replace("$$EXPECT$$", expected_array)
+
+txt = function + [ main_txt ]
+Setup.language_db.REPLACE_INDENT(txt)
+
+fh = open("test.c", "wb")
+fh.write("".join(txt))
+fh.close()
+os.system("gcc test.c -o test")
+os.system("./test")
+os.remove("./test")
+os.remove("./test.c")
+
+
+
 
 

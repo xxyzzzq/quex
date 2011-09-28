@@ -92,7 +92,9 @@ from   quex.engine.interval_handling                      import Interval
 import quex.engine.analyzer.path.core                     as paths 
 
 from   quex.blackboard import setup as Setup, \
-                              E_StateIndices
+                              E_StateIndices, \
+                              E_EngineTypes, \
+                              E_Compression
 
 from   copy import deepcopy
 from   itertools import imap, ifilter
@@ -100,17 +102,19 @@ import sys
 
 LanguageDB = None # Set during call to 'do()', not earlier
 
-def do(txt, TheAnalyzer, UniformOnlyF):
-    """UniformOnlyF --> Accept only uniform states in path.
+def do(txt, TheAnalyzer, CompressionType, Remainder):
+    """--> Accept only uniform states in path.
                         (This must be done by the 'analyzer module' too.)
     
        RETURNS: List of done state indices.
     """
+    assert CompressionType in [E_Compression.PATH, E_Compression.PATH_UNIFORM]
+
     global LanguageDB
     LanguageDB = Setup.language_db
 
     # (1) Find possible state combinations
-    path_walker_list = paths.do(TheAnalyzer, UniformOnlyF)
+    path_walker_list = paths.do(TheAnalyzer, CompressionType, AvailableStateIndexList=Remainder)
 
     if len(path_walker_list) == 0: return []
 
@@ -179,7 +183,6 @@ def __entry(txt, PWState, TheAnalyzer):
         return False
                 
     if PWState.uniform_entries_f:
-        txt.append("/* Uniform State Entries; number of paths: %i */\n" % len(PWState.path_list))
         entry, dummy = PWState.entry.iteritems().next()
         state_index_list = PWState.implemented_state_index_list
         # Assign the state keys for each state involved
@@ -474,7 +477,9 @@ def __jump_to_path_end_state(PWState):
 
     txt = []
     txt.append(2)
-    txt.append(LanguageDB["$input/decrement"])
+    # Undo last step
+    if PWState.engine_type == E_EngineTypes.FORWARD: txt.append(LanguageDB.INPUT_P_DECREMENT)
+    else:                                            txt.append(LanguageDB.INPUT_P_INCREMENT)
     txt.append("\n")
 
     # -- Transition to the first state after the path:

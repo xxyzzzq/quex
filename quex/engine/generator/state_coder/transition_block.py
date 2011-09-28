@@ -24,13 +24,13 @@ def do(txt, TransitionMap,
     assert isinstance(TransitionMap, list)
     assert EngineType        in E_EngineTypes
     assert isinstance(InitStateF, bool)
-    assert StateIndex        is None or isinstance(StateIndex, (int, long))
+    assert StateIndex        is None or isinstance(StateIndex, long)
     assert GotoReload_Str    is None or isinstance(GotoReload_Str, (str, unicode))
     assert_adjacency(TransitionMap)
 
     LanguageDB = Setup.language_db
 
-    LanguageDB.STATE_DEBUG_INFO(txt, StateIndex, InitStateF and EngineType == E_EngineTypes.FORWARD)
+    LanguageDB.STATE_DEBUG_INFO(txt, StateIndex, (InitStateF and EngineType == E_EngineTypes.FORWARD))
 
     # If a state has no transitions, no new input needs to be eaten => no reload.
     #

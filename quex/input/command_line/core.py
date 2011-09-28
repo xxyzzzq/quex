@@ -319,14 +319,14 @@ def prepare_file_names(setup):
         setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/unicode.i"
 
 def make_numbers(setup):
-    setup.compression_template_coef  = __get_float("compression_template_coef")
-    setup.buffer_limit_code          = __get_integer("buffer_limit_code")
-    setup.path_limit_code            = __get_integer("path_limit_code")
+    setup.compression_template_min_gain = __get_integer("compression_template_min_gain")
+    setup.buffer_limit_code             = __get_integer("buffer_limit_code")
+    setup.path_limit_code               = __get_integer("path_limit_code")
 
     setup.token_id_counter_offset    = __get_integer("token_id_counter_offset")
     setup.token_queue_size           = __get_integer("token_queue_size")
     setup.token_queue_safety_border  = __get_integer("token_queue_safety_border")
-    setup.buffer_element_size   = __get_integer("buffer_element_size")
+    setup.buffer_element_size        = __get_integer("buffer_element_size")
 
 def __get_integer(MemberName):
     ValueStr = setup.__dict__[MemberName]

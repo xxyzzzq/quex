@@ -1,4 +1,4 @@
-<history date="Mon Sep 19 20:25:41 2011" element-n="377">
+<history date="Wed Sep 28 13:45:55 2011" element-n="379">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:24"/>
         <test-runs-today n="3" ok-n="1" fail-n="2" else-n="0" last-run="oll korrekt" last-time="11:15:08"/>
@@ -1059,5 +1059,9 @@
     </day>
     <day year="2011" month="09" day="04">
         <crc-error time="05:48:13" application="no-use-of-lexeme-macro.sh" choice="" database-crc="-94933717" real-crc="437393331"/>
+    </day>
+    <day year="2011" month="09" day="26">
+        <crc-error time="15:37:03" application="check-default-configuration.sh" choice="" database-crc="-115781983" real-crc="-1867447098"/>
+        <crc-error time="15:37:16" application="include_guard.py" choice="undefinition" database-crc="1693599369" real-crc="1058376451"/>
     </day>
 </history>

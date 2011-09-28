@@ -1,36 +1,36 @@
-<test-database execution-time-sec="1.47" date="Mon Sep 19 20:27:09 2011">
+<test-database execution-time-sec="1.45" date="Wed Sep 28 13:47:55 2011">
     <last-used-diff-display-program name=""/>
-    <test title="utf8 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.03"> 
-        <application file-name="from-utf8" info-request-time="1315115413L" vanished="False"/>
-        <make-procedure success="True" time_sec="0.926441"/>
+    <test title="utf8 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.02"> 
+        <application file-name="from-utf8" info-request-time="1317217672L" vanished="False"/>
+        <make-procedure success="True" time_sec="0.881239"/>
         <choice-list number="3" same_result="False">
-           <choice name="Source_Empty" result="OK" time_sec="0.02" crc="-975538654"/>
-           <choice name="Source_TestFile" result="OK" time_sec="0.00" crc="-1181361604"/>
+           <choice name="Source_Empty" result="OK" time_sec="0.00" crc="-975538654"/>
+           <choice name="Source_TestFile" result="OK" time_sec="0.01" crc="-1181361604"/>
            <choice name="Drain_ToSmall" result="OK" time_sec="0.01" crc="834269970"/>
         </choice-list>
     </test>
-    <test title="utf32 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.03"> 
-        <application file-name="from-utf32" info-request-time="1315115415L" vanished="False"/>
-        <make-procedure success="True" time_sec="0.873701"/>
+    <test title="utf32 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.01"> 
+        <application file-name="from-utf32" info-request-time="1317217674L" vanished="False"/>
+        <make-procedure success="True" time_sec="0.869510"/>
         <choice-list number="3" same_result="False">
-           <choice name="Source_Empty" result="OK" time_sec="0.02" crc="490986972"/>
-           <choice name="Source_TestFile" result="OK" time_sec="0.00" crc="-992793919"/>
+           <choice name="Source_Empty" result="OK" time_sec="0.00" crc="490986972"/>
+           <choice name="Source_TestFile" result="OK" time_sec="0.01" crc="-992793919"/>
            <choice name="Drain_ToSmall" result="OK" time_sec="0.00" crc="1140718619"/>
         </choice-list>
     </test>
-    <test title="Test of complete character set on base converters (utf8, utf16, utf32)" make-dependent="True" time-sum-sec="1.38"> 
-        <application file-name="characters" info-request-time="1315115414L" vanished="False"/>
-        <make-procedure success="True" time_sec="0.438151"/>
+    <test title="Test of complete character set on base converters (utf8, utf16, utf32)" make-dependent="True" time-sum-sec="1.40"> 
+        <application file-name="characters" info-request-time="1317217673L" vanished="False"/>
+        <make-procedure success="True" time_sec="0.434346"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="1.38" crc="705934895"/>
+           <choice name="" result="OK" time_sec="1.40" crc="705934895"/>
         </choice-list>
     </test>
-    <test title="utf16 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.03"> 
-        <application file-name="from-utf16" info-request-time="1315115414L" vanished="False"/>
-        <make-procedure success="True" time_sec="0.871913"/>
+    <test title="utf16 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.01"> 
+        <application file-name="from-utf16" info-request-time="1317217672L" vanished="False"/>
+        <make-procedure success="True" time_sec="0.873291"/>
         <choice-list number="3" same_result="False">
-           <choice name="Source_Empty" result="OK" time_sec="0.02" crc="-434085329"/>
-           <choice name="Source_TestFile" result="OK" time_sec="0.01" crc="-2128203092"/>
+           <choice name="Source_Empty" result="OK" time_sec="0.00" crc="-434085329"/>
+           <choice name="Source_TestFile" result="OK" time_sec="0.00" crc="-2128203092"/>
            <choice name="Drain_ToSmall" result="OK" time_sec="0.00" crc="-765338234"/>
         </choice-list>
     </test>

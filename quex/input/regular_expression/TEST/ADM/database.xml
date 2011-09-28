@@ -1,4 +1,4 @@
-<test-database execution-time-sec="2.95" date="Mon Sep 19 20:31:50 2011">
+<test-database execution-time-sec="2.96" date="Wed Sep 28 13:53:47 2011">
     <last-used-diff-display-program name=""/>
     <test title="Case Folding" time-sum-sec="0.19"> 
         <application file-name="test-case_fold.py" info-request-time="1310810807L" vanished="False"/>
@@ -46,10 +46,10 @@
                <choice name="" result="OK" time_sec="0.06" crc="1454754068"/>
             </choice-list>
         </test>
-        <test title="Snap string until (low level function)" time-sum-sec="0.07"> 
+        <test title="Snap string until (low level function)" time-sum-sec="0.06"> 
             <application file-name="test-snap_until.py" info-request-time="1310810807L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.07" crc="-1055637304"/>
+               <choice name="" result="OK" time_sec="0.06" crc="-1055637304"/>
             </choice-list>
         </test>
     </group>
@@ -74,10 +74,10 @@
         </test>
     </group>
     <group name="Conditional Analysis">
-        <test title="pre- and post-conditions" time-sum-sec="0.10"> 
+        <test title="pre- and post-conditions" time-sum-sec="0.09"> 
             <application file-name="test-pre-and-post-condition.py" info-request-time="1313565112L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.10" crc="423562782"/>
+               <choice name="" result="OK" time_sec="0.09" crc="423562782"/>
             </choice-list>
         </test>
         <test title="pre conditions" time-sum-sec="0.09"> 
@@ -126,10 +126,10 @@
                <choice name="" result="OK" time_sec="0.63" crc="-2049050227"/>
             </choice-list>
         </test>
-        <test title="Set Operations" time-sum-sec="0.68"> 
+        <test title="Set Operations" time-sum-sec="0.67"> 
             <application file-name="test-properties-2.py" info-request-time="1310810807L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.68" crc="-725342255"/>
+               <choice name="" result="OK" time_sec="0.67" crc="-725342255"/>
             </choice-list>
         </test>
     </group>

@@ -2,7 +2,7 @@ import quex.engine.state_machine.index         as     index
 import quex.engine.state_machine.core          as     state_machine
 from   quex.engine.analyzer.template.state     import TemplateState
 from   quex.engine.analyzer.template.candidate import TemplateStateCandidate
-from   quex.blackboard                         import E_StateIndices
+from   quex.blackboard                         import E_StateIndices, E_Compression
 
 from   collections import defaultdict
 from   itertools   import ifilter, chain, islice
@@ -132,7 +132,7 @@ import sys
 
 """
 
-def do(TheAnalyzer, CostCoefficient):
+def do(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList):
     """RETURNS: List of TemplateState-s that were identified from states in
                 TheAnalyzer.
 
@@ -147,14 +147,15 @@ def do(TheAnalyzer, CostCoefficient):
        the iteration of calls to '.combine_next()' happen until no meaningful
        combination of states can be identified.
     """
-    assert isinstance(CostCoefficient, (int, long, float))
+    assert CompressionType in (E_Compression.TEMPLATE, E_Compression.TEMPLATE_UNIFORM)
+    assert isinstance(MinGain, (int, long, float))
 
     # CombinationDB: -- Keep track of possible combinations between states.
     #                -- Can determine best matching state candidates for combination.
     #                -- Replaces two combined states by TemplateState.
     #
     # (A 'state' in the above sense can also be a TemplateState)
-    combiner = CombinationDB(TheAnalyzer, CostCoefficient)
+    combiner = CombinationDB(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList)
 
     # Combine states until there is nothing that can be reasonably be combined.
     while combiner.combine_best():
@@ -187,16 +188,20 @@ class CombinationDB:
                      combination with the other states in the 'matrix' 
                      is computed.
     """
-    def __init__(self, TheAnalyzer, MinGain):
+    def __init__(self, TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList):
+        assert CompressionType in (E_Compression.TEMPLATE, E_Compression.TEMPLATE_UNIFORM)
         assert MinGain >= 0
+        self.__uniformity_required_f = (CompressionType == E_Compression.TEMPLATE_UNIFORM)
+
         # Database of states that are subject to combination tries.
         # The init state and states without transition map are excluded.
         self.__db = dict(ifilter(lambda x:     len(x[1].transition_map) != 0 
+                                           and x[0] in AvailableStateIndexList
                                            and not x[1].init_state_f,
                                  TheAnalyzer.state_db.iteritems()))
-        self.__analyzer    = TheAnalyzer
-        self.__min_gain    = float(MinGain)
-        self.__gain_matrix = self.__base()
+        self.__analyzer              = TheAnalyzer
+        self.__min_gain              = float(MinGain)
+        self.__gain_matrix           = self.__base()
 
     def combine_best(self):
         """Finds the two best matching states and combines them into one.
@@ -246,6 +251,11 @@ class CombinationDB:
         for i, i_state in enumerate(state_list):
             for k_state in islice(state_list, i + 1, None):
 
+                if self.__uniformity_required_f:
+                    # Rely on __eq__ operator (used '=='). '!=' uses __neq__ 
+                    if   not (i_state.drop_out == k_state.drop_out): continue
+                    elif not (i_state.entry    == k_state.entry):    continue
+
                 candidate = TemplateStateCandidate(i_state, k_state, self.__analyzer)
 
                 if candidate.gain >= self.__min_gain:
@@ -275,6 +285,11 @@ class CombinationDB:
         self.__gain_matrix.extend([None] * MaxIncrease)
 
         for state in self.__db.itervalues():
+            if self.__uniformity_required_f:
+                # Rely on __eq__ operator (used '=='). '!=' uses __neq__ 
+                if   not (i_state.drop_out == k_state.drop_out): continue
+                elif not (i_state.entry    == k_state.entry):    continue
+
             candidate = TemplateStateCandidate(NewState, state, self.__analyzer)
 
             if candidate.gain >= self.__min_gain:

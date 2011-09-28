@@ -22,7 +22,7 @@ import quex.engine.generator.skipper.range         as range_skipper
 import quex.engine.generator.skipper.nested_range  as nested_range_skipper
 import quex.input.regular_expression.engine         as regex
 #
-from   quex.blackboard import setup as Setup
+from   quex.blackboard import setup as Setup, E_Compression
 
 # Switch: Removal of source and executable file
 #         'False' --> No removal.
@@ -45,7 +45,7 @@ if False:
 else:
     IGNORE_WARNING_F = False
 
-choices_list = ["ANSI-C-PlainMemory", "ANSI-C", "ANSI-C-CG", 
+choices_list = ["ANSI-C-PlainMemory", "ANSI-C", "ANSI-C-CG", "ANSI-C-PathTemplate",
                 "Cpp", "Cpp_StrangeStream", "Cpp-Template", "Cpp-Template-CG", 
                 "Cpp-Path", "Cpp-PathUniform", "Cpp-Path-CG", 
                 "Cpp-PathUniform-CG"] 
@@ -87,6 +87,7 @@ def __Setup_init_language_database(Language):
             "Cpp":                "C++", 
             "Cpp_StrangeStream":  "C++", 
             "Cpp-Template":       "C++", 
+            "ANSI-C-PathTemplate": "C", 
             "Cpp-Template-CG":    "C++", 
             "Cpp-Path":           "C++", 
             "Cpp-PathUniform":    "C++", 
@@ -111,6 +112,8 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
 
     CompileOptionStr = ""
     computed_goto_f  = False
+    Setup.compression_type_list = [] # Default: no compression
+
     if Language.find("StrangeStream") != -1:
         CompileOptionStr += " -DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION "
 
@@ -121,17 +124,21 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
 
     if Language == "Cpp-Template":
         Language = "Cpp"
-        # Shall template compression be used?
-        Setup.compression_template_f    = True
-        Setup.compression_template_coef = 0.1
+        Setup.compression_type_list = [E_Compression.TEMPLATE]
+        Setup.compression_template_min_gain = 10
+
+    if Language == "ANSI-C-PathTemplate":
+        Language = "ANSI-C"
+        Setup.compression_type_list = [E_Compression.PATH, E_Compression.TEMPLATE]
+        Setup.compression_template_min_gain = 0
 
     elif Language == "Cpp-Path":
         Language = "Cpp"
-        Setup.compression_path_f = True
+        Setup.compression_type_list = [E_Compression.PATH]
 
     elif Language == "Cpp-PathUniform":
         Language = "Cpp"
-        Setup.compression_path_uniform_f = True
+        Setup.compression_type_list = [E_Compression.PATH_UNIFORM]
 
     try:
         adapted_dict = {}

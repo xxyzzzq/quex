@@ -49,12 +49,18 @@ state that is represents. It can be activated with the command line option::
    > quex ... --template-compression
 
 The aggressivity of the compression can be controlled by the template compresison
-coefficient to be set by the command line argument::
+'min-gain' to be set by the command line argument::
 
-   > quex ... --template-compression [number]
+   > quex ... --template-compression-min-gain [number]
 
-A meaningful setting for 'number' is in between 0 to 1.5. Especially for
-lexical analyzers for unicode with large transition maps can profit
+It represents the minimum of estimated bytes that could be spared before
+two states are considered for combination into a template state. If only
+states with the same entry and drop out section should be considered then
+the following option can be specified::
+
+   > quex ... --template-compression-uniform
+
+Especially unicode lexical analyzers large transition maps can profit
 tremendously from template compression. If your compiler supports computed
 gotos try to set ``QUEX_OPTION_COMPUTED_GOTOS`` on the compilers' command
 line, e.g. with GNU C++::
@@ -162,6 +168,28 @@ Principle of Path Compression
     State sequence from figure :ref:`fig-path-compression-before` 
     implemented by pathwalker.
 
+Combining Multiple Compression Types
+====================================
+
+It is possible to combine multiple compression types simply by defining
+multiple of them on the command line. The result of applying path compression
+before or after template compression may be significantly different. The 
+sequence of analysis corresponds to the sequence that the activating
+command line options appear, i.e.::
+
+   > quex ... --template-compression ... --path-compression ...
+
+determines that template compression is performed before path compression.
+Uniform and non-uniform compression can be treated as separate procedures.
+Thus, it is possible to say for example::
+
+   > quex ... --template-compression-uniform \
+              --path-compression \
+              --template-compression
+
+which first does a template compression of very similar states, then a 
+general path compression of the remainder. Then whatever remains of 
+states is tried to be combined by aggressive template compression.
 
 Token Queues
 ============

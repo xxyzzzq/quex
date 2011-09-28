@@ -462,6 +462,10 @@ class NumberSet(object):
         if x.end - x.begin != 1:         return False
         return x.begin == Number
 
+    def has_size_one(self):
+        if len(self.__intervals) != 1: return False
+        return (self.__intervals[0].end - self.__intervals[0].begin) == 1
+
     def minimum(self):
         if len(self.__intervals) == 0: return sys.maxint   # i.e. an absurd value
         else:                          return self.__intervals[0].begin

@@ -166,6 +166,7 @@ class LDB(dict):
     ELSE                    = "} else {\n"
     INPUT_P                 = "me->buffer._input_p"
     INPUT_P_INCREMENT       = "++(me->buffer._input_p);"
+    INPUT_P_DECREMENT       = "--(me->buffer._input_p);"
     PATH_ITERATOR_INCREMENT = "++(path_iterator);"
     INPUT_P_TO_LEXEME_START = "QUEX_NAME(Buffer_seek_lexeme_start)(&me->buffer);"
 
@@ -233,7 +234,7 @@ class LDB(dict):
         return result
 
     def GOTO_DROP_OUT(self, StateIndex):
-        return get_address("$drop-out", StateIndex, U=True)
+        return "goto %s;" % get_label("$drop-out", StateIndex, U=True, R=True)
 
     def GOTO_RELOAD(self, StateIndex, InitStateIndexF, EngineType):
         """On reload a special section is entered that tries to reload data. Reload

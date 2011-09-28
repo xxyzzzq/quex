@@ -1,10 +1,10 @@
-import quex.engine.generator.state_coder.core as     state_coder
-from   quex.blackboard                        import setup as Setup
+import quex.engine.generator.state_coder.core as state_coder
 import quex.engine.generator.template_coder   as template_coder
 import quex.engine.generator.paths_coder      as paths_coder
+from   quex.blackboard                        import setup as Setup, E_Compression
 
 from   collections import defaultdict
-from   itertools   import ifilter
+from   itertools   import imap
 
 def do(TheAnalyzer):
     """Generate source code for a given state machine 'SM'.
@@ -20,20 +20,24 @@ def do(TheAnalyzer):
     state_coder.do(txt, TheAnalyzer.state_db[TheAnalyzer.init_state_index], TheAnalyzer)
     remainder.discard(TheAnalyzer.init_state_index)
 
-    # (*) [Optional] Path-Compressed States
-    if Setup.compression_path_f or Setup.compression_path_uniform_f:
-        done_list = paths_coder.do(txt, TheAnalyzer, Setup.compression_path_uniform_f)
-        remainder.difference_update(done_list)
+    # (*) Compression Algorithms:
+    #     txt       -- is directly filled with code of compressed states.
+    #     done_list -- contains list of state indices that have been combined.
+    for ctype in Setup.compression_type_list:
+        # -- Path-Compression
+        if ctype in (E_Compression.PATH, E_Compression.PATH_UNIFORM):
+            done_list = paths_coder.do(txt, TheAnalyzer, ctype, remainder)
+            remainder.difference_update(done_list)
     
-    # (*) [Optional] Template-Compressed States
-    if Setup.compression_template_f:
-        done_list = template_coder.do(txt, TheAnalyzer, Setup.compression_template_coef)
-        remainder.difference_update(done_list)
+        # -- Template-Compression
+        elif ctype in (E_Compression.TEMPLATE, E_Compression.TEMPLATE_UNIFORM):
+            done_list = template_coder.do(txt, TheAnalyzer, Setup.compression_template_min_gain, ctype, remainder)
+            remainder.difference_update(done_list)
     
     # (*) All other (normal) states (sorted by their frequency of appearance
     frequency_db = get_frequency_db(TheAnalyzer.state_db, remainder)
-    for state in sorted(ifilter(lambda x: x.index in remainder, TheAnalyzer.state_db.itervalues()), 
-                        key=lambda x: frequency_db[x.index], reverse=True):
+    for state in sorted(imap(lambda i: TheAnalyzer.state_db[i], remainder), 
+                        key=lambda s: frequency_db[s.index], reverse=True):
         state_coder.do(txt, state, TheAnalyzer) 
 
     LanguageDB = Setup.language_db

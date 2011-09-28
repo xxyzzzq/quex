@@ -51,7 +51,8 @@ from   quex.blackboard  import setup as Setup
 
 def do(SM, EngineType=E_EngineTypes.FORWARD):
     analyzer = Analyzer(SM, EngineType)
-    Setup.language_db.register_analyzer(analyzer)
+    if Setup.language_db is not None:
+        Setup.language_db.register_analyzer(analyzer)
 
     return optimizer.do(analyzer)
 
@@ -75,28 +76,24 @@ class Analyzer:
         self.__engine_type      = EngineType
 
         # (1) Track Analysis: Get the 'Trace' objects for each state
-        acceptance_db = track_analysis.do(SM)
+        acceptance_db, successor_db = track_analysis.do(SM)
+
+        # (*) Successor Database
+        #     Store for each state the set of all possible successor states.
+        self.__successor_db = successor_db
+
+        # (*) 'From Database'
+        #     This is calculated on demand: For each state the list of states
+        #      which enter it. See: property 'from_db' below.
+        from_db = defaultdict(set)
+        for from_index, state in SM.states.iteritems():
+            for to_index in state.transitions().get_map().iterkeys():
+                from_db[to_index].add(from_index)
+        self.__from_db = from_db
 
         # (2) Prepare AnalyzerState Objects
-        from_db = defaultdict(set)
-        for state_index, state in SM.states.iteritems():
-            self.transition_map = state.transitions().get_trigger_map()
-            for target_index in state.transitions().get_map().keys():
-                from_db[target_index].add(state_index)
-
         self.__state_db = dict([(state_index, AnalyzerState(state_index, SM, EngineType, from_db[state_index])) 
                                  for state_index in acceptance_db.iterkeys()])
-
-        # (3) Successor Database
-        #     Store for each state the set of all possible successor states.
-        self.__successor_db          = defaultdict(set)
-        self.__successor_db_done_set = set()
-        self.__successor_db_get(self.__init_state_index, [], self.__successor_db)
-
-        # (3.1) 'From Database'
-        #       This is calculated on demand: For each state the list of states
-        #       which enter it. See: property 'from_db' below.
-        self.__from_db = None
 
         if EngineType != E_EngineTypes.FORWARD:
             # BACKWARD_INPUT_POSITION, BACKWARD_PRE_CONTEXT:
@@ -154,16 +151,16 @@ class Analyzer:
         assert len(TheTraceList) != 0
 
         acceptance_checker = []  # map: pre-context-flag --> acceptance_id
-        terminal_router  = []  # map: acceptance_id    --> (positioning, 'goto terminal_id')
+        terminal_router    = []  # map: acceptance_id    --> (positioning, 'goto terminal_id')
 
         # (*) Acceptance Detector
         if self.analyze_acceptance_uniformity(TheTraceList):
             # (1) Uniform Traces
             #     Use one trace as prototype to generate the mapping of 
             #     pre-context flag vs. acceptance.
-            prototype = TheTraceList[0]
-            acceptance_checker   = map(lambda x: DropOut_AcceptanceCheckerElement(x.pre_context_id, x.pattern_id), 
-                                       prototype.get_priorized_list())
+            prototype          = TheTraceList[0]
+            acceptance_checker = map(lambda x: DropOut_AcceptanceCheckerElement(x.pre_context_id, x.pattern_id), 
+                                     prototype.get_priorized_list())
             # Note: (1.1) Unconditional Acceptance Exists, and
             #       (1.2) No Unconditional Acceptance 
             #       are already well-handled because the current states acceptance behavior
@@ -196,7 +193,7 @@ class Analyzer:
                     accepting_state = self.__state_db[element.accepting_state_index]
                     accepting_state.entry.accepter[element.pre_context_id] = element.pattern_id
 
-        # Terminal TerminalRouter
+        # Terminal Router
         for pattern_id, info in self.analyze_positioning(TheTraceList).iteritems():
             assert pattern_id != E_AcceptanceIDs.VOID
             terminal_router.append(DropOut_TerminalRouterElement(pattern_id, 
@@ -390,13 +387,7 @@ class Analyzer:
              .predecessor_db[state_index] a list of states is returned that enter
                                           the state of 'state_index'.
         """
-        if self.__from_db is None: 
-            self.__from_db = defaultdict(set)
-            for state in self.__state_db.itervalues():
-                for target_index in state.target_index_list:
-                    self.__from_db[target_index].add(state.index)
         return self.__from_db
-
 
     def __successor_db_get(self, StateIndex, path, result):
         """Determine for each state the total set of successor states.
@@ -466,13 +457,16 @@ class Analyzer:
                 dive(PostContextID, target_state, path, collection)
                 path.pop()
 
+        ##  from time import time
         result = defaultdict(set)
         for state in self.state_db.itervalues():
             # Iterate over all post context ids subject to position storage
             for from_state_index, positioner in ifilter(lambda x: x[0] != E_StateIndices.ALL, 
                                                         state.entry.positioner_db.iteritems()):
+                ## before = time()
                 for post_context_id in positioner.iterkeys():
                     dive(post_context_id, state, [], result[post_context_id])
+                ## print "##", state.index, positioner.keys(), time() - before
 
         return result
 
@@ -702,6 +696,14 @@ class Entry(BASE_Entry):
 
        NOTE: This type supports being a dictionary key by '__hash__' and '__eq__'.
              Required for the optional 'template compression'.
+
+       MEMBERS:
+
+          .positioner_db[from_state_index][post_context_id] = pre_context_id_set
+  
+          When the state is entered via 'from_state_index' and one of the pre-contexts
+          in the 'pre_context_id_set' is fullfilled, then the position of 'post_context_id'
+          must be stored.
     """
     __slots__ = ("__independent_of_source_state_f", "accepter", "positioner_db")
 
