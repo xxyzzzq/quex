@@ -1,0 +1,2 @@
+token { TEST; }
+mode one_and_only: <indentation: [\t] => space 1; [\n] => newline;> { "test" => QUEX_TKN_TEST; }
