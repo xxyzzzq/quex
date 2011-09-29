@@ -1,0 +1,26 @@
+< COMPILER = g++ -ggdb -W -pedantic 
+---
+> COMPILER = gcc -ggdb 
+< 	 -Wall -Wconversion                              \
+---
+> 	 -Wall -W -Wconversion -pedantic                 \
+> #    -- Intel's icpc (tm)
+<              $(findstring $(COMPILER),cl dmc)))
+---
+>              $(findstring $(COMPILER),icpc cl dmc)))
+< EasyLexer.o: EasyLexer.cpp 
+---
+> EasyLexer.o: EasyLexer.c 
+< example.o: ../example.cpp  EasyLexer.cpp
+---
+> example.o: ../example.c  EasyLexer.c
+< example-bom.o: example-bom.cpp  EasyLexer.cpp
+---
+> example-bom.o: example-bom.c EasyLexer.c
+< %.E: %.cpp    
+---
+> %.E: %.c    
+< EasyLexer.cpp: definitions.qx end_of_file.qx program.qx $(QUEX_CORE)
+---
+> EasyLexer.c: definitions.qx end_of_file.qx program.qx $(QUEX_CORE)
+> 		 --language C                  \

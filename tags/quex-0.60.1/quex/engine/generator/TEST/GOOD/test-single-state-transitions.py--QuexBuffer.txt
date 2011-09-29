@@ -1,0 +1,433 @@
+#def example_func(input):
+#    # last_acceptance = []
+#    # last_acceptance_input_position = stream.tell()
+#    # case QUEX_LABEL__STATE_-1_GET_INPUT:
+#    # TODO: getting input into parser
+#    if  input >= 10 and input < 280 :
+#        if  input < 150 :
+#            if  input < 71 :
+#                if  input < 30 :
+#                    if  input < 20 :
+#                        # QUEX_LABEL__ENTRY_1;
+#                        return 1L    # ['\n', \19] 
+#                    else:
+#                        if  input < 21 :
+#                            # goto QUEX_LABEL__TERMINAL;
+#                            return -1    # \20 
+#                        else:
+#                            # QUEX_LABEL__ENTRY_5;
+#                            return 5L    # [\21, \29] 
+#                        
+#                    
+#                else:
+#                    if  input < 51 :
+#                        # goto QUEX_LABEL__TERMINAL;
+#                        return -1    # [\30, '2'] 
+#                    else:
+#                        if  input < 70 :
+#                            # QUEX_LABEL__ENTRY_2;
+#                            return 2L    # ['3', 'E'] 
+#                        else:
+#                            # goto QUEX_LABEL__TERMINAL;
+#                            return -1    # 'F' 
+#                        
+#                    
+#                
+#            else:
+#                if  input < 100 :
+#                    if  input < 80 :
+#                        # QUEX_LABEL__ENTRY_8;
+#                        return 8L    # ['G', 'O'] 
+#                    else:
+#                        if  input < 90 :
+#                            # goto QUEX_LABEL__TERMINAL;
+#                            return -1    # ['P', 'Y'] 
+#                        else:
+#                            # QUEX_LABEL__ENTRY_3;
+#                            return 3L    # ['Z', 'c'] 
+#                        
+#                    
+#                else:
+#                    if  input < 110 :
+#                        # goto QUEX_LABEL__TERMINAL;
+#                        return -1    # ['d', 'm'] 
+#                    else:
+#                        if  input < 130 :
+#                            # QUEX_LABEL__ENTRY_3;
+#                            return 3L    # ['n', ''] 
+#                        else:
+#                            # goto QUEX_LABEL__TERMINAL;
+#                            return -1    # ['', ''] 
+#                        
+#                    
+#                
+#            
+#        else:
+#            if  input < 200 :
+#                if  input < 196 :
+#                    if  input < 190 :
+#                        # QUEX_LABEL__ENTRY_4;
+#                        return 4L    # ['', '½'] 
+#                    else:
+#                        if  input < 195 :
+#                            # QUEX_LABEL__ENTRY_5;
+#                            return 5L    # ['¾', 'Â'] 
+#                        else:
+#                            # QUEX_LABEL__ENTRY_1;
+#                            return 1L    # 'Ã' 
+#                        
+#                    
+#                else:
+#                    if  input < 197 :
+#                        # goto QUEX_LABEL__TERMINAL;
+#                        return -1    # 'Ä' 
+#                    else:
+#                        if  input < 198 :
+#                            # QUEX_LABEL__ENTRY_6;
+#                            return 6L    # 'Å' 
+#                        else:
+#                            # goto QUEX_LABEL__TERMINAL;
+#                            return -1    # ['Æ', 'Ç'] 
+#                        
+#                    
+#                
+#            else:
+#                if  input < 240 :
+#                    if  input < 230 :
+#                        # QUEX_LABEL__ENTRY_7;
+#                        return 7L    # ['È', 'å'] 
+#                    else:
+#                        if  input < 231 :
+#                            # goto QUEX_LABEL__TERMINAL;
+#                            return -1    # 'æ' 
+#                        else:
+#                            # QUEX_LABEL__ENTRY_7;
+#                            return 7L    # ['ç', 'ï'] 
+#                        
+#                    
+#                else:
+#                    if  input < 260 :
+#                        if  input < 250 :
+#                            # goto QUEX_LABEL__TERMINAL;
+#                            return -1    # ['ð', 'ù'] 
+#                        else:
+#                            # QUEX_LABEL__ENTRY_8;
+#                            return 8L    # ['ú', 'ă'] 
+#                        
+#                    else:
+#                        if  input < 261 :
+#                            # goto QUEX_LABEL__TERMINAL;
+#                            return -1    # 'Ą' 
+#                        else:
+#                            # QUEX_LABEL__ENTRY_2;
+#                            return 2L    # ['ą', 'ė'] 
+#                        
+#                    
+#                
+#            
+#        
+#    # no trigger triggered 
+#    # goto QUEX_LABEL__TERMINAL;
+#    return -1
+#
+0 -1 -1
+1 -1 -1
+2 -1 -1
+3 -1 -1
+4 -1 -1
+5 -1 -1
+6 -1 -1
+7 -1 -1
+8 -1 -1
+9 -1 -1
+10 1L 1L
+11 1L 1L
+12 1L 1L
+13 1L 1L
+14 1L 1L
+15 1L 1L
+16 1L 1L
+17 1L 1L
+18 1L 1L
+19 1L 1L
+20 -1 -1
+21 5L 5L
+22 5L 5L
+23 5L 5L
+24 5L 5L
+25 5L 5L
+26 5L 5L
+27 5L 5L
+28 5L 5L
+29 5L 5L
+30 -1 -1
+31 -1 -1
+32 -1 -1
+33 -1 -1
+34 -1 -1
+35 -1 -1
+36 -1 -1
+37 -1 -1
+38 -1 -1
+39 -1 -1
+40 -1 -1
+41 -1 -1
+42 -1 -1
+43 -1 -1
+44 -1 -1
+45 -1 -1
+46 -1 -1
+47 -1 -1
+48 -1 -1
+49 -1 -1
+50 -1 -1
+51 2L 2L
+52 2L 2L
+53 2L 2L
+54 2L 2L
+55 2L 2L
+56 2L 2L
+57 2L 2L
+58 2L 2L
+59 2L 2L
+60 2L 2L
+61 2L 2L
+62 2L 2L
+63 2L 2L
+64 2L 2L
+65 2L 2L
+66 2L 2L
+67 2L 2L
+68 2L 2L
+69 2L 2L
+70 -1 -1
+71 8L 8L
+72 8L 8L
+73 8L 8L
+74 8L 8L
+75 8L 8L
+76 8L 8L
+77 8L 8L
+78 8L 8L
+79 8L 8L
+80 -1 -1
+81 -1 -1
+82 -1 -1
+83 -1 -1
+84 -1 -1
+85 -1 -1
+86 -1 -1
+87 -1 -1
+88 -1 -1
+89 -1 -1
+90 3L 3L
+91 3L 3L
+92 3L 3L
+93 3L 3L
+94 3L 3L
+95 3L 3L
+96 3L 3L
+97 3L 3L
+98 3L 3L
+99 3L 3L
+100 -1 -1
+101 -1 -1
+102 -1 -1
+103 -1 -1
+104 -1 -1
+105 -1 -1
+106 -1 -1
+107 -1 -1
+108 -1 -1
+109 -1 -1
+110 3L 3L
+111 3L 3L
+112 3L 3L
+113 3L 3L
+114 3L 3L
+115 3L 3L
+116 3L 3L
+117 3L 3L
+118 3L 3L
+119 3L 3L
+120 3L 3L
+121 3L 3L
+122 3L 3L
+123 3L 3L
+124 3L 3L
+125 3L 3L
+126 3L 3L
+127 3L 3L
+128 3L 3L
+129 3L 3L
+130 -1 -1
+131 -1 -1
+132 -1 -1
+133 -1 -1
+134 -1 -1
+135 -1 -1
+136 -1 -1
+137 -1 -1
+138 -1 -1
+139 -1 -1
+140 -1 -1
+141 -1 -1
+142 -1 -1
+143 -1 -1
+144 -1 -1
+145 -1 -1
+146 -1 -1
+147 -1 -1
+148 -1 -1
+149 -1 -1
+150 4L 4L
+151 4L 4L
+152 4L 4L
+153 4L 4L
+154 4L 4L
+155 4L 4L
+156 4L 4L
+157 4L 4L
+158 4L 4L
+159 4L 4L
+160 4L 4L
+161 4L 4L
+162 4L 4L
+163 4L 4L
+164 4L 4L
+165 4L 4L
+166 4L 4L
+167 4L 4L
+168 4L 4L
+169 4L 4L
+170 4L 4L
+171 4L 4L
+172 4L 4L
+173 4L 4L
+174 4L 4L
+175 4L 4L
+176 4L 4L
+177 4L 4L
+178 4L 4L
+179 4L 4L
+180 4L 4L
+181 4L 4L
+182 4L 4L
+183 4L 4L
+184 4L 4L
+185 4L 4L
+186 4L 4L
+187 4L 4L
+188 4L 4L
+189 4L 4L
+190 5L 5L
+191 5L 5L
+192 5L 5L
+193 5L 5L
+194 5L 5L
+195 1L 1L
+196 -1 -1
+197 6L 6L
+198 -1 -1
+199 -1 -1
+200 7L 7L
+201 7L 7L
+202 7L 7L
+203 7L 7L
+204 7L 7L
+205 7L 7L
+206 7L 7L
+207 7L 7L
+208 7L 7L
+209 7L 7L
+210 7L 7L
+211 7L 7L
+212 7L 7L
+213 7L 7L
+214 7L 7L
+215 7L 7L
+216 7L 7L
+217 7L 7L
+218 7L 7L
+219 7L 7L
+220 7L 7L
+221 7L 7L
+222 7L 7L
+223 7L 7L
+224 7L 7L
+225 7L 7L
+226 7L 7L
+227 7L 7L
+228 7L 7L
+229 7L 7L
+230 -1 -1
+231 7L 7L
+232 7L 7L
+233 7L 7L
+234 7L 7L
+235 7L 7L
+236 7L 7L
+237 7L 7L
+238 7L 7L
+239 7L 7L
+240 -1 -1
+241 -1 -1
+242 -1 -1
+243 -1 -1
+244 -1 -1
+245 -1 -1
+246 -1 -1
+247 -1 -1
+248 -1 -1
+249 -1 -1
+250 8L 8L
+251 8L 8L
+252 8L 8L
+253 8L 8L
+254 8L 8L
+255 8L 8L
+256 8L 8L
+257 8L 8L
+258 8L 8L
+259 8L 8L
+260 -1 -1
+261 2L 2L
+262 2L 2L
+263 2L 2L
+264 2L 2L
+265 2L 2L
+266 2L 2L
+267 2L 2L
+268 2L 2L
+269 2L 2L
+270 2L 2L
+271 2L 2L
+272 2L 2L
+273 2L 2L
+274 2L 2L
+275 2L 2L
+276 2L 2L
+277 2L 2L
+278 2L 2L
+279 2L 2L
+280 -1 -1
+281 -1 -1
+282 -1 -1
+283 -1 -1
+284 -1 -1
+285 -1 -1
+286 -1 -1
+287 -1 -1
+288 -1 -1
+289 -1 -1
+290 -1 -1
+291 -1 -1
+292 -1 -1
+293 -1 -1
+294 -1 -1
+295 -1 -1
+296 -1 -1
+297 -1 -1
+298 -1 -1
+299 -1 -1
+# errors =  []
