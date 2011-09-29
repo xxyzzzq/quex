@@ -8,7 +8,8 @@ fi
 tmp=`pwd`
 cd $bug/ 
 make clean >& /dev/null
-make
+make > tmp.txt
+../quex_pathify.sh tmp.txt
 
 # cleansening
 make clean >& /dev/null

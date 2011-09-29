@@ -40,6 +40,7 @@ main(int argc, char** argv)
             cout << string(*token_p) << endl;
         else
             cout << "<TERMINATION>\n";
+        cout.flush();
     } while( token_p->type_id() != QUEX_TKN_TERMINATION );
 
     return 0;

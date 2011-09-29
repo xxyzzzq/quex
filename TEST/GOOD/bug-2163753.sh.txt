@@ -1,17 +1,22 @@
 Call to quex
+quex -i simple.qx -o Simple --language C
 Compiling
-#-DQUEX_OPTION_DEBUG_SHOW \
-		# -D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV 
-## An Assert-Abortion might be an intended element of the experiment.
-WORD 'word' 
-FAILED '-' 
-WORD 'with' 
-FAILED '-' 
-WORD 'dashes' 
-FAILED '\n' 
-<TERMINATION>
+# -DQUEX_OPTION_DEBUG_SHOW 
+# -D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV 
+,------------------------------------------------------------------------------------
+| [START]
+WORD 'word'
+FAILED '-'
+WORD 'with'
+FAILED '-'
+WORD 'dashes'
+FAILED '
+'
+<TERMINATION> ''
+| [END] number of token = 7
+`------------------------------------------------------------------------------------
 rm -rf Simple-*
-rm -rf Simple.cpp
+rm -rf Simple.[ch]
 rm -rf Simple
 rm -rf a.out
 touch simple.qx

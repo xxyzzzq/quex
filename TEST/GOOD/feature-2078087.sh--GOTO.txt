@@ -1,7 +1,8 @@
-quex -i GOTO.qx -o Simple --token-policy single
-g++ -I/home/fschaef/prj/quex/trunk -I. \
+quex -i GOTO.qx -o Simple --token-policy single --language C
+g++ -I<<QUEX_PATH>> -I. \
+		-DPRINT_TOKEN \
 		-DQUEX_OPTION_DEBUG_SHOW_MODES -DQUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED -DQUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED  \
-		../lexer-simply.cpp Simple*.cpp \
+		../lexer.c Simple*.c \
 		-ggdb -o lexer
 | Mode change to ONE
 ## Disable this message by compile option
@@ -18,21 +19,23 @@ g++ -I/home/fschaef/prj/quex/trunk -I. \
 ## Report any bug at
 ##        http://sourceforge.net/tracker/?group_id=168259&atid=846112
 ## An Assert-Abortion might be an intended element of the experiment.
-LETTER '1' 
-LETTER '1' 
-LETTER '1' 
+,------------------------------------------------------------------------------------
+| [START]
+LETTER '1'
+LETTER '1'
+LETTER '1'
 | Mode change from ONE
 |             to   TWO
-LETTER '2' 
-LETTER '2' 
+LETTER '2'
+LETTER '2'
 | Mode change from TWO
 |             to   THREE
-LETTER '3' 
-LETTER '3' 
+LETTER '3'
+LETTER '3'
 | Mode change from THREE
 |             to   FOUR
-LETTER '4' 
-LETTER '4' 
+LETTER '4'
+LETTER '4'
 | Mode change from FOUR
 |             to   ONE
 | Mode change from ONE
@@ -43,4 +46,6 @@ LETTER '4'
 |             to   FOUR
 | Mode change from FOUR
 |             to   ONE
-<TERMINATION>
+<TERMINATION> ''
+| [END] number of token = 10
+`------------------------------------------------------------------------------------

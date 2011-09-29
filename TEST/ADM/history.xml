@@ -1,4 +1,4 @@
-<history date="Sat Sep  3 07:32:43 2011" element-n="881">
+<history date="Thu Sep 29 21:05:11 2011" element-n="919">
     <day year="2008" month="02" day="10">
         <history-init time="09:50:03"/>
         <crc-error time="09:50:07" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="118547486"/>
@@ -1701,5 +1701,51 @@
     <day year="2011" month="08" day="18">
         <crc-error time="05:51:16" application="bug-2891125.sh" choice="" database-crc="1367707053" real-crc="-338654790"/>
         <crc-error time="05:52:27" application="bug-2799244.sh" choice="good-2" database-crc="863943101" real-crc="-994260522"/>
+    </day>
+    <day year="2011" month="09" day="04">
+        <crc-error time="05:38:13" application="bug-2599228.sh" choice="Developper" database-crc="1346908960" real-crc="-606201214"/>
+        <crc-error time="05:38:14" application="bug-2599228.sh" choice="FilesExist" database-crc="762666300" real-crc="1228260291"/>
+        <crc-error time="05:38:16" application="bug-2619679.sh" choice="" database-crc="-1094321800" real-crc="658489232"/>
+        <crc-error time="05:38:58" application="feature-2078087.sh" choice="GOTO" database-crc="-1769679998" real-crc="-389711507"/>
+        <crc-error time="05:39:06" application="bug-2161098-x.sh" choice="c_comments" database-crc="-105643959" real-crc="-572095635"/>
+        <crc-error time="05:39:07" application="bug-2161098-x.sh" choice="shell_comments" database-crc="1244708232" real-crc="-1773697424"/>
+        <crc-error time="05:39:09" application="bug-2161098-x.sh" choice="funny_comments" database-crc="497102226" real-crc="-352907785"/>
+        <crc-error time="05:39:11" application="bug-2161098.sh" choice="c_comments" database-crc="-1308704859" real-crc="-1177298903"/>
+        <crc-error time="05:39:13" application="bug-2161098.sh" choice="shell_comments" database-crc="1263467179" real-crc="10570509"/>
+        <crc-error time="05:39:15" application="bug-2161098.sh" choice="funny_comments" database-crc="-1261259321" real-crc="1621198374"/>
+        <crc-error time="05:39:35" application="bug-3102035.sh" choice="1" database-crc="273932922" real-crc="-636142630"/>
+        <crc-error time="05:39:36" application="bug-3102035.sh" choice="3" database-crc="962376534" real-crc="-1806820900"/>
+        <crc-error time="05:40:22" application="bug-2891125.sh" choice="" database-crc="-338654790" real-crc="1547920872"/>
+        <crc-error time="05:40:30" application="bug-1885304.sh" choice="" database-crc="-443043108" real-crc="-978738556"/>
+        <crc-error time="05:40:32" application="bug-1889086.sh" choice="" database-crc="1814757686" real-crc="-719842035"/>
+        <crc-error time="05:40:38" application="bug-1895066.sh" choice="" database-crc="-1715157199" real-crc="734096231"/>
+    </day>
+    <day year="2011" month="09" day="05">
+        <crc-error time="04:24:09" application="feature-2078087.sh" choice="GOTO-2" database-crc="-213473949" real-crc="-1937628016"/>
+        <crc-error time="04:24:22" application="feature-2078087.sh" choice="GOSUB" database-crc="788521398" real-crc="-1033444600"/>
+        <crc-error time="04:24:32" application="feature-2078087.sh" choice="GOSUB-2" database-crc="-453959243" real-crc="-1753769948"/>
+        <crc-error time="04:34:28" application="feature-2078087.sh" choice="GOSUB" database-crc="-1033444600" real-crc="-2022508254"/>
+        <crc-error time="04:36:11" application="feature-2078087.sh" choice="GOTO" database-crc="-389711507" real-crc="-1764067582"/>
+        <crc-error time="04:37:00" application="feature-2078087.sh" choice="GOTO-2" database-crc="-1937628016" real-crc="1345162389"/>
+        <crc-error time="04:37:29" application="feature-2078087.sh" choice="GOSUB-2" database-crc="-1753769948" real-crc="-505034788"/>
+        <crc-error time="04:39:43" application="feature-2078087.sh" choice="GOTO" database-crc="-1764067582" real-crc="-1657006230"/>
+        <crc-error time="04:41:39" application="feature-2078087.sh" choice="GOTO" database-crc="-1657006230" real-crc="-544771801"/>
+        <crc-error time="04:42:33" application="feature-2078087.sh" choice="GOTO-2" database-crc="1345162389" real-crc="340418157"/>
+        <crc-error time="04:42:56" application="feature-2078087.sh" choice="GOSUB" database-crc="-2022508254" real-crc="-14838782"/>
+        <crc-error time="04:43:56" application="feature-2078087.sh" choice="GOSUB-2" database-crc="-505034788" real-crc="676421329"/>
+        <crc-error time="19:38:37" application="feature-2078087.sh" choice="GOTO" database-crc="-544771801" real-crc="-1308415202"/>
+        <crc-error time="19:39:01" application="feature-2078087.sh" choice="GOSUB-2" database-crc="676421329" real-crc="1745013127"/>
+        <crc-error time="19:40:12" application="feature-2078087.sh" choice="GOTO" database-crc="-1308415202" real-crc="53158503"/>
+        <crc-error time="19:40:20" application="feature-2078087.sh" choice="GOTO-2" database-crc="340418157" real-crc="-975037083"/>
+        <crc-error time="19:41:05" application="feature-2078087.sh" choice="GOTO-2" database-crc="-975037083" real-crc="525626839"/>
+        <crc-error time="19:51:13" application="bug-2163753.sh" choice="" database-crc="1900270082" real-crc="1865723536"/>
+        <crc-error time="19:52:46" application="bug-2163753.sh" choice="" database-crc="1865723536" real-crc="-1384300693"/>
+    </day>
+    <day year="2011" month="09" day="16">
+        <crc-error time="22:58:09" application="feature-2078087.sh" choice="GOSUB" database-crc="-14838782" real-crc="-727116059"/>
+        <crc-error time="22:58:28" application="feature-2078087.sh" choice="GOSUB-2" database-crc="1745013127" real-crc="1136020320"/>
+    </day>
+    <day year="2011" month="09" day="28">
+        <crc-error time="22:46:35" application="bug-2163753.sh" choice="" database-crc="-1384300693" real-crc="-2054181684"/>
     </day>
 </history>

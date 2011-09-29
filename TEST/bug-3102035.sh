@@ -25,8 +25,7 @@ case $1 in
     5) ./Case5 mini.txt >& tmp.txt;;
 esac
 
-cat tmp.txt
-rm tmp.txt
+../quex_pathify.sh tmp.txt
 
 # cleansening
 make clean >& /dev/null
