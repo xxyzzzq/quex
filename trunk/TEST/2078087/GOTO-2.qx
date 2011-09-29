@@ -11,6 +11,7 @@ token {
 mode BASE :
 <skip: [ \n\t]> 
 {
+    <<EOF>> => QUEX_TKN_TERMINATION(LexemeNull);
 }
 mode ONE : BASE {
     2|to2 => GOTO(TWO,   QUEX_TKN_TWO(Lexeme));

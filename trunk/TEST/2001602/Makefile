@@ -29,25 +29,25 @@ lex_icu:
 		$(LIB_CONV) \
 		$(X).cpp                      \
 		-Wall                         \
-		../lexer.cpp                     \
-		-ggdb \
+		../lexer.cpp                  \
+		-ggdb                         \
 	   	-DQUEX_SETTING_BUFFER_SIZE=64 \
 		-DQUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE=64 \
-		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
+		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED  \
 		-o $@
 
 lex_codec: 
 	@echo "Call to quex"
 	@quex -i simple.qx -o $(X) --codec utf8 
 	@echo "Compiling"
-	g++ -I./ -I$(QUEX_PATH) \
-		$(X).cpp                      \
-		-Wall                         \
+	g++ -I./ -I$(QUEX_PATH)              \
+		$(X).cpp                         \
+		-Wall                            \
 		../lexer.cpp                     \
-		-ggdb \
-	   	-DQUEX_SETTING_BUFFER_SIZE=64 \
+		-ggdb                            \
+	   	-DQUEX_SETTING_BUFFER_SIZE=64    \
 		-DQUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE=64 \
-		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
+		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED  \
 		-o $@
 
 clean:

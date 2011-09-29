@@ -3,3 +3,4 @@
 --not test_that_it_does_not_take_too_long.sh
 --not bug-.sh
 --not bug-template.sh
+--not quex_pathify.sh

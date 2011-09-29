@@ -1,6 +1,5 @@
 quex -i token.qx c_comments.qx     -o Simple --token-policy single
-## None [42, 47]
-g++ -I/home/fschaef/prj/quex/trunk -I./ -ggdb -o lexer Simple*.cpp ../lexer-simply.cpp \
+g++ -I<<QUEX_PATH>> -I./ -ggdb -o lexer Simple*.cpp ../lexer-simply.cpp \
 		-DPRINT_LINE_COLUMN -DQUEX_OPTION_LINE_NUMBER_COUNTING -DQUEX_OPTION_COLUMN_NUMBER_COUNTING  -DQUEX_SETTING_BUFFER_SIZE=4
 ## Disable this message by compile option
 ##        '-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED'

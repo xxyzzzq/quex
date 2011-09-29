@@ -7,7 +7,7 @@ fi
 
 tmp=`pwd`
 cd $bug 
-pwd
+../quex_pathify.sh --string `pwd`
 echo "tokens in .qx files _____________________________________"
 echo '(1)'
 quex -i error-1.qx --engine Simple

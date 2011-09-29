@@ -1,7 +1,8 @@
-quex -i GOSUB-2.qx -o Simple --token-policy single
-g++ -I/home/fschaef/prj/quex/trunk -I. \
+quex -i GOSUB-2.qx -o Simple --token-policy single --language C
+g++ -I<<QUEX_PATH>> -I. \
+		-DPRINT_TOKEN \
 		-DQUEX_OPTION_DEBUG_SHOW_MODES -DQUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED -DQUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED  \
-		../lexer-simply.cpp Simple*.cpp \
+		../lexer.c Simple*.c \
 		-ggdb -o lexer
 | Mode change to ONE
 ## Disable this message by compile option
@@ -18,51 +19,53 @@ g++ -I/home/fschaef/prj/quex/trunk -I. \
 ## Report any bug at
 ##        http://sourceforge.net/tracker/?group_id=168259&atid=846112
 ## An Assert-Abortion might be an intended element of the experiment.
-LETTER '1' 
-LETTER 'one' 
+,------------------------------------------------------------------------------------
+| [START]
+LETTER '1'
+LETTER 'one'
 | Mode change from ONE
 |             to   TWO
-LETTER 'two' 
+LETTER 'two'
 | Mode change from TWO
 |             to   ONE
-LETTER 'one' 
+LETTER 'one'
 | Mode change from ONE
 |             to   TWO
-LETTER 'two' 
+LETTER 'two'
 | Mode change from TWO
 |             to   ONE
-LETTER 'one' 
+LETTER 'one'
 | Mode change from ONE
 |             to   TWO
-LETTER 'two' 
+LETTER 'two'
 | Mode change from TWO
 |             to   ONE
-LETTER 'one' 
+LETTER 'one'
 | Mode change from ONE
 |             to   ONE
-LETTER 'one' 
+LETTER 'one'
 | Mode change from ONE
 |             to   TWO
-LETTER 'two' 
+LETTER 'two'
 | Mode change from TWO
 |             to   ONE
-LETTER 'one' 
+LETTER 'one'
 | Mode change from ONE
 |             to   ONE
-LETTER 'one' 
+LETTER 'one'
 | Mode change from ONE
 |             to   ONE
-LETTER 'one' 
+LETTER 'one'
 | Mode change from ONE
 |             to   TWO
-LETTER 'two' 
+LETTER 'two'
 | Mode change from TWO
 |             to   ONE
-LETTER 'one' 
+LETTER 'one'
 | Mode change from ONE
 |             to   ONE
-LETTER 'one' 
+LETTER 'one'
 | Mode change from ONE
 |             to   ONE
-LETTER 'one' 
-lexer: /home/fschaef/prj/quex/trunk/quex/code_base/analyzer/member/mode-handling.i:72: void quex::Simple_pop_mode(quex::Simple*): Assertion `me->_mode_stack.end != me->_mode_stack.begin' failed.
+LETTER 'one'
+lexer: <<QUEX_PATH>>/quex/code_base/analyzer/member/mode-handling.i:77: void Simple_pop_mode(Simple_tag*): Assertion `me->_mode_stack.end != me->_mode_stack.begin' failed.
