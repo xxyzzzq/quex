@@ -1,0 +1,47 @@
+digraph state_machine_0 {
+rankdir=LR;
+size="8,5"
+node [shape = doublecircle]; 15; 16; 17; 18; 19;
+node [shape = circle];
+14 -> 16 [label ="'a'"];
+14 -> 17 [label ="'b'"];
+14 -> 15 [label ="'c'"];
+15 -> 16 [label ="'a'"];
+15 -> 18 [label ="'b'"];
+15 -> 19 [label ="'c'"];
+18 -> 16 [label ="'a'"];
+18 -> 18 [label ="'b'"];
+18 -> 19 [label ="'c'"];
+7777 -> 14 [label ="'0'"];
+}
+
+
+# start    = 15;
+# path     = (15)--'b'-->(18)--'a'-->[16];
+# skeleton = (16) by 'a'; (18) by 'b'; (19) by 'c'; 
+# wildcard = False;
+# 
+# start    = 15;
+# path     = (15)--'b'-->(18)--'b'-->(18)--'a'-->[16];
+# skeleton = (16) by 'a'; (18) by 'b'; (19) by 'c'; 
+# wildcard = False;
+# 
+# start    = 15;
+# path     = (15)--'b'-->(18)--'b'-->(18)--'c'-->[19];
+# skeleton = (16) by 'a'; (18) by 'b'; (19) by 'c'; 
+# wildcard = False;
+# 
+# start    = 15;
+# path     = (15)--'b'-->(18)--'c'-->[19];
+# skeleton = (16) by 'a'; (18) by 'b'; (19) by 'c'; 
+# wildcard = False;
+# 
+# start    = 14;
+# path     = (14)--'c'-->(15)--'b'-->(18)--'b'-->[18];
+# skeleton = (16) by 'a'; (17) by 'b'; (19) by 'c'; 
+# wildcard = False;
+# 
+#
+# Some recursions are possible, if the skeleton contains them.
+# In this case, the path cannot contain but the 'iterative' char
+# plus some exit character.

@@ -1,0 +1,60 @@
+init-state = 0L
+00000() <~ (21, 58)
+      == 'a' ==> 00001
+      == 'b' ==> 00003
+      <no epsilon>
+00001(S, P14) <~ (21, 60, S, P14)
+      == 'a' ==> 00001
+      == 'd' ==> 00002
+      <no epsilon>
+00002(A, P14) <~ (21, 61, A, P14)
+      == 'd' ==> 00002
+      <no epsilon>
+00003() <~ (21, 59)
+      == 'c' ==> 00004
+      <no epsilon>
+00004(S, P14) <~ (21, 62, S, P14)
+      == 'd' ==> 00002
+      <no epsilon>
+
+State 0:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 1:
+  .entry:
+    .positioner:
+        .from 0: <nothing>
+        .from 1: <nothing>
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 2:
+  .entry:
+    .positioner:
+        .from 1: position[PostContext_14]  = input_p;
+        .from 2: <nothing>
+        .from 4: position[PostContext_14]  = input_p;
+  .drop_out:
+    pos = position[PostContext_14] ; goto Pattern21;
+
+
+State 3:
+  .entry:
+    .positioner:
+        .from 0: <nothing>
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 4:
+  .entry:
+    .positioner:
+        .from 3: <nothing>
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
