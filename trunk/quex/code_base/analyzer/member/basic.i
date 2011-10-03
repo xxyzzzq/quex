@@ -211,7 +211,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE size_t 
-    QUEX_NAME(buffer_reload_forward)(QUEX_NAME(Buffer)*  buffer) 
+    QUEX_NAME(__buffer_reload_forward_core)(QUEX_NAME(Buffer)*  buffer) 
     {
         size_t loaded_character_n = (size_t)-1;
 
@@ -235,81 +235,24 @@ QUEX_NAMESPACE_MAIN_OPEN
         return loaded_character_n;
     }
 
-    QUEX_INLINE void
-    QUEX_NAME(__buffer_adapt_last_acceptance_input_position)(const size_t                  LoadedCharacterN,
-                                                             QUEX_TYPE_CHARACTER_POSITION* pos)
-    { 
-        /* -- In general, there would be no harm if the last_acceptance_input_position
-         *    underflows, since it is set anyway. 
-         * -- With template states, though, the value == 0 is used as a signal that 
-         *    indicates that is has not been set, and thus, no seek has to happen.      
-         * -- Thus, we better do not underflow.*/
-        if( *pos != 0x0 ) *pos -= (ptrdiff_t)LoadedCharacterN; 
-    }
-
-    QUEX_INLINE void
-    QUEX_NAME(__buffer_adapt_post_context_start_positions)(const size_t                  LoadedCharacterN,
-                                                           QUEX_TYPE_CHARACTER_POSITION* pos_array,
-                                                           const size_t                  N)
+    QUEX_INLINE void 
+    QUEX_NAME(buffer_reload_forward)(QUEX_NAME(Buffer)*            buffer, 
+                                     QUEX_TYPE_CHARACTER_POSITION* position_register,
+                                     const size_t                  PositionRegisterN)
     {
-        QUEX_TYPE_CHARACTER_POSITION*  iterator = 0x0;
-        QUEX_TYPE_CHARACTER_POSITION*  End = pos_array + (ptrdiff_t)N;
-        for(iterator = pos_array; iterator != End; ++iterator) {
+        QUEX_TYPE_CHARACTER_POSITION*  iterator           = 0x0;
+        QUEX_TYPE_CHARACTER_POSITION*  End                = position_register + (ptrdiff_t)PositionRegisterN;
+        size_t                         loaded_character_n = (size_t)-1;    
+
+        loaded_character_n = QUEX_NAME(__buffer_reload_forward_core)(buffer);
+
+        for(iterator = position_register; iterator != End; ++iterator) {
             /* NOTE: When the post_context_start_position is still undefined the following operation may
              *       underflow. But, do not care, once it is **assigned** to a meaningful value, it won't */
-            *iterator -= (ptrdiff_t)LoadedCharacterN;
+            *iterator -= (ptrdiff_t)loaded_character_n;
         }
     }
 
-    QUEX_INLINE void 
-    QUEX_NAME(buffer_reload_forward_LA_PC)(QUEX_NAME(Buffer)* buffer, 
-                                           QUEX_TYPE_CHARACTER_POSITION* last_acceptance_input_position,
-                                           QUEX_TYPE_CHARACTER_POSITION* post_context_start_position,
-                                           const size_t                  PostContextN)
-    {
-        size_t  loaded_character_n = (size_t)-1;    
-
-        loaded_character_n = QUEX_NAME(buffer_reload_forward)(buffer);
-
-        QUEX_NAME(__buffer_adapt_last_acceptance_input_position)(loaded_character_n,
-                                                                 last_acceptance_input_position); 
-
-        QUEX_NAME(__buffer_adapt_post_context_start_positions)(loaded_character_n,
-                                                               post_context_start_position, 
-                                                               PostContextN);
-    }
-
-#   if 0
-    /* The following differentiation between 'considering last_acceptance' and 'not
-     * considering last acceptance', etc. was done in the hope that it influences the
-     * storage requirements and/or speed. But it did not, since the compiler optimizations
-     * seem to do things that are beyond the scope of such thoughts.  <fschaef9 10y02m15d> */
-    QUEX_INLINE void 
-    QUEX_NAME(buffer_reload_forward_LA)(QUEX_NAME(Buffer)*             buffer, 
-                                        QUEX_TYPE_CHARACTER_POSITION*  last_acceptance_input_position)
-    {
-        size_t  loaded_character_n = (size_t)-1;    
-
-        loaded_character_n = QUEX_NAME(buffer_reload_forward)(buffer);
-
-        QUEX_NAME(__buffer_adapt_last_acceptance_input_position)(loaded_character_n,
-                                                                 last_acceptance_input_position); 
-    }
-
-    QUEX_INLINE void 
-    QUEX_NAME(buffer_reload_forward_PC)(QUEX_NAME(Buffer)* buffer, 
-                                        QUEX_TYPE_CHARACTER_POSITION* post_context_start_position,
-                                        const size_t                  PostContextN)
-    {
-        size_t  loaded_character_n = (size_t)-1;    
-
-        loaded_character_n = QUEX_NAME(buffer_reload_forward)(buffer); 
-
-        QUEX_NAME(__buffer_adapt_post_context_start_positions)(loaded_character_n,
-                                                               post_context_start_position, 
-                                                               PostContextN);
-    }
-#   endif
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
