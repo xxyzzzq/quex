@@ -28,23 +28,20 @@
 import quex.engine.codec_db.core as codec_db
 import quex.input.regular_expression.traditional_character_set as traditional_character_set
 import quex.input.regular_expression.property                  as property
-import quex.input.regular_expression.auxiliary                 as aux
 import quex.input.regular_expression.case_fold_expression      as case_fold_expression
 #
-from quex.engine.state_machine.core import StateMachine
-from quex.engine.interval_handling  import Interval
-from quex.exception                      import RegularExpressionException
-from quex.engine.misc.file_in                 import read_until_letter, \
-                                                read_identifier, \
-                                                skip_whitespace, \
-                                                verify_word_in_list, \
-                                                check
+from quex.engine.state_machine.core          import StateMachine
+from quex.exception                          import RegularExpressionException
+from quex.engine.misc.file_in                import read_until_letter, \
+                                                    read_identifier, \
+                                                    skip_whitespace, \
+                                                    verify_word_in_list, \
+                                                    check, \
+                                                    error_msg
 from quex.input.regular_expression.auxiliary import __snap_until, \
                                                           __debug_entry, \
                                                           __debug_exit, \
                                                           snap_replacement
-from quex.blackboard import setup as Setup
-
 special_character_set_db = {
     # The closing ']' is to trigger the end of the traditional character set
     "alnum":  "a-zA-Z0-9]",

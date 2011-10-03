@@ -4,8 +4,6 @@ from quex.engine.misc.file_in import get_current_line_info_number, \
                                      skip_whitespace, \
                                      read_identifier, \
                                      verify_word_in_list, \
-                                     parse_assignment, \
-                                     read_until_whitespace, \
                                      read_integer
 
 from   quex.engine.generator.action_info  import LocalizedParameter
