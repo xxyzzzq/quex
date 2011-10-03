@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-from   quex.engine.misc.file_in             import get_propperly_slash_based_file_name
+from   quex.engine.misc.file_in             import get_propperly_slash_based_file_name, error_msg
 from   quex.engine.misc.enum                import Enum
 from   quex.DEFINITIONS                     import QUEX_PATH
 
@@ -20,6 +20,7 @@ class QuexSetup:
         self.language_db  = None
         self.extension_db = None
         self.buffer_codec_transformation_info = None
+        self.compression_type_list = []
 
     def get_character_value_limit(self):
         """RETURNS: Integer = supremo of possible character range, i.e.
@@ -36,7 +37,7 @@ class QuexSetup:
             error_msg("Error while trying to compute 256 to the 'buffer-element-size' (%s)\n"   \
                       % self.get_character_value_limit_str()                                    + \
                       "Adapt \"--buffer-element-size\" or \"--buffer-element-type\",\n"       + \
-                      "or specify '--buffer-element-size-irrelevant' to ignore the issue.", fh)
+                      "or specify '--buffer-element-size-irrelevant' to ignore the issue.")
 
     def get_character_value_limit_str(self):
         if self.buffer_element_size == 1: return "1 byte"
@@ -114,10 +115,12 @@ SETUP_INFO = {
     "buffer_element_type":            [["--buffer-element-type", "--bet"],       ""],
     "buffer_based_analyzis_f":        [["--buffer-based", "--bb"],             SetupParTypes.FLAG],
     "buffer_byte_order":              [["--endian"],                           "<system>"],
-    "comment_state_machine_transitions_f": [["--comment-state-machine"],       SetupParTypes.FLAG],
-    "comment_mode_patterns_f":             [["--comment-mode-patterns"],       SetupParTypes.FLAG],
+    "comment_state_machine_f":        [["--comment-state-machine"],            SetupParTypes.FLAG],
+    "comment_transitions_f":          [["--comment-transitions"],              SetupParTypes.FLAG],
+    "comment_mode_patterns_f":        [["--comment-mode-patterns"],            SetupParTypes.FLAG],
     "compression_template_f":         [["--template-compression"],             SetupParTypes.FLAG],
-    "compression_template_coef":      [["--template-compression-coefficient"], 1.0],
+    "compression_template_uniform_f": [["--template-compression-uniform"],     SetupParTypes.FLAG],
+    "compression_template_min_gain":  [["--template-compression-min-gain"],    0],
     "compression_path_f":             [["--path-compression"],                 SetupParTypes.FLAG],
     "compression_path_uniform_f":     [["--path-compression-uniform"],         SetupParTypes.FLAG],
     "count_column_number_f":          [["--no-count-lines"],                   SetupParTypes.NEGATED_FLAG],
@@ -175,6 +178,7 @@ SETUP_INFO = {
     "language_db":                               None,
     "extension_db":                              None,
     "converter_helper_required_f":               True,
+    "compression_type_list":                     None,
     #______________________________________________________________________________________________________
     #
     # DEPRECATED
@@ -205,6 +209,7 @@ SETUP_INFO = {
     "XX_plot_graphic_format":            [["--plot"],                           ""],
     "XX_plot_character_display":         [["--plot-character-display", "--pcd"],  "utf8"],
     "XX_plot_graphic_format_list_f":     [["--plot-format-list"],               SetupParTypes.FLAG],
+    "XX_compression_template_coef":      [["--template-compression-coefficient"], 1.0],
 }
 
 DEPRECATED = { 
@@ -313,6 +318,11 @@ DEPRECATED = {
       ("Option '--plot-format-list' is no longer supported. Note, that since 0.59.9\n" \
        "Quex does no longer call the GraphViz utility directly. Use '--language dot'.\n",
        "0.59.9"),
+  "XX_compression_template_coef":      
+      ("Option '--template-compression-coefficient' has been replaced by \n" \
+       "'--template-compression-min-gain' which tells the minimum estimated number of\n" \
+       "bytes that can be spared before two states would be combined.",
+       "0.60.1"),
 }
  
 global_character_type_db = {
@@ -374,4 +384,27 @@ global_extension_db = {
    }
 }
 
+def command_line_arg_position(ParameterName):
+    arg_list = SETUP_INFO[ParameterName][0]
+    min_position = 1e37
+    for arg in arg_list:
+        if arg in sys.argv[1:]: 
+            position = sys.argv[1:].index(arg)
+            if position < min_position: min_position = position
+    return min_position
+
+def command_line_args(ParameterName):
+    return SETUP_INFO[ParameterName][0]
+
+def command_line_args_defined(cl, ParameterName):
+    return cl.search(command_line_args(ParameterName))
+
+def command_line_args_string(ParameterName):
+    args = command_line_args(ParameterName)
+    if len(args) == 1: return "'%s'"          % args[0]
+    if len(args) == 2: return "'%s' or '%s'" % (args[0], args[1])
+    txt = ""
+    for arg in args[:-1]:
+        txt += "%s, " % arg
+    return "%sor %s" % (txt, args[-1])
 

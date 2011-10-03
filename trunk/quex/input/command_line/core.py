@@ -2,16 +2,17 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.blackboard                    import  setup                    
+from   quex.blackboard                    import  setup, E_Compression
 import quex.blackboard                    as blackboard
 from   quex.input.command_line.GetPot     import GetPot
 import quex.input.command_line.validation as validation
 from   quex.input.setup                   import SETUP_INFO,               \
                                                  SetupParTypes,            \
                                                  FileTypes,                \
-                                                 DEPRECATED,               \
                                                  global_extension_db,      \
-                                                 global_character_type_db
+                                                 global_character_type_db, \
+                                                 command_line_args_defined, \
+                                                 command_line_arg_position \
 
 from   quex.output.cpp.token_id_maker     import parse_token_id_file
 
@@ -25,8 +26,9 @@ from   quex.engine.generator.action_info    import CodeFragment
 
 from   quex.DEFINITIONS import *
 
-from   copy     import copy, deepcopy
+from   copy     import deepcopy
 from   StringIO import StringIO
+from   operator import itemgetter
 
 class ManualTokenClassSetup:
     """Class to mimik as 'real' TokenTypeDescriptor as defined in 
@@ -274,6 +276,17 @@ def do(argv):
                                 CommentDelimiterList, IncludeRE)
 
 
+    # (*) Compression Types
+    compression_type_list = []
+    for name, ctype in [("compression_template_f",         E_Compression.TEMPLATE),
+                        ("compression_template_uniform_f", E_Compression.TEMPLATE_UNIFORM),
+                        ("compression_path_f",             E_Compression.PATH),
+                        ("compression_path_uniform_f",     E_Compression.PATH_UNIFORM)]:
+        if command_line_args_defined(command_line, name):
+            compression_type_list.append((command_line_arg_position(name), ctype))
+    compression_type_list.sort(key=itemgetter(0))
+    setup.compression_type_list = map(lambda x: x[1], compression_type_list)
+
     # (*) return setup ___________________________________________________________________
     return True
 
@@ -320,14 +333,14 @@ def prepare_file_names(setup):
         setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/unicode.i"
 
 def make_numbers(setup):
-    setup.compression_template_coef  = __get_float("compression_template_coef")
-    setup.buffer_limit_code          = __get_integer("buffer_limit_code")
-    setup.path_limit_code            = __get_integer("path_limit_code")
+    setup.compression_template_min_gain = __get_integer("compression_template_min_gain")
+    setup.buffer_limit_code             = __get_integer("buffer_limit_code")
+    setup.path_limit_code               = __get_integer("path_limit_code")
 
     setup.token_id_counter_offset    = __get_integer("token_id_counter_offset")
     setup.token_queue_size           = __get_integer("token_queue_size")
     setup.token_queue_safety_border  = __get_integer("token_queue_safety_border")
-    setup.buffer_element_size   = __get_integer("buffer_element_size")
+    setup.buffer_element_size        = __get_integer("buffer_element_size")
 
 def __get_integer(MemberName):
     ValueStr = setup.__dict__[MemberName]

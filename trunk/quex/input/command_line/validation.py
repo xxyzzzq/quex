@@ -1,7 +1,7 @@
 import os.path
 from   quex.DEFINITIONS              import QUEX_PATH
 import quex.input.command_line.query as query
-from   quex.input.setup              import SETUP_INFO, DEPRECATED, global_character_type_db
+from   quex.input.setup              import SETUP_INFO, DEPRECATED, global_character_type_db, command_line_args_defined, command_line_args_string, command_line_args
 import quex.engine.codec_db.core     as codec_db
 from   quex.engine.misc.file_in      import is_identifier, \
                                             error_msg, \
@@ -118,6 +118,17 @@ def do(setup, command_line, argv):
                   "on converters. Do no use '--codec' together with '--icu', '--iconv', or\n" + \
                   "`--converter-new`.")
 
+    # If a converter has been specified and no bytes-element-size has been specified,
+    # it defaults to '1 byte' which is most likely not what is desired for unicode.
+    if     converter_n == 1 \
+       and setup.buffer_element_size == 1 \
+       and not command_line_args_defined(command_line, "buffer_element_size") \
+       and not command_line_args_defined(command_line, "buffer_element_type"):
+        error_msg("A converter has been specified, but the default buffer element size\n" + \
+                  "is left to 1 byte. Consider %s or %s." \
+                  % (command_line_args_string("buffer_element_size"),
+                     command_line_args_string("buffer_element_type")))
+
     # If a user defined type is specified for 'engine character type' and 
     # a converter, then the name of the target type must be specified explicitly.
     if         setup.buffer_element_type != "" \
@@ -131,7 +142,8 @@ def do(setup, command_line, argv):
                   "\n" + \
                   "Quex cannot determine automatically the name that the converter requires\n" +      \
                   "to produce unicode characters for type '%s'. It must be specified by the\n" % tc + \
-                  "command line option '--converter-ucs-coding-name' or '--cucn'.")
+                  "command line option %s." \
+                  % command_line_args_string("converter_ucs_coding_name"))
 
     # Token transmission policy
     token_policy_list = ["queue", "single", "users_token", "users_queue"]
@@ -155,7 +167,8 @@ def do(setup, command_line, argv):
             msg_str = "is not %i (found %i)" % (RequiredBufferElementSize, setup.buffer_element_size)
 
         error_msg("Using codec '%s' while buffer element size %s.\n" % (CodecName, msg_str) + 
-                  "Consult command line argument '--buffer-element-size'.")
+                  "Consult command line argument %s" \
+                  % command_line_args_string("buffer_element_size"))
 
     if setup.buffer_codec != "":
         if setup.buffer_codec_file == "":
@@ -164,11 +177,6 @@ def do(setup, command_line, argv):
                                 "Codec '%s' is not supported." % setup.buffer_codec)
         __codec_vs_buffer_element_size("utf8", 1)
         __codec_vs_buffer_element_size("utf16", 2)
-
-    # Path Compression
-    if setup.compression_path_uniform_f and setup.compression_path_f:
-        error_msg("Both flags for path compression were set: '--path-compression' and\n" 
-                  "'--path-compression-uniform'. Please, choose only one!")
 
 def __check_identifier(setup, Candidate, Name):
     value = setup.__dict__[Candidate]
@@ -190,7 +198,7 @@ def __get_supported_command_line_option_description(NormalModeOptions):
 
 def __check_file_name(setup, Candidate, Name):
     value             = setup.__dict__[Candidate]
-    CommandLineOption = SETUP_INFO[Candidate][0]
+    CommandLineOption = command_line_args(Candidate)
 
     if value == "": return
 

@@ -21,7 +21,6 @@
 #  (C) 2001-2009 Frank-Rene Schaefer  
 #==========================================================================
 import string
-import os
 import copy
 
 class GetPot_variable:
@@ -567,8 +566,7 @@ class GetPot:
             return self.__convert_to_type(v.value[Idx], Default)
         
     def vector_variable_size(self):
-        return variables.size()
-
+        return self.variables.size()
 
     def Print(self):
         print "argc = %i" % len(self.argv)
@@ -909,7 +907,7 @@ class GetPot:
                     if letter not in KnownFlags: ufos += letter;
         else:
             no_matches = 0
-            for it in argv[1:]:
+            for it in self.argv[1:]:
                 Remain = self.__get_remaining_string(it, self.__prefix)
                 if Remain != "":
                     no_matches += 1
