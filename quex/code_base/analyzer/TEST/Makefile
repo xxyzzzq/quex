@@ -8,7 +8,8 @@ PROGRAMS = counter-column_line.exe \
 		   post-categorizer-remove-2.exe \
 		   post-categorizer-remove-total.exe \
 		   post-categorizer-find.exe \
-		   accumulator.exe
+		   accumulator.exe \
+	       statistics.exe
 
 all:       $(PROGRAMS) 
 
@@ -16,27 +17,32 @@ all:       $(PROGRAMS)
 hwut-info: 
 	@echo $(PROGRAMS)
 
-CC = g++ \
+MYFLAGS = \
      -ggdb \
 	 -Wall \
+	 -I$(QUEX_PATH) \
      -DQUEX_OPTION_LINE_NUMBER_COUNTING  \
      -DQUEX_OPTION_COLUMN_NUMBER_COUNTING 
 
+CC = g++ $(MYFLAGS)
+
 post-categorizer-%.exe:   post-categorizer-%.cpp $(QUEX_CORE)
-	$(CC) -I./. -I$(QUEX_PATH) $< post-categorizer-common.cpp -o $@ 
+	$(CC) -I./. $< post-categorizer-common.cpp -o $@ 
 	
 counter-%.exe:   counter-%.cpp $(QUEX_CORE)
-	$(CC) -I./. -I$(QUEX_PATH) $< -o $@ 
+	$(CC) -I./. $< -o $@ 
 
 accumulator.exe: accumulator.cpp $(QUEX_CORE)
-	$(CC) -I./. -I$(QUEX_PATH) $< -o $@ 
+	$(CC) -I./. $< -o $@ 
 
 nonsense.exe: nonsense.cpp $(QUEX_CORE)
-	$(CC) -I./. -I$(QUEX_PATH) $< -o $@ 
+	$(CC) -I./. $< -o $@ 
 
+statistics.exe: statistics.c $(QUEX_CORE)
+	gcc $(MYFLAGS) -I./. -I$(HWUT_PATH) $< -o $@ 
 
 %.E:   %.cpp $(QUEX_CORE)
-	$(CC) -E -I./. -I$(QUEX_PATH) $< -o $@ 
+	$(CC) -E -I./. $< -o $@ 
 
 clean: 
 	rm -f *.o
