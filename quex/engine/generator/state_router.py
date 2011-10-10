@@ -1,13 +1,9 @@
-from   quex.blackboard                             import setup as Setup
-from   quex.engine.generator.languages.address      import Address, get_label, get_address, get_label_of_address
-import quex.engine.generator.state_coder.transition as transition
-from   operator                                     import itemgetter
+from   quex.engine.generator.languages.address  import Address, get_label, get_address, get_label_of_address
+from   operator                                 import itemgetter
 
 def do(StateRouterInfoList):
     """Create code that allows to jump to a state based on an integer value.
     """
-    LanguageDB = Setup.language_db
-
     prolog = "#   ifndef QUEX_OPTION_COMPUTED_GOTOS\n" \
              "    __quex_assert_no_passage();\n"       \
              "__STATE_ROUTER:\n"
@@ -45,9 +41,7 @@ def do(StateRouterInfoList):
 
     return Address("$state-router", Code=[prolog] + txt + [epilog])
 
-def get_info(StateIndexList, DSM):
-    LanguageDB = Setup.language_db
-
+def get_info(StateIndexList):
     # In some strange cases, a 'dummy' state router is required so that 
     # 'goto __STATE_ROUTER;' does not reference a non-existing label. Then,
     # we return an empty text array.

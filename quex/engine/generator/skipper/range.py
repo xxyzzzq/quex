@@ -1,16 +1,18 @@
 import quex.engine.state_machine.index             as     sm_index
-from   quex.engine.generator.skipper.common        import *
-from   quex.engine.generator.languages.address     import __nice, get_label
-from   quex.engine.generator.languages.variable_db import Variable
-import quex.engine.utf8                            as     utf8
-from   quex.blackboard                            import setup as Setup
+from   quex.engine.generator.skipper.common        import line_counter_in_loop, \
+                                                          end_delimiter_is_subset_of_indentation_counter_newline, \
+                                                          get_character_sequence, \
+                                                          get_on_skip_range_open, \
+                                                          line_column_counter_in_loop
+from   quex.engine.generator.languages.address     import __nice, get_label, get_address
+import quex.engine.generator.languages.variable_db as     variable_db
+from   quex.blackboard                             import setup as Setup
 from   quex.engine.misc.string_handling            import blue_print
 import quex.blackboard                             as     blackboard
+from   quex.blackboard                             import E_StateIndices
 from   copy                                        import copy
 
 def do(Data):
-
-    LanguageDB      = Setup.language_db
     ClosingSequence = Data["closer_sequence"]
     ModeName        = Data["mode_name"]
 
@@ -25,19 +27,11 @@ def do(Data):
 
     code_str, db = get_skipper(ClosingSequence, Mode, indentation_counter_terminal_id) 
 
-    txt =    "{\n"                                          \
-           + LanguageDB["$comment"]("Range skipper state")  \
-           + code_str                                       \
-           + "\n}\n"
-
     return code_str, db
 
 template_str = """
-{
     $$DELIMITER_COMMENT$$
-    const QUEX_TYPE_CHARACTER   Skipper$$SKIPPER_INDEX$$[] = { $$DELIMITER$$ };
-    const size_t                Skipper$$SKIPPER_INDEX$$L  = $$DELIMITER_LENGTH$$;
-    QUEX_TYPE_CHARACTER*        text_end = QUEX_NAME(Buffer_text_end)(&me->buffer);
+    text_end = QUEX_NAME(Buffer_text_end)(&me->buffer);
 $$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
 
 $$ENTRY$$:
@@ -55,14 +49,16 @@ $$ENTRY$$:
      * This must be distinguished after the loop was exited. But, during the 'swallowing' we
      * are very fast, because we do not have to check for two different characters.        */
     *text_end = Skipper$$SKIPPER_INDEX$$[0]; /* Overwrite BufferLimitCode (BLC).  */
-    $$WHILE_1_PLUS_1_EQUAL_2$$
+_$$SKIPPER_INDEX$$_LOOP:
         $$INPUT_GET$$ 
         $$IF_INPUT_EQUAL_DELIMITER_0$$
-            $$LC_COUNT_LOOP_EXIT$$
+            goto _$$SKIPPER_INDEX$$_LOOP_EXIT;
         $$ENDIF$$
 $$LC_COUNT_IN_LOOP$$
         $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
-    $$END_WHILE$$
+    goto _$$SKIPPER_INDEX$$_LOOP;
+_$$SKIPPER_INDEX$$_LOOP_EXIT:
+
     *text_end = QUEX_SETTING_BUFFER_LIMIT_CODE; /* Reset BLC. */
 
     /* Case (1) and (2) from above can be distinguished easily: 
@@ -129,11 +125,10 @@ $$LC_COUNT_BEFORE_RELOAD$$
      *    recover it after the loading. */
     me->buffer._input_p = text_end;
     if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) == false ) {
-        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
-                                               post_context_start_position, PostContextStartPositionN);
+        QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)position, PositionRegisterN);
         /* Recover '_input_p' from lexeme start 
          * (inverse of what we just did before the loading) */
-        me->buffer._input_p = me->buffer._lexeme_start_p;
+        $$INPUT_P_TO_LEXEME_START$$
         /* After reload, we need to increment _input_p. That's how the game is supposed to be played. 
          * But, we recovered from lexeme start pointer, and this one does not need to be incremented. */
         text_end = QUEX_NAME(Buffer_text_end)(&me->buffer);
@@ -142,9 +137,8 @@ $$LC_COUNT_AFTER_RELOAD$$
         goto $$GOTO_ENTRY$$;
     }
     /* Here, either the loading failed or it is not enough space to carry a closing delimiter */
-    me->buffer._input_p = me->buffer._lexeme_start_p;
+    $$INPUT_P_TO_LEXEME_START$$
     $$ON_SKIP_RANGE_OPEN$$
-}
 """
 
 def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSkipRangeOpenStr=""):
@@ -162,14 +156,12 @@ def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSki
     skipper_index = sm_index.get()
 
     # Determine the $$DELIMITER$$
-    delimiter_str,        \
-    delimiter_length_str, \
-    delimiter_comment_str \
-                          = get_character_sequence(EndSequence)
+    delimiter_str, delimiter_comment_str = get_character_sequence(EndSequence)
+    delimiter_length                     = len(EndSequence)
 
-    delimiter_comment_str  = LanguageDB["$comment"]("                         Delimiter: " 
-                                                    + delimiter_comment_str)
-
+    tmp = []
+    LanguageDB.COMMENT(tmp, "                         Delimiter: %s" % delimiter_comment_str)
+    delimiter_comment_str = "".join(tmp)
     # Determine the check for the tail of the delimiter
     delimiter_remainder_test_str = ""
     if len(EndSequence) != 1: 
@@ -177,44 +169,42 @@ def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSki
         i = 0
         for letter in EndSequence[1:]:
             i += 1
-            txt += "    " + LanguageDB["$input/get-offset"](i-1) + "\n"
-            txt += "    " + LanguageDB["$if !="]("Skipper$$SKIPPER_INDEX$$[%i]" % i)
-            txt += "         goto %s;" % get_label("$entry", skipper_index, U=True) 
-            txt += "    " + LanguageDB["$endif"]
+            txt += "    %s\n"    % LanguageDB.INPUT_P_DEREFERENCE(i-1)
+            txt += "    %s"      % LanguageDB.IF_INPUT("!=", "Skipper$$SKIPPER_INDEX$$[%i]" % i)
+            txt += "         %s" % LanguageDB.GOTO(get_address("$entry", skipper_index, U=True))
+            txt += "    %s"      % LanguageDB.END_IF()
         delimiter_remainder_test_str = txt
 
     if not end_delimiter_is_subset_of_indentation_counter_newline(Mode, EndSequence):
-        goto_after_end_of_skipping_str = "goto %s;" % get_label("$start", U=True)
+        goto_after_end_of_skipping_str = LanguageDB.GOTO(E_StateIndices.ANALYZER_REENTRY)
     else:
         # If there is indentation counting involved, then the counter's terminal id must
         # be determined at this place.
         assert IndentationCounterTerminalID is not None
         # If the ending delimiter is a subset of what the 'newline' pattern triggers 
         # in indentation counting => move on to the indentation counter.
-        goto_after_end_of_skipping_str = "goto %s;" % get_label("$terminal-direct", IndentationCounterTerminalID, U=True)
+        goto_after_end_of_skipping_str = LanguageDB.GOTO_TERMINAL(IndentationCounterTerminalID)
 
     if OnSkipRangeOpenStr != "": on_skip_range_open_str = OnSkipRangeOpenStr
     else:                        on_skip_range_open_str = get_on_skip_range_open(Mode, EndSequence)
 
     # The main part
     code_str = blue_print(template_str,
-                          [["$$DELIMITER$$",                      delimiter_str],
-                           ["$$DELIMITER_LENGTH$$",               delimiter_length_str],
+                          [
                            ["$$DELIMITER_COMMENT$$",              delimiter_comment_str],
-                           ["$$WHILE_1_PLUS_1_EQUAL_2$$",         LanguageDB["$loop-start-endless"]],
-                           ["$$END_WHILE$$",                      LanguageDB["$loop-end"]],
-                           ["$$INPUT_P_INCREMENT$$",              LanguageDB["$input/increment"]],
-                           ["$$INPUT_P_DECREMENT$$",              LanguageDB["$input/decrement"]],
-                           ["$$INPUT_GET$$",                      LanguageDB["$input/get"]],
-                           ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB["$if =="]("Skipper$$SKIPPER_INDEX$$[0]")],
-                           ["$$ENDIF$$",                          LanguageDB["$endif"]],
+                           ["$$INPUT_P_INCREMENT$$",              LanguageDB.INPUT_P_INCREMENT()],
+                           ["$$INPUT_P_DECREMENT$$",              LanguageDB.INPUT_P_DECREMENT()],
+                           ["$$INPUT_GET$$",                      LanguageDB.ACCESS_INPUT()],
+                           ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB.IF_INPUT("==", "Skipper$$SKIPPER_INDEX$$[0]")],
+                           ["$$ENDIF$$",                          LanguageDB.END_IF()],
                            ["$$ENTRY$$",                          get_label("$entry", skipper_index)],
                            ["$$RELOAD$$",                         get_label("$reload", skipper_index)],
                            ["$$GOTO_ENTRY$$",                     get_label("$entry", skipper_index, U=True)],
+                           ["$$INPUT_P_TO_LEXEME_START$$",        LanguageDB.INPUT_P_TO_LEXEME_START()],
                            # When things were skipped, no change to acceptance flags or modes has
                            # happend. One can jump immediately to the start without re-entry preparation.
                            ["$$GOTO_AFTER_END_OF_SKIPPING$$",     goto_after_end_of_skipping_str], 
-                           ["$$MARK_LEXEME_START$$",              LanguageDB["$mark-lexeme-start"]],
+                           ["$$MARK_LEXEME_START$$",              LanguageDB.LEXEME_START_SET()],
                            ["$$DELIMITER_REMAINDER_TEST$$",       delimiter_remainder_test_str],
                            ["$$ON_SKIP_RANGE_OPEN$$",             on_skip_range_open_str],
                           ])
@@ -228,13 +218,11 @@ def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSki
                            ["$$GOTO_RELOAD$$",   get_label("$reload", skipper_index)]])
 
     if reference_p_f:
-        local_variable_db["QUEX_OPTION_COLUMN_NUMBER_COUNTING/reference_p"] = \
-                           Variable("reference_p", 
-                                    "QUEX_TYPE_CHARACTER_POSITION", 
-                                    None,
-                                    "(QUEX_TYPE_CHARACTER_POSITION)0x0",
-                                    "QUEX_OPTION_COLUMN_NUMBER_COUNTING")
+        variable_db.enter(local_variable_db, "reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
 
+    variable_db.enter(local_variable_db, "Skipper%i", "{ %s }" % delimiter_str, delimiter_length, Index=skipper_index)
+    variable_db.enter(local_variable_db, "Skipper%iL", "%i" % delimiter_length,                   Index=skipper_index)
+    variable_db.enter(local_variable_db, "text_end")
     return code_str, local_variable_db
 
 def __lc_counting_replacements(code_str, EndSequence):
@@ -269,10 +257,8 @@ def __lc_counting_replacements(code_str, EndSequence):
 
     in_loop         = ""
     end_procedure   = ""
-    exit_loop       = ""
     before_reload   = ""
     after_reload    = ""
-    exit_loop       = "            " + LanguageDB["$break"]
     on_first_delimiter = ""
 
     reference_p_required_f = False
@@ -323,8 +309,7 @@ def __lc_counting_replacements(code_str, EndSequence):
         after_reload    = "        __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
 
     if len(EndSequence) > 1:
-        end_procedure = LanguageDB["$input/add"](len(EndSequence)-1) + \
-                        "\n" + end_procedure
+        end_procedure = "%s\n%s" % (LanguageDB.INPUT_P_ADD(len(EndSequence)-1), end_procedure)
 
     return blue_print(code_str,
                      [["$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$", reference_p_def],
@@ -333,7 +318,6 @@ def __lc_counting_replacements(code_str, EndSequence):
                       ["$$LC_COUNT_BEFORE_RELOAD$$",               before_reload],
                       ["$$LC_COUNT_AFTER_RELOAD$$",                after_reload],
                       ["$$LC_ON_FIRST_DELIMITER$$",                on_first_delimiter],
-                      ["$$LC_COUNT_LOOP_EXIT$$",                   exit_loop],
                       ]), \
            reference_p_required_f
 

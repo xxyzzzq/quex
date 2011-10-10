@@ -18,35 +18,61 @@ class Variable:
         self.priority_f          = PriorityF
 
 
-_candidate_db = {
+candidate_db = {
 # Name                             Type(0),                         InitialValue(2),                    PriorityF(3)
 "input":                          ["QUEX_TYPE_CHARACTER",           "(QUEX_TYPE_CHARACTER)(0x00)",      False],
 "target_state_index":             ["QUEX_TYPE_GOTO_LABEL",          "((QUEX_TYPE_CHARACTER)0x0)",       False],
 "target_state_else_index":        ["QUEX_TYPE_GOTO_LABEL",          "((QUEX_TYPE_CHARACTER)0x0)",       False],
-"last_acceptance":                ["QUEX_TYPE_GOTO_LABEL",          None,                               False],
-"last_acceptance_input_position": ["QUEX_TYPE_CHARACTER_POSITION",  "((QUEX_TYPE_CHARACTER*)0x00)",     False],
-"PostContextStartPositionN":      ["const size_t",                  None,                               False],
-"post_context_start_position":    ["QUEX_TYPE_CHARACTER_POSITION",  None,                               False],
+"last_acceptance":                ["QUEX_TYPE_ACCEPTANCE_ID",       None,                               False],
+"PositionRegisterN":              ["const size_t",                  None,                               False],
+"position":                       ["QUEX_TYPE_CHARACTER_POSITION",  None,                               False],
 "pre_context_%i_fulfilled_f":     ["int",                           "0",                                False], 
+"counter":                        ["size_t",                        "0",                                False],
 "end_of_core_pattern_position":   ["QUEX_TYPE_CHARACTER_POSITION",  "((QUEX_TYPE_CHARACTER*)0x0)",      False],
 #                                 
 # (*) Path Compression
-"path_iterator":                  ["const QUEX_TYPE_CHARACTER*",    "((QUEX_TYPE_CHARACTER*)0x0)",      False],
-"path_end_state":                 ["QUEX_TYPE_GOTO_LABEL",          "QUEX_GOTO_STATE_LABEL_INIT_VALUE", False], 
-"path_%i":                        ["const QUEX_TYPE_CHARACTER*",    None,                               False],
-"path_walker_%i_base":            ["const QUEX_TYPE_CHARACTER",     None,                               True],
-"path_walker_%i_state":           ["const QUEX_TYPE_GOTO_LABEL",    None,                               False],
+"path_iterator":                  ["const QUEX_TYPE_CHARACTER*",       "((const QUEX_TYPE_CHARACTER*)0x0)", False],
+"path_end_state":                 ["QUEX_TYPE_GOTO_LABEL",             "QUEX_GOTO_STATE_LABEL_INIT_VALUE",  False], 
+"path_walker_%i_path_%i":         ["const QUEX_TYPE_CHARACTER* const", None,                                False],
+"path_walker_%i_base":            ["const QUEX_TYPE_CHARACTER",        None,                                True],
+"path_walker_%i_state":           ["const QUEX_TYPE_GOTO_LABEL",       None,                                False],
 #
 # (*) Template Compression
-"template_state_key":                       ["ptrdiff_t",                     "(ptrdiff_t)0",           False],
-"template_%i_target_%i":                    ["const QUEX_TYPE_GOTO_LABEL",    None,                     False],
-"template_%i_map_state_key_to_state_index": ["const QUEX_TYPE_GOTO_LABEL",    None,                     False],
+"state_key":                                    ["ptrdiff_t",                     "(ptrdiff_t)0",           False],
+"template_%i_target_%i":                        ["const QUEX_TYPE_GOTO_LABEL",    None,                     False],
+"template_%i_map_state_key_to_recursive_entry": ["const QUEX_TYPE_GOTO_LABEL",    None,                     False],
+#
+# (*) Skipper etc.
+"reference_p":                    ["QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", False],
+"text_end":                       ["QUEX_TYPE_CHARACTER*",         "(QUEX_TYPE_CHARACTER*)0x0",         False],
+#     Character Set Skipper:
+"Skipper%i":                      ["const QUEX_TYPE_CHARACTER",    None,                                False],
+"Skipper%iL":                     ["const size_t",                 None,                                False],
+#     Range Skipper (from string to string)
+"Skipper%i_Opener":               ["const QUEX_TYPE_CHARACTER",    None,                                True],
+"Skipper%i_OpenerEnd":            ["const QUEX_TYPE_CHARACTER*",   None,                                False],
+"Skipper%i_Opener_it":            ["const QUEX_TYPE_CHARACTER*",   None,                                False],
+"Skipper%i_Closer":               ["const QUEX_TYPE_CHARACTER",    None,                                True],
+"Skipper%i_CloserEnd":            ["const QUEX_TYPE_CHARACTER*",   None,                                False],
+"Skipper%i_Closer_it":            ["const QUEX_TYPE_CHARACTER*",   None,                                False],
 }
+
+def enter(local_variable_db, Name, InitialValue=None, ElementN=None, Condition=None, ConditionNegatedF=False, Index=None):
+    x = candidate_db[Name]
+
+    if Index is not None: Name = Name % Index
+
+    Type      = x[0]
+    PriorityF = x[2]
+    if InitialValue is None: InitialValue = x[1]
+
+    local_variable_db[Name] = Variable(Name, Type, ElementN, InitialValue, Condition, ConditionNegatedF, PriorityF)
 
 class VariableDB:
 
-    def __init__(self):
+    def __init__(self, InitialDB=None):
         self.__db = {}
+        self.init(InitialDB)
 
     def init(self, InitialDB=None):
         if InitialDB is None: self.__db.clear()
@@ -54,6 +80,9 @@ class VariableDB:
 
     def get(self):
         return self.__db
+
+    def has_key(self, Key):
+        return self.__db.has_key(Key)
 
     def __enter(self, Name, Type, ElementN, InitialValues, Condition, ConditionNegatedF, PriorityF):
         # (*) Determine unique key for Name, Condition, and ConditionNegatedF.
@@ -73,28 +102,28 @@ class VariableDB:
             assert type(Condition_ComputedGoto) == bool
             return "QUEX_OPTION_COMPUTED_GOTOS", not Condition_ComputedGoto
 
-    def require(self, Name, Initial=None, Index=None, Condition_ComputedGoto=None):
-        global _candidate_db
+    def require(self, Name, Initial=None, Index=None, Condition_ComputedGoto=None, Type=None):
+        global candidate_db
 
         condition, condition_negated_f = self.__condition(Condition_ComputedGoto)
 
         # Name --> Type(0), InitialValue(1), PriorityF(2)
-        x = _candidate_db[Name]
+        x = candidate_db[Name]
 
         if Index is not None:   Name = Name % Index
 
-        if Initial is not None: initial = Initial
-        else:               initial = x[1]
+        if Type    is None: Type    = x[0]
+        if Initial is None: Initial = x[1]
 
-        self.__enter(Name, x[0], None, initial, condition, condition_negated_f, x[2])
+        self.__enter(Name, Type, None, Initial, condition, condition_negated_f, x[2])
 
     def require_array(self, Name, ElementN, Initial, Index=None, Condition_ComputedGoto=None):
-        global _candidate_db
+        global candidate_db
 
         condition, condition_negated_f = self.__condition(Condition_ComputedGoto)
 
         # Name --> Type(0), InitialValue(1), PriorityF(2)
-        x = _candidate_db[Name]
+        x = candidate_db[Name]
 
         if Index is not None: Name = Name % Index
         self.__enter(Name, x[0], ElementN, Initial, condition, condition_negated_f, x[2])
