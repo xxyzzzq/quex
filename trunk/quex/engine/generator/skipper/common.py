@@ -1,4 +1,3 @@
-from   quex.blackboard import setup         as Setup
 import quex.engine.utf8                 as utf8
 import quex.output.cpp.action_preparation as action_preparation
 
@@ -21,16 +20,13 @@ line_column_counter_in_loop = """
 """
 
 def get_character_sequence(Sequence):
-    LanguageDB = Setup.language_db
-
-    txt = ""
+    txt         = ""
     comment_txt = ""
     for letter in Sequence:
         comment_txt += "%s, " % utf8.unicode_to_pretty_utf8(letter)
         txt += "0x%X, " % letter
-    length_txt = "%i" % len(Sequence)
 
-    return txt, length_txt, comment_txt
+    return txt, comment_txt
 
 def end_delimiter_is_subset_of_indentation_counter_newline(Mode, EndSequence):
     if Mode is None: return False

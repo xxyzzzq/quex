@@ -1,12 +1,11 @@
 import quex.engine.state_machine.index                    as     sm_index
-import quex.engine.generator.state_coder.transition_block as     transition_block
-import quex.engine.generator.state_coder.transition       as     transition
-from   quex.engine.generator.languages.address            import get_label
-from   quex.engine.generator.languages.variable_db        import Variable
-from   quex.engine.generator.skipper.common               import *
+import quex.engine.generator.state_coder.transition.core  as     transition_block
+from   quex.engine.generator.languages.address            import get_label, get_address
+import quex.engine.generator.languages.variable_db        as     variable_db
+from   quex.engine.generator.skipper.common               import line_column_counter_in_loop
 from   quex.engine.state_machine.transition_map           import TransitionMap 
-from   quex.blackboard                                        import setup as Setup
-from   quex.engine.misc.string_handling                             import blue_print
+from   quex.blackboard                                    import E_EngineTypes, setup as Setup
+from   quex.engine.misc.string_handling                   import blue_print
 
 def do(Data):
     LanguageDB   = Setup.language_db
@@ -15,7 +14,7 @@ def do(Data):
 
     txt = []
     txt.append("    ")
-    txt.append(LanguageDB["$comment"]("Character set skipper state"))
+    LanguageDB.COMMENT(txt, "Character set skipper state")
     txt.extend(code_str)
 
     return txt, db
@@ -32,7 +31,7 @@ $$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
      *       criteria is that a character occurs which does not belong to the trigger 
      *       set. The BufferLimitCode, though, does never belong to any trigger set and
      *       thus, no special character is to be set.                                   */
-STATE_$$SKIPPER_INDEX$$_LOOP:
+_$$SKIPPER_INDEX$$_LOOP:
     $$INPUT_GET$$ 
 $$LC_COUNT_IN_LOOP$$
 """
@@ -49,7 +48,7 @@ $$LC_COUNT_END_PROCEDURE$$
 
 $$LOOP_REENTRANCE$$:
     $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
-    goto STATE_$$SKIPPER_INDEX$$_LOOP;
+    goto _$$SKIPPER_INDEX$$_LOOP;
 
 $$RELOAD$$:
     /* -- When loading new content it is always taken care that the beginning of the lexeme
@@ -57,20 +56,19 @@ $$RELOAD$$:
      *    the lexeme at all, so do not restrict the load procedure and set the lexeme start
      *    to the actual input position.                                                   
      * -- The input_p will at this point in time always point to the buffer border.        */
-    if( $$INPUT_EQUAL_BUFFER_LIMIT_CODE$$ ) {
+    $$IF_INPUT_EQUAL_BUFFER_LIMIT_CODE$$ 
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
 $$LC_COUNT_BEFORE_RELOAD$$
         $$MARK_LEXEME_START$$
         if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
             goto $$GOTO_TERMINAL_EOF$$;
         } else {
-            QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
-                                                   post_context_start_position, PostContextStartPositionN);
+            QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)position, PositionRegisterN);
 
             QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
             $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
 $$LC_COUNT_AFTER_RELOAD$$
-            goto STATE_$$SKIPPER_INDEX$$_LOOP;
+            goto _$$SKIPPER_INDEX$$_LOOP;
         } 
     }
 """
@@ -92,12 +90,16 @@ def get_skipper(TriggerSet):
     transition_map.add_transition(TriggerSet, skipper_index)
     # On buffer limit code, the skipper must transit to a dedicated reloader
 
-    iteration_code = transition_block.do(transition_map.get_trigger_map(), 
-                                         skipper_index, 
-                                         DSM=None, 
-                                         GotoReload_Str="goto %s;" % get_label("$reload", skipper_index))
+    iteration_code = []
+    transition_block.do(iteration_code, 
+                        transition_map.get_trigger_map(), 
+                        skipper_index, 
+                        E_EngineTypes.ELSE,
+                        GotoReload_Str="goto %s;" % get_label("$reload", skipper_index))
 
-    comment_str = LanguageDB["$comment"]("Skip any character in " + TriggerSet.get_utf8_string())
+    tmp = []
+    LanguageDB.COMMENT(tmp, "Skip any character in " + TriggerSet.get_utf8_string())
+    comment_str = "".join(tmp)
 
     # Line and column number counting
     prolog = __lc_counting_replacements(prolog_txt, TriggerSet)
@@ -107,25 +109,28 @@ def get_skipper(TriggerSet):
                         [
                          ["$$DELIMITER_COMMENT$$",              comment_str],
                          ["$$SKIPPER_INDEX$$",                  "%i" % skipper_index],
-                         ["$$INPUT_GET$$",                      LanguageDB["$input/get"]],
+                         ["$$INPUT_GET$$",                      LanguageDB.ACCESS_INPUT()],
                         ])
 
     epilog = blue_print(epilog,
                         [
-                         ["$$INPUT_P_INCREMENT$$",              LanguageDB["$input/increment"]],
-                         ["$$INPUT_P_DECREMENT$$",              LanguageDB["$input/decrement"]],
-                         ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB["$if =="]("SkipDelimiter$$SKIPPER_INDEX$$[0]")],
-                         ["$$ENDIF$$",                          LanguageDB["$endif"]],
+                         ["$$INPUT_P_INCREMENT$$",              LanguageDB.INPUT_P_INCREMENT()],
+                         ["$$INPUT_P_DECREMENT$$",              LanguageDB.INPUT_P_DECREMENT()],
+                         ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB.IF_INPUT("==", "SkipDelimiter$$SKIPPER_INDEX$$[0]")],
+                         ["$$ENDIF$$",                          LanguageDB.END_IF()],
                          ["$$LOOP_REENTRANCE$$",                get_label("$entry", skipper_index)],
-                         ["$$INPUT_EQUAL_BUFFER_LIMIT_CODE$$",  LanguageDB["$BLC"]],
+                         ["$$IF_INPUT_EQUAL_BUFFER_LIMIT_CODE$$",  LanguageDB.IF_INPUT("==", LanguageDB.BUFFER_LIMIT_CODE)],
                          ["$$RELOAD$$",                         get_label("$reload", skipper_index)],
                          ["$$DROP_OUT_DIRECT$$",                get_label("$drop-out", skipper_index, U=True)],
                          ["$$SKIPPER_INDEX$$",                  "%i" % skipper_index],
+                         ["$$LABEL_TERMINAL_EOF$$",             "QUEX_LABEL(%i)" % get_address("$terminal-EOF", U=True)],
+                         ["$$LABEL_REF_AFTER_RELOAD$$",         "QUEX_LABEL(%i)" % get_address("$skipper-reload", skipper_index, U=True)],
                          ["$$GOTO_TERMINAL_EOF$$",              get_label("$terminal-EOF", U=True)],
+                         ["$$LABEL_AFTER_RELOAD$$",             get_label("$skipper-reload", skipper_index)],
                          # When things were skipped, no change to acceptance flags or modes has
                          # happend. One can jump immediately to the start without re-entry preparation.
                          ["$$GOTO_START$$",                     get_label("$start", U=True)], 
-                         ["$$MARK_LEXEME_START$$",              LanguageDB["$mark-lexeme-start"]],
+                         ["$$MARK_LEXEME_START$$",              LanguageDB.LEXEME_START_SET()],
                         ])
 
     code = [ prolog ]
@@ -133,12 +138,7 @@ def get_skipper(TriggerSet):
     code.append(epilog)
 
     local_variable_db = {}
-    local_variable_db["QUEX_OPTION_COLUMN_NUMBER_COUNTING/reference_p"] = \
-                     Variable("reference_p", 
-                              "QUEX_TYPE_CHARACTER_POSITION", 
-                              None,
-                              "(QUEX_TYPE_CHARACTER_POSITION)0x0",
-                              "QUEX_OPTION_COLUMN_NUMBER_COUNTING") 
+    variable_db.enter(local_variable_db, "reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
 
     return code, local_variable_db
 

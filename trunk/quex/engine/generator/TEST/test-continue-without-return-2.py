@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-import sys
 import generator_test
 
 choice = generator_test.hwut_input("CONTINUE: (special use case)", "SAME;")

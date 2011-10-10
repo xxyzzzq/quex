@@ -1,12 +1,10 @@
 from quex.engine.misc.file_in         import is_identifier_start, is_identifier_continue
 from quex.engine.misc.string_handling import blue_print
 
-import quex.engine.state_machine.index             as     index
-from   quex.engine.state_machine.state_core_info   import PostContextIDs      
-from   quex.engine.generator.languages.address     import *
-from   quex.engine.generator.languages.variable_db import variable_db
+from   quex.engine.generator.languages.address     import get_label, \
+                                                          get_address, \
+                                                          Address
 from   quex.engine.interval_handling               import NumberSet
-from   copy     import copy
 from   operator import itemgetter
 #
 
@@ -46,7 +44,7 @@ def __header_definitions(LanguageDB):
     txt = txt.replace("$$GOTO_START_PREPARATION$$", get_label("$re-start", U=True))
     return txt
 
-def __local_variable_definitions(VariableDB):
+def _local_variable_definitions(VariableDB):
     if len(VariableDB) == 0: return ""
 
     def __group_by_condition(VariableDB):
@@ -92,7 +90,6 @@ def __local_variable_definitions(VariableDB):
 
     # L   = max(map(lambda info: len(info[0]), VariableDB.keys()))
     txt       = []
-    done_list = []
     for raw_name, variable in sorted(VariableDB.items()):
         if variable.priority_f == False: continue
 
@@ -162,97 +159,20 @@ QUEX_NAME($$STATE_MACHINE_NAME$$_analyzer_function)(QUEX_TYPE_ANALYZER* me)
 #   define self (*((QUEX_TYPE_ANALYZER*)me))
 """
 
-reload_forward_str = """
-    __quex_assert_no_passage();
-__RELOAD_FORWARD:
-    __quex_debug("__RELOAD_FORWARD");
-
-    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
-    if( me->buffer._memory._end_of_file_p == 0x0 ) {
-        __quex_debug_reload_before();
-        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
-                                               post_context_start_position, PostContextStartPositionN);
-        __quex_debug_reload_after();
-        QUEX_GOTO_STATE(target_state_index);
-    }
-    __quex_debug("reload impossible");
-    QUEX_GOTO_STATE(target_state_else_index);
-"""
-
-reload_init_state_forward_str = """
-    __quex_assert_no_passage();
-__RELOAD_INIT_STATE:
-    __quex_debug("__RELOAD_INIT_STATE");
-
-    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
-    if( me->buffer._memory._end_of_file_p == 0x0 ) {
-        __quex_debug_reload_before();
-        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
-                                               post_context_start_position, PostContextStartPositionN);
-        __quex_debug_reload_after();
-        goto $$INIT_STATE$$; /* Init state entry */
-    }
-    goto $$END_OF_STREAM$$;  /* End of stream    */
-"""
-
-reload_backward_str = """
-    __quex_assert_no_passage();
-__RELOAD_BACKWARD:
-    __quex_debug("__RELOAD_BACKWARD");
-    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
-    if( QUEX_NAME(Buffer_is_begin_of_file)(&me->buffer) == false ) {
-        __quex_debug_reload_before();
-        QUEX_NAME(buffer_reload_backward)(&me->buffer);
-        __quex_debug_reload_after();
-        QUEX_GOTO_STATE(target_state_index);
-    }
-    __quex_debug("reload impossible");
-    QUEX_GOTO_STATE(target_state_else_index);
-"""
-
 comment_on_post_context_position_init_str = """
     /* Post context positions do not have to be reset or initialized. If a state
      * is reached which is associated with 'end of post context' it is clear what
      * post context is meant. This results from the ways the state machine is 
-     * constructed. A post context positions live time looks like the following:
+     * constructed. Post context position's live cycle:
      *
      * (1)   unitialized (don't care)
      * (1.b) on buffer reload it may, or may not be adapted (don't care)
-     * (2)   when a post context begin state is passed, the it is **SET** (now: take care)
+     * (2)   when a post context begin state is passed, then it is **SET** (now: take care)
      * (2.b) on buffer reload it **is adapted**.
      * (3)   when a terminal state of the post context is reached (which can only be reached
-     *       for that particular post context, then the post context position is used
+     *       for that particular post context), then the post context position is used
      *       to reset the input position.                                              */
 """
-
-def __reload_definitions(InitialStateIndex):
-    txt = []
-    txt.append(Address("$reload-FORWARD", None, reload_forward_str))
-    txt.append(blue_print(reload_init_state_forward_str,
-                          [["$$INIT_STATE$$",    get_label("$entry", InitialStateIndex, U=True)],
-                           ["$$END_OF_STREAM$$", get_label("$terminal-EOF", U=True)]]))
-    # Append empty references to make sure that the addresses are implemented.
-    txt.append(Address("$reload-BACKWARD", None, reload_backward_str))
-    return txt
-
-def __local_variable_definition(PostContextID_List, PreContextID_List, LanguageDB):
-    PostContextN = len(PostContextID_List)
-
-    variable_db.require("last_acceptance", 
-                        Initial="QUEX_LABEL(%i)" % get_address("$terminal-FAILURE"))
-    variable_db.require("last_acceptance_input_position") 
-    variable_db.require_array("post_context_start_position",    
-                              ElementN = PostContextN, 
-                              Initial  = "{ " + ("0, " * (PostContextN - 1) + "0") + "}")
-    variable_db.require("PostContextStartPositionN", 
-                        Initial = "(size_t)" + repr(PostContextN))
-    variable_db.require("input") 
-              
-    # -- pre-condition fulfillment flags                
-    for sm_id in PreContextID_List:
-        variable_db.require("pre_context_%i_fulfilled_f", Index = sm_id)
-
-    return LanguageDB["$local-variable-defs"](variable_db.get())
 
 def __analyzer_function(StateMachineName, EngineClassName, SingleModeAnalyzerF,
                         variable_definitions, function_body, ModeNameList=[], LanguageDB=None):
@@ -286,7 +206,7 @@ def __analyzer_function(StateMachineName, EngineClassName, SingleModeAnalyzerF,
     txt.append(get_label("$start") + ":\n")
 
     # -- entry to the actual function body
-    txt.append("    " + LanguageDB["$mark-lexeme-start"] + "\n")
+    txt.append("    %s\n" % LanguageDB.LEXEME_START_SET())
     txt.append("    QUEX_LEXEME_TERMINATING_ZERO_UNDO(&me->buffer);\n")
     
     txt.extend(function_body)
@@ -337,17 +257,9 @@ __terminal_router_prolog_str = """
 __TERMINAL_ROUTER:
     __quex_debug("terminal router");
     /*  if last_acceptance => goto correspondent acceptance terminal state */
-    /*  else               => execute defaul action                        */
+    /*  else               => execute default action                       */
     if( last_acceptance == $$TERMINAL_FAILURE-REF$$ ) {
         goto $$TERMINAL_FAILURE$$; /* TERMINAL: FAILURE */
-    }
-    /* When a terminal router is used, the terminal is determined dynamically,
-     * thus the last_acceptance_input_position **must** be set. 
-     * Exception: Template States, where acceptance states of post conditions
-     *            do not set the acceptance position (because its retrieved
-     *            anyway from post_context_start_position[i]).               */
-    if(last_acceptance_input_position != 0x0) {
-        $$RESTORE_LAST_ACCEPTANCE_POS$$
     }
 #   ifdef  QUEX_OPTION_COMPUTED_GOTOS
     goto *last_acceptance;
@@ -376,9 +288,9 @@ __terminal_state_prolog  = """
 #   define LexemeEnd    QUEX_NAME(access_LexemeEnd)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
 #else
 #   define Lexeme       (me->buffer._lexeme_start_p)
-#   define LexemeBegin  (me->buffer._lexeme_start_p)
-#   define LexemeL      ((size_t)(me->buffer._input_p - me->buffer._lexeme_start_p))
-#   define LexemeEnd    (me->buffer._input_p)
+#   define LexemeBegin  Lexeme
+#   define LexemeL      $$LEXEME_LENGTH$$
+#   define LexemeEnd    $$INPUT_P$$
 #endif
 
 #define LexemeNull      (&QUEX_NAME(LexemeNullObject))
@@ -387,13 +299,13 @@ __terminal_state_prolog  = """
 __terminal_state_epilog = """
 $$TERMINAL_END_OF_STREAM-DEF$$: /* TERMINAL: END_OF_STREAM */
 $$END_OF_STREAM_ACTION$$
-     /* End of Stream causes a return from the lexical analyzer, so that no
-      * tokens can be filled after the termination token.                    */
-     RETURN;          
+    /* End of Stream causes a return from the lexical analyzer, so that no
+     * tokens can be filled after the termination token.                    */
+    RETURN;          
 
 $$TERMINAL_FAILURE-DEF$$: /* TERMINAL: FAILURE */
 $$FAILURE_ACTION$$
-     goto $$GOTO_START_PREPARATION$$;
+    goto $$GOTO_START_PREPARATION$$;
 
 #undef Lexeme
 #undef LexemeBegin
@@ -415,8 +327,7 @@ $$REENTRY_PREPARATION$$:
     if( self_token_get_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) RETURN;
 #   endif
 #   endif
-
-    last_acceptance = $$TERMINAL_FAILURE-REF$$; /* TERMINAL: FAILURE */
+    $$RESET_LAST_ACCEPTANCE$$
 $$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
 $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
     /*  If a mode change happened, then the function must first return and
@@ -445,7 +356,7 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
     goto $$GOTO_START$$;
 """
 
-def __adorn_action_code(action_info, SMD, SupportBeginOfLineF): 
+def __adorn_action_code(action_info, SupportBeginOfLineF, LanguageDB): 
 
     result = action_info.action().get_code()
     assert type(result) != tuple
@@ -458,7 +369,8 @@ def __adorn_action_code(action_info, SMD, SupportBeginOfLineF):
     #       newline at the end, and those that do not. Then, there need not
     #       be a conditional question.
     if SupportBeginOfLineF:
-        txt += "    me->buffer._character_before_lexeme_start = *(me->buffer._input_p - 1);\n"
+        txt += LanguageDB.ASSIGN("me->buffer._character_before_lexeme_start", 
+                                 LanguageDB.INPUT_P_DEREFERENCE(-1)) + "\n"
 
     if action_info.action().require_terminating_zero_f():
         txt += "    QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);\n"
@@ -467,14 +379,10 @@ def __adorn_action_code(action_info, SMD, SupportBeginOfLineF):
 
     return txt
 
-def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOfLineF, LanguageDB):
-    state_machine                  = SMD.sm()
-    DirectlyReachedTerminalID_List = SMD.directly_reached_terminal_id_list()
-
-    state_machine_id_str = __nice(state_machine_id)
-    state_machine        = pattern_action_info.pattern_state_machine()
+def get_terminal_code(AcceptanceID, pattern_action_info, SupportBeginOfLineF, LanguageDB):
+    state_machine = pattern_action_info.pattern_state_machine()
     #
-    action_code = __adorn_action_code(pattern_action_info, SMD, SupportBeginOfLineF)
+    action_code   = __adorn_action_code(pattern_action_info, SupportBeginOfLineF, LanguageDB)
         
     # (*) The 'normal' terminal state can also be reached by the terminal
     #     router and, thus, **must** restore the acceptance input position. This is so, 
@@ -487,103 +395,70 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
         result.append(letter)
 
     safe_pattern = "".join(result)
-    txt = [
-            Address("$terminal", state_machine_id,
-                      "%s:\n" % get_label("$terminal", state_machine_id)                                \
-                    + "    __quex_debug(\"pre-terminal %i: %s\");\n" % (state_machine_id, safe_pattern) \
-                    + "    " + LanguageDB["$input/increment"] + "\n"),
-            Address("$terminal-direct", state_machine_id), 
-            "    __quex_debug(\"* terminal %i:   %s\");\n" % (state_machine_id, safe_pattern),
-    ]
 
-    # (1) Retrieving the input position for the next run
-    #     -- Terminal states can be reached directly, so that the input position
-    #        is already set correctly, or via the terminal router because the
-    #        acceptance was 'trailing'. Example two patterns A:'for' and B:'forest'.
-    #        If the input is 'for' than the pattern A triggers acceptance, but
-    #        the lexer still continue trying for B. If the input is 'fortune', 
-    #        then the input position must be after 'for' because B was not matched.
-    #        The right terminal is reached via the terminal router, and the
-    #        terminal router also resets the input position to 'last_acceptance_position'.
+    backward_input_position_detection_str = ""
     if state_machine.core().post_context_backward_input_position_detector_sm() is not None:
         # Pseudo Ambiguous Post Contexts:
-        # -- require that the end of the core pattern is to be searched! One 
+        # (Retrieving the input position for the next run)
+        # -- Requires that the end of the core pattern is to be searched! One 
         #    cannot simply restore some stored input position.
         # -- The pseudo-ambiguous post condition is translated into a 'normal'
         #    pattern. However, after a match a backward detection of the end
         #    of the core pattern is done. Here, we first need to go to the point
         #    where the 'normal' pattern ended, then we can do a backward detection.
 
-        # The entry into the backward input position detector, is its init state
-        entry_id = state_machine.core().post_context_backward_input_position_detector_sm().init_state_index
-        txt.append("    goto %s;\n" % get_label("$entry", entry_id, U=True))
+        bipd_id   = state_machine.core().post_context_backward_input_position_detector_sm_id()
+        bipd_str  = "    goto %s;\n" % LanguageDB.LABEL_NAME_BACKWARD_INPUT_POSITION_DETECTOR(bipd_id)
         # After having finished the analyzis, enter the terminal code, here.
-        bipd_id  = state_machine.core().post_context_backward_input_position_detector_sm_id()
-        txt.append("%s:\n" % get_label("$bipd-return", bipd_id))
+        bipd_str += "%s:\n" % LanguageDB.LABEL_NAME_BACKWARD_INPUT_POSITION_RETURN(bipd_id) 
+        backward_input_position_detection_str = bipd_str
 
-    elif state_machine.core().post_context_id() != PostContextIDs.NONE: 
-        post_condition_index = SMD.get_post_context_index(state_machine_id)
-        # Post Contexted Patterns:
-        # -- have a dedicated register from where they store the end of the core pattern.
-        txt.append("    __quex_debug(\"post context %s: reset position\");\n" % __nice(state_machine_id))
-        variable = "post_context_start_position[%s]" % __nice(post_condition_index) 
-        txt.append("    " + LanguageDB["$input/seek_position"](variable))
-        txt.append("\n")
 
-    else:
-        # Normal Acceptance:
-        pass
-
-    # -- paste the action code that corresponds to the pattern   
-    txt.append(action_code)
-    txt.append("\n")
-    txt.append("    ")
-    txt.append("goto %s;\n" % get_label("$re-start", U=True))
+    txt = [
+            "\nTERMINAL_%i:\n" % AcceptanceID,
+            backward_input_position_detection_str,
+            "    __quex_debug(\"* terminal %i:   %s\");\n" % (AcceptanceID, safe_pattern),
+            action_code, "\n",
+            "    goto %s;\n" % get_label("$re-start", U=True)
+    ]
 
     return txt
 
 def __terminal_on_failure_prolog(LanguageDB):
     return [
-        "me->buffer._input_p = me->buffer._lexeme_start_p;\n",
-        LanguageDB["$if"], LanguageDB["$EOF"], LanguageDB["$then"], "\n",
-        "    ", LanguageDB["$comment"]("Next increment will stop on EOF character."), "\n",
-        LanguageDB["$endif"], "\n",
-        LanguageDB["$else"], "\n",
-        "    ", LanguageDB["$comment"]("Step over nomatching character"), "\n",
-        "    ", LanguageDB["$input/increment"], "\n",
-        LanguageDB["$endif"], "\n",
+        "    %s\n" % LanguageDB.INPUT_P_TO_LEXEME_START(),
+        "    if(QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {\n",
+        "        /* Next increment will stop on EOF character. */\n",
+        "    } else {\n",
+        "        /* Step over nomatching character */\n",
+        "        %s\n" % LanguageDB.INPUT_P_INCREMENT(),
+        "    }\n",
     ]
 
-def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction, 
-                      SupportBeginOfLineF, PreConditionIDList, LanguageDB):
+def __terminal_states(StateMachineName, action_db, OnFailureAction, EndOfStreamAction, 
+                      SupportBeginOfLineF, PreConditionIDList, LanguageDB, VariableDB):
     """NOTE: During backward-lexing, for a pre-condition, there is not need for terminal
              states, since only the flag 'pre-condition fulfilled is raised.
     """      
-    assert SMD.__class__.__name__ == "StateMachineDecorator"
-    sm = SMD.sm()
-    PostConditionedStateMachineID_List = SMD.post_contexted_sm_id_list()
-    DirectlyReachedTerminalID_List     = SMD.directly_reached_terminal_id_list()
 
     # (*) specific terminal states of patterns (entered from acceptance states)
     specific_terminal_states = []
     for state_machine_id, pattern_action_info in action_db.items():
-        code = get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOfLineF, LanguageDB)
-
+        if state_machine_id in PreConditionIDList: continue
+        code = get_terminal_code(state_machine_id, pattern_action_info, SupportBeginOfLineF, LanguageDB)
         specific_terminal_states.extend(code)
+
+    delete_pre_context_flags = []
+    for pre_context_sm_id in PreConditionIDList:
+        delete_pre_context_flags.append("    ")
+        delete_pre_context_flags.append(LanguageDB.ASSIGN("pre_context_%s_fulfilled_f" % __nice(pre_context_sm_id), 0))
 
     # If there is at least a single terminal, the the 're-entry' preparation must be accomplished
     if len(action_db) != 0: get_label("$re-start", U=True)
 
-    # (*) preparation of the reentry without return:
-    #     delete all pre-condition fullfilled flags
-    delete_pre_context_flags = []
-    for pre_context_sm_id in PreConditionIDList:
-        delete_pre_context_flags.append("    ")
-        delete_pre_context_flags.append(LanguageDB["$assignment"]("pre_context_%s_fulfilled_f" % __nice(pre_context_sm_id), 0))
-
     #  -- execute 'on_failure' pattern action 
     #  -- goto initial state    
-    end_of_stream_code_action_str = __adorn_action_code(EndOfStreamAction, SMD, SupportBeginOfLineF)
+    end_of_stream_code_action_str = __adorn_action_code(EndOfStreamAction, SupportBeginOfLineF, LanguageDB)
 
     # -- FAILURE ACTION: Under 'normal' circumstances the on_failure action is simply to be executed
     #                    since the 'get_forward()' incremented the 'current' pointer.
@@ -594,20 +469,21 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
     #       pointer must be setup right after the lexeme start. This way, the lexer becomes a new chance as
     #       soon as possible.
     on_failure = __terminal_on_failure_prolog(LanguageDB)
-    msg        = __adorn_action_code(OnFailureAction, SMD, SupportBeginOfLineF)
+    msg        = __adorn_action_code(OnFailureAction, SupportBeginOfLineF, LanguageDB)
 
     on_failure.append(msg)
 
-    if len(PreConditionIDList) == 0: precondition_involved_f = "0"
-    else:                            precondition_involved_f = "1"
-
-    prolog = __terminal_state_prolog  
+    prolog = blue_print(__terminal_state_prolog,
+                        [
+                          ["$$LEXEME_LENGTH$$", LanguageDB.LEXEME_LENGTH()],
+                          ["$$INPUT_P$$",       LanguageDB.INPUT_P()],
+                        ]
+                       )
 
     router = Address("$terminal-router", None,
                   [
                       blue_print(__terminal_router_prolog_str,
                       [
-                       ["$$RESTORE_LAST_ACCEPTANCE_POS$$",  LanguageDB["$input/seek_position"]("last_acceptance_input_position")],
                        ["$$TERMINAL_FAILURE-REF$$",         "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")],
                        ["$$TERMINAL_FAILURE$$",             get_label("$terminal-FAILURE")],
                       ]),
@@ -623,14 +499,20 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
               ["$$END_OF_STREAM_ACTION$$",       end_of_stream_code_action_str],
               ["$$TERMINAL_END_OF_STREAM-DEF$$", get_label("$terminal-EOF")],
               ["$$TERMINAL_FAILURE-DEF$$",       get_label("$terminal-FAILURE")],
-              ["$$STATE_MACHINE_NAME$$",         SMD.name()],
+              ["$$STATE_MACHINE_NAME$$",         StateMachineName],
               ["$$GOTO_START_PREPARATION$$",     get_label("$re-start", U=True)],
              ])
+
+
+    reset_last_acceptance_str = ""
+    if VariableDB.has_key("last_acceptance"):
+        reset_last_acceptance_str = "last_acceptance = $$TERMINAL_FAILURE-REF$$; /* TERMINAL: FAILURE */"
 
     reentry_preparation = blue_print(__on_continue_reentry_preparation_str,
                           [["$$REENTRY_PREPARATION$$",                    get_label("$re-start")],
                            ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$",  "".join(delete_pre_context_flags)],
                            ["$$GOTO_START$$",                             get_label("$start", U=True)],
+                           ["$$RESET_LAST_ACCEPTANCE$$",                  reset_last_acceptance_str],
                            ["$$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$", comment_on_post_context_position_init_str],
                            ["$$TERMINAL_FAILURE-REF$$",                   "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")],
                           ])
@@ -645,10 +527,7 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
     return txt
     
 def __frame_of_all(Code, Setup):
-    LanguageDB = Setup.language_db
-    namespace_open  = LanguageDB["$namespace-open"](Setup.analyzer_name_space)
-    namespace_close = LanguageDB["$namespace-close"](Setup.analyzer_name_space)
-    # namespace_ref   = LanguageDB["$namespace-ref"](Setup.analyzer_name_space)
+    # namespace_ref   = LanguageDB.NAMESPACE_REFERENCE(Setup.analyzer_name_space)
     # if len(namespace_ref) > 2 and namespace_ref[:2] == "::":  namespace_ref = namespace_ref[2:]
     # if len(namespace_ref) > 2 and namespace_ref[-2:] == "::": namespace_ref = namespace_ref[:-2]
     # "using namespace " + namespace_ref + ";\n"       + \
@@ -688,7 +567,7 @@ def __get_if_in_interval(TriggerSet):
         return "if( input >= %i && input < %i ) {\n" % (TriggerSet.begin, TriggerSet.end)
 
 def __require_terminating_zero_preparation(LanguageDB, CodeStr):
-    CommentDelimiterList = LanguageDB["$comment-delimiters"]
+    CommentDelimiterList = LanguageDB.COMMENT_DELIMITERS
     assert type(CommentDelimiterList) == list
     ObjectName = "Lexeme"
 

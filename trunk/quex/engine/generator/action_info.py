@@ -1,10 +1,9 @@
-import os
-from   quex.engine.misc.file_in import is_identifier_start, \
-                                       is_identifier_continue, \
+from   quex.engine.misc.file_in import \
                                        open_file_or_die, \
                                        write_safely_and_close, \
-                                       get_current_line_info_number
-from   quex.engine.generator.code_fragment_base import *
+                                       get_current_line_info_number, \
+                                       error_msg
+from   quex.engine.generator.code_fragment_base import CodeFragment
 from   quex.blackboard import setup as Setup
 
 UserCodeFragment_OpenLinePragma = {
@@ -38,10 +37,10 @@ UserCodeFragment_OpenLinePragma = {
 
 class UserCodeFragment(CodeFragment):
     def __init__(self, Code, Filename, LineN, LanguageDB=None):
-        assert type(Code)       in [str, unicode]
-        assert type(LanguageDB) == dict or LanguageDB is None
-        assert type(Filename)   in [str, unicode]
-        assert type(LineN)      in [int, long, float]
+        assert isinstance(Code, (str, unicode))
+        assert isinstance(LanguageDB, dict) or LanguageDB is None
+        assert isinstance(Filename, (str, unicode))
+        assert isinstance(LineN, (int, long, float))
 
         self.filename = Filename
         self.line_n   = LineN
@@ -72,7 +71,6 @@ class UserCodeFragment(CodeFragment):
         result = []
         # Replace 1 tabulator at begin of line = 4 spaces.
         # Count minimum indentation of code fragment.
-        min_indentation = 1e37
         for line in Code.split("\n"):
             L = len(line)
             first_non_whitespace_index = 0

@@ -2,7 +2,7 @@ from   quex.engine.misc.file_in                        import error_msg
 from   quex.engine.generator.action_info               import PatternActionInfo
 import quex.engine.state_machine.nfa_to_dfa            as nfa_to_dfa
 import quex.engine.state_machine.parallelize           as parallelize
-from   quex.engine.state_machine.state_core_info       import PostContextIDs      
+from   quex.engine.state_machine.state_core_info       import E_PostContextIDs      
 import quex.engine.state_machine.hopcroft_minimization as hopcroft
 
 from   itertools import ifilter
@@ -68,7 +68,7 @@ class GeneratorBase:
             # #    trivial_pre_context_dict[sm.get_id()] = sm.get_trivial_pre_context_character_codes()
 
             # -- collect all ids of post conditioned state machines
-            if sm.core().post_context_id() != PostContextIDs.NONE:
+            if sm.core().post_context_id() != E_PostContextIDs.NONE:
                 self.post_contexted_sm_id_list.append(sm_id)
 
     def __create_core_state_machine(self):
