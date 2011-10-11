@@ -1,4 +1,8 @@
-from quex.engine.misc.file_in       import *
+from quex.engine.misc.file_in       import skip_whitespace, \
+                                           check, \
+                                           read_identifier, \
+                                           verify_word_in_list, \
+                                           error_msg
 from quex.exception                 import RegularExpressionException
 
 __debug_recursion_depth  = -1
@@ -116,7 +120,7 @@ def snap_replacement(stream, PatternDict, StateMachineF=True):
                       "Specifier '%s' relates to a pattern state machine." % pattern_name, stream)
 
         if character_set.is_empty():
-            error_msg("Referenced character set '%s' is empty.\nAborted." % pattern_name, fh)
+            error_msg("Referenced character set '%s' is empty.\nAborted." % pattern_name, stream)
 
         return character_set
 

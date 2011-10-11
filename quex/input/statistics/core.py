@@ -1,12 +1,13 @@
 """
 """
-from quex.engine.misc.file_in import read_until_letter, skip_whitespace, check_or_die, check, error_msg
+from quex.engine.misc.file_in import read_until_letter, skip_whitespace, check_or_die, error_msg, read_integer
+from quex.blackboard import setup as Setup
 
 from bisect import bisect_left
 from itertools import islice
-from quex.blackboard import setup as Setup
+from exception import EndOfStreamException
 
-class StateStatistics(fh)
+class StateStatistics:
     def __init__(self, ModeName, StateIndex, BoundaryList, CounterList):
         self.mode_name     = ModeName
         self.state_index   = StateIndex
@@ -18,8 +19,8 @@ class StateStatistics(fh)
         # as soon as a buffer limit is reached. 
         # => Exclude its occurence from any state-specific consideration
         self.blc = Setup.buffer_limit_code
-        blc_i    = self.get_boundary_index(self.blc)
-        self.counter_list[i] = 0
+        self.blc_i    = self.get_boundary_index(self.blc)
+        self.counter_list[self.blc_i] = 0
 
     def get_outstanding_character(self, transition_list, AC):
         """An 'outstanding' character is considered to be a character that
@@ -73,7 +74,7 @@ class StateStatistics(fh)
         """
         assert AC != 0
 
-        boundary_begin = self.get_boundary_index(transition_list[0][0].begin):
+        i_begin = self.get_boundary_index(transition_list[0][0].begin)
         
         # Determine total amount of appearances
         i_end = i_begin + len(transition_list)
@@ -88,20 +89,21 @@ class StateStatistics(fh)
             if count > max_count: max_count = count; max_i = i;
         
         if max_count <= (total_count / AC): return None
-        else:                               return i
+        else:                               return max_i
 
     def get_bisectioning_cost(self, transition_list):
         L = len(transition_list)
         if L == 0: return 0
         if L <= 2: return L - 1
         i = self.get_cut(transition_list)
-        return   self.get_bisectioning_cost(transition_list[:i] \
+        return   self.get_bisectioning_cost(transition_list[:i]) \
                + self.get_bisectioning_cost(transition_list[i:])
 
     def get_cut(self, transition_list):
-        boundary_begin = get_boundary_index(transition_list[0][0].begin)
-        total          = sum(islice(self.counter_list, i_begin, i_end)))
-        total_by_two   = total_by_two
+        i_begin      = self.get_boundary_index(transition_list[0][0].begin)
+        i_end        = len(transition_list) - 1
+        total        = sum(islice(self.counter_list, i_begin, i_end))
+        total_by_two = total / 2.0
 
         sum_count = 0
         for i, count in enumerate(islice(self.counter_list, i_begin, i_end)):
@@ -128,6 +130,7 @@ def do(Filename):
             state_index, statistics = parse_state_statistics(fh)
             db[state_index] = statistics
     except EndOfStreamException as x:
+        x
         return db
     
 def parse_state_statistics(fh):

@@ -108,90 +108,90 @@ MemoryManager_TokenArray_free	/home/fschaef/prj/quex/trunk/quex/code_base/./Memo
 QUEX_NAME(MemoryManager_insert)	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    QUEX_NAME(MemoryManager_insert)(uint8_t* drain_begin_p,  uint8_t* drain_end_p,$/;"	f	namespace:quex
 MemoryPositionMimiker	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/MemoryPositionMimiker	/^        MemoryPositionMimiker(character_type* Adr=0x0, character_index Pos=0) $/;"	f	struct:quex::MemoryPositionMimiker
 MemoryPositionMimiker	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/MemoryPositionMimiker	/^    struct MemoryPositionMimiker {$/;"	s	namespace:quex	file:
-PRIX16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	105;"	d
-PRIX32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	118;"	d
-PRIX64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	131;"	d
-PRIX8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	92;"	d
-PRIXFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	113;"	d
-PRIXFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	126;"	d
-PRIXFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	139;"	d
-PRIXFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	100;"	d
-PRIXLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	109;"	d
-PRIXLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	122;"	d
-PRIXLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	135;"	d
-PRIXLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	96;"	d
-PRIXMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	144;"	d
-PRIXPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	149;"	d
-PRId16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	61;"	d
-PRId32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	68;"	d
-PRId64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	75;"	d
-PRId8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	54;"	d
-PRIdFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	65;"	d
-PRIdFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	72;"	d
-PRIdFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	79;"	d
-PRIdFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	58;"	d
-PRIdLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	63;"	d
-PRIdLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	70;"	d
-PRIdLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	77;"	d
-PRIdLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	56;"	d
-PRIdMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	82;"	d
-PRIdPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	85;"	d
-PRIi16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	62;"	d
-PRIi32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	69;"	d
-PRIi64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	76;"	d
-PRIi8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	55;"	d
-PRIiFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	66;"	d
-PRIiFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	73;"	d
-PRIiFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	80;"	d
-PRIiFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	59;"	d
-PRIiLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	64;"	d
-PRIiLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	71;"	d
-PRIiLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	78;"	d
-PRIiLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	57;"	d
-PRIiMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	83;"	d
-PRIiPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	86;"	d
-PRIo16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	102;"	d
-PRIo32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	115;"	d
-PRIo64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	128;"	d
-PRIo8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	89;"	d
-PRIoFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	110;"	d
-PRIoFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	123;"	d
-PRIoFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	136;"	d
-PRIoFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	97;"	d
-PRIoLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	106;"	d
-PRIoLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	119;"	d
-PRIoLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	132;"	d
-PRIoLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	93;"	d
-PRIoMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	141;"	d
-PRIoPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	146;"	d
-PRIu16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	103;"	d
-PRIu32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	116;"	d
-PRIu64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	129;"	d
-PRIu8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	90;"	d
-PRIuFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	111;"	d
-PRIuFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	124;"	d
-PRIuFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	137;"	d
-PRIuFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	98;"	d
-PRIuLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	107;"	d
-PRIuLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	120;"	d
-PRIuLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	133;"	d
-PRIuLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	94;"	d
-PRIuMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	142;"	d
-PRIuPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	147;"	d
-PRIx16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	104;"	d
-PRIx32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	117;"	d
-PRIx64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	130;"	d
-PRIx8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	91;"	d
-PRIxFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	112;"	d
-PRIxFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	125;"	d
-PRIxFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	138;"	d
-PRIxFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	99;"	d
-PRIxLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	108;"	d
-PRIxLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	121;"	d
-PRIxLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	134;"	d
-PRIxLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	95;"	d
-PRIxMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	143;"	d
-PRIxPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	148;"	d
+PRIX16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	105;"	d
+PRIX32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	118;"	d
+PRIX64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	131;"	d
+PRIX8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	92;"	d
+PRIXFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	113;"	d
+PRIXFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	126;"	d
+PRIXFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	139;"	d
+PRIXFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	100;"	d
+PRIXLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	109;"	d
+PRIXLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	122;"	d
+PRIXLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	135;"	d
+PRIXLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	96;"	d
+PRIXMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	144;"	d
+PRIXPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	149;"	d
+PRId16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	61;"	d
+PRId32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	68;"	d
+PRId64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	75;"	d
+PRId8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	54;"	d
+PRIdFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	65;"	d
+PRIdFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	72;"	d
+PRIdFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	79;"	d
+PRIdFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	58;"	d
+PRIdLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	63;"	d
+PRIdLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	70;"	d
+PRIdLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	77;"	d
+PRIdLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	56;"	d
+PRIdMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	82;"	d
+PRIdPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	85;"	d
+PRIi16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	62;"	d
+PRIi32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	69;"	d
+PRIi64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	76;"	d
+PRIi8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	55;"	d
+PRIiFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	66;"	d
+PRIiFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	73;"	d
+PRIiFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	80;"	d
+PRIiFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	59;"	d
+PRIiLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	64;"	d
+PRIiLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	71;"	d
+PRIiLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	78;"	d
+PRIiLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	57;"	d
+PRIiMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	83;"	d
+PRIiPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	86;"	d
+PRIo16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	102;"	d
+PRIo32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	115;"	d
+PRIo64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	128;"	d
+PRIo8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	89;"	d
+PRIoFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	110;"	d
+PRIoFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	123;"	d
+PRIoFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	136;"	d
+PRIoFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	97;"	d
+PRIoLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	106;"	d
+PRIoLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	119;"	d
+PRIoLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	132;"	d
+PRIoLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	93;"	d
+PRIoMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	141;"	d
+PRIoPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	146;"	d
+PRIu16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	103;"	d
+PRIu32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	116;"	d
+PRIu64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	129;"	d
+PRIu8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	90;"	d
+PRIuFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	111;"	d
+PRIuFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	124;"	d
+PRIuFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	137;"	d
+PRIuFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	98;"	d
+PRIuLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	107;"	d
+PRIuLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	120;"	d
+PRIuLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	133;"	d
+PRIuLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	94;"	d
+PRIuMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	142;"	d
+PRIuPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	147;"	d
+PRIx16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	104;"	d
+PRIx32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	117;"	d
+PRIx64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	130;"	d
+PRIx8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	91;"	d
+PRIxFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	112;"	d
+PRIxFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	125;"	d
+PRIxFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	138;"	d
+PRIxFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	99;"	d
+PRIxLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	108;"	d
+PRIxLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	121;"	d
+PRIxLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	134;"	d
+PRIxLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	95;"	d
+PRIxMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	143;"	d
+PRIxPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	148;"	d
 PTRDIFF_MAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	167;"	d
 PTRDIFF_MAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	170;"	d
 PTRDIFF_MIN	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	166;"	d
@@ -415,96 +415,96 @@ Quex_unicode_to_utf8	/home/fschaef/prj/quex/trunk/quex/code_base/./unicode	/^   
 Quex_unicode_to_utf8_string	/home/fschaef/prj/quex/trunk/quex/code_base/./unicode	/^    Quex_unicode_to_utf8_string(QUEX_TYPE_CHARACTER *Source, size_t SourceSize, uint8_t *Drain, size_t DrainSize)$/;"	f	namespace:quex
 RawBufferSize	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/BufferFiller_Converter.i	/^                                         size_t            RawBufferSize);$/;"	v
 RawBufferSize	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/BufferFiller_Converter.i	/^                                    size_t            RawBufferSize);$/;"	v
-SCNX16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	208;"	d
-SCNX32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	221;"	d
-SCNX64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	234;"	d
-SCNX8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	195;"	d
-SCNXFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	216;"	d
-SCNXFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	229;"	d
-SCNXFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	242;"	d
-SCNXFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	203;"	d
-SCNXLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	212;"	d
-SCNXLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	225;"	d
-SCNXLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	238;"	d
-SCNXLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	199;"	d
-SCNXMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	247;"	d
-SCNXPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	253;"	d
-SCNXPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	258;"	d
-SCNd16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	159;"	d
-SCNd32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	166;"	d
-SCNd64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	173;"	d
-SCNd8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	152;"	d
-SCNdFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	163;"	d
-SCNdFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	170;"	d
-SCNdFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	177;"	d
-SCNdFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	156;"	d
-SCNdLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	161;"	d
-SCNdLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	168;"	d
-SCNdLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	175;"	d
-SCNdLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	154;"	d
-SCNdMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	180;"	d
-SCNdPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	184;"	d
-SCNdPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	187;"	d
-SCNi16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	160;"	d
-SCNi32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	167;"	d
-SCNi64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	174;"	d
-SCNi8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	153;"	d
-SCNiFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	164;"	d
-SCNiFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	171;"	d
-SCNiFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	178;"	d
-SCNiFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	157;"	d
-SCNiLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	162;"	d
-SCNiLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	169;"	d
-SCNiLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	176;"	d
-SCNiLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	155;"	d
-SCNiMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	181;"	d
-SCNiPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	185;"	d
-SCNiPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	188;"	d
-SCNo16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	205;"	d
-SCNo32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	218;"	d
-SCNo64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	231;"	d
-SCNo8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	192;"	d
-SCNoFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	213;"	d
-SCNoFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	226;"	d
-SCNoFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	239;"	d
-SCNoFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	200;"	d
-SCNoLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	209;"	d
-SCNoLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	222;"	d
-SCNoLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	235;"	d
-SCNoLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	196;"	d
-SCNoMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	244;"	d
-SCNoPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	250;"	d
-SCNoPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	255;"	d
-SCNu16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	206;"	d
-SCNu32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	219;"	d
-SCNu64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	232;"	d
-SCNu8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	193;"	d
-SCNuFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	214;"	d
-SCNuFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	227;"	d
-SCNuFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	240;"	d
-SCNuFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	201;"	d
-SCNuLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	210;"	d
-SCNuLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	223;"	d
-SCNuLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	236;"	d
-SCNuLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	197;"	d
-SCNuMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	245;"	d
-SCNuPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	251;"	d
-SCNuPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	256;"	d
-SCNx16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	207;"	d
-SCNx32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	220;"	d
-SCNx64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	233;"	d
-SCNx8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	194;"	d
-SCNxFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	215;"	d
-SCNxFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	228;"	d
-SCNxFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	241;"	d
-SCNxFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	202;"	d
-SCNxLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	211;"	d
-SCNxLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	224;"	d
-SCNxLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	237;"	d
-SCNxLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	198;"	d
-SCNxMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	246;"	d
-SCNxPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	252;"	d
-SCNxPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	257;"	d
+SCNX16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	208;"	d
+SCNX32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	221;"	d
+SCNX64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	234;"	d
+SCNX8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	195;"	d
+SCNXFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	216;"	d
+SCNXFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	229;"	d
+SCNXFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	242;"	d
+SCNXFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	203;"	d
+SCNXLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	212;"	d
+SCNXLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	225;"	d
+SCNXLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	238;"	d
+SCNXLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	199;"	d
+SCNXMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	247;"	d
+SCNXPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	253;"	d
+SCNXPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	258;"	d
+SCNd16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	159;"	d
+SCNd32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	166;"	d
+SCNd64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	173;"	d
+SCNd8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	152;"	d
+SCNdFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	163;"	d
+SCNdFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	170;"	d
+SCNdFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	177;"	d
+SCNdFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	156;"	d
+SCNdLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	161;"	d
+SCNdLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	168;"	d
+SCNdLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	175;"	d
+SCNdLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	154;"	d
+SCNdMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	180;"	d
+SCNdPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	184;"	d
+SCNdPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	187;"	d
+SCNi16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	160;"	d
+SCNi32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	167;"	d
+SCNi64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	174;"	d
+SCNi8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	153;"	d
+SCNiFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	164;"	d
+SCNiFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	171;"	d
+SCNiFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	178;"	d
+SCNiFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	157;"	d
+SCNiLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	162;"	d
+SCNiLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	169;"	d
+SCNiLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	176;"	d
+SCNiLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	155;"	d
+SCNiMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	181;"	d
+SCNiPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	185;"	d
+SCNiPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	188;"	d
+SCNo16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	205;"	d
+SCNo32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	218;"	d
+SCNo64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	231;"	d
+SCNo8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	192;"	d
+SCNoFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	213;"	d
+SCNoFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	226;"	d
+SCNoFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	239;"	d
+SCNoFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	200;"	d
+SCNoLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	209;"	d
+SCNoLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	222;"	d
+SCNoLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	235;"	d
+SCNoLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	196;"	d
+SCNoMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	244;"	d
+SCNoPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	250;"	d
+SCNoPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	255;"	d
+SCNu16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	206;"	d
+SCNu32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	219;"	d
+SCNu64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	232;"	d
+SCNu8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	193;"	d
+SCNuFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	214;"	d
+SCNuFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	227;"	d
+SCNuFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	240;"	d
+SCNuFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	201;"	d
+SCNuLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	210;"	d
+SCNuLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	223;"	d
+SCNuLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	236;"	d
+SCNuLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	197;"	d
+SCNuMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	245;"	d
+SCNuPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	251;"	d
+SCNuPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	256;"	d
+SCNx16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	207;"	d
+SCNx32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	220;"	d
+SCNx64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	233;"	d
+SCNx8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	194;"	d
+SCNxFAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	215;"	d
+SCNxFAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	228;"	d
+SCNxFAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	241;"	d
+SCNxFAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	202;"	d
+SCNxLEAST16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	211;"	d
+SCNxLEAST32	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	224;"	d
+SCNxLEAST64	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	237;"	d
+SCNxLEAST8	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	198;"	d
+SCNxMAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	246;"	d
+SCNxPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	252;"	d
+SCNxPTR	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	257;"	d
 SIG_ATOMIC_MAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	174;"	d
 SIG_ATOMIC_MIN	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	173;"	d
 SIZE_MAX	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	178;"	d
@@ -581,8 +581,8 @@ __BufferFiller_get_border_char	/home/fschaef/prj/quex/trunk/quex/code_base/./buf
 __BufferFiller_read_characters	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/BufferFiller.i	/^    __BufferFiller_read_characters(QuexBuffer*           buffer, $/;"	f	namespace:quex
 __Buffer_reverse_byte_order	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/Buffer.i	/^    __Buffer_reverse_byte_order(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)$/;"	f	namespace:quex
 __INCLUDE_GUARD_QUEX_BUFFER_MEMORY_POSITION_MIMIKER__	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/MemoryPositionMimiker	6;"	d	file:
-__INCLUDE_GUARD_QUEX_CODE_BASE_COMPATIBILITY_WIN_BORLAND_INTTYPES_H	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	2;"	d
-__INCLUDE_GUARD_QUEX_CODE_BASE_COMPATIBILITY_WIN_MSC_INTTYPES_H	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	32;"	d
+__INCLUDE_GUARD_QUEX_CODE_BASE_COMPATIBILITY_WIN_BORLAND_INTTYPES_H	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	2;"	d
+__INCLUDE_GUARD_QUEX_CODE_BASE_COMPATIBILITY_WIN_MSC_INTTYPES_H	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	32;"	d
 __INCLUDE_GUARD_QUEX_CODE_BASE_COMPATIBILITY_WIN_MSC_STDINT_H	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	32;"	d
 __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__ASSERTS__	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/asserts	3;"	d	file:
 __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE_I__	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/Buffer.i	3;"	d	file:
@@ -590,7 +590,7 @@ __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE__	/home/fschaef/prj/quex/tr
 __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_DEBUG_I_	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/Buffer_debug.i	5;"	d	file:
 __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_FILLER_I__	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/BufferFiller.i	3;"	d	file:
 __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_FILLER__	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/BufferFiller	3;"	d	file:
-__INCLUDE_GUARD_QUEX__CODE_BASE__COMPATIBILITY_PSEUDO_STDBOOL_H__	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/pseudo-stdbool.h	10;"	d
+__INCLUDE_GUARD_QUEX__CODE_BASE__COMPATIBILITY_PSEUDO_STDBOOL_H__	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/stdbool-pseudo.h	10;"	d
 __INCLUDE_GUARD_QUEX__CODE_BASE__COMPATIBILITY_STDBOOL_H__	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/stdbool.h	10;"	d
 __INCLUDE_GUARD_QUEX__CODE_BASE__DEFINITIONS__	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	3;"	d	file:
 __INCLUDE_GUARD_QUEX__CODE_BASE__MEMORY_MANAGER_I__	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	3;"	d	file:
@@ -617,7 +617,7 @@ __INCLUDE_GUARD__QUEX_BUFFER__CONVERTER_ICONV_I__	/home/fschaef/prj/quex/trunk/q
 __INCLUDE_GUARD__QUEX_BUFFER__CONVERTER_ICU_I__	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/icu/Converter_ICU.i	4;"	d	file:
 __INCLUDE_GUARD__QUEX_BUFFER__CONVERTER_ICU_I__	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/recode/Converter_Recode.i	4;"	d	file:
 __INCLUDE_GUARD__QUEX_INCLUDE_COMPATIBILITY_ICONV_ARGUMENT_TYPES_H__	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/iconv-argument-types.h	2;"	d
-__INCLUDE_GUARD__QUEX_INCLUDE_COMPATIBILITY_INTTYPES_H__	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/inttypes.h	2;"	d
+__INCLUDE_GUARD__QUEX_INCLUDE_COMPATIBILITY_INTTYPES_H__	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/stdint.h	2;"	d
 __INCLUDE_GUARD__QUEX_LEXER_CLASS_COUNT_COMMON	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/count_common	3;"	d	file:
 __INCLUDE_GUARD__QUEX__$$INCLUDE_GUARD_EXTENSION$$	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	17;"	d	file:
 __INCLUDE_GUARD__QUEX__BUFFER__ICONV__BUFFER_FILLER__	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/BufferFiller_Converter	4;"	d	file:
@@ -705,7 +705,7 @@ __QuexBufferFiller_on_overflow	/home/fschaef/prj/quex/trunk/quex/code_base/./buf
 __QuexBufferFiller_step_forward_n_characters	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/BufferFiller.i	/^    __QuexBufferFiller_step_forward_n_characters(QuexBufferFiller* me,$/;"	f	namespace:quex
 __QuexBufferFiller_tag	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/BufferFiller	/^     typedef struct __QuexBufferFiller_tag {$/;"	s	namespace:quex	file:
 __append	/home/fschaef/prj/quex/trunk/quex/code_base/./circular_queue	/^circular_queue<T>::__append(T* That_bottom, T* That_top, T* That_begin_buffer, T* That_end_buffer) {$/;"	f	class:circular_queue
-__bool_true_false_are_defined	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/pseudo-stdbool.h	28;"	d
+__bool_true_false_are_defined	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/stdbool-pseudo.h	28;"	d
 __bool_true_false_are_defined	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/stdbool.h	26;"	d
 __brief_info	/home/fschaef/prj/quex/trunk/quex/code_base/./circular_queue	/^    void __brief_info(std::ostream& ostr) const {$/;"	f	class:circular_queue
 __constructor_core	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	/^    CLASS::__constructor_core(InputHandleT*             input_handle, $/;"	f	class:quex::CLASS
@@ -790,7 +790,7 @@ base	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/recode/Conve
 begin	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	/^            QUEX_NAME(Mode)*  (begin[QUEX_SETTING_MODE_STACK_SIZE]);$/;"	m	struct:quex::CLASS::__anon9	file:
 begin	/home/fschaef/prj/quex/trunk/quex/code_base/./token/TokenQueue	/^        QUEX_TYPE_TOKEN*   begin;$/;"	m	struct:quex::__anon2	file:
 begin_buffer	/home/fschaef/prj/quex/trunk/quex/code_base/./circular_queue	/^circular_queue<T>::begin_buffer() const    $/;"	f	class:circular_queue
-bool	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/pseudo-stdbool.h	22;"	d
+bool	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/stdbool-pseudo.h	22;"	d
 bool	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/stdbool.h	14;"	d
 bottom	/home/fschaef/prj/quex/trunk/quex/code_base/./circular_queue	/^circular_queue<T>::bottom() const $/;"	f	class:circular_queue
 buffer	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser	/^        QuexBuffer                   buffer;$/;"	m	struct:quex::__QuexAnalyzerEngine_tag	file:
@@ -857,7 +857,7 @@ enter	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/PostCategorizer.i	/
 enter_mode	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/mode_handling.i	/^    CLASS::enter_mode(\/* NOT const*\/ QUEX_NAME(Mode)& TargetMode) $/;"	f	class:quex::CLASS
 eof	/home/fschaef/prj/quex/trunk/quex/code_base/./StrangeStream_unit_tests	/^    TEMPLATE_IN bool   StrangeStream<StdStreamType>::eof()    { return sh->eof(); }$/;"	f	class:quex::StrangeStream
 fail	/home/fschaef/prj/quex/trunk/quex/code_base/./StrangeStream_unit_tests	/^    TEMPLATE_IN bool   StrangeStream<StdStreamType>::fail()   { return sh->fail(); }$/;"	f	class:quex::StrangeStream
-false	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/pseudo-stdbool.h	26;"	d
+false	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/stdbool-pseudo.h	26;"	d
 false	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/stdbool.h	24;"	d
 filler	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/Buffer	/^        struct    __QuexBufferFiller_tag*  filler;$/;"	m	struct:quex::__anon5	typeref:struct:quex::__anon5::__QuexBufferFiller_tag	file:
 flush	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Accumulator.i	/^    QUEX_NAME(Accumulator)::flush(const QUEX_TYPE_TOKEN_ID TokenID)$/;"	f	class:quex::QUEX_NAME(Accumulator)
@@ -877,9 +877,9 @@ icount_NoNewline	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterL
 icount_NoNewline_ContainsOnlySpace	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterLineColumnIndentation.i	/^CounterLineColumnIndentation::icount_NoNewline_ContainsOnlySpace(const int ColumnNIncrement) $/;"	f	class:quex::CounterLineColumnIndentation
 icount_NoNewline_NeverStartOnWhitespace	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterLineColumnIndentation.i	/^CounterLineColumnIndentation::icount_NoNewline_NeverStartOnWhitespace(const int ColumnNIncrement) $/;"	f	class:quex::CounterLineColumnIndentation
 id	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/QuexMode	/^        int            id;$/;"	m	struct:quex::QUEX_NAME(Mode)	file:
-imaxabs	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	264;"	d
-imaxdiv	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	/^imaxdiv_t __cdecl imaxdiv(intmax_t numer, intmax_t denom)$/;"	f
-imaxdiv_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	/^} imaxdiv_t;$/;"	t	typeref:struct:__anon1
+imaxabs	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	264;"	d
+imaxdiv	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^imaxdiv_t __cdecl imaxdiv(intmax_t numer, intmax_t denom)$/;"	f
+imaxdiv_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^} imaxdiv_t;$/;"	t	typeref:struct:__anon1
 include_pop	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/IncludeStack.i	/^    CLASS::include_pop() $/;"	f	class:quex::CLASS
 include_push	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/IncludeStack.i	/^    CLASS::include_push(QUEX_TYPE_CHARACTER*     InputName,$/;"	f	class:quex::CLASS
 indentation	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	/^        int  indentation()                    { return counter._indentation; }$/;"	f	class:quex::CLASS
@@ -891,29 +891,29 @@ input_handle	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/Buff
 input_handle	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/plain/BufferFiller_Plain	/^    QuexBufferFiller_Plain_new(InputHandleT* input_handle);$/;"	v
 input_handle	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/plain/BufferFiller_Plain.i	/^    QuexBufferFiller_Plain_construct(TEMPLATED(QuexBufferFiller_Plain)*, InputHandleT*    input_handle);$/;"	v
 input_handle	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/plain/BufferFiller_Plain.i	/^    QuexBufferFiller_Plain_init(TEMPLATED(QuexBufferFiller_Plain)* me, InputHandleT*    input_handle);$/;"	v
-int16_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef signed   __int16 int16_t;$/;"	t
+int16_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef signed   __int16 int16_t;$/;"	t
 int16_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef __int16           int16_t;$/;"	t
-int32_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef signed   __int32 int32_t;$/;"	t
+int32_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef signed   __int32 int32_t;$/;"	t
 int32_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef __int32           int32_t;$/;"	t
-int64_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef signed   __int64 int64_t;$/;"	t
+int64_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef signed   __int64 int64_t;$/;"	t
 int64_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef __int64           int64_t;$/;"	t
-int8_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef signed   __int8  int8_t;$/;"	t
+int8_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef signed   __int8  int8_t;$/;"	t
 int8_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef signed __int8     int8_t;$/;"	t
-int_fast16_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef signed   __int16 int_fast16_t;$/;"	t
+int_fast16_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef signed   __int16 int_fast16_t;$/;"	t
 int_fast16_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef int16_t   int_fast16_t;$/;"	t
-int_fast32_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef signed   __int32 int_fast32_t;$/;"	t
+int_fast32_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef signed   __int32 int_fast32_t;$/;"	t
 int_fast32_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef int32_t   int_fast32_t;$/;"	t
-int_fast64_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef signed   __int64 int_fast64_t;$/;"	t
+int_fast64_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef signed   __int64 int_fast64_t;$/;"	t
 int_fast64_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef int64_t   int_fast64_t;$/;"	t
-int_fast8_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef signed   __int8  int_fast8_t;$/;"	t
+int_fast8_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef signed   __int8  int_fast8_t;$/;"	t
 int_fast8_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef int8_t    int_fast8_t;$/;"	t
-int_least16_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef signed   __int16 int_least16_t;$/;"	t
+int_least16_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef signed   __int16 int_least16_t;$/;"	t
 int_least16_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef int16_t   int_least16_t;$/;"	t
-int_least32_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef signed   __int32 int_least32_t;$/;"	t
+int_least32_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef signed   __int32 int_least32_t;$/;"	t
 int_least32_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef int32_t   int_least32_t;$/;"	t
-int_least64_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef signed   __int64 int_least64_t;$/;"	t
+int_least64_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef signed   __int64 int_least64_t;$/;"	t
 int_least64_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef int64_t   int_least64_t;$/;"	t
-int_least8_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef signed   __int8  int_least8_t;$/;"	t
+int_least8_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef signed   __int8  int_least8_t;$/;"	t
 int_least8_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef int8_t    int_least8_t;$/;"	t
 intern_off_type	/home/fschaef/prj/quex/trunk/quex/code_base/./StrangeStream_unit_tests	/^        typedef typename   StdStreamType::off_type   intern_off_type;$/;"	t	class:quex::StrangeStream	file:
 intern_pos_type	/home/fschaef/prj/quex/trunk/quex/code_base/./StrangeStream_unit_tests	/^        typedef typename   StdStreamType::pos_type   intern_pos_type;$/;"	t	class:quex::StrangeStream	file:
@@ -1027,14 +1027,14 @@ quex	/home/fschaef/prj/quex/trunk/quex/code_base/./token/Token	/^namespace quex 
 quex	/home/fschaef/prj/quex/trunk/quex/code_base/./token/TokenQueue	/^namespace quex { $/;"	n	file:
 quex	/home/fschaef/prj/quex/trunk/quex/code_base/./unicode	/^namespace quex { $/;"	n	file:
 quick_pop	/home/fschaef/prj/quex/trunk/quex/code_base/./circular_queue	/^circular_queue<T>::quick_pop() {$/;"	f	class:circular_queue
-quot	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	/^   intmax_t quot;$/;"	m	struct:__anon1
+quot	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^   intmax_t quot;$/;"	m	struct:__anon1
 read	/home/fschaef/prj/quex/trunk/quex/code_base/./StrangeStream_unit_tests	/^    StrangeStream<StdStreamType>::read(typename StrangeStream<StdStreamType>::char_type* buffer, size_t Size)$/;"	f	class:quex::StrangeStream
 read_characters	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/BufferFiller	/^        size_t   (*read_characters)(struct __QuexBufferFiller_tag*,$/;"	m	struct:quex::__QuexBufferFiller_tag	file:
 read_iterator	/home/fschaef/prj/quex/trunk/quex/code_base/./token/TokenQueue	/^        QUEX_TYPE_TOKEN*   read_iterator;    \/\/ pointer to next token to be read$/;"	m	struct:quex::__anon2	file:
 receive	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/token_receiving.i	/^    CLASS::receive(QUEX_TYPE_TOKEN* QueueMemoryBegin, QUEX_TYPE_TOKEN* QueueMemoryEnd) $/;"	f	class:quex::CLASS
 receive	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/token_receiving.i	/^    CLASS::receive(QUEX_TYPE_TOKEN* result_p) $/;"	f	class:quex::CLASS
 receive	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/token_receiving.i	/^    CLASS::receive(QUEX_TYPE_TOKEN** result_pp) $/;"	f	class:quex::CLASS
-rem	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	/^   intmax_t rem;$/;"	m	struct:__anon1
+rem	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^   intmax_t rem;$/;"	m	struct:__anon1
 remaining_repetitions_of_last_token_n	/home/fschaef/prj/quex/trunk/quex/code_base/./token/TokenQueue	/^        size_t     remaining_repetitions_of_last_token_n;$/;"	m	struct:quex::__anon2	file:
 remove	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/PostCategorizer.i	/^    QuexPostCategorizer::remove(const QUEX_TYPE_CHARACTER* Lexeme)$/;"	f	class:quex::QuexPostCategorizer
 reset	/home/fschaef/prj/quex/trunk/quex/code_base/./circular_queue	/^circular_queue<T>::reset()$/;"	f	class:circular_queue
@@ -1073,8 +1073,8 @@ stream_offset	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/InputPolicy	/
 stream_offset	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/InputPolicy	/^        typedef typename StdStreamType::off_type   stream_offset;$/;"	t	struct:quex::InputPolicy	file:
 stream_position	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/InputPolicy	/^        typedef long   stream_position;$/;"	t	struct:quex::InputPolicy	file:
 stream_position	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/InputPolicy	/^        typedef typename StdStreamType::pos_type   stream_position;$/;"	t	struct:quex::InputPolicy	file:
-strtoimax	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	292;"	d
-strtoumax	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	293;"	d
+strtoimax	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	292;"	d
+strtoumax	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	293;"	d
 tell	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/misc.i	/^    CLASS::tell()$/;"	f	class:quex::CLASS
 tell	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/InputPolicy	/^        static long    tell(std::FILE* me)            { return std::ftell(me); }$/;"	f	struct:quex::InputPolicy
 tell	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/InputPolicy	/^        static long    tell(void* me)                         { \/* dummy operation *\/ return -1L; }$/;"	f	struct:quex::InputPolicy
@@ -1089,43 +1089,43 @@ token_id	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/PostCategorizer	
 token_list	/home/fschaef/prj/quex/trunk/quex/code_base/./token/TokenQueue	/^        QUEX_TYPE_TOKEN*    token_list;$/;"	m	struct:quex::__anon3	file:
 token_object	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/token_sending.i	/^    CLASS::token_object()$/;"	f	class:quex::CLASS
 top	/home/fschaef/prj/quex/trunk/quex/code_base/./circular_queue	/^circular_queue<T>::top() const    $/;"	f	class:circular_queue
-true	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/pseudo-stdbool.h	25;"	d
+true	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/stdbool-pseudo.h	25;"	d
 true	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/stdbool.h	23;"	d
 type_id	/home/fschaef/prj/quex/trunk/quex/code_base/./token/CppTemplate.txt	/^        QUEX_TYPE_TOKEN_ID    type_id() const      { return _id; }$/;"	f	class:$$TOKEN_TYPE$$
 type_id	/home/fschaef/prj/quex/trunk/quex/code_base/./token/Token	/^        QUEX_TYPE_TOKEN_ID        type_id() const      { return _id; }$/;"	f	class:quex::Token
 type_id_name	/home/fschaef/prj/quex/trunk/quex/code_base/./token/CppTemplate.txt	/^        const std::string     type_id_name() const { return map_id_to_name(_id); }$/;"	f	class:$$TOKEN_TYPE$$
 type_id_name	/home/fschaef/prj/quex/trunk/quex/code_base/./token/Token	/^        const std::string         type_id_name() const { return map_id_to_name(_id); }$/;"	f	class:quex::Token
-uint16_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef unsigned __int16 uint16_t;$/;"	t
+uint16_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef unsigned __int16 uint16_t;$/;"	t
 uint16_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef unsigned __int16  uint16_t;$/;"	t
-uint32_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef unsigned __int32 uint32_t;$/;"	t
+uint32_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef unsigned __int32 uint32_t;$/;"	t
 uint32_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef unsigned __int32  uint32_t;$/;"	t
-uint64_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef unsigned __int64 uint64_t;$/;"	t
+uint64_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef unsigned __int64 uint64_t;$/;"	t
 uint64_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef unsigned __int64  uint64_t;$/;"	t
-uint8_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef unsigned __int8  uint8_t;$/;"	t
+uint8_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef unsigned __int8  uint8_t;$/;"	t
 uint8_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef unsigned __int8   uint8_t;$/;"	t
-uint_fast16_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef unsigned __int16 uint_fast16_t;$/;"	t
+uint_fast16_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef unsigned __int16 uint_fast16_t;$/;"	t
 uint_fast16_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef uint16_t  uint_fast16_t;$/;"	t
-uint_fast32_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef unsigned __int32 uint_fast32_t;$/;"	t
+uint_fast32_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef unsigned __int32 uint_fast32_t;$/;"	t
 uint_fast32_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef uint32_t  uint_fast32_t;$/;"	t
-uint_fast64_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef unsigned __int64 uint_fast64_t;$/;"	t
+uint_fast64_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef unsigned __int64 uint_fast64_t;$/;"	t
 uint_fast64_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef uint64_t  uint_fast64_t;$/;"	t
-uint_fast8_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef unsigned __int8  uint_fast8_t;$/;"	t
+uint_fast8_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef unsigned __int8  uint_fast8_t;$/;"	t
 uint_fast8_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef uint8_t   uint_fast8_t;$/;"	t
-uint_least16_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef unsigned __int16 uint_least16_t;$/;"	t
+uint_least16_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef unsigned __int16 uint_least16_t;$/;"	t
 uint_least16_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef uint16_t  uint_least16_t;$/;"	t
-uint_least32_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef unsigned __int32 uint_least32_t;$/;"	t
+uint_least32_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef unsigned __int32 uint_least32_t;$/;"	t
 uint_least32_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef uint32_t  uint_least32_t;$/;"	t
-uint_least64_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef unsigned __int64 uint_least64_t;$/;"	t
+uint_least64_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef unsigned __int64 uint_least64_t;$/;"	t
 uint_least64_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef uint64_t  uint_least64_t;$/;"	t
-uint_least8_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h	/^  typedef unsigned __int8  uint_least8_t;$/;"	t
+uint_least8_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_stdint.h	/^  typedef unsigned __int8  uint_least8_t;$/;"	t
 uint_least8_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef uint8_t   uint_least8_t;$/;"	t
 uintmax_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^typedef uint64_t  uintmax_t;$/;"	t
 uintptr_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^   typedef unsigned __int64  uintptr_t;$/;"	t
 uintptr_t	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	/^   typedef unsigned int      uintptr_t;$/;"	t
 utf8_text	/home/fschaef/prj/quex/trunk/quex/code_base/./token/Token	/^    Token::utf8_text() const$/;"	f	class:quex::Token
 version	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	/^    CLASS::version() const$/;"	f	class:quex::CLASS
-wcstoimax	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	296;"	d
-wcstoumax	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	297;"	d
+wcstoimax	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	296;"	d
+wcstoumax	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	297;"	d
 write_iterator	/home/fschaef/prj/quex/trunk/quex/code_base/./token/TokenQueue	/^        QUEX_TYPE_TOKEN*   write_iterator;   \/\/ pointer to next token to be written$/;"	m	struct:quex::__anon2	file:
 ~$$TOKEN_CLASS$$	/home/fschaef/prj/quex/trunk/quex/code_base/./token/CppTemplate.txt	/^$$TOKEN_CLASS$$::~$$TOKEN_CLASS$$()$/;"	f	class:$$TOKEN_CLASS$$
 ~CLASS	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/constructor.i	/^    CLASS::~CLASS() $/;"	f	class:quex::CLASS

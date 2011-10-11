@@ -1,4 +1,4 @@
-<history date="Sat Sep  3 07:32:48 2011" element-n="153">
+<history date="Tue Oct 11 08:41:04 2011" element-n="156">
     <day year="2009" month="04" day="25">
         <history-init time="06:37:01"/>
         <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="06:37:01"/>
@@ -427,5 +427,10 @@
     <day year="2010" month="11" day="19">
         <crc-error time="09:04:00" application="test-converter-x.py" choice="1" database-crc="-705738934" real-crc="816612133"/>
         <crc-error time="09:04:00" application="test-converter-x.py" choice="2" database-crc="-837076251" real-crc="248418612"/>
+    </day>
+    <day year="2011" month="10" day="11">
+        <crc-error time="06:15:49" application="test-converter-x.py" choice="2" database-crc="248418612" real-crc="1067358446"/>
+        <crc-error time="06:20:08" application="test-converter-C.py" choice="cp1256" database-crc="-800287742" real-crc="1051252697"/>
+        <crc-error time="06:20:59" application="test-converter-x.py" choice="3" database-crc="-1279708581" real-crc="-1013101497"/>
     </day>
 </history>

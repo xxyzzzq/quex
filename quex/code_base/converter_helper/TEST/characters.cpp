@@ -1,6 +1,6 @@
 extern "C" { 
 #include <iconv.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include <stddef.h>
 #include <stdio.h>
 }

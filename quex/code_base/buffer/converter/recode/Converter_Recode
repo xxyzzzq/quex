@@ -10,7 +10,7 @@
 
 #include <quex/code_base/buffer/converter/Converter>
 
-#include <quex/code_base/compatibility/pseudo-stdbool.h>
+#include <quex/code_base/compatibility/stdbool-pseudo.h>
  
 #if ! defined (__QUEX_OPTION_PLAIN_C)
     extern "C" { 

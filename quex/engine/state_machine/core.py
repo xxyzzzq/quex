@@ -6,8 +6,7 @@ from   quex.engine.state_machine.transition_map  import *
 from   quex.engine.state_machine.state_core_info import *
 from   quex.engine.state_machine.origin_list     import StateOriginList
 
-import sys
-from   copy      import copy, deepcopy
+from   copy      import deepcopy
 from   operator  import attrgetter
 from   itertools import ifilter, imap
 
@@ -26,7 +25,7 @@ class State:
 
     ## Little Slower: __slots__ = ('__core', '__origin_list', '__transition_map')
 
-    def __init__(self, AcceptanceF=False, StateMachineID=AcceptanceIDs.FAILURE, StateIndex=-1L, 
+    def __init__(self, AcceptanceF=False, StateMachineID=E_AcceptanceIDs.FAILURE, StateIndex=-1L, 
                  AltCore=None, AltOriginList=None, AltTM=None):
         """Contructor of a State, i.e. a aggregation of transitions.
         """
@@ -147,7 +146,7 @@ class StateMachineCoreInfo:
         self.__pre_context_sm                      = PreContextSM
         self.__pre_context_begin_of_line_f         = PreContext_BeginOfLineF
         self.__pre_context_single_character_list   = PreContext_SingleCharacterList
-        self.__post_context_id                     = PostContextIDs.NONE
+        self.__post_context_id                     = E_PostContextIDs.NONE
         self.__post_context_backward_input_position_detector_sm = None
 
     def id(self):                                  
@@ -175,7 +174,7 @@ class StateMachineCoreInfo:
         return    self.__pre_context_single_character_list \
                or len(self.__pre_context_single_character_list) != 0 \
                or self.__pre_context_sm is not None \
-               or self.__post_context_id != PostContextIDs.NONE \
+               or self.__post_context_id != E_PostContextIDs.NONE \
                or self.__post_context_backward_input_position_detector_sm is not None
 
     def set_id(self, Value):                                  
@@ -247,7 +246,7 @@ class StateMachine:
     def core(self):
         return self.__core
             
-    def clone(self):
+    def clone(self, ReplacementDB=None):
         """Clone state machine, i.e. create a new one with the same behavior,
         i.e. transitions, but with new unused state indices. This is used when
         state machines are to be created that combine the behavior of more
@@ -258,28 +257,29 @@ class StateMachine:
                  None          if cloning not possible due to external state references
 
         """
-        replacement = {}
-
         # (*) create the new state machine
         #     (this has to happen first, to get an init_state_index)
-        result = StateMachine()
 
-        # every target state has to appear as a start state (no external states)
-        # => it is enough to consider the start states and 'rename' them.
-        # if later a target state index appears, that is not in this set we
-        # return 'None' to indicate that this state machine cannot be cloned.
-        sorted_state_indices = self.states.keys()
-        sorted_state_indices.sort()
-        for state_idx in sorted_state_indices:
-            # NOTE: The constructor already delivered an init state index to 'result'.
-            #       Thus self's init index has to be translated to result's init index.
-            if state_idx == self.init_state_index:
-                replacement[state_idx] = result.init_state_index
-            else:
-                replacement[state_idx] = state_machine_index.get()
+        if ReplacementDB is not None: 
+            result      = StateMachine(InitStateIndex=ReplacementDB[self.init_state_index])
+            replacement = ReplacementDB
+        else:                         
+            result = StateMachine()
+            replacement = {}
+            # every target state has to appear as a start state (no external states)
+            # => it is enough to consider the start states and 'rename' them.
+            # if later a target state index appears, that is not in this set we
+            # return 'None' to indicate that this state machine cannot be cloned.
+            for state_idx in sorted(self.states.iterkeys()):
+                # NOTE: The constructor already delivered an init state index to 'result'.
+                #       Thus self's init index has to be translated to result's init index.
+                if state_idx == self.init_state_index:
+                    replacement[state_idx] = result.init_state_index
+                else:
+                    replacement[state_idx] = state_machine_index.get()
+
         # termination is a global state, it is not replaced by a new index 
-
-        for state_idx, state in self.states.items():
+        for state_idx, state in self.states.iteritems():
             new_state_idx = replacement[state_idx]
             result.states[new_state_idx] = self.states[state_idx].clone(replacement)
         
@@ -291,6 +291,11 @@ class StateMachine:
         ##        assert result.states.has_key(target_idx)
             
         return result
+
+    def normalized_clone(self):
+        index_map, dummy, dummy = self.get_state_index_normalization()
+        return self.clone(index_map)
+
 
     def get_id(self):
         return self.__core.id()
@@ -321,14 +326,14 @@ class StateMachine:
            by any other state. This indicates most likely a lack off efficiency 
            or an error in the algorithms.
         """
-        unique = set([])
+        targets = set([])
         for state in self.states.values():
-            unique.update(state.transitions().get_target_state_index_list())
+            targets.update(state.transitions().get_target_state_index_list())
 
         result = []
         for state_index in self.states.keys():
             # The init state is never considered to be an 'orphan'
-            if state_index not in unique and state_index != self.init_state_index: 
+            if state_index not in targets and state_index != self.init_state_index: 
                 result.append(state_index)
 
         return result
@@ -661,6 +666,7 @@ class StateMachine:
         """Checks whether all states in the state index list have the same 
            state attributes.
         """
+        assert False, "This function should not be used. I favor of Analyzer.check_uniformity()"
         assert len(StateIndexList) != 0
         prototype = self.states.get(StateIndexList[0])
         assert prototype is not None
@@ -802,23 +808,34 @@ class StateMachine:
             state.origins().delete_dominated()
 
     def replace_pre_context_state_machine(self, NewPreContextSM):
-        OldPreContextID = self.core().pre_context_sm().get_id()
-        NewPreContextID = NewPreContextSM.get_id()
+        OldID = self.core().pre_context_sm().get_id()
+        NewID = NewSM.get_id()
 
         # Set the new pre-context state machine
-        self.core().set_pre_context_sm(NewPreContextSM)
+        self.core().set_pre_context_sm(NewSM)
 
         # Adapt all origins that depend on the old pre-context to the new context
-        for state in self.states.values():
-            for origin in state.origins():
-                if origin.pre_context_id() != OldPreContextID: continue
-                origin.set_pre_context_id(NewPreContextID)
+        for state in self.states.itervalues():
+            for origin in ifilter(lambda x: x.pre_context_id() == OldID, state.origins()):
+                origin.set_pre_context_id(NewID)
+
+    def replace_post_context_backward_input_position_detector_state_machine(self, NewSM):
+        OldID = self.core().post_context_backward_input_position_detector_sm().get_id()
+        NewID = NewSM.get_id()
+
+        # Set the new pre-context state machine
+        self.core().set_post_context_backward_input_position_detector_sm(NewSM)
+
+        # Adapt all origins that depend on the old pcbi to the new context
+        for state in self.states.itervalues():
+            for origin in ifilter(lambda x: x.post_context_backward_input_position_detector_sm_id() == OldID, state.origins()):
+                origin.set_post_context_backward_detector_sm_id(NewID)
 
     def transform(self, TrafoInfo):
         """RETURNS: True  transformation successful
                     False transformation failed, number set possibly in inconsistent state!
         """
-        for state in self.states.values():
+        for state in self.states.itervalues():
             if state.transform(TrafoInfo) == False: return False
 
         # Do not transform any related state machine (pre-, papc-detector)

@@ -5,7 +5,7 @@ token_type {
 
        #include <quex/code_base/definitions>
        #include <quex/code_base/asserts>
-       #include <quex/code_base/compatibility/inttypes.h>
+       #include <quex/code_base/compatibility/stdint.h>
 
        /* The following function converts the engine's codec to utf8. */
        QUEX_NAMESPACE_MAIN_OPEN

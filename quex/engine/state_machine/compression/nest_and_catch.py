@@ -285,16 +285,16 @@ class CommonTransitionDB:
             if CommonTriggerSet.is_equal(info.trigger_set): 
                 info.state_index_set.add(StateIndexA) 
                 info.state_index_set.add(StateIndexB) 
-                self.state_index_to_entry_db.setdefault(StateIndexA, set([]).add(entry.id)
-                self.state_index_to_entry_db.setdefault(StateIndexB, set([]).add(entry.id)
+                self.state_index_to_entry_db.setdefault(StateIndexA, set([])).add(entry.id)
+                self.state_index_to_entry_db.setdefault(StateIndexB, set([])).add(entry.id)
                 break
         else:
             # (2) If the transition was not known to the database,
             #     then add it.
-            new_entry = CommonTransitionDBEntry(TargetIdx, CommonTriggerSet, StateIndexA, StateIndexB])
+            new_entry = CommonTransitionDBEntry(TargetIdx, CommonTriggerSet, StateIndexA, StateIndexB)
             self.db.append(new_entry)
-            self.state_index_to_entry_db.setdefault(StateIndexA, set([]).add(entry.id)
-            self.state_index_to_entry_db.setdefault(StateIndexB, set([]).add(entry.id)
+            self.state_index_to_entry_db.setdefault(StateIndexA, set([])).add(entry.id)
+            self.state_index_to_entry_db.setdefault(StateIndexB, set([])).add(entry.id)
 
             # Now, the superset/subset relations must be registered
             for entry in common_transition_group_db:

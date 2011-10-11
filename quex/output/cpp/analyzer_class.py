@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 import os
-from   copy import copy
 import time
 
 from   quex.blackboard                 import setup as Setup
@@ -22,8 +21,9 @@ def do(ModeDB, IndentationSupportF, BeginOfLineSupportF):
     return header_engine_txt, code_engine_txt, header_configuration_txt
 
 def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF):
+    LanguageDB = Setup.language_db
+
     LexerClassName = Setup.analyzer_class_name
-    LanguageDB     = Setup.language_db
 
     ConfigurationTemplateFile =(  QUEX_PATH \
                                 + Setup.language_db["$code_base"] \
@@ -39,14 +39,11 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
         if len(mode.get_code_fragment_list("on_exit")) != 0:  exit_handler_active_f = True
 
     # Buffer filler converter (0x0 means: no buffer filler converter)
-    converter_f = False
     converter_new_str = "#   define QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW " 
     if Setup.converter_user_new_func != "": 
         converter_new_str += Setup.converter_user_new_func + "()"
-        user_defined_converter_f = True
     else: 
         converter_new_str = "/* " + converter_new_str + " */"
-        user_defined_converter_f = False
 
     # Token repetition support
     token_repeat_test_txt = ""
@@ -83,8 +80,7 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
     txt = __switch(txt, "QUEX_OPTION_BUFFER_BASED_ANALYZIS",         Setup.buffer_based_analyzis_f)
 
     # -- token class related definitions
-    token_descr = blackboard.token_type_definition
-    namespace_token_str = make_safe_identifier(Setup.language_db["$namespace-ref"](token_descr.name_space))
+    token_descr         = blackboard.token_type_definition
 
     # -- name of the character codec
     codec_name = "unicode"
@@ -92,7 +88,7 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
         codec_name = make_safe_identifier(Setup.buffer_codec).lower()
 
     def namespace(NameSpaceList):
-        result = Setup.language_db["$namespace-ref"](NameSpaceList)
+        result = Setup.language_db.NAMESPACE_REFERENCE(NameSpaceList)
 
         if result == "::": return ""
 
@@ -105,7 +101,7 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
             [
              ["$$BUFFER_LIMIT_CODE$$",          "0x%X" % Setup.buffer_limit_code],
              ["$$CODEC_NAME$$",                 codec_name],
-             ["$$INCLUDE_GUARD_EXTENSION$$",    get_include_guard_extension( Setup.language_db["$namespace-ref"](Setup.analyzer_name_space) + "__" + Setup.analyzer_class_name)],
+             ["$$INCLUDE_GUARD_EXTENSION$$",    get_include_guard_extension(LanguageDB.NAMESPACE_REFERENCE(Setup.analyzer_name_space) + "__" + Setup.analyzer_class_name)],
              ["$$INITIAL_LEXER_MODE_ID$$",      "QUEX_NAME(ModeID_%s)" % blackboard.initial_mode.get_pure_code()],
              ["$$LEXER_BUILD_DATE$$",           time.asctime()],
              ["$$LEXER_CLASS_NAME$$",           LexerClassName],
@@ -113,11 +109,11 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
              ["$$LEXER_DERIVED_CLASS_NAME$$",   Setup.analyzer_derived_class_name],
              ["$$MAX_MODE_CLASS_N$$",           repr(len(ModeDB))],
              ["$$NAMESPACE_MAIN$$",             namespace(Setup.analyzer_name_space)],
-             ["$$NAMESPACE_MAIN_CLOSE$$",       Setup.language_db["$namespace-close"](Setup.analyzer_name_space).replace("\n", "\\\n")],
-             ["$$NAMESPACE_MAIN_OPEN$$",        Setup.language_db["$namespace-open"](Setup.analyzer_name_space).replace("\n", "\\\n")],
+             ["$$NAMESPACE_MAIN_CLOSE$$",       LanguageDB.NAMESPACE_CLOSE(Setup.analyzer_name_space).replace("\n", "\\\n")],
+             ["$$NAMESPACE_MAIN_OPEN$$",        LanguageDB.NAMESPACE_OPEN(Setup.analyzer_name_space).replace("\n", "\\\n")],
              ["$$NAMESPACE_TOKEN$$",            namespace(token_descr.name_space)],
-             ["$$NAMESPACE_TOKEN_CLOSE$$",      Setup.language_db["$namespace-close"](token_descr.name_space).replace("\n", "\\\n")],
-             ["$$NAMESPACE_TOKEN_OPEN$$",       Setup.language_db["$namespace-open"](token_descr.name_space).replace("\n", "\\\n")],
+             ["$$NAMESPACE_TOKEN_CLOSE$$",      LanguageDB.NAMESPACE_CLOSE(token_descr.name_space).replace("\n", "\\\n")],
+             ["$$NAMESPACE_TOKEN_OPEN$$",       LanguageDB.NAMESPACE_OPEN(token_descr.name_space).replace("\n", "\\\n")],
              ["$$PATH_TERMINATION_CODE$$",      "0x%X" % Setup.path_limit_code],
              ["$$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$", converter_new_str],
              ["$$QUEX_TYPE_CHARACTER$$",        Setup.buffer_element_type],
@@ -163,7 +159,6 @@ def write_engine_header(ModeDB):
     QuexClassHeaderFileTemplate = os.path.normpath(  QUEX_PATH
                                                    + Setup.language_db["$code_base"] 
                                                    + Setup.language_db["$analyzer_template_file"]).replace("//","/")
-    LexerFileStem  = Setup.output_header_file
     LexerClassName = Setup.analyzer_class_name
 
     quex_converter_coding_name_str = Setup.converter_ucs_coding_name
@@ -198,7 +193,7 @@ def write_engine_header(ModeDB):
     template_code_txt = get_file_content_or_die(QuexClassHeaderFileTemplate)
 
     include_guard_ext = get_include_guard_extension(
-            Setup.language_db["$namespace-ref"](Setup.analyzer_name_space) 
+            Setup.language_db.NAMESPACE_REFERENCE(Setup.analyzer_name_space) 
             + "__" + Setup.analyzer_class_name)
 
     function_code_txt = write_constructor_and_memento_functions(ModeDB)
@@ -355,8 +350,6 @@ def get_mode_class_related_code_fragments(Modes):
                  -- friend declarations for the mode classes/functions
 
     """
-    L = max(map(lambda m: len(m.name), Modes))
-
     members_txt = ""    
     for mode in Modes:
         if mode.options["inheritable"] == "only": continue

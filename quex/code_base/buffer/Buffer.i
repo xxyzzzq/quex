@@ -170,30 +170,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(buffer);
     }
 
-    QUEX_INLINE void
-    QUEX_NAME(Buffer_input_p_increment)(QUEX_NAME(Buffer)* buffer)
-    { 
-        ++(buffer->_input_p); 
-    }
-
-    QUEX_INLINE void
-    QUEX_NAME(Buffer_input_p_decrement)(QUEX_NAME(Buffer)* buffer)
-    { 
-        --(buffer->_input_p); 
-    }
-
-    QUEX_INLINE void
-    QUEX_NAME(Buffer_mark_lexeme_start)(QUEX_NAME(Buffer)* buffer)
-    { 
-        buffer->_lexeme_start_p = buffer->_input_p; 
-    }
-
-    QUEX_INLINE void
-    QUEX_NAME(Buffer_seek_lexeme_start)(QUEX_NAME(Buffer)* buffer)
-    { 
-        buffer->_input_p = buffer->_lexeme_start_p;
-    }
-
     QUEX_INLINE QUEX_TYPE_CHARACTER_POSITION
     QUEX_NAME(Buffer_tell_memory_adr)(QUEX_NAME(Buffer)* buffer)
     {
@@ -225,21 +201,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE QUEX_TYPE_CHARACTER
-    QUEX_NAME(Buffer_input_get)(QUEX_NAME(Buffer)* me)
-    {
-        QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(me);
-#       ifdef QUEX_OPTION_ASSERTS
-        if( *me->_input_p == QUEX_SETTING_BUFFER_LIMIT_CODE )
-            __quex_assert(   me->_input_p == me->_memory._end_of_file_p 
-                          || me->_input_p == me->_memory._back 
-                          || me->_input_p == me->_memory._front);
-#       endif
-        /* std::fprintf(stderr, "## front = %08X; back = %08X; input_p = %08X;\n", (int)(me->_memory._front), (int)(me->_memory._back), (int)(me->_input_p)); */
-        return *(me->_input_p); 
-    }
-
-    QUEX_INLINE QUEX_TYPE_CHARACTER
-    QUEX_NAME(Buffer_input_get_offset)(QUEX_NAME(Buffer)* me, const size_t Offset)
+    QUEX_NAME(Buffer_input_get_offset)(QUEX_NAME(Buffer)* me, const ptrdiff_t Offset)
     {
         QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(me);
         __quex_assert( me->_input_p + Offset > me->_memory._front );

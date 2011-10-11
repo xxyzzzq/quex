@@ -30,14 +30,10 @@ ABSTRACT:
 """
 import os
 import sys
-import codecs
-from copy import copy
 sys.path.append(os.environ["QUEX_PATH"])
 
 from   quex.engine.utf16                    import utf16_to_unicode, unicode_to_utf16
 from   quex.engine.interval_handling        import Interval
-import quex.engine.state_machine            as     state_machine
-from   quex.engine.state_machine.core       import State
 import quex.engine.state_machine.nfa_to_dfa as     nfa_to_dfa
 import quex.engine.state_machine.hopcroft_minimization as hopcroft_minimization
 

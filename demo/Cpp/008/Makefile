@@ -62,6 +62,7 @@ GENERATE_PARSER: Calc_parser.ypp
 clean:	
 	touch Calc_lexer.qx
 	rm -f Calc_lexer
+	rm -f Calc_lexer.cpp
 	rm -f Calc_lexer-configuration
 	rm -f Calc_lexer-token
 	rm -f Calc_lexer-token_ids

@@ -261,7 +261,7 @@ def __create_token_sender_by_token_name(fh, TokenName):
                 return "QUEX_NAME_TOKEN(take_text)(self_write_token_p(), &self, LexemeNull, LexemeNull);\n" \
                        "self_send(%s);\n" % (TokenName)
             else:
-                error_msg("When one unnamed argument is specified it must be 'Lexeme'\n"          + \
+                error_msg("If one unnamed argument is specified it must be 'Lexeme'\n"          + \
                           "or 'LexemeNull'. Found '%s'.\n" % argument_list[0]                     + \
                           "To cut parts of the lexeme, please, use the 2 argument sender, e.g.\n" + \
                           "QUEX_TKN_MY_ID(Lexeme + 1, LexemeEnd - 2);\n"                             + \
@@ -368,11 +368,9 @@ def __create_mode_transition_and_token_sender(fh, Command):
         error_msg("Command %s requires at least one argument: The target mode." % Command, fh)
 
     # Code for mode change
-    txt = { 
-        "GOTO":  LanguageDB["$goto-mode"],
-        "GOSUB": LanguageDB["$gosub-mode"],
-        "GOUP":  LanguageDB["$goup-mode"],
-    }[Command](target_mode)
+    if   Command == "GOTO":  txt = LanguageDB.MODE_GOTO(target_mode)
+    elif Command == "GOSUB": txt = LanguageDB.MODE_GOSUB(target_mode)
+    else:                    txt = LanguageDB.MODE_GOUP()
 
     # Code for token sending
     txt += token_sender

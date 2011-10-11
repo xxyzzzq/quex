@@ -15,8 +15,19 @@
 #
 ################################################################################
 #
-from   quex.engine.misc.file_in            import *
-from   quex.output.cpp.token_id_maker      import TokenInfo
+
+from   quex.engine.misc.file_in            import EndOfStreamException, \
+                                                  check, \
+                                                  error_msg, \
+                                                  get_current_line_info_number, \
+                                                  open_file_or_die, \
+                                                  os, \
+                                                  parse_identifier_assignment, \
+                                                  read_identifier, \
+                                                  read_integer, \
+                                                  skip_whitespace, \
+                                                  verify_word_in_list 
+from   quex.output.cpp.token_id_maker      import TokenInfo 
 from   quex.exception                      import RegularExpressionException
 import quex.blackboard                     as blackboard
 import quex.input.files.mode               as mode

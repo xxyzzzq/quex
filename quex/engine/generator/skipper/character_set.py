@@ -1,5 +1,5 @@
 import quex.engine.state_machine.index                    as     sm_index
-import quex.engine.generator.state_coder.transition.core  as     transition_block
+import quex.engine.generator.state.transition.core  as     transition_block
 from   quex.engine.generator.languages.address            import get_label, get_address
 import quex.engine.generator.languages.variable_db        as     variable_db
 from   quex.engine.generator.skipper.common               import line_column_counter_in_loop

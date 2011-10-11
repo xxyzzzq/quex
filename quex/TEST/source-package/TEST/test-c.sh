@@ -20,10 +20,10 @@ case $1 in
         option='-i simple.qx '
         ;;
     iconv)
-        option='-i simple.qx --iconv'
+        option='-i simple.qx --iconv -b 2'
         ;;
     icu)
-        option='-i simple.qx --icu'
+        option='-i simple.qx --icu -b 2 --debug-exception'
         ;;
     codec)
         option='-i simple.qx --codec iso8859_7'
@@ -35,13 +35,13 @@ case $1 in
         option='-i simple.qx --codec utf16 --bes 2'
         ;;
     post-categorizer)
-        option='-i simple.qx --icu --post-categorizer'
+        option='-i simple.qx --icu -b 2 --post-categorizer'
         ;;
     no-string-accumulator)
         option='-i simple.qx --no-string-accumulator'
         ;;
     no-include-stack)
-        option='-i simple.qx --icu --no-include-stack'
+        option='-i simple.qx --icu -b 2 --no-include-stack'
         ;;
     no-counter)
         option='-i simple.qx --no-count-lines --no-count-columns'

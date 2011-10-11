@@ -6,4 +6,4 @@
 ## Map: Trigger Intervals (sorted) --> Target Index
 
     [-2147483647, -1] 	---> 1L
-    [0, 2147483646] 	---> None
+    [0, 2147483646] 	---> DROP_OUT

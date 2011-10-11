@@ -9,13 +9,13 @@
     [0] at 00000000: Codec Interval [110000,110080)
     [1] at 00000080: Codec Interval [110080,110081)
 
-    if( input < 0x020000) {
-        if( input < 0x010081) {
+    if( input < 0x020000 ) {
+        if( input < 0x010081 ) {
             unicode = (uint32_t)input + (uint32_t)0x010000;
             goto four_bytes;
         } else {
         
-            if( input < 0x010800) {
+            if( input < 0x010800 ) {
                 unicode = (uint32_t)input - (uint32_t)0x010000;
                 goto two_bytes;
             } else {
@@ -26,8 +26,8 @@
         }
     } else {
     
-        if( input < 0x110000) {
-            if( input < 0x02F7FF) {
+        if( input < 0x110000 ) {
+            if( input < 0x02F7FF ) {
                 unicode = (uint32_t)input - (uint32_t)0x01F7FF;
                 goto three_bytes;
             } else {
@@ -37,7 +37,7 @@
             }
         } else {
         
-            if( input < 0x110080) {
+            if( input < 0x110080 ) {
                 unicode = (uint32_t)input - (uint32_t)0x110000;
                 goto one_byte;
             } else {

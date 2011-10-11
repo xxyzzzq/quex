@@ -1,7 +1,6 @@
 from quex.blackboard    import setup as Setup
 from quex.engine.misc.file_in import open_file_or_die, \
-                                error_msg, \
-                                write_safely_and_close 
+                                     write_safely_and_close 
 import os.path           as     path
 import os
 from   quex.DEFINITIONS  import QUEX_PATH
@@ -32,11 +31,11 @@ base = """
 
 base_compatibility = """
 /compatibility/iconv-argument-types.h
-/compatibility/inttypes.h
-/compatibility/pseudo-stdbool.h
+/compatibility/stdint.h
+/compatibility/stdbool-pseudo.h
 /compatibility/stdbool.h
-/compatibility/win/borland_inttypes.h
-/compatibility/win/msc_inttypes.h
+/compatibility/win/borland_stdint.h
+/compatibility/win/msc_stdint.h
 /compatibility/win/msc_stdint.h
 """
 

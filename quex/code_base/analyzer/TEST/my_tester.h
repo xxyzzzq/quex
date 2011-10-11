@@ -1,6 +1,6 @@
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__TEST__MY_TESTER_H
 #define __QUEX_INCLUDE_GUARD__ANALYZER__TEST__MY_TESTER_H
-#include <quex/code_base/compatibility/inttypes.h>
+#include <quex/code_base/compatibility/stdint.h>
 
 #define QUEX_TYPE_CHARACTER           uint8_t  
 

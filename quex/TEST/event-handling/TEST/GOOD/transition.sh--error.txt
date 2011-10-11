@@ -13,34 +13,34 @@
 ## Report any bug at
 ##        http://sourceforge.net/tracker/?group_id=168259&atid=846112
 | [START]
-Exit:  ONE
+Exit:  to   TWO
 | Mode change from ONE
 |             to   TWO
-Enter: TWO
-TOKEN: GOSUB_TO_MODE 'sub2' 
-Exit:  TWO
+Enter: from ONE
+TOKEN: GOSUB_TO_MODE 'sub2'
+Exit:  to   THREE
 | Mode change from TWO
 |             to   THREE
-Enter: THREE
-TOKEN: GOSUB_TO_MODE 'sub3' 
-Exit:  THREE
+Enter: from TWO
+TOKEN: GOSUB_TO_MODE 'sub3'
+Exit:  to   ONE
 | Mode change from THREE
 |             to   ONE
-Enter: ONE
-TOKEN: GOSUB_TO_MODE 'sub1' 
-Exit:  ONE
+Enter: from THREE
+TOKEN: GOSUB_TO_MODE 'sub1'
+Exit:  to   THREE
 | Mode change from ONE
 |             to   THREE
-Enter: THREE
-TOKEN: RETURN_TO_MODE 'return' 
-Exit:  THREE
+Enter: from ONE
+TOKEN: RETURN_TO_MODE 'return'
+Exit:  to   TWO
 | Mode change from THREE
 |             to   TWO
-Enter: TWO
-TOKEN: RETURN_TO_MODE 'return' 
-Exit:  TWO
+Enter: from THREE
+TOKEN: RETURN_TO_MODE 'return'
+Exit:  to   ONE
 | Mode change from TWO
 |             to   ONE
-Enter: ONE
-TOKEN: RETURN_TO_MODE 'return' 
-transition.exe: /home/fschaef/prj/quex/trunk/quex/code_base/analyzer/member/mode-handling.i:72: void quex::EHLexer_pop_mode(quex::EHLexer*): Assertion `me->_mode_stack.end != me->_mode_stack.begin' failed.
+Enter: from TWO
+TOKEN: RETURN_TO_MODE 'return'
+transition.exe: <<QUEX_PATH>>/quex/code_base/analyzer/member/mode-handling.i:77: EHLexer_pop_mode: Assertion `me->_mode_stack.end != me->_mode_stack.begin' failed.

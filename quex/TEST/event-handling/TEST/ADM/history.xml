@@ -1,4 +1,4 @@
-<history date="Sat Sep  3 07:32:43 2011" element-n="149">
+<history date="Tue Oct 11 08:41:03 2011" element-n="161">
     <day year="2009" month="04" day="07">
         <history-init time="05:54:43"/>
         <crc-error time="08:24:24" application="transition-x.exe" choice="1" database-crc="-683060918" real-crc="2085579180"/>
@@ -431,5 +431,23 @@
     </day>
     <day year="2010" month="03" day="04">
         <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="oll korrekt" last-time="06:36:36"/>
+    </day>
+    <day year="2011" month="09" day="04">
+        <crc-error time="20:01:12" application="transition-x.sh" choice="error" database-crc="1802618472" real-crc="-233707508"/>
+        <crc-error time="20:01:19" application="transition.sh" choice="error" database-crc="-1554181520" real-crc="-1043027687"/>
+    </day>
+    <day year="2011" month="09" day="06">
+        <crc-error time="04:49:57" application="transition-x.sh" choice="error" database-crc="-233707508" real-crc="-169306904"/>
+        <crc-error time="04:52:11" application="transition.sh" choice="3" database-crc="793083293" real-crc="410119906"/>
+        <crc-error time="04:53:35" application="transition.sh" choice="error" database-crc="-1043027687" real-crc="487729552"/>
+        <crc-error time="04:59:16" application="transition.sh" choice="3" database-crc="410119906" real-crc="1272697451"/>
+        <crc-error time="05:24:32" application="transition.sh" choice="1" database-crc="542117604" real-crc="140187343"/>
+        <crc-error time="05:25:02" application="on_skip_range_open-customized.sh" choice="customized" database-crc="795059160" real-crc="1327256698"/>
+        <crc-error time="05:25:29" application="on_skip_range_open.sh" choice="default" database-crc="1478886908" real-crc="1314773609"/>
+        <crc-error time="05:27:08" application="on_skip_range_open-customized.sh" choice="customized" database-crc="1327256698" real-crc="-1869838464"/>
+    </day>
+    <day year="2011" month="09" day="07">
+        <crc-error time="19:16:28" application="transition-x.sh" choice="error" database-crc="1553181746" real-crc="-1050387149"/>
+        <crc-error time="19:16:38" application="transition.sh" choice="error" database-crc="-1604933047" real-crc="1033984840"/>
     </day>
 </history>

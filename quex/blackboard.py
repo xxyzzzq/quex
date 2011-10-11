@@ -36,9 +36,55 @@ setup = QuexSetup(SETUP_INFO)
 #-----------------------------------------------------------------------------------------
 # StateIndices: Values to be used as target states for transitions
 #-----------------------------------------------------------------------------------------
-TargetStateIndices = Enum("DROP_OUT", 
-                          "RELOAD_PROCEDURE",
-                          "END_OF_PRE_CONTEXT_CHECK") 
+E_StateIndices = Enum("DROP_OUT", 
+                      "RELOAD_PROCEDURE",
+                      "INIT_STATE_TRANSITION_BLOCK",
+                      "END_OF_PRE_CONTEXT_CHECK",
+                      "RECURSIVE",
+                      "ALL", 
+                      "ANALYZER_REENTRY", 
+                      "NONE", 
+                      "VOID") 
+
+E_PreContextIDs  = Enum("NONE",    
+                        "BEGIN_OF_LINE", 
+                        "_DEBUG_NAME_PreContextIDs")
+
+E_AcceptanceIDs  = Enum("FAILURE", 
+                        "PRE_CONTEXT_FULFILLED", 
+                        "TERMINAL_PRE_CONTEXT_CHECK", 
+                        "TERMINAL_BACKWARD_INPUT_POSITION", 
+                        "VOID", 
+                        "_DEBUG_NAME_E_AcceptanceIDs")
+
+E_PostContextIDs = Enum("NONE", 
+                        "IRRELEVANT",
+                        "_DEBUG_NAME_E_PostContextIDs")
+
+E_EngineTypes    = Enum("FORWARD", 
+                      "BACKWARD_PRE_CONTEXT", 
+                      "BACKWARD_INPUT_POSITION",
+                      "INDENTATION_COUNTER",
+                      "ELSE",                       # skipper, or whatever ...
+                      "_DEBUG_E_EngineTypes")
+
+E_TransitionN = Enum("VOID", 
+                     "LEXEME_START_PLUS_ONE",
+                     "IRRELEVANT",
+                     "_DEBUG_NAME_TransitionNs")
+
+E_InputActions = Enum("DEREF", 
+                      "INCREMENT", 
+                      "INCREMENT_THEN_DEREF", 
+                      "DECREMENT",
+                      "DECREMENT_THEN_DEREF",
+                      "_DEBUG_InputActions")
+
+E_Compression = Enum("PATH", 
+                     "PATH_UNIFORM",
+                     "TEMPLATE",
+                     "TEMPLATE_UNIFORM",
+                     "_DEBUG_Compression")
 
 #-----------------------------------------------------------------------------------------
 # mode_db: storing the mode information into a dictionary:

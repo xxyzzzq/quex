@@ -235,7 +235,7 @@ def __AUX_create_database_file(TargetEncoding, TargetEncodingName):
 
     if prev_output != -1:
         input_interval.end = input
-        self.__db.append((interval, target_interval_begin))
+        db.append((input_interval, target_interval_begin))
 
     fh = open_file_or_die(__codec_db_path + "/%s.dat" % TargetEncoding, "wb")
     fh.write("// Describes mapping from Unicode Code pointer to Character code in %s (%s)\n" \

@@ -6,7 +6,7 @@ from   quex.blackboard                          import setup as Setup, \
                                                        E_InputActions, \
                                                        E_Compression
 
-from itertools import imap, ifilter
+from itertools import imap
 from operator  import itemgetter
 
 class PathWalkerState(AnalyzerState):
@@ -128,11 +128,6 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
        character paths and assigns them to PathWalkerState-s. The PathWalkerState-s
        can then immediately be used for code generation.
     """
-
-    LanguageDB = Setup.language_db
-    state_db   = TheAnalyzer.state_db
-    SM_ID      = TheAnalyzer.state_machine_id
-
     path_walker_list = []
     for candidate in CharacterPathList:
         for path_walker in path_walker_list:

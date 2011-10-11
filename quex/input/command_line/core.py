@@ -24,7 +24,7 @@ import quex.engine.codec_db.core            as codec_db
 from   quex.engine.generator.languages.core import db as quex_core_engine_generator_languages_db
 from   quex.engine.generator.action_info    import CodeFragment
 
-from   quex.DEFINITIONS import *
+from   quex.DEFINITIONS import QUEX_VERSION
 
 from   copy     import deepcopy
 from   StringIO import StringIO
@@ -64,7 +64,7 @@ def do(argv):
     if command_line.search("--version", "-v"):
         print "Quex - Fast Universal Lexical Analyzer Generator"
         print "Version " + QUEX_VERSION
-        print "(C) 2006-2010 Frank-Rene Schaefer"
+        print "(C) 2005-2011 Frank-Rene Schaefer"
         print "ABSOLUTELY NO WARRANTY"
         return False
 
@@ -72,12 +72,8 @@ def do(argv):
         print "Quex - Fast Universal Lexical Analyzer Generator"
         print "Please, consult the quex documentation for further help, or"
         print "visit http://quex.org"
-        print "(C) 2006-2010 Frank-Rene Schaefer"
+        print "(C) 2005-2011 Frank-Rene Schaefer"
         print "ABSOLUTELY NO WARRANTY"
-        return False
-
-    if command_line.search("--plot-format-list"):
-        print quex.output.graphviz.core.get_supported_graphic_format_description()
         return False
 
     for variable_name, info in SETUP_INFO.items():

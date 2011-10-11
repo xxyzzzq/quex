@@ -24,9 +24,12 @@
 
 (C) 2005-2011 Frank-Rene Schaefer
 """
-from   quex.engine.interval_handling     import NumberSet
-from   quex.engine.generator.action_info import *
-from   quex.blackboard                  import setup as Setup
+from   quex.engine.generator.action_info       import CodeFragment, \
+                                                      PatternActionInfo
+from   quex.engine.generator.languages.address import get_plain_strings
+from   quex.blackboard import setup as Setup
+
+LanguageDB = None
 
 def do(Mode, IndentationSupportF):
     """The module 'quex.output.cpp.core' produces the code for the 
@@ -38,6 +41,9 @@ def do(Mode, IndentationSupportF):
        -- (optional) for a virtual function call 'on_action_entry()'.
        -- (optional) for debug output that tells the line number and column number.
     """
+    global LanguageDB
+    LanguageDB = Setup.language_db
+
     assert Mode.__class__.__name__ == "Mode"
     variable_db              = {}
     # -- 'end of stream' action
@@ -81,7 +87,7 @@ def get_code(CodeFragmentList, variable_db={}):
             result, add_variable_db = result
             variable_db.update(add_variable_db)
 
-        if type(result) == list: code_str += "".join(result)
+        if type(result) == list: code_str += "".join(get_plain_strings(result))
         else:                    code_str += result        
 
         if code_info.require_terminating_zero_f():
@@ -117,7 +123,6 @@ def __prepare(Mode, CodeFragment_or_CodeFragments, PatternStateMachine,
 
     on_every_match_code = ""
     lc_count_code       = ""
-    debug_code          = ""
     user_code           = ""
     variable_db         = {}
 
@@ -181,6 +186,7 @@ def __prepare_on_failure_action(Mode):
                      None, Default_ActionF=True) 
 
 def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
+    global LanguageDB
 
     # shift the values for line and column numbering
     txt = "    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);\n" + \
@@ -213,7 +219,7 @@ def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
         return txt
 
     else:
-        if character_n == -1: incr_str = "    ((size_t)(self.buffer._input_p - self.buffer._lexeme_start_p))"
+        if character_n == -1: incr_str = "    %s" % LanguageDB.LEXEME_LENGTH()
         else:                 incr_str = "%i" % int(character_n)
 
         return txt + "    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += %s);\n" % incr_str

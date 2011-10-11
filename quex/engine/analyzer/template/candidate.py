@@ -10,8 +10,7 @@ from   quex.engine.analyzer.core import Entry, \
                                         DropOutBackwardInputPositionDetection
 from   quex.engine.analyzer.template.state import TemplateState, \
                                                   TargetScheme, \
-                                                  get_iterable, \
-                                                  get_state_list
+                                                  get_iterable
 from   quex.blackboard import E_AcceptanceIDs, \
                               E_TransitionN, \
                               E_StateIndices

@@ -1,15 +1,12 @@
-from copy import copy
-import os
 import sys
 
-from   quex.engine.misc.file_in import error_msg, write_safely_and_close, open_file_or_die
+from   quex.engine.misc.file_in                 import write_safely_and_close
 
-from   quex.blackboard                               import setup as Setup
+from   quex.blackboard                          import setup as Setup
 import quex.output.cpp.source_package           as source_package
 import quex.blackboard                          as blackboard
 
-from   quex.engine.generator.action_info   import UserCodeFragment_straighten_open_line_pragmas, \
-                                                  CodeFragment
+from   quex.engine.generator.action_info        import UserCodeFragment_straighten_open_line_pragmas
 #
 import quex.input.files.core                    as quex_file_parser
 #
@@ -94,10 +91,13 @@ def do():
 
     # Bring the info about the patterns first
     if Setup.comment_mode_patterns_f:
-        analyzer_code += Setup.language_db["$ml-comment"]("BEGIN: MODE PATTERNS\n" + \
-                                                          inheritance_info_str     + \
-                                                          "\nEND: MODE PATTERNS")
-        analyzer_code += "\n" # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
+        comment = []
+        Setup.language_db.ML_COMMENT(comment, 
+                                     "BEGIN: MODE PATTERNS\n" + \
+                                     inheritance_info_str     + \
+                                     "\nEND: MODE PATTERNS")
+        comment.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
+        analyzer_code += "".join(comment)
 
     # generate frame for analyser code
     analyzer_code = cpp_generator.frame_this(analyzer_code)
@@ -136,8 +136,8 @@ def do():
         source_package.do()
 
 def do_plot():
-    mode_db             = quex_file_parser.do(Setup.input_mode_files)
-    IndentationSupportF = blackboard.requires_indentation_count(mode_db)
+    mode_db = quex_file_parser.do(Setup.input_mode_files)
+    ## IndentationSupportF = blackboard.requires_indentation_count(mode_db)
 
     for mode in mode_db.values():        
         # -- some modes only define event handlers that are inherited

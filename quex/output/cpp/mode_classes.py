@@ -4,7 +4,6 @@ import quex.output.cpp.action_preparation as action_preparation
 
 def do(Modes):
     LexerClassName              = Setup.analyzer_class_name
-    TokenClassName              = Setup.token_class_name
     DerivedClassName            = Setup.analyzer_derived_class_name
     DerivedClassHeaderFileName  = Setup.analyzer_derived_class_file
 
@@ -133,7 +132,7 @@ def  get_implementation_of_mode_functions(mode, Modes):
     # (*) has base mode
     if mode.has_base_mode():
         base_mode_list    = __filter_out_inheritable_only(mode.get_base_mode_name_list())
-        has_base_mode_str = get_IsOneOfThoseCode(base_mode_list)
+        has_base_mode_str = get_IsOneOfThoseCode(base_mode_list, CheckBaseModeF=True)
     else:
         has_base_mode_str = "    return false;"
         
@@ -141,7 +140,7 @@ def  get_implementation_of_mode_functions(mode, Modes):
     try:
         entry_list         = __filter_out_inheritable_only(mode.options["entry"])
         has_entry_from_str = get_IsOneOfThoseCode(entry_list,
-                                                  __filter_out_inheritable_only(ConsiderDerivedClassesF=true))
+                                                  __filter_out_inheritable_only(ConsiderDerivedClassesF=True))
         # check whether the mode we come from is an allowed mode
     except:
         has_entry_from_str = "    return true; /* default */"        
@@ -150,7 +149,7 @@ def  get_implementation_of_mode_functions(mode, Modes):
     try:
         exit_list       = __filter_out_inheritable_only(mode.options["exit"])
         has_exit_to_str = get_IsOneOfThoseCode(exit_list,
-                                               ConsiderDerivedClassesF=true)
+                                               ConsiderDerivedClassesF=True)
     except:
         has_exit_to_str = "    return true; /* default */"
 
@@ -171,6 +170,7 @@ def  get_implementation_of_mode_functions(mode, Modes):
     return txt
 
 def get_IsOneOfThoseCode(ThoseModes, Indentation="    ",
+                         CheckBaseModeF = False,
                          ConsiderDerivedClassesF=False):
     txt = Indentation
     if len(ThoseModes) == 0:
@@ -186,19 +186,20 @@ def get_IsOneOfThoseCode(ThoseModes, Indentation="    ",
     txt += "default:\n"
     if ConsiderDerivedClassesF:
         for mode_name in ThoseModes:
-            txt += "    if( Mode->has_base(%s) ) return true;\n" % mode_name
+            txt += "    if( Mode->has_base(&QUEX_NAME(%s)) ) return true;\n" % mode_name
     else:
         txt += ";\n"
     txt += "}\n"
 
-    txt += "QUEX_ERROR_EXIT("
-    if ConsiderDerivedClassesF:
-        txt += "\"mode '%s' is not one of (and not a a derived mode of): " % mode_name
+    txt += "__QUEX_STD_fprintf(stderr, "
+    if ConsiderDerivedClassesF or CheckBaseModeF:
+        txt += "\"mode '%s' is not one of (and not a derived mode of): " 
     else:
-        txt += "\"mode '%s' is not one of: " % mode_name
+        txt += "\"mode '%s' is not one of: " 
     for mode_name in ThoseModes:
         txt += "%s, " % mode_name
-    txt += "\\n\");\n"
+    txt += "\\n\", Mode->name);\n"
+    txt += "__quex_assert(false);\n"
     txt += "return false;\n"
 
     return txt.replace("\n", "\n" + Indentation)

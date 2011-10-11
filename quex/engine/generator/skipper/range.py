@@ -169,7 +169,7 @@ def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSki
         i = 0
         for letter in EndSequence[1:]:
             i += 1
-            txt += "    %s\n"    % LanguageDB.INPUT_P_DEREFERENCE(i-1)
+            txt += "    %s\n"    % LanguageDB.ASSIGN("input", LanguageDB.INPUT_P_DEREFERENCE(i-1))
             txt += "    %s"      % LanguageDB.IF_INPUT("!=", "Skipper$$SKIPPER_INDEX$$[%i]" % i)
             txt += "         %s" % LanguageDB.GOTO(get_address("$entry", skipper_index, U=True))
             txt += "    %s"      % LanguageDB.END_IF()

@@ -35,7 +35,6 @@ CC = $(COMPILER) -c \
 	 -DPRINT_LINE_COLUMN_NUMBER
      # -DQUEX_OPTION_ASSERTS_DISABLED
      # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
-     # -DQUEX_OPTION_DEBUG_SHOW
    
 LD = $(COMPILER) 
 
@@ -59,7 +58,7 @@ EasyLexer.cpp: simple.qx $(QUEX_CORE)
 	quex -i                 simple.qx  \
 	     --engine           EasyLexer  \
 		 --token-id-offset  0x1000     \
-		 --post-categorizer
+		 --post-categorizer 
 
 # (*) HELPERS __________________________________________________________________
 clean:	

@@ -10,7 +10,7 @@
 
 #define  __QUEX_SETTING_INITIAL_LEXER_MODE_ID  0
 
-#include <quex/code_base/compatibility/inttypes.h>
+#include <quex/code_base/compatibility/stdint.h>
 #include <quex/code_base/test_environment/TestAnalyzer-configuration>
 
 #if defined(__QUEX_OPTION_PLAIN_C)
@@ -50,8 +50,8 @@ QUEX_NAMESPACE_TOKEN_OPEN
             QUEX_TYPE_TOKEN_ID type_id() { return _id; } 
         };
 #   endif
-    void QUEX_NAME_TOKEN(construct)(QUEX_TYPE_TOKEN* me) {}
-    void QUEX_NAME_TOKEN(destruct)(QUEX_TYPE_TOKEN* me) {}
+    void QUEX_NAME_TOKEN(construct)(QUEX_TYPE_TOKEN* me) { (void)me; }
+    void QUEX_NAME_TOKEN(destruct)(QUEX_TYPE_TOKEN* me) { (void)me; }
 QUEX_NAMESPACE_TOKEN_CLOSE
 
 #include <quex/code_base/temporary_macros_on>

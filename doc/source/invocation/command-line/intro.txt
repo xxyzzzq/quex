@@ -296,7 +296,7 @@ The following options support the definition of a independently customized token
 
         ``type-name`` defines the type of the token id. This defines internally the 
         macro ``QUEX_TYPE_TOKEN_ID``. This macro is to be used when a customized
-        token class is defined. The types of Standard C99 'inttypes.h' are encouraged.
+        token class is defined. The types of Standard C99 'stdint.h' are encouraged.
 
         DEFAULT = ``uint32_t``
 
@@ -629,6 +629,26 @@ The following options control the comment which is added to the generated code:
         the input position ('S'), if no backtrack elimination is applied. It originates
         from pattern '394' which is also an acceptance state and '384'. It transits to
         state 2400 on the event of a '=' character.
+
+.. cmdoption:: --comment-transitions
+
+        Adds to each transition in a transition map information about the characters 
+        which trigger the transition, e.g. in a transition segment implemented in a 
+        C-switch case construct
+
+        .. code-block:: cpp
+
+               ...
+               case 0x67: 
+               case 0x68: goto _2292;/* ['g', 'h'] */
+               case 0x69: goto _2295;/* 'i' */
+               case 0x6A: 
+               case 0x6B: goto _2292;/* ['j', 'k'] */
+               case 0x6C: goto _2302;/* 'l' */
+               case 0x6D:
+               ...
+
+        The output of the characters happens in UTF8 format.
 
 .. cmdoption:: --comment-mode-patterns
 

@@ -1,9 +1,8 @@
 #! /usr/bin/env python
 import sys
-from copy import deepcopy
 sys.path.append("../")
 
-from core import *
+from core import StateMachine
 
 
 def do(the_state_machine_list, LeaveIntermediateAcceptanceStatesF=False, 

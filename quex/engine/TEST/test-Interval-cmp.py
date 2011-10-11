@@ -1,7 +1,4 @@
 #! /usr/bin/env python
-from   copy import deepcopy
-import test_NumberSet_base
-
 import os
 import sys
 sys.path.append(os.environ["QUEX_PATH"])
