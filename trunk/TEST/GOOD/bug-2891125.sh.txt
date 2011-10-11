@@ -1,7 +1,7 @@
 ## The goal of this test is to find places where quex exits
 ## with a 'sys.exit' command. This causes trouble since it
 ## may be treated as an exception. No output is good output.
-./engine/misc/file_in.py:625:    if not DontExitF: sys.exit(-1)  # Here, sys.exit(-1) is accepted
-./DEFINITIONS.py:50:    sys.exit(-1) # sys.exit(-1) is acceptable
-./DEFINITIONS.py:63:        sys.exit(-1) # sys.exit(-1) is acceptable
-./DEFINITIONS.py:72:        sys.exit(-1) # sys.exit(-1) is acceptable
+./engine/misc/file_in.py:LineN:    if not DontExitF: sys.exit(-1)  # Here, sys.exit(-1) is accepted
+./DEFINITIONS.py:LineN:    sys.exit(-1) # sys.exit(-1) is acceptable
+./DEFINITIONS.py:LineN:        sys.exit(-1) # sys.exit(-1) is acceptable
+./DEFINITIONS.py:LineN:        sys.exit(-1) # sys.exit(-1) is acceptable
