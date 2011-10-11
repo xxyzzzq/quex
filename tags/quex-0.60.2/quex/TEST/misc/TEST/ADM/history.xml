@@ -1,0 +1,16 @@
+<history date="Tue Oct 11 19:41:54 2011" element-n="6">
+    <day year="2011" month="02" day="10">
+        <history-init time="20:32:09"/>
+    </day>
+    <day year="2011" month="02" day="13">
+        <crc-error time="07:07:32" application="comment.sh" choice="" database-crc="-1663713497" real-crc="-868935868"/>
+    </day>
+    <day year="2011" month="03" day="18">
+        <crc-error time="06:45:06" application="comment.sh" choice="" database-crc="683586817" real-crc="-244584835"/>
+        <crc-error time="06:45:15" application="comment.sh" choice="" database-crc="-244584835" real-crc="248321084"/>
+        <crc-error time="06:45:45" application="comment.sh" choice="" database-crc="248321084" real-crc="977201913"/>
+    </day>
+    <day year="2011" month="10" day="07">
+        <crc-error time="06:11:47" application="debug_show.sh" choice="" database-crc="-218739515" real-crc="-1401362288"/>
+    </day>
+</history>

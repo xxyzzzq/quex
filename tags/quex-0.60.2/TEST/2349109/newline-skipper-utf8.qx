@@ -1,0 +1,21 @@
+start = X;
+
+mode X :
+<skip: [ \n\t]> 
+{
+    ۱ => QUEX_TKN_1(Lexeme);
+    ۲ => QUEX_TKN_2(Lexeme);
+    ۳ => QUEX_TKN_3(Lexeme);
+    ۴ => QUEX_TKN_4(Lexeme);
+    ۵ => QUEX_TKN_5(Lexeme);
+    ۶ => QUEX_TKN_6(Lexeme);
+    ۷ => QUEX_TKN_7(Lexeme);
+    ۸ => QUEX_TKN_8(Lexeme);
+    ۹ => QUEX_TKN_9(Lexeme);
+    ۱۰ => QUEX_TKN_10(Lexeme);
+    ۱۱ => QUEX_TKN_11(Lexeme);
+    ۱۲ => QUEX_TKN_12(Lexeme);
+    ۱۳ => QUEX_TKN_13(Lexeme);
+    ۱۴ => QUEX_TKN_14(Lexeme);
+    ۱۵ => QUEX_TKN_15(Lexeme);
+}

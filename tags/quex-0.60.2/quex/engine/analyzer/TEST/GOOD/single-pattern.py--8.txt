@@ -1,0 +1,34 @@
+init-state = 0L
+00000() <~ (11, 25)
+      == 'a' ==> 00001
+      == 'b' ==> 00002
+      <no epsilon>
+00001(A, S) <~ (11, 26, A, S)
+      <no epsilon>
+00002() <~ (11, 27)
+      == 'c' ==> 00001
+      <no epsilon>
+
+State 0:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 1:
+  .entry:
+    .positioner:
+        .from 0: <nothing>
+        .from 2: <nothing>
+  .drop_out:
+     goto Pattern11;
+
+
+State 2:
+  .entry:
+    .positioner:
+        .from 0: <nothing>
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+

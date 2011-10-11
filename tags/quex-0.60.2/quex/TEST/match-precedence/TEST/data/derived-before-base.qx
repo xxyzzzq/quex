@@ -1,0 +1,15 @@
+start = A;
+
+token {
+    A_IDENTIFIER;
+    B_WORD;
+}
+
+mode A : B {
+    [a-z]+ => T_A_IDENTIFIER(Lexeme);
+}
+
+mode B : <skip: [ \t]> { 
+
+    word   => T_B_WORD(Lexeme);
+}

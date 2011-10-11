@@ -1,0 +1,26 @@
+digraph state_machine_1 {
+rankdir=LR;
+size="8,5"
+node [shape = doublecircle]; 2; 3; 4; 5; 6;
+node [shape = circle];
+0 -> 1 [label ="'0'"];
+1 -> 2 [label ="'c'"];
+1 -> 5 [label ="'d'"];
+2 -> 3 [label ="'c'"];
+2 -> 4 [label ="'d'"];
+4 -> 3 [label ="'c'"];
+4 -> 5 [label ="'d'"];
+4 -> 6 [label ="'e'"];
+}
+
+
+# start    = 2;
+# path     = (2)--'d'-->(4)--'e'-->[6];
+# skeleton = (5) by 'd'; (3) by 'c'; 
+# wildcard = False;
+# 
+# start    = 1;
+# path     = (1)--'c'-->(2)--'d'-->(4)--'e'-->[6];
+# skeleton = (5) by 'd'; (3) by 'c'; 
+# wildcard = False;
+# 

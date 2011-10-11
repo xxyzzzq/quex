@@ -1,0 +1,19 @@
+Involved states in First  = [10L, 11L]
+Involved states in Second = [20L, 21L]
+
+(Straight)---------------------------------------
+
+|         |                            |    (10, 11), (20, 21);
+|                                      |    RECURSIVE;
+
+BorderN    = 1
+TargetComb = (10, 11, 20, 21), (20, 21, 20, 21)
+
+(Vice Versa)-------------------------------------
+
+|                                      |    RECURSIVE;
+|         |                            |    (10, 11), (20, 21);
+
+BorderN    = 1
+TargetComb = (20, 21, 10, 11), (20, 21, 20, 21)
+
