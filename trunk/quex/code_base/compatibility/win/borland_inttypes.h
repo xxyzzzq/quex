@@ -1,7 +1,7 @@
-#ifndef __QUEX_INCLUDE_GUARD__COMPATIBILITY__WIN__BORLAND_INTTYPES_H
-#define __QUEX_INCLUDE_GUARD__COMPATIBILITY__WIN__BORLAND_INTTYPES_H
-  // Contributed by Howard Jeng <sphericalcow@users.sourceforge.net>.
-  // DATE: 08y3m4d
+#ifndef __QUEX_INCLUDE_GUARD__COMPATIBILITY__WIN__BORLAND_STDINT_H
+#define __QUEX_INCLUDE_GUARD__COMPATIBILITY__WIN__BORLAND_STDINT_H
+  /* Contributed by Howard Jeng, sphericalcow at users sourceforge net.
+   * DATE: 08y3m4d                                                      */
 
   typedef signed   __int8  int8_t;
   typedef signed   __int8  int_least8_t;
