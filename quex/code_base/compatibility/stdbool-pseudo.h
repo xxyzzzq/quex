@@ -6,8 +6,8 @@
  *          Issue 6, IEEE Std 1003.1, 2004 Edition".
  *
  * (C) 2008  Frank-Rene Schaefer */           
-#ifndef __QUEX_INCLUDE_GUARD__COMPATIBILITY__PSEUDO_STDBOOL_H
-#define __QUEX_INCLUDE_GUARD__COMPATIBILITY__PSEUDO_STDBOOL_H
+#ifndef __QUEX_INCLUDE_GUARD__COMPATIBILITY__STDBOOL_PSEUDO_H
+#define __QUEX_INCLUDE_GUARD__COMPATIBILITY__STDBOOL_PSEUDO_H
 
 #if defined(__QUEX_OPTION_PLAIN_C)
 
@@ -28,4 +28,4 @@
 #define __bool_true_false_are_defined ((int)(1))
 
 #endif /* __QUEX_OPTION_PLAIN_C */
-#endif /* __QUEX_INCLUDE_GUARD__COMPATIBILITY__PSEUDO_STDBOOL_H */
+#endif /* __QUEX_INCLUDE_GUARD__COMPATIBILITY__STDBOOL_PSEUDO_H */

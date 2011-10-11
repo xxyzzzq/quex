@@ -436,11 +436,13 @@ db["C++"] = LDB(CppBase)
 # C
 #    
 db["C"] = copy(db["C++"])
-db["C"]["$token-default-file"]     = "/token/CDefault.qx"
-db["C"]["$token_template_file"]    = "/token/TXT-C"
-db["C"]["$token_template_i_file"]  = "/token/TXT-C.i"
-db["C"]["$analyzer_template_file"] = "/analyzer/TXT-C"
-db["C"]["$file_extension"]         = ".c"
+db["C"].update([
+    ("$token-default-file", "/token/CDefault.qx"),
+    ("$token_template_file",    "/token/TXT-C"),
+    ("$token_template_i_file",  "/token/TXT-C.i"),
+    ("$analyzer_template_file", "/analyzer/TXT-C"),
+    ("$file_extension",         ".c")
+])
 
 #________________________________________________________________________________
 # Perl
@@ -460,13 +462,13 @@ db["Python"] = {
 db["VisualBasic6"] = {
     }
 
-db["DOT"] = {
-    "$token-default-file":                   "/token/CDefault.qx",
-    "$token_template_file":                  "/token/TXT-C",
-    "$token_template_i_file":                "/token/TXT-C.i",
-    "$analyzer_template_file":               "/analyzer/TXT-C",
-    "$file_extension":                       ".dot",
-    "$code_base":                            "/quex/code_base/",
-    "$require-terminating-zero-preparation": cpp.__require_terminating_zero_preparation,
-    "$comment-delimiters": [["/*", "*/", ""], ["//", "\n", ""], ["\"", "\"", "\\\""]],
-}
+db["DOT"] = copy(db["C++"])
+db["C"].update([
+    ("$token-default-file", "/token/CDefault.qx"),
+    ("$token_template_file",    "/token/TXT-C"),
+    ("$token_template_i_file",  "/token/TXT-C.i"),
+    ("$analyzer_template_file", "/analyzer/TXT-C"),
+    ("$file_extension",         ".c"),
+    ("$require-terminating-zero-preparation",  cpp.__require_terminating_zero_preparation),
+    ("$comment-delimiters", [["/*", "*/", ""], ["//", "\n", ""], ["\"", "\"", "\\\""]]),
+])
