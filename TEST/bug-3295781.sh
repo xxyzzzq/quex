@@ -7,10 +7,11 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i test.qx -o Simple --template-compression 1 --path-compression --language C > tmp.txt
-gcc -I${QUEX_PATH} -c Simple.c -Wall >> tmp.txt
-cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ '
-rm tmp.txt
+quex -i test.qx -o Simple --path-compression --template-compression --language C 2>&1
+awk '(/QUEX_NAME/ && /_analyzer_function/ && ! /=/) || /__quex_debug_path_walker_iteration/ || /__quex_debug_template_state/' Simple.c
+
+echo "## Compile: No output is good output"
+gcc -I${QUEX_PATH} -c Simple.c -Wall 2>&1
 
 # cleansening
 rm Simple*

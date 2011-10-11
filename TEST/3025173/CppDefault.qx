@@ -6,7 +6,7 @@ token_type {
        #include <quex/code_base/definitions>
        #include <quex/code_base/asserts>
        #include <quex/code_base/converter_helper/unicode>
-       #include <quex/code_base/compatibility/inttypes.h>
+       #include <quex/code_base/compatibility/stdint.h>
 
        /* Different codecs may have different converters, the name of the converter
         * is to be defined in the configuration file using the. All converters 

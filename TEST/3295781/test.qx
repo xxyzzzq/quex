@@ -1,2 +1,24 @@
-token { TEST; }
-mode one_and_only: <indentation: [\t] => space 1; [\n] => newline;> { "test" => QUEX_TKN_TEST; }
+start = X;
+
+token {
+  TEST;
+  IDENTIFIER;
+  WHITESPACE;
+  FOR;
+  FOREST;
+  FORESTER;
+  FORMIDABLE;
+}
+
+mode Y : 
+<indentation: [\t] => space 1; [\n] => newline;> 
+{ "test" => QUEX_TKN_TEST; }
+
+mode X { 
+    [a-eg-z]+  => QUEX_TKN_IDENTIFIER;
+    " "+       => QUEX_TKN_WHITESPACE;
+    for        => QUEX_TKN_FOR;
+    forest     => QUEX_TKN_FOREST;
+    forester   => QUEX_TKN_FORESTER;
+    formidable => QUEX_TKN_FORMIDABLE;
+}

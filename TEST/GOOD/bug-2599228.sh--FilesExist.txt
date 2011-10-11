@@ -8,11 +8,11 @@ This test checks wether all files in QUEX_CORE exist
 
 [OK] <<QUEX_PATH>>/quex/code_base/./MemoryManager.i exists
 [OK] <<QUEX_PATH>>/quex/code_base/./MemoryManager exists
-[OK] <<QUEX_PATH>>/quex/code_base/./compatibility/inttypes.h exists
-[OK] <<QUEX_PATH>>/quex/code_base/./compatibility/pseudo-stdbool.h exists
+[OK] <<QUEX_PATH>>/quex/code_base/./compatibility/stdint.h exists
+[OK] <<QUEX_PATH>>/quex/code_base/./compatibility/stdbool-pseudo.h exists
 [OK] <<QUEX_PATH>>/quex/code_base/./compatibility/iconv-argument-types.h exists
-[OK] <<QUEX_PATH>>/quex/code_base/./compatibility/win/borland_inttypes.h exists
-[OK] <<QUEX_PATH>>/quex/code_base/./compatibility/win/msc_inttypes.h exists
+[OK] <<QUEX_PATH>>/quex/code_base/./compatibility/win/borland_stdint.h exists
+[OK] <<QUEX_PATH>>/quex/code_base/./compatibility/win/msc_stdint.h exists
 [OK] <<QUEX_PATH>>/quex/code_base/./compatibility/win/msc_stdint.h exists
 [OK] <<QUEX_PATH>>/quex/code_base/./compatibility/stdbool.h exists
 [OK] <<QUEX_PATH>>/quex/code_base/./token/CppDefault.qx exists

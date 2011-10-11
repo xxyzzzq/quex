@@ -5,11 +5,11 @@ as one of the quex headers changes. This is not necessary for
 installed versions of quex.
 <<QUEX_PATH>>/quex/code_base/./MemoryManager.i
 <<QUEX_PATH>>/quex/code_base/./MemoryManager
-<<QUEX_PATH>>/quex/code_base/./compatibility/inttypes.h
-<<QUEX_PATH>>/quex/code_base/./compatibility/pseudo-stdbool.h
+<<QUEX_PATH>>/quex/code_base/./compatibility/stdint.h
+<<QUEX_PATH>>/quex/code_base/./compatibility/stdbool-pseudo.h
 <<QUEX_PATH>>/quex/code_base/./compatibility/iconv-argument-types.h
-<<QUEX_PATH>>/quex/code_base/./compatibility/win/borland_inttypes.h
-<<QUEX_PATH>>/quex/code_base/./compatibility/win/msc_inttypes.h
+<<QUEX_PATH>>/quex/code_base/./compatibility/win/borland_stdint.h
+<<QUEX_PATH>>/quex/code_base/./compatibility/win/msc_stdint.h
 <<QUEX_PATH>>/quex/code_base/./compatibility/win/msc_stdint.h
 <<QUEX_PATH>>/quex/code_base/./compatibility/stdbool.h
 <<QUEX_PATH>>/quex/code_base/./token/CppDefault.qx

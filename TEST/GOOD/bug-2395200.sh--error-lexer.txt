@@ -7,7 +7,7 @@ deal with those cases. Try compile option:
 
 -DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
 
-However, those mechanisms imply a tradeoff in terms of speed.
+However, those mechanisms imply a trade-off in terms of speed.
 Please, consider using a 'binary' for your input stream, or use
 a different implementation of the standard I/O library (e.g.
 not Microsoft(tm)).

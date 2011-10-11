@@ -7,7 +7,7 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i simple.qx -o Simple --comment-mode-patterns
+quex -i simple.qx -o Simple --comment-mode-patterns --debug-exception
 
 echo "Search for THE_INHERITABLE_ONLY_MODE_XYZ_4711 ___________________________"
 echo " (No output is good output. '*' indicates that it appears in comment)"
