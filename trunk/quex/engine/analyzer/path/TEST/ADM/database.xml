@@ -1,7 +1,7 @@
-<test-database execution-time-sec="1.89" date="Tue Oct 11 08:41:04 2011">
+<test-database execution-time-sec="1.91" date="Tue Oct 11 19:28:06 2011">
     <last-used-diff-display-program name=""/>
     <group name="Paths">
-        <test title="find_begin" time-sum-sec="0.44"> 
+        <test title="find_begin" time-sum-sec="0.43"> 
             <application file-name="find.py" info-request-time="1317239084L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="1" result="OK" time_sec="0.07" crc="-1340672967"/>
@@ -12,7 +12,7 @@
                <choice name="6" result="OK" time_sec="0.07" crc="-1279354597"/>
             </choice-list>
         </test>
-        <test title="filter_redundant_paths" time-sum-sec="0.48"> 
+        <test title="filter_redundant_paths" time-sum-sec="0.50"> 
             <application file-name="filter_redundant_paths.py" info-request-time="1317239076L" vanished="False"/>
             <choice-list number="8" same_result="False">
                <choice name="0" result="OK" time_sec="0.06" crc="-1231177672"/>
@@ -25,7 +25,7 @@
                <choice name="6" result="OK" time_sec="0.06" crc="-1818699120"/>
             </choice-list>
         </test>
-        <test title="select_longest_intersecting_path" time-sum-sec="0.36"> 
+        <test title="select_longest_intersecting_path" time-sum-sec="0.37"> 
             <application file-name="select_longest_paths.py" info-request-time="1317239077L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="0" result="OK" time_sec="0.06" crc="773714092"/>
@@ -52,12 +52,12 @@
                <choice name="2_intervals" result="OK" time_sec="0.06" crc="212610594"/>
             </choice-list>
         </test>
-        <test title="find_path (mean tests)" time-sum-sec="0.21"> 
+        <test title="find_path (mean tests)" time-sum-sec="0.20"> 
             <application file-name="find-2.py" info-request-time="1317239081L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="1" result="OK" time_sec="0.07" crc="907948234"/>
                <choice name="2" result="OK" time_sec="0.07" crc="742726405"/>
-               <choice name="3" result="OK" time_sec="0.07" crc="712019166"/>
+               <choice name="3" result="OK" time_sec="0.06" crc="712019166"/>
             </choice-list>
         </test>
     </group>

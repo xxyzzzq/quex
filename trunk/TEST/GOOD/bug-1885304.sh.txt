@@ -2708,9 +2708,9 @@ _254:
 #   define LexemeEnd    QUEX_NAME(access_LexemeEnd)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
 #else
 #   define Lexeme       (me->buffer._lexeme_start_p)
-#   define LexemeBegin  (me->buffer._lexeme_start_p)
+#   define LexemeBegin  Lexeme
 #   define LexemeL      ((size_t)(me->buffer._input_p - me->buffer._lexeme_start_p))
-#   define LexemeEnd    (me->buffer._input_p)
+#   define LexemeEnd    me->buffer._input_p
 #endif
 
 
@@ -2904,7 +2904,7 @@ TERMINAL_25:
 #   ifdef __QUEX_OPTION_COUNTER
     __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
     __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end +=     ((size_t)(self.buffer._input_p - self.buffer._lexeme_start_p)));
+    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end +=     ((size_t)(me->buffer._input_p - me->buffer._lexeme_start_p)));
     __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
     __quex_debug_counter();
 #   endif
@@ -2927,7 +2927,7 @@ TERMINAL_30:
 #   ifdef __QUEX_OPTION_COUNTER
     __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
     __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end +=     ((size_t)(self.buffer._input_p - self.buffer._lexeme_start_p)));
+    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end +=     ((size_t)(me->buffer._input_p - me->buffer._lexeme_start_p)));
     __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
     __quex_debug_counter();
 #   endif
