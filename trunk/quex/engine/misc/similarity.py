@@ -73,7 +73,7 @@ if __name__ == "__main__":
     for word in ["ains", "zwei", "trei", "sibeen", "vier", "acht", "schiffahrt"]:
         print "%s:" % word
         for candidate in word_list:
-            print "    %s: %i" % (candidate, compute(word, candidate))
+            print "    %s: %s" % (candidate, compute_motion_vector(word, candidate))
 
 
 

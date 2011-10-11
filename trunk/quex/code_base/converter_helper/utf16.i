@@ -4,7 +4,7 @@
  *
  * (C) 2005-2010 Frank-Rene Schaefer; ABSOLUTELY NO WARRANTY                      */
 #include <quex/code_base/definitions>
-#include <quex/code_base/compatibility/inttypes.h>
+#include <quex/code_base/compatibility/stdint.h>
 #include <quex/code_base/asserts>
 
 

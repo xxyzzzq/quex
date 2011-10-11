@@ -1,9 +1,8 @@
 #! /usr/bin/env python
 from   quex.engine.misc.file_in                         import error_msg
-from   quex.engine.state_machine.core                   import *
+from   quex.engine.state_machine.core                   import StateMachine
 import quex.engine.state_machine.ambiguous_post_context as apc
-from   quex.engine.state_machine.state_core_info        import PostContextIDs
-import sys
+from   quex.blackboard                                  import E_PostContextIDs
 
 
 def do(the_state_machine, post_context_sm, fh=-1):
@@ -38,7 +37,7 @@ def do(the_state_machine, post_context_sm, fh=-1):
     assert isinstance(post_context_sm, StateMachine), \
             "expected 2nd argument as objects of class StateMachine\n" + \
             "received: " + post_context_sm.__class__.__name__
-    assert the_state_machine.core().post_context_id() == PostContextIDs.NONE, \
+    assert the_state_machine.core().post_context_id() == E_PostContextIDs.NONE, \
             "post context state machine cannot be post-context again."
 
     # -- state machines with no states are senseless here. 
@@ -83,11 +82,15 @@ def do(the_state_machine, post_context_sm, fh=-1):
     #        pattern.
     #
     result     = the_state_machine
-    # (*) need to clone the state machines, i.e. provide their internal
+    # (*) Need to clone the state machines, i.e. provide their internal
     #     states with new ids, but the 'behavior' remains. This allows
     #     state machines to appear twice, or being used in 'larger'
     #     conglomerates.
     post_clone = post_context_sm.clone() 
+
+    # -- Once an acceptance state is reached no further analysis is necessary.
+    ## NO: acceptance_pruning.do(post_clone)
+    ## BECAUSE: it may have to compete with a pseudo-ambiguous post context
 
     # (*) collect all transitions from both state machines into a single one
     #

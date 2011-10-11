@@ -61,14 +61,7 @@
  * This function saves all statistics data into a file given by 'Filename'. It
  * is called upon destruction of the lexical analyzer object. 
  * ____________________________________________________________________________*/
-#include <stddef.h>
-#include <stdio.h>
-#define QUEX_TYPE_CHARACTER          int
-#define QUEX_TYPE_STATISTICS_COUNTER unsigned int
-#define __QUEX_STD_fopen             fopen
-#define __QUEX_STD_fclose            fclose
-#define __QUEX_STD_fprintf           fprintf
-#define QUEX_NAME(X)                 Quex_ ## X
+#include <quex/code_base/definitions>
 
 typedef struct { 
     const size_t                         boundary_n;  

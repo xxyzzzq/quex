@@ -2,7 +2,6 @@
 import test_NumberSet_base
 import sys
 import os
-from copy import deepcopy
 sys.path.append(os.environ["QUEX_PATH"])
 from quex.engine.interval_handling import Interval, NumberSet
 

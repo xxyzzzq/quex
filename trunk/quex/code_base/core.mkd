@@ -6,11 +6,11 @@ __QUEX_CORE = \
     $(addprefix $(QUEX_CODE_BASE_PATH)/, \
     ./MemoryManager.i \
     ./MemoryManager \
-    ./compatibility/inttypes.h \
-    ./compatibility/pseudo-stdbool.h \
+    ./compatibility/stdint.h \
+    ./compatibility/stdbool-pseudo.h \
     ./compatibility/iconv-argument-types.h \
-    ./compatibility/win/borland_inttypes.h \
-    ./compatibility/win/msc_inttypes.h \
+    ./compatibility/win/borland_stdint.h \
+    ./compatibility/win/msc_stdint.h \
     ./compatibility/win/msc_stdint.h \
     ./compatibility/stdbool.h \
     ./token/CppDefault.qx \
@@ -69,7 +69,7 @@ __QUEX_CORE = \
     ./temporary_macros_off \
     ./test_environment/StrangeStream)
 
-ifeq ($(QUEX_PATH), /home/fschaef/prj/quex/trunk)
+ifeq ($(QUEX_PATH), $(QUEX_DEV_PATH))
     QUEX_CORE = $(__QUEX_CORE)
 else
     QUEX_CORE =#

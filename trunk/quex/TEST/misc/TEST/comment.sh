@@ -9,7 +9,9 @@ case $1 in
         quex -i comment.qx -o WithOut 
         quex -i comment.qx -o With   \
              --comment-state-machine \
-             --comment-mode-patterns
+             --comment-mode-patterns \
+             --comment-transitions   \
+             --debug-exception
         diff With.cpp WithOut.cpp | awk ' (/</ || />/) && ! /\#/ '
         rm -f With*
         ;;

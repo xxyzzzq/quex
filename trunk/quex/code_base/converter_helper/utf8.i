@@ -5,7 +5,7 @@
  * (C) 2005-2010 Frank-Rene Schaefer                                                */
 
 #include <quex/code_base/definitions>
-#include <quex/code_base/compatibility/inttypes.h>
+#include <quex/code_base/compatibility/stdint.h>
 #include <quex/code_base/asserts>
 
 QUEX_NAMESPACE_MAIN_OPEN

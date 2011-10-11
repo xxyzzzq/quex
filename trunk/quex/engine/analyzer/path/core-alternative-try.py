@@ -1,9 +1,8 @@
 # (C) 2010 Frank-Rene Schaefer
-from   quex.engine.interval_handling         import Interval
 from   quex.engine.analyzer.path.path        import CharacterPath
 import quex.engine.analyzer.path.path_walker as     path_walker
 from   quex.blackboard import E_StateIndices
-from   copy        import deepcopy, copy
+from   copy        import deepcopy
 from   collections import defaultdict
 """
    Path Compression ___________________________________________________________
@@ -285,7 +284,6 @@ def __find_continuation(analyzer, StateIndex, the_path, InitStateIndex, Uniformi
 def find_single_character_transitions(transition_map):
     candidate_db = {}
 
-    result_list = []
     for interval, target_idx in transition_map:
         # Only targets that are reached via interval size == 1, can be considered
         if   interval.size() != 1:                  continue

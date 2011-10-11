@@ -13,7 +13,6 @@
 # ABSOLUTELY NO WARRANTY
 #########################################################################################################
 import quex.engine.generator.languages.cpp       as     cpp
-# import quex.engine.generator.languages.python    as     python
 from   quex.engine.generator.languages.address   import get_address, \
                                                         db, \
                                                         get_label, \
@@ -26,10 +25,6 @@ from   itertools import islice
 #________________________________________________________________________________
 # C++
 #    
-def __string_if_true(Value, Condition):
-    if Condition: return Value
-    else:         return ""
-
 CppBase = {
     "$class-member-def":   lambda TypeStr, MaxTypeNameL, VariableName, MaxVariableL:
                            "    %s%s %s;" % (TypeStr, " " * (MaxTypeNameL - len(TypeStr)), VariableName),
@@ -83,8 +78,8 @@ class LDB(dict):
     def INPUT_P_ADD(self, Offset):     return "QUEX_NAME(Buffer_input_p_add_offset)(&me->buffer, %i);" % Offset
     def INPUT_P_TO_LEXEME_START(self): return "me->buffer._input_p = me->buffer._lexeme_start_p;"
     def INPUT_P_DEREFERENCE(self, Offset=0): 
-        if Offset == 0: return "input = *(me->buffer._input_p);\n"
-        else:           return "input = QUEX_NAME(Buffer_input_get_offset)(&me->buffer, %i);" % Offset
+        if Offset == 0: return "*(me->buffer._input_p)"
+        else:           return "QUEX_NAME(Buffer_input_get_offset)(&me->buffer, %i)" % Offset
 
     def NAMESPACE_OPEN(self, NameList):
         txt = ""
@@ -247,18 +242,11 @@ class LDB(dict):
         if FirstF: return "if( %s ) {\n"        % test
         else:      return "} else if( %s ) {\n" % test
 
+    def END_IF(self, LastF=True):
+        return { True: "}", False: "" }[LastF]
+
     def IF_INPUT(self, Condition, Value, FirstF=True):
         return self.IF("input", Condition, Value, FirstF)
-
-    def PRE_CONTEXT_CONDITION(self, PreContextID):
-        if PreContextID == E_PreContextIDs.BEGIN_OF_LINE: 
-            return "me->buffer._character_before_lexeme_start == '\\n'"
-        elif PreContextID == E_PreContextIDs.NONE:
-            return "true"
-        elif isinstance(PreContextID, (int, long)):
-            return "pre_context_%i_fulfilled_f" % PreContextID
-        else:
-            assert False
 
     def IF_PRE_CONTEXT(self, FirstF, PreContextList, Consequence):
         if not isinstance(PreContextList, (list, set)): PreContextList = [ PreContextList ]
@@ -279,25 +267,32 @@ class LDB(dict):
         txt += " ) {\n        %s\n    }\n" % Consequence.replace("\n", "\n        ")
         return txt
 
+    def PRE_CONTEXT_CONDITION(self, PreContextID):
+        if PreContextID == E_PreContextIDs.BEGIN_OF_LINE: 
+            return "me->buffer._character_before_lexeme_start == '\\n'"
+        elif PreContextID == E_PreContextIDs.NONE:
+            return "true"
+        elif isinstance(PreContextID, (int, long)):
+            return "pre_context_%i_fulfilled_f" % PreContextID
+        else:
+            assert False
+
     def ASSIGN(self, X, Y):
         return "%s = %s;" % (X, Y)
 
-    def END_IF(self, LastF=True):
-        return { True: "}", False: "" }[LastF]
-
     def ACCESS_INPUT(self, txt=None, InputAction=E_InputActions.DEREF):
         code = {
-            E_InputActions.DEREF:                "    %s\n" % self.INPUT_P_DEREFERENCE(), 
+            E_InputActions.DEREF:                "    %s\n" % self.ASSIGN("input", self.INPUT_P_DEREFERENCE()), 
 
             E_InputActions.INCREMENT:            "    %s\n" % self.INPUT_P_INCREMENT(), 
             
             E_InputActions.INCREMENT_THEN_DEREF: "    %s\n" % self.INPUT_P_INCREMENT() + \
-                                                 "    %s\n" % self.INPUT_P_DEREFERENCE(), 
+                                                 "    %s\n" % self.ASSIGN("input", self.INPUT_P_DEREFERENCE()), 
             
             E_InputActions.DECREMENT:            "    %s\n" % self.INPUT_P_DECREMENT(), 
             
             E_InputActions.DECREMENT_THEN_DEREF: "    %s\n" % self.INPUT_P_DECREMENT() + \
-                                                 "    %s\n" % self.INPUT_P_DEREFERENCE(), 
+                                                 "    %s\n" % self.ASSIGN("input", self.INPUT_P_DEREFERENCE()), 
         }[InputAction]
 
         if txt is None: return code

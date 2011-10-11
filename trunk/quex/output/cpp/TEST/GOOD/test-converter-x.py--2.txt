@@ -6,8 +6,8 @@
     [2] at 00000800: Codec Interval [300000,300010)
     [3] at 00010000: Codec Interval [400000,400010)
 
-    if( input < 0x300000) {
-        if( input < 0x200000) {
+    if( input < 0x300000 ) {
+        if( input < 0x200000 ) {
             unicode = (uint32_t)input - (uint32_t)0x100000;
             goto one_byte;
         } else {
@@ -17,7 +17,7 @@
         }
     } else {
     
-        if( input < 0x400000) {
+        if( input < 0x400000 ) {
             unicode = (uint32_t)input - (uint32_t)0x2FF800;
             goto three_bytes;
         } else {

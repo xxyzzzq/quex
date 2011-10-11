@@ -2,9 +2,9 @@
 
 from   quex.engine.interval_handling import NumberSet, Interval
 from   quex.engine.misc.file_in      import error_msg
+from   quex.blackboard               import E_StateIndices
 
 import sys
-import bisect
 from   operator import attrgetter
 
 # definitions for 'history items':
@@ -272,7 +272,6 @@ class TransitionMap:
 
             hint_i             = 0
             interval_list      = trigger_set.get_intervals()
-            interval_list_size = len(interval_list)
 
             for interval in interval_list:
                 x   = (interval, target_index)
@@ -288,7 +287,7 @@ class TransitionMap:
             
         # (*) fill all gaps in the trigger map with 'None' target = Drop Out !
         if trigger_map[0][0].begin != -sys.maxint:
-            trigger_map =   [ (Interval(-sys.maxint, trigger_map[0][0].begin), None) ] \
+            trigger_map =   [ (Interval(-sys.maxint, trigger_map[0][0].begin), E_StateIndices.DROP_OUT) ] \
                           + trigger_map
 
         # The first two intervals are already adjacent
@@ -299,20 +298,22 @@ class TransitionMap:
                 error_msg(".get_trigger_map(...) Serious internal error. Please, report Bug!\n" \
                           " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
             if trigger_map[i][0].begin != trigger_map[i - 1][0].end:
-                trigger_map.insert(i, (Interval(trigger_map[i - 1][0].end, trigger_map[i][0].begin), None))
+                trigger_map.insert(i, (Interval(trigger_map[i - 1][0].end, trigger_map[i][0].begin), 
+                                                E_StateIndices.DROP_OUT))
                 i    += 1
                 size += 1
             i += 1
 
         if trigger_map[-1][0].end != sys.maxint:
-            trigger_map.append( (Interval(trigger_map[-1][0].end, sys.maxint), None) )
+            trigger_map.append( (Interval(trigger_map[-1][0].end, sys.maxint), 
+                                 E_StateIndices.DROP_OUT) )
 
         # double check:
-        # prev_interval = trigger_map[0][0]
-        # for interval, target_index in trigger_map[1:]:
-        #    if prev_interval.end != interval.begin:
-        #        print "##ERROR GAP: ", prev_interval, interval
-        #    prev_interval = interval
+        ## prev_interval = trigger_map[0][0]
+        ## for interval, target_index in trigger_map[1:]:
+        ##    if prev_interval.end != interval.begin:
+        ##        print "##ERROR GAP: ", prev_interval, interval
+        ##    prev_interval = interval
 
         return trigger_map
 
@@ -356,7 +357,7 @@ class TransitionMap:
     def get_graphviz_string(self, OwnStateIdx, StateIndexMap, Option="utf8"):
         assert Option in ["hex", "utf8"]
         sorted_transitions = self.get_map().items()
-        sorted_transitions.sort(key=lambda x: (x[1].minimum()))
+        sorted_transitions.sort(lambda a, b: cmp(a[1].minimum(), b[1].minimum()))
 
         msg = ""
         # normal state transitions
@@ -424,12 +425,12 @@ class TransitionMap:
 
         # Target of internval (-oo, X) must be 'drop out' since there are no unicode 
         # code points below 0.
-        assert trigger_map[0][1] is None
+        assert trigger_map[0][1] == E_StateIndices.DROP_OUT
         assert trigger_map[0][0].begin == - sys.maxint
 
         # The first interval mentioned after that must not point to 'drop out' since
         # the trigger map must collect the same targets into one single interval.
-        assert trigger_map[1][1] is not None
+        assert trigger_map[1][1] != E_StateIndices.DROP_OUT
 
         non_drop_out_target = trigger_map[1][1]
         self.add_transition(trigger_map[0][0], non_drop_out_target)
@@ -437,9 +438,8 @@ class TransitionMap:
         # NOTE: Here we know that len(trigger_map) >= 2
         for trigger_set, target in trigger_map[2:]:
 
-            if target is None: target = non_drop_out_target
-            else:              non_drop_out_target = target
-
+            if target is E_StateIndices.DROP_OUT: target              = non_drop_out_target
+            else:                                     non_drop_out_target = target
             self.add_transition(trigger_set, target)
 
     def transform(self, TrafoInfo):

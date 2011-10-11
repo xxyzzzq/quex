@@ -1,4 +1,4 @@
-from quex.engine.state_machine.state_core_info     import PostContextIDs      
+from quex.engine.state_machine.state_core_info     import E_PostContextIDs      
 
 class Checker:
     def __init__(self, SM0, SM1):
@@ -85,8 +85,8 @@ class Checker:
             sm0c = self.sm0.states[index].core() # core of the 'sm0' state
 
             if    sm0c.is_acceptance()               !=  sm1c.is_acceptance():               return False
-            elif    (sm0c.post_context_id() == PostContextIDs.NONE) \
-                 != (sm1c.post_context_id() == PostContextIDs.NONE):                         return False
+            elif    (sm0c.post_context_id() == E_PostContextIDs.NONE) \
+                 != (sm1c.post_context_id() == E_PostContextIDs.NONE):                         return False
             elif (sm0c.pre_context_id() == -1)       != (sm1c.pre_context_id() == -1):       return False
             elif  sm0c.store_input_position_f()      !=  sm1c.store_input_position_f():      return False
             elif  sm0c.pre_context_begin_of_line_f() !=  sm1c.pre_context_begin_of_line_f(): return False

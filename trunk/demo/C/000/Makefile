@@ -50,7 +50,7 @@ example.o: ../example.c  EasyLexer.c
 EasyLexer.c: simple.qx $(QUEX_CORE)
 	quex -i                 simple.qx  \
 	     --engine           EasyLexer  \
-		 --token-id-offset     0x1000  \
+		 --token-id-offset  0x1000     \
 		 --language         C          
 
 source-package:
@@ -59,7 +59,7 @@ source-package:
 		 --token-id-offset  0x1000     \
 		 --post-categorizer            \
 		 --language         C          \
-		 --source-package   lexer_mine
+		 --source-package   lexer_mine 
 
 # (*) HELPERS __________________________________________________________________
 clean:	

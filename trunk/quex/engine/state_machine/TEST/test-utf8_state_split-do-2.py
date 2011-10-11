@@ -4,14 +4,12 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from StringIO import StringIO
 import quex.input.regular_expression.engine        as regex
-from   quex.engine.state_machine.core             import StateMachine
-from   quex.engine.interval_handling              import NumberSet, Interval
-import quex.engine.state_machine.utf8_state_split as trafo
-from   quex.engine.state_machine.utf8_state_split import unicode_to_utf8
+from   quex.engine.interval_handling               import NumberSet, Interval
+import quex.engine.state_machine.utf8_state_split  as trafo
+from   quex.engine.state_machine.utf8_state_split  import unicode_to_utf8
 import quex.input.regular_expression.engine        as regex
-from   quex.engine.generator.base                 import get_combined_state_machine
+from   quex.engine.generator.base                  import get_combined_state_machine
 
 if "--hwut-info" in sys.argv:
     print "UTF8 State Split: Larger Number Sets"

@@ -1,4 +1,13 @@
-from   quex.engine.misc.file_in          import *
+from   quex.engine.misc.file_in          import EndOfStreamException, \
+                                                skip_whitespace, \
+                                                check_or_die, \
+                                                get_current_line_info_number, \
+                                                error_msg, \
+                                                read_identifier, \
+                                                verify_word_in_list, \
+                                                read_namespaced_name, \
+                                                check, \
+                                                read_until_letter
 from   quex.engine.generator.action_info import UserCodeFragment, CodeFragment
 import quex.input.files.code_fragment    as code_fragment
 from   quex.blackboard                   import setup as Setup
@@ -333,9 +342,9 @@ def __parse_section(fh, descriptor, already_defined_list):
             error_msg("Missing terminating ';' in token_type 'file_name' specification.", fh)
 
     elif word in ["standard", "distinct", "union"]:
-        if   word == "standard": parse_standard_members(fh, descriptor, already_defined_list)
-        elif word == "distinct": parse_distinct_members(fh, descriptor, already_defined_list)
-        elif word == "union":    parse_union_members(fh, descriptor, already_defined_list)
+        if   word == "standard": parse_standard_members(fh, word, descriptor, already_defined_list)
+        elif word == "distinct": parse_distinct_members(fh, word, descriptor, already_defined_list)
+        elif word == "union":    parse_union_members(fh, word, descriptor, already_defined_list)
 
         if not check(fh, "}"):
             fh.seek(position)
@@ -351,9 +360,9 @@ def __parse_section(fh, descriptor, already_defined_list):
 
     return True
             
-def parse_standard_members(fh, descriptor, already_defined_list):
+def parse_standard_members(fh, section_name, descriptor, already_defined_list):
     if not check(fh, "{"):
-        error_msg("Missing opening '{' at begin of token_type section '%s'." % word, fh);
+        error_msg("Missing opening '{' at begin of token_type section '%s'." % section_name, fh);
 
     position = fh.tell()
 
@@ -378,18 +387,18 @@ def parse_standard_members(fh, descriptor, already_defined_list):
 
         already_defined_list.append([name, type_code_fragment])
 
-def parse_distinct_members(fh, descriptor, already_defined_list):
+def parse_distinct_members(fh, section_name, descriptor, already_defined_list):
     if not check(fh, "{"):
-        error_msg("Missing opening '{' at begin of token_type section '%s'." % word, fh);
+        error_msg("Missing opening '{' at begin of token_type section '%s'." % section_name, fh);
 
     result = parse_variable_definition_list(fh, "distinct", already_defined_list)
     if result == {}: 
         error_msg("Missing variable definition in token_type 'distinct' section.", fh)
     descriptor.distinct_db = result
 
-def parse_union_members(fh, descriptor, already_defined_list):
+def parse_union_members(fh, section_name, descriptor, already_defined_list):
     if not check(fh, "{"):
-        error_msg("Missing opening '{' at begin of token_type section '%s'." % word, fh);
+        error_msg("Missing opening '{' at begin of token_type section '%s'." % section_name, fh);
 
     result = parse_variable_definition_list(fh, "union", already_defined_list, 
                                                          GroupF=True)
@@ -527,46 +536,6 @@ def __validate_definition(TypeCodeFragment, NameStr,
                   FileName, LineN, DontExitF=True)
         error_msg("Previously defined here.",
                   candidate[1].filename, candidate[1].line_n)
-
-
-    
-def something_different(fh):
-    # -- get the name of the pattern
-    skip_whitespace(fh)
-    member_name = read_identifier(fh)
-    if member_name == "":
-        error_msg("Missing identifier for token struct/class member.", fh)
-
-    check_or_die(fh, ";")
-
-    if check(fh, "}"): 
-        error_msg("Missing type for token struct/class member '%s'." % member_name, fh)
-
-    type_name = read_identifier(fh)
-    if type_name == "":
-        error_msg("Missing type name for token struct/class member.", fh)
-
-    if check(fh, "[") == False:
-        skip_whitespace(fh)
-        if not check(fh, ";"): 
-            error_msg("Missing ';' after token struct/class member '%s' definition." % \
-                      member_name, fh)
-    else:
-        skip_whitespace(fh)
-        array_element_n = read_integer(fh)
-        if array_element_n is None:
-            error_msg("Missing integer after '[' in '%s' definition." % member_name, fh)
-
-        skip_whitespace(fh)
-
-        if check(fh, "]") == False:
-            error_msg("Missing closing ']' in '%s' array definition." % member_name, fh)
-
-        if check(fh, ";"): 
-            error_msg("Missing ';' after token struct/class member '%s' definition." % \
-                      member_name, fh)
-
-    return TokenTypeMember(member_name, type_name, array_element_n)
 
 _warning_msg = \
 """

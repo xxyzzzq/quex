@@ -13,26 +13,26 @@
 ## Report any bug at
 ##        http://sourceforge.net/tracker/?group_id=168259&atid=846112
 | [START]
-TOKEN: IGNORED '1' 
-Exit:  ONE
+TOKEN: IGNORED '1'
+Exit:  to   TWO
 | Mode change from ONE
 |             to   TWO
-Enter: TWO
-TOKEN: GOTO '2' 
-Exit:  TWO
+Enter: from ONE
+TOKEN: GOTO '2'
+Exit:  to   THREE
 | Mode change from TWO
 |             to   THREE
-Enter: THREE
-TOKEN: GOTO '3' 
-Exit:  THREE
+Enter: from TWO
+TOKEN: GOTO '3'
+Exit:  to   TWO
 | Mode change from THREE
 |             to   TWO
-Enter: TWO
-TOKEN: GOTO '2' 
-Exit:  TWO
+Enter: from THREE
+TOKEN: GOTO '2'
+Exit:  to   ONE
 | Mode change from TWO
 |             to   ONE
-Enter: ONE
-TOKEN: GOTO '1' 
-TOKEN: <TERMINATION> '' 
+Enter: from TWO
+TOKEN: GOTO '1'
+TOKEN: <TERMINATION> ''
 | [END]

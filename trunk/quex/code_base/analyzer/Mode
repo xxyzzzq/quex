@@ -8,9 +8,9 @@
 #   error "Macro QUEX_TYPE_ANALYZER must be defined before inclusion of this file."
 #endif
 
-#include<quex/code_base/definitions>
+#include <quex/code_base/definitions>
 
-#include<quex/code_base/temporary_macros_on>
+#include <quex/code_base/temporary_macros_on>
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 #    if defined(QUEX_OPTION_ASSERTS)

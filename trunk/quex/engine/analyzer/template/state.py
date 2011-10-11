@@ -1,4 +1,4 @@
-from quex.engine.generator.state_coder.transition_block import assert_adjacency
+from quex.engine.generator.state.transition.core  import assert_adjacency
 from quex.engine.interval_handling                      import Interval
 from quex.engine.analyzer.core                          import AnalyzerState, get_input_action
 from quex.blackboard                                    import E_StateIndices

@@ -15,7 +15,7 @@ Types
    Type to be used to store the numeric value of a token identifier. On small systems
    this might be set to ``short`` or ``unsigned char``. On larger systems, if very
    many different token-ids exits (e.g. > 2e32) then it might be set to ``long``.
-   It might be more appropriate to use standard types from ``inttypes.h``
+   It might be more appropriate to use standard types from ``stdint.h``
    such as ``uint8_t``, ``uint16_t`` etc.
 
    The character type can also be specified via the command line option ``-b``, 

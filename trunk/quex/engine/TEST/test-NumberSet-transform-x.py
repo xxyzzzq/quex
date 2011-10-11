@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 from   copy import deepcopy
 from   random import random
-import test_NumberSet_base
 
 import os
 import sys

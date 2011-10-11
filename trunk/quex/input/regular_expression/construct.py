@@ -10,7 +10,7 @@ import quex.engine.state_machine.nfa_to_dfa              as nfa_to_dfa
 import quex.engine.state_machine.hopcroft_minimization   as hopcroft
 #
 from   quex.blackboard           import setup as Setup
-from   quex.engine.misc.file_in  import *
+from   quex.engine.misc.file_in  import error_msg
 
 DEBUG_hopcroft_f = False
 

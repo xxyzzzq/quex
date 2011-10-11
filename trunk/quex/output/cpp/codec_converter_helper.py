@@ -102,7 +102,6 @@ class ConverterWriter:
                         txt += LanguageDB.ELSE + "\n"   
                         txt += __bracket(conversion_list[mid_index:], range_index)
                         txt += LanguageDB.END_IF() 
-                        # txt += "/*-0-*/\n"
                     if CallerRangeIndex != range_index:
                         txt += self.get_byte_formatter(range_index)
                 else:
@@ -110,9 +109,9 @@ class ConverterWriter:
                     txt += LanguageDB.ELSE + "\n"   
                     txt += __bracket(conversion_list[mid_index:], range_index)
                     txt += LanguageDB.END_IF() 
-                    # txt += "/*-1-*/\n"
 
-            return "    " + txt[:-1].replace("\n", "\n    ") + "\n"
+            if txt[-1] == "\n": txt = txt[:-1]
+            return "    " + txt.replace("\n", "\n    ") + "\n"
 
         range_index = self.same_byte_format_range(conversion_table)
         txt         = __bracket(conversion_table, range_index)

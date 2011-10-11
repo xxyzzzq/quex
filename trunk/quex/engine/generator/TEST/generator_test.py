@@ -539,7 +539,7 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
                        ("$$LOCAL_VARIABLES$$",        "".join(LanguageDB.VARIABLE_DEFINITIONS(VariableDB(LocalVariableDB)))),
                        ("$$MARK_LEXEME_START$$",      LanguageDB.LEXEME_START_SET()),
                        ("$$SOURCE_CODE$$",            SourceCode),
-                       ("$$INPUT_P_DEREFERENCE$$",    LanguageDB.INPUT_P_DEREFERENCE()),
+                       ("$$INPUT_P_DEREFERENCE$$",    LanguageDB.ASSIGN("input", LanguageDB.INPUT_P_DEREFERENCE())),
                        ("$$TERMINAL_END_OF_STREAM$$", address.get_label("$terminal-EOF")),
                        ("$$END_STR$$",                EndStr)])
 

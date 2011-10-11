@@ -9,7 +9,7 @@
 #define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__$$CODEC$$_I
 
 #include <quex/code_base/definitions>
-#include <quex/code_base/compatibility/inttypes.h>
+#include <quex/code_base/compatibility/stdint.h>
 #include <quex/code_base/asserts>
 
 /* Converter Functions: ____________________________________________________________________

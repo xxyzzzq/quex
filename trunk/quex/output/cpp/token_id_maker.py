@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 import time
 import os
-import sys
 import re
 
 from quex.engine.misc.file_in  import open_file_or_die, \
@@ -193,8 +192,8 @@ def do(setup, IndentationSupportF):
             prolog = ""
             epilog = ""
         else:
-            prolog = LanguageDB["$namespace-open"](setup.token_id_prefix_name_space)
-            epilog = LanguageDB["$namespace-close"](setup.token_id_prefix_name_space)
+            prolog = LanguageDB.NAMESPACE_OPEN(setup.token_id_prefix_name_space)
+            epilog = LanguageDB.NAMESPACE_CLOSE(setup.token_id_prefix_name_space)
 
         token_id_txt = [prolog]
 
@@ -230,7 +229,7 @@ def do(setup, IndentationSupportF):
                           ["$$DATE$$",                        time.asctime()],
                           ["$$TOKEN_CLASS_DEFINITION_FILE$$", Setup.get_file_reference(blackboard.token_type_definition.get_file_name())],
                           ["$$INCLUDE_GUARD_EXT$$",           get_include_guard_extension(
-                                                                  LanguageDB["$namespace-ref"](tc_descr.name_space) 
+                                                                  LanguageDB.NAMESPACE_REFERENCE(tc_descr.name_space) 
                                                                   + "__" + tc_descr.class_name)],
                           ["$$TOKEN_PREFIX$$",                setup.token_id_prefix]])
 
@@ -281,7 +280,6 @@ def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, I
     # validate(...) ensured, that the file exists.
     work_list    = [ ForeignTokenIdFile ] 
     done_list    = []
-    unfound_list = []
     while len(work_list) != 0:
         fh = open_file_or_die(work_list.pop(), Mode="rb")
         content = fh.read()

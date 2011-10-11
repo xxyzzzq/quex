@@ -5,7 +5,7 @@
 #define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UNICODE_I
 
 #include <quex/code_base/definitions>
-#include <quex/code_base/compatibility/inttypes.h>
+#include <quex/code_base/compatibility/stdint.h>
 #include <quex/code_base/asserts>
 
 

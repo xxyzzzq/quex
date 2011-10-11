@@ -1,9 +1,9 @@
 # (C) 2009-2011 Frank-Rene Schaefer
-import quex.engine.generator.state_coder.transition.core  as transition_block
-from   quex.engine.generator.state_coder.transition.code  import TextTransitionCode
-import quex.engine.generator.state_coder.drop_out         as drop_out_coder
-import quex.engine.generator.state_coder.entry            as entry_coder
-from   quex.engine.generator.state_coder.core             import input_do
+import quex.engine.generator.state.transition.core  as transition_block
+from   quex.engine.generator.state.transition.code  import TextTransitionCode
+import quex.engine.generator.state.drop_out         as drop_out_coder
+import quex.engine.generator.state.entry            as entry_coder
+from   quex.engine.generator.state.core             import input_do
 from   quex.engine.generator.languages.address            import get_address, get_label
 from   quex.engine.generator.languages.variable_db        import variable_db
 
@@ -266,14 +266,18 @@ def __drop_out(txt, TState, TheAnalyzer):
        of course.
     """
     # (*) Central Label for the Templates Drop Out
-    txt.append("%s\n" % LanguageDB.LABEL_DROP_OUT(TState.index))
+    #     (The rules for having or not having a label here are complicated, 
+    #      so rely on the label's usage database.)
+    txt.append("%s:\n" % get_label("$drop-out", TState.index))
     txt.append("   __quex_debug_template_drop_out(%i, state_key);\n" % TState.index)
 
     # (*) Drop Out Section(s)
     if TState.uniform_drop_outs_f:
         # -- uniform drop outs => no switch required
         prototype = TheAnalyzer.state_db[TState.state_index_list[0]]
-        drop_out_coder.do(txt, prototype, TheAnalyzer, DefineLabelF=False)
+        tmp = []
+        drop_out_coder.do(tmp, prototype, TheAnalyzer, DefineLabelF=False)
+        txt.extend(tmp)
         return
 
     # -- non-uniform drop outs => route by 'state_key'
@@ -302,7 +306,7 @@ def __require_data(TState, TheAnalyzer):
         address_list = []
         for state_key, target in enumerate(target_scheme.scheme):
             if target == E_StateIndices.DROP_OUT:
-                elm = get_address("$drop-out", TState.index, U=True)
+                elm = get_address("$drop-out", TState.index, U=True, R=True)
             else:
                 from_state_index = TState.state_index_list[state_key]
                 elm = LanguageDB.ADDRESS(target, from_state_index)

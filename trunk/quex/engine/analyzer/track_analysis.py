@@ -62,12 +62,9 @@ without actual storing of input positions:
 ===============================================================================
 """
 from   quex.blackboard              import E_StateIndices, E_PostContextIDs, E_AcceptanceIDs, E_PreContextIDs, E_TransitionN
-from   quex.engine.misc.enum        import Enum
 from   quex.engine.misc.tree_walker import TreeWalker
 
-from   collections import defaultdict
 from   copy        import deepcopy
-from   operator    import attrgetter
 from   itertools   import ifilter, chain
 import sys
 

@@ -70,7 +70,7 @@ def __AUX_helper_to_name_the_include_guards_according_to_quex_convention():
         # Cut the QUEX_PATH from the file name
 
         print "%s%s %s  %s" % \
-              (x.name, " " * (max_length - len(x.name)), better_name(file_name), x.file_name[L:])
+              (x.name, " " * (max_length - len(x.name)), better_name(file_name), x.file_name[max_length:])
 
 def check_include_guard_convention():
     stranger_list = filter(lambda x: x.name != better_name(x.file_name), include_guard_list)
@@ -101,7 +101,7 @@ def check_include_guard_undefinition():
     stranger_list = filter(lambda x: x.name not in undef_list, include_guard_list)
     L = max(map(lambda x: len(x.name), stranger_list))
 
-    print "Following include guards are not undefined in %s:" % undef_file_name
+    print "Following include guards are not undefined in %s:" % undef_file_name.replace(os.environ["QUEX_PATH"], "<<QUEX_PATH>>")
     stranger_list.sort(lambda a,b: cmp(a.name, b.name))
     for x in stranger_list:
         ext = os.path.splitext(x.file_name)[1]

@@ -73,6 +73,8 @@ elif "Pre-Post-Conditions":
     test('A/B',      'AB')
     test('A/B/',     'B')
     test('A/B(C?)/', 'A/B/')
+    print "##NOTE: Pre-Context 'A+' is equivalent to 'A'"
+    print "##NOTE: In both cases a single 'A' is enough."
     test('A/B(C?)/', 'A+/B/')
     test('B$',  'B')
     test('^B',  'B')

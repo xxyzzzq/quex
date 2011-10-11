@@ -1,5 +1,4 @@
-from quex.engine.misc.file_in   import error_msg, \
-                                       write_safely_and_close
+from quex.engine.misc.file_in   import write_safely_and_close
 from quex.engine.generator.base import GeneratorBase
 
 class Generator(GeneratorBase):

@@ -34,7 +34,6 @@ CC = $(COMPILER) -c \
 	 -DPRINT_TOKEN
      # -DQUEX_OPTION_ASSERTS_DISABLED
      # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
-     # -DQUEX_OPTION_DEBUG_SHOW
    
 LD = $(COMPILER) 
 
@@ -57,9 +56,9 @@ example.o: ../example.c  EasyLexer.c
 EasyLexer.c: simple.qx $(QUEX_CORE)
 	quex -i                 simple.qx  \
 	     --engine           EasyLexer  \
-		 --token-id-offset     0x1000     \
+		 --token-id-offset  0x1000     \
 		 --language         C          \
-		 --post-categorizer
+		 --post-categorizer 
 
 # (*) HELPERS __________________________________________________________________
 clean:	

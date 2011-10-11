@@ -1,13 +1,9 @@
 import quex.engine.state_machine.index         as     index
-import quex.engine.state_machine.core          as     state_machine
 from   quex.engine.analyzer.template.state     import TemplateState
 from   quex.engine.analyzer.template.candidate import TemplateStateCandidate
-from   quex.blackboard                         import E_StateIndices, E_Compression
+from   quex.blackboard                         import E_Compression
 
-from   collections import defaultdict
-from   itertools   import ifilter, chain, islice
-from   copy        import copy
-import sys
+from   itertools   import ifilter, islice
 
 # (C) 2010 Frank-Rene Schaefer
 """
@@ -287,8 +283,8 @@ class CombinationDB:
         for state in self.__db.itervalues():
             if self.__uniformity_required_f:
                 # Rely on __eq__ operator (used '=='). '!=' uses __neq__ 
-                if   not (i_state.drop_out == k_state.drop_out): continue
-                elif not (i_state.entry    == k_state.entry):    continue
+                if   not (state.drop_out == NewState.drop_out): continue
+                elif not (state.entry    == NewState.entry):    continue
 
             candidate = TemplateStateCandidate(NewState, state, self.__analyzer)
 

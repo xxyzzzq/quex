@@ -7,6 +7,10 @@
 <      *       <no epsilon>
 <      * END: STATE MACHINE
 <      */
+<         case 0x0: QUEX_GOTO_RELOAD_FORWARD(6, 8);/* \0 */
+>         case 0x0: QUEX_GOTO_RELOAD_FORWARD(6, 8);
+<         case 0x61: goto _7;/* 'a' */
+>         case 0x61: goto _7;
 <     /* BEGIN: MODE PATTERNS
 <      * 
 <      * MODE: X

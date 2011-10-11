@@ -1,11 +1,9 @@
 # (C) 2005-2011 Frank-Rene Schaefer
 import quex.engine.state_machine.index as     state_machine_index
 from   quex.engine.state_machine.core  import StateMachine
-from   quex.engine.state_machine.index import map_state_combination_to_index
-from   quex.engine.state_machine.state_core_info import PostContextIDs
+from   quex.engine.state_machine.state_core_info import E_PostContextIDs
 from   itertools   import islice, ifilter, chain, imap
 from   collections import defaultdict
-import sys
 
 class HopcroftMinization:
     """Combine sets of states that are equivalent. 
@@ -299,7 +297,7 @@ class HopcroftMinization:
                    sense of criteria (1) and (2) above. 
                 """
                 return (state.is_acceptance(), 
-                        state.core().store_input_position_f() and state.core().post_context_id() != PostContextIDs.NONE)
+                        state.core().store_input_position_f() and state.core().post_context_id() != E_PostContextIDs.NONE)
 
             distinguisher_db = defaultdict(list)
             for state_index, state in self.sm.states.iteritems():
@@ -335,7 +333,7 @@ class HopcroftMinization:
                 """
                 result = {}
                 for x in state.origins():
-                    store_f = x.store_input_position_f() and x.post_context_id() != PostContextIDs.NONE, 
+                    store_f = x.store_input_position_f() and x.post_context_id() != E_PostContextIDs.NONE, 
                     result[x.state_machine_id] = store_f
                 return result
 

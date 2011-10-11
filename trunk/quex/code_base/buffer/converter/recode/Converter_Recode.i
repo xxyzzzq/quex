@@ -3,7 +3,7 @@
 #ifndef __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__RECODE__CONVERTER_RECODE_I
 #define __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__RECODE__CONVERTER_RECODE_I
 
-#include <quex/code_base/compatibility/inttypes.h>
+#include <quex/code_base/compatibility/stdint.h>
 #include <quex/code_base/MemoryManager>
 
 #if ! defined(QUEX_OPTION_CONVERTER_ICU)

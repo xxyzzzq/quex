@@ -63,6 +63,7 @@ GENERATE_PARSER:  Calc_parser.y
 clean:	
 	touch Calc_lexer.qx
 	rm -f Calc_lexer.h
+	rm -f Calc_lexer.c
 	rm -f Calc_lexer-configuration.h
 	rm -f Calc_lexer-token.h
 	rm -f Calc_lexer-token_ids.h

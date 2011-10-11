@@ -6,7 +6,7 @@
 #
 #include <sys/types.h>
 #include <iostream>
-#include <quex/code_base/compatibility/inttypes.h>
+#include <quex/code_base/compatibility/stdint.h>
 
 #ifndef QUEX_NAMESPACE_MAIN_OPEN
 #   error "Important macro definitions are missing. However, please, do not include the default configuration file. This might cause interferences with the main configuration file of the lexical analyzer. Please, place this header after the inclusion of the lexer's configuration file."

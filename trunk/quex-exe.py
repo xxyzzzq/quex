@@ -25,36 +25,37 @@ except:
     print("error: Please, use Python versions 2.x.")
     sys.exit(-1)
 
-from quex.engine.misc.file_in  import error_msg
 
 def __exeption_handler(TheException):
-    def on_exception(x, Txt):
-        if "--debug-exception" in sys.argv: 
-            raise x
-        error_msg(Txt)
+    from quex.engine.misc.file_in  import error_msg
 
-    if isinstance(TheException, AssertionError):
-        on_exception(TheException, "Assertion error -- please report a bug under\n" + \
-                     " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+    if "--debug-exception" in sys.argv:
+        import traceback 
+        print traceback.format_exc()
+        return
+
+    if   isinstance(TheException, AssertionError):
+        error_msg("Assertion error -- please report a bug under\n" + \
+                  " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
 
     elif isinstance(TheException, KeyboardInterrupt): 
         print
         error_msg("#\n# Keyboard Interrupt -- Processing unfinished.\n#")
 
-    else:
-        on_exception(TheException, "Exception occured -- please, report a bug under\n" + \
+    elif isinstance(TheException, Exception):
+        error_msg("Exception occured -- please, report a bug under\n" + \
                   " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
     
+    # Indicate Error For 'make'-procedures, etc.
+    sys.exit(-1)
+
 try:
     # (*) Check if everything is correctly installed
     import quex.DEFINITIONS
     quex.DEFINITIONS.check()
 
-    import tempfile
-
     # This script needs to be located one directory above 'quex.'
     # so that it ca get the imports straight.
-    from   quex.blackboard               import setup as Setup
     import quex.input.command_line.core  as command_line
     import quex.input.command_line.query as query_parser
     import quex.core                     as core

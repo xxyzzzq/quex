@@ -22,10 +22,12 @@ claim =  True
 super = A/B/
 sub   = A/B(C?)/
 claim =  False
+##NOTE: Pre-Context 'A+' is equivalent to 'A'
+##NOTE: In both cases a single 'A' is enough.
 ---------------------------
 super = A/B(C?)/
 sub   = A+/B/
-claim =  False
+claim =  True
 
 super = A+/B/
 sub   = A/B(C?)/

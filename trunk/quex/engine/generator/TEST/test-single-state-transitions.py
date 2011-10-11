@@ -26,7 +26,7 @@ import quex.engine.state_machine.index as index
 
 import quex.engine.generator.languages.core               as languages
 import quex.engine.generator.languages.address            as address
-import quex.engine.generator.state_coder.transition.core  as transition_block
+import quex.engine.generator.state.transition.core  as transition_block
 from   quex.engine.generator.state_machine_decorator      import StateMachineDecorator
 
 from   quex.blackboard import E_EngineTypes

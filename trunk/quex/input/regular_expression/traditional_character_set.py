@@ -1,7 +1,8 @@
 import StringIO
 import quex.engine.utf8 as utf8
 import quex.input.regular_expression.snap_backslashed_character as snap_backslashed_character
-from   quex.engine.interval_handling  import *
+from   quex.engine.interval_handling  import Interval, \
+                                             NumberSet
 from   quex.exception                      import RegularExpressionException
 
 class Tracker:

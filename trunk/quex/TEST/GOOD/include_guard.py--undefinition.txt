@@ -1,4 +1,4 @@
-Following include guards are not undefined in /home/fschaef/prj/quex/trunk/quex/code_base/include-guard-undef:
+Following include guards are not undefined in <<QUEX_PATH>>/quex/code_base/include-guard-undef:
 __QUEX_INCLUDE_GUARD__ANALYZER__DUMPSTER_I
 __QUEX_INCLUDE_GUARD__BOM
 __QUEX_INCLUDE_GUARD__BOM_I

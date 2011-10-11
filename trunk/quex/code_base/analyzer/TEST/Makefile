@@ -39,7 +39,8 @@ nonsense.exe: nonsense.cpp $(QUEX_CORE)
 	$(CC) -I./. $< -o $@ 
 
 statistics.exe: statistics.c $(QUEX_CORE)
-	gcc $(MYFLAGS) -I./. -I$(HWUT_PATH) $< -o $@ 
+	gcc $(MYFLAGS) -I./. -I$(HWUT_PATH) $< -o $@ \
+		-D__QUEX_OPTION_PLAIN_C
 
 %.E:   %.cpp $(QUEX_CORE)
 	$(CC) -E -I./. $< -o $@ 

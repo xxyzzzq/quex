@@ -2,11 +2,11 @@
 import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
-from copy import deepcopy
 
 from   quex.engine.state_machine.core import *
 import quex.engine.state_machine.nfa_to_dfa            as nfa_to_dfa
 import quex.engine.state_machine.hopcroft_minimization as hopcroft
+import quex.engine.state_machine.acceptance_pruning    as acceptance_pruning
 
 def do(the_state_machine, pre_context_state_machine):
     """Sets up a pre-condition to the given state machine. This process
@@ -43,6 +43,8 @@ def do(the_state_machine, pre_context_state_machine):
     inverse_pre_context = pre_context_state_machine.get_inverse()
     inverse_pre_context = nfa_to_dfa.do(inverse_pre_context)
     inverse_pre_context = hopcroft.do(inverse_pre_context)
+    # -- Once an acceptance state is reached no further analysis is necessary.
+    acceptance_pruning.do(inverse_pre_context)
         
     # (*) let the state machine refer to it 
     #     [Is this necessary? Is it not enough that the acceptance origins point to it? <fschaef>]

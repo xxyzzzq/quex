@@ -1,5 +1,4 @@
 # (C) 2010 Frank-Rene Schaefer
-from   quex.engine.interval_handling         import Interval
 from   quex.engine.analyzer.path.path        import CharacterPath
 import quex.engine.analyzer.path.path_walker as     path_walker
 from   quex.blackboard                       import E_Compression

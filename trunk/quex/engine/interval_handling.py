@@ -15,7 +15,6 @@
 ################################################################################
 
 
-from   quex.engine.misc.file_in                       import error_msg
 # import quex.engine.generator.languages.core as languages
 import quex.engine.utf8 as utf8
 
@@ -463,6 +462,10 @@ class NumberSet(object):
         if x.end - x.begin != 1:         return False
         return x.begin == Number
 
+    def has_size_one(self):
+        if len(self.__intervals) != 1: return False
+        return (self.__intervals[0].end - self.__intervals[0].begin) == 1
+
     def minimum(self):
         if len(self.__intervals) == 0: return sys.maxint   # i.e. an absurd value
         else:                          return self.__intervals[0].begin
@@ -602,23 +605,23 @@ class NumberSet(object):
         return clone            
 
     def has_intersection(self, Other):
-        assert Other.__class__ == Interval or Other.__class__ == NumberSet
+        assert isinstance(Other, (Interval, NumberSet))
         if   len(self.__intervals) == 0:                                   return False
         elif Other.__class__ == NumberSet and len(Other.__intervals) == 0: return False
 
         self_begin = self.__intervals[0].begin
         self_end   = self.__intervals[-1].end
-        if Other.__class__ == Interval: 
+        if isinstance(Other, Interval): 
             if Other.end   < self_begin: return False
             if Other.begin > self_end:   return False
 
             for y in self.__intervals:
                 # PASTE: Implement Interval::overlap() for performance reasons.
-                if   x.begin >= y.end:   continue
-                elif x.end   <= y.begin: break
+                if   Other.begin >= y.end:   continue
+                elif Other.end   <= y.begin: break
                 # x.end > y.begin  (lacks condition: x.begin < y.end)
                 # y.end > x.begin  (lacks condition: y.begin < x.end)
-                if x.begin < y.end or y.begin < x.end: return True
+                if Other.begin < y.end or y.begin < Other.end: return True
 
             return False
 
@@ -713,9 +716,6 @@ class NumberSet(object):
 
     def intersection(self, Other):
         assert Other.__class__ == Interval or Other.__class__ == NumberSet
-
-        if Other.__class__ == Interval: Other_intervals = [ Other ]
-        else:                           Other_intervals = Other.__intervals
 
         # NOTE: If, for any reason this function does not rely on intersect_with(), then
         #       the function intersect_with() is no longer under unit test!
@@ -821,7 +821,6 @@ class NumberSet(object):
         interval_n  = len(self.__intervals)
         todo_i      = -1
         trafo_i     = 0
-        result_list = []
         while todo_i < interval_n - 1:
             ## print "##i", self.__intervals, trafo_i
             todo_i += 1

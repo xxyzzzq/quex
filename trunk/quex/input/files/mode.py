@@ -8,22 +8,22 @@ import quex.input.files.consistency_check                  as consistency_check
 import quex.input.regular_expression.snap_character_string as snap_character_string
 from   quex.blackboard                                     import setup as Setup
 
-from   quex.engine.generator.action_info                     import *
-from   quex.engine.generator.languages.address               import get_label
-import quex.engine.generator.skipper.character_set           as     skip_character_set
-import quex.engine.generator.skipper.range                   as     skip_range
-import quex.engine.generator.skipper.nested_range            as     skip_nested_range
-import quex.engine.generator.state_coder.indentation_counter as     indentation_counter
-from   quex.engine.misc.file_in                              import *
+from   quex.engine.generator.action_info                   import *
+from   quex.engine.generator.languages.address             import get_label
+import quex.engine.generator.skipper.character_set         as     skip_character_set
+import quex.engine.generator.skipper.range                 as     skip_range
+import quex.engine.generator.skipper.nested_range          as     skip_nested_range
+import quex.engine.generator.state.indentation_counter     as     indentation_counter
+from   quex.engine.misc.file_in                            import *
 
-from   quex.engine.state_machine.core                       import StateMachine, SideInfo
-import quex.engine.state_machine.identity_checker           as identity_checker
-import quex.engine.state_machine.sequentialize              as sequentialize
-import quex.engine.state_machine.repeat                     as repeat
-import quex.engine.state_machine.nfa_to_dfa                 as nfa_to_dfa
-import quex.engine.state_machine.hopcroft_minimization      as hopcroft
-import quex.engine.state_machine.character_counter          as character_counter    
-import quex.engine.state_machine.subset_checker             as subset_checker
+from   quex.engine.state_machine.core                      import StateMachine, SideInfo
+import quex.engine.state_machine.identity_checker          as identity_checker
+import quex.engine.state_machine.sequentialize             as sequentialize
+import quex.engine.state_machine.repeat                    as repeat
+import quex.engine.state_machine.nfa_to_dfa                as nfa_to_dfa
+import quex.engine.state_machine.hopcroft_minimization     as hopcroft
+import quex.engine.state_machine.character_counter         as character_counter    
+import quex.engine.state_machine.subset_checker            as subset_checker
 
 from   copy import deepcopy
 
