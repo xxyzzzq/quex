@@ -2,12 +2,10 @@ import os
 import sys
 sys.path.append(os.environ["QUEX_PATH"])
 from copy import copy
-from quex.DEFINITIONS                   import QUEX_PATH
-from quex.engine.interval_handling import Interval
-from quex.engine.misc.string_handling        import blue_print
-from quex.engine.misc.file_in                import write_safely_and_close, make_safe_identifier, get_file_content_or_die
+from quex.DEFINITIONS                  import QUEX_PATH
+from quex.engine.misc.string_handling  import blue_print
+from quex.engine.misc.file_in          import write_safely_and_close, make_safe_identifier, get_file_content_or_die
 from quex.blackboard                   import setup as Setup
-from quex.input.command_line.core       import __prepare_file_name
 
 def do():
     if Setup.buffer_codec == "": return
@@ -82,7 +80,7 @@ class ConverterWriter:
         # Implement a binary bracketing of conversion domains
         def __bracket(conversion_list, CallerRangeIndex):
             txt = ""
-            L = len(conversion_list)
+            L   = len(conversion_list)
             if   L == 1:
                 txt += self.get_unicode_range_conversion(conversion_list[0])
                 # The caller does have to implement an 'encoder
@@ -95,22 +93,24 @@ class ConverterWriter:
                 # Bracket interval in the middle
                 mid_index = int(float(L)/2)
                 Middle    = "0x%06X" % conversion_list[mid_index].codec_interval_begin
-                txt += LanguageDB["$if <"](Middle) 
+                txt += LanguageDB.IF_INPUT("<", Middle) 
                 if range_index != -1: 
                     # If there is no 'unicode coversion' and all ranges belong to the 
                     # same byte formatting, then there is no need to bracket further:
                     if not __rely_on_ucs4_conversion_f:
                         txt += __bracket(conversion_list[:mid_index], range_index)
-                        txt += LanguageDB["$endif-else"] + "\n"   
+                        txt += LanguageDB.ELSE + "\n"   
                         txt += __bracket(conversion_list[mid_index:], range_index)
-                        txt += LanguageDB["$end-else"]
+                        txt += LanguageDB.END_IF() 
+                        # txt += "/*-0-*/\n"
                     if CallerRangeIndex != range_index:
                         txt += self.get_byte_formatter(range_index)
                 else:
                     txt += __bracket(conversion_list[:mid_index], range_index)
-                    txt += LanguageDB["$endif-else"] + "\n"   
+                    txt += LanguageDB.ELSE + "\n"   
                     txt += __bracket(conversion_list[mid_index:], range_index)
-                    txt += LanguageDB["$end-else"]
+                    txt += LanguageDB.END_IF() 
+                    # txt += "/*-1-*/\n"
 
             return "    " + txt[:-1].replace("\n", "\n    ") + "\n"
 
