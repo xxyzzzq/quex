@@ -1,10 +1,15 @@
 #! /usr/bin/env python
-from   quex.engine.misc.file_in             import get_propperly_slash_based_file_name, error_msg
-from   quex.engine.misc.enum                import Enum
-from   quex.DEFINITIONS                     import QUEX_PATH
+from   quex.engine.misc.file_in import get_propperly_slash_based_file_name, error_msg
+from   quex.engine.misc.enum    import Enum
+from   quex.DEFINITIONS         import QUEX_PATH
 
 import os.path as path
 import sys
+
+E_Files = Enum("HEADER", 
+               "HEADER_IMPLEMTATION", 
+               "SOURCE", 
+               "_DEBUG_Files")
 
 class QuexSetup:
     def __init__(self, SetupInfo):
@@ -99,7 +104,6 @@ class QuexSetup:
         return clean(FileName)
 
 SetupParTypes = Enum("LIST", "FLAG", "NEGATED_FLAG")
-FileTypes     = Enum("HEADER", "HEADER_IMPLEMTATION", "SOURCE")
 
 SETUP_INFO = {         
     # [Name in Setup]                 [ Flags ]                                [Default / Type]
@@ -343,43 +347,43 @@ global_character_type_db = {
 global_extension_db = {
     "C++": {
         "": { 
-              FileTypes.SOURCE:              ".cpp",
-              FileTypes.HEADER:              "",
-              FileTypes.HEADER_IMPLEMTATION: ".i",
+              E_Files.SOURCE:              ".cpp",
+              E_Files.HEADER:              "",
+              E_Files.HEADER_IMPLEMTATION: ".i",
         },
         "++": { 
-              FileTypes.SOURCE:              ".c++",
-              FileTypes.HEADER:              ".h++",
-              FileTypes.HEADER_IMPLEMTATION: ".h++",
+              E_Files.SOURCE:              ".c++",
+              E_Files.HEADER:              ".h++",
+              E_Files.HEADER_IMPLEMTATION: ".h++",
         },
         "pp": { 
-              FileTypes.SOURCE:              ".cpp",
-              FileTypes.HEADER:              ".hpp",
-              FileTypes.HEADER_IMPLEMTATION: ".hpp",
+              E_Files.SOURCE:              ".cpp",
+              E_Files.HEADER:              ".hpp",
+              E_Files.HEADER_IMPLEMTATION: ".hpp",
         },
         "cc": { 
-              FileTypes.SOURCE:              ".cc",
-              FileTypes.HEADER:              ".hh",
-              FileTypes.HEADER_IMPLEMTATION: ".hh",
+              E_Files.SOURCE:              ".cc",
+              E_Files.HEADER:              ".hh",
+              E_Files.HEADER_IMPLEMTATION: ".hh",
         },
         "xx": { 
-              FileTypes.SOURCE:              ".cxx",
-              FileTypes.HEADER:              ".hxx",
-              FileTypes.HEADER_IMPLEMTATION: ".hxx",
+              E_Files.SOURCE:              ".cxx",
+              E_Files.HEADER:              ".hxx",
+              E_Files.HEADER_IMPLEMTATION: ".hxx",
         },
    },
     "C": {
         "": {
-              FileTypes.SOURCE:              ".c",
-              FileTypes.HEADER:              ".h",
-              FileTypes.HEADER_IMPLEMTATION: ".c",
+              E_Files.SOURCE:              ".c",
+              E_Files.HEADER:              ".h",
+              E_Files.HEADER_IMPLEMTATION: ".c",
         },
    },
     "DOT": {
         "": {
-              FileTypes.SOURCE:              ".dot",
-              FileTypes.HEADER:              None,
-              FileTypes.HEADER_IMPLEMTATION: None,
+              E_Files.SOURCE:              ".dot",
+              E_Files.HEADER:              None,
+              E_Files.HEADER_IMPLEMTATION: None,
         }
    }
 }

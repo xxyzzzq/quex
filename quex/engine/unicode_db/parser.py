@@ -3,9 +3,8 @@ import sys
 
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from quex.DEFINITIONS            import QUEX_PATH
-from quex.engine.misc.file_in         import *
-from quex.engine.misc.string_handling import *
+from quex.DEFINITIONS              import QUEX_PATH
+from quex.engine.misc.file_in      import error_msg
 
 from quex.engine.interval_handling import Interval, NumberSet
 

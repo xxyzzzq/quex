@@ -11,6 +11,7 @@ from   quex.engine.misc.file_in          import EndOfStreamException, \
 from   quex.engine.generator.action_info import UserCodeFragment, CodeFragment
 import quex.input.files.code_fragment    as code_fragment
 from   quex.blackboard                   import setup as Setup
+from   quex.input.setup                  import E_Files
 
 token_type_code_fragment_db = { 
         "constructor": True, "destructor": True, 
@@ -69,7 +70,7 @@ class TokenTypeDescriptorCore:
 
     def set_file_name(self, FileName):
         self._file_name = FileName
-        ext = Setup.language_db[Setup.language].extension_db[Setup.output_file_naming_scheme][HEADER_IMPLEMTATION]
+        ext = Setup.language_db[Setup.language].extension_db[Setup.output_file_naming_scheme][E_Files.HEADER_IMPLEMTATION]
         self._file_name_implementation = FileName + ext
 
     def __repr__(self):

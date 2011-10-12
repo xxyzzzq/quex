@@ -292,7 +292,7 @@ class HopcroftMinization:
         single_state_machine_f = self.sm.states[self.sm.init_state_index].origins().is_empty()
 
         if single_state_machine_f:
-            def key_info(state):
+            def key_0(state):
                 """Computes a 'key' that allows the state set split in the
                    sense of criteria (1) and (2) above. 
                 """
@@ -301,7 +301,7 @@ class HopcroftMinization:
 
             distinguisher_db = defaultdict(list)
             for state_index, state in self.sm.states.iteritems():
-                distinguisher_db[key_info(state)].append(state_index)
+                distinguisher_db[key_0(state)].append(state_index)
 
             state_set_iterable = distinguisher_db.itervalues()
 
@@ -311,7 +311,7 @@ class HopcroftMinization:
             # with criteria (1) and (2) from above.
 
             # (1) Separate by Acceptance
-            def key_info(state):
+            def key_1(state):
                 """Computes a 'key' that allows the state set split in the
                    sense of criteria (1), i.e. acceptance must be the same
                    for states of the same set (== same key).
@@ -322,7 +322,7 @@ class HopcroftMinization:
 
             distinguisher_db = defaultdict(list)
             for state_index, state in self.sm.states.iteritems():
-                distinguisher_db[key_info(state)].append(state_index)
+                distinguisher_db[key_1(state)].append(state_index)
 
             # (2) Separate by Store-Input-Position Behavior
             def store_info(state):

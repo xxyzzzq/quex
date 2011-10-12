@@ -12,8 +12,7 @@ from   quex.engine.analyzer.template.state import TemplateState, \
                                                   TargetScheme, \
                                                   get_iterable
 from   quex.blackboard import E_AcceptanceIDs, \
-                              E_TransitionN, \
-                              E_StateIndices
+                              E_TransitionN
 
 from itertools import ifilter
 
