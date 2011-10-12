@@ -507,7 +507,7 @@ Template and Path Compression can be controlled with the following command line 
 
    If this option is set, then template compression is activated.
 
-.. cmdoption:: --template-compression-coefficient 'number'
+.. cmdoption:: --template-compression-min-gain 'number'
 
    The number following this option specifies the template compression coefficient.
    It indicates the relative cost of routing to a target state compared to a simple

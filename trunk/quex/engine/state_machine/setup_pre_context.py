@@ -3,7 +3,6 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.engine.state_machine.core import *
 import quex.engine.state_machine.nfa_to_dfa            as nfa_to_dfa
 import quex.engine.state_machine.hopcroft_minimization as hopcroft
 import quex.engine.state_machine.acceptance_pruning    as acceptance_pruning

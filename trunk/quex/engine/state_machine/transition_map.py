@@ -2,17 +2,14 @@
 
 from   quex.engine.interval_handling import NumberSet, Interval
 from   quex.engine.misc.file_in      import error_msg
+from   quex.engine.misc.enum         import Enum
 from   quex.blackboard               import E_StateIndices
 
 import sys
 from   operator import attrgetter
 
 # definitions for 'history items':
-INTERVAL_BEGIN            = True
-INTERVAL_END              = False
-# real (uni-code) character codes start at zero, thus, it is safe to use 
-# -7777 as a marker for undefined borders.
-INTERVAL_UNDEFINED_BORDER = -7777
+E_Border = Enum("BEGIN", "END", "UNDEFINED")
 
 class TransitionMap:
     """Members:
@@ -219,8 +216,8 @@ class TransitionMap:
             interval_list = trigger_set.get_intervals(PromiseToTreatWellF=True)
             for interval in interval_list: 
                 # add information about start and end of current interval
-                history.append(history_item(interval.begin, INTERVAL_BEGIN, target_idx))
-                history.append(history_item(interval.end, INTERVAL_END, target_idx))
+                history.append(history_item(interval.begin, E_Border.BEGIN, target_idx))
+                history.append(history_item(interval.end, E_Border.END, target_idx))
 
         # (*) sort history according to position
         history.sort(key=attrgetter("position"))
@@ -486,7 +483,7 @@ class history_item(object):
         self.target_idx = TargetIdx 
         
     def __repr__(self):         
-        if self.change == INTERVAL_BEGIN: ChangeStr = "begin"
+        if self.change == E_Border.BEGIN: ChangeStr = "begin"
         else:                             ChangeStr = "end"
         return "%i: %s %s" % (self.position, ChangeStr, self.target_idx)
 
