@@ -214,7 +214,7 @@ def requires_indentation_count(ModeDB):
        support. if one mode has an indentation handler, than indentation
        support must be provided.                                         
     """
-    for mode in ModeDB.values():
+    for mode in ModeDB.itervalues():
         if    mode.has_code_fragment_list("on_indent")      \
            or mode.has_code_fragment_list("on_nodent")      \
            or mode.has_code_fragment_list("on_indentation") \

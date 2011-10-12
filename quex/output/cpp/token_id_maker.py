@@ -13,132 +13,16 @@ from quex.engine.misc.file_in  import open_file_or_die, \
 import quex.blackboard                  as blackboard
 from   quex.blackboard                  import token_id_db
 from   quex.engine.misc.string_handling import blue_print
-from   quex.blackboard                 import setup as Setup
+from   quex.blackboard                  import setup as Setup
 
-class TokenInfo:
-    def __init__(self, Name, ID, TypeName=None, Filename="", LineN=-1):
-        self.name         = Name
-        self.number       = ID
-        self.related_type = TypeName
-        self.file_name    = Filename
-        self.line_n       = LineN
-        self.id           = None
-
-file_str = \
-"""/* -*- C++ -*- vim: set syntax=cpp:
- * PURPOSE: File containing definition of token-identifier and
- *          a function that maps token identifiers to a string
- *          name.
- *
- * NOTE: This file has been created automatically by Quex.
- *       Visit quex.org for further info.
- *
- * DATE: $$DATE$$
- *
- * (C) 2005-2010 Frank-Rene Schaefer
- * ABSOLUTELY NO WARRANTY                                           */
-#ifndef __QUEX_INCLUDE_GUARD__AUTO_TOKEN_IDS_$$INCLUDE_GUARD_EXT$$__
-#define __QUEX_INCLUDE_GUARD__AUTO_TOKEN_IDS_$$INCLUDE_GUARD_EXT$$__
-
-#ifndef __QUEX_OPTION_PLAIN_C
-#   include<cstdio> 
-#else
-#   include<stdio.h> 
-#endif
-
-/* The token class definition file can only be included after the two token identifiers have
- * been defined. Otherwise, it would rely on default values. */
-#include "$$TOKEN_CLASS_DEFINITION_FILE$$"
-
-$$TOKEN_ID_DEFINITIONS$$
-
-QUEX_NAMESPACE_TOKEN_OPEN
-extern const char* QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID);
-QUEX_NAMESPACE_TOKEN_CLOSE
-
-#endif /* __QUEX_INCLUDE_GUARD__AUTO_TOKEN_IDS_$$INCLUDE_GUARD_EXT$$__ */
-"""
-
-func_str = \
-"""
-QUEX_NAMESPACE_TOKEN_OPEN
-
-const char*
-QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID)
-{
-   static char  error_string[64];
-   static const char  uninitialized_string[] = "<UNINITIALIZED>";
-   static const char  termination_string[]   = "<TERMINATION>";
-#  if defined(QUEX_OPTION_INDENTATION_TRIGGER)
-   static const char  indent_string[]        = "<INDENT>";
-   static const char  dedent_string[]        = "<DEDENT>";
-   static const char  nodent_string[]        = "<NODENT>";
-#  endif
-$$TOKEN_NAMES$$       
-
-   /* NOTE: This implementation works only for token id types that are 
-    *       some type of integer or enum. In case an alien type is to
-    *       used, this function needs to be redefined.                  */
-   switch( TokenID ) {
-   default: {
-       __QUEX_STD_sprintf(error_string, "<UNKNOWN TOKEN-ID: %i>", (int)TokenID);
-       return error_string;
-   }
-   case __QUEX_SETTING_TOKEN_ID_TERMINATION:       return termination_string;
-   case __QUEX_SETTING_TOKEN_ID_UNINITIALIZED:     return uninitialized_string;
-#  if defined(QUEX_OPTION_INDENTATION_TRIGGER)
-   case __QUEX_SETTING_TOKEN_ID_INDENT:     return indent_string;
-   case __QUEX_SETTING_TOKEN_ID_DEDENT:     return dedent_string;
-   case __QUEX_SETTING_TOKEN_ID_NODENT:     return nodent_string;
-#  endif
-$$TOKEN_ID_CASES$$
-   }
-}
-
-QUEX_NAMESPACE_TOKEN_CLOSE
-"""
-
-standard_token_id_list = ["TERMINATION", "UNINITIALIZED", "INDENT", "NODENT", "DEDENT"]
-
-def prepare_default_standard_token_ids():
-    global standard_token_id_list
-
-    token_id_db["TERMINATION"]   = TokenInfo("TERMINATION",   ID=0)
-    token_id_db["UNINITIALIZED"] = TokenInfo("UNINITIALIZED", ID=1)
-    # Indentation Tokens
-    token_id_db["INDENT"]        = TokenInfo("INDENT",        ID=2)
-    token_id_db["DEDENT"]        = TokenInfo("DEDENT",        ID=3)
-    token_id_db["NODENT"]        = TokenInfo("NODENT",        ID=4)
-
-    # Assert that every standard token id is in the database
-    for name in standard_token_id_list:
-        assert token_id_db.has_key(name)
-
-def __is_token_id_occupied(TokenID):
-    return TokenID in map(lambda x: x.number, token_id_db.values())
-
-def __propose_implicit_token_definitions():
-    if len(blackboard.token_id_implicit_list) == 0: return
-
-    file_name = blackboard.token_id_implicit_list[0][1]
-    line_n    = blackboard.token_id_implicit_list[0][2]
-    error_msg("Detected implicit token identifier definitions. Proposal:\n"
-              "   token {" , file_name, line_n, 
-              DontExitF=True, WarningF=True)
-
-    for token_name, file_name, line_n in blackboard.token_id_implicit_list:
-        error_msg("     %s;" % token_name, file_name, line_n, DontExitF=True, WarningF=True)
-    error_msg("   }", file_name, line_n, DontExitF=True, WarningF=True)
-
-
-def do(setup, IndentationSupportF):
+def do(setup):
     """Creates a file of token-ids from a given set of names.
        Creates also a function:
 
        const string& $$token$$::map_id_to_name().
     """
     global file_str
-    LanguageDB = Setup.language_db
+    LanguageDB          = Setup.language_db
 
     __propose_implicit_token_definitions()
 
@@ -235,6 +119,123 @@ def do(setup, IndentationSupportF):
 
     write_safely_and_close(setup.output_token_id_file, content)
 
+
+standard_token_id_list = ["TERMINATION", "UNINITIALIZED", "INDENT", "NODENT", "DEDENT"]
+
+def prepare_default_standard_token_ids():
+    global standard_token_id_list
+
+    token_id_db["TERMINATION"]   = TokenInfo("TERMINATION",   ID=0)
+    token_id_db["UNINITIALIZED"] = TokenInfo("UNINITIALIZED", ID=1)
+    # Indentation Tokens
+    token_id_db["INDENT"]        = TokenInfo("INDENT",        ID=2)
+    token_id_db["DEDENT"]        = TokenInfo("DEDENT",        ID=3)
+    token_id_db["NODENT"]        = TokenInfo("NODENT",        ID=4)
+
+    # Assert that every standard token id is in the database
+    for name in standard_token_id_list:
+        assert token_id_db.has_key(name)
+
+class TokenInfo:
+    def __init__(self, Name, ID, TypeName=None, Filename="", LineN=-1):
+        self.name         = Name
+        self.number       = ID
+        self.related_type = TypeName
+        self.file_name    = Filename
+        self.line_n       = LineN
+        self.id           = None
+
+file_str = \
+"""/* -*- C++ -*- vim: set syntax=cpp:
+ * PURPOSE: File containing definition of token-identifier and
+ *          a function that maps token identifiers to a string
+ *          name.
+ *
+ * NOTE: This file has been created automatically by Quex.
+ *       Visit quex.org for further info.
+ *
+ * DATE: $$DATE$$
+ *
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY                                           */
+#ifndef __QUEX_INCLUDE_GUARD__AUTO_TOKEN_IDS_$$INCLUDE_GUARD_EXT$$__
+#define __QUEX_INCLUDE_GUARD__AUTO_TOKEN_IDS_$$INCLUDE_GUARD_EXT$$__
+
+#ifndef __QUEX_OPTION_PLAIN_C
+#   include<cstdio> 
+#else
+#   include<stdio.h> 
+#endif
+
+/* The token class definition file can only be included after the two token identifiers have
+ * been defined. Otherwise, it would rely on default values. */
+#include "$$TOKEN_CLASS_DEFINITION_FILE$$"
+
+$$TOKEN_ID_DEFINITIONS$$
+
+QUEX_NAMESPACE_TOKEN_OPEN
+extern const char* QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID);
+QUEX_NAMESPACE_TOKEN_CLOSE
+
+#endif /* __QUEX_INCLUDE_GUARD__AUTO_TOKEN_IDS_$$INCLUDE_GUARD_EXT$$__ */
+"""
+
+func_str = \
+"""
+QUEX_NAMESPACE_TOKEN_OPEN
+
+const char*
+QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID)
+{
+   static char  error_string[64];
+   static const char  uninitialized_string[] = "<UNINITIALIZED>";
+   static const char  termination_string[]   = "<TERMINATION>";
+#  if defined(QUEX_OPTION_INDENTATION_TRIGGER)
+   static const char  indent_string[]        = "<INDENT>";
+   static const char  dedent_string[]        = "<DEDENT>";
+   static const char  nodent_string[]        = "<NODENT>";
+#  endif
+$$TOKEN_NAMES$$       
+
+   /* NOTE: This implementation works only for token id types that are 
+    *       some type of integer or enum. In case an alien type is to
+    *       used, this function needs to be redefined.                  */
+   switch( TokenID ) {
+   default: {
+       __QUEX_STD_sprintf(error_string, "<UNKNOWN TOKEN-ID: %i>", (int)TokenID);
+       return error_string;
+   }
+   case __QUEX_SETTING_TOKEN_ID_TERMINATION:       return termination_string;
+   case __QUEX_SETTING_TOKEN_ID_UNINITIALIZED:     return uninitialized_string;
+#  if defined(QUEX_OPTION_INDENTATION_TRIGGER)
+   case __QUEX_SETTING_TOKEN_ID_INDENT:     return indent_string;
+   case __QUEX_SETTING_TOKEN_ID_DEDENT:     return dedent_string;
+   case __QUEX_SETTING_TOKEN_ID_NODENT:     return nodent_string;
+#  endif
+$$TOKEN_ID_CASES$$
+   }
+}
+
+QUEX_NAMESPACE_TOKEN_CLOSE
+"""
+
+def __is_token_id_occupied(TokenID):
+    return TokenID in map(lambda x: x.number, token_id_db.values())
+
+def __propose_implicit_token_definitions():
+    if len(blackboard.token_id_implicit_list) == 0: return
+
+    file_name = blackboard.token_id_implicit_list[0][1]
+    line_n    = blackboard.token_id_implicit_list[0][2]
+    error_msg("Detected implicit token identifier definitions. Proposal:\n"
+              "   token {" , file_name, line_n, 
+              DontExitF=True, WarningF=True)
+
+    for token_name, file_name, line_n in blackboard.token_id_implicit_list:
+        error_msg("     %s;" % token_name, file_name, line_n, DontExitF=True, WarningF=True)
+    error_msg("   }", file_name, line_n, DontExitF=True, WarningF=True)
+
+
 def do_map_id_to_name_function():
     L = max(map(lambda name: len(name), token_id_db.keys()))
     def space(Name):
@@ -262,7 +263,6 @@ def do_map_id_to_name_function():
     return blue_print(func_str,
                       [["$$TOKEN_ID_CASES$$", "".join(switch_cases)],
                        ["$$TOKEN_NAMES$$",    "".join(token_names)], ])
-
 
 def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, IncludeRE):
     """This function somehow interprets the user defined token id file--if there is
