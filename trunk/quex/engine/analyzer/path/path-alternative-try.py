@@ -1,6 +1,7 @@
 from quex.engine.analyzer.core import AnalyzerState
 
 from quex.engine.interval_handling import NumberSet
+from quex.blackboard import E_StateIndices
 
 from itertools   import ifilter
 from operator    import itemgetter

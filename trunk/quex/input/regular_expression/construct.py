@@ -1,13 +1,14 @@
-from   quex.engine.state_machine.core                    import SideInfo
-from   quex.engine.interval_handling                     import UnicodeInterval, Interval
-import quex.engine.state_machine.character_counter       as character_counter
-import quex.engine.state_machine.setup_post_context      as setup_post_context
-import quex.engine.state_machine.setup_pre_context       as setup_pre_context
-import quex.engine.state_machine.setup_border_conditions as setup_border_conditions
-import quex.engine.state_machine.transformation          as transformation
-#
-import quex.engine.state_machine.nfa_to_dfa              as nfa_to_dfa
-import quex.engine.state_machine.hopcroft_minimization   as hopcroft
+from   quex.engine.state_machine.core                     import SideInfo
+from   quex.engine.interval_handling                      import UnicodeInterval, Interval
+from   quex.engine.state_machine.utf16_state_split import ForbiddenRange
+import quex.engine.state_machine.character_counter        as character_counter
+import quex.engine.state_machine.setup_post_context       as setup_post_context
+import quex.engine.state_machine.setup_pre_context        as setup_pre_context
+import quex.engine.state_machine.setup_border_conditions  as setup_border_conditions
+import quex.engine.state_machine.transformation           as transformation
+#                                                         
+import quex.engine.state_machine.nfa_to_dfa               as nfa_to_dfa
+import quex.engine.state_machine.hopcroft_minimization    as hopcroft
 #
 from   quex.blackboard           import setup as Setup
 from   quex.engine.misc.file_in  import error_msg

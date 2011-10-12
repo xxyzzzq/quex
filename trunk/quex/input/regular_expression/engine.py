@@ -30,19 +30,20 @@
 import sys
 from StringIO import StringIO
 
-from quex.engine.misc.file_in  import *
+from quex.engine.misc.file_in       import error_msg, \
+                                           check 
 
 from quex.exception                 import RegularExpressionException
-from quex.engine.interval_handling  import *
+from quex.engine.interval_handling  import Interval, NumberSet
 from quex.engine.state_machine.core import StateMachine
 from quex.input.regular_expression.auxiliary import __snap_until, \
-                                                          __debug_entry, \
-                                                          __debug_exit, \
-                                                          __debug_print, \
-                                                          snap_replacement
+                                                    __debug_entry, \
+                                                    __debug_exit, \
+                                                    __debug_print, \
+                                                    snap_replacement
 
-from   quex.blackboard                                   import setup as Setup
-import quex.engine.utf8                                  as utf8
+from   quex.blackboard                              import setup as Setup
+import quex.engine.utf8                             as utf8
 import quex.input.regular_expression.character_set_expression   as character_set_expression
 import quex.input.regular_expression.snap_backslashed_character as snap_backslashed_character
 import quex.input.regular_expression.snap_character_string      as snap_character_string

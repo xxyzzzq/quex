@@ -1,11 +1,20 @@
-from   quex.engine.misc.file_in import *
+from   quex.engine.misc.file_in          import EndOfStreamException, \
+                                                check, \
+                                                check_or_die, \
+                                                error_msg, \
+                                                get_current_line_info_number, \
+                                                read_integer, \
+                                                read_namespaced_name, \
+                                                read_until_closing_bracket, \
+                                                skip_whitespace, \
+                                                verify_word_in_list
 import quex.blackboard                   as     blackboard
 from   quex.output.cpp.token_id_maker    import TokenInfo
 from   quex.blackboard                   import setup as Setup
 from   quex.blackboard                   import QuexSetup
 from   quex.engine.unicode_db.parser     import ucs_property_db
 from   quex.engine.utf8                  import __read_one_utf8_code_from_stream
-from   quex.engine.generator.action_info import *
+from   quex.engine.generator.action_info import UserCodeFragment 
 import quex.input.regular_expression.snap_backslashed_character as snap_backslashed_character
 
 

@@ -3,8 +3,9 @@ from   quex.engine.misc.string_handling import blue_print
 from   quex.engine.interval_handling        import NumberSet, Interval
 import quex.engine.state_machine.index      as     state_machine_index
 from   quex.engine.state_machine.transition_map  import TransitionMap, E_Border
-from   quex.engine.state_machine.state_core_info import *
+from   quex.engine.state_machine.state_core_info import StateCoreInfo
 from   quex.engine.state_machine.origin_list     import StateOriginList
+from   quex.blackboard                           import E_AcceptanceIDs, E_PostContextIDs
 
 from   copy      import deepcopy
 from   operator  import attrgetter
@@ -806,18 +807,6 @@ class StateMachine:
     def filter_dominated_origins(self):
         for state in self.states.values(): 
             state.origins().delete_dominated()
-
-    def replace_pre_context_state_machine(self, NewPreContextSM):
-        OldID = self.core().pre_context_sm().get_id()
-        NewID = NewSM.get_id()
-
-        # Set the new pre-context state machine
-        self.core().set_pre_context_sm(NewSM)
-
-        # Adapt all origins that depend on the old pre-context to the new context
-        for state in self.states.itervalues():
-            for origin in ifilter(lambda x: x.pre_context_id() == OldID, state.origins()):
-                origin.set_pre_context_id(NewID)
 
     def replace_post_context_backward_input_position_detector_state_machine(self, NewSM):
         OldID = self.core().post_context_backward_input_position_detector_sm().get_id()

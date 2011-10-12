@@ -1,7 +1,7 @@
 from   quex.engine.analyzer.core                import AnalyzerState
 from   quex.engine.state_machine.transition_map import TransitionMap
 import quex.engine.state_machine.index          as     index
-from   quex.blackboard                          import setup as Setup, \
+from   quex.blackboard                          import \
                                                        E_EngineTypes, \
                                                        E_InputActions, \
                                                        E_Compression

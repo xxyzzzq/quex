@@ -2,17 +2,18 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.blackboard                    import  setup, E_Compression
-import quex.blackboard                    as blackboard
+from   quex.blackboard                    import setup, \
+                                                 E_Compression
+import quex.blackboard                    as     blackboard
 from   quex.input.command_line.GetPot     import GetPot
-import quex.input.command_line.validation as validation
+import quex.input.command_line.validation as     validation
 from   quex.input.setup                   import SETUP_INFO,               \
                                                  SetupParTypes,            \
-                                                 FileTypes,                \
                                                  global_extension_db,      \
                                                  global_character_type_db, \
                                                  command_line_args_defined, \
-                                                 command_line_arg_position \
+                                                 command_line_arg_position, \
+                                                 E_Files
 
 from   quex.output.cpp.token_id_maker     import parse_token_id_file
 
@@ -302,12 +303,12 @@ def prepare_file_names(setup):
             setup.output_file_stem += name + "_"
     setup.output_file_stem += setup.analyzer_class_name
 
-    setup.output_code_file                       = __prepare_file_name("",               FileTypes.SOURCE) 
-    setup.output_header_file                     = __prepare_file_name("",               FileTypes.HEADER)
-    setup.output_configuration_file              = __prepare_file_name("-configuration", FileTypes.HEADER)
-    setup.output_token_id_file                   = __prepare_file_name("-token_ids",     FileTypes.HEADER)
-    setup.output_token_class_file                = __prepare_file_name("-token",         FileTypes.HEADER)
-    setup.output_token_class_file_implementation = __prepare_file_name("-token",         FileTypes.HEADER_IMPLEMTATION)
+    setup.output_code_file                       = __prepare_file_name("",               E_Files.SOURCE) 
+    setup.output_header_file                     = __prepare_file_name("",               E_Files.HEADER)
+    setup.output_configuration_file              = __prepare_file_name("-configuration", E_Files.HEADER)
+    setup.output_token_id_file                   = __prepare_file_name("-token_ids",     E_Files.HEADER)
+    setup.output_token_class_file                = __prepare_file_name("-token",         E_Files.HEADER)
+    setup.output_token_class_file_implementation = __prepare_file_name("-token",         E_Files.HEADER_IMPLEMTATION)
 
     if setup.buffer_codec == "utf8":
         setup.output_buffer_codec_header   = "quex/code_base/converter_helper/utf8"
@@ -321,9 +322,9 @@ def prepare_file_names(setup):
         # Note, that the name may be set to 'None' if the conversion is utf8 or utf16
         # See Internal engine character encoding'
         setup.output_buffer_codec_header = \
-            __prepare_file_name("-converter-%s" % setup.buffer_codec, FileTypes.HEADER)
+            __prepare_file_name("-converter-%s" % setup.buffer_codec, E_Files.HEADER)
         setup.output_buffer_codec_header_i = \
-            __prepare_file_name("-converter-%s" % setup.buffer_codec, FileTypes.HEADER_IMPLEMTATION)
+            __prepare_file_name("-converter-%s" % setup.buffer_codec, E_Files.HEADER_IMPLEMTATION)
     else:
         setup.output_buffer_codec_header   = "quex/code_base/converter_helper/unicode"
         setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/unicode.i"
@@ -354,7 +355,7 @@ def __get_integer(MemberName):
 
 def __prepare_file_name(Suffix, ContentType):
     global setup
-    assert ContentType in FileTypes
+    assert ContentType in E_Files
 
     # Language + Extenstion Scheme + ContentType --> name of extension
     ext = setup.extension_db[setup.output_file_naming_scheme][ContentType]

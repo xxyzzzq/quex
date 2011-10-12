@@ -20,7 +20,6 @@ def get_flaws(FilenameList):
         i1 = line.find(":", i0+1)
         file_name   = line[:i0]
         line_n      = line[i0+1:i1]
-        module_name = line[line.find("'from")+5:line.find("import")].strip()
         result[file_name].append(int(line_n))
     fh.close()
     return result
@@ -68,7 +67,7 @@ def get_new_undefined_names(Filename, PrevNameSet):
 def replace_new_import_statement(FilenameOrig, FilenameNew, NameSet, Indentation):
     new_content = " "
     last_i      = len(NameSet) - 1
-    for i, name in enumerate(NameSet):
+    for i, name in enumerate(sorted(list(NameSet))):
         new_content += name 
         if i != last_i: new_content += ", \\"
         new_content += "\n"
@@ -77,7 +76,6 @@ def replace_new_import_statement(FilenameOrig, FilenameNew, NameSet, Indentation
     # Now, write the new file
     fh0 = open(FilenameOrig, "rb")
     fh1 = open(FilenameNew, "wb")
-    prev_name_set = set()
     for i, line in enumerate(fh0.readlines(), 1):
         if i == line_n: 
             line = line.replace("*", "").strip()

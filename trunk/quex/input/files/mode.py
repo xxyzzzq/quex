@@ -8,13 +8,25 @@ import quex.input.files.consistency_check                  as consistency_check
 import quex.input.regular_expression.snap_character_string as snap_character_string
 from   quex.blackboard                                     import setup as Setup
 
-from   quex.engine.generator.action_info                   import *
+from   quex.engine.generator.action_info                   import CodeFragment, UserCodeFragment, GeneratedCode, PatternActionInfo
 from   quex.engine.generator.languages.address             import get_label
 import quex.engine.generator.skipper.character_set         as     skip_character_set
 import quex.engine.generator.skipper.range                 as     skip_range
 import quex.engine.generator.skipper.nested_range          as     skip_nested_range
 import quex.engine.generator.state.indentation_counter     as     indentation_counter
-from   quex.engine.misc.file_in                            import *
+from   quex.engine.misc.file_in                            import EndOfStreamException, \
+                                                                  check, \
+                                                                  check_or_die, \
+                                                                  copy, \
+                                                                  error_msg, \
+                                                                  get_current_line_info_number, \
+                                                                  read_identifier, \
+                                                                  read_option_start, \
+                                                                  read_option_value, \
+                                                                  read_until_letter, \
+                                                                  read_until_whitespace, \
+                                                                  skip_whitespace, \
+                                                                  verify_word_in_list
 
 from   quex.engine.state_machine.core                      import StateMachine, SideInfo
 import quex.engine.state_machine.identity_checker          as identity_checker
@@ -611,7 +623,7 @@ def __parse_option_list(new_mode, fh):
 
     except EndOfStreamException:
         fh.seek(position)
-        error_msg("End of file reached while parsing options of mode '%s'." % mode_name, fh)
+        error_msg("End of file reached while parsing options of mode '%s'." % new_mode.name, fh)
 
 def __parse_base_mode_list(fh, new_mode):
     new_mode.base_modes = []
@@ -840,8 +852,8 @@ def __parse_option(fh, new_mode):
     # Is the option of the appropriate value?
     option_info = mode_option_info_db[identifier]
     if option_info.domain is not None and value not in option_info.domain:
-        error_msg("Tried to set value '%s' for option '%s'. " % (Value, Option) + \
-                  "Though, possible for this option are only: %s." % repr(oi.domain)[1:-1], fh)
+        error_msg("Tried to set value '%s' for option '%s'. " % (value, identifier) + \
+                  "Though, possible for this option are only: %s." % repr(option_info.domain)[1:-1], fh)
 
     # Finally, set the option
     new_mode.add_option(identifier, value)
