@@ -56,14 +56,14 @@ def get_new_undefined_names(Filename, PrevNameSet):
 
     # Extract the missing names
     fh = open("pyflakes.log", "rb")
-    new_name_set = set()
+    name_set = set()
     for line in fh.readlines():
         i    = line.find("undefined name")
         if i == -1: continue
         name = line[i+15:].replace("'", "").strip()
-        new_name_set.add(name)
+        if name not in PrevNameSet: name_set.add(name)
 
-    return new_name_set.difference(PrevNameSet)
+    return name_set
 
 def replace_new_import_statement(FilenameOrig, FilenameNew, NameSet, Indentation):
     new_content = " "

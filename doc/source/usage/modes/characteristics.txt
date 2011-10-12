@@ -333,6 +333,7 @@ in the event handler definition. The list of event handlers is the following:
    delimiter, for example
 
        .. code-block:: cpp
+
           mode X : <skip_range: "/*" "*/"> { 
               ... 
           }

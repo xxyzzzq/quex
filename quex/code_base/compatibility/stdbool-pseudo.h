@@ -11,13 +11,12 @@
 
 #if defined(__QUEX_OPTION_PLAIN_C)
 
-/* According to the C99 Standard 'bool' would have to be defined
- * as equal to '_Bool' which is also defined in some standard. The author
- * of this header, though, found it particularly hard to determine
- * whether the compiler obeys these standards or not. Even prominent
- * compilers (such as gcc) do not provide __STDC_VERSION__. Thus, 
- * the 'easy' solution to simply define it as 'int' and call this
- * file a 'stdbool-pseudo.h'. */
+/* According to the C99 Standard 'bool' would have to be defined as equal to
+ * '_Bool' which is also defined in some standard. The author of this header,
+ * though, found it particularly hard to determine whether the compiler obeys
+ * these standards or not. Even prominent compilers, such as gcc at the time of
+ * this writing, did not provide __STDC_VERSION__. Thus, the 'easy' solution to
+ * simply define it as 'int' and call this file a 'stdbool-pseudo.h'. */
 #ifndef bool
 #   define bool int
 #endif

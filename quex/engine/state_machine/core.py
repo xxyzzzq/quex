@@ -2,7 +2,7 @@ from   quex.engine.misc.string_handling import blue_print
 #
 from   quex.engine.interval_handling        import NumberSet, Interval
 import quex.engine.state_machine.index      as     state_machine_index
-from   quex.engine.state_machine.transition_map  import *
+from   quex.engine.state_machine.transition_map  import TransitionMap, E_Border
 from   quex.engine.state_machine.state_core_info import *
 from   quex.engine.state_machine.origin_list     import StateOriginList
 
@@ -510,12 +510,12 @@ class StateMachine:
             #    add or delete a target state to the set of currently considered target states
             #    NOTE: More than one state can trigger on the same range to the same target state.
             #          Thus, one needs to keep track of the 'opened' target states.
-            if item.change == INTERVAL_BEGIN:
+            if item.change == E_Border.BEGIN:
                 if current_target_indices.has_key(item.target_idx):
                     current_target_indices[item.target_idx] += 1
                 else:
                     current_target_indices[item.target_idx] = 1
-            else:        # == INTERVAL_END
+            else:        # == E_Border.END
                 if current_target_indices[item.target_idx] > 1:
                     current_target_indices[item.target_idx] -= 1
                 else:    
