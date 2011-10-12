@@ -25,7 +25,7 @@ def open_data_base_file(Filename):
                   "Unicode Database Directory: '%s'" % unicode_db_directory)
     return fh
 
-def parse_table(Filename, IntervalColumnList=[], NumberColumnList=[], NumberListColumnList=[]):
+def parse_table(Filename, IntervalColumnList=[], NumberColumnList=[], NumberListColumnList=[], CommentF=False):
     """Columns in IntervalColumnList   --> converted to Interval() objects
                   NumberColumnList     --> converted to integers (hex numbers)
                   NumberListColumnList --> converted to integer list (hex numbers)
@@ -34,8 +34,14 @@ def parse_table(Filename, IntervalColumnList=[], NumberColumnList=[], NumberList
 
     record_set = []
     for line in fh.readlines():
-        if line.find("#") != -1: line = line[:line.find("#")]
-        if line == "" or line.isspace(): continue
+        comment_idx = line.find("#")
+        comment     = None
+        if comment_idx != -1: 
+            comment = line[comment_idx+1:]
+            line    = line[:comment_idx]
+
+        if line == "" or line.isspace(): 
+            continue
 
         # append content to record set
         cells = map(lambda x: x.strip(), line.split(";"))
@@ -60,6 +66,10 @@ def parse_table(Filename, IntervalColumnList=[], NumberColumnList=[], NumberList
             for n in cells[i].split():
                 nl.append(int("0x" + n, 16))
             cells[i] = nl
+
+        # Sometimes, the comment is useful
+        if CommentF: 
+            cells.append(comment)
 
         record_set.append(cells)
 
@@ -136,6 +146,11 @@ class PropertyInfo:
         #                             # NOTE: Not all values may have aliases!
         self.code_point_db     = None # map value (not alias) to number set or number
         self.related_property_info_db = RelatedPropertyInfoDB
+        # Some values may be based on combinations of values. For those, the 
+        # following maps are required.
+        self.alias_to_alias_combination_db = {}
+        self.name_to_alias_map             = {}
+
 
     def __repr__(self):
         assert self.type in ["Binary", "Catalog", "Enumerated", "String", "Miscellaneous", "Numeric"], \
@@ -159,6 +174,15 @@ class PropertyInfo:
         """
         assert self.type != "Binary" or Value is None
 
+        def get_value_combination(CmbAlias):
+            result = []
+            for alias in self.alias_to_alias_combination_db[CmbAlias]:
+                name = self.alias_to_name_map.get(alias)
+                if name == None:
+                    return "Unicode database error: no name related to alias '%s'" % alias
+                result.append(name)
+            return result
+
         if self.type != "Binary" and Value is None:
             return "Property '%s' requires a value setting.\n" % self.name + \
                    "Possible Values: " + \
@@ -172,10 +196,23 @@ class PropertyInfo:
             return deepcopy(self.code_point_db)
 
         adapted_value = Value.replace(" ", "_")
-        if self.code_point_db.has_key(adapted_value): 
+
+        if   self.code_point_db.has_key(adapted_value): 
+            # 'value' is present as name in the code point database
             value = adapted_value
+
         elif Value in self.alias_to_name_map.keys():
+            # 'value' is present as alias in code pointer database
             value = self.alias_to_name_map[adapted_value]
+
+        elif Value in self.alias_to_alias_combination_db.keys():
+            # 'value' is present as a combination of aliases
+            value = get_value_combination(adapted_value)
+
+        elif self.name_to_alias_map.has_key(adapted_value):
+            # The value was a combination of values
+            value = get_value_combination(self.name_to_alias_map[adapted_value])
+
         else:
             # -- WILDCARD MATCH: Results in a list of property values  
             character_set = self.__wildcard_value_match(adapted_value)
@@ -187,8 +224,21 @@ class PropertyInfo:
             # internal database (for safety, do it)
             return deepcopy(character_set)
 
+        if type(value) == list:
+            result = NumberSet()
+            for element in value:
+                if element == "Unassigned": continue
+                entry = self.code_point_db.get(element)
+                if entry is None:
+                    return "%s/%s is not supported by Unicode database." % (self.name, repr(element))
+                result.unite_with(entry)
+        else:
+            result = self.code_point_db.get(value)
+            if result is None:
+                return "%s/%s is not supported by Unicode database." % (self.name, repr(value))
+
         # Reference to internal database --> decouple with 'deepcopy'
-        return deepcopy(self.code_point_db[value])
+        return deepcopy(result)
 
     def init_code_point_db(self):
 
@@ -338,7 +388,7 @@ class PropertyInfoDB:
         if self.db == {}: self.init_db()
 
         property = self[PropertyName]
-        if property.__class__.__name__ != "PropertyInfo":
+        if not isinstance(property, PropertyInfo):
             txt = property
             txt += "Properties: " + self.get_property_names()
             return txt
@@ -363,7 +413,8 @@ class PropertyInfoDB:
         if self.db == {}: self.init_db()
 
         property = self[PropertyName]
-        if property.__class__.__name__ != "PropertyInfo":
+        if not isinstance(property, PropertyInfo):
+            assert type(property) in [str, unicode]
             txt = property
             txt += "Properties: " + self.get_property_names()
             return txt
@@ -416,15 +467,24 @@ class PropertyInfoDB:
                  before this function.
         """
         assert self.db != {}
-        table = parse_table("PropertyValueAliases.txt")
+        table = parse_table("PropertyValueAliases.txt", CommentF=True)
 
         for row in table:
             property_alias       = row[0].strip()
             property_value_alias = row[1].strip()
             property_value       = row[2].replace(" ", "_").strip()
-            # -- if property db has been parsed before, this shall not fail
+
+            # if property db has been parsed before, this shall not fail
             property_info = self.db[property_alias]
-            property_info.alias_to_name_map[property_value_alias] = property_value
+
+            # The 'General Category' property is different, in the sense that
+            # important information may be stored in comments.
+            if property_alias == "gc" and row[-1] is not None:
+                combination = map(lambda x: x.strip(), row[-1].split("|"))
+                property_info.alias_to_alias_combination_db[property_value_alias] = combination
+                property_info.name_to_alias_map[property_value]                   = property_value_alias
+            else:
+                property_info.alias_to_name_map[property_value_alias] = property_value
 
     def load_binary_properties(self, DB_Filename):
         # property descriptions working with 'property names'
