@@ -27,7 +27,7 @@ from   quex.engine.misc.file_in            import EndOfStreamException, \
                                                   read_integer, \
                                                   skip_whitespace, \
                                                   verify_word_in_list 
-from   quex.output.cpp.token_id_maker      import TokenInfo 
+from   quex.output.cpp.token_id_maker      import TokenInfo, prepare_default_standard_token_ids
 from   quex.exception                      import RegularExpressionException
 import quex.blackboard                     as blackboard
 import quex.input.files.mode               as mode
@@ -39,6 +39,8 @@ from   quex.engine.generator.action_info   import UserCodeFragment
 
 def do(file_list):
     if len(file_list) == 0: error_msg("No input files.")
+
+    prepare_default_standard_token_ids()
 
     for file in file_list:
         fh = open_file_or_die(file, Codec="utf-8")

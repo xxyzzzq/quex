@@ -83,7 +83,6 @@ if __name__ == "__main__":
         #     If the setup parser returns 'False' the requested job was minor
         #     and no further processing has to be done. If 'True' start the process.
         if command_line.do(sys.argv):
-            # (*) Run Quex ___________________________________________________________________
             core.do() 
 
     except BaseException as instance:

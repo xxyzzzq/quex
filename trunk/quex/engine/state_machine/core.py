@@ -77,7 +77,8 @@ class State:
     def merge(self, Other):
         # merge core information of self with other state
         self.core().merge(Other.core())
-        if   Other.origins().is_empty(): return 
+        if   Other.origins().is_empty(): 
+            return 
         elif self.origins().is_empty():  
             self.origins().set(Other.origins().get_list())
         else: 
@@ -280,7 +281,7 @@ class StateMachine:
                     replacement[state_idx] = state_machine_index.get()
 
         # termination is a global state, it is not replaced by a new index 
-        for state_idx, state in self.states.iteritems():
+        for state_idx in self.states.iterkeys():
             new_state_idx = replacement[state_idx]
             result.states[new_state_idx] = self.states[state_idx].clone(replacement)
         
@@ -555,7 +556,7 @@ class StateMachine:
            are not returned (acceptance + post condition flag). Instead the core
            patterns acceptance states are returned (post condition flag only).
         """   
-        return filter(lambda s: s.is_acceptance(), self.states.values())
+        return [ state for state in self.states.itervalues() if state.is_acceptance() ]
 
     def get_acceptance_state_index_list(self):
         result = []
