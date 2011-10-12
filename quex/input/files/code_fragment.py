@@ -103,7 +103,7 @@ def read_character_code(fh):
     
     start = fh.read(1)
     if start == "":  
-        seek(pos); return -1
+        fh.seek(pos); return -1
 
     elif start == "'": 
         # read an utf-8 char an get the token-id
@@ -123,12 +123,12 @@ def read_character_code(fh):
         return character_code
 
     if start == "U":
-        if fh.read(1) != "C": seek(pos); return -1
+        if fh.read(1) != "C": fh.seek(pos); return -1
         # read Unicode Name 
         # Example: UC MATHEMATICAL_MONOSPACE_DIGIT_FIVE
         skip_whitespace(fh)
         ucs_name = __read_token_identifier(fh)
-        if ucs_name == "": seek(pos); return -1
+        if ucs_name == "": fh.seek(pos); return -1
         # Get the character set related to the given name. Note, the size of the set
         # is supposed to be one.
         character_code = ucs_property_db.get_character_set("Name", ucs_name)
