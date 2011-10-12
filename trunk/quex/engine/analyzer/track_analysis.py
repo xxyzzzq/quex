@@ -620,7 +620,7 @@ def extract_pre_context_id(Origin):
     """This function basically describes how pre-context-ids and 
        'begin-of-line' pre-context are expressed by an integer.
     """
-    if   Origin.pre_context_begin_of_line_f(): return E_PreContextIDs.BEGIN_OF_LINE
-    elif Origin.pre_context_id() == -1:        return E_PreContextIDs.NONE
-    else:                                      return Origin.pre_context_id()
+    if   Origin.pre_context_begin_of_line_f():            return E_PreContextIDs.BEGIN_OF_LINE
+    elif Origin.pre_context_id() == E_PreContextIDs.NONE: return E_PreContextIDs.NONE
+    else:                                                 return Origin.pre_context_id()
 

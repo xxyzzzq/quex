@@ -1,4 +1,4 @@
-from quex.blackboard import E_PostContextIDs, E_AcceptanceIDs
+from quex.blackboard import E_PostContextIDs, E_AcceptanceIDs, E_PreContextIDs
 
 StateOriginInfo_POST_CONDITION_END          = 1
 StateOriginInfo_NON_ACCEPTANCE              = 2
@@ -123,7 +123,7 @@ class StateCoreInfo(object):
         if Other.__store_input_position_f:       self.__store_input_position_f      = True 
         if Other.__pre_context_begin_of_line_f:  self.__pre_context_begin_of_line_f = True 
 
-        if Other.__pre_context_id != -1L:                   self.__pre_context_id  = Other.__pre_context_id 
+        if Other.__pre_context_id != -1L:                     self.__pre_context_id  = Other.__pre_context_id 
         if Other.__post_context_id != E_PostContextIDs.NONE:  self.__post_context_id = Other.__post_context_id
 
         if Other.__pseudo_ambiguous_post_context_id != -1L: 
@@ -171,7 +171,9 @@ class StateCoreInfo(object):
         self.__pseudo_ambiguous_post_context_id = Value
 
     def pre_context_id(self):
-        return self.__pre_context_id  
+        if self.__pre_context_begin_of_line_f: return E_PreContextIDs.BEGIN_OF_LINE
+        elif self.__pre_context_id == -1L:     return E_PreContextIDs.NONE
+        else:                                  return self.__pre_context_id  
 
     def post_context_id(self):
         return self.__post_context_id     
@@ -188,7 +190,7 @@ class StateCoreInfo(object):
     def is_end_of_post_contexted_core_pattern(self):
         return self.post_context_id() != E_PostContextIDs.NONE and self.store_input_position_f()
                             
-    def type(self):
+    def type_DELETED(self):
         Acc   = self.is_acceptance()
         Store = self.store_input_position_f()
         Post  = self.post_context_id()

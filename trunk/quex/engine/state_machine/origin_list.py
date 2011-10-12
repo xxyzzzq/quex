@@ -1,4 +1,5 @@
-from quex.engine.state_machine.state_core_info import StateCoreInfo, E_PostContextIDs
+from quex.engine.state_machine.state_core_info import StateCoreInfo
+from quex.blackboard import E_PreContextIDs, E_PostContextIDs
 
 class StateOriginList(object):
     __slots__ = ('__list')
@@ -108,13 +109,7 @@ class StateOriginList(object):
 
     def contains_any_pre_context_dependency(self):
         for origin in self.__list:
-            if origin.pre_context_id() != -1L:       return True
-            if origin.pre_context_begin_of_line_f(): return True
-        return False    
-
-    def contains_pre_context_id(self):
-        for origin in self.__list:
-            if origin.pre_context_id() != -1L: return True
+            if origin.pre_context_id() != E_PreContextIDs.NONE: return True
         return False    
 
     def contains_pre_context_begin_of_line(self):
@@ -160,10 +155,9 @@ class StateOriginList(object):
                  be one origin for each state.
         """
         self.__list = filter(lambda origin:
-                                    origin.post_contexted_acceptance_f() or
-                                    origin.pre_context_id() != -1L       or
-                                    origin.store_input_position_f()        or
-                                    origin.pre_context_begin_of_line_f(),
+                                    origin.post_contexted_acceptance_f()            or
+                                    origin.pre_context_id() != E_PreContextIDs.NONE or
+                                    origin.store_input_position_f(),
                                     self.__list)
 
     def delete_dominated(self):
@@ -187,7 +181,7 @@ class StateOriginList(object):
                 # Only append acceptance origins until the first unconditional acceptance state 
                 # is found. 
                 if not unconditional_acceptance_found_f:
-                    if origin.pre_context_id() == -1L and not origin.pre_context_begin_of_line_f():
+                    if origin.pre_context_id() == E_PreContextIDs.NONE:
                         unconditional_acceptance_found_f = True # prevent entering this part again
                     new_origin_list.append(origin)
 
