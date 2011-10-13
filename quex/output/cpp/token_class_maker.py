@@ -15,7 +15,7 @@ def do():
 
     if blackboard.token_type_definition.manually_written():
         # User has specified a manually written token class
-        return "", ""
+        return None, None
 
     txt, txt_i = _do(blackboard.token_type_definition)
 

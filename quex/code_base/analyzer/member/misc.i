@@ -7,6 +7,7 @@
 #if defined(__QUEX_OPTION_COUNTER)
 #   include <quex/code_base/analyzer/Counter>
 #endif
+#include <quex/code_base/token/TokenPolicy>
 
 QUEX_NAMESPACE_MAIN_OPEN
 

@@ -113,8 +113,8 @@ class StateCoreInfo(object):
                and self.__pseudo_ambiguous_post_context_id == Other.__pseudo_ambiguous_post_context_id 
 
     def merge(self, Other):
-        # It **does** make any sense to merge to state cores from different
-        # state machines. This should not be an 'assert'. In the final state machine
+        # It **DOES** make any sense to merge to state cores from different
+        # state machines. This should NOT be an 'assert'. In the final state machine
         # more than one state machine is combined in parallel and then they belong 
         # to the same state machine
         # if self.state_machine_id != Other.state_machine_id: return
