@@ -35,11 +35,12 @@ def do(ModeDB):
     friend_txt                   = get_mode_class_related_code_fragments(ModeDB.values())
 
     # -- define a pointer that directly has the type of the derived class
-    if Setup.analyzer_derived_class_name == "":
-        Setup.analyzer_derived_class_name = LexerClassName
-        derived_class_type_declaration = ""
-    else:
+    if Setup.analyzer_derived_class_name != "":
+        analyzer_derived_class_name    = Setup.analyzer_derived_class_name
         derived_class_type_declaration = "class %s;" % Setup.analyzer_derived_class_name
+    else:
+        analyzer_derived_class_name    = Setup.analyzer_class_name
+        derived_class_type_declaration = ""
 
     token_class_file_name = blackboard.token_type_definition.get_file_name()
     token_class_name      = blackboard.token_type_definition.class_name
@@ -51,8 +52,6 @@ def do(ModeDB):
             Setup.language_db.NAMESPACE_REFERENCE(Setup.analyzer_name_space) 
             + "__" + Setup.analyzer_class_name)
 
-    function_code_txt = write_constructor_and_memento_functions(ModeDB)
-
     txt = blue_print(template_code_txt,
             [
                 ["$$___SPACE___$$",                      " " * (len(LexerClassName) + 1)],
@@ -63,7 +62,7 @@ def do(ModeDB):
                 ["$$LEXER_CLASS_NAME_SAFE$$",            Setup.analyzer_name_safe],
                 ["$$LEXER_CONFIG_FILE$$",                Setup.get_file_reference(Setup.output_configuration_file)],
                 ["$$LEXER_DERIVED_CLASS_DECL$$",         derived_class_type_declaration],
-                ["$$LEXER_DERIVED_CLASS_NAME$$",         Setup.analyzer_derived_class_name],
+                ["$$LEXER_DERIVED_CLASS_NAME$$",         analyzer_derived_class_name],
                 ["$$QUEX_MODE_ID_DEFINITIONS$$",         mode_id_definition_str],
                 ["$$MEMENTO_EXTENSIONS$$",               blackboard.memento_class_extension.get_code()],
                 ["$$MODE_CLASS_FRIENDS$$",               friend_txt],
@@ -80,9 +79,9 @@ def do(ModeDB):
                 ["$$USER_DEFINED_HEADER$$",              blackboard.header.get_code() + "\n"],
              ])
 
-    return txt, function_code_txt
+    return txt
 
-def write_constructor_and_memento_functions(ModeDB):
+def do_implementation(ModeDB):
 
     FileTemplate = os.path.normpath(QUEX_PATH
                                     + Setup.language_db["$code_base"] 

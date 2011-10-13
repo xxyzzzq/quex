@@ -22,7 +22,7 @@ def do(setup):
        const string& $$token$$::map_id_to_name().
     """
     global file_str
-    LanguageDB          = Setup.language_db
+    LanguageDB = Setup.language_db
 
     __propose_implicit_token_definitions()
 
@@ -117,7 +117,7 @@ def do(setup):
                                                                   + "__" + tc_descr.class_name)],
                           ["$$TOKEN_PREFIX$$",                setup.token_id_prefix]])
 
-    write_safely_and_close(setup.output_token_id_file, content)
+    return content
 
 
 standard_token_id_list = ["TERMINATION", "UNINITIALIZED", "INDENT", "NODENT", "DEDENT"]

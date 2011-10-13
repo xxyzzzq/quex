@@ -8,16 +8,14 @@ from quex.engine.misc.file_in          import write_safely_and_close, make_safe_
 from quex.blackboard                   import setup as Setup
 
 def do():
-    if Setup.buffer_codec == "": return
-    if Setup.buffer_codec_transformation_info in ["utf8-state-split", "utf16-state-split"]: return
+    if Setup.buffer_codec == "": return None, None
+    if Setup.buffer_codec_transformation_info in ["utf8-state-split", "utf16-state-split"]: return None, None
 
     assert Setup.buffer_codec_transformation_info is not None
 
-    txt, txt_i = _do(Setup.buffer_codec_transformation_info, 
-                     Setup.buffer_codec)
+    return _do(Setup.buffer_codec_transformation_info, 
+               Setup.buffer_codec)
 
-    write_safely_and_close(Setup.output_buffer_codec_header, txt) 
-    write_safely_and_close(Setup.output_buffer_codec_header_i, txt_i) 
 
 def _do(UnicodeTrafoInfo, CodecName):
     """

@@ -29,53 +29,65 @@ def do():
     if Setup.language == "DOT": 
         return do_plot()
 
+
     mode_db = quex_file_parser.do(Setup.input_mode_files)
 
     # (*) Implement the 'quex' core class from a template
     # -- do the coding of the class framework
-    analyzer_class_header,                     \
-    analyzer_class_constructor_and_memento_txt = analyzer_class.do(mode_db)
-    mode_implementation_txt = mode_classes.do(mode_db)
-    configuration_txt       = configuration.do(mode_db) 
+    configuration_header = configuration.do(mode_db) 
+
+    class_analyzer_header         = analyzer_class.do(mode_db)
+    class_analyzer_implementation = analyzer_class.do_implementation(mode_db)
+
+    mode_implementation  = mode_classes.do(mode_db)
 
     # (*) Generate the token ids
     #     (This needs to happen after the parsing of mode_db, since during that
     #      the token_id_db is developed.)
-    token_id_maker.do(Setup) 
-    map_id_to_name_function_implementation_txt = token_id_maker.do_map_id_to_name_function()
+    token_id_header                        = token_id_maker.do(Setup) 
+    function_map_id_to_name_implementation = token_id_maker.do_map_id_to_name_function()
 
     # (*) [Optional] Make a customized token class
-    token_class_h, token_class_txt = token_class_maker.do()
+    class_token_header, class_token_implementation = token_class_maker.do()
     
     # (*) [Optional] Generate a converter helper
-    codec_converter_helper.do()
+    codec_converter_helper_header, \
+    codec_converter_helper_implementation = codec_converter_helper.do()
 
     # (*) implement the lexer mode-specific analyser functions
-    analyzer_functions_txt = analyzer_functions_get(mode_db)
+    function_analyzers_implementation = analyzer_functions_get(mode_db)
 
     # Implementation (Potential Inline Functions)
-    implemtation_txt =   analyzer_class_constructor_and_memento_txt + "\n" \
-                       + token_class_txt             + "\n" 
+    class_implemtation = class_analyzer_implementation + "\n" 
+    if class_token_implementation is not None:
+         class_implemtation += class_token_implementation + "\n" 
 
     # Engine (Source Code)
-    source_txt =   mode_implementation_txt                    + "\n" \
-                 + analyzer_functions_txt                     + "\n" \
-                 + map_id_to_name_function_implementation_txt + "\n" 
+    engine_txt =   mode_implementation                    + "\n" \
+                 + function_analyzers_implementation      + "\n" \
+                 + function_map_id_to_name_implementation + "\n" 
 
-    # (*) Write Files
-    write_safely_and_close(Setup.output_configuration_file, configuration_txt)
+    # (*) Write Files ___________________________________________________________________
+    if codec_converter_helper_header is not None:
+        write_safely_and_close(Setup.output_buffer_codec_header,   codec_converter_helper_header) 
+        write_safely_and_close(Setup.output_buffer_codec_header_i, codec_converter_helper_implementation) 
+
+    if token_id_header is not None:
+        write_safely_and_close(Setup.output_token_id_file, token_id_header)
+
+    write_safely_and_close(Setup.output_configuration_file, configuration_header)
+
     if Setup.language == "C":
-        write_safely_and_close(Setup.output_header_file, analyzer_class_header)
-        write_safely_and_close(Setup.output_code_file, 
-                               source_txt + implemtation_txt)
+        engine_txt            += class_implemtation
     else:
-        header_txt = analyzer_class_header.replace("$$ADDITIONAL_HEADER_CONTENT$$", implemtation_txt)
-        write_safely_and_close(Setup.output_header_file, header_txt)
-        write_safely_and_close(Setup.output_code_file, source_txt)
+        class_analyzer_header = class_analyzer_header.replace("$$ADDITIONAL_HEADER_CONTENT$$", class_implemtation)
 
-    if token_class_h != "":
+    write_safely_and_close(Setup.output_header_file, class_analyzer_header)
+    write_safely_and_close(Setup.output_code_file,   engine_txt)
+
+    if class_token_header is not None:
         write_safely_and_close(blackboard.token_type_definition.get_file_name(), 
-                               token_class_h)
+                               class_token_header)
 
     for file_name in [Setup.output_header_file, 
                       Setup.output_code_file, 

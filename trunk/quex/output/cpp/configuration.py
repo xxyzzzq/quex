@@ -45,6 +45,11 @@ def do(ModeDB):
     else:
         token_repeat_test_txt = "false"
 
+    if Setup.analyzer_derived_class_name != "":
+        analyzer_derived_class_name = Setup.analyzer_derived_class_name
+    else:
+        analyzer_derived_class_name = Setup.analyzer_class_name
+
     txt = __switch(txt, "QUEX_OPTION_COLUMN_NUMBER_COUNTING",        Setup.count_column_number_f)        
     txt = __switch(txt, "QUEX_OPTION_COMPUTED_GOTOS",                False)
     txt = __switch(txt, "QUEX_OPTION_CONVERTER_ICONV",               Setup.converter_iconv_f)
@@ -97,7 +102,7 @@ def do(ModeDB):
              ["$$LEXER_BUILD_DATE$$",           time.asctime()],
              ["$$LEXER_CLASS_NAME$$",           LexerClassName],
              ["$$LEXER_CLASS_NAME_SAFE$$",      Setup.analyzer_name_safe],
-             ["$$LEXER_DERIVED_CLASS_NAME$$",   Setup.analyzer_derived_class_name],
+             ["$$LEXER_DERIVED_CLASS_NAME$$",   analyzer_derived_class_name],
              ["$$MAX_MODE_CLASS_N$$",           repr(len(ModeDB))],
              ["$$NAMESPACE_MAIN$$",             namespace(Setup.analyzer_name_space)],
              ["$$NAMESPACE_MAIN_CLOSE$$",       LanguageDB.NAMESPACE_CLOSE(Setup.analyzer_name_space).replace("\n", "\\\n")],

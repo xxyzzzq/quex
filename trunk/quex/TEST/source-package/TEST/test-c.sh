@@ -23,7 +23,7 @@ case $1 in
         option='-i simple.qx --iconv -b 2'
         ;;
     icu)
-        option='-i simple.qx --icu -b 2 --debug-exception'
+        option='-i simple.qx --icu -b 2'
         ;;
     codec)
         option='-i simple.qx --codec iso8859_7'
@@ -56,7 +56,7 @@ case $1 in
 esac
 
 echo "(0) Running Quex (no output is good output)"
-quex -o EasyLexer --source-package pkg $option --language C
+quex -o EasyLexer --source-package pkg $option --language C --debug-exception
 
 echo "(1) Running gcc (no output is good output)"
 gcc  -Ipkg pkg/EasyLexer.c -o pkg/EasyLexer.o -c -Wall -W
