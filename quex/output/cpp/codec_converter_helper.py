@@ -4,7 +4,7 @@ sys.path.append(os.environ["QUEX_PATH"])
 from copy import copy
 from quex.DEFINITIONS                  import QUEX_PATH
 from quex.engine.misc.string_handling  import blue_print
-from quex.engine.misc.file_in          import write_safely_and_close, make_safe_identifier, get_file_content_or_die
+from quex.engine.misc.file_in          import make_safe_identifier, get_file_content_or_die
 from quex.blackboard                   import setup as Setup
 
 def do():

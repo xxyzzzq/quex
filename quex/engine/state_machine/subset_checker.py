@@ -135,7 +135,6 @@ def do(SuperSM, AllegedSubSM):
     #               as mentioned above.
     return Checker(SuperSM.core().pre_context_sm(), AllegedSubSM.core().pre_context_sm()).do()
 
-
 def do_list(SuperSM_List, AllegedSubSM):
     for super_sm in SuperSM_List:
         if do(super_sm, AllegedSubSM) == True: return True
