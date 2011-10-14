@@ -1,0 +1,8 @@
+
+token { SOME; }
+
+mode STANDARD
+{
+	xa|x*b => QUEX_TKN_SOME(Lexeme);
+}
+

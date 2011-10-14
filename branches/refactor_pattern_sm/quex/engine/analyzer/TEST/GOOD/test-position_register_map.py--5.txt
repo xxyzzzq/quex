@@ -1,0 +1,9 @@
+12 Cases store at 4 places => 4 registers.
+   3L: 0
+   21L: 0
+   48L: 1
+   75L: 1
+   105L: 2
+   135L: 2
+   168L: 3
+   201L: 3
