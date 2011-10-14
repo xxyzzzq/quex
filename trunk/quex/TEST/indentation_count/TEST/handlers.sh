@@ -49,7 +49,7 @@ gcc \
 
 cat tmp.txt
 
-# rm -f ./EasyLexer*
+rm -f ./EasyLexer*
 rm -f ./lexer
 rm -f tmp.txt
 

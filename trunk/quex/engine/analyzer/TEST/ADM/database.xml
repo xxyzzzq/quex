@@ -1,4 +1,4 @@
-<test-database execution-time-sec="5.14" date="Fri Oct 14 07:53:22 2011">
+<test-database execution-time-sec="5.12" date="Fri Oct 14 08:10:39 2011">
     <last-used-diff-display-program name=""/>
     <test title="Single Pattern Checks" time-sum-sec="0.80"> 
         <application file-name="single-pattern.py" info-request-time="1317238980L" vanished="False"/>
@@ -34,7 +34,7 @@
                <choice name="1" result="OK" time_sec="0.08" crc="1167848905"/>
             </choice-list>
         </test>
-        <test title="With Pre- and Post-Contexts" time-sum-sec="0.82"> 
+        <test title="With Pre- and Post-Contexts" time-sum-sec="0.81"> 
             <application file-name="track_analysis-pre-post.py" info-request-time="1317238981L" vanished="False"/>
             <choice-list number="8" same_result="False">
                <choice name="1" result="OK" time_sec="0.09" crc="-223671648"/>
@@ -62,7 +62,7 @@
                <choice name="9" result="OK" time_sec="0.08" crc="-588482074"/>
             </choice-list>
         </test>
-        <test title="With Pre-Contexts" time-sum-sec="1.12"> 
+        <test title="With Pre-Contexts" time-sum-sec="1.11"> 
             <application file-name="track_analysis-pre.py" info-request-time="1317238978L" vanished="False"/>
             <choice-list number="12" same_result="False">
                <choice name="0" result="OK" time_sec="0.08" crc="1419750555"/>

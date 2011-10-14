@@ -1,6 +1,6 @@
-<test-database execution-time-sec="172.03" date="Fri Oct 14 07:46:13 2011">
+<test-database execution-time-sec="172.02" date="Fri Oct 14 08:10:38 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Makefile Differences to C++ Version" time-sum-sec="0.26"> 
+    <test title="Makefile Differences to C++ Version" time-sum-sec="0.24"> 
         <application file-name="makefile-diff.sh" info-request-time="1310810828L" vanished="False"/>
         <choice-list number="12" same_result="False">
            <choice name="000" result="OK" time_sec="0.02" crc="743386054"/>
@@ -84,7 +84,7 @@
         </test>
     </group>
     <group name="demo/005">
-        <test title="Including Files" time-sum-sec="7.61"> 
+        <test title="Including Files" time-sum-sec="7.60"> 
             <application file-name="005.sh" info-request-time="1310810828L" vanished="False"/>
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="1.90" crc="256352848"/>
@@ -131,7 +131,7 @@
         </test>
     </group>
     <group name="demo/010">
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="78.79"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="78.80"> 
             <application file-name="010.sh" info-request-time="1310810828L" vanished="False"/>
             <choice-list number="10" same_result="False">
                <choice name="copy" result="OK" time_sec="2.55" crc="595815643"/>
@@ -148,7 +148,7 @@
         </test>
     </group>
     <group name="demo/011">
-        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="7.32"> 
+        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="7.33"> 
             <application file-name="011.sh" info-request-time="1310810828L" vanished="False"/>
             <choice-list number="4" same_result="True">
                <choice name="iso8859-7" result="OK" time_sec="1.80" crc="-1827787599"/>
