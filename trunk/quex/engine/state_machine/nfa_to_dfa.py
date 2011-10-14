@@ -1,11 +1,11 @@
-from   quex.engine.state_machine.core  import StateMachine
+from   quex.engine.state_machine.core  import StateMachine, State
 from   quex.engine.state_machine.index import map_state_combination_to_index
 from   itertools import imap
 
 def do(SM):
     """Creates a deterministic finite automaton (DFA) from the current state 
        machine - which may be a NFA (non-deterministic finite automaton). This is
-       a generlized version of the 'subset construction' algorithm. Where 
+       a generalized version of the 'subset construction' algorithm. Where 
        subsection construction focusses on letters of an alphabet for the
        investigation of transitions, this algorithm focusses on elementary
        trigger sets. A very good description of the subset construction 
@@ -14,8 +14,13 @@ def do(SM):
     # (*) create the result state machine
     initial_state_epsilon_closure = SM.get_epsilon_closure(SM.init_state_index) 
 
-    # NOTE: Later on, state machines with an initial acceptance state are forbidden.
-    #       So, acceptance is not a question here. Think about setting it to false anyway.
+    # NOTE: 
+    # State machines with an initial acceptance state are conceivable!  In a
+    # 'define' section building bricks of patterns may be defined that 'accept
+    # nothing'. Those 'building bricks' may use nfa_to_dfa here, too.  
+    #
+    # (A pattern state machine for pattern matching, of course, has to disallow 
+    #  'accept nothing'.)
     result = StateMachine(Core = SM.core())
 
     # (*) initial state of resulting DFA = epsilon closure of initial state of NFA
@@ -60,19 +65,17 @@ def do(SM):
 
             # -- if target state combination was not considered yet, then create 
             #    a new state in the state machine
-            if result.states.has_key(target_state_index):
-                # -- add only a transition 'start state to target state'
-                result.add_transition(start_state_index, trigger_set, target_state_index)
-            else:
-                # -- add the transition 'start state to target state'
-                #    (create implicitly the new target state in the state machine)
-                result.add_transition(start_state_index, trigger_set, target_state_index)
-                # -- merge informations of combined states inside the target state
-                new_target_state = result.states[target_state_index]
+            if not result.states.has_key(target_state_index):
+                # create the new target state in the state machine
+                new_target_state = State()
                 for state in imap(lambda idx: SM.states[idx], epsilon_closure_of_target_state_combination):
                     new_target_state.merge(state)
+                result.states[target_state_index] = new_target_state
 
                 worklist.append((target_state_index, epsilon_closure_of_target_state_combination))  
+
+            # -- add the transition 'start state to target state'
+            result.add_transition(start_state_index, trigger_set, target_state_index)
 
     return result 
 

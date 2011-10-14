@@ -19,6 +19,16 @@ if DEBUG_hopcroft_f:
     import quex.engine.state_machine.identity_checker as identity_checker
     from   copy import deepcopy
 
+class Pattern:
+    def __init__(self, PreContextSM, SM, BIPD, BeginOfLineF, NewLineN, CharacterN):
+        self.__pre_context_sm                       = PreContextSM
+        self.__sm                                   = SM
+        self.__backward_input_position_detection_sm = BIPD
+        self.__pre_context_begin_of_line_f          = BeginOfLineF
+
+        self.__newline_n   = NewLineN
+        self.__character_n = CharacterN
+
 
 def do(core_sm, 
        begin_of_line_f=False, pre_context=None, 

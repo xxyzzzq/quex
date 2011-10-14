@@ -23,7 +23,6 @@ class State:
     #
     # Objects of this class are to be used in class StateMachine, where a dictionary maps 
     # from a start state index to a State-object.
-
     ## Little Slower: __slots__ = ('__core', '__origin_list', '__transition_map')
 
     def __init__(self, AcceptanceF=False, StateMachineID=E_AcceptanceIDs.FAILURE, StateIndex=-1L, 
@@ -75,6 +74,9 @@ class State:
         return self.__transition_map
 
     def merge(self, Other):
+        #assert    (self.origins().is_empty()       and Other.origins().is_empty()) \
+        #       or ((not self.origins().is_empty()) and (not Other.origins().is_empty())) 
+
         # merge core information of self with other state
         self.core().merge(Other.core())
         if   Other.origins().is_empty(): 
@@ -297,7 +299,6 @@ class StateMachine:
     def normalized_clone(self):
         index_map, dummy, dummy = self.get_state_index_normalization()
         return self.clone(index_map)
-
 
     def get_id(self):
         return self.__core.id()
