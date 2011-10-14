@@ -1,0 +1,423 @@
+(1)
+::
+[abc] => space 10;
+[cde] => grid  4;>
+::
+
+test_string:2:error: Character set specification 'grid' intersects
+test_string:1:error: with definition for 'space' at this place.
+Exception!
+
+(2)
+::
+[abc] => space 10;
+[cde] => newline;>
+::
+
+test_string:2:error: Character set specification 'newline' intersects
+test_string:1:error: with definition for 'space' at this place.
+Exception!
+
+(3)
+::
+[abc] => space 10;
+[cde] => suppressor;>
+::
+
+test_string:1:warning: Indentation does not contain a grid but only homogenous space counts of 10.
+test_string:1:warning: This setup is equivalent to a setup with space counts of 1. Space counts
+test_string:1:warning: of 1 are the fastest to compute.
+Spaces:
+     10 by ['a', 'c']
+Grids:
+Bad:
+    
+Newline:
+    init-state = 0L
+    00000() <~ 
+          == '\n' ==> 00001
+          == '\r' ==> 00002
+          <no epsilon>
+    00001(A, S) <~ 
+          <no epsilon>
+    00002() <~ 
+          == '\n' ==> 00001
+          <no epsilon>
+    
+Suppressor:
+    init-state = 0L
+    00000() <~ 
+          == ['c', 'e'] ==> 00001
+          <no epsilon>
+    00001(A, S) <~ 
+          <no epsilon>
+    
+
+
+(4)
+::
+[abc] => space 10;
+[cde] => bad;>
+::
+
+test_string:2:error: Character set specification 'bad' intersects
+test_string:1:error: with definition for 'space' at this place.
+Exception!
+
+(5)
+::
+[abc] => grid 10;
+[cde] => space 1;>
+::
+
+test_string:2:error: Character set specification 'space' intersects
+test_string:1:error: with definition for 'grid' at this place.
+Exception!
+
+(6)
+::
+[abc] => grid 10;
+[cde] => newline;>
+::
+
+test_string:2:error: Character set specification 'newline' intersects
+test_string:1:error: with definition for 'grid' at this place.
+Exception!
+
+(7)
+::
+[abc] => grid 10;
+[cde] => suppressor;>
+::
+
+test_string:1:warning: Indentation setup does not contain spaces, only grids (tabulators). All grid
+test_string:1:warning: widths are multiples of 10. The grid setup 10
+test_string:1:warning: is equivalent to a setup with space counts 1.
+test_string:1:warning: Space counts are faster to compute.
+Spaces:
+Grids:
+     10 by ['a', 'c']
+Bad:
+    
+Newline:
+    init-state = 0L
+    00000() <~ 
+          == '\n' ==> 00001
+          == '\r' ==> 00002
+          <no epsilon>
+    00001(A, S) <~ 
+          <no epsilon>
+    00002() <~ 
+          == '\n' ==> 00001
+          <no epsilon>
+    
+Suppressor:
+    init-state = 0L
+    00000() <~ 
+          == ['c', 'e'] ==> 00001
+          <no epsilon>
+    00001(A, S) <~ 
+          <no epsilon>
+    
+
+
+(8)
+::
+[abc] => grid 10;
+[cde] => bad;>
+::
+
+test_string:2:error: Character set specification 'bad' intersects
+test_string:1:error: with definition for 'grid' at this place.
+Exception!
+
+(9)
+::
+[abc] => bad;
+[cde] => grid  10;>
+::
+
+test_string:2:error: Character set specification 'grid' intersects
+test_string:1:error: with definition for 'bad' at this place.
+Exception!
+
+(10)
+::
+[abc] => bad;
+[cde] => newline;>
+::
+
+Spaces:
+      1 by ' '
+Grids:
+      4 by '\t'
+Bad:
+    ['a', 'c']
+Newline:
+    init-state = 0L
+    00000() <~ 
+          == ['c', 'e'] ==> 00001
+          <no epsilon>
+    00001(A, S) <~ 
+          <no epsilon>
+    
+Suppressor:
+    <none>
+
+
+(11)
+::
+[abc] => bad;
+[cde] => suppressor;>
+::
+
+Spaces:
+      1 by ' '
+Grids:
+      4 by '\t'
+Bad:
+    ['a', 'c']
+Newline:
+    init-state = 0L
+    00000() <~ 
+          == '\n' ==> 00001
+          == '\r' ==> 00002
+          <no epsilon>
+    00001(A, S) <~ 
+          <no epsilon>
+    00002() <~ 
+          == '\n' ==> 00001
+          <no epsilon>
+    
+Suppressor:
+    init-state = 0L
+    00000() <~ 
+          == ['c', 'e'] ==> 00001
+          <no epsilon>
+    00001(A, S) <~ 
+          <no epsilon>
+    
+
+
+(12)
+::
+[abc] => bad;
+[cde] => space;>
+::
+
+test_string:2:error: Character set specification 'space' intersects
+test_string:1:error: with definition for 'bad' at this place.
+Exception!
+
+(13)
+::
+[abc] => newline;
+[cde] => grid  10;>
+::
+
+test_string:2:error: Character set specification 'grid' intersects
+test_string:1:error: the ending of the pattern for 'newline' at this place.
+test_string:2:error: Note, that 'newline' and cannot end with a character which is subject
+test_string:2:error: to indentation counting (i.e. 'space' or 'grid').
+Exception!
+
+(14)
+::
+[abc] => newline;
+[cde] => space;>
+::
+
+test_string:2:error: Character set specification 'space' intersects
+test_string:1:error: the ending of the pattern for 'newline' at this place.
+test_string:2:error: Note, that 'newline' and cannot end with a character which is subject
+test_string:2:error: to indentation counting (i.e. 'space' or 'grid').
+Exception!
+
+(15)
+::
+[abc] => newline;
+[cde] => suppressor;>
+::
+
+Spaces:
+      1 by ' '
+Grids:
+      4 by '\t'
+Bad:
+    
+Newline:
+    init-state = 0L
+    00000() <~ 
+          == ['a', 'c'] ==> 00001
+          <no epsilon>
+    00001(A, S) <~ 
+          <no epsilon>
+    
+Suppressor:
+    init-state = 0L
+    00000() <~ 
+          == ['c', 'e'] ==> 00001
+          <no epsilon>
+    00001(A, S) <~ 
+          <no epsilon>
+    
+
+
+(16)
+::
+[abc] => newline;
+[cde] => bad;>
+::
+
+Spaces:
+      1 by ' '
+Grids:
+      4 by '\t'
+Bad:
+    ['c', 'e']
+Newline:
+    init-state = 0L
+    00000() <~ 
+          == ['a', 'c'] ==> 00001
+          <no epsilon>
+    00001(A, S) <~ 
+          <no epsilon>
+    
+Suppressor:
+    <none>
+
+
+(17)
+::
+[abc] => suppressor;
+[cde] => grid  10;>
+::
+
+test_string:2:warning: Indentation setup does not contain spaces, only grids (tabulators). All grid
+test_string:2:warning: widths are multiples of 10. The grid setup 10
+test_string:2:warning: is equivalent to a setup with space counts 1.
+test_string:2:warning: Space counts are faster to compute.
+Spaces:
+Grids:
+     10 by ['c', 'e']
+Bad:
+    
+Newline:
+    init-state = 0L
+    00000() <~ 
+          == '\n' ==> 00001
+          == '\r' ==> 00002
+          <no epsilon>
+    00001(A, S) <~ 
+          <no epsilon>
+    00002() <~ 
+          == '\n' ==> 00001
+          <no epsilon>
+    
+Suppressor:
+    init-state = 0L
+    00000() <~ 
+          == ['a', 'c'] ==> 00001
+          <no epsilon>
+    00001(A, S) <~ 
+          <no epsilon>
+    
+
+
+(18)
+::
+[abc] => suppressor;
+[cde] => newline;>
+::
+
+Spaces:
+      1 by ' '
+Grids:
+      4 by '\t'
+Bad:
+    
+Newline:
+    init-state = 0L
+    00000() <~ 
+          == ['c', 'e'] ==> 00001
+          <no epsilon>
+    00001(A, S) <~ 
+          <no epsilon>
+    
+Suppressor:
+    init-state = 0L
+    00000() <~ 
+          == ['a', 'c'] ==> 00001
+          <no epsilon>
+    00001(A, S) <~ 
+          <no epsilon>
+    
+
+
+(19)
+::
+[abc] => suppressor;
+[cde] => space;>
+::
+
+Spaces:
+      1 by ['c', 'e']
+Grids:
+Bad:
+    
+Newline:
+    init-state = 0L
+    00000() <~ 
+          == '\n' ==> 00001
+          == '\r' ==> 00002
+          <no epsilon>
+    00001(A, S) <~ 
+          <no epsilon>
+    00002() <~ 
+          == '\n' ==> 00001
+          <no epsilon>
+    
+Suppressor:
+    init-state = 0L
+    00000() <~ 
+          == ['a', 'c'] ==> 00001
+          <no epsilon>
+    00001(A, S) <~ 
+          <no epsilon>
+    
+
+
+(20)
+::
+[abc] => suppressor;
+[cde] => bad;>
+::
+
+Spaces:
+      1 by ' '
+Grids:
+      4 by '\t'
+Bad:
+    ['c', 'e']
+Newline:
+    init-state = 0L
+    00000() <~ 
+          == '\n' ==> 00001
+          == '\r' ==> 00002
+          <no epsilon>
+    00001(A, S) <~ 
+          <no epsilon>
+    00002() <~ 
+          == '\n' ==> 00001
+          <no epsilon>
+    
+Suppressor:
+    init-state = 0L
+    00000() <~ 
+          == ['a', 'c'] ==> 00001
+          <no epsilon>
+    00001(A, S) <~ 
+          <no epsilon>
+    
+
+

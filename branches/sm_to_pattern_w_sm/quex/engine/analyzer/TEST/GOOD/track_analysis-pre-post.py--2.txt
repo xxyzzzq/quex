@@ -1,0 +1,67 @@
+init-state = 0L
+00000() <~ (17, 36), (34, 85), (32, 77), (8, 16)
+      == 'a' ==> 00001
+      <no epsilon>
+00001(A, S, P19, pre=6) <~ (8, 17, A, S, pre=6), (17, 37, S, P10), (32, 78, S, P19), (34, 86, A, S)
+      == 'b' ==> 00002
+      <no epsilon>
+00002() <~ (17, 38), (32, 79)
+      == 'c' ==> 00003
+      <no epsilon>
+00003(A, P10) <~ (17, 39, A, P10), (32, 80)
+      == 'd' ==> 00004
+      <no epsilon>
+00004() <~ (32, 81)
+      == 'e' ==> 00005
+      <no epsilon>
+00005(A, P19) <~ (32, 82, A, P19)
+      <no epsilon>
+
+State 0:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 1:
+  .entry:
+    .positioner:
+        .from 0: <nothing>
+  .drop_out:
+    if PreContext_6:  goto Pattern8;
+     goto Pattern34;
+
+
+State 2:
+  .entry:
+    .positioner:
+        .from 1: <nothing>
+  .drop_out:
+    if PreContext_6: pos -= 1;  goto Pattern8;
+    pos -= 1;  goto Pattern34;
+
+
+State 3:
+  .entry:
+    .positioner:
+        .from 2: <nothing>
+  .drop_out:
+    pos -= 2;  goto Pattern17;
+
+
+State 4:
+  .entry:
+    .positioner:
+        .from 3: <nothing>
+  .drop_out:
+    pos -= 3;  goto Pattern17;
+
+
+State 5:
+  .entry:
+    .positioner:
+        .from 4: <nothing>
+  .drop_out:
+    pos -= 4;  goto Pattern32;
+
+

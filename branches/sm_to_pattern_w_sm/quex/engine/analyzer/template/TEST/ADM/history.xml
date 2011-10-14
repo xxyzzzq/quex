@@ -1,0 +1,12 @@
+<history date="Fri Oct 14 08:10:39 2011" element-n="6">
+    <day year="2011" month="09" day="28">
+        <history-init time="20:08:52"/>
+    </day>
+    <day year="2011" month="09" day="29">
+        <crc-error time="20:42:18" application="combine-maps.py" choice="1" database-crc="820212916" real-crc="1678558343"/>
+        <crc-error time="20:42:18" application="combine-maps.py" choice="2" database-crc="-1627687556" real-crc="-2112920410"/>
+        <crc-error time="20:42:18" application="combine-maps.py" choice="2b" database-crc="578732802" real-crc="-1958104461"/>
+        <crc-error time="20:42:19" application="best_matching_pair.py" choice="0" database-crc="-388511388" real-crc="463769672"/>
+        <crc-error time="20:42:19" application="best_matching_pair.py" choice="2" database-crc="846269955" real-crc="-1321050110"/>
+    </day>
+</history>

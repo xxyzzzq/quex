@@ -1,0 +1,5 @@
+(1)
+error.qx:2:error: Unbalanced '"', reached end of file before closing '"' was found.
+
+(2)
+error-2.qx:3:error: Unbalanced '/*', reached end of file before closing '*/' was found.

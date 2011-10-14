@@ -1,0 +1,30 @@
+Normal FILE input
+## FILE* (stdio.h):
+##    Note this works only when engine is generated with -b 1 (or no -b)
+##    and therefore QUEX_TYPE_CHARACTER == uint8_t.
+,------------------------------------------------------------------------------------
+| [START]
+(1, 1)  	HELLO 'bonjour' 
+(1, 9)  	WORLD 'le monde' 
+(2, 1)  	HELLO 'hello' 
+(2, 7)  	WORLD 'world' 
+(3, 1)  	HELLO 'hallo' 
+(3, 7)  	WORLD 'welt' 
+(4, 1)  	<TERMINATION> '' 
+| [END] number of token = 7
+`------------------------------------------------------------------------------------
+Normal stringstream input
+## stringstream:
+##    Note this works only when engine is generated with -b 1 (or no -b)
+##    and therefore QUEX_TYPE_CHARACTER == uint8_t.
+,------------------------------------------------------------------------------------
+| [START]
+(1, 1)  	HELLO 'bonjour' 
+(1, 9)  	WORLD 'le monde' 
+(1, 18)  	HELLO 'hello' 
+(1, 24)  	WORLD 'world' 
+(1, 30)  	HELLO 'hallo' 
+(1, 36)  	WORLD 'welt' 
+(1, 40)  	<TERMINATION> '' 
+| [END] number of token = 7
+`------------------------------------------------------------------------------------

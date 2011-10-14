@@ -1,0 +1,46 @@
+| Mode change to ONE
+## Disable this message by compile option
+##        '-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED'
+##
+## Asserts activated! Lexical analyzer is 'paranoid'!
+## => Even smallest misbehavior causes program exit.
+##    This helps to find subtile errors.
+##
+## Note however: the paranoia is a heavy load on performance!
+##
+## Disable asserts by '-DQUEX_OPTION_ASSERTS_DISABLED'
+##
+## Report any bug at
+##        http://sourceforge.net/tracker/?group_id=168259&atid=846112
+| [START]
+Exit:  to   TWO
+| Mode change from ONE
+|             to   TWO
+Enter: from ONE
+TOKEN: GOSUB_TO_MODE 'sub2'
+Exit:  to   THREE
+| Mode change from TWO
+|             to   THREE
+Enter: from TWO
+TOKEN: GOSUB_TO_MODE 'sub3'
+Exit:  to   ONE
+| Mode change from THREE
+|             to   ONE
+Enter: from THREE
+TOKEN: GOSUB_TO_MODE 'sub1'
+Exit:  to   THREE
+| Mode change from ONE
+|             to   THREE
+Enter: from ONE
+TOKEN: RETURN_TO_MODE 'return'
+Exit:  to   TWO
+| Mode change from THREE
+|             to   TWO
+Enter: from THREE
+TOKEN: RETURN_TO_MODE 'return'
+Exit:  to   ONE
+| Mode change from TWO
+|             to   ONE
+Enter: from TWO
+TOKEN: RETURN_TO_MODE 'return'
+transition-x.exe: <<QUEX_PATH>>/quex/code_base/analyzer/member/mode-handling.i:77: EHLexer_pop_mode: Assertion `me->_mode_stack.end != me->_mode_stack.begin' failed.

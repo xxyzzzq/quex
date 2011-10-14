@@ -1,0 +1,6 @@
+
+Combination: 1 & 2
+BorderN    = 5
+TargetComb = (10, 11), (20, 21), (30, 31), (40, 41)
+##Gain:        188
+Best matching pair:  (1, 2)

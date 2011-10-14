@@ -1,0 +1,16 @@
+
+Combination: 1 & 2
+BorderN    = 2
+TargetComb = (1, 4)
+##Gain:        96
+
+Combination: 2 & 3
+BorderN    = 2
+TargetComb = (4, 3)
+##Gain:        96
+
+Combination: 1 & 3
+BorderN    = 2
+TargetComb = 
+##Gain:        104
+Best matching pair:  (1, 3)
