@@ -159,19 +159,3 @@ def do_plot():
                                               StateMachineName = mode.name)
         plotter.do(Option=Setup.character_display)
 
-def _exception_checker():
-    """Allow to check wether the exception handlers are all in place.
-    """
-    if       len(sys.argv) != 3: return
-    elif     sys.argv[1] != "<<TEST:Exceptions/function>>" \
-         and sys.argv[1] != "<<TEST:Exceptions/on-import>>":   return
-
-    exception = sys.argv[2]
-    if   exception == "KeyboardInterrupt": raise KeyboardInterrupt()
-    elif exception == "AssertionError":    raise AssertionError()
-    elif exception == "Exception":         raise Exception()
-
-# Double check wether exception handlers are in place:
-if len(sys.argv) == 3 and sys.argv[1] == "<<TEST:Exceptions/on-import>>":
-    _exception_checker()
-
