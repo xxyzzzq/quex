@@ -100,17 +100,17 @@ def do(UTF8_String_or_Stream, PatternDict,
 
     __ensure_whitespace_follows(initial_position, stream)
     
-    sm = construct.do(core_sm         = core, 
-                      begin_of_line_f = begin_of_line_f, 
-                      pre_context     = pre,
-                      end_of_line_f   = end_of_line_f,
-                      post_context    = post, 
-                      fh              = stream,
-                      DOS_CarriageReturnNewlineF = DOS_CarriageReturnNewlineF, 
-                      AllowNothingIsNecessaryF   = AllowNothingIsNecessaryF,
-                      AllowStateMachineTrafoF    = AllowStateMachineTrafoF)
+    pattern = construct.do(core_sm         = core, 
+                           begin_of_line_f = begin_of_line_f, 
+                           pre_context     = pre,
+                           end_of_line_f   = end_of_line_f,
+                           post_context    = post, 
+                           fh              = stream,
+                           DOS_CarriageReturnNewlineF = DOS_CarriageReturnNewlineF, 
+                           AllowNothingIsNecessaryF   = AllowNothingIsNecessaryF,
+                           AllowStateMachineTrafoF    = AllowStateMachineTrafoF)
     
-    return sm
+    return pattern
 
 def snap_conditional_expression(stream, PatternDict):
     """conditional expression: expression

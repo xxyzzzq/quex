@@ -1,4 +1,4 @@
-<history date="Fri Oct 14 08:10:39 2011" element-n="294">
+<history date="Sat Oct 15 12:40:34 2011" element-n="295">
     <day year="2011" month="04" day="29">
         <history-init time="04:18:51"/>
     </day>
@@ -344,5 +344,8 @@
     </day>
     <day year="2011" month="09" day="08">
         <crc-error time="05:51:13" application="track_analysis-backward-input-position-detection.py" choice="" database-crc="-2079954003" real-crc="1373021320"/>
+    </day>
+    <day year="2011" month="10" day="15">
+        <crc-error time="08:27:22" application="single-pattern.py" choice="3" database-crc="172029546" real-crc="-1102175176"/>
     </day>
 </history>

@@ -3,7 +3,7 @@ init-state = 0L
       == 'a' ==> 00001
       == 'b' ==> 00004
       <no epsilon>
-00001(S, P16) <~ (30, 80, S, P16)
+00001(S16) <~ (30, 80, S16)
       == 'a' ==> 00001
       == 'd' ==> 00002
       <no epsilon>
@@ -11,12 +11,12 @@ init-state = 0L
       == 'd' ==> 00002
       == 'f' ==> 00003
       <no epsilon>
-00003(A, P16, pre=28) <~ (30, 82, A, P16, pre=28)
+00003(A, R16, pre=28) <~ (30, 82, A, R16, pre=28)
       <no epsilon>
 00004() <~ (30, 79)
       == 'c' ==> 00005
       <no epsilon>
-00005(S, P16) <~ (30, 83, S, P16)
+00005(S16) <~ (30, 83, S16)
       == 'd' ==> 00002
       <no epsilon>
 pre-condition inverted = init-state = 0L
