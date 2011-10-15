@@ -106,7 +106,7 @@ class StateCoreInfo(object):
         elif self.__acceptance_f:
             if self.state_machine_id != Other.state_machine_id: return False
 
-        return     self.__store_input_position_f           == Other.__store_input_position_f           \
+        return     self.store_input_position_f()           == Other.store_input_position_f()           \
                and self.__post_context_id                  == Other.__post_context_id                  \
                and self.__pre_context_id                   == Other.__pre_context_id                   \
                and self.__pre_context_begin_of_line_f      == Other.__pre_context_begin_of_line_f      \
@@ -182,6 +182,7 @@ class StateCoreInfo(object):
         return self.__pre_context_begin_of_line_f
 
     def store_input_position_f(self):
+        if self.__acceptance_f: return False
         return self.__store_input_position_f    
 
     def pseudo_ambiguous_post_context_id(self):
@@ -190,19 +191,6 @@ class StateCoreInfo(object):
     def is_end_of_post_contexted_core_pattern(self):
         return self.post_context_id() != E_PostContextIDs.NONE and self.store_input_position_f()
                             
-    def type_DELETED(self):
-        Acc   = self.is_acceptance()
-        Store = self.store_input_position_f()
-        Post  = self.post_context_id()
-        Pre   = self.pre_context_id() 
-        if     Acc and     Store and not Post and not Pre: return StateOriginInfo_ACCEPTANCE
-        if not Acc and not Store and not Post and not Pre: return StateOriginInfo_NON_ACCEPTANCE
-        if     Acc and     Store and     Post and not Pre: return StateOriginInfo_POST_CONDITIONED_ACCEPTANCE
-        if     Acc and not Store and     Post and not Pre: return StateOriginInfo_POST_CONDITION_END    
-        if     Acc and     Store and not Post and     Pre: return StateOriginInfo_PRE_CONDITIONEND_ACCEPTANCE
-        # the constitution of the state origin is not valid --> return error
-        return StateOriginInfo_ERROR    
-
     def __cmp__(self, Other):
         if self.is_acceptance() == True  and Other.is_acceptance() == False: return -1
         if self.is_acceptance() == False and Other.is_acceptance() == True:  return 1
@@ -243,33 +231,43 @@ class StateCoreInfo(object):
         return self.get_string()
 
     def get_string(self, StateMachineAndStateInfoF=True):
-        appendix = ""
+        txt = ""
 
-        # ONLY FOR TEST: state.core
-        if False and not StateMachineAndStateInfoF:
-            if self.__acceptance_f: return "*"
-            else:                   return ""
+        if 1: 
+            # ONLY FOR TEST: state.core
+            if False and not StateMachineAndStateInfoF:
+                if self.__acceptance_f: return "*"
+                else:                   return ""
 
-        if StateMachineAndStateInfoF:
-            if self.state_machine_id != E_AcceptanceIDs.FAILURE:
-                appendix += ", " + repr(self.state_machine_id).replace("L", "")
-            if self.state_index != -1L:
-                appendix += ", " + repr(self.state_index).replace("L", "")
-        if self.__acceptance_f:        
-            appendix += ", A"
-        if self.__store_input_position_f:        
-            appendix += ", S"
-        if self.__post_context_id != E_PostContextIDs.NONE:  # post context id determined 'register' where input position
-            #                                              # stored
-            appendix += ", P" + repr(self.__post_context_id).replace("L", "")
-        if self.__pre_context_id != -1L:            
-            appendix += ", pre=" + repr(self.__pre_context_id).replace("L", "")
-        if self.__pseudo_ambiguous_post_context_id != -1L:            
-            appendix += ", papc=" + repr(self.__pseudo_ambiguous_post_context_id).replace("L", "")
-        if self.__pre_context_begin_of_line_f:
-            appendix += ", bol"
-        if len(appendix) > 2: 
-            appendix = appendix[2:]
+            if StateMachineAndStateInfoF:
+                if self.state_machine_id != E_AcceptanceIDs.FAILURE:
+                    txt += ", " + repr(self.state_machine_id).replace("L", "")
+                if self.state_index != -1L:
+                    txt += ", " + repr(self.state_index).replace("L", "")
+            if self.__acceptance_f:        
+                txt += ", A"
+                if self.__store_input_position_f:        
+                    txt += ", S"
+                if self.__post_context_id != E_PostContextIDs.NONE:  
+                    txt += ", R" + repr(self.__post_context_id).replace("L", "")
+            else:
+                if self.__store_input_position_f:        
+                    assert self.__post_context_id != E_PostContextIDs.NONE
+                    txt += ", S" + repr(self.__post_context_id).replace("L", "")
 
-        return "(%s)" % appendix
+            if self.__pre_context_id != -1L:            
+                txt += ", pre=" + repr(self.__pre_context_id).replace("L", "")
+            if self.__pre_context_begin_of_line_f:
+                txt += ", pre=bol"
+            if self.__pseudo_ambiguous_post_context_id != -1L:            
+                txt += ", papc=" + repr(self.__pseudo_ambiguous_post_context_id).replace("L", "")
+
+            # Delete the starting ", "
+            if len(txt) > 2: txt = txt[2:]
+
+            return "(%s)" % txt
+        else:
+            open("/tmp/horror.txt", "wb").write("terribel\n")
+            import sys
+            sys.exit(-1)
 

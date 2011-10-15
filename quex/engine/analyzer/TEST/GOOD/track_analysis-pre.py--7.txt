@@ -3,7 +3,7 @@ init-state = 0L
       == 'a' ==> 00001
       == 'b' ==> 00005
       <no epsilon>
-00001(A, S, bol) <~ (2, 5, A, S, bol), (21, 50)
+00001(A, S, pre=bol) <~ (2, 5, A, S, pre=bol), (21, 50)
       == 'b' ==> 00002
       <no epsilon>
 00002() <~ (21, 51)
@@ -14,7 +14,7 @@ init-state = 0L
       <no epsilon>
 00004(A, S) <~ (21, 53, A, S)
       <no epsilon>
-00005(A, S, bol) <~ (2, 5, A, S, bol), (21, 51)
+00005(A, S, pre=bol) <~ (2, 5, A, S, pre=bol), (21, 51)
       == 'c' ==> 00003
       <no epsilon>
 

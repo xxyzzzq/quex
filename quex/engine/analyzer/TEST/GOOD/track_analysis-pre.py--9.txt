@@ -3,7 +3,7 @@ init-state = 0L
       == 'a' ==> 00001
       == 'b' ==> 00005
       <no epsilon>
-00001(A, S, bol) <~ (2, 5, A, S, bol), (23, 55)
+00001(A, S, pre=bol) <~ (2, 5, A, S, pre=bol), (23, 55)
       == 'b' ==> 00002
       <no epsilon>
 00002() <~ (23, 54)

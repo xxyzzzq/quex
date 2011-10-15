@@ -785,7 +785,7 @@ class StateMachine:
                                    LeaveStoreInputPositionsF=False):
         """Mount on any acceptance state the MountedStateIdx via epsilon transition.
         """
-        for state_idx, state in self.states.items():
+        for state_idx, state in self.states.iteritems():
             # -- only consider state other than the state to be mounted
             # -- only handle only acceptance states
             if state_idx == MountedStateIdx: continue

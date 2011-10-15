@@ -24,10 +24,10 @@ result =  init-state = 0L
 00000() <~ 
       == '1' ==> 00001
       <no epsilon>
-00001(S, P12) <~ 
+00001(S12) <~ 
       == '\n' ==> 00002
       <no epsilon>
-00002(A, P12) <~ 
+00002(A, R12) <~ 
       <no epsilon>
 
 trivially pre-conditioned =  False
@@ -42,7 +42,7 @@ result =  init-state = 0L
 00000() <~ 
       == '1' ==> 00001
       <no epsilon>
-00001(A, S, bol) <~ 
+00001(A, S, pre=bol) <~ 
       <no epsilon>
 
 trivially pre-conditioned =  True
@@ -57,10 +57,10 @@ result =  init-state = 0L
 00000() <~ 
       == '1' ==> 00001
       <no epsilon>
-00001(S, P21) <~ 
+00001(S21) <~ 
       == '\n' ==> 00002
       <no epsilon>
-00002(A, P21, bol) <~ 
+00002(A, R21, pre=bol) <~ 
       <no epsilon>
 
 trivially pre-conditioned =  True
@@ -75,10 +75,10 @@ result =  init-state = 0L
 00000() <~ 
       == '1' ==> 00001
       <no epsilon>
-00001(S, P5) <~ 
+00001(S5) <~ 
       == '2' ==> 00002
       <no epsilon>
-00002(A, P5) <~ 
+00002(A, R5) <~ 
       <no epsilon>
 
 trivially pre-conditioned =  False
@@ -93,13 +93,13 @@ result =  init-state = 0L
 00000() <~ 
       == '1' ==> 00001
       <no epsilon>
-00001(S, P5) <~ 
+00001(S5) <~ 
       == '2' ==> 00002
       <no epsilon>
 00002() <~ 
       == '\n' ==> 00003
       <no epsilon>
-00003(A, P5) <~ 
+00003(A, R5) <~ 
       <no epsilon>
 
 trivially pre-conditioned =  False
@@ -114,10 +114,10 @@ result =  init-state = 0L
 00000() <~ 
       == '1' ==> 00001
       <no epsilon>
-00001(S, P5) <~ 
+00001(S5) <~ 
       == '2' ==> 00002
       <no epsilon>
-00002(A, P5, bol) <~ 
+00002(A, R5, pre=bol) <~ 
       <no epsilon>
 
 trivially pre-conditioned =  True
@@ -132,13 +132,13 @@ result =  init-state = 0L
 00000() <~ 
       == '1' ==> 00001
       <no epsilon>
-00001(S, P5) <~ 
+00001(S5) <~ 
       == '2' ==> 00002
       <no epsilon>
 00002() <~ 
       == '\n' ==> 00003
       <no epsilon>
-00003(A, P5, bol) <~ 
+00003(A, R5, pre=bol) <~ 
       <no epsilon>
 
 trivially pre-conditioned =  True
@@ -176,10 +176,10 @@ result =  init-state = 0L
 00000() <~ 
       == '1' ==> 00001
       <no epsilon>
-00001(S, P58) <~ 
+00001(S58) <~ 
       == '\n' ==> 00002
       <no epsilon>
-00002(A, P58, pre=56) <~ 
+00002(A, R58, pre=56) <~ 
       <no epsilon>
 pre-condition inverted = init-state = 0L
 00000() <~ 
@@ -226,10 +226,10 @@ result =  init-state = 0L
 00000() <~ 
       == '1' ==> 00001
       <no epsilon>
-00001(S, P75) <~ 
+00001(S75) <~ 
       == '\n' ==> 00002
       <no epsilon>
-00002(A, P75, pre=73) <~ 
+00002(A, R75, pre=73) <~ 
       <no epsilon>
 pre-condition inverted = init-state = 0L
 00000() <~ 
@@ -254,10 +254,10 @@ result =  init-state = 0L
 00000() <~ 
       == '1' ==> 00001
       <no epsilon>
-00001(S, P5) <~ 
+00001(S5) <~ 
       == '2' ==> 00002
       <no epsilon>
-00002(A, P5, pre=86) <~ 
+00002(A, R5, pre=86) <~ 
       <no epsilon>
 pre-condition inverted = init-state = 0L
 00000() <~ 
@@ -279,13 +279,13 @@ result =  init-state = 0L
 00000() <~ 
       == '1' ==> 00001
       <no epsilon>
-00001(S, P5) <~ 
+00001(S5) <~ 
       == '2' ==> 00002
       <no epsilon>
 00002(pre=94) <~ 
       == '\n' ==> 00003
       <no epsilon>
-00003(A, P5) <~ 
+00003(A, R5) <~ 
       <no epsilon>
 pre-condition inverted = init-state = 0L
 00000() <~ 
@@ -307,10 +307,10 @@ result =  init-state = 0L
 00000() <~ 
       == '1' ==> 00001
       <no epsilon>
-00001(S, P5) <~ 
+00001(S5) <~ 
       == '2' ==> 00002
       <no epsilon>
-00002(A, P5, pre=102) <~ 
+00002(A, R5, pre=102) <~ 
       <no epsilon>
 pre-condition inverted = init-state = 0L
 00000() <~ 
@@ -335,13 +335,13 @@ result =  init-state = 0L
 00000() <~ 
       == '1' ==> 00001
       <no epsilon>
-00001(S, P5) <~ 
+00001(S5) <~ 
       == '2' ==> 00002
       <no epsilon>
 00002(pre=110) <~ 
       == '\n' ==> 00003
       <no epsilon>
-00003(A, P5) <~ 
+00003(A, R5) <~ 
       <no epsilon>
 pre-condition inverted = init-state = 0L
 00000() <~ 

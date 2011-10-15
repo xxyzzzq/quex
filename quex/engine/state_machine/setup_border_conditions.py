@@ -66,19 +66,20 @@ def do(sm, BeginOfLineF, EndOfLineF, DOS_CarriageReturnNewlineF=False):
     return sm
 
 def __add_line_border_at_end(the_sm, DOS_CarriageReturnNewlineF, InverseF):     
-    """Adds the condition 'newline or border character' at the end 
-       of the given state machine. Acceptance is only reached when 
-       the newline or border occurs. 
+    """Adds the condition 'newline or border character' at the end of the given
+       state machine. Acceptance is only reached when the newline or border
+       occurs. 
        
-       This function is used for begin of line or end of line pre-conditions, 
-       thus: IT DOES NOT SETUP A POST-CONDITITION in the sense
-       that output is scanned but cursor is being reset after match!
-       The caller provides the post-condition modifications itself, if needed.
+       This function is used for begin of line or end of line pre-conditions,
+       thus: IT DOES NOT SETUP A POST-CONDITITION in the sense that output is
+       scanned but cursor is being reset after match!  The caller provides the
+       post-condition modifications itself, if needed.
 
-       We simply append to each acceptance state the trigger
-       '\n' or BorderCharacter that leads to the new acceptance.
-       The old acceptance state is annulated.
+       We simply append to each acceptance state the trigger '\n' or
+       BorderCharacter that leads to the new acceptance.  The old acceptance
+       state is annulated.  
     """    
+
     old_acceptance_state_list = the_sm.get_acceptance_state_list() 
     new_state_idx             = the_sm.create_new_state(AcceptanceF=True)
     for state in old_acceptance_state_list:
