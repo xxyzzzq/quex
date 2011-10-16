@@ -382,38 +382,31 @@ class Trace(object):
             if origin.is_acceptance():
                 if not self.__sift(StateIndex, origin): 
                     continue
-                if origin.post_context_id() != E_PostContextIDs.NONE:  # Restore --> adapt the 'store trace'
+                elif post_context_id != E_PostContextIDs.NONE:  # Restore --> adapt the 'store trace'
                     entry = deepcopy(self.__storage_db[pattern_id])
                     entry.pre_context_id                 = pre_context_id
                     entry.accepting_state_index          = StateIndex
                     entry.min_transition_n_to_acceptance = CurrentPathLength
                     self.__trace_db[pattern_id] = entry
-                    continue
                 else:
-                    accepting_state_index          = StateIndex
-                    min_transition_n_to_acceptance = CurrentPathLength
-            else:
-                if not origin.store_input_position_f(): 
-                    continue
-                else:
-                    self.__storage_db[pattern_id] = TraceEntry(E_PreContextIDs.NONE, 
-                                                               pattern_id,
-                                                               MinTransitionN_ToAcceptance  = E_TransitionN.VOID,
-                                                               AcceptingStateIndex          = E_StateIndices.VOID, 
-                                                               TransitionN_SincePositioning = 0,
-                                                               PositioningStateIndex        = StateIndex, 
-                                                               PostContextID                = post_context_id)
-                continue
+                    # Add entry to the Database 
+                    self.__trace_db[pattern_id] = \
+                            TraceEntry(pre_context_id, 
+                                       pattern_id,
+                                       MinTransitionN_ToAcceptance  = CurrentPathLength,
+                                       AcceptingStateIndex          = StateIndex, 
+                                       TransitionN_SincePositioning = 0,
+                                       PositioningStateIndex        = StateIndex, 
+                                       PostContextID                = post_context_id)
 
-            # Add entry to the Database 
-            self.__trace_db[pattern_id] = \
-                    TraceEntry(pre_context_id, 
-                               pattern_id,
-                               MinTransitionN_ToAcceptance  = min_transition_n_to_acceptance,
-                               AcceptingStateIndex          = accepting_state_index, 
-                               TransitionN_SincePositioning = 0,
-                               PositioningStateIndex        = StateIndex, 
-                               PostContextID                = post_context_id)
+            elif origin.store_input_position_f(): 
+                self.__storage_db[pattern_id] = TraceEntry(E_PreContextIDs.NONE, 
+                                                           pattern_id,
+                                                           MinTransitionN_ToAcceptance  = E_TransitionN.VOID,
+                                                           AcceptingStateIndex          = E_StateIndices.VOID, 
+                                                           TransitionN_SincePositioning = 0,
+                                                           PositioningStateIndex        = StateIndex, 
+                                                           PostContextID                = post_context_id)
 
         assert len(self.__trace_db) >= 1
 
@@ -436,11 +429,12 @@ class Trace(object):
                False -- Origin is dominated by other content of the trace.
         """
         assert Origin.is_acceptance()
-        ThePatternID = Origin.state_machine_id
+        ThePatternID    = Origin.state_machine_id
+        ThePreContextID = Origin.pre_context_id()
 
         # NOTE: There are also traces, which are only 'position storage infos'.
         #       Those have accepting state index == VOID.
-        if Origin.is_unconditional_acceptance():
+        if ThePreContextID == E_PreContextIDs.NONE:
             # Abolish:
             # -- all previous traces (accepting_state_index != StateIndex)
             # -- traces of same state, if they are dominated (pattern_id > ThePatternID)
@@ -454,7 +448,6 @@ class Trace(object):
                     return False
         else:
             # Abolish ONLY TRACES WITH THE SAME PRE-CONTEXT ID:
-            ThePreContextID = Origin.pre_context_id()
             # -- all previous traces (accepting_state_index != StateIndex)
             # -- traces of same state, if they are dominated (pattern_id > ThePatternID)
             for entry in ifilter(lambda x: x.pre_context_id == ThePreContextID, \
