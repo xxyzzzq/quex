@@ -57,12 +57,14 @@ class StateCoreInfo(object):
     """    
     __slots__ = ("state_machine_id", "state_index", 
                  "__acceptance_f", 
+                 "__pre_context_id", 
                  "__store_input_position_f",
                  "__post_context_id", 
-                 "__pre_context_id", 
                  "__pseudo_ambiguous_post_context_id")
 
-    def __init__(self, StateMachineID, StateIndex, AcceptanceF, StoreInputPositionF=False, 
+    def __init__(self, StateMachineID, StateIndex, 
+                 AcceptanceF, 
+                 StoreInputPositionF=False, 
                  PostContextID=E_PostContextIDs.NONE, 
                  PreContextID=E_PreContextIDs.NONE,
                  PseudoAmbiguousPostConditionID=-1L):
@@ -209,29 +211,26 @@ class StateCoreInfo(object):
         assert False
             
     def is_same_origin(self, Other):
-        return self.__DELETED_eq__(Other)
-
-    def __DELETED_eq__(self, other):
         """Two origins are the same if they origin from the same state machine and 
            have the same state index. If they then differ in the 'store_input_position_f'
            there is a major error. It would mean that one StateOriginInfo states about the
            same original state something different than another StateOriginInfo.
         """
-        result = self.state_machine_id == other.state_machine_id and \
-                 self.state_index      == other.state_index                           
+        result = self.state_machine_id == Other.state_machine_id and \
+                 self.state_index      == Other.state_index                           
 
         if result == True: 
-            assert self.__store_input_position_f == other.__store_input_position_f, \
+            assert self.__store_input_position_f == Other.__store_input_position_f, \
                    "Two StateOriginInfo objects report about the same state different\n" \
                    "information about the input being stored or not.\n" \
                    "state machine id = " + repr(self.state_machine_id) + "\n" + \
                    "state index      = " + repr(self.state_index)
-            assert self.__pre_context_id == other.__pre_context_id, \
+            assert self.__pre_context_id == Other.__pre_context_id, \
                    "Two StateOriginInfo objects report about the same state different\n" \
                    "information about the pre-conditioned acceptance.\n" \
                    "state machine id = " + repr(self.state_machine_id) + "\n" + \
                    "state index      = " + repr(self.state_index)
-            assert self.__post_context_id == other.__post_context_id, \
+            assert self.__post_context_id == Other.__post_context_id, \
                    "Two StateOriginInfo objects report about the same state different\n" \
                    "information about the post-conditioned acceptance.\n" \
                    "state machine id = " + repr(self.state_machine_id) + "\n" + \
@@ -245,41 +244,31 @@ class StateCoreInfo(object):
     def get_string(self, StateMachineAndStateInfoF=True):
         txt = ""
 
-        if 1: 
-            # ONLY FOR TEST: state.core
-            if False and not StateMachineAndStateInfoF:
-                if self.__acceptance_f: return "*"
-                else:                   return ""
-
-            if StateMachineAndStateInfoF:
-                if self.state_machine_id != E_AcceptanceIDs.FAILURE:
-                    txt += ", " + repr(self.state_machine_id).replace("L", "")
-                if self.state_index != -1L:
-                    txt += ", " + repr(self.state_index).replace("L", "")
-            if self.__acceptance_f:        
-                txt += ", A"
-                if self.__post_context_id != E_PostContextIDs.NONE:  
-                    txt += ", R" + repr(self.__post_context_id).replace("L", "")
-            else:
-                if self.__store_input_position_f:        
-                    assert self.__post_context_id != E_PostContextIDs.NONE
-                    txt += ", S" + repr(self.__post_context_id).replace("L", "")
-
-            if self.__pre_context_id != E_PreContextIDs.NONE:            
-                if self.__pre_context_id == E_PreContextIDs.BEGIN_OF_LINE:
-                    txt += ", pre=bol"
-                else: 
-                    txt += ", pre=" + repr(self.__pre_context_id).replace("L", "")
-
-            if self.__pseudo_ambiguous_post_context_id != -1L:            
-                txt += ", papc=" + repr(self.__pseudo_ambiguous_post_context_id).replace("L", "")
-
-            # Delete the starting ", "
-            if len(txt) > 2: txt = txt[2:]
-
-            return "(%s)" % txt
+        if StateMachineAndStateInfoF:
+            if self.state_machine_id != E_AcceptanceIDs.FAILURE:
+                txt += ", " + repr(self.state_machine_id).replace("L", "")
+            if self.state_index != -1L:
+                txt += ", " + repr(self.state_index).replace("L", "")
+        if self.__acceptance_f:        
+            txt += ", A"
+            if self.__post_context_id != E_PostContextIDs.NONE:  
+                txt += ", R" + repr(self.__post_context_id).replace("L", "")
         else:
-            open("/tmp/horror.txt", "wb").write("terribel\n")
-            import sys
-            sys.exit(-1)
+            if self.__store_input_position_f:        
+                assert self.__post_context_id != E_PostContextIDs.NONE
+                txt += ", S" + repr(self.__post_context_id).replace("L", "")
+
+        if self.__pre_context_id != E_PreContextIDs.NONE:            
+            if self.__pre_context_id == E_PreContextIDs.BEGIN_OF_LINE:
+                txt += ", pre=bol"
+            else: 
+                txt += ", pre=" + repr(self.__pre_context_id).replace("L", "")
+
+        if self.__pseudo_ambiguous_post_context_id != -1L:            
+            txt += ", papc=" + repr(self.__pseudo_ambiguous_post_context_id).replace("L", "")
+
+        # Delete the starting ", "
+        if len(txt) > 2: txt = txt[2:]
+
+        return "(%s)" % txt
 

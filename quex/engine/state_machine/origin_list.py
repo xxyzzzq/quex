@@ -90,22 +90,6 @@ class StateOriginList(object):
     def is_empty(self):
         return len(self.__list) == 0
 
-    def is_from_single_state(self, StateMachineID, StateIdx):
-        if len(self.__list) != 1:                             return False
-        if self.__list[0].state_machine_id != StateMachineID: return False
-        if self.__list[0].state_index != StateIdx:            return False
-        return True
-
-    def contains_post_context_flag(self):
-        for origin in self.__list:
-            if origin.post_context_id() != E_PostContextIDs.NONE: return True
-        return False                                
-
-    def contains_store_input_position(self):
-        for origin in self.__list:
-            if origin.store_input_position_f() == True: return True
-        return False
-
     def contains_any_pre_context_dependency(self):
         for origin in self.__list:
             if origin.pre_context_id() != E_PreContextIDs.NONE: return True
