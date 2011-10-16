@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.05" date="Sun Oct 16 13:04:34 2011">
+<test-database execution-time-sec="0.08" date="Sun Oct 16 22:13:01 2011">
     <last-used-diff-display-program name=""/>
     <test title="data/bocu1.txt" make-dependent="True" time-sum-sec="0.00"> 
         <application file-name="bom.exe" info-request-time="1318660753L" vanished="False"/>
@@ -8,7 +8,7 @@
         </choice-list>
     </test>
     <group name="StrangeStream">
-        <test title="wchar_t stream based." make-dependent="True" time-sum-sec="0.02"> 
+        <test title="wchar_t stream based." make-dependent="True" time-sum-sec="0.04"> 
             <application file-name="strange_wstream.exe" info-request-time="1318660754L" vanished="False"/>
             <make-procedure success="True" time_sec="0.478509"/>
             <choice-list number="4" same_result="False">
@@ -18,7 +18,7 @@
                <choice name="5" result="OK" time_sec="0.01" crc="252659001"/>
             </choice-list>
         </test>
-        <test title="char stream based." make-dependent="True" time-sum-sec="0.02"> 
+        <test title="char stream based." make-dependent="True" time-sum-sec="0.04"> 
             <application file-name="strange_stream.exe" info-request-time="1318660753L" vanished="False"/>
             <make-procedure success="True" time_sec="0.489518"/>
             <choice-list number="4" same_result="False">

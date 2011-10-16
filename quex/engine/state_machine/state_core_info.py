@@ -185,6 +185,7 @@ class StateCoreInfo(object):
     def set_post_context_id(self, Value):
         assert   (isinstance(Value, long) and Value >= 0) \
                or Value in E_PostContextIDs
+        # assert isinstance(self.state_machine_id, long) and self.state_machine_id != -1
         self.__post_context_id = Value
 
     def set_post_context_backward_detector_sm_id(self, Value):
@@ -196,6 +197,9 @@ class StateCoreInfo(object):
 
     def post_context_id(self):
         return self.__post_context_id     
+
+    def restore_input_position_f(self):
+        return self.__post_context_id != E_PostContextIDs.NONE and self.__acceptance_f
 
     def store_input_position_f(self):
         if self.__acceptance_f: return False
@@ -252,10 +256,12 @@ class StateCoreInfo(object):
         if self.__acceptance_f:        
             txt += ", A"
             if self.__post_context_id != E_PostContextIDs.NONE:  
+                # assert isinstance(self.state_machine_id, long) and self.state_machine_id != -1, "---%s---" % repr(self.state_machine_id)
                 txt += ", R" + repr(self.__post_context_id).replace("L", "")
         else:
             if self.__store_input_position_f:        
                 assert self.__post_context_id != E_PostContextIDs.NONE
+                # assert isinstance(self.state_machine_id, long) and self.state_machine_id != -1, "---%s---" % repr(self.state_machine_id)
                 txt += ", S" + repr(self.__post_context_id).replace("L", "")
 
         if self.__pre_context_id != E_PreContextIDs.NONE:            

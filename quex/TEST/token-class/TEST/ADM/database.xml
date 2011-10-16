@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.45" date="Sun Oct 16 13:04:34 2011">
+<test-database execution-time-sec="0.45" date="Sun Oct 16 22:13:01 2011">
     <last-used-diff-display-program name=""/>
     <test title="With token policy 'queue'." make-dependent="True" time-sum-sec="0.01"> 
         <application file-name="simple-queue.exe" info-request-time="1318660744L" vanished="False"/>
@@ -13,7 +13,7 @@
            <choice name="empty" result="OK" time_sec="0.10" crc="-1191820474"/>
            <choice name="no-namespace" result="OK" time_sec="0.13" crc="2098295666"/>
            <choice name="double-colon" result="OK" time_sec="0.10" crc="-223322448"/>
-           <choice name="token" result="OK" time_sec="0.10" crc="-26357094"/>
+           <choice name="token" result="OK" time_sec="0.11" crc="-26357094"/>
         </choice-list>
     </test>
     <test title="With token policy 'simple'." make-dependent="True" time-sum-sec="0.00"> 
