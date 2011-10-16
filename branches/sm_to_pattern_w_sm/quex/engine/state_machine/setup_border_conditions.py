@@ -2,7 +2,8 @@ from   quex.engine.state_machine.core               import StateMachine, State
 import quex.engine.state_machine.index              as     state_machine_index
 import quex.engine.state_machine.setup_post_context as setup_post_context
 import quex.engine.state_machine.nfa_to_dfa         as nfa_to_dfa
-from   quex.engine.state_machine.state_core_info    import E_PostContextIDs
+from   quex.engine.state_machine.state_core_info    import E_PostContextIDs, \
+                                                           E_PreContextIDs
 
 def do(sm, BeginOfLineF, EndOfLineF, DOS_CarriageReturnNewlineF=False):
     """DOS_CarriageReturnNewlineF == True:  
@@ -72,7 +73,7 @@ def __begin_of_line_condition(sm, DOS_CarriageReturnNewlineF):
     else:
         # mark all acceptance states with the 'trivial pre-condition BOL' flag
         for state in sm.get_acceptance_state_list():
-            state.core().set_pre_context_begin_of_line_f()
+            state.core().set_pre_context_id(E_PreContextIDs.BEGIN_OF_LINE)
         sm.core().set_pre_context_begin_of_line_f()
             
 
@@ -117,7 +118,7 @@ def __add_line_border_at_end(the_sm, DOS_CarriageReturnNewlineF, InverseF):
         state.set_acceptance(False)
         state.core().set_store_input_position_f(False)
         state.core().set_post_context_id(E_PostContextIDs.NONE)
-        state.core().set_pre_context_begin_of_line_f(False)
+        state.core().set_pre_context_id(E_PreContextIDs.NONE)
         state.core().set_post_context_backward_detector_sm_id(-1L)
         #
     return new_state_idx    

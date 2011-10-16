@@ -103,8 +103,8 @@ class State:
         return     self.core().is_equivalent(Other.core())       == True \
                and self.origins().is_equivalent(Other.origins()) == True
         
-    def set_acceptance(self, Value=True, LeaveStoreInputPositionF=False):
-        self.core().set_acceptance_f(Value, LeaveStoreInputPositionF)
+    def set_acceptance(self, Value=True):
+        self.core().set_acceptance_f(Value)
 
     def mark_self_as_origin(self, StateMachineID, StateIndex):
         self.core().state_machine_id = StateMachineID
@@ -785,8 +785,7 @@ class StateMachine:
 
     def mount_to_acceptance_states(self, MountedStateIdx, 
                                    CancelStartAcceptanceStateF=True,
-                                   RaiseTargetAcceptanceStateF=False,
-                                   LeaveStoreInputPositionsF=False):
+                                   RaiseTargetAcceptanceStateF=False):
         """Mount on any acceptance state the MountedStateIdx via epsilon transition.
         """
         for state_idx, state in self.states.iteritems():
@@ -797,10 +796,10 @@ class StateMachine:
             # add the MountedStateIdx to the list of epsilon transition targets
             state.transitions().add_epsilon_target_state(MountedStateIdx)
             # if required (e.g. for sequentialization) cancel the acceptance status
-            if CancelStartAcceptanceStateF: state.set_acceptance(False, LeaveStoreInputPositionsF)
+            if CancelStartAcceptanceStateF: state.set_acceptance(False)
 
         if RaiseTargetAcceptanceStateF: 
-            self.states[MountedStateIdx].set_acceptance(True, LeaveStoreInputPositionsF)
+            self.states[MountedStateIdx].set_acceptance(True)
 
     def mount_to_initial_state(self, TargetStateIdx):
         """Adds an epsilon transition from initial state to the given 'TargetStateIdx'. 

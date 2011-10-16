@@ -81,18 +81,23 @@ class Checker:
         """Checks whether all states in SList are of the same type as S0. 
            (With respect to the criteria of out algorithm.)
         """
-        sm1c = S1.core()                         # core of the 'sm1' state
+        s1 = S1.core()                         # core of the 'sm1' state
         for index in S0List:
-            sm0c = self.sm0.states[index].core() # core of the 'sm0' state
+            s0 = self.sm0.states[index].core() # core of the 'sm0' state
 
-            if    sm0c.is_acceptance()               !=  sm1c.is_acceptance():               return False
-            elif    (sm0c.post_context_id() == E_PostContextIDs.NONE) \
-                 != (sm1c.post_context_id() == E_PostContextIDs.NONE):                         return False
-            elif (sm0c.pre_context_id() == E_PreContextIDs.NONE)       != (sm1c.pre_context_id() == E_PreContextIDs.NONE):       return False
-            elif  sm0c.store_input_position_f()      !=  sm1c.store_input_position_f():      return False
-            elif  sm0c.pre_context_begin_of_line_f() !=  sm1c.pre_context_begin_of_line_f(): return False
-            elif    (sm0c.pseudo_ambiguous_post_context_id() == -1) \
-                 != (sm1c.pseudo_ambiguous_post_context_id() == -1):                         return False
+            if       s0.is_acceptance() \
+                 !=  s1.is_acceptance():                                      return False
+            elif    (s0.pre_context_id() == E_PreContextIDs.NONE) \
+                 != (s1.pre_context_id() == E_PreContextIDs.NONE):            return False
+            elif    (s0.pre_context_id() == E_PreContextIDs.BEGIN_OF_LINE) \
+                 != (s1.pre_context_id() == E_PreContextIDs.BEGIN_OF_LINE):   return False
+            elif     s0.store_input_position_f() \
+                 !=  s1.store_input_position_f():                             return False
+            elif    (s0.post_context_id() == E_PostContextIDs.NONE) \
+                 != (s1.post_context_id() == E_PostContextIDs.NONE):          return False
+            elif    (s0.pseudo_ambiguous_post_context_id() == -1) \
+                 != (s1.pseudo_ambiguous_post_context_id() == -1):            return False
+
         return True
 
 def do(SM0, SM1):

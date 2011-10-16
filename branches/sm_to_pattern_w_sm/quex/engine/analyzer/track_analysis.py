@@ -361,7 +361,7 @@ class Trace(object):
                 entry.transition_n_since_positioning = operation(entry.transition_n_since_positioning)
 
         for origin in Origins:
-            pre_context_id  = extract_pre_context_id(origin)
+            pre_context_id  = origin.pre_context_id()
             pattern_id      = origin.state_machine_id
             post_context_id = origin.post_context_id()
 
@@ -454,7 +454,7 @@ class Trace(object):
                     return False
         else:
             # Abolish ONLY TRACES WITH THE SAME PRE-CONTEXT ID:
-            ThePreContextID = extract_pre_context_id(Origin)
+            ThePreContextID = Origin.pre_context_id()
             # -- all previous traces (accepting_state_index != StateIndex)
             # -- traces of same state, if they are dominated (pattern_id > ThePatternID)
             for entry in ifilter(lambda x: x.pre_context_id == ThePreContextID, \
@@ -615,12 +615,4 @@ TraceEntry_Void = TraceEntry(PreContextID                 = E_PreContextIDs.NONE
                              TransitionN_SincePositioning = E_TransitionN.VOID, 
                              PositioningStateIndex        = E_StateIndices.NONE, 
                              PostContextID                = E_PostContextIDs.NONE)
-
-def extract_pre_context_id(Origin):
-    """This function basically describes how pre-context-ids and 
-       'begin-of-line' pre-context are expressed by an integer.
-    """
-    if   Origin.pre_context_begin_of_line_f():            return E_PreContextIDs.BEGIN_OF_LINE
-    elif Origin.pre_context_id() == E_PreContextIDs.NONE: return E_PreContextIDs.NONE
-    else:                                                 return Origin.pre_context_id()
 
