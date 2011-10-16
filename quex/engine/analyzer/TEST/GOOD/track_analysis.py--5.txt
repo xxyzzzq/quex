@@ -3,7 +3,7 @@ init-state = 0L
       == 'a' ==> 00001
       == 'b' ==> 00005
       <no epsilon>
-00001(A, S) <~ (1, 3, A, S), (20, 48)
+00001(A) <~ (1, 3, A), (20, 48)
       == 'a' ==> 00002
       == 'c' ==> 00003
       <no epsilon>
@@ -13,9 +13,9 @@ init-state = 0L
 00003() <~ (20, 50)
       == 'd' ==> 00004
       <no epsilon>
-00004(A, S) <~ (20, 51, A, S)
+00004(A) <~ (20, 51, A)
       <no epsilon>
-00005(A, S) <~ (1, 3, A, S), (20, 49)
+00005(A) <~ (1, 3, A), (20, 49)
       == 'c' ==> 00003
       <no epsilon>
 
@@ -27,7 +27,7 @@ State 0:
 
 State 1:
   .entry:
-     .positioner:
+    .positioner:
         .from 0: <nothing>
   .drop_out:
      goto Pattern1;
@@ -35,7 +35,7 @@ State 1:
 
 State 2:
   .entry:
-     .positioner:
+    .positioner:
         .from 1: position[Acceptance] = input_p;
   .drop_out:
     pos -= 1;  goto Pattern1;
@@ -43,7 +43,7 @@ State 2:
 
 State 3:
   .entry:
-     .positioner:
+    .positioner:
         .from 1: position[Acceptance] = input_p;
         .from 2: <nothing>
         .from 5: position[Acceptance] = input_p;
@@ -61,7 +61,7 @@ State 4:
 
 State 5:
   .entry:
-     .positioner:
+    .positioner:
         .from 0: <nothing>
   .drop_out:
      goto Pattern1;

@@ -9,7 +9,7 @@ result =  init-state = 0L
 00000() <~ 
       == '1' ==> 00001
       <no epsilon>
-00001(A, S) <~ 
+00001(A) <~ 
       <no epsilon>
 
 trivially pre-conditioned =  False
@@ -19,15 +19,15 @@ trivially pre-conditioned =  False
  -- begin of file  =  False
  -- end of file    =  True
 
-result sm.id     =  16
+result sm.id     =  15
 result =  init-state = 0L
 00000() <~ 
       == '1' ==> 00001
       <no epsilon>
-00001(S12) <~ 
+00001(S5) <~ 
       == '\n' ==> 00002
       <no epsilon>
-00002(A, R12) <~ 
+00002(A, R5) <~ 
       <no epsilon>
 
 trivially pre-conditioned =  False
@@ -42,7 +42,7 @@ result =  init-state = 0L
 00000() <~ 
       == '1' ==> 00001
       <no epsilon>
-00001(A, S, pre=bol) <~ 
+00001(A, pre=bol) <~ 
       <no epsilon>
 
 trivially pre-conditioned =  True
@@ -52,15 +52,15 @@ trivially pre-conditioned =  True
  -- begin of file  =  True
  -- end of file    =  True
 
-result sm.id     =  25
+result sm.id     =  24
 result =  init-state = 0L
 00000() <~ 
       == '1' ==> 00001
       <no epsilon>
-00001(S21) <~ 
+00001(S5) <~ 
       == '\n' ==> 00002
       <no epsilon>
-00002(A, R21, pre=bol) <~ 
+00002(A, R5, pre=bol) <~ 
       <no epsilon>
 
 trivially pre-conditioned =  True
@@ -154,13 +154,13 @@ result =  init-state = 0L
 00000() <~ 
       == '1' ==> 00001
       <no epsilon>
-00001(A, S, pre=49) <~ 
+00001(A, pre=49) <~ 
       <no epsilon>
 pre-condition inverted = init-state = 0L
 00000() <~ 
       == '0' ==> 00001
       <no epsilon>
-00001(A, S) <~ 
+00001(A) <~ 
       <no epsilon>
 
 trivially pre-conditioned =  False
@@ -170,22 +170,22 @@ trivially pre-conditioned =  False
  -- begin of file  =  False
  -- end of file    =  True
 
-result sm.id     =  62
+result sm.id     =  61
 result pre sm.id =  56
 result =  init-state = 0L
 00000() <~ 
       == '1' ==> 00001
       <no epsilon>
-00001(S58) <~ 
+00001(S5) <~ 
       == '\n' ==> 00002
       <no epsilon>
-00002(A, R58, pre=56) <~ 
+00002(A, R5, pre=56) <~ 
       <no epsilon>
 pre-condition inverted = init-state = 0L
 00000() <~ 
       == '0' ==> 00001
       <no epsilon>
-00001(A, S) <~ 
+00001(A) <~ 
       <no epsilon>
 
 trivially pre-conditioned =  False
@@ -201,7 +201,7 @@ result =  init-state = 0L
 00000() <~ 
       == '1' ==> 00001
       <no epsilon>
-00001(A, S, pre=66) <~ 
+00001(A, pre=66) <~ 
       <no epsilon>
 pre-condition inverted = init-state = 0L
 00000() <~ 
@@ -220,16 +220,16 @@ trivially pre-conditioned =  False
  -- begin of file  =  True
  -- end of file    =  True
 
-result sm.id     =  79
+result sm.id     =  78
 result pre sm.id =  73
 result =  init-state = 0L
 00000() <~ 
       == '1' ==> 00001
       <no epsilon>
-00001(S75) <~ 
+00001(S5) <~ 
       == '\n' ==> 00002
       <no epsilon>
-00002(A, R75, pre=73) <~ 
+00002(A, R5, pre=73) <~ 
       <no epsilon>
 pre-condition inverted = init-state = 0L
 00000() <~ 
@@ -263,7 +263,7 @@ pre-condition inverted = init-state = 0L
 00000() <~ 
       == '0' ==> 00001
       <no epsilon>
-00001(A, S) <~ 
+00001(A) <~ 
       <no epsilon>
 
 trivially pre-conditioned =  False
@@ -282,16 +282,16 @@ result =  init-state = 0L
 00001(S5) <~ 
       == '2' ==> 00002
       <no epsilon>
-00002(pre=94) <~ 
+00002() <~ 
       == '\n' ==> 00003
       <no epsilon>
-00003(A, R5) <~ 
+00003(A, R5, pre=94) <~ 
       <no epsilon>
 pre-condition inverted = init-state = 0L
 00000() <~ 
       == '0' ==> 00001
       <no epsilon>
-00001(A, S) <~ 
+00001(A) <~ 
       <no epsilon>
 
 trivially pre-conditioned =  False
@@ -338,10 +338,10 @@ result =  init-state = 0L
 00001(S5) <~ 
       == '2' ==> 00002
       <no epsilon>
-00002(pre=110) <~ 
+00002() <~ 
       == '\n' ==> 00003
       <no epsilon>
-00003(A, R5) <~ 
+00003(A, R5, pre=110) <~ 
       <no epsilon>
 pre-condition inverted = init-state = 0L
 00000() <~ 

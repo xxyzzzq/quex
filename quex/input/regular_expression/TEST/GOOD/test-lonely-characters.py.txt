@@ -22,7 +22,7 @@ init-state = 0L
 00006() <~ 
       == 'u' ==> 00007
       <no epsilon>
-00007(A, S) <~ 
+00007(A) <~ 
       <no epsilon>
 
 expression    = "[fb]oo-a"
@@ -43,7 +43,7 @@ init-state = 0L
 00004() <~ 
       == 'a' ==> 00005
       <no epsilon>
-00005(A, S) <~ 
+00005(A) <~ 
       <no epsilon>
 
 expression    = "a*(b|cd+)e+"
@@ -57,7 +57,7 @@ init-state = 0L
 00001() <~ 
       == 'e' ==> 00002
       <no epsilon>
-00002(A, S) <~ 
+00002(A) <~ 
       == 'e' ==> 00002
       <no epsilon>
 00003() <~ 
@@ -75,10 +75,10 @@ init-state = 0L
       == [\1, '\t'], ['\v', '`'], ['b', '􏿿'] ==> 00001
       == 'a' ==> 00002
       <no epsilon>
-00001(A, S) <~ 
+00001(A) <~ 
       == 'b' ==> 00001
       <no epsilon>
-00002(A, S) <~ 
+00002(A) <~ 
       == [\1, '\t'], ['\v', '`'], ['b', '􏿿'] ==> 00001
       == 'a' ==> 00002
       <no epsilon>
@@ -92,7 +92,7 @@ init-state = 0L
 00001() <~ 
       == '\n' ==> 00002
       <no epsilon>
-00002(A, S) <~ 
+00002(A) <~ 
       <no epsilon>
 
 expression    = "\"\[\]\-\*\+\$\^\)\("
@@ -128,7 +128,7 @@ init-state = 0L
 00009() <~ 
       == '(' ==> 00010
       <no epsilon>
-00010(A, S) <~ 
+00010(A) <~ 
       <no epsilon>
 
 ## NOTE: The 'c' has to be ignored, because it comes after the lonestanding space
@@ -138,7 +138,7 @@ init-state = 0L
 00000() <~ 
       == ['a', 'b'] ==> 00001
       <no epsilon>
-00001(A, S) <~ 
+00001(A) <~ 
       <no epsilon>
 
 ## NOTE: The 'c' has to be ignored, because it comes after the lonestanding space
@@ -149,7 +149,7 @@ init-state = 0L
 00000() <~ 
       == ['a', 'b'] ==> 00001
       <no epsilon>
-00001(A, S) <~ 
+00001(A) <~ 
       <no epsilon>
 
 ## NOTE: The '=> TKN_IF' has to be ignored, because it comes after the lonestanding space
@@ -162,7 +162,7 @@ init-state = 0L
 00001() <~ 
       == 'f' ==> 00002
       <no epsilon>
-00002(A, S) <~ 
+00002(A) <~ 
       <no epsilon>
 
 expression    = "\n"
@@ -171,6 +171,6 @@ init-state = 0L
 00000() <~ 
       == '\n' ==> 00001
       <no epsilon>
-00001(A, S) <~ 
+00001(A) <~ 
       <no epsilon>
 

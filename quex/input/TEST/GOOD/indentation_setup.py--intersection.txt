@@ -38,7 +38,7 @@ Newline:
           == '\n' ==> 00001
           == '\r' ==> 00002
           <no epsilon>
-    00001(A, S) <~ 
+    00001(A) <~ 
           <no epsilon>
     00002() <~ 
           == '\n' ==> 00001
@@ -49,7 +49,7 @@ Suppressor:
     00000() <~ 
           == ['c', 'e'] ==> 00001
           <no epsilon>
-    00001(A, S) <~ 
+    00001(A) <~ 
           <no epsilon>
     
 
@@ -105,7 +105,7 @@ Newline:
           == '\n' ==> 00001
           == '\r' ==> 00002
           <no epsilon>
-    00001(A, S) <~ 
+    00001(A) <~ 
           <no epsilon>
     00002() <~ 
           == '\n' ==> 00001
@@ -116,7 +116,7 @@ Suppressor:
     00000() <~ 
           == ['c', 'e'] ==> 00001
           <no epsilon>
-    00001(A, S) <~ 
+    00001(A) <~ 
           <no epsilon>
     
 
@@ -158,7 +158,7 @@ Newline:
     00000() <~ 
           == ['c', 'e'] ==> 00001
           <no epsilon>
-    00001(A, S) <~ 
+    00001(A) <~ 
           <no epsilon>
     
 Suppressor:
@@ -183,7 +183,7 @@ Newline:
           == '\n' ==> 00001
           == '\r' ==> 00002
           <no epsilon>
-    00001(A, S) <~ 
+    00001(A) <~ 
           <no epsilon>
     00002() <~ 
           == '\n' ==> 00001
@@ -194,7 +194,7 @@ Suppressor:
     00000() <~ 
           == ['c', 'e'] ==> 00001
           <no epsilon>
-    00001(A, S) <~ 
+    00001(A) <~ 
           <no epsilon>
     
 
@@ -250,7 +250,7 @@ Newline:
     00000() <~ 
           == ['a', 'c'] ==> 00001
           <no epsilon>
-    00001(A, S) <~ 
+    00001(A) <~ 
           <no epsilon>
     
 Suppressor:
@@ -258,7 +258,7 @@ Suppressor:
     00000() <~ 
           == ['c', 'e'] ==> 00001
           <no epsilon>
-    00001(A, S) <~ 
+    00001(A) <~ 
           <no epsilon>
     
 
@@ -280,7 +280,7 @@ Newline:
     00000() <~ 
           == ['a', 'c'] ==> 00001
           <no epsilon>
-    00001(A, S) <~ 
+    00001(A) <~ 
           <no epsilon>
     
 Suppressor:
@@ -308,7 +308,7 @@ Newline:
           == '\n' ==> 00001
           == '\r' ==> 00002
           <no epsilon>
-    00001(A, S) <~ 
+    00001(A) <~ 
           <no epsilon>
     00002() <~ 
           == '\n' ==> 00001
@@ -319,7 +319,7 @@ Suppressor:
     00000() <~ 
           == ['a', 'c'] ==> 00001
           <no epsilon>
-    00001(A, S) <~ 
+    00001(A) <~ 
           <no epsilon>
     
 
@@ -341,7 +341,7 @@ Newline:
     00000() <~ 
           == ['c', 'e'] ==> 00001
           <no epsilon>
-    00001(A, S) <~ 
+    00001(A) <~ 
           <no epsilon>
     
 Suppressor:
@@ -349,7 +349,7 @@ Suppressor:
     00000() <~ 
           == ['a', 'c'] ==> 00001
           <no epsilon>
-    00001(A, S) <~ 
+    00001(A) <~ 
           <no epsilon>
     
 
@@ -371,7 +371,7 @@ Newline:
           == '\n' ==> 00001
           == '\r' ==> 00002
           <no epsilon>
-    00001(A, S) <~ 
+    00001(A) <~ 
           <no epsilon>
     00002() <~ 
           == '\n' ==> 00001
@@ -382,7 +382,7 @@ Suppressor:
     00000() <~ 
           == ['a', 'c'] ==> 00001
           <no epsilon>
-    00001(A, S) <~ 
+    00001(A) <~ 
           <no epsilon>
     
 
@@ -405,7 +405,7 @@ Newline:
           == '\n' ==> 00001
           == '\r' ==> 00002
           <no epsilon>
-    00001(A, S) <~ 
+    00001(A) <~ 
           <no epsilon>
     00002() <~ 
           == '\n' ==> 00001
@@ -416,7 +416,7 @@ Suppressor:
     00000() <~ 
           == ['a', 'c'] ==> 00001
           <no epsilon>
-    00001(A, S) <~ 
+    00001(A) <~ 
           <no epsilon>
     
 

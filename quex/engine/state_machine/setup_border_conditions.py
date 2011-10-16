@@ -1,4 +1,5 @@
-from   quex.engine.state_machine.core               import StateMachine
+from   quex.engine.state_machine.core               import StateMachine, State
+import quex.engine.state_machine.index              as     state_machine_index
 import quex.engine.state_machine.setup_post_context as setup_post_context
 import quex.engine.state_machine.nfa_to_dfa         as nfa_to_dfa
 from   quex.engine.state_machine.state_core_info    import E_PostContextIDs
@@ -11,59 +12,69 @@ def do(sm, BeginOfLineF, EndOfLineF, DOS_CarriageReturnNewlineF=False):
                '$' is implemented as post-condition '\n' -- like the normal
                newline on Unix machines.
     """
+
     # (1) end of line 
-    #     NOTE: This must come before 'Begin of File', because there's a post condition
-    #           added, that enters new acceptance states.
     if EndOfLineF:
-        if sm.core().post_context_id() == E_PostContextIDs.NONE:
-            # -- create a state machine that represents the post-condition
-            # -- mount it to the core pattern as a post-condition
-            post_sm = StateMachine()
-            if not DOS_CarriageReturnNewlineF:
-                post_sm.add_transition(post_sm.init_state_index, ord('\n'), AcceptanceF=True)
-            else:
-                aux_idx   = post_sm.add_transition(post_sm.init_state_index, ord('\r'), AcceptanceF=False)
-                post_sm.add_transition(aux_idx, ord('\n'), AcceptanceF=True)
-            
-            # post conditions add an epsilon transition that has to be solved 
-            # by translating state machine into a DFA
-            sm = setup_post_context.do(sm, post_sm) 
-            sm = nfa_to_dfa.do(sm)
-            assert sm.has_origins() == False
-            
-        else:
-            post_context_id = sm.core().post_context_id()
-            # end of line in two cases:
-            #  (1) next char is '\n' (or \r\n in case of DOS_CarriageReturnNewlineF==True)
-            #  (2) at end of file, we supposed anyway that in this case the buffer needs to
-            #      end with 'EndOfFile_Code' just before the first letter.
-            #
-            #  => mount 'newline or EndOfFile_Code' to the tail of pattern
-            #
-            new_state_idx = __add_line_border_at_end(sm, 
-                                                     DOS_CarriageReturnNewlineF, InverseF=False)
-            # -- the post-context flag needs to be raised
-            sm.states[new_state_idx].core().set_post_context_id(post_context_id)
+        # NOTE: This must come before 'Begin of File', because there's a post condition
+        #       added, that enters new acceptance states.
+        __end_of_line_condition(sm, DOS_CarriageReturnNewlineF)
 
     # (2) begin of line
     if BeginOfLineF: 
-        # begin of line in two cases:
-        #  (1) last char was '\n'
-        #  (2) the first character is not detected as begin of line, if the 
-        #      pre-condition is non-trivial.
-        #
-        #  A line begins always after '\n' so no check for '\r\n' is necessary.
-        #  => DOS_CarriageReturnNewlineF = False
-        if sm.core().pre_context_sm() is not None:
-            __add_line_border_at_end(sm.core().pre_context_sm(), 
-                                     DOS_CarriageReturnNewlineF=False, InverseF=True)
-        else:
-            # mark all acceptance states with the 'trivial pre-condition BOL' flag
-            for state in sm.get_acceptance_state_list():
-                state.core().set_pre_context_begin_of_line_f()
-            sm.core().set_pre_context_begin_of_line_f()
-                
+        # NOTE: EndOfLineF must be handled before. Reason ... see there.
+        __begin_of_line_condition(sm, DOS_CarriageReturnNewlineF)
     return sm
+
+def __end_of_line_condition(sm, DOS_CarriageReturnNewlineF):
+    if sm.core().post_context_id() == E_PostContextIDs.NONE:
+        # -- create a state machine that represents the post-condition
+        # -- mount it to the core pattern as a post-condition
+        post_sm = StateMachine()
+        if not DOS_CarriageReturnNewlineF:
+            post_sm.add_transition(post_sm.init_state_index, ord('\n'), AcceptanceF=True)
+        else:
+            aux_idx   = post_sm.add_transition(post_sm.init_state_index, ord('\r'), AcceptanceF=False)
+            post_sm.add_transition(aux_idx, ord('\n'), AcceptanceF=True)
+        
+        # post conditions add an epsilon transition that has to be solved 
+        # by translating state machine into a DFA
+        sm = setup_post_context.do(sm, post_sm) 
+        sm = nfa_to_dfa.do(sm)
+        assert sm.has_origins() == False
+        
+    else:
+        post_context_id = sm.core().post_context_id()
+        # end of line in two cases:
+        #  (1) next char is '\n' (or \r\n in case of DOS_CarriageReturnNewlineF==True)
+        #  (2) at end of file, we supposed anyway that in this case the buffer needs to
+        #      end with 'EndOfFile_Code' just before the first letter.
+        #
+        #  => mount 'newline or EndOfFile_Code' to the tail of pattern
+        #
+        new_state_idx = __add_line_border_at_end(sm, 
+                                                 DOS_CarriageReturnNewlineF, InverseF=False)
+        # -- the post-context flag needs to be raised
+        sm.states[new_state_idx].core().set_post_context_id(post_context_id)
+
+def __begin_of_line_condition(sm, DOS_CarriageReturnNewlineF):
+    """Begin of line in two cases:
+
+         (1) last char was '\n'
+         (2) the first character is not detected as begin of line, if the 
+             pre-condition is non-trivial.
+         
+        A line begins always after '\n' so no check for '\r\n' is necessary.
+        => DOS_CarriageReturnNewlineF = False
+    """
+    if sm.core().pre_context_sm() is not None:
+        __add_line_border_at_end(sm.core().pre_context_sm(), 
+                                 DOS_CarriageReturnNewlineF=False, InverseF=True)
+    else:
+        # mark all acceptance states with the 'trivial pre-condition BOL' flag
+        for state in sm.get_acceptance_state_list():
+            state.core().set_pre_context_begin_of_line_f()
+        sm.core().set_pre_context_begin_of_line_f()
+            
 
 def __add_line_border_at_end(the_sm, DOS_CarriageReturnNewlineF, InverseF):     
     """Adds the condition 'newline or border character' at the end of the given
@@ -79,9 +90,15 @@ def __add_line_border_at_end(the_sm, DOS_CarriageReturnNewlineF, InverseF):
        BorderCharacter that leads to the new acceptance.  The old acceptance
        state is annulated.  
     """    
-
     old_acceptance_state_list = the_sm.get_acceptance_state_list() 
-    new_state_idx             = the_sm.create_new_state(AcceptanceF=True)
+    new_state_idx             = state_machine_index.get()
+    new_state                 = State(StateIndex=new_state_idx)
+    # New state must be just like any of the acceptance states (take the first).
+    # The transition map, of course must be empty.
+    new_state._set(old_acceptance_state_list[0].core().clone())
+
+    the_sm.states[new_state_idx] = new_state
+
     for state in old_acceptance_state_list:
         # (1) Transition '\n' --> Acceptance
         state.add_transition(ord('\n'), new_state_idx)
@@ -101,5 +118,6 @@ def __add_line_border_at_end(the_sm, DOS_CarriageReturnNewlineF, InverseF):
         state.core().set_store_input_position_f(False)
         state.core().set_post_context_id(E_PostContextIDs.NONE)
         state.core().set_pre_context_begin_of_line_f(False)
+        state.core().set_post_context_backward_detector_sm_id(-1L)
         #
     return new_state_idx    
