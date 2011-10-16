@@ -34,7 +34,6 @@
 import quex.engine.analyzer.track_analysis        as     track_analysis
 import quex.engine.analyzer.optimizer             as     optimizer
 import quex.engine.analyzer.position_register_map as     position_register_map
-from   quex.engine.analyzer.track_analysis        import extract_pre_context_id
 from   quex.engine.state_machine.core             import StateMachine
 from   quex.blackboard  import E_StateIndices, \
                                E_PostContextIDs, \
@@ -179,8 +178,8 @@ class Analyzer:
             acceptance_checker = []
             for origin in sorted(ifilter(lambda x: x.is_acceptance(), state._origin_list),
                                  key=attrgetter("state_machine_id")):
-                acceptance_checker.append(DropOut_AcceptanceCheckerElement(extract_pre_context_id(origin),
-                                          origin.state_machine_id))
+                acceptance_checker.append(DropOut_AcceptanceCheckerElement(origin.pre_context_id(),
+                                                                           origin.state_machine_id))
                 ## Is this right?: According to (2.1) the following must hold
                 ## assert origin.pre_context_id() != -1
 

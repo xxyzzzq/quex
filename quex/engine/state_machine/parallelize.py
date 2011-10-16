@@ -72,8 +72,7 @@ def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):
         if CommonTerminalStateF:
             result.mount_to_acceptance_states(new_terminal_state_index,
                                               CancelStartAcceptanceStateF=True,
-                                              RaiseTargetAcceptanceStateF=True,
-                                              LeaveStoreInputPositionsF=True)
+                                              RaiseTargetAcceptanceStateF=True)
 
 
     # (*) If there was an empty state machine, a 'free pass' is added

@@ -1,5 +1,6 @@
 from quex.engine.state_machine.state_core_info import StateCoreInfo
 from quex.blackboard import E_PreContextIDs, E_PostContextIDs
+from itertools import ifilter
 
 class StateOriginList(object):
     __slots__ = ('__list')
@@ -39,11 +40,9 @@ class StateOriginList(object):
     def __add(self, Origin):
         """Check if origin has already been mentioned, else append the new origin.
         """
-        if Origin in self.__list: 
-            idx = self.__list.index(Origin)  
-            self.__list[idx] = Origin
-        else:    
-            self.__list.append(Origin)
+        for dummy in ifilter(lambda origin: origin.is_same_origin(Origin), self.__list):
+            return
+        self.__list.append(Origin)
 
     def add(self, X, StateIndex, StoreInputPositionF=False, SelfAcceptanceF=False):
         """Add the StateMachineID and the given StateIdx to the list of origins of 
@@ -114,7 +113,8 @@ class StateOriginList(object):
 
     def contains_pre_context_begin_of_line(self):
         for origin in self.__list:
-            if origin.pre_context_begin_of_line_f(): return True
+            if origin.pre_context_id() == E_PreContextIDs.BEGIN_OF_LINE: 
+                return True
         return False    
 
     def adapt(self, StateMachineID, StateIndex):
@@ -172,7 +172,7 @@ class StateOriginList(object):
            ... i.e. segmentation faults.
         """
         # NOTE: Acceptance origins sort before non-acceptance origins
-        self.__list.sort()
+        self.__list.sort(key=lambda x: (not x.is_acceptance(), x.state_machine_id))
         new_origin_list = []
         unconditional_acceptance_found_f = False
         for origin in self.__list:

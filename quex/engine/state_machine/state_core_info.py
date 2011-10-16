@@ -60,30 +60,24 @@ class StateCoreInfo(object):
                  "__store_input_position_f",
                  "__post_context_id", 
                  "__pre_context_id", 
-                 "__pre_context_begin_of_line_f",
                  "__pseudo_ambiguous_post_context_id")
 
     def __init__(self, StateMachineID, StateIndex, AcceptanceF, StoreInputPositionF=False, 
                  PostContextID=E_PostContextIDs.NONE, 
-                 PreContext_StateMachineID=E_PreContextIDs.NONE,
-                 PreContext_BeginOfLineF=False,
+                 PreContextID=E_PreContextIDs.NONE,
                  PseudoAmbiguousPostConditionID=-1L):
-        assert PreContext_StateMachineID != -1L # Catch the old definitions (this is superfluous after some time)
-        assert type(StateIndex) == long
+        assert type(StateIndex)  == long
         assert type(AcceptanceF) == bool
         assert type(StoreInputPositionF) == bool
         assert    StateMachineID in E_AcceptanceIDs \
                or (isinstance(StateMachineID, long) and StateMachineID >= 0) 
         assert PostContextID in E_PostContextIDs or PostContextID >= 0
-        assert PreContext_StateMachineID in E_PreContextIDs or isinstance(PreContext_StateMachineID, long)
-
-        if PreContext_BeginOfLineF: 
-            assert PreContext_StateMachineID in [E_PreContextIDs.BEGIN_OF_LINE, E_PreContextIDs.NONE]
+        assert PreContextID  in E_PreContextIDs or isinstance(PreContextID, long)
 
         if AcceptanceF: 
             assert not StoreInputPositionF 
         else:
-            assert PreContext_StateMachineID      == E_PreContextIDs.NONE
+            assert PreContextID                   == E_PreContextIDs.NONE
             assert PseudoAmbiguousPostConditionID == -1L
                
         # NOT: StateMachineID != E_AcceptanceIDs.FAILURE => AcceptanceF == False
@@ -115,10 +109,7 @@ class StateCoreInfo(object):
 
         # -- was the origin a pre-conditioned acceptance?
         #    (then one has to check at the end if the pre-condition holds)
-        if PreContext_BeginOfLineF: 
-            self.__pre_context_id = E_PreContextIDs.BEGIN_OF_LINE
-        else:
-            self.__pre_context_id = PreContext_StateMachineID  
+        self.__pre_context_id = PreContextID  
 
         # -- id of state machine that is used to go backwards from the end
         #    of a post condition that is pseudo-ambiguous. 
@@ -132,7 +123,6 @@ class StateCoreInfo(object):
                              self.__store_input_position_f,
                              self.__post_context_id,
                              self.__pre_context_id,
-                             self.pre_context_begin_of_line_f(),
                              self.__pseudo_ambiguous_post_context_id)
 
     def is_equivalent(self, Other):
@@ -143,7 +133,6 @@ class StateCoreInfo(object):
         return     self.store_input_position_f()           == Other.store_input_position_f()           \
                and self.__post_context_id                  == Other.__post_context_id                  \
                and self.__pre_context_id                   == Other.__pre_context_id                   \
-               and self.pre_context_begin_of_line_f()      == Other.pre_context_begin_of_line_f()    \
                and self.__pseudo_ambiguous_post_context_id == Other.__pseudo_ambiguous_post_context_id 
 
     def merge(self, Other):
@@ -159,9 +148,7 @@ class StateCoreInfo(object):
         elif Other.__store_input_position_f and self.__acceptance_f == False:
             self.set_store_input_position_f(True)
 
-        if Other.__pre_context_id != E_PreContextIDs.NONE:                     self.__pre_context_id  = Other.__pre_context_id 
-        if Other.pre_context_begin_of_line_f():               self.__pre_context_id = E_PreContextIDs.BEGIN_OF_LINE 
-
+        if Other.__pre_context_id != E_PreContextIDs.NONE:    self.__pre_context_id  = Other.__pre_context_id 
         if Other.__post_context_id != E_PostContextIDs.NONE:  self.__post_context_id = Other.__post_context_id
 
         if Other.__pseudo_ambiguous_post_context_id != -1L: 
@@ -174,7 +161,7 @@ class StateCoreInfo(object):
     def is_acceptance(self):
         return self.__acceptance_f
 
-    def set_acceptance_f(self, Value, LeaveStoreInputPositionF):
+    def set_acceptance_f(self, Value):
         """NOTE: By default, when a state is set to acceptance the input
                  position is to be stored for all related origins, if this is 
                  not desired (as by 'post_context_append.do(..)' the flag
@@ -183,8 +170,6 @@ class StateCoreInfo(object):
         """      
         assert type(Value) == bool
         self.__acceptance_f = Value
-        # default: store_input_position_f follows acceptance_f
-        ## STEP: if not LeaveStoreInputPositionF: self.set_store_input_position_f(Value)
         
     def set_store_input_position_f(self, Value=True):
         assert type(Value) == bool
@@ -192,16 +177,8 @@ class StateCoreInfo(object):
         self.__store_input_position_f = Value
 
     def set_pre_context_id(self, Value=True):
-        assert Value != -1L # Catch the old definitions (this is superfluous after some time)
         assert Value in E_PreContextIDs or type(Value) == long
         self.__pre_context_id = Value
-
-    def set_pre_context_begin_of_line_f(self, Value=True):
-        assert type(Value) == bool
-        if Value == True:
-            self.__pre_context_id = E_PreContextIDs.BEGIN_OF_LINE
-        else:
-            self.__pre_context_id = E_PreContextIDs.NONE
 
     def set_post_context_id(self, Value):
         assert   (isinstance(Value, long) and Value >= 0) \
@@ -218,9 +195,6 @@ class StateCoreInfo(object):
     def post_context_id(self):
         return self.__post_context_id     
 
-    def pre_context_begin_of_line_f(self):
-        return self.__pre_context_id == E_PreContextIDs.BEGIN_OF_LINE
-
     def store_input_position_f(self):
         if self.__acceptance_f: return False
         return self.__store_input_position_f    
@@ -232,14 +206,12 @@ class StateCoreInfo(object):
         return self.post_context_id() != E_PostContextIDs.NONE and self.store_input_position_f()
                             
     def __cmp__(self, Other):
-        if self.is_acceptance() == True  and Other.is_acceptance() == False: return -1
-        if self.is_acceptance() == False and Other.is_acceptance() == True:  return 1
-
-        # NOTE: The state machine ID directly corresponds to the 'position in the list'
-        #       where the pattern was specified. Low ID == early specification.
-        return cmp(self.state_machine_id, Other.state_machine_id)
+        assert False
             
-    def __eq__(self, other):
+    def is_same_origin(self, Other):
+        return self.__DELETED_eq__(Other)
+
+    def __DELETED_eq__(self, other):
         """Two origins are the same if they origin from the same state machine and 
            have the same state index. If they then differ in the 'store_input_position_f'
            there is a major error. It would mean that one StateOriginInfo states about the
