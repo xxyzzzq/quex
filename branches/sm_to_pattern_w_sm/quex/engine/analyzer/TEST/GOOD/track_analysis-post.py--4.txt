@@ -26,7 +26,7 @@ init-state = 0L
 00008() <~ (25, 61)
       == 'c' ==> 00009
       <no epsilon>
-00009(A, S) <~ (25, 62, A, S)
+00009(A) <~ (25, 62, A)
       <no epsilon>
 
 State 0:

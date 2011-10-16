@@ -2,7 +2,7 @@
 from   quex.engine.misc.file_in                         import error_msg
 from   quex.engine.state_machine.core                   import StateMachine
 import quex.engine.state_machine.ambiguous_post_context as apc
-from   quex.blackboard                                  import E_PostContextIDs
+from   quex.blackboard                                  import E_PostContextIDs, E_PreContextIDs
 
 
 def do(the_state_machine, post_context_sm, fh=-1):
@@ -113,6 +113,7 @@ def do(the_state_machine, post_context_sm, fh=-1):
     post_context_id             = the_state_machine.core().id()
     pre_context_sm              = the_state_machine.core().pre_context_sm()
     pre_context_sm_id           = the_state_machine.core().pre_context_sm_id()
+    if pre_context_sm_id == -1L: pre_context_sm_id = E_PreContextIDs.NONE
     pre_context_begin_of_line_f = the_state_machine.core().pre_context_begin_of_line_f() 
 
     # -- raise at each old acceptance state the 'store input position flag'
@@ -121,7 +122,7 @@ def do(the_state_machine, post_context_sm, fh=-1):
         state = result.states[state_idx]
         state.core().set_store_input_position_f(True)
         state.core().set_post_context_id(post_context_id)
-        state.core().set_pre_context_id(-1L)   
+        state.core().set_pre_context_id(E_PreContextIDs.NONE)   
     
     # -- no acceptance state shall store the input position
     # -- set the post context flag for all acceptance states

@@ -244,7 +244,7 @@ def mount(the_state_machine, PostConditionSM):
         state.core().set_post_context_backward_detector_sm_id(backward_detector_sm_id)
         # At the end of the post condition, the input positions needs to be stored. Before
         # we can go backwards, we need to know where the post condition actually ended.
-        state.core().set_store_input_position_f(True)
+        # state.core().set_store_input_position_f(True)
 
     the_state_machine.core().set_post_context_backward_input_position_detector_sm(backward_detector_sm)
 

@@ -42,10 +42,12 @@ class State:
             self.__origin_list    = AltOriginList
             self.__transition_map = AltTM
 
-    def clone(self, ReplacementDictionary=None):
+    def clone(self, ReplacementDictionary=None, StateIndex=None):
         """Creates a copy of all transitions, but replaces any state index with the ones 
            determined in the ReplacementDictionary."""
-        result = State(AltCore       = self.__core.clone(),
+        assert ReplacementDictionary is None or isinstance(ReplacementDictionary, dict)
+        assert StateIndex is None            or isinstance(StateIndex, long)
+        result = State(AltCore       = self.__core.clone(StateIndex),
                        AltOriginList = self.__origin_list.clone(),
                        AltTM         = self.__transition_map.clone())
 
@@ -58,10 +60,12 @@ class State:
     def core(self):
         return self.__core
 
-    def _set(self, Core, OriginList, TMap):
+    def _set(self, Core, OriginList=None, TMap=None):
         """This function allows a derived class to impose values on 
            the core members of this class.
         """
+        if OriginList is None: OriginList = StateOriginList()
+        if TMap is None:       TMap       = {}
         self.__core        = Core
         self.__origin_list = OriginList
         if isinstance(TMap, dict): self.__transition_map = TransitionMap(TMap)
@@ -108,7 +112,7 @@ class State:
         # use the own 'core' as only origin
         self.origins().set([self.core()])
 
-    def add_origin(self, StateMachineID_or_StateOriginInfo, StateIdx=None, StoreInputPositionF=None):
+    def add_origin(self, StateMachineID_or_StateOriginInfo, StateIdx=None, StoreInputPositionF=False):
         self.origins().add(StateMachineID_or_StateOriginInfo, StateIdx, 
                            StoreInputPositionF, self.is_acceptance())
 

@@ -36,15 +36,15 @@ def test(Idx, sm_pre, sm, sm_post, BOF_F, EOF_F):
     print " -- begin of file  = ", BOF_F
     print " -- end of file    = ", EOF_F
 
+    # print "HOPCROFT = ", result
+    result = setup_border_conditions.do(result, BOF_F, EOF_F)
+    #
     # print "EXPRESSION = ", result
     # print "POST CONDITION = ", post_sm
     # print "APPENDED = ", result
     result = nfa_to_dfa.do(result)
     # print "DFA = ", result
     result = hopcroft.do(result)
-    #
-    # print "HOPCROFT = ", result
-    result = setup_border_conditions.do(result, BOF_F, EOF_F)
     #
     #
     print
@@ -53,6 +53,8 @@ def test(Idx, sm_pre, sm, sm_post, BOF_F, EOF_F):
         print "result pre sm.id = ", result.core().pre_context_sm().get_id()
     print "result = ", result
     print "trivially pre-conditioned = ", result.core().pre_context_begin_of_line_f()
+
+    # sys.exit(-1)
 
 tiny0 = StateMachine()
 tiny0.add_transition(tiny0.init_state_index, ord('0'), AcceptanceF=True)

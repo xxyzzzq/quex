@@ -4,7 +4,7 @@ init-state = 0L
 00000() <~ 
       == 'a', 'c', 'e', 'g' ==> 00001
       <no epsilon>
-00001(A, S) <~ 
+00001(A) <~ 
       <no epsilon>
 
 expression    = ""ac"|"bd""
@@ -17,7 +17,7 @@ init-state = 0L
 00001() <~ 
       == 'c' ==> 00002
       <no epsilon>
-00002(A, S) <~ 
+00002(A) <~ 
       <no epsilon>
 00003() <~ 
       == 'd' ==> 00002
@@ -36,7 +36,7 @@ init-state = 0L
 00002() <~ 
       == 'c' ==> 00003
       <no epsilon>
-00003(A, S) <~ 
+00003(A) <~ 
       <no epsilon>
 00004() <~ 
       == 'a' ==> 00005
@@ -58,7 +58,7 @@ init-state = 0L
 00002() <~ 
       == 'c' ==> 00003
       <no epsilon>
-00003(A, S) <~ 
+00003(A) <~ 
       <no epsilon>
 00004() <~ 
       == 'a' ==> 00005
@@ -79,7 +79,7 @@ init-state = 0L
       == ['g', 'm'] ==> 00002
       == 'y' ==> 00005
       <no epsilon>
-00001(A, S) <~ 
+00001(A) <~ 
       <no epsilon>
 00002() <~ 
       == 'y' ==> 00003
@@ -106,7 +106,7 @@ init-state = 0L
 00000() <~ 
       == 'a' ==> 00001
       <no epsilon>
-00001(A, S) <~ 
+00001(A) <~ 
       == ['a', 'b'] ==> 00001
       <no epsilon>
 
@@ -119,6 +119,6 @@ init-state = 0L
 00001() <~ 
       == 'z' ==> 00002
       <no epsilon>
-00002(A, S) <~ 
+00002(A) <~ 
       <no epsilon>
 

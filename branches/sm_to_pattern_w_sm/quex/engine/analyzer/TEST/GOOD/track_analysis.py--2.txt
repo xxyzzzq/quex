@@ -3,12 +3,12 @@ init-state = 0L
       == 'a' ==> 00001
       == 'b' ==> 00003
       <no epsilon>
-00001(A, S) <~ (1, 3, A, S), (8, 17)
+00001(A) <~ (1, 3, A), (8, 17)
       == 'c' ==> 00002
       <no epsilon>
-00002(A, S) <~ (8, 18, A, S)
+00002(A) <~ (8, 18, A)
       <no epsilon>
-00003(A, S) <~ (3, 7, A, S), (8, 17)
+00003(A) <~ (3, 7, A), (8, 17)
       == 'c' ==> 00002
       <no epsilon>
 
@@ -20,7 +20,7 @@ State 0:
 
 State 1:
   .entry:
-     .positioner:
+    .positioner:
         .from 0: <nothing>
   .drop_out:
      goto Pattern1;
@@ -37,7 +37,7 @@ State 2:
 
 State 3:
   .entry:
-     .positioner:
+    .positioner:
         .from 0: <nothing>
   .drop_out:
      goto Pattern3;

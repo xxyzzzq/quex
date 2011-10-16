@@ -11,7 +11,7 @@ init-state = 0L
       == ' ', 'a', 'e', 'l', 'o', 'w' ==> 00002
       == 't' ==> 00003
       <no epsilon>
-00003(A, S) <~ 
+00003(A) <~ 
       <no epsilon>
 
 
@@ -41,7 +41,7 @@ init-state = 0L
       == ['b', 'c'] ==> 00002
       == 't' ==> 00003
       <no epsilon>
-00003(A, S) <~ 
+00003(A) <~ 
       <no epsilon>
 
 

@@ -1,4 +1,4 @@
-<history date="Sat Oct 15 12:36:00 2011" element-n="491">
+<history date="Sun Oct 16 00:12:27 2011" element-n="500">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1173,5 +1173,14 @@
     </day>
     <day year="2011" month="10" day="15">
         <crc-error time="08:42:51" application="test-hopcroft-minimization-2.py" choice="ADAPT" database-crc="1992273305" real-crc="-1443496438"/>
+        <crc-error time="11:12:27" application="test-hopcroft-minimization.py" choice="ADAPT" database-crc="-123736635" real-crc="-42865383"/>
+        <crc-error time="11:12:44" application="test-hopcroft-minimization-2.py" choice="ADAPT" database-crc="-1443496438" real-crc="-1898926063"/>
+        <crc-error time="14:17:17" application="test-parallelize.py" choice="" database-crc="1891152328" real-crc="-1321345312"/>
+        <crc-error time="14:17:18" application="test-StateMachine-trace-origin-create-DFA-2.py" choice="" database-crc="56061168" real-crc="1643545621"/>
+        <crc-error time="14:17:18" application="test-parallelize-trace-origin.py" choice="" database-crc="1934687338" real-crc="372081665"/>
+        <crc-error time="14:18:30" application="test-parallelize.py" choice="" database-crc="-1321345312" real-crc="1339935842"/>
+        <crc-error time="14:19:19" application="test-StateMachine-trace-origin-create-DFA-2.py" choice="" database-crc="1643545621" real-crc="-800206185"/>
+        <crc-error time="14:19:37" application="test-parallelize-trace-origin.py" choice="" database-crc="372081665" real-crc="996812597"/>
+        <crc-error time="19:38:09" application="test-setup_border_conditions.py" choice="" database-crc="131781279" real-crc="576054005"/>
     </day>
 </history>

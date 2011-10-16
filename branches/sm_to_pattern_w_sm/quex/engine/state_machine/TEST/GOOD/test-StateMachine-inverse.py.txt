@@ -13,7 +13,7 @@ sm       =  init-state = 0L
 00003() <~ 
       == 'e' ==> 00004
       <no epsilon>
-00004(A, S) <~ 
+00004(A) <~ 
       <no epsilon>
 
 inverse  =  init-state = 0L
@@ -32,7 +32,7 @@ inverse  =  init-state = 0L
 00004() <~ 
       == 'a' ==> 00005
       <no epsilon>
-00005(A, S) <~ 
+00005(A) <~ 
       <no epsilon>
 
 -------------------------------------------------------------------------------
@@ -47,7 +47,7 @@ sm       =  init-state = 0L
 00002() <~ 
       == 'f' ==> 00003
       <no epsilon>
-00003(A, S) <~ 
+00003(A) <~ 
       <no epsilon>
 
 inverse  =  init-state = 0L
@@ -63,7 +63,7 @@ inverse  =  init-state = 0L
       == [-oo, 'd'], ['f', oo] ==> 00003
       == ['a', 'g'] ==> 00004
       <no epsilon>
-00004(A, S) <~ 
+00004(A) <~ 
       <no epsilon>
 
 -------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ sm       =  init-state = 0L
       == 'e' ==> 00004
       == 'g' ==> 00001
       <no epsilon>
-00004(A, S) <~ 
+00004(A) <~ 
       <no epsilon>
 
 inverse  =  init-state = 0L
@@ -100,7 +100,7 @@ inverse  =  init-state = 0L
       == 'g' ==> 00005
       == 'g' ==> 00002
       <no epsilon>
-00005(A, S) <~ 
+00005(A) <~ 
       <no epsilon>
 
 -------------------------------------------------------------------------------
@@ -114,7 +114,7 @@ sm       =  init-state = 0L
 00002() <~ 
       == 'c' ==> 00003
       <no epsilon>
-00003(A, S) <~ 
+00003(A) <~ 
       <no epsilon>
 
 inverse  =  init-state = 0L
@@ -129,6 +129,6 @@ inverse  =  init-state = 0L
 00003() <~ 
       == 'a' ==> 00004
       <no epsilon>
-00004(A, S) <~ 
+00004(A) <~ 
       <no epsilon>
 

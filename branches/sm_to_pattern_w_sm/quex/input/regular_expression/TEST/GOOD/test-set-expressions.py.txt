@@ -41,7 +41,7 @@ result     = init-state = 0L
 00000() <~ 
       == [-7FFFFFFF, 0060] [0062, 7FFFFFFE]  ==> 00001
       <no epsilon>
-00001(A, S) <~ 
+00001(A) <~ 
       <no epsilon>
 
 expression = "[:inverse([a]):]"
@@ -49,6 +49,6 @@ result     = init-state = 2L
 00002() <~ 
       == [-7FFFFFFF, 0060] [0062, 7FFFFFFE]  ==> 00003
       <no epsilon>
-00003(A, S) <~ 
+00003(A) <~ 
       <no epsilon>
 
