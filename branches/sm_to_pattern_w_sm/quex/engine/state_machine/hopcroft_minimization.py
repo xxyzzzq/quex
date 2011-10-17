@@ -275,12 +275,13 @@ class HopcroftMinization:
 
     def initial_split(self):
         """Generates initial sets of states. After the initial split, state
-           sets are only split and not combined. Thus, the initial split 
-           must separate states that must never, ever, be combined. As they are
+           sets are only split further and never combined. The initial split 
+           separate states that must never, ever, be combined. As they are
 
-           (1) Acceptance states of a different origin constellation. The decision making
-               about the winning pattern must be the same for all states of a state
-               set that is possibly combined into one single state. 
+           (1) Acceptance states of a different origin constellation. The
+               decision making about the winning pattern must be the same for all
+               states of a state set that is possibly combined into one single
+               state. 
 
                In particular, non-acceptance states can never be combined with
                acceptance states.
@@ -292,12 +293,13 @@ class HopcroftMinization:
         single_state_machine_f = self.sm.states[self.sm.init_state_index].origins().is_empty()
 
         if single_state_machine_f:
+            # This is not a combined state machine and the states have no other origin
+            # than themselves.
             def key_0(state):
                 """Computes a 'key' that allows the state set split in the
                    sense of criteria (1) and (2) above. 
                 """
-                return (state.is_acceptance(), 
-                        state.core().store_input_position_f() and state.core().post_context_id() != E_PostContextIDs.NONE)
+                return (state.is_acceptance(), state.core().store_input_position_f())
 
             distinguisher_db = defaultdict(list)
             for state_index, state in self.sm.states.iteritems():
@@ -311,7 +313,7 @@ class HopcroftMinization:
             # with criteria (1) and (2) from above.
 
             # (1) Separate by Acceptance
-            def key_1(state):
+            def key_acceptance(state):
                 """Computes a 'key' that allows the state set split in the
                    sense of criteria (1), i.e. acceptance must be the same
                    for states of the same set (== same key).
@@ -322,7 +324,7 @@ class HopcroftMinization:
 
             distinguisher_db = defaultdict(list)
             for state_index, state in self.sm.states.iteritems():
-                distinguisher_db[key_1(state)].append(state_index)
+                distinguisher_db[key_acceptance(state)].append(state_index)
 
             # (2) Separate by Store-Input-Position Behavior
             def store_info(state):
@@ -333,8 +335,7 @@ class HopcroftMinization:
                 """
                 result = {}
                 for x in state.origins():
-                    store_f = x.store_input_position_f() and x.post_context_id() != E_PostContextIDs.NONE, 
-                    result[x.state_machine_id] = store_f
+                    result[x.state_machine_id] = x.store_input_position_f()
                 return result
 
             state_set_iterable = distinguisher_db.values()

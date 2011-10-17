@@ -363,7 +363,6 @@ class Trace(object):
         for origin in Origins:
             pre_context_id  = origin.pre_context_id()
             pattern_id      = origin.state_machine_id
-            post_context_id = origin.post_context_id()
 
             # (1) Acceptance:
             #     -- dominates any acceptance of same pre-context with 
@@ -382,7 +381,7 @@ class Trace(object):
             if origin.is_acceptance():
                 if not self.__sift(StateIndex, origin): 
                     continue
-                elif post_context_id != E_PostContextIDs.NONE:  # Restore --> adapt the 'store trace'
+                elif origin.restore_input_position_f():
                     entry = deepcopy(self.__storage_db[pattern_id])
                     entry.pre_context_id                 = pre_context_id
                     entry.accepting_state_index          = StateIndex
@@ -397,7 +396,7 @@ class Trace(object):
                                        AcceptingStateIndex          = StateIndex, 
                                        TransitionN_SincePositioning = 0,
                                        PositioningStateIndex        = StateIndex, 
-                                       PostContextID                = post_context_id)
+                                       PostContextID                = origin.post_context_id())
 
             elif origin.store_input_position_f(): 
                 self.__storage_db[pattern_id] = TraceEntry(E_PreContextIDs.NONE, 
@@ -406,7 +405,7 @@ class Trace(object):
                                                            AcceptingStateIndex          = E_StateIndices.VOID, 
                                                            TransitionN_SincePositioning = 0,
                                                            PositioningStateIndex        = StateIndex, 
-                                                           PostContextID                = post_context_id)
+                                                           PostContextID                = origin.post_context_id())
 
         assert len(self.__trace_db) >= 1
 

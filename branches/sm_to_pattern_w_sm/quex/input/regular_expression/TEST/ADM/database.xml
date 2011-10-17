@@ -1,4 +1,4 @@
-<test-database execution-time-sec="3.16" date="Sun Oct 16 22:13:02 2011">
+<test-database execution-time-sec="3.03" date="Mon Oct 17 08:14:19 2011">
     <last-used-diff-display-program name=""/>
     <test title="Case Folding" time-sum-sec="0.19"> 
         <application file-name="test-case_fold.py" info-request-time="1318614195L" vanished="False"/>
@@ -54,10 +54,10 @@
         </test>
     </group>
     <group name="Combination">
-        <test title="Alternative Expressions" time-sum-sec="0.21"> 
+        <test title="Alternative Expressions" time-sum-sec="0.11"> 
             <application file-name="test-alternatives.py" info-request-time="1318614195L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.21" crc="1658309293"/>
+               <choice name="" result="OK" time_sec="0.11" crc="1658309293"/>
             </choice-list>
         </test>
         <test title="Simple repeated expressions" time-sum-sec="0.11"> 
@@ -66,10 +66,10 @@
                <choice name="" result="OK" time_sec="0.11" crc="1221595478"/>
             </choice-list>
         </test>
-        <test title="Alternative Expressions" time-sum-sec="0.07"> 
+        <test title="Alternative Expressions" time-sum-sec="0.06"> 
             <application file-name="test-set-expressions.py" info-request-time="1318614195L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.07" crc="-214375384"/>
+               <choice name="" result="OK" time_sec="0.06" crc="-214375384"/>
             </choice-list>
         </test>
     </group>
@@ -80,16 +80,16 @@
                <choice name="" result="OK" time_sec="0.10" crc="-534422812"/>
             </choice-list>
         </test>
-        <test title="pre conditions" time-sum-sec="0.12"> 
+        <test title="pre conditions" time-sum-sec="0.10"> 
             <application file-name="test-pre-condition.py" info-request-time="1318614195L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.12" crc="1222696217"/>
+               <choice name="" result="OK" time_sec="0.10" crc="1222696217"/>
             </choice-list>
         </test>
-        <test title="Begin of Line '^', End of Line '$'" time-sum-sec="0.09"> 
+        <test title="Begin of Line '^', End of Line '$'" time-sum-sec="0.10"> 
             <application file-name="test-bol-eol.py" info-request-time="1318715517L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.09" crc="1253371619"/>
+               <choice name="" result="OK" time_sec="0.10" crc="1253371619"/>
             </choice-list>
         </test>
         <test title="post conditions" time-sum-sec="0.09"> 
@@ -112,18 +112,18 @@
                <choice name="" result="OK" time_sec="0.11" crc="1375710247"/>
             </choice-list>
         </test>
-        <test title="Character Sets" time-sum-sec="0.11"> 
+        <test title="Character Sets" time-sum-sec="0.12"> 
             <application file-name="test-replacement-2.py" info-request-time="1318614195L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.11" crc="1438518425"/>
+               <choice name="" result="OK" time_sec="0.12" crc="1438518425"/>
             </choice-list>
         </test>
     </group>
     <group name="Unicode properties">
-        <test title="Simple" time-sum-sec="0.64"> 
+        <test title="Simple" time-sum-sec="0.63"> 
             <application file-name="test-properties.py" info-request-time="1318614195L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.64" crc="-2049050227"/>
+               <choice name="" result="OK" time_sec="0.63" crc="-2049050227"/>
             </choice-list>
         </test>
         <test title="Set Operations" time-sum-sec="0.68"> 

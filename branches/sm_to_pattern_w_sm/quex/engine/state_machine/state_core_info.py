@@ -202,6 +202,7 @@ class StateCoreInfo(object):
         return self.__post_context_id != E_PostContextIDs.NONE and self.__acceptance_f
 
     def store_input_position_f(self):
+        if self.__store_input_position_f: assert self.__post_context_id != E_PostContextIDs.NONE
         if self.__acceptance_f: return False
         return self.__store_input_position_f    
 
@@ -209,7 +210,7 @@ class StateCoreInfo(object):
         return self.__pseudo_ambiguous_post_context_id
 
     def is_end_of_post_contexted_core_pattern(self):
-        return self.post_context_id() != E_PostContextIDs.NONE and self.store_input_position_f()
+        return self.__post_context_id != E_PostContextIDs.NONE and self.store_input_position_f()
                             
     def __cmp__(self, Other):
         assert False
