@@ -27,7 +27,7 @@ def do(sm, BeginOfLineF, EndOfLineF, DOS_CarriageReturnNewlineF=False):
     return sm
 
 def __end_of_line_condition(sm, DOS_CarriageReturnNewlineF):
-    if sm.core().post_context_id() == E_PostContextIDs.NONE:
+    if not sm.core().post_context_f():
         # -- create a state machine that represents the post-condition
         # -- mount it to the core pattern as a post-condition
         post_sm = StateMachine()
@@ -44,18 +44,8 @@ def __end_of_line_condition(sm, DOS_CarriageReturnNewlineF):
         assert sm.has_origins() == False
         
     else:
-        post_context_id = sm.core().post_context_id()
-        # end of line in two cases:
-        #  (1) next char is '\n' (or \r\n in case of DOS_CarriageReturnNewlineF==True)
-        #  (2) at end of file, we supposed anyway that in this case the buffer needs to
-        #      end with 'EndOfFile_Code' just before the first letter.
-        #
-        #  => mount 'newline or EndOfFile_Code' to the tail of pattern
-        #
-        new_state_idx = __add_line_border_at_end(sm, 
-                                                 DOS_CarriageReturnNewlineF, InverseF=False)
-        # -- the post-context flag needs to be raised
-        sm.states[new_state_idx].core().set_post_context_id(post_context_id)
+        # mount 'newline or EndOfFile_Code' to the tail of pattern
+        new_state_idx = __add_line_border_at_end(sm, DOS_CarriageReturnNewlineF, InverseF=False)
 
 def __begin_of_line_condition(sm, DOS_CarriageReturnNewlineF):
     """Begin of line in two cases:
