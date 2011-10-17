@@ -25,7 +25,7 @@ def get_newline_n(state_machine):
 
     # State machine shall not have pre or post conditions
     assert state_machine.core().pre_context_sm_id() == -1
-    assert state_machine.core().post_context_id() == E_PostContextIDs.NONE
+    assert not state_machine.core().post_context_f()
 
     __distance_db.clear()
     result = __dive(state_machine, state_machine.init_state_index, 0, [], CharacterToCount=ord('\n'))
@@ -51,7 +51,7 @@ def get_character_n(state_machine):
 
     # State machine shall not have pre or post conditions
     assert state_machine.core().pre_context_sm_id() == -1
-    assert state_machine.core().post_context_id() == E_PostContextIDs.NONE
+    assert not state_machine.core().post_context_f()
 
     __distance_db.clear()
     result = __dive(state_machine, state_machine.init_state_index, 0, [], CharacterToCount=-1)

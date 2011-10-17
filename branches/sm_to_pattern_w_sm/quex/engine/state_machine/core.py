@@ -154,7 +154,7 @@ class StateMachineCoreInfo:
         self.__pre_context_sm                      = PreContextSM
         self.__pre_context_begin_of_line_f         = PreContext_BeginOfLineF
         self.__pre_context_single_character_list   = PreContext_SingleCharacterList
-        self.__post_context_id                     = E_PostContextIDs.NONE
+        self.__post_context_f                      = False
         self.__post_context_backward_input_position_detector_sm = None
 
     def id(self):                                  
@@ -163,13 +163,13 @@ class StateMachineCoreInfo:
         return self.__pre_context_sm
     def pre_context_sm_id(self):
         if self.__pre_context_sm is not None: return self.__pre_context_sm.core().id()
-        else:                             return -1L
+        else:                                 return -1L
     def pre_context_begin_of_line_f(self):         
         return self.__pre_context_begin_of_line_f         
     def pre_context_single_character_list(self):   
         return self.__pre_context_single_character_list   
-    def post_context_id(self):                     
-        return self.__post_context_id                     
+    def post_context_f(self):                     
+        return self.__post_context_f                     
     def post_context_backward_input_position_detector_sm(self): 
         return self.__post_context_backward_input_position_detector_sm
     def post_context_backward_input_position_detector_sm_id(self): 
@@ -177,14 +177,12 @@ class StateMachineCoreInfo:
             return self.__post_context_backward_input_position_detector_sm.core().id()
         else:
             return -1L
-
     def has_pre_or_post_context(self):
         return    self.__pre_context_single_character_list \
                or len(self.__pre_context_single_character_list) != 0 \
                or self.__pre_context_sm is not None \
-               or self.__post_context_id != E_PostContextIDs.NONE \
+               or self.__post_context_f \
                or self.__post_context_backward_input_position_detector_sm is not None
-
     def set_id(self, Value):                                  
         assert type(Value) == long
         self.__id = Value
@@ -197,9 +195,8 @@ class StateMachineCoreInfo:
     def set_pre_context_single_character_list(self, Value):   
         assert type(Value) == list
         self.__pre_context_single_character_list = Value
-    def set_post_context_id(self, Value):                     
-        assert type(Value) == long
-        self.__post_context_id = Value
+    def set_post_context_f(self):                     
+        self.__post_context_f = True
     def set_post_context_backward_input_position_detector_sm(self, Value): 
         assert Value.__class__.__name__ == "StateMachine" or Value is None
         self.__post_context_backward_input_position_detector_sm = Value

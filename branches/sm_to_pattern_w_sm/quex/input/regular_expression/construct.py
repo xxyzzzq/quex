@@ -93,13 +93,16 @@ def do(core_sm,
         sm = transformation.try_this(post_context, fh)
         if sm is not None: post_context = sm
 
+    # for state in core_sm.states.itervalues():
+    #    state.core().state_machine_id = core_sm.get_id()
+
     if   pre_context is None and post_context is None:
         result = core_sm
         # -- can't get more beautiful ...
     
     elif pre_context is None and post_context is not None:
-        result = setup_post_context.do(core_sm, post_context, fh=fh)
-        result = beautify(result)
+        setup_post_context.do(core_sm, post_context, fh=fh)
+        result = beautify(core_sm)
 
     elif pre_context is not None and post_context is None:
         result = setup_pre_context.do(core_sm, pre_context)
@@ -109,8 +112,8 @@ def do(core_sm,
         # NOTE: pre-condition needs to be setup **after** post condition, because
         #       post condition deletes all origins!
         #       (is this still so? 07y7m6d fschaef)
-        result = setup_post_context.do(core_sm, post_context, fh=fh)
-        result = setup_pre_context.do(result, pre_context)
+        setup_post_context.do(core_sm, post_context, fh=fh)
+        result = setup_pre_context.do(core_sm, pre_context)
         result = beautify(result)
 
     # -- set begin of line/end of line conditions
