@@ -382,12 +382,13 @@ class Trace(object):
                 if not self.__sift(StateIndex, origin): 
                     continue
                 elif origin.restore_input_position_f():
-                    entry = deepcopy(self.__storage_db[pattern_id])
+                    entry = self.__storage_db[pattern_id].clone()
                     entry.pre_context_id                 = pre_context_id
                     entry.accepting_state_index          = StateIndex
                     entry.min_transition_n_to_acceptance = CurrentPathLength
                     self.__trace_db[pattern_id] = entry
                 else:
+                    # assert origin.post_context_id() == E_PostContextIDs.NONE
                     # Add entry to the Database 
                     self.__trace_db[pattern_id] = \
                             TraceEntry(pre_context_id, 
@@ -396,16 +397,17 @@ class Trace(object):
                                        AcceptingStateIndex          = StateIndex, 
                                        TransitionN_SincePositioning = 0,
                                        PositioningStateIndex        = StateIndex, 
-                                       PostContextID                = origin.post_context_id())
+                                       PostContextID                = E_PostContextIDs.NONE)
 
             elif origin.store_input_position_f(): 
+                # assert origin.post_context_id() != E_PostContextIDs.NONE
                 self.__storage_db[pattern_id] = TraceEntry(E_PreContextIDs.NONE, 
                                                            pattern_id,
                                                            MinTransitionN_ToAcceptance  = E_TransitionN.VOID,
                                                            AcceptingStateIndex          = E_StateIndices.VOID, 
                                                            TransitionN_SincePositioning = 0,
                                                            PositioningStateIndex        = StateIndex, 
-                                                           PostContextID                = origin.post_context_id())
+                                                           PostContextID                = pattern_id)
 
         assert len(self.__trace_db) >= 1
 
@@ -565,7 +567,10 @@ class TraceEntry(object):
         self.positioning_state_index           = PositioningStateIndex
         self.positioning_state_successor_index = None
         #
-        self.post_context_id         = PostContextID
+        if PostContextID != E_PostContextIDs.NONE:
+            self.post_context_id = PatternID # PostContextID
+        else:
+            self.post_context_id = E_PostContextIDs.NONE
 
     def clone(self):
         result = TraceEntry(self.pre_context_id, 

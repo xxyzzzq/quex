@@ -35,11 +35,11 @@ State 1:
 State 2:
   .entry:
     .positioner:
-        .from 1: position[PostContext_14]  = input_p;
+        .from 1: position[PostContext_21]  = input_p;
         .from 2: <nothing>
-        .from 4: position[PostContext_14]  = input_p;
+        .from 4: position[PostContext_21]  = input_p;
   .drop_out:
-    pos = position[PostContext_14] ; goto Pattern21;
+    pos = position[PostContext_21] ; goto Pattern21;
 
 
 State 3:

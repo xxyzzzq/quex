@@ -44,7 +44,7 @@ State 2:
     .positioner:
         .from 1:
              position[Acceptance] = input_p;
-             position[PostContext_10]  = input_p;
+             position[PostContext_20]  = input_p;
   .drop_out:
     if PreContext_6: pos -= 1;  goto Pattern8;
     pos -= 1;  goto Pattern37;
@@ -65,7 +65,7 @@ State 4:
     .positioner:
         .from 3: <nothing>
   .drop_out:
-    pos = position[PostContext_10] ; goto Pattern20;
+    pos = position[PostContext_20] ; goto Pattern20;
 
 
 State 5:

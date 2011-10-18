@@ -44,9 +44,9 @@ State 1:
 State 2:
   .entry:
     .positioner:
-        .from 1:if 'PreContext_28':  position[PostContext_16]  = input_p;
+        .from 1:if 'PreContext_28':  position[PostContext_30]  = input_p;
         .from 2: <nothing>
-        .from 5:if 'PreContext_28':  position[PostContext_16]  = input_p;
+        .from 5:if 'PreContext_28':  position[PostContext_30]  = input_p;
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
@@ -56,7 +56,7 @@ State 3:
     .positioner:
         .from 2: <nothing>
   .drop_out:
-    if PreContext_28: pos = position[PostContext_16] ; goto Pattern30;
+    if PreContext_28: pos = position[PostContext_30] ; goto Pattern30;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
