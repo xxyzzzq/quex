@@ -142,7 +142,6 @@ fragment_db = {
 class PatternShorthand:
     def __init__(self, Name="", StateMachine="", Filename="", LineN=-1, RE=""):
         assert StateMachine.__class__.__name__ == "StateMachine"
-        assert StateMachine.has_origins() == False
 
         self.name               = Name
         self.__state_machine    = StateMachine

@@ -59,6 +59,7 @@ class StateCoreInfo(object):
                  "__acceptance_f", 
                  "__pre_context_id", 
                  "__store_input_position_f",
+                 "__restore_input_position_f",
                  "__post_context_id", 
                  "__pseudo_ambiguous_post_context_id")
 
@@ -67,10 +68,12 @@ class StateCoreInfo(object):
                  StoreInputPositionF=False, 
                  PostContextID=E_PostContextIDs.NONE, 
                  PreContextID=E_PreContextIDs.NONE,
-                 PseudoAmbiguousPostConditionID=-1L):
+                 PseudoAmbiguousPostConditionID=-1L, 
+                 RestoreInputPositionF=False):
         assert type(StateIndex)  == long
         assert type(AcceptanceF) == bool
         assert type(StoreInputPositionF) == bool
+        assert type(RestoreInputPositionF) == bool
         assert    StateMachineID in E_AcceptanceIDs \
                or (isinstance(StateMachineID, long) and StateMachineID >= 0) 
         assert PostContextID in E_PostContextIDs or PostContextID >= 0
@@ -107,7 +110,9 @@ class StateCoreInfo(object):
         # -- was the origin a post-conditioned acceptance?
         #    (then we have to store the input position, store the original state machine
         #     as winner, but continue)
-        self.__post_context_id = PostContextID
+        self.__post_context_id          = PostContextID
+        self.__restore_input_position_f = RestoreInputPositionF
+        assert self.__restore_input_position_f == (self.__acceptance_f and self.__post_context_id != E_PostContextIDs.NONE)
 
         # -- was the origin a pre-conditioned acceptance?
         #    (then one has to check at the end if the pre-condition holds)
@@ -125,15 +130,15 @@ class StateCoreInfo(object):
                              self.__store_input_position_f,
                              self.__post_context_id,
                              self.__pre_context_id,
-                             self.__pseudo_ambiguous_post_context_id)
+                             self.__pseudo_ambiguous_post_context_id, 
+                             self.__restore_input_position_f)
 
     def is_equivalent(self, Other):
         if self.__acceptance_f != Other.__acceptance_f:         return False
         elif self.__acceptance_f:
             if self.state_machine_id != Other.state_machine_id: return False
-
         return     self.store_input_position_f()           == Other.store_input_position_f()           \
-               and self.__post_context_id                  == Other.__post_context_id                  \
+               and self.restore_input_position_f()         == Other.restore_input_position_f()         \
                and self.__pre_context_id                   == Other.__pre_context_id                   \
                and self.__pseudo_ambiguous_post_context_id == Other.__pseudo_ambiguous_post_context_id 
 
@@ -145,13 +150,15 @@ class StateCoreInfo(object):
         # if self.state_machine_id != Other.state_machine_id: return
 
         if Other.__acceptance_f:                 
-            self.__acceptance_f           = True
+            self.__acceptance_f = True
             self.set_store_input_position_f(False)
         elif Other.__store_input_position_f and self.__acceptance_f == False:
             self.set_store_input_position_f(True)
 
         if Other.__pre_context_id != E_PreContextIDs.NONE:    self.__pre_context_id  = Other.__pre_context_id 
         if Other.__post_context_id != E_PostContextIDs.NONE:  self.__post_context_id = Other.__post_context_id
+
+        self.__restore_input_position_f = (self.__acceptance_f and self.__post_context_id != E_PostContextIDs.NONE)
 
         if Other.__pseudo_ambiguous_post_context_id != -1L: 
             self.__pseudo_ambiguous_post_context_id = Other.__pseudo_ambiguous_post_context_id
@@ -172,21 +179,25 @@ class StateCoreInfo(object):
         """      
         assert type(Value) == bool
         self.__acceptance_f = Value
+        self.__restore_input_position_f = (self.__acceptance_f and self.__post_context_id != E_PostContextIDs.NONE)
+
+    def set_post_context_id(self, Value):
+        assert   (isinstance(Value, long) and Value >= 0) or Value in E_PostContextIDs
+        # assert isinstance(self.state_machine_id, long) and self.state_machine_id != -1
+        self.__post_context_id = Value
+        self.__restore_input_position_f = (self.__acceptance_f and self.__post_context_id != E_PostContextIDs.NONE)
         
     def set_store_input_position_f(self, Value=True):
         assert type(Value) == bool
         if Value == True: assert self.__acceptance_f == False
         self.__store_input_position_f = Value
 
+    def restore_input_position_f(self):
+        return self.__restore_input_position_f
+
     def set_pre_context_id(self, Value=True):
         assert Value in E_PreContextIDs or type(Value) == long
         self.__pre_context_id = Value
-
-    def set_post_context_id(self, Value):
-        assert   (isinstance(Value, long) and Value >= 0) \
-               or Value in E_PostContextIDs
-        # assert isinstance(self.state_machine_id, long) and self.state_machine_id != -1
-        self.__post_context_id = Value
 
     def set_post_context_backward_detector_sm_id(self, Value):
         assert type(Value) == long
@@ -198,12 +209,9 @@ class StateCoreInfo(object):
     def post_context_id(self):
         return self.__post_context_id     
 
-    def restore_input_position_f(self):
-        return self.__post_context_id != E_PostContextIDs.NONE and self.__acceptance_f
-
     def store_input_position_f(self):
         if self.__store_input_position_f: assert self.__post_context_id != E_PostContextIDs.NONE
-        if self.__acceptance_f: return False
+        if self.__acceptance_f:           assert self.__store_input_position_f == False
         return self.__store_input_position_f    
 
     def pseudo_ambiguous_post_context_id(self):
@@ -256,7 +264,7 @@ class StateCoreInfo(object):
                 txt += ", " + repr(self.state_index).replace("L", "")
         if self.__acceptance_f:        
             txt += ", A"
-            if self.__post_context_id != E_PostContextIDs.NONE:  
+            if self.__restore_input_position_f:
                 # assert isinstance(self.state_machine_id, long) and self.state_machine_id != -1, "---%s---" % repr(self.state_machine_id)
                 txt += ", R" + repr(self.__post_context_id).replace("L", "")
         else:

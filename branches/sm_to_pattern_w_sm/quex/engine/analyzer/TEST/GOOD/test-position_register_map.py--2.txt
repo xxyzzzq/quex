@@ -1,5 +1,5 @@
 All Post-Contexts are Combinable
    NONE: 0
-   17L: 0
-   29L: 0
-   41L: 0
+   27L: 0
+   39L: 0
+   51L: 0

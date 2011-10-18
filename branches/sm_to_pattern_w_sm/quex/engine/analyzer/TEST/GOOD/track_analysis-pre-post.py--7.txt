@@ -49,9 +49,9 @@ State 2:
     .positioner:
         .from 1:
             if 'PreContext_9':  position[Acceptance] = input_p;
-            if 'PreContext_55':  position[PostContext_40]  = input_p;
+            if 'PreContext_55':  position[PostContext_57]  = input_p;
         .from 2: <nothing>
-        .from 6:if 'PreContext_55':  position[PostContext_40]  = input_p;
+        .from 6:if 'PreContext_55':  position[PostContext_57]  = input_p;
   .drop_out:
     Checker:
         accept = last_acceptance
@@ -89,7 +89,7 @@ State 4:
         case 131: pos -= 1;  goto Pattern131;
         case 11: pos = position[Acceptance]; goto Pattern11;
         case 20: pos = position[Acceptance]; goto Pattern20;
-        case 57: pos = position[PostContext_40] ; goto Pattern57;
+        case 57: pos = position[PostContext_57] ; goto Pattern57;
         case 94: pos -= 2;  goto Pattern94;
 
 
