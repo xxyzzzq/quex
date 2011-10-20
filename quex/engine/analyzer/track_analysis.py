@@ -388,7 +388,6 @@ class Trace(object):
                     entry.min_transition_n_to_acceptance = CurrentPathLength
                     self.__trace_db[pattern_id] = entry
                 else:
-                    # assert origin.post_context_id() == E_PostContextIDs.NONE
                     # Add entry to the Database 
                     self.__trace_db[pattern_id] = \
                             TraceEntry(pre_context_id, 
@@ -400,7 +399,6 @@ class Trace(object):
                                        PostContextID                = E_PostContextIDs.NONE)
 
             elif origin.store_input_position_f(): 
-                # assert origin.post_context_id() != E_PostContextIDs.NONE
                 self.__storage_db[pattern_id] = TraceEntry(E_PreContextIDs.NONE, 
                                                            pattern_id,
                                                            MinTransitionN_ToAcceptance  = E_TransitionN.VOID,

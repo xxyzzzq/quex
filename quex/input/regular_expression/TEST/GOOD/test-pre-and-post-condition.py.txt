@@ -5,10 +5,10 @@ init-state = 0L
 00000() <~ 
       == ';' ==> 00001
       <no epsilon>
-00001(S3) <~ 
+00001(S) <~ 
       == 'b' ==> 00002
       <no epsilon>
-00002(A, R3, pre=9) <~ 
+00002(A, R, pre=9) <~ 
       <no epsilon>
 pre-condition inverted = init-state = 0L
 00000() <~ 
@@ -24,10 +24,10 @@ init-state = 0L
 00000() <~ 
       == 'a', 'z' ==> 00001
       <no epsilon>
-00001(S29) <~ 
+00001(S) <~ 
       == 'c' ==> 00002
       <no epsilon>
-00002(A, R29, pre=35) <~ 
+00002(A, R, pre=35) <~ 
       <no epsilon>
 pre-condition inverted = init-state = 0L
 00000() <~ 
@@ -50,7 +50,7 @@ init-state = 0L
 00002() <~ 
       == 'c' ==> 00003
       <no epsilon>
-00003(S47) <~ 
+00003(S) <~ 
       == 'c' ==> 00004
       == 'z' ==> 00008
       <no epsilon>
@@ -66,7 +66,7 @@ init-state = 0L
 00007() <~ 
       == 'o' ==> 00008
       <no epsilon>
-00008(A, R47, pre=71) <~ 
+00008(A, R, pre=71) <~ 
       <no epsilon>
 00009() <~ 
       == 'a' ==> 00010

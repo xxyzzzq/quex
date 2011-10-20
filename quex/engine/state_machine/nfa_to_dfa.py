@@ -14,6 +14,10 @@ def do(SM):
     # (*) create the result state machine
     initial_state_epsilon_closure = SM.get_epsilon_closure(SM.init_state_index) 
 
+    # (*) initial state of resulting DFA = epsilon closure of initial state of NFA
+    #     -- add the origin list of all states in the epsilon closure
+    InitState = State.new_merged_core_state([SM.states[i] for i in initial_state_epsilon_closure])
+
     # NOTE: 
     # State machines with an initial acceptance state are conceivable!  In a
     # 'define' section building bricks of patterns may be defined that 'accept
@@ -21,14 +25,8 @@ def do(SM):
     #
     # (A pattern state machine for pattern matching, of course, has to disallow 
     #  'accept nothing'.)
-    result = StateMachine(Core = SM.core())
-
-    # (*) initial state of resulting DFA = epsilon closure of initial state of NFA
-    #     -- add the origin list of all states in the epsilon closure
-    new_init_state = result.get_init_state()
-    for state in map(lambda idx: SM.states[idx], initial_state_epsilon_closure):
-        new_init_state.merge(state)
-
+    result = StateMachine(Core = SM.core(), InitState=InitState)
+                          
     # (*) prepare the initial worklist
     worklist = [ ( result.init_state_index, initial_state_epsilon_closure) ]
 
@@ -67,10 +65,8 @@ def do(SM):
             #    a new state in the state machine
             if not result.states.has_key(target_state_index):
                 # create the new target state in the state machine
-                new_target_state = State()
-                for state in imap(lambda idx: SM.states[idx], epsilon_closure_of_target_state_combination):
-                    new_target_state.merge(state)
-                result.states[target_state_index] = new_target_state
+                result.states[target_state_index] = \
+                    State.new_merged_core_state(SM.states[i] for i in epsilon_closure_of_target_state_combination)
 
                 worklist.append((target_state_index, epsilon_closure_of_target_state_combination))  
 

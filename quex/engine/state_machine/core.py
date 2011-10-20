@@ -42,6 +42,34 @@ class State:
             self.__origin_list    = AltOriginList
             self.__transition_map = AltTM
 
+    @staticmethod
+    def new_merged_core_state(StateList):
+        result = State()
+        for state in StateList:
+            result.__merge(state)
+        return result
+
+    def merge_core_with(self, StateList):
+        for state in StateList:
+            self.__merge(state)
+
+    def __merge(self, Other):
+        # assert    (self.origins().is_empty()       and Other.origins().is_empty()) \
+        #       or ((not self.origins().is_empty()) and (not Other.origins().is_empty())) 
+
+        # merge core information of self with other state
+        if   Other.origins().is_empty(): 
+            self.core().merge(Other.core())
+            return 
+        elif self.origins().is_empty():  
+            self.core().merge(Other.core())
+            self.origins().set(Other.origins().get_list())
+        else: 
+            self.core().merge(Other.core())
+            self.origins().append(Other.origins().get_list(), 
+                                  StoreInputPositionFollowsAcceptanceF=False,
+                                  SelfAcceptanceF=self.is_acceptance())
+
     def clone(self, ReplacementDictionary=None, StateIndex=None):
         """Creates a copy of all transitions, but replaces any state index with the ones 
            determined in the ReplacementDictionary."""
@@ -60,37 +88,15 @@ class State:
     def core(self):
         return self.__core
 
-    def _set(self, Core, OriginList=None, TMap=None):
-        """This function allows a derived class to impose values on 
-           the core members of this class.
-        """
-        if OriginList is None: OriginList = StateOriginList()
-        if TMap is None:       TMap       = {}
-        self.__core        = Core
-        self.__origin_list = OriginList
-        if isinstance(TMap, dict): self.__transition_map = TransitionMap(TMap)
-        else:                      self.__transition_map = TMap
+    def set_cloned_core(self, Core):
+        # assert len(self.__origin_list) == 0
+        self.__core = Core.clone()
 
     def origins(self):
         return self.__origin_list
 
     def transitions(self):
         return self.__transition_map
-
-    def merge(self, Other):
-        #assert    (self.origins().is_empty()       and Other.origins().is_empty()) \
-        #       or ((not self.origins().is_empty()) and (not Other.origins().is_empty())) 
-
-        # merge core information of self with other state
-        self.core().merge(Other.core())
-        if   Other.origins().is_empty(): 
-            return 
-        elif self.origins().is_empty():  
-            self.origins().set(Other.origins().get_list())
-        else: 
-            self.origins().append(Other.origins().get_list(), 
-                                  StoreInputPositionFollowsAcceptanceF=False,
-                                  SelfAcceptanceF=self.is_acceptance())
 
     def is_acceptance(self):
         return self.core().is_acceptance()
@@ -228,23 +234,24 @@ class SideInfo:
 
 class StateMachine:
 
-    def __init__(self, InitStateIndex=None, AcceptanceF=False, Core=None):
+    def __init__(self, InitStateIndex=None, AcceptanceF=False, Core=None, InitState=None):
 
-        if InitStateIndex is None: self.init_state_index = state_machine_index.get()
-        else:                      self.init_state_index = InitStateIndex
+        if InitStateIndex is None: InitStateIndex = state_machine_index.get()
+        self.init_state_index = InitStateIndex
             
         # State Index => State (information about what triggers transition to what target state).
-        self.states = { self.init_state_index: State(AcceptanceF) }        
+        if InitState is None: InitState = State(AcceptanceF)
+        self.states = { self.init_state_index: InitState }        
 
         # get a unique state machine id 
-        id = state_machine_index.get_state_machine_id()
+        sm_id = state_machine_index.get_state_machine_id()
 
         # Setup core information
         if Core is not None: 
             self.__core = deepcopy(Core)
-            self.__core.set_id(id)
+            self.__core.set_id(sm_id)
         else:            
-            self.__core = StateMachineCoreInfo(id)
+            self.__core = StateMachineCoreInfo(sm_id)
 
         self.side_info = None
 

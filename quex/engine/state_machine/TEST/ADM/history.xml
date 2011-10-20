@@ -1,4 +1,4 @@
-<history date="Tue Oct 18 22:20:20 2011" element-n="500">
+<history date="Thu Oct 20 08:27:29 2011" element-n="501">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1182,5 +1182,8 @@
         <crc-error time="14:19:19" application="test-StateMachine-trace-origin-create-DFA-2.py" choice="" database-crc="1643545621" real-crc="-800206185"/>
         <crc-error time="14:19:37" application="test-parallelize-trace-origin.py" choice="" database-crc="372081665" real-crc="996812597"/>
         <crc-error time="19:38:09" application="test-setup_border_conditions.py" choice="" database-crc="131781279" real-crc="576054005"/>
+    </day>
+    <day year="2011" month="10" day="19">
+        <crc-error time="22:07:16" application="test-hopcroft-minimization-2.py" choice="ADAPT" database-crc="-1898926063" real-crc="693991759"/>
     </day>
 </history>
