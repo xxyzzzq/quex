@@ -171,7 +171,7 @@ class StateOriginList(object):
 
             else:
                 # Non-Acceptance origins do not harm in any way. Actually, the origins
-                # with 'origin.is_end_of_post_contexted_core_pattern() == True' **need**
+                # with 'origin.store_input_position_f() == True' **need**
                 # to be in there. See the comment at the entry of this function.
                 new_origin_list.append(origin)
 

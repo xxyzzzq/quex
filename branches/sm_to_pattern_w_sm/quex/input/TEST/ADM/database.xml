@@ -1,12 +1,12 @@
-<test-database execution-time-sec="13.21" date="Tue Oct 18 22:20:33 2011">
+<test-database execution-time-sec="12.72" date="Thu Oct 20 08:21:35 2011">
     <last-used-diff-display-program name=""/>
     <test title="Parse Indentation Setup" time-sum-sec="0.42"> 
         <application file-name="indentation_setup.py" info-request-time="1318614195L" vanished="False"/>
         <choice-list number="5" same_result="False">
            <choice name="basic" result="OK" time_sec="0.08" crc="766589108"/>
-           <choice name="twice" result="OK" time_sec="0.08" crc="-233475326"/>
-           <choice name="intersection" result="OK" time_sec="0.11" crc="-450865125"/>
-           <choice name="intersection-2" result="OK" time_sec="0.08" crc="-1608602190"/>
+           <choice name="twice" result="OK" time_sec="0.07" crc="-233475326"/>
+           <choice name="intersection" result="OK" time_sec="0.10" crc="-450865125"/>
+           <choice name="intersection-2" result="OK" time_sec="0.09" crc="-1608602190"/>
            <choice name="non-numeric" result="OK" time_sec="0.07" crc="48305511"/>
         </choice-list>
     </test>
@@ -22,29 +22,29 @@
         </choice-list>
     </test>
     <group name="Quex Queries">
-        <test title="Character Sets for Property Settings II" time-sum-sec="0.95"> 
+        <test title="Character Sets for Property Settings II" time-sum-sec="0.94"> 
             <application file-name="test-query-character-set-by-expression.py" info-request-time="1318614195L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.95" crc="-1557359517"/>
+               <choice name="" result="OK" time_sec="0.94" crc="-1557359517"/>
             </choice-list>
         </test>
-        <test title="Information about Properties" time-sum-sec="6.89"> 
+        <test title="Information about Properties" time-sum-sec="6.50"> 
             <application file-name="test-query.py" info-request-time="1318614195L" vanished="False"/>
             <choice-list number="2" same_result="False">
-               <choice name="PropertyList" result="OK" time_sec="6.23" crc="-2060388148"/>
+               <choice name="PropertyList" result="OK" time_sec="5.84" crc="-2060388148"/>
                <choice name="PropertyInfo" result="OK" time_sec="0.66" crc="2082058675"/>
             </choice-list>
         </test>
-        <test title="Wildcard Property Values" time-sum-sec="0.63"> 
+        <test title="Wildcard Property Values" time-sum-sec="0.62"> 
             <application file-name="test-query-property-wildcard-values.py" info-request-time="1318614195L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.63" crc="350926567"/>
+               <choice name="" result="OK" time_sec="0.62" crc="350926567"/>
             </choice-list>
         </test>
-        <test title="Character Sets for Property Settings" time-sum-sec="1.89"> 
+        <test title="Character Sets for Property Settings" time-sum-sec="1.84"> 
             <application file-name="test-query-character-set.py" info-request-time="1318614195L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="1.89" crc="-1346227307"/>
+               <choice name="" result="OK" time_sec="1.84" crc="-1346227307"/>
             </choice-list>
         </test>
     </group>
@@ -63,7 +63,7 @@
                <choice name="Twice-2" result="OK" time_sec="0.06" crc="1768785304"/>
             </choice-list>
         </test>
-        <test title="Constructor, Copy, Destructor" time-sum-sec="0.30"> 
+        <test title="Constructor, Copy, Destructor" time-sum-sec="0.29"> 
             <application file-name="token_type-4.py" info-request-time="1318614195L" vanished="False"/>
             <choice-list number="5" same_result="False">
                <choice name="Constructor" result="OK" time_sec="0.06" crc="-300396885"/>

@@ -1,6 +1,6 @@
 # (C) 2005-2011 Frank-Rene Schaefer
 import quex.engine.state_machine.index as     state_machine_index
-from   quex.engine.state_machine.core  import StateMachine
+from   quex.engine.state_machine.core  import StateMachine, State
 from   quex.engine.state_machine.state_core_info import E_PostContextIDs
 from   itertools   import islice, ifilter, chain, imap
 from   collections import defaultdict
@@ -224,9 +224,9 @@ class HopcroftMinization:
 
         # -- choose one arbitrary state (for example state 0) as a prototype
         #    which is compared against the remaining states in the state set.
-        prototype_index      = state_set[0]
-        prototype_map        = normalized_map(self.to_map[prototype_index])
-        equivalent_state_set = [ prototype_index ] 
+        prototype_i          = state_set[0]
+        prototype_map        = normalized_map(self.to_map[prototype_i])
+        equivalent_state_set = [ prototype_i ] 
 
         if len(prototype_map) == 0:
             # If there are no target states, then there can be no split.
@@ -478,35 +478,23 @@ def create_state_machine(SM, Result):
         return SM.clone()
     
     # Define a mapping from the state set to a new target state index
+    #
+    # map:  state_set_index  --->  index of the state that represents it
+    #
     map_new_state_index = dict([(i, state_machine_index.get()) for i in xrange(len(Result.state_set_list))])
                 
     # The state set that contains the initial state becomes the initial state of 
     # the new state machine.   
     state_set_containing_initial_state_i = Result.map[SM.init_state_index]
-    result = StateMachine(map_new_state_index[state_set_containing_initial_state_i],
-                          Core = SM.core())
+    new_init_state_index                 = map_new_state_index[state_set_containing_initial_state_i]
+
+    result = StateMachine(new_init_state_index, Core=SM.core())
 
     # Ensure that each target state index has a state inside the state machine
-    for new_state_index in map_new_state_index.values():
-        result.create_new_state(StateIdx=new_state_index)
+    # Build up the state machine out of the state sets
+    for state_set_idx, state_set in enumerate(Result.state_set_list):
 
-    # Build up the state machine out of the remaining state sets
-    state_set_idx = -1L
-    for state_set in Result.state_set_list:
-        state_set_idx += 1L
-        pass#assert len(state_set) != 0, "State set of size '0'. List = " + repr(Result)
-
-        # The prototype: States in one set behave all equivalent with respect to target state sets
-        # thus only one state from the start set has to be considered.      
-        prototype    = SM.states[state_set[0]]
-        # The representive: shall represent the state set in the new state machine.
-        representive = result.states[map_new_state_index[state_set_idx]]
-
-        # The representive must have all transitions that the prototype has
-        for target_state_index, trigger_set in prototype.transitions().get_map().iteritems():
-            target_state_set_index = Result.map[target_state_index]
-            representive.add_transition(trigger_set, 
-                                        map_new_state_index[target_state_set_index])
+        new_state_index = map_new_state_index[state_set_idx]
 
         # Merge all core information of the states inside the state set.
         # If one state set contains an acceptance state, then the result is 'acceptance'.
@@ -514,15 +502,26 @@ def create_state_machine(SM, Result):
         #  acceptance states. There can be no state set containing acceptance and 
         #  non-acceptance states) 
         # (Note, that the prototype's info has not been included yet, consider whole set)
-        for state_idx in state_set:
-            representive.merge(SM.states[state_idx])
+        result.states[new_state_index] = State.new_merged_core_state(SM.states[i] for i in state_set)
+
+    for state_set_idx, state_set in enumerate(Result.state_set_list):
+        # The prototype: States in one set behave all equivalent with respect to target state sets
+        # thus only one state from the start set has to be considered.      
+        prototype    = SM.states[state_set[0]]
+        representative = result.states[map_new_state_index[state_set_idx]]
+
+        # The representative must have all transitions that the prototype has
+        for target_state_index, trigger_set in prototype.transitions().get_map().iteritems():
+            target_state_set_index = Result.map[target_state_index]
+            target_index           = map_new_state_index[target_state_set_index]
+            representative.add_transition(trigger_set, target_index)
 
     return result    
 
 def adapt_state_machine(sm, Result):
     # If all states are of size one, this means, that there were no states that
     # could have been combined. In this case nothing is to be done.
-    for dummy in ifilter(lambda state_set: len(state_set) != 1, Result.state_set_list):
+    for dummy in (state_set for state_set in Result.state_set_list if len(state_set) != 1):
         break
     else:
         return sm
@@ -535,16 +534,13 @@ def adapt_state_machine(sm, Result):
 
         # Merge all core information of the states inside the state set.
         # Do not delete the init state
-        if sm.init_state_index in state_set: prototype_index = sm.init_state_index
-        else:                                prototype_index = state_set[0]  
+        if sm.init_state_index in state_set: prototype_i = sm.init_state_index
+        else:                                prototype_i = state_set[0]  
 
-        prototype = sm.states[prototype_index]
-        for state_idx in ifilter(lambda x: x != prototype_index, state_set):
-            prototype.merge(sm.states[state_idx])
-            # The prototype takes over the role of all
-            replacement_dict[state_idx] = prototype_index
+        # The prototype takes over the role of all
+        sm.states[prototype_i].merge_core_with(sm.states[i] for i in state_set if i != prototype_i)
 
-    pass#assert sm.init_state_index not in replacement_dict.iterkeys()
+        replacement_dict.update((i, prototype_i) for i in state_set if i != prototype_i)
 
     # Replace the indices of the thrown out states
     for state_idx in replacement_dict.iterkeys():

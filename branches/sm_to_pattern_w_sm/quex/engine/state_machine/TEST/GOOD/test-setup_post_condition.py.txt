@@ -17,32 +17,32 @@ APPENDED =  init-state = 0L
 00000() <~ 
       == 'a' ==> 00001
       <no epsilon>
-00001(S4) <~ 
+00001(S) <~ 
       ==<epsilon>==> 00002
 00002() <~ 
       == ';' ==> 00003
       <no epsilon>
-00003(A, R4) <~ 
+00003(A, R) <~ 
       <no epsilon>
 
 DFA =  init-state = 0L
 00000() <~ 
       == 'a' ==> 00001
       <no epsilon>
-00001(S4) <~ 
+00001(S) <~ 
       == ';' ==> 00002
       <no epsilon>
-00002(A, R4) <~ 
+00002(A, R) <~ 
       <no epsilon>
 
 HOPCROFT =  init-state = 0L
 00000() <~ 
       == 'a' ==> 00001
       <no epsilon>
-00001(S4) <~ 
+00001(S) <~ 
       == ';' ==> 00002
       <no epsilon>
-00002(A, R4) <~ 
+00002(A, R) <~ 
       <no epsilon>
 
 -------------------------------------------------------------------------------
@@ -84,7 +84,7 @@ APPENDED =  init-state = 0L
 00002() <~ 
       == 'f' ==> 00003
       <no epsilon>
-00003(S1) <~ 
+00003(S) <~ 
       ==<epsilon>==> 00004
 00004() <~ 
       == 'a' ==> 00005
@@ -95,7 +95,7 @@ APPENDED =  init-state = 0L
 00006() <~ 
       == 'c' ==> 00007
       <no epsilon>
-00007(A, R1) <~ 
+00007(A, R) <~ 
       <no epsilon>
 
 DFA =  init-state = 0L
@@ -109,7 +109,7 @@ DFA =  init-state = 0L
 00002() <~ 
       == 'f' ==> 00003
       <no epsilon>
-00003(S1) <~ 
+00003(S) <~ 
       == 'a' ==> 00004
       <no epsilon>
 00004() <~ 
@@ -118,7 +118,7 @@ DFA =  init-state = 0L
 00005() <~ 
       == 'c' ==> 00006
       <no epsilon>
-00006(A, R1) <~ 
+00006(A, R) <~ 
       <no epsilon>
 
 HOPCROFT =  init-state = 0L
@@ -132,7 +132,7 @@ HOPCROFT =  init-state = 0L
 00002() <~ 
       == 'f' ==> 00003
       <no epsilon>
-00003(S1) <~ 
+00003(S) <~ 
       == 'a' ==> 00004
       <no epsilon>
 00004() <~ 
@@ -141,6 +141,6 @@ HOPCROFT =  init-state = 0L
 00005() <~ 
       == 'c' ==> 00006
       <no epsilon>
-00006(A, R1) <~ 
+00006(A, R) <~ 
       <no epsilon>
 

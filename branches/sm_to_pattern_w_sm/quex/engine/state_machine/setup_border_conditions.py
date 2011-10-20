@@ -86,7 +86,7 @@ def __add_line_border_at_end(the_sm, DOS_CarriageReturnNewlineF, InverseF):
     new_state                 = State(StateIndex=new_state_idx)
     # New state must be just like any of the acceptance states (take the first).
     # The transition map, of course must be empty.
-    new_state._set(old_acceptance_state_list[0].core().clone())
+    new_state.set_cloned_core(old_acceptance_state_list[0].core())
 
     the_sm.states[new_state_idx] = new_state
 

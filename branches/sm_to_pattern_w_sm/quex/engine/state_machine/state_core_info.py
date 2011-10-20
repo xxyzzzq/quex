@@ -4,7 +4,15 @@ from quex.blackboard import E_PostContextIDs, E_AcceptanceIDs, E_PreContextIDs
 # Add a member '_DEBUG_NAME_Xyz' so that the type of an enum value can
 # be determined by value.EnumType[-1]
 class StateCoreInfo(object): 
-    """-- acceptance_f:
+    """A StateCoreInfo tells about a state how it should behave in a state
+       machine that represents one single isolated pattern. This is in 
+       contrast to a state machine that consists of a conglomerate of 
+       patterns combined into a single machine.
+
+       Such a state of an isolated pattern needs has the following
+       actions related to attributes:
+
+       -- acceptance_f:
 
           (if True) When the state is hit, then it 'accepts'. This means that a
           pattern  has matched. 
@@ -14,46 +22,51 @@ class StateCoreInfo(object):
           (if True) it says that acceptance is only valid, if the given 
           pre-context is fulfilled.
 
-       -- post_context_id:
+       Pre contexts are checked by a backward analysis before the actual forward
+       analysis. In the frame of this backward analysis matched pre-contexts raise
+       a flag as soon as a pre-context is fulfilled. Those flags are checked if the 
+       'pre_context_id' is not NONE.
 
-          (if not None) When an acceptance state is reached it tells that 
-          the input position needs to be restored. This is the counterpart
-          to 'store_input_position'. It follows that an acceptance state
-          should never store the input position. Otherwise, it would only
-          mean that it has to be stored and restored immediately. 
+       Post contexts are appended to the pattern. For example 'hello/world' is
+       a pattern that matches 'hello' if it is followed by 'world'. This is
+       implemented by a single concatenated state machine that matches
+       'helloworld'. When acceptance is reached, though, it goes back to where
+       'hello' ended its match. Consequently, there are states were the input
+       position has to be stored, and others where the input position has to be
+       restored. Of course, the restoring of input positions makes only sense
+       in acceptance states. The storing of input positions, then makes only 
+       sense in non-acceptance states. Otherwise, storing and restoring would 
+       happen in the same state and therefore be superfluous.
 
-          State machine id of the related post context. This is actually
-          nonsense. A post context is connected 1:1 with a state machine
-          core pattern. Thus the state machine id is enough. If there is
-          not post context, again, the state machine tells enough.
+       -- store_store_input_position_f:
 
+          When the state is hit, the input position has to be stored. 
+          Such a state can never be an acceptance state. 
+          
+       -- restore_input_position_f:
+
+          When the state is hit the input position has to be restored. 
+          Such a state **must** be an acceptance state.
+
+       Some post contexts cannot be addressed by simple storing and restoring
+       of input positions. They require a backward search. Such cases are 
+       indicated by the following flag:
+          
        -- pseudo_ambiguous_post_context_id:
           
           (if not None) it says that upon acceptance the state needs to 
-          do a backward input position detection. It was not possible to 
-          determine the end of the core pattern of a post context during 
-          forward analysis. Where 'post_context_id' indicates that the
-          input position was stored in a position register, this variable
-          indicates that a backward analysis needs to be performed to
-          find the end of the core pattern.
+          do a backward input position detection. When the acceptance of
+          this pattern is determined a backward search engine needs to be
+          started that searches for the correct input position for the
+          next run.
+      _________________________________________________________________________
 
-       -- store_input_position_f: 
+      NOTE: Again, objects of this type describe the behavior of a state 
+            in a single isolated state machine, designed to match one single
+            pattern. 
 
-          (if True) When the state is hit, the position of the input pointer 
-          should be stored in a position register. 
-
-          This is used for post contexts. When a core pattern ended, the input
-          position needs to be stored and the lexing for the post context
-          starts. When the post context reaches acceptance the input position
-          is then set to what was stored at the end of the core pattern.
-
-          * Note, this has **nothing** to do with trailing acceptances, where a
-          * pattern has matched and a longer pattern is tried to matched.
-          * Example 'for' has matched, we have 'fores' and try to match 'forest'.
-          * If there is not 't' following 'forest', we should go back to the
-          * end of 'for'. Those effects are handled with the 'last acceptance
-          * position' and it is determined during track analysis.
-
+            The exact behavior of a state in a 'melted' state machine is
+            derived from lists of these objects by track analysis.
     """    
     __slots__ = ("state_machine_id", "state_index", 
                  "__acceptance_f", 
@@ -206,20 +219,14 @@ class StateCoreInfo(object):
     def pre_context_id(self):
         return self.__pre_context_id  
 
-    def post_context_id(self):
-        return self.__post_context_id     
-
     def store_input_position_f(self):
-        if self.__store_input_position_f: assert self.__post_context_id != E_PostContextIDs.NONE
+        if self.__store_input_position_f: assert self.__restore_input_position_f == False
         if self.__acceptance_f:           assert self.__store_input_position_f == False
         return self.__store_input_position_f    
 
     def pseudo_ambiguous_post_context_id(self):
         return self.__pseudo_ambiguous_post_context_id
 
-    def is_end_of_post_contexted_core_pattern(self):
-        return self.__post_context_id != E_PostContextIDs.NONE and self.store_input_position_f()
-                            
     def __cmp__(self, Other):
         assert False
             
@@ -243,7 +250,7 @@ class StateCoreInfo(object):
                    "information about the pre-conditioned acceptance.\n" \
                    "state machine id = " + repr(self.state_machine_id) + "\n" + \
                    "state index      = " + repr(self.state_index)
-            assert self.__post_context_id == Other.__post_context_id, \
+            assert self.__restore_input_position_f == Other.__restore_input_position_f, \
                    "Two StateOriginInfo objects report about the same state different\n" \
                    "information about the post-conditioned acceptance.\n" \
                    "state machine id = " + repr(self.state_machine_id) + "\n" + \
@@ -265,13 +272,10 @@ class StateCoreInfo(object):
         if self.__acceptance_f:        
             txt += ", A"
             if self.__restore_input_position_f:
-                # assert isinstance(self.state_machine_id, long) and self.state_machine_id != -1, "---%s---" % repr(self.state_machine_id)
-                txt += ", R" + repr(self.__post_context_id).replace("L", "")
+                txt += ", R" 
         else:
             if self.__store_input_position_f:        
-                assert self.__post_context_id != E_PostContextIDs.NONE
-                # assert isinstance(self.state_machine_id, long) and self.state_machine_id != -1, "---%s---" % repr(self.state_machine_id)
-                txt += ", S" + repr(self.__post_context_id).replace("L", "")
+                txt += ", S" 
 
         if self.__pre_context_id != E_PreContextIDs.NONE:            
             if self.__pre_context_id == E_PreContextIDs.BEGIN_OF_LINE:
