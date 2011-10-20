@@ -119,6 +119,7 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
                       
     """   
     def __check(Place, sm):
+        # print "##", Place, sm
         __check_on_orphan_states(Place, sm)
         __check_on_init_state_not_acceptance(Place, sm)
 

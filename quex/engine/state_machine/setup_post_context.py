@@ -121,7 +121,7 @@ def do(the_state_machine, post_context_sm, fh=-1):
     for state_idx in orig_acceptance_state_id_list:
         state = result.states[state_idx]
         state.core().set_store_input_position_f(True)
-        state.core().set_post_context_id(post_context_id)
+        # state.core().set_post_context_id(post_context_id)
         state.core().set_pre_context_id(E_PreContextIDs.NONE)   
     
     # -- no acceptance state shall store the input position
