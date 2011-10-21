@@ -2,31 +2,31 @@
 expression    = "[:\C{[ﬀİ]}:]"
 state machine
 init-state = 0L
-00000() <~ 
-      == 'İ', 'ﬀ' ==> 00001
-      <no epsilon>
-00001(A) <~ 
-      <no epsilon>
+00000 ()
+     == 'İ', 'ﬀ' ==> 00001
+     <no epsilon>
+00001 (A)
+     <no epsilon>
 
 -------------------------------------------------------------------
 expression    = "[:\C{[a-z]}:]"
 state machine
 init-state = 0L
-00000() <~ 
-      == ['A', 'Z'], ['a', 'z'], 'ſ', 'K' ==> 00001
-      <no epsilon>
-00001(A) <~ 
-      <no epsilon>
+00000 ()
+     == ['A', 'Z'], ['a', 'z'], 'ſ', 'K' ==> 00001
+     <no epsilon>
+00001 (A)
+     <no epsilon>
 
 -------------------------------------------------------------------
 expression    = "[:\C{[:union([a-z], [ﬀİ]):]}:]"
 state machine
 init-state = 0L
-00000() <~ 
-      == ['A', 'Z'], ['a', 'z'], 'İ', 'ſ', 'K', 'ﬀ' ==> 00001
-      <no epsilon>
-00001(A) <~ 
-      <no epsilon>
+00000 ()
+     == ['A', 'Z'], ['a', 'z'], 'İ', 'ſ', 'K', 'ﬀ' ==> 00001
+     <no epsilon>
+00001 (A)
+     <no epsilon>
 
 -------------------------------------------------------------------
 expression    = "[:\C(m){[:union([a-z], [ﬀİ]):]}:]"
@@ -36,21 +36,21 @@ command line:1:error: Set expressions cannot absorb multi character sequences.
 expression    = "[:\C(st){[i]}:]"
 state machine
 init-state = 0L
-00000() <~ 
-      == 'i', 'İ' ==> 00001
-      <no epsilon>
-00001(A) <~ 
-      <no epsilon>
+00000 ()
+     == 'i', 'İ' ==> 00001
+     <no epsilon>
+00001 (A)
+     <no epsilon>
 
 -------------------------------------------------------------------
 expression    = "[:\C(st){[I]}:]"
 state machine
 init-state = 0L
-00000() <~ 
-      == 'I', 'ı' ==> 00001
-      <no epsilon>
-00001(A) <~ 
-      <no epsilon>
+00000 ()
+     == 'I', 'ı' ==> 00001
+     <no epsilon>
+00001 (A)
+     <no epsilon>
 
 -------------------------------------------------------------------
 expression    = "[:\C(st){}:]"
@@ -75,9 +75,9 @@ command line:1:error:               't' for special turkish case fold rules.
 expression    = "[:\C( s ){[a]}:]"
 state machine
 init-state = 0L
-00000() <~ 
-      == 'A', 'a' ==> 00001
-      <no epsilon>
-00001(A) <~ 
-      <no epsilon>
+00000 ()
+     == 'A', 'a' ==> 00001
+     <no epsilon>
+00001 (A)
+     <no epsilon>
 

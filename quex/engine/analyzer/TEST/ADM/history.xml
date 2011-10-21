@@ -1,4 +1,4 @@
-<history date="Fri Oct 21 13:34:08 2011" element-n="314">
+<history date="Fri Oct 21 23:10:37 2011" element-n="319">
     <day year="2011" month="04" day="29">
         <history-init time="04:18:51"/>
     </day>
@@ -372,5 +372,12 @@
         <crc-error time="15:27:18" application="track_analysis-pre-post.py" choice="5" database-crc="-1035866712" real-crc="-1942511726"/>
         <crc-error time="15:27:26" application="track_analysis-pre-post.py" choice="6" database-crc="-1159026220" real-crc="-1184103787"/>
         <crc-error time="15:27:37" application="track_analysis-pre-post.py" choice="7" database-crc="-832127230" real-crc="-1485474443"/>
+    </day>
+    <day year="2011" month="10" day="21">
+        <crc-error time="20:17:00" application="single-pattern.py" choice="0" database-crc="-90387055" real-crc="-1409907710"/>
+        <crc-error time="20:17:00" application="single-pattern.py" choice="1" database-crc="-233502613" real-crc="1486425359"/>
+        <crc-error time="20:17:00" application="single-pattern.py" choice="2" database-crc="879737604" real-crc="-2081933739"/>
+        <crc-error time="20:17:00" application="single-pattern.py" choice="3" database-crc="1338900071" real-crc="437795464"/>
+        <crc-error time="20:17:46" application="single-pattern.py" choice="6" database-crc="577417697" real-crc="1111802160"/>
     </day>
 </history>

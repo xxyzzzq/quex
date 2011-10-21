@@ -1,146 +1,146 @@
 -------------------------------------------------------------------------------
 EXPRESSION =  init-state = 0L
-00000() <~ 
-      == 'a' ==> 00001
-      <no epsilon>
-00001(A) <~ 
-      <no epsilon>
+00000 ()
+     == 'a' ==> 00001
+     <no epsilon>
+00001 (A)
+     <no epsilon>
 
 POST CONDITION =  init-state = 0L
-00000() <~ 
-      == ';' ==> 00001
-      <no epsilon>
-00001(A) <~ 
-      <no epsilon>
+00000 ()
+     == ';' ==> 00001
+     <no epsilon>
+00001 (A)
+     <no epsilon>
 
 APPENDED =  init-state = 0L
-00000() <~ 
-      == 'a' ==> 00001
-      <no epsilon>
-00001(S) <~ 
-      ==<epsilon>==> 00002
-00002() <~ 
-      == ';' ==> 00003
-      <no epsilon>
-00003(A, R) <~ 
-      <no epsilon>
+00000 ()
+     == 'a' ==> 00001
+     <no epsilon>
+00001 (S)
+     ==<epsilon>==> 00002
+00002 ()
+     == ';' ==> 00003
+     <no epsilon>
+00003 (A, R)
+     <no epsilon>
 
 DFA =  init-state = 0L
-00000() <~ 
-      == 'a' ==> 00001
-      <no epsilon>
-00001(S) <~ 
-      == ';' ==> 00002
-      <no epsilon>
-00002(A, R) <~ 
-      <no epsilon>
+00000 ()
+     == 'a' ==> 00001
+     <no epsilon>
+00001 (S)
+     == ';' ==> 00002
+     <no epsilon>
+00002 (A, R)
+     <no epsilon>
 
 HOPCROFT =  init-state = 0L
-00000() <~ 
-      == 'a' ==> 00001
-      <no epsilon>
-00001(S) <~ 
-      == ';' ==> 00002
-      <no epsilon>
-00002(A, R) <~ 
-      <no epsilon>
+00000 ()
+     == 'a' ==> 00001
+     <no epsilon>
+00001 (S)
+     == ';' ==> 00002
+     <no epsilon>
+00002 (A, R)
+     <no epsilon>
 
 -------------------------------------------------------------------------------
 EXPRESSION =  init-state = 0L
-00000() <~ 
-      == ['a', 'g'] ==> 00001
-      <no epsilon>
-00001() <~ 
-      == [-oo, 'd'], ['f', oo] ==> 00001
-      == 'e' ==> 00002
-      <no epsilon>
-00002() <~ 
-      == 'f' ==> 00003
-      <no epsilon>
-00003(A) <~ 
-      <no epsilon>
+00000 ()
+     == ['a', 'g'] ==> 00001
+     <no epsilon>
+00001 ()
+     == [-oo, 'd'], ['f', oo] ==> 00001
+     == 'e' ==> 00002
+     <no epsilon>
+00002 ()
+     == 'f' ==> 00003
+     <no epsilon>
+00003 (A)
+     <no epsilon>
 
 POST CONDITION =  init-state = 0L
-00000() <~ 
-      == 'a' ==> 00001
-      <no epsilon>
-00001() <~ 
-      == 'b' ==> 00002
-      <no epsilon>
-00002() <~ 
-      == 'c' ==> 00003
-      <no epsilon>
-00003(A) <~ 
-      <no epsilon>
+00000 ()
+     == 'a' ==> 00001
+     <no epsilon>
+00001 ()
+     == 'b' ==> 00002
+     <no epsilon>
+00002 ()
+     == 'c' ==> 00003
+     <no epsilon>
+00003 (A)
+     <no epsilon>
 
 APPENDED =  init-state = 0L
-00000() <~ 
-      == ['a', 'g'] ==> 00001
-      <no epsilon>
-00001() <~ 
-      == [-oo, 'd'], ['f', oo] ==> 00001
-      == 'e' ==> 00002
-      <no epsilon>
-00002() <~ 
-      == 'f' ==> 00003
-      <no epsilon>
-00003(S) <~ 
-      ==<epsilon>==> 00004
-00004() <~ 
-      == 'a' ==> 00005
-      <no epsilon>
-00005() <~ 
-      == 'b' ==> 00006
-      <no epsilon>
-00006() <~ 
-      == 'c' ==> 00007
-      <no epsilon>
-00007(A, R) <~ 
-      <no epsilon>
+00000 ()
+     == ['a', 'g'] ==> 00001
+     <no epsilon>
+00001 ()
+     == [-oo, 'd'], ['f', oo] ==> 00001
+     == 'e' ==> 00002
+     <no epsilon>
+00002 ()
+     == 'f' ==> 00003
+     <no epsilon>
+00003 (S)
+     ==<epsilon>==> 00004
+00004 ()
+     == 'a' ==> 00005
+     <no epsilon>
+00005 ()
+     == 'b' ==> 00006
+     <no epsilon>
+00006 ()
+     == 'c' ==> 00007
+     <no epsilon>
+00007 (A, R)
+     <no epsilon>
 
 DFA =  init-state = 0L
-00000() <~ 
-      == ['a', 'g'] ==> 00001
-      <no epsilon>
-00001() <~ 
-      == [-oo, 'd'], ['f', oo] ==> 00001
-      == 'e' ==> 00002
-      <no epsilon>
-00002() <~ 
-      == 'f' ==> 00003
-      <no epsilon>
-00003(S) <~ 
-      == 'a' ==> 00004
-      <no epsilon>
-00004() <~ 
-      == 'b' ==> 00005
-      <no epsilon>
-00005() <~ 
-      == 'c' ==> 00006
-      <no epsilon>
-00006(A, R) <~ 
-      <no epsilon>
+00000 ()
+     == ['a', 'g'] ==> 00001
+     <no epsilon>
+00001 ()
+     == [-oo, 'd'], ['f', oo] ==> 00001
+     == 'e' ==> 00002
+     <no epsilon>
+00002 ()
+     == 'f' ==> 00003
+     <no epsilon>
+00003 (S)
+     == 'a' ==> 00004
+     <no epsilon>
+00004 ()
+     == 'b' ==> 00005
+     <no epsilon>
+00005 ()
+     == 'c' ==> 00006
+     <no epsilon>
+00006 (A, R)
+     <no epsilon>
 
 HOPCROFT =  init-state = 0L
-00000() <~ 
-      == ['a', 'g'] ==> 00001
-      <no epsilon>
-00001() <~ 
-      == [-oo, 'd'], ['f', oo] ==> 00001
-      == 'e' ==> 00002
-      <no epsilon>
-00002() <~ 
-      == 'f' ==> 00003
-      <no epsilon>
-00003(S) <~ 
-      == 'a' ==> 00004
-      <no epsilon>
-00004() <~ 
-      == 'b' ==> 00005
-      <no epsilon>
-00005() <~ 
-      == 'c' ==> 00006
-      <no epsilon>
-00006(A, R) <~ 
-      <no epsilon>
+00000 ()
+     == ['a', 'g'] ==> 00001
+     <no epsilon>
+00001 ()
+     == [-oo, 'd'], ['f', oo] ==> 00001
+     == 'e' ==> 00002
+     <no epsilon>
+00002 ()
+     == 'f' ==> 00003
+     <no epsilon>
+00003 (S)
+     == 'a' ==> 00004
+     <no epsilon>
+00004 ()
+     == 'b' ==> 00005
+     <no epsilon>
+00005 ()
+     == 'c' ==> 00006
+     <no epsilon>
+00006 (A, R)
+     <no epsilon>
 

@@ -34,23 +34,23 @@ Bad:
     
 Newline:
     init-state = 0L
-    00000() <~ 
-          == '\n' ==> 00001
-          == '\r' ==> 00002
-          <no epsilon>
-    00001(A) <~ 
-          <no epsilon>
-    00002() <~ 
-          == '\n' ==> 00001
-          <no epsilon>
+    00000 ()
+         == '\n' ==> 00001
+         == '\r' ==> 00002
+         <no epsilon>
+    00001 (A)
+         <no epsilon>
+    00002 ()
+         == '\n' ==> 00001
+         <no epsilon>
     
 Suppressor:
     init-state = 0L
-    00000() <~ 
-          == ['c', 'e'] ==> 00001
-          <no epsilon>
-    00001(A) <~ 
-          <no epsilon>
+    00000 ()
+         == ['c', 'e'] ==> 00001
+         <no epsilon>
+    00001 (A)
+         <no epsilon>
     
 
 
@@ -101,23 +101,23 @@ Bad:
     
 Newline:
     init-state = 0L
-    00000() <~ 
-          == '\n' ==> 00001
-          == '\r' ==> 00002
-          <no epsilon>
-    00001(A) <~ 
-          <no epsilon>
-    00002() <~ 
-          == '\n' ==> 00001
-          <no epsilon>
+    00000 ()
+         == '\n' ==> 00001
+         == '\r' ==> 00002
+         <no epsilon>
+    00001 (A)
+         <no epsilon>
+    00002 ()
+         == '\n' ==> 00001
+         <no epsilon>
     
 Suppressor:
     init-state = 0L
-    00000() <~ 
-          == ['c', 'e'] ==> 00001
-          <no epsilon>
-    00001(A) <~ 
-          <no epsilon>
+    00000 ()
+         == ['c', 'e'] ==> 00001
+         <no epsilon>
+    00001 (A)
+         <no epsilon>
     
 
 
@@ -155,11 +155,11 @@ Bad:
     ['a', 'c']
 Newline:
     init-state = 0L
-    00000() <~ 
-          == ['c', 'e'] ==> 00001
-          <no epsilon>
-    00001(A) <~ 
-          <no epsilon>
+    00000 ()
+         == ['c', 'e'] ==> 00001
+         <no epsilon>
+    00001 (A)
+         <no epsilon>
     
 Suppressor:
     <none>
@@ -179,23 +179,23 @@ Bad:
     ['a', 'c']
 Newline:
     init-state = 0L
-    00000() <~ 
-          == '\n' ==> 00001
-          == '\r' ==> 00002
-          <no epsilon>
-    00001(A) <~ 
-          <no epsilon>
-    00002() <~ 
-          == '\n' ==> 00001
-          <no epsilon>
+    00000 ()
+         == '\n' ==> 00001
+         == '\r' ==> 00002
+         <no epsilon>
+    00001 (A)
+         <no epsilon>
+    00002 ()
+         == '\n' ==> 00001
+         <no epsilon>
     
 Suppressor:
     init-state = 0L
-    00000() <~ 
-          == ['c', 'e'] ==> 00001
-          <no epsilon>
-    00001(A) <~ 
-          <no epsilon>
+    00000 ()
+         == ['c', 'e'] ==> 00001
+         <no epsilon>
+    00001 (A)
+         <no epsilon>
     
 
 
@@ -247,19 +247,19 @@ Bad:
     
 Newline:
     init-state = 0L
-    00000() <~ 
-          == ['a', 'c'] ==> 00001
-          <no epsilon>
-    00001(A) <~ 
-          <no epsilon>
+    00000 ()
+         == ['a', 'c'] ==> 00001
+         <no epsilon>
+    00001 (A)
+         <no epsilon>
     
 Suppressor:
     init-state = 0L
-    00000() <~ 
-          == ['c', 'e'] ==> 00001
-          <no epsilon>
-    00001(A) <~ 
-          <no epsilon>
+    00000 ()
+         == ['c', 'e'] ==> 00001
+         <no epsilon>
+    00001 (A)
+         <no epsilon>
     
 
 
@@ -277,11 +277,11 @@ Bad:
     ['c', 'e']
 Newline:
     init-state = 0L
-    00000() <~ 
-          == ['a', 'c'] ==> 00001
-          <no epsilon>
-    00001(A) <~ 
-          <no epsilon>
+    00000 ()
+         == ['a', 'c'] ==> 00001
+         <no epsilon>
+    00001 (A)
+         <no epsilon>
     
 Suppressor:
     <none>
@@ -304,23 +304,23 @@ Bad:
     
 Newline:
     init-state = 0L
-    00000() <~ 
-          == '\n' ==> 00001
-          == '\r' ==> 00002
-          <no epsilon>
-    00001(A) <~ 
-          <no epsilon>
-    00002() <~ 
-          == '\n' ==> 00001
-          <no epsilon>
+    00000 ()
+         == '\n' ==> 00001
+         == '\r' ==> 00002
+         <no epsilon>
+    00001 (A)
+         <no epsilon>
+    00002 ()
+         == '\n' ==> 00001
+         <no epsilon>
     
 Suppressor:
     init-state = 0L
-    00000() <~ 
-          == ['a', 'c'] ==> 00001
-          <no epsilon>
-    00001(A) <~ 
-          <no epsilon>
+    00000 ()
+         == ['a', 'c'] ==> 00001
+         <no epsilon>
+    00001 (A)
+         <no epsilon>
     
 
 
@@ -338,19 +338,19 @@ Bad:
     
 Newline:
     init-state = 0L
-    00000() <~ 
-          == ['c', 'e'] ==> 00001
-          <no epsilon>
-    00001(A) <~ 
-          <no epsilon>
+    00000 ()
+         == ['c', 'e'] ==> 00001
+         <no epsilon>
+    00001 (A)
+         <no epsilon>
     
 Suppressor:
     init-state = 0L
-    00000() <~ 
-          == ['a', 'c'] ==> 00001
-          <no epsilon>
-    00001(A) <~ 
-          <no epsilon>
+    00000 ()
+         == ['a', 'c'] ==> 00001
+         <no epsilon>
+    00001 (A)
+         <no epsilon>
     
 
 
@@ -367,23 +367,23 @@ Bad:
     
 Newline:
     init-state = 0L
-    00000() <~ 
-          == '\n' ==> 00001
-          == '\r' ==> 00002
-          <no epsilon>
-    00001(A) <~ 
-          <no epsilon>
-    00002() <~ 
-          == '\n' ==> 00001
-          <no epsilon>
+    00000 ()
+         == '\n' ==> 00001
+         == '\r' ==> 00002
+         <no epsilon>
+    00001 (A)
+         <no epsilon>
+    00002 ()
+         == '\n' ==> 00001
+         <no epsilon>
     
 Suppressor:
     init-state = 0L
-    00000() <~ 
-          == ['a', 'c'] ==> 00001
-          <no epsilon>
-    00001(A) <~ 
-          <no epsilon>
+    00000 ()
+         == ['a', 'c'] ==> 00001
+         <no epsilon>
+    00001 (A)
+         <no epsilon>
     
 
 
@@ -401,23 +401,23 @@ Bad:
     ['c', 'e']
 Newline:
     init-state = 0L
-    00000() <~ 
-          == '\n' ==> 00001
-          == '\r' ==> 00002
-          <no epsilon>
-    00001(A) <~ 
-          <no epsilon>
-    00002() <~ 
-          == '\n' ==> 00001
-          <no epsilon>
+    00000 ()
+         == '\n' ==> 00001
+         == '\r' ==> 00002
+         <no epsilon>
+    00001 (A)
+         <no epsilon>
+    00002 ()
+         == '\n' ==> 00001
+         <no epsilon>
     
 Suppressor:
     init-state = 0L
-    00000() <~ 
-          == ['a', 'c'] ==> 00001
-          <no epsilon>
-    00001(A) <~ 
-          <no epsilon>
+    00000 ()
+         == ['a', 'c'] ==> 00001
+         <no epsilon>
+    00001 (A)
+         <no epsilon>
     
 
 
