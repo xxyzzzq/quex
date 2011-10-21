@@ -14,7 +14,7 @@ init-state = 0L
 00003() <~ 
       == [00B5]  ==> 00004
       <no epsilon>
-00004(A, pre=28, papc=24) <~ 
+00004(A, pre=28) <~ 
       == [00C2]  ==> 00003
       <no epsilon>
 pre-condition inverted = init-state = 0L
@@ -48,7 +48,7 @@ init-state = 0L
       == [0061]  ==> 00002
       == [00C2]  ==> 00003
       <no epsilon>
-00002(A, papc=52) <~ 
+00002(A) <~ 
       == [0061]  ==> 00002
       == [00C2]  ==> 00003
       <no epsilon>
@@ -101,7 +101,7 @@ init-state = 0L
       == [00F1, 00F3]  ==> 00008
       == [00F4]  ==> 00009
       <no epsilon>
-00003(A, papc=79) <~ 
+00003(A) <~ 
       <no epsilon>
 00004() <~ 
       == [0080, 00BF]  ==> 00002

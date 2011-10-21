@@ -419,7 +419,6 @@ n2 = sm.add_transition(n1, ord('y'))
 n3 = sm.add_transition(n1, ord('z'), AcceptanceF=True)
 sm.add_transition(n2, ord('y'), n2)
 sm.add_transition(n2, ord('z'), n3, AcceptanceF=True)
-sm.states[n1].core().set_store_input_position_f()
-sm.states[n1].core().set_post_context_id(66L)
+sm.states[n1].core().set_input_position_store_f()
 test(sm, txt)
 

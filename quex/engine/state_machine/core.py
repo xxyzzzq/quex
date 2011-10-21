@@ -1,7 +1,7 @@
-from   quex.engine.misc.string_handling import blue_print
+from   quex.engine.misc.string_handling          import blue_print
 #
-from   quex.engine.interval_handling        import NumberSet, Interval
-import quex.engine.state_machine.index      as     state_machine_index
+from   quex.engine.interval_handling             import NumberSet, Interval
+import quex.engine.state_machine.index           as     state_machine_index
 from   quex.engine.state_machine.transition_map  import TransitionMap, E_Border
 from   quex.engine.state_machine.state_core_info import StateCoreInfo
 from   quex.engine.state_machine.origin_list     import StateOriginList
@@ -55,20 +55,10 @@ class State:
 
     def __merge(self, Other):
         # assert    (self.origins().is_empty()       and Other.origins().is_empty()) \
-        #       or ((not self.origins().is_empty()) and (not Other.origins().is_empty())) 
+        #        or ((not self.origins().is_empty()) and (not Other.origins().is_empty())) 
 
-        # merge core information of self with other state
-        if   Other.origins().is_empty(): 
-            self.core().merge(Other.core())
-            return 
-        elif self.origins().is_empty():  
-            self.core().merge(Other.core())
-            self.origins().set(Other.origins().get_list())
-        else: 
-            self.core().merge(Other.core())
-            self.origins().append(Other.origins().get_list(), 
-                                  StoreInputPositionFollowsAcceptanceF=False,
-                                  SelfAcceptanceF=self.is_acceptance())
+        self.core().merge(Other.core())
+        self.origins().merge(Other.origins().get_list()) 
 
     def clone(self, ReplacementDictionary=None, StateIndex=None):
         """Creates a copy of all transitions, but replaces any state index with the ones 
@@ -106,6 +96,7 @@ class State:
            they have the same acceptance, store input positions, pre-context, etc.
            attributes.
         """
+        assert False
         return     self.core().is_equivalent(Other.core())       == True \
                and self.origins().is_equivalent(Other.origins()) == True
         
@@ -673,21 +664,6 @@ class StateMachine:
         if len(self.states) != 1: return False
         return self.states[self.init_state_index].transitions().is_empty()
 
-    def check_uniformity(self, StateIndexList):
-        """Checks whether all states in the state index list have the same 
-           state attributes.
-        """
-        assert False, "This function should not be used. I favor of Analyzer.check_uniformity()"
-        assert len(StateIndexList) != 0
-        prototype = self.states.get(StateIndexList[0])
-        assert prototype is not None
-        for state_index in StateIndexList[1:]:
-            state = self.states.get(state_index)
-            assert state is not None
-            if not prototype.is_equivalent(state):
-                return False
-        return True
-
     def has_origins(self):
         for state in self.states.values():
             if not state.origins().is_empty(): return True
@@ -816,18 +792,6 @@ class StateMachine:
     def filter_dominated_origins(self):
         for state in self.states.values(): 
             state.origins().delete_dominated()
-
-    def replace_post_context_backward_input_position_detector_state_machine(self, NewSM):
-        OldID = self.core().post_context_backward_input_position_detector_sm().get_id()
-        NewID = NewSM.get_id()
-
-        # Set the new pre-context state machine
-        self.core().set_post_context_backward_input_position_detector_sm(NewSM)
-
-        # Adapt all origins that depend on the old pcbi to the new context
-        for state in self.states.itervalues():
-            for origin in ifilter(lambda x: x.post_context_backward_input_position_detector_sm_id() == OldID, state.origins()):
-                origin.set_post_context_backward_detector_sm_id(NewID)
 
     def transform(self, TrafoInfo):
         """RETURNS: True  transformation successful

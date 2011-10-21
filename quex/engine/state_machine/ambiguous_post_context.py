@@ -239,13 +239,6 @@ def mount(the_state_machine, PostConditionSM):
             "error: no acceptance state in sequentialized state machine."
 
     # (*) Create origin data, in case where there is none yet create new one.
-    #     (Do not delete, otherwise existing information gets lost.)
-    for state in acceptance_state_list: 
-        state.core().set_post_context_backward_detector_sm_id(backward_detector_sm_id)
-        # At the end of the post condition, the input positions needs to be stored. Before
-        # we can go backwards, we need to know where the post condition actually ended.
-        # state.core().set_store_input_position_f(True)
-
     the_state_machine.core().set_post_context_backward_input_position_detector_sm(backward_detector_sm)
 
     # We cannot do a NFA to DFA and Hopcroft Optimization, because otherwise we

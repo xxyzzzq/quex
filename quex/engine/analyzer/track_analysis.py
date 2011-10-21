@@ -339,7 +339,7 @@ class Trace(object):
         self.__last_transition_n_to_acceptance = len(Path)
 
         # Last element of the path is the index of the current state
-        Origins           = track_info.sm.states[StateIndex].origins()
+        Origins      = track_info.sm.states[StateIndex].origins()
 
         # (*) Update all path related Info
         if StateIndex in track_info.loop_state_set:
@@ -381,7 +381,7 @@ class Trace(object):
             if origin.is_acceptance():
                 if not self.__sift(StateIndex, origin): 
                     continue
-                elif origin.restore_input_position_f():
+                elif origin.input_position_restore_f():
                     entry = self.__storage_db[pattern_id].clone()
                     entry.pre_context_id                 = pre_context_id
                     entry.accepting_state_index          = StateIndex
@@ -398,7 +398,7 @@ class Trace(object):
                                        PositioningStateIndex        = StateIndex, 
                                        PostContextID                = E_PostContextIDs.NONE)
 
-            elif origin.store_input_position_f(): 
+            elif origin.input_position_store_f(): 
                 self.__storage_db[pattern_id] = TraceEntry(E_PreContextIDs.NONE, 
                                                            pattern_id,
                                                            MinTransitionN_ToAcceptance  = E_TransitionN.VOID,
@@ -486,16 +486,24 @@ class Trace(object):
         """Compare two acceptance trace objects. Note, that __last_transition_n_to_acceptance
            is only for debug purposes.
         """
-        if set(self.__trace_db.iterkeys()) != set(Other.__trace_db.iterkeys()):
-            return False
-        if set(self.__storage_db.iterkeys()) != set(Other.__storage_db.iterkeys()):
-            return False
+        if len(self.__trace_db)   != len(Other.__trace_db):      return False
+        if len(self.__storage_db) != len(Other.__storage_db):    return False
+
         for pattern_id, trace in self.__trace_db.iteritems():
-            if not trace.is_equal(Other.__trace_db[pattern_id]):
-                return False
+            other_trace = Other.__trace_db.get(pattern_id)
+            if other_trace is None:                              return False
+            if not trace.is_equal(Other.__trace_db[pattern_id]): return False
+        # Here, self.__trace_db and Other.__trace_db have the same number of entries,
+        # thus the same number of unique keys (pattern_ids). Any key in self.__trace_db
+        # occurs in Other.__trace_db, so both have the same key set. Also, Both 
+        # have the same trace stored along with their given key.
+
         for pattern_id, trace in self.__storage_db.iteritems():
-            if not trace.is_equal(Other.__storage_db[pattern_id]):
-                return False
+            other_trace = Other.__storage_db.get(pattern_id)
+            if other_trace is None:                                return False
+            if not trace.is_equal(Other.__storage_db[pattern_id]): return False
+        # What held for __trace_db above holds here for __storage_db
+        
         return True
 
     def __neq__(self):

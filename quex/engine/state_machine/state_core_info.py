@@ -38,27 +38,20 @@ class StateCoreInfo(object):
        sense in non-acceptance states. Otherwise, storing and restoring would 
        happen in the same state and therefore be superfluous.
 
-       -- store_store_input_position_f:
+       -- store_input_position_store_f:
 
           When the state is hit, the input position has to be stored. 
           Such a state can never be an acceptance state. 
           
-       -- restore_input_position_f:
+       -- input_position_restore_f:
 
           When the state is hit the input position has to be restored. 
           Such a state **must** be an acceptance state.
 
        Some post contexts cannot be addressed by simple storing and restoring
        of input positions. They require a backward search. Such cases are 
-       indicated by the following flag:
-          
-       -- pseudo_ambiguous_post_context_id:
-          
-          (if not None) it says that upon acceptance the state needs to 
-          do a backward input position detection. When the acceptance of
-          this pattern is determined a backward search engine needs to be
-          started that searches for the correct input position for the
-          next run.
+       indicated by the following flag. In this case, the pattern's object
+       contains a flag that tells 'backward input position search' required.
       _________________________________________________________________________
 
       NOTE: Again, objects of this type describe the behavior of a state 
@@ -71,89 +64,43 @@ class StateCoreInfo(object):
     __slots__ = ("state_machine_id", "state_index", 
                  "__acceptance_f", 
                  "__pre_context_id", 
-                 "__store_input_position_f",
-                 "__restore_input_position_f",
-                 "__post_context_id", 
-                 "__pseudo_ambiguous_post_context_id")
+                 "__input_position_store_f",
+                 "__input_position_restore_f")
 
     def __init__(self, StateMachineID, StateIndex, 
                  AcceptanceF, 
                  StoreInputPositionF=False, 
-                 PostContextID=E_PostContextIDs.NONE, 
                  PreContextID=E_PreContextIDs.NONE,
-                 PseudoAmbiguousPostConditionID=-1L, 
                  RestoreInputPositionF=False):
         assert type(StateIndex)  == long
         assert type(AcceptanceF) == bool
         assert type(StoreInputPositionF) == bool
         assert type(RestoreInputPositionF) == bool
-        assert    StateMachineID in E_AcceptanceIDs \
-               or (isinstance(StateMachineID, long) and StateMachineID >= 0) 
-        assert PostContextID in E_PostContextIDs or PostContextID >= 0
-        assert PreContextID  in E_PreContextIDs or isinstance(PreContextID, long)
+        assert StateMachineID in E_AcceptanceIDs or (isinstance(StateMachineID, long) and StateMachineID >= 0) 
+        assert PreContextID   in E_PreContextIDs or isinstance(PreContextID, long)
 
-        if AcceptanceF: 
-            assert not StoreInputPositionF 
-        else:
-            assert PreContextID                   == E_PreContextIDs.NONE
-            assert PseudoAmbiguousPostConditionID == -1L
+        if AcceptanceF: assert not StoreInputPositionF 
+        else:           assert PreContextID == E_PreContextIDs.NONE
                
         # NOT: StateMachineID != E_AcceptanceIDs.FAILURE => AcceptanceF == False
         #      State core info objects are also used for non-acceptance states of patterns
 
         self.state_machine_id = StateMachineID
         self.state_index      = StateIndex
-        # is an acceptance state?
-        self.__acceptance_f   = AcceptanceF 
 
-        # Input position of the current input stream is to be stored in 
-        # the following cases: 
-        #
-        #   -- 'normal acceptance state', i.e. not the acceptance state of a post condition.
-        #   -- 'ex acceptance state', i.e. states that were acceptance states of state machines
-        #      that have a post condition.      
-        #
-        # NOTE: By default, the function 'set_acceptance(True)' and 'set_acceptance(False)'
-        #       of class State sets the 'store_input_position_f' to True, respectively
-        #       false, because this is the normal case. When a post condition is to be appended
-        #       the 'store_input_position_f' is to be stored manually - see the function
-        #       'state_machine.post_context_append.do(...).
-        self.set_store_input_position_f(StoreInputPositionF)
-
-        # -- was the origin a post-conditioned acceptance?
-        #    (then we have to store the input position, store the original state machine
-        #     as winner, but continue)
-        self.__post_context_id          = PostContextID
-        self.__restore_input_position_f = RestoreInputPositionF
-        assert self.__restore_input_position_f == (self.__acceptance_f and self.__post_context_id != E_PostContextIDs.NONE)
-
-        # -- was the origin a pre-conditioned acceptance?
-        #    (then one has to check at the end if the pre-condition holds)
-        self.__pre_context_id = PreContextID  
-
-        # -- id of state machine that is used to go backwards from the end
-        #    of a post condition that is pseudo-ambiguous. 
-        self.__pseudo_ambiguous_post_context_id = PseudoAmbiguousPostConditionID
+        self.__acceptance_f             = AcceptanceF 
+        self.__input_position_store_f   = StoreInputPositionF
+        self.__input_position_restore_f = RestoreInputPositionF
+        self.__pre_context_id           = PreContextID  
 
     def clone(self, StateIndex=None):
         if StateIndex is not None: state_index = StateIndex
         else:                      state_index = self.state_index
         return StateCoreInfo(self.state_machine_id, state_index, 
                              self.__acceptance_f,
-                             self.__store_input_position_f,
-                             self.__post_context_id,
+                             self.__input_position_store_f,
                              self.__pre_context_id,
-                             self.__pseudo_ambiguous_post_context_id, 
-                             self.__restore_input_position_f)
-
-    def is_equivalent(self, Other):
-        if self.__acceptance_f != Other.__acceptance_f:         return False
-        elif self.__acceptance_f:
-            if self.state_machine_id != Other.state_machine_id: return False
-        return     self.store_input_position_f()           == Other.store_input_position_f()           \
-               and self.restore_input_position_f()         == Other.restore_input_position_f()         \
-               and self.__pre_context_id                   == Other.__pre_context_id                   \
-               and self.__pseudo_ambiguous_post_context_id == Other.__pseudo_ambiguous_post_context_id 
+                             self.__input_position_restore_f)
 
     def merge(self, Other):
         # It **DOES** make any sense to merge to state cores from different
@@ -164,99 +111,75 @@ class StateCoreInfo(object):
 
         if Other.__acceptance_f:                 
             self.__acceptance_f = True
-            self.set_store_input_position_f(False)
-        elif Other.__store_input_position_f and self.__acceptance_f == False:
-            self.set_store_input_position_f(True)
+            self.__input_position_store_f = False
 
-        if Other.__pre_context_id != E_PreContextIDs.NONE:    self.__pre_context_id  = Other.__pre_context_id 
-        if Other.__post_context_id != E_PostContextIDs.NONE:  self.__post_context_id = Other.__post_context_id
+        if Other.__pre_context_id != E_PreContextIDs.NONE:    
+            self.__pre_context_id  = Other.__pre_context_id 
 
-        self.__restore_input_position_f = (self.__acceptance_f and self.__post_context_id != E_PostContextIDs.NONE)
+        if self.__acceptance_f:
+            # 'restore' makes only sense on acceptance states
+            if Other.__input_position_restore_f: self.__input_position_restore_f = True
+        else:
+            # 'store' makes only sense on non-acceptance states
+            if Other.__input_position_store_f:   self.__input_position_store_f = True
 
-        if Other.__pseudo_ambiguous_post_context_id != -1L: 
-            self.__pseudo_ambiguous_post_context_id = Other.__pseudo_ambiguous_post_context_id
+        # It does not make sense to store and restore the input position at the same place
+        if self.__input_position_store_f and self.__input_position_restore_f:
+            self.__input_position_store_f = False
+            self.__input_position_restore_f = False
 
-    def is_unconditional_acceptance(self):
-        return     self.__acceptance_f \
-               and self.__pre_context_id == E_PreContextIDs.NONE
+        # NOTE: 'store' + 'restore' = no storage at all.
+        #if Other.__input_position_store_f:
+        #    if self.__input_position_restore_f: self.__input_position_restore_f = False  # 'store' + 'restore'
+        #    else:                               self.__input_position_store_f   = True
+        #if Other.__input_position_restore_f: 
+        #    if self.__input_position_store_f: self.__input_position_store_f   = False    # 'store' + 'restore'
+        #    else:                             self.__input_position_restore_f = True
+        #
+        #if Other.__pre_context_id != E_PreContextIDs.NONE:    
+        #    self.__pre_context_id  = Other.__pre_context_id 
 
     def is_acceptance(self):
         return self.__acceptance_f
 
     def set_acceptance_f(self, Value):
-        """NOTE: By default, when a state is set to acceptance the input
-                 position is to be stored for all related origins, if this is 
-                 not desired (as by 'post_context_append.do(..)' the flag
-                 'store_input_position_f' is to be adapted manually using the
-                 function 'set_store_input_position_f'
-        """      
         assert type(Value) == bool
         self.__acceptance_f = Value
-        self.__restore_input_position_f = (self.__acceptance_f and self.__post_context_id != E_PostContextIDs.NONE)
 
-    def set_post_context_id(self, Value):
-        assert   (isinstance(Value, long) and Value >= 0) or Value in E_PostContextIDs
-        # assert isinstance(self.state_machine_id, long) and self.state_machine_id != -1
-        self.__post_context_id = Value
-        self.__restore_input_position_f = (self.__acceptance_f and self.__post_context_id != E_PostContextIDs.NONE)
+    def input_position_store_f(self):
+        if self.__input_position_store_f: assert self.__input_position_restore_f == False
+        if self.__acceptance_f:           assert self.__input_position_store_f == False
+        return self.__input_position_store_f    
+
+    def input_position_restore_f(self):
+        return self.__input_position_restore_f
+
+    def set_input_position_restore_f(self, Value=True):
+        self.__input_position_restore_f = Value
         
-    def set_store_input_position_f(self, Value=True):
+    def set_input_position_store_f(self, Value=True):
         assert type(Value) == bool
         if Value == True: assert self.__acceptance_f == False
-        self.__store_input_position_f = Value
-
-    def restore_input_position_f(self):
-        return self.__restore_input_position_f
+        self.__input_position_store_f = Value
 
     def set_pre_context_id(self, Value=True):
         assert Value in E_PreContextIDs or type(Value) == long
         self.__pre_context_id = Value
 
-    def set_post_context_backward_detector_sm_id(self, Value):
-        assert type(Value) == long
-        self.__pseudo_ambiguous_post_context_id = Value
-
     def pre_context_id(self):
         return self.__pre_context_id  
-
-    def store_input_position_f(self):
-        if self.__store_input_position_f: assert self.__restore_input_position_f == False
-        if self.__acceptance_f:           assert self.__store_input_position_f == False
-        return self.__store_input_position_f    
-
-    def pseudo_ambiguous_post_context_id(self):
-        return self.__pseudo_ambiguous_post_context_id
 
     def __cmp__(self, Other):
         assert False
             
-    def is_same_origin(self, Other):
-        """Two origins are the same if they origin from the same state machine and 
-           have the same state index. If they then differ in the 'store_input_position_f'
-           there is a major error. It would mean that one StateOriginInfo states about the
-           same original state something different than another StateOriginInfo.
-        """
-        result = self.state_machine_id == Other.state_machine_id and \
-                 self.state_index      == Other.state_index                           
-
-        if result == True: 
-            assert self.__store_input_position_f == Other.__store_input_position_f, \
-                   "Two StateOriginInfo objects report about the same state different\n" \
-                   "information about the input being stored or not.\n" \
-                   "state machine id = " + repr(self.state_machine_id) + "\n" + \
-                   "state index      = " + repr(self.state_index)
-            assert self.__pre_context_id == Other.__pre_context_id, \
-                   "Two StateOriginInfo objects report about the same state different\n" \
-                   "information about the pre-conditioned acceptance.\n" \
-                   "state machine id = " + repr(self.state_machine_id) + "\n" + \
-                   "state index      = " + repr(self.state_index)
-            assert self.__restore_input_position_f == Other.__restore_input_position_f, \
-                   "Two StateOriginInfo objects report about the same state different\n" \
-                   "information about the post-conditioned acceptance.\n" \
-                   "state machine id = " + repr(self.state_machine_id) + "\n" + \
-                   "state index      = " + repr(self.state_index)
-
-        return result     
+    def is_equivalent(self, Other):
+        assert False
+        if self.__acceptance_f != Other.__acceptance_f:         return False
+        elif self.__acceptance_f:
+            if self.state_machine_id != Other.state_machine_id: return False
+        return     self.input_position_store_f()   == Other.input_position_store_f()   \
+               and self.input_position_restore_f() == Other.input_position_restore_f() \
+               and self.__pre_context_id           == Other.__pre_context_id                   
 
     def __repr__(self):
         return self.get_string()
@@ -269,12 +192,13 @@ class StateCoreInfo(object):
                 txt += ", " + repr(self.state_machine_id).replace("L", "")
             if self.state_index != -1L:
                 txt += ", " + repr(self.state_index).replace("L", "")
+
         if self.__acceptance_f:        
             txt += ", A"
-            if self.__restore_input_position_f:
+            if self.__input_position_restore_f:
                 txt += ", R" 
         else:
-            if self.__store_input_position_f:        
+            if self.__input_position_store_f:        
                 txt += ", S" 
 
         if self.__pre_context_id != E_PreContextIDs.NONE:            
@@ -282,9 +206,6 @@ class StateCoreInfo(object):
                 txt += ", pre=bol"
             else: 
                 txt += ", pre=" + repr(self.__pre_context_id).replace("L", "")
-
-        if self.__pseudo_ambiguous_post_context_id != -1L:            
-            txt += ", papc=" + repr(self.__pseudo_ambiguous_post_context_id).replace("L", "")
 
         # Delete the starting ", "
         if len(txt) > 2: txt = txt[2:]

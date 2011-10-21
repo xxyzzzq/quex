@@ -106,9 +106,8 @@ def __add_line_border_at_end(the_sm, DOS_CarriageReturnNewlineF, InverseF):
 
         # (-) Cancel acceptance of old state
         state.set_acceptance(False)
-        state.core().set_store_input_position_f(False)
-        state.core().set_post_context_id(E_PostContextIDs.NONE)
+        state.core().set_input_position_store_f(False)
+        state.core().set_input_position_restore_f(False)
         state.core().set_pre_context_id(E_PreContextIDs.NONE)
-        state.core().set_post_context_backward_detector_sm_id(-1L)
         #
     return new_state_idx    
