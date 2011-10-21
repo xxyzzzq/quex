@@ -13,6 +13,7 @@ class StateOriginList(object):
         return StateOriginList([x.clone() for x in self.__list])
 
     def is_equivalent(self, Other):
+        assert False
         # Loop over all origins in list and search for counterparts in Other
         for origin in self.__list:
             # Is there an equivalent origin in Other?
@@ -40,66 +41,47 @@ class StateOriginList(object):
     def __add(self, Origin):
         """Check if origin has already been mentioned, else append the new origin.
         """
-        for dummy in ifilter(lambda origin: origin.is_same_origin(Origin), self.__list):
+        SM_ID = Origin.state_machine_id
+        for same in (origin for origin in self.__list if origin.state_machine_id == SM_ID):
+            same.merge(Origin)
             return
-        self.__list.append(Origin)
+        self.__list.append(Origin.clone())
 
     def add(self, X, StateIndex, StoreInputPositionF=False, SelfAcceptanceF=False):
         """Add the StateMachineID and the given StateIdx to the list of origins of 
            this state.
-           NOTE: The rule is that by default the 'store_input_position_f' flag
+           NOTE: The rule is that by default the 'input_position_store_f' flag
                  follows the acceptance state flag (i.e. by default any acceptance
                  state stores the input position). Thus when an origin is  added
-                 to a state that is an acceptance state, the 'store_input_position_f'
+                 to a state that is an acceptance state, the 'input_position_store_f'
                  has to be raised for all incoming origins.      
         """
         assert type(X) == long or X.__class__ == StateCoreInfo
         assert type(StateIndex) == long
+        assert StoreInputPositionF is not None
             
-        # -- entry checks 
         if X.__class__ == StateCoreInfo:
             self.__add(X.clone())
         else:
-            # -- create the origin data structure (X = state machine id)
-            if StoreInputPositionF is None: StoreInputPositionF = SelfAcceptanceF
             self.__add(StateCoreInfo(StateMachineID      = X, 
                                      StateIndex          = StateIndex, 
                                      AcceptanceF         = SelfAcceptanceF,
                                      StoreInputPositionF = StoreInputPositionF))
 
-    def append(self, OriginList, StoreInputPositionFollowsAcceptanceF, SelfAcceptanceF):
-        """Add list of origins. Optional argument tells wether
-           the 'store_input_position_f' shall adapt to the acceptance of self, or
-           the acceptance of the origin list is to be copied.
-        """
-        if StoreInputPositionFollowsAcceptanceF: 
-            for origin in OriginList:
-                self.add(origin.state_machine_id, origin.state_index, 
-                         StoreInputPositionF=self.is_acceptance())
-        else:
-            for origin in OriginList: self.__add(origin)
-
-    def clear(self):
-        self.__list = []
+    def merge(self, OriginList):
+        for origin in OriginList: 
+            self.__add(origin)
 
     def set(self, OriginList, ArgumentIsYoursF=False):
         assert type(OriginList) == list
         if ArgumentIsYoursF: self.__list = OriginList
         else:                self.__list = [ x.clone() for x in OriginList ]
 
+    def clear(self):
+        self.__list = []
+
     def is_empty(self):
         return len(self.__list) == 0
-
-    def contains_any_pre_context_dependency(self):
-        for origin in self.__list:
-            if origin.pre_context_id() != E_PreContextIDs.NONE: return True
-        return False    
-
-    def contains_pre_context_begin_of_line(self):
-        for origin in self.__list:
-            if origin.pre_context_id() == E_PreContextIDs.BEGIN_OF_LINE: 
-                return True
-        return False    
 
     def adapt(self, StateMachineID, StateIndex):
         """Adapts all origins so that their original state is 'StateIndex' in state machine
@@ -109,18 +91,6 @@ class StateOriginList(object):
         for origin in self.__list:
             origin.state_machine_id = StateMachineID
             origin.state_index      = StateIndex 
-
-    def find_first_acceptance_origin(self):
-        """Returns first origin which refers to an acceptance state. 
-           Note, that this only makes sense if the list is sorted.
-
-           Returns 'None' if no acceptance origin has been found.
-        """
-        for origin in self.get_list():
-            if origin.is_acceptance():
-                return origin
-        else:
-            return None
 
     def delete_meaningless(self):
         """Deletes origins that are not concerned with one of the three:
@@ -141,7 +111,7 @@ class StateOriginList(object):
         self.__list = filter(lambda origin:
                                     origin.post_contexted_acceptance_f()            or
                                     origin.pre_context_id() != E_PreContextIDs.NONE or
-                                    origin.store_input_position_f(),
+                                    origin.input_position_store_f(),
                                     self.__list)
 
     def delete_dominated(self):
@@ -171,7 +141,7 @@ class StateOriginList(object):
 
             else:
                 # Non-Acceptance origins do not harm in any way. Actually, the origins
-                # with 'origin.store_input_position_f() == True' **need**
+                # with 'origin.input_position_store_f() == True' **need**
                 # to be in there. See the comment at the entry of this function.
                 new_origin_list.append(origin)
 

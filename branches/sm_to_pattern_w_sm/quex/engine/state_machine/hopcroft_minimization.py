@@ -299,7 +299,7 @@ class HopcroftMinization:
                 """Computes a 'key' that allows the state set split in the
                    sense of criteria (1) and (2) above. 
                 """
-                return (state.is_acceptance(), state.core().store_input_position_f())
+                return (state.is_acceptance(), state.core().input_position_store_f())
 
             distinguisher_db = defaultdict(list)
             for state_index, state in self.sm.states.iteritems():
@@ -335,7 +335,7 @@ class HopcroftMinization:
                 """
                 result = {}
                 for x in state.origins():
-                    result[x.state_machine_id] = x.store_input_position_f()
+                    result[x.state_machine_id] = x.input_position_store_f()
                 return result
 
             state_set_iterable = distinguisher_db.values()

@@ -15,13 +15,13 @@ ambigous post condition = init-state = 0L
 00003() <~ 
       == 'b' ==> 00004
       <no epsilon>
-00004(A, papc=27) <~ 
+00004(A) <~ 
       == 'a' ==> 00003
       <no epsilon>
 00005() <~ 
       == 'y' ==> 00006
       <no epsilon>
-00006(A, papc=27) <~ 
+00006(A) <~ 
       == 'a' ==> 00003
       == 'x' ==> 00005
       <no epsilon>
@@ -76,13 +76,13 @@ ambigous post condition = init-state = 0L
 00003() <~ 
       == ['a', 'z'] ==> 00004
       <no epsilon>
-00004(A, papc=43) <~ 
+00004(A) <~ 
       <no epsilon>
 00005() <~ 
       == ['a', 'y'] ==> 00004
       == 'z' ==> 00006
       <no epsilon>
-00006(A, papc=43) <~ 
+00006(A) <~ 
       == ['a', 'w'], ['y', 'z'] ==> 00003
       == 'x' ==> 00005
       <no epsilon>
@@ -128,7 +128,7 @@ ambigous post condition = init-state = 0L
 00005() <~ 
       == 'z' ==> 00006
       <no epsilon>
-00006(A, papc=57) <~ 
+00006(A) <~ 
       == 'x' ==> 00004
       <no epsilon>
 post context backward input position detector inverted = init-state = 0L
@@ -171,7 +171,7 @@ ambigous post condition = init-state = 0L
       == 'a' ==> 00002
       == 'b' ==> 00003
       <no epsilon>
-00003(A, papc=75) <~ 
+00003(A) <~ 
       <no epsilon>
 post context backward input position detector inverted = init-state = 0L
 00000() <~ 
@@ -207,7 +207,7 @@ ambigous post condition = init-state = 0L
 00002() <~ 
       == [\0, '\t'], ['\v', '􏿿'] ==> 00003
       <no epsilon>
-00003(A, papc=97) <~ 
+00003(A) <~ 
       == [\0, '\t'], ['\v', '􏿿'] ==> 00003
       <no epsilon>
 post context backward input position detector inverted = init-state = 0L

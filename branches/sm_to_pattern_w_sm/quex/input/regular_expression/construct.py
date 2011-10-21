@@ -285,7 +285,7 @@ def __validate(sm, fh):
     for state in sm.states.values():
         if state.core().is_acceptance(): acceptance_f = True
 
-        if     state.core().store_input_position_f() \
+        if     state.core().input_position_store_f() \
            and state.core().is_acceptance():
             error_msg("Pattern with post-context: An irregularity occurred.\n" + \
                       "(end of normal post-contexted core pattern is an acceptance state)\n" 

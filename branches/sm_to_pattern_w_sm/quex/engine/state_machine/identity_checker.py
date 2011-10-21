@@ -91,12 +91,10 @@ class Checker:
                  != (s1.pre_context_id() == E_PreContextIDs.NONE):            return False
             elif    (s0.pre_context_id() == E_PreContextIDs.BEGIN_OF_LINE) \
                  != (s1.pre_context_id() == E_PreContextIDs.BEGIN_OF_LINE):   return False
-            elif     s0.store_input_position_f() \
-                 !=  s1.store_input_position_f():                             return False
-            elif     s0.restore_input_position_f() \
-                 !=  s1.restore_input_position_f():                           return False
-            elif    (s0.pseudo_ambiguous_post_context_id() == -1) \
-                 != (s1.pseudo_ambiguous_post_context_id() == -1):            return False
+            elif     s0.input_position_store_f() \
+                 !=  s1.input_position_store_f():                             return False
+            elif     s0.input_position_restore_f() \
+                 !=  s1.input_position_restore_f():                           return False
 
         return True
 
