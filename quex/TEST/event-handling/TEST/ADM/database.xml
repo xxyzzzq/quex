@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.34" date="Fri Oct 21 08:36:48 2011">
+<test-database execution-time-sec="0.35" date="Fri Oct 21 13:31:58 2011">
     <last-used-diff-display-program name=""/>
     <test title="Customized on_skip_range_open event." make-dependent="True" time-sum-sec="0.03"> 
         <application file-name="on_skip_range_open-customized.sh" info-request-time="1318660682L" vanished="False"/>
@@ -21,8 +21,8 @@
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="0.03" crc="140187343"/>
                <choice name="2" result="OK" time_sec="0.03" crc="1810777269"/>
-               <choice name="3" result="OK" time_sec="0.03" crc="784591852"/>
-               <choice name="error" result="OK" time_sec="0.03" crc="-1050387149"/>
+               <choice name="3" result="OK" time_sec="0.04" crc="784591852"/>
+               <choice name="error" result="OK" time_sec="0.04" crc="-1050387149"/>
             </choice-list>
         </test>
         <test title="transition.qx" make-dependent="True" time-sum-sec="0.14"> 
@@ -31,8 +31,8 @@
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="0.03" crc="140187343"/>
                <choice name="2" result="OK" time_sec="0.03" crc="1810777269"/>
-               <choice name="3" result="OK" time_sec="0.03" crc="784591852"/>
-               <choice name="error" result="OK" time_sec="0.03" crc="1033984840"/>
+               <choice name="3" result="OK" time_sec="0.04" crc="784591852"/>
+               <choice name="error" result="OK" time_sec="0.04" crc="1033984840"/>
             </choice-list>
         </test>
     </group>
