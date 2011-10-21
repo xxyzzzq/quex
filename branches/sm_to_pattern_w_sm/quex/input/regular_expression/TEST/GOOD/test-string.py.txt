@@ -1,138 +1,138 @@
 expression    = "a-z"
 state machine
 init-state = 0L
-00000() <~ 
-      == 'a' ==> 00001
-      <no epsilon>
-00001() <~ 
-      == '-' ==> 00002
-      <no epsilon>
-00002() <~ 
-      == 'z' ==> 00003
-      <no epsilon>
-00003(A) <~ 
-      <no epsilon>
+00000 ()
+     == 'a' ==> 00001
+     <no epsilon>
+00001 ()
+     == '-' ==> 00002
+     <no epsilon>
+00002 ()
+     == 'z' ==> 00003
+     <no epsilon>
+00003 (A)
+     <no epsilon>
 
 expression    = "ABCDE0-9"
 state machine
 init-state = 0L
-00000() <~ 
-      == 'A' ==> 00001
-      <no epsilon>
-00001() <~ 
-      == 'B' ==> 00002
-      <no epsilon>
-00002() <~ 
-      == 'C' ==> 00003
-      <no epsilon>
-00003() <~ 
-      == 'D' ==> 00004
-      <no epsilon>
-00004() <~ 
-      == 'E' ==> 00005
-      <no epsilon>
-00005() <~ 
-      == '0' ==> 00006
-      <no epsilon>
-00006() <~ 
-      == '-' ==> 00007
-      <no epsilon>
-00007() <~ 
-      == '9' ==> 00008
-      <no epsilon>
-00008(A) <~ 
-      <no epsilon>
+00000 ()
+     == 'A' ==> 00001
+     <no epsilon>
+00001 ()
+     == 'B' ==> 00002
+     <no epsilon>
+00002 ()
+     == 'C' ==> 00003
+     <no epsilon>
+00003 ()
+     == 'D' ==> 00004
+     <no epsilon>
+00004 ()
+     == 'E' ==> 00005
+     <no epsilon>
+00005 ()
+     == '0' ==> 00006
+     <no epsilon>
+00006 ()
+     == '-' ==> 00007
+     <no epsilon>
+00007 ()
+     == '9' ==> 00008
+     <no epsilon>
+00008 (A)
+     <no epsilon>
 
 expression    = "ABCD\aE0-9"
 state machine
 init-state = 0L
-00000() <~ 
-      == 'A' ==> 00001
-      <no epsilon>
-00001() <~ 
-      == 'B' ==> 00002
-      <no epsilon>
-00002() <~ 
-      == 'C' ==> 00003
-      <no epsilon>
-00003() <~ 
-      == 'D' ==> 00004
-      <no epsilon>
-00004() <~ 
-      == '\a' ==> 00005
-      <no epsilon>
-00005() <~ 
-      == 'E' ==> 00006
-      <no epsilon>
-00006() <~ 
-      == '0' ==> 00007
-      <no epsilon>
-00007() <~ 
-      == '-' ==> 00008
-      <no epsilon>
-00008() <~ 
-      == '9' ==> 00009
-      <no epsilon>
-00009(A) <~ 
-      <no epsilon>
+00000 ()
+     == 'A' ==> 00001
+     <no epsilon>
+00001 ()
+     == 'B' ==> 00002
+     <no epsilon>
+00002 ()
+     == 'C' ==> 00003
+     <no epsilon>
+00003 ()
+     == 'D' ==> 00004
+     <no epsilon>
+00004 ()
+     == '\a' ==> 00005
+     <no epsilon>
+00005 ()
+     == 'E' ==> 00006
+     <no epsilon>
+00006 ()
+     == '0' ==> 00007
+     <no epsilon>
+00007 ()
+     == '-' ==> 00008
+     <no epsilon>
+00008 ()
+     == '9' ==> 00009
+     <no epsilon>
+00009 (A)
+     <no epsilon>
 
 expression    = "A-Z\n^CD\""
 state machine
 init-state = 0L
-00000() <~ 
-      == 'A' ==> 00001
-      <no epsilon>
-00001() <~ 
-      == '-' ==> 00002
-      <no epsilon>
-00002() <~ 
-      == 'Z' ==> 00003
-      <no epsilon>
-00003() <~ 
-      == '\n' ==> 00004
-      <no epsilon>
-00004() <~ 
-      == '^' ==> 00005
-      <no epsilon>
-00005() <~ 
-      == 'C' ==> 00006
-      <no epsilon>
-00006() <~ 
-      == 'D' ==> 00007
-      <no epsilon>
-00007() <~ 
-      == '"' ==> 00008
-      <no epsilon>
-00008(A) <~ 
-      <no epsilon>
+00000 ()
+     == 'A' ==> 00001
+     <no epsilon>
+00001 ()
+     == '-' ==> 00002
+     <no epsilon>
+00002 ()
+     == 'Z' ==> 00003
+     <no epsilon>
+00003 ()
+     == '\n' ==> 00004
+     <no epsilon>
+00004 ()
+     == '^' ==> 00005
+     <no epsilon>
+00005 ()
+     == 'C' ==> 00006
+     <no epsilon>
+00006 ()
+     == 'D' ==> 00007
+     <no epsilon>
+00007 ()
+     == '"' ==> 00008
+     <no epsilon>
+00008 (A)
+     <no epsilon>
 
 expression    = "\""
 state machine
 init-state = 0L
-00000() <~ 
-      == '"' ==> 00001
-      <no epsilon>
-00001(A) <~ 
-      <no epsilon>
+00000 ()
+     == '"' ==> 00001
+     <no epsilon>
+00001 (A)
+     <no epsilon>
 
 expression    = "\\"
 state machine
 init-state = 0L
-00000() <~ 
-      == '\' ==> 00001
-      <no epsilon>
-00001(A) <~ 
-      <no epsilon>
+00000 ()
+     == '\' ==> 00001
+     <no epsilon>
+00001 (A)
+     <no epsilon>
 
 expression    = "\\n"
 state machine
 init-state = 0L
-00000() <~ 
-      == '\' ==> 00001
-      <no epsilon>
-00001() <~ 
-      == 'n' ==> 00002
-      <no epsilon>
-00002(A) <~ 
-      <no epsilon>
+00000 ()
+     == '\' ==> 00001
+     <no epsilon>
+00001 ()
+     == 'n' ==> 00002
+     <no epsilon>
+00002 (A)
+     <no epsilon>
 

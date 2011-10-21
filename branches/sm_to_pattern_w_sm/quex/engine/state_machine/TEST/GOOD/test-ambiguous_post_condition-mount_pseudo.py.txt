@@ -2,227 +2,227 @@
 core pattern            = "xy"+
 post condition pattern  = ((ab)+|xy)
 ambigous post condition = init-state = 0L
-00000() <~ 
-      == 'x' ==> 00001
-      <no epsilon>
-00001() <~ 
-      == 'y' ==> 00002
-      <no epsilon>
-00002() <~ 
-      == 'a' ==> 00003
-      == 'x' ==> 00005
-      <no epsilon>
-00003() <~ 
-      == 'b' ==> 00004
-      <no epsilon>
-00004(A) <~ 
-      == 'a' ==> 00003
-      <no epsilon>
-00005() <~ 
-      == 'y' ==> 00006
-      <no epsilon>
-00006(A) <~ 
-      == 'a' ==> 00003
-      == 'x' ==> 00005
-      <no epsilon>
+00000 ()
+     == 'x' ==> 00001
+     <no epsilon>
+00001 ()
+     == 'y' ==> 00002
+     <no epsilon>
+00002 ()
+     == 'a' ==> 00003
+     == 'x' ==> 00005
+     <no epsilon>
+00003 ()
+     == 'b' ==> 00004
+     <no epsilon>
+00004 (A)
+     == 'a' ==> 00003
+     <no epsilon>
+00005 ()
+     == 'y' ==> 00006
+     <no epsilon>
+00006 (A)
+     == 'a' ==> 00003
+     == 'x' ==> 00005
+     <no epsilon>
 post context backward input position detector inverted = init-state = 0L
-00000() <~ 
-      == 'b' ==> 00001
-      == 'y' ==> 00003
-      <no epsilon>
-00001() <~ 
-      == 'a' ==> 00002
-      <no epsilon>
-00002(A) <~ 
-      == 'b' ==> 00001
-      <no epsilon>
-00003() <~ 
-      == 'x' ==> 00004
-      <no epsilon>
-00004(A) <~ 
-      <no epsilon>
+00000 ()
+     == 'b' ==> 00001
+     == 'y' ==> 00003
+     <no epsilon>
+00001 ()
+     == 'a' ==> 00002
+     <no epsilon>
+00002 (A)
+     == 'b' ==> 00001
+     <no epsilon>
+00003 ()
+     == 'x' ==> 00004
+     <no epsilon>
+00004 (A)
+     <no epsilon>
 
 backward detector = init-state = 0L
-00000() <~ 
-      == 'b' ==> 00001
-      == 'y' ==> 00003
-      <no epsilon>
-00001() <~ 
-      == 'a' ==> 00002
-      <no epsilon>
-00002(A) <~ 
-      == 'b' ==> 00001
-      <no epsilon>
-00003() <~ 
-      == 'x' ==> 00004
-      <no epsilon>
-00004(A) <~ 
-      <no epsilon>
+00000 ()
+     == 'b' ==> 00001
+     == 'y' ==> 00003
+     <no epsilon>
+00001 ()
+     == 'a' ==> 00002
+     <no epsilon>
+00002 (A)
+     == 'b' ==> 00001
+     <no epsilon>
+00003 ()
+     == 'x' ==> 00004
+     <no epsilon>
+00004 (A)
+     <no epsilon>
 
 ---------------------------------------------------------
 core pattern            = "xz"+
 post condition pattern  = [a-z]{2}
 ambigous post condition = init-state = 0L
-00000() <~ 
-      == 'x' ==> 00001
-      <no epsilon>
-00001() <~ 
-      == 'z' ==> 00002
-      <no epsilon>
-00002() <~ 
-      == ['a', 'w'], ['y', 'z'] ==> 00003
-      == 'x' ==> 00005
-      <no epsilon>
-00003() <~ 
-      == ['a', 'z'] ==> 00004
-      <no epsilon>
-00004(A) <~ 
-      <no epsilon>
-00005() <~ 
-      == ['a', 'y'] ==> 00004
-      == 'z' ==> 00006
-      <no epsilon>
-00006(A) <~ 
-      == ['a', 'w'], ['y', 'z'] ==> 00003
-      == 'x' ==> 00005
-      <no epsilon>
+00000 ()
+     == 'x' ==> 00001
+     <no epsilon>
+00001 ()
+     == 'z' ==> 00002
+     <no epsilon>
+00002 ()
+     == ['a', 'w'], ['y', 'z'] ==> 00003
+     == 'x' ==> 00005
+     <no epsilon>
+00003 ()
+     == ['a', 'z'] ==> 00004
+     <no epsilon>
+00004 (A)
+     <no epsilon>
+00005 ()
+     == ['a', 'y'] ==> 00004
+     == 'z' ==> 00006
+     <no epsilon>
+00006 (A)
+     == ['a', 'w'], ['y', 'z'] ==> 00003
+     == 'x' ==> 00005
+     <no epsilon>
 post context backward input position detector inverted = init-state = 0L
-00000() <~ 
-      == ['a', 'z'] ==> 00001
-      <no epsilon>
-00001() <~ 
-      == ['a', 'z'] ==> 00002
-      <no epsilon>
-00002(A) <~ 
-      <no epsilon>
+00000 ()
+     == ['a', 'z'] ==> 00001
+     <no epsilon>
+00001 ()
+     == ['a', 'z'] ==> 00002
+     <no epsilon>
+00002 (A)
+     <no epsilon>
 
 backward detector = init-state = 0L
-00000() <~ 
-      == ['a', 'z'] ==> 00001
-      <no epsilon>
-00001() <~ 
-      == ['a', 'z'] ==> 00002
-      <no epsilon>
-00002(A) <~ 
-      <no epsilon>
+00000 ()
+     == ['a', 'z'] ==> 00001
+     <no epsilon>
+00001 ()
+     == ['a', 'z'] ==> 00002
+     <no epsilon>
+00002 (A)
+     <no epsilon>
 
 ---------------------------------------------------------
 core pattern            = "xyz"+
 post condition pattern  = "xyz"
 ambigous post condition = init-state = 0L
-00000() <~ 
-      == 'x' ==> 00001
-      <no epsilon>
-00001() <~ 
-      == 'y' ==> 00002
-      <no epsilon>
-00002() <~ 
-      == 'z' ==> 00003
-      <no epsilon>
-00003() <~ 
-      == 'x' ==> 00004
-      <no epsilon>
-00004() <~ 
-      == 'y' ==> 00005
-      <no epsilon>
-00005() <~ 
-      == 'z' ==> 00006
-      <no epsilon>
-00006(A) <~ 
-      == 'x' ==> 00004
-      <no epsilon>
+00000 ()
+     == 'x' ==> 00001
+     <no epsilon>
+00001 ()
+     == 'y' ==> 00002
+     <no epsilon>
+00002 ()
+     == 'z' ==> 00003
+     <no epsilon>
+00003 ()
+     == 'x' ==> 00004
+     <no epsilon>
+00004 ()
+     == 'y' ==> 00005
+     <no epsilon>
+00005 ()
+     == 'z' ==> 00006
+     <no epsilon>
+00006 (A)
+     == 'x' ==> 00004
+     <no epsilon>
 post context backward input position detector inverted = init-state = 0L
-00000() <~ 
-      == 'z' ==> 00001
-      <no epsilon>
-00001() <~ 
-      == 'y' ==> 00002
-      <no epsilon>
-00002() <~ 
-      == 'x' ==> 00003
-      <no epsilon>
-00003(A) <~ 
-      <no epsilon>
+00000 ()
+     == 'z' ==> 00001
+     <no epsilon>
+00001 ()
+     == 'y' ==> 00002
+     <no epsilon>
+00002 ()
+     == 'x' ==> 00003
+     <no epsilon>
+00003 (A)
+     <no epsilon>
 
 backward detector = init-state = 0L
-00000() <~ 
-      == 'z' ==> 00001
-      <no epsilon>
-00001() <~ 
-      == 'y' ==> 00002
-      <no epsilon>
-00002() <~ 
-      == 'x' ==> 00003
-      <no epsilon>
-00003(A) <~ 
-      <no epsilon>
+00000 ()
+     == 'z' ==> 00001
+     <no epsilon>
+00001 ()
+     == 'y' ==> 00002
+     <no epsilon>
+00002 ()
+     == 'x' ==> 00003
+     <no epsilon>
+00003 (A)
+     <no epsilon>
 
 ---------------------------------------------------------
 core pattern            = (a)+
 post condition pattern  = ab
 ambigous post condition = init-state = 0L
-00000() <~ 
-      == 'a' ==> 00001
-      <no epsilon>
-00001() <~ 
-      == 'a' ==> 00002
-      <no epsilon>
-00002() <~ 
-      == 'a' ==> 00002
-      == 'b' ==> 00003
-      <no epsilon>
-00003(A) <~ 
-      <no epsilon>
+00000 ()
+     == 'a' ==> 00001
+     <no epsilon>
+00001 ()
+     == 'a' ==> 00002
+     <no epsilon>
+00002 ()
+     == 'a' ==> 00002
+     == 'b' ==> 00003
+     <no epsilon>
+00003 (A)
+     <no epsilon>
 post context backward input position detector inverted = init-state = 0L
-00000() <~ 
-      == 'b' ==> 00001
-      <no epsilon>
-00001() <~ 
-      == 'a' ==> 00002
-      <no epsilon>
-00002(A) <~ 
-      <no epsilon>
+00000 ()
+     == 'b' ==> 00001
+     <no epsilon>
+00001 ()
+     == 'a' ==> 00002
+     <no epsilon>
+00002 (A)
+     <no epsilon>
 
 backward detector = init-state = 0L
-00000() <~ 
-      == 'b' ==> 00001
-      <no epsilon>
-00001() <~ 
-      == 'a' ==> 00002
-      <no epsilon>
-00002(A) <~ 
-      <no epsilon>
+00000 ()
+     == 'b' ==> 00001
+     <no epsilon>
+00001 ()
+     == 'a' ==> 00002
+     <no epsilon>
+00002 (A)
+     <no epsilon>
 
 ---------------------------------------------------------
 core pattern            = (.)+a
 post condition pattern  = (.)+
 ambigous post condition = init-state = 0L
-00000() <~ 
-      == [\0, '\t'], ['\v', '􏿿'] ==> 00001
-      <no epsilon>
-00001() <~ 
-      == [\0, '\t'], ['\v', '`'], ['b', '􏿿'] ==> 00001
-      == 'a' ==> 00002
-      <no epsilon>
-00002() <~ 
-      == [\0, '\t'], ['\v', '􏿿'] ==> 00003
-      <no epsilon>
-00003(A) <~ 
-      == [\0, '\t'], ['\v', '􏿿'] ==> 00003
-      <no epsilon>
+00000 ()
+     == [\0, '\t'], ['\v', '􏿿'] ==> 00001
+     <no epsilon>
+00001 ()
+     == [\0, '\t'], ['\v', '`'], ['b', '􏿿'] ==> 00001
+     == 'a' ==> 00002
+     <no epsilon>
+00002 ()
+     == [\0, '\t'], ['\v', '􏿿'] ==> 00003
+     <no epsilon>
+00003 (A)
+     == [\0, '\t'], ['\v', '􏿿'] ==> 00003
+     <no epsilon>
 post context backward input position detector inverted = init-state = 0L
-00000() <~ 
-      == [\0, '\t'], ['\v', '􏿿'] ==> 00001
-      <no epsilon>
-00001(A) <~ 
-      == [\0, '\t'], ['\v', '􏿿'] ==> 00001
-      <no epsilon>
+00000 ()
+     == [\0, '\t'], ['\v', '􏿿'] ==> 00001
+     <no epsilon>
+00001 (A)
+     == [\0, '\t'], ['\v', '􏿿'] ==> 00001
+     <no epsilon>
 
 backward detector = init-state = 0L
-00000() <~ 
-      == [\0, '\t'], ['\v', '􏿿'] ==> 00001
-      <no epsilon>
-00001(A) <~ 
-      == [\0, '\t'], ['\v', '􏿿'] ==> 00001
-      <no epsilon>
+00000 ()
+     == [\0, '\t'], ['\v', '􏿿'] ==> 00001
+     <no epsilon>
+00001 (A)
+     == [\0, '\t'], ['\v', '􏿿'] ==> 00001
+     <no epsilon>
 

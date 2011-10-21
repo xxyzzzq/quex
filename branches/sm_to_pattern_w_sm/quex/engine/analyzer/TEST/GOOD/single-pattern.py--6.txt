@@ -1,9 +1,9 @@
 init-state = 0L
-00000() <~ (1, 2)
-      == 'a' ==> 00001
-      <no epsilon>
-00001(A) <~ (1, 3, A)
-      <no epsilon>
+00000 (1, 2)
+     == 'a' ==> 00001
+     <no epsilon>
+00001 (1, 3, A)
+     <no epsilon>
 
 State 0:
   .entry:

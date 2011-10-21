@@ -172,15 +172,6 @@ class StateCoreInfo(object):
     def __cmp__(self, Other):
         assert False
             
-    def is_equivalent(self, Other):
-        assert False
-        if self.__acceptance_f != Other.__acceptance_f:         return False
-        elif self.__acceptance_f:
-            if self.state_machine_id != Other.state_machine_id: return False
-        return     self.input_position_store_f()   == Other.input_position_store_f()   \
-               and self.input_position_restore_f() == Other.input_position_restore_f() \
-               and self.__pre_context_id           == Other.__pre_context_id                   
-
     def __repr__(self):
         return self.get_string()
 

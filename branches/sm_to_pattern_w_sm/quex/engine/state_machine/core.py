@@ -53,10 +53,13 @@ class State:
         for state in StateList:
             self.__merge(state)
 
+    def set_cloned_core(self, Core):
+        # assert len(self.__origin_list) == 0
+        self.__core = Core.clone()
+
     def __merge(self, Other):
         # assert    (self.origins().is_empty()       and Other.origins().is_empty()) \
         #        or ((not self.origins().is_empty()) and (not Other.origins().is_empty())) 
-
         self.core().merge(Other.core())
         self.origins().merge(Other.origins().get_list()) 
 
@@ -78,10 +81,6 @@ class State:
     def core(self):
         return self.__core
 
-    def set_cloned_core(self, Core):
-        # assert len(self.__origin_list) == 0
-        self.__core = Core.clone()
-
     def origins(self):
         return self.__origin_list
 
@@ -91,15 +90,6 @@ class State:
     def is_acceptance(self):
         return self.core().is_acceptance()
 
-    def is_equivalent(self, Other):
-        """Determines whether two states are 'equivalent' in the sense that 
-           they have the same acceptance, store input positions, pre-context, etc.
-           attributes.
-        """
-        assert False
-        return     self.core().is_equivalent(Other.core())       == True \
-               and self.origins().is_equivalent(Other.origins()) == True
-        
     def set_acceptance(self, Value=True):
         self.core().set_acceptance_f(Value)
 
@@ -127,15 +117,14 @@ class State:
 
     def get_string(self, StateIndexMap=None, Option="utf8"):
         # if information about origins of the state is present, then print
-        msg = self.origins().get_string()
-        fill_str = ""
-        if msg != "": fill_str = "     "
-
-        msg = self.core().get_string(StateMachineAndStateInfoF=False) + msg
+        if self.origins().is_empty() == False:
+            msg = self.origins().get_string()
+        else:
+            msg = self.core().get_string() + "\n"
 
         # print out transitionts
-        msg += self.transitions().get_string(fill_str, StateIndexMap, Option)
-        return msg
+        msg += self.transitions().get_string("    ", StateIndexMap, Option)
+        return " " + msg
 
     def get_graphviz_string(self, OwnStateIdx, StateIndexMap, Option):
         assert Option in ["hex", "utf8"]

@@ -12,25 +12,6 @@ class StateOriginList(object):
     def clone(self):
         return StateOriginList([x.clone() for x in self.__list])
 
-    def is_equivalent(self, Other):
-        assert False
-        # Loop over all origins in list and search for counterparts in Other
-        for origin in self.__list:
-            # Is there an equivalent origin in Other?
-            for counterpart in Other.__list:
-                if origin.is_equivalent(counterpart): break
-            else:
-                return False 
-
-        # Vice versa ...
-        for origin in Other.__list:
-            for counterpart in self.__list:
-                if origin.is_equivalent(counterpart): break
-            else:
-                return False 
-
-        return True
-
     def get_list(self):
         return self.__list
 
@@ -148,7 +129,7 @@ class StateOriginList(object):
         self.__list = new_origin_list 
 
     def get_string(self):
-        txt = " <~ "
+        txt = "" #" <~ "
         if len(self.__list) == 0: 
             return txt + "\n"
         for origin in self.__list:
