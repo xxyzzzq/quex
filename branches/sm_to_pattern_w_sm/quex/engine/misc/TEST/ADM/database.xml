@@ -1,9 +1,9 @@
-<test-database execution-time-sec="0.53" date="Sat Oct 22 07:48:34 2011">
+<test-database execution-time-sec="0.54" date="Sat Oct 22 17:10:58 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Enums -- Functionality Test" time-sum-sec="0.04"> 
+    <test title="Enums -- Functionality Test" time-sum-sec="0.05"> 
         <application file-name="enum.py" info-request-time="1318614209L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.04" crc="-1245922459"/>
+           <choice name="" result="OK" time_sec="0.05" crc="-1245922459"/>
         </choice-list>
     </test>
     <group name="File Input">

@@ -6,6 +6,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
 from   quex.engine.state_machine.core import *
+from   quex.engine.state_machine.state_core_info import *
 import quex.engine.state_machine.hopcroft_minimization as hopcroft
 
 if "--hwut-info" in sys.argv:
@@ -36,19 +37,16 @@ sm.add_transition(n2, ord('c'), n3)
 sm.add_transition(n3, ord('b'), n2)
 print sm
 
-sm.states[n0].add_origin(0L, 0L)
-sm.states[n0].add_origin(1L, 0L)
-sm.states[n0].add_origin(2L, 0L)
-sm.states[n1].add_origin(0L, 66L)
-sm.states[n1].add_origin(1L, 66L)
-sm.states[n1].add_origin(2L, 66L)
-sm.states[n2].add_origin(0L, 77L)
-sm.states[n2].add_origin(0L, 77L)
-sm.states[n2].add_origin(2L, 77L)
-sm.states[n2].add_origin(1L, 77L)
-sm.states[n3].add_origin(0L, 88L)
-sm.states[n3].add_origin(1L, 88L)
-sm.states[n3].add_origin(2L, 88L)
+def set_origins(StateIndex, TheList):
+    global sm
+    sm.states[StateIndex].origins().set(
+        [ StateCoreInfo(long(sm_id), long(state_index), acceptance_f) for sm_id, state_index, acceptance_f in TheList ]
+    )
+
+set_origins(n0, [(0, 0,  False), (1, 0,  False), (2, 0,  False)])
+set_origins(n1, [(0, 66, True), (1, 66, True), (2, 66, True)])
+set_origins(n2, [(0, 77, True), (0, 77, True), (2, 77, True), (1, 77, True)])
+set_origins(n3, [(0, 88, True), (1, 88, True), (2, 88, True)])
 
 print sm
 # (*) minimize the number of states using hopcroft optimization

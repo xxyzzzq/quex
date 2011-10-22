@@ -289,7 +289,7 @@ class HopcroftMinization:
                and the other not, cannot be combined. Otherwise, the input
                position would be stored in unexpected situations.
         """
-        single_state_machine_f = self.sm.states[self.sm.init_state_index].origins().is_empty()
+        single_state_machine_f = False # self.sm.states[self.sm.init_state_index].origins().is_empty()
 
         if single_state_machine_f:
             # This is not a combined state machine and the states have no other origin
@@ -298,7 +298,7 @@ class HopcroftMinization:
                 """Computes a 'key' that allows the state set split in the
                    sense of criteria (1) and (2) above. 
                 """
-                return (state.is_acceptance(), state.core().input_position_store_f())
+                return (state.is_acceptance(), state.input_position_store_f())
 
             distinguisher_db = defaultdict(list)
             for state_index, state in self.sm.states.iteritems():
@@ -462,9 +462,7 @@ def do(SM, CreateNewStateMachineF=True):
        The original state set is replaced by the two new ones. This algorithm is 
        repeated until the state sets do not change anymore.
     """        
-    ## print "##in:", SM.get_string(NormalizeF=True)
     result = HopcroftMinization(SM)
-    ## print "##out:", create_state_machine(SM, result).get_string(NormalizeF=False)
 
     if CreateNewStateMachineF: return create_state_machine(SM, result)
     else:                      return adapt_state_machine(SM, result)
@@ -529,7 +527,8 @@ def adapt_state_machine(sm, Result):
     # of each set can be thrown away.
     replacement_dict = {}
     for state_set in Result.state_set_list:
-        if len(state_set) == 1: continue
+        if len(state_set) == 1: 
+            continue
 
         # Merge all core information of the states inside the state set.
         # Do not delete the init state

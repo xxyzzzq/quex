@@ -165,7 +165,7 @@ def __detect_path_of_nothing_is_necessary(sm, Name, PostContextPresentF, fh):
 
     init_state = sm.get_init_state()
 
-    if not init_state.core().is_acceptance(): return
+    if not init_state.is_acceptance(): return
 
     msg += { 
         "core pattern":
@@ -283,10 +283,10 @@ def __validate(sm, fh):
     #     ball-game.
     acceptance_f = False
     for state in sm.states.values():
-        if state.core().is_acceptance(): acceptance_f = True
+        if state.is_acceptance(): acceptance_f = True
 
-        if     state.core().input_position_store_f() \
-           and state.core().is_acceptance():
+        if     state.input_position_store_f() \
+           and state.is_acceptance():
             error_msg("Pattern with post-context: An irregularity occurred.\n" + \
                       "(end of normal post-contexted core pattern is an acceptance state)\n" 
                       "Please, log a defect at the projects website quex.sourceforge.net.", fh)

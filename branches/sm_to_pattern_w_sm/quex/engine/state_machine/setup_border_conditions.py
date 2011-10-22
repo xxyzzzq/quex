@@ -62,7 +62,7 @@ def __begin_of_line_condition(sm, DOS_CarriageReturnNewlineF):
     else:
         # mark all acceptance states with the 'trivial pre-condition BOL' flag
         for state in sm.get_acceptance_state_list():
-            state.core().set_pre_context_id(E_PreContextIDs.BEGIN_OF_LINE)
+            state.set_pre_context_id(E_PreContextIDs.BEGIN_OF_LINE)
         sm.core().set_pre_context_begin_of_line_f()
             
 
@@ -85,7 +85,7 @@ def __add_line_border_at_end(the_sm, DOS_CarriageReturnNewlineF, InverseF):
     new_state                 = State(StateIndex=new_state_idx)
     # New state must be just like any of the acceptance states (take the first).
     # The transition map, of course must be empty.
-    new_state.set_cloned_core(old_acceptance_state_list[0].core())
+    new_state.origins().set([old_acceptance_state_list[0].origins().get_the_only_one().clone()])
 
     the_sm.states[new_state_idx] = new_state
 
@@ -104,9 +104,6 @@ def __add_line_border_at_end(the_sm, DOS_CarriageReturnNewlineF, InverseF):
                 the_sm.states[aux_idx].add_transition(ord('\r'), new_state_idx)
 
         # (-) Cancel acceptance of old state
-        state.set_acceptance(False)
-        state.core().set_input_position_store_f(False)
-        state.core().set_input_position_restore_f(False)
-        state.core().set_pre_context_id(E_PreContextIDs.NONE)
+        state.origins().remove_the_only_one()
         #
     return new_state_idx    

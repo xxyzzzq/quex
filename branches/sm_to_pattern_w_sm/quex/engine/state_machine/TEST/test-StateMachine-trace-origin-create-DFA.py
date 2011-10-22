@@ -43,14 +43,20 @@ n9 = sm.add_epsilon_transition(n8, RaiseAcceptanceF=True)
 sm.add_epsilon_transition(n2, n9)
 sm.add_epsilon_transition(n8, n3)
 
-sm.states[n0].add_origin(66L, 0L)    
-sm.states[n0].add_origin(77L, 0L)    
-sm.states[n0].add_origin(88L, 0L)    
-sm.states[n4].add_origin(77L, 1L)    
-sm.states[n6].add_origin(88L, 22L, True)    
+def set_origins(StateIndex, TheList):
+    global sm
+    sm.states[StateIndex].origins().set(
+        [ StateCoreInfo(long(sm_id), long(state_index), acceptance_f) for sm_id, state_index, acceptance_f in TheList ]
+    )
+
+set_origins(n0, [(66, 0, False), (77, 0, False), (88, 0, False)])
+set_origins(n4, [(77, 1, False)])
+set_origins(n6, [(88, 22, False)])
+sm.states[n6].origins().get_list()[0].set_input_position_store_f(True)
 
 
 # (*) create the DFA from the specified NFA
+# print sm.get_string(NormalizeF=False)
 dfa = nfa_to_dfa.do(sm)
 print dfa
 

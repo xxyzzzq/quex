@@ -175,6 +175,14 @@ class StateCoreInfo(object):
     def __repr__(self):
         return self.get_string()
 
+    def is_meaningful(self):
+        if   self.state_machine_id != E_AcceptanceIDs.FAILURE: return True
+        elif self.state_index      != -1L:                     return True
+        elif self.__acceptance_f:                              return True
+        elif self.__input_position_store_f:                    return True
+        elif self.__input_position_restore_f:                  return True
+        return False
+
     def get_string(self, StateMachineAndStateInfoF=True):
         txt = ""
 
