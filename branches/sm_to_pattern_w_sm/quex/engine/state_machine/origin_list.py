@@ -1,6 +1,5 @@
 from quex.engine.state_machine.state_core_info import StateCoreInfo
-from quex.blackboard import E_PreContextIDs, E_PostContextIDs
-from itertools import ifilter
+from quex.blackboard import E_PreContextIDs
 
 class StateOriginList(object):
     __slots__ = ('__list')

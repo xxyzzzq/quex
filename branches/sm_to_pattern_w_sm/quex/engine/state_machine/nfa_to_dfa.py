@@ -1,6 +1,5 @@
 from   quex.engine.state_machine.core  import StateMachine, State
 from   quex.engine.state_machine.index import map_state_combination_to_index
-from   itertools import imap
 
 def do(SM):
     """Creates a deterministic finite automaton (DFA) from the current state 
@@ -16,7 +15,7 @@ def do(SM):
 
     # (*) initial state of resulting DFA = epsilon closure of initial state of NFA
     #     -- add the origin list of all states in the epsilon closure
-    InitState = State.new_merged_core_state([SM.states[i] for i in initial_state_epsilon_closure])
+    InitState = State.new_merged_core_state(SM.states[i] for i in initial_state_epsilon_closure)
 
     # NOTE: 
     # State machines with an initial acceptance state are conceivable!  In a

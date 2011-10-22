@@ -2,7 +2,7 @@
 from   quex.engine.misc.file_in                         import error_msg
 from   quex.engine.state_machine.core                   import StateMachine
 import quex.engine.state_machine.ambiguous_post_context as apc
-from   quex.blackboard                                  import E_PostContextIDs, E_PreContextIDs
+from   quex.blackboard                                  import E_PreContextIDs
 
 
 def do(the_state_machine, post_context_sm, fh=-1):
@@ -110,7 +110,6 @@ def do(the_state_machine, post_context_sm, fh=-1):
 
     # -- consider the pre-context, it has to be moved to the acceptance state
     # -- same for trivial pre-contexts        
-    post_context_id             = the_state_machine.core().id()
     pre_context_sm              = the_state_machine.core().pre_context_sm()
     pre_context_sm_id           = the_state_machine.core().pre_context_sm_id()
     if pre_context_sm_id == -1L: pre_context_sm_id = E_PreContextIDs.NONE
@@ -121,14 +120,13 @@ def do(the_state_machine, post_context_sm, fh=-1):
     for state_idx in orig_acceptance_state_id_list:
         state = result.states[state_idx]
         state.core().set_input_position_store_f(True)
-        # state.core().set_post_context_id(post_context_id)
         state.core().set_pre_context_id(E_PreContextIDs.NONE)   
     
     # -- no acceptance state shall store the input position
     # -- set the post context flag for all acceptance states
     for state in result.get_acceptance_state_list():
         state.core().set_input_position_store_f(False)
-        state.core().set_input_position_restore_f()
+        state.core().set_input_position_restore_f(True)
         state.core().set_pre_context_id(pre_context_sm_id)   
 
     # -- information about the pre-context remains

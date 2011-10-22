@@ -1,15 +1,15 @@
 init-state = 0L
 00000 (16, 35), (7, 15)
      == 'a' ==> 00001
-     <no epsilon>
+    
 00001 (7, 16), (16, 36, A, pre=14)
      == 'b' ==> 00002
-     <no epsilon>
+    
 00002 (7, 17)
      == 'c' ==> 00003
-     <no epsilon>
+    
 00003 (7, 18, A)
-     <no epsilon>
+    
 
 State 0:
   .entry:

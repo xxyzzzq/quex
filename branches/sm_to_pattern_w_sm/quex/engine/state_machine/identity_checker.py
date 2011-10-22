@@ -1,5 +1,5 @@
 # from quex.engine.state_machine.state_core_info     import E_PostContextIDs      
-from quex.blackboard import E_PreContextIDs, E_PostContextIDs
+from quex.blackboard import E_PreContextIDs
 
 class Checker:
     def __init__(self, SM0, SM1):

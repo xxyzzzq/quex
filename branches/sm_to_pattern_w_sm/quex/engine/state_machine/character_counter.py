@@ -1,4 +1,3 @@
-from quex.engine.state_machine.state_core_info import E_PostContextIDs
 
 # Distance Database: Store the distance from state (given by index)
 #                    to the acceptance state, i.e. map:

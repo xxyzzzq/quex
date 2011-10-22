@@ -1,5 +1,3 @@
-import sys
-
 from   quex.engine.misc.file_in                 import write_safely_and_close
 
 from   quex.blackboard                          import setup as Setup

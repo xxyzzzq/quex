@@ -64,7 +64,6 @@ without actual storing of input positions:
 from   quex.blackboard              import E_StateIndices, E_PostContextIDs, E_AcceptanceIDs, E_PreContextIDs, E_TransitionN
 from   quex.engine.misc.tree_walker import TreeWalker
 
-from   copy        import deepcopy
 from   itertools   import ifilter, chain
 import sys
 
