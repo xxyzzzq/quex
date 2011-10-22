@@ -118,7 +118,6 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
                       
     """   
     def __check(Place, sm):
-        # print "##", Place, sm
         __check_on_orphan_states(Place, sm)
         __check_on_init_state_not_acceptance(Place, sm)
 
@@ -132,7 +131,7 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
 
     def __check_on_init_state_not_acceptance(Place, sm):
         init_state = sm.get_init_state()
-        if init_state.core().is_acceptance():
+        if init_state.is_acceptance():
             error_msg("After '%s'" % Place + "\n" + \
                       "The initial state is 'acceptance'. This should never appear.\n" + \
                       "Please, log a defect at the projects website quex.sourceforge.net.\n")
@@ -149,7 +148,8 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
     #     the StateMachine_List represents one possible pattern that can
     #     match the current input.   
     #
-    map(lambda x: x.mark_state_origins(), StateMachine_List)
+    for sm in StateMachine_List:
+        sm.mark_state_origins()
 
     for sm in StateMachine_List:
         assert sm.is_DFA_compliant(), repr(sm)

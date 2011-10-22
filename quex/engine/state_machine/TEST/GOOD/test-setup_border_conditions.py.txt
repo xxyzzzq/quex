@@ -6,7 +6,7 @@
 
 result sm.id     =  9
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
 00001 (A)
@@ -21,7 +21,7 @@ trivially pre-conditioned =  False
 
 result sm.id     =  15
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
 00001 (S)
@@ -39,7 +39,7 @@ trivially pre-conditioned =  False
 
 result sm.id     =  18
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
 00001 (A, pre=bol)
@@ -54,7 +54,7 @@ trivially pre-conditioned =  True
 
 result sm.id     =  24
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
 00001 (S)
@@ -72,7 +72,7 @@ trivially pre-conditioned =  True
 
 result sm.id     =  30
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
 00001 (S)
@@ -90,13 +90,13 @@ trivially pre-conditioned =  False
 
 result sm.id     =  34
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
 00001 (S)
      == '2' ==> 00002
     
-00002 ()
+00002 
      == '\n' ==> 00003
     
 00003 (A, R)
@@ -111,7 +111,7 @@ trivially pre-conditioned =  False
 
 result sm.id     =  38
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
 00001 (S)
@@ -129,13 +129,13 @@ trivially pre-conditioned =  True
 
 result sm.id     =  42
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
 00001 (S)
      == '2' ==> 00002
     
-00002 ()
+00002 
      == '\n' ==> 00003
     
 00003 (A, R, pre=bol)
@@ -151,13 +151,13 @@ trivially pre-conditioned =  True
 result sm.id     =  51
 result pre sm.id =  49
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
 00001 (A, pre=49)
     
 pre-condition inverted = init-state = 0L
-00000 ()
+00000 
      == '0' ==> 00001
     
 00001 (A)
@@ -173,7 +173,7 @@ trivially pre-conditioned =  False
 result sm.id     =  61
 result pre sm.id =  56
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
 00001 (S)
@@ -182,7 +182,7 @@ result =  init-state = 0L
 00002 (A, R, pre=56)
     
 pre-condition inverted = init-state = 0L
-00000 ()
+00000 
      == '0' ==> 00001
     
 00001 (A)
@@ -198,16 +198,16 @@ trivially pre-conditioned =  False
 result sm.id     =  68
 result pre sm.id =  66
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
 00001 (A, pre=66)
     
 pre-condition inverted = init-state = 0L
-00000 ()
+00000 
      == '0' ==> 00001
     
-00001 ()
+00001 
      == '\n' ==> 00002
     
 00002 (A)
@@ -223,7 +223,7 @@ trivially pre-conditioned =  False
 result sm.id     =  78
 result pre sm.id =  73
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
 00001 (S)
@@ -232,10 +232,10 @@ result =  init-state = 0L
 00002 (A, R, pre=73)
     
 pre-condition inverted = init-state = 0L
-00000 ()
+00000 
      == '0' ==> 00001
     
-00001 ()
+00001 
      == '\n' ==> 00002
     
 00002 (A)
@@ -251,7 +251,7 @@ trivially pre-conditioned =  False
 result sm.id     =  89
 result pre sm.id =  86
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
 00001 (S)
@@ -260,7 +260,7 @@ result =  init-state = 0L
 00002 (A, R, pre=86)
     
 pre-condition inverted = init-state = 0L
-00000 ()
+00000 
      == '0' ==> 00001
     
 00001 (A)
@@ -276,19 +276,19 @@ trivially pre-conditioned =  False
 result sm.id     =  97
 result pre sm.id =  94
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
 00001 (S)
      == '2' ==> 00002
     
-00002 ()
+00002 
      == '\n' ==> 00003
     
 00003 (A, R, pre=94)
     
 pre-condition inverted = init-state = 0L
-00000 ()
+00000 
      == '0' ==> 00001
     
 00001 (A)
@@ -304,7 +304,7 @@ trivially pre-conditioned =  False
 result sm.id     =  105
 result pre sm.id =  102
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
 00001 (S)
@@ -313,10 +313,10 @@ result =  init-state = 0L
 00002 (A, R, pre=102)
     
 pre-condition inverted = init-state = 0L
-00000 ()
+00000 
      == '0' ==> 00001
     
-00001 ()
+00001 
      == '\n' ==> 00002
     
 00002 (A)
@@ -332,22 +332,22 @@ trivially pre-conditioned =  False
 result sm.id     =  113
 result pre sm.id =  110
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
 00001 (S)
      == '2' ==> 00002
     
-00002 ()
+00002 
      == '\n' ==> 00003
     
 00003 (A, R, pre=110)
     
 pre-condition inverted = init-state = 0L
-00000 ()
+00000 
      == '0' ==> 00001
     
-00001 ()
+00001 
      == '\n' ==> 00002
     
 00002 (A)

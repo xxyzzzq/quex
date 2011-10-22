@@ -1,4 +1,4 @@
-<history date="Sat Oct 22 07:48:34 2011" element-n="386">
+<history date="Sat Oct 22 17:10:59 2011" element-n="399">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:16"/>
         <crc-error time="09:57:16" application="test-pattern-matching.py" choice="" database-crc="1144357218" real-crc="1999050120"/>
@@ -1040,5 +1040,20 @@
     </day>
     <day year="2011" month="10" day="20">
         <crc-error time="19:15:02" application="test-transformation.py" choice="" database-crc="1252484400" real-crc="78992298"/>
+    </day>
+    <day year="2011" month="10" day="22">
+        <crc-error time="14:24:11" application="test-pre-condition.py" choice="" database-crc="427276463" real-crc="-651932267"/>
+        <crc-error time="14:25:42" application="test-lonely-characters.py" choice="" database-crc="2023379676" real-crc="-1687256944"/>
+        <crc-error time="14:25:58" application="test-case_fold.py" choice="set" database-crc="107706750" real-crc="-43987919"/>
+        <crc-error time="14:26:11" application="test-case_fold.py" choice="pattern" database-crc="-463982733" real-crc="669705050"/>
+        <crc-error time="14:26:25" application="test-pattern-matching.py" choice="" database-crc="366811142" real-crc="1564993349"/>
+        <crc-error time="14:27:02" application="test-transformation.py" choice="" database-crc="306985345" real-crc="1549576353"/>
+        <crc-error time="14:27:30" application="test-alternatives.py" choice="" database-crc="1465829397" real-crc="-188530334"/>
+        <crc-error time="14:27:56" application="test-repeated-expressions.py" choice="" database-crc="-1518287255" real-crc="-563036914"/>
+        <crc-error time="14:29:55" application="test-bol-eol.py" choice="" database-crc="-950452960" real-crc="364350127"/>
+        <crc-error time="14:30:14" application="test-eol-carriage-return-newline.py" choice="" database-crc="1853388351" real-crc="-2011095218"/>
+        <crc-error time="14:30:28" application="test-post-condition.py" choice="" database-crc="-296474085" real-crc="875633433"/>
+        <crc-error time="14:30:52" application="test-pre-and-post-condition.py" choice="" database-crc="1247969412" real-crc="75037608"/>
+        <crc-error time="14:31:08" application="test-replacement.py" choice="" database-crc="-582140445" real-crc="521400020"/>
     </day>
 </history>

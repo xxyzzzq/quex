@@ -81,20 +81,19 @@ class Checker:
         """Checks whether all states in SList are of the same type as S0. 
            (With respect to the criteria of out algorithm.)
         """
-        s1 = S1.core()                         # core of the 'sm1' state
         for index in S0List:
-            s0 = self.sm0.states[index].core() # core of the 'sm0' state
+            S0 = self.sm0.states[index] # core of the 'sm0' state
 
-            if       s0.is_acceptance() \
-                 !=  s1.is_acceptance():                                      return False
-            elif    (s0.pre_context_id() == E_PreContextIDs.NONE) \
-                 != (s1.pre_context_id() == E_PreContextIDs.NONE):            return False
-            elif    (s0.pre_context_id() == E_PreContextIDs.BEGIN_OF_LINE) \
-                 != (s1.pre_context_id() == E_PreContextIDs.BEGIN_OF_LINE):   return False
-            elif     s0.input_position_store_f() \
-                 !=  s1.input_position_store_f():                             return False
-            elif     s0.input_position_restore_f() \
-                 !=  s1.input_position_restore_f():                           return False
+            if       S0.is_acceptance() \
+                 !=  S1.is_acceptance():                                      return False
+            elif    (S0.pre_context_id() == E_PreContextIDs.NONE) \
+                 != (S1.pre_context_id() == E_PreContextIDs.NONE):            return False
+            elif    (S0.pre_context_id() == E_PreContextIDs.BEGIN_OF_LINE) \
+                 != (S1.pre_context_id() == E_PreContextIDs.BEGIN_OF_LINE):   return False
+            elif     S0.input_position_store_f() \
+                 !=  S1.input_position_store_f():                             return False
+            elif     S0.input_position_restore_f() \
+                 !=  S1.input_position_restore_f():                           return False
 
         return True
 

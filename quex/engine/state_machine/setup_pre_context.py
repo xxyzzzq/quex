@@ -54,6 +54,6 @@ def do(the_state_machine, pre_context_state_machine):
     #     (do not delete, otherwise existing information gets lost)
     for state in the_state_machine.states.values():
         if not state.is_acceptance(): continue
-        state.core().set_pre_context_id(pre_context_sm_id)
+        state.set_pre_context_id(pre_context_sm_id)
     
     return the_state_machine

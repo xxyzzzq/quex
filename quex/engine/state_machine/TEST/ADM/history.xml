@@ -1,4 +1,4 @@
-<history date="Sat Oct 22 07:48:34 2011" element-n="512">
+<history date="Sat Oct 22 17:10:58 2011" element-n="525">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1202,5 +1202,18 @@
         <crc-error time="05:46:15" application="test-hopcroft-minimization.py" choice="NEW" database-crc="-181937459" real-crc="320921215"/>
         <crc-error time="05:46:15" application="test-hopcroft-minimization.py" choice="ADAPT" database-crc="-181937459" real-crc="320921215"/>
         <crc-error time="05:46:15" application="test-hopcroft-minimization-2.py" choice="ADAPT" database-crc="-1079290498" real-crc="-2137376588"/>
+        <crc-error time="09:39:23" application="test-parallelize.py" choice="" database-crc="943481406" real-crc="-1443008406"/>
+        <crc-error time="14:41:04" application="test-hopcroft-minimization.py" choice="NEW" database-crc="320921215" real-crc="1006943048"/>
+        <crc-error time="14:41:04" application="test-hopcroft-minimization.py" choice="ADAPT" database-crc="320921215" real-crc="1006943048"/>
+        <crc-error time="14:41:47" application="test-hopcroft-minimization-2.py" choice="NEW" database-crc="-2137376588" real-crc="1325228797"/>
+        <crc-error time="14:42:05" application="test-nfa-to-dfa.py" choice="" database-crc="1794649778" real-crc="428303616"/>
+        <crc-error time="14:42:15" application="test-nfa-to-dfa-special.py" choice="" database-crc="1159177584" real-crc="-5886249"/>
+        <crc-error time="14:42:43" application="test-ambiguous_post_condition-mount_pseudo.py" choice="" database-crc="-714472523" real-crc="-372519755"/>
+        <crc-error time="14:43:15" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1458308100" real-crc="-1450761232"/>
+        <crc-error time="14:43:35" application="test-setup_post_condition.py" choice="" database-crc="-2109087540" real-crc="-1680869239"/>
+        <crc-error time="14:44:01" application="test-setup_border_conditions.py" choice="" database-crc="1639524465" real-crc="-803137523"/>
+        <crc-error time="14:44:20" application="test-StateMachine-inverse.py" choice="" database-crc="-41629599" real-crc="600355830"/>
+        <crc-error time="14:44:36" application="test-setup_pre_condition.py" choice="" database-crc="1330615156" real-crc="1058097925"/>
+        <crc-error time="14:44:57" application="test-hopcroft-minimization-2.py" choice="ADAPT" database-crc="-2137376588" real-crc="1325228797"/>
     </day>
 </history>

@@ -36,7 +36,6 @@ def test(Idx, sm_pre, sm, sm_post, BOF_F, EOF_F):
     print " -- begin of file  = ", BOF_F
     print " -- end of file    = ", EOF_F
 
-    # print "HOPCROFT = ", result
     result = setup_border_conditions.do(result, BOF_F, EOF_F)
     #
     # print "EXPRESSION = ", result

@@ -119,15 +119,15 @@ def do(the_state_machine, post_context_sm, fh=-1):
     # -- set the post context flag for all acceptance states
     for state_idx in orig_acceptance_state_id_list:
         state = result.states[state_idx]
-        state.core().set_input_position_store_f(True)
-        state.core().set_pre_context_id(E_PreContextIDs.NONE)   
+        state.set_input_position_store_f(True)
+        state.set_pre_context_id(E_PreContextIDs.NONE)   
     
     # -- no acceptance state shall store the input position
     # -- set the post context flag for all acceptance states
     for state in result.get_acceptance_state_list():
-        state.core().set_input_position_store_f(False)
-        state.core().set_input_position_restore_f(True)
-        state.core().set_pre_context_id(pre_context_sm_id)   
+        state.set_input_position_store_f(False)
+        state.set_input_position_restore_f(True)
+        state.set_pre_context_id(pre_context_sm_id)   
 
     # -- information about the pre-context remains
     result.core().set_pre_context_begin_of_line_f(pre_context_begin_of_line_f)

@@ -71,7 +71,7 @@ def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):
         result.mount_to_initial_state(clone.init_state_index)
         if CommonTerminalStateF:
             result.mount_to_acceptance_states(new_terminal_state_index,
-                                              CancelStartAcceptanceStateF=True,
+                                              CancelStartAcceptanceStateF=False,
                                               RaiseTargetAcceptanceStateF=True)
 
 

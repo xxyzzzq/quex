@@ -19,7 +19,6 @@ def test(TestString):
     print "state machine\n", sm 
 
 test('"a"/";"/')
-
 test('(a|z)/c/')
 test('"aac"|"bad"/"z"|congo/')
 # test('"aac"|"bad"|bcad')
