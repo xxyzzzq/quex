@@ -5,7 +5,7 @@ import quex.engine.state_machine.index           as     state_machine_index
 from   quex.engine.state_machine.transition_map  import TransitionMap, E_Border
 from   quex.engine.state_machine.state_core_info import StateCoreInfo
 from   quex.engine.state_machine.origin_list     import StateOriginList
-from   quex.blackboard                           import E_AcceptanceIDs, E_PostContextIDs
+from   quex.blackboard                           import E_AcceptanceIDs
 
 from   copy      import deepcopy
 from   operator  import attrgetter

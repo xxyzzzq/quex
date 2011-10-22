@@ -1,4 +1,4 @@
-from quex.blackboard import E_PostContextIDs, E_AcceptanceIDs, E_PreContextIDs
+from quex.blackboard import E_AcceptanceIDs, E_PreContextIDs
 
 # Special Signal Values for 'pre_context_id'
 # Add a member '_DEBUG_NAME_Xyz' so that the type of an enum value can

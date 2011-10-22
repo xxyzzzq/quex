@@ -2,8 +2,7 @@ from   quex.engine.state_machine.core               import StateMachine, State
 import quex.engine.state_machine.index              as     state_machine_index
 import quex.engine.state_machine.setup_post_context as setup_post_context
 import quex.engine.state_machine.nfa_to_dfa         as nfa_to_dfa
-from   quex.engine.state_machine.state_core_info    import E_PostContextIDs, \
-                                                           E_PreContextIDs
+from   quex.engine.state_machine.state_core_info    import E_PreContextIDs
 
 def do(sm, BeginOfLineF, EndOfLineF, DOS_CarriageReturnNewlineF=False):
     """DOS_CarriageReturnNewlineF == True:  
@@ -45,7 +44,7 @@ def __end_of_line_condition(sm, DOS_CarriageReturnNewlineF):
         
     else:
         # mount 'newline or EndOfFile_Code' to the tail of pattern
-        new_state_idx = __add_line_border_at_end(sm, DOS_CarriageReturnNewlineF, InverseF=False)
+        __add_line_border_at_end(sm, DOS_CarriageReturnNewlineF, InverseF=False)
 
 def __begin_of_line_condition(sm, DOS_CarriageReturnNewlineF):
     """Begin of line in two cases:

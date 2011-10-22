@@ -3,31 +3,31 @@ init-state = 0L
      == 'a' ==> 00001
      == 'b' ==> 00004
      == 'c' ==> 00007
-     <no epsilon>
+    
 00001 (8, 19, S)
      == 'b' ==> 00002
-     <no epsilon>
+    
 00002 (8, 20)
      == 'c' ==> 00003
-     <no epsilon>
+    
 00003 (8, 21, A, R)
-     <no epsilon>
+    
 00004 (17, 41, S)
      == 'b' ==> 00005
-     <no epsilon>
+    
 00005 (17, 42)
      == 'c' ==> 00006
-     <no epsilon>
+    
 00006 (17, 43, A, R)
-     <no epsilon>
+    
 00007 (25, 60)
      == 'b' ==> 00008
-     <no epsilon>
+    
 00008 (25, 61)
      == 'c' ==> 00009
-     <no epsilon>
+    
 00009 (25, 62, A)
-     <no epsilon>
+    
 
 State 0:
   .entry:

@@ -225,7 +225,6 @@ def mount(the_state_machine, PostConditionSM):
     #     The start of the post condition is at the same time the end 
     #     of the core pattern.
     backward_detector_sm    = __get_inverse_state_machine_that_finds_end_of_core_expression(PostConditionSM)
-    backward_detector_sm_id = backward_detector_sm.get_id()
     ## DOES NOT WORK: acceptance_pruning.do(backward_detector_sm)
 
     # NOTE: We do not need to mark any origins in the backward detector,
