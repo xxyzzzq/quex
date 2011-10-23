@@ -37,12 +37,16 @@ class State:
             self.__transition_map = AltTM
 
     @staticmethod
-    def new_merged_core_state(StateList):
+    def new_merged_core_state(StateList, ClearF=False):
         result      = State()
         origin_list = StateOriginList()
 
-        for state in StateList:
-            origin_list.merge(state.origins().get_list())
+        if not ClearF:
+            for state in StateList:
+                origin_list.merge(state.origins().get_list())
+        else:
+            for state in StateList:
+                origin_list.merge_clear(state.origins().get_list())
 
         result.set_origins(origin_list)
         return result
@@ -50,10 +54,6 @@ class State:
     def merge_core_with(self, StateList):
         for state in StateList:
             self.__merge(state)
-
-    def set_cloned_core(self, SomeState):
-        assert len(self.__origin_list) == 1
-        self.origins().set([SomeState.origins().get_the_only_one().clone()])
 
     def __merge(self, Other):
         self.origins().merge(Other.origins().get_list()) 
@@ -108,16 +108,24 @@ class State:
         return E_PreContextIDs.NONE
 
     def set_acceptance(self, Value=True):
-        self.origins().get_the_only_one().set_acceptance_f(Value)
+        origin = self.origins().get_the_only_one()
+        origin.set_acceptance_f(Value)
+        if Value == False and not origin.is_meaningful(): self.origins().remove_the_only_one()
 
     def set_input_position_store_f(self, Value=True):
-        self.origins().get_the_only_one().set_input_position_store_f(Value)
+        origin = self.origins().get_the_only_one()
+        origin.set_input_position_store_f(Value)
+        if Value == False and not origin.is_meaningful(): self.origins().remove_the_only_one()
 
     def set_input_position_restore_f(self, Value=True):
-        self.origins().get_the_only_one().set_input_position_restore_f(Value)
+        origin = self.origins().get_the_only_one()
+        origin.set_input_position_restore_f(Value)
+        if Value == False and not origin.is_meaningful(): self.origins().remove_the_only_one()
 
     def set_pre_context_id(self, Value=True):
-        self.origins().get_the_only_one().set_pre_context_id(Value)
+        origin = self.origins().get_the_only_one()
+        origin.set_pre_context_id(Value)
+        if Value == E_PreContextIDs.NONE and not origin.is_meaningful(): self.origins().remove_the_only_one()
 
     def mark_self_as_origin(self, StateMachineID, StateIndex):
         origin = self.origins().get_the_only_one()
@@ -551,22 +559,7 @@ class StateMachine:
         # (*) create the list of pairs [target-index-combination, trigger_set] 
         return combinations
 
-    def get_acceptance_state_list(self, 
-                                  ReturnNonAcceptanceTooF=False, 
-                                  SplitAcceptanceStatesByOriginF=False,
-                                  CorePatternF=False):
-        """Returns the set of states that are 'acceptance'. If the optional     
-           argument 'ReturnNonAcceptanceTooF' is specified, then the non-
-           acceptance states are also returned.
-
-           If 'SplitAcceptanceStatesByOriginF'=True, then the list of acceptance
-           states is split into sets of states of the same origin. The last state
-           set is then the set of non-acceptance states (if requested).
-
-           If 'CorePatternF'=True then the 'end acceptance states' of post conditions
-           are not returned (acceptance + post condition flag). Instead the core
-           patterns acceptance states are returned (post condition flag only).
-        """   
+    def get_acceptance_state_list(self):
         return [ state for state in self.states.itervalues() if state.is_acceptance() ]
 
     def get_acceptance_state_index_list(self):
@@ -692,13 +685,6 @@ class StateMachine:
                 return False
         return True
 
-    def delete_meaningless_origins(self):
-        """Delete origins that do not inform about acceptance, store input position,
-           post context, pre context, and the like.
-        """
-        for state in self.states.values():
-            state.origins().delete_meaningless()
-
     def mark_state_origins(self, OtherStateMachineID=-1L):
         """Marks at each state that it originates from this state machine. This is
            important, when multiple patterns are combined into a single DFA and
@@ -781,22 +767,18 @@ class StateMachine:
         return TargetStateIdx
 
     def mount_to_acceptance_states(self, MountedStateIdx, 
-                                   CancelStartAcceptanceStateF=True,
-                                   RaiseTargetAcceptanceStateF=False):
+                                   CancelStartAcceptanceStateF=True):
         """Mount on any acceptance state the MountedStateIdx via epsilon transition.
         """
         for state_idx, state in self.states.iteritems():
-            # -- only consider state other than the state to be mounted
             # -- only handle only acceptance states
-            if state_idx == MountedStateIdx: continue
+            # -- only consider state other than the state to be mounted
             if not state.is_acceptance():    continue
+            if state_idx == MountedStateIdx: continue
             # add the MountedStateIdx to the list of epsilon transition targets
             state.transitions().add_epsilon_target_state(MountedStateIdx)
             # if required (e.g. for sequentialization) cancel the acceptance status
             if CancelStartAcceptanceStateF: state.set_acceptance(False)
-
-        if RaiseTargetAcceptanceStateF: 
-            self.states[MountedStateIdx].set_acceptance(True)
 
     def mount_to_initial_state(self, TargetStateIdx):
         """Adds an epsilon transition from initial state to the given 'TargetStateIdx'. 

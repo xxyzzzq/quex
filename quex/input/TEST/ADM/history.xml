@@ -1,4 +1,4 @@
-<history date="Sat Oct 22 17:10:59 2011" element-n="354">
+<history date="Sun Oct 23 14:23:54 2011" element-n="355">
     <day year="2008" month="02" day="10">
         <history-init time="09:58:16"/>
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:18:27"/>
@@ -984,5 +984,6 @@
         <crc-error time="14:55:45" application="indentation_setup.py" choice="basic" database-crc="1920333975" real-crc="343427190"/>
         <crc-error time="14:56:05" application="indentation_setup.py" choice="intersection" database-crc="1144976269" real-crc="-2106654838"/>
         <crc-error time="14:56:14" application="indentation_setup.py" choice="intersection-2" database-crc="-119763199" real-crc="-1471589479"/>
+        <crc-error time="20:15:06" application="indentation_setup.py" choice="non-numeric" database-crc="2010246285" real-crc="683339928"/>
     </day>
 </history>

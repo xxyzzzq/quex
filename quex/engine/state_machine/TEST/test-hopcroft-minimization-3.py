@@ -65,7 +65,7 @@ n2 = sm.add_transition(n2, ord('X'), n1)
 n4 = sm.add_transition(n3, ord('Z'))
 
 sm.states[n3].set_input_position_store_f()
-sm.states[n4].set_acceptance_f(True)
+sm.states[n4].set_acceptance(True)
 sm.states[n4].set_input_position_restore_f(True)
 sm.mark_state_origins()
 test(sm, txt)

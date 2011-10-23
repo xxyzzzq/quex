@@ -24,7 +24,9 @@ class StateOriginList(object):
     def __add(self, Origin):
         """Check if origin has already been mentioned, else append the new origin.
         """
-        if not Origin.is_meaningful(): return
+        # NOT: if not Origin.is_meaningful(): return
+        #      We need even non-meaningful origins, to detect whether a state can be 
+        #      combined with another during Hopcroft optimization.
             
         SM_ID = Origin.state_machine_id
         for same in (origin for origin in self.__list if origin.state_machine_id == SM_ID):
@@ -82,6 +84,14 @@ class StateOriginList(object):
         for origin in OriginList: 
             self.__add(origin)
 
+    def merge_clear(self, OriginList):
+        for origin in OriginList: 
+            new_origin = origin.clone()
+            new_origin.set_acceptance_f(False)
+            new_origin.set_input_position_store_f(False)
+            new_origin.set_input_position_restore_f(False)
+            self.__add(new_origin)
+
     def set(self, OriginList, ArgumentIsYoursF=False):
         assert type(OriginList) == list
         if ArgumentIsYoursF: 
@@ -92,9 +102,6 @@ class StateOriginList(object):
 
     def clear(self):
         self.__list = []
-
-    #def is_empty(self):
-    #    return len(self.__list) == 0
 
     def adapt(self, StateMachineID, StateIndex):
         """Adapts all origins so that their original state is 'StateIndex' in state machine
@@ -161,9 +168,11 @@ class StateOriginList(object):
         self.__list = new_origin_list 
 
     def get_string(self):
-        txt = "" #" <~ "
+        txt = "" 
         if len(self.__list) == 0: 
             return txt + "\n"
+
+        # for origin in sorted(self.__list, key=attrgetter("state_machine_id")):
         for origin in self.__list:
             txt += repr(origin) + ", "
         txt = (txt[:-2] + "\n").replace("L","")     

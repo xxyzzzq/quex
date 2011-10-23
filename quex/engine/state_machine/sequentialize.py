@@ -1,12 +1,11 @@
 #! /usr/bin/env python
-import sys
-sys.path.append("../")
-
-from core import StateMachine
+from quex.engine.state_machine.core import StateMachine
 
 
-def do(the_state_machine_list, LeaveIntermediateAcceptanceStatesF=False, 
-       MountToFirstStateMachineF=False, CloneRemainingStateMachinesF=True):
+def do(the_state_machine_list, 
+       LeaveIntermediateAcceptanceStatesF = False, 
+       MountToFirstStateMachineF          = False, 
+       CloneRemainingStateMachinesF       = True):
     """Creates a state machine connecting all state machines in the array 
        'state_machine_list'. When the flag 'LeaveIntermediateAcceptanceStatesF'
        is given as True, the connection points between the state machines

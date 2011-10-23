@@ -1,7 +1,8 @@
 # (C) 2005-2010 Frank-Rene Schaefer
 # ABSOLUTELY NO WARRANTY
 ###############################################################################
-from   quex.engine.state_machine.core import StateMachine
+from   quex.engine.state_machine.core import StateMachine, State
+import quex.engine.state_machine.index as index
 
 def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):
     """Connect state machines paralell.
@@ -26,12 +27,13 @@ def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):
     assert map(lambda x: x.__class__.__name__, StateMachineList) == ["StateMachine"] * len(StateMachineList)
               
     # filter out empty state machines from the consideration          
-    state_machine_list = filter(lambda sm: not sm.is_empty(), StateMachineList)
+    state_machine_list            = [ sm for sm in StateMachineList if not sm.is_empty() ]
     empty_state_machine_occured_f = len(state_machine_list) != len(StateMachineList)
 
     if len(state_machine_list) < 2:
         if len(state_machine_list) < 1: result = StateMachine()
         else:                           result = state_machine_list[0]
+
         if empty_state_machine_occured_f:
             result = __add_free_pass(result)
         return result
@@ -47,7 +49,10 @@ def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):
 
     # (*) collect all transitions from both state machines into a single one
     #     (clone to ensure unique identifiers of states)
-    result = StateMachine()
+    new_init_state = State.new_merged_core_state((clone.get_init_state() for clone in clone_list), 
+                                                 ClearF=True)
+    result         = StateMachine(InitState=new_init_state)
+
     for clone in clone_list:
         result.states.update(clone.states)
 
@@ -61,7 +66,10 @@ def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):
     #           to 'accepted' (see below)
     new_terminal_state_index = -1L
     if CommonTerminalStateF:
-        new_terminal_state_index = result.create_new_state() 
+        new_terminal_state_index = index.get()
+        result.states[new_terminal_state_index] = \
+                    State.new_merged_core_state(result.get_acceptance_state_list(), \
+                                                ClearF=True)
     
     # (*) Connect from the new initial state to the initial states of the
     #     clones via epsilon transition. 
@@ -69,11 +77,10 @@ def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):
     #     via epsilon transition.
     for clone in clone_list:
         result.mount_to_initial_state(clone.init_state_index)
-        if CommonTerminalStateF:
-            result.mount_to_acceptance_states(new_terminal_state_index,
-                                              CancelStartAcceptanceStateF=False,
-                                              RaiseTargetAcceptanceStateF=True)
 
+    if CommonTerminalStateF:
+        result.mount_to_acceptance_states(new_terminal_state_index,
+                                          CancelStartAcceptanceStateF=False)
 
     # (*) If there was an empty state machine, a 'free pass' is added
     if empty_state_machine_occured_f:
