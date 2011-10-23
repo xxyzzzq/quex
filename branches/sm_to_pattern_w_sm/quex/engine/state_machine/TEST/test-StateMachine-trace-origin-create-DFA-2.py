@@ -25,6 +25,7 @@ print "## sm2 = ", sm2
 sm = parallelize.do([sm1, sm2])
 
 print "## parallelized:", sm.get_string(NormalizeF=True)
+# print "## parallelized:", sm.get_string(NormalizeF=False)
 
 dfa = nfa_to_dfa.do(sm)
 print dfa

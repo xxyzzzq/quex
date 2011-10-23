@@ -1,7 +1,7 @@
 # (C) 2005-2011 Frank-Rene Schaefer
 import quex.engine.state_machine.index as     state_machine_index
 from   quex.engine.state_machine.core  import StateMachine, State
-from   itertools   import islice, ifilter, chain, imap
+from   itertools   import islice, ifilter, chain
 from   collections import defaultdict
 
 class HopcroftMinization:
@@ -289,77 +289,77 @@ class HopcroftMinization:
                and the other not, cannot be combined. Otherwise, the input
                position would be stored in unexpected situations.
         """
-        single_state_machine_f = False # self.sm.states[self.sm.init_state_index].origins().is_empty()
+        # (1) Separate by Acceptance
+        def acceptance_info(state):
+            """Computes a 'key' that allows the state set split in the
+               sense of criteria (1), i.e. acceptance must be the same
+               for states of the same set (== same key).
+            """
+            return tuple(sorted(
+                   [x.state_machine_id for x in ifilter(lambda y: y.is_acceptance(), state.origins())]
+            ))
 
-        if single_state_machine_f:
-            # This is not a combined state machine and the states have no other origin
-            # than themselves.
-            def key_0(state):
-                """Computes a 'key' that allows the state set split in the
-                   sense of criteria (1) and (2) above. 
-                """
-                return (state.is_acceptance(), state.input_position_store_f())
+        distinguisher_db = defaultdict(list)
+        for state_index, state in self.sm.states.iteritems():
+            distinguisher_db[acceptance_info(state)].append(state_index)
 
-            distinguisher_db = defaultdict(list)
-            for state_index, state in self.sm.states.iteritems():
-                distinguisher_db[key_0(state)].append(state_index)
+        # (2) Separate by Store-Input-Position Behavior
+        #
+        #     If state A stores the input position for pattern X and another state
+        #     B does not store the input position for pattern X, then they can never
+        #     be combined in a single state. Otherwise, storing of input positions
+        #     would happen in unexpected situations. For state A and B to be in 
+        #     one set, it must hold that
+        #
+        #     |   For every pattern X appearing in origins of A and B the   |
+        #     |   'input_position_store_f' must be the same.                |
+        #   
+        #     Storing input positions happens in 'per pattern position registers'.
+        #     Thus varying input position storage between when different patterns
+        #     are involved are not problematic.
+        def store_info(state):
+            """Two states from the same state machine cannot be combined if they
+               differ in their storing of input positions. Determine for each
+               involved state machine whether the input position is stored or not
+               in the current state.
+            """
+            result = {}
+            for x in state.origins():
+                result[x.state_machine_id] = x.input_position_store_f()
+            return result
 
-            state_set_iterable = distinguisher_db.itervalues()
+        state_set_iterable = distinguisher_db.values()
+        last_i             = len(state_set_iterable) - 1
+        i = -1
+        while i < last_i:
+            i += 1
+            state_set = state_set_iterable[i]
+            if len(state_set) < 2: continue
 
-        else:
-            # If states already represent combinations of states from different patterns,
-            # then the initial state split happens in two phases to perform compliance
-            # with criteria (1) and (2) from above.
+            prototype_id = state_set[0]
+            remainder    = islice(state_set, 1, None)
 
-            # (1) Separate by Acceptance
-            def key_acceptance(state):
-                """Computes a 'key' that allows the state set split in the
-                   sense of criteria (1), i.e. acceptance must be the same
-                   for states of the same set (== same key).
-                """
-                return tuple(sorted(
-                       [x.state_machine_id for x in ifilter(lambda y: y.is_acceptance(), state.origins())]
-                ))
+            prototype_db             = store_info(self.sm.states[prototype_id])
+            prototype_pattern_id_set = set(prototype_db.keys())
+            
+            extracted    = set()
+            # Extract those buddies from 'state_set', where there is an origin that differs
+            # where there is a difference in 'input_position_store_f' for a given pattern_id.
+            for buddy_state_index, buddy_state in ((i, self.sm.states[i]) for i in remainder):
+                buddy_db = store_info(buddy_state)
+                # Only consider the state machines that they have in common
+                # (Origins from different state machines can be combined arbitrarily)
+                for pattern_id in prototype_pattern_id_set.intersection(buddy_db.keys()):
+                    # Both are storing, or both are not storing, then fine.
+                    if prototype_db[pattern_id] == buddy_db[pattern_id]: continue
+                    # Otherwise, extract.
+                    extracted.add(buddy_state_index)
+                    state_set.remove(buddy_state_index)
+                    break
 
-            distinguisher_db = defaultdict(list)
-            for state_index, state in self.sm.states.iteritems():
-                distinguisher_db[key_acceptance(state)].append(state_index)
-
-            # (2) Separate by Store-Input-Position Behavior
-            def store_info(state):
-                """Two states from the same state machine cannot be combined if they
-                   differ in their storing of input positions. Determine for each
-                   involved state machine whether the input position is stored or not
-                   in the current state.
-                """
-                result = {}
-                for x in state.origins():
-                    result[x.state_machine_id] = x.input_position_store_f()
-                return result
-
-            state_set_iterable = distinguisher_db.values()
-            i = -1
-            last_i = len(state_set_iterable) - 1
-            while i < last_i:
-                i += 1
-                state_set = state_set_iterable[i]
-                if len(state_set) < 2: continue
-
-                prototype_db        = store_info(self.sm.states[state_set[0]])
-                prototype_sm_id_set = set(prototype_db.keys())
-                extracted           = set()
-                for other_state_index, other_state in imap(lambda i: (i, self.sm.states[i]), islice(state_set, 1, None)):
-                    other_db = store_info(other_state)
-                    # Only consider the state machines that they have in common
-                    # (Origins from different state machines can be combined arbitrarily)
-                    for sm_id in prototype_sm_id_set.intersection(other_db.keys()):
-                        if prototype_db[sm_id] == other_db[sm_id]: continue
-                        extracted.add(other_state_index)
-                        state_set.remove(other_state_index)
-                        break
-                if len(extracted) != 0:
-                    state_set_iterable.append(list(extracted))
-                    last_i += 1
+            if len(extracted) != 0:
+                state_set_iterable.append(list(extracted))
+                last_i += 1
 
         for state_set in state_set_iterable:
             i = self.__add_state_set(state_set)

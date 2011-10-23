@@ -65,7 +65,7 @@ EXAMPLE A: init-state = 0L
     
 00005 (A)
      ==<epsilon>==> 00006
-00006 (A)
+00006 ()
     
 00007 ()
      == ['a', 'g'] ==> 00008
@@ -99,7 +99,7 @@ EXAMPLE A: init-state = 0L
 EXAMPLE B: init-state = 0L
 00000 ()
      ==<epsilon>==> 00011, 00007, 00002, 00001
-00001 (A)
+00001 ()
     
 00002 ()
      == 'g' ==> 00003

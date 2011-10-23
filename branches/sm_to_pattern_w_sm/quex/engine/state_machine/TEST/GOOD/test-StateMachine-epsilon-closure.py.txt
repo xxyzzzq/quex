@@ -31,7 +31,7 @@
 00010 ()
      == 'e' ==> 00011
     
-00011 ()
+00011 
      ==<epsilon>==> 00007, 00006
 
 ## compute epsilon closures of all states:
