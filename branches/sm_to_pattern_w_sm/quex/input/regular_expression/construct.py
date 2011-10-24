@@ -4,7 +4,6 @@ from   quex.engine.state_machine.utf16_state_split import ForbiddenRange
 import quex.engine.state_machine.character_counter        as character_counter
 import quex.engine.state_machine.setup_post_context       as setup_post_context
 import quex.engine.state_machine.setup_pre_context        as setup_pre_context
-import quex.engine.state_machine.setup_border_conditions  as setup_border_conditions
 import quex.engine.state_machine.transformation           as transformation
 #                                                         
 import quex.engine.state_machine.nfa_to_dfa               as nfa_to_dfa
@@ -20,15 +19,103 @@ if DEBUG_hopcroft_f:
     from   copy import deepcopy
 
 class Pattern:
-    def __init__(self, PreContextSM, SM, BIPD, BeginOfLineF, NewLineN, CharacterN):
-        self.__pre_context_sm                       = PreContextSM
-        self.__sm                                   = SM
-        self.__backward_input_position_detection_sm = BIPD
-        self.__pre_context_begin_of_line_f          = BeginOfLineF
+    """Let's start as a mimiker ... """
+    def __init__(self, PreContextSM, CoreSM, PostContextSM, BeginOfLineF, EndOfLineF, AllowStateMachineTrafoF, fh):
+        pre_context  = PreContextSM
+        core_sm      = CoreSM
+        post_context = PostContextSM
 
-        self.__newline_n   = NewLineN
-        self.__character_n = CharacterN
+        self.__pre_context_begin_of_line_f = BeginOfLineF
 
+        # (1) Character/Newline counting
+        #
+        #     !! BEFORE Transformation !!
+        #
+        #     Currently 'transition number' is equal to 'character number'. After 
+        #     transformation a transition may represent a byte or whatever the codec 
+        #     does to the state machine.
+        self.__newline_n   = character_counter.get_newline_n(CoreSM)
+        self.__character_n = character_counter.get_character_n(CoreSM)
+
+        # (2) [Optional] Transformation according to Codec Information
+        #
+        #     !! BEFORE Pre- and Post-Context Setup !!
+        #
+        #     Because pre-context state machines and pseudo-ambiguous state machines
+        #     are inverted. They need to be inverted according to the transformed codec.
+        #     !! AVOID Double Transformation !!
+        #     The transformation should actually only be allowed during the pattern-action
+        #     definition inside a mode --> flag 'AllowStateMachineTrafoF' 
+        if     AllowStateMachineTrafoF \
+           and Setup.buffer_codec_transformation_info is not None:
+            sm = transformation.try_this(pre_context, fh)
+            if sm is not None: pre_context = sm
+            sm = transformation.try_this(core_sm, fh)
+            if sm is not None: core_sm = sm
+            sm = transformation.try_this(post_context, fh)
+            if sm is not None: post_context = sm
+
+        # (3) Pre- and Post-Context Setup
+        self.__input_position_search_backward_sm = setup_post_context.do(core_sm, post_context, EndOfLineF, fh=fh)
+        self.__inverse_pre_context_sm            = setup_pre_context.do(core_sm, pre_context, BeginOfLineF)
+        self.__sm                                = beautify(core_sm)
+
+        self.__validate(self.__sm, fh)
+
+    @property
+    def newline_n(self): return self.__newline_n
+    @property
+    def character_n(self): return self.__character_n
+    @property
+    def sm(self): return self.__sm
+    @property
+    def inverse_pre_context_sm(self): return self.__inverse_pre_context_sm
+    @property
+    def input_position_search_backward_sm(self): return self.__input_position_search_backward_sm
+
+    def __validate(self, sm, fh):
+        # (*) It is essential that state machines defined as patterns do not 
+        #     have origins.
+        if sm.has_origins():
+            error_msg("Regular expression parsing resulted in state machine with origins.\n" + \
+                      "Please, log a defect at the projects website quex.sourceforge.net.\n", fh)
+
+        # (*) Acceptance states shall not store the input position when they are 'normally'
+        #     post-conditioned. Post-conditioning via the backward search is a different 
+        #     ball-game.
+        acceptance_f = False
+        for state in sm.states.values():
+            if state.is_acceptance(): acceptance_f = True
+
+            if     state.input_position_store_f() \
+               and state.is_acceptance():
+                error_msg("Pattern with post-context: An irregularity occurred.\n" + \
+                          "(end of normal post-contexted core pattern is an acceptance state)\n" 
+                          "Please, log a defect at the projects website quex.sourceforge.net.", fh)
+
+        if acceptance_f == False:
+            error_msg("Pattern has no acceptance state and can never match.\n" + \
+                      "Aborting generation process.", fh)
+            
+        return sm
+
+    def __repr__(self):
+        return self.get_string(self)
+
+    def get_string(self, NormalizeF=False, Option="utf8"):
+        assert Option in ["utf8", "hex"]
+
+        msg = self.__sm.get_string(NormalizeF, Option)
+            
+        if self.__inverse_pre_context_sm is not None:
+            msg += "pre-condition inverted = "
+            msg += self.__inverse_pre_context_sm.get_string(NormalizeF, Option)           
+
+        if self.__input_position_search_backward_sm is not None:
+            msg += "post context backward input position detector inverted = "
+            msg += self.__input_position_search_backward_sm.get_string(NormalizeF, Option)           
+
+        return msg
 
 def do(core_sm, 
        begin_of_line_f=False, pre_context=None, 
@@ -66,65 +153,7 @@ def do(core_sm,
         __detect_path_of_nothing_is_necessary(core_sm,      "core pattern", post_context_f, fh)
         __detect_path_of_nothing_is_necessary(post_context, "post context", post_context_f, fh)
 
-    # Determine newline and character count for matching lexemes
-    # of the core pattern.
-    newline_n   = character_counter.get_newline_n(core_sm)
-    character_n = character_counter.get_character_n(core_sm)
-
-    side_info    = SideInfo(newline_n, character_n)
-
-    # [Optional] Transformation according to Codec Information
-    #
-    # AFTER:  character and newline counting!
-    #         Characters may be split into multiple bytes/words. The 
-    #         transition number corresponds then to byte/word numbers.
-    # BEFORE: Pre- and post-context setup!
-    #         Because pre-context state machines and pseudo-ambiguous 
-    #         state machines are inverted. They need to be inverted 
-    #         according the split codec!
-    # (To avoid double-transformation, the transformation should actually
-    #  only be allowed during the definition inside a mode.)
-    if     AllowStateMachineTrafoF \
-       and Setup.buffer_codec_transformation_info is not None:
-        sm = transformation.try_this(pre_context, fh)
-        if sm is not None: pre_context = sm
-        sm = transformation.try_this(core_sm, fh)
-        if sm is not None: core_sm = sm
-        sm = transformation.try_this(post_context, fh)
-        if sm is not None: post_context = sm
-
-    # for state in core_sm.states.itervalues():
-    #    state.core().state_machine_id = core_sm.get_id()
-
-    if   pre_context is None and post_context is None:
-        result = core_sm
-        # -- can't get more beautiful ...
-    
-    elif pre_context is None and post_context is not None:
-        setup_post_context.do(core_sm, post_context, fh=fh)
-        result = beautify(core_sm)
-
-    elif pre_context is not None and post_context is None:
-        result = setup_pre_context.do(core_sm, pre_context)
-        result = beautify(result)
-
-    elif pre_context is not None and post_context is not None:
-        # NOTE: pre-condition needs to be setup **after** post condition, because
-        #       post condition deletes all origins!
-        #       (is this still so? 07y7m6d fschaef)
-        setup_post_context.do(core_sm, post_context, fh=fh)
-        result = setup_pre_context.do(core_sm, pre_context)
-        result = beautify(result)
-
-    # -- set begin of line/end of line conditions
-    if begin_of_line_f or end_of_line_f: 
-        result = setup_border_conditions.do(result, begin_of_line_f, end_of_line_f,
-                                            DOS_CarriageReturnNewlineF)
-        result = beautify(result)
-
-    result.side_info = side_info
-
-    return __validate(result, fh)
+    return Pattern(pre_context, core_sm, post_context, begin_of_line_f, end_of_line_f, AllowStateMachineTrafoF, fh)
 
 def beautify(the_state_machine):
     ## assert len(the_state_machine.get_orphaned_state_index_list()) == 0, \
@@ -266,34 +295,4 @@ def __delete_orphaned_states(sm, fh):
     for state_index in new_orhpan_state_list:
         del sm.states[state_index]
 
-
-def __validate(sm, fh):
-    # Anything produced by the parser must contain side information about
-    assert sm is None or sm.side_info is not None, \
-           "Missing side info in " + repr(sm)
-
-    # (*) It is essential that state machines defined as patterns do not 
-    #     have origins.
-    if sm.has_origins():
-        error_msg("Regular expression parsing resulted in state machine with origins.\n" + \
-                  "Please, log a defect at the projects website quex.sourceforge.net.\n", fh)
-
-    # (*) Acceptance states shall not store the input position when they are 'normally'
-    #     post-conditioned. Post-conditioning via the backward search is a different 
-    #     ball-game.
-    acceptance_f = False
-    for state in sm.states.values():
-        if state.is_acceptance(): acceptance_f = True
-
-        if     state.input_position_store_f() \
-           and state.is_acceptance():
-            error_msg("Pattern with post-context: An irregularity occurred.\n" + \
-                      "(end of normal post-contexted core pattern is an acceptance state)\n" 
-                      "Please, log a defect at the projects website quex.sourceforge.net.", fh)
-
-    if acceptance_f == False:
-        error_msg("Pattern has no acceptance state and can never match.\n" + \
-                  "Aborting generation process.", fh)
-        
-    return sm
 

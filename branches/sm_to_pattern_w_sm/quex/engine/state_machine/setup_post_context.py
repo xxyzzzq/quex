@@ -5,7 +5,7 @@ import quex.engine.state_machine.ambiguous_post_context as apc
 from   quex.blackboard                                  import E_PreContextIDs
 
 
-def do(the_state_machine, post_context_sm, fh=-1):
+def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
     """ Appends a post context to the given state machine. This process is very
         similar to sequentialization. There is a major difference, though:
        
@@ -30,26 +30,24 @@ def do(the_state_machine, post_context_sm, fh=-1):
         X stopped, even though Ym is required to state acceptance.    
        
     """
-    # (*) do some consistency checking   
-    assert isinstance(the_state_machine, StateMachine), \
-            "expected 1st argument as objects of class StateMachine\n" + \
-            "received: " + the_state_machine.__class__.__name__
-    assert isinstance(post_context_sm, StateMachine), \
-            "expected 2nd argument as objects of class StateMachine\n" + \
-            "received: " + post_context_sm.__class__.__name__
-    assert not the_state_machine.core().post_context_f(), \
-            "post context state machine cannot be post-context again."
-
-    # -- state machines with no states are senseless here. 
+    # State machines with no states are senseless here. 
     assert not the_state_machine.is_empty(), \
-            "empty state machine can have no post context."
-    assert not post_context_sm.is_empty(), \
-            "empty state machine cannot be a post-context."
+           "empty state machine can have no post context."
+    assert post_context_sm is None or not post_context_sm.is_empty(), \
+           "empty state machine cannot be a post-context."
 
-    # -- state machines involved with post condition building are part of a pattern, 
-    #    but not configured out of multiple patterns. Thus there should be no origins.
+    # State machines involved with post condition building are part of a pattern, 
+    # but not configured out of multiple patterns. Thus there should be no origins.
     assert the_state_machine.has_origins() == False
-    assert post_context_sm.has_origins() == False
+    assert post_context_sm is None or not post_context_sm.has_origins()
+
+    if post_context_sm is None:
+        if EndOfLinePostContextF:
+            return __setup_end_of_line_condition(sm, PostContextF, DOS_CarriageReturnNewlineF)
+        else:
+            return None
+    elif EndOfLinePostContextF: 
+        post_context_sm.mount_newline_to_acceptance_states(DOS_CarriageReturnNewlineF)
 
     # -- a post context with an initial state that is acceptance is not
     #    really a 'context' since it accepts anything. The state machine remains
@@ -76,7 +74,7 @@ def do(the_state_machine, post_context_sm, fh=-1):
             post_context_sm = apc.philosophical_cut(the_state_machine, post_context_sm)
 
         apc.mount(the_state_machine, post_context_sm)
-        return the_state_machine
+        return apc
 
     #     -- The 'normal' way: storing the input position at the end of the core
     #        pattern.
@@ -134,4 +132,23 @@ def do(the_state_machine, post_context_sm, fh=-1):
     result.core().set_pre_context_sm(pre_context_sm)
     result.core().set_post_context_f()
 
-    return result
+    # No input position backward search required
+    return None
+
+def __setup_end_of_line_condition(sm, PostContextF, DOS_CarriageReturnNewlineF):
+
+    # -- create a state machine that represents the post-condition
+    # -- mount it to the core pattern as a post-condition
+    post_sm = StateMachine()
+    if not DOS_CarriageReturnNewlineF:
+        post_sm.add_transition(post_sm.init_state_index, ord('\n'), AcceptanceF=True)
+    else:
+        aux_idx   = post_sm.add_transition(post_sm.init_state_index, ord('\r'), AcceptanceF=False)
+        post_sm.add_transition(aux_idx, ord('\n'), AcceptanceF=True)
+    
+    # post conditions add an epsilon transition that has to be solved 
+    # by translating state machine into a DFA
+    input_position_search_backward_sm = setup_post_context.do(sm, post_sm) 
+    sm = nfa_to_dfa.do(sm)
+    assert sm.has_origins() == False
+
