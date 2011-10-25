@@ -13,7 +13,7 @@ if "--hwut-info" in sys.argv:
 def test(TestString):
     TestString = TestString.replace("\n", "\\n").replace("\t", "\\t")
     print "expression           = " + TestString
-    sm = regex.do(TestString, {})
+    sm = regex.do(TestString, {}).sm
     print "fixed newline number = ", counter.get_newline_n(sm)
 
 test('[0-9]+')

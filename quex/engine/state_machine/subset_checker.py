@@ -91,51 +91,51 @@ class Checker:
         # sub set state machine of 'super sm'.
         return True
 
-def do(SuperSM, AllegedSubSM):
-    # Check wether SuperSM matches a superset of patterns of what AllegedSubSM matches.
-    sub_set_f = Checker(SuperSM, AllegedSubSM).do()
+def do(SuperPattern, AllegedSubPattern):
+    # Check wether SuperPattern matches a superset of patterns of what AllegedSubPattern matches.
+    sub_set_f = Checker(SuperPattern.sm, AllegedSubPattern.sm).do()
 
     if not sub_set_f: return False
     # NOTE: Post-conditions do not change anything, since they match only when the whole
     #       lexeme has matched (from begin to end of post condition). Post-conditions only
     #       tell something about the place where the analyzer returns after the match.
     #
-    super_core = SuperSM.core()
-    sub_core   = AllegedSubSM.core()
-
-    super_pre_conditioned_f = (super_core.pre_context_sm_id() != -1 or super_core.pre_context_begin_of_line_f()) 
-    sub_pre_conditioned_f   = (sub_core.pre_context_sm_id() != -1   or sub_core.pre_context_begin_of_line_f()) 
+    super_pre_conditioned_f =     (SuperPattern.inverse_pre_context_sm is not None) \
+                               or (SuperPattern.pre_context_trivial_begin_of_line_f) 
+    sub_pre_conditioned_f   =     (AllegedSubPattern.inverse_pre_context_sm is not None) \
+                               or (AllegedSubPattern.pre_context_trivial_begin_of_line_f) 
     # Pre-Condition: 
     #
     #       (i) If (only) the alleged subset state machine is pre-conditioned this does not 
     #           change anything in our considerations. It only restricts the 'set of applicable
-    #           situations' further. If the set of patterns matched by AllegedSubSM is
-    #           a subset of what SuperSM matches, then any subset of that is also a subset
-    #           of what SuperSM matches.
+    #           situations' further. If the set of patterns matched by AllegedSubPattern is
+    #           a subset of what SuperPattern matches, then any subset of that is also a subset
+    #           of what SuperPattern matches.
     if not super_pre_conditioned_f: return True
 
     #
-    #       (ii) If the SuperSM is pre-conditioned then the enclosing set is restricted, and
-    #            it has to be made sure that it still encloses all what AllegedSubSM matches.
+    #       (ii) If the SuperPattern is pre-conditioned then the enclosing set is restricted, and
+    #            it has to be made sure that it still encloses all what AllegedSubPattern matches.
     #
-    #            -- If the AllegedSubSM is not pre-conditioned at all, then it's free!
-    #               Any pattern that does not have the precondition of SuperSM and matches
-    #               AllegedSubSM can only be matched by AllegedSubSM.
+    #            -- If the AllegedSubPattern is not pre-conditioned at all, then it's free!
+    #               Any pattern that does not have the precondition of SuperPattern and matches
+    #               AllegedSubPattern can only be matched by AllegedSubPattern.
     if not sub_pre_conditioned_f: return False
 
     # Here: Both are pre-conditioned.
-    if super_core.pre_context_begin_of_line_f() and sub_core.pre_context_begin_of_line_f():
-        assert super_core.pre_context_sm_id() != -1
-        assert sub_core.pre_context_sm_id() != -1
+    if     SuperPattern.pre_context_trivial_begin_of_line_f \
+       and AllegedSubPattern.pre_context_trivial_begin_of_line_f:
+        assert SuperPattern.inverse_pre_context_sm      is not None
+        assert AllegedSubPattern.inverse_pre_context_sm is not None 
         # It holds the judgement about the main patterns:
         return True
 
-    #            -- If the AllegedSubSM is pre-conditioned, then its pre-condition must be
-    #               a subset of SuperSM pre-condition. If not, its free for the same reason
+    #            -- If the AllegedSubPattern is pre-conditioned, then its pre-condition must be
+    #               a subset of SuperPattern pre-condition. If not, its free for the same reason
     #               as mentioned above.
-    return Checker(SuperSM.core().pre_context_sm(), AllegedSubSM.core().pre_context_sm()).do()
+    return Checker(SuperPattern.inverse_pre_context_sm, AllegedSubPattern.inverse_pre_context_sm).do()
 
-def do_list(SuperSM_List, AllegedSubSM):
-    for super_sm in SuperSM_List:
-        if do(super_sm, AllegedSubSM) == True: return True
+def do_list(SuperPattern_List, AllegedSubPattern):
+    for super_sm in SuperPattern_List:
+        if do(super_sm, AllegedSubPattern) == True: return True
     return False

@@ -125,25 +125,33 @@ class GeneratedCode(UserCodeFragment):
         return self.function(self.data)
 
 class PatternActionInfo:
-    def __init__(self, PatternStateMachine, Action, Pattern="", IL = None, ModeName="", Comment=""):
+    def __init__(self, ThePattern, Action, PatternStr="", IL = None, ModeName="", Comment=""):
 
         assert Action is None or \
                issubclass(Action.__class__, CodeFragment) or \
                type(Action) in [str, unicode]
-        assert PatternStateMachine.__class__.__name__ == "StateMachine" \
-               or PatternStateMachine is None
+        assert (ThePattern.__class__.__name__ == "Pattern") or (ThePattern is None)
 
 
-        self.__pattern_state_machine = PatternStateMachine
+        self.__pattern_state_machine = ThePattern
         if type(Action) in [str, unicode]: self.__action = CodeFragment(Action)
         else:                              self.__action = Action
 
-        self.pattern   = Pattern
-        self.mode_name = ModeName
-        self.comment   = Comment
+        self.__pattern_str = PatternStr
+        self.mode_name     = ModeName
+        self.comment       = Comment
+
+    def pattern(self):
+        return self.__pattern_state_machine
+
+    def pattern_string(self):
+        return self.__pattern_str
 
     def pattern_state_machine(self):
-        return self.__pattern_state_machine
+        return self.__pattern_state_machine.sm
+
+    def pattern_inverse_pre_context_sm(self):
+        return self.__pattern_state_machine.inverse_pre_context_sm
 
     def action(self):
         return self.__action

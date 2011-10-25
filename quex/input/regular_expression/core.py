@@ -5,8 +5,9 @@ from   quex.engine.misc.file_in       import EndOfStreamException, error_msg
 from   quex.exception                 import RegularExpressionException
 from   quex.engine.interval_handling  import NumberSet, Interval
 from   quex.engine.state_machine.core import StateMachine 
-import quex.blackboard                                              as blackboard
+import quex.blackboard                                        as blackboard
 import quex.input.regular_expression.engine                   as regex
+from   quex.input.regular_expression.construct                import Pattern
 import quex.input.regular_expression.character_set_expression as charset_expression
 import quex.input.regular_expression.snap_character_string    as snap_character_string
 
@@ -15,9 +16,9 @@ def parse(fh, AllowNothingIsFineF=False, AllowStateMachineTrafoF=True):
     start_position = fh.tell()
     try:
         # (*) parse regular expression, build state machine
-        pattern_state_machine = regex.do(fh, blackboard.shorthand_db, 
-                                         AllowNothingIsNecessaryF   = AllowNothingIsFineF,
-                                         AllowStateMachineTrafoF    = AllowStateMachineTrafoF)
+        pattern = regex.do(fh, blackboard.shorthand_db, 
+                           AllowNothingIsNecessaryF   = AllowNothingIsFineF,
+                           AllowStateMachineTrafoF    = AllowStateMachineTrafoF)
 
 
     except RegularExpressionException, x:
@@ -28,7 +29,7 @@ def parse(fh, AllowNothingIsFineF=False, AllowStateMachineTrafoF=True):
         fh.seek(start_position)
         error_msg("End of file reached while parsing regular expression.", fh)
 
-    return __post_process(fh, start_position, pattern_state_machine, ReturnRE_StringF=True)
+    return __post_process(fh, start_position, pattern, ReturnRE_StringF=True)
 
 def parse_character_string(Txt_or_File, PatternStringF=False):
 
@@ -89,6 +90,7 @@ def __prepare_text_or_file_stream(Txt_or_File):
 
 def __post_process(fh, StartPosition, object, ReturnRE_StringF):
     assert    object is None                   \
+           or isinstance(object, Pattern) \
            or isinstance(object, StateMachine) \
            or isinstance(object, NumberSet)
 

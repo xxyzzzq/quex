@@ -237,14 +237,11 @@ def mount(the_state_machine, PostConditionSM):
             "error: mounting pseudo-ambiguous post condition:\n" + \
             "error: no acceptance state in sequentialized state machine."
 
-    # (*) Create origin data, in case where there is none yet create new one.
-    the_state_machine.core().set_post_context_backward_input_position_detector_sm(backward_detector_sm)
-
     # We cannot do a NFA to DFA and Hopcroft Optimization, because otherwise we
     # would create a new state machine. This function, though, is considered to 
     # 'mount' something on an existing state machine, i.e. change the object
     # that is referenced by the first function argument 'the_state_machine'.
-    return the_state_machine
+    return backward_detector_sm
 
 def philosophical_cut(core_sm, post_context_sm):
     """The 'philosophical cut' is a technique introduced by Frank-Rene Schaefer

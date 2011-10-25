@@ -98,24 +98,26 @@ class ModeDescription:
         # Register ModeDescription at the mode database
         mode_description_db[Name] = self
 
-    def add_match(self, Pattern, Action, PatternStateMachine, Comment=""):
-        assert PatternStateMachine.is_DFA_compliant()
-        assert PatternStateMachine.side_info is not None, \
-               "No side info for '%s'" % Pattern
+    def add_match(self, PatternStr, Action, PatternStateMachine, Comment=""):
+        assert PatternStateMachine.sm.is_DFA_compliant()
+        assert    PatternStateMachine.inverse_pre_context_sm is None \
+               or PatternStateMachine.inverse_pre_context_sm.is_DFA_compliant()
 
-        if self.__matches.has_key(Pattern):
-            error_msg("Pattern '%s' appeared twice in mode definition.\n" % Pattern + \
+        if self.__matches.has_key(PatternStr):
+            error_msg("Pattern '%s' appeared twice in mode definition.\n" % PatternStr + \
                       "Only the last definition is considered.", 
                       Action.filename, Action.line_n, DontExitF=True)
 
-        if len(PatternStateMachine.get_orphaned_state_index_list()) != 0:
-            error_msg("Pattern '%s' resulted in state machine with orphan states.\n" % Pattern + \
+        if     len(PatternStateMachine.sm.get_orphaned_state_index_list()) != 0 \
+           or (    PatternStateMachine.inverse_pre_context_sm is not None \
+               and len(PatternStateMachine.inverse_pre_context_sm.get_orphaned_state_index_list()) != 0):
+            error_msg("Pattern '%s' resulted in state machine with orphan states.\n" % PatternStr + \
                       "(After Transformation to internal encoding).\n" + \
                       "Please, submit a bug at quex.sourceforge.net.", 
                       DontExitF=True, WarningF=True)
 
-        self.__matches[Pattern] = PatternActionInfo(PatternStateMachine, Action, Pattern, 
-                                                    ModeName=self.name, Comment=Comment)
+        self.__matches[PatternStr] = PatternActionInfo(PatternStateMachine, Action, PatternStr, 
+                                                       ModeName=self.name, Comment=Comment)
 
     def add_match_priority(self, Pattern, PatternStateMachine, PatternIdx, FileName, LineN):
         if self.__matches.has_key(Pattern):
@@ -464,11 +466,12 @@ class Mode:
 
         def __add_new_pattern_action_pair(pattern_action_pair_list, PatternActionPair):
             state_machine = PatternActionPair.pattern_state_machine()
-            pattern       = PatternActionPair.pattern
+            pattern       = PatternActionPair.pattern_string()
 
             for earlier_match in pattern_action_pair_list:
                 if earlier_match.pattern_state_machine().get_id() > state_machine.get_id(): continue
-                if subset_checker.do(earlier_match.pattern_state_machine(), state_machine) == False: continue
+                if subset_checker.do(earlier_match.pattern(), PatternActionPair.pattern()) == False: continue
+
                 file_name, line_n = earlier_match.get_action_location()
                 error_msg("Pattern '%s' matches a superset of what is matched by" % 
                           earlier_match.pattern, file_name, line_n,

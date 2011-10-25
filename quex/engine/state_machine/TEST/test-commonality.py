@@ -17,7 +17,7 @@ def test(A, B):
         print ("Pattern B = " + Pattern1).replace("\n", "\\n").replace("\t", "\\t")
         sm0 = regex.do(Pattern0, {})
         sm1 = regex.do(Pattern1, {})
-        print "claim     = ", commonality_checker.name[commonality_checker.do(sm0, sm1)]
+        print "claim     = ", commonality_checker.do(sm0, sm1)
     print "---------------------------"
     __core(A, B)
     print
