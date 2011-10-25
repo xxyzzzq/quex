@@ -140,18 +140,17 @@ fragment_db = {
 }
 
 class PatternShorthand:
-    def __init__(self, Name="", ThePattern="", Filename="", LineN=-1, RE=""):
-        assert ThePattern.__class__.__name__ == "Pattern"
+    def __init__(self, Name="", StateMachine="", Filename="", LineN=-1, RE=""):
+        assert StateMachine.__class__.__name__ == "StateMachine"
 
         self.name               = Name
-        self.__pattern          = ThePattern
+        self.__state_machine    = StateMachine
         self.filename           = Filename
         self.line_n             = LineN
         self.regular_expression = RE
 
     def get_state_machine(self):
-        assert False # Revisit this stuff
-        return self.__pattern.clone()
+        return self.__state_machine.clone()
 
     def get_character_set(self):
         if len(self.__state_machine.states) != 2: return None

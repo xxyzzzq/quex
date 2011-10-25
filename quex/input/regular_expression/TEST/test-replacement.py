@@ -34,7 +34,7 @@ try:
     adapted_dict = {}
     for key, regular_expression in pattern_dict.items():
         string_stream = StringIO(regular_expression)
-        state_machine = core.do(string_stream, adapted_dict)
+        state_machine = core.do(string_stream, adapted_dict).sm
         # It is ESSENTIAL that the state machines of defined patterns do not 
         # have origins! Actually, there are not more than patterns waiting
         # to be applied in regular expressions. The regular expressions 
