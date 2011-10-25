@@ -14,7 +14,7 @@ init-state = 0L
 00003 ()
      == [00B5]  ==> 00004
     
-00004 (A, pre=28)
+00004 (A, pre=31)
      == [00C2]  ==> 00003
     
 pre-condition inverted = init-state = 0L

@@ -567,7 +567,7 @@ class StateMachine:
             if state.is_acceptance(): result.append(index)
         return result
 
-    def get_inverse(self, CutAtShortestAcceptanceF=False):
+    def get_inverse(self):
         """Creates an inverse representation of the state machine. Optionally,
            the longer acceptance paths can be cut, in case that there are shorter
            once. This is the contrary of a 'greedy' wildcard, i.e.
@@ -779,7 +779,7 @@ class StateMachine:
             # if required (e.g. for sequentialization) cancel the acceptance status
             if CancelStartAcceptanceStateF: state.set_acceptance(False)
 
-    def mount_newline_to_acceptance_states(self, DOS_CarriageReturnNewlineF):     
+    def mount_newline_to_acceptance_states(self, DOS_CarriageReturnNewlineF, InverseF=False):     
         """Adds the condition 'newline or border character' at the end of the given
            state machine. Acceptance is only reached when the newline or border
            occurs. 
@@ -793,6 +793,9 @@ class StateMachine:
            BorderCharacter that leads to the new acceptance.  The old acceptance
            state is annulated.  
         """    
+        assert type(DOS_CarriageReturnNewlineF) == bool
+        assert type(InverseF)                   == bool
+
         old_acceptance_state_list = self.get_acceptance_state_list() 
         new_state_idx             = state_machine_index.get()
         new_state                 = State(StateIndex=new_state_idx)
@@ -802,19 +805,22 @@ class StateMachine:
 
         self.states[new_state_idx] = new_state
 
+        if InverseF: sequence = [ord("\n"), ord("\r")]
+        else:        sequence = [ord("\r"), ord("\n")]
+
         for state in old_acceptance_state_list:
-            # (1) Transition '\n' --> Acceptance
+            # Transition '\n' --> Acceptance
             state.add_transition(ord('\n'), new_state_idx)
             
             if DOS_CarriageReturnNewlineF:
-                # (3) Transition '\r\n' --> Acceptance
+                # Alternative Transition '\r\n' --> Acceptance
                 aux_idx = self.create_new_state(AcceptanceF=False)
-                state.add_transition(ord('\n'), aux_idx)
-                self.states[aux_idx].add_transition(ord('\r'), new_state_idx)
+                state.add_transition(sequence[0], aux_idx)
+                self.states[aux_idx].add_transition(sequence[1], new_state_idx)
 
             # (-) Cancel acceptance of old state
             state.origins().remove_the_only_one()
-            #
+            
         return new_state_idx    
 
     def mount_to_initial_state(self, TargetStateIdx):

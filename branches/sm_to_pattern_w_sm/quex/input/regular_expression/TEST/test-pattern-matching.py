@@ -34,7 +34,7 @@ def test(the_state_machine, string_to_match):
 print "_____________________________________________________________________________"    
 regex_str = "h[alowe ]+t"
 print "regular expression = '%s'" % regex_str
-sm = re2sm.do(regex_str, {})
+sm = re2sm.do(regex_str, {}).sm
 print sm
 test(sm, "hallo welt")    
 test(sm, "haaawwwolellewat")    
@@ -42,7 +42,7 @@ test(sm, "haaawwwolellewat")
 print "_____________________________________________________________________________"    
 regex_str = "a+(b|c)*t"
 print "regular expression = '%s'" % regex_str
-sm = re2sm.do(regex_str, {})
+sm = re2sm.do(regex_str, {}).sm
 print sm
 test(sm, "aaaacccbbt")    
 test(sm, "abcbcbct")    
