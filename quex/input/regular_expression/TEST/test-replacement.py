@@ -39,7 +39,6 @@ try:
         # have origins! Actually, there are not more than patterns waiting
         # to be applied in regular expressions. The regular expressions 
         # can later be origins.
-        assert state_machine.has_origins() == False
 
         adapted_dict[key] = PatternShorthand(key, state_machine)
 except RegularExpressionException, x:

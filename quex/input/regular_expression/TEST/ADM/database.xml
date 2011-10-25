@@ -1,22 +1,22 @@
-<test-database execution-time-sec="2.95" date="Mon Oct 24 23:52:51 2011">
+<test-database execution-time-sec="3.03" date="Tue Oct 25 08:28:13 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Case Folding" time-sum-sec="0.20"> 
+    <test title="Case Folding" time-sum-sec="0.19"> 
         <application file-name="test-case_fold.py" info-request-time="1318614195L" vanished="False"/>
         <choice-list number="2" same_result="False">
            <choice name="set" result="OK" time_sec="0.09" crc="107706750"/>
            <choice name="pattern" result="OK" time_sec="0.10" crc="-463982733"/>
         </choice-list>
     </test>
-    <test title="State Machine Pattern Matching" time-sum-sec="0.07"> 
-        <application file-name="test-pattern-matching.py" info-request-time="1318614195L" vanished="False"/>
+    <test title="State Machine Pattern Matching" time-sum-sec="0.08"> 
+        <application file-name="test-pattern-matching.py" info-request-time="1319520555L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.07" crc="366811142"/>
+           <choice name="" result="OK" time_sec="0.08" crc="366811142"/>
         </choice-list>
     </test>
-    <test title="Transformations" time-sum-sec="0.08"> 
+    <test title="Transformations" time-sum-sec="0.14"> 
         <application file-name="test-transformation.py" info-request-time="1318614195L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.08" crc="306985345"/>
+           <choice name="" result="FAIL" time_sec="0.14" crc="-1977823673"/>
         </choice-list>
     </test>
     <group name="Backslashed Characters">
@@ -86,10 +86,10 @@
                <choice name="" result="OK" time_sec="0.09" crc="427276463"/>
             </choice-list>
         </test>
-        <test title="Begin of Line '^', End of Line '$'" time-sum-sec="0.07"> 
-            <application file-name="test-bol-eol.py" info-request-time="1319400635L" vanished="False"/>
+        <test title="Begin of Line '^', End of Line '$'" time-sum-sec="0.09"> 
+            <application file-name="test-bol-eol.py" info-request-time="1319523287L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.07" crc="854120591"/>
+               <choice name="" result="OK" time_sec="0.09" crc="-1089790550"/>
             </choice-list>
         </test>
         <test title="post conditions" time-sum-sec="0.09"> 
@@ -99,9 +99,9 @@
             </choice-list>
         </test>
         <test title="End of Line '$' (with DOS/Windows '\r\n')" time-sum-sec="0.07"> 
-            <application file-name="test-eol-carriage-return-newline.py" info-request-time="1318614195L" vanished="False"/>
+            <application file-name="test-eol-carriage-return-newline.py" info-request-time="1319523435L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.07" crc="-1655835001"/>
+               <choice name="" result="FAIL" time_sec="0.07" crc="-679971317"/>
             </choice-list>
         </test>
     </group>

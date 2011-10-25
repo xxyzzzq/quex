@@ -2,7 +2,7 @@
 from   quex.engine.misc.file_in                         import error_msg
 from   quex.engine.state_machine.core                   import StateMachine
 import quex.engine.state_machine.ambiguous_post_context as apc
-from   quex.blackboard                                  import E_PreContextIDs
+from   quex.blackboard                                  import E_PreContextIDs, setup as Setup
 
 
 def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
@@ -42,20 +42,21 @@ def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
     assert post_context_sm is None or not post_context_sm.has_origins()
 
     if post_context_sm is None:
-        if EndOfLinePostContextF:
-            return __setup_end_of_line_condition(sm, PostContextF, DOS_CarriageReturnNewlineF)
-        else:
+        if not EndOfLinePostContextF:
             return None
+        # Generate a new post context that just contains the 'newline'
+        post_context_sm = StateMachine(AcceptanceF=True)
+        post_context_sm.mount_newline_to_acceptance_states(Setup.dos_carriage_return_newline_f)
     elif EndOfLinePostContextF: 
-        post_context_sm.mount_newline_to_acceptance_states(DOS_CarriageReturnNewlineF)
+        # Mount 'newline' to existing post context
+        post_context_sm.mount_newline_to_acceptance_states(Setup.dos_carriage_return_newline_f)
 
-    # -- a post context with an initial state that is acceptance is not
-    #    really a 'context' since it accepts anything. The state machine remains
-    #    un-post context.
+    # A post context with an initial state that is acceptance is not really a
+    # 'context' since it accepts anything. The state machine remains un-post context.
     if post_context_sm.get_init_state().is_acceptance():
         error_msg("Post context accepts anything---replaced by no post context.", fh, 
                   DontExitF=True)
-        return the_state_machine
+        return None
     
     # (*) Two ways of handling post-contexts:
     #
@@ -65,16 +66,17 @@ def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
     #        has been reached.
     #
     if apc.detect_forward(the_state_machine, post_context_sm):
+        trailing_post_context = post_context_sm
         if apc.detect_backward(the_state_machine, post_context_sm):
             # -- for post contexts that are forward and backward ambiguous
             #    a philosophical cut is necessary.
             error_msg("Post context requires philosophical cut--handle with care!\n"
                       "Proposal: Isolate pattern and ensure results are as expected!", fh, 
                       DontExitF=True)
-            post_context_sm = apc.philosophical_cut(the_state_machine, post_context_sm)
+            trailing_post_context = apc.philosophical_cut(the_state_machine, post_context_sm)
 
         apc.mount(the_state_machine, post_context_sm)
-        return apc
+        return trailing_post_context.get_inverse()
 
     #     -- The 'normal' way: storing the input position at the end of the core
     #        pattern.
@@ -134,21 +136,4 @@ def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
 
     # No input position backward search required
     return None
-
-def __setup_end_of_line_condition(sm, PostContextF, DOS_CarriageReturnNewlineF):
-
-    # -- create a state machine that represents the post-condition
-    # -- mount it to the core pattern as a post-condition
-    post_sm = StateMachine()
-    if not DOS_CarriageReturnNewlineF:
-        post_sm.add_transition(post_sm.init_state_index, ord('\n'), AcceptanceF=True)
-    else:
-        aux_idx   = post_sm.add_transition(post_sm.init_state_index, ord('\r'), AcceptanceF=False)
-        post_sm.add_transition(aux_idx, ord('\n'), AcceptanceF=True)
-    
-    # post conditions add an epsilon transition that has to be solved 
-    # by translating state machine into a DFA
-    input_position_search_backward_sm = setup_post_context.do(sm, post_sm) 
-    sm = nfa_to_dfa.do(sm)
-    assert sm.has_origins() == False
 

@@ -4,6 +4,7 @@ import quex.engine.state_machine.core                  as StateMachine
 import quex.engine.state_machine.nfa_to_dfa            as nfa_to_dfa
 import quex.engine.state_machine.hopcroft_minimization as hopcroft
 import quex.engine.state_machine.acceptance_pruning    as acceptance_pruning
+from   quex.blackboard                                 import E_PreContextIDs, setup as Setup
 
 def do(the_state_machine, pre_context_sm, BeginOfLinePreContextF):
     """Sets up a pre-condition to the given state machine. This process
@@ -34,14 +35,10 @@ def do(the_state_machine, pre_context_sm, BeginOfLinePreContextF):
         
     if pre_context_sm is  None:
         if BeginOfLinePreContextF:
-            # mark all acceptance states with the 'trivial pre-condition BOL' flag
-            for state in sm.get_acceptance_state_list():
+            # Mark all acceptance states with the 'trivial pre-context BeginOfLine' flag
+            for state in the_state_machine.get_acceptance_state_list():
                 state.set_pre_context_id(E_PreContextIDs.BEGIN_OF_LINE)
-            sm.core().set_pre_context_begin_of_line_f()
-            return None
         return None
-    elif BeginOfLinePreContextF:
-        pre_context_sm.mount_newline_to_acceptance_states(DOS_CarriageReturnNewlineF=False)
 
     # (*) invert the state machine of the pre-condition 
     inverse_pre_context = pre_context_sm.get_inverse()
@@ -50,6 +47,10 @@ def do(the_state_machine, pre_context_sm, BeginOfLinePreContextF):
     # -- Once an acceptance state is reached no further analysis is necessary.
     acceptance_pruning.do(inverse_pre_context)
         
+    if BeginOfLinePreContextF:
+        # Extend the existing pre-context with a preceeding 'begin-of-line'.
+        inverse_pre_context.mount_newline_to_acceptance_states(Setup.dos_carriage_return_newline_f, InverseF=True)
+
     # (*) let the state machine refer to it 
     #     [Is this necessary? Is it not enough that the acceptance origins point to it? <fschaef>]
     pre_context_sm_id = inverse_pre_context.get_id()

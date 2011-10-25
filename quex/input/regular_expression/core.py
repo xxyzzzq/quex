@@ -16,7 +16,6 @@ def parse(fh, AllowNothingIsFineF=False, AllowStateMachineTrafoF=True):
     try:
         # (*) parse regular expression, build state machine
         pattern_state_machine = regex.do(fh, blackboard.shorthand_db, 
-                                         DOS_CarriageReturnNewlineF = Setup.dos_carriage_return_newline_f,
                                          AllowNothingIsNecessaryF   = AllowNothingIsFineF,
                                          AllowStateMachineTrafoF    = AllowStateMachineTrafoF)
 

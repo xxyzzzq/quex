@@ -57,10 +57,8 @@ import quex.engine.state_machine.repeat                  as repeat
 CONTROL_CHARACTERS = [ "+", "*", "\"", "/", "(", ")", "{", "}", "|", "[", "]", "$"] 
 
 def do(UTF8_String_or_Stream, PatternDict, 
-       DOS_CarriageReturnNewlineF   = False, 
        AllowNothingIsNecessaryF     = False,
        AllowStateMachineTrafoF      = True): 
-    assert type(DOS_CarriageReturnNewlineF) == bool
     assert type(AllowNothingIsNecessaryF) == bool
     assert type(PatternDict) == dict
 
@@ -106,7 +104,6 @@ def do(UTF8_String_or_Stream, PatternDict,
                            end_of_line_f   = end_of_line_f,
                            post_context    = post, 
                            fh              = stream,
-                           DOS_CarriageReturnNewlineF = DOS_CarriageReturnNewlineF, 
                            AllowNothingIsNecessaryF   = AllowNothingIsNecessaryF,
                            AllowStateMachineTrafoF    = AllowStateMachineTrafoF)
     

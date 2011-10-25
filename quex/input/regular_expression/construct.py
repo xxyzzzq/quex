@@ -20,12 +20,12 @@ if DEBUG_hopcroft_f:
 
 class Pattern:
     """Let's start as a mimiker ... """
-    def __init__(self, PreContextSM, CoreSM, PostContextSM, BeginOfLineF, EndOfLineF, AllowStateMachineTrafoF, fh):
+    def __init__(self, PreContextSM, CoreSM, PostContextSM, 
+                 BeginOfLineF, EndOfLineF, 
+                 AllowStateMachineTrafoF, fh):
         pre_context  = PreContextSM
         core_sm      = CoreSM
         post_context = PostContextSM
-
-        self.__pre_context_begin_of_line_f = BeginOfLineF
 
         # (1) Character/Newline counting
         #
@@ -57,8 +57,14 @@ class Pattern:
 
         # (3) Pre- and Post-Context Setup
         self.__input_position_search_backward_sm = setup_post_context.do(core_sm, post_context, EndOfLineF, fh=fh)
-        self.__inverse_pre_context_sm            = setup_pre_context.do(core_sm, pre_context, BeginOfLineF)
-        self.__sm                                = beautify(core_sm)
+        if self.__input_position_search_backward_sm is not None:
+            self.__input_position_search_backward_sm = beautify(self.__input_position_search_backward_sm)
+
+        self.__pre_context_sm_inverse = setup_pre_context.do(core_sm, pre_context, BeginOfLineF)
+        self.__pre_context_trivial_begin_of_line_f = (BeginOfLineF and self.__pre_context_sm_inverse is None)
+        
+        self.__sm = beautify(core_sm)
+
 
         self.__validate(self.__sm, fh)
 
@@ -69,9 +75,13 @@ class Pattern:
     @property
     def sm(self): return self.__sm
     @property
-    def inverse_pre_context_sm(self): return self.__inverse_pre_context_sm
+    def inverse_pre_context_sm(self): return self.__pre_context_sm_inverse
     @property
     def input_position_search_backward_sm(self): return self.__input_position_search_backward_sm
+
+    @property
+    def pre_context_trivial_begin_of_line_f(self):
+        return self.__pre_context_trivial_begin_of_line_f
 
     def __validate(self, sm, fh):
         # (*) It is essential that state machines defined as patterns do not 
@@ -107,9 +117,9 @@ class Pattern:
 
         msg = self.__sm.get_string(NormalizeF, Option)
             
-        if self.__inverse_pre_context_sm is not None:
+        if self.__pre_context_sm_inverse is not None:
             msg += "pre-condition inverted = "
-            msg += self.__inverse_pre_context_sm.get_string(NormalizeF, Option)           
+            msg += self.__pre_context_sm_inverse.get_string(NormalizeF, Option)           
 
         if self.__input_position_search_backward_sm is not None:
             msg += "post context backward input position detector inverted = "
@@ -121,13 +131,11 @@ def do(core_sm,
        begin_of_line_f=False, pre_context=None, 
        end_of_line_f=False,   post_context=None, 
        fh=-1, 
-       DOS_CarriageReturnNewlineF=True, 
        AllowNothingIsNecessaryF=False,
        AllowStateMachineTrafoF=True):
 
     assert type(begin_of_line_f) == bool
     assert type(end_of_line_f) == bool
-    assert type(DOS_CarriageReturnNewlineF) == bool
     assert type(AllowNothingIsNecessaryF) == bool
 
     # Detect orphan states in the 'raw' state machines --> error in sm-building
