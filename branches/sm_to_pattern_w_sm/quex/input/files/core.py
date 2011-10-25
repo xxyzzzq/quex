@@ -217,7 +217,7 @@ def parse_pattern_name_definitions(fh):
                 regular_expression.parse(fh, AllowNothingIsFineF = True, 
                                          AllowStateMachineTrafoF = False) 
 
-        if state_machine.core().has_pre_or_post_context():
+        if state_machine.has_pre_or_post_context():
             error_msg("Pattern definition with pre- and/or post-context.\n" + \
                       "This pattern cannot be used in replacements.", fh, DontExitF=True)
 

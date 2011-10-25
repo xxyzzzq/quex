@@ -389,7 +389,7 @@ def get_terminal_code(AcceptanceID, pattern_action_info, SupportBeginOfLineF, La
     #     because when the 'goto last_acceptance' is triggered the 'last_acceptance'
     #     may lay backwards and needs to be restored.
     result      = []
-    for letter in pattern_action_info.pattern:
+    for letter in pattern_action_info.pattern_string():
         if letter in ['\\', '"', '\n', '\t', '\r', '\a', '\v']:
             result.append("\\")
         result.append(letter)

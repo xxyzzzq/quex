@@ -1,8 +1,8 @@
 ##-- 0 -----------------------------------------------------------------------
  -- pre-condition  = False
  -- post-condition = False
- -- begin of file  =  False
- -- end of file    =  False
+ -- begin of line  =  False
+ -- end of line    =  False
 
 result sm.id     =  9
 result =  init-state = 0L
@@ -16,10 +16,10 @@ trivially pre-conditioned =  False
 ##-- 1 -----------------------------------------------------------------------
  -- pre-condition  = False
  -- post-condition = False
- -- begin of file  =  False
- -- end of file    =  True
+ -- begin of line  =  False
+ -- end of line    =  True
 
-result sm.id     =  15
+result sm.id     =  12
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -34,10 +34,10 @@ trivially pre-conditioned =  False
 ##-- 2 -----------------------------------------------------------------------
  -- pre-condition  = False
  -- post-condition = False
- -- begin of file  =  True
- -- end of file    =  False
+ -- begin of line  =  True
+ -- end of line    =  False
 
-result sm.id     =  18
+result sm.id     =  15
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -49,10 +49,10 @@ trivially pre-conditioned =  True
 ##-- 3 -----------------------------------------------------------------------
  -- pre-condition  = False
  -- post-condition = False
- -- begin of file  =  True
- -- end of file    =  True
+ -- begin of line  =  True
+ -- end of line    =  True
 
-result sm.id     =  24
+result sm.id     =  18
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -67,10 +67,10 @@ trivially pre-conditioned =  True
 ##-- 4 -----------------------------------------------------------------------
  -- pre-condition  = False
  -- post-condition = True
- -- begin of file  =  False
- -- end of file    =  False
+ -- begin of line  =  False
+ -- end of line    =  False
 
-result sm.id     =  30
+result sm.id     =  24
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -85,10 +85,10 @@ trivially pre-conditioned =  False
 ##-- 5 -----------------------------------------------------------------------
  -- pre-condition  = False
  -- post-condition = True
- -- begin of file  =  False
- -- end of file    =  True
+ -- begin of line  =  False
+ -- end of line    =  True
 
-result sm.id     =  34
+result sm.id     =  28
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -106,10 +106,10 @@ trivially pre-conditioned =  False
 ##-- 6 -----------------------------------------------------------------------
  -- pre-condition  = False
  -- post-condition = True
- -- begin of file  =  True
- -- end of file    =  False
+ -- begin of line  =  True
+ -- end of line    =  False
 
-result sm.id     =  38
+result sm.id     =  32
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -124,10 +124,10 @@ trivially pre-conditioned =  True
 ##-- 7 -----------------------------------------------------------------------
  -- pre-condition  = False
  -- post-condition = True
- -- begin of file  =  True
- -- end of file    =  True
+ -- begin of line  =  True
+ -- end of line    =  True
 
-result sm.id     =  42
+result sm.id     =  36
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -145,11 +145,11 @@ trivially pre-conditioned =  True
 ##-- 8 -----------------------------------------------------------------------
  -- pre-condition  = True
  -- post-condition = False
- -- begin of file  =  False
- -- end of file    =  False
+ -- begin of line  =  False
+ -- end of line    =  False
 
-result sm.id     =  51
-result pre sm.id =  49
+result sm.id     =  45
+result pre sm.id =  43
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -167,11 +167,11 @@ trivially pre-conditioned =  False
 ##-- 9 -----------------------------------------------------------------------
  -- pre-condition  = True
  -- post-condition = False
- -- begin of file  =  False
- -- end of file    =  True
+ -- begin of line  =  False
+ -- end of line    =  True
 
-result sm.id     =  61
-result pre sm.id =  56
+result sm.id     =  52
+result pre sm.id =  50
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -192,16 +192,16 @@ trivially pre-conditioned =  False
 ##-- 10 -----------------------------------------------------------------------
  -- pre-condition  = True
  -- post-condition = False
- -- begin of file  =  True
- -- end of file    =  False
+ -- begin of line  =  True
+ -- end of line    =  False
 
-result sm.id     =  68
-result pre sm.id =  66
+result sm.id     =  59
+result pre sm.id =  57
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
     
-00001 (A, pre=66)
+00001 (A, pre=57)
     
 pre-condition inverted = init-state = 0L
 00000 ()
@@ -217,11 +217,11 @@ trivially pre-conditioned =  False
 ##-- 11 -----------------------------------------------------------------------
  -- pre-condition  = True
  -- post-condition = False
- -- begin of file  =  True
- -- end of file    =  True
+ -- begin of line  =  True
+ -- end of line    =  True
 
-result sm.id     =  78
-result pre sm.id =  73
+result sm.id     =  66
+result pre sm.id =  64
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -245,11 +245,11 @@ trivially pre-conditioned =  False
 ##-- 12 -----------------------------------------------------------------------
  -- pre-condition  = True
  -- post-condition = True
- -- begin of file  =  False
- -- end of file    =  False
+ -- begin of line  =  False
+ -- end of line    =  False
 
-result sm.id     =  89
-result pre sm.id =  86
+result sm.id     =  77
+result pre sm.id =  74
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -257,7 +257,7 @@ result =  init-state = 0L
 00001 (S)
      == '2' ==> 00002
     
-00002 (A, R, pre=86)
+00002 (A, R)
     
 pre-condition inverted = init-state = 0L
 00000 ()
@@ -270,11 +270,11 @@ trivially pre-conditioned =  False
 ##-- 13 -----------------------------------------------------------------------
  -- pre-condition  = True
  -- post-condition = True
- -- begin of file  =  False
- -- end of file    =  True
+ -- begin of line  =  False
+ -- end of line    =  True
 
-result sm.id     =  97
-result pre sm.id =  94
+result sm.id     =  85
+result pre sm.id =  82
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -298,11 +298,11 @@ trivially pre-conditioned =  False
 ##-- 14 -----------------------------------------------------------------------
  -- pre-condition  = True
  -- post-condition = True
- -- begin of file  =  True
- -- end of file    =  False
+ -- begin of line  =  True
+ -- end of line    =  False
 
-result sm.id     =  105
-result pre sm.id =  102
+result sm.id     =  93
+result pre sm.id =  90
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -326,11 +326,11 @@ trivially pre-conditioned =  False
 ##-- 15 -----------------------------------------------------------------------
  -- pre-condition  = True
  -- post-condition = True
- -- begin of file  =  True
- -- end of file    =  True
+ -- begin of line  =  True
+ -- end of line    =  True
 
-result sm.id     =  113
-result pre sm.id =  110
+result sm.id     =  101
+result pre sm.id =  98
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001

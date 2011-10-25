@@ -56,6 +56,7 @@ class Pattern:
             if sm is not None: post_context = sm
 
         # (3) Pre- and Post-Context Setup
+        self.__post_context_f = (post_context is not None)
         self.__input_position_search_backward_sm = setup_post_context.do(core_sm, post_context, EndOfLineF, fh=fh)
         if self.__input_position_search_backward_sm is not None:
             self.__input_position_search_backward_sm = beautify(self.__input_position_search_backward_sm)
@@ -78,10 +79,15 @@ class Pattern:
     def inverse_pre_context_sm(self): return self.__pre_context_sm_inverse
     @property
     def input_position_search_backward_sm(self): return self.__input_position_search_backward_sm
-
     @property
     def pre_context_trivial_begin_of_line_f(self):
         return self.__pre_context_trivial_begin_of_line_f
+    def has_pre_or_post_context(self):
+        if   self.__pre_context_trivial_begin_of_line_f: return True
+        elif self.__pre_context_sm_inverse is not None:  return True
+        elif self.__post_context_f:                      return True
+        return False
+
 
     def __validate(self, sm, fh):
         # (*) It is essential that state machines defined as patterns do not 

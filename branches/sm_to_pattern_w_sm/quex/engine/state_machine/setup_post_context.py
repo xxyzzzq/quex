@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 from   quex.engine.misc.file_in                         import error_msg
 from   quex.engine.state_machine.core                   import StateMachine
-import quex.engine.state_machine.ambiguous_post_context as apc
+import quex.engine.state_machine.ambiguous_post_context as ambiguous_post_context
 from   quex.blackboard                                  import E_PreContextIDs, setup as Setup
 
 
@@ -65,18 +65,17 @@ def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
     #        core pattern after the end of the post context
     #        has been reached.
     #
-    if apc.detect_forward(the_state_machine, post_context_sm):
+    if ambiguous_post_context.detect_forward(the_state_machine, post_context_sm):
         trailing_post_context = post_context_sm
-        if apc.detect_backward(the_state_machine, post_context_sm):
+        if ambiguous_post_context.detect_backward(the_state_machine, post_context_sm):
             # -- for post contexts that are forward and backward ambiguous
             #    a philosophical cut is necessary.
             error_msg("Post context requires philosophical cut--handle with care!\n"
                       "Proposal: Isolate pattern and ensure results are as expected!", fh, 
                       DontExitF=True)
-            trailing_post_context = apc.philosophical_cut(the_state_machine, post_context_sm)
-
-        apc.mount(the_state_machine, post_context_sm)
-        return trailing_post_context.get_inverse()
+            trailing_post_context = ambiguous_post_context.philosophical_cut(the_state_machine, post_context_sm)
+        
+        return ambiguous_post_context.mount(the_state_machine, post_context_sm)
 
     #     -- The 'normal' way: storing the input position at the end of the core
     #        pattern.

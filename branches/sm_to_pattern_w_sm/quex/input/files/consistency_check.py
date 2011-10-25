@@ -2,6 +2,7 @@ from   quex.engine.misc.file_in import error_msg, verify_word_in_list
 import quex.blackboard                               as     blackboard
 from   quex.engine.generator.action_info             import CodeFragment
 import quex.engine.state_machine.commonality_checker as commonality_checker
+from   quex.engine.state_machine.commonality_checker import E_Commonality 
 import quex.engine.state_machine.subset_checker      as subset_checker
 
 
@@ -92,7 +93,7 @@ def __commonality(mode, Info, ReferenceSM, Name):
             continue
 
         sm = pattern_action_pair.pattern_state_machine()
-        if commonality_checker.do(ReferenceSM, sm) != commonality_checker.NONE:
+        if commonality_checker.do(ReferenceSM, sm) != E_Commonality.NONE:
             error_msg("The %s pattern '%s'" \
                       % (Name, Info.pattern_str), Info.file_name, Info.line_n, 
                       DontExitF=True, WarningF=False)

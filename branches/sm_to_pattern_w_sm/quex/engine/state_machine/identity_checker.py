@@ -97,10 +97,10 @@ class Checker:
 
         return True
 
-def do(SM0, SM1):
-    # Check whether SM0 and SM1 are identical, i.e they match exactly the same patterns 
+def do(Pattern0, Pattern1):
+    # Check whether Pattern0 and Pattern1 are identical, i.e they match exactly the same patterns 
     # and provide exactly the same behavior of the lexical analyzer.
-    identity_f = Checker(SM0, SM1).do()
+    identity_f = Checker(Pattern0.sm, Pattern1.sm).do()
 
     if not identity_f: return False
     # NOTE: Post-conditions are handled in the identity check already.
@@ -108,31 +108,31 @@ def do(SM0, SM1):
     # Pre-Condition: 
     #
     #       If only one state machine is pre-conditioned, then they are not identical
-    if (SM0.core().pre_context_sm_id() == -1) != (SM1.core().pre_context_sm_id() == -1): 
+    if (Pattern0.inverse_pre_context_sm is not None) != (Pattern1.inverse_pre_context_sm is not None): 
         return False
     else:
-        if SM0.core().pre_context_sm_id() != -1:
+        if Pattern0.inverse_pre_context_sm is not None:
             # Both are pre-conditioned by state machine
-            assert SM1.core().pre_context_sm_id() != -1
+            assert Pattern1.inverse_pre_context_sm != -1
             # Pre-condition by 'begin of line' excludes other pre-conditions.
-            assert not SM0.core().pre_context_begin_of_line_f()
-            assert not SM1.core().pre_context_begin_of_line_f()
-            return Checker(SM0.core().pre_context_sm(), SM1.core().pre_context_sm()).do()
+            assert not Pattern0.pre_context_trivial_begin_of_line_f
+            assert not Pattern1.pre_context_trivial_begin_of_line_f
+            return Checker(Pattern0.inverse_pre_context_sm, Pattern1.inverse_pre_context_sm).do()
 
-    # Here: None SM0 and SM1 is dependent on pre-context state machine
-    if  SM0.core().pre_context_begin_of_line_f() != SM1.core().pre_context_begin_of_line_f(): 
+    # Here: None Pattern0 and Pattern1 is dependent on pre-context state machine
+    if  Pattern0.pre_context_trivial_begin_of_line_f != Pattern1.pre_context_trivial_begin_of_line_f: 
         return False
     else:
-        if SM0.core().pre_context_begin_of_line_f():
+        if Pattern0.pre_context_trivial_begin_of_line_f:
             # Both are pre-conditioned by 'begin of line' => judgement remains as above
-            assert SM1.core().pre_context_begin_of_line_f()
+            assert Pattern1.pre_context_trivial_begin_of_line_f
             # Pre-condition by 'begin of line' excludes other pre-conditions.
-            assert SM0.core().pre_context_sm_id() == -1
-            assert SM1.core().pre_context_sm_id() == -1
+            assert Pattern0.inverse_pre_context_sm is None
+            assert Pattern1.inverse_pre_context_sm is None
             # Here: identity_f == True
             return True
 
-    # Here: None SM0 and SM1 is dependent on pre-context by 'begin of line
+    # Here: None Pattern0 and Pattern1 is dependent on pre-context by 'begin of line
 
     # If there is no pre-condition at all, then the old judgement holds
     return True

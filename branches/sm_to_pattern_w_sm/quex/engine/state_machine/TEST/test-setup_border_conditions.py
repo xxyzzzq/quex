@@ -21,22 +21,22 @@ if "--hwut-info" in sys.argv:
 def test(Idx, sm_pre, sm, sm_post, BOF_F, EOF_F):    
     result = sm.clone()
     print "##-- %i -----------------------------------------------------------------------" % Idx
+    inverse_pre_context_sm = None
     if sm_pre is not None: 
-        setup_pre_context.do(result, sm_pre)
+        inverse_pre_context_sm = setup_pre_context.do(result, sm_pre, BOF_F)
         print " -- pre-condition  = True"
     else:
         print " -- pre-condition  = False"
         
     if sm_post is not None:
-        setup_post_context.do(result, sm_post)
+        ipsb_sm = setup_post_context.do(result, sm_post, EOF_F)
         print " -- post-condition = True"
     else:
         print " -- post-condition = False"
     
-    print " -- begin of file  = ", BOF_F
-    print " -- end of file    = ", EOF_F
+    print " -- begin of line  = ", BOF_F
+    print " -- end of line    = ", EOF_F
 
-    result = setup_border_conditions.do(result, BOF_F, EOF_F)
     #
     # print "EXPRESSION = ", result
     # print "POST CONDITION = ", post_sm
@@ -48,9 +48,10 @@ def test(Idx, sm_pre, sm, sm_post, BOF_F, EOF_F):
     #
     print
     print "result sm.id     = ", result.get_id()
-    if result.core().pre_context_sm() is not None:
-        print "result pre sm.id = ", result.core().pre_context_sm().get_id()
+    if inverse_pre_context_sm is not None:
+        print "result pre sm.id = ", inverse_pre_context_sm.get_id()
     print "result = ", result
+    print "inverse_pre_context_sm = ", inverse_pre_context_sm
     print "trivially pre-conditioned = ", result.core().pre_context_begin_of_line_f()
 
     # sys.exit(-1)

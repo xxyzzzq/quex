@@ -1,4 +1,4 @@
-<history date="Sun Oct 23 14:23:41 2011" element-n="548">
+<history date="Tue Oct 25 21:54:03 2011" element-n="550">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1240,5 +1240,9 @@
         <crc-error time="11:05:59" application="test-parallelize.py" choice="" database-crc="-1443008406" real-crc="-491967246"/>
         <crc-error time="11:06:12" application="test-parallelize-trace-origin.py" choice="" database-crc="1888147954" real-crc="-1706023851"/>
         <crc-error time="11:30:10" application="test-parallelize.py" choice="" database-crc="-491967246" real-crc="801044692"/>
+    </day>
+    <day year="2011" month="10" day="25">
+        <crc-error time="19:25:06" application="test-utf8_state_split-do-2.py" choice="" database-crc="-1139775102" real-crc="-1938210474"/>
+        <crc-error time="19:53:42" application="test-setup_border_conditions.py" choice="" database-crc="-806423538" real-crc="-624847514"/>
     </day>
 </history>

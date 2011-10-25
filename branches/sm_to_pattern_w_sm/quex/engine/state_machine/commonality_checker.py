@@ -1,16 +1,8 @@
 from quex.engine.state_machine.core import StateMachine
+from quex.engine.misc.enum          import Enum 
 
-NONE   = 0
-BOTH   = 1
-A_IN_B = 2
-B_IN_A = 3
 
-name = {
-        NONE:   "NONE",
-        BOTH:   "BOTH",
-        A_IN_B: "A_IN_B",
-        B_IN_A: "B_IN_A",
-}
+E_Commonality = Enum("NONE", "BOTH", "A_IN_B", "B_IN_A")
 
 class Checker:
     def __init__(self, A, B):
@@ -48,9 +40,9 @@ class Checker:
         a_state = self.a_sm.states[ATargetIdx]
         b_state = self.b_sm.states[BTargetIdx]
         if a_state.is_acceptance(): 
-            if b_state.is_acceptance(): return BOTH    # both share a commonality
-            else:                       return A_IN_B  # A has something in B
-        elif b_state.is_acceptance():   return B_IN_A  # B has something in A
+            if b_state.is_acceptance(): return E_Commonality.BOTH    # both share a commonality
+            else:                       return E_Commonality.A_IN_B  # A has something in B
+        elif b_state.is_acceptance():   return E_Commonality.B_IN_A  # B has something in A
 
         # Follow the path of common trigger sets
         for a_target, a_trigger_set in a_state.transitions().get_map().items():
@@ -66,38 +58,38 @@ class Checker:
                 result = self.__dive(a_target, b_target)
                 if result != 0: return result
 
-        return NONE
+        return E_Commonality.NONE
 
 def do(A, B):
 
     # If pre-conditions differ, they cannot have any commonality
-    pre_result = NONE
-    if A.core().pre_context_begin_of_line_f() != B.core().pre_context_begin_of_line_f():
+    pre_result = E_Commonality.NONE
+    if A.pre_context_trivial_begin_of_line_f != B.pre_context_trivial_begin_of_line_f:
         # One depends on begin-of-line, the other doesn't => no commonality
-        pre_result = NONE
+        pre_result = E_Commonality.NONE
 
-    elif (A.core().pre_context_sm_id() != -1) != (B.core().pre_context_sm_id() != -1):
+    elif (A.inverse_pre_context_sm is not None) != (B.inverse_pre_context_sm is not None):
         # One depends on pre-conditions, the other doesn't => no commonality
-        pre_result = NONE
+        pre_result = E_Commonality.NONE
 
-    elif A.core().pre_context_sm_id() != -1:
+    elif A.inverse_pre_context_sm is not None:
         assert B.core().pre_context_sm_id() != -1
         # Both depend on pre-conditions: Are there commonalities in the pre-conditions?
-        pre_result = Checker(A.pre_context_sm(), B.pre_context_sm())
+        pre_result = Checker(A.inverse_pre_context_sm, B.inverse_pre_context_sm)
     else:
-        pre_result = BOTH
+        pre_result = E_Commonality.BOTH
 
-    if pre_result == NONE: return NONE
+    if pre_result == E_Commonality.NONE: return E_Commonality.NONE
 
     # NOTE: Post-conditions do not change anything, since they match only when the whole
     #       lexeme has matched (from begin to end of post condition). Post-conditions only
     #       tell something about the place where the analyzer returns after the match.
-    result = Checker(A, B).do()
+    result = Checker(A.sm, B.sm).do()
 
-    if result == NONE: return NONE
+    if result == E_Commonality.NONE: return E_Commonality.NONE
 
-    if   pre_result == BOTH:   return result
+    if   pre_result == E_Commonality.BOTH:   return result
     elif pre_result == result: return result 
-    else:                      return NONE
+    else:                      return E_Commonality.NONE
 
 
