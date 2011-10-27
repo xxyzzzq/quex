@@ -730,12 +730,7 @@ def __parse_option(fh, new_mode):
         if identifier == "skip_nested_range":
             # Nested range state machines only accept 'strings' not state machines
             opener_str, opener_sequence = __parse_string(fh, "Opener pattern for 'skip_nested_range'")
-            
-            opener_sm = StateMachine()
-            idx = opener_sm.init_state_index
-            for letter in opener_sequence:
-                idx = opener_sm.add_transition(idx, letter)
-            opener_sm.states[idx].set_acceptance(True)
+            opener_sm = StateMachine.from_sequence(opener_sequence)
         else:
             opener_str, opener_pattern = regular_expression.parse(fh)
             opener_sm = opener_pattern.sm

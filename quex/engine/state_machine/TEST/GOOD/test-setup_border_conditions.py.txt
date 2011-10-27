@@ -4,7 +4,7 @@
  -- begin of line  =  False
  -- end of line    =  False
 
-result sm.id     =  9
+result sm.id     =  10
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -19,7 +19,7 @@ trivially pre-conditioned =  False
  -- begin of line  =  False
  -- end of line    =  True
 
-result sm.id     =  12
+result sm.id     =  16
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -37,7 +37,7 @@ trivially pre-conditioned =  False
  -- begin of line  =  True
  -- end of line    =  False
 
-result sm.id     =  15
+result sm.id     =  20
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -52,7 +52,7 @@ trivially pre-conditioned =  True
  -- begin of line  =  True
  -- end of line    =  True
 
-result sm.id     =  18
+result sm.id     =  26
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -70,7 +70,7 @@ trivially pre-conditioned =  True
  -- begin of line  =  False
  -- end of line    =  False
 
-result sm.id     =  24
+result sm.id     =  32
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -88,7 +88,7 @@ trivially pre-conditioned =  False
  -- begin of line  =  False
  -- end of line    =  True
 
-result sm.id     =  28
+result sm.id     =  38
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -109,7 +109,7 @@ trivially pre-conditioned =  False
  -- begin of line  =  True
  -- end of line    =  False
 
-result sm.id     =  32
+result sm.id     =  44
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -127,7 +127,7 @@ trivially pre-conditioned =  True
  -- begin of line  =  True
  -- end of line    =  True
 
-result sm.id     =  36
+result sm.id     =  50
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -148,15 +148,16 @@ trivially pre-conditioned =  True
  -- begin of line  =  False
  -- end of line    =  False
 
-result sm.id     =  45
-result pre sm.id =  43
+result sm.id     =  59
+result pre sm.id =  57
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
     
-00001 (A, pre=49)
+00001 (A, pre=57)
     
-pre-condition inverted = init-state = 0L
+
+inverse_pre_context_sm =  init-state = 0L
 00000 ()
      == '0' ==> 00001
     
@@ -170,8 +171,8 @@ trivially pre-conditioned =  False
  -- begin of line  =  False
  -- end of line    =  True
 
-result sm.id     =  52
-result pre sm.id =  50
+result sm.id     =  70
+result pre sm.id =  68
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -179,9 +180,10 @@ result =  init-state = 0L
 00001 (S)
      == '\n' ==> 00002
     
-00002 (A, R, pre=56)
+00002 (A, R, pre=68)
     
-pre-condition inverted = init-state = 0L
+
+inverse_pre_context_sm =  init-state = 0L
 00000 ()
      == '0' ==> 00001
     
@@ -195,15 +197,16 @@ trivially pre-conditioned =  False
  -- begin of line  =  True
  -- end of line    =  False
 
-result sm.id     =  59
-result pre sm.id =  57
+result sm.id     =  79
+result pre sm.id =  77
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
     
-00001 (A, pre=57)
+00001 (A, pre=77)
     
-pre-condition inverted = init-state = 0L
+
+inverse_pre_context_sm =  init-state = 0L
 00000 ()
      == '0' ==> 00001
     
@@ -220,8 +223,8 @@ trivially pre-conditioned =  False
  -- begin of line  =  True
  -- end of line    =  True
 
-result sm.id     =  66
-result pre sm.id =  64
+result sm.id     =  90
+result pre sm.id =  88
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -229,9 +232,10 @@ result =  init-state = 0L
 00001 (S)
      == '\n' ==> 00002
     
-00002 (A, R, pre=73)
+00002 (A, R, pre=88)
     
-pre-condition inverted = init-state = 0L
+
+inverse_pre_context_sm =  init-state = 0L
 00000 ()
      == '0' ==> 00001
     
@@ -248,8 +252,8 @@ trivially pre-conditioned =  False
  -- begin of line  =  False
  -- end of line    =  False
 
-result sm.id     =  77
-result pre sm.id =  74
+result sm.id     =  101
+result pre sm.id =  99
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -257,9 +261,10 @@ result =  init-state = 0L
 00001 (S)
      == '2' ==> 00002
     
-00002 (A, R)
+00002 (A, R, pre=99)
     
-pre-condition inverted = init-state = 0L
+
+inverse_pre_context_sm =  init-state = 0L
 00000 ()
      == '0' ==> 00001
     
@@ -273,8 +278,8 @@ trivially pre-conditioned =  False
  -- begin of line  =  False
  -- end of line    =  True
 
-result sm.id     =  85
-result pre sm.id =  82
+result sm.id     =  112
+result pre sm.id =  110
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -285,9 +290,10 @@ result =  init-state = 0L
 00002 
      == '\n' ==> 00003
     
-00003 (A, R, pre=94)
+00003 (A, R, pre=110)
     
-pre-condition inverted = init-state = 0L
+
+inverse_pre_context_sm =  init-state = 0L
 00000 ()
      == '0' ==> 00001
     
@@ -301,8 +307,8 @@ trivially pre-conditioned =  False
  -- begin of line  =  True
  -- end of line    =  False
 
-result sm.id     =  93
-result pre sm.id =  90
+result sm.id     =  123
+result pre sm.id =  121
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -310,9 +316,10 @@ result =  init-state = 0L
 00001 (S)
      == '2' ==> 00002
     
-00002 (A, R, pre=102)
+00002 (A, R, pre=121)
     
-pre-condition inverted = init-state = 0L
+
+inverse_pre_context_sm =  init-state = 0L
 00000 ()
      == '0' ==> 00001
     
@@ -329,8 +336,8 @@ trivially pre-conditioned =  False
  -- begin of line  =  True
  -- end of line    =  True
 
-result sm.id     =  101
-result pre sm.id =  98
+result sm.id     =  134
+result pre sm.id =  132
 result =  init-state = 0L
 00000 ()
      == '1' ==> 00001
@@ -341,9 +348,10 @@ result =  init-state = 0L
 00002 
      == '\n' ==> 00003
     
-00003 (A, R, pre=110)
+00003 (A, R, pre=132)
     
-pre-condition inverted = init-state = 0L
+
+inverse_pre_context_sm =  init-state = 0L
 00000 ()
      == '0' ==> 00001
     

@@ -13,13 +13,14 @@ PRE-CONDITION =  init-state = 0L
 00001 (A)
     
 
-with pre-condition =  init-state = 0L
+with pre-context =  init-state = 0L
 00000 ()
      == 'a' ==> 00001
     
-00001 (A, pre=8)
+00001 (A, pre=9)
     
-pre-condition inverted = init-state = 0L
+
+inverse pre-context =  init-state = 0L
 00000 ()
      == ';' ==> 00001
     
@@ -54,7 +55,7 @@ PRE-CONDITION =  init-state = 0L
 00003 (A)
     
 
-with pre-condition =  init-state = 0L
+with pre-context =  init-state = 0L
 00000 ()
      == ['a', 'g'] ==> 00001
     
@@ -65,9 +66,10 @@ with pre-condition =  init-state = 0L
 00002 ()
      == 'f' ==> 00003
     
-00003 (A, pre=12)
+00003 (A, pre=13)
     
-pre-condition inverted = init-state = 0L
+
+inverse pre-context =  init-state = 0L
 00000 ()
      == 'c' ==> 00001
     

@@ -50,6 +50,8 @@ def do(the_state_machine, pre_context_sm, BeginOfLinePreContextF):
     if BeginOfLinePreContextF:
         # Extend the existing pre-context with a preceeding 'begin-of-line'.
         inverse_pre_context.mount_newline_to_acceptance_states(Setup.dos_carriage_return_newline_f, InverseF=True)
+        inverse_pre_context = nfa_to_dfa.do(inverse_pre_context)
+        hopcroft.do(inverse_pre_context, CreateNewStateMachineF=False)
 
     # (*) let the state machine refer to it 
     #     [Is this necessary? Is it not enough that the acceptance origins point to it? <fschaef>]

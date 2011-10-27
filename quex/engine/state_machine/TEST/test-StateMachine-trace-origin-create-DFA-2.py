@@ -12,8 +12,8 @@ if "--hwut-info" in sys.argv:
     print "Tracing origin: NFA to DFA (subset construction) II"
     sys.exit(0)
     
-sm1 = regex.do('[A-Z]+', {})
-sm2 = regex.do('"PR"', {})
+sm1 = regex.do('[A-Z]+', {}).sm
+sm2 = regex.do('"PR"', {}).sm
 
 # (*) create the DFA from the specified NFA
 sm1.mark_state_origins()

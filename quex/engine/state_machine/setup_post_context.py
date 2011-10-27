@@ -40,14 +40,24 @@ def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
     # but not configured out of multiple patterns. Thus there should be no origins.
     assert the_state_machine.has_origins() == False
     assert post_context_sm is None or not post_context_sm.has_origins()
+    for state in the_state_machine.get_acceptance_state_list():
+        for origin in state.origins(): 
+            assert origin.pre_context_id() == E_PreContextIDs.NONE, \
+                   "Post Contexts MUST be mounted BEFORE pre-contexts."
 
+    # print "##EndOfLinePostContextF", EndOfLinePostContextF
+    # print "##post_sm", post_context_sm
     if post_context_sm is None:
         if not EndOfLinePostContextF:
+            # print "##bye, from 1"
             return None
+        # print "##oops 1"
         # Generate a new post context that just contains the 'newline'
         post_context_sm = StateMachine(AcceptanceF=True)
         post_context_sm.mount_newline_to_acceptance_states(Setup.dos_carriage_return_newline_f)
+
     elif EndOfLinePostContextF: 
+        # print "##oops 2"
         # Mount 'newline' to existing post context
         post_context_sm.mount_newline_to_acceptance_states(Setup.dos_carriage_return_newline_f)
 
@@ -56,6 +66,7 @@ def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
     if post_context_sm.get_init_state().is_acceptance():
         error_msg("Post context accepts anything---replaced by no post context.", fh, 
                   DontExitF=True)
+        # print "##oops 3"
         return None
     
     # (*) Two ways of handling post-contexts:
@@ -75,12 +86,12 @@ def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
                       DontExitF=True)
             trailing_post_context = ambiguous_post_context.philosophical_cut(the_state_machine, post_context_sm)
         
+        # print "##oops 4"
         return ambiguous_post_context.mount(the_state_machine, post_context_sm)
 
-    #     -- The 'normal' way: storing the input position at the end of the core
-    #        pattern.
+    # -- The 'normal' way: storing the input position at the end of the core
+    #    pattern.
     #
-    result     = the_state_machine
     # (*) Need to clone the state machines, i.e. provide their internal
     #     states with new ids, but the 'behavior' remains. This allows
     #     state machines to appear twice, or being used in 'larger'
@@ -98,32 +109,28 @@ def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
     #           take over all transitions of a start index into the result without
     #           considering interferences (see below)
     #
-    orig_acceptance_state_id_list = result.get_acceptance_state_index_list()
+    orig_acceptance_state_id_list = the_state_machine.get_acceptance_state_index_list()
 
     # -- mount on every acceptance state the initial state of the following state
     #    machine via epsilon transition
-    result.mount_to_acceptance_states(post_clone.init_state_index, 
-                                      CancelStartAcceptanceStateF=True)
-    for start_state_index, state in post_clone.states.items():        
-        result.states[start_state_index] = state # states are already cloned
+    the_state_machine.mount_to_acceptance_states(post_clone.init_state_index, 
+                                                 CancelStartAcceptanceStateF=True)
+    for start_state_index, state in post_clone.states.iteritems():        
+        the_state_machine.states[start_state_index] = state # states are already cloned
 
     # -- raise at each old acceptance state the 'store input position flag'
     # -- set the post context flag for all acceptance states
-    pre_context_id = E_PreContextIDs.NONE
     for state_idx in orig_acceptance_state_id_list:
-        state = result.states[state_idx]
+        state = the_state_machine.states[state_idx]
         state.set_input_position_store_f(True)
-        if state.pre_context_id() is not E_PreContextIDs.NONE: 
-            pre_context_id = state.pre_context_id()
-        state.set_pre_context_id(E_PreContextIDs.NONE)   
     
     # -- no acceptance state shall store the input position
     # -- set the post context flag for all acceptance states
-    for state in result.get_acceptance_state_list():
+    for state in the_state_machine.get_acceptance_state_list():
         state.set_input_position_store_f(False)
         state.set_input_position_restore_f(True)
-        state.set_pre_context_id(pre_context_id)   
 
     # No input position backward search required
+    # print "##oops 5"
     return None
 

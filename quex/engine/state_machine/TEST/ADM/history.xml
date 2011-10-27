@@ -1,4 +1,4 @@
-<history date="Thu Oct 27 08:35:07 2011" element-n="550">
+<history date="Fri Oct 28 00:56:21 2011" element-n="556">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1244,5 +1244,13 @@
     <day year="2011" month="10" day="25">
         <crc-error time="19:25:06" application="test-utf8_state_split-do-2.py" choice="" database-crc="-1139775102" real-crc="-1938210474"/>
         <crc-error time="19:53:42" application="test-setup_border_conditions.py" choice="" database-crc="-806423538" real-crc="-624847514"/>
+    </day>
+    <day year="2011" month="10" day="27">
+        <crc-error time="17:51:48" application="test-ambiguous_post_condition-mount_pseudo.py" choice="" database-crc="-714472523" real-crc="1141172876"/>
+        <crc-error time="20:34:56" application="test-utf8_state_split-do-2.py" choice="" database-crc="-1938210474" real-crc="-1139775102"/>
+        <crc-error time="20:53:11" application="test-setup_border_conditions.py" choice="" database-crc="-624847514" real-crc="-1955522545"/>
+        <crc-error time="21:22:43" application="test-setup_border_conditions.py" choice="" database-crc="-1955522545" real-crc="-1878608545"/>
+        <crc-error time="21:27:37" application="test-setup_border_conditions.py" choice="" database-crc="-1878608545" real-crc="734907112"/>
+        <crc-error time="22:37:00" application="test-subset_checker.py" choice="Pre-Post-Conditions" database-crc="-752691781" real-crc="-2073619492"/>
     </day>
 </history>
