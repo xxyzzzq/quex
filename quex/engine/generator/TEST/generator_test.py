@@ -143,14 +143,14 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
         adapted_dict = {}
         for key, regular_expression in PatternDictionary.items():
             string_stream = StringIO(regular_expression)
-            state_machine = regex.do(string_stream, adapted_dict)
+            pattern       = regex.do(string_stream, adapted_dict)
             # It is ESSENTIAL that the state machines of defined patterns do not 
             # have origins! Actually, there are not more than patterns waiting
             # to be applied in regular expressions. The regular expressions 
             # can later be origins.
-            assert state_machine.has_origins() == False
+            assert pattern.sm.has_origins() == False
 
-            adapted_dict[key] = PatternShorthand(key, state_machine)
+            adapted_dict[key] = PatternShorthand(key, pattern.sm)
 
     except RegularExpressionException, x:
         print "Dictionary Creation:\n" + repr(x)
@@ -330,7 +330,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
         PatternActionPairList = map(lambda x: 
                                     PatternActionInfo(regex.do(x[0], PatternDictionary), 
                                                       CodeFragment(action(x[1]), RequireTerminatingZeroF=True),
-                                                      Pattern=x[0]),
+                                                      PatternStr=x[0]),
                                     PatternActionPairList)
     except RegularExpressionException, x:
         print "Regular expression parsing:\n" + x.message
@@ -338,7 +338,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
     support_begin_of_line_f = False
     for entry in PatternActionPairList:
-        if entry.pattern_state_machine().core().pre_context_begin_of_line_f():
+        if entry.pattern().pre_context_trivial_begin_of_line_f:
             support_begin_of_line_f = True
             break
 

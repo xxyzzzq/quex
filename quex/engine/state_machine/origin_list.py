@@ -87,9 +87,10 @@ class StateOriginList(object):
     def merge_clear(self, OriginList):
         for origin in OriginList: 
             new_origin = origin.clone()
-            new_origin.set_acceptance_f(False)
             new_origin.set_input_position_store_f(False)
             new_origin.set_input_position_restore_f(False)
+            new_origin.set_pre_context_id(E_PreContextIDs.NONE)
+            new_origin.set_acceptance_f(False)
             self.__add(new_origin)
 
     def set(self, OriginList, ArgumentIsYoursF=False):

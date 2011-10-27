@@ -213,13 +213,14 @@ def parse_pattern_name_definitions(fh):
         # (No possible transformation into a particular codec whatever.
         #  the state machines are transformed once, after they are expanded
         #  as patterns in a mode.)
-        regular_expression_str, state_machine = \
+        regular_expression_str, pattern = \
                 regular_expression.parse(fh, AllowNothingIsFineF = True, 
                                          AllowStateMachineTrafoF = False) 
 
-        if state_machine.has_pre_or_post_context():
+        if pattern.has_pre_or_post_context():
             error_msg("Pattern definition with pre- and/or post-context.\n" + \
                       "This pattern cannot be used in replacements.", fh, DontExitF=True)
+        state_machine = pattern.sm
 
         blackboard.shorthand_db[pattern_name] = \
                 blackboard.PatternShorthand(pattern_name, state_machine, 

@@ -61,6 +61,11 @@ class Checker:
         return E_Commonality.NONE
 
 def do(A, B):
+    if isinstance(A, StateMachine):
+        assert isinstance(B, StateMachine)
+        return Checker(A, B).do()
+
+    assert not isinstance(B, StateMachine)
 
     # If pre-conditions differ, they cannot have any commonality
     pre_result = E_Commonality.NONE
@@ -73,7 +78,7 @@ def do(A, B):
         pre_result = E_Commonality.NONE
 
     elif A.inverse_pre_context_sm is not None:
-        assert B.core().pre_context_sm_id() != -1
+        assert B.inverse_pre_context_sm is not None
         # Both depend on pre-conditions: Are there commonalities in the pre-conditions?
         pre_result = Checker(A.inverse_pre_context_sm, B.inverse_pre_context_sm)
     else:

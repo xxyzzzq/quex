@@ -205,7 +205,7 @@ def __get_line_and_column_counting(ThePattern, EOF_ActionF):
 
     elif newline_n != 0:
         txt += "    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_end += %i);\n" % newline_n 
-        if ThePattern.get_ending_character_set().contains_only(ord('\n')):
+        if ThePattern.sm.get_ending_character_set().contains_only(ord('\n')):
             # A pattern that ends with newline, lets the next column start at zero.
             txt += "    __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);\n"
         else:

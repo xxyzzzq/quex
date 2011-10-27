@@ -147,12 +147,6 @@ class PatternActionInfo:
     def pattern_string(self):
         return self.__pattern_str
 
-    def pattern_state_machine(self):
-        return self.__pattern_state_machine.sm
-
-    def pattern_inverse_pre_context_sm(self):
-        return self.__pattern_state_machine.inverse_pre_context_sm
-
     def action(self):
         return self.__action
 
@@ -178,14 +172,14 @@ class PatternActionInfo:
 
     def __repr__(self):         
         txt  = ""
-        txt += "self.mode_name         = " + repr(self.mode_name) + "\n"
-        txt += "self.pattern           = " + repr(self.pattern) + "\n"
-        txt += "self.pattern_state_machine = \n" + repr(self.pattern_state_machine()).replace("\n", "\n      ")
-        txt += "self.action            = " + repr(self.action().get_code()) + "\n"
+        txt += "self.mode_name      = " + repr(self.mode_name) + "\n"
+        txt += "self.pattern_string = " + repr(self.pattern_string()) + "\n"
+        txt += "self.pattern        = \n" + repr(self.pattern()).replace("\n", "\n      ")
+        txt += "self.action         = " + repr(self.action().get_code()) + "\n"
         if self.action().__class__ == UserCodeFragment:
-            txt += "self.filename          = " + repr(self.action().filename) + "\n"
-            txt += "self.line_n            = " + repr(self.action().line_n) + "\n"
-        txt += "self.pattern_index     = " + repr(self.pattern_state_machine().core().id()) + "\n"
+            txt += "self.filename   = " + repr(self.action().filename) + "\n"
+            txt += "self.line_n     = " + repr(self.action().line_n) + "\n"
+        txt += "self.pattern_index  = " + repr(self.pattern().sm.get_id()) + "\n"
         return txt
 
 class LocalizedParameter:

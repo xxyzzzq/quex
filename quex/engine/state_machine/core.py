@@ -5,7 +5,7 @@ import quex.engine.state_machine.index           as     state_machine_index
 from   quex.engine.state_machine.transition_map  import TransitionMap, E_Border
 from   quex.engine.state_machine.state_core_info import StateCoreInfo
 from   quex.engine.state_machine.origin_list     import StateOriginList
-from   quex.blackboard                           import E_AcceptanceIDs, E_PreContextIDs
+from   quex.blackboard                           import E_AcceptanceIDs, E_PreContextIDs, deprecated
 
 from   copy      import deepcopy
 from   operator  import attrgetter
@@ -160,90 +160,8 @@ class State:
         assert Option in ["hex", "utf8"]
         return self.transitions().get_graphviz_string(OwnStateIdx, StateIndexMap, Option)
 
-class StateMachineCoreInfo:
-    def __init__(self, ID, 
-                 PreContextSM=None, 
-                 PreContext_BeginOfLineF=False, 
-                 PreContext_SingleCharacterList=[]):
-
-        self.__id                                  = ID 
-        self.__pre_context_sm                      = PreContextSM
-        self.__pre_context_begin_of_line_f         = PreContext_BeginOfLineF
-        self.__pre_context_single_character_list   = PreContext_SingleCharacterList
-        self.__post_context_f                      = False
-        self.__post_context_backward_input_position_detector_sm = None
-
-    def id(self):                                  
-        return self.__id
-    def pre_context_sm(self):                      
-        return self.__pre_context_sm
-    def pre_context_sm_id(self):
-        if self.__pre_context_sm is not None: return self.__pre_context_sm.core().id()
-        else:                                 return -1L
-    def pre_context_begin_of_line_f(self):         
-        return self.__pre_context_begin_of_line_f         
-    def pre_context_single_character_list(self):   
-        return self.__pre_context_single_character_list   
-    def post_context_f(self):                     
-        return self.__post_context_f                     
-    def post_context_backward_input_position_detector_sm(self): 
-        return self.__post_context_backward_input_position_detector_sm
-    def post_context_backward_input_position_detector_sm_id(self): 
-        if self.__post_context_backward_input_position_detector_sm is not None: 
-            return self.__post_context_backward_input_position_detector_sm.core().id()
-        else:
-            return -1L
-    def has_pre_or_post_context(self):
-        return    self.__pre_context_single_character_list \
-               or len(self.__pre_context_single_character_list) != 0 \
-               or self.__pre_context_sm is not None \
-               or self.__post_context_f \
-               or self.__post_context_backward_input_position_detector_sm is not None
-    def set_id(self, Value):                                  
-        assert type(Value) == long
-        self.__id = Value
-    def set_pre_context_sm(self, Value):                      
-        assert Value.__class__.__name__ == "StateMachine" or Value is None
-        self.__pre_context_sm = Value
-    def set_pre_context_begin_of_line_f(self, Value=True):         
-        assert type(Value) == bool
-        self.__pre_context_begin_of_line_f = Value
-    def set_pre_context_single_character_list(self, Value):   
-        assert type(Value) == list
-        self.__pre_context_single_character_list = Value
-    def set_post_context_f(self):                     
-        self.__post_context_f = True
-    def set_post_context_backward_input_position_detector_sm(self, Value): 
-        assert Value.__class__.__name__ == "StateMachine" or Value is None
-        self.__post_context_backward_input_position_detector_sm = Value
-
-class SideInfo:
-    def __init__(self, NewlineN=-1, CharacterN=-1):
-        self.__newline_n         = NewlineN
-        self.__character_n       = CharacterN
-
-    def get_newline_n(self):
-        """  -1    => number of newlines in matching lexemes is not deterministic
-             N > 0 => number of newlines in matching lexemes is always 'N'.
-        """
-        # Value is to be computed by 'character_counter.get_newline_n()'
-        # for the core pattern, not for pre-conditions and not for post-conditions.
-        assert self.__newline_n is not None, \
-               "Pattern state machine not constructed by regular_expresion.__construct(...)"
-        return self.__newline_n
-
-    def get_character_n(self):
-        """  -1    => length of lexemes that match pattern is not deterministic
-             N > 0 => length of lexemes that match is always 'N'.
-        """
-        # Value is to be computed by 'character_counter.get_newline_n()'
-        # for the core pattern, not for pre-conditions and not for post-conditions.
-        assert self.__character_n is not None, \
-               "Pattern state machine not constructed by regular_expresion.__construct(...)"
-        return self.__character_n
-
-class StateMachine:
-    def __init__(self, InitStateIndex=None, AcceptanceF=False, Core=None, InitState=None):
+class StateMachine(object):
+    def __init__(self, InitStateIndex=None, AcceptanceF=False, InitState=None, SM_ID=None):
 
         if InitStateIndex is None: InitStateIndex = state_machine_index.get()
         self.init_state_index = InitStateIndex
@@ -253,20 +171,9 @@ class StateMachine:
         self.states = { self.init_state_index: InitState }        
 
         # get a unique state machine id 
-        sm_id = state_machine_index.get_state_machine_id()
+        if SM_ID is not None: self.__id = SM_ID
+        else:                 self.__id = state_machine_index.get_state_machine_id()
 
-        # Setup core information
-        if Core is not None: 
-            self.__core = deepcopy(Core)
-            self.__core.set_id(sm_id)
-        else:            
-            self.__core = StateMachineCoreInfo(sm_id)
-
-        self.side_info = None
-
-    def core(self):
-        return self.__core
-            
     def clone(self, ReplacementDB=None):
         """Clone state machine, i.e. create a new one with the same behavior,
         i.e. transitions, but with new unused state indices. This is used when
@@ -304,7 +211,7 @@ class StateMachine:
             new_state_idx = replacement[state_idx]
             result.states[new_state_idx] = self.states[state_idx].clone(replacement)
         
-        result.__core = deepcopy(self.__core)
+        # result.__core = deepcopy(self.__core)
 
         ## DEBUG: Check that every transition target is part of state machine
         ## for state in result.states.values():
@@ -318,7 +225,10 @@ class StateMachine:
         return self.clone(index_map)
 
     def get_id(self):
-        return self.__core.id()
+        return self.__id  # core.id()
+
+    def set_id(self, Value):
+        self.__id = Value # core.set_id(Value)
 
     def get_init_state(self):
         return self.states[self.init_state_index]
@@ -578,13 +488,6 @@ class StateMachine:
         
            Also "h"*|"h" : HERE cut at first match because it ends after "h"    
         """
-        #__________________________________________________________________________________________
-        # TODO: See th above comment and think about it.
-        assert     self.__core.pre_context_sm() is None \
-               and not self.core().pre_context_begin_of_line_f(), \
-               "pre-conditioned state machines cannot be inverted via 'get_inverse()'"
-
-        #__________________________________________________________________________________________
         result                               = StateMachine(InitStateIndex=self.init_state_index)
         original_acceptance_state_index_list = self.get_acceptance_state_index_list()
         assert len(original_acceptance_state_index_list) != 0
@@ -606,6 +509,8 @@ class StateMachine:
         for state_index, state in self.states.items():
             original_origin_list = [origin.clone() for origin in state.origins()]
             for origin in original_origin_list:
+                origin.set_input_position_restore_f(False)
+                origin.set_pre_context_id(E_PreContextIDs.NONE)
                 origin.set_acceptance_f(False)
             result.states[state_index].origins().set(original_origin_list) # deepcopy implicit
 
@@ -702,7 +607,7 @@ class StateMachine:
         """
         assert type(OtherStateMachineID) == long
 
-        if OtherStateMachineID == -1L: state_machine_id = self.__core.id()
+        if OtherStateMachineID == -1L: state_machine_id = self.__id
         else:                          state_machine_id = OtherStateMachineID
 
         for state_idx, state in self.states.items():
@@ -777,7 +682,10 @@ class StateMachine:
             # add the MountedStateIdx to the list of epsilon transition targets
             state.transitions().add_epsilon_target_state(MountedStateIdx)
             # if required (e.g. for sequentialization) cancel the acceptance status
-            if CancelStartAcceptanceStateF: state.set_acceptance(False)
+            if CancelStartAcceptanceStateF: 
+                # If there was a condition to acceptance => Cancel it first
+                state.set_pre_context_id(E_PreContextIDs.NONE) 
+                state.set_acceptance(False)
 
     def mount_newline_to_acceptance_states(self, DOS_CarriageReturnNewlineF, InverseF=False):     
         """Adds the condition 'newline or border character' at the end of the given
@@ -962,3 +870,6 @@ class StateMachine:
                        "present state indices: " + repr(self.states.keys()) + "\n" + \
                        "state machine = " + self.get_string(NormalizeF=False)
 
+    side_info = property(deprecated, deprecated, deprecated, "Member 'side_info' deprecated!")
+    def core(self): assert False
+            
