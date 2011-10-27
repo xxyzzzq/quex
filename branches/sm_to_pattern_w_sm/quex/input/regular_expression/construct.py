@@ -1,4 +1,3 @@
-from   quex.engine.state_machine.core                     import SideInfo
 from   quex.engine.interval_handling                      import UnicodeInterval, Interval
 from   quex.engine.state_machine.utf16_state_split import ForbiddenRange
 import quex.engine.state_machine.character_counter        as character_counter
@@ -9,7 +8,7 @@ import quex.engine.state_machine.transformation           as transformation
 import quex.engine.state_machine.nfa_to_dfa               as nfa_to_dfa
 import quex.engine.state_machine.hopcroft_minimization    as hopcroft
 #
-from   quex.blackboard           import setup as Setup
+from   quex.blackboard           import setup as Setup, deprecated
 from   quex.engine.misc.file_in  import error_msg
 
 DEBUG_hopcroft_f = False
@@ -18,11 +17,12 @@ if DEBUG_hopcroft_f:
     import quex.engine.state_machine.identity_checker as identity_checker
     from   copy import deepcopy
 
-class Pattern:
+class Pattern(object):
     """Let's start as a mimiker ... """
-    def __init__(self, PreContextSM, CoreSM, PostContextSM, 
-                 BeginOfLineF, EndOfLineF, 
-                 AllowStateMachineTrafoF, fh):
+    def __init__(self, CoreSM, PreContextSM=None, PostContextSM=None, 
+                 BeginOfLineF=False, EndOfLineF=False, 
+                 AllowStateMachineTrafoF=None, fh=-1):
+        assert AllowStateMachineTrafoF is not None
         pre_context  = PreContextSM
         core_sm      = CoreSM
         post_context = PostContextSM
@@ -57,11 +57,13 @@ class Pattern:
 
         # (3) Pre- and Post-Context Setup
         self.__post_context_f = (post_context is not None)
-        self.__input_position_search_backward_sm = setup_post_context.do(core_sm, post_context, EndOfLineF, fh=fh)
-        if self.__input_position_search_backward_sm is not None:
-            self.__input_position_search_backward_sm = beautify(self.__input_position_search_backward_sm)
+
+        ipsb_sm = setup_post_context.do(core_sm, post_context, EndOfLineF, fh=fh)
+        if ipsb_sm is not None: self.__input_position_search_backward_sm = beautify(ipsb_sm)
+        else:                   self.__input_position_search_backward_sm = None
 
         self.__pre_context_sm_inverse = setup_pre_context.do(core_sm, pre_context, BeginOfLineF)
+
         self.__pre_context_trivial_begin_of_line_f = (BeginOfLineF and self.__pre_context_sm_inverse is None)
         
         self.__sm = beautify(core_sm)
@@ -70,24 +72,24 @@ class Pattern:
         self.__validate(self.__sm, fh)
 
     @property
-    def newline_n(self): return self.__newline_n
+    def newline_n(self):                           return self.__newline_n
     @property
-    def character_n(self): return self.__character_n
+    def character_n(self):                         return self.__character_n
     @property
-    def sm(self): return self.__sm
+    def sm(self):                                  return self.__sm
     @property
-    def inverse_pre_context_sm(self): return self.__pre_context_sm_inverse
+    def inverse_pre_context_sm(self):              return self.__pre_context_sm_inverse
     @property
-    def input_position_search_backward_sm(self): return self.__input_position_search_backward_sm
+    def input_position_search_backward_sm(self):   return self.__input_position_search_backward_sm
     @property
-    def pre_context_trivial_begin_of_line_f(self):
-        return self.__pre_context_trivial_begin_of_line_f
+    def pre_context_trivial_begin_of_line_f(self): return self.__pre_context_trivial_begin_of_line_f
+    @property
+    def post_context_f(self):                      return self.__post_context_f
     def has_pre_or_post_context(self):
         if   self.__pre_context_trivial_begin_of_line_f: return True
         elif self.__pre_context_sm_inverse is not None:  return True
         elif self.__post_context_f:                      return True
         return False
-
 
     def __validate(self, sm, fh):
         # (*) It is essential that state machines defined as patterns do not 
@@ -133,6 +135,9 @@ class Pattern:
 
         return msg
 
+    side_info = property(deprecated, deprecated, deprecated, "Member 'side_info' deprecated!")
+
+
 def do(core_sm, 
        begin_of_line_f=False, pre_context=None, 
        end_of_line_f=False,   post_context=None, 
@@ -167,7 +172,9 @@ def do(core_sm,
         __detect_path_of_nothing_is_necessary(core_sm,      "core pattern", post_context_f, fh)
         __detect_path_of_nothing_is_necessary(post_context, "post context", post_context_f, fh)
 
-    return Pattern(pre_context, core_sm, post_context, begin_of_line_f, end_of_line_f, AllowStateMachineTrafoF, fh)
+    return Pattern(core_sm, pre_context, post_context, 
+                   begin_of_line_f, end_of_line_f, 
+                   AllowStateMachineTrafoF, fh)
 
 def beautify(the_state_machine):
     ## assert len(the_state_machine.get_orphaned_state_index_list()) == 0, \

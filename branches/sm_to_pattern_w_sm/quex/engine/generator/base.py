@@ -28,7 +28,7 @@ class GeneratorBase:
         #     -- backward detectors for state machines with forward ambiguous
         #        post-conditions.
         self.papc_backward_detector_state_machine_list = \
-                self.__create_backward_input_position_detectors()
+                self.__create_input_position_search_backwards(PatternActionPair_List)
 
     def __extract_special_lists(self, PatternActionPair_List):
         # (0) extract data structures:
@@ -48,15 +48,16 @@ class GeneratorBase:
         # [NOT IMPLEMENTED YET]    
         # # trivial_pre_context_dict = {}             # map: state machine id --> character code(s)
         for action_info in PatternActionPair_List:
-            sm    = action_info.pattern_state_machine()
-            sm_id = sm.get_id()
+            pattern = action_info.pattern()
+            sm      = pattern.sm
+            sm_id   = sm.get_id()
             self.state_machine_list.append(sm)
 
             # -- register action information under the state machine id, where it belongs.
             self.action_db[sm_id] = action_info
 
             # -- collect all pre-conditions and make one single state machine out of it
-            pre_sm = sm.core().pre_context_sm()
+            pre_sm = pattern.inverse_pre_context_sm
             if pre_sm is not None:
                 self.pre_context_sm_list.append(pre_sm)
                 self.pre_context_sm_id_list.append(pre_sm.get_id())
@@ -67,7 +68,7 @@ class GeneratorBase:
             # #    trivial_pre_context_dict[sm.get_id()] = sm.get_trivial_pre_context_character_codes()
 
             # -- collect all ids of post conditioned state machines
-            if sm.core().post_context_f():
+            if pattern.post_context_f:
                 self.post_contexted_sm_id_list.append(sm_id)
 
     def __create_core_state_machine(self):
@@ -79,25 +80,26 @@ class GeneratorBase:
         if len(self.pre_context_sm_list) == 0: return None
 
         # -- add empty actions for the pre-condition terminal states
-        for pre_sm in self.pre_context_sm_list:
-            self.action_db[pre_sm.get_id()] = PatternActionInfo(pre_sm, "")
+        #for pre_sm in self.pre_context_sm_list:
+        #    self.action_db[pre_sm.get_id()] = PatternActionInfo(pre_sm, "")
 
         return get_combined_state_machine(self.pre_context_sm_list, 
                                           FilterDominatedOriginsF=False)
 
-    def __create_backward_input_position_detectors(self):
+    def __create_input_position_search_backwards(self, PatternActionPair_List):
         # -- find state machines that contain a state flagged with 
         #    'pseudo-ambiguous-post-condition'.
         # -- collect all backward detector state machines in a list
-        papc_sm_list = [] 
-        for sm in self.state_machine_list:
-            papc_sm = sm.core().post_context_backward_input_position_detector_sm()
-            if sm.core().post_context_backward_input_position_detector_sm() is None: continue
-            papc_sm_list.append(papc_sm)
+        ipsb_sm_list = [] 
+        for action_info in PatternActionPair_List:
+            pattern = action_info.pattern()
+            ipsb_sm = pattern.input_position_search_backward_sm
+            if ipsb_sm is None: continue 
+            ipsb_sm_list.append(ipsb_sm)
             # -- code generation 'looks' for origins, so mark them.
-            papc_sm.mark_state_origins()
+            ipsb_sm.mark_state_origins()
 
-        return papc_sm_list 
+        return ipsb_sm_list 
 
 def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
     """Creates a DFA state machine that incorporates the paralell

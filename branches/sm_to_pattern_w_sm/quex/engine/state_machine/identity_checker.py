@@ -1,5 +1,6 @@
 # from quex.engine.state_machine.state_core_info     import E_PostContextIDs      
 from quex.blackboard import E_PreContextIDs
+from quex.engine.state_machine.core import StateMachine
 
 class Checker:
     def __init__(self, SM0, SM1):
@@ -98,6 +99,12 @@ class Checker:
         return True
 
 def do(Pattern0, Pattern1):
+    if isinstance(Pattern0, StateMachine):
+        assert isinstance(Pattern1, StateMachine)
+        return Checker(Pattern0, Pattern1).do()
+
+    assert not isinstance(Pattern1, StateMachine)
+
     # Check whether Pattern0 and Pattern1 are identical, i.e they match exactly the same patterns 
     # and provide exactly the same behavior of the lexical analyzer.
     identity_f = Checker(Pattern0.sm, Pattern1.sm).do()

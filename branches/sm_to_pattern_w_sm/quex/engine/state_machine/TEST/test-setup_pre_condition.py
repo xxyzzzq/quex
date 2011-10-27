@@ -14,7 +14,7 @@ if "--hwut-info" in sys.argv:
 def test(sm, pre_sm):    
     print "EXPRESSION = ", sm
     print "PRE-CONDITION = ", pre_sm
-    result = setup_pre_context.do(sm, pre_sm)
+    result = setup_pre_context.do(sm, pre_sm, False)
     #
     print "with pre-condition = ", result
 

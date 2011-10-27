@@ -380,9 +380,9 @@ def __adorn_action_code(action_info, SupportBeginOfLineF, LanguageDB):
     return txt
 
 def get_terminal_code(AcceptanceID, pattern_action_info, SupportBeginOfLineF, LanguageDB):
-    state_machine = pattern_action_info.pattern_state_machine()
+    pattern     = pattern_action_info.pattern()
     #
-    action_code   = __adorn_action_code(pattern_action_info, SupportBeginOfLineF, LanguageDB)
+    action_code = __adorn_action_code(pattern_action_info, SupportBeginOfLineF, LanguageDB)
         
     # (*) The 'normal' terminal state can also be reached by the terminal
     #     router and, thus, **must** restore the acceptance input position. This is so, 
@@ -396,8 +396,8 @@ def get_terminal_code(AcceptanceID, pattern_action_info, SupportBeginOfLineF, La
 
     safe_pattern = "".join(result)
 
-    backward_input_position_detection_str = ""
-    if state_machine.core().post_context_backward_input_position_detector_sm() is not None:
+    input_position_search_backward_str = ""
+    if pattern.input_position_search_backward_sm is not None:
         # Pseudo Ambiguous Post Contexts:
         # (Retrieving the input position for the next run)
         # -- Requires that the end of the core pattern is to be searched! One 
@@ -407,16 +407,16 @@ def get_terminal_code(AcceptanceID, pattern_action_info, SupportBeginOfLineF, La
         #    of the core pattern is done. Here, we first need to go to the point
         #    where the 'normal' pattern ended, then we can do a backward detection.
 
-        bipd_id   = state_machine.core().post_context_backward_input_position_detector_sm_id()
+        bipd_id   = pattern.input_position_search_backward_sm.get_id()
         bipd_str  = "    goto %s;\n" % LanguageDB.LABEL_NAME_BACKWARD_INPUT_POSITION_DETECTOR(bipd_id)
         # After having finished the analyzis, enter the terminal code, here.
         bipd_str += "%s:\n" % LanguageDB.LABEL_NAME_BACKWARD_INPUT_POSITION_RETURN(bipd_id) 
-        backward_input_position_detection_str = bipd_str
+        input_position_search_backward_str = bipd_str
 
 
     txt = [
             "\nTERMINAL_%i:\n" % AcceptanceID,
-            backward_input_position_detection_str,
+            input_position_search_backward_str,
             "    __quex_debug(\"* terminal %i:   %s\");\n" % (AcceptanceID, safe_pattern),
             action_code, "\n",
             "    goto %s;\n" % get_label("$re-start", U=True)

@@ -42,10 +42,8 @@ def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):
     #     states with new ids, but the 'behavior' remains. This allows
     #     state machines to appear twice, or being used in 'larger'
     #     conglomerates.
-    if CloneF:
-        clone_list = map(lambda sm: sm.clone(), state_machine_list)
-    else:
-        clone_list = state_machine_list
+    if CloneF: clone_list = map(lambda sm: sm.clone(), state_machine_list)
+    else:      clone_list = state_machine_list
 
     # (*) collect all transitions from both state machines into a single one
     #     (clone to ensure unique identifiers of states)

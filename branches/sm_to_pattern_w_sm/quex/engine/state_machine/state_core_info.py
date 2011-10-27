@@ -77,7 +77,7 @@ class StateCoreInfo(object):
         assert type(StoreInputPositionF) == bool
         assert type(RestoreInputPositionF) == bool
         assert StateMachineID in E_AcceptanceIDs or (isinstance(StateMachineID, long) and StateMachineID >= 0) 
-        assert PreContextID   in E_PreContextIDs or isinstance(PreContextID, long)
+        assert PreContextID   in E_PreContextIDs or (isinstance(PreContextID, long) and PreContextID >= 0)
 
         if AcceptanceF: assert not StoreInputPositionF 
         else:           assert PreContextID == E_PreContextIDs.NONE
@@ -144,6 +144,11 @@ class StateCoreInfo(object):
 
     def set_acceptance_f(self, Value):
         assert type(Value) == bool
+        # 'PreContextID', 'RestorePosition' can only be active if acceptance is True.
+        # (May be, de-activate pre-context first)
+        if Value == False: 
+            assert self.__pre_context_id == E_PreContextIDs.NONE
+            assert not self.__input_position_store_f
         self.__acceptance_f = Value
 
     def input_position_store_f(self):
@@ -155,6 +160,10 @@ class StateCoreInfo(object):
         return self.__input_position_restore_f
 
     def set_input_position_restore_f(self, Value=True):
+        assert type(Value) == bool
+        # 'Restore Position' can only be active if acceptance is True.
+        # (May be, activate acceptance first)
+        if Value == True: assert self.__acceptance_f
         self.__input_position_restore_f = Value
         
     def set_input_position_store_f(self, Value=True):
@@ -163,7 +172,10 @@ class StateCoreInfo(object):
         self.__input_position_store_f = Value
 
     def set_pre_context_id(self, Value=True):
-        assert Value in E_PreContextIDs or type(Value) == long
+        assert Value in E_PreContextIDs or (type(Value) == long and Value >= 0)
+        # PreContextID can only be active if acceptance is True.
+        # (May be, activate acceptance first)
+        if Value == True: assert self.__acceptance_f
         self.__pre_context_id = Value
 
     def pre_context_id(self):

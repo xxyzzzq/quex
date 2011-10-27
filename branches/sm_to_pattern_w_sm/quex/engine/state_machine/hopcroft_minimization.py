@@ -485,7 +485,7 @@ def create_state_machine(SM, Result):
     state_set_containing_initial_state_i = Result.map[SM.init_state_index]
     new_init_state_index                 = map_new_state_index[state_set_containing_initial_state_i]
 
-    result = StateMachine(new_init_state_index, Core=SM.core())
+    result = StateMachine(new_init_state_index)
 
     # Ensure that each target state index has a state inside the state machine
     # Build up the state machine out of the state sets

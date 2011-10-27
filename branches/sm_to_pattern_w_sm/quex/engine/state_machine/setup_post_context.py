@@ -107,18 +107,14 @@ def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
     for start_state_index, state in post_clone.states.items():        
         result.states[start_state_index] = state # states are already cloned
 
-    # -- consider the pre-context, it has to be moved to the acceptance state
-    # -- same for trivial pre-contexts        
-    pre_context_sm              = the_state_machine.core().pre_context_sm()
-    pre_context_sm_id           = the_state_machine.core().pre_context_sm_id()
-    if pre_context_sm_id == -1L: pre_context_sm_id = E_PreContextIDs.NONE
-    pre_context_begin_of_line_f = the_state_machine.core().pre_context_begin_of_line_f() 
-
     # -- raise at each old acceptance state the 'store input position flag'
     # -- set the post context flag for all acceptance states
+    pre_context_id = E_PreContextIDs.NONE
     for state_idx in orig_acceptance_state_id_list:
         state = result.states[state_idx]
         state.set_input_position_store_f(True)
+        if state.pre_context_id() is not E_PreContextIDs.NONE: 
+            pre_context_id = state.pre_context_id()
         state.set_pre_context_id(E_PreContextIDs.NONE)   
     
     # -- no acceptance state shall store the input position
@@ -126,12 +122,7 @@ def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
     for state in result.get_acceptance_state_list():
         state.set_input_position_store_f(False)
         state.set_input_position_restore_f(True)
-        state.set_pre_context_id(pre_context_sm_id)   
-
-    # -- information about the pre-context remains
-    result.core().set_pre_context_begin_of_line_f(pre_context_begin_of_line_f)
-    result.core().set_pre_context_sm(pre_context_sm)
-    result.core().set_post_context_f()
+        state.set_pre_context_id(pre_context_id)   
 
     # No input position backward search required
     return None

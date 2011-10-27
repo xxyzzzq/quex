@@ -24,7 +24,7 @@ def do(SM):
     #
     # (A pattern state machine for pattern matching, of course, has to disallow 
     #  'accept nothing'.)
-    result = StateMachine(Core = SM.core(), InitState=InitState)
+    result = StateMachine(InitState=InitState)
                           
     # (*) prepare the initial worklist
     worklist = [ ( result.init_state_index, initial_state_epsilon_closure) ]

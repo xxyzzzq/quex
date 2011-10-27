@@ -50,9 +50,18 @@ def test(Idx, sm_pre, sm, sm_post, BOF_F, EOF_F):
     print "result sm.id     = ", result.get_id()
     if inverse_pre_context_sm is not None:
         print "result pre sm.id = ", inverse_pre_context_sm.get_id()
+
+    begin_of_line_f = None
+    for state in result.get_acceptance_state_list():
+        BOF = (   state.origins().get_the_only_one().pre_context_id() 
+               == E_PreContextIDs.BEGIN_OF_LINE)
+        if begin_of_line_f is None: begin_of_line_f = BOF
+        else:                       assert begin_of_line_f == BOF
+
     print "result = ", result
-    print "inverse_pre_context_sm = ", inverse_pre_context_sm
-    print "trivially pre-conditioned = ", result.core().pre_context_begin_of_line_f()
+    if inverse_pre_context_sm is not None:
+        print "inverse_pre_context_sm = ", inverse_pre_context_sm
+    print "trivially pre-conditioned = ", begin_of_line_f
 
     # sys.exit(-1)
 

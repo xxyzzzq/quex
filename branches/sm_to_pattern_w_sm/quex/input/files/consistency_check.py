@@ -92,7 +92,7 @@ def __commonality(mode, Info, ReferenceSM, Name):
         if pattern_action_pair.comment in ["indentation newline", "indentation newline suppressor"]: 
             continue
 
-        sm = pattern_action_pair.pattern_state_machine()
+        sm = pattern_action_pair.pattern().sm
         if commonality_checker.do(ReferenceSM, sm) != E_Commonality.NONE:
             error_msg("The %s pattern '%s'" \
                       % (Name, Info.pattern_str), Info.file_name, Info.line_n, 
