@@ -14,9 +14,10 @@ if "--hwut-info" in sys.argv:
 def test(sm, pre_sm):    
     print "EXPRESSION = ", sm
     print "PRE-CONDITION = ", pre_sm
-    result = setup_pre_context.do(sm, pre_sm, False)
+    inverse_pre_context_sm = setup_pre_context.do(sm, pre_sm, False)
     #
-    print "with pre-condition = ", result
+    print "with pre-context = ", sm
+    print "inverse pre-context = ", inverse_pre_context_sm
 
 print "-------------------------------------------------------------------------------"
 tiny0 = StateMachine()

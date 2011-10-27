@@ -59,17 +59,16 @@ class Pattern(object):
         self.__post_context_f = (post_context is not None)
 
         ipsb_sm = setup_post_context.do(core_sm, post_context, EndOfLineF, fh=fh)
-        if ipsb_sm is not None: self.__input_position_search_backward_sm = beautify(ipsb_sm)
-        else:                   self.__input_position_search_backward_sm = None
+        self.__input_position_search_backward_sm = beautify(ipsb_sm)
 
         self.__pre_context_sm_inverse = setup_pre_context.do(core_sm, pre_context, BeginOfLineF)
 
         self.__pre_context_trivial_begin_of_line_f = (BeginOfLineF and self.__pre_context_sm_inverse is None)
         
-        self.__sm = beautify(core_sm)
+        if self.__post_context_f: self.__sm = beautify(core_sm)
+        else:                     self.__sm = core_sm
 
-
-        self.__validate(self.__sm, fh)
+        self.__validate(fh)
 
     @property
     def newline_n(self):                           return self.__newline_n
@@ -90,11 +89,14 @@ class Pattern(object):
         elif self.__pre_context_sm_inverse is not None:  return True
         elif self.__post_context_f:                      return True
         return False
+    def has_pre_context(self): 
+        return    self.__pre_context_trivial_begin_of_line_f \
+               or self.__pre_context_sm_inverse is not None
 
-    def __validate(self, sm, fh):
+    def __validate(self, fh):
         # (*) It is essential that state machines defined as patterns do not 
         #     have origins.
-        if sm.has_origins():
+        if self.__sm.has_origins():
             error_msg("Regular expression parsing resulted in state machine with origins.\n" + \
                       "Please, log a defect at the projects website quex.sourceforge.net.\n", fh)
 
@@ -102,9 +104,8 @@ class Pattern(object):
         #     post-conditioned. Post-conditioning via the backward search is a different 
         #     ball-game.
         acceptance_f = False
-        for state in sm.states.values():
+        for state in self.__sm.states.values():
             if state.is_acceptance(): acceptance_f = True
-
             if     state.input_position_store_f() \
                and state.is_acceptance():
                 error_msg("Pattern with post-context: An irregularity occurred.\n" + \
@@ -114,8 +115,14 @@ class Pattern(object):
         if acceptance_f == False:
             error_msg("Pattern has no acceptance state and can never match.\n" + \
                       "Aborting generation process.", fh)
-            
-        return sm
+
+        # All state machines must be DFAs
+        assert    self.__sm.is_DFA_compliant(), \
+                  repr(self.__sm)
+        assert    self.__pre_context_sm_inverse is None \
+               or self.__pre_context_sm_inverse.is_DFA_compliant()
+        assert    self.__input_position_search_backward_sm is None \
+               or self.__input_position_search_backward_sm.is_DFA_compliant()
 
     def __repr__(self):
         return self.get_string(self)
@@ -136,7 +143,6 @@ class Pattern(object):
         return msg
 
     side_info = property(deprecated, deprecated, deprecated, "Member 'side_info' deprecated!")
-
 
 def do(core_sm, 
        begin_of_line_f=False, pre_context=None, 
@@ -177,6 +183,7 @@ def do(core_sm,
                    AllowStateMachineTrafoF, fh)
 
 def beautify(the_state_machine):
+    if the_state_machine is None: return None
     ## assert len(the_state_machine.get_orphaned_state_index_list()) == 0, \
     ##       "before conversion to DFA: orphaned states " + repr(the_state_machine)
     result = nfa_to_dfa.do(the_state_machine)

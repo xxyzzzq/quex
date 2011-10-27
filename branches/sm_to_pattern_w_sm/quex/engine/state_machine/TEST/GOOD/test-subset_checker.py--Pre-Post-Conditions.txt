@@ -39,7 +39,7 @@ claim =  False
 
 super = B
 sub   = B$
-claim =  False
+claim =  True
 ---------------------------
 super = ^B
 sub   = B

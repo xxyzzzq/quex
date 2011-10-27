@@ -1,4 +1,5 @@
-from quex.engine.state_machine.core import StateMachine
+from   quex.engine.state_machine.core           import StateMachine
+import quex.engine.state_machine.transformation as transformation
 
 class Checker:
     def __init__(self, SuperSM, AllegedSubSM):
@@ -91,49 +92,72 @@ class Checker:
         # sub set state machine of 'super sm'.
         return True
 
-def do(SuperPattern, AllegedSubPattern):
-    # Check wether SuperPattern matches a superset of patterns of what AllegedSubPattern matches.
-    sub_set_f = Checker(SuperPattern.sm, AllegedSubPattern.sm).do()
+def do(A, B):
+    # (*) Core Pattern ________________________________________________________
+    #
+    #     (including the mounted post context, if there is one).
+    #
+    # NOTE: Post-conditions do not change anything, since they match only when
+    #       the whole lexeme has matched (from begin to end of post condition).
+    #       Post-conditions only tell something about the place where the 
+    #       analyzer returns after the match.
+    sub_set_f = Checker(A.sm, B.sm).do()
 
     if not sub_set_f: return False
-    # NOTE: Post-conditions do not change anything, since they match only when the whole
-    #       lexeme has matched (from begin to end of post condition). Post-conditions only
-    #       tell something about the place where the analyzer returns after the match.
-    #
-    super_pre_conditioned_f =     (SuperPattern.inverse_pre_context_sm is not None) \
-                               or (SuperPattern.pre_context_trivial_begin_of_line_f) 
-    sub_pre_conditioned_f   =     (AllegedSubPattern.inverse_pre_context_sm is not None) \
-                               or (AllegedSubPattern.pre_context_trivial_begin_of_line_f) 
-    # Pre-Condition: 
-    #
-    #       (i) If (only) the alleged subset state machine is pre-conditioned this does not 
-    #           change anything in our considerations. It only restricts the 'set of applicable
-    #           situations' further. If the set of patterns matched by AllegedSubPattern is
-    #           a subset of what SuperPattern matches, then any subset of that is also a subset
-    #           of what SuperPattern matches.
-    if not super_pre_conditioned_f: return True
 
+    # NOW: For the core state machines it holds: 
     #
-    #       (ii) If the SuperPattern is pre-conditioned then the enclosing set is restricted, and
-    #            it has to be made sure that it still encloses all what AllegedSubPattern matches.
+    #                      'A' matches a super set of 'B'.
     #
-    #            -- If the AllegedSubPattern is not pre-conditioned at all, then it's free!
-    #               Any pattern that does not have the precondition of SuperPattern and matches
-    #               AllegedSubPattern can only be matched by AllegedSubPattern.
-    if not sub_pre_conditioned_f: return False
 
-    # Here: Both are pre-conditioned.
-    if     SuperPattern.pre_context_trivial_begin_of_line_f \
-       and AllegedSubPattern.pre_context_trivial_begin_of_line_f:
-        assert SuperPattern.inverse_pre_context_sm      is not None
-        assert AllegedSubPattern.inverse_pre_context_sm is not None 
-        # It holds the judgement about the main patterns:
+    # (*) Pre-Condition _______________________________________________________
+    #
+    if not A.has_pre_context(): 
+        # Even if only the alleged subset state machine is pre-conditioned this
+        # does not change anything in our considerations. It only restricts its
+        # 'set of applicable situations' further. 
         return True
 
-    #            -- If the AllegedSubPattern is pre-conditioned, then its pre-condition must be
-    #               a subset of SuperPattern pre-condition. If not, its free for the same reason
-    #               as mentioned above.
-    return Checker(SuperPattern.inverse_pre_context_sm, AllegedSubPattern.inverse_pre_context_sm).do()
+    # NOW: The A has a conditioned by a pre-context 
+    #
+    if not B.has_pre_context(): 
+        # If the A is pre-conditioned then the enclosing set is restricted, and
+        # it has to be made sure that it still encloses all what B matches.
+        #
+        # If the B is not pre-conditioned at all, then it's free!  Any pattern
+        # that does not have the precondition of A and matches B can only be
+        # matched by B.
+        return False
+
+    # NOW: Both are conditioned by pre-context. For A to match a superset of B
+    #      it must be less restricted then B. This means that 
+    #
+    #      'pre-condition on A' is a subset of 'pre-condition of B'
+    # 
+    #
+    if B.pre_context_trivial_begin_of_line_f:
+        if not A.pre_context_trivial_begin_of_line_f:
+            # pre(A) can never be a subset of pre(B)
+            return False
+        else:
+            # pre(A) = pre(B) which fulfills the condition
+            return True
+
+    # NOW: B is a 'real' pre-context not only a 'begin-of-line'
+    #
+    if not A.pre_context_trivial_begin_of_line_f:
+        # Decision about "pre(A) is subset of pre(B)" done by Checker
+        A_pre_sm = A.inverse_pre_context_sm
+    else:
+        # A contains only 'begin-of-line'. However, at this point in time
+        # we are dealing with transformed machines. So this has also to be
+        # transformed.
+        A_pre_sm = StateMachine.from_sequence("\n")
+        A_pre_sm = transformation.try_this(A_pre_sm, fh)
+
+    return Checker(B.inverse_pre_context_sm, A_pre_sm).do()
+
+
 
 def do_list(SuperPattern_List, AllegedSubPattern):
     for super_sm in SuperPattern_List:

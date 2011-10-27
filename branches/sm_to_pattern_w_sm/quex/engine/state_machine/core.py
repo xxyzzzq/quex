@@ -161,18 +161,32 @@ class State:
         return self.transitions().get_graphviz_string(OwnStateIdx, StateIndexMap, Option)
 
 class StateMachine(object):
-    def __init__(self, InitStateIndex=None, AcceptanceF=False, InitState=None, SM_ID=None):
+    def __init__(self, InitStateIndex=None, AcceptanceF=False, InitState=None):
 
         if InitStateIndex is None: InitStateIndex = state_machine_index.get()
         self.init_state_index = InitStateIndex
             
         # State Index => State (information about what triggers transition to what target state).
-        if InitState is None: InitState = State(AcceptanceF)
+        if InitState is None: InitState = State(AcceptanceF=AcceptanceF)
         self.states = { self.init_state_index: InitState }        
 
-        # get a unique state machine id 
-        if SM_ID is not None: self.__id = SM_ID
-        else:                 self.__id = state_machine_index.get_state_machine_id()
+        # Get a unique state machine id 
+        self.__id = state_machine_index.get_state_machine_id()
+
+    @staticmethod
+    def from_sequence(Sequence):
+        """Sequence is a list of one of the following:
+            -- NumberSet
+            -- Number
+            -- Character
+        """
+        assert type(Sequence) == list
+        result = StateMachine()
+        idx    = result.init_state_index
+        for x in Sequence:
+            idx = result.add_transition(idx, x)
+        result.states[idx].set_acceptance(True)
+        return result
 
     def clone(self, ReplacementDB=None):
         """Clone state machine, i.e. create a new one with the same behavior,
@@ -192,12 +206,8 @@ class StateMachine(object):
             result      = StateMachine(InitStateIndex=ReplacementDB[self.init_state_index])
             replacement = ReplacementDB
         else:                         
-            result = StateMachine()
+            result      = StateMachine()
             replacement = {}
-            # every target state has to appear as a start state (no external states)
-            # => it is enough to consider the start states and 'rename' them.
-            # if later a target state index appears, that is not in this set we
-            # return 'None' to indicate that this state machine cannot be cloned.
             for state_idx in sorted(self.states.iterkeys()):
                 # NOTE: The constructor already delivered an init state index to 'result'.
                 #       Thus self's init index has to be translated to result's init index.
@@ -206,18 +216,10 @@ class StateMachine(object):
                 else:
                     replacement[state_idx] = state_machine_index.get()
 
-        # termination is a global state, it is not replaced by a new index 
         for state_idx in self.states.iterkeys():
             new_state_idx = replacement[state_idx]
             result.states[new_state_idx] = self.states[state_idx].clone(replacement)
         
-        # result.__core = deepcopy(self.__core)
-
-        ## DEBUG: Check that every transition target is part of state machine
-        ## for state in result.states.values():
-        ##    for target_idx in state.transitions().get_map().keys():
-        ##        assert result.states.has_key(target_idx)
-            
         return result
 
     def normalized_clone(self):
@@ -619,10 +621,8 @@ class StateMachine(object):
         return self.init_state_index
 
     def create_new_state(self, AcceptanceF=False, StateIdx=None):
-        if StateIdx is None:
-            new_state_index = state_machine_index.get()
-        else:
-            new_state_index = StateIdx
+        if StateIdx is None: new_state_index = state_machine_index.get()
+        else:                new_state_index = StateIdx
 
         self.states[new_state_index] = State(AcceptanceF)
         return new_state_index
@@ -870,6 +870,7 @@ class StateMachine(object):
                        "present state indices: " + repr(self.states.keys()) + "\n" + \
                        "state machine = " + self.get_string(NormalizeF=False)
 
+    __core    = property(deprecated, deprecated, deprecated, "Member '__core' deprecated!")
     side_info = property(deprecated, deprecated, deprecated, "Member 'side_info' deprecated!")
     def core(self): assert False
             

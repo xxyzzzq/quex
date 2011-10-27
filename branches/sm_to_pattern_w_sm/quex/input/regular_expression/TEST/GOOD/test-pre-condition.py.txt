@@ -5,7 +5,7 @@ init-state = 0L
 00000 ()
      == ';' ==> 00001
     
-00001 (A, pre=6)
+00001 (A, pre=7)
     
 pre-condition inverted = init-state = 0L
 00000 ()
@@ -50,7 +50,7 @@ init-state = 0L
 00004 ()
      == 'o' ==> 00005
     
-00005 (A, pre=55)
+00005 (A, pre=54)
     
 pre-condition inverted = init-state = 0L
 00000 ()
