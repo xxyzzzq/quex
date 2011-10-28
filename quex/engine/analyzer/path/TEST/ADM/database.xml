@@ -1,4 +1,4 @@
-<test-database execution-time-sec="2.19" date="Fri Oct 28 00:51:33 2011">
+<test-database execution-time-sec="2.19" date="Fri Oct 28 22:40:01 2011">
     <last-used-diff-display-program name=""/>
     <group name="Paths">
         <test title="find_begin" time-sum-sec="0.46"> 
@@ -12,7 +12,7 @@
                <choice name="6" result="OK" time_sec="0.08" crc="-1279354597"/>
             </choice-list>
         </test>
-        <test title="filter_redundant_paths" time-sum-sec="0.58"> 
+        <test title="filter_redundant_paths" time-sum-sec="0.59"> 
             <application file-name="filter_redundant_paths.py" info-request-time="1318614207L" vanished="False"/>
             <choice-list number="8" same_result="False">
                <choice name="0" result="OK" time_sec="0.08" crc="-1231177672"/>

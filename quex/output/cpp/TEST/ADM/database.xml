@@ -1,4 +1,4 @@
-<test-database execution-time-sec="1.97" date="Fri Oct 28 00:56:39 2011">
+<test-database execution-time-sec="1.99" date="Fri Oct 28 22:40:01 2011">
     <last-used-diff-display-program name=""/>
     <test title="Token Class Template" time-sum-sec="0.09"> 
         <application file-name="test-token_class.py" info-request-time="1318614196L" vanished="False"/>
@@ -7,7 +7,7 @@
         </choice-list>
     </test>
     <group name="Converter">
-        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="0.18"> 
+        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="0.19"> 
             <application file-name="test-converter-x.py" info-request-time="1318614196L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="1" result="OK" time_sec="0.07" crc="816612133"/>

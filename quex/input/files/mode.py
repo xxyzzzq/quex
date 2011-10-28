@@ -290,7 +290,7 @@ class Mode:
                 txt += "      (%3i) %s: %s%s\n" % \
                        (pattern_action_pair.pattern().sm.get_id(),
                         pattern_action_pair.mode_name, " " * (L - len(self.name)), 
-                        pattern_action_pair.pattern)
+                        pattern_action_pair.pattern_string())
             txt += "\n"
 
         return txt

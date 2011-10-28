@@ -82,10 +82,10 @@ init-state = 0L
 00001 (S)
      == '\n' ==> 00002
     
-00002 (A, R, pre=40)
+00002 (A, R, pre=39)
     
 pre-condition inverted = init-state = 0L
-00000 
+00000 ()
      == '\n' ==> 00001
      == ['a', 'z'] ==> 00002
     
@@ -103,10 +103,10 @@ init-state = 0L
 00000 ()
      == ['a', 'z'] ==> 00001
     
-00001 (A, pre=49)
+00001 (A, pre=47)
     
 pre-condition inverted = init-state = 0L
-00000 
+00000 ()
      == '\n' ==> 00001
      == ['a', 'z'] ==> 00002
     

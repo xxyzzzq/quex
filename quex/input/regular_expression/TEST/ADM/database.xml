@@ -1,4 +1,4 @@
-<test-database execution-time-sec="2.92" date="Fri Oct 28 00:56:37 2011">
+<test-database execution-time-sec="2.93" date="Fri Oct 28 22:40:01 2011">
     <last-used-diff-display-program name=""/>
     <test title="Case Folding" time-sum-sec="0.19"> 
         <application file-name="test-case_fold.py" info-request-time="1318614195L" vanished="False"/>
@@ -74,16 +74,22 @@
         </test>
     </group>
     <group name="Conditional Analysis">
+        <test title="pre- and post-conditions" time-sum-sec="0.09"> 
+            <application file-name="test-pre-and-post-condition.py" info-request-time="1318614195L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.09" crc="-1675627491"/>
+            </choice-list>
+        </test>
         <test title="pre conditions" time-sum-sec="0.08"> 
             <application file-name="test-pre-condition.py" info-request-time="1319746729L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.08" crc="982436137"/>
             </choice-list>
         </test>
-        <test title="Begin of Line '^', End of Line '$'" time-sum-sec="0.08"> 
+        <test title="Begin of Line '^', End of Line '$'" time-sum-sec="0.09"> 
             <application file-name="test-bol-eol.py" info-request-time="1319523287L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.08" crc="-1089790550"/>
+               <choice name="" result="OK" time_sec="0.09" crc="-290203134"/>
             </choice-list>
         </test>
         <test title="post conditions" time-sum-sec="0.08"> 
@@ -92,16 +98,10 @@
                <choice name="" result="OK" time_sec="0.08" crc="-296474085"/>
             </choice-list>
         </test>
-        <test title="pre- and post-conditions" time-sum-sec="0.09"> 
-            <application file-name="test-pre-and-post-condition.py" info-request-time="1318614195L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.09" crc="-1675627491"/>
-            </choice-list>
-        </test>
         <test title="End of Line '$' (with DOS/Windows '\r\n')" time-sum-sec="0.07"> 
             <application file-name="test-eol-carriage-return-newline.py" info-request-time="1319523435L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.07" crc="-679971317"/>
+               <choice name="" result="OK" time_sec="0.07" crc="-679971317"/>
             </choice-list>
         </test>
     </group>

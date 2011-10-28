@@ -1,7 +1,7 @@
-<test-database execution-time-sec="0.27" date="Fri Oct 28 00:49:16 2011">
+<test-database execution-time-sec="0.27" date="Fri Oct 28 22:39:53 2011">
     <last-used-diff-display-program name=""/>
     <group name="Include Stack">
-        <test title="Misc Scenarios" make-dependent="True" time-sum-sec="0.16"> 
+        <test title="Misc Scenarios" make-dependent="True" time-sum-sec="0.17"> 
             <application file-name="queue.exe" info-request-time="1318660687L" vanished="False"/>
             <make-procedure success="True" time_sec="2.153713"/>
             <choice-list number="7" same_result="False">
@@ -14,7 +14,7 @@
                <choice name="20" result="OK" time_sec="0.03" crc="-1349073584"/>
             </choice-list>
         </test>
-        <test title="Misc Scenarios" make-dependent="True" time-sum-sec="0.11"> 
+        <test title="Misc Scenarios" make-dependent="True" time-sum-sec="0.10"> 
             <application file-name="users_token.exe" info-request-time="1318660689L" vanished="False"/>
             <make-procedure success="True" time_sec="2.037821"/>
             <choice-list number="7" same_result="False">
