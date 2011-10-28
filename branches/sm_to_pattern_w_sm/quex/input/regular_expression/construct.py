@@ -55,19 +55,18 @@ class Pattern(object):
             sm = transformation.try_this(post_context, fh)
             if sm is not None: post_context = sm
 
+        self.__sm = core_sm
+
         # (3) Pre- and Post-Context Setup
         self.__post_context_f = (post_context is not None)
 
-        ipsb_sm = setup_post_context.do(core_sm, post_context, EndOfLineF, fh=fh)
-        self.__input_position_search_backward_sm = beautify(ipsb_sm)
+        self.__sm,                               \
+        self.__input_position_search_backward_sm = setup_post_context.do(self.__sm, post_context, EndOfLineF, fh=fh) 
 
-        self.__pre_context_sm_inverse = setup_pre_context.do(core_sm, pre_context, BeginOfLineF)
+        self.__pre_context_sm_inverse = setup_pre_context.do(self.__sm, pre_context, BeginOfLineF)
 
         self.__pre_context_trivial_begin_of_line_f = (BeginOfLineF and self.__pre_context_sm_inverse is None)
         
-        if self.__post_context_f: self.__sm = beautify(core_sm)
-        else:                     self.__sm = core_sm
-
         self.__validate(fh)
 
     @property

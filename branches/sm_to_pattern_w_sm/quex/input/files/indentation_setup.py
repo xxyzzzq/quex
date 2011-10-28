@@ -296,7 +296,7 @@ def do(fh):
             return indentation_setup
         
         # A regular expression state machine
-        pattern_str, state_machine = regular_expression.parse(fh)
+        pattern_str, pattern = regular_expression.parse(fh)
 
         skip_whitespace(fh)
         if not check(fh, "=>"):
@@ -313,10 +313,10 @@ def do(fh):
 
         trigger_set = None
         if identifier in ["space", "bad", "grid"]:
-            if len(state_machine.states) != 2:
+            if len(pattern.sm.states) != 2:
                 error_msg("For indentation '%s' only patterns are addmissible which\n" % identifier + \
                           "can be matched by a single character, e.g. \" \" or [a-z].", fh)
-            transition_map = state_machine.get_init_state().transitions().get_map()
+            transition_map = pattern.sm.get_init_state().transitions().get_map()
             assert len(transition_map) == 1
             trigger_set = transition_map.values()[0]
 
@@ -350,10 +350,10 @@ def do(fh):
             indentation_setup.specify_bad(pattern_str, trigger_set, fh)
 
         elif identifier == "newline":
-            indentation_setup.specify_newline(pattern_str, state_machine, fh)
+            indentation_setup.specify_newline(pattern_str, pattern.sm, fh)
 
         elif identifier == "suppressor":
-            indentation_setup.specify_suppressor(pattern_str, state_machine, fh)
+            indentation_setup.specify_suppressor(pattern_str, pattern.sm, fh)
 
         else:
             assert False, "Unreachable code reached."

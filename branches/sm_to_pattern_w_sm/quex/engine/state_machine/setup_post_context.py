@@ -1,33 +1,48 @@
 #! /usr/bin/env python
 from   quex.engine.misc.file_in                         import error_msg
 from   quex.engine.state_machine.core                   import StateMachine
-import quex.engine.state_machine.ambiguous_post_context as ambiguous_post_context
+import quex.engine.state_machine.nfa_to_dfa             as     nfa_to_dfa
+import quex.engine.state_machine.hopcroft_minimization  as     hopcroft
+import quex.engine.state_machine.ambiguous_post_context as     ambiguous_post_context
 from   quex.blackboard                                  import E_PreContextIDs, setup as Setup
 
 
 def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
-    """ Appends a post context to the given state machine. This process is very
-        similar to sequentialization. There is a major difference, though:
+    """Appends a post context to the given state machine and changes 
+       state infos as required. 
+
+       NOTE: 
+
+           In case that:    post_context_sm is not None 
+                         or EndOfLinePostContextF  
+
+           The function appends something to the state machine and
+           it is therefore required to pass 'NFA to DFA'--better
+           also Hopcroft Minimization.
        
-        Given a state machine (e.g. a pattern) X with a post context Y, 
-        a match is only valid if X is followed by Y. Let Xn be an acceptance
-        state of X and Ym an acceptance state of Y: 
+       ________________________________________________________________________
+       This process is very similar to sequentialization. 
+       There is a major difference, though:
+       
+       Given a state machine (e.g. a pattern) X with a post context Y, 
+       a match is only valid if X is followed by Y. Let Xn be an acceptance
+       state of X and Ym an acceptance state of Y: 
 
-               ---(Xn-1)---->(Xn)---->(Y0)----> ... ---->((Ym))
-                             store                       acceptance
-                             input
-                             position
-        
-        That is, it holds:
+              ---(Xn-1)---->(Xn)---->(Y0)----> ... ---->((Ym))
+                            store                       acceptance
+                            input
+                            position
+       
+       That is, it holds:
 
-           -- The next input position is stored the position of Xn, even though
-              it is 'officially' not an acceptance state.
+          -- The next input position is stored the position of Xn, even though
+             it is 'officially' not an acceptance state.
 
-           -- Ym will be an acceptance state, but it will not store 
-              the input position!       
+          -- Ym will be an acceptance state, but it will not store 
+             the input position!       
 
-        The analysis of the next pattern will start at the position where
-        X stopped, even though Ym is required to state acceptance.    
+       The analysis of the next pattern will start at the position where
+       X stopped, even though Ym is required to state acceptance.    
        
     """
     # State machines with no states are senseless here. 
@@ -45,13 +60,9 @@ def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
             assert origin.pre_context_id() == E_PreContextIDs.NONE, \
                    "Post Contexts MUST be mounted BEFORE pre-contexts."
 
-    # print "##EndOfLinePostContextF", EndOfLinePostContextF
-    # print "##post_sm", post_context_sm
     if post_context_sm is None:
         if not EndOfLinePostContextF:
-            # print "##bye, from 1"
-            return None
-        # print "##oops 1"
+            return the_state_machine, None
         # Generate a new post context that just contains the 'newline'
         post_context_sm = StateMachine(AcceptanceF=True)
         post_context_sm.mount_newline_to_acceptance_states(Setup.dos_carriage_return_newline_f)
@@ -66,8 +77,7 @@ def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
     if post_context_sm.get_init_state().is_acceptance():
         error_msg("Post context accepts anything---replaced by no post context.", fh, 
                   DontExitF=True)
-        # print "##oops 3"
-        return None
+        return the_state_machine, None
     
     # (*) Two ways of handling post-contexts:
     #
@@ -87,7 +97,14 @@ def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
             trailing_post_context = ambiguous_post_context.philosophical_cut(the_state_machine, post_context_sm)
         
         # print "##oops 4"
-        return ambiguous_post_context.mount(the_state_machine, post_context_sm)
+        # NOTE: May be, the_state_machine does contain now an epsilon transition. See
+        #       comment at entry of this function.
+        ipsb_sm = ambiguous_post_context.mount(the_state_machine, post_context_sm)
+        the_state_machine = nfa_to_dfa.do(the_state_machine)
+        hopcroft.do(the_state_machine, CreateNewStateMachineF=False)
+        ipsb_sm = nfa_to_dfa.do(ipsb_sm)
+        hopcroft.do(ipsb_sm, CreateNewStateMachineF=False)
+        return the_state_machine, ipsb_sm 
 
     # -- The 'normal' way: storing the input position at the end of the core
     #    pattern.
@@ -131,6 +148,7 @@ def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
         state.set_input_position_restore_f(True)
 
     # No input position backward search required
-    # print "##oops 5"
-    return None
+    the_state_machine = nfa_to_dfa.do(the_state_machine)
+    hopcroft.do(the_state_machine, CreateNewStateMachineF=False)
+    return the_state_machine, None
 

@@ -1,18 +1,18 @@
-<test-database execution-time-sec="7.71" date="Fri Oct 28 00:49:24 2011">
+<test-database execution-time-sec="10.21" date="Fri Oct 28 22:39:57 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Indentation Counting and Range Skipper" time-sum-sec="1.96"> 
+    <test title="Indentation Counting and Range Skipper" time-sum-sec="2.52"> 
         <application file-name="with-skip-range.sh" info-request-time="1318614191L" vanished="False"/>
         <choice-list number="3" same_result="False">
            <choice name="range" result="OK" time_sec="0.85" crc="-1124186354"/>
-           <choice name="range-2" result="FAIL" time_sec="0.25" crc="-1743780697"/>
+           <choice name="range-2" result="OK" time_sec="0.81" crc="-1743780697"/>
            <choice name="nested_range" result="OK" time_sec="0.86" crc="1419122518"/>
         </choice-list>
     </test>
-    <test title="Bad character detection." time-sum-sec="0.49"> 
+    <test title="Bad character detection." time-sum-sec="2.43"> 
         <application file-name="bad.sh" info-request-time="1318614191L" vanished="False"/>
         <choice-list number="2" same_result="False">
-           <choice name="default" result="FAIL" time_sec="0.24" crc="954811374"/>
-           <choice name="customized" result="FAIL" time_sec="0.25" crc="2010419295"/>
+           <choice name="default" result="OK" time_sec="1.34" crc="954811374"/>
+           <choice name="customized" result="OK" time_sec="1.09" crc="2010419295"/>
         </choice-list>
     </test>
     <test title="Customized Event Handlers" time-sum-sec="4.26"> 
@@ -31,9 +31,9 @@
            <choice name="1" result="FAIL" time_sec="0.17" crc="-1391501822"/>
            <choice name="2" result="FAIL" time_sec="0.17" crc="970527046"/>
            <choice name="3" result="FAIL" time_sec="0.17" crc="-1638526542"/>
-           <choice name="4" result="FAIL" time_sec="0.16" crc="774002524"/>
-           <choice name="5" result="FAIL" time_sec="0.17" crc="640949708"/>
-           <choice name="6" result="FAIL" time_sec="0.16" crc="1833916996"/>
+           <choice name="4" result="FAIL" time_sec="0.17" crc="774002524"/>
+           <choice name="5" result="FAIL" time_sec="0.16" crc="640949708"/>
+           <choice name="6" result="OK" time_sec="0.16" crc="1833916996"/>
         </choice-list>
     </test>
 </test-database>
