@@ -51,11 +51,11 @@ State 2:
 State 3:
   .entry:
     .accepter:
-        if      PreContext_17: last_acceptance = Pattern19
+        if      PreContext_19: last_acceptance = Pattern15
     .positioner:
         .from 2: <nothing>
   .drop_out:
-    if PreContext_17: pos -= 2;  goto Pattern19;
+    if PreContext_19: pos -= 2;  goto Pattern15;
     pos -= 1;  goto Pattern4;
 
 
@@ -68,9 +68,9 @@ State 4:
     Checker:
         accept = last_acceptance
     Router:
-        case 19: pos -= 3;  goto Pattern19;
         case 4: pos -= 2;  goto Pattern4;
         case 21: pos -= 2;  goto Pattern21;
+        case 15: pos -= 3;  goto Pattern15;
 
 
 State 5:

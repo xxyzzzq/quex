@@ -19,12 +19,6 @@ init-state = 0L
 00005 (30, 83, S)
      == 'd' ==> 00002
     
-pre-condition inverted = init-state = 0L
-00000 ()
-     == 'x' ==> 00001
-    
-00001 (A)
-    
 
 State 0:
   .entry:

@@ -1,4 +1,4 @@
-<history date="Sat Oct 29 17:46:25 2011" element-n="417">
+<history date="Sat Oct 29 22:54:59 2011" element-n="428">
     <day year="2011" month="04" day="29">
         <history-init time="04:18:51"/>
     </day>
@@ -481,5 +481,18 @@
         <crc-error time="10:12:14" application="track_analysis-pre-post.py" choice="5" database-crc="2081279670" real-crc="-1456295736"/>
         <crc-error time="10:12:29" application="track_analysis-pre.py" choice="6" database-crc="-1146612816" real-crc="-388756843"/>
         <crc-error time="10:12:43" application="track_analysis.py" choice="7" database-crc="-346138715" real-crc="-1890303030"/>
+    </day>
+    <day year="2011" month="10" day="29">
+        <crc-error time="19:00:55" application="test-position_register_map.py" choice="4" database-crc="798142314" real-crc="1047394533"/>
+        <crc-error time="19:00:55" application="test-position_register_map.py" choice="5" database-crc="819783985" real-crc="-36821897"/>
+        <crc-error time="19:32:21" application="track_analysis-backwards.py" choice="1" database-crc="1795542876" real-crc="-162318005"/>
+        <crc-error time="19:32:49" application="track_analysis-backwards.py" choice="0" database-crc="-1604370334" real-crc="-85262202"/>
+        <crc-error time="20:54:55" application="single-pattern.py" choice="4" database-crc="-19197351" real-crc="2005428988"/>
+        <crc-error time="20:54:56" application="single-pattern.py" choice="5" database-crc="972250298" real-crc="1956753950"/>
+        <crc-error time="20:54:57" application="track_analysis-pre-post.py" choice="2" database-crc="477780019" real-crc="739920742"/>
+        <crc-error time="20:54:57" application="track_analysis-pre-post.py" choice="3" database-crc="-57302933" real-crc="-34868212"/>
+        <crc-error time="20:54:57" application="track_analysis-pre-post.py" choice="4" database-crc="-26453013" real-crc="-1258678191"/>
+        <crc-error time="20:54:57" application="track_analysis-pre-post.py" choice="5" database-crc="-1456295736" real-crc="-2107214201"/>
+        <crc-error time="20:54:57" application="track_analysis-pre-post.py" choice="6" database-crc="-1682249961" real-crc="-339707231"/>
     </day>
 </history>
