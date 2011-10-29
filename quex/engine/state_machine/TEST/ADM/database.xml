@@ -1,4 +1,4 @@
-<test-database execution-time-sec="13.67" date="Sat Oct 29 18:07:54 2011">
+<test-database execution-time-sec="13.61" date="Sat Oct 29 20:39:06 2011">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Superset/Subset Determination" time-sum-sec="1.49"> 
         <application file-name="test-subset_checker.py" info-request-time="1319904117L" vanished="False"/>
@@ -176,10 +176,10 @@
                <choice name="" result="OK" time_sec="0.06" crc="-121887893"/>
             </choice-list>
         </test>
-        <test title="Paralell" time-sum-sec="0.06"> 
-            <application file-name="test-parallelize.py" info-request-time="1319365405L" vanished="False"/>
+        <test title="Paralell" time-sum-sec="0.00"> 
+            <application file-name="test-parallelize.py" info-request-time="1319913523L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.06" crc="801044692"/>
+               <choice name="" result="OK" time_sec="0.00" crc="-2088071502"/>
             </choice-list>
         </test>
         <test title="Repetitions Kleene closure 0 or arbitrary repetitions" time-sum-sec="0.06"> 
