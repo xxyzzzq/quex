@@ -1,5 +1,5 @@
 from   quex.engine.state_machine.core           import StateMachine
-import quex.engine.state_machine.transformation as transformation
+import quex.engine.state_machine.transformation as     transformation
 
 class Checker:
     def __init__(self, SuperSM, AllegedSubSM):
@@ -7,7 +7,7 @@ class Checker:
            AllegedSubSM. Basically it tries to answer the question:
 
               ? Is the set of patterns matched by 'AllegedSubSM' a subset of the ?
-              ? set of patterns matched by 'SuperSM'                              ?
+              ? set of patterns matched by 'SuperSM'                             ?
 
            RETURNS: 'True'  if so,
                     'False' if not.
@@ -93,6 +93,14 @@ class Checker:
         return True
 
 def do(A, B):
+    """RETURNS: True  - if B is a subset of A, A is a superset of B
+                False - if not
+    """
+    if isinstance(A, StateMachine):
+        assert isinstance(B, StateMachine)
+        return not Checker(A, B).do()
+
+    assert not isinstance(B, StateMachine)
     # (*) Core Pattern ________________________________________________________
     #
     #     (including the mounted post context, if there is one).

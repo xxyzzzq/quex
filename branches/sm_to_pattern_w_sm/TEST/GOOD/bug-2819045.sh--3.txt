@@ -1,6 +1,2 @@
-error-3.qx:11:warning: Pattern definition with pre- and/or post-context.
-error-3.qx:11:warning: This pattern cannot be used in replacements.
-error-3.qx:12:warning: Pattern definition with pre- and/or post-context.
-error-3.qx:12:warning: This pattern cannot be used in replacements.
-error-3.qx:13:error: Pre- or post- conditioned pattern was used in replacement.
-error-3.qx:13:error: Quex's regular expression grammar does not allow this.
+error-3.qx:11:error: Pattern definition with pre- and/or post-context.
+error-3.qx:11:error: Pre- and Post-Contexts can only be defined inside mode definitions.

@@ -219,7 +219,7 @@ def parse_pattern_name_definitions(fh):
 
         if pattern.has_pre_or_post_context():
             error_msg("Pattern definition with pre- and/or post-context.\n" + \
-                      "This pattern cannot be used in replacements.", fh, DontExitF=True)
+                      "Pre- and Post-Contexts can only be defined inside mode definitions.", fh)
         state_machine = pattern.sm
 
         blackboard.shorthand_db[pattern_name] = \

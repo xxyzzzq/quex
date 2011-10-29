@@ -36,7 +36,7 @@ import quex.engine.state_machine.repeat                    as repeat
 import quex.engine.state_machine.nfa_to_dfa                as nfa_to_dfa
 import quex.engine.state_machine.hopcroft_minimization     as hopcroft
 import quex.engine.state_machine.character_counter         as character_counter    
-import quex.engine.state_machine.subset_checker            as subset_checker
+import quex.engine.state_machine.superset_checker            as superset_checker
 
 from   copy import deepcopy
 
@@ -471,11 +471,11 @@ class Mode:
 
             for earlier_match in pattern_action_pair_list:
                 if earlier_match.pattern().sm.get_id() > state_machine.get_id(): continue
-                if subset_checker.do(earlier_match.pattern(), PatternActionPair.pattern()) == False: continue
+                if superset_checker.do(earlier_match.pattern(), PatternActionPair.pattern()) == False: continue
 
                 file_name, line_n = earlier_match.get_action_location()
                 error_msg("Pattern '%s' matches a superset of what is matched by" % 
-                          earlier_match.pattern, file_name, line_n,
+                          earlier_match.pattern_string(), file_name, line_n,
                           DontExitF=True, WarningF=False) 
                 file_name, line_n = PatternActionPair.get_action_location()
                 error_msg("pattern '%s' while the former has precedence.\n" % \
@@ -608,8 +608,8 @@ def finalize():
     global mode_description_db
 
     # (*) Translate each mode description int a 'real' mode
-    for mode_name, mode_descr in mode_description_db.iteritems():
-        blackboard.mode_db[mode_name] = Mode(mode_descr)
+    for name, mode_descr in mode_description_db.iteritems():
+        blackboard.mode_db[name] = Mode(mode_descr)
 
     # (*) perform consistency check 
     consistency_check.do(blackboard.mode_db)

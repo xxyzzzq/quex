@@ -13,9 +13,9 @@ define {
     UENDCNT    N'T|'S|'D|'M|'LL|'RE|'VE|'YE
     LENDCNT    n't|'s|'d|'m|'ll|'re|'ve|'ye
     ENDCONT    {UENDCNT}|{LENDCNT}
-    USTARTCNT  GIM/ME|LEM/ME
-    LSTARTCNT  [Gg]im/me|[Ll]em/me
-    STARTCNT   {USTARTCNT}|{LSTARTCNT}
+    // USTARTCNT  GIM/ME|LEM/ME
+    // LSTARTCNT  [Gg]im/me|[Ll]em/me
+    // STARTCNT   {USTARTCNT}|{LSTARTCNT}
     WORD       {ALLWCHAR}+
 }
 
