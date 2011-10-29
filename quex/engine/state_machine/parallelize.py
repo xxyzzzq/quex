@@ -1,4 +1,4 @@
-# (C) 2005-2010 Frank-Rene Schaefer
+# (C) 2005-2011 Frank-Rene Schaefer
 # ABSOLUTELY NO WARRANTY
 ###############################################################################
 from   quex.engine.state_machine.core import StateMachine, State

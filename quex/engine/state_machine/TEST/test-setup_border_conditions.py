@@ -9,7 +9,7 @@ import quex.engine.state_machine.setup_pre_context as setup_pre_context
 import quex.engine.state_machine.setup_border_conditions as setup_border_conditions 
 import quex.engine.state_machine.nfa_to_dfa as nfa_to_dfa
 import quex.engine.state_machine.hopcroft_minimization as hopcroft
-import quex.engine.state_machine.identity_checker      as identity_checker
+import quex.engine.state_machine.check.identity      as identity_checker
 
 from   quex.engine.state_machine.TEST.test_state_machines import *
 from   quex.blackboard import setup as Setup

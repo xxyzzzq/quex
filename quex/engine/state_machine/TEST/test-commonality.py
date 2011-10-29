@@ -3,8 +3,8 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.input.regular_expression.engine           as regex
-import quex.engine.state_machine.commonality_checker as commonality_checker
+import quex.input.regular_expression.engine        as regex
+import quex.engine.state_machine.check.commonality as commonality_checker
 
 if "--hwut-info" in sys.argv:
     print "Commonality Checker"

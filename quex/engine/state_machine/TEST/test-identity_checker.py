@@ -3,8 +3,8 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.input.regular_expression.engine      as regex
-import quex.engine.state_machine.identity_checker as identity_checker
+import quex.input.regular_expression.engine     as regex
+import quex.engine.state_machine.check.identity as identity_checker
 
 if "--hwut-info" in sys.argv:
     print "Pattern Identity Determination"
