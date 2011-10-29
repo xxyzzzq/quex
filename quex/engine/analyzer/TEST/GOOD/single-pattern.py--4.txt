@@ -7,12 +7,6 @@ init-state = 0L
     
 00002 (11, 24, A, R, pre=9)
     
-pre-condition inverted = init-state = 0L
-00000 ()
-     == 'x' ==> 00001
-    
-00001 (A)
-    
 
 State 0:
   .entry:

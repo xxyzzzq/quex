@@ -47,8 +47,8 @@ State 3:
     .positioner:
         .from 2: <nothing>
   .drop_out:
-    if PreContext_12: pos -= 2;  goto Pattern14;
-    else if PreContext_27:  goto Pattern29;
+    if PreContext_14: pos -= 2;  goto Pattern10;
+    else if PreContext_28:  goto Pattern24;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
@@ -57,8 +57,8 @@ State 4:
     .positioner:
         .from 3: <nothing>
   .drop_out:
-    if PreContext_12: pos -= 3;  goto Pattern14;
-    else if PreContext_27: pos -= 1;  goto Pattern29;
+    if PreContext_14: pos -= 3;  goto Pattern10;
+    else if PreContext_28: pos -= 1;  goto Pattern24;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
@@ -67,8 +67,8 @@ State 5:
     .positioner:
         .from 4: <nothing>
   .drop_out:
-    if PreContext_12: pos -= 4;  goto Pattern14;
-    else if PreContext_27: pos -= 2;  goto Pattern29;
+    if PreContext_14: pos -= 4;  goto Pattern10;
+    else if PreContext_28: pos -= 2;  goto Pattern24;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
@@ -77,6 +77,6 @@ State 6:
     .positioner:
         .from 5: <nothing>
   .drop_out:
-     goto Pattern46;
+     goto Pattern45;
 
 

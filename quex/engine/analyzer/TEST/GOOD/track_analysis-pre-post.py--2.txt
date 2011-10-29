@@ -28,8 +28,8 @@ State 1:
     .positioner:
         .from 0: <nothing>
   .drop_out:
-    if PreContext_6:  goto Pattern8;
-     goto Pattern34;
+    if PreContext_7:  goto Pattern3;
+     goto Pattern33;
 
 
 State 2:
@@ -37,8 +37,8 @@ State 2:
     .positioner:
         .from 1: <nothing>
   .drop_out:
-    if PreContext_6: pos -= 1;  goto Pattern8;
-    pos -= 1;  goto Pattern34;
+    if PreContext_7: pos -= 1;  goto Pattern3;
+    pos -= 1;  goto Pattern33;
 
 
 State 3:
@@ -46,7 +46,7 @@ State 3:
     .positioner:
         .from 2: <nothing>
   .drop_out:
-    pos -= 2;  goto Pattern17;
+    pos -= 2;  goto Pattern16;
 
 
 State 4:
@@ -54,7 +54,7 @@ State 4:
     .positioner:
         .from 3: <nothing>
   .drop_out:
-    pos -= 3;  goto Pattern17;
+    pos -= 3;  goto Pattern16;
 
 
 State 5:
@@ -62,6 +62,6 @@ State 5:
     .positioner:
         .from 4: <nothing>
   .drop_out:
-    pos -= 4;  goto Pattern32;
+    pos -= 4;  goto Pattern31;
 
 
