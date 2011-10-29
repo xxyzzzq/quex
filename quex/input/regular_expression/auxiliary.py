@@ -106,6 +106,12 @@ def snap_replacement(stream, PatternDict, StateMachineF=True):
         # not find all optimizations.
         assert state_machine.has_origins() == False
             
+        # A state machine, that contains pre- or post- conditions cannot be part
+        # of a replacement. The addition of new post-contexts would mess up the pattern.
+        ## if state_machine.has_pre_or_post_context():
+        ##    error_msg("Pre- or post-conditioned pattern was used in replacement.\n" + \
+        ##              "Quex's regular expression grammar does not allow this.", stream)
+            
         return state_machine
 
     else:

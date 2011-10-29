@@ -53,6 +53,7 @@ class IndentationSetup:
             self.specify_newline("(\\r\\n)|(\\n)", sm, self.fh)
 
     def set_containing_mode_name(self, ModeName):
+        assert isinstance(ModeName, (str, unicode))
         self.__containing_mode_name = ModeName
 
     def containing_mode_name(self):

@@ -3,7 +3,7 @@ import quex.blackboard                               as     blackboard
 from   quex.engine.generator.action_info             import CodeFragment
 import quex.engine.state_machine.commonality_checker as commonality_checker
 from   quex.engine.state_machine.commonality_checker import E_Commonality 
-import quex.engine.state_machine.subset_checker      as subset_checker
+import quex.engine.state_machine.superset_checker      as superset_checker
 
 
 def do(ModeDB):
@@ -75,8 +75,8 @@ def do(ModeDB):
             #              "indentation newline suppressor")
 
             # Newline and newline suppressor should never have a superset/subset relation
-            if    subset_checker.do(newline_info.get(), newline_suppressor_info.get()) \
-               or subset_checker.do(newline_suppressor_info.get(), newline_info.get()):
+            if    superset_checker.do(newline_info.get(), newline_suppressor_info.get()) \
+               or superset_checker.do(newline_suppressor_info.get(), newline_info.get()):
 
                 error_msg("The indentation newline pattern '%s' and the newline" \
                           % newline_info.pattern_str, 
@@ -98,9 +98,9 @@ def __commonality(mode, Info, ReferenceSM, Name):
                       % (Name, Info.pattern_str), Info.file_name, Info.line_n, 
                       DontExitF=True, WarningF=False)
 
-            pattern           = pattern_action_pair.pattern
+            pattern_str       = pattern_action_pair.pattern_string()
             file_name, line_n = pattern_action_pair.get_action_location()
-            error_msg("has commonalities with pattern '%s' defined here." % pattern, 
+            error_msg("has commonalities with pattern '%s' defined here." % pattern_str, 
                       file_name, line_n)
 
 def __start_mode(applicable_mode_name_list, mode_name_list):

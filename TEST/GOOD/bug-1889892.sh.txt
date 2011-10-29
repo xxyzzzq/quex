@@ -15,5 +15,5 @@ consistency check: modes are = 'Hallo'
 (5)
 error-4.qx:2:warning: Pattern contained solely forbidden characters in a state transition.
 error-4.qx:2:warning: The resulting target state is deleted since no other state triggered to it.
-error-4.qx:2:error: Pattern has no acceptance state and can never match.
-error-4.qx:2:error: Aborting generation process.
+error-4.qx:2:error: Deletion of signal characters resulted in empty core pattern.
+error-4.qx:2:error: Consider changing the value of the buffer limit code or path delimiter.

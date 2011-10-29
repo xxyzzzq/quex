@@ -168,6 +168,10 @@ def do(core_sm,
     for sm in [pre_context, core_sm, post_context]:
         __delete_orphaned_states(sm, fh)
 
+    if core_sm.is_empty():
+        error_msg("Deletion of signal characters resulted in empty core pattern.\n" + \
+                  "Consider changing the value of the buffer limit code or path delimiter.", fh)
+
     # Detect the 'Nothing is Necessary' error in a pattern.
     # (*) 'Nothing is necessary' cannot be accepted. See the discussion in the 
     #     module "quex.output.cpp.core"          
