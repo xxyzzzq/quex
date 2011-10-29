@@ -52,7 +52,7 @@ EasyLexer.c: simple.qx $(QUEX_CORE)
 	     --engine        EasyLexer  \
 		 --token-id-offset  0x1000     \
 		 --language      C          \
-		 --post-categorizer --debug-exception
+		 --post-categorizer 
 
 # (*) HELPERS __________________________________________________________________
 clean:	

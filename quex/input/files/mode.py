@@ -30,13 +30,13 @@ from   quex.engine.misc.file_in                            import EndOfStreamExc
                                                                   verify_word_in_list
 
 from   quex.engine.state_machine.core                      import StateMachine
-import quex.engine.state_machine.identity_checker          as identity_checker
+import quex.engine.state_machine.check.identity            as identity_checker
 import quex.engine.state_machine.sequentialize             as sequentialize
 import quex.engine.state_machine.repeat                    as repeat
 import quex.engine.state_machine.nfa_to_dfa                as nfa_to_dfa
 import quex.engine.state_machine.hopcroft_minimization     as hopcroft
 import quex.engine.state_machine.character_counter         as character_counter    
-import quex.engine.state_machine.superset_checker            as superset_checker
+import quex.engine.state_machine.check.superset            as superset
 
 from   copy import deepcopy
 
@@ -471,7 +471,7 @@ class Mode:
 
             for earlier_match in pattern_action_pair_list:
                 if earlier_match.pattern().sm.get_id() > state_machine.get_id(): continue
-                if superset_checker.do(earlier_match.pattern(), PatternActionPair.pattern()) == False: continue
+                if superset.do(earlier_match.pattern(), PatternActionPair.pattern()) == False: continue
 
                 file_name, line_n = earlier_match.get_action_location()
                 error_msg("Pattern '%s' matches a superset of what is matched by" % 

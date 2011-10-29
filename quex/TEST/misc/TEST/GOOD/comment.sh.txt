@@ -1,16 +1,16 @@
 <     /* BEGIN: STATE MACHINE
-<      * init-state = 6L
-<      * 00006 (1, 2)
-<      *      == 'a' ==> 00007
+<      * init-state = 8L
+<      * 00008 (1, 2)
+<      *      == 'a' ==> 00009
 <      *     
-<      * 00007 (1, 3, A)
+<      * 00009 (1, 3, A)
 <      *     
 <      * END: STATE MACHINE
 <      */
-<         case 0x0: QUEX_GOTO_RELOAD_FORWARD(6, 8);/* \0 */
->         case 0x0: QUEX_GOTO_RELOAD_FORWARD(6, 8);
-<         case 0x61: goto _7;/* 'a' */
->         case 0x61: goto _7;
+<         case 0x0: QUEX_GOTO_RELOAD_FORWARD(8, 10);/* \0 */
+>         case 0x0: QUEX_GOTO_RELOAD_FORWARD(8, 10);
+<         case 0x61: goto _9;/* 'a' */
+>         case 0x61: goto _9;
 <     /* BEGIN: MODE PATTERNS
 <      * 
 <      * MODE: X
