@@ -3,8 +3,8 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.input.regular_expression.engine      as regex
-import quex.engine.state_machine.superset_checker as superset_checker
+import quex.input.regular_expression.engine     as regex
+import quex.engine.state_machine.check.superset as superset
 
 if "--hwut-info" in sys.argv:
     print "Pattern Superset/Subset Determination"
@@ -17,7 +17,7 @@ def test(A, B):
         print ("sub   = " + SubPattern).replace("\n", "\\n").replace("\t", "\\t")
         super_p = regex.do(SuperPattern, {})
         sub_p   = regex.do(SubPattern, {})
-        print "claim = ", superset_checker.do(super_p, sub_p)
+        print "claim = ", superset.do(super_p, sub_p)
     print "---------------------------"
     __core(A, B)
     print
