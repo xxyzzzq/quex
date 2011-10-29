@@ -17,6 +17,8 @@ def test(A, B):
         print ("sub   = " + SubPattern).replace("\n", "\\n").replace("\t", "\\t")
         super_p = regex.do(SuperPattern, {})
         sub_p   = regex.do(SubPattern, {})
+        # print "##super:", super_p
+        # print "##sub:", sub_p
         print "claim = ", superset.do(super_p, sub_p)
     print "---------------------------"
     __core(A, B)

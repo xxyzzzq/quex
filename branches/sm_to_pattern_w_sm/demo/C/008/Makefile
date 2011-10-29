@@ -54,7 +54,7 @@ $(PARSER_SOURCES): GENERATE_PARSER
 GENERATE_LEXER: Calc_lexer.qx 
 	quex -i $< --engine $(LEXER_NAME) --token-prefix TKN_ \
           --foreign-token-id-file Calc_token-ids.h                   \
-		  --language C         --debug-exception
+		  --language C         
 
 GENERATE_PARSER:  Calc_parser.y
 	bison $<

@@ -14,7 +14,7 @@ from   quex.engine.misc.file_in  import error_msg
 DEBUG_hopcroft_f = False
 
 if DEBUG_hopcroft_f:
-    import quex.engine.state_machine.identity_checker as identity_checker
+    import quex.engine.state_machine.check.identity   as identity_checker
     from   copy import deepcopy
 
 class Pattern(object):

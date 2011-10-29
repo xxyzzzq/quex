@@ -8,12 +8,11 @@ def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):
     """Connect state machines paralell.
 
        CommonTerminalStateF tells wether the state machines shall trigger 
-                            to a common terminal. This is necessary if the
-                            state machines are part of a bigger construction.
+                            to a common terminal. This may help nfa-to-dfa
+                            or hopcroft minimization for ISOLATED patterns.
 
-                            When the ready-to-rumble pattern state machines
-                            are to be combined into a single analyzer, the
-                            flag must be set to 'False'.
+                            A state machine that consists of the COMBINATION
+                            of patterns MUST set this flag to 'False'.
 
        CloneF               Controls if state machine list is cloned or not.
                             If the single state machines are no longer required after
@@ -27,16 +26,15 @@ def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):
     assert map(lambda x: x.__class__.__name__, StateMachineList) == ["StateMachine"] * len(StateMachineList)
               
     # filter out empty state machines from the consideration          
-    state_machine_list            = [ sm for sm in StateMachineList if not sm.is_empty() ]
-    empty_state_machine_occured_f = len(state_machine_list) != len(StateMachineList)
+    state_machine_list       = [ sm for sm in StateMachineList if not sm.is_empty() ]
+    empty_state_machine_list = [ sm for sm in StateMachineList if sm.is_empty() ]
 
     if len(state_machine_list) < 2:
         if len(state_machine_list) < 1: result = StateMachine()
+        elif CloneF:                    result = state_machine_list[0].clone()
         else:                           result = state_machine_list[0]
 
-        if empty_state_machine_occured_f:
-            result = __add_free_pass(result)
-        return result
+        return __consider_empty_state_machines(result, empty_state_machine_list)
 
     # (*) need to clone the state machines, i.e. provide their internal
     #     states with new ids, but the 'behavior' remains. This allows
@@ -80,26 +78,21 @@ def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):
         result.mount_to_acceptance_states(new_terminal_state_index,
                                           CancelStartAcceptanceStateF=False)
 
-    # (*) If there was an empty state machine, a 'free pass' is added
-    if empty_state_machine_occured_f:
-        result = __add_free_pass(result, new_terminal_state_index)
+    return __consider_empty_state_machines(result, empty_state_machine_list)
 
-    return result
+def __consider_empty_state_machines(sm, EmptyStateMachineList):
+    """An empty state machine basically means that its init state is going to 
+       be merge into the init state of the resulting state machine. 
 
-def __add_free_pass(result_state_machine,
-                    TerminationStateIdx=-1):
-    """Add an optional 'free pass' if there was an empty state.  
-       If there was an empty state, then the number of elements in the list changed
-       in case there was an empty state one has to add a 'free pass' from begin to 
-       the final acceptance state.   
+       If there is an empty state machine with an acceptance, then this is 
+       reflected in the origins. Thus, the result's init state becomes an
+       acceptance state for that pattern. 
+       
+       => There is no particular need for an epsilon transition to the common
+          new terminal index.
     """
-    if TerminationStateIdx == -1:
-        acceptance_state_index_list = result_state_machine.get_acceptance_state_index_list()
-        assert len(acceptance_state_index_list) != 0, \
-               "resulting state machine has no acceptance state!"
-        TerminationStateIdx = acceptance_state_index_list[0]
-
-    result_state_machine.add_epsilon_transition(result_state_machine.init_state_index, 
-                                                TerminationStateIdx)
-    return result_state_machine
+    init_state_origins = sm.get_init_state().origins()
+    for esm in EmptyStateMachineList:
+        init_state_origins.merge(esm.get_init_state().origins())
+    return sm
 
