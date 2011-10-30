@@ -1,4 +1,4 @@
-<test-database execution-time-sec="14.90" date="Sun Oct 30 09:59:42 2011">
+<test-database execution-time-sec="14.96" date="Sun Oct 30 19:56:11 2011">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Superset/Subset Determination" time-sum-sec="1.63"> 
         <application file-name="test-subset_checker.py" info-request-time="1319904117L" vanished="False"/>
@@ -18,7 +18,7 @@
            <choice name="" result="OK" time_sec="0.93" crc="360428126"/>
         </choice-list>
     </test>
-    <test title="Pattern Identity Determination" time-sum-sec="0.93"> 
+    <test title="Pattern Identity Determination" time-sum-sec="0.94"> 
         <application file-name="test-identity_checker.py" info-request-time="1319898809L" vanished="False"/>
         <choice-list number="4" same_result="False">
            <choice name="True" result="OK" time_sec="0.47" crc="-390242573"/>
@@ -214,12 +214,6 @@
                <choice name="" result="OK" time_sec="0.07" crc="-1706023851"/>
             </choice-list>
         </test>
-        <test title="NFA to DFA (subset construction)" time-sum-sec="0.06"> 
-            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1319357626L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.06" crc="1084071896"/>
-            </choice-list>
-        </test>
         <test title="Cloning" time-sum-sec="0.07"> 
             <application file-name="test-StateMachine-trace-origin-clone.py" info-request-time="1318614206L" vanished="False"/>
             <choice-list number="1" same_result="False">
@@ -230,6 +224,12 @@
             <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1319264993L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.07" crc="638605976"/>
+            </choice-list>
+        </test>
+        <test title="NFA to DFA (subset construction)" time-sum-sec="0.06"> 
+            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1319357626L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.06" crc="1084071896"/>
             </choice-list>
         </test>
         <test title="NFA to DFA (subset construction) II" time-sum-sec="0.08"> 
@@ -254,7 +254,7 @@
                <choice name="" result="OK" time_sec="4.41" crc="119936027"/>
             </choice-list>
         </test>
-        <test title="Contigous Word Sequence Ranges" time-sum-sec="0.32"> 
+        <test title="Contigous Word Sequence Ranges" time-sum-sec="0.33"> 
             <application file-name="test-utf16_interval_split.py" info-request-time="1318614206L" vanished="False"/>
             <choice-list number="5" same_result="False">
                <choice name="1" result="OK" time_sec="0.07" crc="1196565311"/>
@@ -283,7 +283,7 @@
                <choice name="" result="OK" time_sec="0.57" crc="-544662156"/>
             </choice-list>
         </test>
-        <test title="Intervals" time-sum-sec="0.27"> 
+        <test title="Intervals" time-sum-sec="0.28"> 
             <application file-name="test-utf8_number_set_split-by-length.py" info-request-time="1318614206L" vanished="False"/>
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="0.07" crc="-1982649752"/>
@@ -292,7 +292,7 @@
                <choice name="Overlap2" result="OK" time_sec="0.07" crc="1206343695"/>
             </choice-list>
         </test>
-        <test title="Plug Intermediate States" time-sum-sec="0.78"> 
+        <test title="Plug Intermediate States" time-sum-sec="0.77"> 
             <application file-name="test-utf8_state_split.py" info-request-time="1318614206L" vanished="False"/>
             <choice-list number="12" same_result="False">
                <choice name="1.1" result="OK" time_sec="0.07" crc="-92510559"/>

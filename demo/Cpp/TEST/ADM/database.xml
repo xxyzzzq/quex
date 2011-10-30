@@ -1,4 +1,4 @@
-<test-database execution-time-sec="251.42" date="Sun Oct 30 09:51:48 2011">
+<test-database execution-time-sec="251.43" date="Sun Oct 30 19:56:10 2011">
     <last-used-diff-display-program name=""/>
     <group name="demo/000">
         <test title="Single Mode Example" time-sum-sec="6.07"> 
@@ -10,7 +10,7 @@
         </test>
     </group>
     <group name="demo/001">
-        <test title="Multiple Modes, Mode Transitions" time-sum-sec="6.53"> 
+        <test title="Multiple Modes, Mode Transitions" time-sum-sec="6.54"> 
             <application file-name="001.sh" info-request-time="1318614214L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="3.44" crc="1133630677"/>
@@ -38,7 +38,7 @@
                <choice name="BPC=wchar_t" result="OK" time_sec="3.81" crc="766281751"/>
             </choice-list>
         </test>
-        <test title="Byte Order Mark (BOM) Cutting" time-sum-sec="12.81"> 
+        <test title="Byte Order Mark (BOM) Cutting" time-sum-sec="12.82"> 
             <application file-name="003-bom.sh" info-request-time="1318614214L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="Without" result="OK" time_sec="5.54" crc="1853132003"/>
@@ -58,7 +58,7 @@
         </test>
     </group>
     <group name="demo/004">
-        <test title="A C-Lexical Analyser" time-sum-sec="9.30"> 
+        <test title="A C-Lexical Analyser" time-sum-sec="9.31"> 
             <application file-name="004.sh" info-request-time="1318614214L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="5.11" crc="-1383033063"/>
@@ -78,7 +78,7 @@
         </test>
     </group>
     <group name="demo/006">
-        <test title="Pseudo Ambiguous Post Conditions" time-sum-sec="6.34"> 
+        <test title="Pseudo Ambiguous Post Conditions" time-sum-sec="6.33"> 
             <application file-name="006.sh" info-request-time="1318614214L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="3.35" crc="67355700"/>
@@ -114,7 +114,7 @@
         </test>
     </group>
     <group name="demo/010">
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="98.60"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="98.58"> 
             <application file-name="010.sh" info-request-time="1318614214L" vanished="False"/>
             <choice-list number="10" same_result="False">
                <choice name="copy" result="OK" time_sec="3.90" crc="1030682096"/>
@@ -131,7 +131,7 @@
         </test>
     </group>
     <group name="demo/011">
-        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="12.98"> 
+        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="12.99"> 
             <application file-name="011.sh" info-request-time="1318614214L" vanished="False"/>
             <choice-list number="4" same_result="True">
                <choice name="iso8859-7" result="OK" time_sec="3.18" crc="-1827787599"/>
