@@ -165,7 +165,7 @@ def do(A, B):
         # -- at this point in time we are dealing with transformed 
         #    machines. So this has also to be transformed.
         A_pre_sm = StateMachine.from_sequence("\n").get_inverse()
-        A_pre_sm = transformation.try_this(A_pre_sm, fh)
+        A_pre_sm = transformation.try_this(A_pre_sm, fh=-1)
 
     return Checker(B.inverse_pre_context_sm, A_pre_sm).do()
 

@@ -35,7 +35,6 @@ import quex.engine.state_machine.sequentialize             as sequentialize
 import quex.engine.state_machine.repeat                    as repeat
 import quex.engine.state_machine.nfa_to_dfa                as nfa_to_dfa
 import quex.engine.state_machine.hopcroft_minimization     as hopcroft
-import quex.engine.state_machine.character_counter         as character_counter    
 import quex.engine.state_machine.check.superset            as superset
 
 from   copy import deepcopy

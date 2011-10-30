@@ -1,20 +1,20 @@
 init-state = 0L
-00000 (21, 49), (2, 4)
+00000 (1, 2), (20, 47)
      == 'a' ==> 00001
      == 'b' ==> 00005
     
-00001 (2, 5, A, pre=bol), (21, 50)
+00001 (1, 3, A, pre=bol), (20, 48)
      == 'b' ==> 00002
     
-00002 (21, 51)
+00002 (20, 49)
      == 'c' ==> 00003
     
-00003 (21, 52)
+00003 (20, 50)
      == 'd' ==> 00004
     
-00004 (21, 53, A)
+00004 (20, 51, A)
     
-00005 (2, 5, A, pre=bol), (21, 51)
+00005 (1, 3, A, pre=bol), (20, 49)
      == 'c' ==> 00003
     
 
@@ -29,7 +29,7 @@ State 1:
     .positioner:
         .from 0: <nothing>
   .drop_out:
-    if BeginOfLine:  goto Pattern2;
+    if BeginOfLine:  goto Pattern1;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
@@ -38,7 +38,7 @@ State 2:
     .positioner:
         .from 1:if 'BeginOfLine':  position[Acceptance] = input_p;
   .drop_out:
-    if BeginOfLine: pos -= 1;  goto Pattern2;
+    if BeginOfLine: pos -= 1;  goto Pattern1;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
@@ -48,7 +48,7 @@ State 3:
         .from 2: <nothing>
         .from 5:if 'BeginOfLine':  position[Acceptance] = input_p;
   .drop_out:
-    if BeginOfLine: pos = position[Acceptance]; goto Pattern2;
+    if BeginOfLine: pos = position[Acceptance]; goto Pattern1;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
@@ -57,7 +57,7 @@ State 4:
     .positioner:
         .from 3: <nothing>
   .drop_out:
-     goto Pattern21;
+     goto Pattern20;
 
 
 State 5:
@@ -65,7 +65,7 @@ State 5:
     .positioner:
         .from 0: <nothing>
   .drop_out:
-    if BeginOfLine:  goto Pattern2;
+    if BeginOfLine:  goto Pattern1;
     pos = lexeme_start_p + 1;  goto Failure;
 
 

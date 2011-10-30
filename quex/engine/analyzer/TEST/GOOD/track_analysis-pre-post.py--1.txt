@@ -1,14 +1,14 @@
 init-state = 0L
-00000 (14, 30), (29, 63), (44, 98)
+00000 (10, 22), (39, 86), (25, 55)
      == 'a' ==> 00001
     
-00001 (14, 31, S), (29, 64), (44, 99)
+00001 (10, 23, S), (25, 56), (39, 87)
      == 'b' ==> 00002
     
-00002 (14, 32), (29, 65, S), (44, 100)
+00002 (10, 24), (25, 57, S), (39, 88)
      == 'c' ==> 00003
     
-00003 (14, 33, A, R, pre=12), (29, 66, A, R, pre=27), (44, 101, A, pre=42)
+00003 (10, 25, A, R, pre=14), (25, 58, A, R, pre=29), (39, 89, A, pre=43)
     
 
 State 0:
@@ -38,9 +38,9 @@ State 3:
     .positioner:
         .from 2: <nothing>
   .drop_out:
-    if PreContext_12: pos -= 2;  goto Pattern14;
-    else if PreContext_27: pos -= 1;  goto Pattern29;
-    else if PreContext_42:  goto Pattern44;
+    if PreContext_14: pos -= 2;  goto Pattern10;
+    else if PreContext_29: pos -= 1;  goto Pattern25;
+    else if PreContext_43:  goto Pattern39;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
