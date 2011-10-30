@@ -1,7 +1,7 @@
-<test-database execution-time-sec="44.46" date="Sun Oct 30 09:54:22 2011">
+<test-database execution-time-sec="44.46" date="Sun Oct 30 19:56:11 2011">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
-        <test title="Super Set" time-sum-sec="0.16"> 
+        <test title="Super Set" time-sum-sec="0.15"> 
             <application file-name="test-NumberSet-is_superset.py" info-request-time="1318614203L" vanished="False"/>
             <choice-list number="2" same_result="False">
                <choice name="Normal" result="OK" time_sec="0.08" crc="801219498"/>
@@ -27,7 +27,7 @@
                <choice name="" result="OK" time_sec="0.08" crc="2115164504"/>
             </choice-list>
         </test>
-        <test title="Massive Mutual Consistency Check" time-sum-sec="32.40"> 
+        <test title="Massive Mutual Consistency Check" time-sum-sec="32.41"> 
             <application file-name="test-NumberSet-mmcc.py" info-request-time="1318614203L" vanished="False"/>
             <choice-list number="5" same_result="True">
                <choice name="union" result="OK" time_sec="7.64" crc="1624740239"/>
@@ -69,7 +69,7 @@
                <choice name="500" result="OK" time_sec="0.20" crc="-352222672"/>
             </choice-list>
         </test>
-        <test title="Cut Interval" time-sum-sec="0.12"> 
+        <test title="Cut Interval" time-sum-sec="0.11"> 
             <application file-name="test-Interval-cmp.py" info-request-time="1318614203L" vanished="False"/>
             <choice-list number="2" same_result="False">
                <choice name="normal" result="OK" time_sec="0.06" crc="1145705751"/>

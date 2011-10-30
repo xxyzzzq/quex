@@ -11,5 +11,5 @@ cd $bug/
 quex -i error-$1.qx -o Simple # --debug-exception
 
 # cleansening
-rm -f Simple Simple.cpp Simple-token_ids Simplism
+rm -f Simple*
 cd $tmp

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="5.40" date="Sun Oct 30 09:54:28 2011">
+<test-database execution-time-sec="5.38" date="Sun Oct 30 19:56:11 2011">
     <last-used-diff-display-program name=""/>
     <test title="Single Pattern Checks" time-sum-sec="0.85"> 
         <application file-name="single-pattern.py" info-request-time="1319668738L" vanished="False"/>
@@ -15,7 +15,7 @@
            <choice name="9" result="OK" time_sec="0.09" crc="638934247"/>
         </choice-list>
     </test>
-    <test title="Position Register vs. Post-Context and Last Acceptance" time-sum-sec="0.77"> 
+    <test title="Position Register vs. Post-Context and Last Acceptance" time-sum-sec="0.76"> 
         <application file-name="test-position_register_map.py" info-request-time="1319829837L" vanished="False"/>
         <choice-list number="6" same_result="False">
            <choice name="0" result="OK" time_sec="0.09" crc="1306113174"/>
@@ -47,7 +47,7 @@
                <choice name="9" result="OK" time_sec="0.11" crc="1710692672"/>
             </choice-list>
         </test>
-        <test title="Without Pre- and Post-Contexts" time-sum-sec="0.90"> 
+        <test title="Without Pre- and Post-Contexts" time-sum-sec="0.89"> 
             <application file-name="track_analysis.py" info-request-time="1319737571L" vanished="False"/>
             <choice-list number="10" same_result="False">
                <choice name="0" result="OK" time_sec="0.08" crc="1603897145"/>
@@ -62,7 +62,7 @@
                <choice name="9" result="OK" time_sec="0.08" crc="-1944151372"/>
             </choice-list>
         </test>
-        <test title="With Pre-Contexts" time-sum-sec="1.12"> 
+        <test title="With Pre-Contexts" time-sum-sec="1.10"> 
             <application file-name="track_analysis-pre.py" info-request-time="1319737591L" vanished="False"/>
             <choice-list number="12" same_result="False">
                <choice name="0" result="OK" time_sec="0.08" crc="69998728"/>

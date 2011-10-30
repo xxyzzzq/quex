@@ -1,4 +1,4 @@
-<test-database execution-time-sec="3.04" date="Sun Oct 30 10:00:00 2011">
+<test-database execution-time-sec="3.02" date="Sun Oct 30 19:56:11 2011">
     <last-used-diff-display-program name=""/>
     <test title="Case Folding" time-sum-sec="0.20"> 
         <application file-name="test-case_fold.py" info-request-time="1318614195L" vanished="False"/>
@@ -74,6 +74,12 @@
         </test>
     </group>
     <group name="Conditional Analysis">
+        <test title="pre- and post-conditions" time-sum-sec="0.10"> 
+            <application file-name="test-pre-and-post-condition.py" info-request-time="1318614195L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.10" crc="-1379740236"/>
+            </choice-list>
+        </test>
         <test title="pre conditions" time-sum-sec="0.08"> 
             <application file-name="test-pre-condition.py" info-request-time="1319746729L" vanished="False"/>
             <choice-list number="1" same_result="False">
@@ -90,12 +96,6 @@
             <application file-name="test-post-condition.py" info-request-time="1319488972L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.09" crc="-296474085"/>
-            </choice-list>
-        </test>
-        <test title="pre- and post-conditions" time-sum-sec="0.10"> 
-            <application file-name="test-pre-and-post-condition.py" info-request-time="1318614195L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.10" crc="-1379740236"/>
             </choice-list>
         </test>
         <test title="End of Line '$' (with DOS/Windows '\r\n')" time-sum-sec="0.08"> 
