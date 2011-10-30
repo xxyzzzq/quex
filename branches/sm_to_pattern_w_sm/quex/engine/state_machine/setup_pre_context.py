@@ -1,6 +1,5 @@
 # (C) Frank-Rene Schaefer
 #     ABSOLUTELY NO WARRANTY
-import quex.engine.state_machine.core                  as StateMachine
 import quex.engine.state_machine.nfa_to_dfa            as nfa_to_dfa
 import quex.engine.state_machine.hopcroft_minimization as hopcroft
 import quex.engine.state_machine.acceptance_pruning    as acceptance_pruning

@@ -87,16 +87,14 @@ def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
     #        has been reached.
     #
     if ambiguous_post_context.detect_forward(the_state_machine, post_context_sm):
-        trailing_post_context = post_context_sm
         if ambiguous_post_context.detect_backward(the_state_machine, post_context_sm):
             # -- for post contexts that are forward and backward ambiguous
             #    a philosophical cut is necessary.
             error_msg("Post context requires philosophical cut--handle with care!\n"
                       "Proposal: Isolate pattern and ensure results are as expected!", fh, 
                       DontExitF=True)
-            trailing_post_context = ambiguous_post_context.philosophical_cut(the_state_machine, post_context_sm)
+            post_context_sm = ambiguous_post_context.philosophical_cut(the_state_machine, post_context_sm)
         
-        # print "##oops 4"
         # NOTE: May be, the_state_machine does contain now an epsilon transition. See
         #       comment at entry of this function.
         ipsb_sm = ambiguous_post_context.mount(the_state_machine, post_context_sm)
