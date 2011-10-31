@@ -3,7 +3,7 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.engine.state_machine.acceptance_pruning as acceptance_pruning
+import quex.engine.state_machine.algorithm.acceptance_pruning as acceptance_pruning
 import quex.input.regular_expression.engine         as core
 from   quex.blackboard                              import setup as Setup
 Setup.buffer_limit_code = 0

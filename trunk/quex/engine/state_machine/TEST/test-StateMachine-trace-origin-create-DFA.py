@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from quex.engine.state_machine.core import *
-import quex.engine.state_machine.nfa_to_dfa as nfa_to_dfa
+import quex.engine.state_machine.algorithm.nfa_to_dfa as nfa_to_dfa
 
 if "--hwut-info" in sys.argv:
     print "Tracing origin: NFA to DFA (subset construction)"

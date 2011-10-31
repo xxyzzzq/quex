@@ -13,8 +13,8 @@
 ##############################################################################
 
 import quex.engine.state_machine.sequentialize         as sequentialize
-import quex.engine.state_machine.nfa_to_dfa            as nfa_to_dfa
-import quex.engine.state_machine.hopcroft_minimization as hopcroft
+import quex.engine.state_machine.algorithm.nfa_to_dfa            as nfa_to_dfa
+import quex.engine.state_machine.algorithm.hopcroft_minimization as hopcroft
 from   copy import deepcopy
 
 

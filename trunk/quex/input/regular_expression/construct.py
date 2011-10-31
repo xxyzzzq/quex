@@ -5,8 +5,8 @@ import quex.engine.state_machine.setup_post_context       as setup_post_context
 import quex.engine.state_machine.setup_pre_context        as setup_pre_context
 import quex.engine.state_machine.transformation           as transformation
 #                                                         
-import quex.engine.state_machine.nfa_to_dfa               as nfa_to_dfa
-import quex.engine.state_machine.hopcroft_minimization    as hopcroft
+import quex.engine.state_machine.algorithm.nfa_to_dfa               as nfa_to_dfa
+import quex.engine.state_machine.algorithm.hopcroft_minimization    as hopcroft
 #
 from   quex.blackboard           import setup as Setup, deprecated
 from   quex.engine.misc.file_in  import error_msg

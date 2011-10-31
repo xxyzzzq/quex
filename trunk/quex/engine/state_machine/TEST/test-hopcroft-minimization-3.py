@@ -9,8 +9,8 @@ from copy import deepcopy
 import quex.engine.state_machine.repeat as repeat
 from   quex.engine.state_machine.core import *
 from   quex.engine.state_machine.TEST.test_state_machines import *
-import quex.engine.state_machine.nfa_to_dfa as nfa_to_dfa
-import quex.engine.state_machine.hopcroft_minimization as hopcroft
+import quex.engine.state_machine.algorithm.nfa_to_dfa as nfa_to_dfa
+import quex.engine.state_machine.algorithm.hopcroft_minimization as hopcroft
 import quex.engine.state_machine.check.identity as identity_checker
 
 if "--hwut-info" in sys.argv:

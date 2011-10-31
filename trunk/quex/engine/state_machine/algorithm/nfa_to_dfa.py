@@ -1,7 +1,7 @@
 from   quex.engine.state_machine.core  import StateMachine, State
 from   quex.engine.state_machine.index import map_state_combination_to_index
 
-def do(SM):
+def do(SM, Class_StateMachine=StateMachine, Class_State=State):
     """Creates a deterministic finite automaton (DFA) from the current state 
        machine - which may be a NFA (non-deterministic finite automaton). This is
        a generalized version of the 'subset construction' algorithm. Where 
@@ -15,7 +15,7 @@ def do(SM):
 
     # (*) initial state of resulting DFA = epsilon closure of initial state of NFA
     #     -- add the origin list of all states in the epsilon closure
-    InitState = State.new_merged_core_state(SM.states[i] for i in initial_state_epsilon_closure)
+    InitState = Class_State.new_merged_core_state(SM.states[i] for i in initial_state_epsilon_closure)
 
     # NOTE: 
     # State machines with an initial acceptance state are conceivable!  In a
@@ -24,7 +24,7 @@ def do(SM):
     #
     # (A pattern state machine for pattern matching, of course, has to disallow 
     #  'accept nothing'.)
-    result = StateMachine(InitState=InitState)
+    result = Class_StateMachine(InitState=InitState)
                           
     # (*) prepare the initial worklist
     worklist = [ ( result.init_state_index, initial_state_epsilon_closure) ]
@@ -65,7 +65,7 @@ def do(SM):
             if not result.states.has_key(target_state_index):
                 # create the new target state in the state machine
                 result.states[target_state_index] = \
-                    State.new_merged_core_state(SM.states[i] for i in epsilon_closure_of_target_state_combination)
+                    Class_State.new_merged_core_state(SM.states[i] for i in epsilon_closure_of_target_state_combination)
 
                 worklist.append((target_state_index, epsilon_closure_of_target_state_combination))  
 
