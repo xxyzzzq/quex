@@ -21,6 +21,7 @@ print "EXAMPLE A:", sm
 
 print "-------------------------------------------------------------------------------"
 empty_state_machine = StateMachine(7777)    
+empty_state_machine.get_init_state().set_acceptance(True)
 sm = parallelize.do([empty_state_machine, sm0, 
                      empty_state_machine, sm1, 
                      empty_state_machine, sm2, 

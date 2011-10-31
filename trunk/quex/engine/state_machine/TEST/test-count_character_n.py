@@ -12,7 +12,7 @@ if "--hwut-info" in sys.argv:
     
 def test(TestString):
     print ("expr.  = " + TestString).replace("\n", "\\n").replace("\t", "\\t")
-    sm = core.do(TestString, {})
+    sm = core.do(TestString, {}).sm
     print "char-n = ", counter.get_character_n(sm)
 
 test('[0-9]+')

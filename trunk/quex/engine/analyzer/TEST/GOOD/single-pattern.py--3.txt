@@ -1,21 +1,21 @@
 init-state = 0L
-00000() <~ (21, 58)
-      == 'a' ==> 00001
-      == 'b' ==> 00003
-      <no epsilon>
-00001(S, P14) <~ (21, 60, S, P14)
-      == 'a' ==> 00001
-      == 'd' ==> 00002
-      <no epsilon>
-00002(A, P14) <~ (21, 61, A, P14)
-      == 'd' ==> 00002
-      <no epsilon>
-00003() <~ (21, 59)
-      == 'c' ==> 00004
-      <no epsilon>
-00004(S, P14) <~ (21, 62, S, P14)
-      == 'd' ==> 00002
-      <no epsilon>
+00000 (21, 58)
+     == 'a' ==> 00001
+     == 'b' ==> 00003
+    
+00001 (21, 60, S)
+     == 'a' ==> 00001
+     == 'd' ==> 00002
+    
+00002 (21, 61, A, R)
+     == 'd' ==> 00002
+    
+00003 (21, 59)
+     == 'c' ==> 00004
+    
+00004 (21, 62, S)
+     == 'd' ==> 00002
+    
 
 State 0:
   .entry:
@@ -35,11 +35,11 @@ State 1:
 State 2:
   .entry:
     .positioner:
-        .from 1: position[PostContext_14]  = input_p;
+        .from 1: position[PostContext_21]  = input_p;
         .from 2: <nothing>
-        .from 4: position[PostContext_14]  = input_p;
+        .from 4: position[PostContext_21]  = input_p;
   .drop_out:
-    pos = position[PostContext_14] ; goto Pattern21;
+    pos = position[PostContext_21] ; goto Pattern21;
 
 
 State 3:

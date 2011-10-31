@@ -63,7 +63,6 @@ def kleene_closure(the_state_machine):
     prev_init_state_index  = result.init_state_index
     result.create_new_init_state() 
     result.mount_to_initial_state(prev_init_state_index)
-    ## print "##rmounti:", result
 
     # (*) add additional terminal state
     new_terminal_state_index = result.create_new_state()
@@ -74,15 +73,12 @@ def kleene_closure(the_state_machine):
     #     NOTE: do not cancel the acceptance state of any acceptance state,
     #           so the next step can enter another target state index.
     result.mount_to_acceptance_states(prev_init_state_index,
-                                      CancelStartAcceptanceStateF=False,
-                                      RaiseTargetAcceptanceStateF=False)
+                                      CancelStartAcceptanceStateF=False)
     ## print "##backward:", result
     # (*) connect all acceptance states via epsilon transition 
     #     *forwards* to terminal state
     result.mount_to_acceptance_states(new_terminal_state_index,
-                                      CancelStartAcceptanceStateF=True,
-                                      RaiseTargetAcceptanceStateF=False)
-    ## print "##forward:", result
+                                      CancelStartAcceptanceStateF=True)
 
     # (*) add epsilon transition from new init state to new terminal state
     result.add_epsilon_transition(result.init_state_index, new_terminal_state_index, 

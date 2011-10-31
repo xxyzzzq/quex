@@ -3,6 +3,7 @@ from quex.engine.misc.file_in       import skip_whitespace, \
                                            read_identifier, \
                                            verify_word_in_list, \
                                            error_msg
+from quex.engine.state_machine.core import StateMachine
 from quex.exception                 import RegularExpressionException
 
 __debug_recursion_depth  = -1
@@ -97,18 +98,19 @@ def snap_replacement(stream, PatternDict, StateMachineF=True):
     if StateMachineF:
         # Get a cloned version of state machine
         state_machine = reference.get_state_machine()
+        assert isinstance(state_machine, StateMachine)
 
         # It is essential that state machines defined as patterns do not 
         # have origins. Otherwise, the optimization of patterns that
         # contain pattern replacements might get confused and can
         # not find all optimizations.
         assert state_machine.has_origins() == False
-
+            
         # A state machine, that contains pre- or post- conditions cannot be part
         # of a replacement. The addition of new post-contexts would mess up the pattern.
-        if state_machine.core().has_pre_or_post_context():
-            error_msg("Pre- or post- conditioned pattern was used in replacement.\n" + \
-                      "Quex's regular expression grammar does not allow this.", stream)
+        ## if state_machine.has_pre_or_post_context():
+        ##    error_msg("Pre- or post-conditioned pattern was used in replacement.\n" + \
+        ##              "Quex's regular expression grammar does not allow this.", stream)
             
         return state_machine
 

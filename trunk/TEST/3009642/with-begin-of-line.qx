@@ -1,9 +1,9 @@
 start = data;
 
 define {
-   EoL			 ("\r"|"\n"|"\r\n")
-   LINE         ^{EoL}
-   WORD         [^ \t\r\n]+
+   EoL		 ("\r"|"\n"|"\r\n")
+   LINE      {EoL}
+   WORD      [^ \t\r\n]+
 }
 
 token {
@@ -16,7 +16,7 @@ token {
 mode comment :
 	END_OF_FILE
 {
-	{LINE}    => QUEX_TKN_LINE(Lexeme);
+	^{LINE}   => QUEX_TKN_LINE(Lexeme);
 	{EoL}     => QUEX_TKN_EOL;
 }
 

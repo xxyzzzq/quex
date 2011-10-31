@@ -25,13 +25,13 @@ def test(RE_Core, RE_PostCondition):
 
     # reset the index, so that things get a litter less 'historic'
     try:
-        core_sm           = regex.do(string_stream_Core, {})
+        core_sm           = regex.do(string_stream_Core, {}).sm
     except RegularExpressionException, x:
         print "Core Pattern:\n" + repr(x)
         return
 
     try:
-        post_context_sm = regex.do(string_stream_PostCondition, {})
+        post_context_sm = regex.do(string_stream_PostCondition, {}).sm
     except RegularExpressionException, x:
         print "Post Condition Pattern:\n" + repr(x)
         return
@@ -40,14 +40,14 @@ def test(RE_Core, RE_PostCondition):
     print "core pattern            =", RE_Core
     print "post condition pattern  =", RE_PostCondition
 
-    ambiguous_post_context.mount(core_sm, post_context_sm)
+    backward_search_sm = ambiguous_post_context.mount(core_sm, post_context_sm)
     # .mount() does not transformation from NFA to DFA
     core_sm = nfa_to_dfa.do(core_sm)
     core_sm = hopcroft.do(core_sm)
 
     print "ambigous post condition =", core_sm
 
-    print "backward detector =", core_sm.core().post_context_backward_input_position_detector_sm()
+    print "backward detector =", backward_search_sm
 
 
 test('"xy"+', '((ab)+|xy)')

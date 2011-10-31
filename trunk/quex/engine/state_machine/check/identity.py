@@ -1,5 +1,6 @@
 # from quex.engine.state_machine.state_core_info     import E_PostContextIDs      
-from quex.blackboard import E_PreContextIDs, E_PostContextIDs
+from quex.blackboard import E_PreContextIDs
+from quex.engine.state_machine.core import StateMachine
 
 class Checker:
     def __init__(self, SM0, SM1):
@@ -81,24 +82,32 @@ class Checker:
         """Checks whether all states in SList are of the same type as S0. 
            (With respect to the criteria of out algorithm.)
         """
-        sm1c = S1.core()                         # core of the 'sm1' state
         for index in S0List:
-            sm0c = self.sm0.states[index].core() # core of the 'sm0' state
+            S0 = self.sm0.states[index] # core of the 'sm0' state
 
-            if    sm0c.is_acceptance()               !=  sm1c.is_acceptance():               return False
-            elif    (sm0c.post_context_id() == E_PostContextIDs.NONE) \
-                 != (sm1c.post_context_id() == E_PostContextIDs.NONE):                         return False
-            elif (sm0c.pre_context_id() == E_PreContextIDs.NONE)       != (sm1c.pre_context_id() == E_PreContextIDs.NONE):       return False
-            elif  sm0c.store_input_position_f()      !=  sm1c.store_input_position_f():      return False
-            elif  sm0c.pre_context_begin_of_line_f() !=  sm1c.pre_context_begin_of_line_f(): return False
-            elif    (sm0c.pseudo_ambiguous_post_context_id() == -1) \
-                 != (sm1c.pseudo_ambiguous_post_context_id() == -1):                         return False
+            if       S0.is_acceptance() \
+                 !=  S1.is_acceptance():                                      return False
+            elif    (S0.pre_context_id() == E_PreContextIDs.NONE) \
+                 != (S1.pre_context_id() == E_PreContextIDs.NONE):            return False
+            elif    (S0.pre_context_id() == E_PreContextIDs.BEGIN_OF_LINE) \
+                 != (S1.pre_context_id() == E_PreContextIDs.BEGIN_OF_LINE):   return False
+            elif     S0.input_position_store_f() \
+                 !=  S1.input_position_store_f():                             return False
+            elif     S0.input_position_restore_f() \
+                 !=  S1.input_position_restore_f():                           return False
+
         return True
 
-def do(SM0, SM1):
-    # Check whether SM0 and SM1 are identical, i.e they match exactly the same patterns 
+def do(Pattern0, Pattern1):
+    if isinstance(Pattern0, StateMachine):
+        assert isinstance(Pattern1, StateMachine)
+        return Checker(Pattern0, Pattern1).do()
+
+    assert not isinstance(Pattern1, StateMachine)
+
+    # Check whether Pattern0 and Pattern1 are identical, i.e they match exactly the same patterns 
     # and provide exactly the same behavior of the lexical analyzer.
-    identity_f = Checker(SM0, SM1).do()
+    identity_f = Checker(Pattern0.sm, Pattern1.sm).do()
 
     if not identity_f: return False
     # NOTE: Post-conditions are handled in the identity check already.
@@ -106,31 +115,31 @@ def do(SM0, SM1):
     # Pre-Condition: 
     #
     #       If only one state machine is pre-conditioned, then they are not identical
-    if (SM0.core().pre_context_sm_id() == -1) != (SM1.core().pre_context_sm_id() == -1): 
+    if (Pattern0.inverse_pre_context_sm is not None) != (Pattern1.inverse_pre_context_sm is not None): 
         return False
     else:
-        if SM0.core().pre_context_sm_id() != -1:
+        if Pattern0.inverse_pre_context_sm is not None:
             # Both are pre-conditioned by state machine
-            assert SM1.core().pre_context_sm_id() != -1
+            assert Pattern1.inverse_pre_context_sm != -1
             # Pre-condition by 'begin of line' excludes other pre-conditions.
-            assert not SM0.core().pre_context_begin_of_line_f()
-            assert not SM1.core().pre_context_begin_of_line_f()
-            return Checker(SM0.core().pre_context_sm(), SM1.core().pre_context_sm()).do()
+            assert not Pattern0.pre_context_trivial_begin_of_line_f
+            assert not Pattern1.pre_context_trivial_begin_of_line_f
+            return Checker(Pattern0.inverse_pre_context_sm, Pattern1.inverse_pre_context_sm).do()
 
-    # Here: None SM0 and SM1 is dependent on pre-context state machine
-    if  SM0.core().pre_context_begin_of_line_f() != SM1.core().pre_context_begin_of_line_f(): 
+    # Here: None Pattern0 and Pattern1 is dependent on pre-context state machine
+    if  Pattern0.pre_context_trivial_begin_of_line_f != Pattern1.pre_context_trivial_begin_of_line_f: 
         return False
     else:
-        if SM0.core().pre_context_begin_of_line_f():
+        if Pattern0.pre_context_trivial_begin_of_line_f:
             # Both are pre-conditioned by 'begin of line' => judgement remains as above
-            assert SM1.core().pre_context_begin_of_line_f()
+            assert Pattern1.pre_context_trivial_begin_of_line_f
             # Pre-condition by 'begin of line' excludes other pre-conditions.
-            assert SM0.core().pre_context_sm_id() == -1
-            assert SM1.core().pre_context_sm_id() == -1
+            assert Pattern0.inverse_pre_context_sm is None
+            assert Pattern1.inverse_pre_context_sm is None
             # Here: identity_f == True
             return True
 
-    # Here: None SM0 and SM1 is dependent on pre-context by 'begin of line
+    # Here: None Pattern0 and Pattern1 is dependent on pre-context by 'begin of line
 
     # If there is no pre-condition at all, then the old judgement holds
     return True

@@ -61,15 +61,14 @@ def do(Mode, IndentationSupportF):
     # Assume pattern-action pairs (matches) are sorted and their pattern state
     # machine ids reflect the sequence of pattern precedence.
     for pattern_info in pattern_action_pair_list:
-        action                = pattern_info.action()
-        pattern_state_machine = pattern_info.pattern_state_machine()
+        action  = pattern_info.action()
+        pattern = pattern_info.pattern()
 
         # Generated code fragments may rely on some information about the generator
         if hasattr(action, "data") and type(action.data) == dict:   
             action.data["indentation_counter_terminal_id"] = indentation_counter_terminal_id
 
-        prepared_action, db = __prepare(Mode, action, pattern_state_machine, 
-                                        SelfCountingActionF=False)
+        prepared_action, db = __prepare(Mode, action, pattern, SelfCountingActionF=False)
         variable_db.update(db)
 
         pattern_info.set_action(prepared_action)
@@ -95,7 +94,7 @@ def get_code(CodeFragmentList, variable_db={}):
 
     return code_str, require_terminating_zero_preparation_f
 
-def __prepare(Mode, CodeFragment_or_CodeFragments, PatternStateMachine, 
+def __prepare(Mode, CodeFragment_or_CodeFragments, ThePattern, 
               Default_ActionF=False, EOF_ActionF=False, SelfCountingActionF=False):
     """-- If there are multiple handlers for a single event they are combined
     
@@ -105,13 +104,11 @@ def __prepare(Mode, CodeFragment_or_CodeFragments, PatternStateMachine,
           code for line and column number counting.
     """
     assert Mode.__class__.__name__  == "Mode"
-    assert PatternStateMachine      is None or PatternStateMachine.__class__.__name__ == "StateMachine" 
+    assert ThePattern      is None or ThePattern.__class__.__name__ == "Pattern" 
     assert type(Default_ActionF)    == bool
     assert type(EOF_ActionF)        == bool
     # We assume that any state machine presented here has been propperly created
     # and thus contains some side information about newline number, character number etc.
-    assert PatternStateMachine      is None or PatternStateMachine.side_info is not None, \
-           repr(PatternStateMachine)
 
     if type(CodeFragment_or_CodeFragments) == list:
         assert Default_ActionF or EOF_ActionF, \
@@ -132,7 +129,7 @@ def __prepare(Mode, CodeFragment_or_CodeFragments, PatternStateMachine,
 
     # (*) Code to count line and column numbers
     if not SelfCountingActionF: 
-        lc_count_code  = __get_line_and_column_counting(PatternStateMachine, EOF_ActionF)
+        lc_count_code  = __get_line_and_column_counting(ThePattern, EOF_ActionF)
 
     if (not Default_ActionF) and (not EOF_ActionF):
         lc_count_code += "    __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);\n"
@@ -185,7 +182,7 @@ def __prepare_on_failure_action(Mode):
     return __prepare(Mode, Mode.get_code_fragment_list("on_failure"), 
                      None, Default_ActionF=True) 
 
-def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
+def __get_line_and_column_counting(ThePattern, EOF_ActionF):
     global LanguageDB
 
     # shift the values for line and column numbering
@@ -195,11 +192,11 @@ def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
     if EOF_ActionF:
         return txt
 
-    if PatternStateMachine is None:
+    if ThePattern is None:
         return txt + "    QUEX_NAME(Counter_count)(&self.counter, self.buffer._lexeme_start_p, self.buffer._input_p);\n"
 
-    newline_n   = PatternStateMachine.side_info.get_newline_n()
-    character_n = PatternStateMachine.side_info.get_character_n()
+    newline_n   = ThePattern.newline_n
+    character_n = ThePattern.character_n
 
     if   newline_n == -1:
         # Run the general algorithm, since not even the number of newlines in the 
@@ -208,7 +205,7 @@ def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
 
     elif newline_n != 0:
         txt += "    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_end += %i);\n" % newline_n 
-        if PatternStateMachine.get_ending_character_set().contains_only(ord('\n')):
+        if ThePattern.sm.get_ending_character_set().contains_only(ord('\n')):
             # A pattern that ends with newline, lets the next column start at zero.
             txt += "    __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);\n"
         else:

@@ -72,7 +72,7 @@ elif "5" in sys.argv:
 else:
     assert False
 
-state_machine_list = map(lambda x: regex.do(x, {}), pattern_list)
+state_machine_list = map(lambda x: regex.do(x, {}).sm, pattern_list)
 sm                 = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
 sm                 = sm.normalized_clone()
 

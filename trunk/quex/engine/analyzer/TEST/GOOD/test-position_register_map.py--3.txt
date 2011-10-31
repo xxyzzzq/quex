@@ -1,4 +1,4 @@
 Two Registers
    NONE: 0
-   17L: 1
-   29L: 0
+   27L: 1
+   39L: 0

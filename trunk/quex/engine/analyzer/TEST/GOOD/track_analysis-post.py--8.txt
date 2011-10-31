@@ -1,27 +1,27 @@
 init-state = 0L
-00000() <~ (17, 45), (44, 119), (8, 21)
-      == 'x' ==> 00001
-      <no epsilon>
-00001(S, P10) <~ (8, 22, S, P1), (17, 46, S, P10), (44, 120)
-      == 'a' ==> 00002
-      == 'b' ==> 00006
-      <no epsilon>
-00002(A, P1) <~ (8, 23, A, P1), (44, 122)
-      == 'a' ==> 00002
-      == 'c' ==> 00003
-      <no epsilon>
-00003() <~ (44, 123)
-      == 'd' ==> 00004
-      <no epsilon>
-00004() <~ (44, 124)
-      == 'e' ==> 00005
-      <no epsilon>
-00005(A, S) <~ (44, 125, A, S)
-      <no epsilon>
-00006(A, P10) <~ (17, 47, A, P10), (44, 121)
-      == 'b' ==> 00006
-      == 'c' ==> 00003
-      <no epsilon>
+00000 (17, 45), (8, 21), (44, 119)
+     == 'x' ==> 00001
+    
+00001 (8, 22, S), (17, 46, S), (44, 120)
+     == 'a' ==> 00002
+     == 'b' ==> 00006
+    
+00002 (8, 23, A, R), (44, 122)
+     == 'a' ==> 00002
+     == 'c' ==> 00003
+    
+00003 (44, 123)
+     == 'd' ==> 00004
+    
+00004 (44, 124)
+     == 'e' ==> 00005
+    
+00005 (44, 125, A)
+    
+00006 (17, 47, A, R), (44, 121)
+     == 'b' ==> 00006
+     == 'c' ==> 00003
+    
 
 State 0:
   .entry:
@@ -43,11 +43,11 @@ State 2:
         last_acceptance = Pattern8
     .positioner:
         .from 1:
-             position[PostContext_1]  = input_p;
-             position[PostContext_10]  = input_p;
+             position[PostContext_8]  = input_p;
+             position[PostContext_17]  = input_p;
         .from 2: <nothing>
   .drop_out:
-    pos = position[PostContext_1] ; goto Pattern8;
+    pos = position[PostContext_8] ; goto Pattern8;
 
 
 State 3:
@@ -59,8 +59,8 @@ State 3:
     Checker:
         accept = last_acceptance
     Router:
-        case 8: pos = position[PostContext_1] ; goto Pattern8;
-        case 17: pos = position[PostContext_10] ; goto Pattern17;
+        case 8: pos = position[PostContext_8] ; goto Pattern8;
+        case 17: pos = position[PostContext_17] ; goto Pattern17;
 
 
 State 4:
@@ -71,8 +71,8 @@ State 4:
     Checker:
         accept = last_acceptance
     Router:
-        case 8: pos = position[PostContext_1] ; goto Pattern8;
-        case 17: pos = position[PostContext_10] ; goto Pattern17;
+        case 8: pos = position[PostContext_8] ; goto Pattern8;
+        case 17: pos = position[PostContext_17] ; goto Pattern17;
 
 
 State 5:
@@ -89,10 +89,10 @@ State 6:
         last_acceptance = Pattern17
     .positioner:
         .from 1:
-             position[PostContext_1]  = input_p;
-             position[PostContext_10]  = input_p;
+             position[PostContext_8]  = input_p;
+             position[PostContext_17]  = input_p;
         .from 6: <nothing>
   .drop_out:
-    pos = position[PostContext_10] ; goto Pattern17;
+    pos = position[PostContext_17] ; goto Pattern17;
 
 

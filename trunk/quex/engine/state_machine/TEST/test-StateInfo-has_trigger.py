@@ -13,7 +13,7 @@ if "--hwut-info" in sys.argv:
 def test(TestString, StartCharacterList):
     print "____________________________________________________________________"
     print "expr.   = " + TestString.replace("\n", "\\n").replace("\t", "\\t")
-    sm = core.do(TestString, {})
+    sm = core.do(TestString, {}).sm
     print "start   = ", map(lambda char: char.replace("\t", "\\t"), StartCharacterList)
     code_list = map(lambda char: ord(char), StartCharacterList)
     print "verdict = ", repr(sm.get_init_state().transitions().has_one_of_triggers(code_list))

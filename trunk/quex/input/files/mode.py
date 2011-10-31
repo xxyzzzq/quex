@@ -6,6 +6,7 @@ import quex.input.files.code_fragment                      as code_fragment
 import quex.input.files.indentation_setup                  as indentation_setup
 import quex.input.files.consistency_check                  as consistency_check
 import quex.input.regular_expression.snap_character_string as snap_character_string
+from   quex.input.regular_expression.construct             import Pattern
 from   quex.blackboard                                     import setup as Setup
 
 from   quex.engine.generator.action_info                   import CodeFragment, UserCodeFragment, GeneratedCode, PatternActionInfo
@@ -28,14 +29,13 @@ from   quex.engine.misc.file_in                            import EndOfStreamExc
                                                                   skip_whitespace, \
                                                                   verify_word_in_list
 
-from   quex.engine.state_machine.core                      import StateMachine, SideInfo
-import quex.engine.state_machine.identity_checker          as identity_checker
+from   quex.engine.state_machine.core                      import StateMachine
+import quex.engine.state_machine.check.identity            as identity_checker
 import quex.engine.state_machine.sequentialize             as sequentialize
 import quex.engine.state_machine.repeat                    as repeat
 import quex.engine.state_machine.nfa_to_dfa                as nfa_to_dfa
 import quex.engine.state_machine.hopcroft_minimization     as hopcroft
-import quex.engine.state_machine.character_counter         as character_counter    
-import quex.engine.state_machine.subset_checker            as subset_checker
+import quex.engine.state_machine.check.superset            as superset
 
 from   copy import deepcopy
 
@@ -98,38 +98,40 @@ class ModeDescription:
         # Register ModeDescription at the mode database
         mode_description_db[Name] = self
 
-    def add_match(self, Pattern, Action, PatternStateMachine, Comment=""):
-        assert PatternStateMachine.is_DFA_compliant()
-        assert PatternStateMachine.side_info is not None, \
-               "No side info for '%s'" % Pattern
+    def add_match(self, PatternStr, Action, ThePattern, Comment=""):
+        assert    ThePattern.sm.is_DFA_compliant()
+        assert    ThePattern.inverse_pre_context_sm is None \
+               or ThePattern.inverse_pre_context_sm.is_DFA_compliant()
 
-        if self.__matches.has_key(Pattern):
-            error_msg("Pattern '%s' appeared twice in mode definition.\n" % Pattern + \
+        if self.__matches.has_key(PatternStr):
+            error_msg("Pattern '%s' appeared twice in mode definition.\n" % PatternStr + \
                       "Only the last definition is considered.", 
                       Action.filename, Action.line_n, DontExitF=True)
 
-        if len(PatternStateMachine.get_orphaned_state_index_list()) != 0:
-            error_msg("Pattern '%s' resulted in state machine with orphan states.\n" % Pattern + \
+        if     len(ThePattern.sm.get_orphaned_state_index_list()) != 0 \
+           or (    ThePattern.inverse_pre_context_sm is not None \
+               and len(ThePattern.inverse_pre_context_sm.get_orphaned_state_index_list()) != 0):
+            error_msg("Pattern '%s' resulted in state machine with orphan states.\n" % PatternStr + \
                       "(After Transformation to internal encoding).\n" + \
                       "Please, submit a bug at quex.sourceforge.net.", 
                       DontExitF=True, WarningF=True)
 
-        self.__matches[Pattern] = PatternActionInfo(PatternStateMachine, Action, Pattern, 
-                                                    ModeName=self.name, Comment=Comment)
+        self.__matches[PatternStr] = PatternActionInfo(ThePattern, Action, PatternStr, 
+                                                       ModeName=self.name, Comment=Comment)
 
-    def add_match_priority(self, Pattern, PatternStateMachine, PatternIdx, FileName, LineN):
+    def add_match_priority(self, Pattern, ThePattern, PatternIdx, FileName, LineN):
         if self.__matches.has_key(Pattern):
             error_msg("Pattern '%s' appeared twice in mode definition.\n" % Pattern + \
                       "Only this priority mark is considered.", FileName, LineN)
 
-        self.__repriorization_db[Pattern] = [PatternStateMachine, FileName, LineN, PatternIdx]
+        self.__repriorization_db[Pattern] = [ThePattern, FileName, LineN, PatternIdx]
 
-    def add_match_deletion(self, Pattern, PatternStateMachine, FileName, LineN):
+    def add_match_deletion(self, Pattern, ThePattern, FileName, LineN):
         if self.__matches.has_key(Pattern):
             error_msg("Deletion of '%s' which appeared before in same mode.\n" % Pattern + \
                       "Deletion of pattern.", FileName, LineN)
 
-        self.__deletion_db[Pattern] = [PatternStateMachine, FileName, LineN]
+        self.__deletion_db[Pattern] = [ThePattern, FileName, LineN]
 
     def add_option(self, Option, Value):
         """ SANITY CHECK:
@@ -247,7 +249,7 @@ class Mode:
             action = info.action()
             if   action.__class__.__name__ != "GeneratedCode": continue
             elif action.function != indentation_counter.do:    continue
-            return info.pattern_state_machine().get_id()
+            return info.pattern().sm.get_id()
         return None
 
     def get_documentation(self):
@@ -281,13 +283,13 @@ class Mode:
         if len(self.__pattern_action_pair_list) != 0:
             txt += "    PATTERN-ACTION PAIRS:\n"
             self.__pattern_action_pair_list.sort(lambda x, y:
-                            cmp(x.pattern_state_machine().get_id(),
-                                y.pattern_state_machine().get_id()))
+                            cmp(x.pattern().sm.get_id(),
+                                y.pattern().sm.get_id()))
             for pattern_action_pair in self.__pattern_action_pair_list:
                 txt += "      (%3i) %s: %s%s\n" % \
-                       (pattern_action_pair.pattern_state_machine().get_id(),
+                       (pattern_action_pair.pattern().sm.get_id(),
                         pattern_action_pair.mode_name, " " * (L - len(self.name)), 
-                        pattern_action_pair.pattern)
+                        pattern_action_pair.pattern_string())
             txt += "\n"
 
         return txt
@@ -380,7 +382,7 @@ class Mode:
             # Patterns of a 'lower precedence mode' **must** have higher pattern ids
             # that patterns of a 'higher precedence mode'. This is to ensure that 
             # base mode patterns precede derived mode patterns.
-            min_pattern_index = min(map(lambda match: match.pattern_state_machine().get_id(),
+            min_pattern_index = min(map(lambda match: match.pattern().sm.get_id(),
                                         MatchList))
             if min_pattern_index > PrevMaxPatternIndex:
                 return MatchList, RepriorizationDB
@@ -394,8 +396,8 @@ class Mode:
 
             # Assign new pattern ids starting from MinPatternID
             for match in match_list:
-                current_pattern_id = match.pattern_state_machine().get_id()
-                match.pattern_state_machine().core().set_id(current_pattern_id + offset)
+                current_pattern_id = match.pattern().sm.get_id()
+                match.pattern().sm.set_id(current_pattern_id + offset)
             
             # The reprioritizations must also be adapted
             ## for key, info in repriorization_db.items():
@@ -418,9 +420,9 @@ class Mode:
                 return ok_f
 
             def __is_in_patterns(AllegedIdenticalSM, MyDB):
-                for pattern, info in MyDB.items():
-                    sm = info[0]
-                    if identity_checker.do(AllegedIdenticalSM, sm): return pattern
+                for pattern_str, info in MyDB.items():
+                    pattern = info[0]
+                    if identity_checker.do(AllegedIdenticalSM, pattern): return pattern_str
                 return ""
 
             # DELETION / PRIORITY-MARK 
@@ -429,10 +431,10 @@ class Mode:
             i    = 0
             size = len(pattern_action_pair_list)
             while i < size:
-                match         = pattern_action_pair_list[i]
-                state_machine = match.pattern_state_machine()
+                match   = pattern_action_pair_list[i]
+                pattern = match.pattern()
 
-                found_pattern = __is_in_patterns(state_machine, deletion_db)
+                found_pattern = __is_in_patterns(pattern, deletion_db)
                 if found_pattern != "":
                     # Delete pattern from the list of pattern action pairs
                     del pattern_action_pair_list[i]
@@ -442,13 +444,13 @@ class Mode:
                     self.__history_deletion.append([CurrentModeName, match.pattern, match.mode_name])
                     continue
 
-                found_pattern = __is_in_patterns(state_machine, repriorization_db)
+                found_pattern = __is_in_patterns(pattern, repriorization_db)
                 if found_pattern != "":
                     # Adapt the pattern index, this automatically adapts the match precedence
-                    old_state_machine_id = state_machine.get_id()
+                    old_state_machine_id = pattern.sm.get_id()
                     new_state_machine_id = repriorization_db[found_pattern][-1]
                     new_match = deepcopy(match)
-                    new_match.pattern_state_machine().core().set_id(new_state_machine_id)
+                    new_match.pattern().sm.set_id(new_state_machine_id)
                     pattern_action_pair_list[i] = new_match
                     # Mark 'repriorization applied'
                     repriorization_done_db[found_pattern] = True
@@ -463,15 +465,16 @@ class Mode:
             return
 
         def __add_new_pattern_action_pair(pattern_action_pair_list, PatternActionPair):
-            state_machine = PatternActionPair.pattern_state_machine()
-            pattern       = PatternActionPair.pattern
+            state_machine = PatternActionPair.pattern().sm
+            pattern       = PatternActionPair.pattern_string()
 
             for earlier_match in pattern_action_pair_list:
-                if earlier_match.pattern_state_machine().get_id() > state_machine.get_id(): continue
-                if subset_checker.do(earlier_match.pattern_state_machine(), state_machine) == False: continue
+                if earlier_match.pattern().sm.get_id() > state_machine.get_id(): continue
+                if superset.do(earlier_match.pattern(), PatternActionPair.pattern()) == False: continue
+
                 file_name, line_n = earlier_match.get_action_location()
                 error_msg("Pattern '%s' matches a superset of what is matched by" % 
-                          earlier_match.pattern, file_name, line_n,
+                          earlier_match.pattern_string(), file_name, line_n,
                           DontExitF=True, WarningF=False) 
                 file_name, line_n = PatternActionPair.get_action_location()
                 error_msg("pattern '%s' while the former has precedence.\n" % \
@@ -509,7 +512,7 @@ class Mode:
 
                 # Determine the max pattern index at this level of inheritance
                 prev_max_pattern_index = max([prev_max_pattern_index] + \
-                                             map(lambda match: match.pattern_state_machine().get_id(),
+                                             map(lambda match: match.pattern().sm.get_id(),
                                              match_list))
 
 
@@ -604,8 +607,8 @@ def finalize():
     global mode_description_db
 
     # (*) Translate each mode description int a 'real' mode
-    for mode_name, mode_descr in mode_description_db.iteritems():
-        blackboard.mode_db[mode_name] = Mode(mode_descr)
+    for name, mode_descr in mode_description_db.iteritems():
+        blackboard.mode_db[name] = Mode(mode_descr)
 
     # (*) perform consistency check 
     consistency_check.do(blackboard.mode_db)
@@ -674,11 +677,11 @@ def __parse_string(fh, Name):
     return msg, sequence
 
 def __parse_option(fh, new_mode):
-    def fit_state_machine(SM):
+    def get_pattern_object(SM):
         if not SM.is_DFA_compliant(): result = nfa_to_dfa.do(SM)
         else:                         result = SM
         result = hopcroft.do(result, CreateNewStateMachineF=False)
-        return result
+        return Pattern(result, AllowStateMachineTrafoF=True)
 
     identifier = read_option_start(fh)
     if identifier is None: return False
@@ -713,12 +716,7 @@ def __parse_option(fh, new_mode):
                                LineN    = get_current_line_info_number(fh))
         action.data["character_set"] = trigger_set
 
-        pattern_sm = fit_state_machine(pattern_sm)
-        # For skippers line and column counting detection is not really a topic
-        # It is done in the skipper itself.
-        pattern_sm.side_info = SideInfo()
-
-        new_mode.add_match(pattern_str, action, pattern_sm)
+        new_mode.add_match(pattern_str, action, get_pattern_object(pattern_sm))
 
         return True
 
@@ -731,14 +729,10 @@ def __parse_option(fh, new_mode):
         if identifier == "skip_nested_range":
             # Nested range state machines only accept 'strings' not state machines
             opener_str, opener_sequence = __parse_string(fh, "Opener pattern for 'skip_nested_range'")
-            
-            opener_sm = StateMachine()
-            idx = opener_sm.init_state_index
-            for letter in opener_sequence:
-                idx = opener_sm.add_transition(idx, letter)
-            opener_sm.states[idx].set_acceptance(True)
+            opener_sm = StateMachine.from_sequence(opener_sequence)
         else:
-            opener_str, opener_sm = regular_expression.parse(fh)
+            opener_str, opener_pattern = regular_expression.parse(fh)
+            opener_sm = opener_pattern.sm
             # For 'range skipping' the opener sequence is not needed, only the opener state
             # machine is webbed into the pattern matching state machine.
             opener_sequence       = None
@@ -764,13 +758,7 @@ def __parse_option(fh, new_mode):
         action.data["closer_sequence"] = closer_sequence
         action.data["mode_name"]       = new_mode.name
 
-        fit_state_machine(opener_sm)
-
-        # For skippers line and column counting detection is not really a topic
-        # It is done in the skipper itself.
-        opener_sm.side_info = SideInfo()
-
-        new_mode.add_match(opener_str, action, opener_sm)
+        new_mode.add_match(opener_str, action, get_pattern_object(opener_sm))
 
         return True
         
@@ -781,9 +769,9 @@ def __parse_option(fh, new_mode):
         # Similar to skippers, the indentation count is then triggered by the newline.
         # -- Suppressed Newline = Suppressor followed by Newline,
         #    then newline does not trigger indentation counting.
-        suppressed_newline_pattern = ""
+        suppressed_newline_pattern_str = ""
         if value.newline_suppressor_state_machine.get() is not None:
-            suppressed_newline_pattern = \
+            suppressed_newline_pattern_str = \
                   "(" + value.newline_suppressor_state_machine.pattern_str + ")" \
                 + "(" + value.newline_state_machine.pattern_str + ")"
                                            
@@ -796,14 +784,8 @@ def __parse_option(fh, new_mode):
             # Go back to start.
             code = UserCodeFragment("goto %s;" % get_label("$start", U=True), FileName, LineN)
 
-            suppressed_newline_sm = fit_state_machine(suppressed_newline_sm)
-
-            # Analyze pattern for constant number of newlines, characters, etc.
-            suppressed_newline_sm.side_info = SideInfo(
-                    character_counter.get_newline_n(suppressed_newline_sm),
-                    character_counter.get_character_n(suppressed_newline_sm))
-
-            new_mode.add_match(suppressed_newline_pattern, code, suppressed_newline_sm,
+            new_mode.add_match(suppressed_newline_pattern_str, code, 
+                               get_pattern_object(suppressed_newline_sm),
                                Comment="indentation newline suppressor")
 
         # When there is an empty line, then there shall be no indentation count on it.
@@ -835,11 +817,9 @@ def __parse_option(fh, new_mode):
 
         action.data["indentation_setup"] = value
 
-        sm = fit_state_machine(sm)
-        sm.side_info = SideInfo(character_counter.get_newline_n(sm),
-                                character_counter.get_character_n(sm))
-        new_mode.add_match(value.newline_state_machine.pattern_str,
-                           action, sm, Comment="indentation newline")
+        new_mode.add_match(value.newline_state_machine.pattern_str, action, 
+                           get_pattern_object(sm), 
+                           Comment="indentation newline")
 
         # Announce the mode to which the setup belongs
         value.set_containing_mode_name(new_mode.name)
@@ -882,18 +862,18 @@ def __parse_element(new_mode, fh):
 
         fh.seek(position)
         description = "Start of mode element: regular expression"
-        pattern, pattern_state_machine = regular_expression.parse(fh)
+        pattern_str, pattern = regular_expression.parse(fh)
 
-        if new_mode.has_pattern(pattern):
-            previous = new_mode.get_pattern_action_pair(pattern)
+        if new_mode.has_pattern(pattern_str):
+            previous = new_mode.get_pattern_action_pair(pattern_str)
             error_msg("Pattern has been defined twice.", fh, DontExitF=True)
             error_msg("First defined here.", 
                       previous.action().filename, previous.action().line_n)
 
         position    = fh.tell()
-        description = "Start of mode element: code fragment for '%s'" % pattern
+        description = "Start of mode element: code fragment for '%s'" % pattern_str
 
-        __parse_action(new_mode, fh, pattern, pattern_state_machine)
+        __parse_action(new_mode, fh, pattern_str, pattern)
 
     except EndOfStreamException:
         fh.seek(position)
@@ -901,7 +881,7 @@ def __parse_element(new_mode, fh):
 
     return True
 
-def __parse_action(new_mode, fh, pattern, pattern_state_machine):
+def __parse_action(new_mode, fh, pattern_str, pattern):
 
     position = fh.tell()
     try:
@@ -910,7 +890,7 @@ def __parse_action(new_mode, fh, pattern, pattern_state_machine):
             
         code_obj = code_fragment.parse(fh, "regular expression", ErrorOnFailureF=False) 
         if code_obj is not None:
-            new_mode.add_match(pattern, code_obj, pattern_state_machine)
+            new_mode.add_match(pattern_str, code_obj, pattern)
             return
 
         fh.seek(position)
@@ -923,17 +903,17 @@ def __parse_action(new_mode, fh, pattern, pattern_state_machine):
             # use its id.
             fh.seek(-1, 1)
             check_or_die(fh, ";", ". Since quex version 0.33.5 this is required.")
-            new_mode.add_match_priority(pattern, pattern_state_machine, pattern_state_machine.get_id(), 
+            new_mode.add_match_priority(pattern_str, pattern, pattern.sm.get_id(), 
                                         fh.name, get_current_line_info_number(fh))
 
         elif word == "DELETION":
             # This mark deletes any pattern that was inherited with the same 'name'
             fh.seek(-1, 1)
             check_or_die(fh, ";", ". Since quex version 0.33.5 this is required.")
-            new_mode.add_match_deletion(pattern, pattern_state_machine, fh.name, get_current_line_info_number(fh))
+            new_mode.add_match_deletion(pattern_str, pattern, fh.name, get_current_line_info_number(fh))
             
         else:
-            error_msg("Missing token '{', 'PRIORITY-MARK', 'DELETION', or '=>' after '%s'.\n" % pattern + \
+            error_msg("Missing token '{', 'PRIORITY-MARK', 'DELETION', or '=>' after '%s'.\n" % pattern_str + \
                       "found: '%s'. Note, that since quex version 0.33.5 it is required to add a ';'\n" % word + \
                       "to the commands PRIORITY-MARK and DELETION.", fh)
 

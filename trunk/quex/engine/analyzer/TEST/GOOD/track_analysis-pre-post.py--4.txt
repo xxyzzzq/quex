@@ -1,24 +1,24 @@
 init-state = 0L
-00000() <~ (29, 65), (46, 111), (14, 30)
-      == 'a' ==> 00001
-      <no epsilon>
-00001(S, P3) <~ (14, 31, S, P3), (29, 66), (46, 112)
-      == 'b' ==> 00002
-      <no epsilon>
-00002() <~ (14, 32), (29, 67), (46, 113)
-      == 'c' ==> 00003
-      <no epsilon>
-00003(A, S, P3, pre=27) <~ (14, 33, A, P3, pre=12), (29, 68, A, S, pre=27), (46, 114)
-      == 'd' ==> 00004
-      <no epsilon>
-00004() <~ (46, 115)
-      == 'e' ==> 00005
-      <no epsilon>
-00005() <~ (46, 116)
-      == 'f' ==> 00006
-      <no epsilon>
-00006(A, S) <~ (46, 117, A, S)
-      <no epsilon>
+00000 (10, 22), (24, 53), (45, 107)
+     == 'a' ==> 00001
+    
+00001 (10, 23, S), (24, 54), (45, 108)
+     == 'b' ==> 00002
+    
+00002 (10, 24), (24, 55), (45, 109)
+     == 'c' ==> 00003
+    
+00003 (10, 25, A, R, pre=14), (24, 56, A, pre=28), (45, 110)
+     == 'd' ==> 00004
+    
+00004 (45, 111)
+     == 'e' ==> 00005
+    
+00005 (45, 112)
+     == 'f' ==> 00006
+    
+00006 (45, 113, A)
+    
 
 State 0:
   .entry:
@@ -47,8 +47,8 @@ State 3:
     .positioner:
         .from 2: <nothing>
   .drop_out:
-    if PreContext_12: pos -= 2;  goto Pattern14;
-    else if PreContext_27:  goto Pattern29;
+    if PreContext_14: pos -= 2;  goto Pattern10;
+    else if PreContext_28:  goto Pattern24;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
@@ -57,8 +57,8 @@ State 4:
     .positioner:
         .from 3: <nothing>
   .drop_out:
-    if PreContext_12: pos -= 3;  goto Pattern14;
-    else if PreContext_27: pos -= 1;  goto Pattern29;
+    if PreContext_14: pos -= 3;  goto Pattern10;
+    else if PreContext_28: pos -= 1;  goto Pattern24;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
@@ -67,8 +67,8 @@ State 5:
     .positioner:
         .from 4: <nothing>
   .drop_out:
-    if PreContext_12: pos -= 4;  goto Pattern14;
-    else if PreContext_27: pos -= 2;  goto Pattern29;
+    if PreContext_14: pos -= 4;  goto Pattern10;
+    else if PreContext_28: pos -= 2;  goto Pattern24;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
@@ -77,6 +77,6 @@ State 6:
     .positioner:
         .from 5: <nothing>
   .drop_out:
-     goto Pattern46;
+     goto Pattern45;
 
 

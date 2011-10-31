@@ -5,3 +5,4 @@
 ./DEFINITIONS.py:LineN:    sys.exit(-1) # sys.exit(-1) is acceptable
 ./DEFINITIONS.py:LineN:        sys.exit(-1) # sys.exit(-1) is acceptable
 ./DEFINITIONS.py:LineN:        sys.exit(-1) # sys.exit(-1) is acceptable
+./exception_checker.py:LineN:    sys.exit(-1)

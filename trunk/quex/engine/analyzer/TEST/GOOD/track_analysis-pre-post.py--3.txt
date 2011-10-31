@@ -1,28 +1,28 @@
 init-state = 0L
-00000() <~ (35, 88), (8, 16), (20, 47), (37, 96)
-      == 'a' ==> 00001
-      <no epsilon>
-00001(A, S, P22, pre=6) <~ (8, 17, A, S, pre=6), (20, 48, S, P10), (35, 89, S, P22), (37, 97, A, S)
-      == 'b' ==> 00002
-      <no epsilon>
-00002() <~ (20, 49), (35, 90)
-      == 'b' ==> 00003
-      == 'c' ==> 00005
-      <no epsilon>
-00003() <~ (20, 49)
-      == 'b' ==> 00003
-      == 'c' ==> 00004
-      <no epsilon>
-00004(A, P10) <~ (20, 50, A, P10)
-      <no epsilon>
-00005(A, P10) <~ (20, 50, A, P10), (35, 91)
-      == 'd' ==> 00006
-      <no epsilon>
-00006() <~ (35, 92)
-      == 'e' ==> 00007
-      <no epsilon>
-00007(A, P22) <~ (35, 93, A, P22)
-      <no epsilon>
+00000 (3, 6), (19, 45), (36, 94), (34, 86)
+     == 'a' ==> 00001
+    
+00001 (3, 7, A, pre=7), (19, 46, S), (34, 87, S), (36, 95, A)
+     == 'b' ==> 00002
+    
+00002 (19, 47), (34, 88)
+     == 'b' ==> 00003
+     == 'c' ==> 00005
+    
+00003 (19, 47)
+     == 'b' ==> 00003
+     == 'c' ==> 00004
+    
+00004 (19, 48, A, R)
+    
+00005 (19, 48, A, R), (34, 89)
+     == 'd' ==> 00006
+    
+00006 (34, 90)
+     == 'e' ==> 00007
+    
+00007 (34, 91, A, R)
+    
 
 State 0:
   .entry:
@@ -35,8 +35,8 @@ State 1:
     .positioner:
         .from 0: <nothing>
   .drop_out:
-    if PreContext_6:  goto Pattern8;
-     goto Pattern37;
+    if PreContext_7:  goto Pattern3;
+     goto Pattern36;
 
 
 State 2:
@@ -44,10 +44,10 @@ State 2:
     .positioner:
         .from 1:
              position[Acceptance] = input_p;
-             position[PostContext_10]  = input_p;
+             position[PostContext_19]  = input_p;
   .drop_out:
-    if PreContext_6: pos -= 1;  goto Pattern8;
-    pos -= 1;  goto Pattern37;
+    if PreContext_7: pos -= 1;  goto Pattern3;
+    pos -= 1;  goto Pattern36;
 
 
 State 3:
@@ -56,8 +56,8 @@ State 3:
         .from 2: <nothing>
         .from 3: <nothing>
   .drop_out:
-    if PreContext_6: pos = position[Acceptance]; goto Pattern8;
-    pos = position[Acceptance]; goto Pattern37;
+    if PreContext_7: pos = position[Acceptance]; goto Pattern3;
+    pos = position[Acceptance]; goto Pattern36;
 
 
 State 4:
@@ -65,7 +65,7 @@ State 4:
     .positioner:
         .from 3: <nothing>
   .drop_out:
-    pos = position[PostContext_10] ; goto Pattern20;
+    pos = position[PostContext_19] ; goto Pattern19;
 
 
 State 5:
@@ -73,7 +73,7 @@ State 5:
     .positioner:
         .from 2: <nothing>
   .drop_out:
-    pos -= 2;  goto Pattern20;
+    pos -= 2;  goto Pattern19;
 
 
 State 6:
@@ -81,7 +81,7 @@ State 6:
     .positioner:
         .from 5: <nothing>
   .drop_out:
-    pos -= 3;  goto Pattern20;
+    pos -= 3;  goto Pattern19;
 
 
 State 7:
@@ -89,6 +89,6 @@ State 7:
     .positioner:
         .from 6: <nothing>
   .drop_out:
-    pos -= 4;  goto Pattern35;
+    pos -= 4;  goto Pattern34;
 
 

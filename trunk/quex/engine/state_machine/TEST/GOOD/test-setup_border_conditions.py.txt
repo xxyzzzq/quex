@@ -1,356 +1,364 @@
 ##-- 0 -----------------------------------------------------------------------
  -- pre-condition  = False
  -- post-condition = False
- -- begin of file  =  False
- -- end of file    =  False
+ -- begin of line  =  False
+ -- end of line    =  False
 
-result sm.id     =  9
+result sm.id     =  10
 result =  init-state = 0L
-00000() <~ 
-      == '1' ==> 00001
-      <no epsilon>
-00001(A, S) <~ 
-      <no epsilon>
+00000 ()
+     == '1' ==> 00001
+    
+00001 (A)
+    
 
 trivially pre-conditioned =  False
 ##-- 1 -----------------------------------------------------------------------
  -- pre-condition  = False
  -- post-condition = False
- -- begin of file  =  False
- -- end of file    =  True
+ -- begin of line  =  False
+ -- end of line    =  True
 
-result sm.id     =  16
+result sm.id     =  17
 result =  init-state = 0L
-00000() <~ 
-      == '1' ==> 00001
-      <no epsilon>
-00001(S, P12) <~ 
-      == '\n' ==> 00002
-      <no epsilon>
-00002(A, P12) <~ 
-      <no epsilon>
+00000 ()
+     == '1' ==> 00001
+    
+00001 (S)
+     == '\n' ==> 00002
+    
+00002 (A, R)
+    
 
 trivially pre-conditioned =  False
 ##-- 2 -----------------------------------------------------------------------
  -- pre-condition  = False
  -- post-condition = False
- -- begin of file  =  True
- -- end of file    =  False
+ -- begin of line  =  True
+ -- end of line    =  False
 
-result sm.id     =  18
+result sm.id     =  21
 result =  init-state = 0L
-00000() <~ 
-      == '1' ==> 00001
-      <no epsilon>
-00001(A, S, bol) <~ 
-      <no epsilon>
+00000 ()
+     == '1' ==> 00001
+    
+00001 (A, pre=bol)
+    
 
 trivially pre-conditioned =  True
 ##-- 3 -----------------------------------------------------------------------
  -- pre-condition  = False
  -- post-condition = False
- -- begin of file  =  True
- -- end of file    =  True
+ -- begin of line  =  True
+ -- end of line    =  True
 
-result sm.id     =  25
+result sm.id     =  28
 result =  init-state = 0L
-00000() <~ 
-      == '1' ==> 00001
-      <no epsilon>
-00001(S, P21) <~ 
-      == '\n' ==> 00002
-      <no epsilon>
-00002(A, P21, bol) <~ 
-      <no epsilon>
+00000 ()
+     == '1' ==> 00001
+    
+00001 (S)
+     == '\n' ==> 00002
+    
+00002 (A, R, pre=bol)
+    
 
 trivially pre-conditioned =  True
 ##-- 4 -----------------------------------------------------------------------
  -- pre-condition  = False
  -- post-condition = True
- -- begin of file  =  False
- -- end of file    =  False
+ -- begin of line  =  False
+ -- end of line    =  False
 
-result sm.id     =  30
+result sm.id     =  35
 result =  init-state = 0L
-00000() <~ 
-      == '1' ==> 00001
-      <no epsilon>
-00001(S, P5) <~ 
-      == '2' ==> 00002
-      <no epsilon>
-00002(A, P5) <~ 
-      <no epsilon>
+00000 ()
+     == '1' ==> 00001
+    
+00001 (S)
+     == '2' ==> 00002
+    
+00002 (A, R)
+    
 
 trivially pre-conditioned =  False
 ##-- 5 -----------------------------------------------------------------------
  -- pre-condition  = False
  -- post-condition = True
- -- begin of file  =  False
- -- end of file    =  True
+ -- begin of line  =  False
+ -- end of line    =  True
 
-result sm.id     =  34
+result sm.id     =  42
 result =  init-state = 0L
-00000() <~ 
-      == '1' ==> 00001
-      <no epsilon>
-00001(S, P5) <~ 
-      == '2' ==> 00002
-      <no epsilon>
-00002() <~ 
-      == '\n' ==> 00003
-      <no epsilon>
-00003(A, P5) <~ 
-      <no epsilon>
+00000 ()
+     == '1' ==> 00001
+    
+00001 (S)
+     == '2' ==> 00002
+    
+00002 
+     == '\n' ==> 00003
+    
+00003 (A, R)
+    
 
 trivially pre-conditioned =  False
 ##-- 6 -----------------------------------------------------------------------
  -- pre-condition  = False
  -- post-condition = True
- -- begin of file  =  True
- -- end of file    =  False
+ -- begin of line  =  True
+ -- end of line    =  False
 
-result sm.id     =  38
+result sm.id     =  49
 result =  init-state = 0L
-00000() <~ 
-      == '1' ==> 00001
-      <no epsilon>
-00001(S, P5) <~ 
-      == '2' ==> 00002
-      <no epsilon>
-00002(A, P5, bol) <~ 
-      <no epsilon>
+00000 ()
+     == '1' ==> 00001
+    
+00001 (S)
+     == '2' ==> 00002
+    
+00002 (A, R, pre=bol)
+    
 
 trivially pre-conditioned =  True
 ##-- 7 -----------------------------------------------------------------------
  -- pre-condition  = False
  -- post-condition = True
- -- begin of file  =  True
- -- end of file    =  True
+ -- begin of line  =  True
+ -- end of line    =  True
 
-result sm.id     =  42
+result sm.id     =  56
 result =  init-state = 0L
-00000() <~ 
-      == '1' ==> 00001
-      <no epsilon>
-00001(S, P5) <~ 
-      == '2' ==> 00002
-      <no epsilon>
-00002() <~ 
-      == '\n' ==> 00003
-      <no epsilon>
-00003(A, P5, bol) <~ 
-      <no epsilon>
+00000 ()
+     == '1' ==> 00001
+    
+00001 (S)
+     == '2' ==> 00002
+    
+00002 
+     == '\n' ==> 00003
+    
+00003 (A, R, pre=bol)
+    
 
 trivially pre-conditioned =  True
 ##-- 8 -----------------------------------------------------------------------
  -- pre-condition  = True
  -- post-condition = False
- -- begin of file  =  False
- -- end of file    =  False
+ -- begin of line  =  False
+ -- end of line    =  False
 
-result sm.id     =  51
-result pre sm.id =  49
+result sm.id     =  65
+result pre sm.id =  63
 result =  init-state = 0L
-00000() <~ 
-      == '1' ==> 00001
-      <no epsilon>
-00001(A, S, pre=49) <~ 
-      <no epsilon>
-pre-condition inverted = init-state = 0L
-00000() <~ 
-      == '0' ==> 00001
-      <no epsilon>
-00001(A, S) <~ 
-      <no epsilon>
+00000 ()
+     == '1' ==> 00001
+    
+00001 (A, pre=63)
+    
+
+inverse_pre_context_sm =  init-state = 0L
+00000 ()
+     == '0' ==> 00001
+    
+00001 (A)
+    
 
 trivially pre-conditioned =  False
 ##-- 9 -----------------------------------------------------------------------
  -- pre-condition  = True
  -- post-condition = False
- -- begin of file  =  False
- -- end of file    =  True
+ -- begin of line  =  False
+ -- end of line    =  True
 
-result sm.id     =  62
-result pre sm.id =  56
+result sm.id     =  77
+result pre sm.id =  75
 result =  init-state = 0L
-00000() <~ 
-      == '1' ==> 00001
-      <no epsilon>
-00001(S, P58) <~ 
-      == '\n' ==> 00002
-      <no epsilon>
-00002(A, P58, pre=56) <~ 
-      <no epsilon>
-pre-condition inverted = init-state = 0L
-00000() <~ 
-      == '0' ==> 00001
-      <no epsilon>
-00001(A, S) <~ 
-      <no epsilon>
+00000 ()
+     == '1' ==> 00001
+    
+00001 (S)
+     == '\n' ==> 00002
+    
+00002 (A, R, pre=75)
+    
+
+inverse_pre_context_sm =  init-state = 0L
+00000 ()
+     == '0' ==> 00001
+    
+00001 (A)
+    
 
 trivially pre-conditioned =  False
 ##-- 10 -----------------------------------------------------------------------
  -- pre-condition  = True
  -- post-condition = False
- -- begin of file  =  True
- -- end of file    =  False
+ -- begin of line  =  True
+ -- end of line    =  False
 
-result sm.id     =  68
-result pre sm.id =  66
+result sm.id     =  86
+result pre sm.id =  84
 result =  init-state = 0L
-00000() <~ 
-      == '1' ==> 00001
-      <no epsilon>
-00001(A, S, pre=66) <~ 
-      <no epsilon>
-pre-condition inverted = init-state = 0L
-00000() <~ 
-      == '0' ==> 00001
-      <no epsilon>
-00001() <~ 
-      == '\n' ==> 00002
-      <no epsilon>
-00002(A) <~ 
-      <no epsilon>
+00000 ()
+     == '1' ==> 00001
+    
+00001 (A, pre=84)
+    
+
+inverse_pre_context_sm =  init-state = 0L
+00000 ()
+     == '0' ==> 00001
+    
+00001 
+     == '\n' ==> 00002
+    
+00002 (A)
+    
 
 trivially pre-conditioned =  False
 ##-- 11 -----------------------------------------------------------------------
  -- pre-condition  = True
  -- post-condition = False
- -- begin of file  =  True
- -- end of file    =  True
+ -- begin of line  =  True
+ -- end of line    =  True
 
-result sm.id     =  79
-result pre sm.id =  73
+result sm.id     =  98
+result pre sm.id =  96
 result =  init-state = 0L
-00000() <~ 
-      == '1' ==> 00001
-      <no epsilon>
-00001(S, P75) <~ 
-      == '\n' ==> 00002
-      <no epsilon>
-00002(A, P75, pre=73) <~ 
-      <no epsilon>
-pre-condition inverted = init-state = 0L
-00000() <~ 
-      == '0' ==> 00001
-      <no epsilon>
-00001() <~ 
-      == '\n' ==> 00002
-      <no epsilon>
-00002(A) <~ 
-      <no epsilon>
+00000 ()
+     == '1' ==> 00001
+    
+00001 (S)
+     == '\n' ==> 00002
+    
+00002 (A, R, pre=96)
+    
+
+inverse_pre_context_sm =  init-state = 0L
+00000 ()
+     == '0' ==> 00001
+    
+00001 
+     == '\n' ==> 00002
+    
+00002 (A)
+    
 
 trivially pre-conditioned =  False
 ##-- 12 -----------------------------------------------------------------------
  -- pre-condition  = True
  -- post-condition = True
- -- begin of file  =  False
- -- end of file    =  False
+ -- begin of line  =  False
+ -- end of line    =  False
 
-result sm.id     =  89
-result pre sm.id =  86
+result sm.id     =  110
+result pre sm.id =  108
 result =  init-state = 0L
-00000() <~ 
-      == '1' ==> 00001
-      <no epsilon>
-00001(S, P5) <~ 
-      == '2' ==> 00002
-      <no epsilon>
-00002(A, P5, pre=86) <~ 
-      <no epsilon>
-pre-condition inverted = init-state = 0L
-00000() <~ 
-      == '0' ==> 00001
-      <no epsilon>
-00001(A, S) <~ 
-      <no epsilon>
+00000 ()
+     == '1' ==> 00001
+    
+00001 (S)
+     == '2' ==> 00002
+    
+00002 (A, R, pre=108)
+    
+
+inverse_pre_context_sm =  init-state = 0L
+00000 ()
+     == '0' ==> 00001
+    
+00001 (A)
+    
 
 trivially pre-conditioned =  False
 ##-- 13 -----------------------------------------------------------------------
  -- pre-condition  = True
  -- post-condition = True
- -- begin of file  =  False
- -- end of file    =  True
+ -- begin of line  =  False
+ -- end of line    =  True
 
-result sm.id     =  97
-result pre sm.id =  94
+result sm.id     =  122
+result pre sm.id =  120
 result =  init-state = 0L
-00000() <~ 
-      == '1' ==> 00001
-      <no epsilon>
-00001(S, P5) <~ 
-      == '2' ==> 00002
-      <no epsilon>
-00002(pre=94) <~ 
-      == '\n' ==> 00003
-      <no epsilon>
-00003(A, P5) <~ 
-      <no epsilon>
-pre-condition inverted = init-state = 0L
-00000() <~ 
-      == '0' ==> 00001
-      <no epsilon>
-00001(A, S) <~ 
-      <no epsilon>
+00000 ()
+     == '1' ==> 00001
+    
+00001 (S)
+     == '2' ==> 00002
+    
+00002 
+     == '\n' ==> 00003
+    
+00003 (A, R, pre=120)
+    
+
+inverse_pre_context_sm =  init-state = 0L
+00000 ()
+     == '0' ==> 00001
+    
+00001 (A)
+    
 
 trivially pre-conditioned =  False
 ##-- 14 -----------------------------------------------------------------------
  -- pre-condition  = True
  -- post-condition = True
- -- begin of file  =  True
- -- end of file    =  False
+ -- begin of line  =  True
+ -- end of line    =  False
 
-result sm.id     =  105
-result pre sm.id =  102
+result sm.id     =  134
+result pre sm.id =  132
 result =  init-state = 0L
-00000() <~ 
-      == '1' ==> 00001
-      <no epsilon>
-00001(S, P5) <~ 
-      == '2' ==> 00002
-      <no epsilon>
-00002(A, P5, pre=102) <~ 
-      <no epsilon>
-pre-condition inverted = init-state = 0L
-00000() <~ 
-      == '0' ==> 00001
-      <no epsilon>
-00001() <~ 
-      == '\n' ==> 00002
-      <no epsilon>
-00002(A) <~ 
-      <no epsilon>
+00000 ()
+     == '1' ==> 00001
+    
+00001 (S)
+     == '2' ==> 00002
+    
+00002 (A, R, pre=132)
+    
+
+inverse_pre_context_sm =  init-state = 0L
+00000 ()
+     == '0' ==> 00001
+    
+00001 
+     == '\n' ==> 00002
+    
+00002 (A)
+    
 
 trivially pre-conditioned =  False
 ##-- 15 -----------------------------------------------------------------------
  -- pre-condition  = True
  -- post-condition = True
- -- begin of file  =  True
- -- end of file    =  True
+ -- begin of line  =  True
+ -- end of line    =  True
 
-result sm.id     =  113
-result pre sm.id =  110
+result sm.id     =  146
+result pre sm.id =  144
 result =  init-state = 0L
-00000() <~ 
-      == '1' ==> 00001
-      <no epsilon>
-00001(S, P5) <~ 
-      == '2' ==> 00002
-      <no epsilon>
-00002(pre=110) <~ 
-      == '\n' ==> 00003
-      <no epsilon>
-00003(A, P5) <~ 
-      <no epsilon>
-pre-condition inverted = init-state = 0L
-00000() <~ 
-      == '0' ==> 00001
-      <no epsilon>
-00001() <~ 
-      == '\n' ==> 00002
-      <no epsilon>
-00002(A) <~ 
-      <no epsilon>
+00000 ()
+     == '1' ==> 00001
+    
+00001 (S)
+     == '2' ==> 00002
+    
+00002 
+     == '\n' ==> 00003
+    
+00003 (A, R, pre=144)
+    
+
+inverse_pre_context_sm =  init-state = 0L
+00000 ()
+     == '0' ==> 00001
+    
+00001 
+     == '\n' ==> 00002
+    
+00002 (A)
+    
 
 trivially pre-conditioned =  False

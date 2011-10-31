@@ -1,20 +1,25 @@
-from quex.engine.state_machine.core import StateMachine
+from   quex.engine.state_machine.core           import StateMachine
+import quex.engine.state_machine.transformation as     transformation
 
 class Checker:
-    def __init__(self, SuperSM, AllegedSubSM):
-        """Checks wether all patterns matched by the SuperSM are also matched by the 
-           AllegedSubSM. Basically it tries to answer the question:
+    def __init__(self, SuperSM, CandidateSM):
+        """RETURNS: 
+        
+             True  - if SuperSM matches all the patterns that CandidateSM
+                     can match. 
+             False - if not 
 
-              ? Is the set of patterns matched by 'AllegedSubSM' a subset of the ?
-              ? set of patterns matched by 'SuperSM'                              ?
+           In other words, SuperSM is a 'Super StateMachine' of Candidate, if
+           the set of patterns matched by 'CandidateSM' a subset of the set of
+           patterns matched by 'SuperSM'.                            
 
            RETURNS: 'True'  if so,
                     'False' if not.
         """
         assert isinstance(SuperSM, StateMachine)
-        assert isinstance(AllegedSubSM, StateMachine)
+        assert isinstance(CandidateSM, StateMachine)
 
-        self.sub   = AllegedSubSM
+        self.sub   = CandidateSM
         self.super = SuperSM
         self.visited_state_index_db = {}
 
@@ -91,51 +96,80 @@ class Checker:
         # sub set state machine of 'super sm'.
         return True
 
-def do(SuperSM, AllegedSubSM):
-    # Check wether SuperSM matches a superset of patterns of what AllegedSubSM matches.
-    sub_set_f = Checker(SuperSM, AllegedSubSM).do()
+def do(A, B):
+    """RETURNS: True  - if A == SUPERSET of B
+                False - if not
+    """
+    if isinstance(A, StateMachine):
+        assert isinstance(B, StateMachine)
+        return Checker(A, B).do()
 
-    if not sub_set_f: return False
-    # NOTE: Post-conditions do not change anything, since they match only when the whole
-    #       lexeme has matched (from begin to end of post condition). Post-conditions only
-    #       tell something about the place where the analyzer returns after the match.
+    assert not isinstance(B, StateMachine)
+    # (*) Core Pattern ________________________________________________________
     #
-    super_core = SuperSM.core()
-    sub_core   = AllegedSubSM.core()
+    #     (including the mounted post context, if there is one).
+    #
+    # NOTE: Post-conditions do not change anything, since they match only when
+    #       the whole lexeme has matched (from begin to end of post condition).
+    #       Post-conditions only tell something about the place where the 
+    #       analyzer returns after the match.
+    superset_f = Checker(A.sm, B.sm).do()
 
-    super_pre_conditioned_f = (super_core.pre_context_sm_id() != -1 or super_core.pre_context_begin_of_line_f()) 
-    sub_pre_conditioned_f   = (sub_core.pre_context_sm_id() != -1   or sub_core.pre_context_begin_of_line_f()) 
-    # Pre-Condition: 
-    #
-    #       (i) If (only) the alleged subset state machine is pre-conditioned this does not 
-    #           change anything in our considerations. It only restricts the 'set of applicable
-    #           situations' further. If the set of patterns matched by AllegedSubSM is
-    #           a subset of what SuperSM matches, then any subset of that is also a subset
-    #           of what SuperSM matches.
-    if not super_pre_conditioned_f: return True
+    if not superset_f: return False
 
+    # NOW: For the core state machines it holds: 
     #
-    #       (ii) If the SuperSM is pre-conditioned then the enclosing set is restricted, and
-    #            it has to be made sure that it still encloses all what AllegedSubSM matches.
+    #                      'core(A)' matches a super set of 'core(B)'.
     #
-    #            -- If the AllegedSubSM is not pre-conditioned at all, then it's free!
-    #               Any pattern that does not have the precondition of SuperSM and matches
-    #               AllegedSubSM can only be matched by AllegedSubSM.
-    if not sub_pre_conditioned_f: return False
 
-    # Here: Both are pre-conditioned.
-    if super_core.pre_context_begin_of_line_f() and sub_core.pre_context_begin_of_line_f():
-        assert super_core.pre_context_sm_id() != -1
-        assert sub_core.pre_context_sm_id() != -1
-        # It holds the judgement about the main patterns:
+    # (*) Pre-Condition _______________________________________________________
+    #
+    if not A.has_pre_context(): 
+        # core(A) is a superset of core(B). 
+        # A is not restricted. B may be (who cares).
+        # => A can match more than B.
         return True
 
-    #            -- If the AllegedSubSM is pre-conditioned, then its pre-condition must be
-    #               a subset of SuperSM pre-condition. If not, its free for the same reason
-    #               as mentioned above.
-    return Checker(SuperSM.core().pre_context_sm(), AllegedSubSM.core().pre_context_sm()).do()
+    # NOW: Acceptance of A is restricted by a pre-context.
+    #
+    if not B.has_pre_context(): 
+        # A is restricted by pre-context, B is not.
+        # => B can match things that A cannot. 
+        return False
 
-def do_list(SuperSM_List, AllegedSubSM):
-    for super_sm in SuperSM_List:
-        if do(super_sm, AllegedSubSM) == True: return True
+    # NOW: A is restricted by pre-context. 
+    #      B is restricted by pre-context. 
+    #
+    #      For A to be a superset of B, A must be less or equally restricted than B.
+    #
+    #                 pre(B) is a superset of pre(A) 
+    # 
+    #
+    if B.pre_context_trivial_begin_of_line_f:
+        if not A.pre_context_trivial_begin_of_line_f:
+            # pre(A) can never be a subset of pre(B)
+            return False
+        else:
+            # pre(A) = pre(B) which fulfills the condition
+            return True
+
+    # NOW: B is a 'real' pre-context not only a 'begin-of-line'
+    #
+    # Decision about "pre(A) is subset of pre(B)" done by Checker
+    if not A.pre_context_trivial_begin_of_line_f:
+        A_pre_sm = A.inverse_pre_context_sm
+    else:
+        # A contains only 'begin-of-line'. Note, however, that 
+        # -- newline definition may include '\r\n' so inversion is 
+        #    required. 
+        # -- at this point in time we are dealing with transformed 
+        #    machines. So this has also to be transformed.
+        A_pre_sm = StateMachine.from_sequence("\n").get_inverse()
+        A_pre_sm = transformation.try_this(A_pre_sm, fh=-1)
+
+    return Checker(B.inverse_pre_context_sm, A_pre_sm).do()
+
+def do_list(SuperPattern_List, AllegedSubPattern):
+    for super_sm in SuperPattern_List:
+        if do(super_sm, AllegedSubPattern) == True: return True
     return False

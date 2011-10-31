@@ -11,7 +11,7 @@ from   quex.engine.state_machine.core import *
 from   quex.engine.state_machine.TEST.test_state_machines import *
 import quex.engine.state_machine.nfa_to_dfa as nfa_to_dfa
 import quex.engine.state_machine.hopcroft_minimization as hopcroft
-import quex.engine.state_machine.identity_checker as identity_checker
+import quex.engine.state_machine.check.identity as identity_checker
 
 if "--hwut-info" in sys.argv:
     print "DFA: Hopcroft optimization III (state machine combination) "
@@ -64,9 +64,8 @@ n2 = sm.add_transition(n2, ord('X'), n1)
 
 n4 = sm.add_transition(n3, ord('Z'))
 
-sm.states[n3].core().set_store_input_position_f()
-sm.states[n3].core().set_post_context_id(66L)
-sm.states[n4].core().set_post_context_id(66L)
-sm.states[n4].core().set_acceptance_f(True, LeaveStoreInputPositionF=True)
+sm.states[n3].set_input_position_store_f()
+sm.states[n4].set_acceptance(True)
+sm.states[n4].set_input_position_restore_f(True)
 sm.mark_state_origins()
 test(sm, txt)

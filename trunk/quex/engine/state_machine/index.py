@@ -42,6 +42,14 @@ def get_state_machine_id():
     """Produces a unique id for the state machine. This function is only to be called
        from inside the constructor of class StateMachine."""
     global __internal_state_machine_id_counter
+    # import sys
+    # try:    
+    #    for i in xrange(10000):
+    #        frame = sys._getframe(i).f_code
+    #        print "## called by: %s: %s" % (frame.co_name, frame.co_filename)
+    # except: 
+    #    print "## => ", __internal_state_machine_id_counter + 1
+    #    print "##----------------------------------"
     __internal_state_machine_id_counter += long(1)
     return __internal_state_machine_id_counter 
 

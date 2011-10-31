@@ -17,7 +17,7 @@ if "--hwut-info" in sys.argv:
 def test(RE):
     print "-------------------------------------------------------------------------------"
     print "## RE:", RE
-    result = core.do(RE, {})
+    result = core.do(RE, {}).sm
     ## print "## State Machine:", result
     ## result = repeat.do(result, 1)
     print "## RE+ (repetition):", result.get_string(NormalizeF=True)

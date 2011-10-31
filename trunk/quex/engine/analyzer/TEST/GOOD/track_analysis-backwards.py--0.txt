@@ -1,12 +1,12 @@
 init-state = 0L
-00000() <~ (6, 14), (15, 32)
-      == 'x' ==> 00001
-      == 'y' ==> 00002
-      <no epsilon>
-00001(A, S) <~ (6, 15, A, S)
-      <no epsilon>
-00002(A, S) <~ (15, 33, A, S)
-      <no epsilon>
+00000 (7, 14), (15, 30)
+     == 'x' ==> 00001
+     == 'y' ==> 00002
+    
+00001 (7, 15, A)
+    
+00002 (15, 31, A)
+    
 
 State 0:
   .entry:
@@ -16,7 +16,7 @@ State 0:
 State 1:
   .entry:
     EntryBackward:
-    pre-context-fulfilled = 6L;
+    pre-context-fulfilled = 7L;
   .drop_out:
     goto PreContextCheckTerminated;
 

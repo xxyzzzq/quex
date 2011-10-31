@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+#
 # Quex is  free software;  you can  redistribute it and/or  modify it  under the
 # terms  of the  GNU Lesser  General  Public License  as published  by the  Free
 # Software Foundation;  either version 2.1 of  the License, or  (at your option)
@@ -17,52 +18,28 @@
 #
 ################################################################################
 import sys
+import os
+import quex.exception_checker as exception_checker
 
-try:    
-    if False: print ""
-except: 
+if sys.version_info[0] >= 3: 
     print("error: This version of quex was not implemented for Python >= 3.0")
     print("error: Please, use Python versions 2.x.")
     sys.exit(-1)
 
-
-def __exeption_handler(TheException):
-    from quex.engine.misc.file_in  import error_msg
-
-    if "--debug-exception" in sys.argv:
-        import traceback 
-        print traceback.format_exc()
-        return
-
-    if   isinstance(TheException, AssertionError):
-        error_msg("Assertion error -- please report a bug under\n" + \
-                  " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
-
-    elif isinstance(TheException, KeyboardInterrupt): 
-        print
-        error_msg("#\n# Keyboard Interrupt -- Processing unfinished.\n#")
-
-    elif isinstance(TheException, Exception):
-        error_msg("Exception occured -- please, report a bug under\n" + \
-                  " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
-    
-    # Indicate Error For 'make'-procedures, etc.
-    sys.exit(-1)
+if os.environ.has_key("QUEX_PATH") == False:
+    print("Environment variable QUEX_PATH has not been defined.")
+else:
+    sys.path.insert(0, os.environ["QUEX_PATH"])
 
 try:
-    # (*) Check if everything is correctly installed
+    exception_checker.do_on_import(sys.argv)
     import quex.DEFINITIONS
-    quex.DEFINITIONS.check()
-
-    # This script needs to be located one directory above 'quex.'
-    # so that it ca get the imports straight.
     import quex.input.command_line.core  as command_line
-    import quex.input.command_line.query as query_parser
+    import quex.input.command_line.query as query
     import quex.core                     as core
 
-
 except BaseException as instance:
-    __exeption_handler(instance)
+    exception_checker.handle(instance)
     
 try:
     pass
@@ -73,19 +50,24 @@ except:
 
 if __name__ == "__main__":
     try:
-        core._exception_checker()
+        quex.DEFINITIONS.check()
 
-        # (*) Call only for query? ___________________________________________________________
-        if query_parser.do(sys.argv):   # if quex has been called for UCS property
-            sys.exit(0)                 # query, then no further processing is performed
+        # (*) Test Exceptions __________________________________________________
+        if   exception_checker.do(sys.argv):
+            # Done: Tests about exceptions have been performed
+            pass
 
-        # (*) Get Setup from Command Line and Config File ____________________________________
-        #     If the setup parser returns 'False' the requested job was minor
-        #     and no further processing has to be done. If 'True' start the process.
-        if command_line.do(sys.argv):
+        # (*) Query ____________________________________________________________
+        elif query.do(sys.argv):    
+            # Done: Queries about unicode sets and regular expressions
+            pass
+
+        # (*) The Real Job _____________________________________________________
+        elif command_line.do(sys.argv):
+            # To do: Interpret input files and generate code or drawings.
             core.do() 
 
     except BaseException as instance:
-        __exeption_handler(instance)
+        exception_checker.handle(instance)
 
 

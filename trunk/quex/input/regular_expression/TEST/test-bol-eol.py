@@ -4,10 +4,11 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.engine.state_machine.acceptance_pruning as acceptance_pruning
-import quex.input.regular_expression.engine as core
-from quex.blackboard import setup as Setup
+import quex.input.regular_expression.engine         as core
+from   quex.blackboard                              import setup as Setup
 Setup.buffer_limit_code = 0
 Setup.path_limit_code   = 0
+Setup.dos_carriage_return_newline_f = False
 
 if "--hwut-info" in sys.argv:
     print "Conditional Analysis: Begin of Line '^', End of Line '$'"
@@ -28,7 +29,7 @@ def test_core(TestString):
         print "pattern syntax error"
     else:
         print "state machine\n", sm 
-        print "begin of line = ", sm.core().pre_context_begin_of_line_f()
+        print "begin of line = ", sm.pre_context_trivial_begin_of_line_f
 
 test('[a-z]+')
 test('[a-z]*')
