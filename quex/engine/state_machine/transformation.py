@@ -4,8 +4,8 @@ import sys
 from   quex.engine.state_machine.core                  import StateMachine
 import quex.engine.state_machine.utf8_state_split      as utf8_state_split
 import quex.engine.state_machine.utf16_state_split     as utf16_state_split
-import quex.engine.state_machine.nfa_to_dfa            as nfa_to_dfa
-import quex.engine.state_machine.hopcroft_minimization as hopcroft
+import quex.engine.state_machine.algorithm.nfa_to_dfa            as nfa_to_dfa
+import quex.engine.state_machine.algorithm.hopcroft_minimization as hopcroft
 from   quex.engine.misc.file_in                        import error_msg
 from   quex.blackboard                                 import setup as Setup
 

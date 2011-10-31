@@ -11,7 +11,6 @@ from   copy      import deepcopy
 from   operator  import attrgetter
 from   itertools import ifilter, imap
 
-
 class State:
     # Information about all transitions starting from a particular state. 
     # Transitions are of two types:

@@ -1,8 +1,8 @@
 #! /usr/bin/env python
 from   quex.engine.misc.file_in                         import error_msg
 from   quex.engine.state_machine.core                   import StateMachine
-import quex.engine.state_machine.nfa_to_dfa             as     nfa_to_dfa
-import quex.engine.state_machine.hopcroft_minimization  as     hopcroft
+import quex.engine.state_machine.algorithm.nfa_to_dfa             as     nfa_to_dfa
+import quex.engine.state_machine.algorithm.hopcroft_minimization  as     hopcroft
 import quex.engine.state_machine.ambiguous_post_context as     ambiguous_post_context
 from   quex.blackboard                                  import E_PreContextIDs, setup as Setup
 

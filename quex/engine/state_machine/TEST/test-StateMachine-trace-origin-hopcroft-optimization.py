@@ -7,7 +7,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.engine.state_machine.core import *
 from   quex.engine.state_machine.state_core_info import *
-import quex.engine.state_machine.hopcroft_minimization as hopcroft
+import quex.engine.state_machine.algorithm.hopcroft_minimization as hopcroft
 
 if "--hwut-info" in sys.argv:
     print "Tracing origin: Hopcroft optimization (minimize state set)"

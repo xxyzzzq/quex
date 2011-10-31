@@ -1,8 +1,8 @@
 # (C) Frank-Rene Schaefer
 #     ABSOLUTELY NO WARRANTY
-import quex.engine.state_machine.nfa_to_dfa            as nfa_to_dfa
-import quex.engine.state_machine.hopcroft_minimization as hopcroft
-import quex.engine.state_machine.acceptance_pruning    as acceptance_pruning
+import quex.engine.state_machine.algorithm.nfa_to_dfa            as nfa_to_dfa
+import quex.engine.state_machine.algorithm.hopcroft_minimization as hopcroft
+import quex.engine.state_machine.algorithm.acceptance_pruning    as acceptance_pruning
 from   quex.blackboard                                 import E_PreContextIDs, setup as Setup
 
 def do(the_state_machine, pre_context_sm, BeginOfLinePreContextF):
