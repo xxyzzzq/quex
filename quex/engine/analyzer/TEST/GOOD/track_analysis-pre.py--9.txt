@@ -1,22 +1,22 @@
 init-state = 0L
-00000() <~ (2, 4), (4, 8), (23, 53)
-      == 'a' ==> 00001
-      == 'b' ==> 00005
-      <no epsilon>
-00001(A, S, bol) <~ (2, 5, A, S, bol), (23, 55)
-      == 'b' ==> 00002
-      <no epsilon>
-00002() <~ (23, 54)
-      == 'c' ==> 00003
-      <no epsilon>
-00003() <~ (23, 56)
-      == 'd' ==> 00004
-      <no epsilon>
-00004(A, S) <~ (23, 57, A, S)
-      <no epsilon>
-00005(A, S) <~ (4, 9, A, S), (23, 54)
-      == 'c' ==> 00003
-      <no epsilon>
+00000 (1, 2), (3, 6), (22, 51)
+     == 'a' ==> 00001
+     == 'b' ==> 00005
+    
+00001 (1, 3, A, pre=bol), (22, 53)
+     == 'b' ==> 00002
+    
+00002 (22, 52)
+     == 'c' ==> 00003
+    
+00003 (22, 54)
+     == 'd' ==> 00004
+    
+00004 (22, 55, A)
+    
+00005 (3, 7, A), (22, 52)
+     == 'c' ==> 00003
+    
 
 State 0:
   .entry:
@@ -29,11 +29,11 @@ State 0:
 State 1:
   .entry:
     .accepter:
-        if      BeginOfLine: last_acceptance = Pattern2
+        if      BeginOfLine: last_acceptance = Pattern1
     .positioner:
         .from 0: <nothing>
   .drop_out:
-    if BeginOfLine:  goto Pattern2;
+    if BeginOfLine:  goto Pattern1;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
@@ -42,7 +42,7 @@ State 2:
     .positioner:
         .from 1: <nothing>
   .drop_out:
-    if BeginOfLine: pos -= 1;  goto Pattern2;
+    if BeginOfLine: pos -= 1;  goto Pattern1;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
@@ -56,8 +56,8 @@ State 3:
         accept = last_acceptance
     Router:
         case Failure: pos = lexeme_start_p + 1;  goto Failure;
-        case 2: pos -= 2;  goto Pattern2;
-        case 4: pos -= 1;  goto Pattern4;
+        case 1: pos -= 2;  goto Pattern1;
+        case 3: pos -= 1;  goto Pattern3;
 
 
 State 4:
@@ -65,16 +65,16 @@ State 4:
     .positioner:
         .from 3: <nothing>
   .drop_out:
-     goto Pattern23;
+     goto Pattern22;
 
 
 State 5:
   .entry:
     .accepter:
-        last_acceptance = Pattern4
+        last_acceptance = Pattern3
     .positioner:
         .from 0: <nothing>
   .drop_out:
-     goto Pattern4;
+     goto Pattern3;
 
 

@@ -1,15 +1,15 @@
 init-state = 0L
-00000() <~ (44, 98), (29, 63), (14, 30)
-      == 'a' ==> 00001
-      <no epsilon>
-00001(S, P3) <~ (14, 31, S, P3), (29, 64), (44, 99)
-      == 'b' ==> 00002
-      <no epsilon>
-00002(S, P21) <~ (14, 32), (29, 65, S, P21), (44, 100)
-      == 'c' ==> 00003
-      <no epsilon>
-00003(A, S, P21, pre=42) <~ (14, 33, A, P3, pre=12), (29, 66, A, P21, pre=27), (44, 101, A, S, pre=42)
-      <no epsilon>
+00000 (10, 22), (39, 86), (25, 55)
+     == 'a' ==> 00001
+    
+00001 (10, 23, S), (25, 56), (39, 87)
+     == 'b' ==> 00002
+    
+00002 (10, 24), (25, 57, S), (39, 88)
+     == 'c' ==> 00003
+    
+00003 (10, 25, A, R, pre=14), (25, 58, A, R, pre=29), (39, 89, A, pre=43)
+    
 
 State 0:
   .entry:
@@ -38,9 +38,9 @@ State 3:
     .positioner:
         .from 2: <nothing>
   .drop_out:
-    if PreContext_12: pos -= 2;  goto Pattern14;
-    else if PreContext_27: pos -= 1;  goto Pattern29;
-    else if PreContext_42:  goto Pattern44;
+    if PreContext_14: pos -= 2;  goto Pattern10;
+    else if PreContext_29: pos -= 1;  goto Pattern25;
+    else if PreContext_43:  goto Pattern39;
     pos = lexeme_start_p + 1;  goto Failure;
 
 

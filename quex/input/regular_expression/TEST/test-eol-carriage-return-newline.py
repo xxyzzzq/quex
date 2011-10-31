@@ -18,12 +18,15 @@ def test(TestString):
 def test_core(TestString):
     print "___________________________________________________________________________"
     print "expression    = \"" + TestString + "\""
-    sm = core.do(TestString, {}, DOS_CarriageReturnNewlineF=True)
+
+    Setup.dos_carriage_return_newline_f = True
+
+    sm = core.do(TestString, {})
     if sm is None: 
         print "pattern syntax error"
     else:
         print "state machine\n", sm 
-        print "begin of line = ", sm.core().pre_context_begin_of_line_f()
+        print "begin of line = ", sm.pre_context_trivial_begin_of_line_f
 
 test('[a-z]+')
 # test('[a-z]*')

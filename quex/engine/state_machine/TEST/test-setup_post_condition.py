@@ -15,12 +15,12 @@ if "--hwut-info" in sys.argv:
 def test(sm, post_sm):    
     print "EXPRESSION = ", sm
     print "POST CONDITION = ", post_sm
-    result = setup_post_context.do(sm, post_sm)
-    print "APPENDED = ", result
-    result = nfa_to_dfa.do(result)
-    print "DFA = ", result
-    result = hopcroft.do(result)
-    print "HOPCROFT = ", result
+    return_sm = setup_post_context.do(sm, post_sm, False)
+    print "APPENDED = ", sm
+    sm = nfa_to_dfa.do(sm)
+    print "DFA = ", sm
+    sm = hopcroft.do(sm)
+    print "HOPCROFT = ", sm
 
 print "-------------------------------------------------------------------------------"
 tiny0 = StateMachine()

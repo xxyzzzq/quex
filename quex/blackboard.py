@@ -142,7 +142,6 @@ fragment_db = {
 class PatternShorthand:
     def __init__(self, Name="", StateMachine="", Filename="", LineN=-1, RE=""):
         assert StateMachine.__class__.__name__ == "StateMachine"
-        assert StateMachine.has_origins() == False
 
         self.name               = Name
         self.__state_machine    = StateMachine
@@ -234,8 +233,17 @@ def requires_begin_of_line_condition_support(ModeDB):
     for mode in ModeDB.values():
         pattern_action_pair_list = mode.get_pattern_action_pair_list()
         for info in pattern_action_pair_list:
-            state_machine = info.pattern_state_machine()
-            if state_machine.core().pre_context_begin_of_line_f():
+            if info.pattern().pre_context_trivial_begin_of_line_f:
                 return True
     return False
 
+def deprecated(*Args):
+    """This function is solely to be used as setter/getter property, 
+       of member variables that are deprecated. This way misuse
+       can be detected. Example usage:
+
+       class X(object):  # Class must be derived from 'object'
+           ...
+           my_old = property(deprecated, deprecated, "Alarm on 'my_old'")
+    """
+    assert False

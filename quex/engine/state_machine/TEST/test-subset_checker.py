@@ -3,11 +3,11 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.input.regular_expression.engine      as regex
-import quex.engine.state_machine.subset_checker as subset_checker
+import quex.input.regular_expression.engine     as regex
+import quex.engine.state_machine.check.superset as superset
 
 if "--hwut-info" in sys.argv:
-    print "Pattern Subset Determination"
+    print "Pattern Superset/Subset Determination"
     print "CHOICES: Easy, FalseCases, GoodCases, FalseCasesII, GoodCasesII, Misc, Pre-Post-Conditions;"
     sys.exit(0)
     
@@ -15,9 +15,11 @@ def test(A, B):
     def __core(SuperPattern, SubPattern):
         print ("super = " + SuperPattern).replace("\n", "\\n").replace("\t", "\\t")
         print ("sub   = " + SubPattern).replace("\n", "\\n").replace("\t", "\\t")
-        super_sm = regex.do(SuperPattern, {})
-        sub_sm   = regex.do(SubPattern, {})
-        print "claim = ", subset_checker.do(super_sm, sub_sm)
+        super_p = regex.do(SuperPattern, {})
+        sub_p   = regex.do(SubPattern, {})
+        # print "##super:", super_p
+        # print "##sub:", sub_p
+        print "claim = ", superset.do(super_p, sub_p)
     print "---------------------------"
     __core(A, B)
     print

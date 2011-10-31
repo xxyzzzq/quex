@@ -1,4 +1,4 @@
-<history date="Wed Oct 19 21:17:30 2011" element-n="490">
+<history date="Sun Oct 30 19:56:11 2011" element-n="557">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1170,5 +1170,90 @@
     </day>
     <day year="2011" month="09" day="07">
         <crc-error time="19:02:47" application="test-subset_checker.py" choice="Pre-Post-Conditions" database-crc="54741919" real-crc="-752691781"/>
+    </day>
+    <day year="2011" month="10" day="15">
+        <crc-error time="08:42:51" application="test-hopcroft-minimization-2.py" choice="ADAPT" database-crc="1992273305" real-crc="-1443496438"/>
+        <crc-error time="11:12:27" application="test-hopcroft-minimization.py" choice="ADAPT" database-crc="-123736635" real-crc="-42865383"/>
+        <crc-error time="11:12:44" application="test-hopcroft-minimization-2.py" choice="ADAPT" database-crc="-1443496438" real-crc="-1898926063"/>
+        <crc-error time="14:17:17" application="test-parallelize.py" choice="" database-crc="1891152328" real-crc="-1321345312"/>
+        <crc-error time="14:17:18" application="test-StateMachine-trace-origin-create-DFA-2.py" choice="" database-crc="56061168" real-crc="1643545621"/>
+        <crc-error time="14:17:18" application="test-parallelize-trace-origin.py" choice="" database-crc="1934687338" real-crc="372081665"/>
+        <crc-error time="14:18:30" application="test-parallelize.py" choice="" database-crc="-1321345312" real-crc="1339935842"/>
+        <crc-error time="14:19:19" application="test-StateMachine-trace-origin-create-DFA-2.py" choice="" database-crc="1643545621" real-crc="-800206185"/>
+        <crc-error time="14:19:37" application="test-parallelize-trace-origin.py" choice="" database-crc="372081665" real-crc="996812597"/>
+        <crc-error time="19:38:09" application="test-setup_border_conditions.py" choice="" database-crc="131781279" real-crc="576054005"/>
+    </day>
+    <day year="2011" month="10" day="19">
+        <crc-error time="22:07:16" application="test-hopcroft-minimization-2.py" choice="ADAPT" database-crc="-1898926063" real-crc="693991759"/>
+    </day>
+    <day year="2011" month="10" day="20">
+        <crc-error time="16:00:40" application="test-StateMachine-trace-origin-create-DFA.py" choice="" database-crc="0" real-crc="-1604145748"/>
+        <crc-error time="16:00:49" application="test-StateMachine-trace-origin-create-DFA.py" choice="" database-crc="-1604145748" real-crc="278042434"/>
+        <crc-error time="19:14:08" application="test-ambiguous_post_condition-mount_pseudo.py" choice="" database-crc="70674072" real-crc="-1923637937"/>
+    </day>
+    <day year="2011" month="10" day="21">
+        <crc-error time="06:11:52" application="test-hopcroft-minimization-3.py" choice="NEW" database-crc="-1634634268" real-crc="2109332825"/>
+        <crc-error time="06:12:02" application="test-hopcroft-minimization-3.py" choice="ADAPT" database-crc="-1634634268" real-crc="2109332825"/>
+        <crc-error time="06:13:06" application="test-StateMachine-trace-origin-hopcroft-optimization.py" choice="" database-crc="-1792270783" real-crc="985424934"/>
+        <crc-error time="20:44:40" application="test-hopcroft-minimization.py" choice="ADAPT" database-crc="-42865383" real-crc="-181937459"/>
+        <crc-error time="20:45:10" application="test-hopcroft-minimization-2.py" choice="ADAPT" database-crc="693991759" real-crc="-1079290498"/>
+    </day>
+    <day year="2011" month="10" day="22">
+        <crc-error time="05:46:15" application="test-hopcroft-minimization.py" choice="NEW" database-crc="-181937459" real-crc="320921215"/>
+        <crc-error time="05:46:15" application="test-hopcroft-minimization.py" choice="ADAPT" database-crc="-181937459" real-crc="320921215"/>
+        <crc-error time="05:46:15" application="test-hopcroft-minimization-2.py" choice="ADAPT" database-crc="-1079290498" real-crc="-2137376588"/>
+        <crc-error time="09:39:23" application="test-parallelize.py" choice="" database-crc="943481406" real-crc="-1443008406"/>
+        <crc-error time="14:41:04" application="test-hopcroft-minimization.py" choice="NEW" database-crc="320921215" real-crc="1006943048"/>
+        <crc-error time="14:41:04" application="test-hopcroft-minimization.py" choice="ADAPT" database-crc="320921215" real-crc="1006943048"/>
+        <crc-error time="14:41:47" application="test-hopcroft-minimization-2.py" choice="NEW" database-crc="-2137376588" real-crc="1325228797"/>
+        <crc-error time="14:42:05" application="test-nfa-to-dfa.py" choice="" database-crc="1794649778" real-crc="428303616"/>
+        <crc-error time="14:42:15" application="test-nfa-to-dfa-special.py" choice="" database-crc="1159177584" real-crc="-5886249"/>
+        <crc-error time="14:42:43" application="test-ambiguous_post_condition-mount_pseudo.py" choice="" database-crc="-714472523" real-crc="-372519755"/>
+        <crc-error time="14:43:15" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1458308100" real-crc="-1450761232"/>
+        <crc-error time="14:43:35" application="test-setup_post_condition.py" choice="" database-crc="-2109087540" real-crc="-1680869239"/>
+        <crc-error time="14:44:01" application="test-setup_border_conditions.py" choice="" database-crc="1639524465" real-crc="-803137523"/>
+        <crc-error time="14:44:20" application="test-StateMachine-inverse.py" choice="" database-crc="-41629599" real-crc="600355830"/>
+        <crc-error time="14:44:36" application="test-setup_pre_condition.py" choice="" database-crc="1330615156" real-crc="1058097925"/>
+        <crc-error time="14:44:57" application="test-hopcroft-minimization-2.py" choice="ADAPT" database-crc="-2137376588" real-crc="1325228797"/>
+        <crc-error time="17:48:30" application="test-StateMachine-clone.py" choice="" database-crc="-821346206" real-crc="-452405640"/>
+        <crc-error time="17:50:58" application="test-StateMachine-epsilon-closure.py" choice="" database-crc="-1480470678" real-crc="1906518391"/>
+        <crc-error time="17:51:09" application="test-StateMachine-elementary_trigger_sets-2.py" choice="" database-crc="333023497" real-crc="596212212"/>
+        <crc-error time="17:51:35" application="test-parallelize.py" choice="" database-crc="-1443008406" real-crc="1466316070"/>
+        <crc-error time="17:52:13" application="test-repeat.py" choice="" database-crc="1781551933" real-crc="1363066081"/>
+        <crc-error time="17:52:27" application="test-repeat-pure.py" choice="" database-crc="-244690266" real-crc="1918833745"/>
+        <crc-error time="17:53:43" application="test-sequentialize.py" choice="" database-crc="195355358" real-crc="-1418864951"/>
+        <crc-error time="17:53:53" application="test-StateMachine-trace-origin-clone.py" choice="" database-crc="-1523462439" real-crc="341129516"/>
+        <crc-error time="17:54:02" application="test-StateMachine-trace-origin-hopcroft-optimization.py" choice="" database-crc="638605976" real-crc="-1539282322"/>
+        <crc-error time="17:55:35" application="test-StateMachine-trace-origin-create-DFA-2.py" choice="" database-crc="847768767" real-crc="-19285013"/>
+        <crc-error time="17:55:44" application="test-parallelize-trace-origin.py" choice="" database-crc="-436275390" real-crc="-1658048624"/>
+    </day>
+    <day year="2011" month="10" day="23">
+        <crc-error time="07:05:09" application="test-hopcroft-minimization.py" choice="ADAPT" database-crc="1006943048" real-crc="320921215"/>
+        <crc-error time="07:05:48" application="test-hopcroft-minimization-2.py" choice="ADAPT" database-crc="1325228797" real-crc="-2137376588"/>
+        <crc-error time="08:25:23" application="test-StateMachine-trace-origin-create-DFA-2.py" choice="" database-crc="-19285013" real-crc="1408923868"/>
+        <crc-error time="08:31:51" application="test-StateMachine-trace-origin-create-DFA-2.py" choice="" database-crc="1408923868" real-crc="644766520"/>
+        <crc-error time="09:35:08" application="test-parallelize.py" choice="" database-crc="801044692" real-crc="2067146737"/>
+        <crc-error time="10:15:58" application="test-StateMachine-trace-origin-create-DFA-2.py" choice="" database-crc="644766520" real-crc="1873986190"/>
+        <crc-error time="10:17:19" application="test-parallelize-trace-origin.py" choice="" database-crc="441636267" real-crc="1888147954"/>
+        <crc-error time="10:34:52" application="test-parallelize.py" choice="" database-crc="2067146737" real-crc="-1443008406"/>
+        <crc-error time="11:04:58" application="test-StateMachine-trace-origin-create-DFA-2.py" choice="" database-crc="1873986190" real-crc="-876481985"/>
+        <crc-error time="11:05:59" application="test-parallelize.py" choice="" database-crc="-1443008406" real-crc="-491967246"/>
+        <crc-error time="11:06:12" application="test-parallelize-trace-origin.py" choice="" database-crc="1888147954" real-crc="-1706023851"/>
+        <crc-error time="11:30:10" application="test-parallelize.py" choice="" database-crc="-491967246" real-crc="801044692"/>
+    </day>
+    <day year="2011" month="10" day="25">
+        <crc-error time="19:25:06" application="test-utf8_state_split-do-2.py" choice="" database-crc="-1139775102" real-crc="-1938210474"/>
+        <crc-error time="19:53:42" application="test-setup_border_conditions.py" choice="" database-crc="-806423538" real-crc="-624847514"/>
+    </day>
+    <day year="2011" month="10" day="27">
+        <crc-error time="17:51:48" application="test-ambiguous_post_condition-mount_pseudo.py" choice="" database-crc="-714472523" real-crc="1141172876"/>
+        <crc-error time="20:34:56" application="test-utf8_state_split-do-2.py" choice="" database-crc="-1938210474" real-crc="-1139775102"/>
+        <crc-error time="20:53:11" application="test-setup_border_conditions.py" choice="" database-crc="-624847514" real-crc="-1955522545"/>
+        <crc-error time="21:22:43" application="test-setup_border_conditions.py" choice="" database-crc="-1955522545" real-crc="-1878608545"/>
+        <crc-error time="21:27:37" application="test-setup_border_conditions.py" choice="" database-crc="-1878608545" real-crc="734907112"/>
+        <crc-error time="22:37:00" application="test-subset_checker.py" choice="Pre-Post-Conditions" database-crc="-752691781" real-crc="-2073619492"/>
+    </day>
+    <day year="2011" month="10" day="29">
+        <crc-error time="16:06:29" application="test-subset_checker.py" choice="Pre-Post-Conditions" database-crc="-2073619492" real-crc="-752691781"/>
     </day>
 </history>

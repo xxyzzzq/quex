@@ -1,33 +1,15 @@
 from quex.engine.state_machine.state_core_info import StateCoreInfo
-from quex.blackboard import E_PreContextIDs, E_PostContextIDs
+from quex.blackboard import E_PreContextIDs, E_AcceptanceIDs
 
 class StateOriginList(object):
     __slots__ = ('__list')
 
     def __init__(self, List=None):
-        if List is None: self.__list = []
-        else:            self.__list = List
+        self.__list = []
+        if List is not None: self.merge(List)
 
     def clone(self):
         return StateOriginList([x.clone() for x in self.__list])
-
-    def is_equivalent(self, Other):
-        # Loop over all origins in list and search for counterparts in Other
-        for origin in self.__list:
-            # Is there an equivalent origin in Other?
-            for counterpart in Other.__list:
-                if origin.is_equivalent(counterpart): break
-            else:
-                return False 
-
-        # Vice versa ...
-        for origin in Other.__list:
-            for counterpart in self.__list:
-                if origin.is_equivalent(counterpart): break
-            else:
-                return False 
-
-        return True
 
     def get_list(self):
         return self.__list
@@ -36,86 +18,91 @@ class StateOriginList(object):
         for x in self.__list:
             yield x
 
+    def __len__(self):
+        return len(self.__list)
+
     def __add(self, Origin):
         """Check if origin has already been mentioned, else append the new origin.
         """
-        if Origin in self.__list: 
-            idx = self.__list.index(Origin)  
-            self.__list[idx] = Origin
-        else:    
-            self.__list.append(Origin)
+        # NOT: if not Origin.is_meaningful(): return
+        #      We need even non-meaningful origins, to detect whether a state can be 
+        #      combined with another during Hopcroft optimization.
+            
+        SM_ID = Origin.state_machine_id
+        for same in (origin for origin in self.__list if origin.state_machine_id == SM_ID):
+            same.merge(Origin)
+            return
+        self.__list.append(Origin.clone())
 
-    def add(self, X, StateIndex, StoreInputPositionF=False, SelfAcceptanceF=False):
+    def get_the_only_one(self):
+        """Returns a origin that belongs to the list. If there is no origin on
+           the list, then one is created and then returned.
+        """
+        L = len(self.__list)
+        if   L == 0: 
+            new_origin = StateCoreInfo(E_AcceptanceIDs.FAILURE, -1L, AcceptanceF=False)
+            self.__list.append(new_origin)
+            # NOTE: Here the object is in a state where there is a 'nonsense origin'. It is
+            #       expected from the caller to fix this.
+            return new_origin
+
+        assert L == 1, "Calling function not permitted on aggregated states."
+        return self.__list[0]
+
+    def remove_the_only_one(self):
+        assert len(self.__list) == 1
+        del self.__list[0]
+
+    def add(self, X, StateIndex=None, 
+            StoreInputPositionF   = False, 
+            AcceptanceF           = False, 
+            RestoreInputPositionF = False, 
+            PreContextID          = E_PreContextIDs.NONE):
         """Add the StateMachineID and the given StateIdx to the list of origins of 
            this state.
-           NOTE: The rule is that by default the 'store_input_position_f' flag
+           NOTE: The rule is that by default the 'input_position_store_f' flag
                  follows the acceptance state flag (i.e. by default any acceptance
                  state stores the input position). Thus when an origin is  added
-                 to a state that is an acceptance state, the 'store_input_position_f'
+                 to a state that is an acceptance state, the 'input_position_store_f'
                  has to be raised for all incoming origins.      
         """
-        assert type(X) == long or X.__class__ == StateCoreInfo
-        assert type(StateIndex) == long
+        assert type(X) == long or X == E_AcceptanceIDs.FAILURE or X.__class__ == StateCoreInfo
+        assert StateIndex is None or type(StateIndex) == long
+        assert StoreInputPositionF is not None
             
-        # -- entry checks 
         if X.__class__ == StateCoreInfo:
             self.__add(X.clone())
         else:
-            # -- create the origin data structure (X = state machine id)
-            if StoreInputPositionF is None: StoreInputPositionF = SelfAcceptanceF
-            self.__add(StateCoreInfo(StateMachineID      = X, 
-                                     StateIndex          = StateIndex, 
-                                     AcceptanceF         = SelfAcceptanceF,
-                                     StoreInputPositionF = StoreInputPositionF))
+            self.__add(StateCoreInfo(StateMachineID        = X, 
+                                     StateIndex            = StateIndex, 
+                                     AcceptanceF           = AcceptanceF,
+                                     PreContextID          = PreContextID,
+                                     StoreInputPositionF   = StoreInputPositionF, 
+                                     RestoreInputPositionF = RestoreInputPositionF))
 
-    def append(self, OriginList, StoreInputPositionFollowsAcceptanceF, SelfAcceptanceF):
-        """Add list of origins. Optional argument tells wether
-           the 'store_input_position_f' shall adapt to the acceptance of self, or
-           the acceptance of the origin list is to be copied.
-        """
-        if StoreInputPositionFollowsAcceptanceF: 
-            for origin in OriginList:
-                self.add(origin.state_machine_id, origin.state_index, 
-                         StoreInputPositionF=self.is_acceptance())
-        else:
-            for origin in OriginList: self.__add(origin)
+    def merge(self, OriginList):
+        for origin in OriginList: 
+            self.__add(origin)
 
-    def clear(self):
-        self.__list = []
+    def merge_clear(self, OriginList):
+        for origin in OriginList: 
+            new_origin = origin.clone()
+            new_origin.set_input_position_store_f(False)
+            new_origin.set_input_position_restore_f(False)
+            new_origin.set_pre_context_id(E_PreContextIDs.NONE)
+            new_origin.set_acceptance_f(False)
+            self.__add(new_origin)
 
     def set(self, OriginList, ArgumentIsYoursF=False):
         assert type(OriginList) == list
-        if ArgumentIsYoursF: self.__list = OriginList
-        else:                self.__list = [ x.clone() for x in OriginList ]
+        if ArgumentIsYoursF: 
+            self.__list = OriginList
+            return
+        self.__list = []
+        self.merge(OriginList)
 
-    def is_empty(self):
-        return len(self.__list) == 0
-
-    def is_from_single_state(self, StateMachineID, StateIdx):
-        if len(self.__list) != 1:                             return False
-        if self.__list[0].state_machine_id != StateMachineID: return False
-        if self.__list[0].state_index != StateIdx:            return False
-        return True
-
-    def contains_post_context_flag(self):
-        for origin in self.__list:
-            if origin.post_context_id() != E_PostContextIDs.NONE: return True
-        return False                                
-
-    def contains_store_input_position(self):
-        for origin in self.__list:
-            if origin.store_input_position_f() == True: return True
-        return False
-
-    def contains_any_pre_context_dependency(self):
-        for origin in self.__list:
-            if origin.pre_context_id() != E_PreContextIDs.NONE: return True
-        return False    
-
-    def contains_pre_context_begin_of_line(self):
-        for origin in self.__list:
-            if origin.pre_context_begin_of_line_f(): return True
-        return False    
+    def clear(self):
+        self.__list = []
 
     def adapt(self, StateMachineID, StateIndex):
         """Adapts all origins so that their original state is 'StateIndex' in state machine
@@ -125,18 +112,6 @@ class StateOriginList(object):
         for origin in self.__list:
             origin.state_machine_id = StateMachineID
             origin.state_index      = StateIndex 
-
-    def find_first_acceptance_origin(self):
-        """Returns first origin which refers to an acceptance state. 
-           Note, that this only makes sense if the list is sorted.
-
-           Returns 'None' if no acceptance origin has been found.
-        """
-        for origin in self.get_list():
-            if origin.is_acceptance():
-                return origin
-        else:
-            return None
 
     def delete_meaningless(self):
         """Deletes origins that are not concerned with one of the three:
@@ -157,7 +132,7 @@ class StateOriginList(object):
         self.__list = filter(lambda origin:
                                     origin.post_contexted_acceptance_f()            or
                                     origin.pre_context_id() != E_PreContextIDs.NONE or
-                                    origin.store_input_position_f(),
+                                    origin.input_position_store_f(),
                                     self.__list)
 
     def delete_dominated(self):
@@ -172,7 +147,7 @@ class StateOriginList(object):
            ... i.e. segmentation faults.
         """
         # NOTE: Acceptance origins sort before non-acceptance origins
-        self.__list.sort()
+        self.__list.sort(key=lambda x: (not x.is_acceptance(), x.state_machine_id))
         new_origin_list = []
         unconditional_acceptance_found_f = False
         for origin in self.__list:
@@ -187,16 +162,18 @@ class StateOriginList(object):
 
             else:
                 # Non-Acceptance origins do not harm in any way. Actually, the origins
-                # with 'origin.is_end_of_post_contexted_core_pattern() == True' **need**
+                # with 'origin.input_position_store_f() == True' **need**
                 # to be in there. See the comment at the entry of this function.
                 new_origin_list.append(origin)
 
         self.__list = new_origin_list 
 
     def get_string(self):
-        txt = " <~ "
+        txt = "" 
         if len(self.__list) == 0: 
             return txt + "\n"
+
+        # for origin in sorted(self.__list, key=attrgetter("state_machine_id")):
         for origin in self.__list:
             txt += repr(origin) + ", "
         txt = (txt[:-2] + "\n").replace("L","")     

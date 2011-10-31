@@ -112,7 +112,7 @@ pattern_list = {
 }[choice]
 
 acceptance_pruning._deactivated_for_unit_test_f = True
-state_machine_list = map(lambda x: regex.do(x, {}), pattern_list)
+state_machine_list = map(lambda x: regex.do(x, {}).sm, pattern_list)
 
 sm  = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
 sm  = sm.normalized_clone()

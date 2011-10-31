@@ -11,5 +11,5 @@ echo No output is just fine
 quex -i error.qx -o Simple
 
 # cleansening
-rm -f Simple Simple.cpp Simple-token_ids Simplism
+rm -f Simple*
 cd $tmp

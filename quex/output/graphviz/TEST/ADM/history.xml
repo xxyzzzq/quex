@@ -1,4 +1,4 @@
-<history date="Wed Oct 19 21:17:50 2011" element-n="321">
+<history date="Sun Oct 30 19:56:11 2011" element-n="325">
     <day year="2008" month="02" day="16">
         <history-init time="03:28:11"/>
         <test-runs-today n="3" ok-n="0" fail-n="0" else-n="3" last-run="no verdict" last-time="09:46:34"/>
@@ -917,5 +917,13 @@
     <day year="2011" month="09" day="02">
         <crc-error time="21:43:34" application="plot-papc.py" choice="" database-crc="1052666039" real-crc="1518992449"/>
         <crc-error time="21:43:34" application="plot-core.py" choice="" database-crc="1071426012" real-crc="-8660561"/>
+    </day>
+    <day year="2011" month="10" day="28">
+        <crc-error time="20:05:07" application="plot-papc.py" choice="" database-crc="474998688" real-crc="531012172"/>
+        <crc-error time="20:05:12" application="plot-core.py" choice="" database-crc="508913560" real-crc="1345578908"/>
+    </day>
+    <day year="2011" month="10" day="29">
+        <crc-error time="16:08:17" application="plot-core.py" choice="" database-crc="1345578908" real-crc="813061445"/>
+        <crc-error time="16:08:23" application="plot-pre-context.py" choice="" database-crc="-2135540397" real-crc="-652435395"/>
     </day>
 </history>

@@ -1,24 +1,24 @@
 init-state = 0L
-00000() <~ (37, 103), (4, 12), (12, 34)
-      == 'a' ==> 00001
-      == 'b' ==> 00004
-      <no epsilon>
-00001(A, S) <~ (4, 13, A, S), (37, 105)
-      == 'a' ==> 00001
-      == 'd' ==> 00002
-      <no epsilon>
-00002() <~ (37, 106)
-      == 'e' ==> 00003
-      <no epsilon>
-00003(A, S) <~ (37, 107, A, S)
-      <no epsilon>
-00004() <~ (12, 35), (37, 104)
-      == 'b' ==> 00004
-      == 'c' ==> 00005
-      <no epsilon>
-00005(A, S) <~ (12, 36, A, S), (37, 108)
-      == 'd' ==> 00002
-      <no epsilon>
+00000 (4, 12), (12, 34), (37, 103)
+     == 'a' ==> 00001
+     == 'b' ==> 00004
+    
+00001 (4, 13, A), (37, 105)
+     == 'a' ==> 00001
+     == 'd' ==> 00002
+    
+00002 (37, 106)
+     == 'e' ==> 00003
+    
+00003 (37, 107, A)
+    
+00004 (12, 35), (37, 104)
+     == 'b' ==> 00004
+     == 'c' ==> 00005
+    
+00005 (12, 36, A), (37, 108)
+     == 'd' ==> 00002
+    
 
 State 0:
   .entry:
@@ -30,7 +30,7 @@ State 1:
   .entry:
     .accepter:
         last_acceptance = Pattern4
-     .positioner:
+    .positioner:
         .from 0: <nothing>
         .from 1: <nothing>
   .drop_out:
@@ -39,7 +39,7 @@ State 1:
 
 State 2:
   .entry:
-     .positioner:
+    .positioner:
         .from 1: <nothing>
         .from 5: <nothing>
   .drop_out:
@@ -60,7 +60,7 @@ State 3:
 
 State 4:
   .entry:
-     .positioner:
+    .positioner:
         .from 0: <nothing>
         .from 4: <nothing>
   .drop_out:
@@ -71,7 +71,7 @@ State 5:
   .entry:
     .accepter:
         last_acceptance = Pattern12
-     .positioner:
+    .positioner:
         .from 4: <nothing>
   .drop_out:
      goto Pattern12;

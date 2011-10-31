@@ -64,7 +64,6 @@ without actual storing of input positions:
 from   quex.blackboard              import E_StateIndices, E_PostContextIDs, E_AcceptanceIDs, E_PreContextIDs, E_TransitionN
 from   quex.engine.misc.tree_walker import TreeWalker
 
-from   copy        import deepcopy
 from   itertools   import ifilter, chain
 import sys
 
@@ -339,7 +338,7 @@ class Trace(object):
         self.__last_transition_n_to_acceptance = len(Path)
 
         # Last element of the path is the index of the current state
-        Origins           = track_info.sm.states[StateIndex].origins()
+        Origins      = track_info.sm.states[StateIndex].origins()
 
         # (*) Update all path related Info
         if StateIndex in track_info.loop_state_set:
@@ -361,9 +360,8 @@ class Trace(object):
                 entry.transition_n_since_positioning = operation(entry.transition_n_since_positioning)
 
         for origin in Origins:
-            pre_context_id  = extract_pre_context_id(origin)
+            pre_context_id  = origin.pre_context_id()
             pattern_id      = origin.state_machine_id
-            post_context_id = origin.post_context_id()
 
             # (1) Acceptance:
             #     -- dominates any acceptance of same pre-context with 
@@ -382,38 +380,31 @@ class Trace(object):
             if origin.is_acceptance():
                 if not self.__sift(StateIndex, origin): 
                     continue
-                if origin.post_context_id() != E_PostContextIDs.NONE:  # Restore --> adapt the 'store trace'
-                    entry = deepcopy(self.__storage_db[pattern_id])
+                elif origin.input_position_restore_f():
+                    entry = self.__storage_db[pattern_id].clone()
                     entry.pre_context_id                 = pre_context_id
                     entry.accepting_state_index          = StateIndex
                     entry.min_transition_n_to_acceptance = CurrentPathLength
                     self.__trace_db[pattern_id] = entry
-                    continue
                 else:
-                    accepting_state_index          = StateIndex
-                    min_transition_n_to_acceptance = CurrentPathLength
-            else:
-                if not origin.store_input_position_f(): 
-                    continue
-                else:
-                    self.__storage_db[pattern_id] = TraceEntry(E_PreContextIDs.NONE, 
-                                                               pattern_id,
-                                                               MinTransitionN_ToAcceptance  = E_TransitionN.VOID,
-                                                               AcceptingStateIndex          = E_StateIndices.VOID, 
-                                                               TransitionN_SincePositioning = 0,
-                                                               PositioningStateIndex        = StateIndex, 
-                                                               PostContextID                = post_context_id)
-                continue
+                    # Add entry to the Database 
+                    self.__trace_db[pattern_id] = \
+                            TraceEntry(pre_context_id, 
+                                       pattern_id,
+                                       MinTransitionN_ToAcceptance  = CurrentPathLength,
+                                       AcceptingStateIndex          = StateIndex, 
+                                       TransitionN_SincePositioning = 0,
+                                       PositioningStateIndex        = StateIndex, 
+                                       PostContextID                = E_PostContextIDs.NONE)
 
-            # Add entry to the Database 
-            self.__trace_db[pattern_id] = \
-                    TraceEntry(pre_context_id, 
-                               pattern_id,
-                               MinTransitionN_ToAcceptance  = min_transition_n_to_acceptance,
-                               AcceptingStateIndex          = accepting_state_index, 
-                               TransitionN_SincePositioning = 0,
-                               PositioningStateIndex        = StateIndex, 
-                               PostContextID                = post_context_id)
+            elif origin.input_position_store_f(): 
+                self.__storage_db[pattern_id] = TraceEntry(E_PreContextIDs.NONE, 
+                                                           pattern_id,
+                                                           MinTransitionN_ToAcceptance  = E_TransitionN.VOID,
+                                                           AcceptingStateIndex          = E_StateIndices.VOID, 
+                                                           TransitionN_SincePositioning = 0,
+                                                           PositioningStateIndex        = StateIndex, 
+                                                           PostContextID                = pattern_id)
 
         assert len(self.__trace_db) >= 1
 
@@ -436,11 +427,12 @@ class Trace(object):
                False -- Origin is dominated by other content of the trace.
         """
         assert Origin.is_acceptance()
-        ThePatternID = Origin.state_machine_id
+        ThePatternID    = Origin.state_machine_id
+        ThePreContextID = Origin.pre_context_id()
 
         # NOTE: There are also traces, which are only 'position storage infos'.
         #       Those have accepting state index == VOID.
-        if Origin.is_unconditional_acceptance():
+        if ThePreContextID == E_PreContextIDs.NONE:
             # Abolish:
             # -- all previous traces (accepting_state_index != StateIndex)
             # -- traces of same state, if they are dominated (pattern_id > ThePatternID)
@@ -454,7 +446,6 @@ class Trace(object):
                     return False
         else:
             # Abolish ONLY TRACES WITH THE SAME PRE-CONTEXT ID:
-            ThePreContextID = extract_pre_context_id(Origin)
             # -- all previous traces (accepting_state_index != StateIndex)
             # -- traces of same state, if they are dominated (pattern_id > ThePatternID)
             for entry in ifilter(lambda x: x.pre_context_id == ThePreContextID, \
@@ -494,16 +485,24 @@ class Trace(object):
         """Compare two acceptance trace objects. Note, that __last_transition_n_to_acceptance
            is only for debug purposes.
         """
-        if set(self.__trace_db.iterkeys()) != set(Other.__trace_db.iterkeys()):
-            return False
-        if set(self.__storage_db.iterkeys()) != set(Other.__storage_db.iterkeys()):
-            return False
+        if len(self.__trace_db)   != len(Other.__trace_db):      return False
+        if len(self.__storage_db) != len(Other.__storage_db):    return False
+
         for pattern_id, trace in self.__trace_db.iteritems():
-            if not trace.is_equal(Other.__trace_db[pattern_id]):
-                return False
+            other_trace = Other.__trace_db.get(pattern_id)
+            if other_trace is None:                              return False
+            if not trace.is_equal(Other.__trace_db[pattern_id]): return False
+        # Here, self.__trace_db and Other.__trace_db have the same number of entries,
+        # thus the same number of unique keys (pattern_ids). Any key in self.__trace_db
+        # occurs in Other.__trace_db, so both have the same key set. Also, Both 
+        # have the same trace stored along with their given key.
+
         for pattern_id, trace in self.__storage_db.iteritems():
-            if not trace.is_equal(Other.__storage_db[pattern_id]):
-                return False
+            other_trace = Other.__storage_db.get(pattern_id)
+            if other_trace is None:                                return False
+            if not trace.is_equal(Other.__storage_db[pattern_id]): return False
+        # What held for __trace_db above holds here for __storage_db
+        
         return True
 
     def __neq__(self):
@@ -573,7 +572,10 @@ class TraceEntry(object):
         self.positioning_state_index           = PositioningStateIndex
         self.positioning_state_successor_index = None
         #
-        self.post_context_id         = PostContextID
+        if PostContextID != E_PostContextIDs.NONE:
+            self.post_context_id = PatternID # PostContextID
+        else:
+            self.post_context_id = E_PostContextIDs.NONE
 
     def clone(self):
         result = TraceEntry(self.pre_context_id, 
@@ -615,12 +617,4 @@ TraceEntry_Void = TraceEntry(PreContextID                 = E_PreContextIDs.NONE
                              TransitionN_SincePositioning = E_TransitionN.VOID, 
                              PositioningStateIndex        = E_StateIndices.NONE, 
                              PostContextID                = E_PostContextIDs.NONE)
-
-def extract_pre_context_id(Origin):
-    """This function basically describes how pre-context-ids and 
-       'begin-of-line' pre-context are expressed by an integer.
-    """
-    if   Origin.pre_context_begin_of_line_f():            return E_PreContextIDs.BEGIN_OF_LINE
-    elif Origin.pre_context_id() == E_PreContextIDs.NONE: return E_PreContextIDs.NONE
-    else:                                                 return Origin.pre_context_id()
 

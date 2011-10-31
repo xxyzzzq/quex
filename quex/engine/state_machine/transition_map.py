@@ -322,57 +322,6 @@ class TransitionMap:
         if self.__db.has_key(TargetIdx): return self.__db[TargetIdx]
         else:                            return NumberSet()
 
-    def get_string(self, FillStr, StateIndexMap, Option="utf8"):
-        # print out transitionts
-        sorted_transitions = self.get_map().items()
-        sorted_transitions.sort(lambda a, b: cmp(a[1].minimum(), b[1].minimum()))
-
-        msg = ""
-        # normal state transitions
-        for target_state_index, trigger_set in sorted_transitions:
-            if Option == "utf8": trigger_str = trigger_set.get_utf8_string()
-            else:                trigger_str = trigger_set.get_string(Option)
-            if StateIndexMap is None: target_str = "%05i" % target_state_index
-            else:                     target_str = "%05i" % StateIndexMap[target_state_index]
-                
-            msg += "%s == %s ==> %s\n" % (FillStr, trigger_str, target_str)
-
-        # epsilon transitions
-        if len(self.__epsilon_target_index_list) != 0:
-            txt_list = map(lambda ti: "%05i" % StateIndexMap[ti], self.__epsilon_target_index_list)
-            msg += "%s ==<epsilon>==> " % FillStr 
-            for txt in txt_list:
-                msg += txt + ", "
-            if len(txt_list) != 0: msg = msg[:-2]
-        else:
-            msg += "%s <no epsilon>" % FillStr
-
-        msg += "\n"
-
-        return msg
-
-    def get_graphviz_string(self, OwnStateIdx, StateIndexMap, Option="utf8"):
-        assert Option in ["hex", "utf8"]
-        sorted_transitions = self.get_map().items()
-        sorted_transitions.sort(lambda a, b: cmp(a[1].minimum(), b[1].minimum()))
-
-        msg = ""
-        # normal state transitions
-        for target_state_index, trigger_set in sorted_transitions:
-            if Option == "utf8": trigger_str = trigger_set.get_utf8_string()
-            else:                trigger_str = trigger_set.get_string(Option)
-            if StateIndexMap is None: target_str  = "%i" % target_state_index
-            else:                     target_str  = "%i" % StateIndexMap[target_state_index]
-            msg += "%i -> %s [label =\"%s\"];\n" % (OwnStateIdx, target_str, trigger_str.replace("\"", ""))
-
-        # epsilon transitions
-        for ti in self.__epsilon_target_index_list:
-            if StateIndexMap is None: target_str = "%i" % int(ti) 
-            else:                     target_str = "%i" % int(StateIndexMap[ti]) 
-            msg += "%i -> %s [label =\"<epsilon>\"];\n" % (OwnStateIdx, target_str)
-
-        return msg
-
     def replace_target_indices(self, ReplacementDict):
         new_db = {}
         for target_idx, trigger_set in self.__db.iteritems():
@@ -472,6 +421,57 @@ class TransitionMap:
         if self.__db.has_key(TargetState):                    return True
         elif TargetState in self.__epsilon_target_index_list: return True
         else:                                                 return False
+
+    def get_string(self, FillStr, StateIndexMap, Option="utf8"):
+        # print out transitionts
+        sorted_transitions = self.get_map().items()
+        sorted_transitions.sort(lambda a, b: cmp(a[1].minimum(), b[1].minimum()))
+
+        msg = ""
+        # normal state transitions
+        for target_state_index, trigger_set in sorted_transitions:
+            if Option == "utf8": trigger_str = trigger_set.get_utf8_string()
+            else:                trigger_str = trigger_set.get_string(Option)
+            if StateIndexMap is None: target_str = "%05i" % target_state_index
+            else:                     target_str = "%05i" % StateIndexMap[target_state_index]
+                
+            msg += "%s == %s ==> %s\n" % (FillStr, trigger_str, target_str)
+
+        # epsilon transitions
+        if len(self.__epsilon_target_index_list) != 0:
+            txt_list = map(lambda ti: "%05i" % StateIndexMap[ti], self.__epsilon_target_index_list)
+            msg += "%s ==<epsilon>==> " % FillStr 
+            for txt in txt_list:
+                msg += txt + ", "
+            if len(txt_list) != 0: msg = msg[:-2]
+        else:
+            msg += "%s" % FillStr
+
+        msg += "\n"
+
+        return msg
+
+    def get_graphviz_string(self, OwnStateIdx, StateIndexMap, Option="utf8"):
+        assert Option in ["hex", "utf8"]
+        sorted_transitions = self.get_map().items()
+        sorted_transitions.sort(lambda a, b: cmp(a[1].minimum(), b[1].minimum()))
+
+        msg = ""
+        # normal state transitions
+        for target_state_index, trigger_set in sorted_transitions:
+            if Option == "utf8": trigger_str = trigger_set.get_utf8_string()
+            else:                trigger_str = trigger_set.get_string(Option)
+            if StateIndexMap is None: target_str  = "%i" % target_state_index
+            else:                     target_str  = "%i" % StateIndexMap[target_state_index]
+            msg += "%i -> %s [label =\"%s\"];\n" % (OwnStateIdx, target_str, trigger_str.replace("\"", ""))
+
+        # epsilon transitions
+        for ti in self.__epsilon_target_index_list:
+            if StateIndexMap is None: target_str = "%i" % int(ti) 
+            else:                     target_str = "%i" % int(StateIndexMap[ti]) 
+            msg += "%i -> %s [label =\"<epsilon>\"];\n" % (OwnStateIdx, target_str)
+
+        return msg
 
 class history_item(object):
     """To be used by: member function 'get_trigger_set_line_up(self)'

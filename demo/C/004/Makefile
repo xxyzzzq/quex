@@ -50,7 +50,7 @@ example.o: ../example.c  EasyLexer.c
 
 EasyLexer.c: c.qx $(QUEX_CORE)
 	quex -i c.qx --engine EasyLexer \
-		 --language C --debug-exception
+		 --language C 
 
 # (*) HELPERS __________________________________________________________________
 clean:	

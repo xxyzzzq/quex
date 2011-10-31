@@ -125,25 +125,27 @@ class GeneratedCode(UserCodeFragment):
         return self.function(self.data)
 
 class PatternActionInfo:
-    def __init__(self, PatternStateMachine, Action, Pattern="", IL = None, ModeName="", Comment=""):
+    def __init__(self, ThePattern, Action, PatternStr="", IL = None, ModeName="", Comment=""):
 
         assert Action is None or \
                issubclass(Action.__class__, CodeFragment) or \
                type(Action) in [str, unicode]
-        assert PatternStateMachine.__class__.__name__ == "StateMachine" \
-               or PatternStateMachine is None
+        assert (ThePattern.__class__.__name__ == "Pattern") or (ThePattern is None)
 
 
-        self.__pattern_state_machine = PatternStateMachine
+        self.__pattern_state_machine = ThePattern
         if type(Action) in [str, unicode]: self.__action = CodeFragment(Action)
         else:                              self.__action = Action
 
-        self.pattern   = Pattern
-        self.mode_name = ModeName
-        self.comment   = Comment
+        self.__pattern_str = PatternStr
+        self.mode_name     = ModeName
+        self.comment       = Comment
 
-    def pattern_state_machine(self):
+    def pattern(self):
         return self.__pattern_state_machine
+
+    def pattern_string(self):
+        return self.__pattern_str
 
     def action(self):
         return self.__action
@@ -170,14 +172,14 @@ class PatternActionInfo:
 
     def __repr__(self):         
         txt  = ""
-        txt += "self.mode_name         = " + repr(self.mode_name) + "\n"
-        txt += "self.pattern           = " + repr(self.pattern) + "\n"
-        txt += "self.pattern_state_machine = \n" + repr(self.pattern_state_machine()).replace("\n", "\n      ")
-        txt += "self.action            = " + repr(self.action().get_code()) + "\n"
+        txt += "self.mode_name      = " + repr(self.mode_name) + "\n"
+        txt += "self.pattern_string = " + repr(self.pattern_string()) + "\n"
+        txt += "self.pattern        = \n" + repr(self.pattern()).replace("\n", "\n      ")
+        txt += "self.action         = " + repr(self.action().get_code()) + "\n"
         if self.action().__class__ == UserCodeFragment:
-            txt += "self.filename          = " + repr(self.action().filename) + "\n"
-            txt += "self.line_n            = " + repr(self.action().line_n) + "\n"
-        txt += "self.pattern_index     = " + repr(self.pattern_state_machine().core().id()) + "\n"
+            txt += "self.filename   = " + repr(self.action().filename) + "\n"
+            txt += "self.line_n     = " + repr(self.action().line_n) + "\n"
+        txt += "self.pattern_index  = " + repr(self.pattern().sm.get_id()) + "\n"
         return txt
 
 class LocalizedParameter:

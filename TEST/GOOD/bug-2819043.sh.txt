@@ -1,7 +1,1 @@
 No output is just fine
-error.qx:16:warning: Pattern definition with pre- and/or post-context.
-error.qx:16:warning: This pattern cannot be used in replacements.
-error.qx:17:warning: Pattern definition with pre- and/or post-context.
-error.qx:17:warning: This pattern cannot be used in replacements.
-error.qx:18:error: Pre- or post- conditioned pattern was used in replacement.
-error.qx:18:error: Quex's regular expression grammar does not allow this.

@@ -1,24 +1,24 @@
 init-state = 0L
-00000() <~ (3, 6), (33, 74), (18, 39), (1, 2)
-      == 'a' ==> 00001
-      == 'b' ==> 00004
-      <no epsilon>
-00001(A, S) <~ (1, 3, A, S), (18, 40)
-      == 'b' ==> 00002
-      <no epsilon>
-00002() <~ (18, 41)
-      == 'c' ==> 00003
-      <no epsilon>
-00003(A, S, pre=16) <~ (18, 42, A, S, pre=16)
-      <no epsilon>
-00004(A, S) <~ (3, 7, A, S), (33, 75)
-      == 'b' ==> 00005
-      <no epsilon>
-00005() <~ (33, 76)
-      == 'c' ==> 00006
-      <no epsilon>
-00006(A, S, pre=31) <~ (33, 77, A, S, pre=31)
-      <no epsilon>
+00000 (3, 6), (1, 2), (13, 27), (27, 58)
+     == 'a' ==> 00001
+     == 'b' ==> 00004
+    
+00001 (1, 3, A), (13, 28)
+     == 'b' ==> 00002
+    
+00002 (13, 29)
+     == 'c' ==> 00003
+    
+00003 (13, 30, A, pre=17)
+    
+00004 (3, 7, A), (27, 59)
+     == 'b' ==> 00005
+    
+00005 (27, 60)
+     == 'c' ==> 00006
+    
+00006 (27, 61, A, pre=31)
+    
 
 State 0:
   .entry:
@@ -47,7 +47,7 @@ State 3:
     .positioner:
         .from 2: <nothing>
   .drop_out:
-    if PreContext_16:  goto Pattern18;
+    if PreContext_17:  goto Pattern13;
     pos -= 2;  goto Pattern1;
 
 
@@ -72,7 +72,7 @@ State 6:
     .positioner:
         .from 5: <nothing>
   .drop_out:
-    if PreContext_31:  goto Pattern33;
+    if PreContext_31:  goto Pattern27;
     pos -= 2;  goto Pattern3;
 
 

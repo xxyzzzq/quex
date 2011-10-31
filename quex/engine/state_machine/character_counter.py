@@ -1,4 +1,3 @@
-from quex.engine.state_machine.state_core_info import E_PostContextIDs
 
 # Distance Database: Store the distance from state (given by index)
 #                    to the acceptance state, i.e. map:
@@ -23,10 +22,6 @@ def get_newline_n(state_machine):
     """
     global __distance_db
 
-    # State machine shall not have pre or post conditions
-    assert state_machine.core().pre_context_sm_id() == -1
-    assert state_machine.core().post_context_id() == E_PostContextIDs.NONE
-
     __distance_db.clear()
     result = __dive(state_machine, state_machine.init_state_index, 0, [], CharacterToCount=ord('\n'))
     if result is None: return -1
@@ -48,10 +43,6 @@ def get_character_n(state_machine):
        NOTE: Only the core pattern is concerned---not the pre- or post-condition.
     """
     global __distance_db
-
-    # State machine shall not have pre or post conditions
-    assert state_machine.core().pre_context_sm_id() == -1
-    assert state_machine.core().post_context_id() == E_PostContextIDs.NONE
 
     __distance_db.clear()
     result = __dive(state_machine, state_machine.init_state_index, 0, [], CharacterToCount=-1)
