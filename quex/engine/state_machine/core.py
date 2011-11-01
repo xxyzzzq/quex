@@ -187,6 +187,12 @@ class StateMachine(object):
         result.states[idx].set_acceptance(True)
         return result
 
+    @classmethod
+    def beauty(cls, Other):
+        result = nfa_to_dfa.do(Other, Class_StateMachine=cls, Class_State=State)
+        hopcroft.do(result, CreateNewStateMachineF=False, Class_StateMachine=cls, Class_State=State)
+        return result
+
     def clone(self, ReplacementDB=None):
         """Clone state machine, i.e. create a new one with the same behavior,
         i.e. transitions, but with new unused state indices. This is used when

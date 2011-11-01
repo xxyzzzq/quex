@@ -443,7 +443,7 @@ class HopcroftMinization:
 
         return new_index
 
-def do(SM, CreateNewStateMachineF=True):
+def do(SM, CreateNewStateMachineF=True, Class_StateMachine=StateMachine, Class_State=State):
     """Reduces the number of states according to equivalence classes of states. It starts
        with two sets: 
        
@@ -464,10 +464,10 @@ def do(SM, CreateNewStateMachineF=True):
     """        
     result = HopcroftMinization(SM)
 
-    if CreateNewStateMachineF: return create_state_machine(SM, result)
+    if CreateNewStateMachineF: return create_state_machine(SM, result, Class_StateMachine, Class_State)
     else:                      return adapt_state_machine(SM, result)
 
-def create_state_machine(SM, Result):
+def create_state_machine(SM, Result, Class_StateMachine, Class_State):
     # If all states are of size one, this means, that there were no states that
     # could have been combined. In this case a simple copy of the original
     # state machine will do.
@@ -499,7 +499,7 @@ def create_state_machine(SM, Result):
         #  acceptance states. There can be no state set containing acceptance and 
         #  non-acceptance states) 
         # (Note, that the prototype's info has not been included yet, consider whole set)
-        result.states[new_state_index] = State.new_merged_core_state(SM.states[i] for i in state_set)
+        result.states[new_state_index] = Class_State.new_merged_core_state(SM.states[i] for i in state_set)
 
     for state_set_idx, state_set in enumerate(Result.state_set_list):
         # The prototype: States in one set behave all equivalent with respect to target state sets
