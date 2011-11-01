@@ -3,6 +3,7 @@ from   quex.engine.generator.action_info               import PatternActionInfo
 import quex.engine.state_machine.parallelize           as parallelize
 import quex.engine.state_machine.algorithm.nfa_to_dfa            as nfa_to_dfa
 import quex.engine.state_machine.algorithm.hopcroft_minimization as hopcroft
+import quex.engine.state_machine.algorithm.beautifier            as beautifier
 
 from   itertools import ifilter
 
@@ -79,12 +80,10 @@ class GeneratorBase:
     def __create_pre_context_state_machine(self):
         if len(self.pre_context_sm_list) == 0: return None
 
-        # -- add empty actions for the pre-condition terminal states
-        #for pre_sm in self.pre_context_sm_list:
-        #    self.action_db[pre_sm.get_id()] = PatternActionInfo(pre_sm, "")
-
-        return get_combined_state_machine(self.pre_context_sm_list, 
-                                          FilterDominatedOriginsF=False)
+        # We CANNOT filter dominated origins in pre-context state machines, because
+        # all found pre-contexts need to be reported!
+        # => "FilterDominatedOriginsF = False"
+        return get_combined_state_machine(self.pre_context_sm_list, FilterDominatedOriginsF=False)
 
     def __create_input_position_search_backwards(self, PatternActionPair_List):
         # -- find state machines that contain a state flagged with 
@@ -160,18 +159,12 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
     sm = parallelize.do(StateMachine_List, CommonTerminalStateF=False) #, CloneF=False)
     __check("Parallelization", sm)
 
-    # (3) convert the state machine to an DFA (paralellization created an NFA)
-    sm = nfa_to_dfa.do(sm)
-    __check("NFA to DFA", sm)
-
     # (4) determine for each state in the DFA what is the dominating original state
     if FilterDominatedOriginsF: sm.filter_dominated_origins()
     __check("Filter Dominated Origins", sm)
 
-    # (5) perform hopcroft optimization
-    #     Note, that hopcroft optimization does consider the original acceptance 
-    #     states when deciding if two state sets are equivalent.   
-    sm = hopcroft.do(sm) # , CreateNewStateMachineF=False)
-    __check("Hopcroft Minimization", sm)
+    # (3) convert the state machine to an DFA (paralellization created an NFA)
+    sm = beautifier.do(sm)
+    __check("NFA to DFA, Hopcroft Minimization", sm)
 
     return sm

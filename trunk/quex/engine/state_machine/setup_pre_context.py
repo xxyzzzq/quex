@@ -1,9 +1,8 @@
 # (C) Frank-Rene Schaefer
 #     ABSOLUTELY NO WARRANTY
-import quex.engine.state_machine.algorithm.nfa_to_dfa            as nfa_to_dfa
-import quex.engine.state_machine.algorithm.hopcroft_minimization as hopcroft
-import quex.engine.state_machine.algorithm.acceptance_pruning    as acceptance_pruning
-from   quex.blackboard                                 import E_PreContextIDs, setup as Setup
+import quex.engine.state_machine.algorithm.beautifier         as beautifier
+import quex.engine.state_machine.algorithm.acceptance_pruning as acceptance_pruning
+from   quex.blackboard                                        import E_PreContextIDs, setup as Setup
 
 def do(the_state_machine, pre_context_sm, BeginOfLinePreContextF):
     """Sets up a pre-condition to the given state machine. This process
@@ -47,8 +46,7 @@ def do(the_state_machine, pre_context_sm, BeginOfLinePreContextF):
         inverse_pre_context.mount_newline_to_acceptance_states(Setup.dos_carriage_return_newline_f, InverseF=True)
 
     # (*) Clean up what has been done by inversion (and optionally 'BeginOfLinePreContextF')
-    inverse_pre_context = nfa_to_dfa.do(inverse_pre_context)
-    inverse_pre_context = hopcroft.do(inverse_pre_context)
+    inverse_pre_context = beautifier.do(inverse_pre_context)
 
     # (*) Once an acceptance state is reached no further analysis is necessary.
     acceptance_pruning.do(inverse_pre_context)

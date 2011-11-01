@@ -1,4 +1,4 @@
-<history date="Mon Oct 31 21:35:56 2011" element-n="557">
+<history date="Tue Nov  1 16:47:57 2011" element-n="559">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1255,5 +1255,9 @@
     </day>
     <day year="2011" month="10" day="29">
         <crc-error time="16:06:29" application="test-subset_checker.py" choice="Pre-Post-Conditions" database-crc="-2073619492" real-crc="-752691781"/>
+    </day>
+    <day year="2011" month="11" day="01">
+        <crc-error time="15:47:29" application="test-utf8_state_split-do-2.py" choice="" database-crc="-1139775102" real-crc="-1541079576"/>
+        <crc-error time="15:47:56" application="test-setup_border_conditions.py" choice="" database-crc="-231661803" real-crc="-1717267691"/>
     </day>
 </history>

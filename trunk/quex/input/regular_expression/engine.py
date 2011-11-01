@@ -50,6 +50,7 @@ import quex.input.regular_expression.snap_character_string      as snap_characte
 import quex.input.regular_expression.case_fold_expression       as case_fold_expression
 import quex.input.regular_expression.construct                  as construct
 import quex.engine.state_machine.sequentialize           as sequentialize
+import quex.engine.state_machine.algorithm.beautifier    as beautifier
 import quex.engine.state_machine.parallelize             as parallelize
 import quex.engine.state_machine.repeat                  as repeat
 
@@ -179,7 +180,7 @@ def snap_expression(stream, PatternDict):
         return __debug_exit(result, stream)
 
     result = parallelize.do([result, result_2], CloneF=True)   # CloneF = False (shold be!)
-    return __debug_exit(construct.beautify(result), stream)
+    return __debug_exit(beautifier.do(result), stream)
         
 def snap_term(stream, PatternDict):
     """term:  primary
@@ -206,7 +207,7 @@ def snap_term(stream, PatternDict):
                               MountToFirstStateMachineF=True, 
                               CloneRemainingStateMachinesF=False)    
 
-    return __debug_exit(construct.beautify(result), stream)
+    return __debug_exit(beautifier.do(result), stream)
         
 def snap_primary(stream, PatternDict):
     """primary:  " non_double_quote *  "              = character string
@@ -272,7 +273,7 @@ def snap_primary(stream, PatternDict):
     # -- optional repetition command? 
     result_repeated = __snap_repetition_range(result, stream) 
     if result_repeated is not None: result = result_repeated
-    return __debug_exit(construct.beautify(result), stream)
+    return __debug_exit(beautifier.do(result), stream)
     # return __debug_exit(result, stream)
     
 def snap_non_control_character(stream, PatternDict):

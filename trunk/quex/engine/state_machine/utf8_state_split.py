@@ -76,8 +76,7 @@ from   quex.engine.utf8                     import utf8_to_unicode, unicode_to_u
 from   quex.engine.interval_handling        import Interval
 import quex.engine.state_machine            as     state_machine
 from   quex.engine.state_machine.core       import State
-import quex.engine.state_machine.algorithm.nfa_to_dfa as     nfa_to_dfa
-import quex.engine.state_machine.algorithm.hopcroft_minimization as hopcroft_minimization
+import quex.engine.state_machine.algorithm.beautifier as beautifier
 
 utf8_border = [ 0x00000080, 0x00000800, 0x00010000, 0x00110000] 
 
@@ -116,7 +115,7 @@ def do(sm):
             for interval in number_set.get_intervals(PromiseToTreatWellF=True):
                 create_intermediate_states(sm, state_index, target_state_index, interval)
 
-    return hopcroft_minimization.do(nfa_to_dfa.do(sm), CreateNewStateMachineF=False)
+    return beautifier.do(sm)
 
 def do_set(NSet):
     """Unicode values > 0x7F are translated into byte sequences, thus, only number

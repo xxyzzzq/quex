@@ -9,6 +9,7 @@ import quex.engine.state_machine.parallelize as parallelize
 from   quex.engine.state_machine.TEST.test_state_machines import *
 import quex.engine.state_machine.algorithm.nfa_to_dfa as nfa_to_dfa
 import quex.engine.state_machine.algorithm.hopcroft_minimization as hopcroft
+import quex.engine.state_machine.algorithm.beautifier as beautifier
 
 if "--hwut-info" in sys.argv:
     print "Tracing origin: Inverse"
@@ -33,6 +34,5 @@ sm = parallelize.do([sm0, sm2])
 
 print "-------------------------------------------------------------------------------"
 print "## paralellized = ", sm
-sm = nfa_to_dfa.do(sm)
-sm = hopcroft.do(sm)
+sm = beautifier.do(sm)
 print "## result = ",  sm

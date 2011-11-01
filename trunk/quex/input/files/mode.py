@@ -33,8 +33,9 @@ from   quex.engine.state_machine.core                      import StateMachine
 import quex.engine.state_machine.check.identity            as identity_checker
 import quex.engine.state_machine.sequentialize             as sequentialize
 import quex.engine.state_machine.repeat                    as repeat
-import quex.engine.state_machine.algorithm.nfa_to_dfa                as nfa_to_dfa
-import quex.engine.state_machine.algorithm.hopcroft_minimization     as hopcroft
+import quex.engine.state_machine.algorithm.beautifier             as beautifier
+import quex.engine.state_machine.algorithm.nfa_to_dfa             as nfa_to_dfa
+import quex.engine.state_machine.algorithm.hopcroft_minimization  as hopcroft
 import quex.engine.state_machine.check.superset            as superset
 
 from   copy import deepcopy
@@ -809,7 +810,7 @@ def __parse_option(fh, new_mode):
         # -- 'newline ([space]* newline)*'
         x4 = sequentialize.do([value.newline_state_machine.get(), x3])
         # -- nfa to dfa; hopcroft optimization
-        sm = hopcroft.do(nfa_to_dfa.do(x4), CreateNewStateMachineF=False)
+        sm = beautifier.do(x4)
 
         FileName = value.newline_state_machine.file_name
         LineN    = value.newline_state_machine.line_n

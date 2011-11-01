@@ -3,6 +3,7 @@ from   quex.engine.misc.file_in                         import error_msg
 from   quex.engine.state_machine.core                   import StateMachine
 import quex.engine.state_machine.algorithm.nfa_to_dfa             as     nfa_to_dfa
 import quex.engine.state_machine.algorithm.hopcroft_minimization  as     hopcroft
+import quex.engine.state_machine.algorithm.beautifier             as     beautifier
 import quex.engine.state_machine.ambiguous_post_context as     ambiguous_post_context
 from   quex.blackboard                                  import E_PreContextIDs, setup as Setup
 
@@ -98,10 +99,8 @@ def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
         # NOTE: May be, the_state_machine does contain now an epsilon transition. See
         #       comment at entry of this function.
         ipsb_sm = ambiguous_post_context.mount(the_state_machine, post_context_sm)
-        the_state_machine = nfa_to_dfa.do(the_state_machine)
-        hopcroft.do(the_state_machine, CreateNewStateMachineF=False)
-        ipsb_sm = nfa_to_dfa.do(ipsb_sm)
-        hopcroft.do(ipsb_sm, CreateNewStateMachineF=False)
+        the_state_machine = beautifier.do(the_state_machine)
+        ipsb_sm           = beautifier.do(ipsb_sm)
         return the_state_machine, ipsb_sm 
 
     # -- The 'normal' way: storing the input position at the end of the core

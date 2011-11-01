@@ -11,7 +11,7 @@ init-state = 0L
      == 'd' ==> 00002
      == 'f' ==> 00003
     
-00003 (26, 74, A, R, pre=30)
+00003 (26, 74, A, R, pre=29)
     
 00004 (26, 71)
      == 'c' ==> 00005
@@ -38,9 +38,9 @@ State 1:
 State 2:
   .entry:
     .positioner:
-        .from 1:if 'PreContext_30':  position[PostContext_26]  = input_p;
+        .from 1:if 'PreContext_29':  position[PostContext_26]  = input_p;
         .from 2: <nothing>
-        .from 5:if 'PreContext_30':  position[PostContext_26]  = input_p;
+        .from 5:if 'PreContext_29':  position[PostContext_26]  = input_p;
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
@@ -50,7 +50,7 @@ State 3:
     .positioner:
         .from 2: <nothing>
   .drop_out:
-    if PreContext_30: pos = position[PostContext_26] ; goto Pattern26;
+    if PreContext_29: pos = position[PostContext_26] ; goto Pattern26;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
