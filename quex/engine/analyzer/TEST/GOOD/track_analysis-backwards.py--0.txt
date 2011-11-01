@@ -1,11 +1,11 @@
 init-state = 0L
-00000 (7, 14), (15, 30)
+00000 (6, 12), (13, 26)
      == 'x' ==> 00001
      == 'y' ==> 00002
     
-00001 (7, 15, A)
+00001 (6, 13, A)
     
-00002 (15, 31, A)
+00002 (13, 27, A)
     
 
 State 0:
@@ -16,14 +16,14 @@ State 0:
 State 1:
   .entry:
     EntryBackward:
-    pre-context-fulfilled = 7L;
+    pre-context-fulfilled = 6L;
   .drop_out:
     goto PreContextCheckTerminated;
 
 State 2:
   .entry:
     EntryBackward:
-    pre-context-fulfilled = 15L;
+    pre-context-fulfilled = 13L;
   .drop_out:
     goto PreContextCheckTerminated;
 

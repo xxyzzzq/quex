@@ -185,23 +185,6 @@ def do(core_sm,
                    begin_of_line_f, end_of_line_f, 
                    AllowStateMachineTrafoF, fh)
 
-def beautify(the_state_machine):
-    if the_state_machine is None: return None
-    ## assert len(the_state_machine.get_orphaned_state_index_list()) == 0, \
-    ##       "before conversion to DFA: orphaned states " + repr(the_state_machine)
-    result = nfa_to_dfa.do(the_state_machine)
-    ## assert len(the_state_machine.get_orphaned_state_index_list()) == 0, \
-    ##       "after conversion to DFA: orphaned states " + repr(the_state_machine)
-
-    if DEBUG_hopcroft_f: DEBUG_before = deepcopy(result)
-    result = hopcroft.do(result, CreateNewStateMachineF=False)
-    if DEBUG_hopcroft_f: assert identity_checker.do(DEBUG_before, result)
-
-    ## assert len(the_state_machine.get_orphaned_state_index_list()) == 0, \
-    ##       "after hopcroft minimization: orphaned states " + repr(the_state_machine)
-
-    return result
-  
 def __detect_initial_orphaned_states(sm, fh):
 
     if sm is None: return

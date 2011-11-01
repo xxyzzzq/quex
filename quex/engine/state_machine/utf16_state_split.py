@@ -34,8 +34,7 @@ sys.path.append(os.environ["QUEX_PATH"])
 
 from   quex.engine.utf16                    import utf16_to_unicode, unicode_to_utf16
 from   quex.engine.interval_handling        import Interval
-import quex.engine.state_machine.algorithm.nfa_to_dfa as     nfa_to_dfa
-import quex.engine.state_machine.algorithm.hopcroft_minimization as hopcroft_minimization
+import quex.engine.state_machine.algorithm.beautifier as beautifier
 
 ForbiddenRange = Interval(0xD800, 0xE000)
 
@@ -69,7 +68,7 @@ def do(sm):
             for interval in interval_list:
                 create_intermediate_states(sm, state_index, target_state_index, interval)
     
-    result = hopcroft_minimization.do(nfa_to_dfa.do(sm), CreateNewStateMachineF=False)
+    result = beautifier.do(sm)
     return result
 
 def do_set(NSet):

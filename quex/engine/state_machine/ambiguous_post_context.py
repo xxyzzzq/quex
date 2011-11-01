@@ -13,8 +13,7 @@
 ##############################################################################
 
 import quex.engine.state_machine.sequentialize         as sequentialize
-import quex.engine.state_machine.algorithm.nfa_to_dfa            as nfa_to_dfa
-import quex.engine.state_machine.algorithm.hopcroft_minimization as hopcroft
+import quex.engine.state_machine.algorithm.beautifier  as beautifier
 from   copy import deepcopy
 
 
@@ -83,15 +82,10 @@ def detect_backward(CoreStateMachine, PostConditionStateMachine):
     #   state.set_acceptance(False)
     # -- set the initial state as acceptance state
     # my_post_context_sm.get_init_state().set_acceptance(True)
+    my_core_sm = beautifier.do(CoreStateMachine.get_inverse())
 
-    my_core_sm = CoreStateMachine.get_inverse()
-    my_core_sm = nfa_to_dfa.do(my_core_sm)
-    my_core_sm = hopcroft.do(my_core_sm)
-
-    tmp = deepcopy(PostConditionStateMachine)
-    my_post_context_sm = tmp.get_inverse()
-    my_post_context_sm = nfa_to_dfa.do(my_post_context_sm)
-    my_post_context_sm = hopcroft.do(my_post_context_sm)
+    tmp = deepcopy(PostConditionStateMachine) # no deeepcopy needed here, I guess <fschaef 11y11m01d>
+    my_post_context_sm = beautifier.do(tmp.get_inverse())
 
     return detect_forward(my_post_context_sm, my_core_sm)
 
@@ -154,9 +148,7 @@ def __get_inverse_state_machine_that_finds_end_of_core_expression(PostConditionS
        can take out the 'drop out' triggers since they CANNOT occur. This
        enables some speed-up when going backwards.
     """
-    result = PostConditionSM.get_inverse()
-    result = nfa_to_dfa.do(result)
-    result = hopcroft.do(result)
+    result = beautifier.do(PostConditionSM.get_inverse())
 
     # -- delete 'drop-out' transitions in non-acceptance states
     #    NOTE: When going backwards one already knows that the acceptance
@@ -266,8 +258,7 @@ def philosophical_cut(core_sm, post_context_sm):
     # By means of cutting, some states might have become bold. That is, they have
     # only an epsilon transition. Thus, it is required to do a transformation NFA->DFA
     # and add a hopcroft optimization.
-    new_post_sm = nfa_to_dfa.do(post_context_sm)
-    new_post_sm = hopcroft.do(new_post_sm)
+    new_post_sm = beautifier.do(post_context_sm)
     return new_post_sm
 
 def __dive_to_cut_iteration(SM0, sm0_state, SM1, sm1_state, SM1_Path):

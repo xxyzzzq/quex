@@ -64,6 +64,13 @@ elif "10" in sys.argv:
         'xy/b',
         'xy(a+|b)cde',
     ]
+#elif "11" in sys.argv:
+#    # Case where the acceptance decides about positioning
+#    pattern_list = [
+#        "b/[ ]*[cdef]",
+#        "ab*/cd?",
+#        "a/b*ce?",
+#    ]
 else:
     assert False
 
@@ -71,7 +78,7 @@ else:
 acceptance_pruning._deactivated_for_unit_test_f = True
 state_machine_list = map(lambda x: regex.do(x, {}).sm, pattern_list)
 
-sm  = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
+sm  = get_combined_state_machine(state_machine_list, True)#False) # May be 'True' later.
 sm  = sm.normalized_clone()
 
 # For DEBUG purposes: specify 'DRAW' on command line

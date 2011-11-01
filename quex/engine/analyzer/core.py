@@ -456,22 +456,31 @@ class Analyzer:
                 dive(PostContextID, target_state, path, collection)
                 path.pop()
 
-        ##  from time import time
         result = defaultdict(set)
         for state in self.state_db.itervalues():
             # Iterate over all post context ids subject to position storage
             for from_state_index, positioner in ifilter(lambda x: x[0] != E_StateIndices.ALL, 
                                                         state.entry.positioner_db.iteritems()):
-                ## before = time()
                 for post_context_id in positioner.iterkeys():
                     dive(post_context_id, state, [], result[post_context_id])
-                ## print "##", state.index, positioner.keys(), time() - before
 
         return result
 
     def __iter__(self):
         for x in self.__state_db.values():
             yield x
+
+    def __repr__(self):
+        # Provide some type of order that is oriented vs. the content of the states.
+        # This helps to compare analyzers where the state identifiers differ, but the
+        # states should be the same.
+        def order(X):
+            side_info = 0
+            if len(X.transition_map) != 0: side_info = max(trigger_set.size() for trigger_set, t in X.transition_map)
+            return (len(X.transition_map), side_info, X.index)
+
+        txt = [ repr(state) for state in sorted(self.__state_db.itervalues(), key=order) ]
+        return "".join(txt)
 
 class AnalyzerState(object):
     """AnalyzerState consists of the following major components:

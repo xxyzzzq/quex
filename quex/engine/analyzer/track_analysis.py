@@ -103,7 +103,7 @@ class TrackAnalysis:
         # NOTE: The investigation about loop states must be done **before** the
         #       analysis of traces. The trace analysis requires the loop state set!
         self.__loop_state_set, \
-        self.__successor_db     = self.__loop_search() # self.sm.init_state_index, [])
+        self.__successor_db    = self.__loop_search() # self.sm.init_state_index, [])
 
         # (*) Collect Trace Information
         # 
@@ -143,11 +143,11 @@ class TrackAnalysis:
         """Determine the indices of states that are part of a loop. Whenever
            such a state appears in a path from one state A to another state B, 
            then the number of transitions from A to B cannot be determined 
-           from the state machine itself.
+           from the number of transitions between them.
 
            Recursion Terminal: When a state has no target state that has not
                                yet been handled in the path. This is implemented
-                               int the loop itself.
+                               in the loop itself.
         """
         class LoopSearcher(TreeWalker):
             def __init__(self, SM):
@@ -155,27 +155,26 @@ class TrackAnalysis:
                 self.sm           = SM
                 self.result       = set()
                 self.successor_db = dict([(i, set()) for i in SM.states.iterkeys()])
-                self.done_set     = set()
+                # self.done_set     = set()
                 self.empty_list   = []
 
             def on_enter(self, StateIndex):
-                found_f = False
+                found_f = False # StateIndex found in path?
                 for i in self.path:
                     if StateIndex == i: found_f = True
                     self.successor_db[i].add(StateIndex)
-                if StateIndex in self.done_set: 
-                    return None
-                elif found_f:
-                    self.done_set.add(StateIndex)
+
+                if found_f:
                     idx = self.path.index(StateIndex)
+                    # All states from path[idx] to the current are part of a loop.
                     self.result.update(self.path[idx:])
                     return None
 
                 self.path.append(StateIndex)
-                return self.sm.states[StateIndex].transitions().get_map().keys()
+                propose_list = self.sm.states[StateIndex].transitions().get_map().keys()
+                return propose_list
 
             def on_finished(self, StateIndex):
-                self.done_set.add(StateIndex)
                 self.path.pop()
 
         searcher = LoopSearcher(self.sm)
