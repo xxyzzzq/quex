@@ -5,17 +5,8 @@ import quex.engine.state_machine.setup_post_context       as setup_post_context
 import quex.engine.state_machine.setup_pre_context        as setup_pre_context
 import quex.engine.state_machine.transformation           as transformation
 #                                                         
-import quex.engine.state_machine.algorithm.nfa_to_dfa               as nfa_to_dfa
-import quex.engine.state_machine.algorithm.hopcroft_minimization    as hopcroft
-#
 from   quex.blackboard           import setup as Setup, deprecated
 from   quex.engine.misc.file_in  import error_msg
-
-DEBUG_hopcroft_f = False
-
-if DEBUG_hopcroft_f:
-    import quex.engine.state_machine.check.identity   as identity_checker
-    from   copy import deepcopy
 
 class Pattern(object):
     """Let's start as a mimiker ... """

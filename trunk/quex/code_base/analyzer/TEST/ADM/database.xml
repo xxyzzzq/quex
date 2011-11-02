@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.23" date="Tue Nov  1 16:21:37 2011">
+<test-database execution-time-sec="0.15" date="Wed Nov  2 08:17:52 2011">
     <last-used-diff-display-program name=""/>
     <test title="Statistics Module" make-dependent="True" time-sum-sec="0.00"> 
         <application file-name="statistics.exe" info-request-time="1320160892L" vanished="False"/>
@@ -7,7 +7,7 @@
            <choice name="" result="OK" time_sec="0.00" crc="1432648595"/>
         </choice-list>
     </test>
-    <test title="Accumulator" make-dependent="True" time-sum-sec="0.02"> 
+    <test title="Accumulator" make-dependent="True" time-sum-sec="0.00"> 
         <application file-name="accumulator.exe" info-request-time="1320160893L" vanished="False"/>
         <make-procedure success="True" time_sec="0.528223"/>
         <choice-list number="5" same_result="False">
@@ -41,7 +41,7 @@
         </test>
     </group>
     <group name="Post Categorizer">
-        <test title="Enter" make-dependent="True" time-sum-sec="0.04"> 
+        <test title="Enter" make-dependent="True" time-sum-sec="0.03"> 
             <application file-name="post-categorizer-find.exe" info-request-time="1320160892L" vanished="False"/>
             <make-procedure success="True" time_sec="0.822438"/>
             <choice-list number="7" same_result="True">
@@ -67,7 +67,7 @@
                <choice name="7" result="OK" time_sec="0.01" crc="312237205"/>
             </choice-list>
         </test>
-        <test title="Remove Existent Node" make-dependent="True" time-sum-sec="0.03"> 
+        <test title="Remove Existent Node" make-dependent="True" time-sum-sec="0.01"> 
             <application file-name="post-categorizer-remove-2.exe" info-request-time="1320160897L" vanished="False"/>
             <make-procedure success="True" time_sec="0.824791"/>
             <choice-list number="7" same_result="False">
@@ -94,7 +94,7 @@
                <choice name="Be" result="OK" time_sec="0.01" crc="1918139693"/>
             </choice-list>
         </test>
-        <test title="Enter" make-dependent="True" time-sum-sec="0.04"> 
+        <test title="Enter" make-dependent="True" time-sum-sec="0.01"> 
             <application file-name="post-categorizer-enter.exe" info-request-time="1320160896L" vanished="False"/>
             <make-procedure success="True" time_sec="0.807528"/>
             <choice-list number="7" same_result="False">

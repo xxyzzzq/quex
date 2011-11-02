@@ -1,26 +1,26 @@
 init-state = 0L
-00000 (15, 33), (21, 47), (4, 8), (45, 110)
+00000 (4, 8), (20, 45), (15, 33), (44, 108)
      == 'a' ==> 00001
      == 'b' ==> 00006
     
-00001 (4, 9, A), (15, 34, S), (45, 112)
+00001 (4, 9, A), (15, 34, S), (44, 110)
      == 'a' ==> 00002
     
-00002 (4, 10, A), (15, 35), (45, 113)
+00002 (4, 10, A), (15, 35), (44, 111)
      == 'a' ==> 00003
     
-00003 (15, 36, A, R, pre=19), (45, 114)
+00003 (15, 36, A, R, pre=18), (44, 112)
      == 'c' ==> 00004
     
-00004 (45, 115)
+00004 (44, 113)
      == 'd' ==> 00005
     
-00005 (45, 116, A)
+00005 (44, 114, A)
     
-00006 (21, 48, A), (45, 111)
+00006 (20, 46, A), (44, 109)
      == 'b' ==> 00007
     
-00007 (45, 114)
+00007 (44, 112)
      == 'c' ==> 00004
     
 
@@ -51,11 +51,11 @@ State 2:
 State 3:
   .entry:
     .accepter:
-        if      PreContext_19: last_acceptance = Pattern15
+        if      PreContext_18: last_acceptance = Pattern15
     .positioner:
         .from 2: <nothing>
   .drop_out:
-    if PreContext_19: pos -= 2;  goto Pattern15;
+    if PreContext_18: pos -= 2;  goto Pattern15;
     pos -= 1;  goto Pattern4;
 
 
@@ -68,8 +68,8 @@ State 4:
     Checker:
         accept = last_acceptance
     Router:
+        case 20: pos -= 2;  goto Pattern20;
         case 4: pos -= 2;  goto Pattern4;
-        case 21: pos -= 2;  goto Pattern21;
         case 15: pos -= 3;  goto Pattern15;
 
 
@@ -78,17 +78,17 @@ State 5:
     .positioner:
         .from 4: <nothing>
   .drop_out:
-     goto Pattern45;
+     goto Pattern44;
 
 
 State 6:
   .entry:
     .accepter:
-        last_acceptance = Pattern21
+        last_acceptance = Pattern20
     .positioner:
         .from 0: <nothing>
   .drop_out:
-     goto Pattern21;
+     goto Pattern20;
 
 
 State 7:
@@ -96,6 +96,6 @@ State 7:
     .positioner:
         .from 6: <nothing>
   .drop_out:
-    pos -= 1;  goto Pattern21;
+    pos -= 1;  goto Pattern20;
 
 

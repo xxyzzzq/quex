@@ -1,6 +1,6 @@
-<test-database execution-time-sec="176.24" date="Tue Nov  1 16:15:38 2011">
+<test-database execution-time-sec="176.23" date="Wed Nov  2 08:17:51 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Makefile Differences to C++ Version" time-sum-sec="0.43"> 
+    <test title="Makefile Differences to C++ Version" time-sum-sec="0.42"> 
         <application file-name="makefile-diff.sh" info-request-time="1318614211L" vanished="False"/>
         <choice-list number="12" same_result="False">
            <choice name="000" result="OK" time_sec="0.07" crc="743386054"/>
@@ -18,7 +18,7 @@
         </choice-list>
     </test>
     <group name="demo/000">
-        <test title="Single Mode Example" time-sum-sec="3.57"> 
+        <test title="Single Mode Example" time-sum-sec="3.58"> 
             <application file-name="000.sh" info-request-time="1318614211L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="1.95" crc="-584949883"/>
@@ -36,7 +36,7 @@
         </test>
     </group>
     <group name="demo/002">
-        <test title="Indentation Based Scopes" time-sum-sec="3.90"> 
+        <test title="Indentation Based Scopes" time-sum-sec="3.89"> 
             <application file-name="002.sh" info-request-time="1318614211L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.13" crc="29925504"/>
@@ -45,7 +45,7 @@
         </test>
     </group>
     <group name="demo/003">
-        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="12.49"> 
+        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="12.50"> 
             <application file-name="003.sh" info-request-time="1318614211L" vanished="False"/>
             <choice-list number="5" same_result="True">
                <choice name="BPC=2" result="OK" time_sec="3.57" crc="766281751"/>
@@ -55,7 +55,7 @@
                <choice name="BPC=wchar_t" result="OK" time_sec="2.19" crc="766281751"/>
             </choice-list>
         </test>
-        <test title="Byte Order Mark (BOM) Cutting" time-sum-sec="7.70"> 
+        <test title="Byte Order Mark (BOM) Cutting" time-sum-sec="7.69"> 
             <application file-name="003-bom.sh" info-request-time="1318614211L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="Without" result="OK" time_sec="3.62" crc="1853132003"/>
@@ -113,7 +113,7 @@
         </test>
     </group>
     <group name="demo/008">
-        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="4.52"> 
+        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="4.51"> 
             <application file-name="008.sh" info-request-time="1318614211L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.26" crc="-1665911539"/>

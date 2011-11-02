@@ -1,26 +1,26 @@
 init-state = 0L
-00000 (11, 22), (66, 160), (38, 87), (3, 6)
+00000 (10, 20), (63, 154), (36, 83), (3, 6)
      == 'a' ==> 00001
      == 'b' ==> 00004
     
-00001 (3, 7, A, pre=7), (38, 88), (66, 162)
+00001 (3, 7, A, pre=6), (36, 85), (63, 155)
      == 'd' ==> 00002
     
-00002 (38, 90), (66, 163, S)
+00002 (36, 86), (63, 157, S)
      == 'e' ==> 00003
     
-00003 (38, 92, A, pre=42), (66, 164, A, R, pre=70)
+00003 (36, 87, A, pre=39), (63, 159, A, R, pre=66)
     
-00004 (11, 23, A, pre=15), (38, 89), (66, 161)
+00004 (10, 21, A, pre=13), (36, 84), (63, 156)
      == 'b' ==> 00005
      == 'c' ==> 00006
      == 'd' ==> 00002
     
-00005 (38, 91), (66, 165)
+00005 (36, 88), (63, 158)
      == 'c' ==> 00006
      == 'd' ==> 00002
     
-00006 (38, 88), (66, 162)
+00006 (36, 85), (63, 155)
      == 'd' ==> 00002
     
 
@@ -35,11 +35,11 @@ State 0:
 State 1:
   .entry:
     .accepter:
-        if      PreContext_7: last_acceptance = Pattern3
+        if      PreContext_6: last_acceptance = Pattern3
     .positioner:
         .from 0: <nothing>
   .drop_out:
-    if PreContext_7:  goto Pattern3;
+    if PreContext_6:  goto Pattern3;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
@@ -47,7 +47,7 @@ State 2:
   .entry:
     .positioner:
         .from 1: <nothing>
-        .from 4:if 'PreContext_15':  position[Acceptance] = input_p;
+        .from 4:if 'PreContext_13':  position[Acceptance] = input_p;
         .from 5: <nothing>
         .from 6: <nothing>
   .drop_out:
@@ -55,7 +55,7 @@ State 2:
         accept = last_acceptance
     Router:
         case Failure: pos = lexeme_start_p + 1;  goto Failure;
-        case 11: pos = position[Acceptance]; goto Pattern11;
+        case 10: pos = position[Acceptance]; goto Pattern10;
         case 3: pos -= 1;  goto Pattern3;
 
 
@@ -65,44 +65,44 @@ State 3:
         .from 2: <nothing>
   .drop_out:
     Checker:
-        if      PreContext_42: accept = Pattern38
-        else if PreContext_70: accept = Pattern66
+        if      PreContext_39: accept = Pattern36
+        else if PreContext_66: accept = Pattern63
         accept = last_acceptance
     Router:
         case Failure: pos = lexeme_start_p + 1;  goto Failure;
-        case 11: pos = position[Acceptance]; goto Pattern11;
-        case 66: pos -= 1;  goto Pattern66;
+        case 10: pos = position[Acceptance]; goto Pattern10;
         case 3: pos -= 2;  goto Pattern3;
-        case 38: goto Pattern38;
+        case 36: goto Pattern36;
+        case 63: pos -= 1;  goto Pattern63;
 
 
 State 4:
   .entry:
     .accepter:
-        if      PreContext_15: last_acceptance = Pattern11
+        if      PreContext_13: last_acceptance = Pattern10
     .positioner:
         .from 0: <nothing>
   .drop_out:
-    if PreContext_15:  goto Pattern11;
+    if PreContext_13:  goto Pattern10;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 5:
   .entry:
     .positioner:
-        .from 4:if 'PreContext_15':  position[Acceptance] = input_p;
+        .from 4:if 'PreContext_13':  position[Acceptance] = input_p;
   .drop_out:
-    if PreContext_15: pos -= 1;  goto Pattern11;
+    if PreContext_13: pos -= 1;  goto Pattern10;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 6:
   .entry:
     .positioner:
-        .from 4:if 'PreContext_15':  position[Acceptance] = input_p;
+        .from 4:if 'PreContext_13':  position[Acceptance] = input_p;
         .from 5: <nothing>
   .drop_out:
-    if PreContext_15: pos = position[Acceptance]; goto Pattern11;
+    if PreContext_13: pos = position[Acceptance]; goto Pattern10;
     pos = lexeme_start_p + 1;  goto Failure;
 
 

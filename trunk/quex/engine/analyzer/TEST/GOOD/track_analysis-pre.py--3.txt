@@ -2,7 +2,7 @@ init-state = 0L
 00000 (7, 15), (11, 25)
      == 'a' ==> 00001
     
-00001 (7, 16), (11, 26, A, pre=15)
+00001 (7, 16), (11, 26, A, pre=14)
      == 'b' ==> 00002
     
 00002 (7, 17)
@@ -22,7 +22,7 @@ State 1:
     .positioner:
         .from 0: <nothing>
   .drop_out:
-    if PreContext_15:  goto Pattern11;
+    if PreContext_14:  goto Pattern11;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
@@ -31,7 +31,7 @@ State 2:
     .positioner:
         .from 1: <nothing>
   .drop_out:
-    if PreContext_15: pos -= 1;  goto Pattern11;
+    if PreContext_14: pos -= 1;  goto Pattern11;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
