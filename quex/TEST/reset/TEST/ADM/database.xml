@@ -1,6 +1,6 @@
-<test-database execution-time-sec="0.40" date="Tue Nov  1 16:20:59 2011">
+<test-database execution-time-sec="0.47" date="Wed Nov  2 08:17:51 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Normal Reset" make-dependent="True" time-sum-sec="0.06"> 
+    <test title="Normal Reset" make-dependent="True" time-sum-sec="0.07"> 
         <application file-name="lexer-x" info-request-time="1320160854L" vanished="False"/>
         <make-procedure success="True" time_sec="1.808565"/>
         <choice-list number="11" same_result="True">
@@ -18,7 +18,7 @@
         </choice-list>
     </test>
     <group name="Reset w/ QuexBufferFiller">
-        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.06"> 
+        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.07"> 
             <application file-name="codec-lexer" info-request-time="1320160850L" vanished="False"/>
             <make-procedure success="True" time_sec="1.974929"/>
             <choice-list number="11" same_result="True">
@@ -35,7 +35,7 @@
                <choice name="136" result="OK" time_sec="0.01" crc="17735322"/>
             </choice-list>
         </test>
-        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.08"> 
+        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.11"> 
             <application file-name="icu-lexer" info-request-time="1320160852L" vanished="False"/>
             <make-procedure success="True" time_sec="2.420453"/>
             <choice-list number="11" same_result="True">
@@ -52,7 +52,7 @@
                <choice name="1000" result="OK" time_sec="0.01" crc="319410180"/>
             </choice-list>
         </test>
-        <test title="Plain" make-dependent="True" time-sum-sec="0.07"> 
+        <test title="Plain" make-dependent="True" time-sum-sec="0.10"> 
             <application file-name="lexer" info-request-time="1320160856L" vanished="False"/>
             <make-procedure success="True" time_sec="1.815931"/>
             <choice-list number="11" same_result="True">
@@ -69,7 +69,7 @@
                <choice name="136" result="OK" time_sec="0.02" crc="759753114"/>
             </choice-list>
         </test>
-        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.13"> 
+        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.12"> 
             <application file-name="iconv-lexer" info-request-time="1320160858L" vanished="False"/>
             <make-procedure success="True" time_sec="2.226837"/>
             <choice-list number="11" same_result="True">

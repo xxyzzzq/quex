@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.52" date="Tue Nov  1 16:21:23 2011">
+<test-database execution-time-sec="0.51" date="Wed Nov  2 08:17:52 2011">
     <last-used-diff-display-program name=""/>
     <test title="With token policy 'queue'." make-dependent="True" time-sum-sec="0.01"> 
         <application file-name="simple-queue.exe" info-request-time="1320160880L" vanished="False"/>

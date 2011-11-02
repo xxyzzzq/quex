@@ -1,27 +1,27 @@
 init-state = 0L
-00000 (3, 6), (19, 45), (36, 94), (34, 86)
+00000 (18, 43), (33, 84), (35, 92), (3, 6)
      == 'a' ==> 00001
     
-00001 (3, 7, A, pre=7), (19, 46, S), (34, 87, S), (36, 95, A)
+00001 (3, 7, A, pre=6), (18, 44, S), (33, 85, S), (35, 93, A)
      == 'b' ==> 00002
     
-00002 (19, 47), (34, 88)
+00002 (18, 45), (33, 86)
      == 'b' ==> 00003
      == 'c' ==> 00005
     
-00003 (19, 47)
+00003 (18, 45)
      == 'b' ==> 00003
      == 'c' ==> 00004
     
-00004 (19, 48, A, R)
+00004 (18, 46, A, R)
     
-00005 (19, 48, A, R), (34, 89)
+00005 (18, 46, A, R), (33, 87)
      == 'd' ==> 00006
     
-00006 (34, 90)
+00006 (33, 88)
      == 'e' ==> 00007
     
-00007 (34, 91, A, R)
+00007 (33, 89, A, R)
     
 
 State 0:
@@ -35,8 +35,8 @@ State 1:
     .positioner:
         .from 0: <nothing>
   .drop_out:
-    if PreContext_7:  goto Pattern3;
-     goto Pattern36;
+    if PreContext_6:  goto Pattern3;
+     goto Pattern35;
 
 
 State 2:
@@ -44,10 +44,10 @@ State 2:
     .positioner:
         .from 1:
              position[Acceptance] = input_p;
-             position[PostContext_19]  = input_p;
+             position[PostContext_18]  = input_p;
   .drop_out:
-    if PreContext_7: pos -= 1;  goto Pattern3;
-    pos -= 1;  goto Pattern36;
+    if PreContext_6: pos -= 1;  goto Pattern3;
+    pos -= 1;  goto Pattern35;
 
 
 State 3:
@@ -56,8 +56,8 @@ State 3:
         .from 2: <nothing>
         .from 3: <nothing>
   .drop_out:
-    if PreContext_7: pos = position[Acceptance]; goto Pattern3;
-    pos = position[Acceptance]; goto Pattern36;
+    if PreContext_6: pos = position[Acceptance]; goto Pattern3;
+    pos = position[Acceptance]; goto Pattern35;
 
 
 State 4:
@@ -65,7 +65,7 @@ State 4:
     .positioner:
         .from 3: <nothing>
   .drop_out:
-    pos = position[PostContext_19] ; goto Pattern19;
+    pos = position[PostContext_18] ; goto Pattern18;
 
 
 State 5:
@@ -73,7 +73,7 @@ State 5:
     .positioner:
         .from 2: <nothing>
   .drop_out:
-    pos -= 2;  goto Pattern19;
+    pos -= 2;  goto Pattern18;
 
 
 State 6:
@@ -81,7 +81,7 @@ State 6:
     .positioner:
         .from 5: <nothing>
   .drop_out:
-    pos -= 3;  goto Pattern19;
+    pos -= 3;  goto Pattern18;
 
 
 State 7:
@@ -89,6 +89,6 @@ State 7:
     .positioner:
         .from 6: <nothing>
   .drop_out:
-    pos -= 4;  goto Pattern34;
+    pos -= 4;  goto Pattern33;
 
 

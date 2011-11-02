@@ -107,18 +107,21 @@ class TreeWalker:
 
        STATE __________________________________________________________________
 
-       The example of a 'path' member of TreeWalker insinuates the importance 
+       The example of a '.path' member of TreeWalker insinuates the importance 
        of the concept of the TreeWalker's state. Here, the 'state' keeps track
        of the currently walked down path. Any other data related to the data
        that is walked along may be stored as members of the (derived) TreeWalker 
        object.
+
+       For debug purposes, the '.depth' property can be used to probe the depth 
+       of the current recursion.
     """
     def do(self, InitNode_OrInitList):
         if type(InitNode_OrInitList) == list: init_node_list = InitNode_OrInitList 
         else:                                 init_node_list = [ InitNode_OrInitList ]
 
         frame = TreeWalkerFrame(None, init_node_list, -1)
-        work_stack = []
+        self.work_stack = []
         while 1 + 1 == 2:
             frame.i += 1
 
@@ -126,16 +129,19 @@ class TreeWalker:
             sub_node_list = self.on_enter(node)
 
             if (sub_node_list is not None) and len(sub_node_list) != 0:
-                work_stack.append(frame)                      # branch node
+                self.work_stack.append(frame)                      # branch node
                 frame = TreeWalkerFrame(node, sub_node_list, -1) 
             else:
                 if sub_node_list is not None:                 # is node not totally refused?
                     self.on_finished(node)                    # no sub nodes
                 while frame.i == len(frame.node_list) - 1:    # last in row    
-                    if len(work_stack) == 0:    return
-                    frame = work_stack.pop()
+                    if len(self.work_stack) == 0:    return
+                    frame = self.work_stack.pop()
                     self.on_finished(frame.node_list[frame.i])
                     if frame.i != len(frame.node_list) - 1: break
+    @property
+    def depth(self):
+        return len(self.work_stack)
 
     def on_enter(self, node):     assert False # --> user's derived class
     def on_finished(self, node):  assert False #           - " -

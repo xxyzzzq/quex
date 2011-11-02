@@ -151,23 +151,34 @@ class TrackAnalysis:
         """
         class LoopSearcher(TreeWalker):
             def __init__(self, SM):
-                self.path         = []
-                self.sm           = SM
-                self.result       = set()
-                self.successor_db = dict([(i, set()) for i in SM.states.iterkeys()])
-                # self.done_set     = set()
-                self.empty_list   = []
+                self.path = []
+                self.sm   = SM
+                self.done_set             = set()
+                self.empty_list           = []
+                # set of a all state indices that are on a loop-path
+                self.loop_state_index_set = set()
+                # map: state_index -> list of all successor state indices
+                self.successor_db         = dict([(i, set()) for i in SM.states.iterkeys()])
 
             def on_enter(self, StateIndex):
+                ## print (" " * self.depth) + ">%i" % StateIndex
                 found_f = False # StateIndex found in path?
                 for i in self.path:
-                    if StateIndex == i: found_f = True
                     self.successor_db[i].add(StateIndex)
+                    if StateIndex == i: 
+                        idx = self.path.index(StateIndex)
+                        # All states from path[idx] to the current are part of a loop.
+                        self.loop_state_index_set.update(self.path[idx:])
+                        found_f = True
+
+                # Make sure, that the successor_db has still registered the state_index
+                if StateIndex in self.done_set:
+                    # All states in the path have the successor states of StateIndex
+                    for i in (i for i in self.path if i != StateIndex):
+                        self.successor_db[i].update(self.successor_db[StateIndex])
+                    return None
 
                 if found_f:
-                    idx = self.path.index(StateIndex)
-                    # All states from path[idx] to the current are part of a loop.
-                    self.result.update(self.path[idx:])
                     return None
 
                 self.path.append(StateIndex)
@@ -175,11 +186,15 @@ class TrackAnalysis:
                 return propose_list
 
             def on_finished(self, StateIndex):
+                self.done_set.add(StateIndex)
                 self.path.pop()
 
+        print "##", self.sm.get_string(NormalizeF=False)
         searcher = LoopSearcher(self.sm)
         searcher.do(self.sm.init_state_index)
-        return searcher.result, searcher.successor_db
+        for i in sorted(searcher.successor_db.iterkeys()):
+            print "##successor_db[%i]: %s" % (i, searcher.successor_db[i])
+        return searcher.loop_state_index_set, searcher.successor_db
 
     def __trace_walk(self):
         """StateIndex -- current state

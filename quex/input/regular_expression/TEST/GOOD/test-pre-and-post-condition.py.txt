@@ -8,7 +8,7 @@ init-state = 0L
 00001 (S)
      == 'b' ==> 00002
     
-00002 (A, R, pre=11)
+00002 (A, R, pre=10)
     
 pre-condition inverted = init-state = 0L
 00000 ()
@@ -27,7 +27,7 @@ init-state = 0L
 00001 (S)
      == 'c' ==> 00002
     
-00002 (A, R, pre=37)
+00002 (A, R, pre=35)
     
 pre-condition inverted = init-state = 0L
 00000 ()
@@ -66,7 +66,7 @@ init-state = 0L
 00007 ()
      == 'o' ==> 00008
     
-00008 (A, R, pre=73)
+00008 (A, R, pre=70)
     
 00009 ()
      == 'a' ==> 00010

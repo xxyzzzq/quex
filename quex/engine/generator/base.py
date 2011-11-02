@@ -1,9 +1,7 @@
 from   quex.engine.misc.file_in                        import error_msg
 from   quex.engine.generator.action_info               import PatternActionInfo
 import quex.engine.state_machine.parallelize           as parallelize
-import quex.engine.state_machine.algorithm.nfa_to_dfa            as nfa_to_dfa
-import quex.engine.state_machine.algorithm.hopcroft_minimization as hopcroft
-import quex.engine.state_machine.algorithm.beautifier            as beautifier
+import quex.engine.state_machine.algorithm.beautifier  as beautifier
 
 from   itertools import ifilter
 

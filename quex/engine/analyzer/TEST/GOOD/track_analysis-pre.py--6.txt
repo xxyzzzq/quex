@@ -1,5 +1,5 @@
 init-state = 0L
-00000 (3, 6), (1, 2), (13, 27), (27, 58)
+00000 (1, 2), (26, 56), (3, 6), (13, 27)
      == 'a' ==> 00001
      == 'b' ==> 00004
     
@@ -9,15 +9,15 @@ init-state = 0L
 00002 (13, 29)
      == 'c' ==> 00003
     
-00003 (13, 30, A, pre=17)
+00003 (13, 30, A, pre=16)
     
-00004 (3, 7, A), (27, 59)
+00004 (3, 7, A), (26, 57)
      == 'b' ==> 00005
     
-00005 (27, 60)
+00005 (26, 58)
      == 'c' ==> 00006
     
-00006 (27, 61, A, pre=31)
+00006 (26, 59, A, pre=29)
     
 
 State 0:
@@ -47,7 +47,7 @@ State 3:
     .positioner:
         .from 2: <nothing>
   .drop_out:
-    if PreContext_17:  goto Pattern13;
+    if PreContext_16:  goto Pattern13;
     pos -= 2;  goto Pattern1;
 
 
@@ -72,7 +72,7 @@ State 6:
     .positioner:
         .from 5: <nothing>
   .drop_out:
-    if PreContext_31:  goto Pattern27;
+    if PreContext_29:  goto Pattern26;
     pos -= 2;  goto Pattern3;
 
 
