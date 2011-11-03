@@ -1,9 +1,9 @@
-<test-database execution-time-sec="0.55" date="Wed Nov  2 08:17:52 2011">
+<test-database execution-time-sec="0.51" date="Thu Nov  3 00:54:21 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Enums -- Functionality Test" time-sum-sec="0.06"> 
+    <test title="Enums -- Functionality Test" time-sum-sec="0.04"> 
         <application file-name="enum.py" info-request-time="1318614209L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.06" crc="-1245922459"/>
+           <choice name="" result="OK" time_sec="0.04" crc="-1245922459"/>
         </choice-list>
     </test>
     <group name="File Input">
@@ -27,7 +27,7 @@
         </test>
     </group>
     <group name="Integer conversion">
-        <test title="read_integer(...)" time-sum-sec="0.30"> 
+        <test title="read_integer(...)" time-sum-sec="0.29"> 
             <application file-name="test-read_integer.py" info-request-time="1318614209L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="hex" result="OK" time_sec="0.05" crc="952788026"/>
