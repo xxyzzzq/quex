@@ -161,7 +161,6 @@ class TrackAnalysis:
                 self.successor_db         = dict([(i, set()) for i in SM.states.iterkeys()])
 
             def on_enter(self, StateIndex):
-                ## print (" " * self.depth) + ">%i" % StateIndex
                 found_f = False # StateIndex found in path?
                 for i in self.path:
                     self.successor_db[i].add(StateIndex)
@@ -189,11 +188,8 @@ class TrackAnalysis:
                 self.done_set.add(StateIndex)
                 self.path.pop()
 
-        print "##", self.sm.get_string(NormalizeF=False)
         searcher = LoopSearcher(self.sm)
         searcher.do(self.sm.init_state_index)
-        for i in sorted(searcher.successor_db.iterkeys()):
-            print "##successor_db[%i]: %s" % (i, searcher.successor_db[i])
         return searcher.loop_state_index_set, searcher.successor_db
 
     def __trace_walk(self):
