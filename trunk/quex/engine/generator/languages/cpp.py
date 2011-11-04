@@ -443,9 +443,9 @@ def __terminal_states(StateMachineName, action_db, OnFailureAction, EndOfStreamA
 
     # (*) specific terminal states of patterns (entered from acceptance states)
     specific_terminal_states = []
-    for state_machine_id, pattern_action_info in action_db.items():
-        if state_machine_id in PreConditionIDList: continue
-        code = get_terminal_code(state_machine_id, pattern_action_info, SupportBeginOfLineF, LanguageDB)
+    for pattern_id, pattern_action_info in action_db.items():
+        if pattern_id in PreConditionIDList: continue
+        code = get_terminal_code(pattern_id, pattern_action_info, SupportBeginOfLineF, LanguageDB)
         specific_terminal_states.extend(code)
 
     delete_pre_context_flags = []

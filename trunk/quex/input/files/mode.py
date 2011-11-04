@@ -448,15 +448,15 @@ class Mode:
                 found_pattern = __is_in_patterns(pattern, repriorization_db)
                 if found_pattern != "":
                     # Adapt the pattern index, this automatically adapts the match precedence
-                    old_state_machine_id = pattern.sm.get_id()
-                    new_state_machine_id = repriorization_db[found_pattern][-1]
+                    old_pattern_id = pattern.sm.get_id()
+                    new_pattern_id = repriorization_db[found_pattern][-1]
                     new_match = deepcopy(match)
-                    new_match.pattern().sm.set_id(new_state_machine_id)
+                    new_match.pattern().sm.set_id(new_pattern_id)
                     pattern_action_pair_list[i] = new_match
                     # Mark 'repriorization applied'
                     repriorization_done_db[found_pattern] = True
                     self.__history_repriorization.append([CurrentModeName, match.pattern, match.mode_name,
-                                                          old_state_machine_id, new_state_machine_id]) 
+                                                          old_pattern_id, new_pattern_id]) 
                 i += 1
 
             # Ensure that all mentioned marks really had some effect.

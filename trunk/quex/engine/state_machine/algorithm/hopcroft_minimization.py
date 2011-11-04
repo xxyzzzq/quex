@@ -296,7 +296,7 @@ class HopcroftMinization:
                for states of the same set (== same key).
             """
             return tuple(sorted(
-                   [x.state_machine_id for x in ifilter(lambda y: y.is_acceptance(), state.origins())]
+                   [x.pattern_id() for x in ifilter(lambda y: y.is_acceptance(), state.origins())]
             ))
 
         distinguisher_db = defaultdict(list)
@@ -325,7 +325,7 @@ class HopcroftMinization:
             """
             result = {}
             for x in state.origins():
-                result[x.state_machine_id] = x.input_position_store_f()
+                result[x.pattern_id()] = x.input_position_store_f()
             return result
 
         state_set_iterable = distinguisher_db.values()
