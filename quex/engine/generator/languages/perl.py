@@ -121,9 +121,9 @@ def __cpp_terminal_states(StateMachineName, sm, action_db, DefaultAction):
     
     # -- specific terminal states of patterns (entered from acceptance states)
     txt = ""
-    for state_machine_id in action_db.keys():
-        txt += "  %s:\n" % get_label("", None, state_machine_id)
-        action_code = "    " + action_db[state_machine_id].replace("\n", "\n    ")   
+    for pattern_id in action_db.keys():
+        txt += "  %s:\n" % get_label("", None, pattern_id)
+        action_code = "    " + action_db[pattern_id].replace("\n", "\n    ")   
         txt += "    QUEX_STREAM_SEEK(last_acceptance_input_position);"
         txt += action_code + "\n"    
         txt += "    // if action code returns from the function, then the following is meaningless\n"
@@ -135,9 +135,9 @@ def __cpp_terminal_states(StateMachineName, sm, action_db, DefaultAction):
 
     #  -- general terminal state (entered from non-acceptance state)    
     txt = ""    
-    for state_machine_id in action_db.keys():
+    for pattern_id in action_db.keys():
         txt += "     case %s: goto %s;\n" % \
-                (repr(state_machine_id), get_label("", None, state_machine_id))
+                (repr(pattern_id), get_label("", None, pattern_id))
     jumps_to_acceptance_states_str = txt
 
 

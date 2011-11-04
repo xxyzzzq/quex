@@ -128,8 +128,8 @@ class State:
 
     def mark_self_as_origin(self, StateMachineID, StateIndex):
         origin = self.origins().get_the_only_one()
-        origin.state_machine_id = StateMachineID
-        origin.state_index      = StateIndex
+        origin.set_pattern_id(StateMachineID)
+        origin.state_index = StateIndex
 
     def add_origin(self, StateMachineID_or_StateOriginInfo, StateIdx=None, StoreInputPositionF=False):
         self.origins().add(StateMachineID_or_StateOriginInfo, StateIdx, 

@@ -75,11 +75,20 @@ class Analyzer:
         self.__engine_type      = EngineType
 
         # (1) Track Analysis: Get the 'Trace' objects for each state
-        acceptance_db, successor_db = track_analysis.do(SM)
+        acceptance_db, successor_db, store_to_restore_path_db = track_analysis.do(SM)
 
         # (*) Successor Database
         #     Store for each state the set of all possible successor states.
         self.__successor_db = successor_db
+
+        # (*) Store-To-Restore Path DB
+        #     For patterns where the number of characters from input position store
+        #     to restore cannot be determined by the number of state transitions 
+        #     (i.e. loops involved) the path from store to restore is stored here:
+        #     
+        #          map: pattern_id --> paths from store to restore
+        #
+        self.__store_to_restore_path_db = store_to_restore_path_db
 
         # (*) 'From Database'
         #     This is calculated on demand: For each state the list of states
@@ -177,9 +186,9 @@ class Analyzer:
             #          but all current pre-contexts must be checked.
             acceptance_checker = []
             for origin in sorted(ifilter(lambda x: x.is_acceptance(), state._origin_list),
-                                 key=attrgetter("state_machine_id")):
+                                 key=lambda x: x.pattern_id()):
                 acceptance_checker.append(DropOut_AcceptanceCheckerElement(origin.pre_context_id(),
-                                                                           origin.state_machine_id))
+                                                                           origin.pattern_id()))
                 ## Is this right?: According to (2.1) the following must hold
                 ## assert origin.pre_context_id() != -1
 
@@ -925,7 +934,7 @@ class EntryBackward(BASE_Entry):
     def __init__(self, OriginList):
         self.__pre_context_fulfilled_set = set([])
         for origin in ifilter(lambda origin: origin.is_acceptance(), OriginList):
-            self.__pre_context_fulfilled_set.add(origin.state_machine_id)
+            self.__pre_context_fulfilled_set.add(origin.pattern_id())
 
     def __hash__(self):
         return hash(len(self.__pre_context_fulfilled_set))

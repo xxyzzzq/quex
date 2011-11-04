@@ -1,5 +1,5 @@
 from quex.engine.state_machine.state_core_info import StateCoreInfo
-from quex.blackboard import E_PreContextIDs, E_AcceptanceIDs
+from quex.blackboard                           import E_PreContextIDs, E_AcceptanceIDs
 
 class StateOriginList(object):
     __slots__ = ('__list')
@@ -28,8 +28,8 @@ class StateOriginList(object):
         #      We need even non-meaningful origins, to detect whether a state can be 
         #      combined with another during Hopcroft optimization.
             
-        SM_ID = Origin.state_machine_id
-        for same in (origin for origin in self.__list if origin.state_machine_id == SM_ID):
+        PatternID = Origin.pattern_id()
+        for same in (origin for origin in self.__list if origin.pattern_id() == PatternID):
             same.merge(Origin)
             return
         self.__list.append(Origin.clone())
@@ -70,10 +70,10 @@ class StateOriginList(object):
         assert StateIndex is None or type(StateIndex) == long
         assert StoreInputPositionF is not None
             
-        if X.__class__ == StateCoreInfo:
+        if isinstance(X.__class__, StateCoreInfo):
             self.__add(X.clone())
         else:
-            self.__add(StateCoreInfo(StateMachineID        = X, 
+            self.__add(StateCoreInfo(PatternID             = X, 
                                      StateIndex            = StateIndex, 
                                      AcceptanceF           = AcceptanceF,
                                      PreContextID          = PreContextID,
@@ -104,14 +104,14 @@ class StateOriginList(object):
     def clear(self):
         self.__list = []
 
-    def adapt(self, StateMachineID, StateIndex):
+    def adapt(self, PatternID, StateIndex):
         """Adapts all origins so that their original state is 'StateIndex' in state machine
-           'StateMachineID'. Post- and pre-condition flags remain, and so the store input 
+           'PatternID'. Post- and pre-condition flags remain, and so the store input 
            position flag.
         """
         for origin in self.__list:
-            origin.state_machine_id = StateMachineID
-            origin.state_index      = StateIndex 
+            origin.set_pattern_id(StateMachineID)
+            origin.state_index = StateIndex 
 
     def delete_meaningless(self):
         """Deletes origins that are not concerned with one of the three:
@@ -147,7 +147,7 @@ class StateOriginList(object):
            ... i.e. segmentation faults.
         """
         # NOTE: Acceptance origins sort before non-acceptance origins
-        self.__list.sort(key=lambda x: (not x.is_acceptance(), x.state_machine_id))
+        self.__list.sort(key=lambda x: (not x.is_acceptance(), x.pattern_id()))
         new_origin_list = []
         unconditional_acceptance_found_f = False
         for origin in self.__list:

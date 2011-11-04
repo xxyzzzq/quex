@@ -65,13 +65,14 @@ from   quex.blackboard              import E_StateIndices, E_PostContextIDs, E_A
 from   quex.engine.misc.tree_walker import TreeWalker
 
 from   itertools   import ifilter, chain
+from   collections import defaultdict
 import sys
 
 def do(SM):
     """Determines a database of Trace lists for each state.
     """
     ta = TrackAnalysis(SM)
-    return ta.acceptance_trace_db, ta.successor_db
+    return ta.acceptance_trace_db, ta.successor_db, ta.store_to_restore_path_db
 
 class TrackAnalysis:
     """The init function of this class walks down each possible path trough a
@@ -109,7 +110,8 @@ class TrackAnalysis:
         # 
         #    map:  state_index  --> list of Trace objects.
         #
-        self.__map_state_to_trace = self.__trace_walk()
+        self.__map_state_to_trace,      \
+        self.__store_to_restore_path_db = self.__trace_walk()
 
     @property
     def loop_state_set(self):
@@ -134,6 +136,19 @@ class TrackAnalysis:
            Result of self.__trace_walk(...)
         """
         return self.__map_state_to_trace
+
+    @property
+    def store_to_restore_path_db(self):
+        """A dictionary that maps pattern id to a list of paths which guide from 
+           the state where an input position is stored to the position where it 
+           is restored. 
+
+           IMPORTANT: This database contains only entries for patterns where the
+                      path from store to restore CANNOT be determined from the 
+                      number of state transitions (i.e. if there is a 'loop' 
+                      involved).
+        """
+        return self.__store_to_restore_path_db
 
     @property
     def successor_db(self):
@@ -207,21 +222,30 @@ class TrackAnalysis:
                 # self.done_set   = set()
                 self.empty_list = []
                 self.result     = dict([(i, []) for i in self.sm.states.iterkeys()])
+                # map: pattern_id --> path from store to restore of input positions 
+                #                     where the difference CANNOT be determined by
+                #                     the number of transitions.
+                self.store_to_restore_path_db = defaultdict(list)
 
             def on_enter(self, StateIndex):
                 # (*) Update the information about the 'trace of acceptances'
+                State = self.sm.states[StateIndex]
+
                 if len(self.path) == 0: 
                     trace = Trace(self.sm.init_state_index)
                 else: 
                     trace = self.path[-1][1].clone()
-                    trace.update(StateIndex, self.track_info, self.path) 
+                    trace.update(StateIndex, State, self.track_info, self.path) 
+
+                # (*) Keep track of paths from store to restore
+                self.__register_store_restore_paths(trace, State)
 
                 # (*) Mark the current state with its acceptance trace
                 existing_trace_list = self.result.get(StateIndex) 
                 if trace in existing_trace_list:
                     # If a state has been analyzed before with the same trace as result,  
                     # then it is not necessary dive into deeper investigations again.
-                    return None
+                    return None # Refuse further processing of the node
                 self.result[StateIndex].append(trace)
 
                 # if StateIndex in self.done_set: return None
@@ -239,10 +263,35 @@ class TrackAnalysis:
                 # self.done_set.add(StateIndex)
                 self.path.pop()
 
+            def __register_store_restore_paths(self, TheTrace, TheState):
+                """When a state is reached that:
+                       (i) restores the input position and 
+                       (ii) the number of transitions from the storage of input position 
+                            to here cannot be determined by the number of transitions,
+                   then we have a situation where the input position
+                       (a) MUST be stored and restored.
+                       (b) The path from store to restore must be registered, so that
+                           later it can be determine what paths intersect and what not.
+                """
+                for origin in (x for x in TheState.origins()if     x.input_position_restore_f()): 
+                    trace = TheTrace.storage_db.get(origin.pattern_id())
+                    assert trace is not None, \
+                           "There MUST be a 'storing' state in the trace, if we reached a restore state."
+                    if trace.transition_n_since_positioning == E_TransitionN.VOID: continue
+                    # Find the stretch on the path from the storing state to the current state
+                    # where the input position is restored.
+                    for path_index, info in enumerate(self.path): 
+                        state_index = info[0]
+                        if state_index == trace.positioning_state_index:
+                            break
+                    else:
+                        assert False, "The positioning_state_index MUST be in the path!"
+                    store_to_restore_path = self.path[path_index:]
+                    self.store_to_restore_path_db[origin.pattern_id()].append(store_to_restore_path)
+
         trace_finder = TraceFinder(self)
         trace_finder.do(self.sm.init_state_index)
-        return trace_finder.result
-        return
+        return trace_finder.result, trace_finder.store_to_restore_path_db
 
 class Trace(object):
     """For one particular STATE that is reached via one particular PATH an
@@ -306,7 +355,7 @@ class Trace(object):
     def __len__(self):
         return len(self.__trace_db)
 
-    def update(self, StateIndex, track_info, Path):
+    def update(self, StateIndex, State, track_info, Path):
         """Assume: 'self.__trace_db' contains accumulated information of passed 
                    states until the current state has been reached. 
 
@@ -348,8 +397,6 @@ class Trace(object):
         self.__last_transition_n_to_acceptance = len(Path)
 
         # Last element of the path is the index of the current state
-        Origins      = track_info.sm.states[StateIndex].origins()
-
         # (*) Update all path related Info
         if StateIndex in track_info.loop_state_set:
             # -- Touching a loop ...
@@ -369,9 +416,9 @@ class Trace(object):
                and entry.transition_n_since_positioning != E_TransitionN.VOID:
                 entry.transition_n_since_positioning = operation(entry.transition_n_since_positioning)
 
-        for origin in Origins:
-            pre_context_id  = origin.pre_context_id()
-            pattern_id      = origin.state_machine_id
+        for origin in State.origins():
+            pattern_id     = origin.pattern_id()
+            pre_context_id = origin.pre_context_id()
 
             # (1) Acceptance:
             #     -- dominates any acceptance of same pre-context with 
@@ -437,7 +484,7 @@ class Trace(object):
                False -- Origin is dominated by other content of the trace.
         """
         assert Origin.is_acceptance()
-        ThePatternID    = Origin.state_machine_id
+        ThePatternID    = Origin.pattern_id()
         ThePreContextID = Origin.pre_context_id()
 
         # NOTE: There are also traces, which are only 'position storage infos'.
@@ -469,6 +516,10 @@ class Trace(object):
                     return False
 
         return True
+
+    @property
+    def storage_db(self):
+        return self.__storage_db
 
     def __getitem__(self, PreContextID):
         return self.get(PreContextID)

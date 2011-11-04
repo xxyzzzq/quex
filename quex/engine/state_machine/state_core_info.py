@@ -61,13 +61,13 @@ class StateCoreInfo(object):
             The exact behavior of a state in a 'melted' state machine is
             derived from lists of these objects by track analysis.
     """    
-    __slots__ = ("state_machine_id", "state_index", 
+    __slots__ = ("__pattern_id", "state_index", 
                  "__acceptance_f", 
                  "__pre_context_id", 
                  "__input_position_store_f",
                  "__input_position_restore_f")
 
-    def __init__(self, StateMachineID, StateIndex, 
+    def __init__(self, PatternID, StateIndex, 
                  AcceptanceF, 
                  StoreInputPositionF=False, 
                  PreContextID=E_PreContextIDs.NONE,
@@ -76,17 +76,17 @@ class StateCoreInfo(object):
         assert type(AcceptanceF) == bool
         assert type(StoreInputPositionF) == bool
         assert type(RestoreInputPositionF) == bool
-        assert StateMachineID in E_AcceptanceIDs or (isinstance(StateMachineID, long) and StateMachineID >= 0) 
-        assert PreContextID   in E_PreContextIDs or (isinstance(PreContextID, long) and PreContextID >= 0)
+        assert PatternID    in E_AcceptanceIDs or (isinstance(PatternID, long)    and PatternID >= 0) 
+        assert PreContextID in E_PreContextIDs or (isinstance(PreContextID, long) and PreContextID >= 0)
 
         if AcceptanceF: assert not StoreInputPositionF 
         else:           assert PreContextID == E_PreContextIDs.NONE
                
-        # NOT: StateMachineID != E_AcceptanceIDs.FAILURE => AcceptanceF == False
+        # NOT: PatternID != E_AcceptanceIDs.FAILURE => AcceptanceF == False
         #      State core info objects are also used for non-acceptance states of patterns
 
-        self.state_machine_id = StateMachineID
-        self.state_index      = StateIndex
+        self.__pattern_id = PatternID
+        self.state_index  = StateIndex
 
         self.__acceptance_f             = AcceptanceF 
         self.__input_position_store_f   = StoreInputPositionF
@@ -96,7 +96,7 @@ class StateCoreInfo(object):
     def clone(self, StateIndex=None):
         if StateIndex is not None: state_index = StateIndex
         else:                      state_index = self.state_index
-        return StateCoreInfo(self.state_machine_id, state_index, 
+        return StateCoreInfo(self.__pattern_id, state_index, 
                              self.__acceptance_f,
                              self.__input_position_store_f,
                              self.__pre_context_id,
@@ -107,7 +107,7 @@ class StateCoreInfo(object):
         # state machines. This should NOT be an 'assert'. In the final state machine
         # more than one state machine is combined in parallel and then they belong 
         # to the same state machine
-        # if self.state_machine_id != Other.state_machine_id: return
+        # if self.__pattern_id != Other.__pattern_id: return
 
         if Other.__acceptance_f:                 
             self.__acceptance_f = True
@@ -138,6 +138,12 @@ class StateCoreInfo(object):
         #
         #if Other.__pre_context_id != E_PreContextIDs.NONE:    
         #    self.__pre_context_id  = Other.__pre_context_id 
+
+    def pattern_id(self):
+        return self.__pattern_id
+
+    def set_pattern_id(self, Value):
+        self.__pattern_id = Value
 
     def is_acceptance(self):
         return self.__acceptance_f
@@ -188,19 +194,19 @@ class StateCoreInfo(object):
         return self.get_string()
 
     def is_meaningful(self):
-        if   self.state_machine_id != E_AcceptanceIDs.FAILURE: return True
-        elif self.state_index      != -1L:                     return True
-        elif self.__acceptance_f:                              return True
-        elif self.__input_position_store_f:                    return True
-        elif self.__input_position_restore_f:                  return True
+        if   self.__pattern_id != E_AcceptanceIDs.FAILURE: return True
+        elif self.state_index      != -1L:                 return True
+        elif self.__acceptance_f:                          return True
+        elif self.__input_position_store_f:                return True
+        elif self.__input_position_restore_f:              return True
         return False
 
     def get_string(self, StateMachineAndStateInfoF=True):
         txt = ""
 
         if StateMachineAndStateInfoF:
-            if self.state_machine_id != E_AcceptanceIDs.FAILURE:
-                txt += ", " + repr(self.state_machine_id).replace("L", "")
+            if self.__pattern_id != E_AcceptanceIDs.FAILURE:
+                txt += ", " + repr(self.__pattern_id).replace("L", "")
             if self.state_index != -1L:
                 txt += ", " + repr(self.state_index).replace("L", "")
 
