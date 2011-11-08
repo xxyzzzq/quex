@@ -4,8 +4,6 @@ from   quex.engine.analyzer.core import Entry, \
 from   quex.blackboard import setup as Setup, \
                               E_EngineTypes
 
-from   itertools import imap
-
 def do(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
     """Writes code for the state entry into 'txt'.
 
@@ -52,8 +50,7 @@ def _doors(txt, TheState, PositionRegisterMap, LabelF):
         # The check 'if pre-context' + the jump take most likely more time
         # then simply assigning the position to the position register. So
         # simply omit the check. Collect all registers that store.
-        register_set = set(imap(lambda post_context_id: PositionRegisterMap[post_context_id], 
-                           Positioner.iterkeys()))
+        register_set = set(PositionRegisterMap[x.post_context_id] for x in Positioner)
         for register in register_set:
             txt.append(
                 " %s" % LanguageDB.ASSIGN(LanguageDB.POSITION_REGISTER(register), LanguageDB.INPUT_P()), 

@@ -58,12 +58,13 @@ def do(analyzer):
     #                -- Sets of post_context_ids that store their positions in exactly the
     #                   same states.
     all_post_context_id_set, \
+    store_db,                \
     equivalent_sets          = analyzer._get_equivalent_post_context_id_sets()
 
     # (2) Determine: Sets of post context ids, where the paths from storage
     #                of input position and restore of input position does 
     #                not interact.
-    combinable_list = find_non_intersecting_post_context_id_groups(all_post_context_id_set, analyzer)
+    combinable_list = find_non_intersecting_post_context_id_groups(store_db, all_post_context_id_set, analyzer)
 
     # (*) To each non-intersecting state set on can add the equivalent 
     #     post-context-ids.
@@ -106,11 +107,11 @@ def do(analyzer):
 
     return result
 
-def find_non_intersecting_post_context_id_groups(AllPostContextID_List, analyzer):
+def find_non_intersecting_post_context_id_groups(StoreDB, AllPostContextID_List, analyzer):
     """Determine groups of post-context-ids where the path from store input 
        position to restore input position does not intersect.
     """
-    StateSetDB = analyzer._find_state_sets_from_store_to_restore()
+    StateSetDB = analyzer._find_state_sets_from_store_to_restore(StoreDB)
 
     result = []
     for i, post_context_id in enumerate(AllPostContextID_List):
@@ -127,6 +128,7 @@ def find_non_intersecting_post_context_id_groups(AllPostContextID_List, analyzer
     # NOTE: A non-intersecting set of size < 2 does not make any statement.
     #       At least, there must be two elements, so that this means 'A is 
     #       equivalent to B'. Thus, filter anything of size < 2.
+    ##print "##", result
     return result
             
 
