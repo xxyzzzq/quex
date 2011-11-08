@@ -64,7 +64,7 @@ without actual storing of input positions:
 from   quex.blackboard              import E_StateIndices, E_PostContextIDs, E_AcceptanceIDs, E_PreContextIDs, E_TransitionN
 from   quex.engine.misc.tree_walker import TreeWalker
 
-from   itertools   import ifilter, chain
+from   itertools   import ifilter, chain, islice
 from   collections import defaultdict
 import sys
 
@@ -235,10 +235,10 @@ class TrackAnalysis:
                     trace = Trace(self.sm.init_state_index)
                 else: 
                     trace = self.path[-1][1].clone()
-                    trace.update(StateIndex, State, self.track_info, self.path) 
+                    trace.update(StateIndex, State, self.track_info.loop_state_set, self.path) 
 
                 # (*) Keep track of paths from store to restore
-                self.__register_store_restore_paths(trace, State)
+                self.__register_store_restore_paths(trace, StateIndex)
 
                 # (*) Mark the current state with its acceptance trace
                 existing_trace_list = self.result.get(StateIndex) 
@@ -263,7 +263,7 @@ class TrackAnalysis:
                 # self.done_set.add(StateIndex)
                 self.path.pop()
 
-            def __register_store_restore_paths(self, TheTrace, TheState):
+            def __register_store_restore_paths(self, TheTrace, StateIndex):
                 """When a state is reached that:
                        (i) restores the input position and 
                        (ii) the number of transitions from the storage of input position 
@@ -273,21 +273,17 @@ class TrackAnalysis:
                        (b) The path from store to restore must be registered, so that
                            later it can be determine what paths intersect and what not.
                 """
-                for origin in (x for x in TheState.origins()if     x.input_position_restore_f()): 
-                    trace = TheTrace.storage_db.get(origin.pattern_id())
-                    assert trace is not None, \
-                           "There MUST be a 'storing' state in the trace, if we reached a restore state."
-                    if trace.transition_n_since_positioning == E_TransitionN.VOID: continue
+                for entry in TheTrace.acceptance_db.itervalues():
+                    if entry.transition_n_since_positioning != E_TransitionN.VOID: continue
                     # Find the stretch on the path from the storing state to the current state
                     # where the input position is restored.
                     for path_index, info in enumerate(self.path): 
-                        state_index = info[0]
-                        if state_index == trace.positioning_state_index:
-                            break
+                        if info[0] == entry.positioning_state_index: break
                     else:
                         assert False, "The positioning_state_index MUST be in the path!"
-                    store_to_restore_path = self.path[path_index:]
-                    self.store_to_restore_path_db[origin.pattern_id()].append(store_to_restore_path)
+                    store_to_restore_path = [ state_index for state_index, trace in islice(self.path, path_index, None)] 
+                    store_to_restore_path.append(StateIndex)
+                    self.store_to_restore_path_db[entry.post_context_id].append(store_to_restore_path)
 
         trace_finder = TraceFinder(self)
         trace_finder.do(self.sm.init_state_index)
@@ -326,13 +322,22 @@ class Trace(object):
                 (else,                       8 wins, input position = current - 3)
        ...
     """
-    __slots__ = ("__trace_db", "__storage_db", "__last_transition_n_to_acceptance")
+    __slots__ = ("__acceptance_db", "__storage_db", "__DEBUG_last_transition_n_to_acceptance")
+    # __acceptance_db:   pattern_id --> TraceEntry object 
+    #
+    #               Information about the acceptance of pattern_id on the trace with 
+    #               respect to the state that this object represents.
+    #
+    # __storage_db: pattern_id --> TraceEntry object 
+    #               Information about where input position is stored for given 
+    #               pattern_id. This is obviously only important for post-contexted
+    #               pattern, i.e. where there is store-restore input position.
 
     def __init__(self, InitStateIndex=None):
         if InitStateIndex is None:
-            self.__trace_db = {}
+            self.__acceptance_db = {}
         else:
-            self.__trace_db = { 
+            self.__acceptance_db = { 
                 E_AcceptanceIDs.FAILURE: 
                       TraceEntry(PreContextID                 = E_PreContextIDs.NONE, 
                                  PatternID                    = E_AcceptanceIDs.FAILURE, 
@@ -343,20 +348,24 @@ class Trace(object):
                                  PostContextID                = E_PostContextIDs.NONE),
             }
         self.__storage_db = {}
-        self.__last_transition_n_to_acceptance = 0
+        self.__DEBUG_last_transition_n_to_acceptance = 0
 
     def clone(self):
         result = Trace()
-        result.__trace_db   = dict([ (i, x.clone()) for i, x in self.__trace_db.iteritems() ])
-        result.__storage_db = dict([ (i, x.clone()) for i, x in self.__storage_db.iteritems() ])
-        result.__last_transition_n_to_acceptance = self.__last_transition_n_to_acceptance
+        result.__acceptance_db   = dict(( (i, x.clone()) 
+                                     for i, x in self.__acceptance_db.iteritems() 
+                                  ))
+        result.__storage_db = dict(( (i, x.clone()) 
+                                     for i, x in self.__storage_db.iteritems() 
+                                  ))
+        result.__DEBUG_last_transition_n_to_acceptance = self.__DEBUG_last_transition_n_to_acceptance
         return result
 
     def __len__(self):
-        return len(self.__trace_db)
+        return len(self.__acceptance_db)
 
-    def update(self, StateIndex, State, track_info, Path):
-        """Assume: 'self.__trace_db' contains accumulated information of passed 
+    def update(self, StateIndex, State, LoopStateSet, Path):
+        """Assume: 'self.__acceptance_db' contains accumulated information of passed 
                    states until the current state has been reached. 
 
            Now, the current state is reached. It contains 'origins', i.e.
@@ -366,7 +375,7 @@ class Trace(object):
            input position is to be stored and what pre-context has to be
            fulfilled for a pattern to trigger acceptance.
            
-           The 'self.__trace_db' contains two types of elements:
+           The 'self.__acceptance_db' contains two types of elements:
 
               -- TraceEntry objects that tell about an acceptance.
                  => .accepting_state_index = index of the accepting state
@@ -393,12 +402,12 @@ class Trace(object):
         # that the entries are accumulated from the begin of a path towards its 
         # end. Otherwise, the 'longest match' cannot be applied by overwriting
         # existing entries.
-        assert abs(self.__last_transition_n_to_acceptance) < CurrentPathLength
-        self.__last_transition_n_to_acceptance = len(Path)
+        assert abs(self.__DEBUG_last_transition_n_to_acceptance) < CurrentPathLength
+        self.__DEBUG_last_transition_n_to_acceptance = len(Path)
 
         # Last element of the path is the index of the current state
         # (*) Update all path related Info
-        if StateIndex in track_info.loop_state_set:
+        if StateIndex in LoopStateSet:
             # -- Touching a loop ...
             #    => The number of transitions starting from the current state cannot 
             #       be determined by the number of state transitions. 
@@ -410,122 +419,61 @@ class Trace(object):
             operation = lambda transition_n: transition_n + 1
 
         # Loop controlled by 'operation'
-        for entry in chain(self.__trace_db.itervalues(), self.__storage_db.itervalues()):
+        for entry in chain(self.__acceptance_db.itervalues(), self.__storage_db.itervalues()):
             # 'lexeme_start_p + 1', 'void' --> are not updated
             if     entry.transition_n_since_positioning != E_TransitionN.LEXEME_START_PLUS_ONE \
                and entry.transition_n_since_positioning != E_TransitionN.VOID:
                 entry.transition_n_since_positioning = operation(entry.transition_n_since_positioning)
 
-        for origin in State.origins():
-            pattern_id     = origin.pattern_id()
-            pre_context_id = origin.pre_context_id()
+        # (*) Absolute Acceptance 
+        acceptance_id = E_AcceptanceIDs.FAILURE
+        origin        = State.origins().get_absolute_acceptance_origin()
+        if origin is not None:
+            self.__acceptance_db.clear()
+            self.__add(origin, StateIndex, CurrentPathLength)
 
-            # (1) Acceptance:
-            #     -- dominates any acceptance of same pre-context with 
-            #        'transition_n_since_positioning != 0'
-            # (1.1) No Position Restore (normal pattern)
-            # (1.2) With Position Restore (end of post-context)
-            #         -- dominates any acceptance of same pre-context with 
-            #            'transition_n_since_positioning != 0'
-            #         -- turn position store object in trace into an 
-            #            accepting trace (accepting_state_index != VOID).
-            # (2) Non-Acceptance:
-            # (2.1) Store input position
-            #         -- Enter in database: store position info object
-            # (2.2) Non input position storage
-            #         -- Unimportant
-            if origin.is_acceptance():
-                if not self.__sift(StateIndex, origin): 
-                    continue
-                elif origin.input_position_restore_f():
-                    entry = self.__storage_db[pattern_id].clone()
-                    entry.pre_context_id                 = pre_context_id
-                    entry.accepting_state_index          = StateIndex
-                    entry.min_transition_n_to_acceptance = CurrentPathLength
-                    self.__trace_db[pattern_id] = entry
-                else:
-                    # Add entry to the Database 
-                    self.__trace_db[pattern_id] = \
-                            TraceEntry(pre_context_id, 
-                                       pattern_id,
-                                       MinTransitionN_ToAcceptance  = CurrentPathLength,
-                                       AcceptingStateIndex          = StateIndex, 
-                                       TransitionN_SincePositioning = 0,
-                                       PositioningStateIndex        = StateIndex, 
-                                       PostContextID                = E_PostContextIDs.NONE)
+        # (*) Conditional Acceptance 
+        for origin in State.origins().get_conditional_acceptance_iterable(acceptance_id):
+            self.__add(origin, StateIndex, CurrentPathLength)
 
-            elif origin.input_position_store_f(): 
-                self.__storage_db[pattern_id] = TraceEntry(E_PreContextIDs.NONE, 
-                                                           pattern_id,
-                                                           MinTransitionN_ToAcceptance  = E_TransitionN.VOID,
-                                                           AcceptingStateIndex          = E_StateIndices.VOID, 
-                                                           TransitionN_SincePositioning = 0,
-                                                           PositioningStateIndex        = StateIndex, 
-                                                           PostContextID                = pattern_id)
+        # (*) Store Input Position Information
+        for origin in State.origins().get_store_iterable():
+            # One the StoreInfo object is in __storage_db, it is subject to counting
+            # .transition_n_since_positioning each time we advance one step on the path. 
+            self.__storage_db[origin.pattern_id()] = StoreInfo(StateIndex)
 
-        assert len(self.__trace_db) >= 1
+        assert len(self.__acceptance_db) >= 1
 
-    def __sift(self, StateIndex, Origin):
-        """StateIndex -- index of the current state.
-           Origin     -- information about what happens in the current state.
-
-           This functions sifts out elements in the trace of the current path
-           which are dominated by the influence of the Origin. On the other
-           hand, if the Origin contains information which is dominated by 
-           existing traces it is returned 'False' which indicates that 
-           the origin does not need to be considered further.
-
-           The origin carries information about acceptances of patterns and 
-           storage of input positions. An unconditional acceptance means,
-           that it does not depend on any pre-context of any kind. 
-
-           RETURNS:
-               True  -- Origin is subject to further treatment.
-               False -- Origin is dominated by other content of the trace.
-        """
-        assert Origin.is_acceptance()
-        ThePatternID    = Origin.pattern_id()
-        ThePreContextID = Origin.pre_context_id()
-
-        # NOTE: There are also traces, which are only 'position storage infos'.
-        #       Those have accepting state index == VOID.
-        if ThePreContextID == E_PreContextIDs.NONE:
-            # Abolish:
-            # -- all previous traces (accepting_state_index != StateIndex)
-            # -- traces of same state, if they are dominated (pattern_id > ThePatternID)
-            for entry in self.__trace_db.values():
-                assert entry.accepting_state_index != E_StateIndices.VOID 
-                if   entry.accepting_state_index != StateIndex:
-                    del self.__trace_db[entry.pattern_id]
-                elif entry.pattern_id == E_AcceptanceIDs.FAILURE or entry.pattern_id >= ThePatternID:
-                    del self.__trace_db[entry.pattern_id]
-                elif entry.pre_context_id == E_PreContextIDs.NONE:
-                    return False
+    def __add(self, Origin, StateIndex, CurrentPathLength):
+        pattern_id = Origin.pattern_id()
+        if Origin.input_position_restore_f():
+            entry = self.__storage_db[pattern_id]
+            transition_n_since_positioning = entry.transition_n_since_positioning
+            positioning_state_index        = entry.positioning_state_index
+            post_context_id                = pattern_id
         else:
-            # Abolish ONLY TRACES WITH THE SAME PRE-CONTEXT ID:
-            # -- all previous traces (accepting_state_index != StateIndex)
-            # -- traces of same state, if they are dominated (pattern_id > ThePatternID)
-            for entry in ifilter(lambda x: x.pre_context_id == ThePreContextID, \
-                                 self.__trace_db.values()):
-                assert entry.accepting_state_index != E_StateIndices.VOID 
-                if entry.accepting_state_index != StateIndex:
-                    del self.__trace_db[entry.pattern_id]
-                elif entry.pattern_id >= ThePatternID:
-                    del self.__trace_db[entry.pattern_id]
-                else:
-                    return False
+            transition_n_since_positioning = 0
+            positioning_state_index        = StateIndex
+            post_context_id                = E_PostContextIDs.NONE
 
-        return True
+        self.__acceptance_db[pattern_id] = \
+                TraceEntry(Origin.pre_context_id(), pattern_id,
+                           MinTransitionN_ToAcceptance  = CurrentPathLength,
+                           AcceptingStateIndex          = StateIndex, 
+                           TransitionN_SincePositioning = transition_n_since_positioning,
+                           PositioningStateIndex        = positioning_state_index, 
+                           PostContextID                = post_context_id)
 
     @property
-    def storage_db(self):
-        return self.__storage_db
+    def acceptance_db(self): return self.__acceptance_db
+    @property
+    def storage_db(self): return self.__storage_db
 
     def __getitem__(self, PreContextID):
         return self.get(PreContextID)
 
     def get(self, PreContextID):
-        for entry in self.__trace_db.itervalues():
+        for entry in self.__acceptance_db.itervalues():
             if entry.pre_context_id == PreContextID: return entry
         return None
 
@@ -537,32 +485,32 @@ class Trace(object):
             # Lowest pattern ids sort on top
             return (- X.min_transition_n_to_acceptance, X.pattern_id)
 
-        return sorted(self.__trace_db.itervalues(), key=my_key)
+        return sorted(self.__acceptance_db.itervalues(), key=my_key)
 
     def get_priorized_pre_context_id_list(self):
         return map(lambda x: x.pre_context_id, self.get_priorized_list())
 
     def __eq__(self, Other):
-        """Compare two acceptance trace objects. Note, that __last_transition_n_to_acceptance
+        """Compare two acceptance trace objects. Note, that __DEBUG_last_transition_n_to_acceptance
            is only for debug purposes.
         """
-        if len(self.__trace_db)   != len(Other.__trace_db):      return False
+        if len(self.__acceptance_db)   != len(Other.__acceptance_db):      return False
         if len(self.__storage_db) != len(Other.__storage_db):    return False
 
-        for pattern_id, trace in self.__trace_db.iteritems():
-            other_trace = Other.__trace_db.get(pattern_id)
+        for pattern_id, trace in self.__acceptance_db.iteritems():
+            other_trace = Other.__acceptance_db.get(pattern_id)
             if other_trace is None:                              return False
-            if not trace.is_equal(Other.__trace_db[pattern_id]): return False
-        # Here, self.__trace_db and Other.__trace_db have the same number of entries,
-        # thus the same number of unique keys (pattern_ids). Any key in self.__trace_db
-        # occurs in Other.__trace_db, so both have the same key set. Also, Both 
+            if not trace.is_equal(Other.__acceptance_db[pattern_id]): return False
+        # Here, self.__acceptance_db and Other.__acceptance_db have the same number of entries,
+        # thus the same number of unique keys (pattern_ids). Any key in self.__acceptance_db
+        # occurs in Other.__acceptance_db, so both have the same key set. Also, Both 
         # have the same trace stored along with their given key.
 
-        for pattern_id, trace in self.__storage_db.iteritems():
-            other_trace = Other.__storage_db.get(pattern_id)
-            if other_trace is None:                                return False
-            if not trace.is_equal(Other.__storage_db[pattern_id]): return False
-        # What held for __trace_db above holds here for __storage_db
+        for pattern_id, entry in self.__storage_db.iteritems():
+            other_entry = Other.__storage_db.get(pattern_id)
+            if other_entry is None:                                return False
+            if not entry.is_equal(Other.__storage_db[pattern_id]): return False
+        # What held for __acceptance_db above holds here for __storage_db
         
         return True
 
@@ -571,13 +519,27 @@ class Trace(object):
 
     def __repr__(self):
         txt = []
-        for x in self.__trace_db.itervalues():
+        for x in self.__acceptance_db.itervalues():
             txt.append(repr(x))
         return "".join(txt)
 
     def __iter__(self):
-        for x in self.__trace_db.itervalues():
+        for x in self.__acceptance_db.itervalues():
             yield x
+
+class StoreInfo(object):
+    __slots__ = ('transition_n_since_positioning', 'positioning_state_index')
+    def __init__(self, PositioningStateIndex, TransitionN_SincePositioning=0):
+        self.transition_n_since_positioning = TransitionN_SincePositioning
+        self.positioning_state_index        = PositioningStateIndex
+
+    def is_equal(self, Other):
+        return     self.transition_n_since_positioning == Other.transition_n_since_positioning \
+               and self.positioning_state_index        == Other.positioning_state_index
+
+    def clone(self):
+        return StoreInfo(self.positioning_state_index, 
+                         self.transition_n_since_positioning)
 
 class TraceEntry(object):
     """Information about a trace element. That is what pre-context is

@@ -6,7 +6,6 @@ def get_index(TriggerMap):
        cases. It is tried to avoid cuts in between switch-case regions.
     """
     L = len(TriggerMap)
-    preferred_section_index = int(L / 2)
 
     # Make sure that no cut in the middle of a switch case
     preferred_section_index = int(L / 2)

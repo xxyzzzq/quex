@@ -104,13 +104,13 @@ class StateOriginList(object):
     def clear(self):
         self.__list = []
 
-    def adapt(self, PatternID, StateIndex):
+    def DELETED_adapt(self, PatternID, StateIndex):
         """Adapts all origins so that their original state is 'StateIndex' in state machine
            'PatternID'. Post- and pre-condition flags remain, and so the store input 
            position flag.
         """
         for origin in self.__list:
-            origin.set_pattern_id(StateMachineID)
+            origin.set_pattern_id(PatternID)
             origin.state_index = StateIndex 
 
     def delete_meaningless(self):
@@ -134,6 +134,38 @@ class StateOriginList(object):
                                     origin.pre_context_id() != E_PreContextIDs.NONE or
                                     origin.input_position_store_f(),
                                     self.__list)
+
+    def get_absolute_acceptance_origin(self):
+        """There can be only one 'origin' that wins without any pre-condition/pre-context.
+           This is the one with the lowest pattern id (the one which has been written first).
+        """
+        iterable = (origin for origin in self.__list                       \
+                    if     origin.pre_context_id() == E_PreContextIDs.NONE \
+                       and origin.is_acceptance())
+        try:
+            result = min((origin for origin in iterable), key=lambda x: x.pattern_id())
+            return result
+        except:
+            return None
+
+    def get_conditional_acceptance_iterable(self, MaxAcceptanceID):
+        """There can be more than one conditional acceptance for a state, because it is only
+           known at runtime which pre-context is actually fulfilled.
+        """
+        # Conditional acceptance on a pre-context is simply nonsense.
+        if MaxAcceptanceID == E_AcceptanceIDs.FAILURE:
+            return (origin for origin in self.__list                  \
+                    if origin.pre_context_id() != E_PreContextIDs.NONE)
+        else:
+            return (origin for origin in self.__list                       \
+                    if     origin.pre_context_id() != E_PreContextIDs.NONE \
+                       and origin.pattern_id() < MaxAcceptanceID)
+
+    def get_store_iterable(self):
+        """Return list of origins which tell something about storing the input
+           position. Those cannot be acceptance origins.
+        """
+        return (origin for origin in self.__list if origin.input_position_store_f())
 
     def delete_dominated(self):
         """This function is a simplification in order to allow the Hopcroft Minimization

@@ -43,8 +43,8 @@ from   quex.blackboard  import E_StateIndices, \
                                E_PreContextIDs, \
                                E_InputActions
 
-from   collections      import defaultdict
-from   operator         import attrgetter, itemgetter
+from   collections      import defaultdict, namedtuple
+from   operator         import itemgetter
 from   itertools        import islice, ifilter, imap
 from   quex.blackboard  import setup as Setup
 
@@ -69,6 +69,8 @@ class Analyzer:
     def __init__(self, SM, EngineType):
         assert EngineType in E_EngineTypes
         assert isinstance(SM, StateMachine)
+
+        ## print "##", SM.get_string(NormalizeF=False)
 
         self.__init_state_index = SM.init_state_index
         self.__state_machine_id = SM.get_id()
@@ -228,7 +230,7 @@ class Analyzer:
                     if target_index == pos_state_index: continue
                     entry = self.__state_db[target_index].entry
                     # from state: pos_state_index (the state before)
-                    entry.positioner_db[pos_state_index][info.post_context_id].add(info.pre_context_id)
+                    entry.positioner_db[pos_state_index].add(PositionerInfo(info.post_context_id, info.pre_context_id))
 
         # Clean Up the acceptance_checker and the terminal_router:
         # (1) there is no check after the unconditional acceptance
@@ -397,23 +399,6 @@ class Analyzer:
         """
         return self.__from_db
 
-    def __successor_db_get(self, StateIndex, path, result):
-        """Determine for each state the total set of successor states.
-        """
-        state             = self.__state_db[StateIndex]
-        target_index_list = state.target_index_list
-
-        path.append(StateIndex)
-        for state_index in path:
-            result[state_index].update(target_index_list)
-
-        for target_index in ifilter(lambda x: x not in path, target_index_list):
-            if target_index in path: continue
-            if target_index in self.__successor_db_done_set: continue
-            self.__successor_db_get(target_index, path, result)
-        path.pop()
-        self.__successor_db_done_set.add(StateIndex)
-
     def _get_equivalent_post_context_id_sets(self):
         """Determine sets of equivalent post context ids, because they
            store the input positions at the exactly same set of states.
@@ -426,8 +411,8 @@ class Analyzer:
         for state in self.state_db.itervalues():
             # Iterate over all post context ids subject to position storage
             for positioner in state.entry.positioner_db.itervalues():
-                for post_context_id in positioner.iterkeys():
-                    store_constellation_db[post_context_id].add(state.index)
+                for info in positioner:
+                    store_constellation_db[info.post_context_id].add(state.index)
 
         # (2) inverse map: 
         #             
@@ -441,39 +426,25 @@ class Analyzer:
         # NOTE: An equivalent set of size < 2 does not make any statement.
         #       At least, there must be two elements, so that this means 'A is 
         #       equivalent to B'. Thus, filter anything of size < 2.
-        return store_constellation_db.keys(), filter(lambda x: len(x) >= 2, inverse_db.values())
+        return store_constellation_db.keys(), store_constellation_db, filter(lambda x: len(x) >= 2, inverse_db.values())
 
-    def _find_state_sets_from_store_to_restore(self):
+    def _find_state_sets_from_store_to_restore(self, store_constellation_db):
         """RETURNS: A mapping:
 
               post-context id --> set of states that lie on the path from store 
                                   to restore of the input position.
         """
-        def dive(PostContextID, State, path, collection):
-            """Termination Condition: state.target_index_list == empty
-                                  or: state_index in path
-            """
-            for target_index in ifilter(lambda x: x not in path, State.target_index_list):
-                collection.add(target_index)
-                target_state = self.state_db[target_index]
-                for dummy in ifilter(lambda x:     x.positioning     == E_TransitionN.VOID \
-                                               and x.post_context_id == PostContextID,
-                                     target_state.drop_out.terminal_router):
-                    collection.update(path)
+        debug_result = defaultdict(set)
+        for pattern_id, path_list in self.__store_to_restore_path_db.iteritems():
+            assert pattern_id != E_AcceptanceIDs.FAILURE
+            store_state_set = store_constellation_db[pattern_id]
+            for path in path_list:
+                # Walk along the path until you find the place where things are stored
+                for i, state_index in enumerate(path):
+                    if state_index not in store_state_set: continue
+                    debug_result[pattern_id].update(path[i:])
                     break
-                path.append(target_index)
-                dive(PostContextID, target_state, path, collection)
-                path.pop()
-
-        result = defaultdict(set)
-        for state in self.state_db.itervalues():
-            # Iterate over all post context ids subject to position storage
-            for from_state_index, positioner in ifilter(lambda x: x[0] != E_StateIndices.ALL, 
-                                                        state.entry.positioner_db.iteritems()):
-                for post_context_id in positioner.iterkeys():
-                    dive(post_context_id, state, [], result[post_context_id])
-
-        return result
+        return debug_result
 
     def __iter__(self):
         for x in self.__state_db.values():
@@ -610,6 +581,8 @@ class BASE_Entry:
         """Require derived classes to be more specific, if necessary."""
         return not self.is_independent_of_source_state()
 
+PositionerInfo = namedtuple("PositionerInfo", ["post_context_id", "pre_context_id"])
+
 class Entry(BASE_Entry):
     """An entry has potentially two tasks:
     
@@ -716,7 +689,7 @@ class Entry(BASE_Entry):
 
        MEMBERS:
 
-          .positioner_db[from_state_index][post_context_id] = pre_context_id_set
+          .positioner_db[from_state_index] = (post_context_id, pre_context_id_set)
   
           When the state is entered via 'from_state_index' and one of the pre-contexts
           in the 'pre_context_id_set' is fullfilled, then the position of 'post_context_id'
@@ -728,8 +701,8 @@ class Entry(BASE_Entry):
         # By default, we do not do store anything about acceptance at state entry
         self.accepter = {}
 
-        # map:  (from_state_index, pre_context_id) --> post_context_id where to store position
-        self.positioner_db = dict([ (i, defaultdict(set)) for i in FromStateIndexList ])
+        # map:  (from_state_index, post_context_id) --> pre_context_id (necessary) to store position
+        self.positioner_db = dict([ (i, set()) for i in FromStateIndexList ])
 
         # Are all positionings independent_of_source_state?
         # This flag is to be determined after the analysis by function 'finish()'
@@ -831,17 +804,24 @@ class Entry(BASE_Entry):
             self.__independent_of_source_state_f = True
             return
 
-        # (1) Search for Unconditional Case ... If found other conditions are redundant
-        for positioner in self.positioner_db.itervalues():
-            for post_context_id, pre_context_id_set in positioner.iteritems():
-                if E_PreContextIDs.NONE not in pre_context_id_set: continue
-                positioner[post_context_id] = set([E_PreContextIDs.NONE])
+        # (*) One non-pre_context_id acceptance makes all of the same non-pre_contexted
+        #     (Meaning: if the acceptance has no condition to it for one case,
+        #               the other conditions do not have to be considered.)
+        for from_state_index, positioner in self.positioner_db.iteritems():
+            for dummy in (x for x in positioner
+                          if     x.post_context_id == E_PostContextIDs.NONE \
+                             and x.pre_context_id  == E_PreContextIDs.NONE):
+                # Filter out all normal acceptances with a pre-context
+                self.positioner_db[from_state_index] =                      \
+                     [x for x in positioner                                 \
+                        if    x.post_context_id != E_PostContextIDs.NONE    \
+                           or x.pre_context_id  == E_PreContextIDs.NONE]
 
-        # (2) Check whether state entries are independent_of_source_state
+        # (*) Check whether state entries are independent_of_source_state
         itervalues = self.positioner_db.itervalues()
 
         self.__independent_of_source_state_f = True
-        prototype        = itervalues.next()
+        prototype                            = itervalues.next()
         for dummy in ifilter(lambda x: x != prototype, itervalues):
             self.__independent_of_source_state_f = False
             return
@@ -867,12 +847,11 @@ class Entry(BASE_Entry):
             txt.append("        .from %i:" % from_state_index)
             if   len(positioner) == 0: txt.append(" <nothing>\n")
             elif len(positioner) != 1: txt.append("\n")
-            for post_context_id, pre_context_id_list in positioner.iteritems():
-                pre_list = map(repr_pre_context_id, pre_context_id_list)
+            for info in positioner:
                 if len(positioner) != 1: txt.append("            ")
-                if E_PreContextIDs.NONE not in pre_context_id_list:
-                    txt.append("if %s: " % repr(pre_list)[1:-1])
-                txt.append(" %s = input_p;\n" % repr_position_register(post_context_id))
+                if info.pre_context_id != E_PreContextIDs.NONE:
+                    txt.append("if '%s': " % repr_pre_context_id(info.pre_context_id))
+                txt.append(" %s = input_p;\n" % repr_position_register(info.post_context_id))
 
         return "".join(txt)
 

@@ -6,29 +6,42 @@ E_Type = Enum("SWITCH_CASE", "BISECTION", "COMPARISON_SEQUENCE", "UPPER_ONLY", "
 def get(TriggerMap, 
         size_all_intervals=None, 
         size_all_drop_out_intervals=None):
-    """Let P be the preferably of a switch statement over bisection or linear if-else
-       blocks. The following heuristics may be applied:
+    """(i) Cost of Bisectioning 
+    
+       Let 'B' be the cost of bisectioning a given trigger map devided by the number
+       of involved characters. It holds:
     
        -- The more ranges are involved in a trigger map, the more 'if-else' we need,
           thus:
-                   P increases with len(trigger_map)
+                   B increases with len(trigger_map)
 
-          Since only for bisection only log2(N) comparisons are necessary (and if linear
+          Since for bisection only log2(N) comparisons are necessary (and if linear
           if-else blocks are used, then only if N/2 < log2(N)), it may be assumed that
 
-              (1)  P increases with log2(len(trigger_map))            
+                           log2(len(trigger_map))            
+              (1)  B  = ---------------------------
+                           extend(trigger_map)
+
+       (ii) Cost of Switch-Case-ing
+        
+       Let 'S' be the cost of a switch-case sectioning of a given trigger map, i.e.
+       "goto constant * (character - offset)". It holds
 
        -- The look-up tables used for switches can potentially grow large, so that
 
-                   P decreases wit== E_Type.SWITCH_CASE
-          where size(trigger_map) = all characters minus the ones that 'drop-out', thus
+                    S = C0 * extend(trigger_map)
+
+          where extend(trigger_map) = all characters in trigger_map.
            
-              (2)  P decreases with size(all intervals) - size(all drop out intervals)
-               
+       (*) Decision
 
-       The following heuristic is proposed:
+       A switch case is preferrable to a bisectioning, if S < B, that is
 
-              P = log2(len(trigger_map)) / sum(all interval) - sum(drop_out_intervals) 
+                                 log2(len(trigger_map))
+                          C0 < --------------------------
+                                 extend(trigger_map) ** 2
+
+       The magic lies in determining the constant C0, but equation (2) gives a hint.
     """
     TriggerSetN       = len(TriggerMap)
     MiddleTrigger_Idx = int(TriggerSetN / 2)
