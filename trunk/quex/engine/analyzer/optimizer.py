@@ -44,9 +44,9 @@ def do(analyzer):
     for state_index, state in analyzer.state_db.iteritems():
         tm = state.transition_map
         if   len(tm) == 0: 
-            state.entry.accepter.clear()
+            state.entry.clear_accepter()
         elif (len(tm) == 1 and tm[0][1] == state_index):
-            state.entry.accepter.clear()
+            state.entry.clear_accepter()
 
     for entry in imap(lambda x: x.entry, analyzer.state_db.itervalues()):
         entry.finish()

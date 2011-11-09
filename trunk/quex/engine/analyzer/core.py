@@ -201,7 +201,7 @@ class Analyzer:
             for trace in TheTraceList:
                 for element in trace:
                     accepting_state = self.__state_db[element.accepting_state_index]
-                    accepting_state.entry.accepter[element.pre_context_id] = element.pattern_id
+                    accepting_state.entry.set_accepter(element.pattern_id, element.pre_context_id)
 
         # Terminal Router
         for pattern_id, info in self.analyze_positioning(TheTraceList).iteritems():
@@ -387,7 +387,7 @@ class Analyzer:
         """
         if self.__engine_type != E_EngineTypes.FORWARD: return False
         for entry in imap(lambda x: x.entry, self.__state_db.itervalues()):
-            if len(entry.accepter) != 0: return True
+            if entry.has_accepter(): return True
         return False
 
     @property
@@ -695,11 +695,11 @@ class Entry(BASE_Entry):
           in the 'pre_context_id_set' is fullfilled, then the position of 'post_context_id'
           must be stored.
     """
-    __slots__ = ("__independent_of_source_state_f", "accepter", "positioner_db")
+    __slots__ = ("__independent_of_source_state_f", "__accepter", "positioner_db")
 
     def __init__(self, FromStateIndexList):
         # By default, we do not do store anything about acceptance at state entry
-        self.accepter = {}
+        self.__accepter = set()
 
         # map:  (from_state_index, post_context_id) --> pre_context_id (necessary) to store position
         self.positioner_db = dict([ (i, set()) for i in FromStateIndexList ])
@@ -722,12 +722,52 @@ class Entry(BASE_Entry):
         prototype_B = Other.positioner_db.itervalues().next()
         return prototype_A == prototype_B
 
+    def set_accepter(self, PatternID, PreContextID):
+        self.__accepter.add((PreContextID, PatternID))
+
+    def get_accepter(self):
+        """Returns information about the acceptance sequence. Lines that are dominated
+           by the unconditional pre-context are filtered out. Returns pairs of
+
+                          (pre_context_id, acceptance_id)
+        """
+        result = []
+        for pre_context_id, acceptance_id in sorted(list(self.__accepter), key=itemgetter(1)):
+            result.append((pre_context_id, acceptance_id))   
+            if pre_context_id == E_PreContextIDs.NONE: break
+        return result
+
+    def size_of_accepter(self):
+        return len(self.__accepter)
+
+    def has_accepter(self):
+        return len(self.__accepter) != 0
+
+    def clear_accepter(self):
+        self.__accepter.clear()
+
+    def get_positioner_db(self):
+        """RETURNS: PositionDB
+        
+           where PositionDB maps:
+        
+                   from_state_index  -->   Positioner
+ 
+           where Positioner is a dictionary that maps:
+
+                   post_context_id --> list of pre-context-ids that trigger it 
+
+           Note, that 'PostContextID==None' (Normal Acceptance) can have multiple
+           pre-context ids related to it.
+        """
+        return self.positioner_db
+
     def __hash__(self):
-        return len(self.accepter) * 10 + self._positioner_n()
+        return len(self.__accepter) * 10 + self._positioner_n()
 
     def __eq__(self, Other):
         if not self._positioner_eq(Other): return False
-        return self.accepter == Other.accepter 
+        return self.__accepter == Other.__accepter 
 
     def is_equal(self, Other):
         # Maybe, we can delete this ...
@@ -752,34 +792,6 @@ class Entry(BASE_Entry):
         assert self.__independent_of_source_state_f
         # All positioners are independent_of_source_state, so simply return the first.
         return self.positioner_db.itervalues().next()
-
-    def get_accepter(self):
-        """Returns information about the acceptance sequence. Lines that are dominated
-           by the unconditional pre-context are filtered out. Returns pairs of
-
-                          (pre_context_id, acceptance_id)
-        """
-        result = []
-        for pre_context_id, acceptance_id in sorted(self.accepter.iteritems(), key=itemgetter(1)):
-            result.append((pre_context_id, acceptance_id))   
-            if pre_context_id == E_PreContextIDs.NONE: break
-        return result
-
-    def get_positioner_db(self):
-        """RETURNS: PositionDB
-        
-           where PositionDB maps:
-        
-                   from_state_index  -->   Positioner
- 
-           where Positioner is a dictionary that maps:
-
-                   post_context_id --> list of pre-context-ids that trigger it 
-
-           Note, that 'PostContextID==None' (Normal Acceptance) can have multiple
-           pre-context ids related to it.
-        """
-        return self.positioner_db
 
     def finish(self):
         """Once the whole state machine is analyzed and positioner and accepters
@@ -829,8 +841,7 @@ class Entry(BASE_Entry):
 
     def __repr__(self):
         txt = []
-        accepter = self.get_accepter()
-        if len(accepter) != 0:
+        if self.has_accepter() != 0:
             txt.append("    .accepter:\n")
             if_str = "if     "
             for pre_context_id, acceptance_id in self.get_accepter():
