@@ -1,10 +1,10 @@
-<test-database execution-time-sec="0.35" date="Tue Nov  8 22:37:20 2011">
+<test-database execution-time-sec="0.34" date="Wed Nov  9 08:31:29 2011">
     <last-used-diff-display-program name=""/>
     <group name="Plot">
-        <test title="Core state machine." time-sum-sec="0.10"> 
+        <test title="Core state machine." time-sum-sec="0.09"> 
             <application file-name="plot-core.py" info-request-time="1318614197L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.10" crc="1345578908"/>
+               <choice name="" result="OK" time_sec="0.09" crc="1345578908"/>
             </choice-list>
         </test>
         <test title="Backward Detector (for pseudo-ambiguous post context)." time-sum-sec="0.14"> 

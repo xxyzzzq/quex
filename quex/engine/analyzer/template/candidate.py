@@ -136,7 +136,7 @@ def _compute_gain(cost_function, Combined, A, StateA_Index, B, StateB_Index):
 
 def _entry_cost(X):
     if   isinstance(X, Entry):
-        La = len(filter(lambda x: x != E_AcceptanceIDs.VOID, X.accepter.iterkeys()))
+        La = X.size_of_accepter() # len(filter(lambda x: x != E_AcceptanceIDs.VOID, X.accepter.iterkeys()))
         # Number of accepter elements: if(pre-context) acceptance = ...
         assignment_n  = La
         goto_n        = La

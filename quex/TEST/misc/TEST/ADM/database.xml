@@ -1,4 +1,4 @@
-<test-database execution-time-sec="1.47" date="Tue Nov  8 23:14:41 2011">
+<test-database execution-time-sec="1.46" date="Wed Nov  9 08:24:29 2011">
     <last-used-diff-display-program name=""/>
     <test title="Customized codec files (option --codec-file)" time-sum-sec="0.24"> 
         <application file-name="customized_codec.sh" info-request-time="1310810801L" vanished="False"/>
@@ -12,10 +12,10 @@
            <choice name="" result="OK" time_sec="0.34" crc="-530152913"/>
         </choice-list>
     </test>
-    <test title="Analyzer State Tracer" time-sum-sec="0.89"> 
+    <test title="Analyzer State Tracer" time-sum-sec="0.88"> 
         <application file-name="debug_show.sh" info-request-time="1318614193L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.89" crc="1416435023"/>
+           <choice name="" result="OK" time_sec="0.88" crc="1416435023"/>
         </choice-list>
     </test>
 </test-database>
