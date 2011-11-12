@@ -42,7 +42,7 @@ def _doors(txt, TheState, PositionRegisterMap, LabelF):
     LanguageDB = Setup.language_db
     TheEntry   = TheState.entry
 
-    if len(TheEntry.positioner_db) == 0:
+    if TheEntry.door_number() == 0:
         if LabelF: LanguageDB.STATE_ENTRY(txt, TheState)
         return
 

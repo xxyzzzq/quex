@@ -141,7 +141,7 @@ def _entry_cost(X):
         assignment_n  = La
         goto_n        = La
         cmp_n         = La
-        Lp = len(X.positioner_db)
+        Lp = X.door_number()
         # Assume that we store the positions without watching for pre-contexts
         assignment_n += Lp
 

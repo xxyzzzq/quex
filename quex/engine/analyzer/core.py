@@ -114,6 +114,14 @@ class Analyzer:
             self.__position_register_map = None
             return
 
+        # Store Constellation Database:
+        #
+        #      map: post_context_id --> set of states where input position is stored for it
+        #
+        # This database is developed in 'get_drop_out_object(..)' when trace lists are investigated.
+        # States that do not need to store post contexts, because the input position difference can
+        # be derived from the transition number are not considered.
+        self.__store_constellation_db = defaultdict(set)
         for state_index, acceptance_trace_list in acceptance_db.iteritems():
             state = self.__state_db[state_index]
             # acceptance_trace_list: 
@@ -213,12 +221,17 @@ class Analyzer:
             # If the positioning is all determined, then no 'triggering' state
             # needs to be informed.
             if info.transition_n_since_positioning != E_TransitionN.VOID: continue
+    
+            # Register the states that store a certain post context. This is only needed
+            # later when equivalent storing states are identified.
+            self.__store_constellation_db[info.post_context_id].update(info.positioning_state_index_set)
+
             # Pattern 'Failure' is always associated with the init state and the
             # positioning is uniformly 'lexeme_start_p + 1' (and never undefined, i.e. None).
             assert pattern_id != E_AcceptanceIDs.FAILURE
 
             # Follower states of triggering states need to store the position
-            for pos_state_index in info.positioning_state_index_list:
+            for pos_state_index in info.positioning_state_index_set:
                 positioning_state = self.__state_db[pos_state_index]
 
                 # Let index be the index of the currently considered state. Then,
@@ -230,7 +243,7 @@ class Analyzer:
                     if target_index == pos_state_index: continue
                     entry = self.__state_db[target_index].entry
                     # from state: pos_state_index (the state before)
-                    entry.positioner_db[pos_state_index].add(PositionerInfo(info.post_context_id, info.pre_context_id))
+                    entry.doors_add(pos_state_index, PostContextID=info.post_context_id, PreContextID=info.pre_context_id)
 
         # Clean Up the acceptance_checker and the terminal_router:
         # (1) there is no check after the unconditional acceptance
@@ -252,22 +265,22 @@ class Analyzer:
         else:
             # Only the acceptances that appear in the acceptance_checker are considered
             checked_pattern_id_list = map(lambda x: x.acceptance_id, acceptance_checker)
-            result.terminal_router = filter(lambda x: x.acceptance_id in checked_pattern_id_list, 
-                                   terminal_router)
+            result.terminal_router  = filter(lambda x: x.acceptance_id in checked_pattern_id_list, 
+                                             terminal_router)
 
         ##DEBUG:
         result.trivialize()
         return result
 
     def analyze_positioning(self, TheTraceList):
-        """A given state can be reached by (possibly) multiple paths from
-           the initial state. Each path relates to an 'Trace'
-           object that is determined by passed acceptance states.
+        """A given state can be reached by (possibly) multiple paths from the
+           initial state. Each path relates to an 'Trace' object that is
+           determined by passed acceptance states.
 
-           Arrange the information for each acceptance id: It is determined
-           if for a given acceptance id, the path to the current state is
-           of fixed length or not. Further information is accumulated in 
-           PositioningInfo objects. 
+           Arrange the information for each acceptance id: It is determined if
+           for a given acceptance id, the path to the current state is of fixed
+           length or not. Further information is accumulated in PositioningInfo
+           objects. 
 
            RETURNS:
 
@@ -278,17 +291,17 @@ class Analyzer:
             __slots__ = ("transition_n_since_positioning", 
                          "post_context_id", 
                          "pre_context_id", 
-                         "positioning_state_index_list")
+                         "positioning_state_index_set")
             def __init__(self, TraceElement):
                 self.transition_n_since_positioning = TraceElement.transition_n_since_positioning
                 self.post_context_id                = TraceElement.post_context_id
-                self.positioning_state_index_list   = [ TraceElement.positioning_state_index ]
+                self.positioning_state_index_set    = set([ TraceElement.positioning_state_index ])
                 self.pre_context_id                 = TraceElement.pre_context_id
 
             def __repr__(self):
                 txt  = ".transition_n_since_positioning = %s\n" % repr(self.transition_n_since_positioning)
                 txt += ".post_context_id                = %s\n" % repr(self.post_context_id)                
-                txt += ".positioning_state_index_list   = %s\n" % repr(self.positioning_state_index_list) 
+                txt += ".positioning_state_index_set    = %s\n" % repr(self.positioning_state_index_set) 
                 txt += ".pre_context_id                 = %s\n" % repr(self.pre_context_id) 
                 return txt
 
@@ -298,19 +311,18 @@ class Analyzer:
         # => then the acceptance relates to undetermined positioning.
         for trace in TheTraceList:
             for element in trace:
-                info = trace_by_pattern_id.get(element.pattern_id)
-                if info is None:
+                prototype = trace_by_pattern_id.get(element.pattern_id)
+                if prototype is None:
                     trace_by_pattern_id[element.pattern_id] = PositioningInfo(element)
                     continue
-                else:
-                    # Acceptance-IDs and their Post-Contexts are related 1:1
-                    # (Their is no post-contexted 'FAILURE')
-                    assert info.post_context_id == element.post_context_id
+                # Acceptance-IDs and their Post-Contexts are related 1:1
+                # (Their is no post-contexted 'FAILURE')
+                assert prototype.post_context_id == element.post_context_id
 
-                    info.positioning_state_index_list.append(element.positioning_state_index)
+                prototype.positioning_state_index_set.add(element.positioning_state_index)
 
-                    if info.transition_n_since_positioning != element.transition_n_since_positioning:
-                        info.transition_n_since_positioning = E_TransitionN.VOID
+                if prototype.transition_n_since_positioning != element.transition_n_since_positioning:
+                    prototype.transition_n_since_positioning = E_TransitionN.VOID
 
         return trace_by_pattern_id
 
@@ -403,32 +415,21 @@ class Analyzer:
         """Determine sets of equivalent post context ids, because they
            store the input positions at the exactly same set of states.
         """
-        # (1) map: 
-        #
-        #          post-context-id --> set of states where the positions are stored
-        #
-        store_constellation_db = defaultdict(set)
-        for state in self.state_db.itervalues():
-            # Iterate over all post context ids subject to position storage
-            for positioner in state.entry.positioner_db.itervalues():
-                for info in positioner:
-                    store_constellation_db[info.post_context_id].add(state.index)
-
-        # (2) inverse map: 
+        # (2) Determine map: 
         #             
-        #          set of states where the positions are stored --> post context ids that do so
+        #     set of states where the positions are stored --> post context ids that do so
         #
         inverse_db = defaultdict(set)
-        for post_context_id, storing_state_set in store_constellation_db.iteritems():
+        for post_context_id, storing_state_set in self.__store_constellation_db.iteritems():
             inverse_db[tuple(sorted(storing_state_set))].add(post_context_id)
 
         # The grouped post context ids are the set of equivalent post context ids
         # NOTE: An equivalent set of size < 2 does not make any statement.
         #       At least, there must be two elements, so that this means 'A is 
         #       equivalent to B'. Thus, filter anything of size < 2.
-        return store_constellation_db.keys(), store_constellation_db, filter(lambda x: len(x) >= 2, inverse_db.values())
+        return self.__store_constellation_db.keys(), [ x for x in inverse_db.itervalues() if len(x) >= 2 ]
 
-    def _find_state_sets_from_store_to_restore(self, store_constellation_db):
+    def _find_state_sets_from_store_to_restore(self):
         """RETURNS: A mapping:
 
               post-context id --> set of states that lie on the path from store 
@@ -437,7 +438,7 @@ class Analyzer:
         debug_result = defaultdict(set)
         for pattern_id, path_list in self.__store_to_restore_path_db.iteritems():
             assert pattern_id != E_AcceptanceIDs.FAILURE
-            store_state_set = store_constellation_db[pattern_id]
+            store_state_set = self.__store_constellation_db[pattern_id]
             for path in path_list:
                 # Walk along the path until you find the place where things are stored
                 for i, state_index in enumerate(path):
@@ -702,24 +703,29 @@ class Entry(BASE_Entry):
         self.__accepter = set()
 
         # map:  (from_state_index, post_context_id) --> pre_context_id (necessary) to store position
-        self.positioner_db = dict([ (i, set()) for i in FromStateIndexList ])
+        self.__positioner_db = dict([ (i, set()) for i in FromStateIndexList ])
 
         # Are all positionings independent_of_source_state?
         # This flag is to be determined after the analysis by function 'finish()'
         self.__independent_of_source_state_f = None 
 
-    def _positioner_n(self):
-        total_size = len(self.positioner_db)
+    def doors_add(self, FromStateIndex, AcceptanceID=E_AcceptanceIDs.FAILURE, PostContextID=E_PostContextIDs.NONE, PreContextID=E_PreContextIDs.NONE):
+        entry = self.__positioner_db.get(FromStateIndex)
+        assert entry is not None
+        entry.add(PositionerInfo(PostContextID, PreContextID))
+
+    def door_number(self):
+        total_size = len(self.__positioner_db)
         # Note, that total_size can be '0' in the 'independent_of_source_state' case
         if self.__independent_of_source_state_f: return min(1, total_size)
         else:                                    return total_size
 
     def _positioner_eq(self, Other):
         if not self.__independent_of_source_state_f:
-            return self.positioner_db == Other.positioner_db
-        if len(self.positioner_db) == 0: return True
-        prototype_A = self.positioner_db.itervalues().next()
-        prototype_B = Other.positioner_db.itervalues().next()
+            return self.__positioner_db == Other.__positioner_db
+        if len(self.__positioner_db) == 0: return True
+        prototype_A = self.__positioner_db.itervalues().next()
+        prototype_B = Other.__positioner_db.itervalues().next()
         return prototype_A == prototype_B
 
     def set_accepter(self, PatternID, PreContextID):
@@ -760,10 +766,10 @@ class Entry(BASE_Entry):
            Note, that 'PostContextID==None' (Normal Acceptance) can have multiple
            pre-context ids related to it.
         """
-        return self.positioner_db
+        return self.__positioner_db
 
     def __hash__(self):
-        return len(self.__accepter) * 10 + self._positioner_n()
+        return len(self.__accepter) * 10 + self.door_number()
 
     def __eq__(self, Other):
         if not self._positioner_eq(Other): return False
@@ -785,13 +791,13 @@ class Entry(BASE_Entry):
                              of others.
         """
         if   self.__independent_of_source_state_f: return False
-        elif len(self.positioner_db) <= 1:         return False
-        return self.positioner_db.has_key(StateIndex)
+        elif len(self.__positioner_db) <= 1:         return False
+        return self.__positioner_db.has_key(StateIndex)
 
     def positioner_prototype(self):
         assert self.__independent_of_source_state_f
         # All positioners are independent_of_source_state, so simply return the first.
-        return self.positioner_db.itervalues().next()
+        return self.__positioner_db.itervalues().next()
 
     def finish(self):
         """Once the whole state machine is analyzed and positioner and accepters
@@ -812,25 +818,25 @@ class Entry(BASE_Entry):
 
            A unified entry is coded as 'ALL' --> common positioning.
         """
-        if len(self.positioner_db) == 0: 
+        if len(self.__positioner_db) == 0: 
             self.__independent_of_source_state_f = True
             return
 
         # (*) One non-pre_context_id acceptance makes all of the same non-pre_contexted
         #     (Meaning: if the acceptance has no condition to it for one case,
         #               the other conditions do not have to be considered.)
-        for from_state_index, positioner in self.positioner_db.iteritems():
+        for from_state_index, positioner in self.__positioner_db.iteritems():
             for dummy in (x for x in positioner
                           if     x.post_context_id == E_PostContextIDs.NONE \
                              and x.pre_context_id  == E_PreContextIDs.NONE):
                 # Filter out all normal acceptances with a pre-context
-                self.positioner_db[from_state_index] =                      \
+                self.__positioner_db[from_state_index] =                      \
                      [x for x in positioner                                 \
                         if    x.post_context_id != E_PostContextIDs.NONE    \
                            or x.pre_context_id  == E_PreContextIDs.NONE]
 
         # (*) Check whether state entries are independent_of_source_state
-        itervalues = self.positioner_db.itervalues()
+        itervalues = self.__positioner_db.itervalues()
 
         self.__independent_of_source_state_f = True
         prototype                            = itervalues.next()
@@ -852,9 +858,9 @@ class Entry(BASE_Entry):
                 txt.append("last_acceptance = %s\n" % repr_acceptance_id(acceptance_id))
                 if_str = "else if"
 
-        if len(self.positioner_db) != 0:
+        if len(self.__positioner_db) != 0:
             txt.append("    .positioner:\n")
-        for from_state_index, positioner in self.positioner_db.iteritems():
+        for from_state_index, positioner in self.__positioner_db.iteritems():
             txt.append("        .from %i:" % from_state_index)
             if   len(positioner) == 0: txt.append(" <nothing>\n")
             elif len(positioner) != 1: txt.append("\n")
