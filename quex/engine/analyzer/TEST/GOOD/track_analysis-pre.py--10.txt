@@ -90,7 +90,7 @@ State 5:
 State 6:
   .entry:
     .positioner:
-        .from 5:if 'PreContext_16':  position[Acceptance] = input_p;
+        .from 5: if 'PreContext_16':  position[Acceptance] = input_p;
         .from 6: <nothing>
   .drop_out:
     if PreContext_16: pos = position[Acceptance]; goto Pattern13;

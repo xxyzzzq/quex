@@ -38,9 +38,9 @@ State 1:
 State 2:
   .entry:
     .positioner:
-        .from 1:if 'PreContext_29':  position[PostContext_26]  = input_p;
+        .from 1: if 'PreContext_29':  position[PostContext_26]  = input_p;
         .from 2: <nothing>
-        .from 5:if 'PreContext_29':  position[PostContext_26]  = input_p;
+        .from 5: if 'PreContext_29':  position[PostContext_26]  = input_p;
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
@@ -67,6 +67,28 @@ State 5:
     .positioner:
         .from 4: <nothing>
   .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+
+--- Optimized States ---
+
+State 2:
+  .entry:
+    .positioner:
+        .from 1: if 'PreContext_29':  position[PostContext_0]  = input_p;
+        .from 2: <nothing>
+        .from 5: if 'PreContext_29':  position[PostContext_0]  = input_p;
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 3:
+  .entry:
+    .positioner:
+        .from 2: <nothing>
+  .drop_out:
+    if PreContext_29: pos = position[PostContext_0] ; goto Pattern26;
     pos = lexeme_start_p + 1;  goto Failure;
 
 

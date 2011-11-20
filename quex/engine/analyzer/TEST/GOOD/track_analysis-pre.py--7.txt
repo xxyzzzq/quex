@@ -36,7 +36,7 @@ State 1:
 State 2:
   .entry:
     .positioner:
-        .from 1:if 'BeginOfLine':  position[Acceptance] = input_p;
+        .from 1: if 'BeginOfLine':  position[Acceptance] = input_p;
   .drop_out:
     if BeginOfLine: pos -= 1;  goto Pattern1;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -46,7 +46,7 @@ State 3:
   .entry:
     .positioner:
         .from 2: <nothing>
-        .from 5:if 'BeginOfLine':  position[Acceptance] = input_p;
+        .from 5: if 'BeginOfLine':  position[Acceptance] = input_p;
   .drop_out:
     if BeginOfLine: pos = position[Acceptance]; goto Pattern1;
     pos = lexeme_start_p + 1;  goto Failure;

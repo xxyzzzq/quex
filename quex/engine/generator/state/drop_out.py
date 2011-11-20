@@ -31,7 +31,7 @@ def do(txt, TheState, TheAnalyzer, DefineLabelF=True):
         for i, easy in enumerate(info):
             positioning_str = ""
             if easy[1].positioning != 0:
-                if easy[1].positioning == E_TransitionN.VOID: register = PositionRegisterMap[easy[1].post_context_id]
+                if easy[1].positioning == E_TransitionN.VOID: register = easy[1].post_context_id
                 else:                                         register = E_PostContextIDs.NONE
                 positioning_str = "%s\n" % LanguageDB.POSITIONING(easy[1].positioning, register)
 
@@ -73,7 +73,7 @@ def do(txt, TheState, TheAnalyzer, DefineLabelF=True):
     #else:
     case_list = []
     for element in TheState.drop_out.terminal_router:
-        if element.positioning == E_TransitionN.VOID: register = PositionRegisterMap[element.post_context_id]
+        if element.positioning == E_TransitionN.VOID: register = element.post_context_id
         else:                                         register = None
         case_list.append((LanguageDB.ACCEPTANCE(element.acceptance_id), 
                           "%s %s" % \

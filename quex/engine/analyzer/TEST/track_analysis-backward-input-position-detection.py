@@ -8,7 +8,7 @@ import quex.input.regular_expression.engine  as regex
 from   quex.engine.generator.base            import get_combined_state_machine
 import quex.engine.analyzer.core             as core
 from   quex.blackboard                       import E_EngineTypes, E_InputActions
-import help_drawing
+import help
 
 from   operator import attrgetter
 
@@ -26,12 +26,6 @@ sm                 = get_combined_state_machine(state_machine_list, False) # May
 sm                 = sm.normalized_clone()
 
 # For DEBUG purposes: specify 'DRAW' on command line (in sys.argv)
-help_drawing.if_DRAW_in_sys_argv(sm)
+help.if_DRAW_in_sys_argv(sm)
+help.test(sm, E_EngineTypes.BACKWARD_INPUT_POSITION)
 
-print sm.get_string(NormalizeF=False)
-
-analyzer = core.do(sm, E_EngineTypes.BACKWARD_INPUT_POSITION, OptimizeF=False)
-
-for state in sorted(analyzer, key=attrgetter("index")):
-    assert state.input == E_InputActions.DECREMENT_THEN_DEREF
-    print state.get_string(InputF=False, TransitionMapF=False)

@@ -48,10 +48,10 @@ State 2:
   .entry:
     .positioner:
         .from 1:
-            if 'PreContext_9':  position[Acceptance] = input_p;
-            if 'PreContext_52':  position[PostContext_49]  = input_p;
+             if 'PreContext_9':  position[Acceptance] = input_p;
+             if 'PreContext_52':  position[PostContext_49]  = input_p;
         .from 2: <nothing>
-        .from 6:if 'PreContext_52':  position[PostContext_49]  = input_p;
+        .from 6: if 'PreContext_52':  position[PostContext_49]  = input_p;
   .drop_out:
     Checker:
         accept = last_acceptance
@@ -107,7 +107,7 @@ State 5:
 State 6:
   .entry:
     .positioner:
-        .from 5:if 'PreContext_16':  position[Acceptance] = input_p;
+        .from 5: if 'PreContext_16':  position[Acceptance] = input_p;
         .from 6: <nothing>
   .drop_out:
     if PreContext_16: pos = position[Acceptance]; goto Pattern13;

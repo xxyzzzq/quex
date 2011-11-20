@@ -197,7 +197,7 @@ def __entry(txt, TState, TheAnalyzer):
     # Non-Uniform Entries
     i = -1
     for entry, state_index_list in TState.entry.iteritems():
-        if entry.is_independent_of_source_state():
+        if entry.uniform_doors_f():
             i += 1
             # Assign the state keys for each state involved
             for state_index, state_key, state in TState.state_set_iterable(state_index_list, TheAnalyzer): 
@@ -350,7 +350,7 @@ def handle_source_state_dependent_transitions(transition_map, TheAnalyzer,
         if not isinstance(target_index, (int, long)): continue
 
         entry = TheAnalyzer.state_db[target_index].entry
-        if entry.is_independent_of_source_state(): continue
+        if entry.uniform_doors_f(): continue
 
         # (*) Code: Transition to Specific State Entry based on current state.
         case_list = []
@@ -358,7 +358,7 @@ def handle_source_state_dependent_transitions(transition_map, TheAnalyzer,
         # => If the target state's entries depend on the source state all
         #    states in the template's state_index_list must be mentioned as entry.
         for state_key, from_state_index in enumerate(StateIndexList):
-            if not entry.special_door_from_state(from_state_index): from_state_index = None
+            if not entry.has_special_door_from_state(from_state_index): from_state_index = None
             case_list.append((state_key, LanguageDB.GOTO(target_index, from_state_index))) 
 
         code = LanguageDB.SELECTION(StateKeyStr, case_list)

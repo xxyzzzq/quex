@@ -198,7 +198,7 @@ def __entry(txt, PWState, TheAnalyzer):
     i = -1
     for entry, state_index_list in PWState.entry.iteritems():
         iterable = PWState.state_set_iterable(state_index_list, TheAnalyzer)
-        if entry.is_independent_of_source_state():
+        if entry.uniform_doors_f():
             i += 1
             # Assign the state keys for each state involved
             for state_index, path_id, path_offset, state in iterable:
@@ -352,7 +352,7 @@ def __require_data(PWState, TheAnalyzer):
             # NOTE: For all states in the path the 'from_state_index, to_state_index' can
             #       be determined, **except** for the FIRST state in the path. Thus for
             #       this state the 'door' cannot be determined in case that it is 
-            #       "not is_independent_of_source_state()". 
+            #       "not uniform_doors_f()". 
             #
             #       However, the only occasion where the FIRST state in the path may be 
             #       used is reload during the FIRST state. The reload adapts the positions
