@@ -58,3 +58,16 @@ State 4:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
+
+--- Optimized States ---
+
+State 2:
+  .entry:
+    .positioner:
+        .from 1: position[PostContext_0]  = input_p;
+        .from 2: <nothing>
+        .from 4: position[PostContext_0]  = input_p;
+  .drop_out:
+    pos = position[PostContext_0] ; goto Pattern21;
+
+

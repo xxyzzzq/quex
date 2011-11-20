@@ -45,6 +45,7 @@ State 2:
         .from 1:
              position[Acceptance] = input_p;
              position[PostContext_18]  = input_p;
+             if 'PreContext_6':  position[Acceptance] = input_p;
   .drop_out:
     if PreContext_6: pos -= 1;  goto Pattern3;
     pos -= 1;  goto Pattern35;

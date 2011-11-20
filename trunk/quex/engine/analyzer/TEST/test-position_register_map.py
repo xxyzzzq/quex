@@ -9,7 +9,7 @@ import quex.engine.analyzer.core                  as core
 import quex.engine.analyzer.position_register_map as position_register_map
 from   quex.engine.generator.base                 import get_combined_state_machine
 from   quex.blackboard                            import E_EngineTypes
-import help_drawing
+import help
 
 if "--hwut-info" in sys.argv:
     print "Position Register vs. Post-Context and Last Acceptance"
@@ -77,7 +77,7 @@ sm                 = get_combined_state_machine(state_machine_list, False) # May
 sm                 = sm.normalized_clone()
 
 # For DEBUG purposes: specify 'DRAW' on command line (in sys.argv)
-help_drawing.if_DRAW_in_sys_argv(sm)
+help.if_DRAW_in_sys_argv(sm)
 
 analyzer = core.Analyzer(sm, E_EngineTypes.FORWARD)
 

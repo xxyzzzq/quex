@@ -44,16 +44,18 @@ from   quex.blackboard  import E_StateIndices, \
                                E_InputActions
 
 from   collections      import defaultdict, namedtuple
-from   operator         import itemgetter
+from   operator         import itemgetter, attrgetter
 from   itertools        import islice, ifilter, imap
 from   quex.blackboard  import setup as Setup
 
 def do(SM, EngineType=E_EngineTypes.FORWARD):
     analyzer = Analyzer(SM, EngineType)
+    analyzer = optimizer.do(analyzer)
+
     if Setup.language_db is not None:
         Setup.language_db.register_analyzer(analyzer)
 
-    return optimizer.do(analyzer)
+    return analyzer
 
 class Analyzer:
     """Objects of class Analyzer contain information for code generation of a
@@ -69,8 +71,6 @@ class Analyzer:
     def __init__(self, SM, EngineType):
         assert EngineType in E_EngineTypes
         assert isinstance(SM, StateMachine)
-
-        ## print "##", SM.get_string(NormalizeF=False)
 
         self.__init_state_index = SM.init_state_index
         self.__state_machine_id = SM.get_id()
@@ -128,6 +128,9 @@ class Analyzer:
             # Trace objects for each path that guides through state.
             state.drop_out = self.get_drop_out_object(state, acceptance_trace_list)
 
+        # What post-contexts are stored in what position register. The following analyzis
+        # may spare some space for position registers as well as some unnecessary multiple
+        # storage of positions.
         self.__position_register_map = position_register_map.do(self)
 
     @property
@@ -209,7 +212,7 @@ class Analyzer:
             for trace in TheTraceList:
                 for element in trace:
                     accepting_state = self.__state_db[element.accepting_state_index]
-                    accepting_state.entry.set_accepter(element.pattern_id, element.pre_context_id)
+                    accepting_state.entry.doors_accept(element.pattern_id, element.pre_context_id)
 
         # Terminal Router
         for pattern_id, info in self.analyze_positioning(TheTraceList).iteritems():
@@ -243,7 +246,7 @@ class Analyzer:
                     if target_index == pos_state_index: continue
                     entry = self.__state_db[target_index].entry
                     # from state: pos_state_index (the state before)
-                    entry.doors_add(pos_state_index, PostContextID=info.post_context_id, PreContextID=info.pre_context_id)
+                    entry.doors_store(pos_state_index, PostContextID=info.post_context_id, PreContextID=info.pre_context_id)
 
         # Clean Up the acceptance_checker and the terminal_router:
         # (1) there is no check after the unconditional acceptance
@@ -575,14 +578,63 @@ class AnalyzerState(object):
     def __repr__(self):
         return self.get_string()
 
-class BASE_Entry:
-    def is_independent_of_source_state(self):
-        assert False
-    def special_door_from_state(self, StateIndex):
+class BASE_Entry(object):
+    def uniform_doors_f(self):
+        assert False, "This function needs to be overloaded for '%s'" % self.__class__.__name__
+    def has_special_door_from_state(self, StateIndex):
         """Require derived classes to be more specific, if necessary."""
-        return not self.is_independent_of_source_state()
+        return not self.uniform_doors_f()
 
-PositionerInfo = namedtuple("PositionerInfo", ["post_context_id", "pre_context_id"])
+# EntryAction_StoreInputPosition: 
+#
+# Storing the input position is actually dependent of the pre_context_id, if 
+# there is one. The pre_context_id is left out for the following reasons:
+#
+# -- Testing the pre_context_id is not necessary.
+#    If a pre-contexted acceptance is reach where the pre-context is required
+#    two things can happen: 
+#    (i) Pre-context-id is not fulfilled, then no input position needs to 
+#        be restored. Storing does no harm.
+#    (ii) Pre-context-id is fulfilled, then the position is restored. 
+#
+# -- Avoiding overhead for pre_context_id test.
+#    In case (i) cost = test + jump, (ii) cost = test + assign + jump. Without
+#    test (i) cost = assign, (ii) cost = storage. Assume cost for test <= assign.
+#    Thus not testing is cheaper.
+#
+# -- In the process of register economization, some post contexts may use the
+#    same position register. The actions which can be combined then can be 
+#    easily detected, if no pre-context is considered.
+class EntryAction_StoreInputPosition(object):
+    __slots__ = ["pre_context_id", "post_context_id"]
+    def __init__(self, PreContextID, PostContextID):
+        self.pre_context_id  = PreContextID
+        self.post_context_id = PostContextID
+    # Require '__hash__' and '__eq__' to be element of a set.
+    def __hash__(self):
+        return 1
+    def __eq__(self, Other):
+        if not isinstance(Other, EntryAction_StoreInputPosition): return False
+        return     self.pre_context_id  == Other.pre_context_id \
+               and self.post_context_id == Other.post_context_id
+
+# EntryAction_AcceptPattern:
+# 
+# In this case the pre-context-id is essential. We cannot accept a pattern if
+# its pre-context is not fulfilled.
+EntryAction_AcceptPattern      = namedtuple("EntryAction_AcceptPattern",      ["pre_context_id", "acceptance_id"  ])
+class EntryAction_AcceptPattern(object):
+    __slots__ = ["pre_context_id", "acceptance_id"]
+    def __init__(self, PreContextID, AcceptanceID):
+        self.pre_context_id = PreContextID
+        self.acceptance_id  = AcceptanceID
+    # Require '__hash__' and '__eq__' to be element of a set.
+    def __hash__(self):
+        return 1
+    def __eq__(self, Other):
+        if not isinstance(Other, EntryAction_AcceptPattern): return False
+        return     self.pre_context_id == Other.pre_context_id \
+               and self.acceptance_id  == Other.acceptance_id
 
 class Entry(BASE_Entry):
     """An entry has potentially two tasks:
@@ -696,40 +748,42 @@ class Entry(BASE_Entry):
           in the 'pre_context_id_set' is fullfilled, then the position of 'post_context_id'
           must be stored.
     """
-    __slots__ = ("__independent_of_source_state_f", "__accepter", "positioner_db")
+    __slots__ = ("__uniform_doors_f", "__doors_db")
 
     def __init__(self, FromStateIndexList):
-        # By default, we do not do store anything about acceptance at state entry
-        self.__accepter = set()
+        # map:  (from_state_index) --> list of actions to be taken if state is entered 
+        #                              'from_state_index' for a given pre-context.
+        if len(FromStateIndexList) == 0:
+            FromStateIndexList = [ E_StateIndices.NONE ]
+        self.__doors_db = dict([ (i, set()) for i in FromStateIndexList ])
 
-        # map:  (from_state_index, post_context_id) --> pre_context_id (necessary) to store position
-        self.__positioner_db = dict([ (i, set()) for i in FromStateIndexList ])
+        # Are the actions for all doors the same?
+        self.__uniform_doors_f = None 
 
-        # Are all positionings independent_of_source_state?
-        # This flag is to be determined after the analysis by function 'finish()'
-        self.__independent_of_source_state_f = None 
+    def doors_accept(self, PatternID, PreContextID):
+        # Add accepter to every door.
+        for door in self.__doors_db.itervalues():
+            door.add(EntryAction_AcceptPattern(PreContextID, PatternID))
 
-    def doors_add(self, FromStateIndex, AcceptanceID=E_AcceptanceIDs.FAILURE, PostContextID=E_PostContextIDs.NONE, PreContextID=E_PreContextIDs.NONE):
-        entry = self.__positioner_db.get(FromStateIndex)
-        assert entry is not None
-        entry.add(PositionerInfo(PostContextID, PreContextID))
+    def doors_store(self, FromStateIndex, PostContextID, PreContextID):
+        # Add 'store input position' to specific door. See 'EntryAction_StoreInputPosition'
+        # comment for the reason why we do not store pre-context-id.
+        entry = EntryAction_StoreInputPosition(PreContextID, PostContextID)
+        self.__doors_db[FromStateIndex].add(entry)
 
     def door_number(self):
-        total_size = len(self.__positioner_db)
+        total_size = len(self.__doors_db)
         # Note, that total_size can be '0' in the 'independent_of_source_state' case
-        if self.__independent_of_source_state_f: return min(1, total_size)
+        if self.__uniform_doors_f: return min(1, total_size)
         else:                                    return total_size
 
     def _positioner_eq(self, Other):
-        if not self.__independent_of_source_state_f:
-            return self.__positioner_db == Other.__positioner_db
-        if len(self.__positioner_db) == 0: return True
-        prototype_A = self.__positioner_db.itervalues().next()
-        prototype_B = Other.__positioner_db.itervalues().next()
+        if not self.__uniform_doors_f:
+            return self.__doors_db == Other.__doors_db
+        if len(self.__doors_db) == 0: return True
+        prototype_A = self.__doors_db.itervalues().next()
+        prototype_B = Other.__doors_db.itervalues().next()
         return prototype_A == prototype_B
-
-    def set_accepter(self, PatternID, PreContextID):
-        self.__accepter.add((PreContextID, PatternID))
 
     def get_accepter(self):
         """Returns information about the acceptance sequence. Lines that are dominated
@@ -737,20 +791,36 @@ class Entry(BASE_Entry):
 
                           (pre_context_id, acceptance_id)
         """
-        result = []
-        for pre_context_id, acceptance_id in sorted(list(self.__accepter), key=itemgetter(1)):
-            result.append((pre_context_id, acceptance_id))   
-            if pre_context_id == E_PreContextIDs.NONE: break
+        result = set()
+        for door in self.__doors_db.itervalues():
+            acceptance_actions = [action for action in door if isinstance(action, EntryAction_AcceptPattern)]
+            result.update(acceptance_actions)
+
+        result = list(result)
+        result.sort(key=attrgetter("acceptance_id"))
         return result
 
     def size_of_accepter(self):
-        return len(self.__accepter)
+        """Count the number of difference acceptance ids."""
+        db = set()
+        for door in self.__doors_db.itervalues():
+            for action in door:
+                if not isinstance(action, EntryAction_AcceptPattern): continue
+                db.add(action.acceptance_id)
+        return len(db)
 
     def has_accepter(self):
-        return len(self.__accepter) != 0
+        for door in self.__doors_db.itervalues():
+            for action in door:
+                if isinstance(action, EntryAction_AcceptPattern): return True
+        return False
 
     def clear_accepter(self):
-        self.__accepter.clear()
+        for door in self.__doors_db.itervalues():
+            for action in list(door):
+                if not isinstance(action, EntryAction_AcceptPattern): continue
+                door.remove(action)
+        return False
 
     def get_positioner_db(self):
         """RETURNS: PositionDB
@@ -766,23 +836,51 @@ class Entry(BASE_Entry):
            Note, that 'PostContextID==None' (Normal Acceptance) can have multiple
            pre-context ids related to it.
         """
-        return self.__positioner_db
+        return self.__doors_db
 
     def __hash__(self):
-        return len(self.__accepter) * 10 + self.door_number()
+        result = 0
+        for action_set in self.__doors_db.itervalues():
+            result += len(action_set)
+        return result
 
     def __eq__(self, Other):
-        if not self._positioner_eq(Other): return False
-        return self.__accepter == Other.__accepter 
+        if len(self.__doors_db) != len(Other.__doors_db): 
+            return False
+        for from_state_index, action_list in self.__doors_db.iteritems():
+            other_action_list = Other.__doors_db.get(from_state_index)
+            if other_action_list is None: return False
+            if action_list != other_action_list: return False
+        return True
 
     def is_equal(self, Other):
         # Maybe, we can delete this ...
         return self.__eq__(self, Other)
 
-    def is_independent_of_source_state(self): 
-        return self.__independent_of_source_state_f
+    def uniform_doors_f(self): 
+        return self.__uniform_doors_f
 
-    def special_door_from_state(self, StateIndex):
+    def get_uniform_door_prototype(self): 
+        if not self.__uniform_doors_f: return None
+        return self.__doors_db.itervalues().next()
+
+    def get_door_group_tree(self):
+        """Grouping and categorizing of entry doors:
+
+           -- All doors which are exactly the same appear in the same group.
+           -- Some doors perform actions which are a superset of the actions
+              of other doors. The groups of those are organized in hierarchical
+              order-from superset to subset. The member '.subset' of each
+              group points to the branches of a node.
+
+           Doors are identified by their 'from_state_index'.
+        """
+        # (1) grouping:
+        group_db = defaultdict(list)
+        for from_state_index, door in self.__doors_db.iteritems():
+            group_db[sorted(door)].append(from_state_index)
+
+    def has_special_door_from_state(self, StateIndex):
         """Determines whether the state has a special entry from state 'StateIndex'.
            RETURNS: False -- if entry is not at all source state dependent.
                           -- if there is no single door for StateIndex to this entry.
@@ -790,16 +888,11 @@ class Entry(BASE_Entry):
                     True  -- If there is an entry that depends on StateIndex in exclusion
                              of others.
         """
-        if   self.__independent_of_source_state_f: return False
-        elif len(self.__positioner_db) <= 1:         return False
-        return self.__positioner_db.has_key(StateIndex)
+        if   self.__uniform_doors_f: return False
+        elif len(self.__doors_db) <= 1:            return False
+        return self.__doors_db.has_key(StateIndex)
 
-    def positioner_prototype(self):
-        assert self.__independent_of_source_state_f
-        # All positioners are independent_of_source_state, so simply return the first.
-        return self.__positioner_db.itervalues().next()
-
-    def finish(self):
+    def finish(self, PositionRegisterMap):
         """Once the whole state machine is analyzed and positioner and accepters
            are set, the entry can be 'finished'. That means that some simplifications
            may be accomplished:
@@ -818,30 +911,40 @@ class Entry(BASE_Entry):
 
            A unified entry is coded as 'ALL' --> common positioning.
         """
-        if len(self.__positioner_db) == 0: 
-            self.__independent_of_source_state_f = True
+        if len(self.__doors_db) == 0: 
+            self.__uniform_doors_f = True
             return
 
-        # (*) One non-pre_context_id acceptance makes all of the same non-pre_contexted
-        #     (Meaning: if the acceptance has no condition to it for one case,
-        #               the other conditions do not have to be considered.)
-        for from_state_index, positioner in self.__positioner_db.iteritems():
-            for dummy in (x for x in positioner
-                          if     x.post_context_id == E_PostContextIDs.NONE \
-                             and x.pre_context_id  == E_PreContextIDs.NONE):
-                # Filter out all normal acceptances with a pre-context
-                self.__positioner_db[from_state_index] =                      \
-                     [x for x in positioner                                 \
-                        if    x.post_context_id != E_PostContextIDs.NONE    \
-                           or x.pre_context_id  == E_PreContextIDs.NONE]
+        # (*) Some post-contexts may use the same position register. Those have
+        #     been identified in PositionRegisterMap. Do the replacement.
+        for from_state_index, door in self.__doors_db.items():
+            if len(door) == 0: continue
+            new_door = set()
+            for action in door:
+                if not isinstance(action, EntryAction_StoreInputPosition):
+                    new_door.add(action)
+                else:
+                    new_door.add(EntryAction_StoreInputPosition(action.pre_context_id, PositionRegisterMap[action.post_context_id]))
+            self.__doors_db[from_state_index] = new_door
+
+        # (*) If a door stores the input position in register unconditionally,
+        #     then all other conditions concerning the storage in that register
+        #     are nonessential.
+        for door in self.__doors_db.itervalues():
+            for action in list(x for x in door \
+                               if     isinstance(x, EntryAction_StoreInputPosition) \
+                                  and x.pre_context_id == E_PreContextIDs.NONE):
+                for x in list(x for x in door \
+                             if isinstance(x, EntryAction_StoreInputPosition)):
+                    if x.post_context_id == action.post_context_id and x.pre_context_id != E_PreContextIDs.NONE:
+                        door.remove(x)
 
         # (*) Check whether state entries are independent_of_source_state
-        itervalues = self.__positioner_db.itervalues()
-
-        self.__independent_of_source_state_f = True
-        prototype                            = itervalues.next()
-        for dummy in ifilter(lambda x: x != prototype, itervalues):
-            self.__independent_of_source_state_f = False
+        self.__uniform_doors_f = True
+        iterable               = self.__doors_db.itervalues()
+        prototype              = iterable.next()
+        for dummy in ifilter(lambda x: x != prototype, iterable):
+            self.__uniform_doors_f = False
             return
         return 
 
@@ -850,25 +953,37 @@ class Entry(BASE_Entry):
         if self.has_accepter() != 0:
             txt.append("    .accepter:\n")
             if_str = "if     "
-            for pre_context_id, acceptance_id in self.get_accepter():
-                if pre_context_id != E_PreContextIDs.NONE:
-                    txt.append("        %s %s: " % (if_str, repr_pre_context_id(pre_context_id)))
+            for action in self.get_accepter():
+                if action.pre_context_id != E_PreContextIDs.NONE:
+                    txt.append("        %s %s: " % (if_str, repr_pre_context_id(action.pre_context_id)))
                 else:
                     txt.append("        ")
-                txt.append("last_acceptance = %s\n" % repr_acceptance_id(acceptance_id))
+                txt.append("last_acceptance = %s\n" % repr_acceptance_id(action.acceptance_id))
                 if_str = "else if"
 
-        if len(self.__positioner_db) != 0:
+
+        ptxt = []
+        for from_state_index, door in sorted(self.__doors_db.iteritems(), key=itemgetter(0)):
+            if from_state_index == E_StateIndices.NONE: continue
+            ptxt.append("        .from %s:" % repr(from_state_index).replace("L", ""))
+            positioner_action_list = [action for action in door if isinstance(action, EntryAction_StoreInputPosition)]
+            positioner_action_list.sort(key=lambda x: (x.pre_context_id, x.post_context_id))
+            if   len(positioner_action_list) == 0: 
+                content = " <nothing>\n"
+            else:
+                content = ""
+                for action in positioner_action_list:
+                    if action.pre_context_id != E_PreContextIDs.NONE:
+                        content += " if '%s': " % repr_pre_context_id(action.pre_context_id)
+                    content += " %s = input_p;\n" % repr_position_register(action.post_context_id)
+            if content.count("\n") != 1: 
+                ptxt.append("\n")
+                content = "            " + content[:-1].replace("\n", "\n            ") + "\n"
+            ptxt.append(content)
+
+        if len(ptxt) != 0:
             txt.append("    .positioner:\n")
-        for from_state_index, positioner in self.__positioner_db.iteritems():
-            txt.append("        .from %i:" % from_state_index)
-            if   len(positioner) == 0: txt.append(" <nothing>\n")
-            elif len(positioner) != 1: txt.append("\n")
-            for info in positioner:
-                if len(positioner) != 1: txt.append("            ")
-                if info.pre_context_id != E_PreContextIDs.NONE:
-                    txt.append("if '%s': " % repr_pre_context_id(info.pre_context_id))
-                txt.append(" %s = input_p;\n" % repr_position_register(info.post_context_id))
+            txt.extend(ptxt)
 
         return "".join(txt)
 
@@ -892,7 +1007,7 @@ class EntryBackwardInputPositionDetection(BASE_Entry):
             self.__terminated_f = True
             return
 
-    def is_independent_of_source_state(self):
+    def uniform_doors_f(self):
         # There is no difference from which state we enter
         return True
 
@@ -940,7 +1055,7 @@ class EntryBackward(BASE_Entry):
         #       ... equal if elements are the same, order not important
         return self.pre_context_fulfilled_set == Other.pre_context_fulfilled_set
 
-    def is_independent_of_source_state(self):
+    def uniform_doors_f(self):
         return True
 
     def is_equal(self, Other):
@@ -1006,6 +1121,11 @@ class DropOut(object):
 
     def is_equal(self, Other):
         return self.__eq__(Other)
+
+    def finish(self, PositionRegisterMap):
+        for element in self.terminal_router:
+            if element.positioning is not E_TransitionN.VOID: continue
+            element.post_context_id = PositionRegisterMap[element.post_context_id]
 
     def trivialize(self):
         """If there is only one acceptance involved and no pre-context,

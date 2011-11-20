@@ -8,7 +8,7 @@ import quex.input.regular_expression.engine  as regex
 from   quex.engine.generator.base            import get_combined_state_machine
 from   quex.engine.analyzer.core             import E_InputActions
 import quex.engine.analyzer.core             as core
-import help_drawing
+import help
 
 if "--hwut-info" in sys.argv:
     print "Track Analyzis: Without Pre- and Post-Contexts;"
@@ -189,16 +189,5 @@ sm = get_combined_state_machine(state_machine_list, False) # May be 'True' later
 sm = sm.normalized_clone()
 
 # For DEBUG purposes: specify 'DRAW' on command line
-help_drawing.if_DRAW_in_sys_argv(sm)
-
-print sm.get_string(NormalizeF=False)
-
-analyzer = core.do(sm)
-
-for state in analyzer:
-    if state.index == sm.init_state_index: 
-        assert state.input == E_InputActions.DEREF
-    else:
-        assert state.input == E_InputActions.INCREMENT_THEN_DEREF
-
-    print state.get_string(InputF=False, TransitionMapF=False)
+help.if_DRAW_in_sys_argv(sm)
+help.test(sm)

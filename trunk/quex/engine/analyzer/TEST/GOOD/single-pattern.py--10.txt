@@ -40,3 +40,19 @@ State 2:
      goto Pattern12;
 
 
+
+--- Optimized States ---
+
+State 1:
+  .entry:
+    .positioner:
+        .from 0: <nothing>
+        .from 2: position[PostContext_0]  = input_p;
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
+        case 12: pos = position[PostContext_0] ; goto Pattern12;
+
+

@@ -10,7 +10,7 @@ from   quex.engine.generator.base            import get_combined_state_machine
 import quex.engine.analyzer.core             as core
 from   quex.blackboard                       import E_InputActions, \
                                                     E_EngineTypes
-import help_drawing
+import help
 
 if "--hwut-info" in sys.argv:
     print "Track Analyzis: Backwards - For Pre-Context;"
@@ -39,12 +39,5 @@ sm  = get_combined_state_machine(state_machine_list, False) # May be 'True' late
 sm  = sm.normalized_clone()
 
 # For DEBUG purposes: specify 'DRAW' on command line
-help_drawing.if_DRAW_in_sys_argv(sm)
-
-print sm.get_string(NormalizeF=False)
-
-analyzer = core.do(sm, E_EngineTypes.BACKWARD_PRE_CONTEXT, OptimizeF=False)
-
-for state in analyzer:
-    assert state.input == E_InputActions.DECREMENT_THEN_DEREF
-    print state.get_string(InputF=False, TransitionMapF=False)
+help.if_DRAW_in_sys_argv(sm)
+help.test(sm, EngineType=E_EngineTypes.BACKWARD_PRE_CONTEXT)

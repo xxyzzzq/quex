@@ -120,7 +120,7 @@ class LDB(dict):
                 # It must be a template/path walker state. Those are not real analyzer states
                 # but little engines that can be entered via an address.
                 FromStateIndex = None
-            elif not self.__analyzer.state_db[StateIndex].entry.special_door_from_state(FromStateIndex):
+            elif not self.__analyzer.state_db[StateIndex].entry.has_special_door_from_state(FromStateIndex):
                 # If the entry of the target state is uniform (the same from every 'SourceState'),
                 # then we do not need to goto it through a specific door (FromStateIndex = None).
                 # If the 'Analyzer == None' we assume that all related states have 
@@ -248,22 +248,16 @@ class LDB(dict):
     def IF_INPUT(self, Condition, Value, FirstF=True):
         return self.IF("input", Condition, Value, FirstF)
 
-    def IF_PRE_CONTEXT(self, FirstF, PreContextList, Consequence):
-        if not isinstance(PreContextList, (list, set)): PreContextList = [ PreContextList ]
+    def IF_PRE_CONTEXT(self, FirstF, PreContextID, Consequence):
 
-        if E_PreContextIDs.NONE in PreContextList: 
+        if PreContextID == E_PreContextIDs.NONE:
             if FirstF: opening = "";             indent = "    ";     closing = ""
             else:      opening = "    else {\n"; indent = "        "; closing = "    }\n"
             return "%s%s%s%s\n" % (opening, indent, Consequence.replace("\n", "\n    "), closing)
 
         if FirstF: txt = "    if( "
         else:      txt = "    else if( "
-
-        last_i = len(PreContextList) - 1
-        for i, pre_context_id in enumerate(PreContextList):
-            txt += self.PRE_CONTEXT_CONDITION(pre_context_id)
-            if i != last_i: txt += " || "
-
+        txt += self.PRE_CONTEXT_CONDITION(PreContextID)
         txt += " ) {\n        %s\n    }\n" % Consequence.replace("\n", "\n        ")
         return txt
 

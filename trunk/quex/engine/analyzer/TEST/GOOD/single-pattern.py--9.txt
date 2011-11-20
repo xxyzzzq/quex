@@ -54,3 +54,23 @@ State 4:
     pos -= 1;  goto Pattern25;
 
 
+
+--- Optimized States ---
+
+State 2:
+  .entry:
+    .positioner:
+        .from 1: position[PostContext_0]  = input_p;
+        .from 4: <nothing>
+  .drop_out:
+    pos = position[PostContext_0] ; goto Pattern25;
+
+
+State 4:
+  .entry:
+    .positioner:
+        .from 1: position[PostContext_0]  = input_p;
+  .drop_out:
+    pos -= 1;  goto Pattern25;
+
+
