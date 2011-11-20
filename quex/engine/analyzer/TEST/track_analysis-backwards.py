@@ -43,7 +43,7 @@ help_drawing.if_DRAW_in_sys_argv(sm)
 
 print sm.get_string(NormalizeF=False)
 
-analyzer = core.do(sm, E_EngineTypes.BACKWARD_PRE_CONTEXT)
+analyzer = core.do(sm, E_EngineTypes.BACKWARD_PRE_CONTEXT, OptimizeF=False)
 
 for state in analyzer:
     assert state.input == E_InputActions.DECREMENT_THEN_DEREF

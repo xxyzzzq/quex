@@ -92,7 +92,7 @@ help_drawing.if_DRAW_in_sys_argv(sm)
 
 print sm.get_string(NormalizeF=False)
 
-analyzer = core.do(sm)
+analyzer = core.do(sm, OptimizeF=False)
 
 for state in analyzer:
     if state.index == sm.init_state_index: 

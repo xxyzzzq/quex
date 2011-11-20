@@ -30,7 +30,7 @@ help_drawing.if_DRAW_in_sys_argv(sm)
 
 print sm.get_string(NormalizeF=False)
 
-analyzer = core.do(sm, E_EngineTypes.BACKWARD_INPUT_POSITION)
+analyzer = core.do(sm, E_EngineTypes.BACKWARD_INPUT_POSITION, OptimizeF=False)
 
 for state in sorted(analyzer, key=attrgetter("index")):
     assert state.input == E_InputActions.DECREMENT_THEN_DEREF
