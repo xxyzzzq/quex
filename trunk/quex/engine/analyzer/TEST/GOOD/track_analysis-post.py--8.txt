@@ -43,8 +43,8 @@ State 2:
         last_acceptance = Pattern8
     .positioner:
         .from 1:
-             position[PostContext_17]  = input_p;
              position[PostContext_8]  = input_p;
+             position[PostContext_17]  = input_p;
         .from 2: <nothing>
   .drop_out:
     pos = position[PostContext_8] ; goto Pattern8;
@@ -89,8 +89,8 @@ State 6:
         last_acceptance = Pattern17
     .positioner:
         .from 1:
-             position[PostContext_17]  = input_p;
              position[PostContext_8]  = input_p;
+             position[PostContext_17]  = input_p;
         .from 6: <nothing>
   .drop_out:
     pos = position[PostContext_17] ; goto Pattern17;
