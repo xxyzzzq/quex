@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# -*- coding: utf8 -*-
 import os
 import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
@@ -11,7 +12,7 @@ import help
 
 if "--hwut-info" in sys.argv:
     print "Track Analyzis: With Pre- and Post-Contexts;"
-    print "CHOICES: 1, 2, 3, 4, 5, 6, 7, 9;"
+    print "CHOICES: 1, 2, 3, 4, 5, 6, 7, 8, 9;"
     sys.exit()
 
 if   "1" in sys.argv:
@@ -69,6 +70,27 @@ elif "7" in sys.argv:
         '2/(a+|bc+)/d+ef',
         '3/(a+|bc+)d+/ef',
         '4/(a+|bc+)d+e/f',
+    ]
+elif "8" in sys.argv:
+    # Case where the acceptance decides about positioning + dependence on pre-context
+    #                                       b
+    #      ┌───────────────┐              ┌───┐
+    #      │               │              ▼   │
+    #      │  ┌───┐  x   ┌───────┐  b   ┌───────┐  c   ┌───┐  d   ┌───┐  e   ┌───┐
+    #      │  │ 0 │ ───▶ │   1   │ ───▶ │   6*  │ ───▶ │ 3 │ ───▶ │ 4 │ ───▶ │ 5*│
+    #      │  └───┘      └───────┘S8    └───────┘R17   └───┘      └───┘      └───┘A44
+    #      │                      S17                    ▲                          
+    #      │                 a                           │
+    #      │               ┌───┐                         │
+    #      │               ▼   │                         │
+    #      │        a    ┌───────┐  c                    │
+    #      └───────────▶ │   2*  │───────────────────────┘
+    #                    └───────┘R8
+    #____________________________________________________________________
+    pattern_list = [
+        '0/x/a+',
+        '1/x/b+',
+        'x(a+|b+)cde',
     ]
 elif "9" in sys.argv:
     # Non-uniform traces with multiple pre-contexts

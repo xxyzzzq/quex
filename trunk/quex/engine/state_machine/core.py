@@ -473,10 +473,7 @@ class StateMachine(object):
         return [ state for state in self.states.itervalues() if state.is_acceptance() ]
 
     def get_acceptance_state_index_list(self):
-        result = []
-        for index, state in self.states.items():
-            if state.is_acceptance(): result.append(index)
-        return result
+        return [ index for index, state in self.states.iteritems() if state.is_acceptance() ]
 
     def get_inverse(self):
         """Creates an inverse representation of the state machine. Optionally,

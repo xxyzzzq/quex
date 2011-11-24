@@ -29,6 +29,7 @@ elif "1" in sys.argv:
         'a+',        
         '[ab]+cd',        
     ]
+
 elif "2" in sys.argv:
     print "All Post-Contexts are Combinable"
     pattern_list = [
@@ -75,6 +76,8 @@ else:
 state_machine_list = map(lambda x: regex.do(x, {}).sm, pattern_list)
 sm                 = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
 sm                 = sm.normalized_clone()
+
+#print "##", sm
 
 # For DEBUG purposes: specify 'DRAW' on command line (in sys.argv)
 help.if_DRAW_in_sys_argv(sm)

@@ -35,7 +35,7 @@ State 1:
 State 2:
   .entry:
     .positioner:
-        .from 1: position[Acceptance] = input_p;
+        .from 1: position[PostContext_1]  = input_p;
   .drop_out:
     pos -= 1;  goto Pattern1;
 
@@ -44,9 +44,9 @@ State 3:
   .entry:
     .positioner:
         .from 2: <nothing>
-        .from 5: position[Acceptance] = input_p;
+        .from 5: position[PostContext_1]  = input_p;
   .drop_out:
-    pos = position[Acceptance]; goto Pattern1;
+    pos = position[PostContext_1] ; goto Pattern1;
 
 
 State 4:
@@ -63,5 +63,25 @@ State 5:
         .from 0: <nothing>
   .drop_out:
      goto Pattern1;
+
+
+
+--- Optimized States ---
+
+State 2:
+  .entry:
+    .positioner:
+        .from 1: position[PostContext_0]  = input_p;
+  .drop_out:
+    pos -= 1;  goto Pattern1;
+
+
+State 3:
+  .entry:
+    .positioner:
+        .from 2: <nothing>
+        .from 5: position[PostContext_0]  = input_p;
+  .drop_out:
+    pos = position[PostContext_0] ; goto Pattern1;
 
 

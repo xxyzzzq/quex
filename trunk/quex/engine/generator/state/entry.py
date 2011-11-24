@@ -54,8 +54,7 @@ def _doors(txt, TheState, PositionRegisterMap, LabelF):
         # The check 'if pre-context' + the jump take most likely more time
         # then simply assigning the position to the position register. So
         # simply omit the check. Collect all registers that store.
-        # for register_i in (PositionRegisterMap[x.post_context_id] for x in Door \
-        for register_i in (x.post_context_id for x in Door \
+        for register_i in (x.position_register for x in Door \
                            if isinstance(x, EntryAction_StoreInputPosition)):
             txt.append(
                 " %s" % LanguageDB.ASSIGN(LanguageDB.POSITION_REGISTER(register_i), LanguageDB.INPUT_P()), 

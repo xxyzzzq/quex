@@ -31,7 +31,7 @@ def do(txt, TheState, TheAnalyzer, DefineLabelF=True):
         for i, easy in enumerate(info):
             positioning_str = ""
             if easy[1].positioning != 0:
-                if easy[1].positioning == E_TransitionN.VOID: register = easy[1].post_context_id
+                if easy[1].positioning == E_TransitionN.VOID: register = easy[1].position_register
                 else:                                         register = E_PostContextIDs.NONE
                 positioning_str = "%s\n" % LanguageDB.POSITIONING(easy[1].positioning, register)
 
@@ -58,22 +58,22 @@ def do(txt, TheState, TheAnalyzer, DefineLabelF=True):
     # (2.2.1) If the positioning is the same for all entries (except the FAILURE)
     #         then, again, the routing may be simplified:
     #router    = TheState.drop_out.router
-    #prototype = (router[0].positioning, router[0].post_context_id)
+    #prototype = (router[0].positioning, router[0].position_register)
     #simple_f  = True
     #for element in islice(router, 1, None):
     #    if element.acceptance_id == E_AcceptanceIDs.FAILURE: continue
-    #    if prototype != (element.positioning, element.post_context_id): 
+    #    if prototype != (element.positioning, element.position_register): 
     #        simple_f = False
     #        break
 
     #if simple_f:
     #    txt.append("    %s\n    %s\n" % 
-    #               (LanguageDB.POSITIONING(element.positioning, element.post_context_id), 
+    #               (LanguageDB.POSITIONING(element.positioning, element.position_register), 
     #                LanguageDB.GOTO_TERMINAL(E_AcceptanceIDs.VOID)))
     #else:
     case_list = []
     for element in TheState.drop_out.terminal_router:
-        if element.positioning == E_TransitionN.VOID: register = element.post_context_id
+        if element.positioning == E_TransitionN.VOID: register = element.position_register
         else:                                         register = None
         case_list.append((LanguageDB.ACCEPTANCE(element.acceptance_id), 
                           "%s %s" % \

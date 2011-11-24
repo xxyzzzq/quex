@@ -47,8 +47,6 @@ def test(SM, EngineType = E_EngineTypes.FORWARD):
         if states_txt_db[state.index] != optimized_txt:
             diff_txt_db[state.index] = optimized_txt
 
-    return
-
     # Print the results of optimization
     if len(diff_txt_db):
         print 
