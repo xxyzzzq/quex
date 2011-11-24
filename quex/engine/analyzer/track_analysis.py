@@ -283,7 +283,7 @@ class TrackAnalysis:
                         assert False, "The positioning_state_index MUST be in the path!"
                     store_to_restore_path = [ state_index for state_index, trace in islice(self.path, path_index, None)] 
                     store_to_restore_path.append(StateIndex)
-                    self.store_to_restore_path_db[entry.post_context_id].append(store_to_restore_path)
+                    self.store_to_restore_path_db[entry.pattern_id].append(store_to_restore_path)
 
         trace_finder = TraceFinder(self)
         trace_finder.do(self.sm.init_state_index)
@@ -344,8 +344,7 @@ class Trace(object):
                                  MinTransitionN_ToAcceptance  = 0,
                                  AcceptingStateIndex          = InitStateIndex, 
                                  TransitionN_SincePositioning = E_TransitionN.LEXEME_START_PLUS_ONE,              
-                                 PositioningStateIndex        = E_StateIndices.NONE, 
-                                 PostContextID                = E_PostContextIDs.NONE),
+                                 PositioningStateIndex        = E_StateIndices.NONE), 
             }
         self.__storage_db = {}
         self.__DEBUG_last_transition_n_to_acceptance = 0
@@ -426,19 +425,20 @@ class Trace(object):
                 entry.transition_n_since_positioning = operation(entry.transition_n_since_positioning)
 
         # (*) Absolute Acceptance 
-        acceptance_id = E_AcceptanceIDs.FAILURE
-        origin        = State.origins().get_absolute_acceptance_origin()
+        acceptance_id_limit = E_AcceptanceIDs.FAILURE
+        origin              = State.origins().get_absolute_acceptance_origin()
         if origin is not None:
+            acceptance_id_limit = origin.pattern_id()
             self.__acceptance_db.clear()
             self.__add(origin, StateIndex, CurrentPathLength)
 
         # (*) Conditional Acceptance 
-        for origin in State.origins().get_conditional_acceptance_iterable(acceptance_id):
+        for origin in State.origins().get_conditional_acceptance_iterable(acceptance_id_limit):
             self.__add(origin, StateIndex, CurrentPathLength)
 
         # (*) Store Input Position Information
         for origin in State.origins().get_store_iterable():
-            # One the StoreInfo object is in __storage_db, it is subject to counting
+            # Once the StoreInfo object is in __storage_db, it is subject to counting
             # .transition_n_since_positioning each time we advance one step on the path. 
             self.__storage_db[origin.pattern_id()] = StoreInfo(StateIndex)
 
@@ -450,19 +450,16 @@ class Trace(object):
             entry = self.__storage_db[pattern_id]
             transition_n_since_positioning = entry.transition_n_since_positioning
             positioning_state_index        = entry.positioning_state_index
-            post_context_id                = pattern_id
         else:
             transition_n_since_positioning = 0
             positioning_state_index        = StateIndex
-            post_context_id                = E_PostContextIDs.NONE
 
         self.__acceptance_db[pattern_id] = \
                 TraceEntry(Origin.pre_context_id(), pattern_id,
                            MinTransitionN_ToAcceptance  = CurrentPathLength,
                            AcceptingStateIndex          = StateIndex, 
                            TransitionN_SincePositioning = transition_n_since_positioning,
-                           PositioningStateIndex        = positioning_state_index, 
-                           PostContextID                = post_context_id)
+                           PositioningStateIndex        = positioning_state_index) 
 
     @property
     def acceptance_db(self): return self.__acceptance_db
@@ -523,10 +520,6 @@ class Trace(object):
             txt.append(repr(x))
         return "".join(txt)
 
-    def __iter__(self):
-        for x in self.__acceptance_db.itervalues():
-            yield x
-
 class StoreInfo(object):
     __slots__ = ('transition_n_since_positioning', 'positioning_state_index')
     def __init__(self, PositioningStateIndex, TransitionN_SincePositioning=0):
@@ -550,16 +543,13 @@ class TraceEntry(object):
                  "min_transition_n_to_acceptance", 
                  "accepting_state_index", 
                  "transition_n_since_positioning", 
-                 "positioning_state_index",
-                 "post_context_id",
-                 "positioning_state_successor_index")
+                 "positioning_state_index")
 
     def __init__(self, PreContextID, PatternID, 
                  MinTransitionN_ToAcceptance, 
                  AcceptingStateIndex, 
                  TransitionN_SincePositioning, 
-                 PositioningStateIndex, 
-                 PostContextID):
+                 PositioningStateIndex): 
         """PreContextID  --
            PatternID     -- 
            TransitionN_SincePositioning -- Number of transitions since the 'positioning'
@@ -572,9 +562,6 @@ class TraceEntry(object):
                                     in the case of acceptance. This is usually the 
                                     acceptance state. For post-context patterns it is 
                                     the state where the post context begins.
-
-           PostContextID   = -1  acceptance has nothing to do with post context
-                          != -1  acceptance is related to post context with given id.
         """
         self.pre_context_id  = PreContextID
         self.pattern_id      = PatternID
@@ -593,12 +580,6 @@ class TraceEntry(object):
         # 
         self.accepting_state_index             = AcceptingStateIndex
         self.positioning_state_index           = PositioningStateIndex
-        self.positioning_state_successor_index = None
-        #
-        if PostContextID != E_PostContextIDs.NONE:
-            self.post_context_id = PatternID # PostContextID
-        else:
-            self.post_context_id = E_PostContextIDs.NONE
 
     def clone(self):
         result = TraceEntry(self.pre_context_id, 
@@ -606,9 +587,7 @@ class TraceEntry(object):
                             self.min_transition_n_to_acceptance, 
                             self.accepting_state_index, 
                             self.transition_n_since_positioning, 
-                            self.positioning_state_index, 
-                            self.post_context_id)
-        result.positioning_state_successor_index = self.positioning_state_successor_index
+                            self.positioning_state_index) 
         return result
 
     def is_equal(self, Other):
@@ -618,8 +597,6 @@ class TraceEntry(object):
         elif self.min_transition_n_to_acceptance    != Other.min_transition_n_to_acceptance:    return False
         elif self.accepting_state_index             != Other.accepting_state_index:             return False
         elif self.positioning_state_index           != Other.positioning_state_index:           return False
-        elif self.positioning_state_successor_index != Other.positioning_state_successor_index: return False
-        elif self.post_context_id                   != Other.post_context_id:                   return False
         return True
 
     def __repr__(self):
@@ -627,10 +604,9 @@ class TraceEntry(object):
         txt.append("    .pre_context_id                 = %s\n" % repr(self.pre_context_id))
         txt.append("    .pattern_id                     = %s\n" % repr(self.pattern_id))
         txt.append("    .transition_n_since_positioning = %s\n" % repr(self.transition_n_since_positioning))
-        txt.append("    .min_transition_n_to_acceptance     = %s\n" % repr(self.min_transition_n_to_acceptance))
+        txt.append("    .min_transition_n_to_acceptance = %s\n" % repr(self.min_transition_n_to_acceptance))
         txt.append("    .accepting_state_index          = %s\n" % repr(self.accepting_state_index))
         txt.append("    .positioning_state_index        = %s\n" % repr(self.positioning_state_index))
-        txt.append("    .post_context_id                = %s\n" % repr(self.post_context_id))
         return "".join(txt)
 
 TraceEntry_Void = TraceEntry(PreContextID                 = E_PreContextIDs.NONE, 
@@ -638,6 +614,5 @@ TraceEntry_Void = TraceEntry(PreContextID                 = E_PreContextIDs.NONE
                              MinTransitionN_ToAcceptance  = 0,
                              AcceptingStateIndex          = E_StateIndices.VOID,  
                              TransitionN_SincePositioning = E_TransitionN.VOID, 
-                             PositioningStateIndex        = E_StateIndices.NONE, 
-                             PostContextID                = E_PostContextIDs.NONE)
+                             PositioningStateIndex        = E_StateIndices.NONE) 
 

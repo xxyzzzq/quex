@@ -19,7 +19,7 @@
     stored along with the AnalyzerState object.
 
     The track analysis in 'track_analysis.py' provides the basis for the 
-    construction of AnalyzerState objects. It produces the 'acceptance_trace_db'.
+    construction of AnalyzerState objects. It produces the 'trace_db'.
     It maps:
 
                     state index --> list of Trace objects
@@ -72,12 +72,16 @@ class Analyzer:
         assert EngineType in E_EngineTypes
         assert isinstance(SM, StateMachine)
 
+        self.__acceptance_state_index_list = SM.get_acceptance_state_index_list()
         self.__init_state_index = SM.init_state_index
         self.__state_machine_id = SM.get_id()
         self.__engine_type      = EngineType
 
         # (1) Track Analysis: Get the 'Trace' objects for each state
-        acceptance_db, successor_db, store_to_restore_path_db = track_analysis.do(SM)
+        trace_db, successor_db, store_to_restore_path_db = track_analysis.do(SM)
+
+        # (*) Acceptance Traces
+        self.__trace_db = trace_db
 
         # (*) Successor Database
         #     Store for each state the set of all possible successor states.
@@ -103,7 +107,7 @@ class Analyzer:
 
         # (2) Prepare AnalyzerState Objects
         self.__state_db = dict([(state_index, AnalyzerState(state_index, SM, EngineType, from_db[state_index])) 
-                                 for state_index in acceptance_db.iterkeys()])
+                                 for state_index in trace_db.iterkeys()])
 
         if EngineType != E_EngineTypes.FORWARD:
             # BACKWARD_INPUT_POSITION, BACKWARD_PRE_CONTEXT:
@@ -116,23 +120,25 @@ class Analyzer:
 
         # Store Constellation Database:
         #
-        #      map: post_context_id --> set of states where input position is stored for it
+        #      map: pattern_id --> set of states where input position is stored for it
         #
         # This database is developed in 'get_drop_out_object(..)' when trace lists are investigated.
         # States that do not need to store post contexts, because the input position difference can
         # be derived from the transition number are not considered.
         self.__store_constellation_db = defaultdict(set)
-        for state_index, acceptance_trace_list in acceptance_db.iteritems():
+        for state_index, trace_list in trace_db.iteritems():
             state = self.__state_db[state_index]
             # acceptance_trace_list: 
             # Trace objects for each path that guides through state.
-            state.drop_out = self.get_drop_out_object(state, acceptance_trace_list)
+            state.drop_out = self.get_drop_out_object(state, trace_list)
 
         # What post-contexts are stored in what position register. The following analyzis
         # may spare some space for position registers as well as some unnecessary multiple
         # storage of positions.
         self.__position_register_map = position_register_map.do(self)
 
+    @property
+    def trace_db(self): return self.__trace_db
     @property
     def state_db(self):              return self.__state_db
     @property
@@ -143,6 +149,17 @@ class Analyzer:
     def state_machine_id(self):      return self.__state_machine_id
     @property
     def engine_type(self):           return self.__engine_type
+    @property
+    def from_db(self):
+        """Determines the predecessor of each state, i.e. by
+
+             .predecessor_db[state_index] a list of states is returned that enter
+                                          the state of 'state_index'.
+        """
+        return self.__from_db
+    @property
+    def acceptance_state_index_list(self):
+        return self.__acceptance_state_index_list
 
     def get_drop_out_object(self, state, TheTraceList):
         """This class computes a 'DropOut' object, i.e. some data that tells
@@ -210,7 +227,7 @@ class Analyzer:
 
             # Triggering states need to store acceptance as soon as they are entered
             for trace in TheTraceList:
-                for element in trace:
+                for element in trace.acceptance_db.itervalues():
                     accepting_state = self.__state_db[element.accepting_state_index]
                     accepting_state.entry.doors_accept(element.pattern_id, element.pre_context_id)
 
@@ -218,8 +235,7 @@ class Analyzer:
         for pattern_id, info in self.analyze_positioning(TheTraceList).iteritems():
             assert pattern_id != E_AcceptanceIDs.VOID
             terminal_router.append(DropOut_TerminalRouterElement(pattern_id, 
-                                                                 info.transition_n_since_positioning, 
-                                                                 info.post_context_id))
+                                                                 info.transition_n_since_positioning))
 
             # If the positioning is all determined, then no 'triggering' state
             # needs to be informed.
@@ -227,7 +243,7 @@ class Analyzer:
     
             # Register the states that store a certain post context. This is only needed
             # later when equivalent storing states are identified.
-            self.__store_constellation_db[info.post_context_id].update(info.positioning_state_index_set)
+            self.__store_constellation_db[pattern_id].update(info.positioning_state_index_set)
 
             # Pattern 'Failure' is always associated with the init state and the
             # positioning is uniformly 'lexeme_start_p + 1' (and never undefined, i.e. None).
@@ -246,7 +262,9 @@ class Analyzer:
                     if target_index == pos_state_index: continue
                     entry = self.__state_db[target_index].entry
                     # from state: pos_state_index (the state before)
-                    entry.doors_store(pos_state_index, PostContextID=info.post_context_id, PreContextID=info.pre_context_id)
+                    entry.doors_store(pos_state_index, \
+                                      PreContextID     = info.pre_context_id, \
+                                      PositionRegister = pattern_id)
 
         # Clean Up the acceptance_checker and the terminal_router:
         # (1) there is no check after the unconditional acceptance
@@ -292,18 +310,15 @@ class Analyzer:
         """
         class PositioningInfo(object):
             __slots__ = ("transition_n_since_positioning", 
-                         "post_context_id", 
                          "pre_context_id", 
                          "positioning_state_index_set")
             def __init__(self, TraceElement):
                 self.transition_n_since_positioning = TraceElement.transition_n_since_positioning
-                self.post_context_id                = TraceElement.post_context_id
                 self.positioning_state_index_set    = set([ TraceElement.positioning_state_index ])
                 self.pre_context_id                 = TraceElement.pre_context_id
 
             def __repr__(self):
                 txt  = ".transition_n_since_positioning = %s\n" % repr(self.transition_n_since_positioning)
-                txt += ".post_context_id                = %s\n" % repr(self.post_context_id)                
                 txt += ".positioning_state_index_set    = %s\n" % repr(self.positioning_state_index_set) 
                 txt += ".pre_context_id                 = %s\n" % repr(self.pre_context_id) 
                 return txt
@@ -313,14 +328,11 @@ class Analyzer:
         # -- one element has undetermined positioning, 
         # => then the acceptance relates to undetermined positioning.
         for trace in TheTraceList:
-            for element in trace:
+            for element in trace.acceptance_db.itervalues():
                 prototype = trace_by_pattern_id.get(element.pattern_id)
                 if prototype is None:
                     trace_by_pattern_id[element.pattern_id] = PositioningInfo(element)
                     continue
-                # Acceptance-IDs and their Post-Contexts are related 1:1
-                # (Their is no post-contexted 'FAILURE')
-                assert prototype.post_context_id == element.post_context_id
 
                 prototype.positioning_state_index_set.add(element.positioning_state_index)
 
@@ -405,15 +417,6 @@ class Analyzer:
             if entry.has_accepter(): return True
         return False
 
-    @property
-    def from_db(self):
-        """Determines the predecessor of each state, i.e. by
-
-             .predecessor_db[state_index] a list of states is returned that enter
-                                          the state of 'state_index'.
-        """
-        return self.__from_db
-
     def _get_equivalent_post_context_id_sets(self):
         """Determine sets of equivalent post context ids, because they
            store the input positions at the exactly same set of states.
@@ -423,8 +426,8 @@ class Analyzer:
         #     set of states where the positions are stored --> post context ids that do so
         #
         inverse_db = defaultdict(set)
-        for post_context_id, storing_state_set in self.__store_constellation_db.iteritems():
-            inverse_db[tuple(sorted(storing_state_set))].add(post_context_id)
+        for pattern_id, storing_state_set in self.__store_constellation_db.iteritems():
+            inverse_db[tuple(sorted(storing_state_set))].add(pattern_id)
 
         # The grouped post context ids are the set of equivalent post context ids
         # NOTE: An equivalent set of size < 2 does not make any statement.
@@ -606,17 +609,17 @@ class BASE_Entry(object):
 #    same position register. The actions which can be combined then can be 
 #    easily detected, if no pre-context is considered.
 class EntryAction_StoreInputPosition(object):
-    __slots__ = ["pre_context_id", "post_context_id"]
-    def __init__(self, PreContextID, PostContextID):
-        self.pre_context_id  = PreContextID
-        self.post_context_id = PostContextID
+    __slots__ = ["pre_context_id", "position_register"]
+    def __init__(self, PreContextID, PositionRegister):
+        self.pre_context_id    = PreContextID
+        self.position_register = PositionRegister
     # Require '__hash__' and '__eq__' to be element of a set.
     def __hash__(self):
         return 1
     def __eq__(self, Other):
         if not isinstance(Other, EntryAction_StoreInputPosition): return False
-        return     self.pre_context_id  == Other.pre_context_id \
-               and self.post_context_id == Other.post_context_id
+        return     self.pre_context_id    == Other.pre_context_id \
+               and self.position_register == Other.position_register
 
 # EntryAction_AcceptPattern:
 # 
@@ -742,10 +745,10 @@ class Entry(BASE_Entry):
 
        MEMBERS:
 
-          .positioner_db[from_state_index] = (post_context_id, pre_context_id_set)
+          .positioner_db[from_state_index] = (pattern_id, pre_context_id_set)
   
           When the state is entered via 'from_state_index' and one of the pre-contexts
-          in the 'pre_context_id_set' is fullfilled, then the position of 'post_context_id'
+          in the 'pre_context_id_set' is fullfilled, then the position of 'pattern_id'
           must be stored.
     """
     __slots__ = ("__uniform_doors_f", "__doors_db")
@@ -765,10 +768,10 @@ class Entry(BASE_Entry):
         for door in self.__doors_db.itervalues():
             door.add(EntryAction_AcceptPattern(PreContextID, PatternID))
 
-    def doors_store(self, FromStateIndex, PostContextID, PreContextID):
+    def doors_store(self, FromStateIndex, PreContextID, PositionRegister):
         # Add 'store input position' to specific door. See 'EntryAction_StoreInputPosition'
         # comment for the reason why we do not store pre-context-id.
-        entry = EntryAction_StoreInputPosition(PreContextID, PostContextID)
+        entry = EntryAction_StoreInputPosition(PreContextID, PositionRegister)
         self.__doors_db[FromStateIndex].add(entry)
 
     def door_number(self):
@@ -829,12 +832,8 @@ class Entry(BASE_Entry):
         
                    from_state_index  -->   Positioner
  
-           where Positioner is a dictionary that maps:
-
-                   post_context_id --> list of pre-context-ids that trigger it 
-
-           Note, that 'PostContextID==None' (Normal Acceptance) can have multiple
-           pre-context ids related to it.
+           where Positioner is a list of actions to be taken when the state is entered
+           from the given 'from_state_index'.
         """
         return self.__doors_db
 
@@ -924,7 +923,7 @@ class Entry(BASE_Entry):
                 if not isinstance(action, EntryAction_StoreInputPosition):
                     new_door.add(action)
                 else:
-                    new_door.add(EntryAction_StoreInputPosition(action.pre_context_id, PositionRegisterMap[action.post_context_id]))
+                    new_door.add(EntryAction_StoreInputPosition(action.pre_context_id, PositionRegisterMap[action.position_register]))
             self.__doors_db[from_state_index] = new_door
 
         # (*) If a door stores the input position in register unconditionally,
@@ -936,7 +935,7 @@ class Entry(BASE_Entry):
                                   and x.pre_context_id == E_PreContextIDs.NONE):
                 for x in list(x for x in door \
                              if isinstance(x, EntryAction_StoreInputPosition)):
-                    if x.post_context_id == action.post_context_id and x.pre_context_id != E_PreContextIDs.NONE:
+                    if x.position_register == action.position_register and x.pre_context_id != E_PreContextIDs.NONE:
                         door.remove(x)
 
         # (*) Check whether state entries are independent_of_source_state
@@ -967,7 +966,7 @@ class Entry(BASE_Entry):
             if from_state_index == E_StateIndices.NONE: continue
             ptxt.append("        .from %s:" % repr(from_state_index).replace("L", ""))
             positioner_action_list = [action for action in door if isinstance(action, EntryAction_StoreInputPosition)]
-            positioner_action_list.sort(key=lambda x: (x.pre_context_id, x.post_context_id))
+            positioner_action_list.sort(key=lambda x: (x.pre_context_id, x.position_register))
             if   len(positioner_action_list) == 0: 
                 content = " <nothing>\n"
             else:
@@ -975,7 +974,7 @@ class Entry(BASE_Entry):
                 for action in positioner_action_list:
                     if action.pre_context_id != E_PreContextIDs.NONE:
                         content += " if '%s': " % repr_pre_context_id(action.pre_context_id)
-                    content += " %s = input_p;\n" % repr_position_register(action.post_context_id)
+                    content += " %s = input_p;\n" % repr_position_register(action.position_register)
             if content.count("\n") != 1: 
                 ptxt.append("\n")
                 content = "            " + content[:-1].replace("\n", "\n            ") + "\n"
@@ -1125,7 +1124,7 @@ class DropOut(object):
     def finish(self, PositionRegisterMap):
         for element in self.terminal_router:
             if element.positioning is not E_TransitionN.VOID: continue
-            element.post_context_id = PositionRegisterMap[element.post_context_id]
+            element.position_register = PositionRegisterMap[element.position_register]
 
     def trivialize(self):
         """If there is only one acceptance involved and no pre-context,
@@ -1173,13 +1172,13 @@ class DropOut(object):
                 for easy in info:
                     if easy[0].pre_context_id == E_PreContextIDs.NONE:
                         txt.append("    %s goto %s;\n" % \
-                                   (repr_positioning(easy[1].positioning, easy[1].post_context_id),
+                                   (repr_positioning(easy[1].positioning, easy[1].position_register),
                                     repr_acceptance_id(easy[1].acceptance_id)))
                     else:
                         txt.append("    %s %s: %s goto %s;\n" % \
                                    (if_str,
                                     repr_pre_context_id(easy[0].pre_context_id),
-                                    repr_positioning(easy[1].positioning, easy[1].post_context_id),
+                                    repr_positioning(easy[1].positioning, easy[1].position_register),
                                     repr_acceptance_id(easy[1].acceptance_id)))
                         if_str = "else if"
                 return "".join(txt)
@@ -1279,39 +1278,22 @@ class DropOut_TerminalRouterElement(object):
                          == None --> restore from position register
                                      (Case of 'failure'. This info is actually redundant.)
                          == -1   --> (Failure) position = lexeme_start_p + 1
-                         
-        .post_context_id  Registered where the position to be restored is located.
-
-                         == None  --> Nothing (no position is to be stored.)
-                                      Case: 'positioning != 1'
-                         == -1    --> acceptance without post-context
-                         >= 0     --> acceptance with post-context given as integer
     """
-    __slots__ = ("acceptance_id", "positioning", "post_context_id")
+    __slots__ = ("acceptance_id", "positioning", "position_register")
 
-    def __init__(self, AcceptanceID, TransitionNSincePositioning, PostContextID):
+    def __init__(self, AcceptanceID, TransitionNSincePositioning):
         assert    isinstance(TransitionNSincePositioning, (int, long)) \
                or TransitionNSincePositioning in E_TransitionN
-        assert    isinstance(PostContextID, (int, long)) \
-               or PostContextID in E_PostContextIDs
 
-        #if    AcceptanceID == E_AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK      \
-        #   or AcceptanceID == E_AcceptanceIDs.TERMINAL_BACKWARD_INPUT_POSITION: 
-        #    assert TransitionNSincePositioning == E_TransitionN.VOID
-        #else:   
-        #    assert TransitionNSincePositioning != E_TransitionN.VOID
-        #if TransitionNSincePositioning == E_TransitionN.VOID:                                 
-        #    assert PostContextID != E_PostContextIDs.NONE
-
-        self.acceptance_id   = AcceptanceID
-        self.positioning     = TransitionNSincePositioning
-        self.post_context_id = PostContextID
+        self.acceptance_id     = AcceptanceID
+        self.positioning       = TransitionNSincePositioning
+        self.position_register = AcceptanceID                 # May later be adapted.
 
     def is_equal(self, Other):
         """Explictly avoid default usage of '__eq__'"""
-        return     self.acceptance_id   == Other.acceptance_id   \
-               and self.positioning     == Other.positioning     \
-               and self.post_context_id == Other.post_context_id
+        return     self.acceptance_id     == Other.acceptance_id   \
+               and self.positioning       == Other.positioning     \
+               and self.position_register == Other.position_register
 
     def __repr__(self):
         if self.acceptance_id == E_AcceptanceIDs.FAILURE: assert self.positioning == E_TransitionN.LEXEME_START_PLUS_ONE
@@ -1319,7 +1301,7 @@ class DropOut_TerminalRouterElement(object):
 
         if self.positioning != 0:
             return "case %s: %s goto %s;" % (repr_acceptance_id(self.acceptance_id, PatternStrF=False),
-                                             repr_positioning(self.positioning, self.post_context_id), 
+                                             repr_positioning(self.positioning, self.position_register), 
                                              repr_acceptance_id(self.acceptance_id))
         else:
             return "case %s: goto %s;" % (repr_acceptance_id(self.acceptance_id, PatternStrF=False),
@@ -1332,8 +1314,7 @@ class DropOutBackward(DropOut):
         self.acceptance_checker.append(DropOut_AcceptanceCheckerElement(E_PreContextIDs.NONE, 
                                                                         E_AcceptanceIDs.VOID))
         self.terminal_router.append(DropOut_TerminalRouterElement(E_AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK, 
-                                                                  E_TransitionN.IRRELEVANT, 
-                                                                  E_PostContextIDs.IRRELEVANT))
+                                                                  E_TransitionN.IRRELEVANT))
 
 class DropOutBackwardInputPositionDetection(object):
     __slots__ = ("__reachable_f")

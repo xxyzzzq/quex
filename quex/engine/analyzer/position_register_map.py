@@ -1,4 +1,6 @@
+from quex.blackboard import E_TransitionN, E_AcceptanceIDs
 from itertools   import ifilter, islice
+from collections import defaultdict
 
 def do(analyzer):
     """RETURNS: 
@@ -28,8 +30,10 @@ def do(analyzer):
            (1) the path from store to restore does not intersect, or
 
            (2) they store their positions in exactly the same states.
-       
-       For example:                   . b .
+
+       A more general and conclusive condition will be derived later. Now,
+       consider the following example:
+                                      . b .
                                      /     \ 
                                      \     /
                 .-- a -->( 1 )-- b -->( 2 )-- c -->((3))
@@ -40,42 +44,55 @@ def do(analyzer):
                              \                     /
                               '-------- e --------'
 
-       The input position needs to be stored for post context 47 in state 1
-       and for post context 11 in state 4. Since the paths of the post contexts
-       do not cross it is actually not necessary to have to separate
-       array registers. One for post context 47 and 11 is enough.
+       The input position needs to be stored for post context 47 in state 1 and
+       for post context 11 in state 4. Since the paths of the post contexts do
+       not cross it is actually not necessary to have to separate array
+       registers. One register for post context 47 and 11 is enough.  Reducing
+       position registers saves space, but moreover, it may spare the
+       computation time to store redundant input positions.
 
-       This present function determines what post contexts (together with the
-       'acceptance position register) can share a single register/array
-       location. As a result it delivers a mapping from post context id to
-       an array index in a position storage array. 
+       .-------------------------------------------------------------------------.
+       | CONDITION:                                                              |
+       |                                                                         |
+       | Let 'A' be a state that restores the input position from register 'x'.  |
+       | If 'B' be the last state on a trace to 'A' where the position is stored |
+       | in 'x'. If another state 'C' stores the input position in register 'y'  |
+       | and comes **AFTER** 'B' on the trace, then 'x' and 'y' cannot be the    |
+       | same.                                                                   |
+       '-------------------------------------------------------------------------'
     """
+    # Database that maps for each state with post context id with which post context id
+    # it cannot be combined.
+    cannot_db = defaultdict(set)
+
+    def cannot_db_update(db, Trace):
+        """According to the CONDITION mentioned in the entry, it determined 
+           what post contexts cannot be combined for the given trace list.
+           Note, that FAILURE never needs a position register. After FAILURE, 
+           the position is set to lexeme start plus one.
+        """
+        entry_list = [x for x in trace.acceptance_db.itervalues() \
+                        if     x.transition_n_since_positioning is E_TransitionN.VOID \
+                           and x.pattern_id is not E_AcceptanceIDs.FAILURE]
+        for i, x in enumerate(entry_list):
+            db[x.pattern_id].add(x.pattern_id)
+            for y in entry_list[i+1:]:
+                if x.positioning_state_index == y.positioning_state_index: continue
+                db[x.pattern_id].add(y.pattern_id)
+                db[y.pattern_id].add(x.pattern_id)
+
+    for state_index, trace_list in analyzer.trace_db.iteritems():
+        for trace in trace_list:
+            cannot_db_update(cannot_db, trace)
+
+    all_post_context_id_list = set(cannot_db.iterkeys())
+
+    combinable_db = dict((pattern_id, all_post_context_id_list.difference(cannot_set))
+                         for pattern_id, cannot_set in cannot_db.iteritems())
+
     # IMPORTANT: When we talk about 'post_context' this includes the 
     #            last acceptance position. Indeed, the last acceptance
     #            position is coded as 'E_PostContextIDs.NONE'.
-
-    # (1) Determine: -- Set of all present post-context-ids that are related to store/restore.
-    #                -- Sets of post_context_ids that store their positions in exactly the
-    #                   same states.
-    all_post_context_id_set, \
-    equivalent_sets          = analyzer._get_equivalent_post_context_id_sets()
-
-    # (2) Determine: Sets of post context ids, where the paths from storage
-    #                of input position and restore of input position does 
-    #                not interact.
-    combinable_list = find_non_intersecting_post_context_id_groups(all_post_context_id_set, analyzer)
-
-    # (*) To each non-intersecting state set on can add the equivalent 
-    #     post-context-ids.
-    for candidate in combinable_list:
-        for equivalent in ifilter(lambda x : not x.isdisjoint(candidate), equivalent_sets):
-            candidate.update(equivalent)
-
-    # -- Make sure, that each post-context-id is at least considered, even though,
-    #    it may not appear in the combinable set.
-    combinable_list.extend(set([x]) for x in all_post_context_id_set)
-    # -- Make sure, that all equivalent sets appear
-    combinable_list.extend(equivalent_sets)
 
     result      = {}
     array_index = 0
@@ -105,30 +122,4 @@ def do(analyzer):
             else:                            p += 1
 
     return result
-
-def find_non_intersecting_post_context_id_groups(AllPostContextID_List, analyzer):
-    """Determine groups of post-context-ids where the path from store input 
-       position to restore input position does not intersect.
-    """
-    StateSetDB = analyzer._find_state_sets_from_store_to_restore()
-
-    result = []
-    for i, post_context_id in enumerate(AllPostContextID_List):
-        non_intersecting_group = set([post_context_id])
-        state_set              = StateSetDB[post_context_id]
-        for other_post_context_id in islice(AllPostContextID_List, i + 1, None):
-            other_state_set = StateSetDB[other_post_context_id]
-            if state_set.isdisjoint(other_state_set):
-                non_intersecting_group.add(other_post_context_id)
-        if len(non_intersecting_group) > 1:
-            if non_intersecting_group not in result:
-                result.append(non_intersecting_group)
-
-    # NOTE: A non-intersecting set of size < 2 does not make any statement.
-    #       At least, there must be two elements, so that this means 'A is 
-    #       equivalent to B'. Thus, filter anything of size < 2.
-    ##print "##", result
-    return result
-            
-
 

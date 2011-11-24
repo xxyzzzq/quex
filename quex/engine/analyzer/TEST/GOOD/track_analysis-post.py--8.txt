@@ -96,3 +96,53 @@ State 6:
     pos = position[PostContext_17] ; goto Pattern17;
 
 
+
+--- Optimized States ---
+
+State 2:
+  .entry:
+    .accepter:
+        last_acceptance = Pattern8
+    .positioner:
+        .from 1: position[PostContext_0]  = input_p;
+        .from 2: <nothing>
+  .drop_out:
+    pos = position[PostContext_0] ; goto Pattern8;
+
+
+State 3:
+  .entry:
+    .positioner:
+        .from 2: <nothing>
+        .from 6: <nothing>
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case 8: pos = position[PostContext_0] ; goto Pattern8;
+        case 17: pos = position[PostContext_0] ; goto Pattern17;
+
+
+State 4:
+  .entry:
+    .positioner:
+        .from 3: <nothing>
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case 8: pos = position[PostContext_0] ; goto Pattern8;
+        case 17: pos = position[PostContext_0] ; goto Pattern17;
+
+
+State 6:
+  .entry:
+    .accepter:
+        last_acceptance = Pattern17
+    .positioner:
+        .from 1: position[PostContext_0]  = input_p;
+        .from 6: <nothing>
+  .drop_out:
+    pos = position[PostContext_0] ; goto Pattern17;
+
+

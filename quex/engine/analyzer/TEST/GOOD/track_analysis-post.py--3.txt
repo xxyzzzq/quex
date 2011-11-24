@@ -56,3 +56,31 @@ State 4:
     pos = position[PostContext_23] ; goto Pattern23;
 
 
+
+--- Optimized States ---
+
+State 2:
+  .entry:
+    .positioner:
+        .from 1: position[PostContext_0]  = input_p;
+        .from 2: <nothing>
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 3:
+  .entry:
+    .positioner:
+        .from 2: <nothing>
+  .drop_out:
+    pos = position[PostContext_0] ; goto Pattern11;
+
+
+State 4:
+  .entry:
+    .positioner:
+        .from 2: <nothing>
+  .drop_out:
+    pos = position[PostContext_0] ; goto Pattern23;
+
+

@@ -47,7 +47,7 @@ State 2:
         accept = last_acceptance
     Router:
         case 4: pos -= 1;  goto Pattern4;
-        case 6: pos = position[Acceptance]; goto Pattern6;
+        case 6: pos = position[PostContext_6] ; goto Pattern6;
 
 
 State 3:
@@ -71,9 +71,34 @@ State 4:
 State 5:
   .entry:
     .positioner:
-        .from 4: position[Acceptance] = input_p;
+        .from 4: position[PostContext_6]  = input_p;
         .from 5: <nothing>
   .drop_out:
-    pos = position[Acceptance]; goto Pattern6;
+    pos = position[PostContext_6] ; goto Pattern6;
+
+
+
+--- Optimized States ---
+
+State 2:
+  .entry:
+    .positioner:
+        .from 1: <nothing>
+        .from 5: <nothing>
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case 4: pos -= 1;  goto Pattern4;
+        case 6: pos = position[PostContext_0] ; goto Pattern6;
+
+
+State 5:
+  .entry:
+    .positioner:
+        .from 4: position[PostContext_0]  = input_p;
+        .from 5: <nothing>
+  .drop_out:
+    pos = position[PostContext_0] ; goto Pattern6;
 
 
