@@ -43,9 +43,9 @@ State 2:
   .entry:
     .positioner:
         .from 1:
-             position[Acceptance] = input_p;
              position[PostContext_18]  = input_p;
-             if 'PreContext_6':  position[Acceptance] = input_p;
+             position[PostContext_35]  = input_p;
+             if 'PreContext_6':  position[PostContext_3]  = input_p;
   .drop_out:
     if PreContext_6: pos -= 1;  goto Pattern3;
     pos -= 1;  goto Pattern35;
@@ -57,8 +57,8 @@ State 3:
         .from 2: <nothing>
         .from 3: <nothing>
   .drop_out:
-    if PreContext_6: pos = position[Acceptance]; goto Pattern3;
-    pos = position[Acceptance]; goto Pattern35;
+    if PreContext_6: pos = position[PostContext_3] ; goto Pattern3;
+    pos = position[PostContext_35] ; goto Pattern35;
 
 
 State 4:
@@ -91,5 +91,35 @@ State 7:
         .from 6: <nothing>
   .drop_out:
     pos -= 4;  goto Pattern33;
+
+
+
+--- Optimized States ---
+
+State 2:
+  .entry:
+    .positioner:
+        .from 1: position[PostContext_0]  = input_p;
+  .drop_out:
+    if PreContext_6: pos -= 1;  goto Pattern3;
+    pos -= 1;  goto Pattern35;
+
+
+State 3:
+  .entry:
+    .positioner:
+        .from 2: <nothing>
+        .from 3: <nothing>
+  .drop_out:
+    if PreContext_6: pos = position[PostContext_0] ; goto Pattern3;
+    pos = position[PostContext_0] ; goto Pattern35;
+
+
+State 4:
+  .entry:
+    .positioner:
+        .from 3: <nothing>
+  .drop_out:
+    pos = position[PostContext_0] ; goto Pattern18;
 
 

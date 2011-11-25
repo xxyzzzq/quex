@@ -116,7 +116,16 @@ class Analyzer:
             # accomplished inside the constructor of 'AnalyzerState'. No positions
             # need to be stored and restored.
             self.__position_register_map = None
+            self.__position_info_db      = None
             return
+
+        # Positioning info:
+        #
+        # map:  (state_index) --> (pattern_id) --> positioning info
+        #
+        self.__position_info_db = {}
+        for state_index, trace_list in trace_db.iteritems():
+            self.__position_info_db[state_index] = self.analyze_positioning(trace_list)
 
         # Store Constellation Database:
         #
@@ -160,6 +169,8 @@ class Analyzer:
     @property
     def acceptance_state_index_list(self):
         return self.__acceptance_state_index_list
+    @property
+    def position_info_db(self): return self.__position_info_db
 
     def get_drop_out_object(self, state, TheTraceList):
         """This class computes a 'DropOut' object, i.e. some data that tells
@@ -232,7 +243,7 @@ class Analyzer:
                     accepting_state.entry.doors_accept(element.pattern_id, element.pre_context_id)
 
         # Terminal Router
-        for pattern_id, info in self.analyze_positioning(TheTraceList).iteritems():
+        for pattern_id, info in self.__position_info_db[state.index].iteritems():
             assert pattern_id != E_AcceptanceIDs.VOID
             terminal_router.append(DropOut_TerminalRouterElement(pattern_id, 
                                                                  info.transition_n_since_positioning))
@@ -323,15 +334,15 @@ class Analyzer:
                 txt += ".pre_context_id                 = %s\n" % repr(self.pre_context_id) 
                 return txt
 
-        trace_by_pattern_id = {}
+        positioning_info_by_pattern_id = {}
         # -- If the positioning differs for one element in the trace list, or 
         # -- one element has undetermined positioning, 
         # => then the acceptance relates to undetermined positioning.
         for trace in TheTraceList:
             for element in trace.acceptance_db.itervalues():
-                prototype = trace_by_pattern_id.get(element.pattern_id)
+                prototype = positioning_info_by_pattern_id.get(element.pattern_id)
                 if prototype is None:
-                    trace_by_pattern_id[element.pattern_id] = PositioningInfo(element)
+                    positioning_info_by_pattern_id[element.pattern_id] = PositioningInfo(element)
                     continue
 
                 prototype.positioning_state_index_set.add(element.positioning_state_index)
@@ -339,7 +350,7 @@ class Analyzer:
                 if prototype.transition_n_since_positioning != element.transition_n_since_positioning:
                     prototype.transition_n_since_positioning = E_TransitionN.VOID
 
-        return trace_by_pattern_id
+        return positioning_info_by_pattern_id
 
     def analyze_acceptance_uniformity(self, TheTraceList):
         """Acceptance Uniformity:

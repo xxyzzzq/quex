@@ -53,7 +53,7 @@ State 2:
         accept = last_acceptance
     Router:
         case Failure: pos = lexeme_start_p + 1;  goto Failure;
-        case 13: pos = position[Acceptance]; goto Pattern13;
+        case 13: pos = position[PostContext_0] ; goto Pattern13;
         case 6: pos -= 1;  goto Pattern6;
 
 

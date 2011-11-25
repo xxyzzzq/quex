@@ -1,9 +1,9 @@
-<test-database execution-time-sec="0.55" date="Tue Nov 22 23:25:30 2011">
+<test-database execution-time-sec="0.54" date="Thu Nov 24 23:14:52 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Enums -- Functionality Test" time-sum-sec="0.05"> 
+    <test title="Enums -- Functionality Test" time-sum-sec="0.04"> 
         <application file-name="enum.py" info-request-time="1318614209L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.05" crc="-1245922459"/>
+           <choice name="" result="OK" time_sec="0.04" crc="-1245922459"/>
         </choice-list>
     </test>
     <group name="File Input">
@@ -13,10 +13,10 @@
                <choice name="" result="OK" time_sec="0.05" crc="1489533151"/>
             </choice-list>
         </test>
-        <test title="Function delete_comment(...)" time-sum-sec="0.07"> 
+        <test title="Function delete_comment(...)" time-sum-sec="0.06"> 
             <application file-name="test-delete_comment.py" info-request-time="1318614209L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.07" crc="1761513741"/>
+               <choice name="" result="OK" time_sec="0.06" crc="1761513741"/>
             </choice-list>
         </test>
         <test title="Function extract_identifiers_with_specific_prefix(...)" time-sum-sec="0.05"> 
