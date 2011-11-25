@@ -77,7 +77,7 @@ state_machine_list = map(lambda x: regex.do(x, {}).sm, pattern_list)
 sm                 = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
 sm                 = sm.normalized_clone()
 
-#print "##", sm
+# print "##", sm
 
 # For DEBUG purposes: specify 'DRAW' on command line (in sys.argv)
 help.if_DRAW_in_sys_argv(sm)

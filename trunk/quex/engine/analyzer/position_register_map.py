@@ -61,39 +61,84 @@ def do(analyzer):
        | same.                                                                   |
        '-------------------------------------------------------------------------'
     """
+    cannot_db       = get_cannot_db(analyzer)
+    combinable_list = get_combinable_candidates(cannot_db)
+
+    return get_mapping(combinable_list)
+
+def get_cannot_db(analyzer):
+    """Determine for each position register (identified by pattern_id) the set of 
+       position register. The condition for this is given at the entrance of this file.
+
+       RETURNS:   
+       
+           map:  
+                 pattern_id --> list of pattern_ids that it cannot be combined with.
+    """
     # Database that maps for each state with post context id with which post context id
     # it cannot be combined.
     cannot_db = defaultdict(set)
 
-    def cannot_db_update(db, Trace):
+    def cannot_db_update(db, PositionInfo):
         """According to the CONDITION mentioned in the entry, it determined 
            what post contexts cannot be combined for the given trace list.
            Note, that FAILURE never needs a position register. After FAILURE, 
            the position is set to lexeme start plus one.
         """
-        entry_list = [x for x in trace.acceptance_db.itervalues() \
-                        if     x.transition_n_since_positioning is E_TransitionN.VOID \
-                           and x.pattern_id is not E_AcceptanceIDs.FAILURE]
-        for i, x in enumerate(entry_list):
-            db[x.pattern_id].add(x.pattern_id)
-            for y in entry_list[i+1:]:
-                if x.positioning_state_index == y.positioning_state_index: continue
-                db[x.pattern_id].add(y.pattern_id)
-                db[y.pattern_id].add(x.pattern_id)
+        entry_list = [(pattern_id, x) for pattern_id, x in PositionInfo.iteritems() \
+                        if     x.transition_n_since_positioning == E_TransitionN.VOID \
+                           and pattern_id                       != E_AcceptanceIDs.FAILURE]
 
-    for state_index, trace_list in analyzer.trace_db.iteritems():
-        for trace in trace_list:
-            cannot_db_update(cannot_db, trace)
+        for i, x in enumerate(entry_list):
+            x_pattern_id, x_info = x
+            # Make sure, that any such register has at least one entry
+            if not db.has_key(x_pattern_id): db[x_pattern_id] = set()
+            for y_pattern_id, y_info in entry_list[i+1:]:
+                # If the positioning state differs, and we need to restore here, 
+                # then the position register cannot be shared.
+                if x_info.positioning_state_index_set == y_info.positioning_state_index_set: continue
+                # Note, that in particular if x == y, it is left out of consideration
+                db[x_pattern_id].add(y_pattern_id)
+                db[y_pattern_id].add(x_pattern_id)
+
+    for state_index, position_info in analyzer.position_info_db.iteritems():
+        cannot_db_update(cannot_db, position_info)
+
+    return cannot_db
+
+def get_combinable_candidates(cannot_db):
+    """Determine sets of combinations that are allowed.
+    """
 
     all_post_context_id_list = set(cannot_db.iterkeys())
 
-    combinable_db = dict((pattern_id, all_post_context_id_list.difference(cannot_set))
-                         for pattern_id, cannot_set in cannot_db.iteritems())
+    combinable_list = []
+    for pattern_id, cannot_set in cannot_db.iteritems():
+        candidate_list = list(all_post_context_id_list.difference(cannot_set))
+        assert pattern_id in candidate_list
 
-    # IMPORTANT: When we talk about 'post_context' this includes the 
-    #            last acceptance position. Indeed, the last acceptance
-    #            position is coded as 'E_PostContextIDs.NONE'.
+        # Delete all candidates that cannot be be combined with the remainder
+        # Consider those patterns first that have the largest set of 'cannot-s'.
+        candidate_list.sort(key=lambda x: -len(cannot_db[x]))
+        i    = 0
+        size = len(candidate_list)
+        while i < size:
+            candidate  = candidate_list[i]
+            cannot_set = cannot_db[candidate]
+            if candidate == pattern_id or cannot_set.isdisjoint(candidate_list):
+                i += 1
+            else:
+                del candidate_list[i]
+                size -= 1
 
+        combinable_list.append(set(candidate_list))
+
+    return combinable_list
+
+def get_mapping(combinable_list):
+    """Determine the mapping from pattern_id to the register id that can be used
+       to index into an array.
+    """
     result      = {}
     array_index = 0
     while len(combinable_list) != 0:
@@ -101,11 +146,8 @@ def do(analyzer):
         k           = max(enumerate(combinable_list), key=lambda x: len(x[1]))[0]
         combination = combinable_list.pop(k)
 
-        for post_context_id in combination:
-            result[post_context_id] = array_index
-            # Delete the post_context_id from all combinable sets, because it is done.
-            for combination in combinable_list:
-                combination.discard(post_context_id)
+        for pattern_id in (x for x in combination if not result.has_key(x)):
+            result[pattern_id] = array_index
 
         # Since: -- The combinations only contain post_context_id's that have not been
         #           mentioned before, and

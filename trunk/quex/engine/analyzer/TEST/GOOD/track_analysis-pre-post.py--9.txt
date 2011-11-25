@@ -102,7 +102,7 @@ State 6:
         .from 4: if 'PreContext_13':  position[PostContext_10]  = input_p;
         .from 5: <nothing>
   .drop_out:
-    if PreContext_13: pos = position[Acceptance]; goto Pattern10;
+    if PreContext_13: pos = position[PostContext_10] ; goto Pattern10;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
