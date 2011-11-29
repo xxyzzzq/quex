@@ -12,7 +12,7 @@ import help
 
 if "--hwut-info" in sys.argv:
     print "Track Analyzis: With Pre-Contexts;"
-    print "CHOICES: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11;"
+    print "CHOICES: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12;"
     sys.exit()
 
 if "0" in sys.argv:
@@ -90,6 +90,18 @@ elif "11" in sys.argv:
         '1/(a|bb?c?)de/',
         '2/(a|bb?c?)de/',
     ]
+elif "12" in sys.argv:
+    pattern_list = [
+        '0/abc/',
+        '1/abcd+e/',
+        '2/abc/',
+        '3/abcd+e/',
+        '4/abc/',
+        '5/abcd+e/',
+        'a',
+        'abc',
+        'abcd+ef+g',
+    ]
 else:
     assert False
 
@@ -101,6 +113,8 @@ sm  = sm.normalized_clone()
 
 # For DEBUG purposes: specify 'DRAW' on command line
 help.if_DRAW_in_sys_argv(sm)
+help.test(sm, PrintPRM_F=True)
+sys.exit()
 
 print sm.get_string(NormalizeF=False)
 

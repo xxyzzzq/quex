@@ -44,3 +44,18 @@ State 3:
     pos -= 2;  goto Pattern1;
 
 
+State 0:
+        [FAILURE]: NONE/set([NONE])
+
+State 1:
+        [      1]: NONE/set([1L])
+
+State 2:
+        [      1]: NONE/set([1L])
+        [     15]: 18/set([2L])
+
+State 3:
+        [      1]: NONE/set([1L])
+        [     15]: 18/set([2L])
+        [     28]: 31/set([3L])
+

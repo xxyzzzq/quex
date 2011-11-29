@@ -312,7 +312,7 @@ class LDB(dict):
         assert type(InitStateForwardF) == bool
         assert type(StateIndex) == long
         if InitStateForwardF: 
-            txt.append("    __quex_debug(\"Init State\");\n")
+            txt.append("    __quex_debug(\"Init State\\n\");\n")
         txt.append("    __quex_debug_state(%i);\n" % StateIndex)
         return 
 

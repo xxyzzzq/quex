@@ -101,3 +101,50 @@ State 7:
     pos -= 1;  goto Pattern20;
 
 
+
+--- Optimized States ---
+
+State 2:
+  .entry:
+    .positioner:
+        .from 1: position[PostContext_0]  = input_p;
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 3:
+  .entry:
+    .accepter:
+        last_acceptance = Pattern11
+    .positioner:
+        .from 2: <nothing>
+        .from 3: <nothing>
+  .drop_out:
+    pos = position[PostContext_0] ; goto Pattern11;
+
+
+State 4:
+  .entry:
+    .positioner:
+        .from 3: <nothing>
+        .from 7: <nothing>
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case 11: pos = position[PostContext_0] ; goto Pattern11;
+        case 20: pos -= 2;  goto Pattern20;
+
+
+State 5:
+  .entry:
+    .positioner:
+        .from 4: <nothing>
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case 11: pos = position[PostContext_0] ; goto Pattern11;
+        case 20: pos -= 3;  goto Pattern20;
+
+

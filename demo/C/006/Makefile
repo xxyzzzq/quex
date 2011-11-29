@@ -10,12 +10,6 @@ endif
 
 include $(QUEX_PATH)/quex/code_base/core.mkd
 
-ifdef ASSERTS_ENABLED_F
-	CCFLAG_ASSERTS=# By default asserts are enabled
-else 
-	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
-endif
-
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
@@ -32,6 +26,7 @@ CC = $(COMPILER) -c \
 	 -Wall -Wconversion -pedantic                    \
 	 $(CCFLAG_ASSERTS)                               \
 	 -DPRINT_TOKEN
+     # -DQUEX_OPTION_DEBUG_SHOW \
      # -DQUEX_OPTION_ASSERTS_DISABLED
      # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
    

@@ -78,7 +78,7 @@ class Analyzer:
         self.__engine_type      = EngineType
 
         # (1) Track Analysis: Get the 'Trace' objects for each state
-        trace_db, successor_db, store_to_restore_path_db = track_analysis.do(SM)
+        trace_db, successor_db = track_analysis.do(SM)
 
         # (*) Acceptance Traces
         self.__trace_db = trace_db
@@ -86,15 +86,6 @@ class Analyzer:
         # (*) Successor Database
         #     Store for each state the set of all possible successor states.
         self.__successor_db = successor_db
-
-        # (*) Store-To-Restore Path DB
-        #     For patterns where the number of characters from input position store
-        #     to restore cannot be determined by the number of state transitions 
-        #     (i.e. loops involved) the path from store to restore is stored here:
-        #     
-        #          map: pattern_id --> paths from store to restore
-        #
-        self.__store_to_restore_path_db = store_to_restore_path_db
 
         # (*) 'From Database'
         #     This is calculated on demand: For each state the list of states
@@ -225,7 +216,7 @@ class Analyzer:
             # (2.2) No Unconditional Acceptance
             #       => past acceptances can be communicated via 'last_acceptance' instead of Failure.
             #          but all current pre-contexts must be checked.
-            acceptance_checker = []
+            #acceptance_checker = []
             for origin in sorted(ifilter(lambda x: x.is_acceptance(), state._origin_list),
                                  key=lambda x: x.pattern_id()):
                 acceptance_checker.append(DropOut_AcceptanceCheckerElement(origin.pre_context_id(),
@@ -427,42 +418,6 @@ class Analyzer:
         for entry in imap(lambda x: x.entry, self.__state_db.itervalues()):
             if entry.has_accepter(): return True
         return False
-
-    def _get_equivalent_post_context_id_sets(self):
-        """Determine sets of equivalent post context ids, because they
-           store the input positions at the exactly same set of states.
-        """
-        # (2) Determine map: 
-        #             
-        #     set of states where the positions are stored --> post context ids that do so
-        #
-        inverse_db = defaultdict(set)
-        for pattern_id, storing_state_set in self.__store_constellation_db.iteritems():
-            inverse_db[tuple(sorted(storing_state_set))].add(pattern_id)
-
-        # The grouped post context ids are the set of equivalent post context ids
-        # NOTE: An equivalent set of size < 2 does not make any statement.
-        #       At least, there must be two elements, so that this means 'A is 
-        #       equivalent to B'. Thus, filter anything of size < 2.
-        return self.__store_constellation_db.keys(), [ x for x in inverse_db.itervalues() if len(x) >= 2 ]
-
-    def _find_state_sets_from_store_to_restore(self):
-        """RETURNS: A mapping:
-
-              post-context id --> set of states that lie on the path from store 
-                                  to restore of the input position.
-        """
-        debug_result = defaultdict(set)
-        for pattern_id, path_list in self.__store_to_restore_path_db.iteritems():
-            assert pattern_id != E_AcceptanceIDs.FAILURE
-            store_state_set = self.__store_constellation_db[pattern_id]
-            for path in path_list:
-                # Walk along the path until you find the place where things are stored
-                for i, state_index in enumerate(path):
-                    if state_index not in store_state_set: continue
-                    debug_result[pattern_id].update(path[i:])
-                    break
-        return debug_result
 
     def __iter__(self):
         for x in self.__state_db.values():

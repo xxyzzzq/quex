@@ -36,7 +36,7 @@ State 1:
 State 2:
   .entry:
     .positioner:
-        .from 1: if 'BeginOfLine':  position[PostContext_0]  = input_p;
+        .from 1: if 'BeginOfLine':  position[PostContext_1]  = input_p;
   .drop_out:
     if BeginOfLine: pos -= 1;  goto Pattern1;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -46,9 +46,9 @@ State 3:
   .entry:
     .positioner:
         .from 2: <nothing>
-        .from 5: if 'BeginOfLine':  position[PostContext_0]  = input_p;
+        .from 5: if 'BeginOfLine':  position[PostContext_1]  = input_p;
   .drop_out:
-    if BeginOfLine: pos = position[PostContext_0] ; goto Pattern1;
+    if BeginOfLine: pos = position[PostContext_1] ; goto Pattern1;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
@@ -66,6 +66,50 @@ State 5:
         .from 0: <nothing>
   .drop_out:
     if BeginOfLine:  goto Pattern1;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 0:
+        [FAILURE]: NONE/set([NONE])
+
+State 1:
+        [FAILURE]: NONE/set([NONE])
+        [      1]: BEGIN_OF_LINE/set([1L])
+
+State 2:
+        [FAILURE]: NONE/set([NONE])
+        [      1]: BEGIN_OF_LINE/set([1L])
+
+State 3:
+        [FAILURE]: NONE/set([NONE])
+    (*) [      1]: BEGIN_OF_LINE/set([1L, 5L])
+
+State 4:
+        [     20]: NONE/set([4L])
+
+State 5:
+        [FAILURE]: NONE/set([NONE])
+        [      1]: BEGIN_OF_LINE/set([5L])
+
+
+--- Optimized States ---
+
+State 2:
+  .entry:
+    .positioner:
+        .from 1: if 'BeginOfLine':  position[PostContext_0]  = input_p;
+  .drop_out:
+    if BeginOfLine: pos -= 1;  goto Pattern1;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 3:
+  .entry:
+    .positioner:
+        .from 2: <nothing>
+        .from 5: if 'BeginOfLine':  position[PostContext_0]  = input_p;
+  .drop_out:
+    if BeginOfLine: pos = position[PostContext_0] ; goto Pattern1;
     pos = lexeme_start_p + 1;  goto Failure;
 
 

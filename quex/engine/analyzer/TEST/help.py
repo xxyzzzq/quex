@@ -1,5 +1,6 @@
 import quex.engine.analyzer.core      as core
 import quex.engine.analyzer.optimizer as optimizer
+from   quex.engine.analyzer.position_register_map import print_this
 from   quex.blackboard                import E_EngineTypes, E_InputActions, setup as Setup
 
 import sys
@@ -21,11 +22,11 @@ def if_DRAW_in_sys_argv(sm):
     os.remove("tmp1.dot")
     sys.exit()
 
-def test(SM, EngineType = E_EngineTypes.FORWARD):
+def test(SM, EngineType = E_EngineTypes.FORWARD, PrintPRM_F = False):
     
     print SM.get_string(NormalizeF=True)
 
-    plain     = core.Analyzer(SM, EngineType)
+    plain = core.Analyzer(SM, EngineType)
 
     # Print plain analyzer, note down what changed during optimization
     states_txt_db = {}
@@ -38,6 +39,9 @@ def test(SM, EngineType = E_EngineTypes.FORWARD):
         plain_txt = state.get_string(InputF=False, TransitionMapF=False)
         states_txt_db[state.index] = plain_txt
         print plain_txt
+
+    if PrintPRM_F:
+        print_this(plain.position_info_db)
 
     diff_txt_db = {}
     optimized = optimizer.do(plain)

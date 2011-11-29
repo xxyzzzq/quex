@@ -72,7 +72,7 @@ def do(SM):
     """Determines a database of Trace lists for each state.
     """
     ta = TrackAnalysis(SM)
-    return ta.acceptance_trace_db, ta.successor_db, ta.store_to_restore_path_db
+    return ta.acceptance_trace_db, ta.successor_db
 
 class TrackAnalysis:
     """The init function of this class walks down each possible path trough a
@@ -110,8 +110,7 @@ class TrackAnalysis:
         # 
         #    map:  state_index  --> list of Trace objects.
         #
-        self.__map_state_to_trace,      \
-        self.__store_to_restore_path_db = self.__trace_walk()
+        self.__map_state_to_trace = self.__trace_walk()
 
     @property
     def loop_state_set(self):
@@ -219,13 +218,8 @@ class TrackAnalysis:
                 self.path       = []
                 self.track_info = track_info
                 self.sm         = track_info.sm
-                # self.done_set   = set()
                 self.empty_list = []
                 self.result     = dict([(i, []) for i in self.sm.states.iterkeys()])
-                # map: pattern_id --> path from store to restore of input positions 
-                #                     where the difference CANNOT be determined by
-                #                     the number of transitions.
-                self.store_to_restore_path_db = defaultdict(list)
 
             def on_enter(self, StateIndex):
                 # (*) Update the information about the 'trace of acceptances'
@@ -237,11 +231,12 @@ class TrackAnalysis:
                     trace = self.path[-1][1].clone()
                     trace.update(StateIndex, State, self.track_info.loop_state_set, self.path) 
 
-                # (*) Keep track of paths from store to restore
-                self.__register_store_restore_paths(trace, StateIndex)
-
                 # (*) Mark the current state with its acceptance trace
                 existing_trace_list = self.result.get(StateIndex) 
+                #print "##path:", map(lambda x: x[0], self.path)
+                #if StateIndex == 3:
+                #    print "##ETL:  ", existing_trace_list
+                #    print "##trace:", trace
                 if trace in existing_trace_list:
                     # If a state has been analyzed before with the same trace as result,  
                     # then it is not necessary dive into deeper investigations again.
@@ -263,31 +258,9 @@ class TrackAnalysis:
                 # self.done_set.add(StateIndex)
                 self.path.pop()
 
-            def __register_store_restore_paths(self, TheTrace, StateIndex):
-                """When a state is reached that:
-                       (i) restores the input position and 
-                       (ii) the number of transitions from the storage of input position 
-                            to here cannot be determined by the number of transitions,
-                   then we have a situation where the input position
-                       (a) MUST be stored and restored.
-                       (b) The path from store to restore must be registered, so that
-                           later it can be determine what paths intersect and what not.
-                """
-                for entry in TheTrace.acceptance_db.itervalues():
-                    if entry.transition_n_since_positioning != E_TransitionN.VOID: continue
-                    # Find the stretch on the path from the storing state to the current state
-                    # where the input position is restored.
-                    for path_index, info in enumerate(self.path): 
-                        if info[0] == entry.positioning_state_index: break
-                    else:
-                        assert False, "The positioning_state_index MUST be in the path!"
-                    store_to_restore_path = [ state_index for state_index, trace in islice(self.path, path_index, None)] 
-                    store_to_restore_path.append(StateIndex)
-                    self.store_to_restore_path_db[entry.pattern_id].append(store_to_restore_path)
-
         trace_finder = TraceFinder(self)
         trace_finder.do(self.sm.init_state_index)
-        return trace_finder.result, trace_finder.store_to_restore_path_db
+        return trace_finder.result
 
 class Trace(object):
     """For one particular STATE that is reached via one particular PATH an
@@ -481,8 +454,11 @@ class Trace(object):
             # Longest pattern sort on top
             # Lowest pattern ids sort on top
             return (- X.min_transition_n_to_acceptance, X.pattern_id)
+            # return (0, X.pattern_id)
 
-        return sorted(self.__acceptance_db.itervalues(), key=my_key)
+        result = sorted(self.__acceptance_db.itervalues(), key=my_key)
+        # print "##result:", result
+        return result
 
     def get_priorized_pre_context_id_list(self):
         return map(lambda x: x.pre_context_id, self.get_priorized_list())

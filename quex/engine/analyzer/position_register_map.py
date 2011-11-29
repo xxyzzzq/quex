@@ -64,7 +64,15 @@ def do(analyzer):
     cannot_db       = get_cannot_db(analyzer)
     combinable_list = get_combinable_candidates(cannot_db)
 
-    return get_mapping(combinable_list)
+    # print "##", cannot_db
+    if True:
+        result = get_mapping(combinable_list)
+    else:
+        # The 'Dumb' solution (for debugging)
+        # Each pattern gets is own position register.
+        result = dict((pattern_id, i) for i, pattern_id in enumerate(cannot_db.iterkeys()))
+    return result
+
 
 def get_cannot_db(analyzer):
     """Determine for each position register (identified by pattern_id) the set of 
@@ -85,9 +93,10 @@ def get_cannot_db(analyzer):
            Note, that FAILURE never needs a position register. After FAILURE, 
            the position is set to lexeme start plus one.
         """
+        # FAILURE is excluded implicitly, since then 'transition_n_since_positioning'
+        # is equal to 'LEXEME_START_PLUS_ONE' and not 'VOID'.
         entry_list = [(pattern_id, x) for pattern_id, x in PositionInfo.iteritems() \
-                        if     x.transition_n_since_positioning == E_TransitionN.VOID \
-                           and pattern_id                       != E_AcceptanceIDs.FAILURE]
+                      if x.transition_n_since_positioning == E_TransitionN.VOID] 
 
         for i, x in enumerate(entry_list):
             x_pattern_id, x_info = x
@@ -113,6 +122,7 @@ def get_combinable_candidates(cannot_db):
     all_post_context_id_list = set(cannot_db.iterkeys())
 
     combinable_list = []
+    done_set        = set()
     for pattern_id, cannot_set in cannot_db.iteritems():
         candidate_list = list(all_post_context_id_list.difference(cannot_set))
         assert pattern_id in candidate_list
@@ -125,13 +135,16 @@ def get_combinable_candidates(cannot_db):
         while i < size:
             candidate  = candidate_list[i]
             cannot_set = cannot_db[candidate]
-            if candidate == pattern_id or cannot_set.isdisjoint(candidate_list):
-                i += 1
+            if      ((candidate == pattern_id) or (cannot_set.isdisjoint(candidate_list))) \
+                and (candidate not in done_set):
+                i += 1                # candidate can stay, go to next
             else:
-                del candidate_list[i]
+                del candidate_list[i] # candidate is deleted
                 size -= 1
 
-        combinable_list.append(set(candidate_list))
+        if len(candidate_list) != 0:
+            combinable_list.append(set(candidate_list))
+            done_set.update(candidate_list)
 
     return combinable_list
 
@@ -164,4 +177,17 @@ def get_mapping(combinable_list):
             else:                            p += 1
 
     return result
+
+from operator import itemgetter
+def print_this(PositionInfoDB):
+    for state_index, position_info in sorted(PositionInfoDB.iteritems(),key=itemgetter(0)):
+        print "State %i:" % state_index
+        txt = ""
+        for pattern_id, info in sorted(position_info.iteritems(),key=itemgetter(0)): 
+            if info.transition_n_since_positioning == E_TransitionN.VOID:
+                txt += "    (*) "
+            else: 
+                txt += "        "
+            txt += "[%7s]: %s/%s\n" % (pattern_id, info.pre_context_id, info.positioning_state_index_set)
+        print txt
 

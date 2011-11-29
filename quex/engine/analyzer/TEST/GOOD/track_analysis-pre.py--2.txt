@@ -43,3 +43,17 @@ State 3:
      goto Pattern14;
 
 
+State 0:
+        [FAILURE]: NONE/set([NONE])
+
+State 1:
+        [FAILURE]: NONE/set([NONE])
+        [      3]: 6/set([1L])
+
+State 2:
+        [FAILURE]: NONE/set([NONE])
+        [      3]: 6/set([1L])
+
+State 3:
+        [     14]: NONE/set([3L])
+
