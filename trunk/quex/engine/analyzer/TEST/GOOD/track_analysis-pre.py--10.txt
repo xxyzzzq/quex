@@ -53,7 +53,7 @@ State 2:
         accept = last_acceptance
     Router:
         case Failure: pos = lexeme_start_p + 1;  goto Failure;
-        case 13: pos = position[PostContext_0] ; goto Pattern13;
+        case 13: pos = position[PostContext_13] ; goto Pattern13;
         case 6: pos -= 1;  goto Pattern6;
 
 
@@ -85,6 +85,61 @@ State 5:
   .drop_out:
     if PreContext_16:  goto Pattern13;
     pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 6:
+  .entry:
+    .positioner:
+        .from 5: if 'PreContext_16':  position[PostContext_13]  = input_p;
+        .from 6: <nothing>
+  .drop_out:
+    if PreContext_16: pos = position[PostContext_13] ; goto Pattern13;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+State 0:
+        [FAILURE]: NONE/set([NONE])
+
+State 1:
+        [FAILURE]: NONE/set([NONE])
+        [      6]: 9/set([1L])
+
+State 2:
+        [FAILURE]: NONE/set([NONE])
+        [      6]: 9/set([1L])
+    (*) [     13]: 16/set([5L])
+
+State 3:
+        [     40]: NONE/set([3L])
+
+State 4:
+        [     40]: NONE/set([3L])
+        [     69]: 72/set([4L])
+        [    101]: 104/set([4L])
+        [    133]: 136/set([4L])
+
+State 5:
+        [FAILURE]: NONE/set([NONE])
+        [     13]: 16/set([5L])
+
+State 6:
+        [FAILURE]: NONE/set([NONE])
+    (*) [     13]: 16/set([5L])
+
+
+--- Optimized States ---
+
+State 2:
+  .entry:
+    .positioner:
+        .from 1: <nothing>
+        .from 6: <nothing>
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
+        case 13: pos = position[PostContext_0] ; goto Pattern13;
+        case 6: pos -= 1;  goto Pattern6;
 
 
 State 6:

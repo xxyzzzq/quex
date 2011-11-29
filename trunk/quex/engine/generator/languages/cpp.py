@@ -417,7 +417,7 @@ def get_terminal_code(AcceptanceID, pattern_action_info, SupportBeginOfLineF, La
     txt = [
             "\nTERMINAL_%i:\n" % AcceptanceID,
             input_position_search_backward_str,
-            "    __quex_debug(\"* terminal %i:   %s\");\n" % (AcceptanceID, safe_pattern),
+            "    __quex_debug(\"* terminal %i:   %s\\n\");\n" % (AcceptanceID, safe_pattern),
             action_code, "\n",
             "    goto %s;\n" % get_label("$re-start", U=True)
     ]

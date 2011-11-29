@@ -18,7 +18,7 @@ def do(txt, TheState, TheAnalyzer, DefineLabelF=True):
         if TheState.drop_out.reachable_f:
             # Backward input position detectors are always isolated state machines.
             # => TheAnalyzer.state_machine_id = id of the backward input position detector.
-            txt.append('    __quex_debug("backward input position %i detected");\n' % \
+            txt.append('    __quex_debug("backward input position %i detected\\n");\n' % \
                        TheAnalyzer.state_machine_id)
             txt.append("    %s\n\n" % LanguageDB.INPUT_P_INCREMENT())
             txt.append("    goto %s;\n" \

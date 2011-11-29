@@ -8,7 +8,8 @@ import quex.input.regular_expression.engine       as regex
 import quex.engine.analyzer.core                  as core
 import quex.engine.analyzer.position_register_map as position_register_map
 from   quex.engine.generator.base                 import get_combined_state_machine
-from   quex.blackboard                            import E_EngineTypes
+from   quex.blackboard                            import E_EngineTypes, E_TransitionN
+from   operator import itemgetter
 import help
 
 if "--hwut-info" in sys.argv:
@@ -77,15 +78,16 @@ state_machine_list = map(lambda x: regex.do(x, {}).sm, pattern_list)
 sm                 = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
 sm                 = sm.normalized_clone()
 
-# print "##", sm
+print "State Machine _____________________________________"
+print sm
 
 # For DEBUG purposes: specify 'DRAW' on command line (in sys.argv)
 help.if_DRAW_in_sys_argv(sm)
 
 analyzer = core.Analyzer(sm, E_EngineTypes.FORWARD)
 
-#for state in analyzer:
-#    print state.get_string(InputF=False, TransitionMapF=False)
+print "Positioning Info __________________________________"
+position_register_map.print_this(analyzer.position_info_db)
 
-for post_context_id, array_index in sorted(position_register_map.do(analyzer).iteritems()):
+for post_context_id, array_index in sorted(analyzer.position_register_map.iteritems()):
     print "   %s: %i" % (repr(post_context_id), array_index)
