@@ -456,9 +456,7 @@ class Trace(object):
             return (- X.min_transition_n_to_acceptance, X.pattern_id)
             # return (0, X.pattern_id)
 
-        result = sorted(self.__acceptance_db.itervalues(), key=my_key)
-        # print "##result:", result
-        return result
+        return sorted(self.__acceptance_db.itervalues(), key=my_key)
 
     def get_priorized_pre_context_id_list(self):
         return map(lambda x: x.pre_context_id, self.get_priorized_list())

@@ -84,9 +84,6 @@ State 4:
         .from 3: <nothing>
   .drop_out:
     Checker:
-        if      PreContext_52: accept = Pattern49
-        else if PreContext_88: accept = Pattern85
-        else if PreContext_124: accept = Pattern121
         accept = last_acceptance
     Router:
         case Failure: pos = lexeme_start_p + 1;  goto Failure;
@@ -153,13 +150,14 @@ State 3:
 
 State 4:
   .entry:
+    .accepter:
+        if      PreContext_52: last_acceptance = Pattern49
+        else if PreContext_88: last_acceptance = Pattern85
+        else if PreContext_124: last_acceptance = Pattern121
     .positioner:
         .from 3: <nothing>
   .drop_out:
     Checker:
-        if      PreContext_52: accept = Pattern49
-        else if PreContext_88: accept = Pattern85
-        else if PreContext_124: accept = Pattern121
         accept = last_acceptance
     Router:
         case Failure: pos = lexeme_start_p + 1;  goto Failure;
