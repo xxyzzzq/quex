@@ -195,36 +195,20 @@ class Analyzer:
 
         # (*) Acceptance Detector
         if self.analyze_acceptance_uniformity(TheTraceList):
-            # (1) Uniform Traces
+            # (1) Uniform Acceptance Pattern
             #     Use one trace as prototype to generate the mapping of 
             #     pre-context flag vs. acceptance.
             prototype          = TheTraceList[0]
             acceptance_checker = map(lambda x: DropOut_AcceptanceCheckerElement(x.pre_context_id, x.pattern_id), 
                                      prototype.get_priorized_list())
-            # Note: (1.1) Unconditional Acceptance Exists, and
-            #       (1.2) No Unconditional Acceptance 
-            #       are already well-handled because the current states acceptance behavior
-            #       is already webbed into the traces--and it is conform with the others.
         else:
-            # (2) Non-Uniform Traces
-            # (2.1) Unconditional Acceptance Exists
-            #       => According to Trace.update() all influence from past traces 
-            #          is nulled.
-            #       => Thus, a state with an unconditional will have **only** the traces
-            #          of its own state and is therefore **uniform**.
-            #       => This case is impossible for non-uniform traces.
-            # (2.2) No Unconditional Acceptance
-            #       => past acceptances can be communicated via 'last_acceptance' instead of Failure.
-            #          but all current pre-contexts must be checked.
-            #acceptance_checker = []
-            for origin in sorted(ifilter(lambda x: x.is_acceptance(), state._origin_list),
-                                 key=lambda x: x.pattern_id()):
-                acceptance_checker.append(DropOut_AcceptanceCheckerElement(origin.pre_context_id(),
-                                                                           origin.pattern_id()))
-                ## Is this right?: According to (2.1) the following must hold
-                ## assert origin.pre_context_id() != -1
-
-            # No pre-context --> restore last acceptance
+            # (2) Non-Uniform Acceptance Patterns
+            #
+            #     Different paths to one state result in different acceptances. There is only one
+            #     way to handle this:
+            #
+            #     -- The acceptance must be stored when it occurs, and
+            #     -- It must be restored here.
             acceptance_checker.append(DropOut_AcceptanceCheckerElement(E_PreContextIDs.NONE, E_AcceptanceIDs.VOID))
 
             # Triggering states need to store acceptance as soon as they are entered

@@ -1,0 +1,99 @@
+init-state = 0L
+00000 (3, 6), (10, 20), (23, 47)
+     == 'a' ==> 00001
+     == 'b' ==> 00004
+    
+00001 (3, 7, A, pre=6), (23, 48)
+     == 'c' ==> 00002
+    
+00002 (23, 49)
+     == 'd' ==> 00003
+    
+00003 (23, 50, A, pre=26)
+    
+00004 (10, 21, A, pre=13), (23, 48)
+     == 'c' ==> 00002
+    
+
+State 0:
+  .entry:
+    .accepter:
+        last_acceptance = Failure
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 1:
+  .entry:
+    .accepter:
+        if      PreContext_6: last_acceptance = Pattern3
+    .positioner:
+        .from 0: <nothing>
+  .drop_out:
+    if PreContext_6:  goto Pattern3;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 2:
+  .entry:
+    .positioner:
+        .from 1: <nothing>
+        .from 4: <nothing>
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
+        case 10: pos -= 1;  goto Pattern10;
+        case 3: pos -= 1;  goto Pattern3;
+
+
+State 3:
+  .entry:
+    .accepter:
+        if      PreContext_26: last_acceptance = Pattern23
+    .positioner:
+        .from 2: <nothing>
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
+        case 10: pos -= 2;  goto Pattern10;
+        case 3: pos -= 2;  goto Pattern3;
+        case 23: goto Pattern23;
+
+
+State 4:
+  .entry:
+    .accepter:
+        if      PreContext_13: last_acceptance = Pattern10
+    .positioner:
+        .from 0: <nothing>
+  .drop_out:
+    if PreContext_13:  goto Pattern10;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 0:
+        [FAILURE]: NONE/set([NONE])
+
+State 1:
+        [FAILURE]: NONE/set([NONE])
+        [      3]: 6/set([1L])
+
+State 2:
+        [FAILURE]: NONE/set([NONE])
+        [      3]: 6/set([1L])
+        [     10]: 13/set([4L])
+
+State 3:
+        [FAILURE]: NONE/set([NONE])
+        [      3]: 6/set([1L])
+        [     10]: 13/set([4L])
+        [     23]: 26/set([3L])
+
+State 4:
+        [FAILURE]: NONE/set([NONE])
+        [     10]: 13/set([4L])
+
