@@ -12,7 +12,7 @@ import help
 
 if "--hwut-info" in sys.argv:
     print "Track Analyzis: With Pre-Contexts;"
-    print "CHOICES: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12;"
+    print "CHOICES: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13;"
     sys.exit()
 
 if "0" in sys.argv:
@@ -101,6 +101,12 @@ elif "12" in sys.argv:
         'a',
         'abc',
         'abcd+ef+g',
+    ]
+elif "13" in sys.argv:
+    pattern_list = [
+        '0/a/',        
+        '1/b/',     
+        '2/[ab]cd/',     
     ]
 else:
     assert False
