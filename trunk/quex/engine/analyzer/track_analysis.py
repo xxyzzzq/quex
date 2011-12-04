@@ -217,7 +217,6 @@ class TrackAnalysis:
         class TraceFinder(TreeWalker):
             def __init__(self, track_info):
                 self.path       = []
-                self.track_info = track_info
                 self.sm         = track_info.sm
                 self.empty_list = []
                 self.result     = dict([(i, []) for i in self.sm.states.iterkeys()])
@@ -229,8 +228,7 @@ class TrackAnalysis:
                 if len(self.path) == 0: 
                     trace = Trace(self.sm.init_state_index)
                 else: 
-                    trace = self.path[-1][1].clone()
-                    trace.update(StateIndex, State, self.track_info.loop_state_set, self.path) 
+                    trace = self.path[-1][1].next_step(StateIndex, State, self.path) 
 
                 # (*) Mark the current state with its acceptance trace
                 #     This automatically handles the case of loops. But it does 
@@ -258,13 +256,61 @@ class TrackAnalysis:
         trace_finder.do(self.sm.init_state_index)
         return trace_finder.result
 
+#_DEBUG_counter = 0
 class Trace(object):
-    """An object of type 'Trace' is information related to a specific state
-       and ONE particular path from the init state to the state.
+    """ABSTRACT:
+       
+       An object of this class documents the impact of actions that happen
+       along ONE specific path from the init state to a specific state. 
+       ------------------------------------------------------------------------
 
-       During the path from the init state to the state, other states may have
-       been passed where the input position had to be stored or a pattern was
-       accepted. This behavior may depend on pre-contexts being fulfilled.
+       EXPLANATION:
+
+       During a path from the init state to 'this state', the following things
+       may happen or may have happened:
+
+            -- The input position has been stored in a position register
+               (for post context management or on accepting a pattern).
+
+            -- A pattern has been accepted. Acceptance may depend on a
+               pre-context being fulfilled.
+
+       Storing the input position can be a costly operation. If the length of
+       the path from storing to restoring can be determined from the number of
+       transitions, then it actually does not have to be stored. Instead, it
+       can be obtained by 'input position -= transition number since
+       positioning.' In any case, the restoring of an input position is
+       triggered by an acceptance event.
+
+       Acceptance of a pattern occurs, if one drops out of a state, i.e. there
+       are no further transitions possible. Later analysis will focus on these
+       acceptance events. They are stored in a sorted member '.acceptance_trace'.
+
+       The sort order of the acceptance trace reflects the philosophy of
+       'longest match'. That, is that the last acceptance along a path has a
+       higher precedence than an even higher prioritized pattern before. 
+       Actually, all patterns without any pre-context remove any TraceEntry
+       object that preceded along the path.
+
+       For further analysis, this class provides:
+
+            .acceptance_trace -- Sorted list of information about acceptances.
+                                 
+            .priorized_pre_context_id_list -- Sorted list of pre-context-ids
+                                              in the acceptance trace.
+
+       The sort order of '.prioritized_pre_context_id_list' is the same as the
+       aforementioned sort order of '.acceptance_trace'.
+
+       During the process of building path traces, the function
+
+            .next_step(...)
+
+       is called. It assumes that the current object represents the path trace
+       before 'this state'. Based on the given arguments to this function it 
+       modifies itself so that it represents the trace for 'this_state'.
+
+       ------------------------------------------------------------------------
 
        EXAMPLE:
     
@@ -285,21 +331,9 @@ class Trace(object):
                     (if pre context 3 fulfilled: 7 wins, input position = current - 1)
                     (else,                       8 wins, input position = current - 3)
            ...
-    
-
-       The trace entry of a state tells what has to happen if the state machine 
-       'drops-out', i.e. no character appears that would trigger a further transition.
     """
-    __slots__ = ("__acceptance_trace", "__storage_db", "__DEBUG_last_transition_n_to_acceptance")
-    # __acceptance_trace:   pattern_id --> TraceEntry object 
-    #
-    #               Information about the acceptance of pattern_id on the trace with 
-    #               respect to the state that this object represents.
-    #
-    # __storage_db: pattern_id --> TraceEntry object 
-    #               Information about where input position is stored for given 
-    #               pattern_id. This is obviously only important for post-contexted
-    #               pattern, i.e. where there is store-restore input position.
+    __slots__ = ("__acceptance_trace",  # List of TraceEntry objects
+                 "__storage_db")        # Map: pattern_id --> StoreInfo objects
 
     def __init__(self, InitStateIndex=None):
         if InitStateIndex is None:
@@ -313,18 +347,26 @@ class Trace(object):
                              PositioningStateIndex        = E_StateIndices.NONE), 
             ]
         self.__storage_db = {}
-        self.__DEBUG_last_transition_n_to_acceptance = 0
 
     def clone(self):
+        # global _DEBUG_counter
+        # if len(self.__storage_db) == 0 and len(self.__acceptance_trace) == 1:
+        #    entry = self.__acceptance_trace.__iter__().next()
+        #    if entry.pre_context_id == E_PreContextIDs.NONE                                    \
+        #       and entry.pattern_id == E_AcceptanceIDs.FAILURE                                 \
+        #       and entry.transition_n_since_positioning == E_TransitionN.LEXEME_START_PLUS_ONE \
+        #       and entry.positioning_state_index == E_StateIndices.NONE:
+        #         _DEBUG_counter += 1
+        #         print "cloning empty counter:", _DEBUG_counter
+
         result = Trace()
         result.__acceptance_trace = [ x.clone() for x in self.__acceptance_trace ]
         result.__storage_db       = dict(( (i, x.clone()) 
                                          for i, x in self.__storage_db.iteritems() 
                                     ))
-        result.__DEBUG_last_transition_n_to_acceptance = self.__DEBUG_last_transition_n_to_acceptance
         return result
 
-    def update(self, StateIndex, State, LoopStateSet, Path):
+    def next_step(self, StateIndex, State, Path):
         """Assume: 'self.__acceptance_trace' contains accumulated information of passed 
                    states until the current state has been reached. 
 
@@ -355,30 +397,14 @@ class Trace(object):
                  state and accepting state can be determined as soon as the 
                  accepting state arrives that belongs to the storage info.
         """
-
-        # It is essential for a meaningful accumulation of the match information
-        # that the entries are accumulated from the begin of a path towards its 
-        # end. Otherwise, the 'longest match' cannot be applied by overwriting
-        # existing entries.
-        CurrentPathLength = len(Path) + 1 # This is the length of the path considered
-        #                                 # the current state being added already.
-        assert abs(self.__DEBUG_last_transition_n_to_acceptance) < CurrentPathLength
-        self.__DEBUG_last_transition_n_to_acceptance = len(Path)
-
-        def show(What):
-            print "##StateIndex:", StateIndex
-            print "##%s {" % What
-            print "##at:", self.__acceptance_trace
-            print "##sd:"
-            for key, info in self.__storage_db.iteritems():
-                print "##", key, info.transition_n_since_positioning, info.positioning_state_index
-            print "##}"
-
-        ##show("Before")
-        ##print "##path:", [state_index for state_index, x in Path] + [StateIndex]
+        # Some experimenting has shown that the number of unnecessary cloning, i.e.
+        # when there would be no change, is negligible. So, it is done the safe way:
+        # Always clone. The fact that '.transition_n_since_positioning' has to be
+        # almost always to be adapted, makes selective cloning meaningless.
+        current = self.clone()
 
         # (*) Update '.transition_n_since_positioning'
-        for entry in chain(self.__acceptance_trace, self.__storage_db.itervalues()):
+        for entry in chain(current.__acceptance_trace, current.__storage_db.itervalues()):
             # 'lexeme_start_p + 1', 'void' --> are not updated
             # Note, if a state is passed the second time, then new entries are 
             # generated in __acceptance_trace and __storage_db. So, the 'transition_n_since_positioning'
@@ -386,25 +412,25 @@ class Trace(object):
             if not isinstance(entry.transition_n_since_positioning, (int, long)): continue
 
             # Is there a loop from 'positioning_state_index' to current state?
-            if self.__check_loop(Path, entry.positioning_state_index, StateIndex):
+            if current.__check_loop(Path, entry.positioning_state_index, StateIndex):
                 entry.transition_n_since_positioning = E_TransitionN.VOID
             else:
                 entry.transition_n_since_positioning += 1
 
-        # (*) Update '.acceptance_trace' and '.storage_db'
+        # (*) Update '.__acceptance_trace' and '.__storage_db'
         for origin in sorted(State.origins(), key=lambda x: x.pattern_id(), reverse=True):
             # Acceptance 
             if origin.is_acceptance():
                 if origin.pre_context_id() == E_PreContextIDs.NONE:
-                    del self.__acceptance_trace[:]
-                self.__add(origin, StateIndex)
+                    del current.__acceptance_trace[:]
+                current.__add(origin, StateIndex)
 
             # Store Input Position Information
             if origin.input_position_store_f():
-                self.__storage_db[origin.pattern_id()] = StoreInfo(StateIndex)
+                current.__storage_db[origin.pattern_id()] = StoreInfo(StateIndex)
 
-        ## show("After")
-        assert len(self.__acceptance_trace) >= 1
+        assert len(current.__acceptance_trace) >= 1
+        return current
 
     def __add(self, Origin, StateIndex):
         """Add entry to the acceptance trace."""
@@ -458,12 +484,6 @@ class Trace(object):
         unique_set.add(StateIndex)
         return len(unique_set) != segment_size
 
-    @property
-    def storage_db(self): return self.__storage_db
-
-    def __getitem__(self, PreContextID):
-        return self.get(PreContextID)
-
     def get(self, PreContextID):
         for entry in self.__acceptance_trace:
             if entry.pre_context_id == PreContextID: return entry
@@ -473,13 +493,11 @@ class Trace(object):
     def acceptance_trace(self):
         return self.__acceptance_trace
 
-    def get_priorized_pre_context_id_list(self):
+    @property
+    def prioritized_pre_context_id_list(self):
         return map(lambda x: x.pre_context_id, self.acceptance_trace)
 
     def __eq__(self, Other):
-        """Compare two acceptance trace objects. Note, that __DEBUG_last_transition_n_to_acceptance
-           is only for debug purposes.
-        """
         if self.__acceptance_trace != Other.__acceptance_trace: return False
         if len(self.__storage_db)  != len(Other.__storage_db):  return False
 
@@ -494,12 +512,30 @@ class Trace(object):
         return not self.__eq__(self)
 
     def __repr__(self):
-        txt = []
-        for x in self.__acceptance_trace:
-            txt.append(repr(x))
-        return "".join(txt)
+        return "".join([repr(x) for x in self.__acceptance_trace])
 
 class StoreInfo(object):
+    """Informs about a 'positioning action' that happend during the the walk
+       along a path before reaching 'this state'.
+
+       A 'positioning action' is the storage of the current input position 
+       into a dedicated position register. Objects of class 'StoreInfo'
+       are stored in dictionaries where the key represents the pattern-id
+       is at the same time the identifier of the position storage register.
+       (Note, later the position register is remapped according to required
+        entries.)
+
+       'This state' means the state where the trace lead to. 
+
+       The member '.transition_n_since_positioning' is incremented at each
+       transition along a path. If a loop is detected it is set to value
+       'E_TransitionN.VOID'.
+
+       The member '.positioning_state_index' is the state where the positioning
+       happend. If there is a loop along the path from '.positioning_state_index'
+       to 'this state, then the '.transition_n_since_positioning' is set to 
+       'E_TransitionN.VOID' (see comment above).
+    """
     __slots__ = ('transition_n_since_positioning', 'positioning_state_index')
     def __init__(self, PositioningStateIndex, TransitionN_SincePositioning=0):
         self.transition_n_since_positioning = TransitionN_SincePositioning
@@ -540,8 +576,8 @@ class TraceEntry(object):
                                     acceptance state. For post-context patterns it is 
                                     the state where the post context begins.
         """
-        self.pre_context_id  = PreContextID
-        self.pattern_id      = PatternID
+        self.pre_context_id                 = PreContextID
+        self.pattern_id                     = PatternID
         self.transition_n_since_positioning = TransitionN_SincePositioning
         self.accepting_state_index          = AcceptingStateIndex
         self.positioning_state_index        = PositioningStateIndex
@@ -555,11 +591,11 @@ class TraceEntry(object):
         return result
 
     def is_equal(self, Other):
-        if   self.pre_context_id                    != Other.pre_context_id:                    return False
-        elif self.pattern_id                        != Other.pattern_id:                        return False
-        elif self.transition_n_since_positioning    != Other.transition_n_since_positioning:    return False
-        elif self.accepting_state_index             != Other.accepting_state_index:             return False
-        elif self.positioning_state_index           != Other.positioning_state_index:           return False
+        if   self.pre_context_id                 != Other.pre_context_id:                    return False
+        elif self.pattern_id                     != Other.pattern_id:                        return False
+        elif self.transition_n_since_positioning != Other.transition_n_since_positioning:    return False
+        elif self.accepting_state_index          != Other.accepting_state_index:             return False
+        elif self.positioning_state_index        != Other.positioning_state_index:           return False
         return True
 
     def __eq__(self, Other):
