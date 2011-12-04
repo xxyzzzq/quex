@@ -359,10 +359,10 @@ class Analyzer:
                     False -- not uniform.
         """
         prototype   = TheTraceList[0]
-        id_sequence = prototype.get_priorized_pre_context_id_list()
+        id_sequence = prototype.prioritized_pre_context_id_list
 
         # Check (1) and (2)
-        for trace in ifilter(lambda trace: id_sequence != trace.get_priorized_pre_context_id_list(),
+        for trace in ifilter(lambda trace: id_sequence != trace.prioritized_pre_context_id_list,
                              islice(TheTraceList, 1, None)):
             return False
 
@@ -375,7 +375,7 @@ class Analyzer:
         # -- No Pre-Context (must be in every trace)
         pattern_id = prototype.get(E_PreContextIDs.NONE).pattern_id
         # Iterate over remainder (Prototype is not considered)
-        for trace in ifilter(lambda trace: pattern_id != trace[E_PreContextIDs.NONE].pattern_id, 
+        for trace in ifilter(lambda trace: pattern_id != trace.get(E_PreContextIDs.NONE).pattern_id, 
                              islice(TheTraceList, 1, None)):
             return False
 
@@ -387,7 +387,7 @@ class Analyzer:
         else:
             # According to (1) every trace will contain 'begin-of-line' pre-context
             acceptance_id = x.pattern_id
-            for trace in ifilter(lambda trace: trace[E_PreContextIDs.BEGIN_OF_LINE].pattern_id != acceptance_id,
+            for trace in ifilter(lambda trace: trace.get(E_PreContextIDs.BEGIN_OF_LINE).pattern_id != acceptance_id,
                                  islice(TheTraceList, 1, None)):
                 return False
 
