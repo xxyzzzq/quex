@@ -200,7 +200,7 @@ class Analyzer:
             #     pre-context flag vs. acceptance.
             prototype          = TheTraceList[0]
             acceptance_checker = map(lambda x: DropOut_AcceptanceCheckerElement(x.pre_context_id, x.pattern_id), 
-                                     prototype.get_priorized_list())
+                                     prototype.acceptance_trace)
         else:
             # (2) Non-Uniform Acceptance Patterns
             #
@@ -213,7 +213,7 @@ class Analyzer:
 
             # Triggering states need to store acceptance as soon as they are entered
             for trace in TheTraceList:
-                for element in trace.acceptance_db.itervalues():
+                for element in trace.acceptance_trace:
                     accepting_state = self.__state_db[element.accepting_state_index]
                     accepting_state.entry.doors_accept(element.pattern_id, element.pre_context_id)
 
@@ -314,7 +314,7 @@ class Analyzer:
         # -- one element has undetermined positioning, 
         # => then the acceptance relates to undetermined positioning.
         for trace in TheTraceList:
-            for element in trace.acceptance_db.itervalues():
+            for element in trace.acceptance_trace:
                 prototype = positioning_info_by_pattern_id.get(element.pattern_id)
                 if prototype is None:
                     positioning_info_by_pattern_id[element.pattern_id] = PositioningInfo(element)

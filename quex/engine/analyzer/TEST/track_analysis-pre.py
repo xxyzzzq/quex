@@ -120,15 +120,3 @@ sm  = sm.normalized_clone()
 # For DEBUG purposes: specify 'DRAW' on command line
 help.if_DRAW_in_sys_argv(sm)
 help.test(sm, PrintPRM_F=True)
-sys.exit()
-
-print sm.get_string(NormalizeF=False)
-
-analyzer = core.do(sm)
-
-for state in analyzer:
-    if state.index == sm.init_state_index: 
-        assert state.input == E_InputActions.DEREF
-    else:
-        assert state.input == E_InputActions.INCREMENT_THEN_DEREF
-    print state.get_string(InputF=False, TransitionMapF=False)
