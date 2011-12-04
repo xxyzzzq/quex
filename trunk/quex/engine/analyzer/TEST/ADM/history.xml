@@ -1,4 +1,4 @@
-<history date="Wed Nov 30 22:12:08 2011" element-n="557">
+<history date="Sun Dec  4 02:59:21 2011" element-n="563">
     <day year="2011" month="04" day="29">
         <history-init time="04:18:51"/>
     </day>
@@ -651,5 +651,17 @@
         <crc-error time="21:09:30" application="track_analysis-pre-post.py" choice="7" database-crc="-327289940" real-crc="772269168"/>
         <crc-error time="21:11:14" application="track_analysis-pre-post.py" choice="9" database-crc="926550977" real-crc="1545903350"/>
         <crc-error time="21:11:59" application="track_analysis-pre.py" choice="11" database-crc="996587702" real-crc="-374616685"/>
+    </day>
+    <day year="2011" month="12" day="01">
+        <crc-error time="07:24:17" application="single-pattern.py" choice="10" database-crc="1728908294" real-crc="1213902001"/>
+    </day>
+    <day year="2011" month="12" day="02">
+        <crc-error time="22:41:03" application="track_analysis-loops.py" choice="1" database-crc="1479135912" real-crc="-436646474"/>
+        <crc-error time="22:56:33" application="track_analysis-loops.py" choice="1" database-crc="-436646474" real-crc="1324665105"/>
+    </day>
+    <day year="2011" month="12" day="03">
+        <crc-error time="05:39:04" application="track_analysis-loops.py" choice="3" database-crc="0" real-crc="-574671848"/>
+        <crc-error time="11:21:31" application="track_analysis-loops.py" choice="4" database-crc="444190285" real-crc="1315080754"/>
+        <crc-error time="11:22:00" application="track_analysis-loops.py" choice="4" database-crc="1315080754" real-crc="444190285"/>
     </day>
 </history>

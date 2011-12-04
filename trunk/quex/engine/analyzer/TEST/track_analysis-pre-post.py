@@ -111,5 +111,6 @@ sm  = sm.normalized_clone()
 
 # For DEBUG purposes: specify 'DRAW' on command line
 help.if_DRAW_in_sys_argv(sm)
+# help.test(sm, PrintPRM_F=True)
 help.test(sm)
 
