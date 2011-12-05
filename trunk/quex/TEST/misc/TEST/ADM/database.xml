@@ -1,21 +1,21 @@
-<test-database execution-time-sec="1.82" date="Sat Dec  3 00:09:20 2011">
+<test-database execution-time-sec="1.53" date="Mon Dec  5 23:19:21 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Customized codec files (option --codec-file)" time-sum-sec="0.31"> 
+    <test title="Customized codec files (option --codec-file)" time-sum-sec="0.27"> 
         <application file-name="customized_codec.sh" info-request-time="1310810801L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.31" crc="1025570625"/>
+           <choice name="" result="OK" time_sec="0.27" crc="1025570625"/>
         </choice-list>
     </test>
-    <test title="Test code comments" time-sum-sec="0.39"> 
+    <test title="Test code comments" time-sum-sec="0.35"> 
         <application file-name="comment.sh" info-request-time="1318614193L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.39" crc="-530152913"/>
+           <choice name="" result="OK" time_sec="0.35" crc="-530152913"/>
         </choice-list>
     </test>
-    <test title="Analyzer State Tracer" time-sum-sec="1.12"> 
+    <test title="Analyzer State Tracer" time-sum-sec="0.91"> 
         <application file-name="debug_show.sh" info-request-time="1318614193L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="1.12" crc="1416435023"/>
+           <choice name="" result="FAIL" time_sec="0.91" crc="1416435023"/>
         </choice-list>
     </test>
 </test-database>
