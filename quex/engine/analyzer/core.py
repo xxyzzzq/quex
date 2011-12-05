@@ -109,19 +109,18 @@ class Analyzer:
             self.__position_info_db[state_index] = self.analyze_positioning(trace_list)
 
         # (*) Drop Out Behavior
+        #     The PathTrace objects tell what to do at drop_out. From this, the
+        #     required entry actions of states can be derived.
         self.__require_acceptance_storage_list = []
+        self.__require_position_storage_list   = []
         for state_index, trace_list in self.__trace_db.iteritems():
             state = self.__state_db[state_index]
             # trace_list: PathTrace objects for each path that guides through state.
             state.drop_out = self.get_drop_out_object(state, trace_list)
 
         # (*) Entry Behavior
-        for element in self.__require_acceptance_storage_list:
-            entry = self.__state_db[element.accepting_state_index].entry
-            entry.doors_accept(element.pattern_id, element.pre_context_id)
-
-        # (*) Position Register Map (Used in 'optimizer.py')
-        self.__position_register_map = position_register_map.do(self)
+        #     Implement the required entry actions.
+        self.determine_entry_behavior()
 
     @property
     def trace_db(self):              return self.__trace_db
@@ -172,31 +171,33 @@ class Analyzer:
            even any pre-context patterns).
         """
         assert len(ThePathTraceList) != 0
-
-        acceptance_checker = []  # map: pre-context-flag --> acceptance_id
-        terminal_router    = []  # map: acceptance_id    --> (positioning, 'goto terminal_id')
+        result = DropOut()
 
         # (*) Acceptance Detector
-        if self.analyze_acceptance_uniformity(ThePathTraceList):
+        uniformity_f = self.analyze_acceptance_uniformity(ThePathTraceList)
+        if uniformity_f:
             # (1) Uniform Acceptance Pattern
             # 
             #     Use one trace as prototype to generate the mapping of 
             #     pre-context flag vs. acceptance. Acceptance behavior is
             #     the same for all possible paths. No storage required.
             prototype          = ThePathTraceList[0]
-            acceptance_checker = map(lambda x: DropOut_AcceptanceCheckerElement(x.pre_context_id, x.pattern_id), 
-                                     prototype.acceptance_trace)
+            for x in prototype.acceptance_trace:
+                result.accept(x.pre_context_id, x.pattern_id)
+                # No further checks after unconditional acceptance necessary
+                if     x.pre_context_id == E_PreContextIDs.NONE \
+                   and x.pattern_id     != E_AcceptanceIDs.FAILURE: break
+
         else:
             # (2) Non-Uniform Acceptance Patterns
             #
             #     Different paths to one state result in different acceptances. 
             #     There is only one way to handle this:
             #
-            #         -- The acceptance must be stored when it occurs, and
+            #         -- The acceptance must be stored in the state where it occurs, and
             #         -- It must be restored here.
             #
-            acceptance_checker.append(DropOut_AcceptanceCheckerElement(E_PreContextIDs.NONE, E_AcceptanceIDs.VOID))
-
+            result.accept(E_PreContextIDs.NONE, E_AcceptanceIDs.VOID)
             # Triggering states need to store acceptance as soon as they are entered
             for trace in ThePathTraceList:
                 self.__require_acceptance_storage_list.extend(trace.acceptance_trace)
@@ -204,18 +205,28 @@ class Analyzer:
         # Terminal Router
         for pattern_id, info in self.__position_info_db[state.index].iteritems():
             assert pattern_id != E_AcceptanceIDs.VOID
-            terminal_router.append(DropOut_TerminalRouterElement(pattern_id, 
-                                                                 info.transition_n_since_positioning))
+            result.route_to_terminal(pattern_id, info.transition_n_since_positioning)
 
             # If the positioning is all determined, then no 'triggering' state
             # needs to be informed.
             if info.transition_n_since_positioning != E_TransitionN.VOID: continue
     
             # Pattern 'Failure' is always associated with the init state and the
-            # positioning is uniformly 'lexeme_start_p + 1' (and never undefined, i.e. None).
+            # positioning is 'lexeme_start_p + 1' (and never undefined, i.e. None).
             assert pattern_id != E_AcceptanceIDs.FAILURE
 
             # Follower states of triggering states need to store the position
+            self.__require_position_storage_list.append((state.index, pattern_id, info))
+
+        result.trivialize()
+        return result
+
+    def determine_entry_behavior(self):
+        for element in self.__require_acceptance_storage_list:
+            entry = self.__state_db[element.accepting_state_index].entry
+            entry.doors_accept(element.pattern_id, element.pre_context_id)
+
+        for state_index, pattern_id, info in self.__require_position_storage_list:
             for pos_state_index in info.positioning_state_index_set:
                 positioning_state = self.__state_db[pos_state_index]
 
@@ -223,40 +234,16 @@ class Analyzer:
                 # Let x be one of the target states of the positioning state. 
                 # If (index == x) or (index in self.__successor_db[x])
                 # => The path from positioning state over x guides to current state
-                for target_index in ifilter(lambda x: state.index == x or state.index in self.__successor_db[x],
+                for target_index in ifilter(lambda x: state_index == x or state_index in self.__successor_db[x],
                                             positioning_state.target_index_list):
                     if target_index == pos_state_index: continue
                     entry = self.__state_db[target_index].entry
-                    # from state: pos_state_index (the state before)
-                    entry.doors_store(pos_state_index, \
+                    entry.doors_store(FromStateIndex   = pos_state_index, \
                                       PreContextID     = info.pre_context_id, \
                                       PositionRegister = pattern_id)
 
-        # Clean Up the acceptance_checker and the terminal_router:
-        # (1) there is no check after the unconditional acceptance
-        result = DropOut()
-        for i, dummy in ifilter(lambda x:     x[1].pre_context_id == E_PreContextIDs.NONE   \
-                                          and x[1].acceptance_id  != E_AcceptanceIDs.FAILURE, 
-                                enumerate(acceptance_checker)):
-            result.acceptance_checker = acceptance_checker[:i+1]
-            break
-        else:
-            result.acceptance_checker = acceptance_checker
-
-        # (2) Acceptances that are not referred do not need to be routed.
-        for dummy in ifilter(lambda x: x.acceptance_id == E_AcceptanceIDs.VOID, acceptance_checker):
-            # The 'accept = last_acceptance' appears, thus all possible cases
-            # need to be considered.
-            result.terminal_router = terminal_router
-            break
-        else:
-            # Only the acceptances that appear in the acceptance_checker are considered
-            checked_pattern_id_list = map(lambda x: x.acceptance_id, acceptance_checker)
-            result.terminal_router  = filter(lambda x: x.acceptance_id in checked_pattern_id_list, 
-                                             terminal_router)
-
-        result.trivialize()
-        return result
+        # (*) Position Register Map (Used in 'optimizer.py')
+        self.__position_register_map = position_register_map.do(self)
 
     def analyze_positioning(self, ThePathTraceList):
         """A given state can be reached by (possibly) multiple paths from the
@@ -1033,6 +1020,14 @@ class DropOut(object):
     def __init__(self):
         self.acceptance_checker = []
         self.terminal_router  = []
+
+    def accept(self, PreContextID, PatternID):
+        self.acceptance_checker.append(
+             DropOut_AcceptanceCheckerElement(PreContextID, PatternID))
+
+    def route_to_terminal(self, PatternID, TransitionNSincePositioning):
+        self.terminal_router.append(
+             DropOut_TerminalRouterElement(PatternID, TransitionNSincePositioning))
 
     def __hash__(self):
         return hash(len(self.acceptance_checker) * 10 + len(self.terminal_router))
