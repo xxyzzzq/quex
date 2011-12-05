@@ -1,34 +1,33 @@
-"""Analyzer:
+"""ABSTRACT:
 
-   An object of class Analyzer is a representation of an analyzer state machine
-   (object of class StateMachine) that is suited for code generation. In
-   particular, track analysis results in 'decorations' for states which help to
-   implement efficient code.
+This module produces an object of class Analyzer. It is a representation of an
+analyzer state machine (object of class StateMachine) that is suited for code
+generation. In particular, track analysis results in 'decorations' for states
+which help to implement efficient code.
 
-   Formally an Analyzer consists of a set of states that are related by their
-   transitions. Each state is an object of class AnalyzerState and has the 
-   following components:
+Formally an Analyzer consists of a set of states that are related by their
+transitions. Each state is an object of class AnalyzerState and has the
+following components:
 
-        * input:          what happens to get the next character.
-        * entry:          actions to be performed at the entry of the state.
-        * transition_map: a map that tells what state is to be entered 
-                          as a reaction to the current input character.
-        * drop_out:       what has to happen if no character triggers.
+    * entry:          actions to be performed at the entry of the state.
 
-    For administrative purposes, other data such as the 'state_index' is 
-    stored along with the AnalyzerState object.
+    * input:          what happens to get the next character.
 
-    The track analysis in 'track_analysis.py' provides the basis for the 
-    construction of AnalyzerState objects. It produces the 'trace_db'.
-    It maps:
+    * transition_map: a map that tells what state is to be entered 
+                      as a reaction to the current input character.
 
-                    state index --> list of Trace objects
-    
-    Each trace object relates to a particular path through the given state. It
-    tells how the state should behave, if there was only this particular path. 
-    The task of this module is to combine the list of Trace objects and generate
-    a AnalyzerState objects with the aforementioned components.
-    
+    * drop_out:       what has to happen if no character triggers.
+
+For administrative purposes, other data such as the 'state_index' is stored
+along with the AnalyzerState object.
+
+The goal of track analysis is to reduce the run-time effort of the lexical
+analyzer. In particular, acceptance and input position storages may be spared
+depending on the constitution of the state machine.
+
+-------------------------------------------------------------------------------
+(C) 2010-2011 Frank-Rene Schaefer
+ABSOLUTELY NO WARRANTY
 """
 
 import quex.engine.analyzer.track_analysis        as     track_analysis
@@ -49,24 +48,21 @@ from   itertools        import islice, ifilter, imap
 from   quex.blackboard  import setup as Setup
 
 def do(SM, EngineType=E_EngineTypes.FORWARD):
+    # Generate Analyzer from StateMachine
     analyzer = Analyzer(SM, EngineType)
+
+    # Optimize the Analyzer
     analyzer = optimizer.do(analyzer)
 
+    # The language database requires the analyzer for labels etc.
     if Setup.language_db is not None:
         Setup.language_db.register_analyzer(analyzer)
 
     return analyzer
 
 class Analyzer:
-    """Objects of class Analyzer contain information for code generation of a
-       lexical analyzer. This information is derived from a given state machine
-       that is expected to combine all active pattern detectors. 
-       
-       In the given state machine, information about a states behavior is
-       stored along with the states in so called 'origins'. An 'origin' is some
-       data that originates in the single pattern detectors before they were
-       combined. Those origins are used by the track analysis to determine
-       traces. Based on the traces the AnalyzerState objects are created.
+    """A representation of a pattern analyzing StateMachine suitable for
+       effective code generation.
     """
     def __init__(self, SM, EngineType):
         assert EngineType in E_EngineTypes
@@ -77,28 +73,22 @@ class Analyzer:
         self.__state_machine_id = SM.get_id()
         self.__engine_type      = EngineType
 
-        # (1) Track Analysis: Get the 'Trace' objects for each state
-        trace_db, successor_db = track_analysis.do(SM)
-
-        # (*) Acceptance Traces
-        self.__trace_db = trace_db
-
-        # (*) Successor Database
-        #     Store for each state the set of all possible successor states.
-        self.__successor_db = successor_db
+        # (*) PathTrace database, Successor database
+        self.__trace_db, self.__successor_db = track_analysis.do(SM)
 
         # (*) 'From Database'
-        #     This is calculated on demand: For each state the list of states
-        #      which enter it. See: property 'from_db' below.
+        #
+        #     map:  state_index --> states from which it is entered.
+        #
         from_db = defaultdict(set)
         for from_index, state in SM.states.iteritems():
             for to_index in state.transitions().get_map().iterkeys():
                 from_db[to_index].add(from_index)
         self.__from_db = from_db
 
-        # (2) Prepare AnalyzerState Objects
+        # (*) Prepare AnalyzerState Objects
         self.__state_db = dict([(state_index, AnalyzerState(state_index, SM, EngineType, from_db[state_index])) 
-                                 for state_index in trace_db.iterkeys()])
+                                 for state_index in self.__trace_db.iterkeys()])
 
         if EngineType != E_EngineTypes.FORWARD:
             # BACKWARD_INPUT_POSITION, BACKWARD_PRE_CONTEXT:
@@ -110,35 +100,31 @@ class Analyzer:
             self.__position_info_db      = None
             return
 
-        # Positioning info:
+        # (*) Positioning info:
         #
-        # map:  (state_index) --> (pattern_id) --> positioning info
+        #     map:  (state_index) --> (pattern_id) --> positioning info
         #
         self.__position_info_db = {}
-        for state_index, trace_list in trace_db.iteritems():
+        for state_index, trace_list in self.__trace_db.iteritems():
             self.__position_info_db[state_index] = self.analyze_positioning(trace_list)
 
-        # Store Constellation Database:
-        #
-        #      map: pattern_id --> set of states where input position is stored for it
-        #
-        # This database is developed in 'get_drop_out_object(..)' when trace lists are investigated.
-        # States that do not need to store post contexts, because the input position difference can
-        # be derived from the transition number are not considered.
-        self.__store_constellation_db = defaultdict(set)
-        for state_index, trace_list in trace_db.iteritems():
+        # (*) Drop Out Behavior
+        self.__require_acceptance_storage_list = []
+        for state_index, trace_list in self.__trace_db.iteritems():
             state = self.__state_db[state_index]
-            # acceptance_trace_list: 
-            # Trace objects for each path that guides through state.
+            # trace_list: PathTrace objects for each path that guides through state.
             state.drop_out = self.get_drop_out_object(state, trace_list)
 
-        # What post-contexts are stored in what position register. The following analyzis
-        # may spare some space for position registers as well as some unnecessary multiple
-        # storage of positions.
+        # (*) Entry Behavior
+        for element in self.__require_acceptance_storage_list:
+            entry = self.__state_db[element.accepting_state_index].entry
+            entry.doors_accept(element.pattern_id, element.pre_context_id)
+
+        # (*) Position Register Map (Used in 'optimizer.py')
         self.__position_register_map = position_register_map.do(self)
 
     @property
-    def trace_db(self): return self.__trace_db
+    def trace_db(self):              return self.__trace_db
     @property
     def state_db(self):              return self.__state_db
     @property
@@ -151,19 +137,16 @@ class Analyzer:
     def engine_type(self):           return self.__engine_type
     @property
     def from_db(self):
-        """Determines the predecessor of each state, i.e. by
-
-             .predecessor_db[state_index] a list of states is returned that enter
-                                          the state of 'state_index'.
-        """
+        """Map: state_index --> list of states that enter it."""
         return self.__from_db
     @property
     def acceptance_state_index_list(self):
         return self.__acceptance_state_index_list
     @property
-    def position_info_db(self): return self.__position_info_db
+    def position_info_db(self): 
+        return self.__position_info_db
 
-    def get_drop_out_object(self, state, TheTraceList):
+    def get_drop_out_object(self, state, ThePathTraceList):
         """This class computes a 'DropOut' object, i.e. some data that tells
            what has to happen if nothing in the transition map triggers.  It
            does so based on the computed traces produced by the track analysis.
@@ -184,38 +167,39 @@ class Analyzer:
            --------------------------------------------------------------------
         
            A state may be reached via multiple paths. For each path there is a
-           separate Trace. Each Trace tells what has to happen in the state
+           separate PathTrace. Each PathTrace tells what has to happen in the state
            depending on the pre-contexts being fulfilled or not (if there are
            even any pre-context patterns).
         """
-        assert len(TheTraceList) != 0
+        assert len(ThePathTraceList) != 0
 
         acceptance_checker = []  # map: pre-context-flag --> acceptance_id
         terminal_router    = []  # map: acceptance_id    --> (positioning, 'goto terminal_id')
 
         # (*) Acceptance Detector
-        if self.analyze_acceptance_uniformity(TheTraceList):
+        if self.analyze_acceptance_uniformity(ThePathTraceList):
             # (1) Uniform Acceptance Pattern
+            # 
             #     Use one trace as prototype to generate the mapping of 
-            #     pre-context flag vs. acceptance.
-            prototype          = TheTraceList[0]
+            #     pre-context flag vs. acceptance. Acceptance behavior is
+            #     the same for all possible paths. No storage required.
+            prototype          = ThePathTraceList[0]
             acceptance_checker = map(lambda x: DropOut_AcceptanceCheckerElement(x.pre_context_id, x.pattern_id), 
                                      prototype.acceptance_trace)
         else:
             # (2) Non-Uniform Acceptance Patterns
             #
-            #     Different paths to one state result in different acceptances. There is only one
-            #     way to handle this:
+            #     Different paths to one state result in different acceptances. 
+            #     There is only one way to handle this:
             #
-            #     -- The acceptance must be stored when it occurs, and
-            #     -- It must be restored here.
+            #         -- The acceptance must be stored when it occurs, and
+            #         -- It must be restored here.
+            #
             acceptance_checker.append(DropOut_AcceptanceCheckerElement(E_PreContextIDs.NONE, E_AcceptanceIDs.VOID))
 
             # Triggering states need to store acceptance as soon as they are entered
-            for trace in TheTraceList:
-                for element in trace.acceptance_trace:
-                    accepting_state = self.__state_db[element.accepting_state_index]
-                    accepting_state.entry.doors_accept(element.pattern_id, element.pre_context_id)
+            for trace in ThePathTraceList:
+                self.__require_acceptance_storage_list.extend(trace.acceptance_trace)
 
         # Terminal Router
         for pattern_id, info in self.__position_info_db[state.index].iteritems():
@@ -227,10 +211,6 @@ class Analyzer:
             # needs to be informed.
             if info.transition_n_since_positioning != E_TransitionN.VOID: continue
     
-            # Register the states that store a certain post context. This is only needed
-            # later when equivalent storing states are identified.
-            self.__store_constellation_db[pattern_id].update(info.positioning_state_index_set)
-
             # Pattern 'Failure' is always associated with the init state and the
             # positioning is uniformly 'lexeme_start_p + 1' (and never undefined, i.e. None).
             assert pattern_id != E_AcceptanceIDs.FAILURE
@@ -275,33 +255,31 @@ class Analyzer:
             result.terminal_router  = filter(lambda x: x.acceptance_id in checked_pattern_id_list, 
                                              terminal_router)
 
-        ##DEBUG:
         result.trivialize()
         return result
 
-    def analyze_positioning(self, TheTraceList):
+    def analyze_positioning(self, ThePathTraceList):
         """A given state can be reached by (possibly) multiple paths from the
-           initial state. Each path relates to an 'Trace' object that is
-           determined by passed acceptance states.
+           initial state. Each path relates to an 'PathTrace' object that is
+           determined by passed acceptance states and store-input-position states.
 
            Arrange the information for each acceptance id: It is determined if
-           for a given acceptance id, the path to the current state is of fixed
-           length or not. Further information is accumulated in PositioningInfo
-           objects. 
-
+           for a given acceptance id, the path from 'store-input-position' 
+           'restore-input-position' is of fixed length or not. 
+           
            RETURNS:
 
-                     map: acceptance_id --> PositioningInfo
+                     map: pattern_id --> PositioningInfo
 
         """
         class PositioningInfo(object):
             __slots__ = ("transition_n_since_positioning", 
                          "pre_context_id", 
                          "positioning_state_index_set")
-            def __init__(self, TraceElement):
-                self.transition_n_since_positioning = TraceElement.transition_n_since_positioning
-                self.positioning_state_index_set    = set([ TraceElement.positioning_state_index ])
-                self.pre_context_id                 = TraceElement.pre_context_id
+            def __init__(self, PathTraceElement):
+                self.transition_n_since_positioning = PathTraceElement.transition_n_since_positioning
+                self.positioning_state_index_set    = set([ PathTraceElement.positioning_state_index ])
+                self.pre_context_id                 = PathTraceElement.pre_context_id
 
             def __repr__(self):
                 txt  = ".transition_n_since_positioning = %s\n" % repr(self.transition_n_since_positioning)
@@ -313,7 +291,7 @@ class Analyzer:
         # -- If the positioning differs for one element in the trace list, or 
         # -- one element has undetermined positioning, 
         # => then the acceptance relates to undetermined positioning.
-        for trace in TheTraceList:
+        for trace in ThePathTraceList:
             for element in trace.acceptance_trace:
                 prototype = positioning_info_by_pattern_id.get(element.pattern_id)
                 if prototype is None:
@@ -327,10 +305,10 @@ class Analyzer:
 
         return positioning_info_by_pattern_id
 
-    def analyze_acceptance_uniformity(self, TheTraceList):
+    def analyze_acceptance_uniformity(self, ThePathTraceList):
         """Acceptance Uniformity:
 
-               For each trace in TheTraceList, it holds that for
+               For each trace in ThePathTraceList, it holds that for
                any given pre-context: The trace accepts the same pattern.
         
            Consequently, the following cases cancel uniformity:
@@ -358,12 +336,12 @@ class Analyzer:
            RETURNS: True  -- uniform.
                     False -- not uniform.
         """
-        prototype   = TheTraceList[0]
+        prototype   = ThePathTraceList[0]
         id_sequence = prototype.prioritized_pre_context_id_list
 
         # Check (1) and (2)
         for trace in ifilter(lambda trace: id_sequence != trace.prioritized_pre_context_id_list,
-                             islice(TheTraceList, 1, None)):
+                             islice(ThePathTraceList, 1, None)):
             return False
 
         # If the function did not return yet, then (1) and (2) are negative.
@@ -376,7 +354,7 @@ class Analyzer:
         pattern_id = prototype.get(E_PreContextIDs.NONE).pattern_id
         # Iterate over remainder (Prototype is not considered)
         for trace in ifilter(lambda trace: pattern_id != trace.get(E_PreContextIDs.NONE).pattern_id, 
-                             islice(TheTraceList, 1, None)):
+                             islice(ThePathTraceList, 1, None)):
             return False
 
         # -- Begin-of-Line 
@@ -388,7 +366,7 @@ class Analyzer:
             # According to (1) every trace will contain 'begin-of-line' pre-context
             acceptance_id = x.pattern_id
             for trace in ifilter(lambda trace: trace.get(E_PreContextIDs.BEGIN_OF_LINE).pattern_id != acceptance_id,
-                                 islice(TheTraceList, 1, None)):
+                                 islice(ThePathTraceList, 1, None)):
                 return False
 
         # Checks (1), (2), and (3) did not find anything 'bad' --> uniform acceptance.
@@ -540,7 +518,7 @@ class BASE_Entry(object):
 
 # EntryAction_StoreInputPosition: 
 #
-# Storing the input position is actually dependent of the pre_context_id, if 
+# Storing the input position is actually dependent on the pre_context_id, if 
 # there is one. The pre_context_id is left out for the following reasons:
 #
 # -- Testing the pre_context_id is not necessary.
