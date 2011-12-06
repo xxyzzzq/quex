@@ -106,7 +106,7 @@ class Analyzer:
         #
         self.__position_info_db = {}
         for state_index, trace_list in self.__trace_db.iteritems():
-            self.__position_info_db[state_index] = self.analyze_positioning(trace_list)
+            self.__position_info_db[state_index] = self.multi_path_positioning_analysis(trace_list)
 
         # (*) Drop Out Behavior
         #     The PathTrace objects tell what to do at drop_out. From this, the
@@ -116,55 +116,69 @@ class Analyzer:
         for state_index, trace_list in self.__trace_db.iteritems():
             state = self.__state_db[state_index]
             # trace_list: PathTrace objects for each path that guides through state.
-            state.drop_out = self.get_drop_out_object(state, trace_list)
+            self.configure_drop_out(state, trace_list)
 
         # (*) Entry Behavior
         #     Implement the required entry actions.
-        self.determine_entry_behavior()
+        self.configure_entries()
+
+        # (*) Position Register Map (Used in 'optimizer.py')
+        self.__position_register_map = position_register_map.do(self)
 
     @property
-    def trace_db(self):              return self.__trace_db
+    def trace_db(self):                    return self.__trace_db
     @property
-    def state_db(self):              return self.__state_db
+    def state_db(self):                    return self.__state_db
     @property
-    def init_state_index(self):      return self.__init_state_index
+    def init_state_index(self):            return self.__init_state_index
     @property
-    def position_register_map(self): return self.__position_register_map
+    def position_register_map(self):       return self.__position_register_map
     @property
-    def state_machine_id(self):      return self.__state_machine_id
+    def state_machine_id(self):            return self.__state_machine_id
     @property
-    def engine_type(self):           return self.__engine_type
+    def engine_type(self):                 return self.__engine_type
+    @property
+    def position_info_db(self):            return self.__position_info_db
+    @property
+    def acceptance_state_index_list(self): return self.__acceptance_state_index_list
     @property
     def from_db(self):
         """Map: state_index --> list of states that enter it."""
         return self.__from_db
-    @property
-    def acceptance_state_index_list(self):
-        return self.__acceptance_state_index_list
-    @property
-    def position_info_db(self): 
-        return self.__position_info_db
+    def last_acceptance_variable_required(self):
+        """If one entry stores the last_acceptance, then the 
+           correspondent variable is required to be defined.
+        """
+        if self.__engine_type != E_EngineTypes.FORWARD: return False
+        for entry in imap(lambda x: x.entry, self.__state_db.itervalues()):
+            if entry.has_accepter(): return True
+        return False
 
-    def get_drop_out_object(self, state, ThePathTraceList):
-        """This class computes a 'DropOut' object, i.e. some data that tells
-           what has to happen if nothing in the transition map triggers.  It
-           does so based on the computed traces produced by the track analysis.
+    def configure_drop_out(self, state, ThePathTraceList):
+        """Every analysis step ends with a 'drop-out'. At this moment it is
+           decided what pattern has won. Also, the input position pointer
+           must be set so that it indicates the right location where the
+           next step starts the analysis. 
 
-           DropOut objects contain two elements:
+           Consequently, a drop-out action contains two elements:
 
-               -- An Acceptance Detector: Dependent on the fulfilled 
-                  pre-contexts a winning pattern is determined.
+            -- Acceptance Checker: Dependent on the fulfilled pre-contexts a
+               winning pattern is determined. 
 
-               -- Terminal Routing: Dependent on the acceptance the 
-                  input position is modified and the terminal containing
-                  the pattern action is entered.
+               If acceptance depends on stored acceptances, a request is raised
+               at each accepting state that is has to store its acceptance in 
+               variable 'last_acceptance'.
 
-           The input position modification may contain a 'restore'. In that
-           case the correspondent Entry objects of the storing states are
-           modified, so that they store the input position.
+            -- Terminal Router: Dependent on the accepted pattern the input
+               position is modified and the terminal containing the pattern
+               action is entered.
+
+               If the input position is restored from a position register, 
+               then the storing states are requested to store the input
+               position.
 
            --------------------------------------------------------------------
-        
+           HINT:
            A state may be reached via multiple paths. For each path there is a
            separate PathTrace. Each PathTrace tells what has to happen in the state
            depending on the pre-contexts being fulfilled or not (if there are
@@ -173,23 +187,20 @@ class Analyzer:
         assert len(ThePathTraceList) != 0
         result = DropOut()
 
-        # (*) Acceptance Detector
-        uniformity_f = self.analyze_acceptance_uniformity(ThePathTraceList)
-        if uniformity_f:
-            # (1) Uniform Acceptance Pattern
+        # (*) Acceptance Checker
+        if self.multi_path_acceptance_analysis(ThePathTraceList):
+            # (i) Uniform Acceptance Pattern for all paths through the state.
             # 
-            #     Use one trace as prototype to generate the mapping of 
-            #     pre-context flag vs. acceptance. Acceptance behavior is
-            #     the same for all possible paths. No storage required.
-            prototype          = ThePathTraceList[0]
+            #     Use one trace as prototype. No related state needs to store
+            #     acceptance at entry. 
+            prototype = ThePathTraceList[0]
             for x in prototype.acceptance_trace:
                 result.accept(x.pre_context_id, x.pattern_id)
                 # No further checks after unconditional acceptance necessary
                 if     x.pre_context_id == E_PreContextIDs.NONE \
                    and x.pattern_id     != E_AcceptanceIDs.FAILURE: break
-
         else:
-            # (2) Non-Uniform Acceptance Patterns
+            # (ii) Non-Uniform Acceptance Patterns
             #
             #     Different paths to one state result in different acceptances. 
             #     There is only one way to handle this:
@@ -198,30 +209,32 @@ class Analyzer:
             #         -- It must be restored here.
             #
             result.accept(E_PreContextIDs.NONE, E_AcceptanceIDs.VOID)
-            # Triggering states need to store acceptance as soon as they are entered
+
+            # Dependency: Related states are required to store acceptance at state entry.
             for trace in ThePathTraceList:
                 self.__require_acceptance_storage_list.extend(trace.acceptance_trace)
 
-        # Terminal Router
+        # (*) Terminal Router
         for pattern_id, info in self.__position_info_db[state.index].iteritems():
-            assert pattern_id != E_AcceptanceIDs.VOID
             result.route_to_terminal(pattern_id, info.transition_n_since_positioning)
 
-            # If the positioning is all determined, then no 'triggering' state
-            # needs to be informed.
-            if info.transition_n_since_positioning != E_TransitionN.VOID: continue
-    
-            # Pattern 'Failure' is always associated with the init state and the
-            # positioning is 'lexeme_start_p + 1' (and never undefined, i.e. None).
-            assert pattern_id != E_AcceptanceIDs.FAILURE
-
-            # Follower states of triggering states need to store the position
-            self.__require_position_storage_list.append((state.index, pattern_id, info))
+            if info.transition_n_since_positioning == E_TransitionN.VOID: 
+                # Request the storage of the position from related states.
+                self.__require_position_storage_list.append((state.index, pattern_id, info))
 
         result.trivialize()
-        return result
+        state.drop_out = result
 
-    def determine_entry_behavior(self):
+    def configure_entries(self):
+        """During the generation of drop-out actions for states the requirements
+           for entry actions into states have been derived. This function 
+           implements those requirements.
+
+           As an optimization, it tries to postpone the acceptance and input
+           position storage as much as possible, so that every lexeme that
+           passes only to the non-storing segment profits from not having
+           to store the input position.
+        """
         for element in self.__require_acceptance_storage_list:
             entry = self.__state_db[element.accepting_state_index].entry
             entry.doors_accept(element.pattern_id, element.pre_context_id)
@@ -242,22 +255,33 @@ class Analyzer:
                                       PreContextID     = info.pre_context_id, \
                                       PositionRegister = pattern_id)
 
-        # (*) Position Register Map (Used in 'optimizer.py')
-        self.__position_register_map = position_register_map.do(self)
+    def multi_path_positioning_analysis(self, ThePathTraceList):
+        """This function draws conclusions on the input positioning behavior at
+           drop-out based on different paths through the same state.  Basis for
+           the analysis are the PathTrace objects of a state specified as
+           'ThePathTraceList'.
 
-    def analyze_positioning(self, ThePathTraceList):
-        """A given state can be reached by (possibly) multiple paths from the
-           initial state. Each path relates to an 'PathTrace' object that is
-           determined by passed acceptance states and store-input-position states.
+           RETURNS: For a given state's PathTrace list a dictionary that maps:
 
-           Arrange the information for each acceptance id: It is determined if
-           for a given acceptance id, the path from 'store-input-position' 
-           'restore-input-position' is of fixed length or not. 
+                               pattern_id --> PositioningInfo
+
+           --------------------------------------------------------------------
            
-           RETURNS:
+           There are the following alternatives for setting the input position:
+           
+              (1) 'lexeme_start_p + 1' in case of failure.
 
-                     map: pattern_id --> PositioningInfo
+              (2) 'input_p + offset' if the number of transitions between
+                  any storing state and the current state is does not differ 
+                  dependent on the path taken (and does not contain loops).
+           
+              (3) 'input_p = position_register[i]' if (1) and (2) are not
+                  not the case.
 
+           The detection of loops has been accomplished during the construction
+           of the PathTrace objects for each state. This function focusses on
+           the possibility to have different paths to the same state with
+           different positioning behaviors.
         """
         class PositioningInfo(object):
             __slots__ = ("transition_n_since_positioning", 
@@ -280,6 +304,8 @@ class Analyzer:
         # => then the acceptance relates to undetermined positioning.
         for trace in ThePathTraceList:
             for element in trace.acceptance_trace:
+                assert element.pattern_id != E_AcceptanceIDs.VOID
+
                 prototype = positioning_info_by_pattern_id.get(element.pattern_id)
                 if prototype is None:
                     positioning_info_by_pattern_id[element.pattern_id] = PositioningInfo(element)
@@ -292,11 +318,25 @@ class Analyzer:
 
         return positioning_info_by_pattern_id
 
-    def analyze_acceptance_uniformity(self, ThePathTraceList):
-        """Acceptance Uniformity:
+    def multi_path_acceptance_analysis(self, ThePathTraceList):
+        """This function draws conclusions on the input positioning behavior at
+           drop-out based on different paths through the same state.  Basis for
+           the analysis are the PathTrace objects of a state specified as
+           'ThePathTraceList'.
 
-               For each trace in ThePathTraceList, it holds that for
-               any given pre-context: The trace accepts the same pattern.
+           RETURNS: True - if all paths through a state have the same acceptance
+                           pattern. That is for any setup of pre-contexts being
+                           fulfilled, the same pattern is accepted independent
+                           of the path taken.
+
+                    False - if the aforementioned is not the case.
+
+           --------------------------------------------------------------------
+
+           Acceptance Uniformity:
+
+               For each trace in ThePathTraceList, it holds that for any given
+               pre-context: The trace accepts the same pattern.
         
            Consequently, the following cases cancel uniformity:
 
@@ -358,15 +398,6 @@ class Analyzer:
 
         # Checks (1), (2), and (3) did not find anything 'bad' --> uniform acceptance.
         return True
-
-    def last_acceptance_variable_required(self):
-        """If one entry stores the last_acceptance, then the 
-           correspondent variable is required to be defined.
-        """
-        if self.__engine_type != E_EngineTypes.FORWARD: return False
-        for entry in imap(lambda x: x.entry, self.__state_db.itervalues()):
-            if entry.has_accepter(): return True
-        return False
 
     def __iter__(self):
         for x in self.__state_db.values():
