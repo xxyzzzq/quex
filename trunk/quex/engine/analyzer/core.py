@@ -44,7 +44,7 @@ from   quex.blackboard  import E_StateIndices, \
 
 from   collections      import defaultdict, namedtuple
 from   operator         import itemgetter, attrgetter
-from   itertools        import islice, ifilter, imap
+from   itertools        import islice, ifilter, imap, izip
 from   quex.blackboard  import setup as Setup
 
 def do(SM, EngineType=E_EngineTypes.FORWARD):
@@ -188,7 +188,8 @@ class Analyzer:
         result = DropOut()
 
         # (*) Acceptance Checker
-        if self.multi_path_acceptance_analysis(ThePathTraceList):
+        uniform_f = self.multi_path_acceptance_analysis(ThePathTraceList)
+        if uniform_f:
             # (i) Uniform Acceptance Pattern for all paths through the state.
             # 
             #     Use one trace as prototype. No related state needs to store
@@ -324,79 +325,30 @@ class Analyzer:
            the analysis are the PathTrace objects of a state specified as
            'ThePathTraceList'.
 
-           RETURNS: True - if all paths through a state have the same acceptance
-                           pattern. That is for any setup of pre-contexts being
-                           fulfilled, the same pattern is accepted independent
-                           of the path taken.
-
-                    False - if the aforementioned is not the case.
-
-           --------------------------------------------------------------------
-
            Acceptance Uniformity:
 
-               For each trace in ThePathTraceList, it holds that for any given
-               pre-context: The trace accepts the same pattern.
-        
-           Consequently, the following cases cancel uniformity:
+               For any possible path to 'this' state the acceptance pattern is
+               the same. That is, it accepts exactly the same pattern under the
+               same pre contexts and in the same sequence of precedence.
 
-           (1) There is a pre-context that is not present in another trace.
-           
-           Assumed (1) does not hold than every trace has the same set of
-           pre-contexts. 
+           The very nice thing is that the 'acceptance_trace' of a PathTrace
+           object reflects the precedence of acceptance. Thus, one can simply
+           compare the acceptance trace objects of each PathTrace.
 
-           (2) The precedence of the pre-contexts differs.
+           RETURNS: True  - uniform acceptance pattern.
+                    False - acceptance pattern is not uniform.
 
-           Assumed (2) does not hold then all traces check the pre-contexts
-           with the same precedence (Precedence first depends on path-length, 
-           then on pattern-id).
-
-           (3) A pre-context that may accept more than one pattern, accepts
-               different patterns. This is possible for the 'begin-of-line'
-               pattern that may prefix multiple patterns, and the 'no-pre-context'
-               of normal patterns.
-
-           If the checks (1), (2), and (3) are passed negative, then the traces
-           are indeed uniform. This means, that the drop-out does not have to
-           rely on stored acceptances.
-
-           RETURNS: True  -- uniform.
-                    False -- not uniform.
         """
-        prototype   = ThePathTraceList[0]
-        id_sequence = prototype.prioritized_pre_context_id_list
+        prototype = ThePathTraceList[0].acceptance_trace
 
         # Check (1) and (2)
-        for trace in ifilter(lambda trace: id_sequence != trace.prioritized_pre_context_id_list,
-                             islice(ThePathTraceList, 1, None)):
-            return False
+        for path_trace in islice(ThePathTraceList, 1, None):
+            acceptance_trace = path_trace.acceptance_trace
+            if len(prototype) != len(acceptance_trace):    return False
+            for x, y in izip(prototype, acceptance_trace):
+                if   x.pre_context_id != y.pre_context_id: return False
+                elif x.pattern_id     != y.pattern_id:     return False
 
-        # If the function did not return yet, then (1) and (2) are negative.
-
-        # Check (3)
-        # Pre-Context: 'Begin-of-Line' and 'No-Pre-Context' may trigger
-        #              different pattern_ids.
-
-        # -- No Pre-Context (must be in every trace)
-        pattern_id = prototype.get(E_PreContextIDs.NONE).pattern_id
-        # Iterate over remainder (Prototype is not considered)
-        for trace in ifilter(lambda trace: pattern_id != trace.get(E_PreContextIDs.NONE).pattern_id, 
-                             islice(ThePathTraceList, 1, None)):
-            return False
-
-        # -- Begin-of-Line 
-        x = prototype.get(E_PreContextIDs.BEGIN_OF_LINE)
-        if x is None:
-            # According to (1) no other trace will have a Begin-of-Line pre-context
-            pass
-        else:
-            # According to (1) every trace will contain 'begin-of-line' pre-context
-            acceptance_id = x.pattern_id
-            for trace in ifilter(lambda trace: trace.get(E_PreContextIDs.BEGIN_OF_LINE).pattern_id != acceptance_id,
-                                 islice(ThePathTraceList, 1, None)):
-                return False
-
-        # Checks (1), (2), and (3) did not find anything 'bad' --> uniform acceptance.
         return True
 
     def __iter__(self):
@@ -404,7 +356,7 @@ class Analyzer:
             yield x
 
     def __repr__(self):
-        # Provide some type of order that is oriented vs. the content of the states.
+        # Provide some type of order that is oriented towards the content of the states.
         # This helps to compare analyzers where the state identifiers differ, but the
         # states should be the same.
         def order(X):
@@ -493,24 +445,24 @@ class AnalyzerState(object):
         self._origin_list = state.origins().get_list()
 
     @property
+    def index(self):                  return self.__index
+    def set_index(self, Value):       assert isinstance(Value, long); self.__index = Value
+    @property
+    def init_state_f(self):           return self.__init_state_f
+    @property
+    def init_state_forward_f(self):   return self.__init_state_f and self.__engine_type == E_EngineTypes.FORWARD
+    @property
+    def engine_type(self):            return self.__engine_type
+    def set_engine_type(self, Value): assert Value in E_EngineTypes; self.__engine_type = Value     
+    @property
+    def target_index_list(self):      return self.__target_index_list
+    @property
     def transition_map_empty_f(self): 
         L = len(self.transition_map)
         if   L > 1:  return False
         elif L == 0: return True
         elif self.transition_map[0][1] == E_StateIndices.DROP_OUT: return True
         return False
-    @property
-    def index(self):                return self.__index
-    def set_index(self, Value):     assert isinstance(Value, long); self.__index = Value
-    @property
-    def init_state_f(self):         return self.__init_state_f
-    @property
-    def init_state_forward_f(self): return self.__init_state_f and self.__engine_type == E_EngineTypes.FORWARD
-    @property
-    def engine_type(self):            return self.__engine_type
-    def set_engine_type(self, Value): assert Value in E_EngineTypes; self.__engine_type = Value     
-    @property
-    def target_index_list(self):    return self.__target_index_list
 
     def get_string_array(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
         txt = [ "State %s:\n" % repr(self.index).replace("L", "") ]
@@ -588,114 +540,17 @@ class EntryAction_AcceptPattern(object):
 class Entry(BASE_Entry):
     """An entry has potentially two tasks:
     
-          (1) Storing information about positioning. This action may depend
-              on the state where we come from. There are two possibilities:
+          (1) Storing information about positioning represented by objects 
+              of type 'EntryAction_StoreInputPosition'.
 
-              (i) The entries to the state differ in their 'position storage 
-                  behavior'. In this case, the origin of the states must be
-                  mentioned, i.e.
+          (2) Storing information about an acceptance. represented by objects
+              of type 'EntryAction_StoreInputPosition'.
+              
+       Entry actions are relative from which state it is entered. Thus, an 
+       object of this class contains a dictionary that maps:
 
-                     _4711_from_815:  position[34] = input_p; goto _4711;
-                     _4711_from_17:   position[3]  = input_p; goto _4711;
-                     _4711_from_147:  position[41] = input_p; goto _4711;
-                     _4711_from_461:  position[71] = input_p; goto _4711;
-                     _4711:
-                         ...
-                        (it follows: accepter)
+                 from_state_index  --> list of entry actions
 
-              (ii) All states enter with the same 'position storage behavior'.
-                    
-                    _4711:
-                        position[3] = _input_p;
-                        position[7] = _input_p;
-                        ...
-                        (it follows: accepter)
-
-              The positioner may also be pre-context dependent, i.e. something like
-
-                       if( pre_context_34_f ) position[12] = _input_p;
-                       ...
-                  
-          (2) Storing information about an acceptance. This action is independent
-              from the state that we come from. It may depend, though, on the 
-              pre-context, i.e.
-
-                    (positioning terminated)
-                    ...
-                    if( pre_context_341_f ) last_acceptance = 34;
-                    if( pre_context_12_f )  last_acceptance = 31;
-                    if( pre_context_55_f )  last_acceptance = 34;
-
-       (*) Positioner
-
-       Depending on the post-context any pre-context may later on win. Thus, 
-
-                /* 'Positioner' */
-                if( pre_context_5_f ) { position[LastAcceptance] = input_p; }
-                if( pre_context_7_f ) { position_register[23]    = input_p; }
-                if( pre_context_9_f ) { position[LastAcceptance] = input_p; }
-                position[LastAcceptance] = input_p; 
-       
-       The list is not sorted and it is not exclusive, line 1 and 2 are redundant
-       since the same job is done by line 4 for both in any case. The information
-       about position storage is done by a dictionary '.positioner' which maps:
-
-                .positioner:  post-context-id  --> list of pre-context-ids
-
-       Note: 
-       
-       "post-context-id == E_PostContextIDs.NONE" stands for no post-context 
-                           ('normal' pattern)  
-       "pre-context-id == E_PreContextIDs.NONE" in the pre-context-id list 
-                          stands for the unconditional case (also 'normal').
-
-       (*) Accepter:
-
-       For the second task mentioned, some 'accepter' sequence needs to be applied, 
-       such as
-
-                /* 'Accepter' */
-                if     ( pre_context_5_f ) { last_acceptance_id = 15; }
-                else if( pre_context_7_f ) { last_acceptance_id = 18; }
-                else if( pre_context_9_f ) { last_acceptance_id = 21; }
-                else                       { last_acceptance_id = 32; }
-
-       where the last line handles the case that no-pre-context has to be handled. Note,
-       that the list is:
-
-                -- sorted by pattern_id (acceptance_id) since this denotes the
-                   precedence of the patterns.
-
-                -- it is exclusive, because only one pattern can win.
-
-       The data structure that describes this is the dictionary '.accepter' that maps:
-
-               .accepter:    pre-context-id --> acceptance_id 
-
-       Where 'acceptance_id' >= 0     means a 'real' acceptance_id is to be stored
-                             is None  means, that nothing is to be done.
-
-       The sequence is solely determined by the acceptance id, so no further 
-       information must be available. At code-construction time the sorted
-       list may be used, i.e.
-          
-               for x in sorted(entry.accepter.iteritems(), key=itemgetter(1)):
-                   ...
-                   if pre_context_id is None: break
-
-       To facilitate this, the function '.get_accepter' delivers a sorted list
-       of accepting entries.
-
-       NOTE: This type supports being a dictionary key by '__hash__' and '__eq__'.
-             Required for the optional 'template compression'.
-
-       MEMBERS:
-
-          .positioner_db[from_state_index] = (pattern_id, pre_context_id_set)
-  
-          When the state is entered via 'from_state_index' and one of the pre-contexts
-          in the 'pre_context_id_set' is fullfilled, then the position of 'pattern_id'
-          must be stored.
     """
     __slots__ = ("__uniform_doors_f", "__doors_db")
 
@@ -1084,7 +939,7 @@ class DropOut(object):
         """If there is only one acceptance involved and no pre-context,
            then the drop-out action can be trivialized.
 
-           RETURNS: None                  -- if the drop out is not trivial
+           RETURNS: None                          -- if the drop out is not trivial
                     DropOut_TerminalRouterElement -- if the drop-out is trivial
         """
         if E_AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK in imap(lambda x: x.acceptance_id, self.terminal_router):
