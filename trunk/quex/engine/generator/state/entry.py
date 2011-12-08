@@ -15,8 +15,7 @@ def do(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
                         drop out is required.
                 False -- if no further code is required.
     """
-    LanguageDB          = Setup.language_db
-    PositionRegisterMap = TheAnalyzer.position_register_map
+    LanguageDB = Setup.language_db
 
     if      UnreachablePrefixF \
         and (    (not TheState.init_state_f) \
@@ -28,7 +27,7 @@ def do(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
     entry = TheState.entry
 
     if isinstance(entry, Entry):
-        _doors(txt, TheState, PositionRegisterMap, LabelF)
+        _doors(txt, TheState, LabelF)
         _accepter(txt, TheState.entry.get_accepter())
 
     elif isinstance(entry, EntryBackward):
@@ -42,7 +41,7 @@ def do(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
         LanguageDB.STATE_ENTRY(txt, TheState, BIPD_ID=TheAnalyzer.state_machine_id)
     return True
 
-def _doors(txt, TheState, PositionRegisterMap, LabelF):
+def _doors(txt, TheState, LabelF):
     LanguageDB = Setup.language_db
     TheEntry   = TheState.entry
 

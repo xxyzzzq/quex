@@ -32,10 +32,10 @@ State 2:
 
 
 State 0:
-        [FAILURE]: NONE/set([NONE])
+        [FAILURE]: NONE/set([0L])
 
 State 1:
-        [FAILURE]: NONE/set([NONE])
+        [FAILURE]: NONE/set([0L])
         [      3]: 6/set([1L])
 
 State 2:

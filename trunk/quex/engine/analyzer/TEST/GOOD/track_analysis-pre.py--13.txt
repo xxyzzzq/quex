@@ -76,24 +76,24 @@ State 4:
 
 
 State 0:
-        [FAILURE]: NONE/set([NONE])
+        [FAILURE]: NONE/set([0L])
 
 State 1:
-        [FAILURE]: NONE/set([NONE])
+        [FAILURE]: NONE/set([0L])
         [      3]: 6/set([1L])
 
 State 2:
-        [FAILURE]: NONE/set([NONE])
+        [FAILURE]: NONE/set([0L])
         [      3]: 6/set([1L])
         [     10]: 13/set([4L])
 
 State 3:
-        [FAILURE]: NONE/set([NONE])
+        [FAILURE]: NONE/set([0L])
         [      3]: 6/set([1L])
         [     10]: 13/set([4L])
         [     23]: 26/set([3L])
 
 State 4:
-        [FAILURE]: NONE/set([NONE])
+        [FAILURE]: NONE/set([0L])
         [     10]: 13/set([4L])
 

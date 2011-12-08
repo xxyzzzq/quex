@@ -26,8 +26,9 @@ from   quex.blackboard              import E_StateIndices, E_PostContextIDs, E_A
 from   quex.engine.misc.tree_walker import TreeWalker
 
 from   operator    import attrgetter
-from   itertools   import ifilter, chain, islice
+from   itertools   import ifilter, chain, islice, izip
 from   collections import defaultdict
+from   copy        import copy
 import sys
 
 def do(SM):
@@ -180,8 +181,9 @@ class TrackAnalysis:
                 #             time, see bug-2257908.sh in $QUEX_PATH/TEST).
                 # 
                 existing_trace_list = self.result.get(StateIndex) 
-                if trace in existing_trace_list:
-                    return None # Refuse further processing of the node
+                for candidate in existing_trace_list:
+                    if trace.is_equivalent(candidate):
+                        return None # Refuse further processing of the node
 
                 # (*) Mark the current state with its acceptance trace
                 self.result[StateIndex].append(trace)
@@ -285,11 +287,10 @@ class PathTrace(object):
             self.__acceptance_trace = [] 
         else:
             self.__acceptance_trace = [ 
-                  AcceptInfo(PreContextID                 = E_PreContextIDs.NONE, 
-                             PatternID                    = E_AcceptanceIDs.FAILURE, 
-                             AcceptingStateIndex          = InitStateIndex, 
-                             TransitionN_SincePositioning = E_TransitionN.LEXEME_START_PLUS_ONE,              
-                             PositioningStateIndex        = E_StateIndices.NONE), 
+                  AcceptInfo(PreContextID         = E_PreContextIDs.NONE, 
+                             PatternID            = E_AcceptanceIDs.FAILURE, 
+                             AcceptingStateIndex  = InitStateIndex, 
+                             PathSincePositioning = [InitStateIndex])              
             ]
         self.__storage_db = {}
 
@@ -321,27 +322,13 @@ class PathTrace(object):
         """
         # Some experimenting has shown that the number of unnecessary cloning,
         # i.e.  when there would be no change, is negligible. The fact that
-        # '.transition_n_since_positioning' has almost always to be adapted,
+        # '.path_since_positioning()' has almost always to be adapted,
         # makes selective cloning meaningless. So, it is done the safe way:
         result = self.clone() # Always clone. 
 
-        # (1) Update '.transition_n_since_positioning'
-        #     If a loop from .positioning_state_index to 'this state' is detected,
-        #     then it is set to 'void'. If not it is incremented by one.
+        # (1) Update '.path_since_positioning'
         for entry in chain(result.__acceptance_trace, result.__storage_db.itervalues()):
-            # If .transition_n_since_positioning == 'lexeme_start_p + 1' or 'void' 
-            # then it shall not be changed.
-            #
-            # If '.transition_n_since_positioning == void' and '.positioning_state_index' 
-            # is reached again, it would strictly have to be set to '0' again. But, 
-            # this happens below in (2) automatically when the existing object is replaced.
-            if not isinstance(entry.transition_n_since_positioning, (int, long)): continue
-
-            # Is there a loop from 'positioning_state_index' to result state?
-            if result.__check_loop(Path, entry.positioning_state_index, StateIndex):
-                entry.transition_n_since_positioning = E_TransitionN.VOID
-            else:
-                entry.transition_n_since_positioning += 1
+            entry.path_since_positioning_append(StateIndex)
 
         # (2) Update '.__acceptance_trace' and '.__storage_db' according to occurring
         #     acceptances and store-input-position events.
@@ -354,7 +341,7 @@ class PathTrace(object):
 
             # Store Input Position Information
             if origin.input_position_store_f():
-                result.__storage_db[origin.pattern_id()] = StoreInfo(StateIndex)
+                result.__storage_db[origin.pattern_id()] = StoreInfo([StateIndex])
 
         assert len(result.__acceptance_trace) >= 1
         return result
@@ -373,26 +360,23 @@ class PathTrace(object):
         pattern_id = Origin.pattern_id()
         if not Origin.input_position_restore_f():
             # 'Normal' patterns refer to the input position at the time of acceptance.
-            transition_n_since_positioning = 0
-            positioning_state_index        = StateIndex
+            path_since_positioning = [StateIndex]
         else:
             # Post contexted patterns refer to the input position at the time when
             # it was stored.
-            entry = self.__storage_db[pattern_id]
-            transition_n_since_positioning = entry.transition_n_since_positioning
-            positioning_state_index        = entry.positioning_state_index
+            entry                  = self.__storage_db[pattern_id]
+            path_since_positioning = entry.path_since_positioning
 
         # Reoccurring information about an acceptance overwrites previous occurrences.
         for entry_i in (i for i, x in enumerate(self.__acceptance_trace) \
-                          if x.pattern_id == pattern_id):
+                        if x.pattern_id == pattern_id):
             del self.__acceptance_trace[entry_i]
             # From the above rule, it follows that there is only one entry per pattern_id.
             break
 
         entry = AcceptInfo(Origin.pre_context_id(), pattern_id,
-                           AcceptingStateIndex          = StateIndex, 
-                           TransitionN_SincePositioning = transition_n_since_positioning,
-                           PositioningStateIndex        = positioning_state_index) 
+                           AcceptingStateIndex  = StateIndex, 
+                           PathSincePositioning = path_since_positioning) 
 
         # Insert at the beginning, because what comes last has the highest
         # priority.  (Philosophy of longest match). The calling function must
@@ -400,41 +384,32 @@ class PathTrace(object):
         # appear AFTER the lower prioritized ones.
         self.__acceptance_trace.insert(0, entry)
 
-    def __check_loop(self, Path, PositioningStateIndex, StateIndex):
-        """Check whether there is a loop on the path from the positioning state 
-           index to current state. 
-
-           A loop exists, if at least one state index appears more than once on
-           the path.  The easiest way to check for that is to compare the size
-           of the unique set to the size of the segment. If they are not equal
-           than state indices appeared twice or more often.
-
-           If the current state IS the position state again, then there is no 
-           loop. The position would be stored in the current state.
-        """
-        # Quick shortcut for a special case of the aforementioned condition:
-        if PositioningStateIndex == StateIndex: return False
-
-        # Find the LAST index of the position state index on the path
-        L = len(Path)
-        for inverse_path_i in (i for i, x in enumerate(reversed(Path)) if x == PositioningStateIndex):
-            psi_path_index = L - inverse_path_i
-            break
-        else:
-            assert False
-
-        segment_size = len(Path) - psi_path_index + 1 # '+1' for StateIndex
-        unique_set   = set(islice(Path, psi_path_index, None))
-        unique_set.add(StateIndex)
-        # If a state index appeared more than once, then the size of the unique set 
-        # and the size of the path segment differ.
-        return len(unique_set) != segment_size
-
     def get(self, PreContextID):
         """RETURNS: AcceptInfo object for a given PreContextID."""
         for entry in self.__acceptance_trace:
             if entry.pre_context_id == PreContextID: return entry
         return None
+
+    def is_equivalent(self, Other):
+        """This function determines whether the path trace described in Other is
+           equivalent to this trace. 
+        """
+        if   len(self.__acceptance_trace) != len(Other.__acceptance_trace): return False
+        elif len(self.__storage_db)       != len(Other.__storage_db):       return False
+
+        for x, y in izip(self.__acceptance_trace, Other.__acceptance_trace):
+            if   x.pattern_id                     != y.pattern_id:              return False
+            elif x.accepting_state_index          != y.accepting_state_index:   return False
+            elif x.positioning_state_index        != y.positioning_state_index: return False
+            elif x.transition_n_since_positioning != y.transition_n_since_positioning: return False
+
+        for x, y in izip(sorted(self.__storage_db.iteritems()), sorted(Other.__storage_db.iteritems())):
+            x_pattern_id, x_info = x
+            y_pattern_id, y_info = y
+            if   x_pattern_id                   != y_pattern_id:                   return False
+            elif x_info.loop_f                  != y_info.loop_f:                  return False
+            elif x_info.positioning_state_index != y_info.positioning_state_index: return False
+        return True
 
     def __eq__(self, Other):
         if self.__acceptance_trace != Other.__acceptance_trace: return False
@@ -451,7 +426,7 @@ class PathTrace(object):
         return not self.__eq__(self)
 
     def __repr__(self):
-        return "".join([repr(x) for x in self.__acceptance_trace])
+        return "".join([repr(x) for x in self.__acceptance_trace]) + "".join([repr(x) for x in self.__storage_db.iteritems()])
 
 class StoreInfo(object):
     """ABSTRACT:
@@ -473,8 +448,10 @@ class StoreInfo(object):
 
        'This state' means the state where the trace lead to. 
 
-       The member '.transition_n_since_positioning' is incremented at each
-       transition along a path. If a loop is detected it is set to value
+       The member '.path_since_positioning' gets one more state index appended
+       at each transition along a path. 
+       
+       If a loop is detected '.transition_n_since_positioning' returns
        'E_TransitionN.VOID'.
 
        The member '.positioning_state_index' is the state where the positioning
@@ -482,20 +459,42 @@ class StoreInfo(object):
        to 'this state, then the '.transition_n_since_positioning' is set to 
        'E_TransitionN.VOID' (see comment above).
     """
-    __slots__ = ('transition_n_since_positioning', 'positioning_state_index')
-    def __init__(self, PositioningStateIndex, TransitionN_SincePositioning=0):
-        self.transition_n_since_positioning = TransitionN_SincePositioning
-        self.positioning_state_index        = PositioningStateIndex
+    __slots__ = ('path_since_positioning', '__loop_f')
+    def __init__(self, PathSincePositioning):
+        self.path_since_positioning = PathSincePositioning
+        self.__loop_f               = (len(PathSincePositioning) != len(set(PathSincePositioning)))
+
+    def path_since_positioning_append(self, StateIndex):
+        if StateIndex in self.path_since_positioning: self.__loop_f = True
+        self.path_since_positioning.append(StateIndex)
+
+    @property
+    def loop_f(self):                         return self.__loop_f
+    @property
+    def transition_n_since_positioning(self): return self._transition_n_since_positioning
+
+    def _transition_n_since_positioning(self):
+        """The sole purpose for this function is to be callable by a derived class."""
+        if self.__loop_f: return E_TransitionN.VOID
+        return len(self.path_since_positioning) - 1
+
+    @property
+    def positioning_state_index(self):
+        return self.path_since_positioning[0]
 
     def is_equal(self, Other):
         return     self.transition_n_since_positioning == Other.transition_n_since_positioning \
-               and self.positioning_state_index        == Other.positioning_state_index
+               and self.positioning_state_index          == Other.positioning_state_index
 
     def clone(self):
-        return StoreInfo(self.positioning_state_index, 
-                         self.transition_n_since_positioning)
+        return StoreInfo(copy(self.path_since_positioning))
 
-class AcceptInfo(object):
+    def __repr__(self):
+        txt = ["---\n"]
+        txt.append("    .path_since_positioning         = %s\n" % repr(self.path_since_positioning))
+        return "".join(txt)
+
+class AcceptInfo(StoreInfo):
     """ABSTRACT: 
     
        Information about the acceptance behavior in a state which is a result
@@ -531,34 +530,39 @@ class AcceptInfo(object):
     """
     __slots__ = ("pre_context_id", 
                  "pattern_id", 
-                 "accepting_state_index", 
-                 "transition_n_since_positioning", 
-                 "positioning_state_index")
+                 "accepting_state_index") 
 
     def __init__(self, PreContextID, PatternID, 
                  AcceptingStateIndex, 
-                 TransitionN_SincePositioning, 
-                 PositioningStateIndex): 
-        self.pre_context_id                 = PreContextID
-        self.pattern_id                     = PatternID
-        self.transition_n_since_positioning = TransitionN_SincePositioning
-        self.accepting_state_index          = AcceptingStateIndex
-        self.positioning_state_index        = PositioningStateIndex
+                 PathSincePositioning): 
+        self.pre_context_id        = PreContextID
+        self.pattern_id            = PatternID
+        self.accepting_state_index = AcceptingStateIndex
+        StoreInfo.__init__(self, PathSincePositioning)
 
     def clone(self):
         result = AcceptInfo(self.pre_context_id, 
                             self.pattern_id, 
                             self.accepting_state_index, 
-                            self.transition_n_since_positioning, 
-                            self.positioning_state_index) 
+                            copy(self.path_since_positioning)) 
         return result
 
+    @property
+    def transition_n_since_positioning(self):
+        if self.pattern_id == E_AcceptanceIDs.FAILURE: 
+            return E_TransitionN.LEXEME_START_PLUS_ONE
+        return StoreInfo._transition_n_since_positioning(self)
+
+    @property
+    def positioning_state_index(self):
+        return self.path_since_positioning[0]
+
     def is_equal(self, Other):
-        if   self.pre_context_id                 != Other.pre_context_id:                    return False
-        elif self.pattern_id                     != Other.pattern_id:                        return False
-        elif self.transition_n_since_positioning != Other.transition_n_since_positioning:    return False
-        elif self.accepting_state_index          != Other.accepting_state_index:             return False
-        elif self.positioning_state_index        != Other.positioning_state_index:           return False
+        if   self.pre_context_id                 != Other.pre_context_id:                 return False
+        elif self.pattern_id                     != Other.pattern_id:                     return False
+        elif self.accepting_state_index          != Other.accepting_state_index:          return False
+        elif self.transition_n_since_positioning != Other.transition_n_since_positioning: return False
+        elif self.positioning_state_index        != Other.positioning_state_index:        return False
         return True
 
     def __eq__(self, Other):
