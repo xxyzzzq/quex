@@ -96,15 +96,16 @@ State 6:
     if PreContext_16: pos = position[PostContext_13] ; goto Pattern13;
     pos = lexeme_start_p + 1;  goto Failure;
 
+
 State 0:
-        [FAILURE]: NONE/set([NONE])
+        [FAILURE]: NONE/set([0L])
 
 State 1:
-        [FAILURE]: NONE/set([NONE])
+        [FAILURE]: NONE/set([0L])
         [      6]: 9/set([1L])
 
 State 2:
-        [FAILURE]: NONE/set([NONE])
+        [FAILURE]: NONE/set([0L])
         [      6]: 9/set([1L])
     (*) [     13]: 16/set([5L])
 
@@ -118,11 +119,11 @@ State 4:
         [    133]: 136/set([4L])
 
 State 5:
-        [FAILURE]: NONE/set([NONE])
+        [FAILURE]: NONE/set([0L])
         [     13]: 16/set([5L])
 
 State 6:
-        [FAILURE]: NONE/set([NONE])
+        [FAILURE]: NONE/set([0L])
     (*) [     13]: 16/set([5L])
 
 

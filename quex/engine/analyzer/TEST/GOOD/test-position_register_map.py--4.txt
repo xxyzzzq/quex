@@ -16,16 +16,16 @@ init-state = 0L
 
 Positioning Info __________________________________
 State 0:
-        [FAILURE]: NONE/set([NONE])
+        [FAILURE]: NONE/set([0L])
 
 State 1:
-        [FAILURE]: NONE/set([NONE])
+        [FAILURE]: NONE/set([0L])
 
 State 2:
-        [FAILURE]: NONE/set([NONE])
+        [FAILURE]: NONE/set([0L])
 
 State 3:
-        [FAILURE]: NONE/set([NONE])
+        [FAILURE]: NONE/set([0L])
     (*) [     13]: 16/set([1L])
     (*) [     30]: 33/set([1L])
     (*) [     47]: 50/set([1L])

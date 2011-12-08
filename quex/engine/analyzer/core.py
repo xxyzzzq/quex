@@ -486,6 +486,11 @@ class BASE_Entry(object):
         """Require derived classes to be more specific, if necessary."""
         return not self.uniform_doors_f()
 
+class EntryAction(object):
+    @staticmethod
+    def type_id():      assert False
+    def priority(self): assert False
+
 # EntryAction_StoreInputPosition: 
 #
 # Storing the input position is actually dependent on the pre_context_id, if 
@@ -511,6 +516,12 @@ class EntryAction_StoreInputPosition(object):
     def __init__(self, PreContextID, PositionRegister):
         self.pre_context_id    = PreContextID
         self.position_register = PositionRegister
+
+    # Require 'type_id' and 'priority' for sorting of entry actions.
+    @staticmethod
+    def type_id():      return 0
+    def priority(self): return - self.position_register
+
     # Require '__hash__' and '__eq__' to be element of a set.
     def __hash__(self):
         return 1
@@ -529,6 +540,12 @@ class EntryAction_AcceptPattern(object):
     def __init__(self, PreContextID, AcceptanceID):
         self.pre_context_id = PreContextID
         self.acceptance_id  = AcceptanceID
+
+    # Require 'type_id' and 'priority' for sorting of entry actions.
+    @staticmethod
+    def type_id():      return 1
+    def priority(self): return - self.acceptance_id
+
     # Require '__hash__' and '__eq__' to be element of a set.
     def __hash__(self):
         return 1
@@ -579,15 +596,14 @@ class Entry(BASE_Entry):
         total_size = len(self.__doors_db)
         # Note, that total_size can be '0' in the 'independent_of_source_state' case
         if self.__uniform_doors_f: return min(1, total_size)
-        else:                                    return total_size
+        else:                      return total_size
 
-    def _positioner_eq(self, Other):
-        if not self.__uniform_doors_f:
-            return self.__doors_db == Other.__doors_db
-        if len(self.__doors_db) == 0: return True
-        prototype_A = self.__doors_db.itervalues().next()
-        prototype_B = Other.__doors_db.itervalues().next()
-        return prototype_A == prototype_B
+    def door_actions(self, DoorID):
+        def criteria(Action):
+            return (Action.type_id(), Action.priority())
+        action_list = self.__doors_db[DoorID]
+        action_list.sort(key=criteria)
+        return action_list
 
     def get_accepter(self):
         """Returns information about the acceptance sequence. Lines that are dominated
@@ -688,8 +704,8 @@ class Entry(BASE_Entry):
                     True  -- If there is an entry that depends on StateIndex in exclusion
                              of others.
         """
-        if   self.__uniform_doors_f: return False
-        elif len(self.__doors_db) <= 1:            return False
+        if   self.__uniform_doors_f:    return False
+        elif len(self.__doors_db) <= 1: return False
         return self.__doors_db.has_key(StateIndex)
 
     def finish(self, PositionRegisterMap):
@@ -1134,11 +1150,10 @@ class DropOutBackwardInputPositionDetection(object):
         self.__reachable_f = AcceptanceF
 
     @property
-    def reachable_f(self): return self.__reachable_f
+    def reachable_f(self):         return self.__reachable_f
 
-    def __hash__(self):      return self.__reachable_f
-    def __eq__(self, Other): return self.__reachable_f == Other.__reachable_f
-
+    def __hash__(self):            return self.__reachable_f
+    def __eq__(self, Other):       return self.__reachable_f == Other.__reachable_f
     def __repr__(self):
         if not self.__reachable_f: return "<unreachable>"
         else:                      return "<backward input position detected>"
