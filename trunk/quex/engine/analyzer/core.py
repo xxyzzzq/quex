@@ -44,7 +44,7 @@ from   quex.blackboard  import E_StateIndices, \
 
 from   collections      import defaultdict, namedtuple
 from   operator         import itemgetter, attrgetter
-from   itertools        import islice, ifilter, imap, izip
+from   itertools        import islice, ifilter, imap, izip, dropwhile
 from   quex.blackboard  import setup as Setup
 
 def do(SM, EngineType=E_EngineTypes.FORWARD):
@@ -236,62 +236,133 @@ class Analyzer:
            passes only to the non-storing segment profits from not having
            to store the input position.
         """
+        self.implement_required_acceptance_storage()
+        self.implement_required_position_storage()
+
+    def implement_required_acceptance_storage(self):
+        """
+        Storing Acceptance / Postpone as much as possible.
+        
+        The stored 'last_acceptance' is only needed at the first time
+        when it is restored. So, we could walk along the path from the 
+        accepting state to the end of the path and see when this happens.
+        
+        Critical case:
+        
+          State V --- "acceptance = A" -->-.
+                                            \
+                                              State Y ----->  State Z
+                                            /
+          State W --- "acceptance = B" -->-'
+        
+        That is, if state Y is entered from state V is shall store 'A'
+        as accepted, if it is entered from state W is shall store 'B'.
+        In this case, we cannot walk the path further, and say that when
+        state Z is entered it has to store 'A'. This would cancel the
+        possibility of having 'B' accepted here. There is good news:
+        
+        ! The good news is, that during the 'configure_drop_out()' the last  !
+        ! acceptance is restored if and only if there are two paths with     !
+        ! differing acceptance patterns. Thus, it is sufficient to consider  !
+        ! the restore of acceptance in the drop_out as a terminal condition. !
+        """
         for element in self.__require_acceptance_storage_list:
             entry = self.__state_db[element.accepting_state_index].entry
+            # Find the first place on the path where the acceptance is restored
+            # - starting from the accepting state.
+            entry = self.__state_db[element.accepting_state_index].entry
             entry.doors_accept(element.pattern_id, element.pre_context_id)
+            # begin_i = element.path_since_positioning.index(element.accepting_state_index)
+            # for state_index in dropwhile(lambda i: not self.__state_db[i].drop_out.restore_acceptance_f, 
+            #                             islice(element.path_since_positioning, begin_i, None)):
+            #    entry = self.__state_db[state_index].entry
+            #    entry.doors_accept(element.pattern_id, element.pre_context_id)
+            #    break
 
+    def implement_required_position_storage(self):
+        """
+        Store Input Position / Postpone as much as possible.
+
+        Before we do not reach a state that actually restores the position, it
+        does make little sense to store the input position. 
+
+        Critical Point: Loops and Forks
+
+        If a loop is reached then the input position can no longer be determined
+        by the transition number. The good news is that during 'configure_drop_out'
+        any state that has undetermined positioning restores the input position.
+        Thus 'restore_position_f(register)' is enough to catch this case.
+        """
         for state_index, pattern_id, info in self.__require_position_storage_list:
-            for pos_state_index in info.positioning_state_index_set:
-                positioning_state = self.__state_db[pos_state_index]
-
-                # Let index be the index of the currently considered state. Then,
-                # Let x be one of the target states of the positioning state. 
-                # If (index == x) or (index in self.__successor_db[x])
-                # => The path from positioning state over x guides to current state
-                for target_index in ifilter(lambda x: state_index == x or state_index in self.__successor_db[x],
-                                            positioning_state.target_index_list):
-                    if target_index == pos_state_index: continue
-                    entry = self.__state_db[target_index].entry
-                    entry.doors_store(FromStateIndex   = pos_state_index, \
-                                      PreContextID     = info.pre_context_id, \
-                                      PositionRegister = pattern_id)
+            for path in info.path_list_since_positioning:
+                # Never store the input position in the state itself. The input position
+                # is reached after the entries have been passed.
+                state = self.__state_db[path[1]]
+                state.entry.doors_store(FromStateIndex   = path[0], 
+                                        PreContextID     = info.pre_context_id, 
+                                        PositionRegister = pattern_id, 
+                                        Offset           = 0)
+                # offset           = -1
+                # for state_index in islice(path, 1, None):
+                    # offset += 1
+                    # state = self.__state_db[state_index]
+                    # if not state.drop_out.restore_position_f(pattern_id): 
+                        # prev_state_index = state_index
+                        # continue
+                    # state.entry.doors_store(FromStateIndex   = prev_state_index, 
+                                            # PreContextID     = info.pre_context_id, 
+                                            # PositionRegister = pattern_id, 
+                                            # Offset           = offset)
+                    # break
+                
 
     def multi_path_positioning_analysis(self, ThePathTraceList):
-        """This function draws conclusions on the input positioning behavior at
-           drop-out based on different paths through the same state.  Basis for
-           the analysis are the PathTrace objects of a state specified as
-           'ThePathTraceList'.
+        """
+        This function draws conclusions on the input positioning behavior at
+        drop-out based on different paths through the same state.  Basis for
+        the analysis are the PathTrace objects of a state specified as
+        'ThePathTraceList'.
 
-           RETURNS: For a given state's PathTrace list a dictionary that maps:
+        RETURNS: For a given state's PathTrace list a dictionary that maps:
 
-                               pattern_id --> PositioningInfo
+                            pattern_id --> PositioningInfo
 
-           --------------------------------------------------------------------
-           
-           There are the following alternatives for setting the input position:
-           
-              (1) 'lexeme_start_p + 1' in case of failure.
+        --------------------------------------------------------------------
+        
+        There are the following alternatives for setting the input position:
+        
+           (1) 'lexeme_start_p + 1' in case of failure.
 
-              (2) 'input_p + offset' if the number of transitions between
-                  any storing state and the current state is does not differ 
-                  dependent on the path taken (and does not contain loops).
-           
-              (3) 'input_p = position_register[i]' if (1) and (2) are not
-                  not the case.
+           (2) 'input_p + offset' if the number of transitions between
+               any storing state and the current state is does not differ 
+               dependent on the path taken (and does not contain loops).
+        
+           (3) 'input_p = position_register[i]' if (1) and (2) are not
+               not the case.
 
-           The detection of loops has been accomplished during the construction
-           of the PathTrace objects for each state. This function focusses on
-           the possibility to have different paths to the same state with
-           different positioning behaviors.
+        The detection of loops has been accomplished during the construction
+        of the PathTrace objects for each state. This function focusses on
+        the possibility to have different paths to the same state with
+        different positioning behaviors.
         """
         class PositioningInfo(object):
             __slots__ = ("transition_n_since_positioning", 
                          "pre_context_id", 
-                         "positioning_state_index_set")
+                         "path_list_since_positioning")
             def __init__(self, PathTraceElement):
                 self.transition_n_since_positioning = PathTraceElement.transition_n_since_positioning
-                self.positioning_state_index_set    = set([ PathTraceElement.positioning_state_index ])
+                self.path_list_since_positioning    = [ PathTraceElement.path_since_positioning ]
                 self.pre_context_id                 = PathTraceElement.pre_context_id
+
+            @property
+            def positioning_state_index_set(self):
+                return set(path[0] for path in self.path_list_since_positioning)
+
+            def add(self, PathTraceElement):
+                self.path_list_since_positioning.append(PathTraceElement.path_since_positioning)
+
+                if self.transition_n_since_positioning != PathTraceElement.transition_n_since_positioning:
+                    self.transition_n_since_positioning = E_TransitionN.VOID
 
             def __repr__(self):
                 txt  = ".transition_n_since_positioning = %s\n" % repr(self.transition_n_since_positioning)
@@ -310,34 +381,30 @@ class Analyzer:
                 prototype = positioning_info_by_pattern_id.get(element.pattern_id)
                 if prototype is None:
                     positioning_info_by_pattern_id[element.pattern_id] = PositioningInfo(element)
-                    continue
-
-                prototype.positioning_state_index_set.add(element.positioning_state_index)
-
-                if prototype.transition_n_since_positioning != element.transition_n_since_positioning:
-                    prototype.transition_n_since_positioning = E_TransitionN.VOID
+                else:
+                    prototype.add(element)
 
         return positioning_info_by_pattern_id
 
     def multi_path_acceptance_analysis(self, ThePathTraceList):
-        """This function draws conclusions on the input positioning behavior at
-           drop-out based on different paths through the same state.  Basis for
-           the analysis are the PathTrace objects of a state specified as
-           'ThePathTraceList'.
+        """
+        This function draws conclusions on the input positioning behavior at
+        drop-out based on different paths through the same state.  Basis for
+        the analysis are the PathTrace objects of a state specified as
+        'ThePathTraceList'.
 
-           Acceptance Uniformity:
+        Acceptance Uniformity:
 
-               For any possible path to 'this' state the acceptance pattern is
-               the same. That is, it accepts exactly the same pattern under the
-               same pre contexts and in the same sequence of precedence.
+            For any possible path to 'this' state the acceptance pattern is
+            the same. That is, it accepts exactly the same pattern under the
+            same pre contexts and in the same sequence of precedence.
 
-           The very nice thing is that the 'acceptance_trace' of a PathTrace
-           object reflects the precedence of acceptance. Thus, one can simply
-           compare the acceptance trace objects of each PathTrace.
+        The very nice thing is that the 'acceptance_trace' of a PathTrace
+        object reflects the precedence of acceptance. Thus, one can simply
+        compare the acceptance trace objects of each PathTrace.
 
-           RETURNS: True  - uniform acceptance pattern.
-                    False - acceptance pattern is not uniform.
-
+        RETURNS: True  - uniform acceptance pattern.
+                 False - acceptance pattern is not uniform.
         """
         prototype = ThePathTraceList[0].acceptance_trace
 
@@ -512,10 +579,11 @@ class EntryAction(object):
 #    same position register. The actions which can be combined then can be 
 #    easily detected, if no pre-context is considered.
 class EntryAction_StoreInputPosition(object):
-    __slots__ = ["pre_context_id", "position_register"]
-    def __init__(self, PreContextID, PositionRegister):
+    __slots__ = ["pre_context_id", "position_register", "offset"]
+    def __init__(self, PreContextID, PositionRegister, Offset):
         self.pre_context_id    = PreContextID
         self.position_register = PositionRegister
+        self.offset            = Offset
 
     # Require 'type_id' and 'priority' for sorting of entry actions.
     @staticmethod
@@ -528,7 +596,8 @@ class EntryAction_StoreInputPosition(object):
     def __eq__(self, Other):
         if not isinstance(Other, EntryAction_StoreInputPosition): return False
         return     self.pre_context_id    == Other.pre_context_id \
-               and self.position_register == Other.position_register
+               and self.position_register == Other.position_register \
+               and self.offset            == Other.offset           
 
 # EntryAction_AcceptPattern:
 # 
@@ -586,10 +655,10 @@ class Entry(BASE_Entry):
         for door in self.__doors_db.itervalues():
             door.add(EntryAction_AcceptPattern(PreContextID, PatternID))
 
-    def doors_store(self, FromStateIndex, PreContextID, PositionRegister):
+    def doors_store(self, FromStateIndex, PreContextID, PositionRegister, Offset):
         # Add 'store input position' to specific door. See 'EntryAction_StoreInputPosition'
         # comment for the reason why we do not store pre-context-id.
-        entry = EntryAction_StoreInputPosition(PreContextID, PositionRegister)
+        entry = EntryAction_StoreInputPosition(PreContextID, PositionRegister, Offset)
         self.__doors_db[FromStateIndex].add(entry)
 
     def door_number(self):
@@ -740,7 +809,8 @@ class Entry(BASE_Entry):
                 if not isinstance(action, EntryAction_StoreInputPosition):
                     new_door.add(action)
                 else:
-                    new_door.add(EntryAction_StoreInputPosition(action.pre_context_id, PositionRegisterMap[action.position_register]))
+                    register_index = PositionRegisterMap[action.position_register]
+                    new_door.add(EntryAction_StoreInputPosition(action.pre_context_id, register_index, action.offset))
             self.__doors_db[from_state_index] = new_door
 
         # (*) If a door stores the input position in register unconditionally,
@@ -791,7 +861,11 @@ class Entry(BASE_Entry):
                 for action in positioner_action_list:
                     if action.pre_context_id != E_PreContextIDs.NONE:
                         content += " if '%s': " % repr_pre_context_id(action.pre_context_id)
-                    content += " %s = input_p;\n" % repr_position_register(action.position_register)
+                    if action.offset == 0:
+                        content += " %s = input_p;\n" % repr_position_register(action.position_register)
+                    else:
+                        content += " %s = input_p - %i;\n" % (repr_position_register(action.position_register), 
+                                                              action.offset)
             if content.count("\n") != 1: 
                 ptxt.append("\n")
                 content = "            " + content[:-1].replace("\n", "\n            ") + "\n"
@@ -922,6 +996,17 @@ class DropOut(object):
     def __init__(self):
         self.acceptance_checker = []
         self.terminal_router  = []
+
+    @property
+    def restore_acceptance_f(self):
+        for element in self.acceptance_checker:
+            if element.acceptance_id == E_AcceptanceIDs.VOID: return True
+        return False
+
+    def restore_position_f(self, RegisterIndex):
+        for element in [x for x in self.terminal_router if x.position_register == RegisterIndex]:
+            return element.positioning == E_TransitionN.VOID
+        return False
 
     def accept(self, PreContextID, PatternID):
         self.acceptance_checker.append(
