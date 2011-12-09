@@ -44,9 +44,7 @@ State 2:
     .accepter:
         if      PreContext_13: last_acceptance = Pattern10
     .positioner:
-        .from 1:
-             if 'PreContext_13':  position[PostContext_10]  = input_p;
-             if 'PreContext_27':  position[PostContext_24]  = input_p;
+        .from 1: if 'PreContext_13':  position[PostContext_10]  = input_p;
         .from 2: <nothing>
   .drop_out:
     if PreContext_13: pos = position[PostContext_10] ; goto Pattern10;
@@ -93,9 +91,7 @@ State 6:
     .accepter:
         if      PreContext_27: last_acceptance = Pattern24
     .positioner:
-        .from 1:
-             if 'PreContext_13':  position[PostContext_10]  = input_p;
-             if 'PreContext_27':  position[PostContext_24]  = input_p;
+        .from 1: if 'PreContext_27':  position[PostContext_24]  = input_p;
         .from 6: <nothing>
   .drop_out:
     if PreContext_27: pos = position[PostContext_24] ; goto Pattern24;
@@ -110,9 +106,7 @@ State 2:
     .accepter:
         if      PreContext_13: last_acceptance = Pattern10
     .positioner:
-        .from 1:
-             if 'PreContext_13':  position[PostContext_0]  = input_p;
-             if 'PreContext_27':  position[PostContext_0]  = input_p;
+        .from 1: if 'PreContext_13':  position[PostContext_0]  = input_p;
         .from 2: <nothing>
   .drop_out:
     if PreContext_13: pos = position[PostContext_0] ; goto Pattern10;
@@ -151,9 +145,7 @@ State 6:
     .accepter:
         if      PreContext_27: last_acceptance = Pattern24
     .positioner:
-        .from 1:
-             if 'PreContext_13':  position[PostContext_0]  = input_p;
-             if 'PreContext_27':  position[PostContext_0]  = input_p;
+        .from 1: if 'PreContext_27':  position[PostContext_0]  = input_p;
         .from 6: <nothing>
   .drop_out:
     if PreContext_27: pos = position[PostContext_0] ; goto Pattern24;

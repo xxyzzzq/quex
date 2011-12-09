@@ -3,63 +3,64 @@ from itertools   import ifilter, islice
 from collections import defaultdict
 
 def do(analyzer):
-    """RETURNS: 
+    """
+    RETURNS: 
     
-       A dictionary that maps:
+    A dictionary that maps:
 
-               post-context-id --> position register index
+            post-context-id --> position register index
 
-       where post-context-id == E_PostContextIDs.NONE means
-       'last_acceptance_position'.  The position register index starts from
-       0 and ends with N, where N-1 is the number of required position
-       registers. It can directly be used as index into an array of
-       positions.
+    where post-context-id == E_PostContextIDs.NONE means
+    'last_acceptance_position'.  The position register index starts from
+    0 and ends with N, where N-1 is the number of required position
+    registers. It can directly be used as index into an array of
+    positions.
 
-       -----------------------------------------------------------------------
-    
-       Under some circumstances it is necessary to store the acceptance
-       position or the position in the input stream where a post context
-       begins. For this an array of positions is necessary, e.g.
+    -----------------------------------------------------------------------
+   
+    Under some circumstances it is necessary to store the acceptance
+    position or the position in the input stream where a post context
+    begins. For this an array of positions is necessary, e.g.
 
-           QUEX_POSITION_LABEL     positions[4];
+        QUEX_POSITION_LABEL     positions[4];
 
-       where the last acceptance input position or the input position of
-       post contexts may be stored. The paths of a state machine, though,
-       may allow to store multiple positions in one array location, because
+    where the last acceptance input position or the input position of
+    post contexts may be stored. The paths of a state machine, though,
+    may allow to store multiple positions in one array location, because
 
-           (1) the path from store to restore does not intersect, or
+        (1) the path from store to restore does not intersect, or
 
-           (2) they store their positions in exactly the same states.
+        (2) they store their positions in exactly the same states.
 
-       A more general and conclusive condition will be derived later. Now,
-       consider the following example:
-                                      . b .
-                                     /     \ 
-                                     \     /
-                .-- a -->( 1 )-- b -->( 2 )-- c -->((3))
-               /            S47                       R47 
-           ( 0 )
-               \            S11                       R11
-                '-- b -->( 4 )-- c -->( 5 )-- d -->((6))
-                             \                     /
-                              '-------- e --------'
+    A more general and conclusive condition will be derived later. Now,
+    consider the following example:
+                                   . b .
+                                  /     \ 
+                                  \     /
+             .-- a -->( 1 )-- b -->( 2 )-- c -->((3))
+            /            S47                       R47 
+        ( 0 )
+            \            S11                       R11
+             '-- b -->( 4 )-- c -->( 5 )-- d -->((6))
+                          \                     /
+                           '-------- e --------'
 
-       The input position needs to be stored for post context 47 in state 1 and
-       for post context 11 in state 4. Since the paths of the post contexts do
-       not cross it is actually not necessary to have to separate array
-       registers. One register for post context 47 and 11 is enough.  Reducing
-       position registers saves space, but moreover, it may spare the
-       computation time to store redundant input positions.
+    The input position needs to be stored for post context 47 in state 1 and
+    for post context 11 in state 4. Since the paths of the post contexts do
+    not cross it is actually not necessary to have to separate array
+    registers. One register for post context 47 and 11 is enough.  Reducing
+    position registers saves space, but moreover, it may spare the
+    computation time to store redundant input positions.
 
-       .-------------------------------------------------------------------------.
-       | CONDITION:                                                              |
-       |                                                                         |
-       | Let 'A' be a state that restores the input position from register 'x'.  |
-       | If 'B' be the last state on a trace to 'A' where the position is stored |
-       | in 'x'. If another state 'C' stores the input position in register 'y'  |
-       | and comes **AFTER** 'B' on the trace, then 'x' and 'y' cannot be the    |
-       | same.                                                                   |
-       '-------------------------------------------------------------------------'
+    .-------------------------------------------------------------------------.
+    | CONDITION:                                                              |
+    |                                                                         |
+    | Let 'A' be a state that restores the input position from register 'x'.  |
+    | If 'B' be the last state on a trace to 'A' where the position is stored |
+    | in 'x'. If another state 'C' stores the input position in register 'y'  |
+    | and comes **AFTER** 'B' on the trace, then 'x' and 'y' cannot be the    |
+    | same.                                                                   |
+    '-------------------------------------------------------------------------'
     """
     cannot_db       = get_cannot_db(analyzer)
     combinable_list = get_combinable_candidates(cannot_db)
@@ -75,13 +76,14 @@ def do(analyzer):
 
 
 def get_cannot_db(analyzer):
-    """Determine for each position register (identified by pattern_id) the set of 
-       position register. The condition for this is given at the entrance of this file.
+    """
+    Determine for each position register (identified by pattern_id) the set of 
+    position register. The condition for this is given at the entrance of this file.
 
-       RETURNS:   
-       
-           map:  
-                 pattern_id --> list of pattern_ids that it cannot be combined with.
+    RETURNS:   
+    
+        map:  
+              pattern_id --> list of pattern_ids that it cannot be combined with.
     """
     # Database that maps for each state with post context id with which post context id
     # it cannot be combined.
@@ -116,8 +118,7 @@ def get_cannot_db(analyzer):
     return cannot_db
 
 def get_combinable_candidates(cannot_db):
-    """Determine sets of combinations that are allowed.
-    """
+    """Determine sets of combinations that are allowed."""
 
     all_post_context_id_list = set(cannot_db.iterkeys())
 
