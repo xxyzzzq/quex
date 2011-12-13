@@ -22,33 +22,31 @@ init-state = 0L
 
 State 0:
   .entry:
+    .from NONE:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 1:
   .entry:
-    .positioner:
-        .from 0: <nothing>
-        .from 1: <nothing>
+    .from 0:
+    .from 1:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 2:
   .entry:
-    .positioner:
-        .from 1: if 'PreContext_29':  position[PostContext_26]  = input_p;
-        .from 2: <nothing>
-        .from 5: if 'PreContext_29':  position[PostContext_26]  = input_p;
+    .from 1: if 'PreContext_29': position[PostContext_26]  = input_p;
+    .from 2:
+    .from 5: if 'PreContext_29': position[PostContext_26]  = input_p;
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 3:
   .entry:
-    .positioner:
-        .from 2: <nothing>
+    .from 2:
   .drop_out:
     if PreContext_29: pos = position[PostContext_26] ; goto Pattern26;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -56,16 +54,14 @@ State 3:
 
 State 4:
   .entry:
-    .positioner:
-        .from 0: <nothing>
+    .from 0:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 5:
   .entry:
-    .positioner:
-        .from 4: <nothing>
+    .from 4:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
@@ -75,18 +71,16 @@ State 5:
 
 State 2:
   .entry:
-    .positioner:
-        .from 1: if 'PreContext_29':  position[PostContext_0]  = input_p;
-        .from 2: <nothing>
-        .from 5: if 'PreContext_29':  position[PostContext_0]  = input_p;
+    .from 1: if 'PreContext_29': position[PostContext_0]  = input_p;
+    .from 2:
+    .from 5: if 'PreContext_29': position[PostContext_0]  = input_p;
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 3:
   .entry:
-    .positioner:
-        .from 2: <nothing>
+    .from 2:
   .drop_out:
     if PreContext_29: pos = position[PostContext_0] ; goto Pattern26;
     pos = lexeme_start_p + 1;  goto Failure;

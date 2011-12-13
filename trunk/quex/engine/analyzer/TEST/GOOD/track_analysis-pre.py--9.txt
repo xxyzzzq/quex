@@ -20,18 +20,14 @@ init-state = 0L
 
 State 0:
   .entry:
-    .accepter:
-        last_acceptance = Failure
+    .from NONE: last_acceptance = Failure
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 1:
   .entry:
-    .accepter:
-        if      BeginOfLine: last_acceptance = Pattern1
-    .positioner:
-        .from 0: <nothing>
+    .from 0: if      BeginOfLine: last_acceptance = Pattern1
   .drop_out:
     if BeginOfLine:  goto Pattern1;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -39,8 +35,7 @@ State 1:
 
 State 2:
   .entry:
-    .positioner:
-        .from 1: <nothing>
+    .from 1:
   .drop_out:
     if BeginOfLine: pos -= 1;  goto Pattern1;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -48,9 +43,8 @@ State 2:
 
 State 3:
   .entry:
-    .positioner:
-        .from 2: <nothing>
-        .from 5: <nothing>
+    .from 2:
+    .from 5:
   .drop_out:
     Checker:
         accept = last_acceptance
@@ -62,18 +56,14 @@ State 3:
 
 State 4:
   .entry:
-    .positioner:
-        .from 3: <nothing>
+    .from 3:
   .drop_out:
      goto Pattern22;
 
 
 State 5:
   .entry:
-    .accepter:
-        last_acceptance = Pattern3
-    .positioner:
-        .from 0: <nothing>
+    .from 0: last_acceptance = Pattern3
   .drop_out:
      goto Pattern3;
 

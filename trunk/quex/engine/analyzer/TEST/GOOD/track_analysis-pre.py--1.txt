@@ -10,14 +10,14 @@ init-state = 0L
 
 State 0:
   .entry:
+    .from NONE:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 1:
   .entry:
-    .positioner:
-        .from 0: <nothing>
+    .from 0:
   .drop_out:
     if PreContext_11:  goto Pattern8;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -25,8 +25,7 @@ State 1:
 
 State 2:
   .entry:
-    .positioner:
-        .from 1: <nothing>
+    .from 1:
   .drop_out:
      goto Pattern4;
 

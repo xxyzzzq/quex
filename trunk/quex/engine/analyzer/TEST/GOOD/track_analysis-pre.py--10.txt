@@ -25,19 +25,15 @@ init-state = 0L
 
 State 0:
   .entry:
-    .accepter:
-        last_acceptance = Failure
+    .from NONE: last_acceptance = Failure
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 1:
   .entry:
-    .accepter:
-        if      PreContext_9: last_acceptance = Pattern6
-    .positioner:
-        .from 0: <nothing>
-        .from 1: <nothing>
+    .from 0: if      PreContext_9: last_acceptance = Pattern6
+    .from 1: if      PreContext_9: last_acceptance = Pattern6
   .drop_out:
     if PreContext_9:  goto Pattern6;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -45,9 +41,8 @@ State 1:
 
 State 2:
   .entry:
-    .positioner:
-        .from 1: <nothing>
-        .from 6: <nothing>
+    .from 1:
+    .from 6:
   .drop_out:
     Checker:
         accept = last_acceptance
@@ -59,16 +54,14 @@ State 2:
 
 State 3:
   .entry:
-    .positioner:
-        .from 2: <nothing>
+    .from 2:
   .drop_out:
      goto Pattern40;
 
 
 State 4:
   .entry:
-    .positioner:
-        .from 3: <nothing>
+    .from 3:
   .drop_out:
     if PreContext_72:  goto Pattern69;
     else if PreContext_104:  goto Pattern101;
@@ -78,10 +71,7 @@ State 4:
 
 State 5:
   .entry:
-    .accepter:
-        if      PreContext_16: last_acceptance = Pattern13
-    .positioner:
-        .from 0: <nothing>
+    .from 0: if      PreContext_16: last_acceptance = Pattern13
   .drop_out:
     if PreContext_16:  goto Pattern13;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -89,9 +79,8 @@ State 5:
 
 State 6:
   .entry:
-    .positioner:
-        .from 5: if 'PreContext_16':  position[PostContext_13]  = input_p;
-        .from 6: <nothing>
+    .from 5: if 'PreContext_16': position[PostContext_13]  = input_p;
+    .from 6:
   .drop_out:
     if PreContext_16: pos = position[PostContext_13] ; goto Pattern13;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -131,9 +120,8 @@ State 6:
 
 State 2:
   .entry:
-    .positioner:
-        .from 1: <nothing>
-        .from 6: <nothing>
+    .from 1:
+    .from 6:
   .drop_out:
     Checker:
         accept = last_acceptance
@@ -145,9 +133,8 @@ State 2:
 
 State 6:
   .entry:
-    .positioner:
-        .from 5: if 'PreContext_16':  position[PostContext_0]  = input_p;
-        .from 6: <nothing>
+    .from 5: if 'PreContext_16': position[PostContext_0]  = input_p;
+    .from 6:
   .drop_out:
     if PreContext_16: pos = position[PostContext_0] ; goto Pattern13;
     pos = lexeme_start_p + 1;  goto Failure;
