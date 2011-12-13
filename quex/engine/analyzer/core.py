@@ -261,18 +261,17 @@ class Analyzer:
         state Z is entered it has to store 'A'. This would cancel the
         possibility of having 'B' accepted here. There is good news:
         
-        ! The good news is, that during the 'configure_drop_out()' the last  !
-        ! acceptance is restored if and only if there are two paths with     !
-        ! differing acceptance patterns. Thus, it is sufficient to consider  !
-        ! the restore of acceptance in the drop_out as a terminal condition. !
+        ! During the 'configure_drop_out()' the last acceptance is restored    !
+        ! if and only if there are at least two paths with differing           !
+        ! acceptance patterns. Thus, it is sufficient to consider the restore  !
+        ! of acceptance in the drop_out as a terminal condition.               !
         """
         for element in self.__require_acceptance_storage_list:
             entry = self.__state_db[element.accepting_state_index].entry
             # Find the first place on the path where the acceptance is restored
             # - starting from the accepting state.
             entry = self.__state_db[element.accepting_state_index].entry
-            entry.doors_accept(element.pattern_id, element.pre_context_id)
-            # begin_i = element.path_since_positioning.index(element.accepting_state_index)
+            entry.doors_accept(None, element.pattern_id, element.pre_context_id)
             # for state_index in dropwhile(lambda i: not self.__state_db[i].drop_out.restore_acceptance_f, 
             #                             islice(element.path_since_positioning, begin_i, None)):
             #    entry = self.__state_db[state_index].entry
@@ -650,10 +649,13 @@ class Entry(BASE_Entry):
         # Are the actions for all doors the same?
         self.__uniform_doors_f = None 
 
-    def doors_accept(self, PatternID, PreContextID):
-        # Add accepter to every door.
-        for door in self.__doors_db.itervalues():
-            door.add(EntryAction_AcceptPattern(PreContextID, PatternID))
+    def doors_accept(self, FromStateIndex, PatternID, PreContextID):
+        if FromStateIndex is not None:
+            self.__doors_db[FromStateIndex].add(EntryAction_AcceptPattern(PreContextID, PatternID))
+        else:
+            # Add accepter to every door.
+            for door in self.__doors_db.itervalues():
+                door.add(EntryAction_AcceptPattern(PreContextID, PatternID))
 
     def doors_store(self, FromStateIndex, PreContextID, PositionRegister, Offset):
         # Add 'store input position' to specific door. See 'EntryAction_StoreInputPosition'
@@ -835,47 +837,58 @@ class Entry(BASE_Entry):
         return 
 
     def __repr__(self):
-        txt = []
-        if self.has_accepter() != 0:
-            txt.append("    .accepter:\n")
+        def get_accepters(AccepterList):
+            txt    = []
             if_str = "if     "
-            for action in self.get_accepter():
+            for action in sorted(AccepterList, key=attrgetter("acceptance_id")):
                 if action.pre_context_id != E_PreContextIDs.NONE:
-                    txt.append("        %s %s: " % (if_str, repr_pre_context_id(action.pre_context_id)))
+                    txt.append("%s %s: " % (if_str, repr_pre_context_id(action.pre_context_id)))
                 else:
-                    txt.append("        ")
+                    txt.append("")
                 txt.append("last_acceptance = %s\n" % repr_acceptance_id(action.acceptance_id))
                 if_str = "else if"
+            return txt
 
+        def get_storers(StorerList):
+            txt = []
+            for action in sorted(StorerList, key=attrgetter("position_register")):
+                if action.pre_context_id != E_PreContextIDs.NONE:
+                    txt.append("if '%s': " % repr_pre_context_id(action.pre_context_id))
+                if action.offset == 0:
+                    txt.append("%s = input_p;\n" % repr_position_register(action.position_register))
+                else:
+                    txt.append("%s = input_p - %i;\n" % (repr_position_register(action.position_register), 
+                                                          action.offset))
+            return txt
 
-        ptxt = []
-        for from_state_index, door in sorted(self.__doors_db.iteritems(), key=itemgetter(0)):
-            if from_state_index == E_StateIndices.NONE: continue
-            ptxt.append("        .from %s:" % repr(from_state_index).replace("L", ""))
-            positioner_action_list = [action for action in door if isinstance(action, EntryAction_StoreInputPosition)]
-            positioner_action_list.sort(key=lambda x: (x.pre_context_id, x.position_register))
-            if   len(positioner_action_list) == 0: 
-                content = " <nothing>\n"
+        result = []
+        for from_state_index, door in self.__doors_db.iteritems():
+            accept_action_list = []
+            store_action_list  = []
+            for action in door:
+                if isinstance(action, EntryAction_StoreInputPosition): 
+                    store_action_list.append(action)
+                else:
+                    accept_action_list.append(action)
+
+            result.append("    .from %s:" % repr(from_state_index).replace("L", ""))
+            a_txt = get_accepters(accept_action_list)
+            s_txt = get_storers(store_action_list)
+            content = "".join(a_txt + s_txt)
+            if len(content) == 0:
+                # Simply new line
+                content = "\n"
+            elif content.count("\n") == 1:
+                # Append to same line
+                content = " " + content
             else:
-                content = ""
-                for action in positioner_action_list:
-                    if action.pre_context_id != E_PreContextIDs.NONE:
-                        content += " if '%s': " % repr_pre_context_id(action.pre_context_id)
-                    if action.offset == 0:
-                        content += " %s = input_p;\n" % repr_position_register(action.position_register)
-                    else:
-                        content += " %s = input_p - %i;\n" % (repr_position_register(action.position_register), 
-                                                              action.offset)
-            if content.count("\n") != 1: 
-                ptxt.append("\n")
-                content = "            " + content[:-1].replace("\n", "\n            ") + "\n"
-            ptxt.append(content)
+                # Indent properly
+                content = "\n        " + content[:-1].replace("\n", "\n        ") + content[-1]
+            result.append(content)
 
-        if len(ptxt) != 0:
-            txt.append("    .positioner:\n")
-            txt.extend(ptxt)
 
-        return "".join(txt)
+        if len(result) == 0: return ""
+        return "".join(result)
 
 class EntryBackwardInputPositionDetection(BASE_Entry):
     """There is not much more to say then: 
