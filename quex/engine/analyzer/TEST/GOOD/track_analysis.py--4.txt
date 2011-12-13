@@ -17,39 +17,36 @@ init-state = 0L
 
 State 0:
   .entry:
+    .from NONE:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 1:
   .entry:
-    .positioner:
-        .from 0: <nothing>
+    .from 0:
   .drop_out:
      goto Pattern4;
 
 
 State 2:
   .entry:
-    .positioner:
-        .from 1: <nothing>
+    .from 1:
   .drop_out:
      goto Pattern4;
 
 
 State 3:
   .entry:
-    .positioner:
-        .from 1: <nothing>
-        .from 2: <nothing>
+    .from 1:
+    .from 2:
   .drop_out:
     pos -= 1;  goto Pattern4;
 
 
 State 4:
   .entry:
-    .positioner:
-        .from 3: <nothing>
+    .from 3:
   .drop_out:
      goto Pattern15;
 

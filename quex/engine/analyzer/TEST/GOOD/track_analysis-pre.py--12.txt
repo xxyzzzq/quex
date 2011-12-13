@@ -27,30 +27,28 @@ init-state = 0L
 
 State 0:
   .entry:
+    .from NONE:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 1:
   .entry:
-    .positioner:
-        .from 0: <nothing>
+    .from 0:
   .drop_out:
      goto Pattern106;
 
 
 State 2:
   .entry:
-    .positioner:
-        .from 1: <nothing>
+    .from 1:
   .drop_out:
     pos -= 1;  goto Pattern106;
 
 
 State 3:
   .entry:
-    .positioner:
-        .from 2: <nothing>
+    .from 2:
   .drop_out:
     if PreContext_12:  goto Pattern9;
     else if PreContext_47:  goto Pattern44;
@@ -60,13 +58,12 @@ State 3:
 
 State 4:
   .entry:
-    .positioner:
-        .from 3:
-             position[PostContext_114]  = input_p;
-             if 'PreContext_12':  position[PostContext_9]  = input_p;
-             if 'PreContext_47':  position[PostContext_44]  = input_p;
-             if 'PreContext_82':  position[PostContext_79]  = input_p;
-        .from 4: <nothing>
+    .from 3:
+        if 'PreContext_12': position[PostContext_9]  = input_p;
+        if 'PreContext_47': position[PostContext_44]  = input_p;
+        if 'PreContext_82': position[PostContext_79]  = input_p;
+        position[PostContext_114]  = input_p;
+    .from 4:
   .drop_out:
     if PreContext_12: pos = position[PostContext_9] ; goto Pattern9;
     else if PreContext_47: pos = position[PostContext_44] ; goto Pattern44;
@@ -76,8 +73,7 @@ State 4:
 
 State 5:
   .entry:
-    .positioner:
-        .from 4: <nothing>
+    .from 4:
   .drop_out:
     if PreContext_34:  goto Pattern31;
     else if PreContext_69:  goto Pattern66;
@@ -90,12 +86,11 @@ State 5:
 
 State 6:
   .entry:
-    .positioner:
-        .from 5:
-             if 'PreContext_34':  position[PostContext_31]  = input_p;
-             if 'PreContext_69':  position[PostContext_66]  = input_p;
-             if 'PreContext_104':  position[PostContext_101]  = input_p;
-        .from 6: <nothing>
+    .from 5:
+        if 'PreContext_34': position[PostContext_31]  = input_p;
+        if 'PreContext_69': position[PostContext_66]  = input_p;
+        if 'PreContext_104': position[PostContext_101]  = input_p;
+    .from 6:
   .drop_out:
     if PreContext_34: pos = position[PostContext_31] ; goto Pattern31;
     else if PreContext_69: pos = position[PostContext_66] ; goto Pattern66;
@@ -108,8 +103,7 @@ State 6:
 
 State 7:
   .entry:
-    .positioner:
-        .from 6: <nothing>
+    .from 6:
   .drop_out:
      goto Pattern140;
 
@@ -161,9 +155,8 @@ State 7:
 
 State 4:
   .entry:
-    .positioner:
-        .from 3: position[PostContext_0]  = input_p;
-        .from 4: <nothing>
+    .from 3: position[PostContext_0]  = input_p;
+    .from 4:
   .drop_out:
     if PreContext_12: pos = position[PostContext_0] ; goto Pattern9;
     else if PreContext_47: pos = position[PostContext_0] ; goto Pattern44;
@@ -173,8 +166,7 @@ State 4:
 
 State 5:
   .entry:
-    .positioner:
-        .from 4: <nothing>
+    .from 4:
   .drop_out:
     if PreContext_34:  goto Pattern31;
     else if PreContext_69:  goto Pattern66;
@@ -187,12 +179,11 @@ State 5:
 
 State 6:
   .entry:
-    .positioner:
-        .from 5:
-             if 'PreContext_34':  position[PostContext_1]  = input_p;
-             if 'PreContext_69':  position[PostContext_1]  = input_p;
-             if 'PreContext_104':  position[PostContext_1]  = input_p;
-        .from 6: <nothing>
+    .from 5:
+        if 'PreContext_69': position[PostContext_1]  = input_p;
+        if 'PreContext_104': position[PostContext_1]  = input_p;
+        if 'PreContext_34': position[PostContext_1]  = input_p;
+    .from 6:
   .drop_out:
     if PreContext_34: pos = position[PostContext_1] ; goto Pattern31;
     else if PreContext_69: pos = position[PostContext_1] ; goto Pattern66;

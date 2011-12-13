@@ -12,8 +12,8 @@ import quex.engine.analyzer.core             as core
 import help
 
 if "--hwut-info" in sys.argv:
-    print "Track Analyzis: Without Pre- and Post-Contexts;"
-    print "CHOICES: 0, 1, 2, 3, 4;"
+    print "Track Analyzis: Special Loops and Forks"
+    print "CHOICES: 0, 1, 2, 3, 4, 5, 6, 7;"
     sys.exit()
 
 if "0" in sys.argv:
@@ -77,7 +77,24 @@ elif "4" in sys.argv:
     pattern_list = [
             "a(b(c(c(cd)*d)*d)*e(fg)?)?"
     ]
-
+elif "5" in sys.argv:
+    pattern_list = [
+        "0/(bc)|(d)/",
+        "1/(b)|(de)/",
+        "((bc)|(de))fgh",
+    ]
+elif "6" in sys.argv:
+    pattern_list = [
+        "0/(b+c+)|(d+)/",
+        "1/(b+)|(d+e+)/",
+        "((b+c+)|(d+e+))fgh",
+    ]
+elif "7" in sys.argv:
+    pattern_list = [
+        "0/(bc)|(d)/",
+        "1/(b)|(de)/",
+        "((bc)|(de))f+gh",
+    ]
 else:
     assert False
 

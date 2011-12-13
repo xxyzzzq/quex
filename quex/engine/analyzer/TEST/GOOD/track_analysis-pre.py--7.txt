@@ -20,14 +20,14 @@ init-state = 0L
 
 State 0:
   .entry:
+    .from NONE:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 1:
   .entry:
-    .positioner:
-        .from 0: <nothing>
+    .from 0:
   .drop_out:
     if BeginOfLine:  goto Pattern1;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -35,8 +35,7 @@ State 1:
 
 State 2:
   .entry:
-    .positioner:
-        .from 1: if 'BeginOfLine':  position[PostContext_1]  = input_p;
+    .from 1: if 'BeginOfLine': position[PostContext_1]  = input_p;
   .drop_out:
     if BeginOfLine: pos -= 1;  goto Pattern1;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -44,9 +43,8 @@ State 2:
 
 State 3:
   .entry:
-    .positioner:
-        .from 2: <nothing>
-        .from 5: if 'BeginOfLine':  position[PostContext_1]  = input_p;
+    .from 2:
+    .from 5: if 'BeginOfLine': position[PostContext_1]  = input_p;
   .drop_out:
     if BeginOfLine: pos = position[PostContext_1] ; goto Pattern1;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -54,16 +52,14 @@ State 3:
 
 State 4:
   .entry:
-    .positioner:
-        .from 3: <nothing>
+    .from 3:
   .drop_out:
      goto Pattern20;
 
 
 State 5:
   .entry:
-    .positioner:
-        .from 0: <nothing>
+    .from 0:
   .drop_out:
     if BeginOfLine:  goto Pattern1;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -96,8 +92,7 @@ State 5:
 
 State 2:
   .entry:
-    .positioner:
-        .from 1: if 'BeginOfLine':  position[PostContext_0]  = input_p;
+    .from 1: if 'BeginOfLine': position[PostContext_0]  = input_p;
   .drop_out:
     if BeginOfLine: pos -= 1;  goto Pattern1;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -105,9 +100,8 @@ State 2:
 
 State 3:
   .entry:
-    .positioner:
-        .from 2: <nothing>
-        .from 5: if 'BeginOfLine':  position[PostContext_0]  = input_p;
+    .from 2:
+    .from 5: if 'BeginOfLine': position[PostContext_0]  = input_p;
   .drop_out:
     if BeginOfLine: pos = position[PostContext_0] ; goto Pattern1;
     pos = lexeme_start_p + 1;  goto Failure;

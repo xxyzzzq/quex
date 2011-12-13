@@ -17,41 +17,38 @@ init-state = 0L
 
 State 0:
   .entry:
+    .from NONE:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 1:
   .entry:
-    .positioner:
-        .from 0: <nothing>
+    .from 0:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 2:
   .entry:
-    .positioner:
-        .from 1:
-             position[PostContext_11]  = input_p;
-             position[PostContext_23]  = input_p;
-        .from 2: <nothing>
+    .from 1:
+        position[PostContext_11]  = input_p;
+        position[PostContext_23]  = input_p;
+    .from 2:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 3:
   .entry:
-    .positioner:
-        .from 2: <nothing>
+    .from 2:
   .drop_out:
     pos = position[PostContext_11] ; goto Pattern11;
 
 
 State 4:
   .entry:
-    .positioner:
-        .from 2: <nothing>
+    .from 2:
   .drop_out:
     pos = position[PostContext_23] ; goto Pattern23;
 
@@ -61,25 +58,22 @@ State 4:
 
 State 2:
   .entry:
-    .positioner:
-        .from 1: position[PostContext_0]  = input_p;
-        .from 2: <nothing>
+    .from 1: position[PostContext_0]  = input_p;
+    .from 2:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 3:
   .entry:
-    .positioner:
-        .from 2: <nothing>
+    .from 2:
   .drop_out:
     pos = position[PostContext_0] ; goto Pattern11;
 
 
 State 4:
   .entry:
-    .positioner:
-        .from 2: <nothing>
+    .from 2:
   .drop_out:
     pos = position[PostContext_0] ; goto Pattern23;
 
