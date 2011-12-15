@@ -270,13 +270,22 @@ class Analyzer:
             entry = self.__state_db[element.accepting_state_index].entry
             # Find the first place on the path where the acceptance is restored
             # - starting from the accepting state.
-            entry = self.__state_db[element.accepting_state_index].entry
-            entry.doors_accept(None, element.pattern_id, element.pre_context_id)
-            # for state_index in dropwhile(lambda i: not self.__state_db[i].drop_out.restore_acceptance_f, 
-            #                             islice(element.path_since_positioning, begin_i, None)):
-            #    entry = self.__state_db[state_index].entry
-            #    entry.doors_accept(element.pattern_id, element.pre_context_id)
-            #    break
+            begin_i = element.path_since_positioning.index(element.accepting_state_index)
+            prev_state_index = None
+            for state_index in islice(element.path_since_positioning, begin_i, None):
+                if self.__state_db[state_index].drop_out.restore_acceptance_f: 
+                    break
+                prev_state_index = state_index
+
+            if prev_state_index is None:
+                entry = self.__state_db[element.accepting_state_index].entry
+                entry.doors_accepter_add(element)
+                # prev_state_index is None => doors_accept() works on all doors
+            else:
+                entry           = self.__state_db[state_index].entry
+                path_trace_list = self.__trace_db[prev_state_index]
+                for path_trace in path_trace_list:
+                    entry.doors_accept(prev_state_index, path_trace.acceptance_trace)
 
     def implement_required_position_storage(self):
         """
@@ -314,7 +323,6 @@ class Analyzer:
                                             # Offset           = offset)
                     # break
                 
-
     def multi_path_positioning_analysis(self, ThePathTraceList):
         """
         This function draws conclusions on the input positioning behavior at
@@ -598,29 +606,35 @@ class EntryAction_StoreInputPosition(object):
                and self.position_register == Other.position_register \
                and self.offset            == Other.offset           
 
-# EntryAction_AcceptPattern:
+# EntryAction_Accepter:
 # 
 # In this case the pre-context-id is essential. We cannot accept a pattern if
 # its pre-context is not fulfilled.
-EntryAction_AcceptPattern      = namedtuple("EntryAction_AcceptPattern",      ["pre_context_id", "acceptance_id"  ])
-class EntryAction_AcceptPattern(object):
-    __slots__ = ["pre_context_id", "acceptance_id"]
-    def __init__(self, PreContextID, AcceptanceID):
-        self.pre_context_id = PreContextID
-        self.acceptance_id  = AcceptanceID
+EntryAction_AccepterElement = namedtuple("EntryAction_AccepterElement", ("pre_context_id", "pattern_id"))
+class EntryAction_Accepter(object):
+    __slots__ = ["__list"]
+    def __init__(self):
+        self.__list = []
+    def add(self, PreContextID, PatternID):
+        self.__list.append(EntryAction_AccepterElement(PreContextID, PatternID))
+    def insert_first(self, PreContextID, PatternID):
+        self.__list.insert(0, EntryAction_AccepterElement(PreContextID, PatternID))
 
     # Require 'type_id' and 'priority' for sorting of entry actions.
     @staticmethod
     def type_id():      return 1
-    def priority(self): return - self.acceptance_id
+    def priority(self): return len(self.__list)
 
     # Require '__hash__' and '__eq__' to be element of a set.
     def __hash__(self):
         return 1
     def __eq__(self, Other):
-        if not isinstance(Other, EntryAction_AcceptPattern): return False
-        return     self.pre_context_id == Other.pre_context_id \
-               and self.acceptance_id  == Other.acceptance_id
+        if not isinstance(Other, EntryAction_Accepter): return False
+        return self.__list == Other.__list
+
+    def __iter__(self):
+        for x in self.__list:
+            yield x
 
 class Entry(BASE_Entry):
     """An entry has potentially two tasks:
@@ -649,13 +663,24 @@ class Entry(BASE_Entry):
         # Are the actions for all doors the same?
         self.__uniform_doors_f = None 
 
-    def doors_accept(self, FromStateIndex, PatternID, PreContextID):
-        if FromStateIndex is not None:
-            self.__doors_db[FromStateIndex].add(EntryAction_AcceptPattern(PreContextID, PatternID))
-        else:
-            # Add accepter to every door.
-            for door in self.__doors_db.itervalues():
-                door.add(EntryAction_AcceptPattern(PreContextID, PatternID))
+    def doors_accept(self, FromStateIndex, PathTraceList):
+        # Construct the Accepter from PathTraceList
+        accepter = EntryAction_Accepter()
+        for path_trace in PathTraceList:
+            accepter.add(path_trace.pre_context_id, path_trace.pattern_id)
+
+        self.__doors_db[FromStateIndex].add(accepter)
+
+    def doors_accepter_add(self, Element):
+        for door in self.__doors_db.itervalues():
+            accepter = None
+            for element in door:
+                if isinstance(element, EntryAction_Accepter): break
+            if accepter is None: 
+                accepter = EntryAction_Accepter()
+                door.add(accepter)
+            accepter.insert_first(Element.pre_context_id, Element.pattern_id)
+
 
     def doors_store(self, FromStateIndex, PreContextID, PositionRegister, Offset):
         # Add 'store input position' to specific door. See 'EntryAction_StoreInputPosition'
@@ -838,14 +863,17 @@ class Entry(BASE_Entry):
 
     def __repr__(self):
         def get_accepters(AccepterList):
+            if len(AccepterList) == 0: return []
+
+            prototype = AccepterList[0]
             txt    = []
             if_str = "if     "
-            for action in sorted(AccepterList, key=attrgetter("acceptance_id")):
+            for action in prototype:
                 if action.pre_context_id != E_PreContextIDs.NONE:
                     txt.append("%s %s: " % (if_str, repr_pre_context_id(action.pre_context_id)))
                 else:
-                    txt.append("")
-                txt.append("last_acceptance = %s\n" % repr_acceptance_id(action.acceptance_id))
+                    if if_str == "else if": txt.append("else: ")
+                txt.append("last_acceptance = %s\n" % repr_acceptance_id(action.pattern_id))
                 if_str = "else if"
             return txt
 
