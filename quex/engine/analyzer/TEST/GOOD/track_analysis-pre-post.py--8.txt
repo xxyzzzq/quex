@@ -25,7 +25,7 @@ init-state = 0L
 
 State 0:
   .entry:
-    .from NONE: last_acceptance = Failure
+    .from NONE:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 

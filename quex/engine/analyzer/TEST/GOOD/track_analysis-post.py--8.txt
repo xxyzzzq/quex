@@ -39,18 +39,16 @@ State 1:
 
 State 2:
   .entry:
-    .from 1:
-        last_acceptance = Pattern8
-        position[PostContext_8]  = input_p;
-    .from 2: last_acceptance = Pattern8
+    .from 1: position[PostContext_8]  = input_p;
+    .from 2:
   .drop_out:
     pos = position[PostContext_8] ; goto Pattern8;
 
 
 State 3:
   .entry:
-    .from 2:
-    .from 6:
+    .from 2: last_acceptance = Pattern8
+    .from 6: last_acceptance = Pattern17
   .drop_out:
     Checker:
         accept = last_acceptance
@@ -79,10 +77,8 @@ State 5:
 
 State 6:
   .entry:
-    .from 1:
-        last_acceptance = Pattern17
-        position[PostContext_17]  = input_p;
-    .from 6: last_acceptance = Pattern17
+    .from 1: position[PostContext_17]  = input_p;
+    .from 6:
   .drop_out:
     pos = position[PostContext_17] ; goto Pattern17;
 
@@ -92,18 +88,16 @@ State 6:
 
 State 2:
   .entry:
-    .from 1:
-        last_acceptance = Pattern8
-        position[PostContext_0]  = input_p;
-    .from 2: last_acceptance = Pattern8
+    .from 1: position[PostContext_0]  = input_p;
+    .from 2:
   .drop_out:
     pos = position[PostContext_0] ; goto Pattern8;
 
 
 State 3:
   .entry:
-    .from 2:
-    .from 6:
+    .from 2: last_acceptance = Pattern8
+    .from 6: last_acceptance = Pattern17
   .drop_out:
     Checker:
         accept = last_acceptance
@@ -125,10 +119,8 @@ State 4:
 
 State 6:
   .entry:
-    .from 1:
-        last_acceptance = Pattern17
-        position[PostContext_0]  = input_p;
-    .from 6: last_acceptance = Pattern17
+    .from 1: position[PostContext_0]  = input_p;
+    .from 6:
   .drop_out:
     pos = position[PostContext_0] ; goto Pattern17;
 

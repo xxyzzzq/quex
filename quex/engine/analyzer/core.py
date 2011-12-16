@@ -266,6 +266,7 @@ class Analyzer:
         ! acceptance patterns. Thus, it is sufficient to consider the restore  !
         ! of acceptance in the drop_out as a terminal condition.               !
         """
+        postponed_db = defaultdict(set)
         for element in self.__require_acceptance_storage_list:
             entry = self.__state_db[element.accepting_state_index].entry
             # Find the first place on the path where the acceptance is restored
@@ -277,15 +278,40 @@ class Analyzer:
                     break
                 prev_state_index = state_index
 
-            if prev_state_index is None:
-                entry = self.__state_db[element.accepting_state_index].entry
-                entry.doors_accepter_add(element)
-                # prev_state_index is None => doors_accept() works on all doors
-            else:
+            if prev_state_index is not None:
                 entry           = self.__state_db[state_index].entry
                 path_trace_list = self.__trace_db[prev_state_index]
                 for path_trace in path_trace_list:
                     entry.doors_accept(prev_state_index, path_trace.acceptance_trace)
+            else:
+                # Postpone:
+                #
+                # Here, storing Acceptance cannot be deferred to subsequent states, because
+                # the first state that restores acceptance is the acceptance state itself.
+                #
+                # (1) Restore is only possible if there is non-uniform acceptance. See 
+                #     function 'configure_drop_out(...)'. 
+                # (2) Non-uniform acceptance is only possible, if there are multiple paths
+                #     to the state with different trailing acceptances.
+                # (3) If there was an absolute acceptance, then all previous trailing 
+                #     acceptance were deleted (longest match). This contradicts (2).
+                #
+                # (4) => Thus, there are only pre-contexted acceptances in such a state.
+                assert element.pre_context_id != E_PreContextIDs.NONE 
+                postponed_db[element.accepting_state_index].add((element.pre_context_id, element.pattern_id))
+
+        # Postponed: Collected acceptances to be stored in the acceptance states itself.
+        #
+        # It is possible that deferred acceptance are alread present in the doors. But, 
+        # since they all come from trailing acceptances, we know that the acceptance of
+        # this state preceeds (longest match). Thus, all the acceptances we add here 
+        # preceed the already mentioned ones. Since they all trigger on lexemes of the
+        # same length, the only precendence criteria is the pattern_id.
+        # 
+        for state_index, info_set in postponed_db.iteritems():
+            entry = self.__state_db[state_index].entry
+            for pre_context_id, pattern_id in sorted(list(info_set), key=itemgetter(1), reverse=True):
+                entry.doors_accepter_add_front(pre_context_id, pattern_id)
 
     def implement_required_position_storage(self):
         """
@@ -617,7 +643,7 @@ class EntryAction_Accepter(object):
         self.__list = []
     def add(self, PreContextID, PatternID):
         self.__list.append(EntryAction_AccepterElement(PreContextID, PatternID))
-    def insert_first(self, PreContextID, PatternID):
+    def insert_front(self, PreContextID, PatternID):
         self.__list.insert(0, EntryAction_AccepterElement(PreContextID, PatternID))
 
     # Require 'type_id' and 'priority' for sorting of entry actions.
@@ -635,6 +661,11 @@ class EntryAction_Accepter(object):
     def __iter__(self):
         for x in self.__list:
             yield x
+
+    def __repr__(self):
+        return "".join(["pre(%s) --> accept(%s)\n" % (element.pre_context_id, element.pattern_id) \
+                       for element in self.__list])
+
 
 class Entry(BASE_Entry):
     """An entry has potentially two tasks:
@@ -671,16 +702,18 @@ class Entry(BASE_Entry):
 
         self.__doors_db[FromStateIndex].add(accepter)
 
-    def doors_accepter_add(self, Element):
+    def doors_accepter_add_front(self, PreContextID, PatternID):
         for door in self.__doors_db.itervalues():
+            # Catch the accepter, if there is already one, of not create one.
             accepter = None
             for element in door:
-                if isinstance(element, EntryAction_Accepter): break
+                if isinstance(element, EntryAction_Accepter): 
+                    accepter = element
+                    break
             if accepter is None: 
                 accepter = EntryAction_Accepter()
                 door.add(accepter)
-            accepter.insert_first(Element.pre_context_id, Element.pattern_id)
-
+            accepter.insert_front(PreContextID, PatternID)
 
     def doors_store(self, FromStateIndex, PreContextID, PositionRegister, Offset):
         # Add 'store input position' to specific door. See 'EntryAction_StoreInputPosition'
