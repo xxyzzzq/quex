@@ -26,14 +26,14 @@ init-state = 0L
 
 State 0:
   .entry:
-    .from NONE: last_acceptance = Failure
+    .from NONE:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 1:
   .entry:
-    .from 0: if      PreContext_6: last_acceptance = Pattern3
+    .from 0:
   .drop_out:
     if PreContext_6:  goto Pattern3;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -74,7 +74,7 @@ State 3:
 
 State 4:
   .entry:
-    .from 0: if      PreContext_13: last_acceptance = Pattern10
+    .from 0:
   .drop_out:
     if PreContext_13:  goto Pattern10;
     pos = lexeme_start_p + 1;  goto Failure;

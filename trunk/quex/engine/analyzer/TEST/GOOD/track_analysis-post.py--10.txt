@@ -48,16 +48,16 @@ State 2:
 
 State 3:
   .entry:
-    .from 2:        last_acceptance = Pattern11
-    .from 3:        last_acceptance = Pattern11
+    .from 2:
+    .from 3:
   .drop_out:
     pos = position[PostContext_11] ; goto Pattern11;
 
 
 State 4:
   .entry:
-    .from 3:
-    .from 7:
+    .from 3: last_acceptance = Pattern11
+    .from 7: last_acceptance = Pattern20
   .drop_out:
     Checker:
         accept = last_acceptance
@@ -86,7 +86,7 @@ State 6:
 
 State 7:
   .entry:
-    .from 2:        last_acceptance = Pattern20
+    .from 2:
   .drop_out:
     pos -= 1;  goto Pattern20;
 
@@ -103,16 +103,16 @@ State 2:
 
 State 3:
   .entry:
-    .from 2:        last_acceptance = Pattern11
-    .from 3:        last_acceptance = Pattern11
+    .from 2:
+    .from 3:
   .drop_out:
     pos = position[PostContext_0] ; goto Pattern11;
 
 
 State 4:
   .entry:
-    .from 3:
-    .from 7:
+    .from 3: last_acceptance = Pattern11
+    .from 7: last_acceptance = Pattern20
   .drop_out:
     Checker:
         accept = last_acceptance
