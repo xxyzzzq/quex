@@ -42,7 +42,11 @@ State 1:
 State 2:
   .entry:
     .from 1:
+        if      PreContext_9: last_acceptance = Pattern6
+        else: last_acceptance = Failure
     .from 6:
+        if      PreContext_16: last_acceptance = Pattern13
+        else: last_acceptance = Failure
   .drop_out:
     Checker:
         accept = last_acceptance
@@ -121,7 +125,11 @@ State 6:
 State 2:
   .entry:
     .from 1:
+        if      PreContext_9: last_acceptance = Pattern6
+        else: last_acceptance = Failure
     .from 6:
+        if      PreContext_16: last_acceptance = Pattern13
+        else: last_acceptance = Failure
   .drop_out:
     Checker:
         accept = last_acceptance

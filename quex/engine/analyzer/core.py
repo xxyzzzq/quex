@@ -641,8 +641,10 @@ class EntryAction_Accepter(object):
     __slots__ = ["__list"]
     def __init__(self):
         self.__list = []
+    
     def add(self, PreContextID, PatternID):
         self.__list.append(EntryAction_AccepterElement(PreContextID, PatternID))
+
     def insert_front(self, PreContextID, PatternID):
         self.__list.insert(0, EntryAction_AccepterElement(PreContextID, PatternID))
 
@@ -668,7 +670,7 @@ class EntryAction_Accepter(object):
 
 
 class Entry(BASE_Entry):
-    """An entry has potentially two tasks:
+    """An entry has potentially the following tasks:
     
           (1) Storing information about positioning represented by objects 
               of type 'EntryAction_StoreInputPosition'.
@@ -695,6 +697,13 @@ class Entry(BASE_Entry):
         self.__uniform_doors_f = None 
 
     def doors_accept(self, FromStateIndex, PathTraceList):
+        """At entry via 'FromStateIndex' implement an acceptance pattern that 
+           is determined via 'PathTraceList'. This function is called upon the
+           detection of a state that restores acceptance. The previous state 
+           must be of uniform acceptance (does not restore). At the entry of 
+           this function we implement the acceptance pattern of the previous
+           state.
+        """
         # Construct the Accepter from PathTraceList
         accepter = EntryAction_Accepter()
         for path_trace in PathTraceList:
@@ -703,6 +712,9 @@ class Entry(BASE_Entry):
         self.__doors_db[FromStateIndex].add(accepter)
 
     def doors_accepter_add_front(self, PreContextID, PatternID):
+        """Add an acceptance at the top of each accepter at every door. If there
+           is no accepter in a door it is created.
+        """
         for door in self.__doors_db.itervalues():
             # Catch the accepter, if there is already one, of not create one.
             accepter = None
@@ -727,22 +739,15 @@ class Entry(BASE_Entry):
         if self.__uniform_doors_f: return min(1, total_size)
         else:                      return total_size
 
-    def door_actions(self, DoorID):
-        def criteria(Action):
-            return (Action.type_id(), Action.priority())
-        action_list = self.__doors_db[DoorID]
-        action_list.sort(key=criteria)
-        return action_list
-
     def get_accepter(self):
         """Returns information about the acceptance sequence. Lines that are dominated
            by the unconditional pre-context are filtered out. Returns pairs of
 
                           (pre_context_id, acceptance_id)
         """
-        result = set()
+        assert False, "Accepters are 'per-door' objects"
         for door in self.__doors_db.itervalues():
-            acceptance_actions = [action for action in door if isinstance(action, EntryAction_AcceptPattern)]
+            acceptance_actions = [action for action in door if isinstance(action, EntryAction_Accepter)]
             result.update(acceptance_actions)
 
         result = list(result)
@@ -751,24 +756,18 @@ class Entry(BASE_Entry):
 
     def size_of_accepter(self):
         """Count the number of difference acceptance ids."""
+        assert False, "Accepters are 'per-door' objects"
         db = set()
         for door in self.__doors_db.itervalues():
             for action in door:
-                if not isinstance(action, EntryAction_AcceptPattern): continue
+                if not isinstance(action, EntryAction_Accepter): continue
                 db.add(action.acceptance_id)
         return len(db)
 
     def has_accepter(self):
         for door in self.__doors_db.itervalues():
             for action in door:
-                if isinstance(action, EntryAction_AcceptPattern): return True
-        return False
-
-    def clear_accepter(self):
-        for door in self.__doors_db.itervalues():
-            for action in list(door):
-                if not isinstance(action, EntryAction_AcceptPattern): continue
-                door.remove(action)
+                if isinstance(action, EntryAction_Accepter): return True
         return False
 
     def get_positioner_db(self):
