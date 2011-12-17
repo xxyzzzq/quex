@@ -42,9 +42,7 @@ State 1:
 
 State 2:
   .entry:
-    .from 1:
-        if      PreContext_17: last_acceptance = Pattern14
-        if 'PreContext_35': position[PostContext_32]  = input_p;
+    .from 1: if 'PreContext_35': position[PostContext_32]  = input_p;
   .drop_out:
     if PreContext_17:  goto Pattern14;
     else if PreContext_35: pos -= 1;  goto Pattern32;
@@ -53,9 +51,17 @@ State 2:
 
 State 3:
   .entry:
-    .from 2: if 'PreContext_17': position[PostContext_14]  = input_p;
+    .from 2:
+        if      PreContext_17: last_acceptance = Pattern14
+        else if PreContext_35: last_acceptance = Pattern32
+        else: last_acceptance = Failure
+        if 'PreContext_17': position[PostContext_14]  = input_p;
     .from 3:
-    .from 7: if 'PreContext_35': position[PostContext_32]  = input_p;
+    .from 7:
+        if      PreContext_35: last_acceptance = Pattern32
+        else if PreContext_17: last_acceptance = Pattern14
+        else: last_acceptance = Failure
+        if 'PreContext_35': position[PostContext_32]  = input_p;
   .drop_out:
     Checker:
         accept = last_acceptance
@@ -94,9 +100,7 @@ State 6:
 
 State 7:
   .entry:
-    .from 6:
-        if      PreContext_35: last_acceptance = Pattern32
-        if 'PreContext_17': position[PostContext_14]  = input_p;
+    .from 6: if 'PreContext_17': position[PostContext_14]  = input_p;
   .drop_out:
     if PreContext_35:  goto Pattern32;
     else if PreContext_17: pos -= 1;  goto Pattern14;
@@ -142,9 +146,7 @@ State 7:
 
 State 2:
   .entry:
-    .from 1:
-        if      PreContext_17: last_acceptance = Pattern14
-        if 'PreContext_35': position[PostContext_0]  = input_p;
+    .from 1: if 'PreContext_35': position[PostContext_0]  = input_p;
   .drop_out:
     if PreContext_17:  goto Pattern14;
     else if PreContext_35: pos -= 1;  goto Pattern32;
@@ -153,9 +155,17 @@ State 2:
 
 State 3:
   .entry:
-    .from 2: if 'PreContext_17': position[PostContext_1]  = input_p;
+    .from 2:
+        if      PreContext_17: last_acceptance = Pattern14
+        else if PreContext_35: last_acceptance = Pattern32
+        else: last_acceptance = Failure
+        if 'PreContext_17': position[PostContext_1]  = input_p;
     .from 3:
-    .from 7: if 'PreContext_35': position[PostContext_0]  = input_p;
+    .from 7:
+        if      PreContext_35: last_acceptance = Pattern32
+        else if PreContext_17: last_acceptance = Pattern14
+        else: last_acceptance = Failure
+        if 'PreContext_35': position[PostContext_0]  = input_p;
   .drop_out:
     Checker:
         accept = last_acceptance
@@ -179,9 +189,7 @@ State 4:
 
 State 7:
   .entry:
-    .from 6:
-        if      PreContext_35: last_acceptance = Pattern32
-        if 'PreContext_17': position[PostContext_1]  = input_p;
+    .from 6: if 'PreContext_17': position[PostContext_1]  = input_p;
   .drop_out:
     if PreContext_35:  goto Pattern32;
     else if PreContext_17: pos -= 1;  goto Pattern14;

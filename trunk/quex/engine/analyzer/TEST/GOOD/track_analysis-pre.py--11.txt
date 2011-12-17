@@ -42,9 +42,18 @@ State 1:
 State 2:
   .entry:
     .from 1:
-    .from 4: if 'PreContext_13': position[PostContext_10]  = input_p;
+        if      PreContext_6: last_acceptance = Pattern3
+        else: last_acceptance = Failure
+    .from 4:
+        if      PreContext_13: last_acceptance = Pattern10
+        else: last_acceptance = Failure
+        if 'PreContext_13': position[PostContext_10]  = input_p;
     .from 5:
+        if      PreContext_13: last_acceptance = Pattern10
+        else: last_acceptance = Failure
     .from 6:
+        if      PreContext_13: last_acceptance = Pattern10
+        else: last_acceptance = Failure
   .drop_out:
     Checker:
         accept = last_acceptance
@@ -135,9 +144,18 @@ State 6:
 State 2:
   .entry:
     .from 1:
-    .from 4: if 'PreContext_13': position[PostContext_0]  = input_p;
+        if      PreContext_6: last_acceptance = Pattern3
+        else: last_acceptance = Failure
+    .from 4:
+        if      PreContext_13: last_acceptance = Pattern10
+        else: last_acceptance = Failure
+        if 'PreContext_13': position[PostContext_0]  = input_p;
     .from 5:
+        if      PreContext_13: last_acceptance = Pattern10
+        else: last_acceptance = Failure
     .from 6:
+        if      PreContext_13: last_acceptance = Pattern10
+        else: last_acceptance = Failure
   .drop_out:
     Checker:
         accept = last_acceptance

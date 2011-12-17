@@ -38,20 +38,6 @@ def do(analyzer):
     if analyzer.engine_type != E_EngineTypes.FORWARD:
         return analyzer
 
-    # (*) Delete unnecessary acceptance storages
-    for state_index, state in analyzer.state_db.iteritems():
-        tm = state.transition_map
-        if    len(tm)  == 0 \
-           or (len(tm) == 1 and tm[0][1] == state_index):
-            # -- state has no successor state, or
-            # -- state has only transitions to itself
-            for dummy in (x for x in state.drop_out.acceptance_checker if x.acceptance_id == E_AcceptanceIDs.VOID):
-                # -- state DOES rely on 'last_acceptance' being stored
-                break 
-            else:
-                # -- state DOES NOT rely on 'last_acceptance' being stored.
-                state.entry.clear_accepter()
-
     # (*) Use information about position storage registers that can be shared.
     #     Replace old register values with new ones.
     for state in analyzer.state_db.itervalues():
