@@ -2,6 +2,7 @@ from collections     import defaultdict, namedtuple
 from quex.blackboard import E_StateIndices, E_PreContextIDs, E_AcceptanceIDs, E_PostContextIDs, E_TransitionN
 from operator        import attrgetter
 from itertools       import ifilter
+from copy            import deepcopy
 
 class BASE_Entry(object):
     def uniform_doors_f(self):
@@ -14,6 +15,8 @@ class EntryAction(object):
     @staticmethod
     def type_id():      assert False
     def priority(self): assert False
+
+    def cost(self):     assert False
 
 # EntryAction_StoreInputPosition: 
 #
@@ -47,6 +50,11 @@ class EntryAction_StoreInputPosition(object):
     def type_id():      return 0
     def priority(self): return - self.position_register
 
+    # Estimate the cost of the 'store input position':
+    # (Assume, we do not check for pre_context_id, see above)
+    # = 1 x Assignment
+    def cost(self):     return 1
+
     # Require '__hash__' and '__eq__' to be element of a set.
     def __hash__(self):
         return 1
@@ -77,12 +85,25 @@ class EntryAction_Accepter(object):
     def type_id():      return 1
     def priority(self): return len(self.__list)
 
+    # Estimate cost for the accepter:
+    # pre-context check + assign acceptance + conditional jump: 3
+    # assign acceptance:                                        1
+    def cost(self):
+        result = 0
+        for action in self.__list:
+            if action.pre_context_id: result += 3
+            else:                     result += 1
+        return result
+
     # Require '__hash__' and '__eq__' to be element of a set.
-    def __hash__(self):
-        return 1
+    def __hash__(self): return 1
     def __eq__(self, Other):
         if not isinstance(Other, EntryAction_Accepter): return False
-        return self.__list == Other.__list
+        if len(self.__list) != len(Other.__list):       return False
+        for x, y in zip(self.__list, Other.__list):
+            if   x.pre_context_id != y.pre_context_id:  return False
+            elif x.pattern_id     != y.pattern_id:      return False
+        return True
 
     def __iter__(self):
         for x in self.__list:
@@ -91,7 +112,6 @@ class EntryAction_Accepter(object):
     def __repr__(self):
         return "".join(["pre(%s) --> accept(%s)\n" % (element.pre_context_id, element.pattern_id) \
                        for element in self.__list])
-
 
 class Entry(BASE_Entry):
     """An entry has potentially the following tasks:
@@ -155,6 +175,7 @@ class Entry(BASE_Entry):
         # Add 'store input position' to specific door. See 'EntryAction_StoreInputPosition'
         # comment for the reason why we do not store pre-context-id.
         entry = EntryAction_StoreInputPosition(PreContextID, PositionRegister, Offset)
+        print "##dad:", FromStateIndex, PreContextID, PositionRegister, Offset, entry
         self.__doors_db[FromStateIndex].add(entry)
 
     def door_number(self):
@@ -163,7 +184,7 @@ class Entry(BASE_Entry):
         if self.__uniform_doors_f: return min(1, total_size)
         else:                      return total_size
 
-    def categorized_doors(self):
+    def categorize_doors(self):
         class Door:
             """A Door consists a list of actions which are performed upon entry to
                the state from a specific source state.
@@ -176,12 +197,20 @@ class Entry(BASE_Entry):
             def __hash__(self): return self.from_state_index
             def __eq__(self):   return self.from_state_index
 
+            def __repr__(self):
+                action_list_str = ""
+                for action in self.action_list:
+                    if   isinstance(action, EntryAction_Accepter):           action_list_str += "acc"
+                    elif isinstance(action, EntryAction_StoreInputPosition): action_list_str += "sto"
+                    else:                                                    action_list_str += "?"
+                return "(f: %i, a: [%s])" % (self.from_state_index, action_list_str)
+
         class Group:
             """A Group is a set of doors that share some common actions.
                The set of common actions may very well be empty.
             """
             id_counter = 0
-            door_db    = {}
+            door_db    = {}  # map: door_id (from_state_index) --> GroupID
             def __init__(self, ParentID, DoorList):
                 self.parent_id   = ParentID
                 self.identifier  = Group.id_counter
@@ -191,7 +220,7 @@ class Entry(BASE_Entry):
                 self.common_action_list = self.get_common_action_list(DoorList)
 
                 # Let the group do the common action, take them out of the doors.
-                self.extract_common_action_list(DoorList, self.common_action_list)
+                self.extract_common_actions_from_doors(DoorList)
 
                 # Differentiate between doors that are completely implemented by
                 # what this group and its parent do, and those doors that need further
@@ -207,76 +236,94 @@ class Entry(BASE_Entry):
 
                 self.child_list  = []
 
-            def extract_common_actions(self, DoorSet):
-                DoorSetSize = len(DoorSet)
+            def extract_common_actions_from_doors(self, DoorSet):
+                DoorN      = len(DoorSet)
                 counter_db = defaultdict(int)
                 for door in DoorSet:
-                    for action in door:
+                    for action in door.action_list:
                         counter_db[action] += 1
 
                 # Get set of actions which are in all doors
-                common_action_set = [ action for action, count in counter_db.iteritems() if count == DoorSetN ]
+                common_action_set = [ action for action, count in counter_db.iteritems() if count == DoorN ]
                 for door in DoorSet:
                     for action in common_action_set:
-                        door.remove(action)
+                        door.action_list.remove(action)
                 return
 
             def get_common_action_list(self, DoorList):
                 """RETURNS: List of actions that appear in all doors."""
-                L          = len(DoorList)
+                DoorN      = len(DoorList)
                 counter_db = defaultdict(int)
-                for door in DoorSet:
-                    for action in door:
+                for door in DoorList:
+                    for action in door.action_list:
                         counter_db[action] += 1
 
-                # Return all actions that 
-                return [ action for action, count in counter_db.iteritems() if count == L ]
+                # Return all actions that happear in all doors (count == number of doors)
+                return [ action for action, count in counter_db.iteritems() if count == DoorN ]
 
             def __repr__(self):
-                txt = ["[%i]" % self.__id]
+                txt = []
                 for child in self.child_list:
-                    txt.append(repr(child))
+                    txt.append("%s\n" % repr(child))
 
-                for door in sorted(self.door_set, key=attrgetter("from_state_index")):
-                    txt.append("%i:\n" % door.from_state_index)
+                txt.append("[%i]:\n" % self.identifier)
+                for from_state_index in sorted(self.door_list):
+                    txt.append("%i:\n" % from_state_index)
                 
                 txt.append("common:\n")
-                for action in self.action_list):
-                    txt.append("    %s\n" % action)
+                for action in self.common_action_list:
+                    action_str = repr(action)
+                    action_str = "    " + action_str.replace("\n", "\n    ")
+                    txt.append(action_str)
 
-                txt.append("    -> %i" % self.parent_id)
+                txt.append("\nparent: %s\n" % repr(self.parent_id))
                 return "".join(txt)
 
-        def get_most_common_action(DoorSet):
+        def get_common_action(DoorSet):
+            # Determine the action that is the most promising to build a 'common'
             counter_db = defaultdict(int)
             for door in DoorSet:
-                for action in door:
-                    counter_db[action].append(door)
+                for action in door.action_list:
+                    counter_db[action] += 1
 
-            return max(counter_db.iteritems(), key=itemgetter(1))[0]
+            def total_cost(X):
+                Action, CountN = X
+                return CountN * Action.cost()
 
-        root = Group([ Door(from_state_index, deepcopy(door)) \
-                       for from_state_index, door in self.__doors_db.iteritems()])
+            if len(counter_db) == 0: return None
+            common_action, total_cost = max(counter_db.iteritems(), key=total_cost)
+            return action
+
+        root = Group(ParentID=None, 
+                     DoorList=[ Door(from_state_index, deepcopy(door)) \
+                                for from_state_index, door in self.__doors_db.iteritems()])
         work_list = [ root ]
         while len(work_list) != 0:
-            # Consider the group with the most doors
-            work_list.sort(key=lambda group: len(group.door_set))
-
-            group = work_list[-1]
+            # Consider the group with the most pending doors
+            group = max(work_list, key=lambda x: len(x.pending_door_list))
 
             # Find the action most worthy to be considered 'common'
-            common_door_set, remainder_door_set = get_most_common_action(group.door_set)
+            common_action = get_common_action(group.pending_door_list)
+            if common_action is None:
+                work_list.remove(group)
+                continue
 
-            # If there was no commonality, then the group is done.
-            if common_door_set.is_empty(): work_list.remove(group)
+            # Split set of doors by 'having the common action' or not.
+            common   = []
+            uncommon = []
+            for door in group.pending_door_list:
+                if common_action in door.action_list: common.append(door)
+                else:                                 uncommon.append(door)
 
-            # Split 'group' into common and remainder.
-            # -- old group: take out remainder_door_set.
-            group.remove_uncommon_doors(common_door_set)
-            # -- new group: create new group from remainder_door_set.
-            remainder = Group(group.identifier, remainder_door_set)
-            group.child_list.append(remainder)
-            work_list.append(remainder)
+            if len(common) != 0:
+                new_group = Group(ParentID=group.identifier, DoorList=common)
+                group.child_list.append(new_group)
+                work_list.append(new_group)
+
+            if len(uncommon) != 0:
+                new_group = Group(ParentID=group.identifier, DoorList=uncommon)
+                group.child_list.append(new_group)
+                work_list.append(new_group)
 
         return root
 
