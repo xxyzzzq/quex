@@ -1,0 +1,9 @@
+[0]:
+0:
+1:
+2:
+common:
+    pre(1) --> accept(10)
+    pre(2) --> accept(20)
+    
+parent: None
