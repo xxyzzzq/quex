@@ -10,7 +10,7 @@ from   collections import namedtuple
 
 if "--hwut-info" in sys.argv:
     print "Categorize Entry Door Actions"
-    print "CHOICES: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10;"
+    print "CHOICES: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10;"
     sys.exit()
 
 choice = sys.argv[1]
@@ -18,37 +18,111 @@ choice = sys.argv[1]
 AcceptInfo = namedtuple("AcceptInfo", ("pre_context_id", "pattern_id"))
 StoreInfo  = namedtuple("StoreInfo",  ("pre_context_id", "position_register", "offset"))
 
+A1   = [AcceptInfo(x, y) for x, y in [(1, 10), (2, 20)]]
+A2   = [AcceptInfo(x, y) for x, y in [(2, 20), (1, 10)]]
+S000 = StoreInfo(0, 0, 0)
+S001 = StoreInfo(0, 0, 1)
+S002 = StoreInfo(0, 0, 2)
+S100 = StoreInfo(1, 0, 0)
+S101 = StoreInfo(1, 0, 1)
+S102 = StoreInfo(1, 0, 2)
+S010 = StoreInfo(0, 1, 0)
+S011 = StoreInfo(0, 1, 1)
+S012 = StoreInfo(0, 1, 2)
+
 def test(ActionDB):
     entry = Entry(ActionDB.keys())
     for from_state_index, action_list in ActionDB.iteritems():
         for element in action_list:
             if isinstance(element, list):
-                for info in element:
-                    entry.doors_accept(from_state_index, info)
+                entry.doors_accept(from_state_index, element)
             else:
-                entry.doors_accept(from_state_index, 
-                                   element.pre_context_id, 
-                                   element.position_register, 
-                                   element.offset)
+                entry.doors_store(from_state_index, 
+                                  element.pre_context_id, 
+                                  element.position_register, 
+                                  element.offset)
     print entry.categorize_doors()
 
 if "1" in sys.argv:
+    # All three states have exactly the same entry actions
     action_db = {
-        0: [ [AcceptInfo(x, y) for x, y in [(1, 10), (2, 20)]] ],
-        1: [ [AcceptInfo(x, y) for x, y in [(1, 10), (2, 20)]] ],
-        2: [ [AcceptInfo(x, y) for x, y in [(1, 10), (2, 20)]] ],
+        0: [ A1 ],
+        1: [ A1 ],
+        2: [ A1 ],
     }
 elif "2" in sys.argv:
+    # Two different entry actions
     action_db = { 
-        0: [ AcceptInfo(x, y) for x, y in [(2, 20), (1, 10)] ],
-        1: [ AcceptInfo(x, y) for x, y in [(1, 10), (2, 20)] ],
+        0: [ A2 ],
+        1: [ A1 ],
     }
-if "1" in sys.argv:
+elif "3" in sys.argv:
+    # One entry action is shared. 
+    # Each door has a special action.
     action_db = {
-        0: [ AcceptInfo(x, y) for x, y in [(1, 10), (2, 20)] ],
-        1: [ AcceptInfo(x, y) for x, y in [(1, 10), (2, 20)] ],
-        2: [ AcceptInfo(x, y) for x, y in [(1, 10), (2, 20)] ],
+        0: [ A1, S000 ],
+        1: [ A1, S001 ],
+        2: [ A1, S002 ],
     }
+elif "4" in sys.argv:
+    # One entry action is shared. 
+    # Each two doors share an action.
+    action_db = {
+        0: [ A1, S000 ],
+        1: [ A1, S000 ],
+        2: [ A1, S001 ],
+        3: [ A1, S001 ],
+        4: [ A1, S002 ],
+        5: [ A1, S002 ],
+    }
+elif "5" in sys.argv:
+    # One entry action is shared. 
+    # Each two doors share an action.
+    # Each door has a special action.
+    action_db = {
+        0: [ A1, S000, S100 ],
+        1: [ A1, S000, S101 ],
+        2: [ A1, S001, S102 ],
+        3: [ A1, S001, S010 ],
+    }
+elif "6" in sys.argv:
+    # One entry action is shared. 
+    # Each two doors share an action.
+    # Each door has a special action.
+    action_db = {
+        0: [ A1, S000, S100 ],
+        1: [ A1, S000, S101 ],
+        2: [ A2, S001, S102 ],
+        3: [ A2, S001, S010 ],
+    }
+elif "7" in sys.argv:
+    actions   = [A1, A2, S000, S001, S002, S100, S101, S102, S010, S011, S012]
+    action_db = dict((i, [x]) for i, x in enumerate(actions))
+
+elif "8" in sys.argv:
+    actions   = [A1, S000, S001, S002, S100, S101, S102, S010, S011, S012]
+    action_db = dict((i, actions) for i in xrange(100))
+
+elif "9" in sys.argv:
+    action_db = dict((i, []) for i in xrange(1000))
+
+elif "10" in sys.argv:
+    actions   = [A1, S000, S001, S002, S100, S101, S102, S010, S011, S012]
+    L         = len(actions)
+    def get_actions(Index):
+        result = copy(actions)
+        del result[Index % L]
+        return result
+    action_db = dict((i, get_actions(i)) for i in xrange(10))
+
+elif "X" in sys.argv:
+    actions   = [A1, S000, S001, S002, S100, S101, S102, S010, S011, S012]
+    L         = len(actions)
+    def get_actions(Index):
+        result = copy(actions)
+        del result[Index % L]
+        return result
+    action_db = dict((i, get_actions(i)) for i in xrange(100))
 
 test(action_db)
 

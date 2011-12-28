@@ -1,7 +1,7 @@
 from   quex.engine.analyzer.core import Entry, \
                                         EntryBackward, \
                                         EntryBackwardInputPositionDetection, \
-                                        EntryAction_StoreInputPosition
+                                        Action_StoreInputPosition
 from   quex.blackboard import setup as Setup, \
                               E_EngineTypes, \
                               E_PreContextIDs
@@ -53,7 +53,7 @@ def _doors(txt, TheState, LabelF):
         # The check 'if pre-context' + the jump take most likely more time
         # then simply assigning the position to the position register. So
         # simply omit the check. Collect all registers that store.
-        for action in (x for x in Door if isinstance(x, EntryAction_StoreInputPosition)):
+        for action in (x for x in Door if isinstance(x, Action_StoreInputPosition)):
             register = LanguageDB.POSITION_REGISTER(action.position_register)
             value    = LanguageDB.INPUT_P()
             if action.offset != 0: value = "%s - %i" % (value, action.offset)
