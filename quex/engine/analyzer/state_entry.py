@@ -1,8 +1,8 @@
 from collections     import defaultdict, namedtuple
 from quex.blackboard import E_StateIndices, E_PreContextIDs, E_AcceptanceIDs, E_PostContextIDs, E_TransitionN
-from operator        import attrgetter
-from itertools       import ifilter
-from copy            import deepcopy
+from operator        import attrgetter, itemgetter
+from itertools       import ifilter, combinations
+from copy            import deepcopy, copy
 
 class BASE_Entry(object):
     def uniform_doors_f(self):
@@ -11,14 +11,16 @@ class BASE_Entry(object):
         """Require derived classes to be more specific, if necessary."""
         return not self.uniform_doors_f()
 
-class EntryAction(object):
+class Action(object):
     @staticmethod
     def type_id():      assert False
     def priority(self): assert False
 
-    def cost(self):     assert False
+    def cost(self):          assert False, "Derived class must implement 'cost()'"
+    def __hash__(self):      assert False, "Derived class must implement '__hash__()'"
+    def __eq__(self, Other): assert False, "Derived class must implement '__eq__()'"
 
-# EntryAction_StoreInputPosition: 
+# Action_StoreInputPosition: 
 #
 # Storing the input position is actually dependent on the pre_context_id, if 
 # there is one. The pre_context_id is left out for the following reasons:
@@ -38,7 +40,7 @@ class EntryAction(object):
 # -- In the process of register economization, some post contexts may use the
 #    same position register. The actions which can be combined then can be 
 #    easily detected, if no pre-context is considered.
-class EntryAction_StoreInputPosition(object):
+class Action_StoreInputPosition(object):
     __slots__ = ["pre_context_id", "position_register", "offset"]
     def __init__(self, PreContextID, PositionRegister, Offset):
         self.pre_context_id    = PreContextID
@@ -59,26 +61,39 @@ class EntryAction_StoreInputPosition(object):
     def __hash__(self):
         return 1
     def __eq__(self, Other):
-        if not isinstance(Other, EntryAction_StoreInputPosition): return False
+        if not isinstance(Other, Action_StoreInputPosition): return False
         return     self.pre_context_id    == Other.pre_context_id \
                and self.position_register == Other.position_register \
                and self.offset            == Other.offset           
 
-# EntryAction_Accepter:
+    def __cmp__(self, Other):
+        if   self.pre_context_id    > Other.pre_context_id:    return 1
+        elif self.pre_context_id    < Other.pre_context_id:    return -1
+        elif self.position_register > Other.position_register: return 1
+        elif self.position_register < Other.position_register: return -1
+        elif self.offset            > Other.offset:            return 1
+        elif self.offset            < Other.offset:            return -1
+        return 0
+
+    def __repr__(self):
+        return "pre(%s) --> store[%i] = input_p - %i;\n" % \
+               (self.pre_context_id, self.position_register, self.offset) 
+
+# Action_Accepter:
 # 
 # In this case the pre-context-id is essential. We cannot accept a pattern if
 # its pre-context is not fulfilled.
-EntryAction_AccepterElement = namedtuple("EntryAction_AccepterElement", ("pre_context_id", "pattern_id"))
-class EntryAction_Accepter(object):
+Action_AccepterElement = namedtuple("Action_AccepterElement", ("pre_context_id", "pattern_id"))
+class Action_Accepter(object):
     __slots__ = ["__list"]
     def __init__(self):
         self.__list = []
     
     def add(self, PreContextID, PatternID):
-        self.__list.append(EntryAction_AccepterElement(PreContextID, PatternID))
+        self.__list.append(Action_AccepterElement(PreContextID, PatternID))
 
     def insert_front(self, PreContextID, PatternID):
-        self.__list.insert(0, EntryAction_AccepterElement(PreContextID, PatternID))
+        self.__list.insert(0, Action_AccepterElement(PreContextID, PatternID))
 
     # Require 'type_id' and 'priority' for sorting of entry actions.
     @staticmethod
@@ -96,9 +111,11 @@ class EntryAction_Accepter(object):
         return result
 
     # Require '__hash__' and '__eq__' to be element of a set.
-    def __hash__(self): return 1
+    def __hash__(self): 
+        return len(self.__list)
+
     def __eq__(self, Other):
-        if not isinstance(Other, EntryAction_Accepter): return False
+        if not isinstance(Other, Action_Accepter): return False
         if len(self.__list) != len(Other.__list):       return False
         for x, y in zip(self.__list, Other.__list):
             if   x.pre_context_id != y.pre_context_id:  return False
@@ -113,14 +130,68 @@ class EntryAction_Accepter(object):
         return "".join(["pre(%s) --> accept(%s)\n" % (element.pre_context_id, element.pattern_id) \
                        for element in self.__list])
 
+class ActionList:
+    def __init__(self, TheActionList=None):
+        self.accepter = None
+        self.misc     = set()
+        if TheActionList is not None:
+            for action in TheActionList:
+                if isinstance(action, Action_Accepter):
+                    assert self.accepter is None
+                    self.accepter = action
+                else:
+                    self.misc.add(action)
+
+    def difference_update(self, ActionList):
+        if self.accepter == ActionList.accepter: self.accepter = None
+        self.misc.difference_update(ActionList.misc)
+
+    def is_empty(self):
+        if self.accepter is not None: return False
+        return len(self.misc) == 0
+
+    def has_action(self, X):
+        if isinstance(X, Action_Accepter): return self.accepter == X
+        return X in self.misc
+
+    def clone(self):
+        result = ActionList()
+        result.accepter = self.accepter          # Accepters are not supposed to change
+        result.misc     = [x for x in self.misc] # Other actions, also are not supposed to change.
+        return result
+
+    def __iter__(self):
+        """Allow iteration over action list."""
+        if self.accepter is not None: 
+            yield self.accepter
+        for action in sorted(self.misc):
+            yield action
+
+    def __hash__(self):
+        if self.accepter is not None: return len(self.misc) * 2 + 1
+        else:                         return len(self.misc)
+
+    def __eq__(self, Other):
+        # Rely on '__eq__' of Action_Accepter
+        if not (self.accepter == Other.accepter): return False
+        return self.misc == Other.misc
+
+    def __repr__(self):
+        txt = ""
+        if self.accepter is not None:
+            txt += "acc"
+        for action in self.misc:
+            txt += "sto"
+        return txt
+
 class Entry(BASE_Entry):
     """An entry has potentially the following tasks:
     
           (1) Storing information about positioning represented by objects 
-              of type 'EntryAction_StoreInputPosition'.
+              of type 'Action_StoreInputPosition'.
 
           (2) Storing information about an acceptance. represented by objects
-              of type 'EntryAction_StoreInputPosition'.
+              of type 'Action_StoreInputPosition'.
               
        Entry actions are relative from which state it is entered. Thus, an 
        object of this class contains a dictionary that maps:
@@ -149,7 +220,7 @@ class Entry(BASE_Entry):
            state.
         """
         # Construct the Accepter from PathTraceList
-        accepter = EntryAction_Accepter()
+        accepter = Action_Accepter()
         for path_trace in PathTraceList:
             accepter.add(path_trace.pre_context_id, path_trace.pattern_id)
 
@@ -163,19 +234,18 @@ class Entry(BASE_Entry):
             # Catch the accepter, if there is already one, of not create one.
             accepter = None
             for element in door:
-                if isinstance(element, EntryAction_Accepter): 
+                if isinstance(element, Action_Accepter): 
                     accepter = element
                     break
             if accepter is None: 
-                accepter = EntryAction_Accepter()
+                accepter = Action_Accepter()
                 door.add(accepter)
             accepter.insert_front(PreContextID, PatternID)
 
     def doors_store(self, FromStateIndex, PreContextID, PositionRegister, Offset):
-        # Add 'store input position' to specific door. See 'EntryAction_StoreInputPosition'
+        # Add 'store input position' to specific door. See 'Action_StoreInputPosition'
         # comment for the reason why we do not store pre-context-id.
-        entry = EntryAction_StoreInputPosition(PreContextID, PositionRegister, Offset)
-        print "##dad:", FromStateIndex, PreContextID, PositionRegister, Offset, entry
+        entry = Action_StoreInputPosition(PreContextID, PositionRegister, Offset)
         self.__doors_db[FromStateIndex].add(entry)
 
     def door_number(self):
@@ -189,20 +259,16 @@ class Entry(BASE_Entry):
             """A Door consists a list of actions which are performed upon entry to
                the state from a specific source state.
             """
-            def __init__(self, FromStateIndex, ActionList):
+            def __init__(self, FromStateIndex, TheActionList):
                 self.from_state_index = FromStateIndex
-                self.action_list      = ActionList
+                self.action_list      = ActionList(TheActionList)
 
             # Make Door usable for dictionary and set
-            def __hash__(self): return self.from_state_index
-            def __eq__(self):   return self.from_state_index
+            def __hash__(self):      return self.from_state_index
+            def __eq__(self, Other): return self.from_state_index == Other.from_state_index
 
             def __repr__(self):
-                action_list_str = ""
-                for action in self.action_list:
-                    if   isinstance(action, EntryAction_Accepter):           action_list_str += "acc"
-                    elif isinstance(action, EntryAction_StoreInputPosition): action_list_str += "sto"
-                    else:                                                    action_list_str += "?"
+                action_list_str = repr(self.action_list)
                 return "(f: %i, a: [%s])" % (self.from_state_index, action_list_str)
 
         class Group:
@@ -211,120 +277,139 @@ class Entry(BASE_Entry):
             """
             id_counter = 0
             door_db    = {}  # map: door_id (from_state_index) --> GroupID
-            def __init__(self, ParentID, DoorList):
-                self.parent_id   = ParentID
+            def __init__(self, Parent, CommonActionList, DoorList):
+                self.parent      = Parent  
                 self.identifier  = Group.id_counter
                 Group.id_counter += 1
 
                 # Actions that are done by every door in the group.
-                self.common_action_list = self.get_common_action_list(DoorList)
+                self.common_action_list = CommonActionList
+                self.door_list          = [x.from_state_index for x in DoorList]
+                Group.door_db.update((x.from_state_index, self.identifier) for x in DoorList)
+                self.child_list         = []
 
-                # Let the group do the common action, take them out of the doors.
-                self.extract_common_actions_from_doors(DoorList)
-
-                # Differentiate between doors that are completely implemented by
-                # what this group and its parent do, and those doors that need further
-                # consideration.
-                self.door_list         = []  # Doors implemented by this group
-                self.pending_door_list = []  # Doors that need further consideration
-                for door in DoorList:
-                    if len(door.action_list) == 0: 
-                        self.door_list.append(door.from_state_index)
-                        Group.door_db[door.from_state_index] = self.identifier
-                    else:
-                        self.pending_door_list.append(door)
-
-                self.child_list  = []
-
-            def extract_common_actions_from_doors(self, DoorSet):
-                DoorN      = len(DoorSet)
-                counter_db = defaultdict(int)
-                for door in DoorSet:
-                    for action in door.action_list:
-                        counter_db[action] += 1
-
-                # Get set of actions which are in all doors
-                common_action_set = [ action for action, count in counter_db.iteritems() if count == DoorN ]
-                for door in DoorSet:
-                    for action in common_action_set:
-                        door.action_list.remove(action)
-                return
-
-            def get_common_action_list(self, DoorList):
-                """RETURNS: List of actions that appear in all doors."""
-                DoorN      = len(DoorList)
-                counter_db = defaultdict(int)
-                for door in DoorList:
-                    for action in door.action_list:
-                        counter_db[action] += 1
-
-                # Return all actions that happear in all doors (count == number of doors)
-                return [ action for action, count in counter_db.iteritems() if count == DoorN ]
+            def __eq__(self, Other):
+                return id(self) == id(Other)
 
             def __repr__(self):
                 txt = []
                 for child in self.child_list:
                     txt.append("%s\n" % repr(child))
 
-                txt.append("[%i]:\n" % self.identifier)
+                txt.append("[%i]: " % self.identifier)
                 for from_state_index in sorted(self.door_list):
-                    txt.append("%i:\n" % from_state_index)
-                
-                txt.append("common:\n")
+                    txt.append("(%i) " % from_state_index)
+                txt.append("\n")
                 for action in self.common_action_list:
                     action_str = repr(action)
-                    action_str = "    " + action_str.replace("\n", "\n    ")
+                    action_str = "    " + action_str[:-1].replace("\n", "\n    ") + action_str[-1]
                     txt.append(action_str)
 
-                txt.append("\nparent: %s\n" % repr(self.parent_id))
+                if self.parent is None: txt.append("parent: [None]\n")
+                else:                   txt.append("parent: [%s]\n" % repr(self.parent.identifier))
                 return "".join(txt)
 
-        def get_common_action(DoorSet):
-            # Determine the action that is the most promising to build a 'common'
-            counter_db = defaultdict(int)
-            for door in DoorSet:
-                for action in door.action_list:
-                    counter_db[action] += 1
+        def get_best_common_action_list(DoorList):
+            """RETURNS: [0] --> action list of the best door combination.
+                        [1] --> best door combination
 
-            def total_cost(X):
-                Action, CountN = X
-                return CountN * Action.cost()
+               Avoid the complexity of iterating over all iterations. The exponentiality
+               of its nature could literally explode the computation time.
+            """
+            def get_common_action_list(Al, Bl):
+                result = []
+                for action in Al:
+                    if Bl.has_action(action): result.append(action)
 
-            if len(counter_db) == 0: return None
-            common_action, total_cost = max(counter_db.iteritems(), key=total_cost)
-            return action
+                return ActionList(result)
 
-        root = Group(ParentID=None, 
-                     DoorList=[ Door(from_state_index, deepcopy(door)) \
-                                for from_state_index, door in self.__doors_db.iteritems()])
-        work_list = [ root ]
+            #iterable  = DoorList.__iter__()
+            #prototype = iterable.next()
+            #for door in iterable:
+            #    # IMPORTANT: Rely on '__eq__'
+            #    if not (prototype.action_list == door.action_list): break
+            #else:
+            #    return prototype.action_list.clone(), [door for door in DoorList]
+
+            same_db = defaultdict(set)
+            for door in DoorList:
+                same_db[door.action_list].add(door)
+
+            # Shortcut: if all doors are the same, then the result can be computed quickly: best = all common
+            if len(same_db) == 1:
+                return door.action_list.clone(), [door for door in DoorList]
+
+            count_db = defaultdict(set) # map: action_list --> 'cost' of action list
+            cost_db  = {}               # map: action_list --> set of doors that share it.
+            for combination in combinations(DoorList, 2):
+                common_action_list = get_common_action_list(combination[0].action_list, combination[1].action_list)
+                action_cost        = cost_db.get(common_action_list)
+                if action_cost is None: 
+                    action_cost = sum(x.cost() for x in common_action_list) 
+                    cost_db[common_action_list] = action_cost
+                    # TODO:
+                    # The current combination can achieve at least a 'cost' of action_cost * 2.
+                    # A door in a combination can at best achieve a cost of cost(all actions) * N
+                    # if all other doors have the same action list. Therefore, any door where 
+                    # cost(all action_cost) * N < best_action_cost * 2 can be dropped.
+                entry = count_db[common_action_list]
+                entry.add(combination[0])
+                entry.add(combination[1])
+
+            # Determine the best combination: max(cost * door number)
+            best_cost        = 0
+            best_action_list = ActionList([])
+            best_combination = [ door for door in DoorList if door.action_list.is_empty() ]
+            for action_list, combination in count_db.iteritems():
+                cost = cost_db[action_list] * len(combination)
+                if cost > best_cost:
+                    best_cost        = cost
+                    best_action_list = action_list
+                    best_combination = combination
+            return best_action_list, best_combination
+                
+
+        root              = Group(None, [], [])
+        parent            = root
+        pending_door_list = [ Door(from_state_index, deepcopy(door)) \
+                              for from_state_index, door in self.__doors_db.iteritems()]
+        work_list         = [ (parent, pending_door_list) ]
         while len(work_list) != 0:
-            # Consider the group with the most pending doors
-            group = max(work_list, key=lambda x: len(x.pending_door_list))
+            parent, pending_door_list = work_list.pop()
 
             # Find the action most worthy to be considered 'common'
-            common_action = get_common_action(group.pending_door_list)
-            if common_action is None:
-                work_list.remove(group)
+            common_action_list, common_door_list = get_best_common_action_list(pending_door_list)
+
+            if len(common_door_list) != 0:
+                # -- New group for the 'commons'
+                done    = []
+                pending = []
+                for door in common_door_list:
+                    door.action_list.difference_update(common_action_list)
+                    if door.action_list.is_empty(): done.append(door)
+                    else:                           pending.append(door)
+
+                new_group = Group(parent, common_action_list, done)
+                parent.child_list.append(new_group)
+                if len(pending) != 0:
+                    work_list.append((new_group, pending))
+
+            elif common_action_list.is_empty():
+                # No common action between any of the action lists 
+                # --> every single one gets its own group.
+                parent.child_list.extend(Group(parent, door.action_list, DoorList=[door]) \
+                                        for door in pending_door_list)
                 continue
 
-            # Split set of doors by 'having the common action' or not.
-            common   = []
-            uncommon = []
-            for door in group.pending_door_list:
-                if common_action in door.action_list: common.append(door)
-                else:                                 uncommon.append(door)
+            if len(common_door_list) != len(pending_door_list):
+                # -- Pending list for the 'uncommons'
+                uncommon_door_list = [ door for door in pending_door_list if door not in common_door_list ]
+                work_list.append((parent, uncommon_door_list))
 
-            if len(common) != 0:
-                new_group = Group(ParentID=group.identifier, DoorList=common)
-                group.child_list.append(new_group)
-                work_list.append(new_group)
+            # Sort by the number of involved doors
+            work_list.sort(key=itemgetter(1))
 
-            if len(uncommon) != 0:
-                new_group = Group(ParentID=group.identifier, DoorList=uncommon)
-                group.child_list.append(new_group)
-                work_list.append(new_group)
-
+        self.__from_state_index_to_door_db = Group.door_db
         return root
 
     def get_accepter(self):
@@ -335,7 +420,7 @@ class Entry(BASE_Entry):
         """
         assert False, "Accepters are 'per-door' objects"
         for door in self.__doors_db.itervalues():
-            acceptance_actions = [action for action in door if isinstance(action, EntryAction_Accepter)]
+            acceptance_actions = [action for action in door if isinstance(action, Action_Accepter)]
             result.update(acceptance_actions)
 
         result = list(result)
@@ -348,14 +433,14 @@ class Entry(BASE_Entry):
         db = set()
         for door in self.__doors_db.itervalues():
             for action in door:
-                if not isinstance(action, EntryAction_Accepter): continue
+                if not isinstance(action, Action_Accepter): continue
                 db.add(action.acceptance_id)
         return len(db)
 
     def has_accepter(self):
         for door in self.__doors_db.itervalues():
             for action in door:
-                if isinstance(action, EntryAction_Accepter): return True
+                if isinstance(action, Action_Accepter): return True
         return False
 
     def get_positioner_db(self):
@@ -436,11 +521,11 @@ class Entry(BASE_Entry):
             if len(door) == 0: continue
             new_door = set()
             for action in door:
-                if not isinstance(action, EntryAction_StoreInputPosition):
+                if not isinstance(action, Action_StoreInputPosition):
                     new_door.add(action)
                 else:
                     register_index = PositionRegisterMap[action.position_register]
-                    new_door.add(EntryAction_StoreInputPosition(action.pre_context_id, register_index, action.offset))
+                    new_door.add(Action_StoreInputPosition(action.pre_context_id, register_index, action.offset))
             self.__doors_db[from_state_index] = new_door
 
         # (*) If a door stores the input position in register unconditionally,
@@ -448,10 +533,10 @@ class Entry(BASE_Entry):
         #     are nonessential.
         for door in self.__doors_db.itervalues():
             for action in list(x for x in door \
-                               if     isinstance(x, EntryAction_StoreInputPosition) \
+                               if     isinstance(x, Action_StoreInputPosition) \
                                   and x.pre_context_id == E_PreContextIDs.NONE):
                 for x in list(x for x in door \
-                             if isinstance(x, EntryAction_StoreInputPosition)):
+                             if isinstance(x, Action_StoreInputPosition)):
                     if x.position_register == action.position_register and x.pre_context_id != E_PreContextIDs.NONE:
                         door.remove(x)
 
@@ -497,7 +582,7 @@ class Entry(BASE_Entry):
             accept_action_list = []
             store_action_list  = []
             for action in door:
-                if isinstance(action, EntryAction_StoreInputPosition): 
+                if isinstance(action, Action_StoreInputPosition): 
                     store_action_list.append(action)
                 else:
                     accept_action_list.append(action)
