@@ -179,9 +179,13 @@ class ActionList:
     def __repr__(self):
         txt = ""
         if self.accepter is not None:
-            txt += "acc"
+            txt += "a"
+            for x in self.accepter:
+                txt += "%s," % repr(x.pattern_id)
         for action in self.misc:
-            txt += "sto"
+            txt += "s"
+            for x in self.misc:
+                txt += "%s:%i," % (repr(x.position_register), x.offset)
         return txt
 
 class Entry(BASE_Entry):
@@ -341,11 +345,18 @@ class Entry(BASE_Entry):
 
             count_db = defaultdict(set) # map: action_list --> 'cost' of action list
             cost_db  = {}               # map: action_list --> set of doors that share it.
-            for combination in combinations(DoorList, 2):
-                common_action_list = get_common_action_list(combination[0].action_list, combination[1].action_list)
+            for action_list, door_list in same_db.iteritems():
+                if len(door_list) > 1: 
+                    count_db[action_list].update(door_list)
+                    cost_db[action_list] = sum(x.cost() for x in action_list)
+            
+            for x, y in combinations(same_db.iteritems(), 2):
+                x_action_list, x_door_list = x
+                y_action_list, y_door_list = y
+                common_action_list = get_common_action_list(x_action_list, y_action_list)
                 action_cost        = cost_db.get(common_action_list)
                 if action_cost is None: 
-                    action_cost = sum(x.cost() for x in common_action_list) 
+                    action_cost    = sum(x.cost() for x in common_action_list) 
                     cost_db[common_action_list] = action_cost
                     # TODO:
                     # The current combination can achieve at least a 'cost' of action_cost * 2.
@@ -353,8 +364,8 @@ class Entry(BASE_Entry):
                     # if all other doors have the same action list. Therefore, any door where 
                     # cost(all action_cost) * N < best_action_cost * 2 can be dropped.
                 entry = count_db[common_action_list]
-                entry.add(combination[0])
-                entry.add(combination[1])
+                entry.update(x_door_list)
+                entry.update(y_door_list)
 
             # Determine the best combination: max(cost * door number)
             best_cost        = 0
@@ -366,9 +377,8 @@ class Entry(BASE_Entry):
                     best_cost        = cost
                     best_action_list = action_list
                     best_combination = combination
-            return best_action_list, best_combination
+            return best_action_list.clone(), best_combination
                 
-
         root              = Group(None, [], [])
         parent            = root
         pending_door_list = [ Door(from_state_index, deepcopy(door)) \
