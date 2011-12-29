@@ -115,6 +115,8 @@ elif "10" in sys.argv:
         return result
     action_db = dict((i, get_actions(i)) for i in xrange(10))
 
+elif "11" in sys.argv:
+    pass
 elif "X" in sys.argv:
     actions   = [A1, S000, S001, S002, S100, S101, S102, S010, S011, S012]
     L         = len(actions)
@@ -122,7 +124,7 @@ elif "X" in sys.argv:
         result = copy(actions)
         del result[Index % L]
         return result
-    action_db = dict((i, get_actions(i)) for i in xrange(100))
+    action_db = dict((i, get_actions(i)) for i in xrange(1000))
 
 test(action_db)
 
