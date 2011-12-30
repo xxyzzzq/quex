@@ -1,4 +1,4 @@
-<history date="Thu Dec 29 09:13:17 2011" element-n="705">
+<history date="Fri Dec 30 22:47:53 2011" element-n="715">
     <day year="2011" month="04" day="29">
         <history-init time="04:18:51"/>
     </day>
@@ -833,5 +833,17 @@
     <day year="2011" month="12" day="29">
         <crc-error time="06:47:16" application="categorize_doors.py" choice="4" database-crc="-350448568" real-crc="1025914692"/>
         <crc-error time="08:10:47" application="categorize_doors.py" choice="10" database-crc="-844853509" real-crc="1852971634"/>
+        <crc-error time="10:52:17" application="categorize_doors.py" choice="5" database-crc="-1490676425" real-crc="-1902844630"/>
+        <crc-error time="10:53:10" application="categorize_doors.py" choice="5" database-crc="-1902844630" real-crc="812726416"/>
+        <crc-error time="10:56:15" application="categorize_doors.py" choice="5" database-crc="812726416" real-crc="-1486574262"/>
+        <crc-error time="10:58:00" application="categorize_doors.py" choice="6" database-crc="-1607343703" real-crc="153013916"/>
+        <crc-error time="11:00:02" application="categorize_doors.py" choice="6" database-crc="153013916" real-crc="311851216"/>
+        <crc-error time="11:00:32" application="categorize_doors.py" choice="6" database-crc="311851216" real-crc="-1607343703"/>
+        <crc-error time="11:05:36" application="categorize_doors.py" choice="5" database-crc="-1486574262" real-crc="-1490676425"/>
+    </day>
+    <day year="2011" month="12" day="30">
+        <crc-error time="07:31:53" application="categorize_doors.py" choice="6" database-crc="-1607343703" real-crc="153013916"/>
+        <crc-error time="07:33:37" application="categorize_doors.py" choice="6" database-crc="153013916" real-crc="311851216"/>
+        <crc-error time="07:36:52" application="categorize_doors.py" choice="6" database-crc="311851216" real-crc="-1038319317"/>
     </day>
 </history>

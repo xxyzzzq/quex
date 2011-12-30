@@ -157,6 +157,7 @@ SETUP_INFO = {
     "output_directory":               [["--output-directory", "--odir"],     ""],
     "source_package_directory":       [["--source-package", "--sp"],         ""],
     "single_mode_analyzer_f":         [["--single-mode-analyzer", "--sma"],  SetupParTypes.FLAG],
+    "state_entry_analysis_complexity_limit": [["--state-entry-analysis-complexity-limit", "--seacl"], 1000],
     "user_application_version_id":    [["--version-id"],                     "0.0.0-pre-release"],
     #
     "version_information":               [["--version", "-v"],                SetupParTypes.FLAG],

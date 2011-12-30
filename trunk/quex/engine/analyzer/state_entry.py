@@ -1,7 +1,9 @@
 from collections     import defaultdict, namedtuple
-from quex.blackboard import E_StateIndices, E_PreContextIDs, E_AcceptanceIDs, E_PostContextIDs, E_TransitionN
+from quex.engine.misc.file_in import error_msg
+from quex.blackboard import setup as Setup, \
+                            E_StateIndices, E_PreContextIDs, E_AcceptanceIDs, E_PostContextIDs, E_TransitionN
 from operator        import attrgetter, itemgetter
-from itertools       import ifilter, combinations
+from itertools       import ifilter, combinations, islice
 from copy            import deepcopy, copy
 
 class BASE_Entry(object):
@@ -164,12 +166,18 @@ class ActionList:
         """Allow iteration over action list."""
         if self.accepter is not None: 
             yield self.accepter
-        for action in sorted(self.misc):
+        for action in sorted(self.misc, key=attrgetter("pre_context_id", "position_register", "offset")):
             yield action
 
     def __hash__(self):
-        if self.accepter is not None: return len(self.misc) * 2 + 1
-        else:                         return len(self.misc)
+        xor_sum = 0
+        for x in self.misc:
+            xor_sum ^= (x.position_register + x.offset)
+
+        if self.accepter is not None:
+            for x in self.accepter:
+                xor_sum ^= x.pattern_id
+        return xor_sum
 
     def __eq__(self, Other):
         # Rely on '__eq__' of Action_Accepter
@@ -182,7 +190,7 @@ class ActionList:
             txt += "a"
             for x in self.accepter:
                 txt += "%s," % repr(x.pattern_id)
-        for action in self.misc:
+        for action in sorted(self.misc, key=attrgetter("position_register", "offset")):
             txt += "s"
             for x in self.misc:
                 txt += "%s:%i," % (repr(x.position_register), x.offset)
@@ -297,7 +305,7 @@ class Entry(BASE_Entry):
 
             def __repr__(self):
                 txt = []
-                for child in self.child_list:
+                for child in sorted(self.child_list, key=attrgetter("identifier")):
                     txt.append("%s\n" % repr(child))
 
                 txt.append("[%i]: " % self.identifier)
@@ -314,18 +322,20 @@ class Entry(BASE_Entry):
                 return "".join(txt)
 
         def get_best_common_action_list(DoorList):
-            """RETURNS: [0] --> action list of the best door combination.
-                        [1] --> best door combination
+            """
+            RETURNS: [0] --> action list of the best door combination.
+                     [1] --> best door combination
 
-               Avoid the complexity of iterating over all iterations. The exponentiality
-               of its nature could literally explode the computation time.
+            Avoid the complexity of iterating over all combinations. The 
+            exponentiality of its nature could literally explode the computation
+            time. Approach: Loop over all combinations of two doors, then 
+            collect all doors that may match a certain action list, i.e.
+
+                 count_db:  action_list -->  doors that have all its actions
+                                             (and may be other actions).
             """
             def get_common_action_list(Al, Bl):
-                result = []
-                for action in Al:
-                    if Bl.has_action(action): result.append(action)
-
-                return ActionList(result)
+                return ActionList([action for action in Al if Bl.has_action(action)])
 
             #iterable  = DoorList.__iter__()
             #prototype = iterable.next()
@@ -342,6 +352,23 @@ class Entry(BASE_Entry):
             # Shortcut: if all doors are the same, then the result can be computed quickly: best = all common
             if len(same_db) == 1:
                 return door.action_list.clone(), [door for door in DoorList]
+
+            if len(same_db) > Setup.state_entry_analysis_complexity_limit:
+                # PROBLEM:  Computation time propotional to square of size!
+                #           ONLY A PROBLEM IN VERY EXTREME CASES WHERE size >> 1000.
+                # In such cases, live with a possibly sub-optimal solution. Reduce
+                # the set of candidates to what may be a good guess: The 1000 
+                # action_lists with the most doors related to them.
+                error_msg("A certain border of complexity has been detected. To be able to\n"
+                          "handle the analysis, Quex decided to reduce the complexity with\n"     
+                          "the risk that the result may not be the absolute optimum. Currently,\n" 
+                          "this value is set to %i. It can be modified with the command line\n"      
+                          "option '--state-entry-analysis-complexity-limit'." \
+                          % Setup.state_entry_analysis_complexity_limit,
+                          DontExitF=True)
+                iterable = sorted(same_db.iteritems(), key=lambda x: len(x[1]))
+                iterable = islice(iterable, Setup.state_entry_analysis_complexity_limit)
+                same_db  = dict( iterable )
 
             count_db = defaultdict(set) # map: action_list --> 'cost' of action list
             cost_db  = {}               # map: action_list --> set of doors that share it.
