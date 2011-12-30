@@ -10,7 +10,7 @@ from   collections import namedtuple
 
 if "--hwut-info" in sys.argv:
     print "Categorize Entry Door Actions"
-    print "CHOICES: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10;"
+    print "CHOICES: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11;"
     sys.exit()
 
 choice = sys.argv[1]
@@ -20,15 +20,15 @@ StoreInfo  = namedtuple("StoreInfo",  ("pre_context_id", "position_register", "o
 
 A1   = [AcceptInfo(x, y) for x, y in [(1, 10), (2, 20)]]
 A2   = [AcceptInfo(x, y) for x, y in [(2, 20), (1, 10)]]
-S000 = StoreInfo(0, 0, 0)
-S001 = StoreInfo(0, 0, 1)
-S002 = StoreInfo(0, 0, 2)
-S100 = StoreInfo(1, 0, 0)
-S101 = StoreInfo(1, 0, 1)
-S102 = StoreInfo(1, 0, 2)
-S010 = StoreInfo(0, 1, 0)
-S011 = StoreInfo(0, 1, 1)
-S012 = StoreInfo(0, 1, 2)
+S000 = StoreInfo(0, 0, 0) # 1
+S001 = StoreInfo(0, 0, 1) # 2
+S002 = StoreInfo(0, 0, 2) # 3
+S100 = StoreInfo(1, 0, 0) # 4
+S101 = StoreInfo(1, 0, 1) # 5
+S102 = StoreInfo(1, 0, 2) # 6
+S010 = StoreInfo(0, 1, 0) # 7
+S011 = StoreInfo(0, 1, 1) # 8
+S012 = StoreInfo(0, 1, 2) # 9
 
 def test(ActionDB):
     entry = Entry(ActionDB.keys())
@@ -116,7 +116,10 @@ elif "10" in sys.argv:
     action_db = dict((i, get_actions(i)) for i in xrange(10))
 
 elif "11" in sys.argv:
-    pass
+    from quex.blackboard import setup as Setup
+    Setup.state_entry_analysis_complexity_limit = 5
+    action_db = dict((i, [StoreInfo(0, 0, i)]) for i in xrange(10))
+
 elif "X" in sys.argv:
     actions   = [A1, S000, S001, S002, S100, S101, S102, S010, S011, S012]
     L         = len(actions)
