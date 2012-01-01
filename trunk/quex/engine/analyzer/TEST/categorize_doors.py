@@ -41,7 +41,8 @@ def test(ActionDB):
                                   element.pre_context_id, 
                                   element.position_register, 
                                   element.offset)
-    print entry.categorize_doors()
+    entry.categorize_action_lists()
+    print entry.door_tree_root
 
 if "1" in sys.argv:
     # All three states have exactly the same entry actions

@@ -17,7 +17,14 @@ from   quex.engine.generator.languages.address   import get_address, \
                                                         db, \
                                                         get_label, \
                                                         Address
-from   quex.blackboard                           import E_StateIndices, E_EngineTypes, E_AcceptanceIDs, E_InputActions, E_TransitionN, E_PreContextIDs
+from   quex.blackboard                           import E_StateIndices,  \
+                                                        E_EngineTypes,   \
+                                                        E_AcceptanceIDs, \
+                                                        E_InputActions,  \
+                                                        E_TransitionN,   \
+                                                        E_PreContextIDs
+from   quex.engine.analyzer.state_entry          import Action_Accepter, \
+                                                        Action_StoreInputPosition
 from   copy                                      import copy
 
 from   itertools import islice
@@ -110,30 +117,67 @@ class LDB(dict):
         comment = Comment.replace("/*", "SLASH_STAR").replace("*/", "STAR_SLASH").replace("\n", "\n     * ")
         txt.append("    /* %s\n     */" % comment) 
 
-    def ADDRESS(self, StateIndex, FromStateIndex):
-        if self.__analyzer is None:
-            FromStateIndex = None
-        elif self.__analyzer.engine_type != E_EngineTypes.FORWARD:
-            FromStateIndex = None
-        elif FromStateIndex is not None:
-            if self.__analyzer.state_db.has_key(StateIndex) == False:
-                # It must be a template/path walker state. Those are not real analyzer states
-                # but little engines that can be entered via an address.
-                FromStateIndex = None
-            elif not self.__analyzer.state_db[StateIndex].entry.has_special_door_from_state(FromStateIndex):
-                # If the entry of the target state is uniform (the same from every 'SourceState'),
-                # then we do not need to goto it through a specific door (FromStateIndex = None).
-                # If the 'Analyzer == None' we assume that all related states have 
-                # independent_of_source_state entries.
-                FromStateIndex = None
+    def ACTION(self, EntryAction):
+        if isinstance(EntryAction, Action_Accepter):
+            else_str = ""
+            txt      = []
+            for element in EntryAction:
+                if element.pre_context_id != E_PreContextIDs.NONE:
+                    txt.append("    %sif( pre_context_%i_fulfilled_f ) %s;\n" \
+                               % (else_str, 
+                                  element.pre_context_id, 
+                                  LanguageDB.ASSIGN("last_acceptance", LanguageDB.ACCEPTANCE(element.pattern_id))))
+                else:
+                    txt.append("    %s%s;\n" \
+                               % (else_str, 
+                                  LanguageDB.ASSIGN("last_acceptance", LanguageDB.ACCEPTANCE(element.pattern_id))))
+                else_str = "else "
+            return "".join(txt)
 
-        result = get_address("$entry", (StateIndex, FromStateIndex), U=True, R=True)
+        elif isinstance(EntryAction, Action_StoreInputPosition):
+            # Assume that checking for the pre-context is just overhead that 
+            # does not accelerate anything.
+            if EntryAction.offset == 0:
+                return "    position[%i] = me->buffer._input_p;\n" \
+                       % EntryAction.position_register
+            else:
+                return "    position[%i] = me->buffer._input_p - %i;\n" \
+                       % (EntryAction.position_register, EntryAction.offset)
+        else:
+            assert False, "Unknown Entry Action"
+
+    def ADDRESS(self, StateIndex, FromStateIndex, DoorIndex=None):
+        # The door can be specified by the FromStateIndex or the DoorIndex but not by both!
+        assert not (FromStateIndex != None and DoorIndex != None)
+
+        if DoorIndex is None:
+            if self.__analyzer is None:
+                DoorIndex = None
+
+            elif self.__analyzer.engine_type != E_EngineTypes.FORWARD:
+                DoorIndex = None
+
+            elif FromStateIndex is not None:
+                if self.__analyzer.state_db.has_key(StateIndex) == False:
+                    # It must be a template/path walker state. Those are not real analyzer states
+                    # but little engines that can be entered via an address.
+                    DoorIndex = None
+                elif not self.__analyzer.state_db[StateIndex].entry.has_special_door_from_state(FromStateIndex):
+                    # If the entry of the target state is uniform (the same from every 'SourceState'),
+                    # then we do not need to goto it through a specific door (FromStateIndex = None).
+                    # If the 'Analyzer == None' we assume that all related states have 
+                    # independent_of_source_state entries.
+                    DoorIndex = None
+                else:
+                    DoorIndex = self.__analyzer.state_db[StateIndex].source_state_to_group_db[FromStateIndex]
+
+        result = get_address("$entry", (StateIndex, DoorIndex), U=True, R=True)
         return result
 
     def ADDRESS_DROP_OUT(self, StateIndex):
         return get_address("$drop-out", StateIndex)
 
-    def __label_name(self, StateIndex, FromStateIndex=None):
+    def __label_name(self, StateIndex, FromStateIndex=None, DoorIndex=None):
         if StateIndex in E_StateIndices:
             assert StateIndex != E_StateIndices.DROP_OUT
             assert StateIndex != E_StateIndices.RELOAD_PROCEDURE
@@ -143,7 +187,7 @@ class LDB(dict):
                 E_StateIndices.ANALYZER_REENTRY:            "__REENTRY",
             }[StateIndex]
 
-        return "_%i" % self.ADDRESS(StateIndex, FromStateIndex)
+        return "_%i" % self.ADDRESS(StateIndex, FromStateIndex, DoorIndex)
 
     def LABEL(self, StateIndex, FromStateIndex=None, NewlineF=True):
         label = self.__label_name(StateIndex, FromStateIndex)
@@ -166,11 +210,11 @@ class LDB(dict):
     def LABEL_NAME_BACKWARD_INPUT_POSITION_RETURN(self, StateMachineID):
         return "BIP_DETECTOR_%i_DONE" % StateMachineID
 
-    def GOTO(self, TargetStateIndex, FromStateIndex=None):
+    def GOTO(self, TargetStateIndex, FromStateIndex=None, DoorIndex=None):
         # Only for normal 'forward analysis' the from state is of interest.
         # Because, only during forward analysis some actions depend on the 
         # state from where we come.
-        result = "goto %s;" % self.__label_name(TargetStateIndex, FromStateIndex)
+        result = "goto %s;" % self.__label_name(TargetStateIndex, FromStateIndex, DoorIndex)
         return result
 
     def GOTO_DROP_OUT(self, StateIndex):

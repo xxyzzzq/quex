@@ -22,27 +22,29 @@ class Action(object):
     def __hash__(self):      assert False, "Derived class must implement '__hash__()'"
     def __eq__(self, Other): assert False, "Derived class must implement '__eq__()'"
 
-# Action_StoreInputPosition: 
-#
-# Storing the input position is actually dependent on the pre_context_id, if 
-# there is one. The pre_context_id is left out for the following reasons:
-#
-# -- Testing the pre_context_id is not necessary.
-#    If a pre-contexted acceptance is reach where the pre-context is required
-#    two things can happen: 
-#    (i) Pre-context-id is not fulfilled, then no input position needs to 
-#        be restored. Storing does no harm.
-#    (ii) Pre-context-id is fulfilled, then the position is restored. 
-#
-# -- Avoiding overhead for pre_context_id test.
-#    In case (i) cost = test + jump, (ii) cost = test + assign + jump. Without
-#    test (i) cost = assign, (ii) cost = storage. Assume cost for test <= assign.
-#    Thus not testing is cheaper.
-#
-# -- In the process of register economization, some post contexts may use the
-#    same position register. The actions which can be combined then can be 
-#    easily detected, if no pre-context is considered.
 class Action_StoreInputPosition(object):
+    """
+    Action_StoreInputPosition: 
+
+    Storing the input position is actually dependent on the pre_context_id, if 
+    there is one. The pre_context_id is left out for the following reasons:
+
+    -- Testing the pre_context_id is not necessary.
+       If a pre-contexted acceptance is reach where the pre-context is required
+       two things can happen: 
+       (i) Pre-context-id is not fulfilled, then no input position needs to 
+           be restored. Storing does no harm.
+       (ii) Pre-context-id is fulfilled, then the position is restored. 
+
+    -- Avoiding overhead for pre_context_id test.
+       In case (i) cost = test + jump, (ii) cost = test + assign + jump. Without
+       test (i) cost = assign, (ii) cost = storage. Assume cost for test <= assign.
+       Thus not testing is cheaper.
+
+    -- In the process of register economization, some post contexts may use the
+       same position register. The actions which can be combined then can be 
+       easily detected, if no pre-context is considered.
+    """
     __slots__ = ["pre_context_id", "position_register", "offset"]
     def __init__(self, PreContextID, PositionRegister, Offset):
         self.pre_context_id    = PreContextID
@@ -114,10 +116,13 @@ class Action_Accepter(object):
 
     # Require '__hash__' and '__eq__' to be element of a set.
     def __hash__(self): 
-        return len(self.__list)
+        xor_sum = 0
+        for x in self.__list:
+            if isinstance(x.pattern_id, (int, long)): xor_sum ^= x.pattern_id
+        return xor_sum
 
     def __eq__(self, Other):
-        if not isinstance(Other, Action_Accepter): return False
+        if not isinstance(Other, Action_Accepter):      return False
         if len(self.__list) != len(Other.__list):       return False
         for x, y in zip(self.__list, Other.__list):
             if   x.pre_context_id != y.pre_context_id:  return False
@@ -175,8 +180,7 @@ class ActionList:
             xor_sum ^= (x.position_register + x.offset)
 
         if self.accepter is not None:
-            for x in self.accepter:
-                xor_sum ^= x.pattern_id
+            xor_sum  ^= hash(self.accepter)
         return xor_sum
 
     def __eq__(self, Other):
@@ -223,6 +227,10 @@ class Entry(BASE_Entry):
         # Are the actions for all doors the same?
         self.__uniform_doors_f = None 
 
+        # Function 'categorize_action_lists()' fills the following members
+        self.__source_state_to_group_db = None # map: source state index to group_id in door tree
+        self.__door_tree_root           = None # The root of the door tree.
+
     def doors_accept(self, FromStateIndex, PathTraceList):
         """At entry via 'FromStateIndex' implement an acceptance pattern that 
            is determined via 'PathTraceList'. This function is called upon the
@@ -266,7 +274,7 @@ class Entry(BASE_Entry):
         if self.__uniform_doors_f: return min(1, total_size)
         else:                      return total_size
 
-    def categorize_doors(self):
+    def categorize_action_lists(self):
         class Door:
             """A Door consists a list of actions which are performed upon entry to
                the state from a specific source state.
@@ -276,12 +284,16 @@ class Entry(BASE_Entry):
                 self.action_list      = ActionList(TheActionList)
 
             # Make Door usable for dictionary and set
-            def __hash__(self):      return self.from_state_index
-            def __eq__(self, Other): return self.from_state_index == Other.from_state_index
+            def __hash__(self):      
+                if isinstance(self.from_state_index, (int, long)): return self.from_state_index
+                else:                                              return -1
+
+            def __eq__(self, Other): 
+                return self.from_state_index == Other.from_state_index
 
             def __repr__(self):
                 action_list_str = repr(self.action_list)
-                return "(f: %i, a: [%s])" % (self.from_state_index, action_list_str)
+                return "(f: %s, a: [%s])" % (self.from_state_index, action_list_str)
 
         class Group:
             """A Group is a set of doors that share some common actions.
@@ -336,14 +348,6 @@ class Entry(BASE_Entry):
             """
             def get_common_action_list(Al, Bl):
                 return ActionList([action for action in Al if Bl.has_action(action)])
-
-            #iterable  = DoorList.__iter__()
-            #prototype = iterable.next()
-            #for door in iterable:
-            #    # IMPORTANT: Rely on '__eq__'
-            #    if not (prototype.action_list == door.action_list): break
-            #else:
-            #    return prototype.action_list.clone(), [door for door in DoorList]
 
             same_db = defaultdict(set)
             for door in DoorList:
@@ -446,8 +450,18 @@ class Entry(BASE_Entry):
             # Sort by the number of involved doors
             work_list.sort(key=itemgetter(1))
 
-        self.__from_state_index_to_door_db = Group.door_db
-        return root
+        self.__source_state_to_group_db = Group.door_db
+        self.__door_tree_root           = root
+
+    @property
+    def source_state_to_group_db(self):
+        """The source_state_to_group_db is determined by 'categorize_action_lists()'"""
+        return self.__source_state_to_group_db
+
+    @property
+    def door_tree_root(self): 
+        """The door_tree_root is determined by 'categorize_action_lists()'"""
+        return self.__door_tree_root
 
     def get_accepter(self):
         """Returns information about the acceptance sequence. Lines that are dominated
@@ -535,13 +549,20 @@ class Entry(BASE_Entry):
            are set, the entry can be 'finished'. That means that some simplifications
            may be accomplished:
 
-           (1) If a position for a post-context is stored in the unconditional
-               case, then all pre-contexted position storages of the same post-
-               context are superfluous.
+           -- The PositionRegisterMap shows how condition register indices must be 
+              replaced. This is a result from analysis about what registers can
+              actually be shared.
 
-           (2) If the entry into the state behaves the same for all 'from'
-               states then the entry is independent_of_source_state.
+           -- If a position for a post-context is stored in the unconditional
+              case, then all pre-contexted position storages of the same post-
+              context are superfluous.
+
+           -- If the entry into the state behaves the same for all 'from'
+              states then the entry is independent_of_source_state.
         
+           -- Call to 'categorize_action_lists()' where action lists are grouped
+              and hierarchically ordered.
+
            At state entry the positioning might differ dependent on the the
            state from which it is entered. If the positioning is the same for
            each source state, then the positioning can be unified.
@@ -576,6 +597,9 @@ class Entry(BASE_Entry):
                              if isinstance(x, Action_StoreInputPosition)):
                     if x.position_register == action.position_register and x.pre_context_id != E_PreContextIDs.NONE:
                         door.remove(x)
+
+        # (*) Categorize action lists
+        self.categorize_action_lists()
 
         # (*) Check whether state entries are independent_of_source_state
         self.__uniform_doors_f = True
