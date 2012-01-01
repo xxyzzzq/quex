@@ -18,18 +18,20 @@ def do(code, TheState, TheAnalyzer):
     txt        = []
 
     # (*) Entry _______________________________________________________________
-    #     There is something special about the init state in forward direction:
-    #     It does not increment the input pointer initially. But when it is entered
-    #     from other states, is has to do so. Solution: Implement init state entry
-    #     as 'prologue' here (without increment) and epilogue (with increment) after 
-    #     the state. 
-    if TheState.init_state_forward_f: init_state_forward_entry(txt, TheState)
-    else:                             entry.do(txt, TheState, TheAnalyzer)
+    entry.do(txt, TheState, TheAnalyzer)
 
     # (*) Access the triggering character _____________________________________
     input_do(txt, TheState)
 
     # (*) Transition Map ______________________________________________________
+    #     There is something special about the init state in forward direction:
+    #     It does not increment the input pointer initially. But when it is entered
+    #     from other states, is has to do so. Solution: Implement init state entry
+    #     as 'prologue' here (without increment) and epilogue (with increment) after 
+    #     the state. 
+    if TheState.init_state_forward_f:
+        txt.append(LanguageDB.LABEL_INIT_STATE_TRANSITION_BLOCK())
+
     transition_block.do(txt, 
                         TheState.transition_map, 
                         TheState.index, 
@@ -85,7 +87,6 @@ def init_state_forward_entry(txt, TheState):
     global LanguageDB
 
     entry._accepter(txt, TheState.entry.get_accepter())
-    txt.append(LanguageDB.LABEL_INIT_STATE_TRANSITION_BLOCK())
 
 def init_state_forward_epilog(txt, TheState, TheAnalyzer):
     assert TheState.init_state_forward_f

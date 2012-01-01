@@ -1,7 +1,7 @@
-from   quex.engine.analyzer.core import Entry, \
-                                        EntryBackward, \
-                                        EntryBackwardInputPositionDetection, \
-                                        Action_StoreInputPosition
+from   quex.engine.analyzer.state_entry import Entry, \
+                                               EntryBackward, \
+                                               EntryBackwardInputPositionDetection, \
+                                               Action_StoreInputPosition
 from   quex.blackboard import setup as Setup, \
                               E_EngineTypes, \
                               E_PreContextIDs
@@ -27,8 +27,7 @@ def do(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
     entry = TheState.entry
 
     if isinstance(entry, Entry):
-        _doors(txt, TheState, LabelF)
-        _accepter(txt, TheState.entry.get_accepter())
+        doit(txt, TheState, Entry.door_tree_root)
 
     elif isinstance(entry, EntryBackward):
         LanguageDB.STATE_ENTRY(txt, TheState)
@@ -40,6 +39,23 @@ def do(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
         # => TheAnalyzer.state_machine_id = id of the backward input position detector.
         LanguageDB.STATE_ENTRY(txt, TheState, BIPD_ID=TheAnalyzer.state_machine_id)
     return True
+
+def doit(txt, TheState, DoorTreeNode, LastChildF=False):
+    LastI = len(DoorTreeNode.child_list) - 1
+    for i, child in enumerate(sorted(DoorTreeNode.child_list, key=attrgetter("identifier"))):
+        doit(txt, TheState, child, LastChildF=(i==LastI))
+
+    LanguageDB.STATE_ENTRY(txt, TheState, DoorTreeNode.identifier, NewlineF=False)
+    
+    # for from_state_index in sorted(DoorTreeNode.door_list):
+    #    txt.append("(%i) " % from_state_index)
+    # txt.append("\n")
+
+    for action in self.common_action_list:
+        txt.append(LanguageDB.ACTION(action))
+
+    if DoorTreeNode.parent is not None and not LastChildF: 
+        txt.append(LanguageDB.GOTO(TheState.index, DoorIndex=DoorTreeNode.parent.identifier))
 
 def _doors(txt, TheState, LabelF):
     LanguageDB = Setup.language_db
