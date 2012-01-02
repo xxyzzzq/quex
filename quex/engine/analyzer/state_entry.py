@@ -322,7 +322,7 @@ class Entry(BASE_Entry):
 
                 txt.append("[%i]: " % self.identifier)
                 for from_state_index in sorted(self.door_list):
-                    txt.append("(%i) " % from_state_index)
+                    txt.append("(%s) " % from_state_index)
                 txt.append("\n")
                 for action in self.common_action_list:
                     action_str = repr(action)
