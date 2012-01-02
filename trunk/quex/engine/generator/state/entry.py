@@ -4,7 +4,8 @@ from   quex.engine.analyzer.state_entry import Entry, \
                                                Action_StoreInputPosition
 from   quex.blackboard import setup as Setup, \
                               E_EngineTypes, \
-                              E_PreContextIDs
+                              E_PreContextIDs, \
+                              E_StateIndices
 
 from operator import attrgetter
 
@@ -27,7 +28,7 @@ def do(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
     entry = TheState.entry
 
     if isinstance(entry, Entry):
-        doit(txt, TheState, Entry.door_tree_root)
+        doit(txt, TheState, entry.door_tree_root)
 
     elif isinstance(entry, EntryBackward):
         LanguageDB.STATE_ENTRY(txt, TheState)
@@ -40,22 +41,29 @@ def do(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
         LanguageDB.STATE_ENTRY(txt, TheState, BIPD_ID=TheAnalyzer.state_machine_id)
     return True
 
-def doit(txt, TheState, DoorTreeNode, LastChildF=False):
-    LastI = len(DoorTreeNode.child_list) - 1
-    for i, child in enumerate(sorted(DoorTreeNode.child_list, key=attrgetter("identifier"))):
+def doit(txt, TheState, Node, LastChildF=False):
+    LanguageDB = Setup.language_db
+    LastI = len(Node.child_list) - 1
+    for i, child in enumerate(sorted(Node.child_list, key=attrgetter("identifier"))):
         doit(txt, TheState, child, LastChildF=(i==LastI))
-
-    LanguageDB.STATE_ENTRY(txt, TheState, DoorTreeNode.identifier, NewlineF=False)
     
-    # for from_state_index in sorted(DoorTreeNode.door_list):
-    #    txt.append("(%i) " % from_state_index)
-    # txt.append("\n")
+    if     len(Node.child_list) == 0 \
+       and (    len(Node.door_list) == 0 \
+            or (len(Node.door_list) == 1 and Node.door_list[0] == E_StateIndices.NONE)):
+        pass
+    else:
+        # If the door can be a 'goto' target, the label needs to be defined.
+        txt.append(LanguageDB.LABEL(TheState.index, DoorIndex=Node.identifier, NewlineF=False))
 
-    for action in self.common_action_list:
-        txt.append(LanguageDB.ACTION(action))
+        if len(Node.door_list) != 0:
+            # If the door is entered by another state, write a comment from where it is entered.
+            LanguageDB.COMMENT(txt, " from " + "".join([ "(%s) " % x for x in Node.door_list]))
+        else:
+            txt.append("\n") 
 
-    if DoorTreeNode.parent is not None and not LastChildF: 
-        txt.append(LanguageDB.GOTO(TheState.index, DoorIndex=DoorTreeNode.parent.identifier))
+    action_txt = [ LanguageDB.ACTION(action) for action in Node.common_action_list ]
+    if Node.parent is not None and not LastChildF: 
+        action_txt.append(LanguageDB.GOTO(TheState.index, DoorIndex=Node.parent.identifier))
 
 def _doors(txt, TheState, LabelF):
     LanguageDB = Setup.language_db

@@ -18,7 +18,8 @@ def do(code, TheState, TheAnalyzer):
     txt        = []
 
     # (*) Entry _______________________________________________________________
-    entry.do(txt, TheState, TheAnalyzer)
+    if not TheState.init_state_forward_f:
+        entry.do(txt, TheState, TheAnalyzer)
 
     # (*) Access the triggering character _____________________________________
     input_do(txt, TheState)

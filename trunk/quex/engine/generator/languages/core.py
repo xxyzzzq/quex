@@ -162,14 +162,11 @@ class LDB(dict):
                     # It must be a template/path walker state. Those are not real analyzer states
                     # but little engines that can be entered via an address.
                     DoorIndex = None
-                elif not self.__analyzer.state_db[StateIndex].entry.has_special_door_from_state(FromStateIndex):
-                    # If the entry of the target state is uniform (the same from every 'SourceState'),
-                    # then we do not need to goto it through a specific door (FromStateIndex = None).
-                    # If the 'Analyzer == None' we assume that all related states have 
-                    # independent_of_source_state entries.
-                    DoorIndex = None
                 else:
-                    DoorIndex = self.__analyzer.state_db[StateIndex].source_state_to_group_db[FromStateIndex]
+                    DoorIndex = self.__analyzer.state_db[StateIndex].entry.source_state_to_group_db[FromStateIndex]
+        elif DoorIndex == 0:
+            # Door '0' is always the state itself
+            DoorIndex = None
 
         result = get_address("$entry", (StateIndex, DoorIndex), U=True, R=True)
         return result
@@ -189,8 +186,8 @@ class LDB(dict):
 
         return "_%i" % self.ADDRESS(StateIndex, FromStateIndex, DoorIndex)
 
-    def LABEL(self, StateIndex, FromStateIndex=None, NewlineF=True):
-        label = self.__label_name(StateIndex, FromStateIndex)
+    def LABEL(self, StateIndex, FromStateIndex=None, DoorIndex=None, NewlineF=True):
+        label = self.__label_name(StateIndex, FromStateIndex, DoorIndex)
         if NewlineF: return label + ":\n"
         return label + ":"
 
