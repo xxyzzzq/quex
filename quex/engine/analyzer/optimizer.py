@@ -35,8 +35,6 @@ from   quex.blackboard import E_EngineTypes, E_AcceptanceIDs
 from   itertools       import imap
 
 def do(analyzer):
-    if analyzer.engine_type != E_EngineTypes.FORWARD:
-        return analyzer
 
     # (*) Use information about position storage registers that can be shared.
     #     Replace old register values with new ones.
