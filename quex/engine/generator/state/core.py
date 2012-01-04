@@ -22,9 +22,6 @@ def do(code, TheState, TheAnalyzer):
         entry.do(txt, TheState, TheAnalyzer)
 
     # (*) Access the triggering character _____________________________________
-    input_do(txt, TheState)
-
-    # (*) Transition Map ______________________________________________________
     #     There is something special about the init state in forward direction:
     #     It does not increment the input pointer initially. But when it is entered
     #     from other states, is has to do so. Solution: Implement init state entry
@@ -32,7 +29,9 @@ def do(code, TheState, TheAnalyzer):
     #     the state. 
     if TheState.init_state_forward_f:
         txt.append(LanguageDB.LABEL_INIT_STATE_TRANSITION_BLOCK())
+    input_do(txt, TheState)
 
+    # (*) Transition Map ______________________________________________________
     transition_block.do(txt, 
                         TheState.transition_map, 
                         TheState.index, 

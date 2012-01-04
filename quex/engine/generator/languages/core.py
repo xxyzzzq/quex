@@ -123,14 +123,13 @@ class LDB(dict):
             txt      = []
             for element in EntryAction:
                 if element.pre_context_id != E_PreContextIDs.NONE:
-                    txt.append("    %sif( pre_context_%i_fulfilled_f ) %s;\n" \
+                    txt.append("    %sif( pre_context_%i_fulfilled_f ) last_acceptance = %s;\n" \
                                % (else_str, 
                                   element.pre_context_id, 
-                                  LanguageDB.ASSIGN("last_acceptance", LanguageDB.ACCEPTANCE(element.pattern_id))))
+                                  self.ACCEPTANCE(element.pattern_id)))
                 else:
-                    txt.append("    %s%s;\n" \
-                               % (else_str, 
-                                  LanguageDB.ASSIGN("last_acceptance", LanguageDB.ACCEPTANCE(element.pattern_id))))
+                    txt.append("    %slast_acceptance = %s;\n" \
+                               % (else_str, self.ACCEPTANCE(element.pattern_id)))
                 else_str = "else "
             return "".join(txt)
 
@@ -143,6 +142,8 @@ class LDB(dict):
             else:
                 return "    position[%i] = me->buffer._input_p - %i;\n" \
                        % (EntryAction.position_register, EntryAction.offset)
+        elif isinstance(EntryAction, Action_PreConditionOK):
+            return "    pre_context_%i_fulfilled_list = 1;\n" % EntryAction.pre_context_id
         else:
             assert False, "Unknown Entry Action"
 

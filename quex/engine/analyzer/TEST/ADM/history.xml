@@ -1,4 +1,4 @@
-<history date="Sun Jan  1 06:04:56 2012" element-n="715">
+<history date="Wed Jan  4 07:59:30 2012" element-n="723">
     <day year="2011" month="04" day="29">
         <history-init time="04:18:51"/>
     </day>
@@ -845,5 +845,15 @@
         <crc-error time="07:31:53" application="categorize_doors.py" choice="6" database-crc="-1607343703" real-crc="153013916"/>
         <crc-error time="07:33:37" application="categorize_doors.py" choice="6" database-crc="153013916" real-crc="311851216"/>
         <crc-error time="07:36:52" application="categorize_doors.py" choice="6" database-crc="311851216" real-crc="-1038319317"/>
+    </day>
+    <day year="2012" month="01" day="04">
+        <crc-error time="05:29:32" application="categorize_doors.py" choice="10" database-crc="-2029840226" real-crc="-1914581712"/>
+        <crc-error time="05:46:26" application="categorize_doors.py" choice="10" database-crc="-1914581712" real-crc="617974807"/>
+        <crc-error time="06:56:06" application="track_analysis-backwards.py" choice="0" database-crc="-1863923295" real-crc="-164540051"/>
+        <crc-error time="06:56:41" application="track_analysis-backwards.py" choice="1" database-crc="633745350" real-crc="-1927787346"/>
+        <crc-error time="06:58:49" application="track_analysis-loops.py" choice="3" database-crc="1559377742" real-crc="-1434891363"/>
+        <crc-error time="06:58:58" application="track_analysis-pre-post.py" choice="3" database-crc="-293283612" real-crc="-1497413012"/>
+        <crc-error time="06:59:06" application="track_analysis-pre-post.py" choice="7" database-crc="1735939841" real-crc="-351472306"/>
+        <crc-error time="06:59:19" application="track_analysis-pre.py" choice="12" database-crc="-1604048331" real-crc="1363165512"/>
     </day>
 </history>

@@ -521,7 +521,9 @@ class AnalyzerState(object):
         if   EngineType == E_EngineTypes.FORWARD: 
             self.entry = Entry(FromStateIndexList)
         elif EngineType == E_EngineTypes.BACKWARD_PRE_CONTEXT: 
-            self.entry = EntryBackward(state.origins())
+            pre_context_id_fulfilled_list = [ origin.pattern_id() for origin in state.origins() \
+                                                                  if origin.is_acceptance() ]
+            self.entry = Entry(FromStateIndexList, pre_context_id_fulfilled_list)
         elif EngineType == E_EngineTypes.BACKWARD_INPUT_POSITION: 
             self.entry = EntryBackwardInputPositionDetection(state.origins(), state.is_acceptance())
         else:

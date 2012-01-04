@@ -22,7 +22,8 @@ class Action(object):
     def __hash__(self):      assert False, "Derived class must implement '__hash__()'"
     def __eq__(self, Other): assert False, "Derived class must implement '__eq__()'"
 
-class Action_StoreInputPosition(object):
+
+class Action_StoreInputPosition(Action):
     """
     Action_StoreInputPosition: 
 
@@ -63,7 +64,11 @@ class Action_StoreInputPosition(object):
 
     # Require '__hash__' and '__eq__' to be element of a set.
     def __hash__(self):
-        return 1
+        if isinstance(self.position_register, (int, long)):
+            return self.position_register
+        else:
+            return -1
+
     def __eq__(self, Other):
         if not isinstance(Other, Action_StoreInputPosition): return False
         return     self.pre_context_id    == Other.pre_context_id \
@@ -80,15 +85,42 @@ class Action_StoreInputPosition(object):
         return 0
 
     def __repr__(self):
+        # if self.pre_context_id != E_PreContextIDs.NONE:
+        #     if_txt = "if '%s': " % repr_pre_context_id(self.pre_context_id)
+        # else:
+        #     if_txt = ""
+        #
+        # if self.offset == 0:
+        #     return "%s%s = input_p;\n" % (if_txt, repr_position_register(self.position_register))
+        # else:
+        #     return "%s%s = input_p - %i;\n" % (if_txt, repr_position_register(self.position_register), 
+        #                                        self.offset))
         return "pre(%s) --> store[%i] = input_p - %i;\n" % \
                (self.pre_context_id, self.position_register, self.offset) 
+
+class Action_PreConditionOK(Action):
+    __slots__ = ["__pre_context_id"]
+    def __init__(self, PreContextID):
+        self.__pre_context_id = PreContextID
+    @property
+    def pre_context_id(self): 
+        return self.__pre_context_id
+    def cost(self):     
+        return 1
+    def __hash__(self):       
+        if isinstance(self.__pre_context_id, (int, long)): return self.__pre_context_id
+        else:                                              return -1
+    def __eq__(self, Other):  
+        return self.__pre_context_id == Other.__pre_context_id
+    def __repr__(self):       
+        return "    pre-context-fulfilled = %s;\n" % self.__pre_context_id
 
 # Action_Accepter:
 # 
 # In this case the pre-context-id is essential. We cannot accept a pattern if
 # its pre-context is not fulfilled.
 Action_AccepterElement = namedtuple("Action_AccepterElement", ("pre_context_id", "pattern_id"))
-class Action_Accepter(object):
+class Action_Accepter(Action):
     __slots__ = ["__list"]
     def __init__(self):
         self.__list = []
@@ -217,7 +249,7 @@ class Entry(BASE_Entry):
     """
     __slots__ = ("__uniform_doors_f", "__doors_db")
 
-    def __init__(self, FromStateIndexList):
+    def __init__(self, FromStateIndexList, PreContextFulfilledID_List=None):
         # map:  (from_state_index) --> list of actions to be taken if state is entered 
         #                              'from_state_index' for a given pre-context.
         if len(FromStateIndexList) == 0:
@@ -230,6 +262,13 @@ class Entry(BASE_Entry):
         # Function 'categorize_action_lists()' fills the following members
         self.__source_state_to_group_db = None # map: source state index to group_id in door tree
         self.__door_tree_root           = None # The root of the door tree.
+
+        # Only for 'Backward Detecting Pre-Contexts'.
+        if PreContextFulfilledID_List is not None:
+            pre_context_ok_action_list = [ Action_PreConditionOK(pre_context_id) \
+                                           for pre_context_id in PreContextFulfilledID_List ]
+            for action_list in self.__doors_db.itervalues():
+                action_list.update(pre_context_ok_action_list)
 
     def doors_accept(self, FromStateIndex, PathTraceList):
         """At entry via 'FromStateIndex' implement an acceptance pattern that 
@@ -401,7 +440,7 @@ class Entry(BASE_Entry):
             # Determine the best combination: max(cost * door number)
             best_cost        = 0
             best_action_list = ActionList([])
-            best_combination = [ door for door in DoorList if door.action_list.is_empty() ]
+            best_combination = set(door for door in DoorList if door.action_list.is_empty())
             for action_list, combination in count_db.iteritems():
                 cost = cost_db[action_list] * len(combination)
                 if cost > best_cost:
@@ -628,7 +667,7 @@ class Entry(BASE_Entry):
 
         def get_storers(StorerList):
             txt = []
-            for action in sorted(StorerList, key=attrgetter("position_register")):
+            for action in sorted(StorerList, key=attrgetter("pre_context_id", "position_register")):
                 if action.pre_context_id != E_PreContextIDs.NONE:
                     txt.append("if '%s': " % repr_pre_context_id(action.pre_context_id))
                 if action.offset == 0:
@@ -638,20 +677,30 @@ class Entry(BASE_Entry):
                                                           action.offset))
             return txt
 
+        def get_pre_context_oks(PCOKList):
+            txt = []
+            for action in sorted(PCOKList, key=attrgetter("pre_context_id")):
+                txt.append("%s" % repr(action))
+            return txt
+
         result = []
         for from_state_index, door in self.__doors_db.iteritems():
             accept_action_list = []
             store_action_list  = []
+            pcok_action_list   = []
             for action in door:
-                if isinstance(action, Action_StoreInputPosition): 
-                    store_action_list.append(action)
-                else:
+                if isinstance(action, Action_Accepter): 
                     accept_action_list.append(action)
+                elif isinstance(action, Action_PreConditionOK):
+                    pcok_action_list.append(action)
+                else:
+                    store_action_list.append(action)
 
             result.append("    .from %s:" % repr(from_state_index).replace("L", ""))
             a_txt = get_accepters(accept_action_list)
             s_txt = get_storers(store_action_list)
-            content = "".join(a_txt + s_txt)
+            p_txt = get_pre_context_oks(pcok_action_list)
+            content = "".join(a_txt + s_txt + p_txt)
             if len(content) == 0:
                 # Simply new line
                 content = "\n"
