@@ -43,7 +43,7 @@ def do(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
 
 def doit(txt, TheState, Node, LastChildF=False):
     LanguageDB = Setup.language_db
-    LastI = len(Node.child_list) - 1
+    LastI      = len(Node.child_list) - 1
     for i, child in enumerate(sorted(Node.child_list, key=attrgetter("identifier"))):
         doit(txt, TheState, child, LastChildF=(i==LastI))
     
@@ -53,6 +53,7 @@ def doit(txt, TheState, Node, LastChildF=False):
         pass
     else:
         # If the door can be a 'goto' target, the label needs to be defined.
+        LanguageDB.COMMENT(txt, "State: %s; DoorIndex=%s;\n" % (TheState.index, Node.identifier))
         txt.append(LanguageDB.LABEL(TheState.index, DoorIndex=Node.identifier, NewlineF=False))
 
         if len(Node.door_list) != 0:

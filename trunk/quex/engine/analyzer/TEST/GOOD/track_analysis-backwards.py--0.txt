@@ -10,20 +10,19 @@ init-state = 0L
 
 State 0:
   .entry:
+    .from NONE:
   .drop_out:
     goto PreContextCheckTerminated;
 
 State 1:
   .entry:
-    EntryBackward:
-    pre-context-fulfilled = 6L;
+    .from 0:     pre-context-fulfilled = 6;
   .drop_out:
     goto PreContextCheckTerminated;
 
 State 2:
   .entry:
-    EntryBackward:
-    pre-context-fulfilled = 13L;
+    .from 0:     pre-context-fulfilled = 13;
   .drop_out:
     goto PreContextCheckTerminated;
 

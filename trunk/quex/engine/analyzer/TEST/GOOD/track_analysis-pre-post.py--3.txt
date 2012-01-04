@@ -42,9 +42,9 @@ State 1:
 State 2:
   .entry:
     .from 1:
-        if 'PreContext_6': position[PostContext_3]  = input_p;
         position[PostContext_18]  = input_p;
         position[PostContext_35]  = input_p;
+        if 'PreContext_6': position[PostContext_3]  = input_p;
   .drop_out:
     if PreContext_6: pos -= 1;  goto Pattern3;
     pos -= 1;  goto Pattern35;

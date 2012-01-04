@@ -116,8 +116,8 @@ State 2:
     .from 1:
         if      PreContext_9: last_acceptance = Pattern6
         else: last_acceptance = Failure
-        if 'PreContext_52': position[PostContext_0]  = input_p;
         if 'PreContext_9': position[PostContext_2]  = input_p;
+        if 'PreContext_52': position[PostContext_0]  = input_p;
     .from 2:
     .from 6:
         if      PreContext_16: last_acceptance = Pattern13

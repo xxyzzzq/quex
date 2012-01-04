@@ -124,8 +124,8 @@ State 6:
 State 2:
   .entry:
     .from 1:
-        if 'PreContext_107': position[PostContext_0]  = input_p;
         if 'PreContext_53': position[PostContext_0]  = input_p;
+        if 'PreContext_107': position[PostContext_0]  = input_p;
     .from 2:
   .drop_out:
     if PreContext_53: pos = position[PostContext_0] ; goto Pattern50;
