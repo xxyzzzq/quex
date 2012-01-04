@@ -177,6 +177,7 @@ class LDB(dict):
         return get_address("$drop-out", StateIndex)
 
     def __label_name(self, StateIndex, FromStateIndex=None, DoorIndex=None):
+        assert type(DoorIndex) != bool
         if StateIndex in E_StateIndices:
             assert StateIndex != E_StateIndices.DROP_OUT
             assert StateIndex != E_StateIndices.RELOAD_PROCEDURE
@@ -189,6 +190,7 @@ class LDB(dict):
         return "_%i" % self.ADDRESS(StateIndex, FromStateIndex, DoorIndex)
 
     def LABEL(self, StateIndex, FromStateIndex=None, DoorIndex=None, NewlineF=True):
+        assert type(DoorIndex) != bool
         label = self.__label_name(StateIndex, FromStateIndex, DoorIndex)
         if NewlineF: return label + ":\n"
         return label + ":"
@@ -348,8 +350,8 @@ class LDB(dict):
         else:   
             index = TheState.index
 
-        if label is not None: txt.append(label)
-        else:                 txt.append(self.LABEL(index, FromStateIndex, NewlineF))
+        if label is None: label = self.LABEL(index, FromStateIndex, None, NewlineF)
+        txt.append(label)
 
     def STATE_DEBUG_INFO(self, txt, StateIndex, InitStateForwardF):
         assert type(InitStateForwardF) == bool
