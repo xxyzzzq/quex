@@ -24,7 +24,8 @@ from   quex.blackboard                           import E_StateIndices,  \
                                                         E_TransitionN,   \
                                                         E_PreContextIDs
 from   quex.engine.analyzer.state_entry          import Action_Accepter, \
-                                                        Action_StoreInputPosition
+                                                        Action_StoreInputPosition, \
+                                                        Action_PreConditionOK
 from   copy                                      import copy
 
 from   itertools import islice
@@ -143,7 +144,7 @@ class LDB(dict):
                 return "    position[%i] = me->buffer._input_p - %i;\n" \
                        % (EntryAction.position_register, EntryAction.offset)
         elif isinstance(EntryAction, Action_PreConditionOK):
-            return "    pre_context_%i_fulfilled_list = 1;\n" % EntryAction.pre_context_id
+            return "    pre_context_%i_fulfilled_f = 1;\n" % EntryAction.pre_context_id
         else:
             assert False, "Unknown Entry Action"
 
@@ -155,7 +156,7 @@ class LDB(dict):
             if self.__analyzer is None:
                 DoorIndex = None
 
-            elif self.__analyzer.engine_type != E_EngineTypes.FORWARD:
+            elif self.__analyzer.engine_type == E_EngineTypes.BACKWARD_INPUT_POSITION:
                 DoorIndex = None
 
             elif FromStateIndex is not None:

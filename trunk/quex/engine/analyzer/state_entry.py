@@ -12,6 +12,8 @@ class BASE_Entry(object):
     def has_special_door_from_state(self, StateIndex):
         """Require derived classes to be more specific, if necessary."""
         return not self.uniform_doors_f()
+    def finish(self, PositionRegisterMap):
+        pass
 
 class Action(object):
     @staticmethod
@@ -111,6 +113,7 @@ class Action_PreConditionOK(Action):
         if isinstance(self.__pre_context_id, (int, long)): return self.__pre_context_id
         else:                                              return -1
     def __eq__(self, Other):  
+        if not isinstance(Other, Action_PreConditionOK): return False
         return self.__pre_context_id == Other.__pre_context_id
     def __repr__(self):       
         return "    pre-context-fulfilled = %s;\n" % self.__pre_context_id
@@ -203,16 +206,27 @@ class ActionList:
         """Allow iteration over action list."""
         if self.accepter is not None: 
             yield self.accepter
-        for action in sorted(self.misc, key=attrgetter("pre_context_id", "position_register", "offset")):
+        def sort_key(X):
+            if   isinstance(X, Action_StoreInputPosition): 
+                return (0, X.pre_context_id, X.position_register, X.offset)
+            elif isinstance(X, Action_PreConditionOK):   
+                return (1, X.pre_context_id)
+            else:
+                assert False
+
+        for action in sorted(self.misc, key=sort_key):
             yield action
 
     def __hash__(self):
         xor_sum = 0
         for x in self.misc:
-            xor_sum ^= (x.position_register + x.offset)
+            if isinstance(x, Action_StoreInputPosition):
+                xor_sum ^= (x.position_register + x.offset)
+            else:
+                xor_sum ^= (x.pre_context_id)
 
         if self.accepter is not None:
-            xor_sum  ^= hash(self.accepter)
+            xor_sum ^= hash(self.accepter)
         return xor_sum
 
     def __eq__(self, Other):
@@ -226,10 +240,12 @@ class ActionList:
             txt += "a"
             for x in self.accepter:
                 txt += "%s," % repr(x.pattern_id)
-        for action in sorted(self.misc, key=attrgetter("position_register", "offset")):
-            txt += "s"
-            for x in self.misc:
-                txt += "%s:%i," % (repr(x.position_register), x.offset)
+        #for action in sorted(self.misc, key=attrgetter("position_register", "offset")):
+        #    txt += "s"
+        #    for x in self.misc:
+        #        txt += "%s:%i," % (repr(x.position_register), x.offset)
+        for action in self.__iter__():
+            txt += "%s" % action
         return txt
 
 class Entry(BASE_Entry):

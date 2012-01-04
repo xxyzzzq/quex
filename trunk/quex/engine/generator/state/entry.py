@@ -30,11 +30,6 @@ def do(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
     if isinstance(entry, Entry):
         doit(txt, TheState, entry.door_tree_root)
 
-    elif isinstance(entry, EntryBackward):
-        LanguageDB.STATE_ENTRY(txt, TheState)
-        for pre_context_id in entry.pre_context_fulfilled_set:
-            txt.append("    %s\n" % LanguageDB.ASSIGN("pre_context_%i_fulfilled_f" % pre_context_id, "true"))
-
     elif isinstance(entry, EntryBackwardInputPositionDetection):
         # Backward input position detectors are always isolated state machines.
         # => TheAnalyzer.state_machine_id = id of the backward input position detector.
@@ -65,6 +60,7 @@ def doit(txt, TheState, Node, LastChildF=False):
     action_txt = [ LanguageDB.ACTION(action) for action in Node.common_action_list ]
     if Node.parent is not None and not LastChildF: 
         action_txt.append(LanguageDB.GOTO(TheState.index, DoorIndex=Node.parent.identifier))
+    txt.extend(action_txt)
 
 def _doors(txt, TheState, LabelF):
     LanguageDB = Setup.language_db
