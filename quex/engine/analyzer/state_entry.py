@@ -24,7 +24,6 @@ class Action(object):
     def __hash__(self):      assert False, "Derived class must implement '__hash__()'"
     def __eq__(self, Other): assert False, "Derived class must implement '__eq__()'"
 
-
 class Action_StoreInputPosition(Action):
     """
     Action_StoreInputPosition: 
@@ -731,90 +730,6 @@ class Entry(BASE_Entry):
 
         if len(result) == 0: return ""
         return "".join(result)
-
-class EntryBackwardInputPositionDetection(BASE_Entry):
-    """There is not much more to say then: 
-
-       Acceptance State 
-       => then we found the input position => return immediately.
-
-       Non-Acceptance State
-       => proceed with the state transitions (do nothing here)
-
-       NOTE: This type supports being a dictionary key by '__hash__' and '__eq__'.
-             Required for the optional 'template compression'.
-    """
-    __slots__ = ("__terminated_f")
-
-    def __init__(self, OriginList, StateMachineID):
-        self.__terminated_f = False
-        for origin in ifilter(lambda origin: origin.is_acceptance(), OriginList):
-            self.__terminated_f = True
-            return
-
-    def uniform_doors_f(self):
-        # There is no difference from which state we enter
-        return True
-
-    def __hash__(self):
-        return hash(int(self.__terminated_f))
-
-    def __eq__(self, Other):
-        return self.__terminated_f == Other.__terminated_f 
-
-    def is_equal(self, Other):
-        return self.__eq__(Other)
-
-    @property
-    def terminated_f(self): return self.__terminated_f
-
-    def __repr__(self):
-        if self.__terminated_f: return "    Terminated\n"
-        else:                   return ""
-
-class EntryBackward(BASE_Entry):
-    """(*) Backward Lexing
-
-       Backward lexing has the task to find out whether a pre-context is fulfilled.
-       But it does not stop, since multiple pre-contexts may still be fulfilled.
-       Thus, the set of fulfilled pre-contexts is stored in 
-
-                    ".pre_context_fulfilled_set"
-
-       This list can be determined beforehand from the origin list. 
-
-       NOTE: This type supports being a dictionary key by '__hash__' and '__eq__'.
-             Required for the optional 'template compression'.
-    """
-    __slots__ = ("__pre_context_fulfilled_set")
-    def __init__(self, OriginList):
-        self.__pre_context_fulfilled_set = set([])
-        for origin in ifilter(lambda origin: origin.is_acceptance(), OriginList):
-            self.__pre_context_fulfilled_set.add(origin.pattern_id())
-
-    def __hash__(self):
-        return hash(len(self.__pre_context_fulfilled_set))
-
-    def __eq__(self, Other):
-        # NOTE: set([0, 1, 2]) == set([2, 1, 0]) 
-        #       ... equal if elements are the same, order not important
-        return self.pre_context_fulfilled_set == Other.pre_context_fulfilled_set
-
-    def uniform_doors_f(self):
-        return True
-
-    def is_equal(self, Other):
-        return self.__eq__(Other)
-
-    @property
-    def pre_context_fulfilled_set(self):
-        return self.__pre_context_fulfilled_set
-
-    def __repr__(self):
-        if len(self.pre_context_fulfilled_set) == 0: return ""
-        txt = ["    EntryBackward:\n"]
-        txt.append("    pre-context-fulfilled = %s;\n" % repr(list(self.pre_context_fulfilled_set))[1:-1])
-        return "".join(txt)
 
 def repr_acceptance_id(Value, PatternStrF=True):
     if   Value == E_AcceptanceIDs.VOID:                       return "last_acceptance"

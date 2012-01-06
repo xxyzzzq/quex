@@ -361,6 +361,9 @@ options:
         cases all characters are internally processed in Unicode.  Thus, the
         size of a buffer element should be large enough so that it can carry 
         the unicode value of any character of the desired input coding space. 
+        When using Unicode, to be safe '-b 4' should be used except that it
+        is unconceivable that any code point beyond 0xFFFF ever appears. In
+        this case '-b 2' is enough.
 
         Dynamic size character encodings are available with the '--codec' option,
         for example 'utf8' and 'utf16'. In this case, the buffer element carries

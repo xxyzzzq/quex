@@ -10,11 +10,13 @@ init-state = 0L
 
 State 0:
   .entry:
+    .from NONE:
   .drop_out:
 <unreachable>
 
 State 1:
   .entry:
+    .from 0:
   .drop_out:
 <unreachable>
 

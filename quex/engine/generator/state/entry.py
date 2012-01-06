@@ -1,6 +1,4 @@
 from   quex.engine.analyzer.state_entry import Entry, \
-                                               EntryBackward, \
-                                               EntryBackwardInputPositionDetection, \
                                                Action_StoreInputPosition
 from   quex.blackboard import setup as Setup, \
                               E_EngineTypes, \
@@ -25,22 +23,20 @@ def do(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
     else:
         txt.append("\n\n")
 
-    entry = TheState.entry
+    if TheState.engine_type == E_EngineTypes.BACKWARD_INPUT_POSITION:
+        BIPD_ID = TheAnalyzer.state_machine_id
+    else:
+        BIPD_ID = None
 
-    if isinstance(entry, Entry):
-        doit(txt, TheState, entry.door_tree_root)
+    doit(txt, TheState, TheState.entry.door_tree_root, LastChildF=False, BIPD_ID=BIPD_ID)
 
-    elif isinstance(entry, EntryBackwardInputPositionDetection):
-        # Backward input position detectors are always isolated state machines.
-        # => TheAnalyzer.state_machine_id = id of the backward input position detector.
-        LanguageDB.STATE_ENTRY(txt, TheState, BIPD_ID=TheAnalyzer.state_machine_id)
     return True
 
-def doit(txt, TheState, Node, LastChildF=False):
+def doit(txt, TheState, Node, LastChildF=False, BIPD_ID=None):
     LanguageDB = Setup.language_db
     LastI      = len(Node.child_list) - 1
     for i, child in enumerate(sorted(Node.child_list, key=attrgetter("identifier"))):
-        doit(txt, TheState, child, LastChildF=(i==LastI))
+        doit(txt, TheState, child, LastChildF=(i==LastI), BIPD_ID=BIPD_ID)
     
     if     len(Node.child_list) == 0 \
        and (    len(Node.door_list) == 0 \
@@ -48,8 +44,11 @@ def doit(txt, TheState, Node, LastChildF=False):
         pass
     else:
         # If the door can be a 'goto' target, the label needs to be defined.
-        LanguageDB.COMMENT(txt, "State: %s; DoorIndex=%s;\n" % (TheState.index, Node.identifier))
-        txt.append(LanguageDB.LABEL(TheState.index, DoorIndex=Node.identifier, NewlineF=False))
+        LanguageDB.COMMENT(txt, "State: %s; DoorIndex=%s; %s\n" % (TheState.index, Node.identifier, BIPD_ID))
+        if TheState.init_state_f and BIPD_ID is not None:
+            txt.append(LanguageDB.LABEL_BACKWARD_INPUT_POSITION_DETECTOR(BIPD_ID))
+        else:
+            txt.append(LanguageDB.LABEL(TheState.index, DoorIndex=Node.identifier, NewlineF=False))
 
         if len(Node.door_list) != 0:
             # If the door is entered by another state, write a comment from where it is entered.
