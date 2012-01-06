@@ -205,6 +205,9 @@ class LDB(dict):
         if EntryN is None: return "_%i_shared_entry:\n"    % TemplateIndex
         else:              return "_%i_shared_entry_%i:\n" % (TemplateIndex, EntryN)
 
+    def LABEL_BACKWARD_INPUT_POSITION_DETECTOR(self, StateMachineID):
+        return "BIP_DETECTOR_%i:" % StateMachineID
+
     def LABEL_NAME_BACKWARD_INPUT_POSITION_DETECTOR(self, StateMachineID):
         return "BIP_DETECTOR_%i" % StateMachineID
 

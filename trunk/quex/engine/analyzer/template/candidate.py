@@ -2,17 +2,15 @@
 """
 (C) 2010-2011 Frank-Rene Schäfer
 """
-from   quex.engine.analyzer.core import Entry, \
-                                        EntryBackward, \
-                                        EntryBackwardInputPositionDetection, \
-                                        DropOut, \
-                                        DropOutBackward, \
-                                        DropOutBackwardInputPositionDetection
-from   quex.engine.analyzer.template.state import TemplateState, \
-                                                  TargetScheme, \
-                                                  get_iterable
-from   quex.blackboard import E_AcceptanceIDs, \
-                              E_TransitionN
+from quex.engine.analyzer.core import Entry, \
+                                      DropOut, \
+                                      DropOutBackward, \
+                                      DropOutBackwardInputPositionDetection
+from quex.engine.analyzer.template.state import TemplateState, \
+                                                TargetScheme, \
+                                                get_iterable
+from quex.blackboard import E_AcceptanceIDs, \
+                            E_TransitionN
 
 from itertools import ifilter
 

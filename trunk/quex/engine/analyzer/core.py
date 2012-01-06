@@ -33,8 +33,6 @@ ABSOLUTELY NO WARRANTY
 import quex.engine.analyzer.track_analysis        as     track_analysis
 import quex.engine.analyzer.optimizer             as     optimizer
 from   quex.engine.analyzer.state_entry           import Entry,                  \
-                                                         EntryBackward,          \
-                                                         EntryBackwardInputPositionDetection, \
                                                          repr_acceptance_id,     \
                                                          repr_position_register, \
                                                          repr_pre_context_id,    \
@@ -525,7 +523,7 @@ class AnalyzerState(object):
                                                                   if origin.is_acceptance() ]
             self.entry = Entry(FromStateIndexList, pre_context_id_fulfilled_list)
         elif EngineType == E_EngineTypes.BACKWARD_INPUT_POSITION: 
-            self.entry = EntryBackwardInputPositionDetection(state.origins(), state.is_acceptance())
+            self.entry = Entry(FromStateIndexList)
         else:
             assert False
 
