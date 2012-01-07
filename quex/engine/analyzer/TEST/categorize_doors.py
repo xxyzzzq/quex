@@ -4,9 +4,12 @@ import os
 import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.engine.analyzer.state_entry             import *
+from   quex.engine.analyzer.state_entry        import *
+from   quex.engine.analyzer.state_entry_action import categorize_action_lists
 import help
+
 from   collections import namedtuple
+from   copy import copy
 
 if "--hwut-info" in sys.argv:
     print "Categorize Entry Door Actions"
@@ -41,8 +44,8 @@ def test(ActionDB):
                                   element.pre_context_id, 
                                   element.position_register, 
                                   element.offset)
-    entry.categorize_action_lists()
-    print entry.door_tree_root
+    node_db, door_tree_root = categorize_action_lists(entry.doors_db)
+    print door_tree_root
 
 if "1" in sys.argv:
     # All three states have exactly the same entry actions

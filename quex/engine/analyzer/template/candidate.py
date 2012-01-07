@@ -133,32 +133,15 @@ def _compute_gain(cost_function, Combined, A, StateA_Index, B, StateB_Index):
     return (a_cost + b_cost) - combined_cost
 
 def _entry_cost(X):
-    if   isinstance(X, Entry):
-        La = X.size_of_accepter() # len(filter(lambda x: x != E_AcceptanceIDs.VOID, X.accepter.iterkeys()))
-        # Number of accepter elements: if(pre-context) acceptance = ...
-        assignment_n  = La
-        goto_n        = La
-        cmp_n         = La
-        Lp = X.door_number()
-        # Assume that we store the positions without watching for pre-contexts
-        assignment_n += Lp
+    assert isinstance(X, Entry)
 
-        return Cost(AssignmentN = assignment_n, 
-                    ComparisonN = cmp_n, 
-                    JumpN       = goto_n)
+    def cost(Node):
+        assert Node is not None, "Entry has not been 'finish()-ed'"
+        result  = sum(cost(child) for child in Node.child_list)
+        result += Node.common_action_list.cost()
+        return result
 
-    elif isinstance(X, EntryBackward):
-        La = len(X.pre_context_fulfilled_set)
-        # Number of accepter elements: pre_context_fulfilled_XYZ_f = true
-        # (No positions will ever be stored with Backward Analyzis for pre-contexts ...
-        #  remember, we go back to the initial position to start forward analyzis.)
-        return Cost(AssignmentN=La)
-
-    elif isinstance(X, EntryBackwardInputPositionDetection):
-        return Cost(0, 0, 0)
-
-    else:
-        assert False
+    return Cost(AssignmentN = cost(X.door_tree_root))
 
 def _drop_out_cost(X):
     if   isinstance(X, DropOut):
