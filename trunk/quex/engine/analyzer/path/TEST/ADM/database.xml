@@ -1,14 +1,14 @@
-<test-database execution-time-sec="2.06" date="Mon Dec 19 08:12:05 2011">
+<test-database execution-time-sec="1.99" date="Fri Jan  6 23:00:08 2012">
     <last-used-diff-display-program name=""/>
     <group name="Paths">
-        <test title="find_begin" time-sum-sec="0.49"> 
+        <test title="find_begin" time-sum-sec="0.45"> 
             <application file-name="find.py" info-request-time="1320093225L" vanished="False"/>
             <choice-list number="6" same_result="False">
-               <choice name="1" result="OK" time_sec="0.07" crc="-1340672967"/>
+               <choice name="1" result="OK" time_sec="0.08" crc="-1340672967"/>
                <choice name="2" result="OK" time_sec="0.07" crc="366827854"/>
                <choice name="3" result="OK" time_sec="0.07" crc="-1895608345"/>
-               <choice name="4" result="OK" time_sec="0.11" crc="-1990655249"/>
-               <choice name="5" result="OK" time_sec="0.09" crc="-883556495"/>
+               <choice name="4" result="OK" time_sec="0.09" crc="-1990655249"/>
+               <choice name="5" result="OK" time_sec="0.07" crc="-883556495"/>
                <choice name="6" result="OK" time_sec="0.07" crc="-1279354597"/>
             </choice-list>
         </test>
@@ -20,18 +20,18 @@
                <choice name="2" result="OK" time_sec="0.06" crc="-1697922765"/>
                <choice name="3" result="OK" time_sec="0.06" crc="1993708865"/>
                <choice name="4" result="OK" time_sec="0.06" crc="-1334313525"/>
-               <choice name="5a" result="OK" time_sec="0.07" crc="377544216"/>
-               <choice name="5b" result="OK" time_sec="0.06" crc="-2040023964"/>
+               <choice name="5a" result="OK" time_sec="0.06" crc="377544216"/>
+               <choice name="5b" result="OK" time_sec="0.07" crc="-2040023964"/>
                <choice name="6" result="OK" time_sec="0.07" crc="-1818699120"/>
             </choice-list>
         </test>
         <test title="select_longest_intersecting_path" time-sum-sec="0.40"> 
             <application file-name="select_longest_paths.py" info-request-time="1318614207L" vanished="False"/>
             <choice-list number="6" same_result="False">
-               <choice name="0" result="OK" time_sec="0.07" crc="773714092"/>
-               <choice name="1" result="OK" time_sec="0.06" crc="464756229"/>
+               <choice name="0" result="OK" time_sec="0.06" crc="773714092"/>
+               <choice name="1" result="OK" time_sec="0.07" crc="464756229"/>
                <choice name="2" result="OK" time_sec="0.06" crc="-2074010539"/>
-               <choice name="3" result="OK" time_sec="0.07" crc="-238344182"/>
+               <choice name="3" result="OK" time_sec="0.06" crc="-238344182"/>
                <choice name="4" result="OK" time_sec="0.07" crc="-1024587979"/>
                <choice name="5" result="OK" time_sec="0.07" crc="470140688"/>
             </choice-list>
@@ -45,18 +45,18 @@
                <choice name="4" result="OK" time_sec="0.07" crc="1601858541"/>
             </choice-list>
         </test>
-        <test title="is_difference_single_character" time-sum-sec="0.14"> 
+        <test title="is_difference_single_character" time-sum-sec="0.13"> 
             <application file-name="can_plug_to_equal.py" info-request-time="1318614207L" vanished="False"/>
             <choice-list number="2" same_result="False">
-               <choice name="1_interval" result="OK" time_sec="0.07" crc="2146992883"/>
-               <choice name="2_intervals" result="OK" time_sec="0.07" crc="212610594"/>
+               <choice name="1_interval" result="OK" time_sec="0.06" crc="2146992883"/>
+               <choice name="2_intervals" result="OK" time_sec="0.06" crc="212610594"/>
             </choice-list>
         </test>
-        <test title="find_path (mean tests)" time-sum-sec="0.22"> 
+        <test title="find_path (mean tests)" time-sum-sec="0.21"> 
             <application file-name="find-2.py" info-request-time="1318614207L" vanished="False"/>
             <choice-list number="3" same_result="False">
-               <choice name="1" result="OK" time_sec="0.08" crc="907948234"/>
-               <choice name="2" result="OK" time_sec="0.08" crc="742726405"/>
+               <choice name="1" result="OK" time_sec="0.07" crc="907948234"/>
+               <choice name="2" result="OK" time_sec="0.07" crc="742726405"/>
                <choice name="3" result="OK" time_sec="0.07" crc="712019166"/>
             </choice-list>
         </test>

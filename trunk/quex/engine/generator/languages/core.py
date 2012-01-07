@@ -23,9 +23,7 @@ from   quex.blackboard                           import E_StateIndices,  \
                                                         E_InputActions,  \
                                                         E_TransitionN,   \
                                                         E_PreContextIDs
-from   quex.engine.analyzer.state_entry          import Action_Accepter, \
-                                                        Action_StoreInputPosition, \
-                                                        Action_PreConditionOK
+import quex.engine.analyzer.state_entry_action   as entry_action
 from   copy                                      import copy
 
 from   itertools import islice
@@ -119,7 +117,7 @@ class LDB(dict):
         txt.append("    /* %s\n     */" % comment) 
 
     def ACTION(self, EntryAction):
-        if isinstance(EntryAction, Action_Accepter):
+        if isinstance(EntryAction, entry_action.Accepter):
             else_str = ""
             txt      = []
             for element in EntryAction:
@@ -134,7 +132,7 @@ class LDB(dict):
                 else_str = "else "
             return "".join(txt)
 
-        elif isinstance(EntryAction, Action_StoreInputPosition):
+        elif isinstance(EntryAction, entry_action.StoreInputPosition):
             # Assume that checking for the pre-context is just overhead that 
             # does not accelerate anything.
             if EntryAction.offset == 0:
@@ -143,7 +141,7 @@ class LDB(dict):
             else:
                 return "    position[%i] = me->buffer._input_p - %i;\n" \
                        % (EntryAction.position_register, EntryAction.offset)
-        elif isinstance(EntryAction, Action_PreConditionOK):
+        elif isinstance(EntryAction, entry_action.PreConditionOK):
             return "    pre_context_%i_fulfilled_f = 1;\n" % EntryAction.pre_context_id
         else:
             assert False, "Unknown Entry Action"
