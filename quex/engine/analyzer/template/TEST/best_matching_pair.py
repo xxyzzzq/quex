@@ -5,6 +5,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
 from   quex.engine.analyzer.core                        import Analyzer
+import quex.engine.analyzer.state_entry_action          as     entry_action
 import quex.engine.analyzer.template.core               as     templates 
 from   quex.engine.analyzer.template.TEST.templates_aux import *
 from   quex.engine.state_machine.core                   import StateMachine
@@ -34,9 +35,9 @@ def test(TriggerMapList):
     # Backward analyzers do not consider so much entry and drop-out ...
     analyzer = Analyzer(sm, E_EngineTypes.BACKWARD_PRE_CONTEXT)
     for state in analyzer.state_db.itervalues():
-        state.entry.categorize_action_lists()
+        state.entry.finish({})
 
-    db       = templates.CombinationDB(analyzer, 33, E_Compression.TEMPLATE, analyzer.state_db.keys())
+    db = templates.CombinationDB(analyzer, 33, E_Compression.TEMPLATE, analyzer.state_db.keys())
 
     for element in db.gain_matrix:
         print

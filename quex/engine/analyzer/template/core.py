@@ -213,6 +213,12 @@ class CombinationDB:
         self.enter(candidate)
         return True
 
+    def result_iterable(self):
+        """RETURNS: List of TemplateStates. Those are the states that have been 
+                    generated from combinations of analyzer states.
+        """
+        return ifilter(lambda x: isinstance(x, TemplateState), self.__db.itervalues())
+
     def result(self):
         """RETURNS: List of TemplateStates. Those are the states that have been 
                     generated from combinations of analyzer states.
