@@ -103,19 +103,14 @@ class Entry(object):
         return self.__doors_db
 
     def __hash__(self):
-        result = 0
+        xor_sum = 0
         for door in self.__doors_db.itervalues():
-            result += len(door.action_list)
-        return result
+            xor_sum ^= hash(door.action_list)
+        return xor_sum
 
     def __eq__(self, Other):
-        if len(self.__doors_db) != len(Other.__doors_db): 
-            return False
-        for from_state_index, door in self.__doors_db.iteritems():
-            other_door = Other.__doors_db.get(from_state_index)
-            if other_door is None: return False
-            if door.action_list != door.other_action_list: return False
-        return True
+        assert self.__door_tree_root is not None
+        return self.__door_tree_root.is_equivalent(Other.__door_tree_root)
 
     def is_equal(self, Other):
         # Maybe, we can delete this ...

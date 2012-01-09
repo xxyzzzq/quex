@@ -80,9 +80,9 @@ class TemplateState(AnalyzerState):
 
     def state_set_iterable(self, StateIndexList, TheAnalyzer):
         return imap(lambda i: 
-                    (i,                                  # state_index
+                    (i,                                # state_index
                      self.state_index_list.index(i),   # 'state_key' of state (in array)
-                     TheAnalyzer.state_db[i]),           # state object
+                     TheAnalyzer.state_db[i]),         # state object
                     StateIndexList)
 
 def combine_scheme(StateIndexListA, A, StateIndexListB, B):
@@ -113,14 +113,18 @@ def combine_scheme(StateIndexListA, A, StateIndexListB, B):
              from a TargetScheme T of transition maps, where T[state_key] 
              maps to the target state of state_index_list[state_key].
     """
+    # A and B can be 'objects' or dictionaries that map 'object: -> state_index_list'
+    # where the 'state_index_list' is the set of states that have the 'object'.
     A_iterable = get_iterable(A, StateIndexListA)
     B_iterable = get_iterable(B, StateIndexListB)
+    # '*_iterable' represent lists of pairs '(object, state_index_list)' 
 
     result = defaultdict(list)
     for element, state_index_list in chain(A_iterable, B_iterable):
         assert hasattr(element, "__hash__")
         assert hasattr(element, "__eq__")
         result[element].extend(state_index_list)
+
     return result
 
 def combine_maps(StateA, StateB, UniformEntryF):
@@ -341,11 +345,14 @@ class TargetSchemeDB(dict):
 
            The TargetScheme must be a tuple, such as 
 
-              (1, E_StateIndices.DROP_OUT, 4, E_StateIndices.DROP_OUT, 1)
+              (1, E_StateIndices.DROP_OUT, 4, ...)
 
-           which tells that if the template operates on behalf of state_key 0
-           there must be a transition to state 1, if state_key = 1, then there
-           must be a 'drop-out', etc.
+           which tells that if the template operates with
+
+              -- state_key = 0 (first element) there must be a transition to state 1, 
+              -- state_key = 1 (second element), then there must be a drop-out,
+              -- state_key = 2 (third element), then transit to state 4,
+              -- ...
         """
         assert isinstance(Targets, tuple)
         for target in Targets:
@@ -408,7 +415,7 @@ class TargetSchemeDB(dict):
 
         # IS RECURSIVE ?
         # -- In a 'normal trigger map' the target needs to be equal to the
-        #   state that it contains.
+        #    state that it contains.
         # -- In a trigger map combination, the recursive target is 
         #    identifier by the value 'E_StateIndices.SAME_STATE'.
         # (If a "StateIndex is None" then it must be a TemplateStateCandidate.
