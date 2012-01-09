@@ -1,5 +1,3 @@
-from   quex.engine.analyzer.state_entry import Entry, \
-                                               Action_StoreInputPosition
 from   quex.blackboard import setup as Setup, \
                               E_EngineTypes, \
                               E_PreContextIDs, \
@@ -51,7 +49,8 @@ def doit(txt, TheState, Node, LastChildF=False, BIPD_ID=None):
 
         if len(Node.door_list) != 0:
             # If the door is entered by another state, write a comment from where it is entered.
-            LanguageDB.COMMENT(txt, " from " + "".join([ "(%s) " % x for x in Node.door_list]))
+            txt.append(" ")
+            LanguageDB.COMMENT(txt, "from " + "".join([ "(%s) " % x for x in Node.door_list])[:-1])
         else:
             txt.append("\n") 
 

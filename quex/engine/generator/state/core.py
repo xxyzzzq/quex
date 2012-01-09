@@ -27,8 +27,10 @@ def do(code, TheState, TheAnalyzer):
     #     from other states, is has to do so. Solution: Implement init state entry
     #     as 'prologue' here (without increment) and epilogue (with increment) after 
     #     the state. 
-    if TheState.init_state_forward_f:
+    if     TheState.init_state_forward_f \
+       and is_state_entered_from_some_other_state(TheState):
         txt.append(LanguageDB.LABEL_INIT_STATE_TRANSITION_BLOCK())
+
     input_do(txt, TheState)
 
     # (*) Transition Map ______________________________________________________
@@ -93,6 +95,9 @@ def init_state_forward_epilog(txt, TheState, TheAnalyzer):
 
     global LanguageDB
 
+    if not is_state_entered_from_some_other_state(TheState):
+        return
+
     entry.do(txt, TheState, TheAnalyzer)
     txt.extend([
         "\n", 
@@ -100,3 +105,17 @@ def init_state_forward_epilog(txt, TheState, TheAnalyzer):
         "    %s\n" % LanguageDB.GOTO(E_StateIndices.INIT_STATE_TRANSITION_BLOCK),
     ])
     return txt
+
+def is_state_entered_from_some_other_state(TheState):
+    """RETURNS: True  -- if state is entered from some other state.
+                False -- if state is not entered at all from any other state.
+    """
+    door_tree_root = TheState.entry.door_tree_root
+    if len(door_tree_root.child_list) != 0:   # Childs are there for entries from other states ...
+        return True
+    elif len(door_tree_root.door_list) == 0:  # No childs, no doors => no entries from other states
+        return False 
+    elif len(door_tree_root.door_list) == 1 and door_tree_root.door_list[0] is E_StateIndices.NONE: 
+        # Only entry is from state 'NONE' => no entries from other states.
+        return False
+    return True
