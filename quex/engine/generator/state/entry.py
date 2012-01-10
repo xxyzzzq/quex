@@ -36,23 +36,18 @@ def doit(txt, TheState, Node, LastChildF=False, BIPD_ID=None):
     for i, child in enumerate(sorted(Node.child_list, key=attrgetter("identifier"))):
         doit(txt, TheState, child, LastChildF=(i==LastI), BIPD_ID=BIPD_ID)
     
-    if     len(Node.child_list) == 0 \
-       and (    len(Node.door_list) == 0 \
-            or (len(Node.door_list) == 1 and Node.door_list[0] == E_StateIndices.NONE)):
-        pass
+    # If the door can be a 'goto' target, the label needs to be defined.
+    if TheState.init_state_f and BIPD_ID is not None:
+        txt.append(LanguageDB.LABEL_BACKWARD_INPUT_POSITION_DETECTOR(BIPD_ID))
     else:
-        # If the door can be a 'goto' target, the label needs to be defined.
-        if TheState.init_state_f and BIPD_ID is not None:
-            txt.append(LanguageDB.LABEL_BACKWARD_INPUT_POSITION_DETECTOR(BIPD_ID))
-        else:
-            txt.append(LanguageDB.LABEL(TheState.index, DoorIndex=Node.identifier, NewlineF=False))
+        txt.append(LanguageDB.LABEL(TheState.index, DoorIndex=Node.identifier, NewlineF=False))
 
-        if len(Node.door_list) != 0:
-            # If the door is entered by another state, write a comment from where it is entered.
-            txt.append(" ")
-            LanguageDB.COMMENT(txt, "from " + "".join([ "(%s) " % x for x in Node.door_list])[:-1])
-        else:
-            txt.append("\n") 
+    if len(Node.door_list) != 0:
+        # If the door is entered by another state, write a comment from where it is entered.
+        txt.append(" ")
+        LanguageDB.COMMENT(txt, "from " + "".join([ "(%s) " % x for x in Node.door_list])[:-1])
+    else:
+        txt.append("\n") 
 
     action_txt = [ LanguageDB.ACTION(action) for action in Node.common_action_list ]
     if Node.parent is not None and not LastChildF: 
