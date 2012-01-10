@@ -164,12 +164,13 @@ class LDB(dict):
                     DoorIndex = None
                 else:
                     DoorIndex = self.__analyzer.state_db[StateIndex].entry.source_state_to_group_db[FromStateIndex]
-        elif DoorIndex == 0:
+
+        # NOT: 'elif', because the door index may have become '0' 
+        if DoorIndex == 0:
             # Door '0' is always the state itself
             DoorIndex = None
 
-        result = get_address("$entry", (StateIndex, DoorIndex), U=True, R=True)
-        return result
+        return get_address("$entry", (StateIndex, DoorIndex), U=True, R=True)
 
     def ADDRESS_DROP_OUT(self, StateIndex):
         return get_address("$drop-out", StateIndex)
