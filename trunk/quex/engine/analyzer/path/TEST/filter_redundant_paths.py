@@ -19,7 +19,9 @@ if "--hwut-info" in sys.argv:
 
 def get_analyzer_state(sm, state_index):
     sm.states[state_index] = core.State()
-    return AnalyzerState(state_index, sm, E_EngineTypes.FORWARD, []) 
+    state = AnalyzerState(state_index, sm, E_EngineTypes.FORWARD, []) 
+    state.entry.finish({})
+    return state
 
 def get_path_list(PlainLists):
     dummy_char = ord("a")
@@ -34,7 +36,6 @@ def get_path_list(PlainLists):
         path.set_end_state_index(sequence[-1])
         result.append(path)
     return result
-
 
 def test(*PlainLists):
     path_list = get_path_list(PlainLists)

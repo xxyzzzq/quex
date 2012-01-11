@@ -102,3 +102,32 @@ def init_state_forward_epilog(txt, TheState, TheAnalyzer):
     ])
     return txt
 
+def UNUSED_is_state_entered_from_some_other_state(TheState):
+    """___________________________________________________________________________
+       THIS FUNCTION MAY POTENTIALLY BE USED ONCE WE THINK THAT '--BUFFER-ONLY' OR
+       SO, WOULD NOT REQUIRE RELOAD AND THE STATE ROUTER WAS NOT IMPLEMENTED.
+
+       Currently, the entry to the init state is always needed, since the state
+       router after the reload requires an address for the init state.
+    
+       RETURNS: True  -- if state is entered from some other state.
+                False -- if state is not entered at all from any other state.
+    """
+    if TheState.engine_type != E_EngineTypes.BACKWARD_INPUT_POSITION:
+        # There is possibly always reload involved and reload requires a jump
+        # to the state where the buffer border was hit.
+        # => Whenever reload is possible, the state is targetted.
+        # In backward input position detection, no reload is possible. The whole
+        # lexeme is inside the buffer. Backward input position happens only inside the
+        # current lexeme.
+        return True
+
+    door_tree_root = TheState.entry.door_tree_root
+    if len(door_tree_root.child_list) != 0:   # Childs are there for entries from other states ...
+        return True
+    elif len(door_tree_root.door_list) == 0:  # No childs, no doors => no entries from other states
+        return False 
+    elif len(door_tree_root.door_list) == 1 and door_tree_root.door_list[0] is E_StateIndices.NONE: 
+        # Only entry is from state 'NONE' => no entries from other states.
+        return False
+    return True

@@ -33,7 +33,9 @@ as described in :ref:`sec-number-format`.
 .. cmdoption:: --output-dir, --odir directory
 
         ``directory`` = name of the output directory where generated files are 
-        to be written.
+        to be written. This does more than merely copying the sources to another
+        place in the file system. It also changes the include file references
+        inside the code to refer to the specified ``directory`` as a base.
 
 .. cmdoption:: ``--file-extension-scheme``, ``--fes`` ext
 
@@ -45,36 +47,36 @@ as described in :ref:`sec-number-format`.
            If the option is not provided, then the naming scheme depends on the 
            ``--language`` command line option. That is:
 
-           .. describe:: C++
+            .. describe:: C++
 
               * No extension for header files that contain only declarations.
               * ``.i`` for header files containing inline function implementation.
               * ``.cpp`` for source files.
 
-           .. describe:: C
+            .. describe:: C
 
               * ``.h`` for header files.
               * ``.c`` for source files.
 
-        .. describe:: ``++``
+            .. describe:: ``++``
 
-              * ``.h++`` for header files.
-              * ``.c++`` for source files.
+                  * ``.h++`` for header files.
+                  * ``.c++`` for source files.
 
-        .. describe:: ``pp``
+            .. describe:: ``pp``
 
-              * ``.hpp`` for header files.
-              * ``.cpp`` for source files.
+                  * ``.hpp`` for header files.
+                  * ``.cpp`` for source files.
 
-        .. describe:: ``cc``
+            .. describe:: ``cc``
 
-              * ``.hh`` for header files.
-              * ``.cc`` for source files.
+                  * ``.hh`` for header files.
+                  * ``.cc`` for source files.
 
-        .. describe:: ``xx``
+            .. describe:: ``xx``
 
-              * ``.hxx`` for header files.
-              * ``.cxx`` for source files.
+                  * ``.hxx`` for header files.
+                  * ``.cxx`` for source files.
 
         For ``C`` there is currently no different naming scheme supported.
 

@@ -5,7 +5,6 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
 from   quex.engine.analyzer.core                        import Analyzer
-import quex.engine.analyzer.state_entry_action          as     entry_action
 import quex.engine.analyzer.template.core               as     templates 
 from   quex.engine.analyzer.template.TEST.templates_aux import *
 from   quex.engine.state_machine.core                   import StateMachine
