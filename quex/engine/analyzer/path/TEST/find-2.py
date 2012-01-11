@@ -29,6 +29,8 @@ def test(sm):
     print sm.get_graphviz_string(NormalizeF=False)
     print
     analyzer = Analyzer(sm, E_EngineTypes.FORWARD)
+    for state in analyzer.state_db.itervalues():
+        state.entry.finish({})
     result   = paths.find_begin(analyzer, 
                                 sm.init_state_index, sm.init_state_index, 
                                 CompressionType=E_Compression.PATH, 
