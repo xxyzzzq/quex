@@ -35,8 +35,18 @@ class TemplateStateCandidate(TemplateState):
         drop_out_gain       = _compute_gain(_drop_out_cost, self.drop_out, 
                                             StateA.drop_out, StateA.index, 
                                             StateB.drop_out, StateB.index)
+
+        print "##A,B:", StateA.index, StateB.index
+        print "##tms:", self.transition_map
+        print "##tmA:", StateA.transition_map
+        print "##tmB:", StateB.transition_map
+
         transition_map_gain = _transition_map_gain(self.transition_map, 
                                                    StateA.transition_map, StateB.transition_map)
+        
+        print "##eg:", entry_gain.total()
+        print "##dg:", drop_out_gain.total()
+        print "##tmg:", transition_map_gain.total()
 
         self.__gain = (entry_gain + drop_out_gain + transition_map_gain).total()
 
