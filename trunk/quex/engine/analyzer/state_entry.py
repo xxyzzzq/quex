@@ -22,28 +22,28 @@ class Entry(object):
                  from_state_index  --> list of entry actions
 
     """
-    __slots__ = ("__uniform_doors_f", "__doors_db", "__source_state_to_group_db", "__door_tree_root")
+    __slots__ = ("__uniform_doors_f", "__action_db", "__door_db", "__door_tree_root")
 
     def __init__(self, FromStateIndexList, PreContextFulfilledID_List=None):
         # map:  (from_state_index) --> list of actions to be taken if state is entered 
         #                              'from_state_index' for a given pre-context.
         if len(FromStateIndexList) == 0:
             FromStateIndexList = [ E_StateIndices.NONE ]
-        self.__doors_db = dict((i, entry_action.ActionDB_Entry(i)) for i in FromStateIndexList)
+        self.__action_db = dict((i, entry_action.TransitionAction(i)) for i in FromStateIndexList)
 
         # Are the actions for all doors the same?
         self.__uniform_doors_f = None 
 
-        # Function 'categorize_action_lists()' fills the following members
-        self.__source_state_to_group_db = None # map: source state index to group_id in door tree
-        self.__door_tree_root           = None # The root of the door tree.
+        # Function 'categorize_command_lists()' fills the following members
+        self.__door_db        = None # map: source state index to door_id in door tree
+        self.__door_tree_root = None # The root of the door tree.
 
         # Only for 'Backward Detecting Pre-Contexts'.
         if PreContextFulfilledID_List is not None:
-            pre_context_ok_action_list = [ entry_action.PreConditionOK(pre_context_id) \
+            pre_context_ok_command_list = [ entry_action.PreConditionOK(pre_context_id) \
                                            for pre_context_id in PreContextFulfilledID_List ]
-            for entry in self.__doors_db.itervalues():
-                entry.action_list.misc.update(pre_context_ok_action_list)
+            for entry in self.__action_db.itervalues():
+                entry.command_list.misc.update(pre_context_ok_command_list)
 
     def doors_accept(self, FromStateIndex, PathTraceList):
         """At entry via 'FromStateIndex' implement an acceptance pattern that 
@@ -58,54 +58,54 @@ class Entry(object):
         for path_trace in PathTraceList:
             accepter.add(path_trace.pre_context_id, path_trace.pattern_id)
 
-        self.__doors_db[FromStateIndex].action_list.accepter = accepter
+        self.__action_db[FromStateIndex].command_list.accepter = accepter
 
     def doors_accepter_add_front(self, PreContextID, PatternID):
         """Add an acceptance at the top of each accepter at every door. If there
            is no accepter in a door it is created.
         """
-        for door in self.__doors_db.itervalues():
+        for door in self.__action_db.itervalues():
             # Catch the accepter, if there is already one, of not create one.
-            if door.action_list.accepter is None: 
-                door.action_list.accepter = entry_action.Accepter()
-            door.action_list.accepter.insert_front(PreContextID, PatternID)
+            if door.command_list.accepter is None: 
+                door.command_list.accepter = entry_action.Accepter()
+            door.command_list.accepter.insert_front(PreContextID, PatternID)
 
     def doors_store(self, FromStateIndex, PreContextID, PositionRegister, Offset):
         # Add 'store input position' to specific door. See 'entry_action.StoreInputPosition'
         # comment for the reason why we do not store pre-context-id.
         entry = entry_action.StoreInputPosition(PreContextID, PositionRegister, Offset)
-        self.__doors_db[FromStateIndex].action_list.misc.add(entry)
+        self.__action_db[FromStateIndex].command_list.misc.add(entry)
 
     def door_number(self):
-        total_size = len(self.__doors_db)
+        total_size = len(self.__action_db)
         # Note, that total_size can be '0' in the 'independent_of_source_state' case
         if self.__uniform_doors_f: return min(1, total_size)
         else:                      return total_size
 
     @property
-    def source_state_to_group_db(self):
-        """The source_state_to_group_db is determined by 'categorize_action_lists()'"""
-        return self.__source_state_to_group_db
+    def door_db(self):
+        """The door_db is determined by 'categorize_command_lists()'"""
+        return self.__door_db
 
     @property
     def door_tree_root(self): 
-        """The door_tree_root is determined by 'categorize_action_lists()'"""
+        """The door_tree_root is determined by 'categorize_command_lists()'"""
         return self.__door_tree_root
 
     def has_accepter(self):
-        for door in self.__doors_db.itervalues():
-            for action in door.action_list:
+        for door in self.__action_db.itervalues():
+            for action in door.command_list:
                 if isinstance(action, entry_action.Accepter): return True
         return False
 
     @property
-    def doors_db(self):
-        return self.__doors_db
+    def action_db(self):
+        return self.__action_db
 
     def __hash__(self):
         xor_sum = 0
-        for door in self.__doors_db.itervalues():
-            xor_sum ^= hash(door.action_list)
+        for door in self.__action_db.itervalues():
+            xor_sum ^= hash(door.command_list)
         return xor_sum
 
     def __eq__(self, Other):
@@ -128,8 +128,8 @@ class Entry(object):
                              of others.
         """
         if   self.__uniform_doors_f:    return False
-        elif len(self.__doors_db) <= 1: return False
-        return self.__doors_db.has_key(StateIndex)
+        elif len(self.__action_db) <= 1: return False
+        return self.__action_db.has_key(StateIndex)
 
     def finish(self, PositionRegisterMap):
         """Once the whole state machine is analyzed and positioner and accepters
@@ -147,7 +147,7 @@ class Entry(object):
            -- If the entry into the state behaves the same for all 'from'
               states then the entry is independent_of_source_state.
         
-           -- Call to 'categorize_action_lists()' where action lists are grouped
+           -- Call to 'categorize_command_lists()' where action lists are grouped
               and hierarchically ordered.
 
            At state entry the positioning might differ dependent on the the
@@ -156,16 +156,16 @@ class Entry(object):
 
            A unified entry is coded as 'ALL' --> common positioning.
         """
-        if len(self.__doors_db) == 0: 
+        if len(self.__action_db) == 0: 
             self.__uniform_doors_f = True
             return
 
         # (*) Some post-contexts may use the same position register. Those have
         #     been identified in PositionRegisterMap. Do the replacement.
-        for from_state_index, door in self.__doors_db.items():
-            if door.action_list.is_empty(): continue
+        for from_state_index, door in self.__action_db.items():
+            if door.command_list.is_empty(): continue
             change_f = False
-            for action in door.action_list.misc:
+            for action in door.command_list.misc:
                 if isinstance(action, entry_action.StoreInputPosition):
                     # Replace position register according to 'PositionRegisterMap'
                     action.position_register = PositionRegisterMap[action.position_register]
@@ -173,27 +173,27 @@ class Entry(object):
             # If there was a replacement, ensure that each action appears only once
             if change_f:
                 # Adding one by one ensures that double entries are avoided
-                door.action_list.misc = set(x for x in door.action_list.misc)
+                door.command_list.misc = set(x for x in door.command_list.misc)
 
         # (*) If a door stores the input position in register unconditionally,
         #     then all other conditions concerning the storage in that register
         #     are nonessential.
-        for door in self.__doors_db.itervalues():
-            for action in list(x for x in door.action_list \
+        for door in self.__action_db.itervalues():
+            for action in list(x for x in door.command_list \
                                if     isinstance(x, entry_action.StoreInputPosition) \
                                   and x.pre_context_id == E_PreContextIDs.NONE):
-                for x in list(x for x in door.action_list.misc \
+                for x in list(x for x in door.command_list.misc \
                               if isinstance(x, entry_action.StoreInputPosition)):
                     if x.position_register == action.position_register and x.pre_context_id != E_PreContextIDs.NONE:
-                        door.action_list.misc.remove(x)
+                        door.command_list.misc.remove(x)
 
         # (*) Categorize action lists
-        self.__source_state_to_group_db, \
-        self.__door_tree_root            = entry_action.categorize_action_lists(self.__doors_db)
+        self.__door_db,       \
+        self.__door_tree_root = entry_action.categorize_command_lists(self.__action_db)
 
         # (*) Check whether state entries are independent_of_source_state
         self.__uniform_doors_f = True
-        iterable               = self.__doors_db.itervalues()
+        iterable               = self.__action_db.itervalues()
         prototype              = iterable.next()
         for dummy in ifilter(lambda x: x != prototype, iterable):
             self.__uniform_doors_f = False
@@ -235,22 +235,22 @@ class Entry(object):
             return txt
 
         result = []
-        for from_state_index, door in self.__doors_db.iteritems():
-            accept_action_list = []
-            store_action_list  = []
-            pcok_action_list   = []
-            for action in door.action_list:
+        for from_state_index, door in self.__action_db.iteritems():
+            accept_command_list = []
+            store_command_list  = []
+            pcok_command_list   = []
+            for action in door.command_list:
                 if isinstance(action, entry_action.Accepter): 
-                    accept_action_list.append(action)
+                    accept_command_list.append(action)
                 elif isinstance(action, entry_action.PreConditionOK):
-                    pcok_action_list.append(action)
+                    pcok_command_list.append(action)
                 else:
-                    store_action_list.append(action)
+                    store_command_list.append(action)
 
             result.append("    .from %s:" % repr(from_state_index).replace("L", ""))
-            a_txt = get_accepters(accept_action_list)
-            s_txt = get_storers(store_action_list)
-            p_txt = get_pre_context_oks(pcok_action_list)
+            a_txt = get_accepters(accept_command_list)
+            s_txt = get_storers(store_command_list)
+            p_txt = get_pre_context_oks(pcok_command_list)
             content = "".join(a_txt + s_txt + p_txt)
             if len(content) == 0:
                 # Simply new line

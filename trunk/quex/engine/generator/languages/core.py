@@ -163,7 +163,7 @@ class LDB(dict):
                     # but little engines that can be entered via an address.
                     DoorIndex = None
                 else:
-                    DoorIndex = self.__analyzer.state_db[StateIndex].entry.source_state_to_group_db[FromStateIndex]
+                    DoorIndex = self.__analyzer.state_db[StateIndex].entry.door_db[FromStateIndex]
 
         # NOT: 'elif', because the door index may have become '0' 
         if DoorIndex == 0:
