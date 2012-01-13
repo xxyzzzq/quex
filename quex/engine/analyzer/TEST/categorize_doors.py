@@ -44,7 +44,7 @@ def test(ActionDB):
                                   element.pre_context_id, 
                                   element.position_register, 
                                   element.offset)
-    node_db, door_tree_root = categorize_action_lists(entry.doors_db)
+    node_db, door_tree_root = categorize_action_lists(entry.action_db)
     print door_tree_root
 
 if "1" in sys.argv:

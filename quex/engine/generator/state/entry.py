@@ -14,12 +14,11 @@ def do(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
     """
     LanguageDB = Setup.language_db
 
+    txt.append("\n\n")
     if      UnreachablePrefixF \
         and (    (not TheState.init_state_f) \
               or (TheState.engine_type == E_EngineTypes.BACKWARD_INPUT_POSITION)): 
-        txt.append("\n\n    %s\n" % LanguageDB.UNREACHABLE)
-    else:
-        txt.append("\n\n")
+        txt.append("    %s\n" % LanguageDB.UNREACHABLE)
 
     if TheState.engine_type == E_EngineTypes.BACKWARD_INPUT_POSITION:
         BIPD_ID = TheAnalyzer.state_machine_id
