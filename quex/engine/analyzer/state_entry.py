@@ -188,8 +188,9 @@ class Entry(object):
                         door.command_list.misc.remove(x)
 
         # (*) Categorize action lists
+        transition_action_list = [ transition_action.clone() for transition_action in self.__action_db.itervalues() ]
         self.__door_db,       \
-        self.__door_tree_root = entry_action.categorize_command_lists(self.__action_db)
+        self.__door_tree_root = entry_action.categorize_command_lists(transition_action_list)
 
         # (*) Check whether state entries are independent_of_source_state
         self.__uniform_doors_f = True
