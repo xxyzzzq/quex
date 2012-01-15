@@ -5,15 +5,16 @@ import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.engine.analyzer.state_entry        import *
-from   quex.engine.analyzer.state_entry_action import categorize_command_lists
+from   quex.engine.analyzer.state_entry_action import *
 import help
 
 from   collections import namedtuple
 from   copy import copy
+from   random import randint
 
 if "--hwut-info" in sys.argv:
     print "Categorize Entry Door Actions"
-    print "CHOICES: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11;"
+    print "CHOICES: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11;" #, clear_door_tree;"
     sys.exit()
 
 choice = sys.argv[1]
@@ -34,7 +35,7 @@ S011 = StoreInfo(0, 1, 1) # 8
 S012 = StoreInfo(0, 1, 2) # 9
 
 def test(ActionDB):
-    entry = Entry(ActionDB.keys())
+    entry = Entry(0, ActionDB.keys())
     for from_state_index, action_list in ActionDB.iteritems():
         for element in action_list:
             if isinstance(element, list):
@@ -124,6 +125,35 @@ elif "11" in sys.argv:
     Setup.state_entry_analysis_complexity_limit = 5
     action_db = dict((i, [StoreInfo(0, 0, i)]) for i in xrange(10))
 
+elif "clear_door_tree" in sys.argv:
+    Door.init()
+    # Create an empty tree of nodes --> should totally collapse to one node.
+    ti   = 0
+    #    def generate_childs(parent, Depth=0):
+    #        global ti
+    #        child_n    = randint(1, 3 - Depth)
+    #        if Depth == 1:
+    #            parent.child_list = [ Door(parent, CommandList(), [TransitionAction(ti + i)]) \
+    #                                for i in xrange(child_n) ]
+    #            ti += child_n
+    #        else:
+    #            parent.child_list = [ Door(parent, CommandList(), []) for i in xrange(child_n) ]
+    #            for child in parent.child_list:
+    #                generate_childs(child, Depth + 1)
+    # root = Door(None, CommandList(), [])
+    # generate_childs(root)
+
+    root = Door(None, CommandList(), [])
+    node = root
+    for i in xrange(10):
+        node.child_list = [ Door(node, CommandList(), []) ]
+        node = node.child_list[0]
+
+    node.child_list = [ Door(node, CommandList(), [TransitionAction(0, 0)]) ]
+    print root
+    print clear_door_tree(root)
+    sys.exit()
+        
 elif "X" in sys.argv:
     actions   = [A1, S000, S001, S002, S100, S101, S102, S010, S011, S012]
     L         = len(actions)

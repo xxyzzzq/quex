@@ -517,13 +517,13 @@ class AnalyzerState(object):
 
         # (*) Entry Action
         if   EngineType == E_EngineTypes.FORWARD: 
-            self.entry = Entry(FromStateIndexList)
+            self.entry = Entry(self.__index, FromStateIndexList)
         elif EngineType == E_EngineTypes.BACKWARD_PRE_CONTEXT: 
             pre_context_id_fulfilled_list = [ origin.pattern_id() for origin in state.origins() \
                                                                   if origin.is_acceptance() ]
-            self.entry = Entry(FromStateIndexList, pre_context_id_fulfilled_list)
+            self.entry = Entry(self.__index, FromStateIndexList, pre_context_id_fulfilled_list)
         elif EngineType == E_EngineTypes.BACKWARD_INPUT_POSITION: 
-            self.entry = Entry(FromStateIndexList)
+            self.entry = Entry(self.__index, FromStateIndexList)
         else:
             assert False
 
