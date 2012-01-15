@@ -24,12 +24,12 @@ class Entry(object):
     """
     __slots__ = ("__uniform_doors_f", "__action_db", "__door_db", "__door_tree_root")
 
-    def __init__(self, FromStateIndexList, PreContextFulfilledID_List=None):
+    def __init__(self, StateIndex, FromStateIndexList, PreContextFulfilledID_List=None):
         # map:  (from_state_index) --> list of actions to be taken if state is entered 
         #                              'from_state_index' for a given pre-context.
         if len(FromStateIndexList) == 0:
             FromStateIndexList = [ E_StateIndices.NONE ]
-        self.__action_db = dict((i, entry_action.TransitionAction(i)) for i in FromStateIndexList)
+        self.__action_db = dict((i, entry_action.TransitionAction(StateIndex, i)) for i in FromStateIndexList)
 
         # Are the actions for all doors the same?
         self.__uniform_doors_f = None 
