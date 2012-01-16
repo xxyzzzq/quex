@@ -39,6 +39,11 @@ def do(analyzer):
     # (*) Use information about position storage registers that can be shared.
     #     Replace old register values with new ones.
     for state in analyzer.state_db.itervalues():
+        # transition_id_to_door_id_db = state.entry.finish(analyzer.position_register_map))
+        # analyzer.transition_id_to_entry_id_db.update(
+        #    (transition_id, EntryID(state.index, door_id)) \
+        #    for transition_id, door_id in transition_id_to_door_id_db.iteritems()
+        # )
         state.entry.finish(analyzer.position_register_map)
         state.drop_out.finish(analyzer.position_register_map)
 
