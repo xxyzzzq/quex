@@ -156,10 +156,6 @@ class Entry(object):
 
            A unified entry is coded as 'ALL' --> common positioning.
         """
-        if len(self.__action_db) == 0: 
-            self.__uniform_doors_f = True
-            return
-
         # (*) Some post-contexts may use the same position register. Those have
         #     been identified in PositionRegisterMap. Do the replacement.
         for from_state_index, door in self.__action_db.items():
@@ -198,8 +194,9 @@ class Entry(object):
         prototype              = iterable.next()
         for dummy in ifilter(lambda x: x != prototype, iterable):
             self.__uniform_doors_f = False
-            return
-        return 
+            break
+
+        return self.__door_db
 
     def __repr__(self):
         def get_accepters(AccepterList):
