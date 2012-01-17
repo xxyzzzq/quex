@@ -27,9 +27,7 @@ class TemplateStateCandidate(TemplateState):
         TemplateState.__init__(self, StateA, StateB)
         self.__asserts(TheAnalyzer)
 
-        entry_gain          = _compute_gain(_entry_cost, self.entry,    
-                                            StateA.entry, StateA.index, 
-                                            StateB.entry, StateB.index)
+        entry_gain          = _compute_entry_gain(self.entry, StateA.entry, StateB.entry)
         drop_out_gain       = _compute_gain(_drop_out_cost, self.drop_out, 
                                             StateA.drop_out, StateA.index, 
                                             StateB.drop_out, StateB.index)
@@ -47,8 +45,8 @@ class TemplateStateCandidate(TemplateState):
                 assert TheAnalyzer.state_db.has_key(state_index)
 
         check(self.state_index_list)
-        for entry, state_index_list in self.entry.iteritems():
-            check(state_index_list)
+        # for entry, state_index_list in self.entry.iteritems():
+        #    check(state_index_list)
         for drop_out, state_index_list in self.drop_out.iteritems():
             check(state_index_list)
 
@@ -103,6 +101,25 @@ def _transition_map_gain(CombinedTM, TM_A, TM_B):
 
     return (a_cost + b_cost) - combined_cost
 
+
+def _compute_entry_gain(Combined, A, B):
+    """Computes cost of each entry by recursively walking through the
+       door tree--summing up the cost of each command list in the nodes.
+    """
+    def __dive(Node):
+        assert Node is not None, "Entry has not been 'finish()-ed'"
+        result  = sum(__dive(child) for child in Node.child_list)
+        result += Node.common_command_list.cost()
+        return result
+
+    # Cost of each object if separated in two states
+    a_cost        = __dive(A.door_tree_root)
+    b_cost        = __dive(B.door_tree_root)
+    # Cost if it is combined
+    combined_cost = __dive(Combined.door_tree_root)
+
+    return Cost(AssignmentN = (a_cost + b_cost) - combined_cost)
+
 def _compute_gain(cost_function, Combined, A, StateA_Index, B, StateB_Index):
     """Computes the gain of combining two objects 'A' and 'B' into the combined
        object 'Combined'. Objects can be state Entry-s or state DropOut-s. By
@@ -121,27 +138,16 @@ def _compute_gain(cost_function, Combined, A, StateA_Index, B, StateB_Index):
        adaption it is possible to treat TemplateState-s and AnalyzerState-s in
        a unified manner.
     """
-    def cost(Iterable):
+    def __cost(Iterable):
         return sum(map(lambda element: cost_function(element[0]), Iterable), Cost())
 
     # Cost of each object if separated in two states
-    a_cost        = cost(get_iterable(A, StateA_Index))
-    b_cost        = cost(get_iterable(B, StateB_Index))
+    a_cost        = __cost(get_iterable(A, StateA_Index))
+    b_cost        = __cost(get_iterable(B, StateB_Index))
     # Cost if it is combined
-    combined_cost = cost(Combined.iteritems())
+    combined_cost = __cost(Combined.iteritems())
 
     return (a_cost + b_cost) - combined_cost
-
-def _entry_cost(X):
-    assert isinstance(X, Entry)
-
-    def cost(Node):
-        assert Node is not None, "Entry has not been 'finish()-ed'"
-        result  = sum(cost(child) for child in Node.child_list)
-        result += Node.common_action_list.cost()
-        return result
-
-    return Cost(AssignmentN = cost(X.door_tree_root))
 
 def _drop_out_cost(X):
     if   isinstance(X, DropOut):

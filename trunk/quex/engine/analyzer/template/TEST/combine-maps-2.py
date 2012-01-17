@@ -16,7 +16,7 @@ if "--hwut-info" in sys.argv:
     print "CHOICES: 1, 2, recursive, recursive-2, recursive-3, recursive-b, recursive-2b, recursive-3b;"
     sys.exit(0)
 
-def test(TriggerMapA, StateN_A, TriggerMapB, StateN_B, UniformEntriesF=True):
+def test(TriggerMapA, StateN_A, TriggerMapB, StateN_B):
     StateListA = range(10, 10 + StateN_A)
     if StateN_A > 1: CombinationA = TestTemplateState(TriggerMapA, StateListA)
     else:            CombinationA = TestState(TriggerMapA, 10)
@@ -33,7 +33,7 @@ def test(TriggerMapA, StateN_A, TriggerMapB, StateN_B, UniformEntriesF=True):
     print "States: %s" % StateListB
     print_tm(TriggerMapB)
     print
-    result = combine_maps(CombinationA, CombinationB, UniformEntriesF)[0]
+    result = combine_maps(CombinationA, CombinationB)[0]
     print_tm(result)
     print
     print "(Vice Versa)-------------------------------------"
@@ -43,7 +43,7 @@ def test(TriggerMapA, StateN_A, TriggerMapB, StateN_B, UniformEntriesF=True):
     print "States: %s" % StateListA
     print_tm(TriggerMapA)
     print
-    result = combine_maps(CombinationB, CombinationA, UniformEntriesF)[0]
+    result = combine_maps(CombinationB, CombinationA)[0]
     print_tm(result)
     print
 
@@ -100,7 +100,7 @@ elif "recursive-b" in sys.argv:
     tm1 = [ 
             (Interval(-sys.maxint, sys.maxint), E_StateIndices.RECURSIVE),
           ]
-    test(tm0, 3, tm1, 3, UniformEntriesF=False)
+    test(tm0, 3, tm1, 3)
 
 elif "recursive-2b" in sys.argv:
     tm0 = [ 
@@ -110,7 +110,7 @@ elif "recursive-2b" in sys.argv:
     tm1 = [ 
             (Interval(-sys.maxint, sys.maxint), 20L), # This is recursive!
           ]
-    test(tm0, 2, tm1, 1, UniformEntriesF=False)
+    test(tm0, 2, tm1, 1)
 
 elif "recursive-3b" in sys.argv:
     tm0 = [ 
@@ -120,5 +120,5 @@ elif "recursive-3b" in sys.argv:
     tm1 = [ 
             (Interval(-sys.maxint, sys.maxint), 20L), # This is recursive!
           ]
-    test(tm0, 2, tm1, 1, UniformEntriesF=False)
+    test(tm0, 2, tm1, 1)
 

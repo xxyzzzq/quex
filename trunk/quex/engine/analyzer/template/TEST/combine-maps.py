@@ -11,7 +11,7 @@ from   quex.engine.interval_handling import *
 
 if "--hwut-info" in sys.argv:
     print "Combination of Two Transition Maps"
-    print "CHOICES: 1, 2, 2b, 3, 4, recursive, recursive-b;"
+    print "CHOICES: 1, 2, 2b, 3, 4, recursive;"
     sys.exit(0)
 
 class TestState:
@@ -19,7 +19,7 @@ class TestState:
         self.transition_map = TM
         self.index          = Index
 
-def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L], UniformEntryF=True):
+def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L]):
     StateA = TestState(TMa, InvolvedStateListA[0])
     StateB = TestState(TMb, InvolvedStateListB[0])
     print
@@ -28,14 +28,14 @@ def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L], UniformEn
     print_tm(TMa)
     print_tm(TMb)
     print
-    print_metric(combine_maps(StateA, StateB, UniformEntryF)[0])
+    print_metric(combine_maps(StateA, StateB)[0])
     print
     print "(Vice Versa)-------------------------------------"
     print
     print_tm(TMb)
     print_tm(TMa)
     print
-    print_metric(combine_maps(StateB, StateA,  UniformEntryF)[0])
+    print_metric(combine_maps(StateB, StateA)[0])
     print
 
 tm0 = [ 
@@ -97,13 +97,16 @@ elif "recursive" in sys.argv:
     print "because this would mean recursion and is thus an equivalence."
 
 elif "recursive-b" in sys.argv:
-    print "Involved states in First = 1L"
-    print "Involved states in Second = 2L"
-    print "=> when First triggers to 1L and Second to 2L, then both"
-    print "   are recursive and no distinction needs to be made."
-    print "BUT: HERE STATE ENTRIES ARE NOT UNIFORM --> NO RECURSION DETECTION"
-    tm1 = [ 
-            (Interval(-sys.maxint, sys.maxint), 2L),
-          ]
-    test(tm0, tm1, [1L], [2L], UniformEntryF=False)
+    pass
+#    We no longer distinguish between uniform entries for computation of combination maps.
+#
+#    print "Involved states in First = 1L"
+#    print "Involved states in Second = 2L"
+#    print "=> when First triggers to 1L and Second to 2L, then both"
+#    print "   are recursive and no distinction needs to be made."
+#    print "BUT: HERE STATE ENTRIES ARE NOT UNIFORM --> NO RECURSION DETECTION"
+#    tm1 = [ 
+#            (Interval(-sys.maxint, sys.maxint), 2L),
+#          ]
+#    test(tm0, tm1, [1L], [2L])
 
