@@ -255,8 +255,8 @@ class CombinationDB:
 
                 if self.__uniformity_required_f:
                     # Rely on __eq__ operator (used '=='). '!=' uses __neq__ 
-                    if   not (i_state.drop_out == k_state.drop_out): continue
-                    elif not (i_state.entry    == k_state.entry):    continue
+                    if   not (i_state.drop_out == k_state.drop_out):    continue
+                    elif not (i_state.entry.is_uniform(k_state.entry)): continue
 
                 candidate = TemplateStateCandidate(i_state, k_state, self.__analyzer)
 
@@ -289,8 +289,8 @@ class CombinationDB:
         for state in self.__db.itervalues():
             if self.__uniformity_required_f:
                 # Rely on __eq__ operator (used '=='). '!=' uses __neq__ 
-                if   not (state.drop_out == NewState.drop_out): continue
-                elif not (state.entry    == NewState.entry):    continue
+                if   not (state.drop_out == NewState.drop_out):    continue
+                elif not (state.entry.is_uniform(NewState.entry)): continue
 
             candidate = TemplateStateCandidate(NewState, state, self.__analyzer)
 

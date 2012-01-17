@@ -29,6 +29,7 @@ class Entry(object):
         #                              'from_state_index' for a given pre-context.
         if len(FromStateIndexList) == 0:
             FromStateIndexList = [ E_StateIndices.NONE ]
+        self.__state_index = StateIndex
         self.__action_db = dict((i, entry_action.TransitionAction(StateIndex, i)) for i in FromStateIndexList)
 
         # Are the actions for all doors the same?
@@ -76,12 +77,6 @@ class Entry(object):
         entry = entry_action.StoreInputPosition(PreContextID, PositionRegister, Offset)
         self.__action_db[FromStateIndex].command_list.misc.add(entry)
 
-    def door_number(self):
-        total_size = len(self.__action_db)
-        # Note, that total_size can be '0' in the 'independent_of_source_state' case
-        if self.__uniform_doors_f: return min(1, total_size)
-        else:                      return total_size
-
     @property
     def door_db(self):
         """The door_db is determined by 'categorize_command_lists()'"""
@@ -109,6 +104,10 @@ class Entry(object):
         return xor_sum
 
     def __eq__(self, Other):
+        assert self.__door_tree_root is not None
+        return self.__door_tree_root.is_equivalent(Other.__door_tree_root)
+
+    def is_uniform(self, Other):
         assert self.__door_tree_root is not None
         return self.__door_tree_root.is_equivalent(Other.__door_tree_root)
 
@@ -186,7 +185,7 @@ class Entry(object):
         # (*) Categorize action lists
         transition_action_list = [ transition_action.clone() for transition_action in self.__action_db.itervalues() ]
         self.__door_db,       \
-        self.__door_tree_root = entry_action.categorize_command_lists(transition_action_list)
+        self.__door_tree_root = entry_action.categorize_command_lists(self.__state_index, transition_action_list)
 
         # (*) Check whether state entries are independent_of_source_state
         self.__uniform_doors_f = True
