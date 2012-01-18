@@ -170,7 +170,8 @@ class LDB(dict):
             # Door '0' is always the state itself
             DoorIndex = None
 
-        return get_address("$entry", (StateIndex, DoorIndex), U=True, R=True)
+        assert isinstance(DoorId, entry_action.DoorID)
+        return get_address("$entry", DoorId, U=True, R=True)
 
     def ADDRESS_DROP_OUT(self, StateIndex):
         return get_address("$drop-out", StateIndex)
