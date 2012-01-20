@@ -116,7 +116,7 @@ class LDB(dict):
         comment = Comment.replace("/*", "SLASH_STAR").replace("*/", "STAR_SLASH").replace("\n", "\n     * ")
         txt.append("    /* %s\n     */" % comment) 
 
-    def ACTION(self, EntryAction):
+    def COMMAND(self, EntryAction):
         if isinstance(EntryAction, entry_action.Accepter):
             else_str = ""
             txt      = []
@@ -146,38 +146,28 @@ class LDB(dict):
         else:
             assert False, "Unknown Entry Action"
 
-    def ADDRESS(self, StateIndex, FromStateIndex, DoorIndex=None):
+    def ADDRESS_BY_DOOR_ID(self, DoorId):
+        return get_address("$entry", DoorId, U=True, R=True)
+
+    def ADDRESS(self, StateIndex, FromStateIndex):
         # The door can be specified by the FromStateIndex or the DoorIndex but not by both!
-        assert not (FromStateIndex != None and DoorIndex != None)
-
-        if DoorIndex is None:
-            if self.__analyzer is None:
-                DoorIndex = None
-
-            elif self.__analyzer.engine_type == E_EngineTypes.BACKWARD_INPUT_POSITION:
-                DoorIndex = None
-
-            elif FromStateIndex is not None:
-                if self.__analyzer.state_db.has_key(StateIndex) == False:
-                    # It must be a template/path walker state. Those are not real analyzer states
-                    # but little engines that can be entered via an address.
-                    DoorIndex = None
-                else:
-                    DoorIndex = self.__analyzer.state_db[StateIndex].entry.door_db[FromStateIndex]
-
-        # NOT: 'elif', because the door index may have become '0' 
-        if DoorIndex == 0:
-            # Door '0' is always the state itself
+        if self.__analyzer is None:
             DoorIndex = None
 
+        if FromStateIndex is None:
+            DoorId = entry_action.DoorID(StateIndex, None)
+        else:
+            transition_id = entry_action.TransitionID(StateIndex, FromStateIndex)
+            print "##key:", map(repr, self.__analyzer.state_db[StateIndex].entry.door_db.keys())
+            DoorId = self.__analyzer.state_db[StateIndex].entry.door_db[transition_id]
+
         assert isinstance(DoorId, entry_action.DoorID)
-        return get_address("$entry", DoorId, U=True, R=True)
+        return self.ADDRESS_BY_DOOR_ID(DoorId)
 
     def ADDRESS_DROP_OUT(self, StateIndex):
         return get_address("$drop-out", StateIndex)
 
-    def __label_name(self, StateIndex, FromStateIndex=None, DoorIndex=None):
-        assert type(DoorIndex) != bool
+    def __label_name(self, StateIndex, FromStateIndex):
         if StateIndex in E_StateIndices:
             assert StateIndex != E_StateIndices.DROP_OUT
             assert StateIndex != E_StateIndices.RELOAD_PROCEDURE
@@ -187,19 +177,26 @@ class LDB(dict):
                 E_StateIndices.ANALYZER_REENTRY:            "__REENTRY",
             }[StateIndex]
 
-        return "_%i" % self.ADDRESS(StateIndex, FromStateIndex, DoorIndex)
+        return "_%i" % self.ADDRESS(StateIndex, FromStateIndex)
 
-    def LABEL(self, StateIndex, FromStateIndex=None, DoorIndex=None, NewlineF=True):
-        assert type(DoorIndex) != bool
-        label = self.__label_name(StateIndex, FromStateIndex, DoorIndex)
+    def __label_name_by_door_id(self, DoorId):
+        return "_%i" % self.ADDRESS_BY_DOOR_ID(DoorId)
+
+    def LABEL(self, StateIndex, FromStateIndex=None, NewlineF=True):
+        label = self.__label_name(StateIndex, FromStateIndex)
         if NewlineF: return label + ":\n"
+        return label + ":"
+
+    def LABEL_BY_DOOR_ID(self, DoorId):
+        label = self.__label_name_by_door_id(DoorId)
+        # if NewlineF: return label + ":\n"
         return label + ":"
 
     def LABEL_DROP_OUT(self, StateIndex):
         return "_%s:" % self.ADDRESS_DROP_OUT(StateIndex)
 
     def LABEL_INIT_STATE_TRANSITION_BLOCK(self):
-        return "%s:\n" % self.__label_name(E_StateIndices.INIT_STATE_TRANSITION_BLOCK)
+        return "%s:\n" % self.__label_name(E_StateIndices.INIT_STATE_TRANSITION_BLOCK, None)
 
     def LABEL_SHARED_ENTRY(self, TemplateIndex, EntryN=None):
         if EntryN is None: return "_%i_shared_entry:\n"    % TemplateIndex
@@ -214,11 +211,18 @@ class LDB(dict):
     def LABEL_NAME_BACKWARD_INPUT_POSITION_RETURN(self, StateMachineID):
         return "BIP_DETECTOR_%i_DONE" % StateMachineID
 
-    def GOTO(self, TargetStateIndex, FromStateIndex=None, DoorIndex=None):
+    def GOTO(self, TargetStateIndex, FromStateIndex=None):
         # Only for normal 'forward analysis' the from state is of interest.
         # Because, only during forward analysis some actions depend on the 
         # state from where we come.
-        result = "goto %s;" % self.__label_name(TargetStateIndex, FromStateIndex, DoorIndex)
+        result = "goto %s;" % self.__label_name(TargetStateIndex, FromStateIndex)
+        return result
+
+    def GOTO_BY_DOOR_ID(self, DoorId):
+        # Only for normal 'forward analysis' the from state is of interest.
+        # Because, only during forward analysis some actions depend on the 
+        # state from where we come.
+        result = "goto %s;" % self.__label_name_by_door_id(DoorId)
         return result
 
     def GOTO_DROP_OUT(self, StateIndex):
@@ -248,7 +252,7 @@ class LDB(dict):
             # The lexeme to parse must lie inside the borders!
         }[EngineType]
 
-        on_success = get_address("$entry", StateIndex, U=True)
+        on_success = get_address("$entry", entry_action.DoorID(StateIndex, None), U=True)
         if InitStateIndexF and EngineType == E_EngineTypes.FORWARD:
             on_fail = get_address("$terminal-EOF", U=True) 
         else:

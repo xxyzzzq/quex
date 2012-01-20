@@ -24,11 +24,11 @@ class Generator(GeneratorBase):
         assert isinstance(Setup.language_db, dict)
         assert len(Setup.language_db) != 0
 
-        self.state_machine_name         = StateMachineName
-        self.language_db                = Setup.language_db
-        self.end_of_stream_action       = EndOfStreamAction
-        self.on_failure_action          = OnFailureAction
-        self.mode_name_list             = ModeNameList
+        self.state_machine_name   = StateMachineName
+        self.language_db          = Setup.language_db
+        self.end_of_stream_action = EndOfStreamAction
+        self.on_failure_action    = OnFailureAction
+        self.mode_name_list       = ModeNameList
 
         GeneratorBase.__init__(self, PatternActionPair_List, StateMachineName, SupportBeginOfLineF)
 
@@ -54,10 +54,9 @@ class Generator(GeneratorBase):
 
         # (*) Determine required labels and variables
         routed_address_set = get_address_set_subject_to_routing()
-        routed_address_set.add(get_address("$entry", self.sm.init_state_index, U=True))
         routed_address_set.add(get_address("$terminal-EOF", U=True))
         routed_state_info_list = state_router_generator.get_info(routed_address_set)
-        state_router = [ state_router_generator.do(routed_state_info_list) ]
+        state_router           = [ state_router_generator.do(routed_state_info_list) ]
 
         variable_db.require("target_state_index", Condition_ComputedGoto=False) 
 

@@ -57,7 +57,6 @@ class TransitionCode:
             # => no postponed code generation
             if TheAnalyzer is not None:
                 assert TheAnalyzer.state_db.has_key(Target)
-                ## assert TheAnalyzer.state_db.has_key(StateIndex)
             self.__code       = LanguageDB.GOTO(Target, StateIndex)
             self.__drop_out_f = False
 

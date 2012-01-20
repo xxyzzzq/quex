@@ -93,7 +93,7 @@ mode PROGRAM :
     {P_KEY_FOR}         => QUEX_TKN_FOR(Lexeme); 
     {P_KEY_DEF}         => QUEX_TKN_FUNCTION_DEF(Lexeme);
     {P_IDENTIFIER}      => QUEX_TKN_IDENTIFIER(Lexeme);
-    {P_NUMBER}          => QUEX_TKN_NUMBER;
+    {P_NUMBER}          => QUEX_TKN_NUMBER(LexemeNull);
 
     {P_STRING_DELIMITER} => GOTO(STRING_READER, QUEX_TKN_EVENT_MODE_CHANGE);
 }

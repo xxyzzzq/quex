@@ -9,6 +9,7 @@ from   itertools   import imap
 def do(TheAnalyzer):
     """Generate source code for a given state machine 'SM'.
     """
+
     assert id(Setup.language_db.analyzer) == id(TheAnalyzer)
 
     txt = []
