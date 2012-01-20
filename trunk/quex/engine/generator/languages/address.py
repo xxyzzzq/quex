@@ -60,22 +60,17 @@ class AddressDB:
 
         return StateIndex
 
-    def get_entry(self, Indices):
-        if type(Indices) == tuple: 
-            state_index = Indices[0]
-            from_index  = Indices[1]
-        else:
-            state_index = Indices
-            from_index  = None
+    def get_entry(self, DoorId):
+        print "##DoorId:", DoorId.__class__.__name__
+        assert DoorId.__class__.__name__ == "DoorID"
 
-        if from_index is not None: return self.get("%i_from_%i" % (state_index, from_index))
-        else:                      return self.get_real(state_index)
+        return self.get("%i_from_%s" % (DoorId.state_index, DoorId.door_index))
 
 __address_db = AddressDB()
 
 __label_db = {
     # Let's make one thing clear: addresses of labels are aligned with state indices:
-    "$entry":                 lambda Indices=None:  __address_db.get_entry(Indices),
+    "$entry":                 lambda DoorId:      __address_db.get_entry(DoorId),
     # 
     "$terminal":              lambda TerminalIdx: __address_db.get("TERMINAL_%s"        % __nice(TerminalIdx)),
     "$terminal-router":       lambda NoThing:     __address_db.get("__TERMINAL_ROUTER"),
@@ -132,7 +127,7 @@ def get_address(Type, Arg=None, U=False, R=False):
     result = __label_db[Type](Arg)
 
     assert type(result) in [int, long], \
-           "Label type '%s' is not suited for routing." % Type
+           "Label type '%s' is not suited for routing. Found %s" % (Type, result)
     
     if U: __referenced_label_set_add(get_label_of_address(result))
     if R: __routed_address_set.add(__address_db.get_real(result))

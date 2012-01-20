@@ -39,17 +39,21 @@ def doit(txt, TheState, Node, LastChildF=False, BIPD_ID=None):
     if TheState.init_state_f and BIPD_ID is not None:
         txt.append(LanguageDB.LABEL_BACKWARD_INPUT_POSITION_DETECTOR(BIPD_ID))
     else:
-        txt.append(LanguageDB.LABEL(TheState.index, DoorIndex=Node.identifier, NewlineF=False))
+        txt.append(LanguageDB.LABEL_BY_DOOR_ID(Node.door_id))
 
+    comment_door(txt, TheState)
+
+    action_txt = [ LanguageDB.COMMAND(command) for command in Node.common_command_list ]
+    if Node.parent is not None and not LastChildF: 
+        action_txt.append(LanguageDB.GOTO_BY_DOOR_ID(TheState.index, Node.parent.door_id))
+    txt.extend(action_txt)
+
+def comment_door(txt, TheState):
+    # If the door is entered by another state, write a comment from where it is entered.
+    return
     if len(Node.door_list) != 0:
-        # If the door is entered by another state, write a comment from where it is entered.
         txt.append(" ")
         LanguageDB.COMMENT(txt, "from " + "".join([ "(%s) " % x for x in Node.door_list])[:-1])
     else:
         txt.append("\n") 
-
-    action_txt = [ LanguageDB.ACTION(action) for action in Node.common_action_list ]
-    if Node.parent is not None and not LastChildF: 
-        action_txt.append(LanguageDB.GOTO(TheState.index, DoorIndex=Node.parent.identifier))
-    txt.extend(action_txt)
 
