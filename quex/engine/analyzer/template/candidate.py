@@ -28,13 +28,13 @@ class TemplateStateCandidate(TemplateState):
         self.__asserts(TheAnalyzer)
 
         entry_gain          = _compute_entry_gain(self.entry, StateA.entry, StateB.entry)
-        drop_out_gain       = _compute_gain(_drop_out_cost, self.drop_out, 
-                                            StateA.drop_out, StateA.index, 
-                                            StateB.drop_out, StateB.index)
+        drop_out_gain       = _compute_drop_out_gain(self.drop_out, 
+                                                     StateA.drop_out, StateA.index, 
+                                                     StateB.drop_out, StateB.index)
         transition_map_gain = _transition_map_gain(self.transition_map, 
                                                    StateA.transition_map, StateB.transition_map)
 
-        self.__gain = (entry_gain + drop_out_gain + transition_map_gain).total()
+        self.__gain         = (entry_gain + drop_out_gain + transition_map_gain).total()
 
     def __asserts(self, TheAnalyzer):
         if TheAnalyzer is None: return
@@ -101,7 +101,6 @@ def _transition_map_gain(CombinedTM, TM_A, TM_B):
 
     return (a_cost + b_cost) - combined_cost
 
-
 def _compute_entry_gain(Combined, A, B):
     """Computes cost of each entry by recursively walking through the
        door tree--summing up the cost of each command list in the nodes.
@@ -120,7 +119,7 @@ def _compute_entry_gain(Combined, A, B):
 
     return Cost(AssignmentN = (a_cost + b_cost) - combined_cost)
 
-def _compute_gain(cost_function, Combined, A, StateA_Index, B, StateB_Index):
+def _compute_drop_out_gain(Combined, A, StateA_Index, B, StateB_Index):
     """Computes the gain of combining two objects 'A' and 'B' into the combined
        object 'Combined'. Objects can be state Entry-s or state DropOut-s. By
        means of the function 'get_iterable' a list of tuples is obtained as 
@@ -139,7 +138,7 @@ def _compute_gain(cost_function, Combined, A, StateA_Index, B, StateB_Index):
        a unified manner.
     """
     def __cost(Iterable):
-        return sum(map(lambda element: cost_function(element[0]), Iterable), Cost())
+        return sum(map(lambda element: _drop_out_cost(element[0]), Iterable), Cost())
 
     # Cost of each object if separated in two states
     a_cost        = __cost(get_iterable(A, StateA_Index))

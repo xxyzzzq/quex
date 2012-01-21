@@ -22,21 +22,23 @@ class Entry(object):
                  from_state_index  --> list of entry actions
 
     """
-    __slots__ = ("__state_index", "__uniform_doors_f", "__action_db", "__door_db", "__door_tree_root")
+    __slots__ = ("__state_index", "__uniform_doors_f", "__action_db", "__door_db", "__transition_db", "__door_tree_root")
 
     def __init__(self, StateIndex, FromStateIndexList, PreContextFulfilledID_List=None):
         # map:  (from_state_index) --> list of actions to be taken if state is entered 
         #                              'from_state_index' for a given pre-context.
-        if len(FromStateIndexList) == 0:
-            FromStateIndexList = [ E_StateIndices.NONE ]
+        # if len(FromStateIndexList) == 0: FromStateIndexList = [ E_StateIndices.NONE ]
         self.__state_index = StateIndex
-        self.__action_db   = dict((i, entry_action.TransitionAction(StateIndex, i)) for i in FromStateIndexList)
+        self.__action_db   = dict((entry_action.TransitionID(StateIndex, i),     \
+                                   entry_action.TransitionAction(StateIndex, i)) \
+                                  for i in FromStateIndexList)
 
         # Are the actions for all doors the same?
         self.__uniform_doors_f = None 
 
         # Function 'categorize_command_lists()' fills the following members
-        self.__door_db        = None # map: source state index to door_id in door tree
+        self.__door_db        = None # map: transition_id --> door_id
+        self.__transition_db  = None # map: door_id       --> transition_id
         self.__door_tree_root = None # The root of the door tree.
 
         # Only for 'Backward Detecting Pre-Contexts'.
@@ -59,7 +61,7 @@ class Entry(object):
         for path_trace in PathTraceList:
             accepter.add(path_trace.pre_context_id, path_trace.pattern_id)
 
-        self.__action_db[FromStateIndex].command_list.accepter = accepter
+        self.__action_db[entry_action.TransitionID(self.__state_index, FromStateIndex)].command_list.accepter = accepter
 
     def doors_accepter_add_front(self, PreContextID, PatternID):
         """Add an acceptance at the top of each accepter at every door. If there
@@ -75,16 +77,28 @@ class Entry(object):
         # Add 'store input position' to specific door. See 'entry_action.StoreInputPosition'
         # comment for the reason why we do not store pre-context-id.
         entry = entry_action.StoreInputPosition(PreContextID, PositionRegister, Offset)
-        self.__action_db[FromStateIndex].command_list.misc.add(entry)
+        self.__action_db[entry_action.TransitionID(self.__state_index, FromStateIndex)].command_list.misc.add(entry)
 
     @property
     def door_db(self):
-        """The door_db is determined by 'categorize_command_lists()'"""
+        """Map:  transition_id --> door_id 
+           The door_db is determined by 'categorize_command_lists()'
+        """
+        assert self.__door_db is not None
         return self.__door_db
+
+    @property
+    def transition_db(self):
+        """Map:  door_id --> transition_id 
+           The door_db is determined by 'categorize_command_lists()'
+        """
+        assert self.__transition_db is not None
+        return self.__transition_db
 
     @property
     def door_tree_root(self): 
         """The door_tree_root is determined by 'categorize_command_lists()'"""
+        assert self.__door_tree_root is not None
         return self.__door_tree_root
 
     def has_accepter(self):
@@ -185,15 +199,9 @@ class Entry(object):
         # (*) Categorize action lists
         transition_action_list = [ transition_action.clone() for transition_action in self.__action_db.itervalues() ]
         self.__door_db,       \
+        self.__transition_db, \
         self.__door_tree_root = entry_action.categorize_command_lists(self.__state_index, transition_action_list)
-
-        # (*) Check whether state entries are independent_of_source_state
-        self.__uniform_doors_f = True
-        iterable               = self.__action_db.itervalues()
-        prototype              = iterable.next()
-        for dummy in ifilter(lambda x: x != prototype, iterable):
-            self.__uniform_doors_f = False
-            break
+        assert self.__door_tree_root is not None
 
         return self.__door_db
 

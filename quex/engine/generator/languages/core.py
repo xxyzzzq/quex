@@ -150,16 +150,12 @@ class LDB(dict):
         return get_address("$entry", DoorId, U=True, R=True)
 
     def ADDRESS(self, StateIndex, FromStateIndex):
-        # The door can be specified by the FromStateIndex or the DoorIndex but not by both!
-        if self.__analyzer is None:
-            DoorIndex = None
+        if self.__analyzer is None: 
+            return self.ADDRESS_BY_DOOR_ID(entry_action.DoorID(StateIndex, None))
 
-        if FromStateIndex is None:
-            DoorId = entry_action.DoorID(StateIndex, None)
-        else:
-            transition_id = entry_action.TransitionID(StateIndex, FromStateIndex)
-            print "##key:", map(repr, self.__analyzer.state_db[StateIndex].entry.door_db.keys())
-            DoorId = self.__analyzer.state_db[StateIndex].entry.door_db[transition_id]
+        transition_id = entry_action.TransitionID(StateIndex, FromStateIndex)
+        #print "##key:", map(repr, self.__analyzer.state_db[StateIndex].entry.door_db.keys())
+        DoorId = self.__analyzer.state_db[StateIndex].entry.door_db[transition_id]
 
         assert isinstance(DoorId, entry_action.DoorID)
         return self.ADDRESS_BY_DOOR_ID(DoorId)
@@ -252,7 +248,8 @@ class LDB(dict):
             # The lexeme to parse must lie inside the borders!
         }[EngineType]
 
-        on_success = get_address("$entry", entry_action.DoorID(StateIndex, None), U=True)
+        # 'DoorIndex == 0' is the entry into the state without any actions.
+        on_success = get_address("$entry", entry_action.DoorID(StateIndex, DoorIndex=0), U=True)
         if InitStateIndexF and EngineType == E_EngineTypes.FORWARD:
             on_fail = get_address("$terminal-EOF", U=True) 
         else:

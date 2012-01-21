@@ -1,4 +1,3 @@
-import quex.engine.state_machine.index         as     index
 from   quex.engine.analyzer.template.state     import TemplateState
 from   quex.engine.analyzer.template.candidate import TemplateStateCandidate
 from   quex.blackboard                         import E_Compression
@@ -195,9 +194,9 @@ class CombinationDB:
                                            and x[0] in AvailableStateIndexList
                                            and not x[1].init_state_f,
                                  TheAnalyzer.state_db.iteritems()))
-        self.__analyzer              = TheAnalyzer
-        self.__min_gain              = float(MinGain)
-        self.__gain_matrix           = self.__base()
+        self.__analyzer    = TheAnalyzer
+        self.__min_gain    = float(MinGain)
+        self.__gain_matrix = self.__base()
 
     def combine_best(self):
         """Finds the two best matching states and combines them into one.
@@ -278,7 +277,6 @@ class CombinationDB:
         assert isinstance(NewState, TemplateState)
         # The new state index must be known. It is used in the gain matrix.
         # But, the new state does not need to be entered into the db, yet.
-        NewState.set_index(index.get())
 
         # Avoid extensive 'appends' by single allocation (see initial computation)
         MaxIncrease = len(self.__db) 

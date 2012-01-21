@@ -31,6 +31,7 @@ def test(TriggerMapList):
                 sm.add_transition(state_index, Interval(info[0]), info[1])
         state_index += 1
 
+    ## print "##sm:", sm
     # Backward analyzers do not consider so much entry and drop-out ...
     analyzer = Analyzer(sm, E_EngineTypes.BACKWARD_PRE_CONTEXT)
     for state in analyzer.state_db.itervalues():

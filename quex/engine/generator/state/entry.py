@@ -1,7 +1,7 @@
-from   quex.blackboard import setup as Setup, \
-                              E_EngineTypes, \
-                              E_PreContextIDs, \
-                              E_StateIndices
+from quex.blackboard import setup as Setup,  \
+                            E_EngineTypes,   \
+                            E_PreContextIDs, \
+                            E_StateIndices
 
 from operator import attrgetter
 
@@ -32,7 +32,7 @@ def do(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
 def doit(txt, TheState, Node, LastChildF=False, BIPD_ID=None):
     LanguageDB = Setup.language_db
     LastI      = len(Node.child_list) - 1
-    for i, child in enumerate(sorted(Node.child_list, key=attrgetter("identifier"))):
+    for i, child in enumerate(sorted(Node.child_list, key=attrgetter("door_id"))):
         doit(txt, TheState, child, LastChildF=(i==LastI), BIPD_ID=BIPD_ID)
     
     # If the door can be a 'goto' target, the label needs to be defined.
@@ -41,19 +41,22 @@ def doit(txt, TheState, Node, LastChildF=False, BIPD_ID=None):
     else:
         txt.append(LanguageDB.LABEL_BY_DOOR_ID(Node.door_id))
 
-    comment_door(txt, TheState)
+    comment_door(txt, Node, TheState.entry)
 
     action_txt = [ LanguageDB.COMMAND(command) for command in Node.common_command_list ]
     if Node.parent is not None and not LastChildF: 
-        action_txt.append(LanguageDB.GOTO_BY_DOOR_ID(TheState.index, Node.parent.door_id))
-    txt.extend(action_txt)
+        action_txt.append(LanguageDB.GOTO_BY_DOOR_ID(Node.parent.door_id))
+    if len(action_txt) == 0: txt.extend("\n")
+    else:                    txt.extend(action_txt)
 
-def comment_door(txt, TheState):
+def comment_door(txt, Node, TheEntry):
+    LanguageDB = Setup.language_db
+
     # If the door is entered by another state, write a comment from where it is entered.
-    return
-    if len(Node.door_list) != 0:
+    transition_id_list = TheEntry.transition_db[Node.door_id]
+    if len(transition_id_list) != 0:
         txt.append(" ")
-        LanguageDB.COMMENT(txt, "from " + "".join([ "(%s) " % x for x in Node.door_list])[:-1])
+        LanguageDB.COMMENT(txt, "from " + "".join([ "(%s) " % x.from_state_index for x in transition_id_list])[:-1])
     else:
         txt.append("\n") 
 
