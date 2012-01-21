@@ -46,7 +46,7 @@ $$LC_COUNT_END_PROCEDURE$$
     /* No need for re-entry preparation. Acceptance flags and modes are untouched after skipping. */
     goto $$GOTO_START$$;
 
-$$LOOP_REENTRANCE$$:
+$$LOOP_REENTRANCE$$
     $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
     goto _$$SKIPPER_INDEX$$_LOOP;
 
@@ -118,7 +118,7 @@ def get_skipper(TriggerSet):
                          ["$$INPUT_P_DECREMENT$$",              LanguageDB.INPUT_P_DECREMENT()],
                          ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB.IF_INPUT("==", "SkipDelimiter$$SKIPPER_INDEX$$[0]")],
                          ["$$ENDIF$$",                          LanguageDB.END_IF()],
-                         ["$$LOOP_REENTRANCE$$",                get_label("$entry", skipper_index)],
+                         ["$$LOOP_REENTRANCE$$",                LanguageDB.LABEL(skipper_index)],
                          ["$$IF_INPUT_EQUAL_BUFFER_LIMIT_CODE$$",  LanguageDB.IF_INPUT("==", LanguageDB.BUFFER_LIMIT_CODE)],
                          ["$$RELOAD$$",                         get_label("$reload", skipper_index)],
                          ["$$DROP_OUT_DIRECT$$",                get_label("$drop-out", skipper_index, U=True)],

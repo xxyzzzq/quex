@@ -1,4 +1,5 @@
 import quex.engine.state_machine.index             as     sm_index
+from   quex.engine.analyzer.state_entry_action     import DoorID
 from   quex.engine.generator.skipper.common        import line_counter_in_loop, \
                                                           end_delimiter_is_subset_of_indentation_counter_newline, \
                                                           get_character_sequence, \
@@ -34,7 +35,7 @@ template_str = """
     text_end = QUEX_NAME(Buffer_text_end)(&me->buffer);
 $$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
 
-$$ENTRY$$:
+$$ENTRY$$
     QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
     __quex_assert(QUEX_NAME(Buffer_content_size)(&me->buffer) >= Skipper$$SKIPPER_INDEX$$L );
 
@@ -134,7 +135,7 @@ $$LC_COUNT_BEFORE_RELOAD$$
         text_end = QUEX_NAME(Buffer_text_end)(&me->buffer);
 $$LC_COUNT_AFTER_RELOAD$$
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
-        goto $$GOTO_ENTRY$$;
+        $$GOTO_ENTRY$$
     }
     /* Here, either the loading failed or it is not enough space to carry a closing delimiter */
     $$INPUT_P_TO_LEXEME_START$$
@@ -171,7 +172,7 @@ def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSki
             i += 1
             txt += "    %s\n"    % LanguageDB.ASSIGN("input", LanguageDB.INPUT_P_DEREFERENCE(i-1))
             txt += "    %s"      % LanguageDB.IF_INPUT("!=", "Skipper$$SKIPPER_INDEX$$[%i]" % i)
-            txt += "         %s" % LanguageDB.GOTO(get_address("$entry", skipper_index, U=True))
+            txt += "         %s" % LanguageDB.GOTO(skipper_index)
             txt += "    %s"      % LanguageDB.END_IF()
         delimiter_remainder_test_str = txt
 
@@ -197,9 +198,9 @@ def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSki
                            ["$$INPUT_GET$$",                      LanguageDB.ACCESS_INPUT()],
                            ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB.IF_INPUT("==", "Skipper$$SKIPPER_INDEX$$[0]")],
                            ["$$ENDIF$$",                          LanguageDB.END_IF()],
-                           ["$$ENTRY$$",                          get_label("$entry", skipper_index)],
+                           ["$$ENTRY$$",                          LanguageDB.LABEL(skipper_index)],
                            ["$$RELOAD$$",                         get_label("$reload", skipper_index)],
-                           ["$$GOTO_ENTRY$$",                     get_label("$entry", skipper_index, U=True)],
+                           ["$$GOTO_ENTRY$$",                     LanguageDB.GOTO(skipper_index)],
                            ["$$INPUT_P_TO_LEXEME_START$$",        LanguageDB.INPUT_P_TO_LEXEME_START()],
                            # When things were skipped, no change to acceptance flags or modes has
                            # happend. One can jump immediately to the start without re-entry preparation.

@@ -276,7 +276,6 @@ class CharacterPath:
     def __len__(self):
         return len(self.__sequence)
 
-
 def can_plug_to_equal(Set0, Char, Set1):
     """Determine whether the character 'Char' can be plugged
        to Set0 to make both sets equal.

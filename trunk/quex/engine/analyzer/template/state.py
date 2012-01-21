@@ -1,3 +1,4 @@
+import quex.engine.state_machine.index              as     index
 from   quex.engine.generator.state.transition.core  import assert_adjacency
 from   quex.engine.analyzer.state_entry             import Entry
 from   quex.engine.analyzer.state_entry_action      import SetStateKey, TransitionID
@@ -32,7 +33,7 @@ class TemplateState(AnalyzerState):
         # The 'index' remains None, as long as the TemplateState is not an 
         # accepted element of a state machine. This makes sense, in particular
         # for TemplateStateCandidates (derived from TemplateState). 
-        self.__index    = None
+        self.__index = index.get()
 
         self.__state_index_list            = get_state_list(StateA) + get_state_list(StateB)
         self.__state_index_to_state_key_db = dict((state_index, i) for i, state_index in enumerate(self.__state_index_list))
@@ -89,9 +90,12 @@ class TemplateState(AnalyzerState):
 
     def __update_entry(self, TheState):
 
+        print "##SC:", TheState.__class__.__name__
+        print "##keys:", TheState.entry.action_db.keys()
+        self.__entry.action_db.update(TheState.entry.action_db)
+
         if isinstance(TheState, TemplateState):
             for transition_id, transition_action in TheState.entry.action_db.iteritems():
-                self.__entry.action_db.update(TheState.entry.action_db)
                 for command in transition_action.command_list.misc:
                     if not isinstance(command, SetStateKey): break
                     new_state_key = self.__state_index_to_state_key_db[transition_id.state_index]
@@ -101,13 +105,12 @@ class TemplateState(AnalyzerState):
                     assert False # There MUST be a 'SetStateKey' action in a TemplateState
 
         elif isinstance(TheState, AnalyzerState):
-            for from_state_index, transition_action in TheState.entry.action_db.iteritems():
+            for transition_id, transition_action in TheState.entry.action_db.iteritems():
                 transition_action.command_list.misc.add(SetStateKey(self.__state_index_to_state_key_db[TheState.index]))
-                self.__entry.action_db[TransitionID(TheState.index, from_state_index)] = transition_action
+                self.__entry.action_db[transition_id] = transition_action
 
         else:
             assert False
-
 
 def combine_scheme(StateIndexListA, A, StateIndexListB, B):
     """A 'scheme' is a dictionary that maps:

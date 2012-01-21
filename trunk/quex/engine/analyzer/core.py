@@ -515,6 +515,11 @@ class AnalyzerState(object):
         # (*) Input
         self.input = get_input_action(EngineType, self.__init_state_f)
 
+        if self.__init_state_f: FromStateIndexList = [ E_StateIndices.NONE ]
+
+        # Test "quex/engine/analyzer/template/TEST/best_matching_pair.py" would not work!
+        # assert len(FromStateIndexList) != 0
+
         # (*) Entry Action
         if   EngineType == E_EngineTypes.FORWARD: 
             self.entry = Entry(self.__index, FromStateIndexList)
