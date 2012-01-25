@@ -1,4 +1,6 @@
 import quex.engine.analyzer.template.core  as templates 
+from   quex.engine.analyzer.core           import AnalyzerState
+from   quex.engine.analyzer.state_entry    import Entry
 from   quex.engine.analyzer.template.state import TargetScheme, TemplateState
 from   operator import attrgetter
 
@@ -9,6 +11,12 @@ def clean_transition_map(tm):
             x = tuple(x)
         if isinstance(x, tuple):
             tm[i] = (element[0], TargetScheme(0, x))
+
+class TestAnalyzer:
+    def __init__(self, *StateList):
+        self.state_db = {}
+        for state in StateList:
+            self.state_db[state.index] = state
 
 class TestTemplateState(TemplateState):
     def __init__(self, TriggerMap, StateIndexList):
@@ -24,7 +32,8 @@ class TestTemplateState(TemplateState):
     def index(self): return None
 
 
-class TestState:
+
+class TestState(AnalyzerState):
     def __init__(self, TM, Index=None, StateIndexList=None):
         self.transition_map   = TM
         self.index            = Index

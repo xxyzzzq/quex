@@ -91,7 +91,7 @@ from   operator        import attrgetter
 """
 LanguageDB = None # Set during call to 'do()', not earlier
 
-def do(txt, TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList):
+def do(txt, TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList, MegaStateList):
     """Tries to combine as many states as possible from TheAnalyzer
        into TemplateState-s. It uses an iterative stepwise algorithm
        were at each step two states are combined as long as the 
@@ -113,7 +113,7 @@ def do(txt, TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList):
 
     # (*) Analysis:
     #     Determine TemplateState-s as combinations of AnalyzerState-s.
-    template_state_list = templates.do(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList)
+    template_state_list = templates.do(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList, MegaStateList)
 
     if len(template_state_list) == 0: return []
 
@@ -179,6 +179,9 @@ def __entry(txt, TState, TheAnalyzer):
                  goto 'TemplateBody'.
     """
     global LanguageDB
+
+    entry_coder.do(txt, TState, TheAnalyzer) # , UnreachablePrefixF=(i==0))
+    return
 
     if TState.uniform_entries_f:
         entry, state_index_list = TState.entry.iteritems().next()
@@ -343,6 +346,7 @@ def handle_source_state_dependent_transitions(transition_map, TheAnalyzer,
        operate on behalf of different states. The state is identified by a
        state key.
     """
+    return
     LanguageDB = Setup.language_db
 
     for i, info in enumerate(transition_map):
@@ -367,7 +371,9 @@ def handle_source_state_dependent_transitions(transition_map, TheAnalyzer,
 
         transition_map[i] = (interval, target)
 
-def handle_templated_transitions(transition_map, XStateIndex, UniformEntriesF):
+def handle_templated_transitions(TheState):
+    transition_map = TheState.transition_map
+
     for i, info in enumerate(transition_map):
         interval, target_scheme = info
 
@@ -378,21 +384,27 @@ def handle_templated_transitions(transition_map, XStateIndex, UniformEntriesF):
         elif target_scheme != E_StateIndices.RECURSIVE:
             # (*) Normal Case: 
             #     Transition target depends on state key
-            label = "template_%i_target_%i[state_key]" % (XStateIndex, target_scheme.index)
-            get_label("$state-router", U=True) # Ensure reference of state router
-            text = "QUEX_GOTO_STATE(%s);" % label 
-
-        elif not UniformEntriesF:
-            # (*) Recursive Case 1:
-            #     Jump to dedicated entry determined by 'state_key'.
-            label = "template_%i_map_state_key_to_recursive_entry[state_key]" % XStateIndex
+            label = "template_%i_target_%i[state_key]" % (TheState.index, target_scheme.index)
             get_label("$state-router", U=True) # Ensure reference of state router
             text = "QUEX_GOTO_STATE(%s);" % label 
 
         else:
-            # (*) Recursive Case 2:
-            #     All states have same entry, thus simply enter the template again.
-            text = LanguageDB.GOTO(XStateIndex)
+            # (*) Recursion:
+            #     The state key does not have to be set again. So, if the entry door
+            #     of the recursion does nothing more than setting a state key, we 
+            #     can directly go to its parent. This, though is coded already in 
+            #
+            #     'template_%i_map_state_key_to_recursive_entry[state_key]'. 
+            #  
+            # EXCEPTION: If no state requires any action (except the 'SetStateKey'), 
+            #            then we can go directly to the 'Door 0', the door where 
+            #            nothing is to be done. No aforementioned array is required.
+            if TheState.entries_empty_f:
+                text = LanguageDB.GOTO_BY_DOOR_ID(DoorID(XStateIndex, DoorIndex=0))
+            else:
+                label = "template_%i_map_state_key_to_recursive_entry[state_key]" % TheState.index
+                get_label("$state-router", U=True) # Ensure reference of state router
+                text = "QUEX_GOTO_STATE(%s);" % label 
 
         target = TextTransitionCode([text])
 
@@ -412,9 +424,7 @@ def prepare_transition_map(TState, TheAnalyzer):
     """
     global LanguageDB
 
-    handle_templated_transitions(TState.transition_map, 
-                                 TState.index, 
-                                 TState.uniform_entries_f)
+    handle_templated_transitions(TState)
     handle_source_state_dependent_transitions(TState.transition_map, 
                                               TheAnalyzer, 
                                               "state_key", 

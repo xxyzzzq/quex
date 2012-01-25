@@ -12,6 +12,7 @@ def do(Target, StateIndex, InitStateF, EngineType, GotoReload_Str, TheAnalyzer=N
     """
     assert Target is not None
     assert Target != -1
+    print "##>>>>", StateIndex
 
     if isinstance(Target, TransitionCode): 
         return Target
@@ -57,6 +58,7 @@ class TransitionCode:
             # => no postponed code generation
             if TheAnalyzer is not None:
                 assert TheAnalyzer.state_db.has_key(Target)
+                if isinstance(StateIndex, (int, long)): assert TheAnalyzer.state_db.has_key(StateIndex)
             self.__code       = LanguageDB.GOTO(Target, StateIndex)
             self.__drop_out_f = False
 

@@ -24,16 +24,23 @@ def do(TheAnalyzer):
     # (*) Compression Algorithms:
     #     txt       -- is directly filled with code of compressed states.
     #     done_list -- contains list of state indices that have been combined.
+    mega_state_list = []
     for ctype in Setup.compression_type_list:
         # -- Path-Compression
         if ctype in (E_Compression.PATH, E_Compression.PATH_UNIFORM):
-            done_list = paths_coder.do(txt, TheAnalyzer, ctype, remainder)
+            done_state_index_list, \
+            template_state_list    = paths_coder.do(txt, TheAnalyzer, 
+                                                    ctype, remainder, mega_state_list)
             remainder.difference_update(done_list)
+            mega_state_list.extend(template_state_list)
     
         # -- Template-Compression
         elif ctype in (E_Compression.TEMPLATE, E_Compression.TEMPLATE_UNIFORM):
-            done_list = template_coder.do(txt, TheAnalyzer, Setup.compression_template_min_gain, ctype, remainder)
+            done_state_index_list, \
+            pathwalker_state_list  = template_coder.do(txt, TheAnalyzer, Setup.compression_template_min_gain, 
+                                                       ctype, remainder, mega_state_list)
             remainder.difference_update(done_list)
+            mega_state_list.extend(template_state_list)
     
     # (*) All other (normal) states (sorted by their frequency of appearance
     frequency_db = get_frequency_db(TheAnalyzer.state_db, remainder)

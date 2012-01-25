@@ -1,4 +1,4 @@
-<history date="Sat Jan 21 06:38:32 2012" element-n="731">
+<history date="Tue Jan 24 22:12:24 2012" element-n="732">
     <day year="2011" month="04" day="29">
         <history-init time="04:18:51"/>
     </day>
@@ -871,5 +871,8 @@
         <crc-error time="16:12:14" application="categorize_doors.py" choice="3" database-crc="1090738739" real-crc="-1006300524"/>
         <crc-error time="16:12:14" application="categorize_doors.py" choice="5" database-crc="1835481564" real-crc="-1490676425"/>
         <crc-error time="16:12:14" application="categorize_doors.py" choice="9" database-crc="674844079" real-crc="404360034"/>
+    </day>
+    <day year="2012" month="01" day="24">
+        <crc-error time="21:07:08" application="categorize_doors.py" choice="9" database-crc="404360034" real-crc="674844079"/>
     </day>
 </history>

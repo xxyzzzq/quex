@@ -24,7 +24,7 @@ class TemplateStateCandidate(TemplateState):
        of a heuristics.
     """
     def __init__(self, StateA, StateB, TheAnalyzer):
-        TemplateState.__init__(self, StateA, StateB)
+        TemplateState.__init__(self, StateA, StateB, TheAnalyzer)
         self.__asserts(TheAnalyzer)
 
         entry_gain          = _compute_entry_gain(self.entry, StateA.entry, StateB.entry)
@@ -40,15 +40,18 @@ class TemplateStateCandidate(TemplateState):
         if TheAnalyzer is None: return
 
         # All states in the state_index_list must be from the original analyzer
-        def check(StateIndexList):
+        def _check(StateIndexList):
             for state_index in StateIndexList:
                 assert TheAnalyzer.state_db.has_key(state_index)
 
-        check(self.state_index_list)
+        print "##_check:", _check([])
+        print "##self:", self
+        print "##state_index_list:", self.state_index_list
+        _check(self.state_index_list)
         # for entry, state_index_list in self.entry.iteritems():
         #    check(state_index_list)
         for drop_out, state_index_list in self.drop_out.iteritems():
-            check(state_index_list)
+            _check(state_index_list)
 
     @property 
     def gain(self):
