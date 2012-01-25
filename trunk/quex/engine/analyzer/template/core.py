@@ -162,10 +162,10 @@ def do(TheAnalyzer, MinGain, CompressionType,
     # in the states that they implement.
     for state in template_state_list:
         state.set_depending_door_db_and_transition_db(TheAnalyzer)
-        state.replace_door_ids(combined.door_id_replacement_db)
+        state.replace_door_ids(combiner.door_id_replacement_db)
 
     for state in MegaStateList:
-        state.replace_door_ids(combined.door_id_replacement_db)
+        state.replace_door_ids(combiner.door_id_replacement_db)
 
     return done_state_index_set, template_state_list
 
@@ -235,7 +235,7 @@ class CombinationDB:
                     generated from combinations of analyzer states.
         """
         template_state_list = [ x for x in self.__db.itervalues() if isinstance(x, TemplateState) ]
-        done_state_index_list = []
+        done_state_index_set = set()
         for state in template_state_list:
             done_state_index_set.update(state.state_index_list)
         return done_state_index_set, template_state_list

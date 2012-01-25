@@ -136,6 +136,18 @@ to combine them into powerful patterns.
      for character sets. Characters that are beyond the scope of the current 
      codec or input character byte width are cut out seeminglessly. 
 
+.. describe:: \\R{ ... }
+
+     Reverse the pattern specified in brackets. If for example, it is specified::
+
+            "Hello "\R{dlroW} => QUEX_TKN_HELLO_WORD(Lexeme)
+
+     then the token ``HELLO_WORLD`` would be sent upon the appearance of 
+     'Hello World' in the input stream. This feature is mainly useful for
+     definitions of patterns of right-to-left writing systems such 
+     as Arabic, Binti and Hebrew. Chinese, Japanese, as well as ancient 
+     Greek, ancient Latin, Egyptian, and Etruscan can be written in 
+     both directions.
 
 .. describe:: \\0 
 

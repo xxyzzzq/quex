@@ -208,7 +208,9 @@ def _transition_cost(TM):
     # For each target scheme, the target state needs to be stored for each state_key.
     target_scheme_n  = 0
     involved_state_n = 0
-    for interval, target in ifilter(lambda x: isinstance(x[1], TargetScheme), TM):
+
+    for target in (t for interval, t in TM if isinstance(t, TargetScheme)):
+        if target.scheme is None: continue
         if involved_state_n == 0:
             # The number of involved states is the same for all target schemes.
             involved_state_n = len(target.scheme)
