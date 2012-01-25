@@ -127,7 +127,8 @@ from   itertools   import ifilter, islice
 
 """
 
-def do(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList):
+def do(TheAnalyzer, MinGain, CompressionType, 
+       AvailableStateIndexList, MegaStateList):
     """RETURNS: List of TemplateState-s that were identified from states in
                 TheAnalyzer.
 
@@ -156,7 +157,17 @@ def do(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList):
     while combiner.combine_best():
         pass
 
-    return combiner.result()
+    done_state_index_set, template_state_list = combiner.result()
+    # All template states must set the databases about 'door-id' and 'transition-id'
+    # in the states that they implement.
+    for state in template_state_list:
+        state.set_depending_door_db_and_transition_db(TheAnalyzer)
+        state.replace_door_ids(combined.door_id_replacement_db)
+
+    for state in MegaStateList:
+        state.replace_door_ids(combined.door_id_replacement_db)
+
+    return done_state_index_set, template_state_list
 
 class CombinationDB:
     """Contains the 'Gain' for each possible combination of states. This includes
@@ -197,6 +208,7 @@ class CombinationDB:
         self.__analyzer    = TheAnalyzer
         self.__min_gain    = float(MinGain)
         self.__gain_matrix = self.__base()
+        self.__door_id_replacement_db = None
 
     def combine_best(self):
         """Finds the two best matching states and combines them into one.
@@ -222,7 +234,24 @@ class CombinationDB:
         """RETURNS: List of TemplateStates. Those are the states that have been 
                     generated from combinations of analyzer states.
         """
-        return filter(lambda x: isinstance(x, TemplateState), self.__db.itervalues())
+        template_state_list = [ x for x in self.__db.itervalues() if isinstance(x, TemplateState) ]
+        done_state_index_list = []
+        for state in template_state_list:
+            done_state_index_set.update(state.state_index_list)
+        return done_state_index_set, template_state_list
+
+    @property 
+    def door_id_replacement_db(self):
+        if self.__door_id_replacement_db is not None:
+            return self.__door_id_replacement_db
+        replacement_db = {}
+        for state in self.result_iterable():
+            for state in (self.__analyzer.state_db[i] for i in state.state_index_list):
+                for door_id, transition_id_list in state.entry.door_db.iteritems():
+                    prototype_transition_id = transition_id_list[0]
+                    replacment_db[door_id]  = self.entry.door_db[prototype_transition_id]
+        self.__door_id_replacement_db = replacment_db
+        return self.__door_id_replacement_db
 
     @property
     def gain_matrix(self):

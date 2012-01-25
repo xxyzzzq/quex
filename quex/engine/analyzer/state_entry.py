@@ -1,4 +1,5 @@
 import quex.engine.analyzer.state_entry_action as entry_action
+from   quex.engine.analyzer.state_entry_action import TransitionID, TransitionAction, DoorID
 from   quex.blackboard          import setup as Setup, \
                                        E_StateIndices,  E_PreContextIDs,  \
                                        E_AcceptanceIDs, E_PostContextIDs, \
@@ -29,8 +30,8 @@ class Entry(object):
         #                              'from_state_index' for a given pre-context.
         # if len(FromStateIndexList) == 0: FromStateIndexList = [ E_StateIndices.NONE ]
         self.__state_index = StateIndex
-        self.__action_db   = dict((entry_action.TransitionID(StateIndex, i),     \
-                                   entry_action.TransitionAction(StateIndex, i)) \
+        self.__action_db   = dict((TransitionID(StateIndex, i),     \
+                                   TransitionAction(StateIndex, i)) \
                                   for i in FromStateIndexList)
 
         # Are the actions for all doors the same?
@@ -61,7 +62,7 @@ class Entry(object):
         for path_trace in PathTraceList:
             accepter.add(path_trace.pre_context_id, path_trace.pattern_id)
 
-        self.__action_db[entry_action.TransitionID(self.__state_index, FromStateIndex)].command_list.accepter = accepter
+        self.__action_db[TransitionID(self.__state_index, FromStateIndex)].command_list.accepter = accepter
 
     def doors_accepter_add_front(self, PreContextID, PatternID):
         """Add an acceptance at the top of each accepter at every door. If there
@@ -77,7 +78,19 @@ class Entry(object):
         # Add 'store input position' to specific door. See 'entry_action.StoreInputPosition'
         # comment for the reason why we do not store pre-context-id.
         entry = entry_action.StoreInputPosition(PreContextID, PositionRegister, Offset)
-        self.__action_db[entry_action.TransitionID(self.__state_index, FromStateIndex)].command_list.misc.add(entry)
+        self.__action_db[TransitionID(self.__state_index, FromStateIndex)].command_list.misc.add(entry)
+
+    def set_door_db_and_transition_db(self, DoorDB, TransitionDB):
+        """A state may very well be implemented by a 'Mega-State' such as a 
+           'pathwalker' (path-compression) or a 'template state'. In this case
+           the state must still report properly about the doors and transitions.
+           As soon as a mega state decides to implement a state, it must set the
+           reference databases in that state.
+        """
+        self.__door_db        = DoorDB
+        self.__transition_db  = TransitionDB
+        # This state shall never be implemented, so its door tree root is not of interest.
+        self.__door_tree_root = None
 
     @property
     def door_db(self):
@@ -86,6 +99,44 @@ class Entry(object):
         """
         assert self.__door_db is not None
         return self.__door_db
+
+    def get_door_id(self, StateIndex, FromStateIndex):
+        return self.__door_db.get(TransitionID(StateIndex, FromStateIndex))
+
+    def door_find(self, DoorId):
+        """Find the Door object that belongs to DoorId"""
+        assert self.__door_tree_root is not None
+        print "##", DoorId
+        assert isinstance(DoorId, DoorID)
+
+        def _dive(node):
+             if node.door_id == DoorId: return node
+             for child in node.child_list:
+                 result = __dive(child)
+                 if result is not None: return result
+             return None
+        return _dive(self.__door_tree_root)
+
+    def door_has_commands(self, StateIndex, FromStateIndex):
+        """Assume that 'door_tree_root' has been built alread."""
+
+        # (1) Find the door for 'StateIndex' from 'FromStateIndex'
+        transition_id = TransitionID(StateIndex, FromStateIndex)
+        door_id       = self.__door_db.get(transition_id)
+        # A transition that does not exist, does not have commands related to it.
+        if door_id is None: return False
+        door          = self.door_find(door_id)
+        assert door is not None
+
+        # (2) Go all the way back from the entry door to the 'over parent'.
+        #     If there is a node on the way with a non-empty command list, then
+        #     there are actions associated with the door; and vice versa.
+        while 1 + 1 == 2:
+            if not door.common_command_list.is_empty(): return True
+            # If we reach the 'over parent' without having any commands being
+            # detected, then there are no commands associated with the given door.
+            if door.parent is None: return False
+            door = door.parent
 
     @property
     def transition_db(self):
@@ -239,24 +290,34 @@ class Entry(object):
                 txt.append("%s" % repr(action))
             return txt
 
+        def get_set_state_keys(SetStateKeyList):
+            txt = []
+            for action in sorted(PCOKList, key=attrgetter("value")):
+                txt.append("%s" % repr(action))
+            return txt
+
         result = []
-        for from_state_index, door in self.__action_db.iteritems():
+        for transition_id, door in sorted(self.__action_db.iteritems(),key=lambda x: x[0].from_state_index):
             accept_command_list = []
             store_command_list  = []
             pcok_command_list   = []
+            ssk_command_list    = []
             for action in door.command_list:
                 if isinstance(action, entry_action.Accepter): 
                     accept_command_list.append(action)
                 elif isinstance(action, entry_action.PreConditionOK):
                     pcok_command_list.append(action)
+                elif isinstance(action, entry_action.SetStateKey):
+                    ssk_command_list.append(action)
                 else:
                     store_command_list.append(action)
 
-            result.append("    .from %s:" % repr(from_state_index).replace("L", ""))
-            a_txt = get_accepters(accept_command_list)
-            s_txt = get_storers(store_command_list)
-            p_txt = get_pre_context_oks(pcok_command_list)
-            content = "".join(a_txt + s_txt + p_txt)
+            result.append("    .from %s:" % repr(transition_id.from_state_index).replace("L", ""))
+            a_txt  = get_accepters(accept_command_list)
+            s_txt  = get_storers(store_command_list)
+            p_txt  = get_pre_context_oks(pcok_command_list)
+            sk_txt = get_pre_context_oks(pcok_command_list)
+            content = "".join(a_txt + s_txt + p_txt + sk_txt)
             if len(content) == 0:
                 # Simply new line
                 content = "\n"

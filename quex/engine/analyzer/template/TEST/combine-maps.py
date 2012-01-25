@@ -22,20 +22,23 @@ class TestState:
 def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L]):
     StateA = TestState(TMa, InvolvedStateListA[0])
     StateB = TestState(TMb, InvolvedStateListB[0])
+
+    analyzer = TestAnalyzer(StateA, StateB)
+
     print
     print "(Straight)---------------------------------------"
     print
     print_tm(TMa)
     print_tm(TMb)
     print
-    print_metric(combine_maps(StateA, StateB)[0])
+    print_metric(combine_maps(StateA, StateB, analyzer)[0])
     print
     print "(Vice Versa)-------------------------------------"
     print
     print_tm(TMb)
     print_tm(TMa)
     print
-    print_metric(combine_maps(StateB, StateA)[0])
+    print_metric(combine_maps(StateB, StateA, analyzer)[0])
     print
 
 tm0 = [ 

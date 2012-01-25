@@ -243,6 +243,14 @@ def snap_primary(stream, PatternDict):
         if lookahead == "C":
             stream.read(1)
             result = snap_case_folded_pattern(stream, PatternDict)
+        elif lookahead == "R":
+            dummy = stream.read(1)
+            if not check(stream, "{"):
+                error_msg("Missing opening '{' after reverse operator \\R.", stream)
+            pattern = snap_expression(stream, PatternDict) 
+            if not check(stream, "}"):
+                error_msg("Missing closing '}' after reversed pattern in \\R{ ... }.", stream)
+            result  = pattern.get_inverse()
         else:
             stream.seek(-1, 1)
             trigger_set = character_set_expression.snap_property_set(stream)

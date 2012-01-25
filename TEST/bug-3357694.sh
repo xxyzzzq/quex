@@ -18,6 +18,7 @@ esac
 
 cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ '
 rm tmp.txt
+rm -f tmp[01].txt
 
 ./test
 
