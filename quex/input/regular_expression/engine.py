@@ -248,6 +248,7 @@ def snap_primary(stream, PatternDict):
             if not check(stream, "{"):
                 error_msg("Missing opening '{' after reverse operator \\R.", stream)
             pattern = snap_expression(stream, PatternDict) 
+            skip_whitespace(stream)
             if not check(stream, "}"):
                 error_msg("Missing closing '}' after reversed pattern in \\R{ ... }.", stream)
             result  = pattern.get_inverse()

@@ -306,9 +306,8 @@ def combine_maps(StateA, StateB, TheAnalyzer):
 
         end       = min(i_end, k_end)
         target    = scheme_db.get_target(i_target, k_target)
-        assert    isinstance(target, (DoorID, TargetScheme)) \
-               or target == E_StateIndices.DROP_OUT   \
-               or target == E_StateIndices.RECURSIVE
+        print "##target:", target
+        assert isinstance(target, TargetScheme)
 
         result.append((Interval(prev_end, end), target))
         prev_end  = end
@@ -349,40 +348,42 @@ class TargetScheme(object):
                      later to define the scheme only once, even it appears
                      twice or more.
     """
-    __slots__ = ('__index', '__scheme')
+    __slots__ = ('__index', '__scheme', '__drop_out_f', '__recursive_f', '__door_id', '__scheme')
 
-    def __init__(self, UniqueIndex, Target):
+    def __init__(self, Target, UniqueIndex=None):
         if UniqueIndex is not None: 
             assert isinstance(Target, tuple)
         else:
-            assert    Target == E_StateIndices.DROP_OUT \
+            assert    isinstance(Target, DoorID) \
+                   or Target == E_StateIndices.DROP_OUT \
                    or Target == E_StateIndices.RECURSIVE
 
         self.__index       = UniqueIndex
+
         self.__drop_out_f  = False
         self.__recursive_f = False
-        self.__door_id     = False
+        self.__door_id     = None
         self.__scheme      = None
 
-        if   Target == E_StateIndices.DROP_OUT:  self.__drop_out_f  = True
-        elif Target == E_StateIndices.RECURSIVE: self.__recursive_f = True
-        elif isinstance(Target, DoorID):         self.__door_id     = Target
-        elif isinstance(Target, tuple):          self.__scheme      = Target
+        if   Target == E_StateIndices.DROP_OUT:  self.__drop_out_f  = True;   assert UniqueIndex is None
+        elif Target == E_StateIndices.RECURSIVE: self.__recursive_f = True;   assert UniqueIndex is None
+        elif isinstance(Target, DoorID):         self.__door_id     = Target; assert UniqueIndex is None
+        elif isinstance(Target, tuple):          self.__scheme      = Target; assert UniqueIndex is not None
 
     @property
-    def scheme(self): return self.__scheme
+    def scheme(self):      return self.__scheme
 
     @property
-    def drop_out(self): return self.__drop_out_f
+    def drop_out_f(self):  return self.__drop_out_f
 
     @property
     def recursive_f(self): return self.__recursive_f
 
     @property
-    def door_id(self): return self.__door_id
+    def door_id(self):     return self.__door_id
 
     @property
-    def index(self):  return self.__index
+    def index(self):       return self.__index
 
     def __repr__(self):
         return repr(self.__scheme)
@@ -434,7 +435,7 @@ class TargetSchemeDB(dict):
             else:
                 self.get_target = self.get_target_AnalyzerState_AnalyzerState
         
-    def get(self, TargetsA, TargetsB):
+    def get_TargetScheme(self, SchemeA, SchemeB):
         """Checks whether the combination is already present. If so, the reference
            to the existing target scheme is returned. If not a new scheme is created
            and entered into the database.
@@ -450,16 +451,20 @@ class TargetSchemeDB(dict):
               -- state_key = 2 (third element), then transit to state 4,
               -- ...
         """
-        assert isinstance(TargetsA, tuple)
-        assert isinstance(TargetsB, tuple)
-        for target in chain(TargetsA, TargetsB):
-            assert isinstance(target, DoorID) or target == E_StateIndices.DROP_OUT
+        assert isinstance(SchemeA, tuple)
+        assert isinstance(SchemeB, tuple)
 
-        result = dict.get(self, TargetsA + TargetsB)
+        scheme = SchemeA + SchemeB
+
+        for target in scheme:
+            assert isinstance(target, DoorID) or target == E_StateIndices.DROP_OUT 
+
+        result = dict.get(self, scheme)
         if result is None: 
-            new_index     = len(self)
-            result        = TargetScheme(new_index, Targets)
-            self[Targets] = result
+            new_index    = len(self)
+            result       = TargetScheme(scheme, new_index)
+            self[scheme] = result
+
         return result
 
     def get_scheme_list(self):
@@ -483,19 +488,35 @@ class TargetSchemeDB(dict):
         assert isinstance(TA, (int, long)) or TA == E_StateIndices.DROP_OUT
         assert isinstance(TB, (int, long)) or TB == E_StateIndices.DROP_OUT
 
-        if     TA == self.__state_a_index and self.__state_a_recursion_to_empty_door_f \
-           and TB == self.__state_b_index and self.__state_b_recursion_to_empty_door_f:
-            return E_StateIndices.RECURSIVE                   # uniform
+        if TA == self.__state_a_index and self.__state_a_recursion_to_empty_door_f:
+            if TB == self.__state_b_index and self.__state_b_recursion_to_empty_door_f:
+                return TargetScheme(E_StateIndices.RECURSIVE) # uniform
+            else:
+                TA_door_id = self.__analyzer.state_db[TA].entry.get_door_id(TA, TA)
 
-        # If both enter the same target through the same door.
-        # => then they can be considered 'uniform'.
-        if isinstance(TA, (int, long)):
-            TA = self.__analyzer.state_db[TA].entry.get_door_id(TA, self.__state_a_index)
-        if isinstance(TB, (int, long)):
-            TB = self.__analyzer.state_db[TB].entry.get_door_id(TB, self.__state_b_index)
+        elif   TA == E_StateIndices.DROP_OUT:
+            if TB == E_StateIndices.DROP_OUT:
+                return TargetScheme(E_StateIndices.DROP_OUT)  # uniform
+            else:
+                TA_door_id = E_StateIndices.DROP_OUT
 
-        if TA == TB: return TA                                # uniform
-        else:        return self.get((TA, TB))
+        else:
+            TA_door_id = self.__analyzer.state_db[TA].entry.get_door_id(TA, self.__state_a_index)
+
+        # TB and TA cannot be recursive, otherwise we would have left above.
+
+        if TB == E_StateIndices.DROP_OUT:
+            # TA cannot be DROP_OUT, otherwise we would have left
+            TB_door_id = E_StateIndices.DROP_OUT
+
+        else:
+            TB_door_id = self.__analyzer.state_db[TB].entry.get_door_id(TB, self.__state_b_index)
+
+        if TA_door_id == TB_door_id:
+            return TargetScheme(TA_door_id)               # uniform
+        else:
+            return self.get_TargetScheme((TA_door_id,), (TB_door_id,))
+
 
     def get_target_AnalyzerState_TemplateState(self, TA, TB):
         return self.__get_target_AnalyzerState_TemplateState(TA, self.__state_a_index, 
@@ -518,22 +539,37 @@ class TargetSchemeDB(dict):
 
         if T1.recursive_f:
             if T0 == State0Index and State0RecursionToEmptyDoorF:
-                return TargetScheme(None, E_StateIndices.RECURSIVE)
-            else:
-                T1 = self.__expand_recursive_target(State1StateIndexList)
+                return T1
+            T1_scheme = self.__expand_recursive_target(State1StateIndexList)
 
         elif T1.drop_out_f:
             if T0 == E_StateIndices.DROP_OUT:
                 return T1
+            T1_scheme = (E_StateIndices.DROP_OUT,) * len(State1StateIndexList)
 
-        elif T1.uniform_door_f:
-            T0_door = self.__analyzer.state_db[T0].entry.get_door_id(T0, State0Index)
-            if T0_door == T1.scheme: return T1
+        elif T1.door_id is not None:
+            if T0 != E_StateIndices.DROP_OUT:
+                T0_door_id = self.__analyzer.state_db[T0].entry.get_door_id(T0, State0Index)
+                if T0_door_id == T1.door_id: 
+                    return T1
+            T1_scheme = (T1.door_id,) * len(State1StateIndexList)
 
         else:
             # T1 is a tuple of doors
-            T0_door = self.__analyzer.state_db[T0].entry.get_door_id(T0, State0Index)
-            return self.get((T0_door,), T1.scheme)
+            T1_scheme = T1.scheme
+
+        # T0 and T1 cannot be recursive, otherwise we would have left
+
+        if T0 == E_StateIndices.DROP_OUT:
+            # T1 cannot be DROP_OUT, otherwise we would have left already
+            T0_door_id = E_StateIndices.DROP_OUT
+
+        else:
+            T0_door_id = self.__analyzer.state_db[T0].entry.get_door_id(T0, State0Index)
+
+        T0_scheme  = (T0_door_id,) 
+
+        return self.get_TargetScheme(T0_scheme, T1_scheme)
 
     def get_target_TemplateState_TemplateState(self, TA, TB):
         assert    isinstance(TA, (DoorID, TargetScheme)) \
@@ -543,48 +579,40 @@ class TargetSchemeDB(dict):
                or TB == E_StateIndices.DROP_OUT          \
                or TB == E_StateIndices.RECURSIVE
 
-        TB_doors = None
-        TA_doors = None
         if TA.recursive_f:
             if TB.recursive_f:
                 return TA
-            else:
-                TA_doors = self.__expand_recursive_target(self.__state_b_state_index_list)
+            TA_scheme = self.__expand_recursive_target(self.__state_b_state_index_list)
 
         elif TA.drop_out_f:
             if TB.drop_out_f:
                 return TA
-            else:
-                TA_doors = (E_StateIndices.DROP_OUT,) * self.__state_a_state_index_list_length
+            TA_scheme = (E_StateIndices.DROP_OUT,) * self.__state_a_state_index_list_length
 
-        elif TA.uniform_door_f:
-            if TB.uniform_door_f:
-                if TA.scheme == TB.scheme:
-                    return TA
-                else:
-                    TA_doors = (TA.door_id,) * self.__state_a_state_index_list_length
-                    TB_doors = (TB.door_id,) * self.__state_b_state_index_list_length
-            else:
-                TA_doors = (TA.door_id,) * self.__state_a_state_index_list_length
+        elif TA.door_id is not None:
+            if TB.door_id is not None and TA.scheme == TB.scheme:
+                return TA
+            TA_scheme = (TA.door_id,) * self.__state_a_state_index_list_length
+
         else:
-            TA_doors = TA.scheme
+            TA_scheme = TA.scheme
 
-        if TB_doors is not None:
-            pass
-
-        elif TB.recursive_f:
+        if TB.recursive_f:
             # TA was not recursive, otherwise we would have returned earlier
-            TB_doors = self.__expand_recursive_target(self.__state_b_state_index_list)
+            TB_scheme = self.__expand_recursive_target(self.__state_b_state_index_list)
 
         elif TB.drop_out_f:
             # TA was not drop-out, otherwise we would have returned earlier
-            TB_doors = (E_StateIndices.DROP_OUT,) * self.__state_b_state_index_list_length
+            TB_scheme = (E_StateIndices.DROP_OUT,) * self.__state_b_state_index_list_length
 
-        elif TB.uniform_door_f:
+        elif TB.door_id is not None:
             # TA was not the same door, otherwise we would have returned earlier
-            TB_doors = (TB.door_id,) * self.__state_b_state_index_list_length
+            TB_scheme = (TB.door_id,) * self.__state_b_state_index_list_length
 
-        return self.get(TA_doors, TB_doors)
+        else:
+            TB_scheme = TB.scheme
+
+        return self.get_TargetScheme(TA_scheme, TB_scheme)
 
     def __expand_recursive_target(self, StateIndexList):
         # Expand the 'RECURSIVE' into a tuple of doors
