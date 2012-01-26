@@ -69,13 +69,13 @@ class TemplateState(AnalyzerState):
             if replacement is not None: return replacement
             return DoorId
 
-        for interval, target in enumerate(self.__transition_map):
-            if   target.drop_out_f:          continue
-            elif target.recursive_f:         continue
-            elif target.door_id is not None:
+        for interval, target in self.__transition_map:
+            if target.drop_out_f or target.recursive_f: continue
+
+            if target.door_id is not None:
                 new_door_id = ReplacementDB.get(target.door_id)
                 if new_door_id is not None:
-                    target.door_id_replace(door_id)
+                    target.door_id_replace(new_door_id)
             else:
                 new_scheme = tuple(replace_if_required(door_id) for door_id in target.scheme)
                 target.scheme_replace(new_scheme)
