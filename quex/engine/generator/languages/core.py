@@ -221,6 +221,9 @@ class LDB(dict):
         result = "goto %s;" % self.__label_name(TargetStateIndex, FromStateIndex)
         return result
 
+    def GOTO_BY_VARIABLE(self, VariableName):
+        return "QUEX_GOTO_STATE(%s);" % VariableName 
+
     def GOTO_BY_DOOR_ID(self, DoorId):
         # Only for normal 'forward analysis' the from state is of interest.
         # Because, only during forward analysis some actions depend on the 

@@ -80,17 +80,42 @@ class Entry(object):
         entry = entry_action.StoreInputPosition(PreContextID, PositionRegister, Offset)
         self.__action_db[TransitionID(self.__state_index, FromStateIndex)].command_list.misc.add(entry)
 
-    def set_door_db_and_transition_db(self, DoorDB, TransitionDB):
-        """A state may very well be implemented by a 'Mega-State' such as a 
-           'pathwalker' (path-compression) or a 'template state'. In this case
-           the state must still report properly about the doors and transitions.
-           As soon as a mega state decides to implement a state, it must set the
-           reference databases in that state.
+    @property
+    def transition_db(self):
+        """Map:  door_id --> transition_id 
+           The door_db is determined by 'categorize_command_lists()'
         """
-        self.__door_db        = DoorDB
-        self.__transition_db  = TransitionDB
-        # This state shall never be implemented, so its door tree root is not of interest.
-        self.__door_tree_root = None
+        assert self.__transition_db is not None
+        return self.__transition_db
+
+    def set_transition_db(self, TransitionDB):
+        assert isinstance(TransitionDB, dict)
+
+        # Assert that we do not receive nonsense
+        if len(TransitionDB) != 0:
+            # DoorDB: door_id --> [ transition_id ] +
+            door_id, transition_id_list = TransitionDB.iteritems().next()
+            isinstance(transition_id_list, list)
+            if len(transition_id_list) != 0: isinstance(transition_id_list[0], TransitionID)
+            isinstance(door_id, DoorID)
+
+        self.__transition_db = TransitionDB
+
+    @property
+    def door_tree_root(self): 
+        """The door_tree_root is determined by 'categorize_command_lists()'"""
+        assert self.__door_tree_root is not None
+        return self.__door_tree_root
+
+    def has_accepter(self):
+        for door in self.__action_db.itervalues():
+            for action in door.command_list:
+                if isinstance(action, entry_action.Accepter): return True
+        return False
+
+    @property
+    def action_db(self):
+        return self.__action_db
 
     @property
     def door_db(self):
@@ -99,6 +124,18 @@ class Entry(object):
         """
         assert self.__door_db is not None
         return self.__door_db
+
+    def set_door_db(self, DoorDB):
+        assert isinstance(DoorDB, dict)
+
+        # Assert that we do not receive nonsense
+        if len(DoorDB) != 0:
+            # DoorDB: transition_id --> door_id
+            transition_id, door_id = DoorDB.iteritems().next()
+            isinstance(transition_id, TransitionID)
+            isinstance(door_id, DoorID)
+
+        self.__door_db = DoorDB
 
     def get_door_id(self, StateIndex, FromStateIndex):
         return self.__door_db.get(TransitionID(StateIndex, FromStateIndex))
@@ -137,30 +174,6 @@ class Entry(object):
             # detected, then there are no commands associated with the given door.
             if door.parent is None: return False
             door = door.parent
-
-    @property
-    def transition_db(self):
-        """Map:  door_id --> transition_id 
-           The door_db is determined by 'categorize_command_lists()'
-        """
-        assert self.__transition_db is not None
-        return self.__transition_db
-
-    @property
-    def door_tree_root(self): 
-        """The door_tree_root is determined by 'categorize_command_lists()'"""
-        assert self.__door_tree_root is not None
-        return self.__door_tree_root
-
-    def has_accepter(self):
-        for door in self.__action_db.itervalues():
-            for action in door.command_list:
-                if isinstance(action, entry_action.Accepter): return True
-        return False
-
-    @property
-    def action_db(self):
-        return self.__action_db
 
     def __hash__(self):
         xor_sum = 0
@@ -249,9 +262,11 @@ class Entry(object):
 
         # (*) Categorize action lists
         transition_action_list = [ transition_action.clone() for transition_action in self.__action_db.itervalues() ]
-        self.__door_db,       \
-        self.__transition_db, \
+        door_db,       \
+        transition_db, \
         self.__door_tree_root = entry_action.categorize_command_lists(self.__state_index, transition_action_list)
+        self.set_door_db(door_db)               # use set_door_db() 'assert' on content
+        self.set_transition_db(transition_db)   # use set_transition_db() 'assert' on content
         assert self.__door_tree_root is not None
 
         return self.__door_db

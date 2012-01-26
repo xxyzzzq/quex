@@ -113,17 +113,15 @@ def do(txt, TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList, Mega
 
     # (*) Analysis:
     #     Determine TemplateState-s as combinations of AnalyzerState-s.
-    template_state_list = templates.do(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList, MegaStateList)
+    done_set, template_state_list = templates.do(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList, MegaStateList)
 
     if len(template_state_list) == 0: return []
 
     # (*) Code Generation:
     variable_db.require("state_key")
 
-    done_set = set()
     for t_state in template_state_list:
         state_coder_do(txt, t_state, TheAnalyzer)
-        done_set.update(t_state.state_index_list)
 
     return done_set
 
@@ -180,6 +178,7 @@ def __entry(txt, TState, TheAnalyzer):
     """
     global LanguageDB
 
+    print "##Class:", TState.__class__.__name__
     entry_coder.do(txt, TState, TheAnalyzer) # , UnreachablePrefixF=(i==0))
     return
 
@@ -307,12 +306,11 @@ def __require_data(TState, TheAnalyzer):
     for target_scheme in sorted(TState.target_scheme_list, key=attrgetter("index")):
         assert len(target_scheme.scheme) == len(TState.state_index_list)
         address_list = []
-        for state_key, target in enumerate(target_scheme.scheme):
-            if target == E_StateIndices.DROP_OUT:
+        for state_key, door_id in enumerate(target_scheme.scheme):
+            if door_id == E_StateIndices.DROP_OUT:
                 elm = get_address("$drop-out", TState.index, U=True, R=True)
             else:
-                from_state_index = TState.state_index_list[state_key]
-                elm = LanguageDB.ADDRESS(target, from_state_index)
+                elm = LanguageDB.ADDRESS_BY_DOOR_ID(door_id)
 
             address_list.append(elm)
 
@@ -375,26 +373,22 @@ def handle_templated_transitions(TheState):
     transition_map = TheState.transition_map
 
     for i, info in enumerate(transition_map):
-        interval, target_scheme = info
+        interval, target = info
+        
+        if   target.drop_out_f:
+            # Later functions detect the 'DROP_OUT' in the transition map, so
+            # we do not want to put it in text here. Namely function:
+            # __separate_buffer_limit_code_transition(...) which implements the
+            # buffer limit code insertion.
+            transition_map[i] = (interval, E_StateIndices.DROP_OUT)
+            continue
 
-        if   isinstance(target_scheme, (int, long)): continue
-
-        elif target_scheme == E_StateIndices.DROP_OUT:  continue
-
-        elif target_scheme != E_StateIndices.RECURSIVE:
-            # (*) Normal Case: 
-            #     Transition target depends on state key
-            label = "template_%i_target_%i[state_key]" % (TheState.index, target_scheme.index)
-            get_label("$state-router", U=True) # Ensure reference of state router
-            text = "QUEX_GOTO_STATE(%s);" % label 
-
-        else:
-            # (*) Recursion:
-            #     The state key does not have to be set again. So, if the entry door
-            #     of the recursion does nothing more than setting a state key, we 
-            #     can directly go to its parent. This, though is coded already in 
+        elif target.recursive_f:
+            # The state key does not have to be set again. So, if the entry door
+            # of the recursion does nothing more than setting a state key, we 
+            # can directly go to its parent. This, though is coded already in 
             #
-            #     'template_%i_map_state_key_to_recursive_entry[state_key]'. 
+            # 'template_%i_map_state_key_to_recursive_entry[state_key]'. 
             #  
             # EXCEPTION: If no state requires any action (except the 'SetStateKey'), 
             #            then we can go directly to the 'Door 0', the door where 
@@ -402,12 +396,21 @@ def handle_templated_transitions(TheState):
             if TheState.entries_empty_f:
                 text = LanguageDB.GOTO_BY_DOOR_ID(DoorID(XStateIndex, DoorIndex=0))
             else:
-                label = "template_%i_map_state_key_to_recursive_entry[state_key]" % TheState.index
                 get_label("$state-router", U=True) # Ensure reference of state router
-                text = "QUEX_GOTO_STATE(%s);" % label 
+                label = "template_%i_map_state_key_to_recursive_entry[state_key]" % TheState.index
+                text  = LanguageDB.GOTO_BY_VARIABLE(label)
 
-        target = TextTransitionCode([text])
+        elif target.door_id is not None:
+            text = LanguageDB.GOTO_BY_DOOR_ID(target.door_id)
 
+        else:
+            get_label("$state-router", U=True) # Ensure reference of state router
+            # Transition target depends on state key
+            label = "template_%i_target_%i[state_key]" % (TheState.index, target.index)
+            text  = LanguageDB.GOTO_BY_VARIABLE(label)
+
+        # Replace target 'i' by written text
+        target            = TextTransitionCode([text])
         transition_map[i] = (interval, target)
 
 def prepare_transition_map(TState, TheAnalyzer):
