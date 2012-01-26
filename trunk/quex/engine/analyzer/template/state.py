@@ -55,14 +55,13 @@ class TemplateState(AnalyzerState):
         #
         #      target[i] = target of state 'state_index_list[i]' for interval X.
         #
-        # (second argument, the target scheme list, is only interesting for unit tests)
         self.__transition_map, \
-        dummy                  = combine_maps(StateA, StateB, TheAnalyzer)
+        self.__target_scheme_list = combine_maps(StateA, StateB, TheAnalyzer)
 
         # Compatible with AnalyzerState
         # (A template state can never mimik an init state)
         self.__engine_type = StateA.engine_type
-        self.input = get_input_action(StateA.engine_type, InitStateF=False)
+        self.input         = get_input_action(StateA.engine_type, InitStateF=False)
 
     def replace_door_ids(self, ReplacementDB):
         def replace_if_required(DoorId):
@@ -78,10 +77,11 @@ class TemplateState(AnalyzerState):
                 x[1] = tuple(replace_if_required(x) for x in target)
 
     def set_depending_door_db_and_transition_db(self, TheAnalyzer):
-        DoorDB = self.entry.door_db
+        DoorDB       = self.entry.door_db
         TransitionDB = self.entry.transition_db
         for state in (TheAnalyzer.state_db[i] for i in self.__state_index_list):
-            state.entry.set_door_db_and_transition_db(DoorDB, TransitionDB)
+            state.entry.set_door_db(DoorDB)
+            state.entry.set_transition_db(TransitionDB)
 
     @property
     def engine_type(self): return self.__engine_type
@@ -90,6 +90,8 @@ class TemplateState(AnalyzerState):
     def init_state_f(self):        return False
     @property
     def transition_map(self):      return self.__transition_map
+    @property
+    def target_scheme_list(self):  return self.__target_scheme_list
     @property
     def state_index_list(self):    return self.__state_index_list
     @property

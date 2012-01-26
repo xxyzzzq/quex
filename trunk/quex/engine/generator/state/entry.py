@@ -1,3 +1,4 @@
+from quex.engine.analyzer.core import AnalyzerState
 from quex.blackboard import setup as Setup,  \
                             E_EngineTypes,   \
                             E_PreContextIDs, \
@@ -12,6 +13,9 @@ def do(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
                         drop out is required.
                 False -- if no further code is required.
     """
+    assert isinstance(TheState, AnalyzerState)
+    assert type(UnreachablePrefixF) == bool
+    assert type(LabelF) == bool
     LanguageDB = Setup.language_db
 
     txt.append("\n\n")

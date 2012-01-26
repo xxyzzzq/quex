@@ -84,8 +84,9 @@ class TransitionCode:
     @property
     def drop_out_f(self): return self.__drop_out_f
 
-    def __eq__(self): assert False
-    def __neq__(self): assert False
+    def __eq__(self, Other): assert False  # Must be implemented by derived class
+    def __neq__(self, Other): assert False  # Must be implemented by derived class
+
 
 class TextTransitionCode(TransitionCode):
     def __init__(self, Code, DropOutF=False):
@@ -94,8 +95,16 @@ class TextTransitionCode(TransitionCode):
             assert isinstance(elm, (int, str, unicode))
         self.__code       = Code
         self.__drop_out_f = DropOutF
+
     @property
     def code(self):       return self.__code
+
     @property
     def drop_out_f(self): return self.__drop_out_f
 
+    def __eq__(self, Other): 
+        if isinstance(Other, TextTransitionCode) == False: return False
+        return self.__code == Other.__code and self.__drop_out_f == Other.__drop_out_f
+
+    def __neq__(self, Other): 
+        return not self.__eq__(self, Other)
