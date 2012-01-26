@@ -256,11 +256,17 @@ class CombinationDB:
             return self.__door_id_replacement_db
 
         replacement_db = {}
-        for state in self.result_iterable():
-            for state in (self.__analyzer.state_db[i] for i in state.state_index_list):
+        for template_state in self.result_iterable():
+            templated_state_index_list = template_state.state_index_list
+
+            for state in (self.__analyzer.state_db[i] for i in templated_state_index_list):
                 for door_id, transition_id_list in state.entry.transition_db.iteritems():
                     prototype_transition_id = transition_id_list[0]
-                    replacement_db[door_id]  = state.entry.door_db[prototype_transition_id]
+                    replacement_db[door_id] = template_state.entry.door_db[prototype_transition_id]
+
+        for key, value in replacement_db.iteritems():
+            print "##key:  ", key
+            print "##value:", value
         self.__door_id_replacement_db = replacement_db
         return self.__door_id_replacement_db
 
