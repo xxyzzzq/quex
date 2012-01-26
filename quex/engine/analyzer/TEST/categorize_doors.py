@@ -14,7 +14,7 @@ from   random import randint
 
 if "--hwut-info" in sys.argv:
     print "Categorize Entry Door Actions"
-    print "CHOICES: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11;" #, clear_door_tree;"
+    print "CHOICES: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, set_state_key;" #, clear_door_tree;"
     sys.exit()
 
 choice = sys.argv[1]
@@ -124,6 +124,21 @@ elif "11" in sys.argv:
     from quex.blackboard import setup as Setup
     Setup.state_entry_analysis_complexity_limit = 5
     action_db = dict((i, [StoreInfo(0, 0, i)]) for i in xrange(10))
+
+elif "set_state_key":
+    action_list = [
+        TransitionAction(1, 1, CommandList([ SetStateKey(1) ])),
+        TransitionAction(2, 1, CommandList([ SetStateKey(2) ])),
+        TransitionAction(3, 1, CommandList([ SetStateKey(2) ])),
+        TransitionAction(4, 1, CommandList([ SetStateKey(2) ])),
+        TransitionAction(1, 2, CommandList([ SetStateKey(3) ])),
+        TransitionAction(2, 2, CommandList([ SetStateKey(3) ])),
+        TransitionAction(3, 2, CommandList([ SetStateKey(3) ])),
+        TransitionAction(4, 2, CommandList([ SetStateKey(4) ])),
+    ]
+    door_db, transition_db, door_tree_root = categorize_command_lists(4711, action_list)
+    print door_tree_root
+    sys.exit(0)
 
 elif "clear_door_tree" in sys.argv:
     Door.init()

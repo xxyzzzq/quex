@@ -191,8 +191,8 @@ class CombinationDB:
 
        (1) .__base(): The 'matrix' is first computed for all states.
 
-       (2) .pop_best_pair(): When the best pair is popped, the correspondent 
-                             entries are deleted from the 'matrix'.
+       (2) .pop_best(): When the best pair is popped, the correspondent 
+                        entries are deleted from the 'matrix'.
        (3) .enter(): The combined states is then entered. The gains for
                      combination with the other states in the 'matrix' 
                      is computed.

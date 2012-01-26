@@ -49,9 +49,10 @@ def doit(txt, TheState, Node, LastChildF=False, BIPD_ID=None):
 
     action_txt = [ LanguageDB.COMMAND(command) for command in Node.common_command_list ]
     if Node.parent is not None and not LastChildF: 
+        action_txt.append("    ")
         action_txt.append(LanguageDB.GOTO_BY_DOOR_ID(Node.parent.door_id))
-    if len(action_txt) == 0: txt.extend("\n")
-    else:                    txt.extend(action_txt)
+    txt.extend(action_txt)
+    txt.extend("\n")
 
 def comment_door(txt, Node, TheEntry):
     LanguageDB = Setup.language_db

@@ -65,7 +65,6 @@ def do(analyzer):
     cannot_db       = get_cannot_db(analyzer)
     combinable_list = get_combinable_candidates(cannot_db)
 
-    # print "##", cannot_db
     if True:
         result = get_mapping(combinable_list)
     else:

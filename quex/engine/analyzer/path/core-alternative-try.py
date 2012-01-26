@@ -208,7 +208,6 @@ def find_begin(analyzer, StateIndex, InitStateIndex, UniformityF):
     result_list = []
 
     candidate_db = find_single_character_transitions(State.transition_map)
-    print "##ck", candidate_db.items()
 
     for target_idx, path_char in candidate_db.iteritems():
         # IN ANY CASE: Check for paths in the subsequent state
@@ -240,9 +239,7 @@ def __find_continuation(analyzer, StateIndex, the_path, InitStateIndex, Uniformi
     result_list = []
 
     single_char_transition_found_f = False
-    print "##--", State.transition_map
     candidate_db = find_single_character_transitions(State.transition_map)
-    print "##--ck2", candidate_db.items()
 
     for target_idx, path_char in candidate_db.iteritems():
         # A recursion cannot be covered by a 'path state'. We cannot extract a
@@ -252,7 +249,6 @@ def __find_continuation(analyzer, StateIndex, the_path, InitStateIndex, Uniformi
 
         # Check for paths in the subsequent state
         result_list.extend(find_begin(analyzer, target_idx, InitStateIndex, UniformityF))
-        print "##>>", target_idx, chr(path_char)
 
         # Does the rest of the transitions fit: 
         #   -- entry/drop_out, and 
@@ -261,7 +257,6 @@ def __find_continuation(analyzer, StateIndex, the_path, InitStateIndex, Uniformi
             continue # No match possible
 
         plug = the_path.match_transition_map(State.transition_map, target_idx, path_char)
-        print "##", plug
         if plug is None: continue # No match possible 
 
         the_path.plug_wildcard_target(plug)

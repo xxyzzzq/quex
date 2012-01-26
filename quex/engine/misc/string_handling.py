@@ -57,7 +57,6 @@ def blue_print(BluePrintStr, Replacements, CommonStart="$"):
         for orig, replacement in Replacements:
             assert orig[0] == CommonStart[0]
             if txt.find(orig, i, i + L) == i: 
-                ## print "##", orig, replacement.__class__.__name__
                 result.append(txt[prev_end:i])
                 result.append(replacement)
                 prev_end = i + len(orig)

@@ -29,7 +29,7 @@ def do(TheAnalyzer):
         # -- Path-Compression
         if ctype in (E_Compression.PATH, E_Compression.PATH_UNIFORM):
             done_state_index_list, \
-            template_state_list    = paths_coder.do(txt, TheAnalyzer, 
+            pathwalker_state_list  = paths_coder.do(txt, TheAnalyzer, 
                                                     ctype, remainder, mega_state_list)
             remainder.difference_update(done_list)
             mega_state_list.extend(template_state_list)
@@ -37,9 +37,9 @@ def do(TheAnalyzer):
         # -- Template-Compression
         elif ctype in (E_Compression.TEMPLATE, E_Compression.TEMPLATE_UNIFORM):
             done_state_index_list, \
-            pathwalker_state_list  = template_coder.do(txt, TheAnalyzer, Setup.compression_template_min_gain, 
+            template_state_list    = template_coder.do(txt, TheAnalyzer, Setup.compression_template_min_gain, 
                                                        ctype, remainder, mega_state_list)
-            remainder.difference_update(done_list)
+            remainder.difference_update(done_state_index_list)
             mega_state_list.extend(template_state_list)
     
     # (*) All other (normal) states (sorted by their frequency of appearance

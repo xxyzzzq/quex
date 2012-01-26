@@ -20,7 +20,6 @@ def compute_distance(A, B):
     sum = 0.0
     for i in range(len(A)):
         move = vector[i]
-        ## if A == "acht": print "## vector", vector
         if i == len(B):                        sum += (len(A) - len(B)) + prev_move; break
         if   B[i] == A[i]:                     prev_move = 0; continue
         elif B[i].lower() == A[i].lower():     sum += 0.1; continue

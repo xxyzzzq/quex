@@ -44,9 +44,6 @@ class TemplateStateCandidate(TemplateState):
             for state_index in StateIndexList:
                 assert TheAnalyzer.state_db.has_key(state_index)
 
-        print "##_check:", _check([])
-        print "##self:", self
-        print "##state_index_list:", self.state_index_list
         _check(self.state_index_list)
         # for entry, state_index_list in self.entry.iteritems():
         #    check(state_index_list)
