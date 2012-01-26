@@ -66,3 +66,17 @@ take care of the line and column numbers. The user does not have to compute
 anything manually. Nevertheless, they should be used with care. For example, if
 ``undo()`` is not combined with a mode change, it is possible to stall the analyzer.
 
+In plain C, the stream navigation functions are available as
+
+.. code-block:: cpp
+
+    size_t  QUEX_NAME(tell)(QUEX_TYPE_ANALYZER* me);
+    void    QUEX_NAME(seek)(QUEX_TYPE_ANALYZER* me, const size_t);
+    void    QUEX_NAME(seek_forward)(QUEX_TYPE_ANALYZER*  me, const size_t);
+    void    QUEX_NAME(seek_backward)(QUEX_TYPE_ANALYZER* me, const size_t);
+    void    QUEX_NAME(undo)(QUEX_TYPE_ANALYZER* me);
+    void    QUEX_NAME(undo_n)(QUEX_TYPE_ANALYZER* me, size_t DeltaN_Backward);
+
+where the ``me`` pointer is a pointer to the analyzer, e.g. ``&self``. This
+follows the general scheme, that a member function ``self.xxx(...)`` in C++ is
+available in plain C as ``QUEX_NAME(xxx)(me, ...)``.
