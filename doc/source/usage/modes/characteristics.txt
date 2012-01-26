@@ -317,6 +317,19 @@ in the event handler definition. The list of event handlers is the following:
              in-depth analyzis, or even bug reporting, the display of the mismatching
              lexeme may give a useful hint towards a lack in the specified pattern set.
 
+   The input pointer is incremented by one, as soon as a failure is detected. This
+   may be intrusive if one tries to use it for catching exceptional patterns. You can
+   always 'undo' as described in section ''stream navigation''. However, note that
+   the philosophy of ``on_failure`` is to catch flaws in pattern definitions. If
+   anti-patterns or exceptional patterns are to be caught, they are best defined
+   explicitly. 
+
+   The definition of anti-patterns is not as difficult as it seems on the first 
+   glance--the use of pattern precedence comes to help. If the interesting patterns
+   are defined before the all-catching anti-pattern, then the anti-pattern can 
+   very well overlap with the interesting patterns. The anti-pattern will only
+   match if all preceeding patterns fail.
+
 .. data:: on_end_of_stream
 
    Event handler for the case that the end of file, or end of stream is reached.
