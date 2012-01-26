@@ -418,7 +418,6 @@ def read_until_closing_bracket(fh, Opener, Closer,
             # If the start delimiter for ignored regions matches the strings recently in flooded into
             # the cache, then read until the end of the region that is to be ignored.
             if match_against_cache(delimiter[0]): 
-                ## print "##cache = ", cache
                 position = fh.tell()
                 try:
                     txt += read_until_closing_bracket(fh, "", delimiter[1], IgnoreRegions=[]) 
@@ -432,7 +431,6 @@ def read_until_closing_bracket(fh, Opener, Closer,
                 txt += delimiter[1]
                 # the 'ignore region info' may contain information about with what the
                 # closing delimiter is to be replaced
-                ## print "##ooo", txt
                 # flush the cache
                 cache = ["\0"] * CacheSz
                 break

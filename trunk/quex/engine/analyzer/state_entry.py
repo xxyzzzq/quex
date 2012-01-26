@@ -117,6 +117,9 @@ class Entry(object):
     def action_db(self):
         return self.__action_db
 
+    def set_action_db(self, ActionDB):
+        self.__action_db = ActionDB
+
     @property
     def door_db(self):
         """Map:  transition_id --> door_id 
@@ -143,7 +146,6 @@ class Entry(object):
     def door_find(self, DoorId):
         """Find the Door object that belongs to DoorId"""
         assert self.__door_tree_root is not None
-        print "##", DoorId
         assert isinstance(DoorId, DoorID)
 
         def _dive(node):

@@ -12,7 +12,6 @@ def do(Target, StateIndex, InitStateF, EngineType, GotoReload_Str, TheAnalyzer=N
     """
     assert Target is not None
     assert Target != -1
-    print "##>>>>", StateIndex
 
     if isinstance(Target, TransitionCode): 
         return Target

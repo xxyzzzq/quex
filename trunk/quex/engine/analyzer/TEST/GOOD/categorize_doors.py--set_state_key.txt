@@ -1,0 +1,19 @@
+[1]: (1) (1) (1) 
+        state_key = 2;
+parent: [0]
+
+[2]: (2) (2) (2) 
+        state_key = 3;
+parent: [0]
+
+[3]: (1) 
+        state_key = 1;
+parent: [0]
+
+[4]: (2) 
+        state_key = 4;
+parent: [0]
+
+[0]: 
+parent: [None]
+

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="7.52" date="Tue Jan 24 22:12:24 2012">
+<test-database execution-time-sec="7.52" date="Thu Jan 26 23:37:54 2012">
     <last-used-diff-display-program name=""/>
     <test title="Single Pattern Checks" time-sum-sec="0.91"> 
         <application file-name="single-pattern.py" info-request-time="1321774366L" vanished="False"/>
@@ -16,9 +16,9 @@
            <choice name="10" result="OK" time_sec="0.08" crc="-1742178598"/>
         </choice-list>
     </test>
-    <test title="Categorize Entry Door Actions" time-sum-sec="0.81"> 
-        <application file-name="categorize_doors.py" info-request-time="1327439148L" vanished="False"/>
-        <choice-list number="11" same_result="False">
+    <test title="Categorize Entry Door Actions" time-sum-sec="0.80"> 
+        <application file-name="categorize_doors.py" info-request-time="1327616932L" vanished="False"/>
+        <choice-list number="12" same_result="False">
            <choice name="1" result="OK" time_sec="0.07" crc="-1409134209"/>
            <choice name="2" result="OK" time_sec="0.07" crc="-819363198"/>
            <choice name="3" result="OK" time_sec="0.07" crc="-1006300524"/>
@@ -30,6 +30,7 @@
            <choice name="9" result="OK" time_sec="0.10" crc="674844079"/>
            <choice name="10" result="FAIL" time_sec="0.11" crc="1380437538"/>
            <choice name="11" result="FAIL" time_sec="0.07" crc="-153612805"/>
+           <choice name="set_state_key" result="OK" time_sec="0.00" crc="1327804210"/>
         </choice-list>
     </test>
     <test title="Position Register vs. Post-Context and Last Acceptance" time-sum-sec="0.63"> 

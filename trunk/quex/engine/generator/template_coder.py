@@ -4,10 +4,11 @@ from   quex.engine.generator.state.transition.code  import TextTransitionCode
 import quex.engine.generator.state.drop_out         as drop_out_coder
 import quex.engine.generator.state.entry            as entry_coder
 from   quex.engine.generator.state.core             import input_do
-from   quex.engine.generator.languages.address            import get_address, get_label
-from   quex.engine.generator.languages.variable_db        import variable_db
+from   quex.engine.generator.languages.address      import get_address, get_label
+from   quex.engine.generator.languages.variable_db  import variable_db
 
-import quex.engine.analyzer.template.core                 as templates 
+import quex.engine.analyzer.template.core           as templates 
+import quex.engine.analyzer.state_entry_action      as SetStateKey 
 
 from   quex.blackboard import setup as Setup, E_StateIndices, E_Compression
 from   itertools       import ifilter
@@ -123,7 +124,7 @@ def do(txt, TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList, Mega
     for t_state in template_state_list:
         state_coder_do(txt, t_state, TheAnalyzer)
 
-    return done_set
+    return done_set, template_state_list
 
 def state_coder_do(txt, TState, TheAnalyzer):
     """Generate code for given template state 'TState'. This follows the 
@@ -178,7 +179,6 @@ def __entry(txt, TState, TheAnalyzer):
     """
     global LanguageDB
 
-    print "##Class:", TState.__class__.__name__
     entry_coder.do(txt, TState, TheAnalyzer) # , UnreachablePrefixF=(i==0))
     return
 
@@ -240,7 +240,7 @@ def __transition_map(txt, TState, TheAnalyzer):
     # By convention we redo the transition map, in case of reload success and 
     # jump to the state's drop-out in case of failure. There is no difference
     # here in the template state example.
-    txt.append("   __quex_debug_template_state(%i, state_key);\n" % TState.index)
+    txt.append("    __quex_debug_template_state(%i, state_key);\n" % TState.index)
     transition_block.do(txt, 
                         TState.transition_map, 
                         TState.index, 
@@ -305,33 +305,48 @@ def __require_data(TState, TheAnalyzer):
 
     for target_scheme in sorted(TState.target_scheme_list, key=attrgetter("index")):
         assert len(target_scheme.scheme) == len(TState.state_index_list)
-        address_list = []
-        for state_key, door_id in enumerate(target_scheme.scheme):
+        def address(DoorId):
             if door_id == E_StateIndices.DROP_OUT:
-                elm = get_address("$drop-out", TState.index, U=True, R=True)
+                return get_address("$drop-out", TState.index, U=True, R=True)
             else:
-                elm = LanguageDB.ADDRESS_BY_DOOR_ID(door_id)
+                return LanguageDB.ADDRESS_BY_DOOR_ID(door_id)
 
-            address_list.append(elm)
+        address_list = [ address(door_id) for door_id in target_scheme.scheme ]
+        print "##SCHEME:", target_scheme.scheme
+        print "##ADRL:  ", address_list
 
         variable_db.require_array("template_%i_target_%i", 
                                   ElementN = len(TState.state_index_list), 
                                   Initial  = help(address_list),
                                   Index    = (TState.index, target_scheme.index))
 
-    # If the template does not have uniform state entries, the entries need to
-    # be routed on recursion. Thus we need to map from state-key to the state
-    # itself.
-    if not TState.uniform_entries_f:
+    # Recursion can only occur, if all entries enter the state via the 'empty door', 
+    # i.e. where there is no action to be done. Thus, RECURSIVE can be translated
+    # to 'Door 0' of the template state.
+    if not TState.entries_empty_f:
+        def recursion_address(StateIndex):
+            """On recursion, the state key does not have to be set a second time. 
+               If the door where the state enters itself does nothing else, but
+               setting the state key, one can enter via the parent's door.
+            """
+            door_id = TState.door_db[TransitionID(StateIndex, StateIndex)]
+            door    = TState.door_find(door_id)
+            assert door is not None
+            if door.parent is not None and len(door.common_command_list) == 1:
+                assert isinstance(door.common_command_list[0], SetStateKey)
+                return LanguageDB.ADDRESS_BY_DOOR_ID(door.parent.door_id)
+            return LanguageDB.ADDRESS_BY_DOOR_ID(door_id)
+
         for found in ifilter(lambda x: E_StateIndices.RECURSIVE == x[1], 
                              TState.transition_map):
             # HERE:     Non-uniform entries 
             #       and there is at least one recursive entry
-            address_list = map(lambda i: LanguageDB.ADDRESS(i, i), TState.state_index_list)
+            address_list = [ recursion_address(i) for i in TState.state_index_list ]
             variable_db.require_array("template_%i_map_state_key_to_recursive_entry", 
                                       ElementN = len(TState.state_index_list), 
                                       Initial  = help(address_list),
                                       Index    = TState.index)
+            # Once, we have cleared this up, there is no need to consider any further example.
             break
 
     # Drop outs: all drop outs end up at the end of the transition map, where

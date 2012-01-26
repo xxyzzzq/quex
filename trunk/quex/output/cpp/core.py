@@ -89,7 +89,6 @@ class Generator(GeneratorBase):
                 print element.__class__.__name__
                 for k in range(max(0,i-10)):
                     print "before:", k, txt[k]
-                print ">>>>>>>", i, txt[i]
                 for k in range(i+1, min(i+10, len(txt))):
                     print "after: ", k, txt[k]
                 assert False

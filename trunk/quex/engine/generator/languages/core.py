@@ -159,8 +159,6 @@ class LDB(dict):
             return self.ADDRESS_BY_DOOR_ID(entry_action.DoorID(StateIndex, None))
 
         transition_id = entry_action.TransitionID(StateIndex, FromStateIndex)
-        print "##state:", self.__analyzer.state_db[StateIndex].__class__.__name__
-        print "##key:", map(repr, self.__analyzer.state_db[StateIndex].entry.door_db.keys())
         DoorId = self.__analyzer.state_db[StateIndex].entry.door_db[transition_id]
 
         assert isinstance(DoorId, entry_action.DoorID)
@@ -217,7 +215,6 @@ class LDB(dict):
         # Only for normal 'forward analysis' the from state is of interest.
         # Because, only during forward analysis some actions depend on the 
         # state from where we come.
-        print "##GOTO", TargetStateIndex, FromStateIndex
         result = "goto %s;" % self.__label_name(TargetStateIndex, FromStateIndex)
         return result
 

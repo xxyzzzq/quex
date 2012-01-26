@@ -822,7 +822,6 @@ class NumberSet(object):
         todo_i      = -1
         trafo_i     = 0
         while todo_i < interval_n - 1:
-            ## print "##i", self.__intervals, trafo_i
             todo_i += 1
             interval = self.__intervals[todo_i]
 

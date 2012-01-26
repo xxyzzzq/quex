@@ -112,30 +112,24 @@ class TemplateState(AnalyzerState):
         """The 'SetStateKey' commands cost nothing, so an easy condition for
            'all entries empty' is that the door_tree_root reports a cost of '0'.
         """
-        return self.entry.door_tree_root.cost() == 0
-
+        # This function can only be called after a call to 'finish()'.
+        assert self.entry.door_tree_root is not None
+        return self.entry.door_tree_root.has_commands_other_than_SetStateKey()
 
     def __update_entry(self, TheState):
 
-        self.__entry.action_db.update(TheState.entry.action_db)
+        for transition_id, action in TheState.entry.action_db.iteritems():
+            clone       = action.clone()
+            state_index = transition_id.state_index
+            state_key   = self.__state_index_to_state_key_db[transition_id.state_index]
+            for command in clone.command_list.misc:
+                if not isinstance(command, SetStateKey): continue
+                command.set_value(state_key)
+                break
+            else:
+                clone.command_list.misc.add(SetStateKey(state_key))
 
-        if isinstance(TheState, TemplateState):
-            for transition_id, transition_action in TheState.entry.action_db.iteritems():
-                for command in transition_action.command_list.misc:
-                    if not isinstance(command, SetStateKey): break
-                    new_state_key = self.__state_index_to_state_key_db[transition_id.state_index]
-                    command.set_value(new_state_key)
-                    break        # There can be only ONE command 'SetStateKey' in a transition_action.
-                else:
-                    assert False # There MUST be a 'SetStateKey' action in a TemplateState
-
-        elif isinstance(TheState, AnalyzerState):
-            for transition_id, transition_action in TheState.entry.action_db.iteritems():
-                transition_action.command_list.misc.add(SetStateKey(self.__state_index_to_state_key_db[TheState.index]))
-                self.__entry.action_db[transition_id] = transition_action
-
-        else:
-            assert False
+            self.__entry.action_db[transition_id] = clone
 
 def combine_scheme(StateIndexListA, A, StateIndexListB, B):
     """A 'scheme' is a dictionary that maps:
@@ -308,7 +302,6 @@ def combine_maps(StateA, StateB, TheAnalyzer):
 
         end       = min(i_end, k_end)
         target    = scheme_db.get_target(i_target, k_target)
-        print "##target:", target
         assert isinstance(target, TargetScheme)
 
         result.append((Interval(prev_end, end), target))
