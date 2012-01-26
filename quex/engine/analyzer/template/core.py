@@ -245,6 +245,13 @@ class CombinationDB:
 
     @property 
     def door_id_replacement_db(self):
+        """RETURN:
+
+                map:    old door_id ---> new door_id
+
+           where the 'old door_id' originates in an AnalyzerState, and the
+           'new door_id' is a door of the template state.
+        """
         if self.__door_id_replacement_db is not None:
             return self.__door_id_replacement_db
 

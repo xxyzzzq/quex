@@ -69,12 +69,16 @@ class TemplateState(AnalyzerState):
             if replacement is not None: return replacement
             return DoorId
 
-        for x in self.__transition_map:
-            target = x[1]
-            if isinstance(target, DoorID):
-                x[1] = replace_if_required(target)
-            elif isinstance(target, tuple):
-                x[1] = tuple(replace_if_required(x) for x in target)
+        for interval, target in enumerate(self.__transition_map):
+            if   target.drop_out_f:          continue
+            elif target.recursive_f:         continue
+            elif target.door_id is not None:
+                new_door_id = ReplacementDB.get(target.door_id)
+                if new_door_id is not None:
+                    target.door_id_replace(door_id)
+            else:
+                new_scheme = tuple(replace_if_required(door_id) for door_id in target.scheme)
+                target.scheme_replace(new_scheme)
 
     def set_depending_door_db_and_transition_db(self, TheAnalyzer):
         DoorDB       = self.entry.door_db
@@ -367,6 +371,9 @@ class TargetScheme(object):
 
     @property
     def scheme(self):      return self.__scheme
+    def scheme_replace(self, Scheme):
+        assert self.__scheme is not None
+        self.__scheme = Scheme
 
     @property
     def drop_out_f(self):  return self.__drop_out_f
@@ -376,6 +383,9 @@ class TargetScheme(object):
 
     @property
     def door_id(self):     return self.__door_id
+    def door_id_replace(self, DoorId):
+        assert self.__door_id is not None
+        self.__door_id = DoorId
 
     @property
     def index(self):       return self.__index
