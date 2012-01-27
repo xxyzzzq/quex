@@ -41,7 +41,7 @@ class StateStatistics:
 
            is the cost of normal bisectioning, given 'N' the number of character
            occurring and 'Ni' the number of intervals. Let 'No' be the number of
-           time that the outstanding character occured, then
+           time that the outstanding character occurred, then
 
                 (2) Cost1 = (N - No) * (AC + 1)
 

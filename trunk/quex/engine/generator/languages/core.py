@@ -159,10 +159,10 @@ class LDB(dict):
             return self.ADDRESS_BY_DOOR_ID(entry_action.DoorID(StateIndex, None))
 
         transition_id = entry_action.TransitionID(StateIndex, FromStateIndex)
-        DoorId = self.__analyzer.state_db[StateIndex].entry.door_db[transition_id]
+        door_id       = self.__analyzer.state_db[StateIndex].entry.door_db[transition_id]
 
-        assert isinstance(DoorId, entry_action.DoorID)
-        return self.ADDRESS_BY_DOOR_ID(DoorId)
+        assert isinstance(door_id, entry_action.DoorID)
+        return self.ADDRESS_BY_DOOR_ID(door_id)
 
     def ADDRESS_DROP_OUT(self, StateIndex):
         return get_address("$drop-out", StateIndex)

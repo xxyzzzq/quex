@@ -21,6 +21,21 @@ def do(TheAnalyzer):
     state_coder.do(txt, TheAnalyzer.state_db[TheAnalyzer.init_state_index], TheAnalyzer)
     remainder.discard(TheAnalyzer.init_state_index)
 
+    mega_state_analysis(TheAnalyzer, remainder)
+    mega_state_coder(TheAnalyzer, mega_state_state_list)
+
+    # (*) All other (normal) states (sorted by their frequency of appearance
+    frequency_db = get_frequency_db(TheAnalyzer.state_db, remainder)
+    for state in sorted(imap(lambda i: TheAnalyzer.state_db[i], remainder), 
+                        key=lambda s: frequency_db[s.index], reverse=True):
+        state_coder.do(txt, state, TheAnalyzer) 
+
+    LanguageDB = Setup.language_db
+    LanguageDB.REPLACE_INDENT(txt)
+
+    return txt
+
+def mega_state_analysis(TheAnalyzer, remainder):
     # (*) Compression Algorithms:
     #     txt       -- is directly filled with code of compressed states.
     #     done_list -- contains list of state indices that have been combined.
@@ -41,17 +56,27 @@ def do(TheAnalyzer):
                                                        ctype, remainder, mega_state_list)
             remainder.difference_update(done_state_index_list)
             mega_state_list.extend(template_state_list)
+    return mega_state_list
     
-    # (*) All other (normal) states (sorted by their frequency of appearance
-    frequency_db = get_frequency_db(TheAnalyzer.state_db, remainder)
-    for state in sorted(imap(lambda i: TheAnalyzer.state_db[i], remainder), 
-                        key=lambda s: frequency_db[s.index], reverse=True):
-        state_coder.do(txt, state, TheAnalyzer) 
-
-    LanguageDB = Setup.language_db
-    LanguageDB.REPLACE_INDENT(txt)
-
-    return txt
+def mega_state_coder(MegaStateList):
+    mega_state_list = []
+    for ctype in Setup.compression_type_list:
+        # -- Path-Compression
+        if ctype in (E_Compression.PATH, E_Compression.PATH_UNIFORM):
+            done_state_index_list, \
+            pathwalker_state_list  = paths_coder.do(txt, TheAnalyzer, 
+                                                    ctype, remainder, mega_state_list)
+            remainder.difference_update(done_list)
+            mega_state_list.extend(template_state_list)
+    
+        # -- Template-Compression
+        elif ctype in (E_Compression.TEMPLATE, E_Compression.TEMPLATE_UNIFORM):
+            done_state_index_list, \
+            template_state_list    = template_coder.do(txt, TheAnalyzer, Setup.compression_template_min_gain, 
+                                                       ctype, remainder, mega_state_list)
+            remainder.difference_update(done_state_index_list)
+            mega_state_list.extend(template_state_list)
+    return mega_state_list
 
 def get_frequency_db(StateDict, RemainderStateIndexList):
     """Sort the list in a away, so that states that are used more

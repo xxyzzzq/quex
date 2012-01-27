@@ -38,7 +38,7 @@ def handle(TheException):
         error_msg("#\n# Keyboard Interrupt -- Processing unfinished.\n#")
 
     elif isinstance(TheException, Exception):
-        error_msg("Exception occured -- please, report a bug under\n" + \
+        error_msg("Exception occurred -- please, report a bug under\n" + \
                   " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
     
     # Indicate Error For 'make'-procedures, etc.

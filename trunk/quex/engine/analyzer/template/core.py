@@ -146,6 +146,8 @@ def do(TheAnalyzer, MinGain, CompressionType,
     assert CompressionType in (E_Compression.TEMPLATE, E_Compression.TEMPLATE_UNIFORM)
     assert isinstance(MinGain, (int, long, float))
 
+    # (*) The Combination Process
+    #
     # CombinationDB: -- Keep track of possible combinations between states.
     #                -- Can determine best matching state candidates for combination.
     #                -- Replaces two combined states by TemplateState.
@@ -158,17 +160,25 @@ def do(TheAnalyzer, MinGain, CompressionType,
         pass
 
     done_state_index_set, template_state_list = combiner.result()
+
+    # (*) Adaption of the Addresses
+    #
     # All template states must set the databases about 'door-id' and 'transition-id'
     # in the states that they implement.
     for state in template_state_list:
-        state.replace_door_ids(combiner.door_id_replacement_db)
+        state.replace_door_ids_in_transition_map(combiner.door_id_replacement_db)
 
     for state in MegaStateList:
-        state.replace_door_ids(combiner.door_id_replacement_db)
+        state.replace_door_ids_in_transition_map(combiner.door_id_replacement_db)
 
     # We must leave the databases in place, until the replacements are made
-    for state in template_state_list:
-        state.set_depending_door_db_and_transition_db(TheAnalyzer)
+    for template_state in template_state_list:
+        for state in (TheAnalyzer.state_db[i] for i in template_state.state_index_list):
+            # Make sure, that the databases which are referenced for transition addresses
+            # are updated, i.e. we use the ones of the template state.
+            state.entry.set_door_db(template_state.entry.door_db)
+            state.entry.set_transition_db(template_state.entry.transition_db)
+            state.entry.set_door_tree_root(template_state.entry.door_tree_root)
 
     return done_state_index_set, template_state_list
 
