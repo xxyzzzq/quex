@@ -63,7 +63,7 @@ class TemplateState(AnalyzerState):
         self.__engine_type = StateA.engine_type
         self.input         = get_input_action(StateA.engine_type, InitStateF=False)
 
-    def replace_door_ids(self, ReplacementDB):
+    def replace_door_ids_in_transition_map(self, ReplacementDB):
         def replace_if_required(DoorId):
             replacement = ReplacementDB.get(DoorId)
             if replacement is not None: return replacement

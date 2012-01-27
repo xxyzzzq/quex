@@ -407,7 +407,7 @@ class PropertyInfoDB:
                       For binary properties 'Value' must be None.
 
            RETURNS: NumberSet in case of success.
-                    str       in case an error occured. String describes the problem.
+                    str       in case an error occurred. String describes the problem.
         """
         if self.db == {}: self.init_db()
 

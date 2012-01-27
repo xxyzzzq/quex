@@ -339,7 +339,7 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
      *               }
      *
      *  When the analyzer returns, the caller function has to watch if a mode change
-     *  occured. If not it can call this function again.                               */
+     *  occurred. If not it can call this function again.                               */
 #   if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
        || defined(QUEX_OPTION_ASSERTS)
     if( me->DEBUG_analyzer_function_at_entry != me->current_analyzer_function ) 

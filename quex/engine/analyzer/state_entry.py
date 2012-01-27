@@ -107,11 +107,8 @@ class Entry(object):
         assert self.__door_tree_root is not None
         return self.__door_tree_root
 
-    def has_accepter(self):
-        for door in self.__action_db.itervalues():
-            for action in door.command_list:
-                if isinstance(action, entry_action.Accepter): return True
-        return False
+    def set_door_tree_root(self, DoorTreeRoot):
+        self.__door_tree_root = DoorTreeRoot
 
     @property
     def action_db(self):
@@ -176,6 +173,12 @@ class Entry(object):
             # detected, then there are no commands associated with the given door.
             if door.parent is None: return False
             door = door.parent
+
+    def has_accepter(self):
+        for door in self.__action_db.itervalues():
+            for action in door.command_list:
+                if isinstance(action, entry_action.Accepter): return True
+        return False
 
     def __hash__(self):
         xor_sum = 0

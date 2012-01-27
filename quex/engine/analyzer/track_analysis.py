@@ -522,7 +522,7 @@ class AcceptInfo(StoreInfo):
        .transition_n_since_positioning -- Number of transitions since the storage
                                  of the input position needed to be done. If 
                                  it is E_TransitionN.VOID, then the number cannot
-                                 be determined from the state machine (loop occured).
+                                 be determined from the state machine (loop occurred).
        
        .positioning_state_index -- Identifies the state where the position needed
                                    to be stored. For post-context patterns this is

@@ -49,7 +49,7 @@ def get_on_skip_range_open(Mode, CloserSequence):
 
     elif not Mode.has_code_fragment_list("on_skip_range_open"):
         txt += 'QUEX_ERROR_EXIT("\\nLexical analyzer mode \'%s\':\\n"\n' % Mode.name + \
-               '                "End of file occured before closing skip range delimiter!\\n"' + \
+               '                "End of file occurred before closing skip range delimiter!\\n"' + \
                '                "The \'on_skip_range_open\' handler has not been specified.");'
     else:
         closer_string = ""
