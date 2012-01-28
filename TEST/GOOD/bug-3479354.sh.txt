@@ -1,55 +1,66 @@
-test.qx:3:warning: Detected implicit token identifier definitions. Proposal:
-test.qx:3:warning:    token {
-test.qx:3:warning:      WORLD;
-test.qx:3:warning:    }
+test.qx:6:warning: Detected implicit token identifier definitions. Proposal:
+test.qx:6:warning:    token {
+test.qx:6:warning:      WORLD;
+test.qx:6:warning:    }
     /* BEGIN: STATE MACHINE
-     * init-state = 122L
-     * 00122 (24, 68)
-     *      == ['a', 'z'] ==> 00123
+     * init-state = 147L
+     * 00147 (29, 79)
+     *      == ['a', 'z'] ==> 00148
      *     
-     * 00123 (24, 69)
-     *      == ['0', '9'] ==> 00124
+     * 00148 (29, 80)
+     *      == ['0', '9'] ==> 00149
      *     
-     * 00124 (24, 70, A)
+     * 00149 (29, 81, A)
      *     
      * END: STATE MACHINE
     /* BEGIN: STATE MACHINE
-     * init-state = 136L
-     * 00136 (16, 46)
-     *      == 'w' ==> 00137
+     * init-state = 161L
+     * 00161 (21, 57)
+     *      == 'w' ==> 00162
      *     
-     * 00137 (16, 47)
-     *      == 'o' ==> 00138
+     * 00162 (21, 58)
+     *      == 'o' ==> 00163
      *     
-     * 00138 (16, 48)
-     *      == 'r' ==> 00139
+     * 00163 (21, 59)
+     *      == 'r' ==> 00164
      *     
-     * 00139 (16, 49)
-     *      == 'l' ==> 00140
+     * 00164 (21, 60)
+     *      == 'l' ==> 00165
      *     
-     * 00140 (16, 50)
-     *      == 'd' ==> 00141
+     * 00165 (21, 61)
+     *      == 'd' ==> 00166
      *     
-     * 00141 (16, 51, A)
+     * 00166 (21, 62, A)
      *     
      * END: STATE MACHINE
     /* BEGIN: STATE MACHINE
-     * init-state = 154L
-     * 00154 (41, 113)
-     *      == 'A' ==> 00155
+     * init-state = 179L
+     * 00179 (46, 124)
+     *      == 'A' ==> 00180
      *     
-     * 00155 (41, 114)
-     *      == 'c' ==> 00156
+     * 00180 (46, 125)
+     *      == 'c' ==> 00181
      *     
-     * 00156 (41, 115)
-     *      == 'b' ==> 00157
+     * 00181 (46, 126)
+     *      == 'b' ==> 00182
      *     
-     * 00157 (41, 116)
-     *      == 'a' ==> 00158
+     * 00182 (46, 127)
+     *      == 'a' ==> 00183
      *     
-     * 00158 (41, 117)
-     *      == 'Z' ==> 00159
+     * 00183 (46, 128)
+     *      == 'Z' ==> 00184
      *     
-     * 00159 (41, 118, A)
+     * 00184 (46, 129, A)
+     *     
+     * END: STATE MACHINE
+    /* BEGIN: STATE MACHINE
+     * init-state = 194L
+     * 00194 (51, 141)
+     *      == 'h' ==> 00195
+     *     
+     * 00195 (51, 142)
+     *      == 'i' ==> 00196
+     *     
+     * 00196 (51, 143, A)
      *     
      * END: STATE MACHINE

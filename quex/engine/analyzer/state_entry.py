@@ -336,7 +336,7 @@ class Entry(object):
             a_txt  = get_accepters(accept_command_list)
             s_txt  = get_storers(store_command_list)
             p_txt  = get_pre_context_oks(pcok_command_list)
-            sk_txt = get_pre_context_oks(pcok_command_list)
+            sk_txt = get_pre_context_oks(ssk_command_list)
             content = "".join(a_txt + s_txt + p_txt + sk_txt)
             if len(content) == 0:
                 # Simply new line

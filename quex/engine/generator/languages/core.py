@@ -122,13 +122,11 @@ class LDB(dict):
             txt      = []
             for element in EntryAction:
                 if element.pre_context_id != E_PreContextIDs.NONE:
-                    txt.append("    %sif( pre_context_%i_fulfilled_f ) last_acceptance = %s;\n" \
-                               % (else_str, 
-                                  element.pre_context_id, 
-                                  self.ACCEPTANCE(element.pattern_id)))
+                    txt.append("    %sif( pre_context_%i_fulfilled_f ) " % (else_str, element.pre_context_id))
                 else:
-                    txt.append("    %slast_acceptance = %s;\n" \
-                               % (else_str, self.ACCEPTANCE(element.pattern_id)))
+                    txt.append("    %s" % else_str)
+                txt.append("{ last_acceptance = %s; __quex_debug(\"last_acceptance = %s\\n\"); }\n" \
+                           % (self.ACCEPTANCE(element.pattern_id), self.ACCEPTANCE(element.pattern_id)))
                 else_str = "else "
             return "".join(txt)
 
@@ -136,17 +134,19 @@ class LDB(dict):
             # Assume that checking for the pre-context is just overhead that 
             # does not accelerate anything.
             if EntryAction.offset == 0:
-                return "    position[%i] = me->buffer._input_p;\n" \
-                       % EntryAction.position_register
+                return "    position[%i] = me->buffer._input_p; __quex_debug(\"position[%i] = input_p;\\n\");\n" \
+                       % (EntryAction.position_register, EntryAction.position_register)
             else:
-                return "    position[%i] = me->buffer._input_p - %i;\n" \
-                       % (EntryAction.position_register, EntryAction.offset)
+                return "    position[%i] = me->buffer._input_p - %i; __quex_debug(\"position[%i] = input_p - %i;\\n\");\n" \
+                       % (EntryAction.position_register, EntryAction.offset, EntryAction.offset)
 
         elif isinstance(EntryAction, entry_action.PreConditionOK):
-            return "    pre_context_%i_fulfilled_f = 1;\n" % EntryAction.pre_context_id
+            return "    pre_context_%i_fulfilled_f = 1; __quex_debug(\"pre_context_%i_fulfilled_f = true\\n\");\n" \
+                   % (EntryAction.pre_context_id, EntryAction.pre_context_id)
 
         elif isinstance(EntryAction, entry_action.SetStateKey):
-            return "    state_key = %i;\n" % EntryAction.value
+            return "    state_key = %i; __quex_debug(\"state_key = %i\\n\");\n" \
+                   % (EntryAction.value, EntryAction.value)
 
         else:
             assert False, "Unknown Entry Action"
@@ -461,7 +461,7 @@ __RELOAD_FORWARD:
         __quex_debug_reload_after();
         QUEX_GOTO_STATE(target_state_index);
     }
-    __quex_debug("reload impossible");
+    __quex_debug("reload impossible\\n");
     QUEX_GOTO_STATE(target_state_else_index);
 """
 
@@ -476,7 +476,7 @@ __RELOAD_BACKWARD:
         __quex_debug_reload_after();
         QUEX_GOTO_STATE(target_state_index);
     }
-    __quex_debug("reload impossible");
+    __quex_debug("reload impossible\\n");
     QUEX_GOTO_STATE(target_state_else_index);
 """
 

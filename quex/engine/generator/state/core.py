@@ -68,7 +68,7 @@ def input_do(txt, TheState, ForceInputDereferencingF=False):
        state it enters via the 'epilog' generated in the function 
        init_state_forward_epilog().
     """
-    global LanguageDB
+    LanguageDB = Setup.language_db
 
     input = TheState.input
     if TheState.transition_map_empty_f:
