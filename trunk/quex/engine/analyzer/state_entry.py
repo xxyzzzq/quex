@@ -145,13 +145,13 @@ class Entry(object):
         assert self.__door_tree_root is not None
         assert isinstance(DoorId, DoorID)
 
-        def _dive(node):
+        def __dive(node):
              if node.door_id == DoorId: return node
              for child in node.child_list:
                  result = __dive(child)
                  if result is not None: return result
              return None
-        return _dive(self.__door_tree_root)
+        return __dive(self.__door_tree_root)
 
     def door_has_commands(self, StateIndex, FromStateIndex):
         """Assume that 'door_tree_root' has been built alread."""
@@ -238,20 +238,23 @@ class Entry(object):
 
            A unified entry is coded as 'ALL' --> common positioning.
         """
-        # (*) Some post-contexts may use the same position register. Those have
-        #     been identified in PositionRegisterMap. Do the replacement.
-        for from_state_index, door in self.__action_db.items():
-            if door.command_list.is_empty(): continue
-            change_f = False
-            for action in door.command_list.misc:
-                if isinstance(action, entry_action.StoreInputPosition):
-                    # Replace position register according to 'PositionRegisterMap'
-                    action.position_register = PositionRegisterMap[action.position_register]
-                    change_f = True
-            # If there was a replacement, ensure that each action appears only once
-            if change_f:
-                # Adding one by one ensures that double entries are avoided
-                door.command_list.misc = set(x for x in door.command_list.misc)
+        assert PositionRegisterMap is None or len(PositionRegisterMap) != 0
+
+        if PositionRegisterMap is not None:
+            # (*) Some post-contexts may use the same position register. Those have
+            #     been identified in PositionRegisterMap. Do the replacement.
+            for from_state_index, door in self.__action_db.items():
+                if door.command_list.is_empty(): continue
+                change_f = False
+                for action in door.command_list.misc:
+                    if isinstance(action, entry_action.StoreInputPosition):
+                        # Replace position register according to 'PositionRegisterMap'
+                        action.position_register = PositionRegisterMap[action.position_register]
+                        change_f = True
+                # If there was a replacement, ensure that each action appears only once
+                if change_f:
+                    # Adding one by one ensures that double entries are avoided
+                    door.command_list.misc = set(x for x in door.command_list.misc)
 
         # (*) If a door stores the input position in register unconditionally,
         #     then all other conditions concerning the storage in that register
@@ -270,6 +273,7 @@ class Entry(object):
         door_db,       \
         transition_db, \
         self.__door_tree_root = entry_action.categorize_command_lists(self.__state_index, transition_action_list)
+
         self.set_door_db(door_db)               # use set_door_db() 'assert' on content
         self.set_transition_db(transition_db)   # use set_transition_db() 'assert' on content
         assert self.__door_tree_root is not None

@@ -8,7 +8,7 @@ from   quex.engine.generator.languages.address      import get_address, get_labe
 from   quex.engine.generator.languages.variable_db  import variable_db
 
 import quex.engine.analyzer.template.core           as templates 
-import quex.engine.analyzer.state_entry_action      as SetStateKey 
+from   quex.engine.analyzer.state_entry_action      import SetStateKey, TransitionID, DoorID
 
 from   quex.blackboard import setup as Setup, E_StateIndices, E_Compression
 from   itertools       import ifilter
@@ -100,6 +100,10 @@ def do(txt, TState, TheAnalyzer):
     LanguageDB = Setup.language_db
     variable_db.require("state_key")
 
+    # (*) Request necessary variable definition _______________________________
+    #     (BEFORE we translate the transition map, somehow)
+    __require_data(TState, TheAnalyzer)
+
     # (*) Entry _______________________________________________________________
     __entry(txt, TState, TheAnalyzer)
 
@@ -111,9 +115,6 @@ def do(txt, TState, TheAnalyzer):
 
     # (*) Drop Out ____________________________________________________________
     __drop_out(txt, TState, TheAnalyzer)
-
-    # (*) Request necessary variable definition _______________________________
-    __require_data(TState, TheAnalyzer)
 
     return 
 
@@ -298,16 +299,21 @@ def __require_data(TState, TheAnalyzer):
                If the door where the state enters itself does nothing else, but
                setting the state key, one can enter via the parent's door.
             """
-            door_id = TState.door_db[TransitionID(StateIndex, StateIndex)]
-            door    = TState.door_find(door_id)
+            door_id = TState.entry.door_db[TransitionID(StateIndex, StateIndex)]
+            door    = TState.entry.door_find(door_id)
             assert door is not None
-            if door.parent is not None and len(door.common_command_list) == 1:
-                assert isinstance(door.common_command_list[0], SetStateKey)
-                return LanguageDB.ADDRESS_BY_DOOR_ID(door.parent.door_id)
+            if door.parent is not None:
+                # If the door has no other command, then setting the state key, 
+                # then the parent can take its role: For recursion the state key
+                # does not have to be set again.
+                for found in (x for x in door.common_command_list if not isinstance(x, SetStateKey)):
+                    break # There is a command, other than 'SetStateKey'
+                else:
+                    return LanguageDB.ADDRESS_BY_DOOR_ID(door.parent.door_id)
+
             return LanguageDB.ADDRESS_BY_DOOR_ID(door_id)
 
-        for found in ifilter(lambda x: E_StateIndices.RECURSIVE == x[1], 
-                             TState.transition_map):
+        for found in (x for x in TState.transition_map if x[1].recursive_f): 
             # HERE:     Non-uniform entries 
             #       and there is at least one recursive entry
             address_list = [ recursion_address(i) for i in TState.state_index_list ]

@@ -42,7 +42,7 @@ class TemplateState(AnalyzerState):
         self.__entry = Entry(self.index, [])
         self.__update_entry(StateA)
         self.__update_entry(StateB)
-        self.__entry.finish({})
+        self.__entry.finish(None)
 
         self.__drop_out = combine_scheme(get_state_list(StateA), StateA.drop_out, 
                                          get_state_list(StateB), StateB.drop_out)
@@ -390,8 +390,8 @@ class TargetScheme(object):
     def __repr__(self):
         if   self.drop_out_f:          return "TargetScheme:DropOut"
         elif self.recursive_f:         return "TargetScheme:Recursion"
-        elif self.door_id is not None: return "TargetScheme:(%s)" % self.__door_id
-        elif self.scheme  is not None: return "TargetScheme:(%s)" % self.__scheme
+        elif self.door_id is not None: return "TargetScheme:(%s)" % repr(self.__door_id)
+        elif self.scheme  is not None: return "TargetScheme:(%s)" % repr(self.__scheme)
         else:                          return "TargetScheme:<ERROR>"
 
     def __hash__(self):

@@ -98,33 +98,10 @@ import sys
 
 LanguageDB = None # Set during call to 'do()', not earlier
 
-def do(txt, TheAnalyzer, CompressionType, Remainder):
-    """--> Accept only uniform states in path.
-                        (This must be done by the 'analyzer module' too.)
-    
-       RETURNS: List of done state indices.
-    """
-    assert CompressionType in [E_Compression.PATH, E_Compression.PATH_UNIFORM]
-
+def do(txt, PWState, TheAnalyzer):
     global LanguageDB
     LanguageDB = Setup.language_db
 
-    # (1) Find possible state combinations
-    path_walker_list = paths.do(TheAnalyzer, CompressionType, AvailableStateIndexList=Remainder)
-
-    if len(path_walker_list) == 0: return []
-
-    # (2) Implement code for path combinations
-    variable_db.require("path_iterator")
-
-    done_set = set()
-    for pw_state in path_walker_list:
-        state_coder_do(txt, pw_state, TheAnalyzer)
-        done_set.update(pw_state.implemented_state_index_list)
-
-    return done_set
-
-def state_coder_do(txt, PWState, TheAnalyzer):
     # (*) Entry _______________________________________________________________
     __entry(txt, PWState, TheAnalyzer)
 
