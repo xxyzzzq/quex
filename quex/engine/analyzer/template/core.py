@@ -271,6 +271,7 @@ class CombinationDB:
 
             for state in (self.__analyzer.state_db[i] for i in templated_state_index_list):
                 for door_id, transition_id_list in state.entry.transition_db.iteritems():
+                    if len(transition_id_list) == 0: continue
                     prototype_transition_id = transition_id_list[0]
                     replacement_db[door_id] = template_state.entry.door_db[prototype_transition_id]
 

@@ -20,7 +20,7 @@ if "--hwut-info" in sys.argv:
 def get_analyzer_state(sm, state_index):
     sm.states[state_index] = core.State()
     state = AnalyzerState(state_index, sm, E_EngineTypes.FORWARD, []) 
-    state.entry.finish({})
+    state.entry.finish(None)
     return state
 
 def get_path_list(PlainLists):

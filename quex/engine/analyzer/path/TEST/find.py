@@ -54,7 +54,7 @@ def test(Skeleton, *StringPaths):
     print
     analyzer      = Analyzer(sm, E_EngineTypes.FORWARD)
     for state in analyzer.state_db.itervalues():
-        state.entry.finish({})
+        state.entry.finish(None)
     result        = paths.find_begin(analyzer, 
                                      sm.init_state_index, sm.init_state_index, 
                                      CompressionType=E_Compression.PATH, 

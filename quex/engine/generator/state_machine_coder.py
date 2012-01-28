@@ -49,7 +49,7 @@ def mega_state_analyzer(TheAnalyzer, remainder):
             done_state_index_list, \
             pathwalker_state_list  = path_analyzer.do(TheAnalyzer, ctype, 
                                                       remainder, mega_state_list)
-            remainder.difference_update(done_list)
+            remainder.difference_update(done_state_index_list)
             mega_state_list.extend(pathwalker_state_list)
     
         # -- Template-Compression
@@ -67,7 +67,7 @@ def mega_state_coder(txt, MegaStateList, TheAnalyzer):
         if isinstance(state, TemplateState):
             template_coder.do(txt, state, TheAnalyzer)
         elif isinstance(state, PathWalkerState):
-            path_coder.do(state)
+            path_coder.do(txt, state, TheAnalyzer)
 
     return 
 
