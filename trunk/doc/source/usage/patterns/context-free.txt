@@ -149,6 +149,19 @@ to combine them into powerful patterns.
      Greek, ancient Latin, Egyptian, and Etruscan can be written in 
      both directions.
 
+     .. note:: 
+
+        For some reason, it has caused some confusion in the past, that pattern
+        substitution requires an extra pair of curly brackets, i.e. to reverse
+        what has been defined as ``PATTERN`` it needs to to be written::
+
+                          \R{{PATTERN}} 
+
+        which reads from inside to outside: expand the pattern definition,
+        then reverse expanded pattern. Inside the curly brackets of ``\R{...}``
+        any pattern expression may occur in the well defined manner.
+
+
 .. describe:: \\0 
 
      a NULL character (ASCII/Unicode code point 0). This is to be used with *extreme caution*!

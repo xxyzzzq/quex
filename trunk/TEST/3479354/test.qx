@@ -1,4 +1,7 @@
 start = X;
+define {
+    SUBST  ih
+}
 mode X {
     \R{dlrow} => QUEX_TKN_WORLD(LexemeNull);
 }
@@ -7,4 +10,7 @@ mode Y {
 }
 mode Z {
     A\R{abc}Z => QUEX_TKN_WORLD(LexemeNull);
+}
+mode Zb {
+    \R{{SUBST}} => QUEX_TKN_WORLD(LexemeNull);
 }

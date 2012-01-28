@@ -80,13 +80,6 @@ class TemplateState(AnalyzerState):
                 new_scheme = tuple(replace_if_required(door_id) for door_id in target.scheme)
                 target.scheme_replace(new_scheme)
 
-    def set_depending_door_db_and_transition_db(self, TheAnalyzer):
-        DoorDB       = self.entry.door_db
-        TransitionDB = self.entry.transition_db
-        for state in (TheAnalyzer.state_db[i] for i in self.__state_index_list):
-            state.entry.set_door_db(DoorDB)
-            state.entry.set_transition_db(TransitionDB)
-
     @property
     def engine_type(self): return self.__engine_type
 
@@ -371,9 +364,19 @@ class TargetScheme(object):
 
     @property
     def scheme(self):      return self.__scheme
+
     def scheme_replace(self, Scheme):
+        assert isinstance(Scheme, tuple)
         assert self.__scheme is not None
         self.__scheme = Scheme
+
+    @property
+    def door_id(self):     return self.__door_id
+
+    def door_id_replace(self, DoorId):
+        assert isinstance(DoorId, DoorID)
+        assert self.__door_id is not None
+        self.__door_id = DoorId
 
     @property
     def drop_out_f(self):  return self.__drop_out_f
@@ -382,16 +385,14 @@ class TargetScheme(object):
     def recursive_f(self): return self.__recursive_f
 
     @property
-    def door_id(self):     return self.__door_id
-    def door_id_replace(self, DoorId):
-        assert self.__door_id is not None
-        self.__door_id = DoorId
-
-    @property
     def index(self):       return self.__index
 
     def __repr__(self):
-        return repr(self.__scheme)
+        if   self.drop_out_f:          return "TargetScheme:DropOut"
+        elif self.recursive_f:         return "TargetScheme:Recursion"
+        elif self.door_id is not None: return "TargetScheme:(%s)" % self.__door_id
+        elif self.scheme  is not None: return "TargetScheme:(%s)" % self.__scheme
+        else:                          return "TargetScheme:<ERROR>"
 
     def __hash__(self):
         return self.__index
@@ -478,10 +479,10 @@ class TargetSchemeDB(dict):
     def get_target(self):
         """This function is designed as a function pointer which will point to 
            one of the following functions depending on the involved state classes:
-               -- get_target_AnalyzerState_AnalyzerState()
-               -- get_target_AnalyzerState_TemplateState()
-               -- get_target_TemplateState_AnalyzerState()
-               -- get_target_TemplateState_TemplateState()
+               -> get_target_AnalyzerState_AnalyzerState()
+               -> get_target_AnalyzerState_TemplateState()
+               -> get_target_TemplateState_AnalyzerState()
+               -> get_target_TemplateState_TemplateState()
         """
         assert False
 
@@ -522,16 +523,19 @@ class TargetSchemeDB(dict):
         else:
             return self.get_TargetScheme((TA_door_id,), (TB_door_id,))
 
-
     def get_target_AnalyzerState_TemplateState(self, TA, TB):
-        return self.__get_target_AnalyzerState_TemplateState(TA, self.__state_a_index, 
-                                                             self.__state_a_recursion_to_empty_door_f, 
-                                                             TB, self.__state_b_state_index_list)
+        result = self.__get_target_AnalyzerState_TemplateState(TA, self.__state_a_index, 
+                                                               self.__state_a_recursion_to_empty_door_f, 
+                                                               TB, self.__state_b_state_index_list)
+        if type(result) != tuple: return result
+        return self.get_TargetScheme(result[0], result[1])
 
     def get_target_TemplateState_AnalyzerState(self, TA, TB):
-        return self.__get_target_AnalyzerState_TemplateState(TB, self.__state_b_index, 
-                                                             self.__state_b_recursion_to_empty_door_f, 
-                                                             TA, self.__state_a_state_index_list)
+        result = self.__get_target_AnalyzerState_TemplateState(TB, self.__state_b_index, 
+                                                               self.__state_b_recursion_to_empty_door_f, 
+                                                               TA, self.__state_a_state_index_list)
+        if type(result) != tuple: return result
+        return self.get_TargetScheme(result[1], result[0])
 
     def __get_target_AnalyzerState_TemplateState(self, T0, State0Index, State0RecursionToEmptyDoorF, 
                                                  T1, State1StateIndexList):
@@ -574,7 +578,7 @@ class TargetSchemeDB(dict):
 
         T0_scheme  = (T0_door_id,) 
 
-        return self.get_TargetScheme(T0_scheme, T1_scheme)
+        return (T0_scheme, T1_scheme)
 
     def get_target_TemplateState_TemplateState(self, TA, TB):
         assert    isinstance(TA, (DoorID, TargetScheme)) \

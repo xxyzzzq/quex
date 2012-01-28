@@ -180,7 +180,7 @@
 #   define __quex_debug_path_walker_drop_out(PW_ID)                                        \
            __quex_debug2("path walker %i: <<Drop Out>>\n", (int)PW_ID)
 #   define __quex_debug_path_walker_iteration(PW_ID, PathIterator)                         \
-           __quex_debug3("path walker %i: [%i] ",                                          \
+           __quex_debug3("path walker %i: [%i] __",                                        \
                          (int)PW_ID, (int)(PathIterator - path_walker_##PW_ID##_base));    \
            __quex_debug("input:           ");                                              \
            __QUEX_PRINT_CHAR(*(me->buffer._input_p));                                      \
@@ -191,7 +191,7 @@
            __quex_debug4("template %i(key=%i): <<State %i>>\n",            \
                          (int)TemplateID, (int)StateKey, (int)StateIndex)
 #   define __quex_debug_template_state(TemplateID, StateKey)                          \
-           __quex_debug3("template %i: [key=%i] ", (int)TemplateID, (int)(StateKey)); \
+           __quex_debug3("template %i: [key=%i] __", (int)TemplateID, (int)(StateKey)); \
            __quex_debug("input:           ");                                         \
            __QUEX_PRINT_CHAR(*(me->buffer._input_p))                                  \
 

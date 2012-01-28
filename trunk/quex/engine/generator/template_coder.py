@@ -92,44 +92,14 @@ from   operator        import attrgetter
 """
 LanguageDB = None # Set during call to 'do()', not earlier
 
-def do(txt, TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList, MegaStateList):
-    """Tries to combine as many states as possible from TheAnalyzer
-       into TemplateState-s. It uses an iterative stepwise algorithm
-       were at each step two states are combined as long as the 
-       gain is above a given minimum 'MinGain.'
-
-       Generated code is written into the array 'txt'. The scheme of
-       code generation for a TemplateState follows the scheme of 
-       'state_coder/core.py' for AnalyzerState-s and is implemented
-       in function 'state_coder_do()'.
-    
-       RETURNS: 
-
-       'Done List', i.e. a list of indices of states which have been 
-                    combined into template states.
-    """
-    assert CompressionType in (E_Compression.TEMPLATE, E_Compression.TEMPLATE_UNIFORM)
-    global LanguageDB
-    LanguageDB = Setup.language_db
-
-    # (*) Analysis:
-    #     Determine TemplateState-s as combinations of AnalyzerState-s.
-    done_set, template_state_list = templates.do(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList, MegaStateList)
-
-    if len(template_state_list) == 0: return []
-
-    # (*) Code Generation:
-    variable_db.require("state_key")
-
-    for t_state in template_state_list:
-        state_coder_do(txt, t_state, TheAnalyzer)
-
-    return done_set, template_state_list
-
-def state_coder_do(txt, TState, TheAnalyzer):
+def do(txt, TState, TheAnalyzer):
     """Generate code for given template state 'TState'. This follows the 
        scheme of code generation for AnalyzerState-s in 'state_coder/core.py'.
     """
+    global LanguageDB
+    LanguageDB = Setup.language_db
+    variable_db.require("state_key")
+
     # (*) Entry _______________________________________________________________
     __entry(txt, TState, TheAnalyzer)
 
@@ -246,7 +216,8 @@ def __transition_map(txt, TState, TheAnalyzer):
                         TState.index, 
                         TState.engine_type, 
                         TState.init_state_f, 
-                        TheAnalyzer = TheAnalyzer)
+                        TheAnalyzer = TheAnalyzer, 
+                        SuppressDebugStateOutputF=True)
 
 def __drop_out(txt, TState, TheAnalyzer):
     """DropOut Section:
@@ -312,8 +283,6 @@ def __require_data(TState, TheAnalyzer):
                 return LanguageDB.ADDRESS_BY_DOOR_ID(door_id)
 
         address_list = [ address(door_id) for door_id in target_scheme.scheme ]
-        print "##SCHEME:", target_scheme.scheme
-        print "##ADRL:  ", address_list
 
         variable_db.require_array("template_%i_target_%i", 
                                   ElementN = len(TState.state_index_list), 
