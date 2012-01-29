@@ -474,6 +474,9 @@ class TargetSchemeDB(dict):
         return result
 
     def get_scheme_list(self):
+        result = self.values()
+        for element in result:
+            assert element.scheme is not None
         return self.values()
 
     def get_target(self):

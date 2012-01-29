@@ -2,8 +2,8 @@ from   quex.blackboard                              import setup as Setup, \
                                                            E_StateIndices, \
                                                            E_EngineTypes
 import quex.blackboard                              as     blackboard
-import quex.engine.state_machine.index                    as           sm_index
-import quex.engine.generator.state.transition.core  as transition_block
+import quex.engine.state_machine.index              as     sm_index
+import quex.engine.generator.state.transition.core  as     transition_block
 from   quex.engine.generator.state.transition.code  import TransitionCode
 from   quex.engine.generator.languages.variable_db  import Variable
 from   quex.engine.generator.languages.address      import get_label
@@ -37,7 +37,7 @@ class IndentationCounter(TransitionCode):
             if self.number != -1: add_str = "%i" % self.number
             else:                 add_str = "me->" + self.variable_name
             return "me->counter._indentation += %s;" % add_str + \
-                   "goto %s;" % get_label("$entry", self.state_index, U=True)
+                   LanguageDB.GOTO(self.state_index)
         
         # Grids lie on a grid:
         elif self.type == "grid":
@@ -49,7 +49,7 @@ class IndentationCounter(TransitionCode):
                     mask = (1 << int(log2)) - 1
                     return "me->counter._indentation &= ~ ((QUEX_TYPE_INDENTATION)0x%X);\n" % mask + \
                            "me->counter._indentation += %i;\n" % self.number + \
-                           "goto %s;" % get_label("$entry", self.state_index, U=True)
+                           LanguageDB.GOTO(self.state_index)
                 else:
                     add_str = "%i" % self.number
             else:   
@@ -101,7 +101,7 @@ epilog_txt = """
 $$END_PROCEDURE$$                           
     goto $$GOTO_START$$;
 
-$$LOOP_REENTRANCE$$:
+$$LOOP_REENTRANCE$$
     $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
     goto INDENTATION_COUNTER_$$COUNTER_INDEX$$_ENTRY;
 
@@ -238,7 +238,7 @@ def do(Data):
                        ["$$INPUT_P_DECREMENT$$",              LanguageDB.INPUT_P_DECREMENT()],
                        ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB.IF_INPUT("==", "SkipDelimiter$$COUNTER_INDEX$$[0]")],
                        ["$$ENDIF$$",                          LanguageDB.END_IF()],
-                       ["$$LOOP_REENTRANCE$$",                get_label("$entry",  counter_index)],
+                       ["$$LOOP_REENTRANCE$$",                LanguageDB.LABEL(counter_index)], 
                        ["$$IF_INPUT_EQUAL_BUFFER_LIMIT_CODE$$",  LanguageDB.IF_INPUT("==", LanguageDB.BUFFER_LIMIT_CODE)],
                        ["$$RELOAD$$",                         get_label("$reload", counter_index)],
                        ["$$COUNTER_INDEX$$",                  repr(counter_index)],

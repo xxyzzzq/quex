@@ -128,6 +128,9 @@ class PathWalkerState(AnalyzerState):
 
         return sorted(imap(help, StateIndexList), key=itemgetter(1, 2)) # Sort by 'path_id', 'path_offset'
 
+    def replace_door_ids_in_transition_map(self, ReplacementDB):
+        pass # Do nothing for the moment
+
 def group(CharacterPathList, TheAnalyzer, CompressionType):
     """Different character paths may be walked down by the same pathwalker, if
        certain conditions are met. This function groups the given list of

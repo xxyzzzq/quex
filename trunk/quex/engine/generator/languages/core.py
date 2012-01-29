@@ -251,6 +251,7 @@ class LDB(dict):
             E_EngineTypes.FORWARD:              "FORWARD",
             E_EngineTypes.BACKWARD_PRE_CONTEXT: "BACKWARD",
             E_EngineTypes.BACKWARD_INPUT_POSITION: "",
+            E_EngineTypes.INDENTATION_COUNTER:  "FORWARD",
             # There is never a reload on backward input position detection.
             # The lexeme to parse must lie inside the borders!
         }[EngineType]
@@ -361,7 +362,8 @@ class LDB(dict):
         else:   
             index = TheState.index
 
-        if label is None: label = self.LABEL(index, FromStateIndex, None, NewlineF)
+        print "##FSI:", FromStateIndex
+        if label is None: label = self.LABEL(index, FromStateIndex, NewlineF)
         txt.append(label)
 
     def STATE_DEBUG_INFO(self, txt, StateIndex, InitStateForwardF):

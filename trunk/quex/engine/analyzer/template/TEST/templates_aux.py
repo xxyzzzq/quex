@@ -144,8 +144,8 @@ def print_metric(TM):
     def get_target_scheme_list(TM):
         result = []
         for interval, target in TM:
-            if isinstance(target, TargetScheme):
-                result.append(target)
+            assert isinstance(target, TargetScheme)
+            if target.scheme is not None: result.append(target)
         return result
 
     SL = get_target_scheme_list(TM)
