@@ -27,7 +27,7 @@ def test(TriggerMapA, TriggerMapB, StateListA=[10L], StateListB=[20L], UniformEn
     print_tm(TriggerMapA)
     print_tm(TriggerMapB)
     print
-    result = combine_maps(StateA, StateB)[0]
+    result = combine_maps(StateA, StateB, analyzer)[0]
     print_metric(result)
     print
     print "(Vice Versa)-------------------------------------"
@@ -35,7 +35,7 @@ def test(TriggerMapA, TriggerMapB, StateListA=[10L], StateListB=[20L], UniformEn
     print_tm(TriggerMapB)
     print_tm(TriggerMapA)
     print
-    result = combine_maps(StateB, StateA)[0]
+    result = combine_maps(StateB, StateA, analyzer)[0]
     print_metric(result)
     print
 

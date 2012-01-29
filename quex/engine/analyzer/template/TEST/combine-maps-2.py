@@ -25,6 +25,8 @@ def test(TriggerMapA, StateN_A, TriggerMapB, StateN_B):
     if StateN_B > 1: CombinationB = TestTemplateState(TriggerMapB, StateListB)
     else:            CombinationB = TestState(TriggerMapB, 20)
 
+    analyzer = TestAnalyzer(StateA, StateB)
+
     print
     print "(Straight)---------------------------------------"
     print
@@ -33,7 +35,7 @@ def test(TriggerMapA, StateN_A, TriggerMapB, StateN_B):
     print "States: %s" % StateListB
     print_tm(TriggerMapB)
     print
-    result = combine_maps(CombinationA, CombinationB)[0]
+    result = combine_maps(CombinationA, CombinationB, analyzer)[0]
     print_tm(result)
     print
     print "(Vice Versa)-------------------------------------"
@@ -43,7 +45,7 @@ def test(TriggerMapA, StateN_A, TriggerMapB, StateN_B):
     print "States: %s" % StateListA
     print_tm(TriggerMapA)
     print
-    result = combine_maps(CombinationB, CombinationA)[0]
+    result = combine_maps(CombinationB, CombinationA, analyzer)[0]
     print_tm(result)
     print
 
