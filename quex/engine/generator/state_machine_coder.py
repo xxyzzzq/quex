@@ -2,8 +2,9 @@ import quex.engine.generator.state.core      as state_coder
 import quex.engine.analyzer.template.core    as template_analyzer
 from   quex.engine.analyzer.template.state   import TemplateState
 import quex.engine.analyzer.path.core        as path_analyzer
+from   quex.engine.analyzer.path.path_walker import PathWalkerState
 import quex.engine.generator.template_coder  as template_coder
-import quex.engine.generator.paths_coder     as paths_coder
+import quex.engine.generator.paths_coder     as path_coder
 from   quex.blackboard                       import setup as Setup, E_Compression
 
 from   collections import defaultdict
