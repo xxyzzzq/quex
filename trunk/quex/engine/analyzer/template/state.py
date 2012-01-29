@@ -507,7 +507,12 @@ class TargetSchemeDB(dict):
                 TA_door_id = E_StateIndices.DROP_OUT
 
         else:
+            # print "##target: ", TA
+            # print "##from:   ", self.__state_a_index
+            # print "##        ", self.__analyzer.state_db[TA].entry.door_tree_root
+            # print "## door_db", self.__analyzer.state_db[TA].entry.door_db
             TA_door_id = self.__analyzer.state_db[TA].entry.get_door_id(TA, self.__state_a_index)
+            assert TA_door_id is not None
 
         # TB and TA cannot be recursive, otherwise we would have left above.
 
@@ -517,6 +522,7 @@ class TargetSchemeDB(dict):
 
         else:
             TB_door_id = self.__analyzer.state_db[TB].entry.get_door_id(TB, self.__state_b_index)
+            assert TB_door_id is not None
 
         if TA_door_id == TB_door_id:
             return TargetScheme(TA_door_id)               # uniform
@@ -575,6 +581,7 @@ class TargetSchemeDB(dict):
 
         else:
             T0_door_id = self.__analyzer.state_db[T0].entry.get_door_id(T0, State0Index)
+            assert T0_door_id is not None
 
         T0_scheme  = (T0_door_id,) 
 

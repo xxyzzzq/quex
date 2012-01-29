@@ -81,14 +81,20 @@ class PathWalkerState(AnalyzerState):
     def transition_map(self):     return self.__transition_map
     @property
     def state_index_list(self):
+        """map:   state_key --> state_index of involved state
+        """
         if self.__state_index_list is None:
-            result = [] # **MUST** be a list, because we might identify 'state_keys' with it.
+            result = [] # **MUST** be a list, because we identify 'state_keys' with it.
             for path in self.__path_list:
                 result.extend(map(lambda x: x[0], path))
             self.__state_index_list = result
         return self.__state_index_list
+
     @property
     def implemented_state_index_list(self):
+        """This is different from 'state_index_list', because the end state
+           of a path is not implemented!
+        """
         result = [] # **MUST** be a list, because we might identify 'state_keys' with it.
         for path in self.__path_list:
             # The end state of each path is not implemented

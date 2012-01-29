@@ -14,16 +14,9 @@ if "--hwut-info" in sys.argv:
     print "CHOICES: 1, 2, 2b, 3, 4, recursive;"
     sys.exit(0)
 
-class TestState:
-    def __init__(self, TM, Index):
-        self.transition_map = TM
-        self.index          = Index
-
 def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L]):
-    StateA = TestState(TMa, InvolvedStateListA[0])
-    StateB = TestState(TMb, InvolvedStateListB[0])
 
-    analyzer = TestAnalyzer(StateA, StateB)
+    StateA, StateB, analyzer = setup_AnalyzerStates(InvolvedStateListA[0], TMa, InvolvedStateListB[0], TMb)
 
     print
     print "(Straight)---------------------------------------"

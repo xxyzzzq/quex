@@ -138,7 +138,12 @@ class Entry(object):
         self.__door_db = DoorDB
 
     def get_door_id(self, StateIndex, FromStateIndex):
-        return self.__door_db.get(TransitionID(StateIndex, FromStateIndex))
+        # Assume that iterating over the whole set is much faster
+        # than creating a temporary TransitionID object.
+        for transition_id, door_id in self.__door_db.iteritems():
+            if transition_id.state_index == StateIndex and transition_id.from_state_index == FromStateIndex:
+                return door_id
+        return None
 
     def door_find(self, DoorId):
         """Find the Door object that belongs to DoorId"""
