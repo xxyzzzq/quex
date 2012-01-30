@@ -1,4 +1,5 @@
-from quex.engine.analyzer.core import AnalyzerState
+from quex.engine.analyzer.core               import AnalyzerState
+from quex.engine.analyzer.state_entry_action import DoorID
 
 from quex.engine.interval_handling import NumberSet
 
@@ -129,12 +130,12 @@ class CharacterPath:
     def match_skeleton(self, TransitionMap, TargetIdx, TriggerCharToTarget):
         """A single character transition 
 
-                        TriggerCharToTarget --> TargetIdx
+                        TriggerCharToTarget --> DoorID
 
            has been detected. The question is, if the remaining transitions of
            the state match the skeleton of the current path. There might be a
            wild card, that is the character that is overlapped by the first
-           single character transition.  As long as a transition map is differs
+           single character transition.  As long as a transition map differs
            only by this single character, the wild card is plugged into the
            position.
 
@@ -170,11 +171,11 @@ class CharacterPath:
         delta_size = len(delta_set)
         if delta_size > 2: return None
 
-        for target_idx in delta_set:
-            if   target_idx == TargetIdx:    continue # (1.1)
+        for target_door_id in delta_set:
+            if   target_door_id == TargetIdx:    continue # (1.1)
             elif wildcard_target is not None:                                            return None
-            elif not TransitionMap[target_idx].contains_only(self.__wildcard_character): return None
-            wildcard_target = target_idx               # (1.2)
+            elif not TransitionMap[target_door_id].contains_only(self.__wildcard_character): return None
+            wildcard_target = target_door_id              # (1.2)
 
         # (2) Target States In Skeleton and Not in TransitionMap
         #
@@ -187,8 +188,8 @@ class CharacterPath:
         if delta_size > 1: 
             return None
         if delta_size == 1:
-            target_idx = delta_set.__iter__().next()
-            if not self.__skeleton[target_idx].contains_only(TriggerCharToTarget): return None
+            target_door_id = delta_set.__iter__().next()
+            if not self.__skeleton[target_door_id].contains_only(TriggerCharToTarget): return None
             # (2.1) OK, single char covers the transition in skeleton.
 
         # (3) Target States in both, Skeleton and Transition Map
@@ -203,9 +204,9 @@ class CharacterPath:
         #           in transition map.
         #      
         common_set = self.__skeleton_key_set & transition_map_key_set
-        for target_idx in common_set:
-            sk_trigger_set = self.__skeleton[target_idx]
-            tm_trigger_set = TransitionMap[target_idx]
+        for target_door_id in common_set:
+            sk_trigger_set = self.__skeleton[target_door_id]
+            tm_trigger_set = TransitionMap[target_door_id]
 
             if sk_trigger_set.is_equal(tm_trigger_set): continue
 
@@ -217,14 +218,14 @@ class CharacterPath:
             elif wildcard_target is None:
                 # (3.2) Can difference between trigger sets be plugged by the wildcard?
                 if can_plug_to_equal(sk_trigger_set, self.__wildcard_character, tm_trigger_set): 
-                    wildcard_target = target_idx
+                    wildcard_target = target_door_id
                     continue
                 # (3.3) A set extended by wilcard may have only a 'hole' of the
                 #       size of the single transition char.
                 if can_plug_to_equal(tm_trigger_set, 
                                      TriggerCharToTarget,
                                      sk_trigger_set.union(NumberSet(self.__wildcard_character))): 
-                    wildcard_target = target_idx
+                    wildcard_target = target_door_id
                     continue
 
             # Trigger sets differ and no wildcard or single transition can
@@ -235,11 +236,9 @@ class CharacterPath:
         return wildcard_target
 
     def plug_wildcard(self, WildcardPlug):
-        assert isinstance(WildcardPlug, (int, long))
+        assert isinstance(WildcardPlug, DoorID)
 
-        # Finally, if there is a plugging to be performed, then do it.
-        if WildcardPlug == -1: return
-        
+        # If there is a plugging to be performed, then do it.
         if self.__skeleton.has_key(WildcardPlug):
             self.__skeleton[WildcardPlug].unite_with(NumberSet(self.__wildcard_character))
         else:
@@ -251,11 +250,12 @@ class CharacterPath:
 
     def get_string(self, NormalizeDB=None):
         def norm(X):
+            assert isinstance(X, (int, long)) or X is None
             return X if NormalizeDB is None else NormalizeDB[X]
 
         skeleton_txt = ""
-        for target_idx, trigger_set in sorted(self.__skeleton.iteritems(), key=itemgetter(0)):
-            skeleton_txt += "(%i) by " % norm(target_idx)
+        for target_door_id, trigger_set in sorted(self.__skeleton.iteritems(), key=itemgetter(0)):
+            skeleton_txt += "(%i) by " % norm(target_door_id.state_index)
             skeleton_txt += trigger_set.get_utf8_string()
             skeleton_txt += "; "
 

@@ -1,19 +1,19 @@
-<test-database execution-time-sec="2.06" date="Sat Jan 28 10:52:14 2012">
+<test-database execution-time-sec="2.14" date="Mon Jan 30 07:40:15 2012">
     <last-used-diff-display-program name=""/>
     <group name="Paths">
-        <test title="find_begin" time-sum-sec="0.47"> 
-            <application file-name="find.py" info-request-time="1326260399L" vanished="False"/>
+        <test title="find_begin" time-sum-sec="0.49"> 
+            <application file-name="find.py" info-request-time="1327902207L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="1" result="OK" time_sec="0.07" crc="-1340672967"/>
-               <choice name="2" result="OK" time_sec="0.07" crc="366827854"/>
-               <choice name="3" result="OK" time_sec="0.07" crc="-1895608345"/>
+               <choice name="2" result="OK" time_sec="0.08" crc="366827854"/>
+               <choice name="3" result="OK" time_sec="0.09" crc="-1895608345"/>
                <choice name="4" result="OK" time_sec="0.10" crc="-1990655249"/>
                <choice name="5" result="OK" time_sec="0.08" crc="-883556495"/>
-               <choice name="6" result="OK" time_sec="0.08" crc="-1279354597"/>
+               <choice name="6" result="OK" time_sec="0.07" crc="-1279354597"/>
             </choice-list>
         </test>
         <test title="filter_redundant_paths" time-sum-sec="0.54"> 
-            <application file-name="filter_redundant_paths.py" info-request-time="1326260645L" vanished="False"/>
+            <application file-name="filter_redundant_paths.py" info-request-time="1327902210L" vanished="False"/>
             <choice-list number="8" same_result="False">
                <choice name="0" result="OK" time_sec="0.07" crc="-1231177672"/>
                <choice name="1" result="OK" time_sec="0.07" crc="-2097780869"/>
@@ -25,8 +25,8 @@
                <choice name="6" result="OK" time_sec="0.07" crc="-1818699120"/>
             </choice-list>
         </test>
-        <test title="select_longest_intersecting_path" time-sum-sec="0.40"> 
-            <application file-name="select_longest_paths.py" info-request-time="1326260663L" vanished="False"/>
+        <test title="select_longest_intersecting_path" time-sum-sec="0.41"> 
+            <application file-name="select_longest_paths.py" info-request-time="1327902184L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="0" result="OK" time_sec="0.07" crc="773714092"/>
                <choice name="1" result="OK" time_sec="0.07" crc="464756229"/>
@@ -36,24 +36,24 @@
                <choice name="5" result="OK" time_sec="0.07" crc="470140688"/>
             </choice-list>
         </test>
-        <test title="Plugging Wild Cards" time-sum-sec="0.30"> 
-            <application file-name="find-3.py" info-request-time="1326260500L" vanished="False"/>
+        <test title="Plugging Wild Cards" time-sum-sec="0.33"> 
+            <application file-name="find-3.py" info-request-time="1327902198L" vanished="False"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="OK" time_sec="0.08" crc="-541971322"/>
+               <choice name="1" result="OK" time_sec="0.11" crc="-541971322"/>
                <choice name="2" result="OK" time_sec="0.07" crc="-1453543211"/>
                <choice name="3" result="OK" time_sec="0.08" crc="-1557722122"/>
                <choice name="4" result="OK" time_sec="0.07" crc="1601858541"/>
             </choice-list>
         </test>
-        <test title="is_difference_single_character" time-sum-sec="0.13"> 
+        <test title="is_difference_single_character" time-sum-sec="0.14"> 
             <application file-name="can_plug_to_equal.py" info-request-time="1318614207L" vanished="False"/>
             <choice-list number="2" same_result="False">
-               <choice name="1_interval" result="OK" time_sec="0.07" crc="2146992883"/>
+               <choice name="1_interval" result="OK" time_sec="0.08" crc="2146992883"/>
                <choice name="2_intervals" result="OK" time_sec="0.07" crc="212610594"/>
             </choice-list>
         </test>
-        <test title="find_path (mean tests)" time-sum-sec="0.22"> 
-            <application file-name="find-2.py" info-request-time="1326260491L" vanished="False"/>
+        <test title="find_path (mean tests)" time-sum-sec="0.23"> 
+            <application file-name="find-2.py" info-request-time="1327902173L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="1" result="OK" time_sec="0.07" crc="907948234"/>
                <choice name="2" result="OK" time_sec="0.08" crc="742726405"/>
