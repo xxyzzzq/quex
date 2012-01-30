@@ -42,7 +42,7 @@ class TemplateState(AnalyzerState):
         self.__entry = Entry(self.index, [])
         self.__update_entry(StateA)
         self.__update_entry(StateB)
-        self.__entry.finish(None)
+        self.__entry.door_tree_configure()
 
         self.__drop_out = combine_scheme(get_state_list(StateA), StateA.drop_out, 
                                          get_state_list(StateB), StateB.drop_out)

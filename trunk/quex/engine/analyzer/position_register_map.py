@@ -72,7 +72,6 @@ def do(analyzer):
         # Each pattern gets is own position register.
         result = dict((pattern_id, i) for i, pattern_id in enumerate(cannot_db.iterkeys()))
 
-    if len(result) == 0: return None
     return result
 
 def get_cannot_db(analyzer):

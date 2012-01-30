@@ -71,7 +71,7 @@ class TestState(AnalyzerState):
         AnalyzerState.set_index(self, Index)
         # self.state_index_list = StateIndexList
         self.entry            = Entry(Index, FromStateIndexList)
-        self.entry.finish(None)
+        self.entry.door_tree_configure()
 
 def get_combination(TriggerMap, StateList):
     """Creates A Template Combination Object for the given Trigger Map

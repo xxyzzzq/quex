@@ -158,8 +158,11 @@ class LDB(dict):
         if self.__analyzer is None: 
             return self.ADDRESS_BY_DOOR_ID(entry_action.DoorID(StateIndex, None))
 
-        transition_id = entry_action.TransitionID(StateIndex, FromStateIndex)
-        door_id       = self.__analyzer.state_db[StateIndex].entry.door_db[transition_id]
+        if FromStateIndex is None:
+            # Return the '0' Door, the door without actions
+            return self.ADDRESS_BY_DOOR_ID(entry_action.DoorID(StateIndex, DoorIndex=0)) 
+
+        door_id = self.__analyzer.state_db[StateIndex].entry.get_door_id(StateIndex, FromStateIndex)
 
         assert isinstance(door_id, entry_action.DoorID)
         return self.ADDRESS_BY_DOOR_ID(door_id)

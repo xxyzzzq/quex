@@ -243,9 +243,10 @@ class Entry(object):
 
            A unified entry is coded as 'ALL' --> common positioning.
         """
-        assert PositionRegisterMap is None or len(PositionRegisterMap) != 0
+        assert isinstance(PositionRegisterMap, dict)
 
-        if PositionRegisterMap is not None:
+        # (*) Adapt position registers (if necessary)
+        if len(PositionRegisterMap) == 0: 
             # (*) Some post-contexts may use the same position register. Those have
             #     been identified in PositionRegisterMap. Do the replacement.
             for from_state_index, door in self.__action_db.items():
@@ -261,6 +262,10 @@ class Entry(object):
                     # Adding one by one ensures that double entries are avoided
                     door.command_list.misc = set(x for x in door.command_list.misc)
 
+        # (*) Configure the entry door tree
+        self.door_tree_configure()
+
+    def door_tree_configure(self):
         # (*) If a door stores the input position in register unconditionally,
         #     then all other conditions concerning the storage in that register
         #     are nonessential.
@@ -283,7 +288,6 @@ class Entry(object):
         self.set_transition_db(transition_db)   # use set_transition_db() 'assert' on content
         assert self.__door_tree_root is not None
 
-        return self.__door_db
 
     def __repr__(self):
         def get_accepters(AccepterList):

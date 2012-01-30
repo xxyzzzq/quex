@@ -220,7 +220,6 @@ def find_begin(analyzer, StateIndex, InitStateIndex, CompressionType, AvailableS
 
     result_list = []
 
-
     State          = analyzer.state_db[StateIndex]
     transition_map = State.map_target_index_to_character_set
 
@@ -244,10 +243,13 @@ def find_begin(analyzer, StateIndex, InitStateIndex, CompressionType, AvailableS
 
         # A new path begins, find the 'skeleton'.
         # The 'skeleton' is the transition map without the single transition
-        skeleton = copy(transition_map) # Shallow copy, i.e. copy references
+
+        # Adapt trigger_map: -- map from DoorID to TriggerSet
+        #                    -- extract the transition to 'target_idx'.
         # The skeleton is possibly changed in __find_continuation(), but then
         # a 'deepcopy' is applied to disconnect it, see __find_continuation().
-        del skeleton[target_idx]        # Delete reference to 'target_idx->trigger_set'
+        skeleton = get_adapted_trigger_map_shallow_copy(transition_map, analyzer, State.index, 
+                                                        ExceptTargetIndex=target_idx)
 
         path = CharacterPath(State, path_char, skeleton)
             
@@ -284,13 +286,16 @@ def __find_continuation(analyzer, StateIndex, the_path, CompressionType, Availab
            and not the_path.match_entry_and_drop_out(State):
             continue # No match possible
 
-        plug = the_path.match_skeleton(transition_map, target_idx, path_char)
+        adapted_transition_map = get_adapted_trigger_map_shallow_copy(transition_map, analyzer, State.index, 
+                                                                      ExceptTargetIndex=None)
+        plug = the_path.match_skeleton(adapted_transition_map, target_idx, path_char)
         if plug is None: 
             continue # No match possible 
 
         # Deepcopy is required to completely isolate the transition map and the
         # entry/drop_out schemes that may now be changed.
         path = deepcopy(the_path)
+        print "##plug:", plug
         if plug != -1: path.plug_wildcard(plug)
 
         # Find a continuation of the path
@@ -303,4 +308,33 @@ def __find_continuation(analyzer, StateIndex, the_path, CompressionType, Availab
         result_list.append(the_path)
 
     return result_list
+
+def  get_adapted_trigger_map_shallow_copy(TriggerMap, TheAnalyzer, StateIndex, ExceptTargetIndex):
+    """Before: 
+    
+             TriggerMap:  target_state_index ---> NumberSet that triggers to it
+
+       After: 
+
+             TriggerMap:  DoorID             ---> NumberSet that triggers to it.
+    
+       The adapted trigger map is possibly changed in __find_continuation(), but then a
+       'deepcopy' is applied to disconnect it, see __find_continuation().
+
+       RETURN: A trigger map that triggers to DoorID objects, rather 
+               than plain states. This is required. A pathwalker
+               can only walk propperly, if it enters the same doors.
+    """
+    def adapt(TargetIndex, TriggerSet):
+        return (TheAnalyzer.state_db[TargetIndex].entry.get_door_id(StateIndex=TargetIndex, FromStateIndex=StateIndex),
+                TriggerSet.clone())
+
+    if ExceptTargetIndex is not None:
+        return dict(adapt(target_index, number_set) \
+                    for target_index, number_set in TriggerMap.iteritems() \
+                    if target_index != ExceptTargetIndex)
+    else:
+        return dict(adapt(target_index, number_set) \
+                    for target_index, number_set in TriggerMap.iteritems())
+
 

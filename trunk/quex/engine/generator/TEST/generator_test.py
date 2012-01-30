@@ -128,7 +128,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
 
     elif Language == "Cpp-Path":
         Language = "Cpp"
-        Setup.compression_path_f = True
+        Setup.compression_type_list = [ E_Compression.PATH ]
 
     elif Language == "Cpp-PathUniform":
         Language = "Cpp"
