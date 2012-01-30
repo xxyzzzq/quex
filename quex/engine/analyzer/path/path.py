@@ -21,10 +21,9 @@ class CharacterPath:
         self.entry[StartState.entry].add(StartState.index)
         self.drop_out[StartState.drop_out].add(StartState.index)
 
-        self.__sequence           = [ (StartState.index, StartCharacter) ]
-
-        self.__skeleton           = Skeleton
-        self.__skeleton_key_set   = set(Skeleton.keys())
+        self.__sequence         = [ (StartState.index, StartCharacter) ]
+        self.__skeleton         = Skeleton
+        self.__skeleton_key_set = set(Skeleton.keys())
         # Character that may trigger to any state. This character is
         # adapted when the first character of the path is different
         # from the wild card character. Then it must trigger to whatever

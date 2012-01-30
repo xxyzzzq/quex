@@ -46,7 +46,7 @@ class PathWalkerState(AnalyzerState):
            same drop_out and entry are accepted.
         """
         def is_equal(A, B):
-            if set(A.keys()) != set(B.keys()): return False
+            if set(A.iterkeys()) != set(B.iterkeys()): return False
             for key, trigger_set in A.iteritems():
                 if not trigger_set.is_equal(B[key]): return False
             return True
