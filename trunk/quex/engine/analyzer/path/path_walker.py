@@ -16,7 +16,7 @@ class PathWalkerState(AnalyzerState):
     """
     def __init__(self, FirstPath, EngineType, CompressionType):
         self.__path_list      = [ FirstPath.sequence() ]
-        self.entry            = FirstPath.entry      # map: entry    --> state_index_list
+        self.entry            = FirstPath.entry      # PathWalkerState_Entry
         self.drop_out         = FirstPath.drop_out   # map: drop_out --> state_index_list
         self.__skeleton       = FirstPath.skeleton() # map: target_index --> trigger set
         # The skeleton does not contain wild cards anymore, so we can already transform it
