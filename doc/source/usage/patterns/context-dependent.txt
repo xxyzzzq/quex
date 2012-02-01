@@ -66,6 +66,26 @@ for the post-condition.
     stream matches a ``Q`` and the following stream matches an ``S``.
     ``R`` is pre- and post-conditioned.
 
+There is an important note to make about post contexts. A post context should
+never contain an empty path. Because, this would mean that if there is nothing
+specific following it is acceptable. Thus the remaining definition of the post
+context is redundant. However, an issue comes with End of File, which is not a
+character in the stream.  Then a post context is required of the type::
+
+    X is either followed by nothing, but never followed by Y.
+
+To achieve this, the problem needs to be translated into to pattern matches::
+
+    X       => QUEX_TKN_X();
+    X/\A{Y} => QUEX_TKN_X();
+
+That is both matches are associated with the same actions. The first matches
+the plain pattern X. The second matches an X which is followed by something 
+that **cannot** match Y, i.e. the anti-pattern of Y.
+
+
+
+
 .. rubric:: Footnotes
 
 .. [#f1] The reason for this lies in the nature of state machines. Flex has the exact

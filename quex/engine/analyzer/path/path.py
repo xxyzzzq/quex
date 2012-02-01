@@ -1,4 +1,5 @@
 from quex.engine.analyzer.core               import AnalyzerState
+from quex.engine.analyzer.state_entry        import Entry
 from quex.engine.analyzer.state_entry_action import DoorID
 
 from quex.engine.interval_handling import NumberSet
@@ -6,6 +7,32 @@ from quex.engine.interval_handling import NumberSet
 from itertools   import ifilter
 from operator    import itemgetter
 from collections import defaultdict
+
+class PathWalkerState_Entry(Entry):
+    def __init__(self, StateIndex, *EntryList):
+        Entry.__init__(self, StateIndex, [])
+        for state_key, entry in enumerate(EntryList):
+            self.update(entry, state_key)
+        Entry.door_tree_configure(self)
+
+    def update(self, TheEntry, StateKey):
+        """Include 'TheState.entry.action_db' into this state. That means,
+           that any mapping:
+           
+                transition (StateIndex, FromStateIndex) --> CommandList 
+
+           is absorbed in 'self.__action_db'. Additionally, any command list
+           must contain the 'SetStateKey' command that sets the state key for
+           TheState. At each (external) entry into the Template state the
+           'state_key' must be set, so that the template state can operate
+           accordingly.  
+        """
+        for transition_id, action in TheEntry.action_db.iteritems():
+            clone = action.clone()
+            # Create new 'SetPathIterator' for current state
+            clone.command_list.misc.add(SetPathIterator(Offset=StateKey))
+
+            self.action_db[transition_id] = clone
 
 class CharacterPath:
     """A set of states that can be walked along with a character sequence plus
@@ -16,9 +43,7 @@ class CharacterPath:
         assert isinstance(StartCharacter, (int, long))
         assert isinstance(Skeleton, dict)
 
-        self.entry    = defaultdict(set)  # map: entry    --> state_index_list
-        self.drop_out = defaultdict(set)  # map: drop_out --> state_index_list
-        self.entry[StartState.entry].add(StartState.index)
+        self.entry = PathWalkerState_Entry(StartState.index, StartState.entry)
         self.drop_out[StartState.drop_out].add(StartState.index)
 
         self.__sequence         = [ (StartState.index, StartCharacter) ]
@@ -61,7 +86,8 @@ class CharacterPath:
         self.__sequence.append((StateIndex, None))
 
     def append(self, State, Char):
-        self.entry[State.entry].add(State.index)
+        offset = len(self.__sequence)
+        self.entry.update(offset, State.entry)
         self.drop_out[State.drop_out].add(State.index)
         self.__sequence.append((State.index, Char))
 

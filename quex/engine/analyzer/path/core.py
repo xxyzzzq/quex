@@ -295,7 +295,6 @@ def __find_continuation(analyzer, StateIndex, the_path, CompressionType, Availab
         # Deepcopy is required to completely isolate the transition map and the
         # entry/drop_out schemes that may now be changed.
         path = deepcopy(the_path)
-        print "##plug:", plug
         if plug != -1: path.plug_wildcard(plug)
 
         # Find a continuation of the path
