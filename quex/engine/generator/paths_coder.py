@@ -173,7 +173,8 @@ def __path_walker(txt, PWState, TheAnalyzer):
             #           else if path_iterator == path_2_end:  goto terminal_2
             #           ...
             jump_to_next_state = LanguageDB.GOTO_BY_DOOR_ID(uniform_entry_door_id)
-            jump_to_terminal   = TODO LanguageDB.GOTO_BY_DOOR_ID(uniform_terminal_door_id)
+            assert False # WORK HERE
+            jump_to_terminal   = LanguageDB.GOTO_BY_DOOR_ID(uniform_terminal_door_id)
     else:
         # (3) -- Non-Uniform entries (ALONG THE PATH)
         #        (The terminal door is going to be listed in the state sequence array)
@@ -186,7 +187,7 @@ def __path_walker(txt, PWState, TheAnalyzer):
 
     txt.extend(["    __quex_debug_path_walker_iteration(%i, path_iterator);\n" % PWState.index,
                 "    %s\n"     % LanguageDB.IF_INPUT("==", "*path_iterator"),
-                "        %s\n" % LanguageDB.PATH_ITERATOR_INCREMENT
+                "        %s\n" % LanguageDB.PATH_ITERATOR_INCREMENT,
                 "        %s\n" % jump_to_next_state])
 
     if jump_to_terminal is None:
