@@ -16,6 +16,7 @@ def do(Target, StateIndex, InitStateF, EngineType, GotoReload_Str, TheAnalyzer=N
     if isinstance(Target, TransitionCode): 
         return Target
     else:
+        print "##Target", Target, StateIndex
         return TransitionCode(Target, StateIndex, InitStateF, EngineType, 
                               GotoReload_Str,  TheAnalyzer)
 

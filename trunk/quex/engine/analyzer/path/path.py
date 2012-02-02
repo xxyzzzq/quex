@@ -1,6 +1,6 @@
 from quex.engine.analyzer.core               import AnalyzerState
 from quex.engine.analyzer.state_entry        import Entry
-from quex.engine.analyzer.state_entry_action import DoorID
+from quex.engine.analyzer.state_entry_action import DoorID, SetPathIterator
 
 from quex.engine.interval_handling import NumberSet
 
@@ -9,13 +9,12 @@ from operator    import itemgetter
 from collections import defaultdict
 
 class PathWalkerState_Entry(Entry):
-    def __init__(self, StateIndex, *EntryList):
+    def __init__(self, StateIndex, TheEntry):
         Entry.__init__(self, StateIndex, [])
-        for state_key, entry in enumerate(EntryList):
-            self.update(entry, state_key)
+        self.update(TheEntry, 0)
         Entry.door_tree_configure(self)
 
-    def update(self, TheEntry, StateKey):
+    def update(self, TheEntry, Offset):
         """Include 'TheState.entry.action_db' into this state. That means,
            that any mapping:
            
@@ -30,7 +29,7 @@ class PathWalkerState_Entry(Entry):
         for transition_id, action in TheEntry.action_db.iteritems():
             clone = action.clone()
             # Create new 'SetPathIterator' for current state
-            clone.command_list.misc.add(SetPathIterator(Offset=StateKey))
+            clone.command_list.misc.add(SetPathIterator(Offset=Offset))
 
             self.action_db[transition_id] = clone
 
@@ -44,6 +43,7 @@ class CharacterPath:
         assert isinstance(Skeleton, dict)
 
         self.entry = PathWalkerState_Entry(StartState.index, StartState.entry)
+        self.drop_out = defaultdict(set)
         self.drop_out[StartState.drop_out].add(StartState.index)
 
         self.__sequence         = [ (StartState.index, StartCharacter) ]
@@ -54,6 +54,8 @@ class CharacterPath:
         # from the wild card character. Then it must trigger to whatever
         # the correspondent state triggers.
         self.__wildcard_character = StartCharacter
+
+        self.uniform_entry_along_path = None
 
     @property
     def state_index_list(self):
@@ -86,10 +88,48 @@ class CharacterPath:
         self.__sequence.append((StateIndex, None))
 
     def append(self, State, Char):
+
+        # The index of the state on the path determines the path iterator's offset
         offset = len(self.__sequence)
-        self.entry.update(offset, State.entry)
+
+        # Adapt the entry's action_db: include the entries of the new state
+        self.entry.update(State.entry, offset)
+
+        # Adapt information about entry and drop-out actions
         self.drop_out[State.drop_out].add(State.index)
+
+        # Add the state on the sequence of state along the path
         self.__sequence.append((State.index, Char))
+
+    def uniform_entry_along_path(self):
+        """Walk along the given path and watch the command lists that have to 
+           be executed at the entry of each path in the list. Now, we use the
+           fact, that there is a 'door tree'. If two command lists of a transition
+           into a state are the same, then they end up in the same door of the
+           door tree. 
+
+           The entries into the states along the paths are uniform, if and 
+           only if all entries happend through the same door in the door tree.
+        """
+        # A path where there are not at least two states, is not a path.
+        assert len(self.__sequence) >= 2
+
+        self.entry.door_tree_configure(self)
+        iterable         = self.__sequence.__iter__()
+        prev_state_index = iterable.next()[0]
+        prototype        = None
+        for state_index, char in iterable:
+            door_id = self.entry.get_door_id(state_index, prev_state_index)
+            if prototype is not None:
+                if not(prototype == door_id):
+                    return None
+            else:
+                prototype = door_id
+            prev_state_index = state_index
+
+        # Since len(sequence) >= 2, then there is a 'prototype' at this point.
+        return prototype
+
 
     def contains(self, StateIndex):
         for dummy in ifilter(lambda x: x[0] == StateIndex, self.__sequence):
@@ -198,7 +238,7 @@ class CharacterPath:
 
         for target_door_id in delta_set:
             if   target_door_id == TargetIdx:    continue # (1.1)
-            elif wildcard_target is not None:                                            return None
+            elif wildcard_target is not None:                                                return None
             elif not TransitionMap[target_door_id].contains_only(self.__wildcard_character): return None
             wildcard_target = target_door_id              # (1.2)
 
@@ -254,7 +294,7 @@ class CharacterPath:
                     continue
 
             # Trigger sets differ and no wildcard or single transition can
-            # 'explain' that => skeleton does not fit.
+            # 'excuse' that => skeleton does not fit.
             return None
 
         if wildcard_target is None: return -1 # No plugging necessary
