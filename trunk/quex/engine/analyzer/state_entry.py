@@ -250,10 +250,8 @@ class Entry(object):
 
            A unified entry is coded as 'ALL' --> common positioning.
         """
-        assert isinstance(PositionRegisterMap, dict)
-
         # (*) Adapt position registers (if necessary)
-        if len(PositionRegisterMap) == 0: 
+        if PositionRegisterMap is not None and len(PositionRegisterMap) != 0: 
             # (*) Some post-contexts may use the same position register. Those have
             #     been identified in PositionRegisterMap. Do the replacement.
             for from_state_index, door in self.__action_db.items():

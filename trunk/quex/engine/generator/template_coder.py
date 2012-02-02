@@ -132,7 +132,7 @@ def __transition_map(txt, TState, TheAnalyzer):
        jump to the state's drop-out in case of failure. There is no difference
        here in the template state example.
     """
-    prepare_transition_map(TState, TheAnalyzer)
+    prepare_transition_map(TState)
     txt.append("    __quex_debug_template_state(%i, state_key);\n" % TState.index)
     transition_block.do(txt, 
                         TState.transition_map, 
@@ -281,7 +281,7 @@ def handle_source_state_dependent_transitions(transition_map, TheAnalyzer,
 
         transition_map[i] = (interval, target)
 
-def handle_templated_transitions(TheState):
+def prepare_transition_map(TheState):
     transition_map = TheState.transition_map
 
     for i, info in enumerate(transition_map):
@@ -324,27 +324,4 @@ def handle_templated_transitions(TheState):
         # Replace target 'i' by written text
         target            = TextTransitionCode([text])
         transition_map[i] = (interval, target)
-
-def prepare_transition_map(TState, TheAnalyzer):
-    """Prepare transition map for code generation:
-    
-       -- Replace TargetScheme objects by TemplateTransitionCode objects in transition map.
-
-       -- If a target state that is **common** for all involved states has special doors
-          for different source states, then implement a goto based on the state_key.
-
-       NOTE: This is no contradiction to the restriction 'no target with source state 
-             dependent entries.' The targets in the restrictions are targets of TargetSchemes,
-             here we talk about common targets, i.e. 'a scalar value' in the transition map.
-    """
-    global LanguageDB
-
-    handle_templated_transitions(TState)
-    handle_source_state_dependent_transitions(TState.transition_map, 
-                                              TheAnalyzer, 
-                                              "state_key", 
-                                              TState.state_index_list)
-    
-    return 
-
 
