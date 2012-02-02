@@ -105,7 +105,7 @@ def do(txt, TState, TheAnalyzer):
     __require_data(TState, TheAnalyzer)
 
     # (*) Entry _______________________________________________________________
-    __entry(txt, TState, TheAnalyzer)
+    entry_coder.do(txt, TState, TheAnalyzer) 
 
     # (*) Access input character ______________________________________________
     input_do(txt, TState) 
@@ -118,99 +118,21 @@ def do(txt, TState, TheAnalyzer):
 
     return 
 
-def __entry(txt, TState, TheAnalyzer):
-    """Entry of a template state. Three main cases:
-
-       (1) Entries of involved states are all the same.
-     
-           /* Labels for states (targeted by 'goto-s') */
-           _1575: state_key = 0;  goto _4711;
-           _1212: state_key = 1;  goto _4711;
-           ...
-           _1312: state_key = 41; goto _4711;
-
-           /* Common Entry */
-           _4711: 
-              ...
-
-       (2) Entries of involved states are different:
-           
-           (2.i) An entry is the same for multiple states
-               
-                 Same as case (1), but at the end of the common 
-                 entry:
-
-                 goto 'TemplateBody'.
-
-           (2.ii) Each state has its own entry, then assign the
-                  state_key immediately after each state's
-                  entry. Then, 
-
-                 goto 'TemplateBody'.
-    """
-    global LanguageDB
-
-    entry_coder.do(txt, TState, TheAnalyzer) # , UnreachablePrefixF=(i==0))
-    return
-
-    if TState.uniform_entries_f:
-        entry, state_index_list = TState.entry.iteritems().next()
-        # Assign the state keys for each state involved
-        for state_index, state_key, state in TState.state_set_iterable(state_index_list, TheAnalyzer): 
-            LanguageDB.STATE_ENTRY(txt, state)
-            txt.append("    %s\n" % LanguageDB.ASSIGN("state_key", "%i" % state_key))
-            txt.append("    __quex_debug_template_entry(%i, %i, state_key);\n" % (TState.index, state_index))
-            txt.append("    %s\n" % LanguageDB.GOTO(TState.index))
-
-        # Implement the common entry
-        txt.extend("%s\n" % LanguageDB.LABEL(TState.index))
-        entry_coder.do(txt, TState, TheAnalyzer, UnreachablePrefixF=False, LabelF=False)
-        return
-
-    # Non-Uniform Entries
-    i = -1
-    for entry, state_index_list in TState.entry.iteritems():
-        if entry.uniform_doors_f():
-            i += 1
-            # Assign the state keys for each state involved
-            for state_index, state_key, state in TState.state_set_iterable(state_index_list, TheAnalyzer): 
-                LanguageDB.STATE_ENTRY(txt, state)
-                txt.append("    %s\n" % LanguageDB.ASSIGN("state_key", "%i" % state_key))
-                txt.append("    __quex_debug_template_entry(%i, %i, state_key);\n" % (TState.index, state_index))
-                if len(state_index_list) != 1:
-                    txt.append("    %s\n" % LanguageDB.GOTO_SHARED_ENTRY(TState.index, i))
-            # Implement the common entry
-            if len(state_index_list) != 1:
-                txt.extend("%s\n" % LanguageDB.LABEL_SHARED_ENTRY(TState.index, i))
-            prototype = TheAnalyzer.state_db[state_index_list[0]]
-            entry_coder.do(txt, prototype, TheAnalyzer, UnreachablePrefixF=False, LabelF=False)
-            txt.append("    %s\n" % LanguageDB.GOTO(TState.index))
-        else:
-            for state_index, state_key, state in TState.state_set_iterable(state_index_list, TheAnalyzer): 
-                # Implement the particular entry
-                entry_coder.do(txt, state, TheAnalyzer) # , UnreachablePrefixF=(i==0))
-                # Assign the state keys for each state involved
-                txt.append("    %s\n" % LanguageDB.ASSIGN("state_key", "%i" % state_key))
-                txt.append("    __quex_debug_template_entry(%i, %i, state_key);\n" % (TState.index, state_index))
-                txt.append("    %s\n" % LanguageDB.GOTO(TState.index))
-
-    # Implement entry point
-    txt.extend("%s\n" % LanguageDB.LABEL(TState.index))
-
 def __transition_map(txt, TState, TheAnalyzer):
-    """Generates code for transition map of a template state."""
+    """Generates code for transition map of a template state.
 
+       NOTE: A word about the reload procedure.
+       
+       Reload can end either with success (new data has been loaded), or failure
+       (no more data available). In case of success the **only** the transition
+       step has to be repeated. Nothing else is effected.  Stored positions are
+       adapted automatically.
+       
+       By convention we redo the transition map, in case of reload success and 
+       jump to the state's drop-out in case of failure. There is no difference
+       here in the template state example.
+    """
     prepare_transition_map(TState, TheAnalyzer)
-    # A word about the reload procedure:
-    #
-    # Reload can end either with success (new data has been loaded), or failure
-    # (no more data available). In case of success the **only** the transition
-    # step has to be repeated. Nothing else is effected.  Stored positions are
-    # adapted automatically.
-    #
-    # By convention we redo the transition map, in case of reload success and 
-    # jump to the state's drop-out in case of failure. There is no difference
-    # here in the template state example.
     txt.append("    __quex_debug_template_state(%i, state_key);\n" % TState.index)
     transition_block.do(txt, 
                         TState.transition_map, 

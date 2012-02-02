@@ -148,6 +148,14 @@ class LDB(dict):
             return "    state_key = %i; __quex_debug(\"state_key = %i\\n\");\n" \
                    % (EntryAction.value, EntryAction.value)
 
+        elif isinstance(EntryAction, entry_action.SetPathIterator):
+            offset_str = ""
+            if EntryAction.offset != 0: offset_str = " + %i" % EntryAction.offset
+            return     "    __quex_debug_path_walker_entry(%i, %i);\n" % \
+                       (EntryAction.path_walker_id, EntryAction.path_id) \
+                     + "    path_iterator = path_walker_%i_path_%i%s" %  \
+                       (EntryAction.path_walker_id, EntryAction.path_id, offset_str)
+
         else:
             assert False, "Unknown Entry Action"
 
