@@ -156,8 +156,15 @@ class LDB(dict):
                      + "    path_iterator = path_walker_%i_path_%i%s" %  \
                        (EntryAction.path_walker_id, EntryAction.path_id, offset_str)
 
+        elif isinstance(EntryAction, entry_action.SetStateIterator):
+            offset_str = ""
+            if EntryAction.offset != 0: offset_str = " + %i" % EntryAction.offset
+            return "    state_iterator = path_walker_%i_path_state_%i_state%s" %  \
+                   (EntryAction.path_walker_id, EntryAction.path_id, offset_str)
+
         else:
             assert False, "Unknown Entry Action"
+
 
     def ADDRESS_BY_DOOR_ID(self, DoorId):
         return get_address("$entry", DoorId, U=True, R=True)

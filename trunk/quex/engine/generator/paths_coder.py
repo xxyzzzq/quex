@@ -122,25 +122,6 @@ def do(txt, PWState, TheAnalyzer):
 
     return
 
-def __is_path_end_state_array_required(PWState):
-    """not (uniform_entry_along_all_paths) --> sequence of entry doors for each transition
-                                               on the path is stored, including the transition
-                                               to the last terminal state.
-                                           --> The path_end_state is not required to be 
-                                               stored separately again.
-       multiple paths with differing
-       terminal states                     --> The terminal state must be determined at
-                                               exit from the path. 
-    """
-    if   PWState.uniform_entry_along_all_paths is None:
-        return False
-    elif len(PWState.path_list) != 1:
-        return False
-    elif not PWState.terminal_door_id_is_same_f():
-        return False
-    else:
-        return True
-
 def __path_walker(txt, PWState, TheAnalyzer):
     uniform_entry_door_id    = PWState.uniform_entry_along_all_paths
     uniform_terminal_door_id = PWState.uniform_terminal_door_id
@@ -173,16 +154,27 @@ def __path_walker(txt, PWState, TheAnalyzer):
             #           else if path_iterator == path_2_end:  goto terminal_2
             #           ...
             jump_to_next_state = LanguageDB.GOTO_BY_DOOR_ID(uniform_entry_door_id)
-            assert False # WORK HERE
-            jump_to_terminal   = LanguageDB.GOTO_BY_DOOR_ID(uniform_terminal_door_id)
+            if PWState.engine_type == E_EngineTypes.FORWARD: undo_incr_decr = LanguageDB.INPUT_P_DECREMENT()
+            else:                                            undo_incr_decr = LanguageDB.INPUT_P_INCREMENT()
+            txt      = ""
+            else_str = ""
+            for path_id, sequence in enumerate(PWState.path_list):
+                terminal_door_id = PWState.terminal_door_id_of_path(PathID=path_id)
+                txt +=   "    %s%s\n"   % (else_str, LanguageDB.IF("path_iterator", "==", "path_walker_%i_path_%i%s" %  \
+                                                                   (PWState.index, path_id, len(sequence))              \
+                       + "        %s\n" % LanguageDB.GOTO_BY_DOOR_ID(terminal_door_id)                                  \
+                       + "    %s\n"     % LanguageDB.END_IF()                                              
+
+            jump_to_terminal = "    %s\n%s" % (undo_incr_decr, txt)
     else:
         # (3) -- Non-Uniform entries (ALONG THE PATH)
         #        (The terminal door is going to be listed in the state sequence array)
         #
         #     if input == *path_iterator:
-        #        path_iterator += 1
-        #        jump to state_sequence[i] # jump to next state's entry
-        jump_to_next_state = TODO
+        #        path_iterator  += 1
+        #        state_iterator += 1    # The 'entries' must set the state iterator appropriately
+        #        goto *state_iterator
+        jump_to_next_state = "    %s\n" % LanguageDB.GOTO_BY_VARIABLE("*state_iterator")
         jump_to_terminal   = None
 
     txt.extend(["    __quex_debug_path_walker_iteration(%i, path_iterator);\n" % PWState.index,
@@ -214,11 +206,6 @@ def __transition_map(txt, PWState, TheAnalyzer):
         #    isolated single interval.
         transition_map = [ (Interval(-sys.maxint, sys.maxint), E_StateIndices.DROP_OUT) ]
 
-    handle_source_state_dependent_transitions(PWState.transition_map, 
-                                              TheAnalyzer, 
-                                              "path_iterator - path_walker_%i_base" % PWState.index, 
-                                              PWState.state_index_list)
-
     # A word about the reload procedure:
     #
     # Reload can end either with success (new data has been loaded), or failure
@@ -229,7 +216,6 @@ def __transition_map(txt, PWState, TheAnalyzer):
     # By convention we redo the transition map, in case of reload success and 
     # jump to the state's drop-out in case of failure. There is no difference
     # here in the template state example.
-    print "##", transition_map
     transition_block.do(txt, 
                         transition_map, 
                         PWState.index, 
@@ -272,10 +258,9 @@ def __require_data(PWState, TheAnalyzer):
     """Defines the transition targets for each involved state.
     """
     def __state_sequences():
-        result    = ["{ "]
-        element_n = 0
-        for path in PWState.path_list:
-            first_state_index = path[0][0]
+        result = ["{ "]
+        offset = 0
+        for sequence in PWState.path_list:
             # NOTE: For all states in the path the 'from_state_index, to_state_index' can
             #       be determined, **except** for the FIRST state in the path. Thus for
             #       this state the 'door' cannot be determined in case that it is 
@@ -285,18 +270,23 @@ def __require_data(PWState, TheAnalyzer):
             #       used is reload during the FIRST state. The reload adapts the positions
             #       and acceptances are not changed. So, we can use the common entry
             #       to the first state as a reference here.
-            result.append("QUEX_LABEL(%i), " % LanguageDB.ADDRESS(first_state_index, None))
-
-            prev_state_index = first_state_index
-            for state_index in imap(lambda x: x[0], path[1:]):
+            prev_state_index  = sequence[0][0]
+            for state_index in imap(lambda x: x[0], sequence[1:]):
                 result.append("QUEX_LABEL(%i), " % LanguageDB.ADDRESS(state_index, prev_state_index))
                 prev_state_index = state_index
             result.append("\n")
 
-            element_n += len(path)
+            # The initial iterator always points ONE before the beginning of the list.
+            # BECAUSE: '*state_iterator' is first called after 'state_iterator += 1'
+            # BUT:     This happens when the 'SetStateIterator' objects are created.
+            variable_db.require("path_walker_%i_path_%i_state", 
+                                Initial = "path_walker_%i_state_base + %i" % (PWState.index, offset), 
+                                Index   = (PWState.index, path_id))
+
+            offset += len(path)
 
         result.append(" }");
-        return element_n, result
+        return offset, result
 
     def __character_sequences():
 
@@ -309,13 +299,13 @@ def __require_data(PWState, TheAnalyzer):
             # memory.append(LanguageDB.COMMENT("".join(sequence_str)) + "\n")
 
             # Last element of sequence contains only the 'end state'.
-            result.append(2)
+            result.append("        ")
             result.extend(imap(lambda x: "%i, " % x[1], path[:-1]))
             result.append("QUEX_SETTING_PATH_TERMINATION_CODE, ")
             result.append("\n")
 
             variable_db.require("path_walker_%i_path_%i", 
-                                Initial = "path_walker_%i_base + %i" % (PWState.index, offset), 
+                                Initial = "path_walker_%i_path_base + %i" % (PWState.index, offset), 
                                 Index   = (PWState.index, path_id))
 
             offset += len(path)
@@ -326,7 +316,7 @@ def __require_data(PWState, TheAnalyzer):
     # (*) Path Walker Basis
     # The 'base' must be defined before all --> PriorityF (see table in variable_db)
     element_n, character_sequence_str = __character_sequences()
-    variable_db.require_array("path_walker_%i_base", 
+    variable_db.require_array("path_walker_%i_path_base", 
                               ElementN = element_n,
                               Initial  = character_sequence_str,
                               Index    = PWState.index)
@@ -334,7 +324,7 @@ def __require_data(PWState, TheAnalyzer):
     # (*) The State Information for each path step
     if not PWState.uniform_entries_f:
         element_n, state_sequence_str = __state_sequences()
-        variable_db.require_array("path_walker_%i_state", 
+        variable_db.require_array("path_walker_%i_state_base", 
                                   ElementN = element_n,
                                   Initial  = state_sequence_str,
                                   Index    = PWState.index)

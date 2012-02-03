@@ -34,8 +34,9 @@ candidate_db = {
 "path_iterator":                  ["const QUEX_TYPE_CHARACTER*",       "((const QUEX_TYPE_CHARACTER*)0x0)", False],
 "path_end_state":                 ["QUEX_TYPE_GOTO_LABEL",             "QUEX_GOTO_STATE_LABEL_INIT_VALUE",  False], 
 "path_walker_%i_path_%i":         ["const QUEX_TYPE_CHARACTER* const", None,                                False],
-"path_walker_%i_base":            ["const QUEX_TYPE_CHARACTER",        None,                                True],
+"path_walker_%i_path_base":       ["const QUEX_TYPE_CHARACTER",        None,                                True],
 "path_walker_%i_state":           ["const QUEX_TYPE_GOTO_LABEL",       None,                                False],
+"path_walker_%i_state_base":      ["const QUEX_TYPE_GOTO_LABEL",       None,                                True],
 #
 # (*) Template Compression
 "state_key":                                    ["ptrdiff_t",                     "(ptrdiff_t)0",           False],
