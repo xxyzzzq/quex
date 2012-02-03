@@ -311,7 +311,7 @@ def __require_data(PWState, TheAnalyzer):
             offset += len(path)
 
         result.append("\n    }")
-        return offset + 1, result
+        return offset, result
 
     # (*) Path Walker Basis
     # The 'base' must be defined before all --> PriorityF (see table in variable_db)
