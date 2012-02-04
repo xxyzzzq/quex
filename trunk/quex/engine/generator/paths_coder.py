@@ -123,12 +123,12 @@ def do(txt, PWState, TheAnalyzer):
     return
 
 def __path_walker(txt, PWState, TheAnalyzer):
-    uniform_entry_door_id    = PWState.uniform_entry_along_all_paths
-    uniform_terminal_door_id = PWState.uniform_terminal_door_id
+    uniform_entry_door_id          = PWState.uniform_entry_door_id_along_all_paths
+    uniform_terminal_entry_door_id = PWState.uniform_terminal_entry_door_id
     # Three Versions of PathWalkers:
     # 
     if uniform_entry is not None:
-        if uniform_terminal_door_id is not None:
+        if uniform_terminal_entry_door_id is not None:
             # (1) -- Uniform entries (ALONG THE PATH)
             #     -- All path have same terminal state and enter it at the same door
             # 
@@ -139,7 +139,7 @@ def __path_walker(txt, PWState, TheAnalyzer):
             #    (input increment/decrement undo)      # we went one step too far
             #    goto TerminalDoorID
             jump_to_next_state = LanguageDB.GOTO_BY_DOOR_ID(uniform_entry_door_id)
-            jump_to_terminal   = LanguageDB.GOTO_BY_DOOR_ID(uniform_terminal_door_id)
+            jump_to_terminal   = LanguageDB.GOTO_BY_DOOR_ID(uniform_terminal_entry_door_id)
         else:
             #   (2) -- Uniform entries (ALONG THE PATH)
             #       -- The terminal of the paths are different
@@ -161,7 +161,7 @@ def __path_walker(txt, PWState, TheAnalyzer):
             for path_id, sequence in enumerate(PWState.path_list):
                 terminal_door_id = PWState.terminal_door_id_of_path(PathID=path_id)
                 txt +=   "    %s%s\n"   % (else_str, LanguageDB.IF("path_iterator", "==", "path_walker_%i_path_%i%s" %  \
-                                                                   (PWState.index, path_id, len(sequence))              \
+                                                                   (PWState.index, path_id, len(sequence))))            \
                        + "        %s\n" % LanguageDB.GOTO_BY_DOOR_ID(terminal_door_id)                                  \
                        + "    %s\n"     % LanguageDB.END_IF()                                              
 
@@ -260,7 +260,7 @@ def __require_data(PWState, TheAnalyzer):
     def __state_sequences():
         result = ["{ "]
         offset = 0
-        for sequence in PWState.path_list:
+        for path in PWState.path_list:
             # NOTE: For all states in the path the 'from_state_index, to_state_index' can
             #       be determined, **except** for the FIRST state in the path. Thus for
             #       this state the 'door' cannot be determined in case that it is 
@@ -270,8 +270,8 @@ def __require_data(PWState, TheAnalyzer):
             #       used is reload during the FIRST state. The reload adapts the positions
             #       and acceptances are not changed. So, we can use the common entry
             #       to the first state as a reference here.
-            prev_state_index  = sequence[0][0]
-            for state_index in imap(lambda x: x[0], sequence[1:]):
+            prev_state_index  = path[0][0]
+            for state_index in (x[0] for x in path[1:]):
                 result.append("QUEX_LABEL(%i), " % LanguageDB.ADDRESS(state_index, prev_state_index))
                 prev_state_index = state_index
             result.append("\n")
@@ -369,7 +369,7 @@ def __jump_to_state_router(PWState):
              takes care of the detection of the end-state, thus it has not
              to be determined in the '*path_iterator == PTC' section.
     """
-    assert PWState.uniform_entry_along_all_paths is None
+    assert PWState.uniform_entry_door_id_along_all_paths is None
 
     ID = PWState.index
 
