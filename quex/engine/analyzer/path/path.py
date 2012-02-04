@@ -12,7 +12,6 @@ class PathWalkerState_Entry(Entry):
     def __init__(self, StateIndex, TheEntry):
         Entry.__init__(self, StateIndex, [])
         self.update(TheEntry, 0)
-        Entry.door_tree_configure(self)
 
     def update(self, TheEntry, Offset):
         """Include 'TheState.entry.action_db' into this state. That means,
@@ -33,6 +32,19 @@ class PathWalkerState_Entry(Entry):
 
             self.action_db[transition_id] = clone
 
+    def cancel_state_iterator_f(self):
+        """When it is detected that along the path, all entries are uniform,
+           then no state chane needs to be followed. This means, that at entry
+           into the path walker, the state iterator does not need to be set.
+
+           This function does the job to cancel the 'state_iterator_f' in
+           any occuring 'SetPathIterator' command.
+        """
+        for action in TheEntry.action_db.itervalues():
+            for command in (x for x in action.command_list if isinstance(x, SetPathIterator)):
+                command.cancel_state_iterator_f()
+        
+
 class CharacterPath:
     """A set of states that can be walked along with a character sequence plus
        a common remaining transition map (here called 'skeleton').
@@ -42,7 +54,7 @@ class CharacterPath:
         assert isinstance(StartCharacter, (int, long))
         assert isinstance(Skeleton, dict)
 
-        self.entry = PathWalkerState_Entry(StartState.index, StartState.entry)
+        self.entry    = PathWalkerState_Entry(StartState.index, StartState.entry)
         self.drop_out = defaultdict(set)
         self.drop_out[StartState.drop_out].add(StartState.index)
 
@@ -55,7 +67,7 @@ class CharacterPath:
         # the correspondent state triggers.
         self.__wildcard_character = StartCharacter
 
-        self.uniform_entry_along_path = None
+        self.uniform_entry_door_id_along_path = None
 
     @property
     def state_index_list(self):
@@ -101,35 +113,37 @@ class CharacterPath:
         # Add the state on the sequence of state along the path
         self.__sequence.append((State.index, Char))
 
-    def uniform_entry_along_path(self):
-        """Walk along the given path and watch the command lists that have to 
-           be executed at the entry of each path in the list. Now, we use the
-           fact, that there is a 'door tree'. If two command lists of a transition
-           into a state are the same, then they end up in the same door of the
-           door tree. 
+    def uniform_entry_command_list_along_path(self):
+        """When a state is entered (possibly) some commands are executed, for
+           example 'position[1] = input_p' or 'last_acceptance = 13'. The states
+           on the path may require also actions to be taken when walking along
+           the path. 
 
-           The entries into the states along the paths are uniform, if and 
-           only if all entries happend through the same door in the door tree.
+           This function determines whether those commands are always the same
+           or not.
+
+           THIS DOES NOT INCLUDE THE TERMINAL STATE! 
+           THE ENTRY OF THE TERMINAL STATE IS NOT PART OF THE PATHWALKER!
+
+           RETURNS: ComandList -- if the commands are uniform.
+                    None       -- if the commands are not uniform.
         """
         # A path where there are not at least two states, is not a path.
         assert len(self.__sequence) >= 2
 
-        self.entry.door_tree_configure(self)
-        iterable         = self.__sequence.__iter__()
-        prev_state_index = iterable.next()[0]
+        prev_state_index = self.__sequence[0]
         prototype        = None
-        for state_index, char in iterable:
-            door_id = self.entry.get_door_id(state_index, prev_state_index)
+        for state_index, char in islice(self.__sequence, -1, None):
+            action = self.entry.action_db_get_command_list(state_index, prev_state_index)
             if prototype is not None:
-                if not(prototype == door_id):
+                if not prototype.is_equivalent(action.command_list):
                     return None
             else:
-                prototype = door_id
+                prototype = action.command_list
             prev_state_index = state_index
 
         # Since len(sequence) >= 2, then there is a 'prototype' at this point.
         return prototype
-
 
     def contains(self, StateIndex):
         for dummy in ifilter(lambda x: x[0] == StateIndex, self.__sequence):

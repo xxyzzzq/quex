@@ -37,9 +37,9 @@ class PathWalkerState(AnalyzerState):
         if not self.__uniformity_required_f:
             # If uniformity is not a required, then there's no need to compute the
             # uniform entry along path of any character path.
-            self.__uniform_entry_along_all_paths = None 
+            self.__uniform_entry_command_list_along_path = None 
         else:
-            self.__uniform_entry_along_all_paths = FirstPath.uniform_entry_along_path
+            self.__uniform_entry_command_list_along_path = FirstPath.uniform_entry_command_list_along_path
 
         self.__state_index_list     = None # Computed on demand
         self.__end_state_index_list = None # Computed on demand
@@ -67,16 +67,16 @@ class PathWalkerState(AnalyzerState):
         # (1b) If uniformity is required and not maintained, then refuse.
         if self.__uniformity_required_f:
             # If uniformity is required, then a non-uniform entry should never been
-            # accepted. Thus, there **must** be a 'uniform_entry_along_all_paths'.
-            assert self.__uniform_entry_along_all_paths is not None
+            # accepted. Thus, there **must** be a 'uniform_entry_door_id_along_all_paths'.
+            assert self.__uniform_entry_command_list_along_path is not None
             # If uniformity is a required, more than one drop-out scheme should never
             # been accepted. 
             assert len(Path.drop_out) == 1 
 
             # (*) Check Entry Uniformity
-            if Path.uniform_entry_along_path is None:
+            if Path.uniform_entry_command_list_along_path is None:
                 return False
-            elif not Path.uniform_entry_along_path.is_equivalent(self.__uniform_entry_along_all_paths):
+            elif not Path.uniform_entry_command_list_along_path.is_equivalent(self.__uniform_entry_command_list_along_path):
                 return False
             # (*) Check Drop-Out Uniformity
             elif self.drop_out != Path.drop_out: 
@@ -143,14 +143,15 @@ class PathWalkerState(AnalyzerState):
 
     @property
     def uniform_entries_f(self):   
-        assert False, "Use: uniform_entry_along_all_paths"
+        assert False, "Use: uniform_entry_door_id_along_all_paths"
 
     @property
-    def uniform_entry_along_all_paths(self):   
+    def uniform_entry_door_id_along_all_paths(self):   
         """RETURNS: -- An 'CommandList' object if it is common for all paths.
                     -- None, the entries along the paths are somehow differring.
         """
-        return self.__uniform_entry_along_all_paths
+        if self.__uniform_entry_command_list_along_path is None: return None
+        # Assume that the door tree is configured correctly
 
     def terminal_door_id_of_path(self, PathID):
         """Determine the DoorID by which the path number 'PathID' enters
@@ -166,10 +167,10 @@ class PathWalkerState(AnalyzerState):
         door_id = self.entry.get_door_id(StateIndex     = terminal_state_index, 
                                          FromStateIndex = before_terminal_state_index)
 
-    def terminal_door_id_is_same_f(self):
-        """RETURNS: True  -- if all paths which are involved enter the same 
-                             terminal state through the same entry door.
-                    False -- if not.
+    def uniform_terminal_entry_door_id(self):
+        """RETURNS: DoorID -- if all paths which are involved enter the same 
+                               terminal state through the same entry door.
+                    None   -- if not.
         """
         assert len(self.path_list) != 0
         if len(self.path_list) == 1:
@@ -178,12 +179,12 @@ class PathWalkerState(AnalyzerState):
         prototype = None
         for path_id in xrange(len(self.__path_list)):
             # Determine door entered from last but one to last state on the path
-            door_id = self.terminal_door_of_path(path_id)
+            door_id = self.terminal_door_id_of_path(path_id)
             if prototype is None: 
                 prototype = door_id
             elif not (prototype == door_id):
-                return False
-        return True
+                return None
+        return prototype
 
     @property
     def uniform_drop_outs_f(self): 
@@ -220,9 +221,21 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
     """
     path_walker_list = []
     for candidate in CharacterPathList:
+        # Before we can analyze propperly, the door tree must be configured
+        candidate.entry.door_tree_configure(self)
+
         for path_walker in path_walker_list:
             if path_walker.accept(candidate): break
         else:
             path_walker_list.append(PathWalkerState(candidate, TheAnalyzer.engine_type, CompressionType))
+
+    # If a pathwalker has only uniform entries, then the 'SetPathIterator' commands
+    # do not need to set the 'state_iterator' along a state sequence.
+    for path_walker in path_walker_list:
+        # Once the entries are combined, re-configure the door tree
+        path_walker.entry.door_tree_configure(self)
+
+        if path_walker.uniform_entry_door_id_along_all_paths is not None:
+            path_walker.entry.cancel_state_iterator_f()
 
     return path_walker_list
