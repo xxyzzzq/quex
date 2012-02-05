@@ -152,6 +152,10 @@ class PathWalkerState(AnalyzerState):
         """
         if self.__uniform_entry_command_list_along_path is None: return None
         # Assume that the door tree is configured correctly
+        # => Then, looking for one door_id is enough.
+        from_index = path[0][0]
+        to_index   = path[1][0]
+        return self.entry.get_door_id(to_index, from_index)
 
     def terminal_door_id_of_path(self, PathID):
         """Determine the DoorID by which the path number 'PathID' enters
@@ -221,9 +225,6 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
     """
     path_walker_list = []
     for candidate in CharacterPathList:
-        # Before we can analyze propperly, the door tree must be configured
-        candidate.entry.door_tree_configure(self)
-
         for path_walker in path_walker_list:
             if path_walker.accept(candidate): break
         else:
@@ -233,7 +234,7 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
     # do not need to set the 'state_iterator' along a state sequence.
     for path_walker in path_walker_list:
         # Once the entries are combined, re-configure the door tree
-        path_walker.entry.door_tree_configure(self)
+        path_walker.entry.door_tree_configure()
 
         if path_walker.uniform_entry_door_id_along_all_paths is not None:
             path_walker.entry.cancel_state_iterator_f()

@@ -151,17 +151,20 @@ class LDB(dict):
         elif isinstance(EntryAction, entry_action.SetPathIterator):
             offset_str = ""
             if EntryAction.offset != 0: offset_str = " + %i" % EntryAction.offset
-            txt =      "    __quex_debug_path_walker_entry(%i, %i);\n" % \
-                       (EntryAction.path_walker_id, EntryAction.path_id) \
-                     + "    path_iterator = path_walker_%i_path_%i%s" %  \
-                       (EntryAction.path_walker_id, EntryAction.path_id, offset_str)
+            txt =   "    __quex_debug_path_walker_entry(%i, %i);\n" % \
+                    (EntryAction.path_walker_id, EntryAction.path_id) \
+                  + "    path_iterator = path_walker_%i_path_%i%s;\n" % \
+                    (EntryAction.path_walker_id, EntryAction.path_id, offset_str)
 
             if not EntryAction.state_iterator_f: return txt
 
-            offset_str = ""
-            if EntryAction.offset != 1: offset_str = " + (%i)" % (EntryAction.offset - 1)
-            return "    state_iterator = path_walker_%i_path_state_%i_state%s" %  \
+            if   EntryAction.offset == 0: offset_str = " - 1"
+            elif EntryAction.offset == 1: offset_str = ""
+            elif EntryAction.offset >  1: offset_str = " + %s" % EntryAction.offset
+            else:                         assert False
+            txt += "    state_iterator = path_walker_%i_path_%i_states%s;\n" %  \
                    (EntryAction.path_walker_id, EntryAction.path_id, offset_str)
+            return txt
 
         else:
             assert False, "Unknown Entry Action"

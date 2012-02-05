@@ -81,12 +81,13 @@ import quex.engine.generator.state.transition.core  as transition_block
 import quex.engine.generator.state.drop_out         as drop_out_coder
 import quex.engine.generator.state.entry            as entry_coder
 from   quex.engine.generator.state.core             import input_do
-from   quex.engine.generator.template_coder               import handle_source_state_dependent_transitions
-from   quex.engine.generator.languages.address            import get_label
-from   quex.engine.generator.languages.variable_db        import variable_db
-from   quex.engine.interval_handling                      import Interval
+from   quex.engine.generator.state.transition.code  import TextTransitionCode
+from   quex.engine.generator.template_coder         import handle_source_state_dependent_transitions
+from   quex.engine.generator.languages.address      import get_label
+from   quex.engine.generator.languages.variable_db  import variable_db
+from   quex.engine.analyzer.state_entry_action      import DoorID
+from   quex.engine.interval_handling                import Interval
 
-import quex.engine.analyzer.path.core                     as paths 
 
 from   quex.blackboard import setup as Setup, \
                               E_StateIndices, \
@@ -112,7 +113,13 @@ def do(txt, PWState, TheAnalyzer):
     __path_walker(txt, PWState, TheAnalyzer)
 
     # (*) Transition Map ______________________________________________________
-    __transition_map(txt, PWState, TheAnalyzer)
+    prepare_transition_map(PWState)
+    transition_block.do(txt, 
+                        PWState.transition_map, 
+                        PWState.index, 
+                        PWState.engine_type, 
+                        PWState.init_state_f, 
+                        TheAnalyzer = TheAnalyzer)
 
     # (*) Drop Out ____________________________________________________________
     __drop_out(txt, PWState, TheAnalyzer)
@@ -127,7 +134,7 @@ def __path_walker(txt, PWState, TheAnalyzer):
     uniform_terminal_entry_door_id = PWState.uniform_terminal_entry_door_id
     # Three Versions of PathWalkers:
     # 
-    if uniform_entry is not None:
+    if uniform_entry_door_id is not None:
         if uniform_terminal_entry_door_id is not None:
             # (1) -- Uniform entries (ALONG THE PATH)
             #     -- All path have same terminal state and enter it at the same door
@@ -165,7 +172,7 @@ def __path_walker(txt, PWState, TheAnalyzer):
                        + "        %s\n" % LanguageDB.GOTO_BY_DOOR_ID(terminal_door_id)                                  \
                        + "    %s\n"     % LanguageDB.END_IF()                                              
 
-            jump_to_terminal = "    %s\n%s" % (undo_incr_decr, txt)
+            jump_to_terminal = "%s\n%s" % (undo_incr_decr, txt)
     else:
         # (3) -- Non-Uniform entries (ALONG THE PATH)
         #        (The terminal door is going to be listed in the state sequence array)
@@ -174,7 +181,7 @@ def __path_walker(txt, PWState, TheAnalyzer):
         #        path_iterator  += 1
         #        state_iterator += 1    # The 'entries' must set the state iterator appropriately
         #        goto *state_iterator
-        jump_to_next_state = "    %s\n" % LanguageDB.GOTO_BY_VARIABLE("*state_iterator")
+        jump_to_next_state = "%s\n" % LanguageDB.GOTO_BY_VARIABLE("*state_iterator")
         jump_to_terminal   = None
 
     txt.extend(["    __quex_debug_path_walker_iteration(%i, path_iterator);\n" % PWState.index,
@@ -186,43 +193,8 @@ def __path_walker(txt, PWState, TheAnalyzer):
         txt.append("    %s\n" % LanguageDB.END_IF())
     else:
         txt.extend(["    %s\n" % LanguageDB.IF("*path_iterator", "==", "QUEX_SETTING_PATH_TERMINATION_CODE", FirstF=False),
-                    "        __quex_debug_path_walker_exit(%i);\n" % PWState.index,
                     "        %s\n" % jump_to_end_state,
                     "    %s\n" % LanguageDB.END_IF()])
-
-def __transition_map(txt, PWState, TheAnalyzer):
-    """Generates the path walker, that walks along the character sequence.
-    """
-    # Transition map of the 'skeleton'        
-    if not PWState.transition_map_empty_f:
-        transition_map = PWState.transition_map
-    else:
-        # Transition Map Empty:
-        # This happens, for example, if there are only keywords and no 
-        # 'overlaying' identifier pattern. But, in this case also, there
-        # must be something that catches the 'buffer limit code'. 
-        # => Define an 'all drop out' trigger_map, and then later
-        # => Adapt the trigger map, so that the 'buffer limit' is an 
-        #    isolated single interval.
-        transition_map = [ (Interval(-sys.maxint, sys.maxint), E_StateIndices.DROP_OUT) ]
-
-    # A word about the reload procedure:
-    #
-    # Reload can end either with success (new data has been loaded), or failure
-    # (no more data available). In case of success **only** the transition
-    # step has to be repeated. Nothing else is effected.  Stored positions are
-    # adapted automatically.
-    #
-    # By convention we redo the transition map, in case of reload success and 
-    # jump to the state's drop-out in case of failure. There is no difference
-    # here in the template state example.
-    transition_block.do(txt, 
-                        transition_map, 
-                        PWState.index, 
-                        PWState.engine_type, 
-                        PWState.init_state_f, 
-                        TheAnalyzer = TheAnalyzer)
-    return 
 
 def __drop_out(txt, PWState, TheAnalyzer):
     # (*) Central Label for the Templates Drop Out
@@ -245,11 +217,11 @@ def __drop_out(txt, PWState, TheAnalyzer):
                              state_index_list)
         # drop out action
         prototype = TheAnalyzer.state_db[state_index_list.__iter__().next()]
-        action    = []
-        drop_out_coder.do(action, prototype, TheAnalyzer, DefineLabelF=False)
-        case_list.append( (state_key_list, action) )
+        drop_out_txt = []
+        drop_out_coder.do(drop_out_txt, prototype, TheAnalyzer, DefineLabelF=False)
+        case_list.append( (state_key_list, drop_out_txt) )
 
-    case_txt = LanguageDB.SELECTION("path_iterator - path_walker_%i_base" % PWState.index, 
+    case_txt = LanguageDB.SELECTION("path_iterator - path_walker_%s_path_base" % PWState.index, 
                                     case_list, CaseFormat="dec")
     LanguageDB.INDENT(case_txt)
     txt.extend(case_txt)
@@ -257,10 +229,14 @@ def __drop_out(txt, PWState, TheAnalyzer):
 def __require_data(PWState, TheAnalyzer):
     """Defines the transition targets for each involved state.
     """
+    variable_db.require("path_iterator")
+    if PWState.uniform_entry_door_id_along_all_paths is None:
+        variable_db.require("state_iterator")
+
     def __state_sequences():
         result = ["{ "]
         offset = 0
-        for path in PWState.path_list:
+        for path_id, path in enumerate(PWState.path_list):
             # NOTE: For all states in the path the 'from_state_index, to_state_index' can
             #       be determined, **except** for the FIRST state in the path. Thus for
             #       this state the 'door' cannot be determined in case that it is 
@@ -279,7 +255,7 @@ def __require_data(PWState, TheAnalyzer):
             # The initial iterator always points ONE before the beginning of the list.
             # BECAUSE: '*state_iterator' is first called after 'state_iterator += 1'
             # BUT:     This happens when the 'SetStateIterator' objects are created.
-            variable_db.require("path_walker_%i_path_%i_state", 
+            variable_db.require("path_walker_%i_path_%i_states", 
                                 Initial = "path_walker_%i_state_base + %i" % (PWState.index, offset), 
                                 Index   = (PWState.index, path_id))
 
@@ -322,95 +298,47 @@ def __require_data(PWState, TheAnalyzer):
                               Index    = PWState.index)
     
     # (*) The State Information for each path step
-    if not PWState.uniform_entries_f:
+    if PWState.uniform_entry_door_id_along_all_paths is None:
         element_n, state_sequence_str = __state_sequences()
         variable_db.require_array("path_walker_%i_state_base", 
                                   ElementN = element_n,
                                   Initial  = state_sequence_str,
                                   Index    = PWState.index)
 
-def get_reload_info(PWState):
-    """The 'reload' must know where to go in case that the reload succeeds 
-       and in case that it fails:
+def prepare_transition_map(PWState):
+    """Prepare the transition map of the PWState for code generation.
+       The targets of a PathWalkerState are all 'DoorID's. Here, they
+       are translated into text.
+
+       NOTE: A word about the reload procedure.
        
-       -- If the reload succeeds it must reenter the same state. If the 
-          entries are not uniform, the entry must be identified by 'state key'. 
-          
-       -- If the reload fails the current state's drop out section must be 
-          entered. The routing to state's particular drop out section happens
-          from the templates central drop out at the end of the transition map.
+       Reload can end either with success (new data has been loaded), or failure
+       (no more data available). In case of success the **only** the transition
+       step has to be repeated. Nothing else is effected.  Stored positions are
+       adapted automatically.
+       
+       By convention we redo the transition map, in case of reload success and 
+       jump to the state's drop-out in case of failure. There is no difference
+       here in the template state example.
     """
-    if PWState.uniform_entries_f:
-        ok_state_str = None # Default: Template's common entry
-    else:
-        ok_state_str = "path_walker_%i_map_state_key_to_entry_index[path_iterator - path_walker_%i_base]" \
-                       % (PWState.index, PWState.index)
+    # Transition map of the 'skeleton'        
+    if PWState.transition_map_empty_f:
+        # Transition Map Empty:
+        # This happens, for example, if there are only keywords and no 
+        # 'overlaying' identifier pattern. But, in this case also, there
+        # must be something that catches the 'buffer limit code'. 
+        # => Define an 'all drop out' trigger_map, and then later
+        # => Adapt the trigger map, so that the 'buffer limit' is an 
+        #    isolated single interval.
+        PWState.transition_map = [ (Interval(-sys.maxint, sys.maxint), E_StateIndices.DROP_OUT) ]
 
-    # DropOut is handled at the end of the transition map.
-    # From there, it is routed by the state_key to the particular drop out.
-    fail_state_str = "QUEX_LABEL(%i)" % LanguageDB.ADDRESS_DROP_OUT(PWState.index)
+    transition_map = PWState.transition_map
 
-    return ok_state_str, fail_state_str
-
-def __jump_to_state_router(PWState):
-    """Create code that jumps to a state based on the path_iterator.
-
-       NOTE: Paths cannot be recursive. Also, path transitions are linear, i.e.
-             target states are either subsequent path states or the path
-             is left. 
-
-             The current state is identified by the 'path_iterator'
-
-             (1) determine to what path the path_iterator belongs.
-             (2) 'path_iterator - path_begin' gives an integer that identifies
-                 the particular state of the path.
-
-       NOTE: In the case of non-uniform path state elements, the state router
-             takes care of the detection of the end-state, thus it has not
-             to be determined in the '*path_iterator == PTC' section.
-    """
-    assert PWState.uniform_entry_door_id_along_all_paths is None
-
-    ID = PWState.index
-
-    # Make sure that the state router is implemented, add reference:
-    get_label("$state-router", U=True)
-    return "QUEX_GOTO_STATE(path_walker_%i_state[path_iterator - path_walker_%i_base]);\n" % (ID, ID)
-
-def __jump_to_path_end_state(PWState):
-    """After the last transition of the path, transit into the 'end state',
-       i.e. the first state after the path. If the path walker contains multiple
-       path, this might include state routing.  
-    """
-    assert PWState.uniform_entries_f
-
-    PathList = PWState.path_list
-    PathN    = len(PathList)
-
-    txt = []
-    txt.append(2)
-    # Undo last step
-    if PWState.engine_type == E_EngineTypes.FORWARD: txt.append(LanguageDB.INPUT_P_DECREMENT())
-    else:                                            txt.append(LanguageDB.INPUT_P_INCREMENT())
-    txt.append("\n")
-
-    # -- Transition to the first state after the path:
-    if PathN == 1:
-        # (i) There is only one path for the pathwalker, then there is only
-        #     one terminal and it is determined at compilation time.
-        prototype_path  = PathList[0]
-        end_state_index = prototype_path[-1][0]
-        txt.append(2)
-        txt.append(LanguageDB.GOTO(end_state_index))
-    else:
-        # (ii) There are multiple paths for the pathwalker, then the terminal
-        #      must be determined at run time.
-        #   -- At the end of the path, path_iterator == path_end, thus we can identify
-        #      the path by comparing simply against all path_ends.
-        get_label("$state-router", U=True) # Make sure, that state router is referenced
-        txt.append(2)
-        txt.append("QUEX_GOTO_STATE(path_end_state);")
-
-    txt.append("\n")
-    return txt
+    for i, info in enumerate(transition_map):
+        interval, target = info
+        if target == E_StateIndices.DROP_OUT: continue
+        assert isinstance(target, DoorID)
+        target            = TextTransitionCode([LanguageDB.GOTO_BY_DOOR_ID(target)])
+        transition_map[i] = (interval, target)
+    return
 
