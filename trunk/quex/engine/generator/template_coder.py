@@ -111,36 +111,19 @@ def do(txt, TState, TheAnalyzer):
     input_do(txt, TState) 
 
     # (*) Transition Map ______________________________________________________
-    __transition_map(txt, TState, TheAnalyzer)
-
-    # (*) Drop Out ____________________________________________________________
-    __drop_out(txt, TState, TheAnalyzer)
-
-    return 
-
-def __transition_map(txt, TState, TheAnalyzer):
-    """Generates code for transition map of a template state.
-
-       NOTE: A word about the reload procedure.
-       
-       Reload can end either with success (new data has been loaded), or failure
-       (no more data available). In case of success the **only** the transition
-       step has to be repeated. Nothing else is effected.  Stored positions are
-       adapted automatically.
-       
-       By convention we redo the transition map, in case of reload success and 
-       jump to the state's drop-out in case of failure. There is no difference
-       here in the template state example.
-    """
     prepare_transition_map(TState)
-    txt.append("    __quex_debug_template_state(%i, state_key);\n" % TState.index)
     transition_block.do(txt, 
                         TState.transition_map, 
                         TState.index, 
                         TState.engine_type, 
                         TState.init_state_f, 
-                        TheAnalyzer = TheAnalyzer, 
-                        SuppressDebugStateOutputF=True)
+                        TheAnalyzer   = TheAnalyzer, 
+                        DebugStateStr = "    __quex_debug_template_state(%i, state_key);\n" % TState.index)
+
+    # (*) Drop Out ____________________________________________________________
+    __drop_out(txt, TState, TheAnalyzer)
+
+    return 
 
 def __drop_out(txt, TState, TheAnalyzer):
     """DropOut Section:
@@ -282,6 +265,19 @@ def handle_source_state_dependent_transitions(transition_map, TheAnalyzer,
         transition_map[i] = (interval, target)
 
 def prepare_transition_map(TheState):
+    """Generates code for transition map of a template state.
+
+       NOTE: A word about the reload procedure.
+       
+       Reload can end either with success (new data has been loaded), or failure
+       (no more data available). In case of success the **only** the transition
+       step has to be repeated. Nothing else is effected.  Stored positions are
+       adapted automatically.
+       
+       By convention we redo the transition map, in case of reload success and 
+       jump to the state's drop-out in case of failure. There is no difference
+       here in the template state example.
+    """
     transition_map = TheState.transition_map
 
     for i, info in enumerate(transition_map):
