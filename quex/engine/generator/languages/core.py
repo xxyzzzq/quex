@@ -69,9 +69,10 @@ class LDB(dict):
     UNREACHABLE             = "__quex_assert_no_passage();"
     ELSE                    = "} else {\n"
 
-    PATH_ITERATOR_INCREMENT = "++(path_iterator);"
-    BUFFER_LIMIT_CODE       = "QUEX_SETTING_BUFFER_LIMIT_CODE"
-    COMMENT_DELIMITERS      = [["/*", "*/", ""], ["//", "\n", ""], ["\"", "\"", "\\\""]]
+    PATH_ITERATOR_INCREMENT  = "++(path_iterator);"
+    STATE_ITERATOR_INCREMENT = "++(state_iterator);"
+    BUFFER_LIMIT_CODE        = "QUEX_SETTING_BUFFER_LIMIT_CODE"
+    COMMENT_DELIMITERS       = [["/*", "*/", ""], ["//", "\n", ""], ["\"", "\"", "\\\""]]
     def LEXEME_START_SET(self, PositionStorage=None):
         if PositionStorage is None: return "me->buffer._lexeme_start_p = me->buffer._input_p;"
         else:                       return "me->buffer._lexeme_start_p = %s;" % PositionStorage
@@ -153,7 +154,7 @@ class LDB(dict):
             if EntryAction.offset != 0: offset_str = " + %i" % EntryAction.offset
             txt =   "    __quex_debug_path_walker_entry(%i, %i);\n" % \
                     (EntryAction.path_walker_id, EntryAction.path_id) \
-                  + "    path_iterator = path_walker_%i_path_%i%s;\n" % \
+                  + "    path_iterator  = path_walker_%i_path_%i%s;\n" % \
                     (EntryAction.path_walker_id, EntryAction.path_id, offset_str)
 
             if not EntryAction.state_iterator_f: return txt
@@ -384,7 +385,6 @@ class LDB(dict):
         else:   
             index = TheState.index
 
-        print "##FSI:", FromStateIndex
         if label is None: label = self.LABEL(index, FromStateIndex, NewlineF)
         txt.append(label)
 

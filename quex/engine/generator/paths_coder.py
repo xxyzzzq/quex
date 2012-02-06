@@ -181,7 +181,8 @@ def __path_walker(txt, PWState, TheAnalyzer):
         #        path_iterator  += 1
         #        state_iterator += 1    # The 'entries' must set the state iterator appropriately
         #        goto *state_iterator
-        jump_to_next_state = "%s\n" % LanguageDB.GOTO_BY_VARIABLE("*state_iterator")
+        jump_to_next_state = "%s\n    %s\n" % (LanguageDB.STATE_ITERATOR_INCREMENT, 
+                                               LanguageDB.GOTO_BY_VARIABLE("*state_iterator"))
         jump_to_terminal   = None
 
     txt.extend(["    __quex_debug_path_walker_iteration(%i, path_iterator);\n" % PWState.index,

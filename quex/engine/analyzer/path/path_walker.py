@@ -1,11 +1,12 @@
 from   quex.engine.analyzer.core                import AnalyzerState
-from   quex.engine.analyzer.state_entry_action  import SetPathIterator
+from   quex.engine.analyzer.state_entry_action  import SetPathIterator, DoorID
 from   quex.engine.state_machine.transition_map import TransitionMap
 import quex.engine.state_machine.index          as     index
 from   quex.blackboard                          import \
                                                        E_EngineTypes, \
                                                        E_InputActions, \
-                                                       E_Compression
+                                                       E_Compression, \
+                                                       E_StateIndices
 
 from itertools import imap
 from operator  import itemgetter
@@ -215,7 +216,23 @@ class PathWalkerState(AnalyzerState):
         return sorted(imap(help, StateIndexList), key=itemgetter(1, 2)) # Sort by 'path_id', 'path_offset'
 
     def replace_door_ids_in_transition_map(self, ReplacementDB):
-        pass # Do nothing for the moment
+        """See TemplateState, for more information."""
+        def replace_if_required(DoorId):
+            replacement = ReplacementDB.get(DoorId)
+            if replacement is not None: return replacement
+            return DoorId
+
+        for i, info in enumerate(self.__transition_map):
+            interval, target = info
+
+            if target == E_StateIndices.DROP_OUT: continue
+            assert isinstance(target, DoorID)
+
+            new_door_id = ReplacementDB.get(target)
+            if new_door_id is not None:
+                self.__transition_map[i] = (interval, new_door_id)
+
+
 
 def group(CharacterPathList, TheAnalyzer, CompressionType):
     """Different character paths may be walked down by the same pathwalker, if
@@ -234,9 +251,38 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
     # do not need to set the 'state_iterator' along a state sequence.
     for path_walker in path_walker_list:
         # Once the entries are combined, re-configure the door tree
-        path_walker.entry.door_tree_configure()
+        path_walker.entry.door_tree_configure(path_walker.index)
 
         if path_walker.uniform_entry_door_id_along_all_paths is not None:
             path_walker.entry.cancel_state_iterator_f()
 
-    return path_walker_list
+    return path_walker_list, get_door_id_replacement_db(path_walker_list, TheAnalyzer)
+
+def get_door_id_replacement_db(PathWalkerList, TheAnalyzer):
+    """RETURN:
+
+            map:    old door_id ---> new door_id
+
+       where the 'old door_id' originates in an AnalyzerState, and the
+       'new door_id' is a door of the Mega State (PathWalkerState).
+
+       (Should be same as in TemplateState).
+    """
+    replacement_db = {}
+    for mega_state in PathWalkerList:
+        # State indices that were combined in the Mega State
+        state_index_list = mega_state.implemented_state_index_list
+
+        # Iterate over states that were combined into the Mega State
+        for state in (TheAnalyzer.state_db[i] for i in state_index_list):
+            # state = state that has been implemented in the mega state.
+            for old_door_id, transition_id_list in state.entry.transition_db.iteritems():
+                if len(transition_id_list) == 0: continue
+                prototype_transition_id = transition_id_list[0]
+                # old_door_id = where the all the transitions in transition_id_list enter the 'state'.
+                # new_door_id = where the transitions in transition_id_list now the mega state.
+                new_door_id                 = mega_state.entry.door_db[prototype_transition_id]
+                replacement_db[old_door_id] = new_door_id
+
+    return replacement_db
+

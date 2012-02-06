@@ -37,13 +37,11 @@
 
 #if _MSC_VER >= 1600
 // VisualStudio(tm) 2010 _MSC_VER = 1600
-// Since this version, Visual Studio(tm) contains "stdint.h"
+// Since this version, Visual Studio(tm) contains "stdint.h"/"cstdint"
 #   ifdef __cplusplus
-extern "C" {
-#   endif
-#   include "stdint.h"
-#   ifdef __cplusplus
-}
+#       include <cstdint>
+#   else
+#       include <stdint.h>
 #   endif
 #else
 

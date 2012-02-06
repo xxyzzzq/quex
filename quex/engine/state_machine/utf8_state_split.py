@@ -277,8 +277,6 @@ def split_interval_into_contigous_byte_sequence_range(X, L):
         if p == L - 1: byte_sequence[p] = back_sequence[p]
         else:          byte_sequence[p] = back_sequence[p] - 1 
         current_end      = utf8_to_unicode(byte_sequence) + 1
-        ## print "##begin: ", ["%02X" % x for x in unicode_to_utf8(current_begin)]
-        ## print "##end-1: ", ["%02X" % x for x in unicode_to_utf8(current_end - 1)]
         result.append(Interval(current_begin, current_end))
         current_begin    = current_end
 

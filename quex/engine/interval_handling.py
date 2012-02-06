@@ -669,7 +669,6 @@ class NumberSet(object):
         # For each interval to leave remain, it needs at least have an intersection
         # with one of the other intervals. If such an intersection is found the
         # interval of concern can be pruned appropriately.
-        # print "##si0", self.__intervals
         L              = len(self.__intervals)
         insertion_list = []
         deletion_list  = []

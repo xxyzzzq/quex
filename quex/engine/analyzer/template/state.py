@@ -113,6 +113,8 @@ class TemplateState(AnalyzerState):
     @property
     def state_index_list(self):    return self.__state_index_list
     @property
+    def implemented_state_index_list(self):    return self.__state_index_list
+    @property
     def entry(self):               return self.__entry
     @property
     def uniform_drop_outs_f(self): return self.__uniform_drop_outs_f

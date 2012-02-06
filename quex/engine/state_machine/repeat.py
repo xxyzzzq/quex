@@ -74,7 +74,6 @@ def kleene_closure(the_state_machine):
     #           so the next step can enter another target state index.
     result.mount_to_acceptance_states(prev_init_state_index,
                                       CancelStartAcceptanceStateF=False)
-    ## print "##backward:", result
     # (*) connect all acceptance states via epsilon transition 
     #     *forwards* to terminal state
     result.mount_to_acceptance_states(new_terminal_state_index,
