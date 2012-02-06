@@ -181,7 +181,7 @@
            __quex_debug2("path walker %i: <<Drop Out>>\n", (int)PW_ID)
 #   define __quex_debug_path_walker_iteration(PW_ID, PathIterator)                         \
            __quex_debug3("path walker %i: [%i] __",                                        \
-                         (int)PW_ID, (int)(PathIterator - path_walker_##PW_ID##_base));    \
+                         (int)PW_ID, (int)(PathIterator - path_walker_##PW_ID##_path_base));\
            __quex_debug("input:           ");                                              \
            __QUEX_PRINT_CHAR(*(me->buffer._input_p));                                      \
            __quex_debug("<->              ");                                              \

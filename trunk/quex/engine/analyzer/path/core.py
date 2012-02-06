@@ -112,12 +112,13 @@ def do(TheAnalyzer, CompressionType, AvailableStateIndexList=None, MegaStateList
     # Group the paths according to their 'skeleton'. If uniformity is required
     # then this is also a grouping criteria. The result is a list of path walkers
     # that can walk the paths. They can act as AnalyzerState-s for code generation.
-    path_walker_state_list = path_walker.group(path_list, TheAnalyzer, CompressionType)
+    path_walker_state_list, door_id_replacement_db = path_walker.group(path_list, TheAnalyzer, 
+                                                                       CompressionType)
     done_set = set()
     for pw_state in path_walker_state_list:
         done_set.update(pw_state.implemented_state_index_list)
 
-    return done_set, path_walker_state_list
+    return done_set, path_walker_state_list, door_id_replacement_db
 
 def __filter_redundant_paths(path_list):
     """Due to the search algorithm, it is not safe to assume that there are

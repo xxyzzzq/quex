@@ -161,26 +161,7 @@ def do(TheAnalyzer, MinGain, CompressionType,
 
     done_state_index_set, template_state_list = combiner.result()
 
-    # (*) Adaption of the Addresses
-    #
-    # All template states must set the databases about 'door-id' and 'transition-id'
-    # in the states that they implement.
-    for state in template_state_list:
-        state.replace_door_ids_in_transition_map(combiner.door_id_replacement_db)
-
-    for state in MegaStateList:
-        state.replace_door_ids_in_transition_map(combiner.door_id_replacement_db)
-
-    # We must leave the databases in place, until the replacements are made
-    for template_state in template_state_list:
-        for state in (TheAnalyzer.state_db[i] for i in template_state.state_index_list):
-            # Make sure, that the databases which are referenced for transition addresses
-            # are updated, i.e. we use the ones of the template state.
-            state.entry.set_door_db(template_state.entry.door_db)
-            state.entry.set_transition_db(template_state.entry.transition_db)
-            state.entry.set_door_tree_root(template_state.entry.door_tree_root)
-
-    return done_state_index_set, template_state_list
+    return done_state_index_set, template_state_list, combiner.door_id_replacement_db
 
 class CombinationDB:
     """Contains the 'Gain' for each possible combination of states. This includes
@@ -261,6 +242,8 @@ class CombinationDB:
 
            where the 'old door_id' originates in an AnalyzerState, and the
            'new door_id' is a door of the template state.
+
+           (Should be same as in PathWalkerState).
         """
         if self.__door_id_replacement_db is not None:
             return self.__door_id_replacement_db

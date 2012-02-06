@@ -1,6 +1,7 @@
-from quex.engine.analyzer.core               import AnalyzerState
-from quex.engine.analyzer.state_entry        import Entry
-from quex.engine.analyzer.state_entry_action import DoorID, SetPathIterator
+from   quex.engine.analyzer.core               import AnalyzerState
+from   quex.engine.analyzer.state_entry        import Entry
+from   quex.engine.analyzer.state_entry_action import DoorID, SetPathIterator
+import quex.engine.state_machine.index         as     index
 
 from quex.engine.interval_handling import NumberSet
 
@@ -54,7 +55,7 @@ class CharacterPath:
         assert isinstance(StartCharacter, (int, long))
         assert isinstance(Skeleton, dict)
 
-        self.entry    = PathWalkerState_Entry(StartState.index, StartState.entry)
+        self.entry    = PathWalkerState_Entry(index.get(), StartState.entry)
         self.drop_out = defaultdict(set)
         self.drop_out[StartState.drop_out].add(StartState.index)
 

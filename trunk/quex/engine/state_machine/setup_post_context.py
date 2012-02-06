@@ -69,7 +69,6 @@ def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
         post_context_sm.mount_newline_to_acceptance_states(Setup.dos_carriage_return_newline_f)
 
     elif EndOfLinePostContextF: 
-        # print "##oops 2"
         # Mount 'newline' to existing post context
         post_context_sm.mount_newline_to_acceptance_states(Setup.dos_carriage_return_newline_f)
 

@@ -120,7 +120,6 @@ class Entry(object):
                 return command_list
         return None
 
-
     def set_action_db(self, ActionDB):
         self.__action_db = ActionDB
 
@@ -270,7 +269,14 @@ class Entry(object):
         # (*) Configure the entry door tree
         self.door_tree_configure()
 
-    def door_tree_configure(self):
+    def door_tree_configure(self, StateIndex=None):
+        """Mega States may want to define a 'StateIndex' so that the doors
+           refer to the state index of the mega states. All others do not 
+           specify 'StateIndex'.
+        """
+        if StateIndex is not None:
+            self.__state_index = StateIndex
+
         # (*) If a door stores the input position in register unconditionally,
         #     then all other conditions concerning the storage in that register
         #     are nonessential.
