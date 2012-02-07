@@ -40,7 +40,7 @@ class PathWalkerState(AnalyzerState):
             # uniform entry along path of any character path.
             self.__uniform_entry_command_list_along_path = None 
         else:
-            self.__uniform_entry_command_list_along_path = FirstPath.uniform_entry_command_list_along_path
+            self.__uniform_entry_command_list_along_path = FirstPath.get_uniform_entry_command_list_along_path()
 
         self.__state_index_list     = None # Computed on demand
         self.__end_state_index_list = None # Computed on demand
@@ -75,9 +75,10 @@ class PathWalkerState(AnalyzerState):
             assert len(Path.drop_out) == 1 
 
             # (*) Check Entry Uniformity
-            if Path.uniform_entry_command_list_along_path is None:
+            uniform_entry = Path.get_uniform_entry_command_list_along_path()
+            if uniform_entry is None:
                 return False
-            elif not Path.uniform_entry_command_list_along_path.is_equivalent(self.__uniform_entry_command_list_along_path):
+            elif not uniform_entry.is_equivalent(self.__uniform_entry_command_list_along_path):
                 return False
             # (*) Check Drop-Out Uniformity
             elif self.drop_out != Path.drop_out: 

@@ -282,30 +282,41 @@ def __find_continuation(analyzer, StateIndex, the_path, CompressionType, Availab
         # 'character string position'. Omit this path!
         if the_path.contains(target_idx): continue # Recursion ahead! Don't go!
 
-        # Does the rest of the transitions fit the 'skeleton'?
-        if     CompressionType == E_Compression.PATH_UNIFORM \
-           and not the_path.match_entry_and_drop_out(State):
-            continue # No match possible
-
+        # Do the transitions fit the 'skeleton'?
         adapted_transition_map = get_adapted_trigger_map_shallow_copy(transition_map, analyzer, State.index, 
                                                                       ExceptTargetIndex=None)
         plug = the_path.match_skeleton(adapted_transition_map, target_idx, path_char)
         if plug is None: 
             continue # No match possible 
 
+        single_char_transition_found_f = True
+
         # Deepcopy is required to completely isolate the transition map and the
         # entry/drop_out schemes that may now be changed.
-        path = deepcopy(the_path)
-        if plug != -1: path.plug_wildcard(plug)
+        path_copy = deepcopy(the_path)
+        if plug != -1: path_copy.plug_wildcard(plug)
+
+        # Can uniformity be maintained?
+        if      CompressionType == E_Compression.PATH_UNIFORM         \
+            and not (    the_path.check_uniform_drop_out(State)       \
+                     and the_path.check_uniform_entry_to_state(State)):
+            # The current state might be a terminal, even if a required uniformity is not 
+            # possible. The terminal is not part of the path, but is entered after the
+            # path has ended. 
+            if len(path_copy) > 1:            # A path must be more than 'Begin and Terminal'
+                path_copy.set_end_state_index(State.index)
+                result_list.append(path_copy) # Path must end here.
+            continue
+
 
         # Find a continuation of the path
-        single_char_transition_found_f = True
-        path.append(State, path_char)
-        result_list.extend(__find_continuation(analyzer, target_idx, path, CompressionType, AvailableStateIndexList))
+        path_copy.append(State, path_char)
+        result_list.extend(__find_continuation(analyzer, target_idx, path_copy, CompressionType, AvailableStateIndexList))
 
     if not single_char_transition_found_f and len(the_path) != 1:
-        the_path.set_end_state_index(StateIndex)
-        result_list.append(the_path)
+        if len(the_path) > 1:            # A path must be more than 'Begin and Terminal'
+            the_path.set_end_state_index(StateIndex)
+            result_list.append(the_path)
 
     return result_list
 

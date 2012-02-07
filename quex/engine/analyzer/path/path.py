@@ -5,7 +5,7 @@ import quex.engine.state_machine.index         as     index
 
 from quex.engine.interval_handling import NumberSet
 
-from itertools   import ifilter
+from itertools   import ifilter, islice
 from operator    import itemgetter
 from collections import defaultdict
 
@@ -68,8 +68,6 @@ class CharacterPath:
         # the correspondent state triggers.
         self.__wildcard_character = StartCharacter
 
-        self.uniform_entry_door_id_along_path = None
-
     @property
     def state_index_list(self):
         """Result **MUST** be a list, because, later on a state key may be 
@@ -114,7 +112,7 @@ class CharacterPath:
         # Add the state on the sequence of state along the path
         self.__sequence.append((State.index, Char))
 
-    def uniform_entry_command_list_along_path(self):
+    def get_uniform_entry_command_list_along_path(self):
         """When a state is entered (possibly) some commands are executed, for
            example 'position[1] = input_p' or 'last_acceptance = 13'. The states
            on the path may require also actions to be taken when walking along
@@ -132,9 +130,9 @@ class CharacterPath:
         # A path where there are not at least two states, is not a path.
         assert len(self.__sequence) >= 2
 
-        prev_state_index = self.__sequence[0]
+        prev_state_index = self.__sequence[0][0]
         prototype        = None
-        for state_index, char in islice(self.__sequence, -1, None):
+        for state_index, char in self.__sequence[1:-1]:
             action = self.entry.action_db_get_command_list(state_index, prev_state_index)
             if prototype is not None:
                 if not prototype.is_equivalent(action.command_list):
@@ -193,15 +191,31 @@ class CharacterPath:
 
         return set_a.intersection(set_b)
 
-    def match_entry_and_drop_out(self, State):
-        """Determine whether the State's entry and drop_out match the entry
-           and drop_out of the character path. This is important if uniformity
-           of the path is required.
+    def check_uniform_entry_to_state(self, State):
+        """Checks whether the entry from the end of the path to the state
+           would be uniform with the entries along the path. 
+
+           RETURNS: True -- State would be entered through the same 
+                            entry as all the other states on the path.
+                    False -- State would require a separate entry, because
+                             some commands need to be executed that are 
+                             not done for all other transitions on the path.
         """
-        assert len(self.entry) == 1
-        assert len(self.drop_out) == 1
-        entry = self.entry.iterkeys().next()
-        if entry != State.entry: return False
+        assert len(self.__sequence) >= 2
+        uniform_entry = self.get_uniform_entry_command_list_along_path()
+        if uniform_entry is None: # Actually, this could be an assert. This function is only
+            return False          # to be executed when building uniform paths.
+        action = self.entry.action_db_get_command_list(State.index, self.__sequence[-1][0])
+        if not uniform_entry.is_equivalent(action.command_list):
+            return False
+        return True
+
+    def check_uniform_drop_out(self, State):
+        """Checks whether the State's drop-out behavior is uniform with all
+           the other State's drop out behaviors on the path.
+        """
+        if len(self.drop_out) != 1: # Actually, this could be an assert. This function is only
+            return False            # to be executed when building uniform paths.
 
         drop_out = self.drop_out.iterkeys().next()
         if drop_out != State.drop_out: return False
