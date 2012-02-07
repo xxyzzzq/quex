@@ -82,7 +82,6 @@ import quex.engine.generator.state.drop_out         as drop_out_coder
 import quex.engine.generator.state.entry            as entry_coder
 from   quex.engine.generator.state.core             import input_do
 from   quex.engine.generator.state.transition.code  import TextTransitionCode
-from   quex.engine.generator.template_coder         import handle_source_state_dependent_transitions
 from   quex.engine.generator.languages.address      import get_label
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.analyzer.state_entry_action      import DoorID

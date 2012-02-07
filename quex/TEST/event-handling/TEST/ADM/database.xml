@@ -1,38 +1,38 @@
-<test-database execution-time-sec="0.61" date="Tue Jan 10 22:22:54 2012">
+<test-database execution-time-sec="0.40" date="Tue Feb  7 23:28:35 2012">
     <last-used-diff-display-program name=""/>
     <test title="Customized on_skip_range_open event." make-dependent="True" time-sum-sec="0.06"> 
-        <application file-name="on_skip_range_open-customized.sh" info-request-time="1320591452L" vanished="False"/>
-        <make-procedure success="True" time_sec="0.764067"/>
+        <application file-name="on_skip_range_open-customized.sh" info-request-time="1328653712L" vanished="False"/>
+        <make-procedure success="True" time_sec="0.795359"/>
         <choice-list number="1" same_result="False">
            <choice name="customized" result="OK" time_sec="0.06" crc="-1869838464"/>
         </choice-list>
     </test>
-    <test title="Default on_skip_range_open event." make-dependent="True" time-sum-sec="0.06"> 
-        <application file-name="on_skip_range_open.sh" info-request-time="1320591454L" vanished="False"/>
-        <make-procedure success="True" time_sec="0.762679"/>
+    <test title="Default on_skip_range_open event." make-dependent="True" time-sum-sec="0.04"> 
+        <application file-name="on_skip_range_open.sh" info-request-time="1328653713L" vanished="False"/>
+        <make-procedure success="True" time_sec="0.781296"/>
         <choice-list number="1" same_result="False">
-           <choice name="default" result="OK" time_sec="0.06" crc="1314773609"/>
+           <choice name="default" result="FAIL" time_sec="0.04" crc="1314773609"/>
         </choice-list>
     </test>
     <group name="Mode Transitions">
-        <test title="transition-x.qx" make-dependent="True" time-sum-sec="0.24"> 
-            <application file-name="transition-x.sh" info-request-time="1320591453L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.963784"/>
+        <test title="transition-x.qx" make-dependent="True" time-sum-sec="0.16"> 
+            <application file-name="transition-x.sh" info-request-time="1328653714L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.814518"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="OK" time_sec="0.07" crc="140187343"/>
-               <choice name="2" result="OK" time_sec="0.05" crc="1810777269"/>
-               <choice name="3" result="OK" time_sec="0.05" crc="784591852"/>
-               <choice name="error" result="OK" time_sec="0.07" crc="-1050387149"/>
+               <choice name="1" result="FAIL" time_sec="0.04" crc="140187343"/>
+               <choice name="2" result="FAIL" time_sec="0.04" crc="1810777269"/>
+               <choice name="3" result="FAIL" time_sec="0.04" crc="784591852"/>
+               <choice name="error" result="FAIL" time_sec="0.04" crc="-1050387149"/>
             </choice-list>
         </test>
-        <test title="transition.qx" make-dependent="True" time-sum-sec="0.26"> 
-            <application file-name="transition.sh" info-request-time="1320591455L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.942393"/>
+        <test title="transition.qx" make-dependent="True" time-sum-sec="0.14"> 
+            <application file-name="transition.sh" info-request-time="1328653715L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.833411"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="OK" time_sec="0.07" crc="140187343"/>
-               <choice name="2" result="OK" time_sec="0.06" crc="1810777269"/>
-               <choice name="3" result="OK" time_sec="0.07" crc="784591852"/>
-               <choice name="error" result="OK" time_sec="0.05" crc="1033984840"/>
+               <choice name="1" result="FAIL" time_sec="0.03" crc="140187343"/>
+               <choice name="2" result="FAIL" time_sec="0.04" crc="1810777269"/>
+               <choice name="3" result="FAIL" time_sec="0.04" crc="784591852"/>
+               <choice name="error" result="FAIL" time_sec="0.03" crc="1033984840"/>
             </choice-list>
         </test>
     </group>
