@@ -116,7 +116,8 @@ class Entry(object):
 
     def action_db_get_command_list(self, StateIndex, FromStateIndex):
         for transition_id, command_list in self.__action_db.iteritems():
-            if transition_id.state_index == StateIndex and transition_db.from_state_index == FromStateIndex:
+            if     transition_id.state_index      == StateIndex    \
+               and transition_id.from_state_index == FromStateIndex:
                 return command_list
         return None
 
