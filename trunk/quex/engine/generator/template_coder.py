@@ -232,38 +232,6 @@ def __require_data(TState, TheAnalyzer):
     # Drop outs: all drop outs end up at the end of the transition map, where
     # it is routed via the state_key to the state's particular drop out.
 
-def handle_source_state_dependent_transitions(transition_map, TheAnalyzer, 
-                                              StateKeyStr, StateIndexList):
-    """Templates and Pathwalkers may trigger in their transition map to states
-       where the entry depends on the source state. Such transition maps may 
-       operate on behalf of different states. The state is identified by a
-       state key.
-    """
-    return
-    LanguageDB = Setup.language_db
-
-    for i, info in enumerate(transition_map):
-        interval, target_index = info
-        if not isinstance(target_index, (int, long)): continue
-
-        entry = TheAnalyzer.state_db[target_index].entry
-        if entry.uniform_doors_f(): continue
-
-        # (*) Code: Transition to Specific State Entry based on current state.
-        case_list = []
-        # A common target state of a template is targeted by all involved states.
-        # => If the target state's entries depend on the source state all
-        #    states in the template's state_index_list must be mentioned as entry.
-        for state_key, from_state_index in enumerate(StateIndexList):
-            if not entry.has_special_door_from_state(from_state_index): from_state_index = None
-            case_list.append((state_key, LanguageDB.GOTO(target_index, from_state_index))) 
-
-        code = LanguageDB.SELECTION(StateKeyStr, case_list)
-        LanguageDB.INDENT(code, 2)
-        target = TextTransitionCode(["\n"] + code)
-
-        transition_map[i] = (interval, target)
-
 def prepare_transition_map(TheState):
     """Generates code for transition map of a template state.
 

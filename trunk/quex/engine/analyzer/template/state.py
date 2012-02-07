@@ -636,7 +636,7 @@ class TargetSchemeDB(dict):
         if TA.recursive_f:
             if TB.recursive_f:
                 return TA
-            TA_scheme = self.__expand_recursive_target(self.__state_b_state_index_list)
+            TA_scheme = self.__expand_recursive_target(self.__state_a_state_index_list)
 
         elif TA.drop_out_f:
             if TB.drop_out_f:
@@ -670,9 +670,12 @@ class TargetSchemeDB(dict):
 
     def __expand_recursive_target(self, StateIndexList):
         # Expand the 'RECURSIVE' into a tuple of doors
-        # Recursive entries always happen into the empty door 'Door 0' where
-        # no actions are to be taken.
-        return tuple(DoorID(state_index, 0) for state_index in StateIndexList)
+        def get_door_id(StateIndex):
+            """Return DoorID for the State entering itself."""
+            state = self.__analyzer.state_db[StateIndex]
+            return state.entry.get_door_id(StateIndex, StateIndex)
+
+        return tuple(get_door_id(state_index) for state_index in StateIndexList)
 
 def get_state_list(X): 
     if isinstance(X, TemplateState): return X.state_index_list 

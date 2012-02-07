@@ -7,7 +7,7 @@ CFLAGS = \
 	 #-DQUEX_OPTION_DEBUG_SHOW
 
 lexer:
-	quex -i $(INPUT) -o Simple --token-policy single --language C
+	quex -i $(INPUT) -o Simple --token-policy single --language C --debug-exception
 	g++ -I$(QUEX_PATH) -I. \
 		-DPRINT_TOKEN \
 		$(CFLAGS) \
@@ -15,7 +15,7 @@ lexer:
 		-ggdb -o lexer
 
 lexer.E:
-	quex -i $(INPUT) -o Simple --token-policy single --language C
+	quex -i $(INPUT) -o Simple --token-policy single --language C --debub-exception
 	g++ -I$(QUEX_PATH) -I. \
 		-E $(CFLAGS) \
 		../lexer.c \
