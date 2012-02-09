@@ -17,8 +17,10 @@ if "--hwut-info" in sys.argv:
     sys.exit(0)
 
 def test(TriggerMapA, TriggerMapB, StateListA=[10L], StateListB=[20L], UniformEntriesF=True):
-    StateA = TestTemplateState(TriggerMapA, StateListA)
-    StateB = TestTemplateState(TriggerMapB, StateListB)
+    if len(StateListA) == 1: StateA = TestState(TriggerMapA, StateListA[0])
+    else:                    StateA = TestTemplateState(TriggerMapA, StateListA)
+    if len(StateListB) == 1: StateB = TestState(TriggerMapB, StateListB[0])
+    else:                    StateB = TestTemplateState(TriggerMapB, StateListB)
     analyzer = TestAnalyzer(StateA, StateB)
 
     print

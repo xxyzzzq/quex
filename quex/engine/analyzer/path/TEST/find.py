@@ -50,15 +50,16 @@ def test(Skeleton, *StringPaths):
     sm.init_state_index = 7777L
 
     # print Skeleton
+    ## print "##w/o normalize:\n", sm.get_graphviz_string(NormalizeF=False)
     print sm.get_graphviz_string(NormalizeF=True)
     print
-    analyzer      = Analyzer(sm, E_EngineTypes.FORWARD)
+    analyzer = Analyzer(sm, E_EngineTypes.FORWARD)
     for state in analyzer.state_db.itervalues():
         state.entry.door_tree_configure()
-    result        = paths.find_begin(analyzer, 
-                                     sm.init_state_index, sm.init_state_index, 
-                                     CompressionType=E_Compression.PATH, 
-                                     AvailableStateIndexList=analyzer.state_db.keys())
+    result = paths.find_begin(analyzer, 
+                              sm.init_state_index, sm.init_state_index, 
+                              CompressionType=E_Compression.PATH, 
+                              AvailableStateIndexList=analyzer.state_db.keys())
     norm_db, x, x = sm.get_state_index_normalization()
     for path in result:
         print "# " + path.get_string(norm_db).replace("\n", "\n# ")

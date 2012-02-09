@@ -1,5 +1,10 @@
-<history date="Tue Feb  7 23:31:15 2012" element-n="1">
+<history date="Thu Feb  9 08:10:40 2012" element-n="4">
     <day year="2011" month="09" day="28">
         <history-init time="20:08:52"/>
+    </day>
+    <day year="2012" month="02" day="09">
+        <crc-error time="07:09:33" application="find.py" choice="1" database-crc="-1340672967" real-crc="1499479175"/>
+        <crc-error time="07:10:19" application="find.py" choice="2" database-crc="366827854" real-crc="22670656"/>
+        <crc-error time="07:10:40" application="find.py" choice="3" database-crc="-1895608345" real-crc="-1958916594"/>
     </day>
 </history>

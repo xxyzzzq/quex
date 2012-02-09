@@ -93,7 +93,7 @@ class TemplateState(AnalyzerState):
         #
         #      target[i] = target of state 'state_index_list[i]' for interval X.
         #
-        self.__transition_map, \
+        self.__transition_map,    \
         self.__target_scheme_list = combine_maps(StateA, StateB, TheAnalyzer)
 
         # Compatible with AnalyzerState

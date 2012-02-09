@@ -221,7 +221,7 @@ class CharacterPath:
         if drop_out != State.drop_out: return False
         return True
 
-    def match_skeleton(self, TransitionMap, TargetIdx, TriggerCharToTarget):
+    def match_skeleton(self, TransitionMap, TargetDoorID, TriggerCharToTarget):
         """A single character transition 
 
                         TriggerCharToTarget --> DoorID
@@ -243,8 +243,9 @@ class CharacterPath:
                    None, if there is no way that the skeleton and the
                          TransitionMap could match.
         """
+        assert isinstance(TargetDoorID, DoorID)
         ## ?? The element of a path cannot be triggered by the skeleton! ??
-        ## ?? if self.__skeleton.has_key(TargetIdx): return False        ?? 
+        ## ?? if self.__skeleton.has_key(TargetDoorID): return False        ?? 
         ## ?? Why would it not? (fschaef9: 10y04m11d)                    ??
 
         # wildcard character is None:  wild card is taken and entered into 'skeleton'
@@ -258,7 +259,7 @@ class CharacterPath:
         #
         #     All target states of TransitionMap must be in Skeleton, except:
         #
-        #      (1.1) The single char transition target TargetIdx.
+        #      (1.1) The single char transition target TargetDoorID.
         #      (1.2) Maybe, one that is reached by a single char
         #            transition of wildcard.
         delta_set  = transition_map_key_set - self.__skeleton_key_set
@@ -266,7 +267,7 @@ class CharacterPath:
         if delta_size > 2: return None
 
         for target_door_id in delta_set:
-            if   target_door_id == TargetIdx:    continue # (1.1)
+            if   target_door_id == TargetDoorID: continue # (1.1)
             elif wildcard_target is not None:                                                return None
             elif not TransitionMap[target_door_id].contains_only(self.__wildcard_character): return None
             wildcard_target = target_door_id              # (1.2)
@@ -343,13 +344,14 @@ class CharacterPath:
         return 
 
     def get_string(self, NormalizeDB=None):
+        # assert NormalizeDB is None, "Sorry, I guessed that this was no longer used."
         def norm(X):
             assert isinstance(X, (int, long)) or X is None
             return X if NormalizeDB is None else NormalizeDB[X]
 
         skeleton_txt = ""
         for target_door_id, trigger_set in sorted(self.__skeleton.iteritems(), key=itemgetter(0)):
-            skeleton_txt += "(%i) by " % norm(target_door_id.state_index)
+            skeleton_txt += "(s=%s,d=%i) by " % (norm(target_door_id.state_index), target_door_id.door_index)
             skeleton_txt += trigger_set.get_utf8_string()
             skeleton_txt += "; "
 
