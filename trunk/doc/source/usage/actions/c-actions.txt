@@ -66,7 +66,7 @@ The following send macros are available:
     The ``self_send_n`` macro stores the repetition number inside the token
     itself.  When the current token contains a repeated token identifier
     ``TokenID``, then the call to the ``.receive()`` function returns the same
-    token ``N`` times repeatedly before starting a new analyzis. As long as the
+    token ``N`` times repeatedly before starting a new analysis. As long as the
     default token classes are used this is implemented automatically.
     Customized token classes need to prepare some information about how the
     repetition number is to be stored inside the token class (see :ref:`
@@ -77,6 +77,14 @@ The following send macros are available:
     This allows to call the token's ``take_text`` function to set text content
     to what is specified by the zero terminated string ``Str``. ``Str`` must
     be of type 'pointer to ``QUEX_TYPE_CHARACTER``'.
+
+.. warning::
+
+    The token passed to 'self_send1(...)' and the like *must* be of the 
+    type ``QUEX_TYPE_CHARACTER`` and *must* have the same coding as 
+    the internal buffer. You might want to consider '--bet wchar_t' 
+    as buffer size when using converters. Then strings constants like 
+    ``L"something"`` could be conveniently passed.
 
 .. cfunction:: self_send2(TokenID, Begin, End)
 

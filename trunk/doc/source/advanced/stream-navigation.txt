@@ -5,15 +5,16 @@ Independent of the underlying character encoding :ref:`sec-character-encodings`
 quex's generated lexical analyzers are equiped with functions for stream
 navigation on character basis. All required mechanisms of buffer loading and
 stream positioning is taking care of in the background. The current character
-index can be accessed by the function:
+index can be accessed by the member function:
 
 .. code-block:: cpp
 
     size_t  tell();
 
-It reports the current character index where the lexical analyzer is going to
-continue its next step. The lexical analyzer can be set to a certain position
-by means of the following functions:
+The plain C versions of all mentioned functions are mentioned at the end of
+this section. The function ``tell()`` reports the current character index where
+the lexical analyzer is going to continue its next step. The lexical analyzer
+can be set to a certain position by means of the following member functions:
 
 .. code-block:: cpp
 

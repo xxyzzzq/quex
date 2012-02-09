@@ -63,7 +63,10 @@ class LDB(dict):
         return self.__analyzer
 
     def __getattr__(self, Attr): 
-        return self[Attr]
+        # Thanks to Rami Al-Rfou' who mentioned that this is the only thing to 
+        # be adapted to be compliant with current version of PyPy.
+        try:             return self[Attr] 
+        except KeyError: raise AttributeError
 
     RETURN                  = "return;"
     UNREACHABLE             = "__quex_assert_no_passage();"
