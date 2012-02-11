@@ -16,11 +16,11 @@ node [shape = circle];
 
 # start    = 2;
 # path     = (2)--'d'-->(4)--'e'-->[6];
-# skeleton = (5) by 'd'; (3) by 'c'; 
+# skeleton = (s=5,d=0) by 'd'; (s=3,d=0) by 'c'; 
 # wildcard = False;
 # 
 # start    = 1;
 # path     = (1)--'c'-->(2)--'d'-->(4)--'e'-->[6];
-# skeleton = (5) by 'd'; (3) by 'c'; 
+# skeleton = (s=5,d=0) by 'd'; (s=3,d=0) by 'c'; 
 # wildcard = False;
 # 

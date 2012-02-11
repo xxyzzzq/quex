@@ -32,8 +32,8 @@ class TransitionMap:
         return TransitionMap(DB = dict([(key, trigger_set.clone()) for key, trigger_set in self.__db.iteritems()]),
                              ETIL = list(self.__epsilon_target_index_list))
 
-    def clear(self, TriggerMap=-1):
-        if TriggerMap != -1: 
+    def clear(self, TriggerMap=None):
+        if TriggerMap is not None:
             assert isinstance(TriggerMap, dict)
             self.__db = TriggerMap
         else:

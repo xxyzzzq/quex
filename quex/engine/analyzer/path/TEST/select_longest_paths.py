@@ -19,7 +19,7 @@ if "--hwut-info" in sys.argv:
 
 def get_analyzer_state(sm, state_index):
     sm.states[state_index] = core.State()
-    state = AnalyzerState(state_index, sm, E_EngineTypes.FORWARD, []) 
+    state = AnalyzerState(sm.states[state_index], state_index, state_index == sm.init_state_index, E_EngineTypes.FORWARD, []) 
     state.entry.door_tree_configure()
     return state
 

@@ -13,12 +13,12 @@ node [shape = circle];
 
 # start    = 7;
 # path     = (7)--'b'-->(8)--'b'-->(8)--'a'-->[9];
-# skeleton = (8) by 'b'; (9) by 'a'; 
+# skeleton = (s=8,d=0) by 'b'; (s=9,d=0) by 'a'; 
 # wildcard = False;
 # 
 # start    = 7;
 # path     = (7)--'b'-->(8)--'a'-->[9];
-# skeleton = (8) by 'b'; (9) by 'a'; 
+# skeleton = (s=8,d=0) by 'b'; (s=9,d=0) by 'a'; 
 # wildcard = False;
 # 
 #

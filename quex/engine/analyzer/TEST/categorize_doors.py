@@ -127,14 +127,14 @@ elif "11" in sys.argv:
 
 elif "set_state_key":
     action_list = [
-        TransitionAction(1, 1, CommandList([ SetStateKey(1) ])),
-        TransitionAction(2, 1, CommandList([ SetStateKey(2) ])),
-        TransitionAction(3, 1, CommandList([ SetStateKey(2) ])),
-        TransitionAction(4, 1, CommandList([ SetStateKey(2) ])),
-        TransitionAction(1, 2, CommandList([ SetStateKey(3) ])),
-        TransitionAction(2, 2, CommandList([ SetStateKey(3) ])),
-        TransitionAction(3, 2, CommandList([ SetStateKey(3) ])),
-        TransitionAction(4, 2, CommandList([ SetStateKey(4) ])),
+        TransitionAction(1, 1, CommandList([ SetTemplateStateKey(1) ])),
+        TransitionAction(2, 1, CommandList([ SetTemplateStateKey(2) ])),
+        TransitionAction(3, 1, CommandList([ SetTemplateStateKey(2) ])),
+        TransitionAction(4, 1, CommandList([ SetTemplateStateKey(2) ])),
+        TransitionAction(1, 2, CommandList([ SetTemplateStateKey(3) ])),
+        TransitionAction(2, 2, CommandList([ SetTemplateStateKey(3) ])),
+        TransitionAction(3, 2, CommandList([ SetTemplateStateKey(3) ])),
+        TransitionAction(4, 2, CommandList([ SetTemplateStateKey(4) ])),
     ]
     door_db, transition_db, door_tree_root = categorize_command_lists(4711, action_list)
     print door_tree_root

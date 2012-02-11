@@ -41,7 +41,7 @@ from   quex.engine.analyzer.state_drop_out        import DropOut,         \
                                                          DropOutBackward, \
                                                          DropOutBackwardInputPositionDetection
 import quex.engine.analyzer.position_register_map as     position_register_map
-from   quex.engine.state_machine.core             import StateMachine
+from   quex.engine.state_machine.core             import StateMachine, State
 from   quex.blackboard  import E_StateIndices, \
                                E_PostContextIDs, \
                                E_AcceptanceIDs, \
@@ -95,7 +95,10 @@ class Analyzer:
         self.__from_db = from_db
 
         # (*) Prepare AnalyzerState Objects
-        self.__state_db = dict([(state_index, AnalyzerState(state_index, SM, EngineType, from_db[state_index])) 
+        self.__state_db = dict([(state_index, AnalyzerState(SM.states[state_index], state_index, 
+                                                            state_index == SM.init_state_index, 
+                                                            EngineType, 
+                                                            from_db[state_index])) 
                                  for state_index in self.__trace_db.iterkeys()])
 
         if EngineType != E_EngineTypes.FORWARD:
@@ -502,15 +505,16 @@ class AnalyzerState(object):
                  "drop_out", 
                  "_origin_list")
 
-    def __init__(self, StateIndex, SM, EngineType, FromStateIndexList):
-        assert type(StateIndex) in [int, long]
+    def __init__(self, SM_State, StateIndex, InitStateF, EngineType, FromStateIndexList):
+        assert isinstance(SM_State, State)
+        assert isinstance(StateIndex, (int, long))
+        assert type(InitStateF) is bool
         assert EngineType in E_EngineTypes
+        assert isinstance(FromStateIndexList, (set, list))
 
-        state = SM.states[StateIndex]
-
-        self.__index            = StateIndex
-        self.__init_state_f     = SM.init_state_index == StateIndex
-        self.__engine_type      = EngineType
+        self.__index        = StateIndex
+        self.__init_state_f = InitStateF
+        self.__engine_type  = EngineType
 
         # (*) Input
         self.input = get_input_action(EngineType, self.__init_state_f)
@@ -524,7 +528,7 @@ class AnalyzerState(object):
         if   EngineType == E_EngineTypes.FORWARD: 
             self.entry = Entry(self.__index, FromStateIndexList)
         elif EngineType == E_EngineTypes.BACKWARD_PRE_CONTEXT: 
-            pre_context_id_fulfilled_list = [ origin.pattern_id() for origin in state.origins() \
+            pre_context_id_fulfilled_list = [ origin.pattern_id() for origin in SM_State.origins() \
                                                                   if origin.is_acceptance() ]
             self.entry = Entry(self.__index, FromStateIndexList, pre_context_id_fulfilled_list)
         elif EngineType == E_EngineTypes.BACKWARD_INPUT_POSITION: 
@@ -534,17 +538,17 @@ class AnalyzerState(object):
 
         # (*) Transition
         if EngineType == E_EngineTypes.BACKWARD_INPUT_POSITION:
-            # During backward input detection, an acceptance state triggers a
+            # During backward input detection, an acceptance SM_State triggers a
             # return from the searcher, thus no further transitions are necessary.
             # (orphaned states, also, need to be deleted).
-            ## if state.is_acceptance(): assert state.transitions().is_empty()
+            ## if SM_State.is_acceptance(): assert state.transitions().is_empty()
             pass
 
-        self.transition_map                    = state.transitions().get_trigger_map()
-        self.__target_index_list               = state.transitions().get_map().keys()
+        self.transition_map                    = SM_State.transitions().get_trigger_map()
+        self.__target_index_list               = SM_State.transitions().get_map().keys()
         # Currently, the following is only used for path compression. If the alternative
         # is implemented, then the following is no longer necessary.
-        self.map_target_index_to_character_set = state.transitions().get_map()
+        self.map_target_index_to_character_set = SM_State.transitions().get_map()
 
         # (*) Drop Out
         if   EngineType == E_EngineTypes.FORWARD: 
@@ -555,9 +559,9 @@ class AnalyzerState(object):
         elif EngineType == E_EngineTypes.BACKWARD_PRE_CONTEXT:
             self.drop_out = DropOutBackward()
         elif EngineType == E_EngineTypes.BACKWARD_INPUT_POSITION:
-            self.drop_out = DropOutBackwardInputPositionDetection(state.is_acceptance())
+            self.drop_out = DropOutBackwardInputPositionDetection(SM_State.is_acceptance())
 
-        self._origin_list = state.origins().get_list()
+        self._origin_list = SM_State.origins().get_list()
 
     @property
     def index(self):                  return self.__index
@@ -590,6 +594,14 @@ class AnalyzerState(object):
 
     def get_string(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
         return "".join(self.get_string_array(InputF, EntryF, TransitionMapF, DropOutF))
+
+    def entries_empty_f(self):
+        """The 'SetTemplateStateKey' commands cost nothing, so an easy condition for
+           'all entries empty' is that the door_tree_root reports a cost of '0'.
+        """
+        # This function can only be called after a call to 'finish()'.
+        assert self.entry.door_tree_root is not None
+        return self.entry.door_tree_root.has_commands_other_than_MegaState_Control()
 
     def __repr__(self):
         return self.get_string()

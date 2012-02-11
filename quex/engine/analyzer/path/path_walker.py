@@ -100,7 +100,6 @@ class PathWalkerState(AnalyzerState):
         # (2c) Absorb the drop-out information
         #      Absorb drop-out information
         for drop_out, state_index_list in Path.drop_out.iteritems():
-            assert sequence[-1][0] not in state_index_list
             self.drop_out[drop_out].update(state_index_list) 
 
         return True

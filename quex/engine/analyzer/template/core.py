@@ -161,7 +161,7 @@ def do(TheAnalyzer, MinGain, CompressionType,
 
     done_state_index_set, template_state_list = combiner.result()
 
-    return done_state_index_set, template_state_list, combiner.door_id_replacement_db
+    return done_state_index_set, template_state_list, combiner.get_door_id_replacement_db()
 
 class CombinationDB:
     """Contains the 'Gain' for each possible combination of states. This includes
@@ -234,8 +234,7 @@ class CombinationDB:
             done_state_index_set.update(state.state_index_list)
         return done_state_index_set, template_state_list
 
-    @property 
-    def door_id_replacement_db(self):
+    def get_door_id_replacement_db(self):
         """RETURN:
 
                 map:    old door_id ---> new door_id
@@ -245,24 +244,14 @@ class CombinationDB:
 
            (Should be same as in PathWalkerState).
         """
-        if self.__door_id_replacement_db is not None:
-            return self.__door_id_replacement_db
-
         replacement_db = {}
         for template_state in self.result_iterable():
-            templated_state_index_list = template_state.state_index_list
-
-            for state in (self.__analyzer.state_db[i] for i in templated_state_index_list):
-                for door_id, transition_id_list in state.entry.transition_db.iteritems():
-                    if len(transition_id_list) == 0: continue
-                    prototype_transition_id = transition_id_list[0]
-                    replacement_db[door_id] = template_state.entry.door_db[prototype_transition_id]
+            replacement_db.update(template_state.entry.door_id_replacement_db)
 
         #for key, value in replacement_db.iteritems():
         #    print "##key:  ", key
         #    print "##value:", value
-        self.__door_id_replacement_db = replacement_db
-        return self.__door_id_replacement_db
+        return replacement_db
 
     @property
     def gain_matrix(self):

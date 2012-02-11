@@ -229,10 +229,8 @@ def find_begin(analyzer, StateIndex, InitStateIndex, CompressionType, AvailableS
 
     for target_idx, trigger_set in transition_map.iteritems():
         if target_idx not in AvailableStateIndexList: continue
-        print "##fb 0:", State.index, target_idx
 
         if find_begin_touched_state_idx_list.has_key(target_idx): continue
-        print "##fb 1:", State.index, target_idx
         find_begin_touched_state_idx_list[target_idx] = True
 
         # IN ANY CASE: Check for paths in the subsequent state
@@ -240,10 +238,8 @@ def find_begin(analyzer, StateIndex, InitStateIndex, CompressionType, AvailableS
 
         # Never allow the init state to be part of the path
         if StateIndex == InitStateIndex: continue
-        print "##fb 2:", State.index, target_idx
         # Do not consider indices that are not available
         if StateIndex not in AvailableStateIndexList: return result_list
-        print "##fb 3:", State.index, target_idx
 
         # Only single character transitions can be element of a path.
         path_char = trigger_set.get_the_only_element()
@@ -256,7 +252,6 @@ def find_begin(analyzer, StateIndex, InitStateIndex, CompressionType, AvailableS
         #                    -- extract the transition to 'target_idx'.
         # The skeleton is possibly changed in __find_continuation(), but then
         # a 'deepcopy' is applied to disconnect it, see __find_continuation().
-        print "##fb 4:", State.index, target_idx
         skeleton = get_adapted_trigger_map_shallow_copy(transition_map, analyzer, State.index, 
                                                         ExceptTargetIndex=target_idx)
 
@@ -280,18 +275,15 @@ def __find_continuation(analyzer, StateIndex, the_path, CompressionType, Availab
     single_char_transition_found_f = False
     for target_idx, trigger_set in transition_map.items():
         if target_idx not in AvailableStateIndexList: continue
-        print "##fc 0:", StateIndex, target_idx
 
         # Only consider single character transitions can be element of a path.
         path_char = trigger_set.get_the_only_element()
         if path_char is None: continue
-        print "##fc 1:", StateIndex, target_idx
 
         # A recursion cannot be covered by a 'path state'. We cannot extract a
         # state that contains recursions and replace it with a skeleton plus a
         # 'character string position'. Omit this path!
         if the_path.contains(target_idx): continue # Recursion ahead! Don't go!
-        print "##fc 2:", StateIndex, target_idx
 
         # Do the transitions fit the 'skeleton'?
         adapted_transition_map = get_adapted_trigger_map_shallow_copy(transition_map, analyzer, State.index, 
@@ -299,7 +291,6 @@ def __find_continuation(analyzer, StateIndex, the_path, CompressionType, Availab
         target_door_id         = analyzer.state_db[target_idx].entry.get_door_id(target_idx, State.index)
         plug = the_path.match_skeleton(adapted_transition_map, target_door_id, path_char)
         if plug is None: continue # No match possible 
-        print "##fc 3:", StateIndex, target_idx
 
         single_char_transition_found_f = True
 
@@ -319,8 +310,6 @@ def __find_continuation(analyzer, StateIndex, the_path, CompressionType, Availab
                 path_copy.set_end_state_index(State.index)
                 result_list.append(path_copy) # Path must end here.
             continue
-
-        print "##fc 4:", StateIndex, target_idx
 
         # Find a continuation of the path
         path_copy.append(State, path_char)

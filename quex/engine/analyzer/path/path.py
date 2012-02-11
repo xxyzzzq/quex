@@ -21,7 +21,7 @@ class PathWalkerState_Entry(Entry):
                 transition (StateIndex, FromStateIndex) --> CommandList 
 
            is absorbed in 'self.__action_db'. Additionally, any command list
-           must contain the 'SetStateKey' command that sets the state key for
+           must contain the 'SetTemplateStateKey' command that sets the state key for
            TheState. At each (external) entry into the Template state the
            'state_key' must be set, so that the template state can operate
            accordingly.  
