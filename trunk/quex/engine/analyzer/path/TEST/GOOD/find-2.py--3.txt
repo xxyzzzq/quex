@@ -14,7 +14,7 @@ node [shape = circle];
 
 # start    = 10;
 # path     = (10)--'b'-->(11)--'c'-->[11];
-# skeleton = (12) by 'a'; (13) by 'b'; 
+# skeleton = (s=12,d=0) by 'a'; (s=13,d=0) by 'b'; 
 # wildcard = False;
 # 
 #

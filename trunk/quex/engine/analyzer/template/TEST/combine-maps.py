@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.engine.analyzer.template.core               as templates
-from   quex.engine.analyzer.template.state              import combine_maps
+from   quex.engine.analyzer.template.state              import combine_maps, TemplateState
 from   quex.engine.analyzer.template.TEST.templates_aux import *
 
 from   quex.engine.interval_handling import *
@@ -14,24 +14,38 @@ if "--hwut-info" in sys.argv:
     print "CHOICES: 1, 2, 2b, 3, 4, recursive;"
     sys.exit(0)
 
-def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L]):
+def core(StateA, TMa, StateB, TMb, analyzer, DrawF):
+    print_tm(TMa)
+    print_tm(TMb)
+    print
+    result = TemplateState(StateA, StateB, analyzer)
+    if DrawF:
+        print "DoorTree(A|B):"
+        print result.entry.door_tree_root.get_string(result.entry.transition_db)
+        print "TransitionMap:"
+        for interval, target in result.transition_map:
+            print "   ", target
+    print_metric(result.transition_map)
+    print
+
+def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L], DrawF=False):
 
     StateA, StateB, analyzer = setup_AnalyzerStates(InvolvedStateListA[0], TMa, InvolvedStateListB[0], TMb)
+
+    if DrawF:
+        print "DoorTree(A):"
+        print StateA.entry.door_tree_root.get_string(StateA.entry.transition_db)
+        print "DoorTree(B):"
+        print StateB.entry.door_tree_root.get_string(StateB.entry.transition_db)
 
     print
     print "(Straight)---------------------------------------"
     print
-    print_tm(TMa)
-    print_tm(TMb)
-    print
-    print_metric(combine_maps(StateA, StateB, analyzer)[0])
+    core(StateA, TMa, StateB, TMb, analyzer, DrawF)
     print
     print "(Vice Versa)-------------------------------------"
     print
-    print_tm(TMb)
-    print_tm(TMa)
-    print
-    print_metric(combine_maps(StateB, StateA, analyzer)[0])
+    core(StateB, TMb, StateA, TMa, analyzer, DrawF)
     print
 
 tm0 = [ 
@@ -88,9 +102,10 @@ elif "recursive" in sys.argv:
     tm1 = [ 
             (Interval(-sys.maxint, sys.maxint), 2L),
           ]
-    test(tm0, tm1, [1L], [2L])
-    print "A target combination (1L, 2L) and vice versa has not to appear,"
-    print "because this would mean recursion and is thus an equivalence."
+    test(tm0, tm1, [1L], [2L], DrawF=True)
+#    Today, I would say that the comment below is utter nonsense: <fschaef>
+#    print "A target combination (1L, 2L) and vice versa has not to appear,"
+#    print "because this would mean recursion and is thus an equivalence."
 
 elif "recursive-b" in sys.argv:
     pass

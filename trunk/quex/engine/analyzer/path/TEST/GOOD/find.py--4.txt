@@ -19,51 +19,51 @@ node [shape = circle];
 
 # start    = 5;
 # path     = (5)--'c'-->(6)--'b'-->[7];
-# skeleton = (2) by 'b'; (8) by 'c'; 
+# skeleton = (s=2,d=0) by 'b'; (s=8,d=0) by 'c'; 
 # wildcard = False;
 # 
 # start    = 4;
 # path     = (4)--'c'-->(5)--'c'-->(6)--'b'-->[7];
-# skeleton = (2) by 'b'; (8) by 'c'; 
+# skeleton = (s=2,d=0) by 'b'; (s=8,d=0) by 'c'; 
 # wildcard = False;
 # 
 # start    = 4;
 # path     = (4)--'c'-->(5)--'b'-->[2];
-# skeleton = (2) by 'b'; (6) by 'c'; 
+# skeleton = (s=2,d=0) by 'b'; (s=6,d=0) by 'c'; 
 # wildcard = False;
 # 
 # start    = 3;
 # path     = (3)--'c'-->(4)--'c'-->(5)--'c'-->(6)--'b'-->[7];
-# skeleton = (2) by 'b'; (8) by 'c'; 
+# skeleton = (s=2,d=0) by 'b'; (s=8,d=0) by 'c'; 
 # wildcard = False;
 # 
 # start    = 3;
 # path     = (3)--'c'-->(4)--'c'-->(5)--'b'-->[2];
-# skeleton = (2) by 'b'; (6) by 'c'; 
+# skeleton = (s=2,d=0) by 'b'; (s=6,d=0) by 'c'; 
 # wildcard = False;
 # 
 # start    = 3;
 # path     = (3)--'c'-->(4)--'b'-->[2];
-# skeleton = (2) by 'b'; (5) by 'c'; 
+# skeleton = (s=2,d=0) by 'b'; (s=5,d=0) by 'c'; 
 # wildcard = False;
 # 
 # start    = 1;
 # path     = (1)--'c'-->(3)--'c'-->(4)--'c'-->(5)--'c'-->(6)--'b'-->[7];
-# skeleton = (2) by 'b'; (8) by 'c'; 
+# skeleton = (s=2,d=0) by 'b'; (s=8,d=0) by 'c'; 
 # wildcard = False;
 # 
 # start    = 1;
 # path     = (1)--'c'-->(3)--'c'-->(4)--'c'-->(5)--'b'-->[2];
-# skeleton = (2) by 'b'; (6) by 'c'; 
+# skeleton = (s=2,d=0) by 'b'; (s=6,d=0) by 'c'; 
 # wildcard = False;
 # 
 # start    = 1;
 # path     = (1)--'c'-->(3)--'c'-->(4)--'b'-->[2];
-# skeleton = (2) by 'b'; (5) by 'c'; 
+# skeleton = (s=2,d=0) by 'b'; (s=5,d=0) by 'c'; 
 # wildcard = False;
 # 
 # start    = 1;
 # path     = (1)--'c'-->(3)--'b'-->[2];
-# skeleton = (2) by 'b'; (4) by 'c'; 
+# skeleton = (s=2,d=0) by 'b'; (s=4,d=0) by 'c'; 
 # wildcard = False;
 # 

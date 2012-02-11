@@ -267,17 +267,6 @@ class Entry(object):
                     # Adding one by one ensures that double entries are avoided
                     door.command_list.misc = set(x for x in door.command_list.misc)
 
-        # (*) Configure the entry door tree
-        self.door_tree_configure()
-
-    def door_tree_configure(self, StateIndex=None):
-        """Mega States may want to define a 'StateIndex' so that the doors
-           refer to the state index of the mega states. All others do not 
-           specify 'StateIndex'.
-        """
-        if StateIndex is not None:
-            self.__state_index = StateIndex
-
         # (*) If a door stores the input position in register unconditionally,
         #     then all other conditions concerning the storage in that register
         #     are nonessential.
@@ -289,6 +278,17 @@ class Entry(object):
                               if isinstance(x, entry_action.StoreInputPosition)):
                     if x.position_register == action.position_register and x.pre_context_id != E_PreContextIDs.NONE:
                         door.command_list.misc.remove(x)
+
+        # (*) Configure the entry door tree
+        self.door_tree_configure() # May be this is not necessary here (?).
+
+    def door_tree_configure(self, StateIndex=None):
+        """Mega States may want to define a 'StateIndex' so that the doors
+           refer to the state index of the mega states. All others do not 
+           specify 'StateIndex'.
+        """
+        if StateIndex is not None:
+            self.__state_index = StateIndex
 
         # (*) Categorize action lists
         transition_action_list = [ transition_action.clone() for transition_action in self.__action_db.itervalues() ]
@@ -335,7 +335,7 @@ class Entry(object):
                 txt.append("%s" % repr(action))
             return txt
 
-        def get_set_state_keys(SetStateKeyList):
+        def get_set_state_keys(SetTemplateStateKeyList):
             txt = []
             for action in sorted(PCOKList, key=attrgetter("value")):
                 txt.append("%s" % repr(action))
@@ -352,7 +352,7 @@ class Entry(object):
                     accept_command_list.append(action)
                 elif isinstance(action, entry_action.PreConditionOK):
                     pcok_command_list.append(action)
-                elif isinstance(action, entry_action.SetStateKey):
+                elif isinstance(action, entry_action.SetTemplateStateKey):
                     ssk_command_list.append(action)
                 else:
                     store_command_list.append(action)

@@ -2,22 +2,66 @@ Involved states in First = 1L
 Involved states in Second = 2L
 => when First triggers to 1L and Second to 2L, then both
    are recursive and no distinction needs to be made.
+DoorTree(A):
+[0]: (1<-1) (1<-7777) 
+parent: [None]
+
+DoorTree(B):
+[0]: (2<-1) (2<-2) (2<-7777) 
+parent: [None]
+
 
 (Straight)---------------------------------------
 
 |         |                            |    1, 2;
 |                                      |    2;
 
+DoorTree(A|B):
+[1]: (2<-1) (2<-7777) 
+        state_key = 1;
+parent: [0]
+
+[2]: (1<-1) (2<-2) 
+parent: [0]
+
+[3]: (1<-7777) 
+        state_key = 0;
+parent: [0]
+
+[0]: 
+parent: [None]
+
+TransitionMap:
+    TargetScheme:((DoorID(s=1, d=0), DoorID(s=2, d=0)))
+    TargetScheme:(DoorID(s=2, d=0))
 BorderN    = 1
-TargetComb = 
+TargetComb = (1, 2)
+
 
 (Vice Versa)-------------------------------------
 
 |                                      |    2;
 |         |                            |    1, 2;
 
-BorderN    = 1
-TargetComb = 
+DoorTree(A|B):
+[1]: (2<-1) (2<-7777) 
+        state_key = 0;
+parent: [0]
 
-A target combination (1L, 2L) and vice versa has not to appear,
-because this would mean recursion and is thus an equivalence.
+[2]: (1<-1) (2<-2) 
+parent: [0]
+
+[3]: (1<-7777) 
+        state_key = 1;
+parent: [0]
+
+[0]: 
+parent: [None]
+
+TransitionMap:
+    TargetScheme:((DoorID(s=2, d=0), DoorID(s=1, d=0)))
+    TargetScheme:(DoorID(s=2, d=0))
+BorderN    = 1
+TargetComb = (2, 1)
+
+

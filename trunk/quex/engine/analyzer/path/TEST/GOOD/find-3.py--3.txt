@@ -17,12 +17,12 @@ node [shape = circle];
 
 # start    = 1;
 # path     = (1)--'z'-->(3)--'w'-->[5];
-# skeleton = (2) by ['a', 'o'], ['q', 'z']; (4) by 'p'; 
+# skeleton = (s=2,d=0) by ['a', 'o'], ['q', 'z']; (s=4,d=0) by 'p'; 
 # wildcard = False;
 # 
 # start    = 0;
 # path     = (0)--'p'-->(1)--'z'-->(3)--'w'-->[5];
-# skeleton = (2) by ['a', 'o'], ['q', 'z']; (4) by 'p'; 
+# skeleton = (s=2,d=0) by ['a', 'o'], ['q', 'z']; (s=4,d=0) by 'p'; 
 # wildcard = False;
 # 
 #

@@ -18,27 +18,27 @@ node [shape = circle];
 
 # start    = 15;
 # path     = (15)--'b'-->(18)--'a'-->[16];
-# skeleton = (16) by 'a'; (18) by 'b'; (19) by 'c'; 
+# skeleton = (s=16,d=0) by 'a'; (s=18,d=0) by 'b'; (s=19,d=0) by 'c'; 
 # wildcard = False;
 # 
 # start    = 15;
 # path     = (15)--'b'-->(18)--'b'-->(18)--'a'-->[16];
-# skeleton = (16) by 'a'; (18) by 'b'; (19) by 'c'; 
+# skeleton = (s=16,d=0) by 'a'; (s=18,d=0) by 'b'; (s=19,d=0) by 'c'; 
 # wildcard = False;
 # 
 # start    = 15;
 # path     = (15)--'b'-->(18)--'b'-->(18)--'c'-->[19];
-# skeleton = (16) by 'a'; (18) by 'b'; (19) by 'c'; 
+# skeleton = (s=16,d=0) by 'a'; (s=18,d=0) by 'b'; (s=19,d=0) by 'c'; 
 # wildcard = False;
 # 
 # start    = 15;
 # path     = (15)--'b'-->(18)--'c'-->[19];
-# skeleton = (16) by 'a'; (18) by 'b'; (19) by 'c'; 
+# skeleton = (s=16,d=0) by 'a'; (s=18,d=0) by 'b'; (s=19,d=0) by 'c'; 
 # wildcard = False;
 # 
 # start    = 14;
 # path     = (14)--'c'-->(15)--'b'-->(18)--'b'-->[18];
-# skeleton = (16) by 'a'; (17) by 'b'; (19) by 'c'; 
+# skeleton = (s=16,d=0) by 'a'; (s=17,d=0) by 'b'; (s=19,d=0) by 'c'; 
 # wildcard = False;
 # 
 #

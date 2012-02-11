@@ -3,25 +3,65 @@ from   quex.engine.analyzer.core               import AnalyzerState
 from   quex.engine.analyzer.state_entry        import Entry
 from   quex.engine.analyzer.state_entry_action import DoorID
 from   quex.engine.analyzer.template.state     import TargetScheme, TemplateState
+from   quex.engine.state_machine.core          import State
+from   quex.engine.interval_handling           import NumberSet, Interval
+from   quex.blackboard                         import E_EngineTypes
 from   operator import attrgetter
 from   collections import defaultdict
 
+def setup_sm_state(StateIndex, TM):
+    result = State(StateIndex=StateIndex)
+    transition_map = defaultdict(NumberSet)
+    for interval, target in TM:
+        transition_map[target].unite_with(interval)
+    result.transitions().clear(transition_map)
+    return result
+
 def setup_AnalyzerStates(StateAIndex, TMa, StateBIndex, TMb):
+    # Use 'BACKWARD_PRE_CONTEXT' so that the drop-out objects are created
+    # without larger analyzsis.
+    EngineType = E_EngineTypes.BACKWARD_PRE_CONTEXT
 
-    StateA = TestState(TMa, StateAIndex)
-    StateB = TestState(TMb, StateBIndex)
+    InitStateIndex = 7777L
+    init_state = setup_sm_state(InitStateIndex, 
+                                [ (Interval(1,2), StateAIndex), 
+                                  (Interval(2,3), StateBIndex) ])
 
-    analyzer = TestAnalyzer(StateA, StateB)
+    sm_state_a = setup_sm_state(StateAIndex, TMa)
+    sm_state_b = setup_sm_state(StateBIndex, TMb)
 
+    analyzer = TestAnalyzer()
+
+    # Make sure, that the transitions appear in the 'entry' member of the states.
+    # -- collect transition information
     transition_db = defaultdict(list)
     for state_index in collect_target_state_indices(TMa):
         transition_db[state_index].append(StateAIndex)
     for state_index in collect_target_state_indices(TMb):
         transition_db[state_index].append(StateBIndex)
+    transition_db[StateAIndex].append(InitStateIndex)
+    transition_db[StateBIndex].append(InitStateIndex)
 
+    # -- setup the states with their 'from_state_list'
     for state_index, from_state_list in transition_db.iteritems():
-        state = TestState([], state_index, from_state_list)
+        if state_index in [StateAIndex, StateBIndex]: continue
+        sm_state = setup_sm_state(state_index, [])
+        state    = AnalyzerState(sm_state, state_index, False, EngineType, from_state_list)
         analyzer.state_db[state_index] = state
+
+    InitState = AnalyzerState(init_state, InitStateIndex, True, EngineType, [])
+
+    StateA = AnalyzerState(sm_state_a, StateAIndex, False, 
+                           EngineType, transition_db[StateAIndex])
+    StateB = AnalyzerState(sm_state_b, StateBIndex, False, 
+                           EngineType, transition_db[StateBIndex])
+
+    analyzer.state_db[InitStateIndex] = InitState 
+    analyzer.state_db[StateAIndex] = StateA 
+    analyzer.state_db[StateBIndex] = StateB
+
+    for state in analyzer.state_db.itervalues():
+        state.entry.door_tree_configure()
 
     return StateA, StateB, analyzer
 
@@ -64,14 +104,6 @@ class TestTemplateState(TemplateState):
     @property
     def index(self): 
         return None
-
-class TestState(AnalyzerState):
-    def __init__(self, TM, Index=None, FromStateIndexList=[]):
-        self.transition_map   = TM
-        AnalyzerState.set_index(self, Index)
-        # self.state_index_list = StateIndexList
-        self.entry            = Entry(Index, FromStateIndexList)
-        self.entry.door_tree_configure()
 
 def get_combination(TriggerMap, StateList):
     """Creates A Template Combination Object for the given Trigger Map
