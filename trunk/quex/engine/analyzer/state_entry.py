@@ -335,9 +335,15 @@ class Entry(object):
                 txt.append("%s" % repr(action))
             return txt
 
-        def get_set_state_keys(SetTemplateStateKeyList):
+        def get_set_template_state_keys(SetTemplateStateKeyList):
             txt = []
-            for action in sorted(PCOKList, key=attrgetter("value")):
+            for action in sorted(SetTemplateStateKeyList, key=attrgetter("value")):
+                txt.append("%s" % repr(action))
+            return txt
+
+        def get_set_path_iterator_keys(SetPathIteratorKeyList):
+            txt = []
+            for action in sorted(SetPathIteratorKeyList, key=attrgetter("path_walker_id", "path_id", "offset")):
                 txt.append("%s" % repr(action))
             return txt
 
@@ -347,6 +353,7 @@ class Entry(object):
             store_command_list  = []
             pcok_command_list   = []
             ssk_command_list    = []
+            spi_command_list    = []
             for action in door.command_list:
                 if isinstance(action, entry_action.Accepter): 
                     accept_command_list.append(action)
@@ -354,6 +361,8 @@ class Entry(object):
                     pcok_command_list.append(action)
                 elif isinstance(action, entry_action.SetTemplateStateKey):
                     ssk_command_list.append(action)
+                elif isinstance(action, entry_action.SetPathIterator):
+                    spu_command_list.append(action)
                 else:
                     store_command_list.append(action)
 
@@ -361,8 +370,9 @@ class Entry(object):
             a_txt  = get_accepters(accept_command_list)
             s_txt  = get_storers(store_command_list)
             p_txt  = get_pre_context_oks(pcok_command_list)
-            sk_txt = get_pre_context_oks(ssk_command_list)
-            content = "".join(a_txt + s_txt + p_txt + sk_txt)
+            sk_txt = get_set_template_state_keys(ssk_command_list)
+            pi_txt = get_set_path_iterator_keys(spi_command_list)
+            content = "".join(a_txt + s_txt + p_txt + sk_txt + pi_txt)
             if len(content) == 0:
                 # Simply new line
                 content = "\n"
