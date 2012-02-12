@@ -16,14 +16,20 @@ if "--hwut-info" in sys.argv:
     print "CHOICES: 1, 2, recursive, recursive-2, recursive-3, recursive-b, recursive-2b, recursive-3b;"
     sys.exit(0)
 
-def test(TriggerMapA, StateN_A, TriggerMapB, StateN_B):
-    StateListA = range(10, 10 + StateN_A)
-    if StateN_A > 1: CombinationA = TestTemplateState(TriggerMapA, StateListA)
-    else:            CombinationA = TestState(TriggerMapA, 10)
+def setup_TemplateState(TriggerMap, StateN, StateIndexOffset):
+    StateList = range(StateIndexOffset, StateIndexOffset + StateN)
+    return TestTemplateState(TriggerMap, StateList)
 
-    StateListB = range(20, 20 + StateN_B)
-    if StateN_B > 1: CombinationB = TestTemplateState(TriggerMapB, StateListB)
-    else:            CombinationB = TestState(TriggerMapB, 20)
+def test(TriggerMapA, StateN_A, TriggerMapB, StateN_B):
+    if StateN_A > 1: 
+        CombinationA = setup_TemplateState(TriggerMapA, StateN_A, 10)
+    else:            
+        CombinationA = TestState(TriggerMapA, 10)
+
+    if StateN_B > 1: 
+        CombinationB = setup_TemplateState(TriggerMapB, StateN_B, 20)
+    else:            
+        CombinationB = TestState(TriggerMapB, 20)
 
     analyzer = TestAnalyzer(StateA, StateB)
 

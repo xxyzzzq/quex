@@ -118,7 +118,6 @@ class TemplateState(AnalyzerState):
                                           
         self.__drop_out = combine_drop_out_scheme(get_state_list(StateA), StateA.drop_out, 
                                                   get_state_list(StateB), StateB.drop_out)
-        self.__uniform_drop_outs_f = (len(self.__drop_out) == 1)
 
         # Transition Map: list of (interval, target)
         # Where target = StateIndex   for AnalyzerState-s
@@ -143,6 +142,9 @@ class TemplateState(AnalyzerState):
 
         self.__transition_map,    \
         self.__target_scheme_list = combine_maps(StateA, tm_a, StateB, tm_b, TheAnalyzer)
+        for interval, target in self.__transition_map:
+            if target.drop_out_f: continue
+            target.door_id_replacement(self.entry.door_id_replacement_db)
 
         # Compatible with AnalyzerState
         # (A template state can never mimik an init state)
@@ -164,7 +166,8 @@ class TemplateState(AnalyzerState):
     @property
     def entry(self):               return self.__entry
     @property
-    def uniform_drop_outs_f(self): return self.__uniform_drop_outs_f
+    def uniform_drop_outs_f(self): 
+        return len(self.__drop_out) == 1
     @property
     def drop_out(self):            return self.__drop_out
 
@@ -435,7 +438,7 @@ class TargetScheme(object):
         if self.__door_id is not None:
             new_door_id = ReplacementDB.get(self.__door_id)
             if new_door_id is not None:
-                self.door_id_replace(new_door_id)
+                self.__door_id = new_door_id
         else:
             self.__scheme = tuple(replace_if_required(door_id) for door_id in self.__scheme)
 

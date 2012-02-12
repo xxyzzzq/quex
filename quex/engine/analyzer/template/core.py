@@ -247,10 +247,6 @@ class CombinationDB:
         replacement_db = {}
         for template_state in self.result_iterable():
             replacement_db.update(template_state.entry.door_id_replacement_db)
-
-        #for key, value in replacement_db.iteritems():
-        #    print "##key:  ", key
-        #    print "##value:", value
         return replacement_db
 
     @property

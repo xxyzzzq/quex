@@ -17,53 +17,45 @@ def setup_sm_state(StateIndex, TM):
     result.transitions().clear(transition_map)
     return result
 
-def setup_AnalyzerStates(StateAIndex, TMa, StateBIndex, TMb):
+def setup_AnalyzerStates(StatesDescription):
+    assert isinstance(StatesDescription, list)
+    for state_index, transition_map in StatesDescription:
+        assert isinstance(state_index, long)
+        assert isinstance(transition_map, list)
+
+    requested_state_index_list = [ x[0] for x in StatesDescription ]
+
     # Use 'BACKWARD_PRE_CONTEXT' so that the drop-out objects are created
     # without larger analyzsis.
-    EngineType = E_EngineTypes.BACKWARD_PRE_CONTEXT
+    EngineType     = E_EngineTypes.BACKWARD_PRE_CONTEXT
 
+    # Pseudo transitions from init state to all
     InitStateIndex = 7777L
-    init_state = setup_sm_state(InitStateIndex, 
-                                [ (Interval(1,2), StateAIndex), 
-                                  (Interval(2,3), StateBIndex) ])
+    init_tm        = [ (Interval(i, i+1), state_index) for i, state_index in enumerate(requested_state_index_list) ]
+    init_state     = setup_sm_state(InitStateIndex, init_tm)
+    sm_state_db    = dict((state_index, setup_sm_state(state_index, tm)) for state_index, tm in StatesDescription)
+    analyzer       = TestAnalyzer()
 
-    sm_state_a = setup_sm_state(StateAIndex, TMa)
-    sm_state_b = setup_sm_state(StateBIndex, TMb)
-
-    analyzer = TestAnalyzer()
-
-    # Make sure, that the transitions appear in the 'entry' member of the states.
-    # -- collect transition information
+    # Make sure, that the transitions appear in the 'entry' member of the
+    # states. Collect transition information.
     transition_db = defaultdict(list)
-    for state_index in collect_target_state_indices(TMa):
-        transition_db[state_index].append(StateAIndex)
-    for state_index in collect_target_state_indices(TMb):
-        transition_db[state_index].append(StateBIndex)
-    transition_db[StateAIndex].append(InitStateIndex)
-    transition_db[StateBIndex].append(InitStateIndex)
+    for state_index, transition_map in StatesDescription:
+        for interval, target_index in transition_map:
+            if not isinstance(target_index, (long,int)): continue
+            transition_db[target_index].append(state_index)
+        transition_db[state_index].append(InitStateIndex)
 
-    # -- setup the states with their 'from_state_list'
+    # Setup the states with their 'from_state_list'
+    InitState  = AnalyzerState(init_state, InitStateIndex, True, EngineType, [])
     for state_index, from_state_list in transition_db.iteritems():
-        if state_index in [StateAIndex, StateBIndex]: continue
-        sm_state = setup_sm_state(state_index, [])
+        sm_state = sm_state_db.get(state_index)
+        if sm_state is None: sm_state = setup_sm_state(state_index, [])
         state    = AnalyzerState(sm_state, state_index, False, EngineType, from_state_list)
+        state.entry.door_tree_configure()
         analyzer.state_db[state_index] = state
 
-    InitState = AnalyzerState(init_state, InitStateIndex, True, EngineType, [])
-
-    StateA = AnalyzerState(sm_state_a, StateAIndex, False, 
-                           EngineType, transition_db[StateAIndex])
-    StateB = AnalyzerState(sm_state_b, StateBIndex, False, 
-                           EngineType, transition_db[StateBIndex])
-
-    analyzer.state_db[InitStateIndex] = InitState 
-    analyzer.state_db[StateAIndex] = StateA 
-    analyzer.state_db[StateBIndex] = StateB
-
-    for state in analyzer.state_db.itervalues():
-        state.entry.door_tree_configure()
-
-    return StateA, StateB, analyzer
+    state_list = [ analyzer.state_db[state_index] for state_index in requested_state_index_list ]
+    return state_list, analyzer
 
 def collect_target_state_indices(TM):
     result = set()

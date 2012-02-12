@@ -30,7 +30,9 @@ def core(StateA, TMa, StateB, TMb, analyzer, DrawF):
 
 def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L], DrawF=False):
 
-    StateA, StateB, analyzer = setup_AnalyzerStates(InvolvedStateListA[0], TMa, InvolvedStateListB[0], TMb)
+    StateList, analyzer = setup_AnalyzerStates([(InvolvedStateListA[0], TMa), 
+                                                (InvolvedStateListB[0], TMb)])
+    StateA, StateB = StateList
 
     if DrawF:
         print "DoorTree(A):"
