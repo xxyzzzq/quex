@@ -130,7 +130,6 @@ class PathWalkerState(AnalyzerState):
             self.__state_index_list = result
         return self.__state_index_list
 
-    @property
     def implemented_state_index_list(self):
         """This is different from 'state_index_list', because the end state
            of a path is not implemented!
@@ -208,12 +207,16 @@ class PathWalkerState(AnalyzerState):
                 if candidate[0] == StateIdx: return path_id, path_offset
         assert False
 
-    def state_set_iterable(self, StateIndexList, TheAnalyzer):
-        def help(StateIdx):
-            path_id, path_offset = self.get_path_info(StateIdx)
-            return (StateIdx, path_id, path_offset, TheAnalyzer.state_db[StateIdx])
-
-        return sorted(imap(help, StateIndexList), key=itemgetter(1, 2)) # Sort by 'path_id', 'path_offset'
+    @property
+    def door_id_replacement_db(self):
+        if self.__door_id_replacement_db is None:
+            result = {}
+            for state_index in self.implemented_state_index_list:
+                door_db = self.__analyzer.state_db[state_index].door_db
+                for transition_id, door_id in door_db.iteritems():
+                    result[door_id] = self.door_db[transition_id]
+            self.__door_id_replacement_db = result
+        return self.__door_id_replacement_db
 
     def replace_door_ids_in_transition_map(self, ReplacementDB):
         """See TemplateState, for more information."""
@@ -256,33 +259,4 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
         if path_walker.uniform_entry_door_id_along_all_paths is not None:
             path_walker.entry.cancel_state_iterator_f()
 
-    return path_walker_list, get_door_id_replacement_db(path_walker_list, TheAnalyzer)
-
-def get_door_id_replacement_db(PathWalkerList, TheAnalyzer):
-    """RETURN:
-
-            map:    old door_id ---> new door_id
-
-       where the 'old door_id' originates in an AnalyzerState, and the
-       'new door_id' is a door of the Mega State (PathWalkerState).
-
-       (Should be same as in TemplateState).
-    """
-    replacement_db = {}
-    for mega_state in PathWalkerList:
-        # State indices that were combined in the Mega State
-        state_index_list = mega_state.implemented_state_index_list
-
-        # Iterate over states that were combined into the Mega State
-        for state in (TheAnalyzer.state_db[i] for i in state_index_list):
-            # state = state that has been implemented in the mega state.
-            for old_door_id, transition_id_list in state.entry.transition_db.iteritems():
-                if len(transition_id_list) == 0: continue
-                prototype_transition_id = transition_id_list[0]
-                # old_door_id = where the all the transitions in transition_id_list enter the 'state'.
-                # new_door_id = where the transitions in transition_id_list now the mega state.
-                new_door_id                 = mega_state.entry.door_db[prototype_transition_id]
-                replacement_db[old_door_id] = new_door_id
-
-    return replacement_db
-
+    return path_walker_list

@@ -4,6 +4,7 @@ from   quex.engine.analyzer.state_entry             import Entry
 from   quex.engine.analyzer.state_entry_action      import SetTemplateStateKey, TransitionID, DoorID
 from   quex.engine.interval_handling                import Interval
 from   quex.engine.analyzer.core                    import AnalyzerState, get_input_action
+from   quex.engine.analyzer.mega_state              import MegaState, MegaState_Target
 from   quex.blackboard                              import E_StateIndices
 
 from   itertools   import chain, imap
@@ -12,28 +13,14 @@ import sys
 from   copy import deepcopy
 
 class TemplateState_Entry(Entry):
+    """
+    """
     def __init__(self, StateIndex, StateIndexToStateKeyDB, *EntryList):
         Entry.__init__(self, StateIndex, [])
         for entry in EntryList:
             self.update(entry, StateIndexToStateKeyDB)
 
         Entry.door_tree_configure(self, StateIndex)
-
-        self.__door_id_replacement_db = self.__get_door_replacement_db(EntryList)
-
-    @property
-    def door_id_replacement_db(self):
-        return self.__door_id_replacement_db
-
-    def __get_door_replacement_db(self, EntryList):
-        """Get the replacements of any involved door in the entry list
-           and translate it into a door of this entry.
-        """
-        result = {}
-        for entry in EntryList:
-            for transition_id, door_id in entry.door_db.iteritems():
-                result[door_id] = self.door_db[transition_id]
-        return result
 
     def update(self, TheEntry, StateIndexToStateKeyDB):
         """Include 'TheState.entry.action_db' into this state. That means,
@@ -48,7 +35,7 @@ class TemplateState_Entry(Entry):
            accordingly.  
         """
         for transition_id, action in TheEntry.action_db.iteritems():
-            clone     = action.clone()
+            clone = action.clone()
             if transition_id.state_index == transition_id.from_state_index: 
                 # Recursion of a state will be a recursion of the template state.
                 #   => The state_key does not have to be set (again) at entry.
@@ -79,9 +66,9 @@ class TemplateState_Entry(Entry):
 
             self.action_db[transition_id] = clone
 
-class TemplateState(AnalyzerState):
+class TemplateState(MegaState):
     """A TemplateState is a state that is implemented to represent multiple
-       states.  Tt implements the general scheme and keeps track of the
+       states.  It implements the general scheme and keeps track of the
        particularities. The TemplateState is constructed by 
 
        The template states are combined successively by the combination of 
@@ -95,7 +82,7 @@ class TemplateState(AnalyzerState):
 
           combine_maps(...) which combines the transition maps of the 
                             two states into a single transition map that
-                            may contain TargetScheme-s. 
+                            may contain MegaState_Target-s. 
                                
           combine_drop_out_scheme(...) which combines DropOut and Entry schemes
                                        of the two states.
@@ -107,7 +94,7 @@ class TemplateState(AnalyzerState):
         # The 'index' remains None, as long as the TemplateState is not an 
         # accepted element of a state machine. This makes sense, in particular
         # for TemplateStateCandidates (derived from TemplateState). 
-        AnalyzerState.set_index(self, index.get())
+        MegaState.__init__(self, TheAnalyzer)
 
         self.__analyzer             = TheAnalyzer
         self.__state_index_list     = get_state_list(StateA) + get_state_list(StateB)
@@ -120,9 +107,11 @@ class TemplateState(AnalyzerState):
                                                   get_state_list(StateB), StateB.drop_out)
 
         # Adapt the door ids of the transition maps and bring them all into a form of 
-        #   (interval --> TargetScheme)
+        #   (interval --> MegaState_Target)
         tm_a = self.__get_adapted_transition_map(StateA)
+        print "##atma:", tm_a
         tm_b = self.__get_adapted_transition_map(StateB)
+        print "##atmb:", tm_b
 
         self.__transition_map,    \
         self.__target_scheme_list = combine_maps(StateA, tm_a, StateB, tm_b)
@@ -133,31 +122,20 @@ class TemplateState(AnalyzerState):
         self.input         = get_input_action(StateA.engine_type, InitStateF=False)
 
     @property
-    def engine_type(self):         return self.__engine_type
-    @property
-    def init_state_f(self):        return False
-    @property
     def transition_map(self):      return self.__transition_map
     @property
     def target_scheme_list(self):  return self.__target_scheme_list
     @property
     def state_index_list(self):    return self.__state_index_list
     @property
-    def implemented_state_index_list(self):    return self.__state_index_list
-    @property
     def entry(self):               return self.__entry
     @property
-    def uniform_drop_outs_f(self): 
-        return len(self.__drop_out) == 1
+    def uniform_drop_outs_f(self): return len(self.__drop_out) == 1
     @property
     def drop_out(self):            return self.__drop_out
 
-    def state_set_iterable(self, StateIndexList, TheAnalyzer):
-        return imap(lambda i: 
-                    (i,                                # state_index
-                     self.state_index_list.index(i),   # 'state_key' of state (in array)
-                     TheAnalyzer.state_db[i]),         # state object
-                    StateIndexList)
+    def implemented_state_index_list(self):    
+        return self.__state_index_list
 
     def __get_local_door_id(self, StateIndex, FromStateIndex):
         """If the target state is implemented in this template, then return 
@@ -174,15 +152,16 @@ class TemplateState(AnalyzerState):
 
     def __get_adapted_transition_map(self, State):
         def adapt(Target):
-            """Transitions to states are transformed into transitions to TargetSchemes.
+            """Transitions to states are transformed into transitions to MegaState_Targets.
                That is intervals are associated with 'doors' instead of target states.
             """
             if Target == E_StateIndices.DROP_OUT: 
-                return TargetScheme(E_StateIndices.DROP_OUT)
+                return MegaState_Target(E_StateIndices.DROP_OUT)
             else:
-                return self.__get_local_door_id(State.index, Target)
+                assert isinstance(Target, (int, long))
+                return MegaState_Target(self.__get_local_door_id(Target, State.index))
 
-        def adapt_TargetScheme(Target):
+        def adapt_MegaState_Target(Target):
             """A transition_map can refer to local door ids, as they are implemented
                by this template, or standard door_ids of 'normal original states'.
                Thus, transitions of an existing template, must de-translated door ids
@@ -190,10 +169,16 @@ class TemplateState(AnalyzerState):
                implemented here with local door ids.
             """
             def __adapt(door_id):
-                transition_id = TState.entry.transition_db[DoorId]
+                if door_id.state_index == State.index:
+                    transition_id = State.entry.transition_db[door_id][0]
+                else:
+                    print "##trl:", door_id
+                    print "##lilli:",self.__analyzer.state_db[door_id.state_index].entry.transition_db[door_id] 
+                    transition_id = self.__analyzer.state_db[door_id.state_index].entry.transition_db[door_id][0]
                 new_door_id   = self.__get_local_door_id(transition_id.state_index, transition_id.from_state_index)
-                door_id.state_index      = new_door_id.state_index
-                door_id.from_state_index = new_door_id.from_state_index
+                print "##trlnew:", new_door_id
+                door_id.state_index = new_door_id.state_index
+                door_id.door_index  = new_door_id.door_index
 
             if Target.drop_out_f:    
                 return Target
@@ -205,10 +190,10 @@ class TemplateState(AnalyzerState):
                     __adapt(door_id)
             return clone
 
-        if isinstance(State, AnalyzerState):
-            return [(interval, adapt(target))              for interval, target in State.transition_map ]
+        if isinstance(State, TemplateState):
+            return [(interval, adapt_MegaState_Target(target)) for interval, target in State.transition_map ]
         else:
-            return [(interval, adapt_TargetScheme(target)) for interval, target in State.transition_map ]
+            return [(interval, adapt(target))                  for interval, target in State.transition_map ]
 
     def replace_door_ids_in_transition_map(self, ReplacementDB):
         """ReplacementDB:    DoorID --> Replacement DoorID
@@ -250,7 +235,7 @@ def combine_drop_out_scheme(StateIndexListA, A, StateIndexListB, B):
 
        NOTE: This type of 'scheme', as mentioned in (1) and (2) is suited 
              for DropOut and EntryObjects. It is fundamentally different 
-             from a TargetScheme T of transition maps, where T[state_key] 
+             from a MegaState_Target T of transition maps, where T[state_key] 
              maps to the target state of state_index_list[state_key].
     """
     # A and B can be 'objects' or dictionaries that map 'object: -> state_index_list'
@@ -312,8 +297,8 @@ def combine_maps(StateA, AdaptedTM_A, StateB, AdaptedTM_B):
 
 
        For some intervals, the target is the same. But for some it is different.
-       In a TemplateState, the intervals are associated with TargetScheme 
-       objects. A TargetScheme object tells the target state dependent
+       In a TemplateState, the intervals are associated with MegaState_Target 
+       objects. A MegaState_Target object tells the target state dependent
        on the 'state_key'. The above example may result in a transition map
        as below:
 
@@ -332,8 +317,8 @@ def combine_maps(StateA, AdaptedTM_A, StateB, AdaptedTM_B):
        is associated with an 'index' for reference.
 
        TemplateStates may be combined with AnalyzerStates and other TemplateStates.
-       Thus, TargetSchemes must be combined with trigger targets
-       and other TargetSchemes.
+       Thus, MegaState_Targets must be combined with trigger targets
+       and other MegaState_Targets.
 
        NOTE:
 
@@ -354,13 +339,13 @@ def combine_maps(StateA, AdaptedTM_A, StateB, AdaptedTM_B):
 
     -----------------------------------------------------------------------------
     Transition maps of TemplateState-s function based on 'state_keys'. Those state
-    keys are used as indices into TemplateTargetSchemes. The 'state_key' of a given
+    keys are used as indices into TemplateMegaState_Targets. The 'state_key' of a given
     state relates to the 'state_index' by
 
         (1)    self.state_index_list[state_key] == state_index
 
     where 'state_index' is the number by which the state is identified inside
-    its state machine. Correspondingly, for a given TemplateTargetScheme T 
+    its state machine. Correspondingly, for a given TemplateMegaState_Target T 
 
         (2)                   T[state_key]
 
@@ -395,7 +380,7 @@ def combine_maps(StateA, AdaptedTM_A, StateB, AdaptedTM_B):
 
         end       = min(i_end, k_end)
         target    = scheme_db.get_target(i_target, k_target)
-        assert isinstance(target, TargetScheme)
+        assert isinstance(target, MegaState_Target)
 
         result.append((Interval(prev_end, end), target))
         prev_end  = end
@@ -411,89 +396,6 @@ def combine_maps(StateA, AdaptedTM_A, StateB, AdaptedTM_B):
 
     return result, scheme_db.get_scheme_list()
 
-class TargetScheme(object):
-    """A target scheme contains the information about what the target
-       state is inside an interval for a given template key. For example,
-       a given interval X triggers to target scheme T, i.e. there is an
-       element in the transition map:
-
-                ...
-                [ X, T ]
-                ...
-
-       then 'T.scheme[key]' tells the 'door id' of the door that is entered
-       for the case the operates with the given 'key'. A key in turn, stands 
-       for a particular state.
-
-       There might be multiple intervals following the same target scheme,
-       so the function 'TargetSchemeDB.get()' takes care of making 
-       those schemes unique.
-
-           .scheme = Target state index scheme as explained above.
-
-           .index  = Unique index of the target scheme. This value is 
-                     determined by 'TargetSchemeDB.get()'. It helps
-                     later to define the scheme only once, even it appears
-                     twice or more.
-    """
-    __slots__ = ('__index', '__scheme', '__drop_out_f', '__door_id', '__scheme')
-
-    def __init__(self, Target, UniqueIndex=None):
-        if UniqueIndex is not None: 
-            assert isinstance(Target, tuple)
-        else:
-            assert    isinstance(Target, DoorID) \
-                   or Target == E_StateIndices.DROP_OUT 
-
-        self.__index       = UniqueIndex
-
-        self.__drop_out_f  = False
-        self.__door_id     = None
-        self.__scheme      = None
-
-        if   Target == E_StateIndices.DROP_OUT:  self.__drop_out_f  = True;   assert UniqueIndex is None
-        elif isinstance(Target, DoorID):         self.__door_id     = Target; assert UniqueIndex is None
-        elif isinstance(Target, tuple):          self.__scheme      = Target; assert UniqueIndex is not None
-
-    @property
-    def scheme(self):      return self.__scheme
-
-    @property
-    def door_id(self):     return self.__door_id
-
-    def door_id_replacement(self, ReplacementDB):
-        def replace_if_required(DoorId):
-            replacement = ReplacementDB.get(DoorId)
-            if replacement is not None: return replacement
-            return DoorId
-
-        if self.__door_id is not None:
-            new_door_id = ReplacementDB.get(self.__door_id)
-            if new_door_id is not None:
-                self.__door_id = new_door_id
-        else:
-            self.__scheme = tuple(replace_if_required(door_id) for door_id in self.__scheme)
-
-    @property
-    def drop_out_f(self):  return self.__drop_out_f
-
-    @property
-    def index(self):       return self.__index
-
-    def __repr__(self):
-        if   self.drop_out_f:          return "TargetScheme:DropOut"
-        elif self.door_id is not None: return "TargetScheme:(%s)" % repr(self.__door_id)
-        elif self.scheme  is not None: return "TargetScheme:(%s)" % repr(self.__scheme)
-        else:                          return "TargetScheme:<ERROR>"
-
-    def __hash__(self):
-        return self.__index
-
-    def __eq__(self, Other):
-        if isinstance(Other, TargetScheme) == False: return False
-        ## if self.__index != Other.__index: return False
-        return self.__scheme == Other.__scheme
-
 class TargetSchemeDB(dict):
     """A TargetSchemeDB keeps track of existing target state combinations.
        If a scheme appears more than once, it does not get a new index. By means
@@ -505,7 +407,7 @@ class TargetSchemeDB(dict):
         self.__state_a_state_index_list_length = len(get_state_list(StateA))
         self.__state_b_state_index_list_length = len(get_state_list(StateB))
 
-    def get_TargetScheme(self, SchemeA, SchemeB):
+    def get_MegaState_Target(self, SchemeA, SchemeB):
         """Checks whether the combination is already present. If so, the reference
            to the existing target scheme is returned. If not a new scheme is created
            and entered into the database.
@@ -532,7 +434,7 @@ class TargetSchemeDB(dict):
         result = dict.get(self, scheme)
         if result is None: 
             new_index    = len(self)
-            result       = TargetScheme(scheme, new_index)
+            result       = MegaState_Target(scheme, new_index)
             self[scheme] = result
 
         return result
@@ -544,10 +446,8 @@ class TargetSchemeDB(dict):
         return self.values()
 
     def get_target(self, TA, TB):
-        print "##:", TA.__class__.__name__, TA
-        print "##:", TB.__class__.__name__, TB
-        assert isinstance(TA, TargetScheme) 
-        assert isinstance(TB, TargetScheme) 
+        assert isinstance(TA, MegaState_Target) 
+        assert isinstance(TB, MegaState_Target) 
 
         if TA.drop_out_f:
             if TB.drop_out_f:
@@ -555,7 +455,7 @@ class TargetSchemeDB(dict):
             TA_scheme = (E_StateIndices.DROP_OUT,) * self.__state_a_state_index_list_length
 
         elif TA.door_id is not None:
-            if TB.door_id is not None and TA.scheme == TB.scheme:
+            if TB.door_id is not None and TA.door_id == TB.door_id:
                 return TA
             TA_scheme = (TA.door_id,) * self.__state_a_state_index_list_length
 
@@ -573,7 +473,7 @@ class TargetSchemeDB(dict):
         else:
             TB_scheme = TB.scheme
 
-        return self.get_TargetScheme(TA_scheme, TB_scheme)
+        return self.get_MegaState_Target(TA_scheme, TB_scheme)
 
 def get_state_list(X): 
     if isinstance(X, TemplateState): return X.state_index_list 

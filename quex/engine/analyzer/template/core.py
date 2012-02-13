@@ -120,7 +120,7 @@ from   itertools   import ifilter, islice
                                     trigger for the given interval to the same
                                     state given by 'X'.
 
-        TargetScheme T           -- which means that the target state depends 
+        MegaState_Target T       -- which means that the target state depends 
                                     on the state_key. 'T[state_key]' tells the
                                     target state when the templates operates
                                     for a state given by 'state_key'.
@@ -161,7 +161,7 @@ def do(TheAnalyzer, MinGain, CompressionType,
 
     done_state_index_set, template_state_list = combiner.result()
 
-    return done_state_index_set, template_state_list, combiner.get_door_id_replacement_db()
+    return done_state_index_set, template_state_list
 
 class CombinationDB:
     """Contains the 'Gain' for each possible combination of states. This includes
@@ -233,21 +233,6 @@ class CombinationDB:
         for state in template_state_list:
             done_state_index_set.update(state.state_index_list)
         return done_state_index_set, template_state_list
-
-    def get_door_id_replacement_db(self):
-        """RETURN:
-
-                map:    old door_id ---> new door_id
-
-           where the 'old door_id' originates in an AnalyzerState, and the
-           'new door_id' is a door of the template state.
-
-           (Should be same as in PathWalkerState).
-        """
-        replacement_db = {}
-        for template_state in self.result_iterable():
-            replacement_db.update(template_state.entry.door_id_replacement_db)
-        return replacement_db
 
     @property
     def gain_matrix(self):
