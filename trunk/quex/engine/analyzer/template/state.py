@@ -31,10 +31,8 @@ class TemplateState_Entry(Entry):
         """
         result = {}
         for entry in EntryList:
-            for door_id, transition_id_list in entry.transition_db.iteritems():
-                if len(transition_id_list) == 0: continue
-                prototype       = transition_id_list[0]
-                result[door_id] = self.door_db[prototype]
+            for transition_id, door_id in entry.door_db.iteritems():
+                result[door_id] = self.door_db[transition_id]
         return result
 
     def update(self, TheEntry, StateIndexToStateKeyDB):
@@ -51,16 +49,18 @@ class TemplateState_Entry(Entry):
         """
         for transition_id, action in TheEntry.action_db.iteritems():
             clone     = action.clone()
-            # NOTE: Recursion of a state will be a recursion of the template state.
-            #   => The state_key does not have to be set (again) at entry.
-            #   => With the "door_tree_configure()" comes an elegant consequence:
-            # 
-            # ALL RECURSIVE TARGETS INSIDE THE TEMPLATE WILL ENTER THROUGH THE
-            # SAME DOOR, AS LONG AS THEY DO THE SAME THING. 
-            # 
-            # RECURSION WILL BE A SPECIAL CASE OF 'SAME DOOR' TARGET WHICH HAS 
-            # NOT TO BE DEALT WITH SEPARATELY.
-            if transition_id.state_index != transition_id.from_state_index: 
+            if transition_id.state_index == transition_id.from_state_index: 
+                # Recursion of a state will be a recursion of the template state.
+                #   => The state_key does not have to be set (again) at entry.
+                #   => With the "door_tree_configure()" comes an elegant consequence:
+                # 
+                # ALL RECURSIVE TARGETS INSIDE THE TEMPLATE WILL ENTER THROUGH THE
+                # SAME DOOR, AS LONG AS THEY DO THE SAME THING. 
+                # 
+                # RECURSION WILL BE A SPECIAL CASE OF 'SAME DOOR' TARGET WHICH HAS 
+                # NOT TO BE DEALT WITH SEPARATELY.
+                pass
+            else:
                 # Not recursive => add control command 'SetTemplateStateKey'
                 #
                 # Determine 'state_key' (an integer value) for state that is
@@ -119,32 +119,13 @@ class TemplateState(AnalyzerState):
         self.__drop_out = combine_drop_out_scheme(get_state_list(StateA), StateA.drop_out, 
                                                   get_state_list(StateB), StateB.drop_out)
 
-        # Transition Map: list of (interval, target)
-        # Where target = StateIndex   for AnalyzerState-s
-        #       target = TargetScheme for TemplateState-s
-        # DoorID-s of template states must be replaced, if they are implemented by this
-        # template state.
-        def adapted(Target):
-            if Target.drop_out_f: return Target
-            result = deepcopy(Target)
-            result.door_id_replacement(self.entry.door_id_replacement_db)
-            return result
-
-        if isinstance(StateA, TemplateState):
-            tm_a = [ (interval, adapted(target)) for interval, target in StateA.transition_map ]
-        else:
-            tm_a = StateA.transition_map
-
-        if isinstance(StateB, TemplateState):
-            tm_b = [ (interval, adapted(target)) for interval, target in StateB.transition_map ]
-        else:
-            tm_b = StateB.transition_map
+        # Adapt the door ids of the transition maps and bring them all into a form of 
+        #   (interval --> TargetScheme)
+        tm_a = self.__get_adapted_transition_map(StateA)
+        tm_b = self.__get_adapted_transition_map(StateB)
 
         self.__transition_map,    \
-        self.__target_scheme_list = combine_maps(StateA, tm_a, StateB, tm_b, TheAnalyzer)
-        for interval, target in self.__transition_map:
-            if target.drop_out_f: continue
-            target.door_id_replacement(self.entry.door_id_replacement_db)
+        self.__target_scheme_list = combine_maps(StateA, tm_a, StateB, tm_b)
 
         # Compatible with AnalyzerState
         # (A template state can never mimik an init state)
@@ -177,6 +158,57 @@ class TemplateState(AnalyzerState):
                      self.state_index_list.index(i),   # 'state_key' of state (in array)
                      TheAnalyzer.state_db[i]),         # state object
                     StateIndexList)
+
+    def __get_local_door_id(self, StateIndex, FromStateIndex):
+        """If the target state is implemented in this template, then return 
+           a locally implemented door. Otherwise, we return a 'standard door'
+           of the original states. Later they may be replaced with the 
+           doors of their mega states, if they are implemented elsewhere.
+        """
+        door_id = self.entry.get_door_id(StateIndex, FromStateIndex)
+        if door_id is not None:
+            # We implement the 'StateIndex' so return a local door from the template
+            return door_id
+        # Return the 'standard door' of state 'StateIndex' from outside the template
+        return self.__analyzer.state_db[StateIndex].entry.get_door_id(StateIndex, FromStateIndex)
+
+    def __get_adapted_transition_map(self, State):
+        def adapt(Target):
+            """Transitions to states are transformed into transitions to TargetSchemes.
+               That is intervals are associated with 'doors' instead of target states.
+            """
+            if Target == E_StateIndices.DROP_OUT: 
+                return TargetScheme(E_StateIndices.DROP_OUT)
+            else:
+                return self.__get_local_door_id(State.index, Target)
+
+        def adapt_TargetScheme(Target):
+            """A transition_map can refer to local door ids, as they are implemented
+               by this template, or standard door_ids of 'normal original states'.
+               Thus, transitions of an existing template, must de-translated door ids
+               that relate to itself, and associate transitions to states which are
+               implemented here with local door ids.
+            """
+            def __adapt(door_id):
+                transition_id = TState.entry.transition_db[DoorId]
+                new_door_id   = self.__get_local_door_id(transition_id.state_index, transition_id.from_state_index)
+                door_id.state_index      = new_door_id.state_index
+                door_id.from_state_index = new_door_id.from_state_index
+
+            if Target.drop_out_f:    
+                return Target
+            clone = deepcopy(Target)
+            if clone.door_id is not None:  
+                __adapt(clone.door_id)
+            else:
+                for door_id in clone.scheme:
+                    __adapt(door_id)
+            return clone
+
+        if isinstance(State, AnalyzerState):
+            return [(interval, adapt(target))              for interval, target in State.transition_map ]
+        else:
+            return [(interval, adapt_TargetScheme(target)) for interval, target in State.transition_map ]
 
     def replace_door_ids_in_transition_map(self, ReplacementDB):
         """ReplacementDB:    DoorID --> Replacement DoorID
@@ -235,7 +267,7 @@ def combine_drop_out_scheme(StateIndexListA, A, StateIndexListB, B):
 
     return result
 
-def combine_maps(StateA, AdaptedTM_A, StateB, AdaptedTM_B, TheAnalyzer):
+def combine_maps(StateA, AdaptedTM_A, StateB, AdaptedTM_B):
     """RETURNS:
 
           -- Transition map = combined transition map of StateA and StateB.
@@ -349,7 +381,7 @@ def combine_maps(StateA, AdaptedTM_A, StateB, AdaptedTM_B, TheAnalyzer):
 
     # Intervals in trigger map are always adjacent, so the '.begin' member is
     # not required.
-    scheme_db = TargetSchemeDB(StateA, StateB, TheAnalyzer)
+    scheme_db = TargetSchemeDB(StateA, StateB)
     result    = []
     prev_end  = - sys.maxint
     while not (i == LenA - 1 and k == LenB - 1):
@@ -468,25 +500,11 @@ class TargetSchemeDB(dict):
        of the index it is possible to avoid multiple definitions of the same 
        scheme, later.
     """
-    def __init__(self, StateA, StateB, TheAnalyzer):
+    def __init__(self, StateA, StateB):
         dict.__init__(self)
-        self.__analyzer                        = TheAnalyzer
-        self.__state_a_index                   = StateA.index
         self.__state_a_state_index_list_length = len(get_state_list(StateA))
-        self.__state_b_index                   = StateB.index
         self.__state_b_state_index_list_length = len(get_state_list(StateB))
 
-        if isinstance(StateA, TemplateState):
-            if isinstance(StateB, TemplateState):
-                self.get_target = self.get_target_TemplateState_TemplateState
-            else:
-                self.get_target = self.get_target_TemplateState_AnalyzerState
-        else:
-            if isinstance(StateB, TemplateState):
-                self.get_target = self.get_target_AnalyzerState_TemplateState
-            else:
-                self.get_target = self.get_target_AnalyzerState_AnalyzerState
-        
     def get_TargetScheme(self, SchemeA, SchemeB):
         """Checks whether the combination is already present. If so, the reference
            to the existing target scheme is returned. If not a new scheme is created
@@ -525,101 +543,11 @@ class TargetSchemeDB(dict):
             assert element.scheme is not None
         return self.values()
 
-    def get_target(self):
-        """This function is designed as a function pointer which will point to 
-           one of the following functions depending on the involved state classes:
-               -> get_target_AnalyzerState_AnalyzerState()
-               -> get_target_AnalyzerState_TemplateState()
-               -> get_target_TemplateState_AnalyzerState()
-               -> get_target_TemplateState_TemplateState()
-        """
-        assert False
-
-    def get_target_AnalyzerState_AnalyzerState(self, TA, TB):
-        # Since TA and TB come from an ordinary AnalyzerState
-        # -- they cannot be a DoorID
-        # -- they cannot be a TargetScheme
-        assert isinstance(TA, (int, long)) or TA == E_StateIndices.DROP_OUT
-        assert isinstance(TB, (int, long)) or TB == E_StateIndices.DROP_OUT
-
-        if     TA == E_StateIndices.DROP_OUT:
-            if TB == E_StateIndices.DROP_OUT:
-                return TargetScheme(E_StateIndices.DROP_OUT)  # uniform
-            else:
-                TA_door_id = E_StateIndices.DROP_OUT
-        else:
-            TA_door_id = self.__analyzer.state_db[TA].entry.get_door_id(TA, self.__state_a_index)
-            assert TA_door_id is not None
-
-        # TB and TA cannot be recursive, otherwise we would have left above.
-
-        if TB == E_StateIndices.DROP_OUT:
-            # TA cannot be DROP_OUT, otherwise we would have left
-            TB_door_id = E_StateIndices.DROP_OUT
-        else:
-            TB_door_id = self.__analyzer.state_db[TB].entry.get_door_id(TB, self.__state_b_index)
-            assert TB_door_id is not None
-
-        if TA_door_id == TB_door_id:
-            return TargetScheme(TA_door_id)               # uniform
-        else:
-            return self.get_TargetScheme((TA_door_id,), (TB_door_id,))
-
-    def get_target_AnalyzerState_TemplateState(self, TA, TB):
-        result = self.__get_target_AnalyzerState_TemplateState(TA, self.__state_a_index, 
-                                                               TB, self.__state_b_state_index_list_length)
-        if type(result) != tuple: return result
-        return self.get_TargetScheme(result[0], result[1])
-
-    def get_target_TemplateState_AnalyzerState(self, TA, TB):
-        result = self.__get_target_AnalyzerState_TemplateState(TB, self.__state_b_index, 
-                                                               TA, self.__state_a_state_index_list_length)
-        if type(result) != tuple: return result
-        return self.get_TargetScheme(result[1], result[0])
-
-    def __get_target_AnalyzerState_TemplateState(self, T0, State0Index, 
-                                                 T1, State1StateIndexListLength):
-        # Since T0 comes from an ordinary AnalyzerState
-        # -- T0 cannot be a DoorID
-        # -- T0 cannot be a TargetScheme
-        assert    isinstance(T0, (int, long)) or T0 == E_StateIndices.DROP_OUT
-        assert    isinstance(T1, TargetScheme) 
-
-        if T1.drop_out_f:
-            if T0 == E_StateIndices.DROP_OUT:
-                return T1
-            T1_scheme = (E_StateIndices.DROP_OUT,) * State1StateIndexListLength
-
-        elif T1.door_id is not None:
-            if T0 != E_StateIndices.DROP_OUT:
-                T0_door_id = self.__analyzer.state_db[T0].entry.get_door_id(T0, State0Index)
-                if T0_door_id == T1.door_id: 
-                    return T1
-            T1_scheme = (T1.door_id,) * State1StateIndexListLength
-
-        else:
-            # T1 is a tuple of doors
-            T1_scheme = T1.scheme
-
-        # T0 and T1 cannot be recursive, otherwise we would have left
-
-        if T0 == E_StateIndices.DROP_OUT:
-            # T1 cannot be DROP_OUT, otherwise we would have left already
-            T0_door_id = E_StateIndices.DROP_OUT
-
-        else:
-            T0_door_id = self.__analyzer.state_db[T0].entry.get_door_id(T0, State0Index)
-            assert T0_door_id is not None
-
-        T0_scheme  = (T0_door_id,) 
-
-        return (T0_scheme, T1_scheme)
-
-    def get_target_TemplateState_TemplateState(self, TA, TB):
-        assert    isinstance(TA, (DoorID, TargetScheme)) \
-               or TA == E_StateIndices.DROP_OUT          
-        assert    isinstance(TB, (DoorID, TargetScheme)) \
-               or TB == E_StateIndices.DROP_OUT          
+    def get_target(self, TA, TB):
+        print "##:", TA.__class__.__name__, TA
+        print "##:", TB.__class__.__name__, TB
+        assert isinstance(TA, TargetScheme) 
+        assert isinstance(TB, TargetScheme) 
 
         if TA.drop_out_f:
             if TB.drop_out_f:
