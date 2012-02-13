@@ -159,6 +159,8 @@ class TemplateState(MegaState):
                 return MegaState_Target(E_StateIndices.DROP_OUT)
             else:
                 assert isinstance(Target, (int, long))
+                if Target in self.implemented_state_index_list:
+                        # avoid recursion entry door
                 return MegaState_Target(self.__get_local_door_id(Target, State.index))
 
         def adapt_MegaState_Target(Target):
@@ -172,6 +174,8 @@ class TemplateState(MegaState):
                 if door_id.state_index == State.index:
                     transition_id = State.entry.transition_db[door_id][0]
                 else:
+                    if Target in self.implemented_state_index_list:
+                        # avoid recursion entry door
                     print "##trl:", door_id
                     print "##lilli:",self.__analyzer.state_db[door_id.state_index].entry.transition_db[door_id] 
                     transition_id = self.__analyzer.state_db[door_id.state_index].entry.transition_db[door_id][0]
