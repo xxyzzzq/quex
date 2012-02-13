@@ -2,7 +2,7 @@ import quex.engine.analyzer.template.core      as templates
 from   quex.engine.analyzer.core               import AnalyzerState
 from   quex.engine.analyzer.state_entry        import Entry
 from   quex.engine.analyzer.state_entry_action import DoorID
-from   quex.engine.analyzer.template.state     import TargetScheme, TemplateState
+from   quex.engine.analyzer.template.state     import MegaState_Target, TemplateState
 from   quex.engine.state_machine.core          import State
 from   quex.engine.interval_handling           import NumberSet, Interval
 from   quex.blackboard                         import E_EngineTypes
@@ -34,7 +34,7 @@ def setup_AnalyzerStates(StatesDescription):
     init_tm        = [ (Interval(i, i+1), state_index) for i, state_index in enumerate(requested_state_index_list) ]
     init_state     = setup_sm_state(InitStateIndex, init_tm)
     sm_state_db    = dict((state_index, setup_sm_state(state_index, tm)) for state_index, tm in StatesDescription)
-    analyzer       = TestAnalyzer()
+    analyzer       = TestAnalyzer(E_EngineTypes.BACKWARD_PRE_CONTEXT)
 
     # Make sure, that the transitions appear in the 'entry' member of the
     # states. Collect transition information.
@@ -68,17 +68,14 @@ def clean_transition_map(tm):
         x = element[1]
         if isinstance(element[1], list): 
             x = tuple(DoorID(x, 0) for x in element[1])
-        tm[i] = (element[0], TargetScheme(x, 0))
+        tm[i] = (element[0], MegaState_Target(x, 0))
 
 class TestAnalyzer:
-    def __init__(self, *StateList):
+    def __init__(self, EngineType):
         self.state_db = {}
-        for element in StateList:
-            if isinstance(element, list):
-                for state in element:
-                    self.state_db[state.index] = state
-            else:
-                self.state_db[element.index] = element
+        self.__engine_type = EngineType
+    @property
+    def engine_type(self): return self.__engine_type
 
 class TestTemplateState(TemplateState):
     def __init__(self, TriggerMap, StateIndexList):
@@ -155,7 +152,7 @@ def print_tm(TM):
     txt = ""
     last_i = len(TM) - 1
     for i, info in enumerate(TM):
-        if not isinstance(info[1], TargetScheme): 
+        if not isinstance(info[1], MegaState_Target): 
             txt += "%s" % repr(info[1]).replace("L", "")
         else: 
             txt += "%s" % scheme_str(info[1])
@@ -168,7 +165,7 @@ def print_metric(TM):
     def get_target_scheme_list(TM):
         result = []
         for interval, target in TM:
-            assert isinstance(target, TargetScheme)
+            assert isinstance(target, MegaState_Target)
             if target.scheme is not None: result.append(target)
         return result
 

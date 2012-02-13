@@ -182,10 +182,6 @@ def __require_data(TState, TheAnalyzer):
     def help(AdrList):
         return "".join(["{ "] + map(lambda adr: "QUEX_LABEL(%i), " % adr, AdrList) + [" }"])
 
-    print "##TState:  ", TState.index
-    print "##states:  ", TState.implemented_state_index_list
-    print "##DTR:     ", TState.entry.door_tree_root
-    print "##DTR:     ", TState.entry.door_id_replacement_db
     for target_scheme in sorted(TState.target_scheme_list, key=attrgetter("index")):
         assert len(target_scheme.scheme) == len(TState.state_index_list)
         def address(DoorId):

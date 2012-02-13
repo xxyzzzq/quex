@@ -7,7 +7,7 @@ from quex.engine.analyzer.core import Entry, \
                                       DropOutBackward, \
                                       DropOutBackwardInputPositionDetection
 from quex.engine.analyzer.template.state import TemplateState, \
-                                                TargetScheme, \
+                                                MegaState_Target, \
                                                 get_iterable
 from quex.blackboard import E_AcceptanceIDs, \
                             E_TransitionN
@@ -206,7 +206,7 @@ def _transition_cost(TM):
     target_scheme_n  = 0
     involved_state_n = 0
 
-    for target in (t for interval, t in TM if isinstance(t, TargetScheme)):
+    for target in (t for interval, t in TM if isinstance(t, MegaState_Target)):
         if target.scheme is None: continue
         if involved_state_n == 0:
             # The number of involved states is the same for all target schemes.
