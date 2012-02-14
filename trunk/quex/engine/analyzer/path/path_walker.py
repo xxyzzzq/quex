@@ -1,5 +1,6 @@
 from   quex.engine.analyzer.core                import AnalyzerState
 from   quex.engine.analyzer.state_entry_action  import SetPathIterator, DoorID
+from   quex.engine.analyzer.mega_state          import MegaState
 from   quex.engine.state_machine.transition_map import TransitionMap
 import quex.engine.state_machine.index          as     index
 from   quex.blackboard                          import \
@@ -11,14 +12,13 @@ from   quex.blackboard                          import \
 from itertools import imap
 from operator  import itemgetter
 
-class PathWalkerState(AnalyzerState):
+class PathWalkerState(MegaState):
     """A path walker state is a state that can walk along one or more paths 
        with the same 'skeleton', i.e. remaining transition map. Objects of
        this class are the basis for code generation.
     """
-    def __init__(self, FirstPath, EngineType, CompressionType):
-        AnalyzerState.set_index(self, index.get())
-        AnalyzerState.set_engine_type(self, EngineType)
+    def __init__(self, FirstPath, TheAnalyzer, CompressionType):
+        MegaState.__init__(self, TheAnalyzer)
 
         self.__path_list      = [ FirstPath.sequence() ]
         self.entry            = self.__adapt_path_walker_id_and_path_id(FirstPath.entry, PathID=0)
@@ -26,13 +26,13 @@ class PathWalkerState(AnalyzerState):
         self.__skeleton       = FirstPath.skeleton() # map: target_index --> trigger set
         # The skeleton does not contain wild cards anymore, so we can already transform it
         # into a transition map:                     # list: [ ... (interval, target) ... ]
-        self.__transition_map = TransitionMap(self.__skeleton).get_trigger_map()
+        self.transition_map   = TransitionMap(self.__skeleton).get_trigger_map()
 
         self.input = { 
             E_EngineTypes.FORWARD:                 E_InputActions.INCREMENT_THEN_DEREF,
             E_EngineTypes.BACKWARD_PRE_CONTEXT:    E_InputActions.DECREMENT_THEN_DEREF,
             E_EngineTypes.BACKWARD_INPUT_POSITION: E_InputActions.DECREMENT_THEN_DEREF,
-        }[EngineType]
+        }[TheAnalyzer.engine_type]
 
         self.__uniformity_required_f = (CompressionType == E_Compression.PATH_UNIFORM)
         if not self.__uniformity_required_f:
@@ -44,10 +44,6 @@ class PathWalkerState(AnalyzerState):
 
         self.__state_index_list     = None # Computed on demand
         self.__end_state_index_list = None # Computed on demand
-
-    @property
-    def init_state_f(self): 
-        return False
 
     def accept(self, Path):
         """Accepts the given Path to be walked, if the skeleton matches.
@@ -117,8 +113,6 @@ class PathWalkerState(AnalyzerState):
 
     @property
     def path_list(self):          assert type(self.__path_list) == list; return self.__path_list
-    @property
-    def transition_map(self):     return self.__transition_map
     @property
     def state_index_list(self):
         """map:   state_key --> state_index of involved state
@@ -207,17 +201,6 @@ class PathWalkerState(AnalyzerState):
                 if candidate[0] == StateIdx: return path_id, path_offset
         assert False
 
-    @property
-    def door_id_replacement_db(self):
-        if self.__door_id_replacement_db is None:
-            result = {}
-            for state_index in self.implemented_state_index_list:
-                door_db = self.__analyzer.state_db[state_index].door_db
-                for transition_id, door_id in door_db.iteritems():
-                    result[door_id] = self.door_db[transition_id]
-            self.__door_id_replacement_db = result
-        return self.__door_id_replacement_db
-
     def replace_door_ids_in_transition_map(self, ReplacementDB):
         """See TemplateState, for more information."""
         def replace_if_required(DoorId):
@@ -225,7 +208,7 @@ class PathWalkerState(AnalyzerState):
             if replacement is not None: return replacement
             return DoorId
 
-        for i, info in enumerate(self.__transition_map):
+        for i, info in enumerate(self.transition_map):
             interval, target = info
 
             if target == E_StateIndices.DROP_OUT: continue
@@ -233,9 +216,7 @@ class PathWalkerState(AnalyzerState):
 
             new_door_id = ReplacementDB.get(target)
             if new_door_id is not None:
-                self.__transition_map[i] = (interval, new_door_id)
-
-
+                self.transition_map[i] = (interval, new_door_id)
 
 def group(CharacterPathList, TheAnalyzer, CompressionType):
     """Different character paths may be walked down by the same pathwalker, if
@@ -248,15 +229,10 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
         for path_walker in path_walker_list:
             if path_walker.accept(candidate): break
         else:
-            path_walker_list.append(PathWalkerState(candidate, TheAnalyzer.engine_type, CompressionType))
+            path_walker_list.append(PathWalkerState(candidate, TheAnalyzer, CompressionType))
 
-    # If a pathwalker has only uniform entries, then the 'SetPathIterator' commands
-    # do not need to set the 'state_iterator' along a state sequence.
     for path_walker in path_walker_list:
         # Once the entries are combined, re-configure the door tree
         path_walker.entry.door_tree_configure(path_walker.index)
-
-        if path_walker.uniform_entry_door_id_along_all_paths is not None:
-            path_walker.entry.cancel_state_iterator_f()
 
     return path_walker_list

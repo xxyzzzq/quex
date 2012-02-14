@@ -33,19 +33,6 @@ class PathWalkerState_Entry(Entry):
 
             self.action_db[transition_id] = clone
 
-    def cancel_state_iterator_f(self):
-        """When it is detected that along the path, all entries are uniform,
-           then no state chane needs to be followed. This means, that at entry
-           into the path walker, the state iterator does not need to be set.
-
-           This function does the job to cancel the 'state_iterator_f' in
-           any occuring 'SetPathIterator' command.
-        """
-        for action in TheEntry.action_db.itervalues():
-            for command in (x for x in action.command_list if isinstance(x, SetPathIterator)):
-                command.cancel_state_iterator_f()
-        
-
 class CharacterPath:
     """A set of states that can be walked along with a character sequence plus
        a common remaining transition map (here called 'skeleton').

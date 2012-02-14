@@ -1,4 +1,4 @@
-<history date="Mon Feb 13 23:33:58 2012" element-n="1072">
+<history date="Tue Feb 14 23:47:03 2012" element-n="1083">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
@@ -1876,5 +1876,18 @@
     </day>
     <day year="2012" month="02" day="13">
         <crc-error time="22:33:46" application="test-simple.py" choice="Cpp-Template" database-crc="-771053764" real-crc="90237132"/>
+    </day>
+    <day year="2012" month="02" day="14">
+        <crc-error time="21:12:57" application="test-simple.py" choice="ANSI-C-PlainMemory" database-crc="-771053764" real-crc="90237132"/>
+        <crc-error time="21:12:57" application="test-simple.py" choice="ANSI-C" database-crc="-771053764" real-crc="90237132"/>
+        <crc-error time="21:12:58" application="test-simple.py" choice="Cpp" database-crc="-771053764" real-crc="90237132"/>
+        <crc-error time="21:12:59" application="test-simple.py" choice="Cpp_StrangeStream" database-crc="-771053764" real-crc="90237132"/>
+        <crc-error time="21:13:00" application="test-simple.py" choice="Cpp-Path" database-crc="-771053764" real-crc="90237132"/>
+        <crc-error time="21:13:01" application="test-simple.py" choice="Cpp-PathUniform" database-crc="-771053764" real-crc="90237132"/>
+        <crc-error time="21:13:01" application="test-simple.py" choice="Cpp-Path-CG" database-crc="-771053764" real-crc="90237132"/>
+        <crc-error time="21:13:02" application="test-simple.py" choice="ANSI-C-CG" database-crc="-771053764" real-crc="90237132"/>
+        <crc-error time="21:13:03" application="test-simple.py" choice="Cpp-PathUniform-CG" database-crc="-771053764" real-crc="90237132"/>
+        <crc-error time="21:13:04" application="test-simple.py" choice="Cpp-Template-CG" database-crc="-771053764" real-crc="90237132"/>
+        <crc-error time="21:13:04" application="test-simple.py" choice="ANSI-C-PathTemplate" database-crc="-771053764" real-crc="90237132"/>
     </day>
 </history>

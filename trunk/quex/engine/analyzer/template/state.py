@@ -111,7 +111,7 @@ class TemplateState(MegaState):
         tm_a = self.__get_adapted_transition_map(StateA)
         tm_b = self.__get_adapted_transition_map(StateB)
 
-        self.__transition_map,    \
+        self.transition_map,    \
         self.__target_scheme_list = combine_maps(StateA, tm_a, StateB, tm_b)
 
         # Compatible with AnalyzerState
@@ -119,8 +119,6 @@ class TemplateState(MegaState):
         self.__engine_type = StateA.engine_type
         self.input         = get_input_action(StateA.engine_type, InitStateF=False)
 
-    @property
-    def transition_map(self):      return self.__transition_map
     @property
     def target_scheme_list(self):  return self.__target_scheme_list
     @property
@@ -171,7 +169,9 @@ class TemplateState(MegaState):
                implemented here with local door ids.
             """
             def __adapt(door_id):
-                if door_id.state_index == State.index:
+                if door_id == E_StateIndices.DROP_OUT:
+                    return door_id
+                elif door_id.state_index == State.index:
                     transition_id = State.entry.transition_db[door_id][0]
                 elif door_id.state_index == self.index:
                     # It may very well be that the MegaState_Target object is referred multiple
@@ -219,7 +219,7 @@ class TemplateState(MegaState):
            with the DoorID 'Dyxm' which is the MegaState's entry that represents
            'from Y to X'. Any transition 'Dyx' must now be replaced by 'Dyxm'.
         """
-        for interval, target in self.__transition_map:
+        for interval, target in self.transition_map:
             if target.drop_out_f: continue
             target.door_id_replacement(ReplacementDB)
 
