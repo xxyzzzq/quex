@@ -55,5 +55,5 @@ struct MyType<T> {
    fun   
 """
 
-generator_test.do(pattern_action_pair_list, test_str, pattern_dict, choice, QuexBufferSize=64)
+generator_test.do(pattern_action_pair_list, test_str, pattern_dict, choice, QuexBufferSize=32)
     

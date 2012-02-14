@@ -191,8 +191,6 @@ def __require_data(TState, TheAnalyzer):
                 return LanguageDB.ADDRESS_BY_DOOR_ID(door_id)
 
         address_list = [ address(door_id) for door_id in target_scheme.scheme ]
-        print "##ts:      ", target_scheme.scheme
-        print "##adr_list:", address_list
 
         variable_db.require_array("template_%i_target_%i", 
                                   ElementN = len(TState.state_index_list), 

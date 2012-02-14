@@ -178,21 +178,21 @@ def __path_walker(txt, PWState, TheAnalyzer):
         #
         #     if input == *path_iterator:
         #        path_iterator  += 1
-        #        state_iterator += 1    # The 'entries' must set the state iterator appropriately
-        #        goto *state_iterator
-        jump_to_next_state = "%s\n    %s\n" % (LanguageDB.STATE_ITERATOR_INCREMENT, 
-                                               LanguageDB.GOTO_BY_VARIABLE("*state_iterator"))
+        #        goto next_state(path_iterator)
+        next_state         = "path_walker_%i_state_base[path_iterator - path_walker_%i_reference]" \
+                             % (PWState.index, PWState.index)
+        jump_to_next_state = "%s" % (LanguageDB.GOTO_BY_VARIABLE(next_state))
         jump_to_terminal   = None
 
     txt.extend(["    __quex_debug_path_walker_iteration(%i, path_iterator);\n" % PWState.index,
-                "    %s\n"     % LanguageDB.IF_INPUT("==", "*path_iterator"),
+                "    %s"     % LanguageDB.IF_INPUT("==", "*path_iterator"),
                 "        %s\n" % LanguageDB.PATH_ITERATOR_INCREMENT,
                 "        %s\n" % jump_to_next_state])
 
     if jump_to_terminal is None:
         txt.append("    %s\n" % LanguageDB.END_IF())
     else:
-        txt.extend(["    %s\n" % LanguageDB.IF("*path_iterator", "==", "QUEX_SETTING_PATH_TERMINATION_CODE", FirstF=False),
+        txt.extend(["    %s" % LanguageDB.IF("*path_iterator", "==", "QUEX_SETTING_PATH_TERMINATION_CODE", FirstF=False),
                     "        %s\n" % jump_to_end_state,
                     "    %s\n" % LanguageDB.END_IF()])
 
@@ -230,11 +230,9 @@ def __require_data(PWState, TheAnalyzer):
     """Defines the transition targets for each involved state.
     """
     variable_db.require("path_iterator")
-    if PWState.uniform_entry_door_id_along_all_paths is None:
-        variable_db.require("state_iterator")
 
     def __state_sequences():
-        result = ["{ "]
+        result = ["{\n"]
         offset = 0
         for path_id, path in enumerate(PWState.path_list):
             # NOTE: For all states in the path the 'from_state_index, to_state_index' can
@@ -247,21 +245,16 @@ def __require_data(PWState, TheAnalyzer):
             #       and acceptances are not changed. So, we can use the common entry
             #       to the first state as a reference here.
             prev_state_index  = path[0][0]
+            result.append("        ")
             for state_index in (x[0] for x in path[1:]):
                 result.append("QUEX_LABEL(%i), " % LanguageDB.ADDRESS(state_index, prev_state_index))
                 prev_state_index = state_index
+            result.append("/* Zero of Elegance */0x0,")
             result.append("\n")
-
-            # The initial iterator always points ONE before the beginning of the list.
-            # BECAUSE: '*state_iterator' is first called after 'state_iterator += 1'
-            # BUT:     This happens when the 'SetStateIterator' objects are created.
-            variable_db.require("path_walker_%i_path_%i_states", 
-                                Initial = "path_walker_%i_state_base + %i" % (PWState.index, offset), 
-                                Index   = (PWState.index, path_id))
 
             offset += len(path)
 
-        result.append(" }");
+        result.append("    }");
         return offset, result
 
     def __character_sequences():
@@ -273,11 +266,10 @@ def __require_data(PWState, TheAnalyzer):
             # comment delimiters if they would appear in the sequence_str.
             # sequence_str = imap(lambda x: Interval(x[1]).get_utf8_string(), path[:-1])
             # memory.append(LanguageDB.COMMENT("".join(sequence_str)) + "\n")
-
             # Last element of sequence contains only the 'end state'.
             result.append("        ")
             result.extend(imap(lambda x: "%i, " % x[1], path[:-1]))
-            result.append("QUEX_SETTING_PATH_TERMINATION_CODE, ")
+            result.append("QUEX_SETTING_PATH_TERMINATION_CODE,")
             result.append("\n")
 
             variable_db.require("path_walker_%i_path_%i", 
@@ -286,7 +278,7 @@ def __require_data(PWState, TheAnalyzer):
 
             offset += len(path)
 
-        result.append("\n    }")
+        result.append("    }")
         return offset, result
 
     # (*) Path Walker Basis
@@ -304,6 +296,13 @@ def __require_data(PWState, TheAnalyzer):
                                   ElementN = element_n,
                                   Initial  = state_sequence_str,
                                   Index    = PWState.index)
+        # The path_iterator is incremented before the 'goto', thus
+        # 'path_iterator - (path_base + 1)' gives actually the correct offset.
+        # We define a variable for that, for elegance.
+        variable_db.require("path_walker_%i_reference", 
+                            Initial = "path_walker_%i_path_base + 1" % PWState.index, 
+                            Index   = (PWState.index))
+
 
 def prepare_transition_map(PWState):
     """Prepare the transition map of the PWState for code generation.

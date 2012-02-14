@@ -159,15 +159,6 @@ class LDB(dict):
                     (EntryAction.path_walker_id, EntryAction.path_id) \
                   + "    path_iterator  = path_walker_%i_path_%i%s;\n" % \
                     (EntryAction.path_walker_id, EntryAction.path_id, offset_str)
-
-            if not EntryAction.state_iterator_f: return txt
-
-            if   EntryAction.offset == 0: offset_str = " - 1"
-            elif EntryAction.offset == 1: offset_str = ""
-            elif EntryAction.offset >  1: offset_str = " + %s" % (EntryAction.offset - 1)
-            else:                         assert False
-            txt += "    state_iterator = path_walker_%i_path_%i_states%s;\n" %  \
-                   (EntryAction.path_walker_id, EntryAction.path_id, offset_str)
             return txt
 
         else:

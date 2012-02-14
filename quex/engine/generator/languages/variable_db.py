@@ -32,12 +32,12 @@ candidate_db = {
 #                                 
 # (*) Path Compression
 "path_iterator":                  ["const QUEX_TYPE_CHARACTER*",       "((const QUEX_TYPE_CHARACTER*)0x0)", False],
-"state_iterator":                 ["const QUEX_TYPE_GOTO_LABEL*",      "((const QUEX_TYPE_GOTO_LABEL*)0x0)",False],
 "path_end_state":                 ["QUEX_TYPE_GOTO_LABEL",             "QUEX_GOTO_STATE_LABEL_INIT_VALUE",  False], 
 "path_walker_%i_path_%i":         ["const QUEX_TYPE_CHARACTER* const", None,                                False],
 "path_walker_%i_path_base":       ["const QUEX_TYPE_CHARACTER",        None,                                True],
 "path_walker_%i_path_%i_states":  ["const QUEX_TYPE_GOTO_LABEL* const",None,                                False],
 "path_walker_%i_state_base":      ["const QUEX_TYPE_GOTO_LABEL",       None,                                True],
+"path_walker_%i_reference":       ["const QUEX_TYPE_CHARACTER* const", None,                                False],
 #
 # (*) Template Compression
 "state_key":                                    ["ptrdiff_t",                     "(ptrdiff_t)0",           False],
