@@ -174,7 +174,7 @@ class TemplateState(MegaState):
                 if door_id.state_index == State.index:
                     transition_id = State.entry.transition_db[door_id][0]
                 else:
-                    if Target in self.implemented_state_index_list:
+                    if door_id.state_index in self.implemented_state_index_list:
                         # avoid recursion entry door
                     print "##trl:", door_id
                     print "##lilli:",self.__analyzer.state_db[door_id.state_index].entry.transition_db[door_id] 
