@@ -109,9 +109,7 @@ class TemplateState(MegaState):
         # Adapt the door ids of the transition maps and bring them all into a form of 
         #   (interval --> MegaState_Target)
         tm_a = self.__get_adapted_transition_map(StateA)
-        print "##atma:", tm_a
         tm_b = self.__get_adapted_transition_map(StateB)
-        print "##atmb:", tm_b
 
         self.__transition_map,    \
         self.__target_scheme_list = combine_maps(StateA, tm_a, StateB, tm_b)
@@ -175,6 +173,12 @@ class TemplateState(MegaState):
             def __adapt(door_id):
                 if door_id.state_index == State.index:
                     transition_id = State.entry.transition_db[door_id][0]
+                elif door_id.state_index == self.index:
+                    # It may very well be that the MegaState_Target object is referred multiple
+                    # times in the same transition map. Thus, it may have been adapted before.
+                    # This case is detected by 'door_id.state_index == self.index', which 
+                    # means that nothing is to be done.
+                    return door_id
                 else:
                     if door_id.state_index not in self.implemented_state_index_list():
                         transition_id = self.__analyzer.state_db[door_id.state_index].entry.transition_db[door_id][0]
@@ -186,7 +190,6 @@ class TemplateState(MegaState):
                             assert False, "There MUST be a non-recursive transition to '%s'." % door_id.state_index
 
                 new_door_id   = self.__get_local_door_id(transition_id.state_index, transition_id.from_state_index)
-                print "##trlnew:", new_door_id
                 door_id.state_index = new_door_id.state_index
                 door_id.door_index  = new_door_id.door_index
 

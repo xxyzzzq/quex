@@ -1,11 +1,11 @@
-<test-database execution-time-sec="1.95" date="Tue Feb 14 00:05:02 2012">
+<test-database execution-time-sec="1.89" date="Tue Feb 14 22:02:01 2012">
     <last-used-diff-display-program name=""/>
-    <test title="Combine Simple" time-sum-sec="0.23"> 
+    <test title="Combine Simple" time-sum-sec="0.14"> 
         <application file-name="combine-simple.py" info-request-time="1329174101L" vanished="False"/>
         <choice-list number="3" same_result="False">
-           <choice name="plain" result="FAIL" time_sec="0.08" crc="-1381564096"/>
+           <choice name="plain" result="OK" time_sec="0.00" crc="-2096630557"/>
            <choice name="recursive" result="OK" time_sec="0.07" crc="-7642453"/>
-           <choice name="distinguished" result="OK" time_sec="0.08" crc="1109648656"/>
+           <choice name="distinguished" result="OK" time_sec="0.07" crc="1109648656"/>
         </choice-list>
     </test>
     <test title="Combination of Two Transition Maps" time-sum-sec="0.42"> 
@@ -20,7 +20,7 @@
         </choice-list>
     </test>
     <group name="Transition Map Templates">
-        <test title="Target Idx Combination Metric" time-sum-sec="0.41"> 
+        <test title="Target Idx Combination Metric" time-sum-sec="0.42"> 
             <application file-name="metric.py" info-request-time="1328734392L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="1" result="FAIL" time_sec="0.07" crc="-1128506959"/>
@@ -31,7 +31,7 @@
                <choice name="recursive" result="FAIL" time_sec="0.07" crc="2055981088"/>
             </choice-list>
         </test>
-        <test title="Combine Combined Trigger Maps" time-sum-sec="0.54"> 
+        <test title="Combine Combined Trigger Maps" time-sum-sec="0.56"> 
             <application file-name="combine-maps-2.py" info-request-time="1328995816L" vanished="False"/>
             <choice-list number="8" same_result="False">
                <choice name="1" result="FAIL" time_sec="0.07" crc="-1280733864"/>
