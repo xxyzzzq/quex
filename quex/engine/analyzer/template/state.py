@@ -159,8 +159,10 @@ class TemplateState(MegaState):
                 return MegaState_Target(E_StateIndices.DROP_OUT)
             else:
                 assert isinstance(Target, (int, long))
-                if Target in self.implemented_state_index_list:
-                        # avoid recursion entry door
+                # If 'Target' is a recursive target of the other state, then there 
+                # is no problem. We know the exact transition (StateIndex, FromStateIndex)
+                # and 'self.entry.get_door_id()' delivers the correct result. This
+                # is not so for MegaState_Target-s (see adapt_MegaState_Target())
                 return MegaState_Target(self.__get_local_door_id(Target, State.index))
 
         def adapt_MegaState_Target(Target):
@@ -174,11 +176,15 @@ class TemplateState(MegaState):
                 if door_id.state_index == State.index:
                     transition_id = State.entry.transition_db[door_id][0]
                 else:
-                    if door_id.state_index in self.implemented_state_index_list:
-                        # avoid recursion entry door
-                    print "##trl:", door_id
-                    print "##lilli:",self.__analyzer.state_db[door_id.state_index].entry.transition_db[door_id] 
-                    transition_id = self.__analyzer.state_db[door_id.state_index].entry.transition_db[door_id][0]
+                    if door_id.state_index not in self.implemented_state_index_list():
+                        transition_id = self.__analyzer.state_db[door_id.state_index].entry.transition_db[door_id][0]
+                    else:
+                        for transition_id in self.__analyzer.state_db[door_id.state_index].entry.transition_db[door_id]:
+                            if transition_id.state_index != transition_id.from_state_index: 
+                                break
+                        else:
+                            assert False, "There MUST be a non-recursive transition to '%s'." % door_id.state_index
+
                 new_door_id   = self.__get_local_door_id(transition_id.state_index, transition_id.from_state_index)
                 print "##trlnew:", new_door_id
                 door_id.state_index = new_door_id.state_index
