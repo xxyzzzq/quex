@@ -314,7 +314,7 @@ in the event handler definition. The list of event handlers is the following:
 
    .. note:: The definition of an ``on_failure`` section can be of great help
              whenever the analyzer shows an unexpected behavior. Before doing any
-             in-depth analyzis, or even bug reporting, the display of the mismatching
+             in-depth analysis, or even bug reporting, the display of the mismatching
              lexeme may give a useful hint towards a lack in the specified pattern set.
 
    The input pointer is incremented by one, as soon as a failure is detected. This
@@ -323,12 +323,50 @@ in the event handler definition. The list of event handlers is the following:
    the philosophy of ``on_failure`` is to catch flaws in pattern definitions. If
    anti-patterns or exceptional patterns are to be caught, they are best defined
    explicitly. 
-
+   
    The definition of anti-patterns is not as difficult as it seems on the first 
    glance--the use of pattern precedence comes to help. If the interesting patterns
    are defined before the all-catching anti-pattern, then the anti-pattern can 
    very well overlap with the interesting patterns. The anti-pattern will only
-   match if all preceeding patterns fail.
+   match if all preceding patterns fail.
+
+   .. note::
+
+      A slightly unintuitive behavior may occur when the token policy 'queue'
+      is used, as it is by default. As any other token which is sent, it goes
+      through the token queue. It arrives at the user in a delayed manner after
+      the queue has been filled up, or the stream ends. In this case, an
+      immediate exceptional behavior cannot be implemented by the token passing
+      and checking the token identifier. 
+
+      To implement an immediate exception like behavior, an additional member
+      variable may be used, e.g.
+
+      .. code-block:: cpp
+
+         body {
+             bool   on_failure_exception_f;
+         } 
+         init {
+             on_failure_exception_f = false;
+         }
+         ...
+         mode MINE {
+            ...
+            on_failure { self.on_failure_exception_f = true; }
+         }
+
+      Then, in the code fragment that receives the tokens the flag could be
+      checked, i.e.
+
+      .. code-block:: cpp
+
+         ...
+         my_lexer.receive(&token);
+         ...
+         if( my_lexer.on_failure_exception_f ) abort();
+         ...
+
 
 .. data:: on_end_of_stream
 

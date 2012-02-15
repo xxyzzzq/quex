@@ -15,14 +15,15 @@ import sys
 import os
 import random
 sys.path.insert(0, os.environ["QUEX_PATH"])
-from   quex.blackboard import setup                as Setup
+from   quex.blackboard                         import setup as Setup
 import quex.engine.generator.languages.core    as languages
 from   quex.engine.generator.languages.address import __label_db
 Setup.language_db = languages.db["C"]
 
-from quex.engine.interval_handling     import NumberSet, Interval
-from quex.engine.state_machine.core    import State, StateMachine
-import quex.engine.state_machine.index as index
+from   quex.engine.interval_handling           import NumberSet, Interval
+from   quex.engine.state_machine.core          import State, StateMachine
+import quex.engine.state_machine.index         as index
+from   quex.engine.analyzer.state_entry_action import DoorID
 
 import quex.engine.generator.languages.core               as languages
 import quex.engine.generator.languages.address            as address
@@ -38,6 +39,7 @@ if "--hwut-info" in sys.argv:
     sys.exit(0)
 
 state = State()
+StateIndex = 6666L
 
 target_state_index_list = []
 if "A" in sys.argv:
@@ -95,7 +97,8 @@ elif "C" in sys.argv:
 
 states = []
 for state_index in set(target_state_index_list):
-    states.append("%s: return (int)%i;\n" % (address.get_label("$entry", state_index), state_index))
+    door_id = DoorID(state_index, StateIndex)
+    states.append("%s: return (int)%i;\n" % (address.get_label("$entry", door_id), state_index))
     # increment the state index counter, so that the drop-out and reload labels 
     # get an appropriate label.
     index.get()
@@ -107,7 +110,7 @@ drop_out = "%s: return (int)-1;\n" % address.get_label("$drop-out", -1)
 states.insert(0, drop_out)
 
 # One for the 'terminal'
-__label_db["$entry"](index.get())
+__label_db["$entry"](DoorID(index.get(), StateIndex))
 
 function  = [ 
     "#define __quex_debug_state(X) /* empty */\n",
@@ -115,7 +118,7 @@ function  = [
 ]
 transition_block.do(function, 
                     state.transitions().get_trigger_map(), 
-                    StateIndex=6666L,
+                    StateIndex=StateIndex,
                     EngineType=E_EngineTypes.BACKWARD_INPUT_POSITION,
                     GotoReload_Str="return -1;")
 

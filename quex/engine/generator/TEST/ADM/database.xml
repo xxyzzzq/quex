@@ -1,4 +1,4 @@
-<test-database execution-time-sec="302.02" date="Tue Feb 14 23:47:03 2012">
+<test-database execution-time-sec="304.18" date="Wed Feb 15 08:07:49 2012">
     <last-used-diff-display-program name=""/>
     <test title="Basic Path Compression Test" time-sum-sec="0.16"> 
         <application file-name="test-paths.py" info-request-time="1317021015L" vanished="True"/>
@@ -214,8 +214,8 @@
                <choice name="ANSI-C-PathTemplate" result="OK" time_sec="0.88" crc="-2081003305"/>
             </choice-list>
         </test>
-        <test title="Multiple Identical Pre-Conditions" time-sum-sec="13.90"> 
-            <application file-name="test-pre-conditions-3.py" info-request-time="1318614208L" vanished="False"/>
+        <test title="Multiple Identical Pre-Conditions" time-sum-sec="14.67"> 
+            <application file-name="test-pre-conditions-3.py" info-request-time="1329289189L" vanished="False"/>
             <choice-list number="12" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.77" crc="-1449812084"/>
                <choice name="ANSI-C" result="OK" time_sec="0.77" crc="-1449812084"/>
@@ -228,7 +228,7 @@
                <choice name="ANSI-C-CG" result="OK" time_sec="0.77" crc="-1449812084"/>
                <choice name="Cpp-PathUniform-CG" result="OK" time_sec="1.07" crc="-1449812084"/>
                <choice name="Cpp-Template-CG" result="OK" time_sec="2.09" crc="-1449812084"/>
-               <choice name="ANSI-C-PathTemplate" result="FAIL" time_sec="0.78" crc="-1449812084"/>
+               <choice name="ANSI-C-PathTemplate" result="OK" time_sec="1.55" crc="-1449812084"/>
             </choice-list>
         </test>
         <test title="Part 1" time-sum-sec="9.46"> 
@@ -250,7 +250,7 @@
         </test>
     </group>
     <group name="Pre- and Post- Conditions">
-        <test title="Simple" time-sum-sec="10.01"> 
+        <test title="Simple" time-sum-sec="10.73"> 
             <application file-name="test-pre-post-condition.py" info-request-time="1318614208L" vanished="False"/>
             <choice-list number="12" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.62" crc="-347610264"/>
@@ -264,7 +264,7 @@
                <choice name="ANSI-C-CG" result="OK" time_sec="0.62" crc="-347610264"/>
                <choice name="Cpp-PathUniform-CG" result="OK" time_sec="0.93" crc="-347610264"/>
                <choice name="Cpp-Template-CG" result="OK" time_sec="1.03" crc="-347610264"/>
-               <choice name="ANSI-C-PathTemplate" result="FAIL" time_sec="0.19" crc="-347610264"/>
+               <choice name="ANSI-C-PathTemplate" result="OK" time_sec="0.91" crc="-347610264"/>
             </choice-list>
         </test>
     </group>
@@ -279,7 +279,7 @@
         </test>
     </group>
     <group name="Pseudo Ambgiguous Post Condition">
-        <test title="Part II" time-sum-sec="9.42"> 
+        <test title="Part II" time-sum-sec="10.12"> 
             <application file-name="test-pseudo_ambiguous_post_conditions-2.py" info-request-time="1318614208L" vanished="False"/>
             <choice-list number="12" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.60" crc="1614045300"/>
@@ -293,7 +293,7 @@
                <choice name="ANSI-C-CG" result="OK" time_sec="0.60" crc="1614045300"/>
                <choice name="Cpp-PathUniform-CG" result="OK" time_sec="0.90" crc="1614045300"/>
                <choice name="Cpp-Template-CG" result="OK" time_sec="1.01" crc="1614045300"/>
-               <choice name="ANSI-C-PathTemplate" result="FAIL" time_sec="0.18" crc="1614045300"/>
+               <choice name="ANSI-C-PathTemplate" result="OK" time_sec="0.88" crc="1614045300"/>
             </choice-list>
         </test>
         <test title="Part I" time-sum-sec="9.68"> 
@@ -410,12 +410,12 @@
         </test>
     </group>
     <group name="Single State">
-        <test title="Transition Code Generation" time-sum-sec="0.42"> 
+        <test title="Transition Code Generation" time-sum-sec="0.39"> 
             <application file-name="test-single-state-transitions.py" info-request-time="1320012962L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="A" result="FAIL" time_sec="0.07" crc="-470930585"/>
-               <choice name="B" result="FAIL" time_sec="0.15" crc="747091293"/>
-               <choice name="C" result="FAIL" time_sec="0.20" crc="1749537508"/>
+               <choice name="B" result="FAIL" time_sec="0.13" crc="747091293"/>
+               <choice name="C" result="FAIL" time_sec="0.19" crc="1749537508"/>
             </choice-list>
         </test>
     </group>

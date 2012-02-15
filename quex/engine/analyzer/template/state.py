@@ -181,7 +181,12 @@ class TemplateState(MegaState):
                     return door_id
                 else:
                     if door_id.state_index not in self.implemented_state_index_list():
-                        transition_id = self.__analyzer.state_db[door_id.state_index].entry.transition_db[door_id][0]
+                        original_state = self.__analyzer.state_db.get(door_id.state_index)
+                        if original_state is None:
+                            # The door belongs to a meta state. Meta states are not implemented
+                            # by other meta states. Thus, the door is fine as it is.
+                            return door_id
+                        transition_id = original_state.entry.transition_db[door_id][0]
                     else:
                         for transition_id in self.__analyzer.state_db[door_id.state_index].entry.transition_db[door_id]:
                             if transition_id.state_index != transition_id.from_state_index: 
