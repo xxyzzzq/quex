@@ -1,10 +1,12 @@
 import quex.engine.state_machine.index              as     sm_index
 import quex.engine.generator.state.transition.core  as     transition_block
+from   quex.engine.generator.state.transition.code  import TextTransitionCode
 from   quex.engine.generator.languages.address      import get_label, get_address
 import quex.engine.generator.languages.variable_db  as     variable_db
 from   quex.engine.generator.skipper.common         import line_column_counter_in_loop
 from   quex.engine.state_machine.transition_map     import TransitionMap 
-from   quex.blackboard                              import E_EngineTypes, setup as Setup
+from   quex.engine.analyzer.state_entry_action      import DoorID
+from   quex.blackboard                              import E_EngineTypes, E_StateIndices, setup as Setup
 from   quex.engine.misc.string_handling             import blue_print
 
 def do(Data):
@@ -21,7 +23,7 @@ def do(Data):
 
 prolog_txt = """
     $$DELIMITER_COMMENT$$
-$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
+$$LC_COUNT_COLUMN_N_POINTER_REFERENCE$$
 
     QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
     __quex_assert(QUEX_NAME(Buffer_content_size)(&me->buffer) >= 1);
@@ -32,23 +34,16 @@ $$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
      *       set. The BufferLimitCode, though, does never belong to any trigger set and
      *       thus, no special character is to be set.                                   */
 _$$SKIPPER_INDEX$$_LOOP:
-    $$INPUT_GET$$ 
-$$LC_COUNT_IN_LOOP$$
+$$INPUT_GET$$$$LC_COUNT_IN_LOOP$$
 """
 
-epilog_txt = """
-/* $$DROP_OUT_DIRECT$$ */
-$$LC_COUNT_END_PROCEDURE$$
+epilog_txt = """$$LC_COUNT_END_PROCEDURE$$
     /* There was no buffer limit code, so no end of buffer or end of file --> continue analysis 
      * The character we just swallowed must be re-considered by the main state machine.
      * But, note that the initial state does not increment '_input_p'!
-     */
-    /* No need for re-entry preparation. Acceptance flags and modes are untouched after skipping. */
+     *
+     * No need for re-entry preparation. Acceptance flags and modes are untouched after skipping. */
     goto $$GOTO_START$$;
-
-$$LOOP_REENTRANCE$$
-    $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
-    goto _$$SKIPPER_INDEX$$_LOOP;
 
 $$RELOAD$$:
     /* -- When loading new content it is always taken care that the beginning of the lexeme
@@ -56,21 +51,19 @@ $$RELOAD$$:
      *    the lexeme at all, so do not restrict the load procedure and set the lexeme start
      *    to the actual input position.                                                   
      * -- The input_p will at this point in time always point to the buffer border.        */
-    $$IF_INPUT_EQUAL_BUFFER_LIMIT_CODE$$ 
-        QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
+    __quex_assert(input == $$BUFFER_LIMIT_CODE$$);
+    QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
 $$LC_COUNT_BEFORE_RELOAD$$
-        $$MARK_LEXEME_START$$
-        if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
-            goto $$GOTO_TERMINAL_EOF$$;
-        } else {
-            QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)position, PositionRegisterN);
-
-            QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
-            $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
+    $$MARK_LEXEME_START$$
+    if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
+        goto $$GOTO_TERMINAL_EOF$$;
+    } else {
+        QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)position, PositionRegisterN);
+        QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
+        $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
 $$LC_COUNT_AFTER_RELOAD$$
-            goto _$$SKIPPER_INDEX$$_LOOP;
-        } 
-    }
+        goto _$$SKIPPER_INDEX$$_LOOP;
+    } 
 """
 
 def get_skipper(TriggerSet):
@@ -83,16 +76,24 @@ def get_skipper(TriggerSet):
 
     LanguageDB = Setup.language_db
 
-    skipper_index = sm_index.get()
+    skipper_index   = sm_index.get()
+
     # Mini trigger map:  [ trigger set ] --> loop start
     # That means: As long as characters of the trigger set appear, we go to the loop start.
     transition_map = TransitionMap() # (don't worry about 'drop-out-ranges' etc.)
     transition_map.add_transition(TriggerSet, skipper_index)
     # On buffer limit code, the skipper must transit to a dedicated reloader
 
+    goto_loop_str = [LanguageDB.INPUT_P_INCREMENT(), " goto _%s_LOOP;\n" % skipper_index]
+    trigger_map = transition_map.get_trigger_map()
+    for i, info in enumerate(trigger_map):
+        interval, target = info
+        if target == E_StateIndices.DROP_OUT: continue
+        trigger_map[i] = (interval, TextTransitionCode(goto_loop_str))
+
     iteration_code = []
     transition_block.do(iteration_code, 
-                        transition_map.get_trigger_map(), 
+                        trigger_map, 
                         skipper_index, 
                         E_EngineTypes.ELSE,
                         GotoReload_Str="goto %s;" % get_label("$reload", skipper_index))
@@ -119,7 +120,7 @@ def get_skipper(TriggerSet):
                          ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB.IF_INPUT("==", "SkipDelimiter$$SKIPPER_INDEX$$[0]")],
                          ["$$ENDIF$$",                          LanguageDB.END_IF()],
                          ["$$LOOP_REENTRANCE$$",                LanguageDB.LABEL(skipper_index)],
-                         ["$$IF_INPUT_EQUAL_BUFFER_LIMIT_CODE$$",  LanguageDB.IF_INPUT("==", LanguageDB.BUFFER_LIMIT_CODE)],
+                         ["$$BUFFER_LIMIT_CODE$$",              LanguageDB.BUFFER_LIMIT_CODE],
                          ["$$RELOAD$$",                         get_label("$reload", skipper_index)],
                          ["$$DROP_OUT_DIRECT$$",                get_label("$drop-out", skipper_index, U=True)],
                          ["$$SKIPPER_INDEX$$",                  "%i" % skipper_index],
@@ -159,18 +160,18 @@ def __lc_counting_replacements(code_str, CharacterSet):
 
        NOTE: On reload we do count the column numbers and reset the column_p.
     """
-    variable_definition = "    __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
+    set_reference = "    __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
 
     in_loop       = ""
     # Does the end delimiter contain a newline?
-    if CharacterSet.contains(ord("\n")): in_loop = line_column_counter_in_loop
+    if CharacterSet.contains(ord("\n")): in_loop = line_column_counter_in_loop()
 
-    end_procedure = "        __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(me->buffer._input_p - reference_p));\n" 
-    before_reload  = "       __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(me->buffer._input_p - reference_p));\n" 
-    after_reload   = "           __QUEX_IF_COUNT_COLUMNS(reference_p = me->buffer._input_p);\n" 
+    end_procedure = "    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(me->buffer._input_p - reference_p));\n" 
+    before_reload = "    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(me->buffer._input_p - reference_p));\n" 
+    after_reload  = "       __QUEX_IF_COUNT_COLUMNS(reference_p = me->buffer._input_p);\n" 
 
     return blue_print(code_str,
-                     [["$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$", variable_definition],
+                     [["$$LC_COUNT_COLUMN_N_POINTER_REFERENCE$$", set_reference],
                       ["$$LC_COUNT_IN_LOOP$$",                     in_loop],
                       ["$$LC_COUNT_END_PROCEDURE$$",               end_procedure],
                       ["$$LC_COUNT_BEFORE_RELOAD$$",               before_reload],

@@ -145,17 +145,23 @@
     || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING) \
     || defined(QUEX_OPTION_INDENTATION_TRIGGER)       
 #     define  __QUEX_OPTION_COUNTER
+#     define  __QUEX_IF_COUNT(EXPRESSION)             EXPRESSION
+#     define  __QUEX_IF_COUNT_IF(EXPRESSION)          if( EXPRESSION )
 #else
 #     if defined(__QUEX_OPTION_COUNTER)  
 #        undef   __QUEX_OPTION_COUNTER
 #     endif
+#     define  __QUEX_IF_COUNT(EXPRESSION)             /* empty */
+#     define  __QUEX_IF_COUNT_IF(EXPRESSION)          /* empty */
 #endif
 
 #if defined(QUEX_OPTION_LINE_NUMBER_COUNTING)   
 #   define     __QUEX_IF_COUNT_LINES(EXPRESSION)      EXPRESSION
+#   define     __QUEX_IF_COUNT_LINES_IF(EXPRESSION)   if( EXPRESSION )
 #   define     __QUEX_IF_COUNT_LINES_ADD(X)           ((me->counter._line_number_at_end) += (X))
 #else
 #   define     __QUEX_IF_COUNT_LINES(EXPRESSION)      /* empty */
+#   define     __QUEX_IF_COUNT_LINES_IF(EXPRESSION)   /* empty */
 #   define     __QUEX_IF_COUNT_LINES_ADD(X)           /* empty */
 #endif
 #if defined(QUEX_OPTION_LINE_NUMBER_COUNTING)   

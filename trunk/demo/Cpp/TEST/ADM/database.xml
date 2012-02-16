@@ -1,4 +1,4 @@
-<test-database execution-time-sec="215.44" date="Tue Feb 14 23:46:43 2012">
+<test-database execution-time-sec="245.03" date="Thu Feb 16 10:04:44 2012">
     <last-used-diff-display-program name=""/>
     <group name="demo/000">
         <test title="Single Mode Example" time-sum-sec="5.91"> 
@@ -19,11 +19,11 @@
         </test>
     </group>
     <group name="demo/002">
-        <test title="Indentation Based Scopes" time-sum-sec="0.91"> 
+        <test title="Indentation Based Scopes" time-sum-sec="7.44"> 
             <application file-name="002.sh" info-request-time="1318614214L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="0.46" crc="-1626426563"/>
-               <choice name="DEBUG" result="FAIL" time_sec="0.45" crc="-1626426563"/>
+               <choice name="NDEBUG" result="OK" time_sec="4.31" crc="-1626426563"/>
+               <choice name="DEBUG" result="OK" time_sec="3.13" crc="-1626426563"/>
             </choice-list>
         </test>
     </group>
@@ -67,13 +67,13 @@
         </test>
     </group>
     <group name="demo/005">
-        <test title="Including Files" time-sum-sec="1.60"> 
+        <test title="Including Files" time-sum-sec="12.01"> 
             <application file-name="005.sh" info-request-time="1318614214L" vanished="False"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="FAIL" time_sec="0.40" crc="256352848"/>
-               <choice name="1_NDEBUG" result="FAIL" time_sec="0.40" crc="256352848"/>
-               <choice name="2" result="FAIL" time_sec="0.40" crc="-364815969"/>
-               <choice name="2_NDEBUG" result="FAIL" time_sec="0.40" crc="-364815969"/>
+               <choice name="1" result="OK" time_sec="3.17" crc="256352848"/>
+               <choice name="1_NDEBUG" result="OK" time_sec="2.94" crc="256352848"/>
+               <choice name="2" result="OK" time_sec="2.95" crc="-364815969"/>
+               <choice name="2_NDEBUG" result="OK" time_sec="2.96" crc="-364815969"/>
             </choice-list>
         </test>
     </group>
@@ -151,11 +151,11 @@
         </test>
     </group>
     <group name="demo/012">
-        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="1.38"> 
+        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="14.01"> 
             <application file-name="012.sh" info-request-time="1318614214L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="0.69" crc="-1785218323"/>
-               <choice name="DEBUG" result="FAIL" time_sec="0.68" crc="-1785218323"/>
+               <choice name="NDEBUG" result="OK" time_sec="7.72" crc="-1785218323"/>
+               <choice name="DEBUG" result="OK" time_sec="6.29" crc="-1785218323"/>
             </choice-list>
         </test>
     </group>

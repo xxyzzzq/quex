@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.41" date="Tue Feb 14 23:47:00 2012">
+<test-database execution-time-sec="0.41" date="Thu Feb 16 10:05:05 2012">
     <last-used-diff-display-program name=""/>
     <group name="Load Backward">
         <test title="Character=4 Byte(s), Fallback=0" make-dependent="True" time-sum-sec="0.01"> 

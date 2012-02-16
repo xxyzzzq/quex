@@ -281,7 +281,7 @@ def __lc_counting_replacements(code_str, EndSequence):
         if newline_number_in_delimiter == 0:
             # -- no newlines in delimiter => line and column number 
             #                                must be counted.
-            in_loop       = line_column_counter_in_loop
+            in_loop       = line_column_counter_in_loop()
             end_procedure = "        __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
                             "                                    - reference_p));\n" 
             reference_p_required_f = True
@@ -299,7 +299,7 @@ def __lc_counting_replacements(code_str, EndSequence):
                                      "    __QUEX_IF_COUNT_LINES_ADD((size_t)1);\n" 
                 end_procedure += "        __QUEX_IF_COUNT_LINES_ADD((size_t)%i);\n" % (newline_number_in_delimiter - 1)
             else:
-                in_loop        = line_counter_in_loop
+                in_loop        = line_counter_in_loop()
                 end_procedure += "        __QUEX_IF_COUNT_LINES_ADD((size_t)%i);\n" % newline_number_in_delimiter
 
         

@@ -73,7 +73,6 @@ class LDB(dict):
     ELSE                    = "} else {\n"
 
     PATH_ITERATOR_INCREMENT  = "++(path_iterator);"
-    STATE_ITERATOR_INCREMENT = "++(state_iterator);"
     BUFFER_LIMIT_CODE        = "QUEX_SETTING_BUFFER_LIMIT_CODE"
     COMMENT_DELIMITERS       = [["/*", "*/", ""], ["//", "\n", ""], ["\"", "\"", "\\\""]]
     def LEXEME_START_SET(self, PositionStorage=None):

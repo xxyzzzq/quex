@@ -1,4 +1,4 @@
-<test-database execution-time-sec="221.19" date="Tue Feb 14 23:46:35 2012">
+<test-database execution-time-sec="227.52" date="Thu Feb 16 10:04:11 2012">
     <last-used-diff-display-program name=""/>
     <group name="alexeevm">
         <test title="3022603 0.49.2 Using external buffer with Quex lexer" time-sum-sec="1.56"> 
@@ -141,31 +141,29 @@
                <choice name="" result="OK" time_sec="2.80" crc="-306258998"/>
             </choice-list>
         </test>
-        <test title="3102035 0.55.1 Weird Setup causes Duplicate State Label" time-sum-sec="2.66"> 
+        <test title="3102035 0.55.1 Weird Setup causes Duplicate State Label" time-sum-sec="2.97"> 
             <application file-name="bug-3102035.sh" info-request-time="1318614190L" vanished="False"/>
             <choice-list number="5" same_result="False">
-               <choice name="1" result="FAIL" time_sec="0.34" crc="-636142630"/>
+               <choice name="1" result="FAIL" time_sec="0.41" crc="-636142630"/>
                <choice name="2" result="OK" time_sec="0.30" crc="-1474666640"/>
-               <choice name="3" result="FAIL" time_sec="0.32" crc="-1806820900"/>
+               <choice name="3" result="FAIL" time_sec="0.56" crc="-1806820900"/>
                <choice name="4" result="OK" time_sec="0.85" crc="-2109073766"/>
                <choice name="5" result="OK" time_sec="0.85" crc="-2109073766"/>
             </choice-list>
         </test>
-        <test title="2078087 (feature) Mode transition shortcuts GOTO, GOSUB, GOUP" time-sum-sec="1.45"> 
+        <test title="2078087 (feature) Mode transition shortcuts GOTO, GOSUB, GOUP" time-sum-sec="6.32"> 
             <application file-name="feature-2078087.sh" info-request-time="1318614190L" vanished="False"/>
             <choice-list number="4" same_result="False">
-               <choice name="GOTO" result="FAIL" time_sec="0.46" crc="53158503"/>
-               <choice name="GOTO-2" result="FAIL" time_sec="0.35" crc="525626839"/>
-               <choice name="GOSUB" result="FAIL" time_sec="0.31" crc="-727116059"/>
-               <choice name="GOSUB-2" result="FAIL" time_sec="0.33" crc="1136020320"/>
+               <choice name="GOTO" result="FAIL" time_sec="3.05" crc="53158503"/>
+               <choice name="GOTO-2" result="FAIL" time_sec="1.18" crc="525626839"/>
+               <choice name="GOSUB" result="FAIL" time_sec="1.08" crc="-727116059"/>
+               <choice name="GOSUB-2" result="FAIL" time_sec="1.02" crc="1136020320"/>
             </choice-list>
         </test>
-        <test title="2161098 0.32.1 Nested-Range Skipper Line Number Counter" time-sum-sec="5.37"> 
-            <application file-name="bug-2161098-x.sh" info-request-time="1318614190L" vanished="False"/>
-            <choice-list number="3" same_result="False">
-               <choice name="c_comments" result="OK" time_sec="1.77" crc="-572095635"/>
-               <choice name="shell_comments" result="OK" time_sec="1.77" crc="-1773697424"/>
-               <choice name="funny_comments" result="OK" time_sec="1.83" crc="-352907785"/>
+        <test title="2277660 character count pre-determination" time-sum-sec="3.19"> 
+            <application file-name="bug-2277660.sh" info-request-time="1318614190L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="3.19" crc="-389983954"/>
             </choice-list>
         </test>
         <test title="3082041 0.52.4 Buffer Memory Size not Accepted" time-sum-sec="2.61"> 
@@ -180,10 +178,12 @@
                <choice name="" result="OK" time_sec="0.39" crc="-1737686789"/>
             </choice-list>
         </test>
-        <test title="2277660 character count pre-determination" time-sum-sec="3.19"> 
-            <application file-name="bug-2277660.sh" info-request-time="1318614190L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="3.19" crc="-389983954"/>
+        <test title="2161098 0.32.1 Nested-Range Skipper Line Number Counter" time-sum-sec="5.37"> 
+            <application file-name="bug-2161098-x.sh" info-request-time="1318614190L" vanished="False"/>
+            <choice-list number="3" same_result="False">
+               <choice name="c_comments" result="OK" time_sec="1.77" crc="-572095635"/>
+               <choice name="shell_comments" result="OK" time_sec="1.77" crc="-1773697424"/>
+               <choice name="funny_comments" result="OK" time_sec="1.83" crc="-352907785"/>
             </choice-list>
         </test>
         <test title="2349109 0.33.5 Line and Column number counts with Set skippers" time-sum-sec="5.67"> 
@@ -272,11 +272,11 @@
                <choice name="" result="OK" time_sec="0.80" crc="1454506733"/>
             </choice-list>
         </test>
-        <test title="3115741 0.55.4 move_backward triggers assert" time-sum-sec="0.73"> 
+        <test title="3115741 0.55.4 move_backward triggers assert" time-sum-sec="2.08"> 
             <application file-name="bug-3115741.sh" info-request-time="1318614190L" vanished="False"/>
             <choice-list number="2" same_result="False">
-               <choice name="general" result="FAIL" time_sec="0.36" crc="-584745426"/>
-               <choice name="undo-line-colum-count" result="FAIL" time_sec="0.37" crc="-415264187"/>
+               <choice name="general" result="OK" time_sec="1.08" crc="-584745426"/>
+               <choice name="undo-line-colum-count" result="OK" time_sec="1.00" crc="-415264187"/>
             </choice-list>
         </test>
     </group>
@@ -407,10 +407,10 @@
         </test>
     </group>
     <group name="remcobloemen1">
-        <test title="3295781 Duplicate label with Template and Path Compression" time-sum-sec="1.05"> 
+        <test title="3295781 Duplicate label with Template and Path Compression" time-sum-sec="0.94"> 
             <application file-name="bug-3295781.sh" info-request-time="1318614190L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="1.05" crc="1206551489"/>
+               <choice name="" result="FAIL" time_sec="0.94" crc="1206551489"/>
             </choice-list>
         </test>
     </group>
@@ -438,12 +438,6 @@
             <application file-name="bug-1889871.sh" info-request-time="1318614190L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.11" crc="-429266748"/>
-            </choice-list>
-        </test>
-        <test title="1885846 Empty RE in define section" time-sum-sec="0.11"> 
-            <application file-name="bug-1885846.sh" info-request-time="1318614190L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.11" crc="2110266544"/>
             </choice-list>
         </test>
         <test title="1908092 0.23.5 uses --token-class without --token-class-file" time-sum-sec="0.40"> 
@@ -577,16 +571,22 @@
                <choice name="" result="OK" time_sec="0.11" crc="-2033217112"/>
             </choice-list>
         </test>
+        <test title="1887163 Single state mode causes quex to crash" time-sum-sec="0.45"> 
+            <application file-name="bug-1887163.sh" info-request-time="1318614190L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.45" crc="1510346924"/>
+            </choice-list>
+        </test>
         <test title="1889702 0.19.4 forbids derived modes that only add event handlers" time-sum-sec="0.47"> 
             <application file-name="bug-1889702.sh" info-request-time="1318614190L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.47" crc="263853875"/>
             </choice-list>
         </test>
-        <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="0.53"> 
+        <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="0.45"> 
             <application file-name="bug-1885304.sh" info-request-time="1320218160L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.53" crc="-572852438"/>
+               <choice name="" result="FAIL" time_sec="0.45" crc="-572852438"/>
             </choice-list>
         </test>
         <test title="1935701 - 0.24.7 buffer handling size mismatch" make-dependent="True" time-sum-sec="0.00"> 
@@ -685,10 +685,10 @@
                <choice name="" result="OK" time_sec="0.16" crc="-1800512920"/>
             </choice-list>
         </test>
-        <test title="1887163 Single state mode causes quex to crash" time-sum-sec="0.45"> 
-            <application file-name="bug-1887163.sh" info-request-time="1318614190L" vanished="False"/>
+        <test title="1885846 Empty RE in define section" time-sum-sec="0.11"> 
+            <application file-name="bug-1885846.sh" info-request-time="1318614190L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.45" crc="1510346924"/>
+               <choice name="" result="OK" time_sec="0.11" crc="2110266544"/>
             </choice-list>
         </test>
     </group>
