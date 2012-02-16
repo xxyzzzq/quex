@@ -14,7 +14,7 @@ from   random import randint
 
 if "--hwut-info" in sys.argv:
     print "Categorize Entry Door Actions"
-    print "CHOICES: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, set_state_key;" #, clear_door_tree;"
+    print "CHOICES: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, set_state_key, set_path_iterator;" #, clear_door_tree;"
     sys.exit()
 
 choice = sys.argv[1]
@@ -46,7 +46,7 @@ def test(ActionDB):
                                   element.position_register, 
                                   element.offset)
     door_db, transition_db, door_tree_root = categorize_command_lists(0, entry.action_db.values())
-    print door_tree_root
+    print door_tree_root.get_string(transition_db)
 
 if "1" in sys.argv:
     # All three states have exactly the same entry actions
@@ -125,7 +125,7 @@ elif "11" in sys.argv:
     Setup.state_entry_analysis_complexity_limit = 5
     action_db = dict((i, [StoreInfo(0, 0, i)]) for i in xrange(10))
 
-elif "set_state_key":
+elif "set_state_key" in sys.argv:
     action_list = [
         TransitionAction(1, 1, CommandList([ SetTemplateStateKey(1) ])),
         TransitionAction(2, 1, CommandList([ SetTemplateStateKey(2) ])),
@@ -136,8 +136,24 @@ elif "set_state_key":
         TransitionAction(3, 2, CommandList([ SetTemplateStateKey(3) ])),
         TransitionAction(4, 2, CommandList([ SetTemplateStateKey(4) ])),
     ]
+    print "##here:"
     door_db, transition_db, door_tree_root = categorize_command_lists(4711, action_list)
-    print door_tree_root
+    print door_tree_root.get_string(transition_db)
+    sys.exit(0)
+
+elif "set_path_iterator" in sys.argv:
+    action_list = [
+        TransitionAction(1, 1, CommandList([ SetPathIterator(0, 1, 1) ])),
+        TransitionAction(2, 1, CommandList([ SetPathIterator(0, 1, 1) ])),
+        TransitionAction(3, 1, CommandList([ SetPathIterator(0, 1, 1) ])),
+        TransitionAction(4, 1, CommandList([ SetPathIterator(1, 1, 1) ])),
+        TransitionAction(1, 2, CommandList([ SetPathIterator(1, 1, 1) ])),
+        TransitionAction(2, 2, CommandList([ SetPathIterator(2, 1, 1) ])),
+        TransitionAction(3, 2, CommandList([ SetPathIterator(1, 2, 1) ])),
+        TransitionAction(4, 2, CommandList([ SetPathIterator(1, 1, 2) ])),
+    ]
+    door_db, transition_db, door_tree_root = categorize_command_lists(4711, action_list)
+    print door_tree_root.get_string(transition_db)
     sys.exit(0)
 
 elif "clear_door_tree" in sys.argv:

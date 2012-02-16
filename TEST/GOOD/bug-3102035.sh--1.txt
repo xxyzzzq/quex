@@ -5,6 +5,6 @@
 ##   Case3.c:151: error: previous definition of ‘STATE_39’ was here
 ##
 ## would appear. If they do not, then everything is fine.
-quex -i case1.qx  --engine Case1 --language C 
+quex -i case1.qx  --engine Case1 --language C --debug-exception
 gcc  -I./ -I<<QUEX_PATH>> -Wall -W -Wconversion -pedantic  -DPRINT_TOKEN -DPRINT_LINE_COLUMN_NUMBER -c Case1.c -o Case1.o
 rm Case1.c

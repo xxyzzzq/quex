@@ -48,6 +48,10 @@ Case5: $(QUEX_PATH)/TEST/lexer.c
 	$(CC) $^ Simple.c -o $@ \
 		  -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
 
+Case2.c: case2.qx $(QUEX_CORE)
+	## Case2 causes an error message which we want to see: no '--debug-exception'
+	quex -i $<  --engine $(@:.c=) --language C 
+
 Case%.c: case%.qx $(QUEX_CORE)
 	quex -i $<  --engine $(@:.c=) --language C --debug-exception
 

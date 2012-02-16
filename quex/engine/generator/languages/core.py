@@ -177,7 +177,11 @@ class LDB(dict):
 
         door_id = self.__analyzer.state_db[StateIndex].entry.get_door_id(StateIndex, FromStateIndex)
 
-        assert isinstance(door_id, entry_action.DoorID)
+        assert isinstance(door_id, entry_action.DoorID), \
+               "No door_id for 'StateIndex=%s, FromStateIndex=%s' in state '%s'. Received '%s'.\n" \
+               % (StateIndex, FromStateIndex, StateIndex, door_id) \
+               + "Door Tree:\n" \
+               + self.__analyzer.state_db[StateIndex].entry.door_tree_root.get_string(self.__analyzer.state_db[StateIndex].entry.transition_db)
         return self.ADDRESS_BY_DOOR_ID(door_id)
 
     def ADDRESS_DROP_OUT(self, StateIndex):
