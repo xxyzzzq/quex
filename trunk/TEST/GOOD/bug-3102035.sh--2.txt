@@ -5,6 +5,7 @@
 ##   Case3.c:151: error: previous definition of ‘STATE_39’ was here
 ##
 ## would appear. If they do not, then everything is fine.
+## Case2 causes an error message which we want to see: no '--debug-exception'
 quex -i case2.qx  --engine Case2 --language C 
 case2.qx:10:error: The pre context contains in a 'nothing is necessary' path in the state machine.
 case2.qx:10:error: This means, that without reading a character the analyzer drops into
