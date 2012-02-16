@@ -206,7 +206,7 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
                            ["$$ON_SKIP_RANGE_OPEN$$",             on_skip_range_open_str],
                            #
                            ["$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$", reference_p_def],
-                           ["$$LC_COUNT_IN_LOOP$$",                     line_column_counter_in_loop],
+                           ["$$LC_COUNT_IN_LOOP$$",                     line_column_counter_in_loop()],
                            ["$$LC_COUNT_END_PROCEDURE$$",               end_procedure],
                            ["$$LC_COUNT_BEFORE_RELOAD$$",               before_reload],
                            ["$$LC_COUNT_AFTER_RELOAD$$",                after_reload],

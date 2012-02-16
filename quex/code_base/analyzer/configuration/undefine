@@ -258,6 +258,15 @@
 #ifdef    __QUEX_IF_TOKEN_REPETITION_SUPPORT_DISABLED
 #   undef __QUEX_IF_TOKEN_REPETITION_SUPPORT_DISABLED 
 #endif
+#ifdef    __QUEX_IF_COUNT
+#   undef __QUEX_IF_COUNT
+#endif
+#ifdef    __QUEX_IF_COUNT_IF
+#   undef __QUEX_IF_COUNT_IF
+#endif
+#ifdef    __QUEX_IF_COUNT_LINES_IF
+#   undef __QUEX_IF_COUNT_LINES_IF
+#endif
 #ifdef    __QUEX_IF_COUNT_LINES
 #   undef __QUEX_IF_COUNT_LINES 
 #endif
