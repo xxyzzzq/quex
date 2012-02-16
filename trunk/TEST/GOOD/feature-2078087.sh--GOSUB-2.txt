@@ -1,4 +1,4 @@
-quex -i GOSUB-2.qx -o Simple --token-policy single --language C
+quex -i GOSUB-2.qx -o Simple --token-policy single --language C --debug-exception
 g++ -I<<QUEX_PATH>> -I. \
 		-DPRINT_TOKEN \
 		-DQUEX_OPTION_DEBUG_SHOW_MODES -DQUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED -DQUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED  \

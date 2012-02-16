@@ -39,17 +39,17 @@ Case%: Case%.c
 	$(CC) -E $< -o $@ 
 
 Case4: $(QUEX_PATH)/TEST/lexer.c
-	quex -i case4.qx  --engine Simple --language C 
+	quex -i case4.qx  --engine Simple --language C --debug-exception
 	$(CC) $^ Simple.c -o $@ \
 		  -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
 
 Case5: $(QUEX_PATH)/TEST/lexer.c
-	quex -i case5.qx  --engine Simple --language C 
+	quex -i case5.qx  --engine Simple --language C --debug-exception
 	$(CC) $^ Simple.c -o $@ \
 		  -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
 
 Case%.c: case%.qx $(QUEX_CORE)
-	quex -i $<  --engine $(@:.c=) --language C 
+	quex -i $<  --engine $(@:.c=) --language C --debug-exception
 
 # (*) HELPERS __________________________________________________________________
 clean:	
