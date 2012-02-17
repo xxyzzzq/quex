@@ -31,30 +31,32 @@ def setup_AnalyzerStates(StatesDescription):
 
     # Pseudo transitions from init state to all
     InitStateIndex = 7777L
-    init_tm        = [ (Interval(i, i+1), state_index) for i, state_index in enumerate(requested_state_index_list) ]
+    init_tm        = [ (Interval(i, i+1), long(state_index)) for i, state_index in enumerate(requested_state_index_list) ]
     init_state     = setup_sm_state(InitStateIndex, init_tm)
-    sm_state_db    = dict((state_index, setup_sm_state(state_index, tm)) for state_index, tm in StatesDescription)
+    sm_state_db    = dict((state_index, setup_sm_state(long(state_index), tm)) for state_index, tm in StatesDescription)
     analyzer       = TestAnalyzer(E_EngineTypes.BACKWARD_PRE_CONTEXT)
 
     # Make sure, that the transitions appear in the 'entry' member of the
     # states. Collect transition information.
     transition_db = defaultdict(list)
     for state_index, transition_map in StatesDescription:
+        state_index = long(state_index)
         for interval, target_index in transition_map:
             if not isinstance(target_index, (long,int)): continue
             transition_db[target_index].append(state_index)
         transition_db[state_index].append(InitStateIndex)
 
     # Setup the states with their 'from_state_list'
-    InitState  = AnalyzerState(init_state, InitStateIndex, True, EngineType, [])
+    InitState  = AnalyzerState(init_state, InitStateIndex, True, EngineType, set())
     for state_index, from_state_list in transition_db.iteritems():
+        state_index = long(state_index)
         sm_state = sm_state_db.get(state_index)
         if sm_state is None: sm_state = setup_sm_state(state_index, [])
-        state    = AnalyzerState(sm_state, state_index, False, EngineType, from_state_list)
+        state    = AnalyzerState(sm_state, state_index, False, EngineType, set(from_state_list))
         state.entry.door_tree_configure()
         analyzer.state_db[state_index] = state
 
-    state_list = [ analyzer.state_db[state_index] for state_index in requested_state_index_list ]
+    state_list = [ analyzer.state_db[long(state_index)] for state_index in requested_state_index_list ]
     return state_list, analyzer
 
 def collect_target_state_indices(TM):
