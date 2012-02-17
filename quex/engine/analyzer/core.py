@@ -510,7 +510,7 @@ class AnalyzerState(object):
         assert isinstance(StateIndex, (int, long))
         assert type(InitStateF) is bool
         assert EngineType in E_EngineTypes
-        assert isinstance(FromStateIndexList, (set, list))
+        assert isinstance(FromStateIndexList, set)
 
         self.__index        = StateIndex
         self.__init_state_f = InitStateF

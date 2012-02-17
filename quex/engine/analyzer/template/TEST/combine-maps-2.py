@@ -3,6 +3,7 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
+import quex.engine.state_machine.index                  as index
 import quex.engine.analyzer.template.core               as templates
 from   quex.engine.analyzer.template.state              import TemplateState, combine_maps
 from   quex.engine.analyzer.template.TEST.templates_aux import *
@@ -16,65 +17,78 @@ if "--hwut-info" in sys.argv:
     print "CHOICES: 1, 2, recursive, recursive-2, recursive-3, recursive-b, recursive-2b, recursive-3b;"
     sys.exit(0)
 
-def setup_TemplateState(TriggerMap, StateN, StateIndexOffset):
-    StateList = range(StateIndexOffset, StateIndexOffset + StateN)
-    return TestTemplateState(TriggerMap, StateList)
+def get_TemplateState(analyzer, StateIndexList):
+    assert len(StateIndexList) > 1
+
+    result = TemplateState(analyzer.state_db[StateIndexList[0]], 
+                           analyzer.state_db[StateIndexList[1]], 
+                           analyzer)
+    for i in StateIndexList[2:]:
+        result = TemplateState(result, analyzer.state_db[i], 
+                               analyzer)
+    return result
 
 def test(TriggerMapA, StateN_A, TriggerMapB, StateN_B):
-    if StateN_A > 1: 
-        CombinationA = setup_TemplateState(TriggerMapA, StateN_A, 10)
-    else:            
-        CombinationA = TestState(TriggerMapA, 10)
+    state_setup = []
+    StateListA = [ long(i) for i in xrange(StateN_A) ]
+    StateListB = [ long(i) for i in xrange(StateN_A, StateN_A + StateN_B) ]
+    def extract_transition_map(XTM, Index):
+        result = []
+        for interval, specification in XTM:
+            result.append((interval, specification[Index]))
+        return result
 
-    if StateN_B > 1: 
-        CombinationB = setup_TemplateState(TriggerMapB, StateN_B, 20)
-    else:            
-        CombinationB = TestState(TriggerMapB, 20)
+    state_setup.extend([ (index.get(), extract_transition_map(TriggerMapA, i)) for i, state_index in enumerate(StateListA)])
+    state_setup.extend([ (index.get(), extract_transition_map(TriggerMapB, i)) for i, state_index in enumerate(StateListB)])
 
-    analyzer = TestAnalyzer(StateA, StateB)
+    state_list, analyzer = setup_AnalyzerStates(state_setup)
+    if StateN_A == 1: state_a = analyzer.state_db[StateListA[0]] # Normal AnalyzerState
+    else:             state_a = get_TemplateState(analyzer, StateListA)
+    if StateN_B == 1: state_b = analyzer.state_db[StateListB[0]] # Normal AnalyzerState
+    else:             state_b = get_TemplateState(analyzer, StateListB)
 
     print
     print "(Straight)---------------------------------------"
     print
     print "States: %s" % StateListA
-    print_tm(TriggerMapA)
+    print_tm(state_a.transition_map)
     print "States: %s" % StateListB
-    print_tm(TriggerMapB)
+    print_tm(state_b.transition_map)
     print
-    result = combine_maps(CombinationA, CombinationB, analyzer)[0]
-    print_tm(result)
+    result = TemplateState(state_a, state_b, analyzer)
+    print_tm(result.transition_map)
     print
     print "(Vice Versa)-------------------------------------"
     print
     print "States: %s" % StateListB
-    print_tm(TriggerMapB)
+    print_tm(state_b.transition_map)
     print "States: %s" % StateListA
-    print_tm(TriggerMapA)
+    print_tm(state_a.transition_map)
     print
-    result = combine_maps(CombinationB, CombinationA, analyzer)[0]
-    print_tm(result)
+    result = TemplateState(state_b, state_a, analyzer)
+    print_tm(result.transition_map)
     print
 
 tm0 = [ 
         (Interval(-sys.maxint, 20), (1L, 2L, 3L)),
-        (Interval(20, sys.maxint),  1L),
+        (Interval(20, sys.maxint),  (1L, 1L, 1L)),
       ]
 
 if "1" in sys.argv:
     tm1 = [ 
             (Interval(-sys.maxint, 10), (1L, 2L, 3L)),
-            (Interval(10, 20),          1L),
+            (Interval(10, 20),          (1L, 1L, 1L)),
             (Interval(20, 30),          (1L, 2L, 3L)),
-            (Interval(30, sys.maxint),  1L),
+            (Interval(30, sys.maxint),  (1L, 1L, 1L)),
           ]
     test(tm0, 3, tm1, 3)
 
 elif "2" in sys.argv:
     tm1 = [ 
             (Interval(-sys.maxint, 10), (1L, 2L, 3L)),
-            (Interval(10, 20),          2L),
+            (Interval(10, 20),          (2L, 1L, 1L)),
             (Interval(20, 30),          (3L, 4L, 5L)),
-            (Interval(30, sys.maxint),  2L),
+            (Interval(30, sys.maxint),  (2L, 1L, 1L)),
           ]
     test(tm0, 3, tm1, 3)
 
