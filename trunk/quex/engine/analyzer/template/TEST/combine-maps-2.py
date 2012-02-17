@@ -70,25 +70,25 @@ def test(TriggerMapA, StateN_A, TriggerMapB, StateN_B):
     print
 
 tm0 = [ 
-        (Interval(-sys.maxint, 20), (1L, 2L, 3L)),
-        (Interval(20, sys.maxint),  (1L, 1L, 1L)),
+        (Interval(-sys.maxint, 20), (100L, 200L, 300L)),
+        (Interval(20, sys.maxint),  (100L, 100L, 100L)),
       ]
 
 if "1" in sys.argv:
     tm1 = [ 
-            (Interval(-sys.maxint, 10), (1L, 2L, 3L)),
-            (Interval(10, 20),          (1L, 1L, 1L)),
-            (Interval(20, 30),          (1L, 2L, 3L)),
-            (Interval(30, sys.maxint),  (1L, 1L, 1L)),
+            (Interval(-sys.maxint, 10), (100L, 200L, 300L)),
+            (Interval(10, 20),          (100L, 100L, 100L)),
+            (Interval(20, 30),          (100L, 200L, 300L)),
+            (Interval(30, sys.maxint),  (100L, 100L, 100L)),
           ]
     test(tm0, 3, tm1, 3)
 
 elif "2" in sys.argv:
     tm1 = [ 
-            (Interval(-sys.maxint, 10), (1L, 2L, 3L)),
-            (Interval(10, 20),          (2L, 1L, 1L)),
-            (Interval(20, 30),          (3L, 4L, 5L)),
-            (Interval(30, sys.maxint),  (2L, 1L, 1L)),
+            (Interval(-sys.maxint, 10), (100L, 200L, 300L)),
+            (Interval(10, 20),          (200L, 100L, 100L)),
+            (Interval(20, 30),          (300L, 400L, 500L)),
+            (Interval(30, sys.maxint),  (200L, 100L, 100L)),
           ]
     test(tm0, 3, tm1, 3)
 
