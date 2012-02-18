@@ -32,7 +32,11 @@ class MegaState(AnalyzerState):
             for state_index in self.implemented_state_index_list():
                 door_db = self.__analyzer.state_db[state_index].entry.door_db
                 for transition_id, door_id in door_db.iteritems():
-                    result[door_id] = self.entry.door_db[transition_id]
+                    new_door_id     = self.entry.door_db.get(transition_id)
+                    # The transition may have been deleted, for example, because
+                    # it lies on the path of a uniform path walker.
+                    if new_door_id is None: continue 
+                    result[door_id] = new_door_id
             self.__door_id_replacement_db = result
         return self.__door_id_replacement_db
 

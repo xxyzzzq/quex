@@ -202,6 +202,17 @@ class PathWalkerState(MegaState):
                 if candidate[0] == StateIdx: return path_id, path_offset
         assert False
 
+    def delete_transitions_on_path(self):
+        """Deletes all transitions that lie on the path. That is safe with respect
+           to 'doors'. If doors are entered from states along the path and from 
+           somewhere else, they still remain in place.
+        """
+        for sequence in self.__path_list:
+            from_index = sequence[0][0]
+            for state_index, dummy in sequence[1:-1]:
+                self.entry.action_db_delete_transition(state_index, from_index)
+                from_index = state_index
+
     def replace_door_ids_in_transition_map(self, ReplacementDB):
         """See TemplateState, for more information."""
         def replace_if_required(DoorId):
@@ -233,6 +244,11 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
             path_walker_list.append(PathWalkerState(candidate, TheAnalyzer, CompressionType))
 
     for path_walker in path_walker_list:
+        if path_walker.uniform_entry_door_id_along_all_paths is not None:
+            # If the path entries are uniform, then the doors on the path do not
+            # need to be implemented.
+            path_walker.delete_transitions_on_path()
+
         # Once the entries are combined, re-configure the door tree
         path_walker.entry.door_tree_configure(path_walker.index)
 
