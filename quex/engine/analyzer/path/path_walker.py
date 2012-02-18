@@ -113,6 +113,7 @@ class PathWalkerState(MegaState):
 
     @property
     def path_list(self):          assert type(self.__path_list) == list; return self.__path_list
+
     @property
     def state_index_list(self):
         """map:   state_key --> state_index of involved state
@@ -145,12 +146,10 @@ class PathWalkerState(MegaState):
                     -- None, the entries along the paths are somehow differring.
         """
         if self.__uniform_entry_command_list_along_path is None: return None
-        # Assume that the door tree is configured correctly
-        # => Then, looking for one door_id is enough.
-        sequence   = self.__path_list[0]
-        from_index = sequence[0][0]
-        to_index   = sequence[1][0]
-        return self.entry.get_door_id(to_index, from_index)
+
+        door_id = self.entry.get_door_id_by_command_list(self.__uniform_entry_command_list_along_path)
+        assert door_id is not None, "There MUST be a door for the uniform entry command list."
+        return door_id
 
     def terminal_door_id_of_path(self, PathID):
         """Determine the DoorID by which the path number 'PathID' enters
@@ -163,17 +162,18 @@ class PathWalkerState(MegaState):
         before_terminal_state_index = sequence[-2][0]
         terminal_state_index        = sequence[-1][0]
         # Determine DoorID by transition
-        return self.entry.get_door_id(StateIndex     = terminal_state_index, 
-                                      FromStateIndex = before_terminal_state_index)
+        return self.analyzer.state_db[terminal_state_index].entry.get_door_id(terminal_state_index, 
+                                                                              before_terminal_state_index)
 
+    @property
     def uniform_terminal_entry_door_id(self):
         """RETURNS: DoorID -- if all paths which are involved enter the same 
                                terminal state through the same entry door.
                     None   -- if not.
         """
         assert len(self.path_list) != 0
-        if len(self.path_list) == 1:
-            return True
+        if len(self.__path_list) == 1:
+            return self.terminal_door_id_of_path(0)
 
         prototype = None
         for path_id in xrange(len(self.__path_list)):

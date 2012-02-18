@@ -17,6 +17,8 @@ class MegaState(AnalyzerState):
     def engine_type(self):  return self.__analyzer.engine_type
     @property
     def init_state_f(self): return False
+    @property
+    def analyzer(self):     return self.__analyzer
 
     @property
     def door_id_replacement_db(self):
