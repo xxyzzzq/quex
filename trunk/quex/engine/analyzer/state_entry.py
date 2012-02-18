@@ -150,6 +150,20 @@ class Entry(object):
                 return door_id
         return None
 
+    def get_door_id_by_command_list(self, TheCommandList):
+        """Finds the DoorID of the door that implements TheCommandList.
+           RETURNS: None if no such door exists that implements TheCommandList.
+        """
+        if TheCommandList.is_empty():
+            return DoorID(self.__state_index, 0) # 'Door 0' is sure to not do anything!
+
+        for transition_id, action in self.action_db.iteritems():
+            if action.command_list == TheCommandList:
+                break
+        else:
+            return None
+        return self.entry.door_db.get(transition_id) # Returns 'None' on missing transition_id
+
     def door_find(self, DoorId):
         """Find the Door object that belongs to DoorId"""
         assert self.__door_tree_root is not None

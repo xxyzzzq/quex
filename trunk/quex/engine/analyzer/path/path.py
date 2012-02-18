@@ -125,7 +125,9 @@ class CharacterPath:
                 if not prototype.is_equivalent(action.command_list):
                     return None
             else:
-                prototype = action.command_list
+                prototype = action.command_list.clone()
+                prototype.delete_SetPathIterator_commands()
+
             prev_state_index = state_index
 
         # Since len(sequence) >= 2, then there is a 'prototype' at this point.
