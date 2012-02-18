@@ -143,7 +143,7 @@ def __path_walker(txt, PWState, TheAnalyzer):
             #    (input increment/decrement undo)      # we went one step too far
             #    goto TerminalDoorID
             jump_to_next_state = LanguageDB.GOTO_BY_DOOR_ID(uniform_entry_door_id)
-            jump_to_terminal   = LanguageDB.GOTO_BY_DOOR_ID(uniform_terminal_entry_door_id)
+            jump_to_terminal   = "        %s\n" % LanguageDB.GOTO_BY_DOOR_ID(uniform_terminal_entry_door_id)
         else:
             #   (2) -- Uniform entries (ALONG THE PATH)
             #       -- The terminal of the paths are different
@@ -158,16 +158,18 @@ def __path_walker(txt, PWState, TheAnalyzer):
             #           else if path_iterator == path_2_end:  goto terminal_2
             #           ...
             jump_to_next_state = LanguageDB.GOTO_BY_DOOR_ID(uniform_entry_door_id)
-            txt      = ""
-            else_str = ""
+            code     = ""
             for path_id, sequence in enumerate(PWState.path_list):
                 terminal_door_id = PWState.terminal_door_id_of_path(PathID=path_id)
-                txt +=   "    %s%s\n"   % (else_str, LanguageDB.IF("path_iterator", "==", "path_walker_%i_path_%i%s" %  \
-                                                                   (PWState.index, path_id, len(sequence))))            \
-                       + "        %s\n" % LanguageDB.GOTO_BY_DOOR_ID(terminal_door_id)                                  \
-                       + "    %s\n"     % LanguageDB.END_IF()                                              
+                code +=  "        %s"       % LanguageDB.IF("path_iterator", "==", "path_walker_%i_path_%i + %s" %  \
+                                                            (PWState.index, path_id, len(sequence)-1),              \
+                                                            FirstF=(path_id == 0))                                  \
+                       + "            %s\n" % LanguageDB.GOTO_BY_DOOR_ID(terminal_door_id) 
 
-            jump_to_terminal = "%s\n%s" % txt
+            code += "        %s\n"     % LanguageDB.ELSE                                  
+            code += "            %s\n" % LanguageDB.UNREACHABLE
+            code += "        %s\n"     % LanguageDB.END_IF()                                  
+            jump_to_terminal = code
     else:
         # (3) -- Non-Uniform entries (ALONG THE PATH)
         #        (The terminal door is going to be listed in the state sequence array)
@@ -182,18 +184,17 @@ def __path_walker(txt, PWState, TheAnalyzer):
         jump_to_next_state = "%s" % (LanguageDB.GOTO_BY_VARIABLE(next_state))
         jump_to_terminal   = ""
 
-    txt.extend(["    __quex_debug_path_walker_iteration(%i, path_iterator);\n" % PWState.index,
-                "    %s"     % LanguageDB.IF_INPUT("==", "*path_iterator"),
-                "        %s\n" % LanguageDB.PATH_ITERATOR_INCREMENT,
-                "        %s\n" % jump_to_next_state])
-
     # Jump to terminal: We went one step too far: UNDO input pointer increment/decrement
     if PWState.engine_type == E_EngineTypes.FORWARD: undo_incr_decr = LanguageDB.INPUT_P_DECREMENT()
     else:                                            undo_incr_decr = LanguageDB.INPUT_P_INCREMENT()
 
-    txt.extend(["    %s" % LanguageDB.IF("*path_iterator", "==", "QUEX_SETTING_PATH_TERMINATION_CODE", FirstF=False),
+    txt.extend(["    __quex_debug_path_walker_iteration(%i, path_iterator);\n" % PWState.index,
+                "    %s"     % LanguageDB.IF_INPUT("==", "*path_iterator"),
+                "        %s\n" % LanguageDB.PATH_ITERATOR_INCREMENT,
+                "        %s\n" % jump_to_next_state,
+                "    %s" % LanguageDB.IF("*path_iterator", "==", "QUEX_SETTING_PATH_TERMINATION_CODE", FirstF=False),
                 "        %s\n" % undo_incr_decr,
-                "        %s\n" % jump_to_terminal,
+                jump_to_terminal,
                 "    %s\n" % LanguageDB.END_IF()])
 
 def __drop_out(txt, PWState, TheAnalyzer):
