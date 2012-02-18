@@ -10,7 +10,7 @@ command line: # Keyboard Interrupt -- Processing unfinished.
 command line: #
 
   -- Exception:
-command line: Exception occured -- please, report a bug under
+command line: Exception occurred -- please, report a bug under
 command line:  https://sourceforge.net/tracker/?group_id=168259&atid=846112
 
 (*) Exceptions during 'function'
@@ -25,6 +25,6 @@ command line: # Keyboard Interrupt -- Processing unfinished.
 command line: #
 
   -- Exception:
-command line: Exception occured -- please, report a bug under
+command line: Exception occurred -- please, report a bug under
 command line:  https://sourceforge.net/tracker/?group_id=168259&atid=846112
 

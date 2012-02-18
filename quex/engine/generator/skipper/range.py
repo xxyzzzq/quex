@@ -1,11 +1,10 @@
 import quex.engine.state_machine.index             as     sm_index
-from   quex.engine.analyzer.state_entry_action     import DoorID
 from   quex.engine.generator.skipper.common        import line_counter_in_loop, \
                                                           end_delimiter_is_subset_of_indentation_counter_newline, \
                                                           get_character_sequence, \
                                                           get_on_skip_range_open, \
                                                           line_column_counter_in_loop
-from   quex.engine.generator.languages.address     import __nice, get_label, get_address
+from   quex.engine.generator.languages.address     import __nice, get_label
 import quex.engine.generator.languages.variable_db as     variable_db
 from   quex.blackboard                             import setup as Setup
 from   quex.engine.misc.string_handling            import blue_print

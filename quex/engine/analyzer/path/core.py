@@ -3,7 +3,7 @@ from   quex.engine.analyzer.path.path        import CharacterPath
 import quex.engine.analyzer.path.path_walker as     path_walker
 from   quex.blackboard                       import E_Compression
 
-from   copy        import deepcopy, copy
+from   copy        import deepcopy
 from   collections import defaultdict
 """
    Path Compression ___________________________________________________________

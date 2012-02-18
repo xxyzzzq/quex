@@ -1,15 +1,15 @@
-<test-database execution-time-sec="4.02" date="Thu Feb 16 21:56:53 2012">
+<test-database execution-time-sec="3.88" date="Sat Feb 18 00:59:11 2012">
     <last-used-diff-display-program name=""/>
-    <test title="UCS Character Code Names" time-sum-sec="3.91"> 
+    <test title="UCS Character Code Names" time-sum-sec="3.73"> 
         <application file-name="ucs-character-name.sh" info-request-time="1318614193L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="1" result="OK" time_sec="3.91" crc="-890159197"/>
+           <choice name="1" result="OK" time_sec="3.73" crc="-890159197"/>
         </choice-list>
     </test>
-    <test title="Explicit Token Type Member Assignment" time-sum-sec="0.11"> 
+    <test title="Explicit Token Type Member Assignment" time-sum-sec="0.15"> 
         <application file-name="token_type-member-name.sh" info-request-time="1318614193L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.11" crc="1449105405"/>
+           <choice name="" result="OK" time_sec="0.15" crc="1449105405"/>
         </choice-list>
     </test>
 </test-database>

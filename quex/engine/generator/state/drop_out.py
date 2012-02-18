@@ -5,7 +5,6 @@ from   quex.blackboard                           import E_EngineTypes, E_Accepta
 
 def do(txt, TheState, TheAnalyzer, DefineLabelF=True):
     LanguageDB          = Setup.language_db
-    PositionRegisterMap = TheAnalyzer.position_register_map
 
     if DefineLabelF:
         txt.append(Address("$drop-out", TheState.index))

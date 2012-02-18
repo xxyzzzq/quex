@@ -55,7 +55,7 @@ def do(sm):
             # cause a time consuming memory copy and constructor calls.
             interval_list = number_set.get_intervals(PromiseToTreatWellF=True)
 
-            # 1st check wether a modification is necessary
+            # 1st check whether a modification is necessary
             modification_required_f = False
             for interval in interval_list:
                 if interval.begin >= 0x10000: modification_required_f = True; break

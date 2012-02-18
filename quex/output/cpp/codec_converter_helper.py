@@ -85,7 +85,7 @@ class ConverterWriter:
                 if CallerRangeIndex != conversion_list[0].byte_format_range_index:
                     txt += self.get_byte_formatter(conversion_list[0].byte_format_range_index)
             else:
-                # Determine wether all sub-ranges belong to the same utf8-range
+                # Determine whether all sub-ranges belong to the same utf8-range
                 range_index = self.same_byte_format_range(conversion_list)
 
                 # Bracket interval in the middle

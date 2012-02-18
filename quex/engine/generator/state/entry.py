@@ -1,8 +1,6 @@
 from quex.engine.analyzer.core import AnalyzerState
 from quex.blackboard import setup as Setup,  \
-                            E_EngineTypes,   \
-                            E_PreContextIDs, \
-                            E_StateIndices
+                            E_EngineTypes
 
 from operator import attrgetter
 

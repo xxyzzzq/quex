@@ -4,7 +4,7 @@
 
 def unicode_to_utf16(UnicodeValue):
     """Do not do this by hand in order to have a 'reference' to double check
-       wether otherwise hand coded values are correct.
+       whether otherwise hand coded values are correct.
     """
     if UnicodeValue < 0x10000:
         return [UnicodeValue,]

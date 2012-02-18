@@ -32,27 +32,22 @@ ABSOLUTELY NO WARRANTY
 
 import quex.engine.analyzer.track_analysis        as     track_analysis
 import quex.engine.analyzer.optimizer             as     optimizer
-from   quex.engine.analyzer.state_entry           import Entry,                  \
-                                                         repr_acceptance_id,     \
-                                                         repr_position_register, \
-                                                         repr_pre_context_id,    \
-                                                         repr_positioning
+from   quex.engine.analyzer.state_entry           import Entry
 from   quex.engine.analyzer.state_drop_out        import DropOut,         \
                                                          DropOutBackward, \
                                                          DropOutBackwardInputPositionDetection
 import quex.engine.analyzer.position_register_map as     position_register_map
 from   quex.engine.state_machine.core             import StateMachine, State
 from   quex.blackboard  import E_StateIndices, \
-                               E_PostContextIDs, \
                                E_AcceptanceIDs, \
                                E_EngineTypes, \
                                E_TransitionN, \
                                E_PreContextIDs, \
                                E_InputActions
 
-from   collections      import defaultdict, namedtuple
-from   operator         import itemgetter, attrgetter
-from   itertools        import islice, ifilter, imap, izip, dropwhile
+from   collections      import defaultdict
+from   operator         import itemgetter
+from   itertools        import islice, imap, izip
 from   quex.blackboard  import setup as Setup
 
 def do(SM, EngineType=E_EngineTypes.FORWARD):

@@ -82,7 +82,6 @@ import quex.engine.generator.state.drop_out         as drop_out_coder
 import quex.engine.generator.state.entry            as entry_coder
 from   quex.engine.generator.state.core             import input_do
 from   quex.engine.generator.state.transition.code  import TextTransitionCode
-from   quex.engine.generator.languages.address      import get_label
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.analyzer.state_entry_action      import DoorID
 from   quex.engine.interval_handling                import Interval
@@ -90,8 +89,7 @@ from   quex.engine.interval_handling                import Interval
 
 from   quex.blackboard import setup as Setup, \
                               E_StateIndices, \
-                              E_EngineTypes, \
-                              E_Compression
+                              E_EngineTypes
 
 from   itertools import imap
 import sys
@@ -193,7 +191,7 @@ def __path_walker(txt, PWState, TheAnalyzer):
         txt.append("    %s\n" % LanguageDB.END_IF())
     else:
         txt.extend(["    %s" % LanguageDB.IF("*path_iterator", "==", "QUEX_SETTING_PATH_TERMINATION_CODE", FirstF=False),
-                    "        %s\n" % jump_to_end_state,
+                    "        %s\n" % jump_to_terminal,
                     "    %s\n" % LanguageDB.END_IF()])
 
 def __drop_out(txt, PWState, TheAnalyzer):

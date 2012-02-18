@@ -7,11 +7,7 @@ from   quex.engine.generator.state.core             import input_do
 from   quex.engine.generator.languages.address      import get_address, get_label
 from   quex.engine.generator.languages.variable_db  import variable_db
 
-import quex.engine.analyzer.template.core           as templates 
-from   quex.engine.analyzer.state_entry_action      import SetTemplateStateKey, TransitionID, DoorID
-
-from   quex.blackboard import setup as Setup, E_StateIndices, E_Compression
-from   itertools       import ifilter
+from   quex.blackboard import setup as Setup, E_StateIndices
 from   operator        import attrgetter
 
 """Template Compression _______________________________________________________

@@ -1,7 +1,7 @@
 import sys
 
 def do(ARGV):
-    """Allow to check wether the exception handlers are all in place.
+    """Allow to check whether the exception handlers are all in place.
     """
     if       len(ARGV) != 3: return False
     elif     ARGV[1] != "<<TEST:Exceptions/function>>" \
@@ -17,7 +17,7 @@ def do(ARGV):
     return False
 
 def do_on_import(ARGV):
-    # Double check wether exception handlers are in place on module-import
+    # Double check whether exception handlers are in place on module-import
     if len(ARGV) == 3 and ARGV[1] == "<<TEST:Exceptions/on-import>>":
         do(ARGV)
 

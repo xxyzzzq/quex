@@ -1,6 +1,7 @@
 import quex.engine.utf8                   as utf8
 import quex.output.cpp.action_preparation as action_preparation
 from   quex.engine.interval_handling      import NumberSet
+from   quex.engine.misc.file_in           import error_msg
 from   quex.blackboard import setup as Setup
 
 __line_counter_in_loop = """

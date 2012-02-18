@@ -247,6 +247,13 @@ following command line options can be used.
 
         DEFAULT = ``16``
 
+.. cmdoption:: --no-warning-on-no-token-queue
+
+        If set, this option disables the warning in case that an event handler 
+        is specified without having set ``--token-policy queue``. Without a token
+        queue no tokens can be propperly sent from inside event handlers. There
+        might be other things the user decides to do without receiving any warning. 
+
 .. cmdoption:: --token-id-offset number
         
         ``number`` = Number where the numeric values for the token ids start

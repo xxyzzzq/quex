@@ -244,7 +244,7 @@ def snap_primary(stream, PatternDict):
             stream.read(1)
             result = snap_case_folded_pattern(stream, PatternDict)
         elif lookahead == "R":
-            dummy = stream.read(1)
+            stream.read(1)
             if not check(stream, "{"):
                 error_msg("Missing opening '{' after reverse operator \\R.", stream)
             pattern = snap_expression(stream, PatternDict) 

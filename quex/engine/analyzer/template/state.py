@@ -1,13 +1,12 @@
-import quex.engine.state_machine.index              as     index
 from   quex.engine.generator.state.transition.core  import assert_adjacency
 from   quex.engine.analyzer.state_entry             import Entry
-from   quex.engine.analyzer.state_entry_action      import SetTemplateStateKey, TransitionID, DoorID
+from   quex.engine.analyzer.state_entry_action      import SetTemplateStateKey, DoorID
 from   quex.engine.interval_handling                import Interval
-from   quex.engine.analyzer.core                    import AnalyzerState, get_input_action
+from   quex.engine.analyzer.core                    import get_input_action
 from   quex.engine.analyzer.mega_state              import MegaState, MegaState_Target
 from   quex.blackboard                              import E_StateIndices
 
-from   itertools   import chain, imap
+from   itertools   import chain
 from   collections import defaultdict
 import sys
 from   copy import deepcopy

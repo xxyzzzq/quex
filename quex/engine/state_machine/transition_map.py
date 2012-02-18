@@ -56,7 +56,7 @@ class TransitionMap:
         # DFA's do not have epsilon transitions
         if len(self.__epsilon_target_index_list) != 0: return False
 
-        # check wether trigger sets intersect
+        # check whether trigger sets intersect
         all_trigger_sets = NumberSet()
         for trigger_set in self.__db.values():
             if all_trigger_sets.has_intersection(trigger_set): 
@@ -185,7 +185,7 @@ class TransitionMap:
         """Lines the triggers up on a 'time line'. A target is triggered by
            certain characters that belong to 'set' (trigger sets). Those sets
            are imagined as ranges on a time line. The 'history' is described
-           by means of history items. Each item tells wether a range begins
+           by means of history items. Each item tells whether a range begins
            or ends, and what target state is reached in that range.
 
            [0, 10] [90, 95] [100, 200] ---> TargetState0

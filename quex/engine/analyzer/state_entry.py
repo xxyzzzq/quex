@@ -1,12 +1,10 @@
 import quex.engine.analyzer.state_entry_action as entry_action
 from   quex.engine.analyzer.state_entry_action import TransitionID, TransitionAction, DoorID
-from   quex.blackboard          import setup as Setup, \
-                                       E_StateIndices,  E_PreContextIDs,  \
+from   quex.blackboard          import \
+                                       E_PreContextIDs,  \
                                        E_AcceptanceIDs, E_PostContextIDs, \
                                        E_TransitionN
-from   collections              import defaultdict, namedtuple
 from   operator                 import attrgetter
-from   itertools                import ifilter, combinations, islice
 
 class Entry(object):
     """An entry has potentially the following tasks:
@@ -362,7 +360,7 @@ class Entry(object):
                 elif isinstance(action, entry_action.SetTemplateStateKey):
                     ssk_command_list.append(action)
                 elif isinstance(action, entry_action.SetPathIterator):
-                    spu_command_list.append(action)
+                    spi_command_list.append(action)
                 else:
                     store_command_list.append(action)
 
