@@ -20,5 +20,5 @@
 ---
 > EasyLexer.c: simple.qx $(QUEX_CORE)
 ---
-> 		 --language         C          
+> 		 --language         C
 > 		 --language         C          \

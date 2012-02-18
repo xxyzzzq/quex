@@ -22,14 +22,11 @@ drop_out behaviors of a state can be derived, as done by module 'core.py'.
 (C) 2010-2011 Frank-Rene Schaefer
 ABSOLUTELY NO WARRANTY
 """
-from   quex.blackboard              import E_StateIndices, E_PostContextIDs, E_AcceptanceIDs, E_PreContextIDs, E_TransitionN
+from   quex.blackboard              import E_AcceptanceIDs, E_PreContextIDs, E_TransitionN
 from   quex.engine.misc.tree_walker import TreeWalker
 
-from   operator    import attrgetter
-from   itertools   import ifilter, chain, islice, izip
-from   collections import defaultdict
+from   itertools   import chain, izip
 from   copy        import copy
-import sys
 
 def do(SM):
     """RETURNS: [0] Acceptance trace database:

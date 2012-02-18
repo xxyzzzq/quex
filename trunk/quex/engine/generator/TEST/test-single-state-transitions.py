@@ -25,9 +25,9 @@ from   quex.engine.state_machine.core          import State, StateMachine
 import quex.engine.state_machine.index         as index
 from   quex.engine.analyzer.state_entry_action import DoorID
 
-import quex.engine.generator.languages.core               as languages
-import quex.engine.generator.languages.address            as address
-import quex.engine.generator.state.transition.core  as transition_block
+import quex.engine.generator.languages.core        as languages
+import quex.engine.generator.languages.address     as address
+import quex.engine.generator.state.transition.core as transition_block
 
 from   quex.blackboard import E_EngineTypes
 
@@ -96,8 +96,8 @@ elif "C" in sys.argv:
                 interval_start += 1 + int(random.random() * 2)
 
 states = []
-for state_index in set(target_state_index_list):
-    door_id = DoorID(state_index, StateIndex)
+for state_index in sorted(list(set(target_state_index_list))):
+    door_id = DoorID(state_index, None)
     states.append("%s: return (int)%i;\n" % (address.get_label("$entry", door_id), state_index))
     # increment the state index counter, so that the drop-out and reload labels 
     # get an appropriate label.
@@ -110,7 +110,7 @@ drop_out = "%s: return (int)-1;\n" % address.get_label("$drop-out", -1)
 states.insert(0, drop_out)
 
 # One for the 'terminal'
-__label_db["$entry"](DoorID(index.get(), StateIndex))
+__label_db["$entry"](DoorID(index.get(), None))
 
 function  = [ 
     "#define __quex_debug_state(X) /* empty */\n",

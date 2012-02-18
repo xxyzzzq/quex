@@ -1,16 +1,11 @@
-from   quex.engine.analyzer.core                import AnalyzerState
 from   quex.engine.analyzer.state_entry_action  import SetPathIterator, DoorID
 from   quex.engine.analyzer.mega_state          import MegaState
 from   quex.engine.state_machine.transition_map import TransitionMap
-import quex.engine.state_machine.index          as     index
 from   quex.blackboard                          import \
                                                        E_EngineTypes, \
                                                        E_InputActions, \
                                                        E_Compression, \
                                                        E_StateIndices
-
-from itertools import imap
-from operator  import itemgetter
 
 class PathWalkerState(MegaState):
     """A path walker state is a state that can walk along one or more paths 
@@ -164,6 +159,7 @@ class PathWalkerState(MegaState):
         # Determine DoorID by transition
         door_id = self.entry.get_door_id(StateIndex     = terminal_state_index, 
                                          FromStateIndex = before_terminal_state_index)
+        assert False, "Should return door_id --was this function ever used"
 
     def uniform_terminal_entry_door_id(self):
         """RETURNS: DoorID -- if all paths which are involved enter the same 

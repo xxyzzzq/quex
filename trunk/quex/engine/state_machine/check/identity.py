@@ -4,7 +4,7 @@ from quex.engine.state_machine.core import StateMachine
 
 class Checker:
     def __init__(self, SM0, SM1):
-        """Checks wether the set of patterns matched by SM0 is identical to the
+        """Checks whether the set of patterns matched by SM0 is identical to the
            set of patterns matched by SM1.
 
            RETURNS: 'True'  if so,

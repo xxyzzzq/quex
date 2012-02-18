@@ -374,7 +374,7 @@ def read_until_closing_bracket(fh, Opener, Closer,
     cache = ["\0"] * CacheSz
 
     def match_against_cache(Delimiter):
-        """Determine wether the string 'Delimiter' is flood into the cache or not."""
+        """Determine whether the string 'Delimiter' is flood into the cache or not."""
         assert len(Delimiter) <= len(cache), \
                "error: read_until_closing_bracket() cache smaller than delimiter"
 

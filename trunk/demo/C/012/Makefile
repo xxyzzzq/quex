@@ -42,7 +42,7 @@ boeck_Lexer.c: boeck.qx
 	quex -i token.qx $< -o boeck::Lexer --codec utf8 \
 		 --token-prefix TKN_ --token-policy single   \
 		 --language C                                \
-		 --no-warning-on-no-token-queue --debug-exception
+		 --no-warning-on-no-token-queue
 
 clean:
 	rm -rf boeck_Lexer*

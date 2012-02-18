@@ -1,5 +1,4 @@
-from quex.blackboard import E_TransitionN, E_AcceptanceIDs
-from itertools   import ifilter, islice
+from quex.blackboard import E_TransitionN
 from collections import defaultdict
 
 def do(analyzer):

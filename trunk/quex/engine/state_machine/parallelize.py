@@ -7,7 +7,7 @@ import quex.engine.state_machine.index as index
 def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):
     """Connect state machines paralell.
 
-       CommonTerminalStateF tells wether the state machines shall trigger 
+       CommonTerminalStateF tells whether the state machines shall trigger 
                             to a common terminal. This may help nfa-to-dfa
                             or hopcroft minimization for ISOLATED patterns.
 

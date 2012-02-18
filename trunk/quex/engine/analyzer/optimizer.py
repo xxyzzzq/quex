@@ -31,9 +31,6 @@
          state' must cause 'skip-failure' on drop-out.
 
 """
-from   quex.blackboard import E_EngineTypes, E_AcceptanceIDs
-from   itertools       import imap
-
 def do(analyzer):
 
     # (*) Use information about position storage registers that can be shared.

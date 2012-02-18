@@ -5,7 +5,7 @@ import quex.engine.state_machine.index         as     index
 
 from quex.engine.interval_handling import NumberSet
 
-from itertools   import ifilter, islice
+from itertools   import ifilter
 from operator    import itemgetter
 from collections import defaultdict
 

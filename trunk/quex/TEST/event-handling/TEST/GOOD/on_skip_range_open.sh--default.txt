@@ -15,5 +15,5 @@
 | [START]
 
 Lexical analyzer mode 'X':
-End of file occured before closing skip range delimiter!
+End of file occurred before closing skip range delimiter!
 The 'on_skip_range_open' handler has not been specified.

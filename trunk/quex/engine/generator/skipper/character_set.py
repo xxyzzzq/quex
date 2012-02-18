@@ -5,7 +5,6 @@ from   quex.engine.generator.languages.address      import get_label, get_addres
 import quex.engine.generator.languages.variable_db  as     variable_db
 from   quex.engine.generator.skipper.common         import line_column_counter_in_loop
 from   quex.engine.state_machine.transition_map     import TransitionMap 
-from   quex.engine.analyzer.state_entry_action      import DoorID
 from   quex.blackboard                              import E_EngineTypes, E_StateIndices, setup as Setup
 from   quex.engine.misc.string_handling             import blue_print
 

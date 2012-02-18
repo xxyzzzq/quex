@@ -61,7 +61,7 @@ def __recursion_contains_critical_character(state_machine, Path, TargetStateIdx,
                          path does not contain the critical character and 
                          therefore is not dangerous.
 
-       NOTE: This function is required to judge wether a recursion occurs
+       NOTE: This function is required to judge whether a recursion occurs
              that effects the number of characters to be counted. If so,
              then the recursion signifies that the number of characters
              to be matched cannot be determined directly from the state machine.
