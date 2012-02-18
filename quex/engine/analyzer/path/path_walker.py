@@ -30,12 +30,7 @@ class PathWalkerState(MegaState):
         }[TheAnalyzer.engine_type]
 
         self.__uniformity_required_f = (CompressionType == E_Compression.PATH_UNIFORM)
-        if not self.__uniformity_required_f:
-            # If uniformity is not a required, then there's no need to compute the
-            # uniform entry along path of any character path.
-            self.__uniform_entry_command_list_along_path = None 
-        else:
-            self.__uniform_entry_command_list_along_path = FirstPath.get_uniform_entry_command_list_along_path()
+        self.__uniform_entry_command_list_along_path = FirstPath.get_uniform_entry_command_list_along_path()
 
         self.__state_index_list     = None # Computed on demand
         self.__end_state_index_list = None # Computed on demand
@@ -57,6 +52,18 @@ class PathWalkerState(MegaState):
             return False
 
         # (1b) If uniformity is required and not maintained, then refuse.
+        # (*) Check Entry Uniformity
+        if self.__uniform_entry_command_list_along_path is None:
+            uniform_entry_f = False
+        else:
+            uniform_entry = Path.get_uniform_entry_command_list_along_path()
+            if uniform_entry is None:
+                uniform_entry_f = False
+            elif not uniform_entry.is_equivalent(self.__uniform_entry_command_list_along_path):
+                uniform_entry_f = False
+            else:
+                uniform_entry_f = True
+
         if self.__uniformity_required_f:
             # If uniformity is required, then a non-uniform entry should never been
             # accepted. Thus, there **must** be a 'uniform_entry_door_id_along_all_paths'.
@@ -66,14 +73,12 @@ class PathWalkerState(MegaState):
             assert len(Path.drop_out) == 1 
 
             # (*) Check Entry Uniformity
-            uniform_entry = Path.get_uniform_entry_command_list_along_path()
-            if uniform_entry is None:
-                return False
-            elif not uniform_entry.is_equivalent(self.__uniform_entry_command_list_along_path):
-                return False
+            if   not uniform_entry_f:            return False
             # (*) Check Drop-Out Uniformity
-            elif self.drop_out != Path.drop_out: 
-                return False
+            elif self.drop_out != Path.drop_out: return False
+
+        if uniform_entry_f == False:
+            self.__uniform_entry_command_list_along_path = None
 
         # (2)  Absorb the Path
         #      The path_id of the path to be added is the length of the current path list.
@@ -142,8 +147,9 @@ class PathWalkerState(MegaState):
         if self.__uniform_entry_command_list_along_path is None: return None
         # Assume that the door tree is configured correctly
         # => Then, looking for one door_id is enough.
-        from_index = path[0][0]
-        to_index   = path[1][0]
+        sequence   = self.__path_list[0]
+        from_index = sequence[0][0]
+        to_index   = sequence[1][0]
         return self.entry.get_door_id(to_index, from_index)
 
     def terminal_door_id_of_path(self, PathID):
@@ -157,9 +163,8 @@ class PathWalkerState(MegaState):
         before_terminal_state_index = sequence[-2][0]
         terminal_state_index        = sequence[-1][0]
         # Determine DoorID by transition
-        door_id = self.entry.get_door_id(StateIndex     = terminal_state_index, 
-                                         FromStateIndex = before_terminal_state_index)
-        assert False, "Should return door_id --was this function ever used"
+        return self.entry.get_door_id(StateIndex     = terminal_state_index, 
+                                      FromStateIndex = before_terminal_state_index)
 
     def uniform_terminal_entry_door_id(self):
         """RETURNS: DoorID -- if all paths which are involved enter the same 
