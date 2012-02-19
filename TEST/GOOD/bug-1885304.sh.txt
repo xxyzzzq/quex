@@ -908,14 +908,16 @@ INIT_STATE_TRANSITION_BLOCK:
     goto _193; /* TERMINAL_FAILURE */
 
 
-_160:
+_160: /* (160 from NONE) */
+
 
     ++(me->buffer._input_p);
     goto INIT_STATE_TRANSITION_BLOCK;
 
 
     __quex_assert_no_passage();
-_166:
+_166: /* (166 from 166) (166 from 162) (166 from 160) (166 from 174) (166 from 173) (166 from 172) (166 from 171) (166 from 170) (166 from 169) (166 from 168) (166 from 182) (166 from 181) (166 from 180) (166 from 179) (166 from 178) (166 from 177) (166 from 176) (166 from 175) (166 from 190) (166 from 189) (166 from 188) (166 from 187) (166 from 186) (166 from 185) (166 from 184) (166 from 183) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(166);
@@ -982,7 +984,8 @@ _194:
 
 
     __quex_assert_no_passage();
-_161:
+_161: /* (161 from 161) (161 from 160) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(161);
@@ -1000,7 +1003,8 @@ _195:
 
 
     __quex_assert_no_passage();
-_164:
+_164: /* (164 from 164) (164 from 160) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(164);
@@ -1024,7 +1028,8 @@ _196:
 
 
     __quex_assert_no_passage();
-_162:
+_162: /* (162 from 160) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(162);
@@ -1093,28 +1098,32 @@ _197:
 
 
     __quex_assert_no_passage();
-_163:
+_163: /* (163 from 160) */
+
     ++(me->buffer._input_p);
     __quex_debug_state(163);
     goto TERMINAL_20;
 
 
     __quex_assert_no_passage();
-_165:
+_165: /* (165 from 160) */
+
     ++(me->buffer._input_p);
     __quex_debug_state(165);
     goto TERMINAL_16;
 
 
     __quex_assert_no_passage();
-_167:
+_167: /* (167 from 160) */
+
     ++(me->buffer._input_p);
     __quex_debug_state(167);
     goto TERMINAL_18;
 
 
     __quex_assert_no_passage();
-_168:
+_168: /* (168 from 160) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(168);
@@ -1183,7 +1192,8 @@ _201:
 
 
     __quex_assert_no_passage();
-_169:
+_169: /* (169 from 160) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(169);
@@ -1254,7 +1264,8 @@ _202:
 
 
     __quex_assert_no_passage();
-_170:
+_170: /* (170 from 160) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(170);
@@ -1323,7 +1334,8 @@ _203:
 
 
     __quex_assert_no_passage();
-_171:
+_171: /* (171 from 170) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(171);
@@ -1392,7 +1404,8 @@ _204:
 
 
     __quex_assert_no_passage();
-_172:
+_172: /* (172 from 171) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(172);
@@ -1461,7 +1474,8 @@ _205:
 
 
     __quex_assert_no_passage();
-_173:
+_173: /* (173 from 172) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(173);
@@ -1530,7 +1544,8 @@ _206:
 
 
     __quex_assert_no_passage();
-_174:
+_174: /* (174 from 173) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(174);
@@ -1599,7 +1614,8 @@ _207:
 
 
     __quex_assert_no_passage();
-_175:
+_175: /* (175 from 174) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(175);
@@ -1666,7 +1682,8 @@ _208:
 
 
     __quex_assert_no_passage();
-_176:
+_176: /* (176 from 169) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(176);
@@ -1735,7 +1752,8 @@ _209:
 
 
     __quex_assert_no_passage();
-_177:
+_177: /* (177 from 169) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(177);
@@ -1804,7 +1822,8 @@ _210:
 
 
     __quex_assert_no_passage();
-_178:
+_178: /* (178 from 177) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(178);
@@ -1873,7 +1892,8 @@ _211:
 
 
     __quex_assert_no_passage();
-_179:
+_179: /* (179 from 178) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(179);
@@ -1940,7 +1960,8 @@ _212:
 
 
     __quex_assert_no_passage();
-_180:
+_180: /* (180 from 176) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(180);
@@ -2009,7 +2030,8 @@ _213:
 
 
     __quex_assert_no_passage();
-_181:
+_181: /* (181 from 180) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(181);
@@ -2078,7 +2100,8 @@ _214:
 
 
     __quex_assert_no_passage();
-_182:
+_182: /* (182 from 181) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(182);
@@ -2147,7 +2170,8 @@ _215:
 
 
     __quex_assert_no_passage();
-_183:
+_183: /* (183 from 182) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(183);
@@ -2214,7 +2238,8 @@ _216:
 
 
     __quex_assert_no_passage();
-_184:
+_184: /* (184 from 168) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(184);
@@ -2283,7 +2308,8 @@ _217:
 
 
     __quex_assert_no_passage();
-_185:
+_185: /* (185 from 184) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(185);
@@ -2352,7 +2378,8 @@ _218:
 
 
     __quex_assert_no_passage();
-_186:
+_186: /* (186 from 185) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(186);
@@ -2421,7 +2448,8 @@ _219:
 
 
     __quex_assert_no_passage();
-_187:
+_187: /* (187 from 186) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(187);
@@ -2490,7 +2518,8 @@ _220:
 
 
     __quex_assert_no_passage();
-_188:
+_188: /* (188 from 187) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(188);
@@ -2557,7 +2586,8 @@ _221:
 
 
     __quex_assert_no_passage();
-_189:
+_189: /* (189 from 162) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(189);
@@ -2626,7 +2656,8 @@ _222:
 
 
     __quex_assert_no_passage();
-_190:
+_190: /* (190 from 189) */
+
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     __quex_debug_state(190);
@@ -2745,7 +2776,7 @@ TERMINAL_6:
 self_send(QUEX_TKN_STRUCT);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2068 "Simple.cpp"
+#   line 2099 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2766,7 +2797,7 @@ TERMINAL_8:
 self_send(QUEX_TKN_TYPE_INT);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2089 "Simple.cpp"
+#   line 2120 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2787,7 +2818,7 @@ TERMINAL_10:
 self_send(QUEX_TKN_TYPE_DOUBLE);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2110 "Simple.cpp"
+#   line 2141 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2808,7 +2839,7 @@ TERMINAL_12:
 self_send(QUEX_TKN_SEND);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2131 "Simple.cpp"
+#   line 2162 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2829,7 +2860,7 @@ TERMINAL_14:
 self_send(QUEX_TKN_EXPECT);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2152 "Simple.cpp"
+#   line 2183 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2850,7 +2881,7 @@ TERMINAL_16:
 self_send(QUEX_TKN_SEMICOLON);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2173 "Simple.cpp"
+#   line 2204 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2871,7 +2902,7 @@ TERMINAL_18:
 self_send(QUEX_TKN_BRACKET_OPEN);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2194 "Simple.cpp"
+#   line 2225 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2892,7 +2923,7 @@ TERMINAL_20:
 self_send(QUEX_TKN_BRACKET_CLOSE);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2215 "Simple.cpp"
+#   line 2246 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2915,7 +2946,7 @@ self_write_token_p()->number = atoi((char*)(Lexeme));
 self_send(QUEX_TKN_NUMBER);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2238 "Simple.cpp"
+#   line 2269 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2936,7 +2967,7 @@ TERMINAL_30:
 #   line 28 "dos_lf_2.qx"
  self_send1(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; 
 
-#   line 2259 "Simple.cpp"
+#   line 2290 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2953,7 +2984,7 @@ _191: /* TERMINAL: END_OF_STREAM */
 #   line 16 "dos_lf_2.qx"
 self_send(QUEX_TKN_TERMINATION);
 
-#   line 2276 "Simple.cpp"
+#   line 2307 "Simple.cpp"
 
     }
     /* End of Stream causes a return from the lexical analyzer, so that no
@@ -3025,7 +3056,7 @@ __REENTRY_PREPARATION:
      *               }
      *
      *  When the analyzer returns, the caller function has to watch if a mode change
-     *  occured. If not it can call this function again.                               */
+     *  occurred. If not it can call this function again.                               */
     if( me->DEBUG_analyzer_function_at_entry != me->current_analyzer_function ) 
 #   endif
     { 
@@ -3049,7 +3080,7 @@ __RELOAD_FORWARD:
         __quex_debug_reload_after();
         QUEX_GOTO_STATE(target_state_index);
     }
-    __quex_debug("reload impossible");
+    __quex_debug("reload impossible\n");
     QUEX_GOTO_STATE(target_state_else_index);
 #   ifndef QUEX_OPTION_COMPUTED_GOTOS
     __quex_assert_no_passage();
