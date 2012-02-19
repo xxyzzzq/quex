@@ -31,6 +31,7 @@ class PathWalkerState(MegaState):
 
         self.__uniformity_required_f = (CompressionType == E_Compression.PATH_UNIFORM)
         self.__uniform_entry_command_list_along_path = FirstPath.get_uniform_entry_command_list_along_path()
+        print "##ucl-init:", self.__uniform_entry_command_list_along_path
 
         self.__state_index_list     = None # Computed on demand
         self.__end_state_index_list = None # Computed on demand
@@ -141,6 +142,17 @@ class PathWalkerState(MegaState):
         assert False, "Use: uniform_entry_door_id_along_all_paths"
 
     @property
+    def uniform_entry_command_list_along_all_paths(self):
+        """At any step along the path commands may be executed upon entry
+           into the target state. If those commands are uniform, then this
+           function returns a CommandList object of those uniform commands.
+
+           RETURNS: None, if the commands at entry of the states on the path
+                          are not uniform.
+        """
+        return self.__uniform_entry_command_list_along_path
+
+    @property
     def uniform_entry_door_id_along_all_paths(self):   
         """RETURNS: -- An 'CommandList' object if it is common for all paths.
                     -- None, the entries along the paths are somehow differring.
@@ -148,6 +160,9 @@ class PathWalkerState(MegaState):
         if self.__uniform_entry_command_list_along_path is None: return None
 
         door_id = self.entry.get_door_id_by_command_list(self.__uniform_entry_command_list_along_path)
+
+        print "##dtr:", self.entry.door_tree_root.get_string(self.entry.transition_db)
+        print "##ucl:", self.__uniform_entry_command_list_along_path
         assert door_id is not None, "There MUST be a door for the uniform entry command list."
         return door_id
 
@@ -241,12 +256,16 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
         for path_walker in path_walker_list:
             if path_walker.accept(candidate): break
         else:
+            print "##not:", candidate
             path_walker_list.append(PathWalkerState(candidate, TheAnalyzer, CompressionType))
 
+    print "##pwlist:", len(path_walker_list)
     for path_walker in path_walker_list:
-        if path_walker.uniform_entry_door_id_along_all_paths is not None:
-            # If the path entries are uniform, then the doors on the path do not
+        print "##action_db:", path_walker.entry.action_db.values()
+        if path_walker.uniform_entry_command_list_along_all_paths is not None:
+            # If the path entries are uniform, then the transitions on the path do not
             # need to be implemented.
+            assert False, Hey, but the common commands must still be there!
             path_walker.delete_transitions_on_path()
 
         # Once the entries are combined, re-configure the door tree

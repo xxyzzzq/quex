@@ -1,4 +1,5 @@
 from quex.engine.analyzer.core import AnalyzerState
+from quex.engine.analyzer.path.path_walker import PathWalkerState
 from quex.blackboard import setup as Setup,  \
                             E_EngineTypes
 
@@ -48,13 +49,16 @@ def doit(txt, TheState, Node, LastChildF=False, BIPD_ID=None):
         #                            to go back to Door 0 after reload.
         #                         -- 'Door 0' has more than one child. The second
         #                            child needs to goto 'Door 0'.
+        #                         -- The state is a PathWalkerState which is uniform.
         # Reload is involved if:      The transition map is not empty.
         #                         and Not in Backward Input Position Detection Mode.
-        transition_id_list    = TheState.entry.transition_db.get(Node.door_id)
-        has_transition_f      = (transition_id_list is not None) and len(transition_id_list) != 0
-        has_reload_f          = len(TheState.transition_map) != 0 and BIPD_ID is None
-        has_multiple_childs_f = len(Node.child_list) > 1
-        if has_transition_f or has_reload_f or has_multiple_childs_f:
+        transition_id_list     = TheState.entry.transition_db.get(Node.door_id)
+        has_transition_f       = (transition_id_list is not None) and len(transition_id_list) != 0
+        has_reload_f           = len(TheState.transition_map) != 0 and BIPD_ID is None
+        has_multiple_childs_f  = len(Node.child_list) > 1
+        is_uniform_path_walker_state_f = isinstance(TheState, PathWalkerState) and \
+                                         TheState.uniform_entry_door_id_along_all_paths is not None
+        if has_transition_f or has_reload_f or has_multiple_childs_f or is_uniform_path_walker_state_f:
             txt.append(LanguageDB.LABEL_BY_DOOR_ID(Node.door_id))
 
     comment_door(txt, Node, TheState.entry)

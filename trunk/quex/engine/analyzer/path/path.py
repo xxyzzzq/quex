@@ -190,7 +190,11 @@ class CharacterPath:
                              some commands need to be executed that are 
                              not done for all other transitions on the path.
         """
-        assert len(self.__sequence) >= 2
+        if len(self.__sequence) < 2: 
+            # The 'State' will be the first entry along the path, so it can only 
+            # be uniform. There is simply no other entry.
+            return True
+
         uniform_entry = self.get_uniform_entry_command_list_along_path()
         if uniform_entry is None: # Actually, this could be an assert. This function is only
             return False          # to be executed when building uniform paths.
@@ -207,8 +211,7 @@ class CharacterPath:
             return False            # to be executed when building uniform paths.
 
         drop_out = self.drop_out.iterkeys().next()
-        if drop_out != State.drop_out: return False
-        return True
+        return drop_out == State.drop_out
 
     def match_skeleton(self, TransitionMap, TargetDoorID, TriggerCharToTarget):
         """A single character transition 

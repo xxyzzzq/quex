@@ -7,19 +7,70 @@ from   quex.blackboard          import \
 from   operator                 import attrgetter
 
 class Entry(object):
-    """An entry has potentially the following tasks:
-    
-          (1) Storing information about positioning represented by objects 
-              of type 'entry_action.StoreInputPosition'.
-
-          (2) Storing information about an acceptance. represented by objects
-              of type 'entry_action.StoreInputPosition'.
+    """An Entry object stores commands to be executed at entry into a state.
               
-       Entry actions are relative from which state it is entered. Thus, an 
-       object of this class contains a dictionary that maps:
+       BASICS _________________________________________________________________
 
-                 from_state_index  --> list of entry actions
+       Entry actions are relative from which state it is entered. Thus there
+       is something like a mapping 
 
+                 from_state_index  --> list of commands
+
+       A MegaState implements multiple (normal) states in once. Thus, the list
+       of commands need to be associated with a transition (state_index,
+       from_state_index) where the 'state_index' is one of the states that it
+       implements. This association happens in the 'action_db'
+
+           action_db:    (state_index, from_state_index) --> commands
+
+       precisely in terms of classes:
+
+           action_db:    TransitionID --> TransitionAction
+
+       where a TransitionID stores a pair of (StateIndex, FromStateIndex) and
+       a TransitionAction stores a transition id along with a CommandList of
+       commands that are executed for the given transition.
+
+       DOOR TREE ______________________________________________________________
+
+       For code generation, the TransitionActions are organized more efficiently.
+       Many transitions may share some commands, so that they could actually enter
+       the state through the same or similar doors. Example:
+
+           (4, from 1) --> accept 4711; store input position;
+           (4, from 2) --> accept 4711; 
+           (4, from 2) --> nothing;
+
+       Then, the entry could look like this:
+
+           Door2: store input position; 
+                  goto Door1;
+           Door1: accept 4711; 
+                  goto Door0;
+           Door0: /* nothing */
+
+           ... the transition map ...
+
+       This configuration is done in function 'door_tree_configure()'. As a result
+       the following mappings are available:
+
+           transition_db:  DoorID --> list of TransitionID
+
+                           Tells for every door what transitions it implements.
+
+           door_db:        TransitionID --> DoorID
+
+                           Tells for every transition what door implements a given 
+                           transition.
+
+           door_tree_root: The hierarchically organized tree of doors as shown in
+                           the example above.
+
+        BRIEF REMARK: _________________________________________________________
+
+        Before '.door_tree_configure()' is called no assumptions about doors
+        can be made. Then, only information about what transition causes what
+        action can be provided.
     """
     __slots__ = ("__state_index", "__uniform_doors_f", "__action_db", "__door_db", "__transition_db", "__door_tree_root")
 
@@ -80,7 +131,7 @@ class Entry(object):
 
     @property
     def transition_db(self):
-        """Map:  door_id --> transition_id 
+        """Map:  door_id --> transition_id list
            The door_db is determined by 'categorize_command_lists()'
         """
         assert self.__transition_db is not None
@@ -163,6 +214,8 @@ class Entry(object):
         """Finds the DoorID of the door that implements TheCommandList.
            RETURNS: None if no such door exists that implements TheCommandList.
         """
+        assert self.__door_tree_root is not None, "door_tree_configure() has not yet been called!"
+
         if TheCommandList.is_empty():
             return DoorID(self.__state_index, 0) # 'Door 0' is sure to not do anything!
 
@@ -171,6 +224,7 @@ class Entry(object):
                 break
         else:
             return None
+
         return self.entry.door_db.get(transition_id) # Returns 'None' on missing transition_id
 
     def door_find(self, DoorId):

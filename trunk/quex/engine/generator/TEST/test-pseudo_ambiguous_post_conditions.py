@@ -1,7 +1,15 @@
 #! /usr/bin/env python
 import generator_test
+import sys
 
-choice = generator_test.hwut_input("Pseudo Ambgiguous Post Condition: Part I", "SAME;")
+if "--hwut-info" in sys.argv:
+    print "Pseudo Ambgiguous Post Condition: Part I"
+    print "CHOICES: ANSI-C-PlainMemory, ANSI-C, ANSI-C-CG, Cpp, Cpp_StrangeStream, Cpp-Template, Cpp-Template-CG, Cpp-Path, Cpp-Path-CG, ANSI-C-PathTemplate;" 
+    print "SAME;"
+    sys.exit(0)
+
+choice = sys.argv[1]
+
 
 pattern_list = [
     # -- pre-conditioned expressions need to preceed same (non-preoconditioned) expressions,

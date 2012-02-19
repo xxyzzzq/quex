@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.53" date="Sat Feb 18 01:06:32 2012">
+<test-database execution-time-sec="0.53" date="Sun Feb 19 00:16:07 2012">
     <last-used-diff-display-program name=""/>
     <test title="Enums -- Functionality Test" time-sum-sec="0.04"> 
         <application file-name="enum.py" info-request-time="1318614209L" vanished="False"/>
@@ -13,21 +13,21 @@
                <choice name="" result="OK" time_sec="0.05" crc="1489533151"/>
             </choice-list>
         </test>
-        <test title="Function delete_comment(...)" time-sum-sec="0.06"> 
+        <test title="Function delete_comment(...)" time-sum-sec="0.05"> 
             <application file-name="test-delete_comment.py" info-request-time="1318614209L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.06" crc="1761513741"/>
+               <choice name="" result="OK" time_sec="0.05" crc="1761513741"/>
             </choice-list>
         </test>
-        <test title="Function extract_identifiers_with_specific_prefix(...)" time-sum-sec="0.06"> 
+        <test title="Function extract_identifiers_with_specific_prefix(...)" time-sum-sec="0.05"> 
             <application file-name="test-extract_identifiers_with_specific_prefix.py" info-request-time="1318614209L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.06" crc="-957083127"/>
+               <choice name="" result="OK" time_sec="0.05" crc="-957083127"/>
             </choice-list>
         </test>
     </group>
     <group name="Integer conversion">
-        <test title="read_integer(...)" time-sum-sec="0.28"> 
+        <test title="read_integer(...)" time-sum-sec="0.30"> 
             <application file-name="test-read_integer.py" info-request-time="1318614209L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="hex" result="OK" time_sec="0.05" crc="952788026"/>

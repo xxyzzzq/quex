@@ -112,6 +112,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
 
     CompileOptionStr = ""
     computed_goto_f  = False
+    FullLanguage     = Language
     if Language.find("StrangeStream") != -1:
         CompileOptionStr += " -DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION "
 
@@ -178,6 +179,9 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
                   + state_machine_code \
                   + test_program
 
+    # Verify, that Templates and Pathwalkers are really generated
+    __verify_code_generation(FullLanguage, source_code)
+
     compile_and_run(Language, source_code, AssertsActionvation_str, CompileOptionStr)
 
 def run_this(Str):
@@ -229,6 +233,7 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str="", StrangeStr
         compiler  = "g++ -Wall"
 
     fd, filename_tmp = mkstemp(extension, "tmp-", dir=os.getcwd())
+
     os.write(fd, SourceCode) 
     os.close(fd)    
     
@@ -718,5 +723,31 @@ test_program_db = {
         return run_test("$$TEST_STRING$$", "$$COMMENT$$", &lexer_state);
     }\n""",
 }
+
+
+def __verify_code_generation(FullLanguage, SourceCode):
+    def check_occurence(String, Code):
+        count_n = 0
+        for line in Code.split("\n"):
+            if line.find(String) != -1:
+               count_n += 1
+               if count_n == 2: return True
+        return False
+
+    if FullLanguage.find("Path") != -1:
+        # Check whether paths have been defined
+        if check_occurence("path_base", SourceCode)  == False:
+            print "ERROR: Option '%s' requires paths to be generated. None is." % FullLanguage
+            sys.exit()
+        else:
+            print "##verified path:", FullLanguage
+
+    elif FullLanguage.find("Template") != -1:
+        # Check whether paths have been defined
+        if check_occurence("template_", SourceCode) == False: 
+            print "ERROR: Option '%s' requires templates to be generated. None is." % FullLanguage
+            sys.exit()
+        else:
+            print "##verified template:", FullLanguage
 
 
