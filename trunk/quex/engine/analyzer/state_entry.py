@@ -225,7 +225,7 @@ class Entry(object):
         else:
             return None
 
-        return self.entry.door_db.get(transition_id) # Returns 'None' on missing transition_id
+        return self.door_db.get(transition_id) # Returns 'None' on missing transition_id
 
     def door_find(self, DoorId):
         """Find the Door object that belongs to DoorId"""

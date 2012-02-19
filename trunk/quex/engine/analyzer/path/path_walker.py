@@ -1,4 +1,4 @@
-from   quex.engine.analyzer.state_entry_action  import SetPathIterator, DoorID
+from   quex.engine.analyzer.state_entry_action  import SetPathIterator, DoorID, TransitionID, TransitionAction
 from   quex.engine.analyzer.mega_state          import MegaState
 from   quex.engine.state_machine.transition_map import TransitionMap
 from   quex.blackboard                          import \
@@ -31,7 +31,6 @@ class PathWalkerState(MegaState):
 
         self.__uniformity_required_f = (CompressionType == E_Compression.PATH_UNIFORM)
         self.__uniform_entry_command_list_along_path = FirstPath.get_uniform_entry_command_list_along_path()
-        print "##ucl-init:", self.__uniform_entry_command_list_along_path
 
         self.__state_index_list     = None # Computed on demand
         self.__end_state_index_list = None # Computed on demand
@@ -161,8 +160,6 @@ class PathWalkerState(MegaState):
 
         door_id = self.entry.get_door_id_by_command_list(self.__uniform_entry_command_list_along_path)
 
-        print "##dtr:", self.entry.door_tree_root.get_string(self.entry.transition_db)
-        print "##ucl:", self.__uniform_entry_command_list_along_path
         assert door_id is not None, "There MUST be a door for the uniform entry command list."
         return door_id
 
@@ -256,17 +253,20 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
         for path_walker in path_walker_list:
             if path_walker.accept(candidate): break
         else:
-            print "##not:", candidate
             path_walker_list.append(PathWalkerState(candidate, TheAnalyzer, CompressionType))
 
-    print "##pwlist:", len(path_walker_list)
     for path_walker in path_walker_list:
-        print "##action_db:", path_walker.entry.action_db.values()
         if path_walker.uniform_entry_command_list_along_all_paths is not None:
-            # If the path entries are uniform, then the transitions on the path do not
-            # need to be implemented.
-            assert False, Hey, but the common commands must still be there!
+            # Assign the uniform command list to the transition 'path_walker -> path_walker'
+            transition_action = TransitionAction(path_walker.index, path_walker.index, path_walker.uniform_entry_command_list_along_all_paths)
+            # Delete transitions on the path itself => No doors for them will be implemented.
             path_walker.delete_transitions_on_path()
+        else:
+            # Nothing special to be done upon iteration over the path
+            transition_action = TransitionAction(path_walker.index, path_walker.index)
+
+        transition_id = TransitionID(path_walker.index, path_walker.index)
+        path_walker.entry.action_db[transition_id] = transition_action
 
         # Once the entries are combined, re-configure the door tree
         path_walker.entry.door_tree_configure(path_walker.index)

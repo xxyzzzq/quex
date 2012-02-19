@@ -127,11 +127,11 @@ def do(txt, PWState, TheAnalyzer):
     return
 
 def __path_walker(txt, PWState, TheAnalyzer):
-    uniform_entry_door_id          = PWState.uniform_entry_door_id_along_all_paths
-    uniform_terminal_entry_door_id = PWState.uniform_terminal_entry_door_id
+
     # Three Versions of PathWalkers:
-    # 
-    if uniform_entry_door_id is not None:
+    if PWState.uniform_entry_command_list_along_all_paths is not None:
+        uniform_entry_door_id          = PWState.entry.get_door_id(PWState.index, PWState.index)
+        uniform_terminal_entry_door_id = PWState.uniform_terminal_entry_door_id
         if uniform_terminal_entry_door_id is not None:
             # (1) -- Uniform entries (ALONG THE PATH)
             #     -- All path have same terminal state and enter it at the same door

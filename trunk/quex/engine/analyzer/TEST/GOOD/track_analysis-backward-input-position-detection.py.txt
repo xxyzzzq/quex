@@ -22,7 +22,7 @@ State 1:
 
 State 2:
   .entry:
-    Terminated
+    .from 1:
   .drop_out:
 <backward input position detected>
 
