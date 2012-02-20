@@ -28,7 +28,7 @@ def get_TemplateState(analyzer, StateIndexList):
                                analyzer)
     return result
 
-def test(TriggerMapA, StateN_A, TriggerMapB, StateN_B):
+def test(TriggerMapA, StateN_A, TriggerMapB, StateN_B, DrawF=True):
     state_setup = []
     StateListA = [ long(i) for i in xrange(StateN_A) ]
     StateListB = [ long(i) for i in xrange(StateN_A, StateN_A + StateN_B) ]
@@ -51,22 +51,29 @@ def test(TriggerMapA, StateN_A, TriggerMapB, StateN_B):
     print "(Straight)---------------------------------------"
     print
     print "States: %s" % StateListA
-    print_tm(state_a.transition_map)
+    print_tm(state_a.transition_map, StateListA)
     print "States: %s" % StateListB
-    print_tm(state_b.transition_map)
+    print_tm(state_b.transition_map, StateListB)
     print
     result = TemplateState(state_a, state_b, analyzer)
-    print_tm(result.transition_map)
+    if DrawF:
+        print "DoorTree(A|B):"
+        print "    " + result.entry.door_tree_root.get_string(result.entry.transition_db).replace("\n", "\n    ")
+    print "Result"
+    print_tm(result.transition_map, result.state_index_list)
     print
     print "(Vice Versa)-------------------------------------"
     print
     print "States: %s" % StateListB
-    print_tm(state_b.transition_map)
+    print_tm(state_b.transition_map, StateListA)
     print "States: %s" % StateListA
-    print_tm(state_a.transition_map)
+    print_tm(state_a.transition_map, StateListB)
     print
+    if DrawF:
+        print "DoorTree(A|B):"
+        print "    " + result.entry.door_tree_root.get_string(result.entry.transition_db).replace("\n", "\n    ")
     result = TemplateState(state_b, state_a, analyzer)
-    print_tm(result.transition_map)
+    print_tm(result.transition_map, result.state_index_list)
     print
 
 tm0 = [ 
@@ -81,7 +88,7 @@ if "1" in sys.argv:
             (Interval(20, 30),          (100L, 200L, 300L)),
             (Interval(30, sys.maxint),  (100L, 100L, 100L)),
           ]
-    test(tm0, 3, tm1, 3)
+    test(tm0, 3, tm1, 3, False)
 
 elif "2" in sys.argv:
     tm1 = [ 
@@ -90,12 +97,12 @@ elif "2" in sys.argv:
             (Interval(20, 30),          (300L, 400L, 500L)),
             (Interval(30, sys.maxint),  (200L, 100L, 100L)),
           ]
-    test(tm0, 3, tm1, 3)
+    test(tm0, 3, tm1, 3, False)
 
 elif "recursive" in sys.argv:
     tm1 = [ 
-            # Recursion in states 0, 1, 2
-            (Interval(-sys.maxint, sys.maxint), (0L, 1L, 2L)),  
+            # Recursion in states 3, 4, 5
+            (Interval(-sys.maxint, sys.maxint), (3L, 4L, 5L)),  
           ]
     test(tm0, 3, tm1, 3)
 

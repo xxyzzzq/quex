@@ -15,17 +15,17 @@ if "--hwut-info" in sys.argv:
     sys.exit(0)
 
 def core(StateA, TMa, StateB, TMb, analyzer, DrawF):
-    print_tm(TMa)
-    print_tm(TMb)
+    print "StateA"
+    print_tm(TMa, [StateA.index])
+    print "StateB"
+    print_tm(TMb, [StateB.index])
     print
     result = TemplateState(StateA, StateB, analyzer)
     if DrawF:
         print "DoorTree(A|B):"
         print "    " + result.entry.door_tree_root.get_string(result.entry.transition_db).replace("\n", "\n    ")
-        print "TransitionMap:"
-        for interval, target in result.transition_map:
-            interval_str = repr(interval).replace("%i" % sys.maxint, "oo").replace("%i" % (sys.maxint-1), "oo")
-            print "   ", interval_str, target
+    print "Result"
+    print_tm(result.transition_map, result.state_index_list)
     print_metric(result.transition_map)
     print
 

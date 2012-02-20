@@ -1,6 +1,6 @@
-<test-database execution-time-sec="174.95" date="Sun Feb 19 00:04:50 2012">
+<test-database execution-time-sec="174.92" date="Mon Feb 20 22:52:21 2012">
     <last-used-diff-display-program name=""/>
-    <test title="Makefile Differences to C++ Version" time-sum-sec="0.33"> 
+    <test title="Makefile Differences to C++ Version" time-sum-sec="0.31"> 
         <application file-name="makefile-diff.sh" info-request-time="1318614211L" vanished="False"/>
         <choice-list number="12" same_result="False">
            <choice name="000" result="OK" time_sec="0.07" crc="2125664829"/>
@@ -104,7 +104,7 @@
         </test>
     </group>
     <group name="demo/007">
-        <test title="Miscellaneous Features" time-sum-sec="4.01"> 
+        <test title="Miscellaneous Features" time-sum-sec="4.00"> 
             <application file-name="007.sh" info-request-time="1318614211L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.20" crc="-375962478"/>

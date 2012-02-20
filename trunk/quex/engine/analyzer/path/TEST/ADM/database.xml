@@ -1,4 +1,4 @@
-<test-database execution-time-sec="2.16" date="Sun Feb 19 00:11:41 2012">
+<test-database execution-time-sec="2.20" date="Mon Feb 20 22:52:23 2012">
     <last-used-diff-display-program name=""/>
     <group name="Paths">
         <test title="find_begin" time-sum-sec="0.51"> 
@@ -12,7 +12,7 @@
                <choice name="6" result="OK" time_sec="0.08" crc="-1287995301"/>
             </choice-list>
         </test>
-        <test title="filter_redundant_paths" time-sum-sec="0.57"> 
+        <test title="filter_redundant_paths" time-sum-sec="0.59"> 
             <application file-name="filter_redundant_paths.py" info-request-time="1329601538L" vanished="False"/>
             <choice-list number="8" same_result="False">
                <choice name="0" result="OK" time_sec="0.07" crc="-1231177672"/>
@@ -25,7 +25,7 @@
                <choice name="6" result="OK" time_sec="0.07" crc="-1818699120"/>
             </choice-list>
         </test>
-        <test title="select_longest_intersecting_path" time-sum-sec="0.40"> 
+        <test title="select_longest_intersecting_path" time-sum-sec="0.42"> 
             <application file-name="select_longest_paths.py" info-request-time="1329461074L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="0" result="OK" time_sec="0.07" crc="773714092"/>
@@ -45,7 +45,7 @@
                <choice name="4" result="OK" time_sec="0.07" crc="569151014"/>
             </choice-list>
         </test>
-        <test title="is_difference_single_character" time-sum-sec="0.13"> 
+        <test title="is_difference_single_character" time-sum-sec="0.14"> 
             <application file-name="can_plug_to_equal.py" info-request-time="1318614207L" vanished="False"/>
             <choice-list number="2" same_result="False">
                <choice name="1_interval" result="OK" time_sec="0.07" crc="2146992883"/>

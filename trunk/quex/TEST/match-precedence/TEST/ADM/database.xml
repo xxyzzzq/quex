@@ -1,4 +1,4 @@
-<test-database execution-time-sec="6.04" date="Sun Feb 19 00:09:39 2012">
+<test-database execution-time-sec="6.04" date="Mon Feb 20 22:52:22 2012">
     <last-used-diff-display-program name=""/>
     <test title="Local variables." time-sum-sec="1.53"> 
         <application file-name="local-variables.sh" info-request-time="1318614192L" vanished="False"/>
@@ -6,7 +6,7 @@
            <choice name="" result="OK" time_sec="1.53" crc="1827488403"/>
         </choice-list>
     </test>
-    <test title="PRIORITY-MARK or DELETION on not existing pattern." time-sum-sec="0.81"> 
+    <test title="PRIORITY-MARK or DELETION on not existing pattern." time-sum-sec="0.80"> 
         <application file-name="unvalid-marks.sh" info-request-time="1318614192L" vanished="False"/>
         <choice-list number="4" same_result="False">
            <choice name="PRIORITY-good" result="OK" time_sec="0.24" crc="-84057889"/>

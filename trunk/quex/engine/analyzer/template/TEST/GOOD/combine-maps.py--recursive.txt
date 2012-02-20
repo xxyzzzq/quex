@@ -13,8 +13,13 @@ DoorTree(B):
 
 (Straight)---------------------------------------
 
-|         |                            |    1, 2;
-|                                      |    2;
+StateA
+  [INTERVAL]   [TARGET/STATE [1]]
+  [-oo, 9]     1L
+  [10, oo]     2L
+StateB
+  [INTERVAL]   [TARGET/STATE [2]]
+  [-oo, oo]    2L
 
 DoorTree(A|B):
     [1]: (2<-1) (2<-7777) 
@@ -31,17 +36,23 @@ DoorTree(A|B):
     [0]: 
     parent: [None]
     
-TransitionMap:
-    [-oo, 9] MegaState_Target:(DoorID(s=0, d=2))
-    [10, oo] MegaState_Target:scheme((DoorID(s=0, d=1), DoorID(s=0, d=2)))
-BorderN    = 1
-TargetComb = (0, 0)
+Result
+  [INTERVAL]   [TARGET/STATE [1, 2]]
+  [-oo, 9]     MST:(DoorID(s=0, d=2))
+  [10, oo]     MST:scheme((DoorID(s=0, d=1), DoorID(s=0, d=2)))
+BorderN        = 1
+Target Schemes = (0, 0)
 
 
 (Vice Versa)-------------------------------------
 
-|                                      |    2;
-|         |                            |    1, 2;
+StateA
+  [INTERVAL]   [TARGET/STATE [2]]
+  [-oo, oo]    2L
+StateB
+  [INTERVAL]   [TARGET/STATE [1]]
+  [-oo, 9]     1L
+  [10, oo]     2L
 
 DoorTree(A|B):
     [1]: (2<-1) (2<-7777) 
@@ -58,10 +69,11 @@ DoorTree(A|B):
     [0]: 
     parent: [None]
     
-TransitionMap:
-    [-oo, 9] MegaState_Target:(DoorID(s=1, d=2))
-    [10, oo] MegaState_Target:scheme((DoorID(s=1, d=2), DoorID(s=1, d=1)))
-BorderN    = 1
-TargetComb = (1, 1)
+Result
+  [INTERVAL]   [TARGET/STATE [2, 1]]
+  [-oo, 9]     MST:(DoorID(s=1, d=2))
+  [10, oo]     MST:scheme((DoorID(s=1, d=2), DoorID(s=1, d=1)))
+BorderN        = 1
+Target Schemes = (1, 1)
 
 
