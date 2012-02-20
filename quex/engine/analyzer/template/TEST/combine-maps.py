@@ -21,10 +21,11 @@ def core(StateA, TMa, StateB, TMb, analyzer, DrawF):
     result = TemplateState(StateA, StateB, analyzer)
     if DrawF:
         print "DoorTree(A|B):"
-        print result.entry.door_tree_root.get_string(result.entry.transition_db)
+        print "    " + result.entry.door_tree_root.get_string(result.entry.transition_db).replace("\n", "\n    ")
         print "TransitionMap:"
         for interval, target in result.transition_map:
-            print "   ", target
+            interval_str = repr(interval).replace("%i" % sys.maxint, "oo").replace("%i" % (sys.maxint-1), "oo")
+            print "   ", interval_str, target
     print_metric(result.transition_map)
     print
 
@@ -36,9 +37,9 @@ def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L], DrawF=Fal
 
     if DrawF:
         print "DoorTree(A):"
-        print StateA.entry.door_tree_root.get_string(StateA.entry.transition_db)
+        print "    " + StateA.entry.door_tree_root.get_string(StateA.entry.transition_db).replace("\n", "\n    ")
         print "DoorTree(B):"
-        print StateB.entry.door_tree_root.get_string(StateB.entry.transition_db)
+        print "    " + StateB.entry.door_tree_root.get_string(StateB.entry.transition_db).replace("\n", "\n    ")
 
     print
     print "(Straight)---------------------------------------"
