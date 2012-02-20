@@ -1,4 +1,4 @@
-<test-database execution-time-sec="18.95" date="Sun Feb 19 00:09:17 2012">
+<test-database execution-time-sec="18.94" date="Mon Feb 20 22:52:21 2012">
     <last-used-diff-display-program name=""/>
     <test title="(*) Exceptions during 'import'" time-sum-sec="0.48"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1318614194L" vanished="False"/>
@@ -12,11 +12,10 @@
            <choice name="" result="OK" time_sec="0.11" crc="-2055131690"/>
         </choice-list>
     </test>
-    <test title="Include Guards for C/C++" time-sum-sec="6.35"> 
-        <application file-name="include_guard.py" info-request-time="1318614194L" vanished="False"/>
-        <choice-list number="2" same_result="False">
-           <choice name="convention" result="OK" time_sec="6.05" crc="1196150108"/>
-           <choice name="undefinition" result="OK" time_sec="0.30" crc="1307575207"/>
+    <test title="Code Check with pyflakes" time-sum-sec="11.72"> 
+        <application file-name="pyflakes-check.sh" info-request-time="1318614194L" vanished="False"/>
+        <choice-list number="1" same_result="False">
+           <choice name="" result="OK" time_sec="11.72" crc="176785168"/>
         </choice-list>
     </test>
     <test title="&lt; #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$" time-sum-sec="0.05"> 
@@ -37,10 +36,11 @@
            <choice name="" result="OK" time_sec="0.05" crc="-1467740473"/>
         </choice-list>
     </test>
-    <test title="Code Check with pyflakes" time-sum-sec="11.72"> 
-        <application file-name="pyflakes-check.sh" info-request-time="1318614194L" vanished="False"/>
-        <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="11.72" crc="176785168"/>
+    <test title="Include Guards for C/C++" time-sum-sec="6.35"> 
+        <application file-name="include_guard.py" info-request-time="1318614194L" vanished="False"/>
+        <choice-list number="2" same_result="False">
+           <choice name="convention" result="OK" time_sec="6.05" crc="1196150108"/>
+           <choice name="undefinition" result="OK" time_sec="0.30" crc="1307575207"/>
         </choice-list>
     </test>
     <group name="User defined token id file">

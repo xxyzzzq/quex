@@ -9,6 +9,8 @@ from   quex.blackboard                         import E_EngineTypes
 from   operator import attrgetter
 from   collections import defaultdict
 
+import sys
+
 def setup_sm_state(StateIndex, TM):
     result = State(StateIndex=StateIndex)
     transition_map = defaultdict(NumberSet)
@@ -126,7 +128,18 @@ def scheme_str(X):
     else:
         return "<<error>>"
 
-def print_tm(TM):
+def print_tm(TM, StateIndexList):
+    tm_str = [("  [INTERVAL]", "[TARGET/STATE %s]" % [int(x) for x in StateIndexList])]
+    for interval, target in TM:
+        interval_str = "  " + repr(interval).replace("%i" % sys.maxint, "oo").replace("%i" % (sys.maxint-1), "oo")
+        target_str   = repr(target).replace("MegaState_Target", "MST")
+        tm_str.append((interval_str, target_str))
+
+    L = max(len(x[0]) for x in tm_str)
+    for interval_str, target_str in tm_str:
+        print "%s%s   %s" % (interval_str, " " * (L - len(interval_str)), target_str)
+
+def OLD_print_tm(TM):
     """Prints a trigger map. That is, character ranges are aligned horizontally, 
        and target states, or respectively involved state lists are printed 
        inside the cells. E.g.
@@ -174,12 +187,12 @@ def print_metric(TM):
     SL = get_target_scheme_list(TM)
     SL.sort(key=attrgetter("scheme"))
 
-    print "BorderN    = %i" % (len(TM) - 1)
+    print "BorderN        = %i" % (len(TM) - 1)
    
     tc_str = ""
     last_i = len(SL) - 1
     for i, info in enumerate(SL):
         tc_str += "%s" % scheme_str(info)
         if i != last_i: tc_str += ", "
-    print "TargetComb = %s" % tc_str
+    print "Target Schemes = %s" % tc_str
 

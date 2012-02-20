@@ -1,4 +1,4 @@
-<history date="Mon Feb 20 08:48:28 2012" element-n="10">
+<history date="Mon Feb 20 22:52:23 2012" element-n="16">
     <day year="2011" month="09" day="28">
         <history-init time="20:08:52"/>
     </day>
@@ -16,5 +16,11 @@
         <crc-error time="07:45:36" application="combine-simple.py" choice="plain" database-crc="-2096630557" real-crc="-673640113"/>
         <crc-error time="07:46:49" application="combine-simple.py" choice="recursive" database-crc="-7642453" real-crc="47904335"/>
         <crc-error time="07:48:22" application="combine-simple.py" choice="distinguished" database-crc="1109648656" real-crc="192272569"/>
+        <crc-error time="21:18:32" application="combine-maps.py" choice="1" database-crc="-892034469" real-crc="-665118599"/>
+        <crc-error time="21:18:32" application="combine-maps.py" choice="2" database-crc="-604200621" real-crc="664275895"/>
+        <crc-error time="21:18:32" application="combine-maps.py" choice="2b" database-crc="-348066796" real-crc="1741258459"/>
+        <crc-error time="21:18:32" application="combine-maps.py" choice="3" database-crc="2055694699" real-crc="909283175"/>
+        <crc-error time="21:18:32" application="combine-maps.py" choice="4" database-crc="1571523934" real-crc="1484321836"/>
+        <crc-error time="21:18:32" application="combine-maps.py" choice="recursive" database-crc="699993789" real-crc="462762661"/>
     </day>
 </history>
