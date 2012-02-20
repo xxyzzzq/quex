@@ -109,10 +109,10 @@ elif "recursive" in sys.argv:
 elif "recursive-2" in sys.argv:
     tm0 = [ 
             (Interval(-sys.maxint, 20), (1L, 2L)),    # This is not recursive
-            (Interval(20, sys.maxint),  10L),         # This is not recursive!
+            (Interval(20, sys.maxint),  (10L, 10L)),  # This is not recursive!
           ]
     tm1 = [ 
-            (Interval(-sys.maxint, sys.maxint), 20L), # This is recursive!
+            (Interval(-sys.maxint, sys.maxint), (2L,)), # This is recursive!
           ]
     test(tm0, 2, tm1, 1)
 
