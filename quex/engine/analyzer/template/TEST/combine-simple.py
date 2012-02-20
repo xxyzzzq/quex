@@ -43,7 +43,8 @@ def combine_states(A, B):
     print_tm(result.transition_map)
     print "official template state index:", result.index
     print "DoorReplacementDB:"
-    for old, new in result.door_id_replacement_db.iteritems():
+    for old, new in sorted(result.door_id_replacement_db.iteritems(), 
+                           key=lambda x: (x[0].state_index, x[0].door_index)):
         print "    %s -> %s" % (old, new)
     print
     print "door tree root:"

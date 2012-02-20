@@ -2,12 +2,12 @@
     pre(0) --> store[0] = input_p - 0;
 parent: [1]
 
-[3]: (0<-2) 
-    pre(0) --> store[0] = input_p - 2;
+[3]: (0<-1) 
+    pre(0) --> store[0] = input_p - 1;
 parent: [1]
 
-[4]: (0<-1) 
-    pre(0) --> store[0] = input_p - 1;
+[4]: (0<-2) 
+    pre(0) --> store[0] = input_p - 2;
 parent: [1]
 
 [1]: 

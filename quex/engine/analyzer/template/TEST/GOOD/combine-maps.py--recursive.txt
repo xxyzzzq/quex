@@ -3,13 +3,13 @@ Involved states in Second = 2L
 => when First triggers to 1L and Second to 2L, then both
    are recursive and no distinction needs to be made.
 DoorTree(A):
-[0]: (1<-1) (1<-7777) 
-parent: [None]
-
+    [0]: (1<-1) (1<-7777) 
+    parent: [None]
+    
 DoorTree(B):
-[0]: (2<-1) (2<-2) (2<-7777) 
-parent: [None]
-
+    [0]: (2<-1) (2<-2) (2<-7777) 
+    parent: [None]
+    
 
 (Straight)---------------------------------------
 
@@ -17,25 +17,25 @@ parent: [None]
 |                                      |    2;
 
 DoorTree(A|B):
-[1]: (2<-1) (2<-7777) 
-        state_key = 1;
-parent: [0]
-
-[2]: (1<-1) (2<-2) 
-parent: [0]
-
-[3]: (1<-7777) 
-        state_key = 0;
-parent: [0]
-
-[0]: 
-parent: [None]
-
+    [1]: (2<-1) (2<-7777) 
+            state_key = 1;
+    parent: [0]
+    
+    [2]: (1<-1) (2<-2) 
+    parent: [0]
+    
+    [3]: (1<-7777) 
+            state_key = 0;
+    parent: [0]
+    
+    [0]: 
+    parent: [None]
+    
 TransitionMap:
-    TargetScheme:((DoorID(s=1, d=0), DoorID(s=2, d=0)))
-    TargetScheme:(DoorID(s=2, d=0))
+    [-oo, 9] MegaState_Target:(DoorID(s=0, d=2))
+    [10, oo] MegaState_Target:scheme((DoorID(s=0, d=1), DoorID(s=0, d=2)))
 BorderN    = 1
-TargetComb = (1, 2)
+TargetComb = (0, 0)
 
 
 (Vice Versa)-------------------------------------
@@ -44,24 +44,24 @@ TargetComb = (1, 2)
 |         |                            |    1, 2;
 
 DoorTree(A|B):
-[1]: (2<-1) (2<-7777) 
-        state_key = 0;
-parent: [0]
-
-[2]: (1<-1) (2<-2) 
-parent: [0]
-
-[3]: (1<-7777) 
-        state_key = 1;
-parent: [0]
-
-[0]: 
-parent: [None]
-
+    [1]: (2<-1) (2<-7777) 
+            state_key = 0;
+    parent: [0]
+    
+    [2]: (1<-1) (2<-2) 
+    parent: [0]
+    
+    [3]: (1<-7777) 
+            state_key = 1;
+    parent: [0]
+    
+    [0]: 
+    parent: [None]
+    
 TransitionMap:
-    TargetScheme:((DoorID(s=2, d=0), DoorID(s=1, d=0)))
-    TargetScheme:(DoorID(s=2, d=0))
+    [-oo, 9] MegaState_Target:(DoorID(s=1, d=2))
+    [10, oo] MegaState_Target:scheme((DoorID(s=1, d=2), DoorID(s=1, d=1)))
 BorderN    = 1
-TargetComb = (2, 1)
+TargetComb = (1, 1)
 
 

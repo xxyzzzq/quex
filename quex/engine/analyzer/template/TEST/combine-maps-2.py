@@ -94,7 +94,8 @@ elif "2" in sys.argv:
 
 elif "recursive" in sys.argv:
     tm1 = [ 
-            (Interval(-sys.maxint, sys.maxint), E_StateIndices.RECURSIVE),
+            # Recursion in states 0, 1, 2
+            (Interval(-sys.maxint, sys.maxint), (0L, 1L, 2L)),  
           ]
     test(tm0, 3, tm1, 3)
 

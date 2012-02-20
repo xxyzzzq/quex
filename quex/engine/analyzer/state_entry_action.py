@@ -702,16 +702,36 @@ def get_best_common_command_list(TransitionActionList):
         entry.update(y_door_list)
 
     # Determine the best combination: max(cost * door number)
+    def __precedence(BestCombination, Combination):
+        """Purpose of this function is to define a certain 'order' where 
+           TransitionAction combination may be preferred according to their
+           transition_id. This has the sole advantage that the result becomes
+           more human readable. It does not influence the quality of the 
+           optimization result.
+
+           Determine precedence based on the numeric transition_id. Take
+           the 'most preceding' transition id of each TransitionAction list.
+        """
+        if BestCombination is None: return False
+        # Take just the highest precedence of each TransitionID mentioned
+        def __best(TAList):
+            assert len(TAList) != 0
+            result = None
+            for transition_action in TAList:
+                if result is None or transition_action.transition_id.precedes(result):
+                    result = transition_action.transition_id
+            return result
+
+        return __best(BestCombination).precedes(__best(Combination))
+
     best_cost         = 0
     best_command_list = None   # instance of CommandList 
     best_combination  = None   # list of instances of TransitionAction
     for command_list, combination in count_db.iteritems():
         cost = cost_db[command_list] * len(combination)
-        if     cost < best_cost: 
+        if   cost < best_cost: 
             continue
-        elif   cost == best_cost            \
-           and best_combination is not None \
-           and best_combination.transition_id.precedes(combination.transition_id):
+        elif cost == best_cost and __precedence(best_combination, combination):
             # Allow 'preceding' transition ids to win, even if the cost does
             # not improve, i.e. 'cost == best_cost'. This allows for some sort order
             # of child nodes, where preceding transition ids are always listed
@@ -723,10 +743,10 @@ def get_best_common_command_list(TransitionActionList):
         best_command_list = command_list
         best_combination  = combination
 
-    if best_combination is not None:
-        return best_command_list.clone(), best_combination
-    else:
+    if best_combination is None or best_command_list.is_empty():
         return CommandList(), set(x for x in TransitionActionList if x.command_list.is_empty())
+    else:
+        return best_command_list.clone(), best_combination
             
 def clear_door_tree(RootNode):
     """Cleaning the door tree considers only one case:

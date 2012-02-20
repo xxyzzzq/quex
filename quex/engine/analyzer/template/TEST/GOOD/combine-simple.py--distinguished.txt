@@ -5,16 +5,16 @@ State5 = Template(State0 + State1)
          MegaState_Target:DropOut  ([10], MegaState_Target:scheme((DoorID(s=1000, d=0), DoorID(s=2000, d=0)))),  MegaState_Target:DropOut 
 official template state index: 5
 DoorReplacementDB:
-    DoorID(s=0, d=0) -> DoorID(s=5, d=2)
-    DoorID(s=1, d=0) -> DoorID(s=5, d=1)
+    DoorID(s=0, d=0) -> DoorID(s=5, d=1)
+    DoorID(s=1, d=0) -> DoorID(s=5, d=2)
 
 door tree root:
-[1]: (1<-7777) 
-        state_key = 1;
+[1]: (0<-7777) 
+        state_key = 0;
 parent: [0]
 
-[2]: (0<-7777) 
-        state_key = 0;
+[2]: (1<-7777) 
+        state_key = 1;
 parent: [0]
 
 [0]: 
@@ -49,22 +49,22 @@ State7 = Template(State5 + State6)
          MegaState_Target:DropOut  ([10], MegaState_Target:scheme((DoorID(s=1000, d=0), DoorID(s=2000, d=0), DoorID(s=3000, d=0), DoorID(s=4000, d=0)))),  MegaState_Target:DropOut 
 official template state index: 7
 DoorReplacementDB:
-    DoorID(s=0, d=0) -> DoorID(s=7, d=3)
-    DoorID(s=1, d=0) -> DoorID(s=7, d=1)
-    DoorID(s=2, d=0) -> DoorID(s=7, d=2)
+    DoorID(s=0, d=0) -> DoorID(s=7, d=1)
+    DoorID(s=1, d=0) -> DoorID(s=7, d=2)
+    DoorID(s=2, d=0) -> DoorID(s=7, d=3)
     DoorID(s=3, d=0) -> DoorID(s=7, d=4)
 
 door tree root:
-[1]: (1<-7777) 
+[1]: (0<-7777) 
+        state_key = 0;
+parent: [0]
+
+[2]: (1<-7777) 
         state_key = 1;
 parent: [0]
 
-[2]: (2<-7777) 
+[3]: (2<-7777) 
         state_key = 2;
-parent: [0]
-
-[3]: (0<-7777) 
-        state_key = 0;
 parent: [0]
 
 [4]: (3<-7777) 
@@ -81,23 +81,23 @@ State8 = Template(State4 + State7)
          MegaState_Target:DropOut  ([10], MegaState_Target:scheme((DoorID(s=5000, d=0), DoorID(s=1000, d=0), DoorID(s=2000, d=0), DoorID(s=3000, d=0), DoorID(s=4000, d=0)))),  MegaState_Target:DropOut 
 official template state index: 8
 DoorReplacementDB:
-    DoorID(s=0, d=0) -> DoorID(s=8, d=3)
-    DoorID(s=1, d=0) -> DoorID(s=8, d=1)
-    DoorID(s=2, d=0) -> DoorID(s=8, d=2)
+    DoorID(s=0, d=0) -> DoorID(s=8, d=1)
+    DoorID(s=1, d=0) -> DoorID(s=8, d=2)
+    DoorID(s=2, d=0) -> DoorID(s=8, d=3)
     DoorID(s=3, d=0) -> DoorID(s=8, d=4)
     DoorID(s=4, d=0) -> DoorID(s=8, d=5)
 
 door tree root:
-[1]: (1<-7777) 
+[1]: (0<-7777) 
+        state_key = 1;
+parent: [0]
+
+[2]: (1<-7777) 
         state_key = 2;
 parent: [0]
 
-[2]: (2<-7777) 
+[3]: (2<-7777) 
         state_key = 3;
-parent: [0]
-
-[3]: (0<-7777) 
-        state_key = 1;
 parent: [0]
 
 [4]: (3<-7777) 
