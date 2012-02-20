@@ -35,6 +35,10 @@ class PathWalkerState(MegaState):
         self.__state_index_list     = None # Computed on demand
         self.__end_state_index_list = None # Computed on demand
 
+    def __determine_transition_map(self, Skeleton):
+        adapted = dict((MegaState_Target(target), trigger_set) for target, trigger_set in Skeleton)
+        return TransitionMap(adapted_skeleton).get_trigger_map()
+
     def accept(self, Path):
         """Accepts the given Path to be walked, if the skeleton matches.
            If additionally uniformity is required, then only states with
