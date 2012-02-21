@@ -92,18 +92,29 @@ def configure_States(TriggerMapA, StateN_A, TriggerMapB, StateN_B):
     if StateN_B == 1: state_b = analyzer.state_db[StateListB[0]] # Normal AnalyzerState
     else:             state_b = setup_TemplateState(analyzer, StateListB)
 
-    return analyzer, state_a, StateListA, state_b, StateListB
+    return analyzer, state_a, state_b
 
-def test_combination(StateA, StateA_List, TMa, StateB, StateB_List, TMb, analyzer, DrawF):
+def test_combination(StateA, StateB, analyzer, DrawF=False):
     print
-    if isinstance(StateA, TemplateState): print "States: ", StateA_List
-    else:                                 print "StateA"
-    print_tm(TMa, StateA_List)
-    if isinstance(StateB, TemplateState): print "States: ", StateB_List
-    else:                                 print "StateB"
-    print_tm(TMb, StateB_List)
+    if isinstance(StateA, TemplateState): 
+        state_a_list = StateA.state_index_list
+        print "States:", StateA.state_index_list
+    else:                                 
+        state_a_list = [StateA.index]
+        print "StateA:", state_a_list
+    print_tm(StateA.transition_map, state_a_list)
+
+    if isinstance(StateB, TemplateState): 
+        state_b_list = StateB.state_index_list
+        print "States:", StateB.state_index_list
+    else:                                 
+        state_b_list = [StateB.index]
+        print "StateB:", state_b_list
+
+    print_tm(StateB.transition_map, state_b_list)
     print
     result = TemplateState(StateA, StateB, analyzer)
+
     if DrawF:
         print "DoorTree(A|B):"
         print "    " + result.entry.door_tree_root.get_string(result.entry.transition_db).replace("\n", "\n    ")

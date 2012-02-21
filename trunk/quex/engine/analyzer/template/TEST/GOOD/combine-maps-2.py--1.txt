@@ -18,23 +18,30 @@ Result
   [10, 19]     MST:scheme((DoorID(s=100, d=0), DoorID(s=200, d=0), DoorID(s=300, d=0), DoorID(s=100, d=0), DoorID(s=100, d=0), DoorID(s=100, d=0)))
   [20, 29]     MST:scheme((DoorID(s=100, d=0), DoorID(s=100, d=0), DoorID(s=100, d=0), DoorID(s=100, d=0), DoorID(s=200, d=0), DoorID(s=300, d=0)))
   [30, oo]     MST:(DoorID(s=100, d=0))
+BorderN        = 3
+Target Schemes = (100, 100, 100, 100, 200, 300), (100, 200, 300, 100, 100, 100), (100, 200, 300, 100, 200, 300)
+
 
 (Vice Versa)-------------------------------------
 
 States: [3L, 4L, 5L]
-  [INTERVAL]   [TARGET/STATE [0, 1, 2]]
+  [INTERVAL]   [TARGET/STATE [3, 4, 5]]
   [-oo, 9]     MST:scheme((DoorID(s=100, d=0), DoorID(s=200, d=0), DoorID(s=300, d=0)))
   [10, 19]     MST:(DoorID(s=100, d=0))
   [20, 29]     MST:scheme((DoorID(s=100, d=0), DoorID(s=200, d=0), DoorID(s=300, d=0)))
   [30, oo]     MST:(DoorID(s=100, d=0))
 States: [0L, 1L, 2L]
-  [INTERVAL]   [TARGET/STATE [3, 4, 5]]
+  [INTERVAL]   [TARGET/STATE [0, 1, 2]]
   [-oo, 19]    MST:scheme((DoorID(s=100, d=0), DoorID(s=200, d=0), DoorID(s=300, d=0)))
   [20, oo]     MST:(DoorID(s=100, d=0))
 
+Result
   [INTERVAL]   [TARGET/STATE [3, 4, 5, 0, 1, 2]]
   [-oo, 9]     MST:scheme((DoorID(s=100, d=0), DoorID(s=200, d=0), DoorID(s=300, d=0), DoorID(s=100, d=0), DoorID(s=200, d=0), DoorID(s=300, d=0)))
   [10, 19]     MST:scheme((DoorID(s=100, d=0), DoorID(s=100, d=0), DoorID(s=100, d=0), DoorID(s=100, d=0), DoorID(s=200, d=0), DoorID(s=300, d=0)))
   [20, 29]     MST:scheme((DoorID(s=100, d=0), DoorID(s=200, d=0), DoorID(s=300, d=0), DoorID(s=100, d=0), DoorID(s=100, d=0), DoorID(s=100, d=0)))
   [30, oo]     MST:(DoorID(s=100, d=0))
+BorderN        = 3
+Target Schemes = (100, 100, 100, 100, 200, 300), (100, 200, 300, 100, 100, 100), (100, 200, 300, 100, 200, 300)
+
 

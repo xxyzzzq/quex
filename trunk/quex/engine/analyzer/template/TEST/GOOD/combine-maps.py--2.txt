@@ -1,11 +1,10 @@
-
 (Straight)---------------------------------------
 
-StateA
+StateA: [10L]
   [INTERVAL]   [TARGET/STATE [10]]
   [-oo, 9]     1L
   [10, oo]     2L
-StateB
+StateB: [20L]
   [INTERVAL]   [TARGET/STATE [20]]
   [-oo, 9]     2L
   [10, oo]     1L
@@ -18,13 +17,14 @@ BorderN        = 1
 Target Schemes = (1, 2), (2, 1)
 
 
+
 (Vice Versa)-------------------------------------
 
-StateA
+StateA: [20L]
   [INTERVAL]   [TARGET/STATE [20]]
   [-oo, 9]     2L
   [10, oo]     1L
-StateB
+StateB: [10L]
   [INTERVAL]   [TARGET/STATE [10]]
   [-oo, 9]     1L
   [10, oo]     2L
