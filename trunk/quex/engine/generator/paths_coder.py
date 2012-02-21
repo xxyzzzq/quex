@@ -82,8 +82,10 @@ import quex.engine.generator.state.drop_out         as drop_out_coder
 import quex.engine.generator.state.entry            as entry_coder
 from   quex.engine.generator.state.core             import input_do
 from   quex.engine.generator.state.transition.code  import TextTransitionCode
+from   quex.engine.generator.mega_state.core        import prepare_transition_map
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.analyzer.state_entry_action      import DoorID
+from   quex.engine.analyzer.mega_state              import MegaState_Target
 from   quex.engine.interval_handling                import Interval
 
 
@@ -303,42 +305,4 @@ def __require_data(PWState, TheAnalyzer):
         variable_db.require("path_walker_%i_reference", 
                             Initial = "path_walker_%i_path_base + 1" % PWState.index, 
                             Index   = (PWState.index))
-
-
-def prepare_transition_map(PWState):
-    """Prepare the transition map of the PWState for code generation.
-       The targets of a PathWalkerState are all 'DoorID's. Here, they
-       are translated into text.
-
-       NOTE: A word about the reload procedure.
-       
-       Reload can end either with success (new data has been loaded), or failure
-       (no more data available). In case of success the **only** the transition
-       step has to be repeated. Nothing else is effected.  Stored positions are
-       adapted automatically.
-       
-       By convention we redo the transition map, in case of reload success and 
-       jump to the state's drop-out in case of failure. There is no difference
-       here in the template state example.
-    """
-    # Transition map of the 'skeleton'        
-    if PWState.transition_map_empty_f:
-        # Transition Map Empty:
-        # This happens, for example, if there are only keywords and no 
-        # 'overlaying' identifier pattern. But, in this case also, there
-        # must be something that catches the 'buffer limit code'. 
-        # => Define an 'all drop out' trigger_map, and then later
-        # => Adapt the trigger map, so that the 'buffer limit' is an 
-        #    isolated single interval.
-        PWState.transition_map = [ (Interval(-sys.maxint, sys.maxint), E_StateIndices.DROP_OUT) ]
-
-    transition_map = PWState.transition_map
-
-    for i, info in enumerate(transition_map):
-        interval, target = info
-        if target == E_StateIndices.DROP_OUT: continue
-        assert isinstance(target, DoorID)
-        target            = TextTransitionCode([LanguageDB.GOTO_BY_DOOR_ID(target)])
-        transition_map[i] = (interval, target)
-    return
 

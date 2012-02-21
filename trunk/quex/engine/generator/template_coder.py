@@ -4,6 +4,7 @@ from   quex.engine.generator.state.transition.code  import TextTransitionCode
 import quex.engine.generator.state.drop_out         as drop_out_coder
 import quex.engine.generator.state.entry            as entry_coder
 from   quex.engine.generator.state.core             import input_do
+from   quex.engine.generator.mega_state.core        import prepare_transition_map
 from   quex.engine.generator.languages.address      import get_address, get_label
 from   quex.engine.generator.languages.variable_db  import variable_db
 
@@ -94,11 +95,6 @@ def do(txt, TState, TheAnalyzer):
     """
     global LanguageDB
     LanguageDB = Setup.language_db
-    variable_db.require("state_key")
-
-    # (*) Request necessary variable definition _______________________________
-    #     (BEFORE we translate the transition map, somehow)
-    __require_data(TState, TheAnalyzer)
 
     # (*) Entry _______________________________________________________________
     entry_coder.do(txt, TState, TheAnalyzer) 
@@ -118,6 +114,11 @@ def do(txt, TState, TheAnalyzer):
 
     # (*) Drop Out ____________________________________________________________
     __drop_out(txt, TState, TheAnalyzer)
+
+    # (*) Request necessary variable definition _______________________________
+    #     (BEFORE we translate the transition map, somehow)
+    variable_db.require("state_key")
+    __require_data(TState, TheAnalyzer)
 
     return 
 
@@ -195,44 +196,4 @@ def __require_data(TState, TheAnalyzer):
 
     # Drop outs: all drop outs end up at the end of the transition map, where
     # it is routed via the state_key to the state's particular drop out.
-
-def prepare_transition_map(TheState):
-    """Generates code for transition map of a template state.
-
-       NOTE: A word about the reload procedure.
-       
-       Reload can end either with success (new data has been loaded), or failure
-       (no more data available). In case of success the **only** the transition
-       step has to be repeated. Nothing else is effected.  Stored positions are
-       adapted automatically.
-       
-       By convention we redo the transition map, in case of reload success and 
-       jump to the state's drop-out in case of failure. There is no difference
-       here in the template state example.
-    """
-    transition_map = TheState.transition_map
-
-    for i, info in enumerate(transition_map):
-        interval, target = info
-        
-        if   target.drop_out_f:
-            # Later functions detect the 'DROP_OUT' in the transition map, so
-            # we do not want to put it in text here. Namely function:
-            # __separate_buffer_limit_code_transition(...) which implements the
-            # buffer limit code insertion.
-            transition_map[i] = (interval, E_StateIndices.DROP_OUT)
-            continue
-
-        if target.door_id is not None:
-            text = LanguageDB.GOTO_BY_DOOR_ID(target.door_id)
-
-        else:
-            get_label("$state-router", U=True) # Ensure reference of state router
-            # Transition target depends on state key
-            label = "template_%i_target_%i[state_key]" % (TheState.index, target.index)
-            text  = LanguageDB.GOTO_BY_VARIABLE(label)
-
-        # Replace target 'i' by written text
-        target            = TextTransitionCode([text])
-        transition_map[i] = (interval, target)
 
