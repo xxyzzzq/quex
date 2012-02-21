@@ -30,7 +30,6 @@ def do(code, TheState, TheAnalyzer):
         txt.append(LanguageDB.LABEL_INIT_STATE_TRANSITION_BLOCK())
 
     # (*) Access the triggering character _____________________________________
-
     input_do(txt, TheState)
 
     # (*) Transition Map ______________________________________________________
