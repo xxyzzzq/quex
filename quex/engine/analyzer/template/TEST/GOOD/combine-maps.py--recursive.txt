@@ -10,14 +10,13 @@ DoorTree(B):
     [0]: (2<-1) (2<-2) (2<-7777) 
     parent: [None]
     
-
 (Straight)---------------------------------------
 
-StateA
+StateA: [1L]
   [INTERVAL]   [TARGET/STATE [1]]
   [-oo, 9]     1L
   [10, oo]     2L
-StateB
+StateB: [2L]
   [INTERVAL]   [TARGET/STATE [2]]
   [-oo, oo]    2L
 
@@ -44,12 +43,13 @@ BorderN        = 1
 Target Schemes = (0, 0)
 
 
+
 (Vice Versa)-------------------------------------
 
-StateA
+StateA: [2L]
   [INTERVAL]   [TARGET/STATE [2]]
   [-oo, oo]    2L
-StateB
+StateB: [1L]
   [INTERVAL]   [TARGET/STATE [1]]
   [-oo, 9]     1L
   [10, oo]     2L

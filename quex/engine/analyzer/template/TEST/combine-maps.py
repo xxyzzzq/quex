@@ -27,10 +27,10 @@ def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L], DrawF=Fal
         print "    " + StateB.entry.door_tree_root.get_string(StateB.entry.transition_db).replace("\n", "\n    ")
 
     print "(Straight)---------------------------------------"
-    test_combination(StateA, [StateA.index], TMa, StateB, [StateB.index], TMb, analyzer, DrawF)
+    test_combination(StateA, StateB, analyzer, DrawF)
     print
     print "(Vice Versa)-------------------------------------"
-    test_combination(StateB, [StateB.index], TMb, StateA, [StateA.index], TMa, analyzer, DrawF)
+    test_combination(StateB, StateA, analyzer, DrawF)
 
 tm0 = [ 
         (Interval(-sys.maxint, 10), 1L),

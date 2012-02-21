@@ -16,30 +16,15 @@ if "--hwut-info" in sys.argv:
     print "CHOICES: 1, 2, 2b, 3, 4, recursive;"
     sys.exit(0)
 
-def test(TriggerMapA, TriggerMapB, StateListA=[10L], StateListB=[20L], UniformEntriesF=True):
-    if len(StateListA) == 1: StateA = TestState(TriggerMapA, StateListA[0])
-    else:                    StateA = TestTemplateState(TriggerMapA, StateListA)
-    if len(StateListB) == 1: StateB = TestState(TriggerMapB, StateListB[0])
-    else:                    StateB = TestTemplateState(TriggerMapB, StateListB)
-    analyzer = TestAnalyzer(StateA, StateB)
+def test(TriggerMapA, StateN_A, TriggerMapB, StateN_B, UniformEntriesF=True):
+
+    analyzer, state_a, state_b = configure_States(TriggerMapA, StateN_A, TriggerMapB, StateN_B)
 
     print
     print "(Straight)---------------------------------------"
-    print
-    print_tm(TriggerMapA)
-    print_tm(TriggerMapB)
-    print
-    result = combine_maps(StateA, StateB, analyzer)[0]
-    print_metric(result)
-    print
+    test_combination(state_a, state_b, analyzer)
     print "(Vice Versa)-------------------------------------"
-    print
-    print_tm(TriggerMapB)
-    print_tm(TriggerMapA)
-    print
-    result = combine_maps(StateB, StateA, analyzer)[0]
-    print_metric(result)
-    print
+    test_combination(state_b, state_a, analyzer)
 
 tm0 = [ 
         (Interval(-sys.maxint, 10), [10L, 11L]),
@@ -51,21 +36,21 @@ if "1" in sys.argv:
             (Interval(-sys.maxint, 30), [10L, 11L]),
             (Interval(30, sys.maxint),  [20L, 21L]),
           ]
-    test(tm0, tm1)
+    test(tm0, 2, tm1, 2)
 
 elif "2" in sys.argv:
     tm1 = [ 
             (Interval(-sys.maxint, 10), [20L, 21L]),
             (Interval(10, sys.maxint),  [10L, 11L])
           ]
-    test(tm0, tm1)
+    test(tm0, 2, tm1, 2)
 
 elif "2b" in sys.argv:
     tm1 = [ 
             (Interval(-sys.maxint, 10), [10L, 11L]),
             (Interval(10, sys.maxint),  [20L, 21L]),
           ]
-    test(tm0, tm1)
+    test(tm0, 2, tm1, 2)
 
 elif "3" in sys.argv:
     tm1 = [ 
@@ -80,7 +65,7 @@ elif "3" in sys.argv:
             (Interval(25, 35),          [50L, 51L]),
             (Interval(35, sys.maxint),  [10L, 20L]),
           ]
-    test(tm0, tm1)
+    test(tm0, 2, tm1, 2)
 
 elif "4" in sys.argv:
     tm0 = [ 

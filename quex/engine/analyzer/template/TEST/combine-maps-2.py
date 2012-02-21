@@ -18,13 +18,13 @@ if "--hwut-info" in sys.argv:
 
 def test(TriggerMapA, StateN_A, TriggerMapB, StateN_B, DrawF=True):
 
-    analyzer, state_a, StateListA, state_b, StateListB = configure_States(TriggerMapA, StateN_A, TriggerMapB, StateN_B)
+    analyzer, state_a, state_b = configure_States(TriggerMapA, StateN_A, TriggerMapB, StateN_B)
 
     print
     print "(Straight)---------------------------------------"
-    test_combination(state_a, StateListA, TriggerMapA, state_b, StateListB, TriggerMapB, analyzer, DrawF)
+    test_combination(state_a, state_b, analyzer, DrawF)
     print "(Vice Versa)-------------------------------------"
-    test_combination(state_b, StateListB, TriggerMapB, state_a, StateListA, TriggerMapA, analyzer, DrawF)
+    test_combination(state_b, state_a, analyzer, DrawF)
 
 tm0 = [ 
         (Interval(-sys.maxint, 20), (100L, 200L, 300L)),

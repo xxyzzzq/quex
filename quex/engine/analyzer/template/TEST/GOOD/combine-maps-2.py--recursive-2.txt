@@ -5,7 +5,7 @@ States: [0L, 1L]
   [INTERVAL]   [TARGET/STATE [0, 1]]
   [-oo, 19]    MST:scheme((DoorID(s=10, d=0), DoorID(s=20, d=0)))
   [20, oo]     MST:scheme((DoorID(s=3, d=2), DoorID(s=3, d=1)))
-States: [2L]
+StateB: [2L]
   [INTERVAL]   [TARGET/STATE [2]]
   [-oo, oo]    2L
 
@@ -32,37 +32,44 @@ Result
   [INTERVAL]   [TARGET/STATE [0, 1, 2]]
   [-oo, 19]    MST:scheme((DoorID(s=10, d=0), DoorID(s=20, d=0), DoorID(s=4, d=2)))
   [20, oo]     MST:scheme((DoorID(s=4, d=2), DoorID(s=4, d=1), DoorID(s=4, d=2)))
+BorderN        = 1
+Target Schemes = (4, 4, 4), (10, 20, 4)
+
 
 (Vice Versa)-------------------------------------
 
-States: [2L]
-  [INTERVAL]   [TARGET/STATE [0, 1]]
+StateA: [2L]
+  [INTERVAL]   [TARGET/STATE [2]]
   [-oo, oo]    2L
 States: [0L, 1L]
-  [INTERVAL]   [TARGET/STATE [2]]
+  [INTERVAL]   [TARGET/STATE [0, 1]]
   [-oo, 19]    MST:scheme((DoorID(s=10, d=0), DoorID(s=20, d=0)))
   [20, oo]     MST:scheme((DoorID(s=3, d=2), DoorID(s=3, d=1)))
 
 DoorTree(A|B):
     [1]: (0<-1) (0<-7777) 
-            state_key = 0;
+            state_key = 1;
     parent: [0]
     
     [2]: (0<-0) (2<-2) 
     parent: [0]
     
     [3]: (1<-7777) 
-            state_key = 1;
+            state_key = 2;
     parent: [0]
     
     [4]: (2<-7777) 
-            state_key = 2;
+            state_key = 0;
     parent: [0]
     
     [0]: 
     parent: [None]
     
+Result
   [INTERVAL]   [TARGET/STATE [2, 0, 1]]
   [-oo, 19]    MST:scheme((DoorID(s=5, d=2), DoorID(s=10, d=0), DoorID(s=20, d=0)))
   [20, oo]     MST:scheme((DoorID(s=5, d=2), DoorID(s=5, d=2), DoorID(s=5, d=1)))
+BorderN        = 1
+Target Schemes = (5, 5, 5), (5, 10, 20)
+
 
