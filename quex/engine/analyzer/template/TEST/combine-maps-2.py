@@ -3,7 +3,6 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.engine.state_machine.index                  as index
 import quex.engine.analyzer.template.core               as templates
 from   quex.engine.analyzer.template.state              import TemplateState, combine_maps
 from   quex.engine.analyzer.template.TEST.templates_aux import *
@@ -14,67 +13,18 @@ from   quex.blackboard               import E_StateIndices
 
 if "--hwut-info" in sys.argv:
     print "Transition Map Templates: Combine Combined Trigger Maps"
-    print "CHOICES: 1, 2, recursive, recursive-2, recursive-3, recursive-b, recursive-2b, recursive-3b;"
+    print "CHOICES: 1, 2, recursive, recursive-2, recursive-3, recursive-b, recursive-2b;"
     sys.exit(0)
 
-def get_TemplateState(analyzer, StateIndexList):
-    assert len(StateIndexList) > 1
-
-    result = TemplateState(analyzer.state_db[StateIndexList[0]], 
-                           analyzer.state_db[StateIndexList[1]], 
-                           analyzer)
-    for i in StateIndexList[2:]:
-        result = TemplateState(result, analyzer.state_db[i], 
-                               analyzer)
-    return result
-
 def test(TriggerMapA, StateN_A, TriggerMapB, StateN_B, DrawF=True):
-    state_setup = []
-    StateListA = [ long(i) for i in xrange(StateN_A) ]
-    StateListB = [ long(i) for i in xrange(StateN_A, StateN_A + StateN_B) ]
-    def extract_transition_map(XTM, Index):
-        result = []
-        for interval, specification in XTM:
-            result.append((interval, specification[Index]))
-        return result
 
-    state_setup.extend([ (index.get(), extract_transition_map(TriggerMapA, i)) for i, state_index in enumerate(StateListA)])
-    state_setup.extend([ (index.get(), extract_transition_map(TriggerMapB, i)) for i, state_index in enumerate(StateListB)])
-
-    state_list, analyzer = setup_AnalyzerStates(state_setup)
-    if StateN_A == 1: state_a = analyzer.state_db[StateListA[0]] # Normal AnalyzerState
-    else:             state_a = get_TemplateState(analyzer, StateListA)
-    if StateN_B == 1: state_b = analyzer.state_db[StateListB[0]] # Normal AnalyzerState
-    else:             state_b = get_TemplateState(analyzer, StateListB)
+    analyzer, state_a, StateListA, state_b, StateListB = configure_States(TriggerMapA, StateN_A, TriggerMapB, StateN_B)
 
     print
     print "(Straight)---------------------------------------"
-    print
-    print "States: %s" % StateListA
-    print_tm(state_a.transition_map, StateListA)
-    print "States: %s" % StateListB
-    print_tm(state_b.transition_map, StateListB)
-    print
-    result = TemplateState(state_a, state_b, analyzer)
-    if DrawF:
-        print "DoorTree(A|B):"
-        print "    " + result.entry.door_tree_root.get_string(result.entry.transition_db).replace("\n", "\n    ")
-    print "Result"
-    print_tm(result.transition_map, result.state_index_list)
-    print
+    test_combination(state_a, StateListA, TriggerMapA, state_b, StateListB, TriggerMapB, analyzer, DrawF)
     print "(Vice Versa)-------------------------------------"
-    print
-    print "States: %s" % StateListB
-    print_tm(state_b.transition_map, StateListA)
-    print "States: %s" % StateListA
-    print_tm(state_a.transition_map, StateListB)
-    print
-    if DrawF:
-        print "DoorTree(A|B):"
-        print "    " + result.entry.door_tree_root.get_string(result.entry.transition_db).replace("\n", "\n    ")
-    result = TemplateState(state_b, state_a, analyzer)
-    print_tm(result.transition_map, result.state_index_list)
-    print
+    test_combination(state_b, StateListB, TriggerMapB, state_a, StateListA, TriggerMapA, analyzer, DrawF)
 
 tm0 = [ 
         (Interval(-sys.maxint, 20), (100L, 200L, 300L)),
@@ -106,49 +56,39 @@ elif "recursive" in sys.argv:
           ]
     test(tm0, 3, tm1, 3)
 
+elif "recursive-b" in sys.argv:
+    tm1 = [ 
+            (Interval(-sys.maxint, sys.maxint), (3L, 4L, 5L)),
+          ]
+    test(tm0, 3, tm1, 3)
+
 elif "recursive-2" in sys.argv:
     tm0 = [ 
-            (Interval(-sys.maxint, 20), (1L, 2L)),    # This is not recursive
-            (Interval(20, sys.maxint),  (10L, 10L)),  # This is not recursive!
+            (Interval(-sys.maxint, 20), (10L, 20L)),  # This is not recursive
+            (Interval(20, sys.maxint),  (0L, 0L)),    # This is not recursive!
           ]
     tm1 = [ 
             (Interval(-sys.maxint, sys.maxint), (2L,)), # This is recursive!
           ]
     test(tm0, 2, tm1, 1)
 
-elif "recursive-3" in sys.argv:
-    tm0 = [ 
-            (Interval(-sys.maxint, 20), (1L, 2L)),    # This is not recursive
-            (Interval(20, sys.maxint),  E_StateIndices.RECURSIVE), 
-          ]
-    tm1 = [ 
-            (Interval(-sys.maxint, sys.maxint), 20L), # This is recursive!
-          ]
-    test(tm0, 2, tm1, 1)
-
-elif "recursive-b" in sys.argv:
-    tm1 = [ 
-            (Interval(-sys.maxint, sys.maxint), E_StateIndices.RECURSIVE),
-          ]
-    test(tm0, 3, tm1, 3)
-
 elif "recursive-2b" in sys.argv:
     tm0 = [ 
-            (Interval(-sys.maxint, 20), (1L, 2L)),    # This is not recursive
-            (Interval(20, sys.maxint),  10L),         # This is not recursive!
+            (Interval(-sys.maxint, 20), (1L,  0L)),   # This is not recursive
+            (Interval(20, sys.maxint),  (10L, 10L)),  # This is not recursive!
           ]
     tm1 = [ 
-            (Interval(-sys.maxint, sys.maxint), 20L), # This is recursive!
+            (Interval(-sys.maxint, sys.maxint), (2L, 2L)), # This is recursive!
           ]
     test(tm0, 2, tm1, 1)
 
-elif "recursive-3b" in sys.argv:
+elif "recursive-3" in sys.argv:
     tm0 = [ 
-            (Interval(-sys.maxint, 20), (1L, 2L)),    # This is not recursive
-            (Interval(20, sys.maxint),  E_StateIndices.RECURSIVE), 
+            (Interval(-sys.maxint, 20), (10L, 20L)),  # This is not recursive
+            (Interval(20, sys.maxint),  (0L, 1L)),    # This is recursive
           ]
     tm1 = [ 
-            (Interval(-sys.maxint, sys.maxint), 20L), # This is recursive!
+            (Interval(-sys.maxint, sys.maxint), (2L,)), # This is recursive!
           ]
     test(tm0, 2, tm1, 1)
 

@@ -1,4 +1,5 @@
 import quex.engine.analyzer.template.core      as templates 
+import quex.engine.state_machine.index         as index
 from   quex.engine.analyzer.core               import AnalyzerState
 from   quex.engine.analyzer.state_entry        import Entry
 from   quex.engine.analyzer.state_entry_action import DoorID
@@ -61,60 +62,65 @@ def setup_AnalyzerStates(StatesDescription):
     state_list = [ analyzer.state_db[long(state_index)] for state_index in requested_state_index_list ]
     return state_list, analyzer
 
-def collect_target_state_indices(TM):
-    result = set()
-    for interval, target in TM:
-        if isinstance(target, (int, long)): result.add(target)
+def setup_TemplateState(analyzer, StateIndexList):
+    assert len(StateIndexList) > 1
+
+    result = TemplateState(analyzer.state_db[StateIndexList[0]], 
+                           analyzer.state_db[StateIndexList[1]], 
+                           analyzer)
+    for i in StateIndexList[2:]:
+        result = TemplateState(result, analyzer.state_db[i], 
+                               analyzer)
     return result
 
-def clean_transition_map(tm):
-    for i, element in enumerate(tm):
-        x = element[1]
-        if isinstance(element[1], list): 
-            x = tuple(DoorID(x, 0) for x in element[1])
-        tm[i] = (element[0], MegaState_Target(x, 0))
+def configure_States(TriggerMapA, StateN_A, TriggerMapB, StateN_B):
+    state_setup = []
+    StateListA = [ long(i) for i in xrange(StateN_A) ]
+    StateListB = [ long(i) for i in xrange(StateN_A, StateN_A + StateN_B) ]
+    def extract_transition_map(XTM, Index):
+        result = []
+        for interval, specification in XTM:
+            result.append((interval, specification[Index]))
+        return result
+
+    state_setup.extend([ (index.get(), extract_transition_map(TriggerMapA, i)) for i, state_index in enumerate(StateListA)])
+    state_setup.extend([ (index.get(), extract_transition_map(TriggerMapB, i)) for i, state_index in enumerate(StateListB)])
+
+    state_list, analyzer = setup_AnalyzerStates(state_setup)
+    if StateN_A == 1: state_a = analyzer.state_db[StateListA[0]] # Normal AnalyzerState
+    else:             state_a = setup_TemplateState(analyzer, StateListA)
+    if StateN_B == 1: state_b = analyzer.state_db[StateListB[0]] # Normal AnalyzerState
+    else:             state_b = setup_TemplateState(analyzer, StateListB)
+
+    return analyzer, state_a, StateListA, state_b, StateListB
+
+def test_combination(StateA, StateA_List, TMa, StateB, StateB_List, TMb, analyzer, DrawF):
+    print
+    if isinstance(StateA, TemplateState): print "States: ", StateA_List
+    else:                                 print "StateA"
+    print_tm(TMa, StateA_List)
+    if isinstance(StateB, TemplateState): print "States: ", StateB_List
+    else:                                 print "StateB"
+    print_tm(TMb, StateB_List)
+    print
+    result = TemplateState(StateA, StateB, analyzer)
+    if DrawF:
+        print "DoorTree(A|B):"
+        print "    " + result.entry.door_tree_root.get_string(result.entry.transition_db).replace("\n", "\n    ")
+    print "Result"
+    print_tm(result.transition_map, result.state_index_list)
+    print_metric(result.transition_map)
+    print
+    print
 
 class TestAnalyzer:
     def __init__(self, EngineType):
         self.state_db = {}
         self.__engine_type = EngineType
+
     @property
-    def engine_type(self): return self.__engine_type
-
-class TestTemplateState(TemplateState):
-    def __init__(self, TriggerMap, StateIndexList):
-        self.__transition_map   = TriggerMap
-        clean_transition_map(self.__transition_map)
-        self.__state_index_list = StateIndexList
-        self.entry              = Entry(0, [])
-
-    @property 
-    def transition_map(self): 
-        return self.__transition_map
-    @property
-    def state_index_list(self): 
-        return self.__state_index_list
-    @property
-    def index(self): 
-        return None
-
-def get_combination(TriggerMap, StateList):
-    """Creates A Template Combination Object for the given Trigger Map
-       and States. The trigger map is a list of objects
-
-            [ interval, State Index to which interval triggers ] 
-
-       The generated object of type 'TemplateCombination' will contain
-       the 'StateList' as '__involved_state_list' and the trigger map
-       as '__trigger_map'.
-    """
-
-    result = templates.TemplateCombination(map(long, StateList), [])
-
-    for info in TriggerMap: 
-        result.append(info[0].begin, info[0].end, info[1])
-
-    return result
+    def engine_type(self): 
+        return self.__engine_type
 
 def scheme_str(X):
     if X.scheme is not None: 

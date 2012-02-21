@@ -12,6 +12,7 @@ States: [3L, 4L, 5L]
   [20, 29]     MST:scheme((DoorID(s=300, d=0), DoorID(s=400, d=0), DoorID(s=500, d=0)))
   [30, oo]     MST:scheme((DoorID(s=200, d=0), DoorID(s=100, d=0), DoorID(s=100, d=0)))
 
+Result
   [INTERVAL]   [TARGET/STATE [0, 1, 2, 3, 4, 5]]
   [-oo, 9]     MST:scheme((DoorID(s=100, d=0), DoorID(s=200, d=0), DoorID(s=300, d=0), DoorID(s=100, d=0), DoorID(s=200, d=0), DoorID(s=300, d=0)))
   [10, 19]     MST:scheme((DoorID(s=100, d=0), DoorID(s=200, d=0), DoorID(s=300, d=0), DoorID(s=200, d=0), DoorID(s=100, d=0), DoorID(s=100, d=0)))
