@@ -14,21 +14,6 @@ if "--hwut-info" in sys.argv:
     print "CHOICES: 1, 2, 2b, 3, 4, recursive;"
     sys.exit(0)
 
-def core(StateA, TMa, StateB, TMb, analyzer, DrawF):
-    print "StateA"
-    print_tm(TMa, [StateA.index])
-    print "StateB"
-    print_tm(TMb, [StateB.index])
-    print
-    result = TemplateState(StateA, StateB, analyzer)
-    if DrawF:
-        print "DoorTree(A|B):"
-        print "    " + result.entry.door_tree_root.get_string(result.entry.transition_db).replace("\n", "\n    ")
-    print "Result"
-    print_tm(result.transition_map, result.state_index_list)
-    print_metric(result.transition_map)
-    print
-
 def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L], DrawF=False):
 
     StateList, analyzer = setup_AnalyzerStates([(InvolvedStateListA[0], TMa), 
@@ -41,15 +26,11 @@ def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L], DrawF=Fal
         print "DoorTree(B):"
         print "    " + StateB.entry.door_tree_root.get_string(StateB.entry.transition_db).replace("\n", "\n    ")
 
-    print
     print "(Straight)---------------------------------------"
-    print
-    core(StateA, TMa, StateB, TMb, analyzer, DrawF)
+    test_combination(StateA, [StateA.index], TMa, StateB, [StateB.index], TMb, analyzer, DrawF)
     print
     print "(Vice Versa)-------------------------------------"
-    print
-    core(StateB, TMb, StateA, TMa, analyzer, DrawF)
-    print
+    test_combination(StateB, [StateB.index], TMb, StateA, [StateA.index], TMa, analyzer, DrawF)
 
 tm0 = [ 
         (Interval(-sys.maxint, 10), 1L),
