@@ -40,6 +40,21 @@ class MegaState(AnalyzerState):
             self.__door_id_replacement_db = result
         return self.__door_id_replacement_db
 
+    def replace_door_ids_in_transition_map(self, ReplacementDB):
+        """ReplacementDB:    DoorID --> Replacement DoorID
+
+           The Existence of MegaStates has the consequence that transitions
+           have to be adapted. Let 'X' be a state that has been absorbed by 
+           a MegaState 'M'. Then a transition from another state 'Y' to 'X' is 
+           originally associated with DoorID 'Dyx'. Since 'X' is now part
+           of a MegaState, the transition 'from Y to X' has been associated
+           with the DoorID 'Dyxm' which is the MegaState's entry that represents
+           'from Y to X'. Any transition 'Dyx' must now be replaced by 'Dyxm'.
+        """
+        for interval, target in self.transition_map:
+            if target.drop_out_f: continue
+            target.door_id_replacement(ReplacementDB)
+
     def implemented_state_index_list(self):
         assert False, "This function needs to be overwritten by derived class."""
 
@@ -119,10 +134,22 @@ class MegaState_Target(object):
         else:                          return "MegaState_Target:<ERROR>"
 
     def __hash__(self):
-        return self.__index
+        if   self.__drop_out_f:          return 0
+        elif self.__door_id is not None: return self.__door_id.state_index
+        elif self.__scheme is not None:  return self.__scheme[0].state_index
+        else:                            assert False
 
     def __eq__(self, Other):
-        if isinstance(Other, MegaState_Target) == False: return False
+        if   isinstance(Other, MegaState_Target) == False: 
+            return False
+        elif self.__drop_out_f and Other.__drop_out_f: 
+            return True
+        elif self.__door_id is not None and Other.__door_id is not None:
+            return self.__door_id == Other.__door_id
+        elif self.__scheme  is not None and Other.__scheme  is not None:
+            return self.__scheme == Other.__scheme
+        else:
+            return False
         ## if self.__index != Other.__index: return False
         return self.__scheme == Other.__scheme
 

@@ -8,9 +8,15 @@ class Handler:
             self.require_data = self.__template_require_data
 
 
+from   quex.blackboard                              import setup as Setup, E_StateIndices
+from   quex.engine.generator.state.transition.code  import TextTransitionCode
+from   quex.engine.analyzer.mega_state              import MegaState_Target
+from   quex.engine.interval_handling                import Interval
+from   quex.engine.generator.languages.address      import get_label
+import quex.engine.generator.state.drop_out         as drop_out_coder
+import sys
 
 def do(txt, TheState, TheAnalyzer):
-    global LanguageDB
     LanguageDB = Setup.language_db
 
     handler = Handler(TheState)
@@ -41,6 +47,57 @@ def do(txt, TheState, TheAnalyzer):
 
     return
 
+def drop_out_scheme_implementation(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
+    """DropOut Section:
+
+       The drop out section is the place where we come if the transition map
+       does not trigger to another state. We also land here if the reload fails.
+       The routing to the different drop-outs of the related states happens by 
+       means of a switch statement, e.g.
+       
+       _4711: /* Address of the drop out */
+           switch( state_key ) {
+           case 0:
+                 ... drop out of state 815 ...
+           case 1: 
+                 ... drop out of state 541 ...
+           }
+
+       The switch statement is not necessary if all drop outs are the same, 
+       of course.
+    """
+    LanguageDB = Setup.language_db
+    # (*) Central Label for the Templates Drop Out
+    #     (The rules for having or not having a label here are complicated, 
+    #      so rely on the label's usage database.)
+    txt.append("%s:\n" % get_label("$drop-out", TheState.index))
+    txt.append("    %s\n" % DebugString) 
+
+    # (*) Drop Out Section(s)
+    if TheState.uniform_drop_outs_f:
+        # -- uniform drop outs => no switch required
+        prototype = TheAnalyzer.state_db[TheState.state_index_list[0]]
+        tmp = []
+        drop_out_coder.do(tmp, prototype, TheAnalyzer, DefineLabelF=False)
+        txt.extend(tmp)
+        return
+
+    # -- non-uniform drop outs => route by 'state_key'
+    case_list = []
+    for drop_out, state_index_list in TheState.drop_out.iteritems():
+        # state keys related to drop out
+        state_key_list = map(lambda i: TheState.state_index_list.index(i), state_index_list)
+        # drop out action
+        assert len(state_index_list) != 0
+        prototype = TheAnalyzer.state_db[state_index_list.__iter__().next()]
+        action = []
+        drop_out_coder.do(action, prototype, TheAnalyzer, DefineLabelF=False)
+        case_list.append( (state_key_list, action) )
+
+    case_txt = LanguageDB.SELECTION(StateKeyString, case_list)
+    LanguageDB.INDENT(case_txt)
+    txt.extend(case_txt)
+
 def prepare_transition_map(TheState):
     """Prepare the transition map of the MegaState for code generation.
 
@@ -55,6 +112,8 @@ def prepare_transition_map(TheState):
        jump to the state's drop-out in case of failure. There is no difference
        here in the template state example.
     """
+    LanguageDB = Setup.language_db
+
     # Transition map of the 'skeleton'        
     if TheState.transition_map_empty_f:
         # Transition Map Empty:

@@ -1,5 +1,5 @@
 from   quex.engine.analyzer.state_entry_action  import SetPathIterator, DoorID, TransitionID, TransitionAction
-from   quex.engine.analyzer.mega_state          import MegaState
+from   quex.engine.analyzer.mega_state          import MegaState, MegaState_Target
 from   quex.engine.state_machine.transition_map import TransitionMap
 from   quex.blackboard                          import \
                                                        E_EngineTypes, \
@@ -21,7 +21,7 @@ class PathWalkerState(MegaState):
         self.__skeleton       = FirstPath.skeleton() # map: target_index --> trigger set
         # The skeleton does not contain wild cards anymore, so we can already transform it
         # into a transition map:                     # list: [ ... (interval, target) ... ]
-        self.transition_map   = TransitionMap(self.__skeleton).get_trigger_map()
+        self.transition_map   = self.__determine_transition_map(self.__skeleton) 
 
         self.input = { 
             E_EngineTypes.FORWARD:                 E_InputActions.INCREMENT_THEN_DEREF,
@@ -36,8 +36,21 @@ class PathWalkerState(MegaState):
         self.__end_state_index_list = None # Computed on demand
 
     def __determine_transition_map(self, Skeleton):
-        adapted = dict((MegaState_Target(target), trigger_set) for target, trigger_set in Skeleton)
-        return TransitionMap(adapted_skeleton).get_trigger_map()
+        """Transforms a 'skeleton', i.e. a map:
+
+                target-door  -->  NumberSet that triggers to it
+
+           into a transition map, i.e. a list of tuples
+
+                (interval, MegaState_Target)
+
+           which represents the same mapping in a 'linear' manner.
+        """
+        transition_map = TransitionMap(Skeleton).get_trigger_map()
+        for i, info in enumerate(transition_map):
+            # info[0] = interval, info[1] = target
+            transition_map[i] = (info[0], MegaState_Target(info[1]))
+        return transition_map
 
     def accept(self, Path):
         """Accepts the given Path to be walked, if the skeleton matches.
@@ -116,7 +129,9 @@ class PathWalkerState(MegaState):
         return TheEntry
 
     @property
-    def path_list(self):          assert type(self.__path_list) == list; return self.__path_list
+    def path_list(self):          
+        assert type(self.__path_list) == list
+        return self.__path_list
 
     @property
     def state_index_list(self):
@@ -228,23 +243,6 @@ class PathWalkerState(MegaState):
             for state_index, dummy in sequence[1:-1]:
                 self.entry.action_db_delete_transition(state_index, from_index)
                 from_index = state_index
-
-    def replace_door_ids_in_transition_map(self, ReplacementDB):
-        """See TemplateState, for more information."""
-        def replace_if_required(DoorId):
-            replacement = ReplacementDB.get(DoorId)
-            if replacement is not None: return replacement
-            return DoorId
-
-        for i, info in enumerate(self.transition_map):
-            interval, target = info
-
-            if target == E_StateIndices.DROP_OUT: continue
-            assert isinstance(target, DoorID)
-
-            new_door_id = ReplacementDB.get(target)
-            if new_door_id is not None:
-                self.transition_map[i] = (interval, new_door_id)
 
 def group(CharacterPathList, TheAnalyzer, CompressionType):
     """Different character paths may be walked down by the same pathwalker, if

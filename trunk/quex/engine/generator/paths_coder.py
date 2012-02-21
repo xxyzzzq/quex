@@ -81,12 +81,10 @@ import quex.engine.generator.state.transition.core  as transition_block
 import quex.engine.generator.state.drop_out         as drop_out_coder
 import quex.engine.generator.state.entry            as entry_coder
 from   quex.engine.generator.state.core             import input_do
-from   quex.engine.generator.state.transition.code  import TextTransitionCode
-from   quex.engine.generator.mega_state.core        import prepare_transition_map
+from   quex.engine.generator.mega_state.core        import prepare_transition_map, \
+                                                           drop_out_scheme_implementation
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.analyzer.state_entry_action      import DoorID
-from   quex.engine.analyzer.mega_state              import MegaState_Target
-from   quex.engine.interval_handling                import Interval
 
 
 from   quex.blackboard import setup as Setup, \
@@ -121,7 +119,9 @@ def do(txt, PWState, TheAnalyzer):
                         TheAnalyzer = TheAnalyzer)
 
     # (*) Drop Out ____________________________________________________________
-    __drop_out(txt, PWState, TheAnalyzer)
+    drop_out_scheme_implementation(txt, PWState, TheAnalyzer, 
+                                   "path_iterator - path_walker_%s_path_base" % PWState.index, 
+                                   "__quex_debug_path_walker_drop_out(%i);\n" % PWState.index)
 
     # (*) Request necessary variable definition _______________________________
     __require_data(PWState, TheAnalyzer)
@@ -198,36 +198,6 @@ def __path_walker(txt, PWState, TheAnalyzer):
                 "        %s\n" % undo_incr_decr,
                 jump_to_terminal,
                 "    %s\n" % LanguageDB.END_IF()])
-
-def __drop_out(txt, PWState, TheAnalyzer):
-    # (*) Central Label for the Templates Drop Out
-    txt.append("%s\n" % LanguageDB.LABEL_DROP_OUT(PWState.index))
-    txt.append(1)
-    txt.append("__quex_debug_path_walker_drop_out(%i);\n" % PWState.index)
-
-    # (*) Drop Out Section(s)
-    if PWState.uniform_drop_outs_f:
-        # -- uniform drop outs => no switch required
-        prototype = TheAnalyzer.state_db[PWState.state_index_list.__iter__().next()]
-        drop_out_coder.do(txt, prototype, TheAnalyzer, DefineLabelF=False)
-        return
-
-    # -- non-uniform drop outs => route by 'state_key'
-    case_list = []
-    for drop_out, state_index_list in PWState.drop_out.iteritems():
-        # state keys related to drop out
-        state_key_list = map(lambda i: PWState.state_index_list.index(i), 
-                             state_index_list)
-        # drop out action
-        prototype = TheAnalyzer.state_db[state_index_list.__iter__().next()]
-        drop_out_txt = []
-        drop_out_coder.do(drop_out_txt, prototype, TheAnalyzer, DefineLabelF=False)
-        case_list.append( (state_key_list, drop_out_txt) )
-
-    case_txt = LanguageDB.SELECTION("path_iterator - path_walker_%s_path_base" % PWState.index, 
-                                    case_list, CaseFormat="dec")
-    LanguageDB.INDENT(case_txt)
-    txt.extend(case_txt)
 
 def __require_data(PWState, TheAnalyzer):
     """Defines the transition targets for each involved state.
