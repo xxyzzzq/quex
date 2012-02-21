@@ -75,13 +75,11 @@ elif "4" in sys.argv:
             (Interval(-sys.maxint, 20), [20L, 21L]), 
             (Interval(20, sys.maxint),  [10L, 11L]), 
           ]
-    test(tm0, tm1)
+    test(tm0, 2, tm1, 2)
 
 elif "recursive" in sys.argv:
-    print "Involved states in First  = [10L, 11L]"
-    print "Involved states in Second = [20L, 21L]"
     tm1 = [ 
-            (Interval(-sys.maxint, sys.maxint), E_StateIndices.RECURSIVE),
+            (Interval(-sys.maxint, sys.maxint), (2L, 3L)),
           ]
-    test(tm0, tm1, [10L, 11L], [20L, 21L])
+    test(tm0, 2, tm1, 2)
 
