@@ -212,21 +212,6 @@ class TemplateState(MegaState):
         else:
             return [(interval, adapt(target))                  for interval, target in State.transition_map ]
 
-    def replace_door_ids_in_transition_map(self, ReplacementDB):
-        """ReplacementDB:    DoorID --> Replacement DoorID
-
-           The Existence of MegaStates has the consequence that transitions
-           have to be adapted. Let 'X' be a state that has been absorbed by 
-           a MegaState 'M'. Then a transition from another state 'Y' to 'X' is 
-           originally associated with DoorID 'Dyx'. Since 'X' is now part
-           of a MegaState, the transition 'from Y to X' has been associated
-           with the DoorID 'Dyxm' which is the MegaState's entry that represents
-           'from Y to X'. Any transition 'Dyx' must now be replaced by 'Dyxm'.
-        """
-        for interval, target in self.transition_map:
-            if target.drop_out_f: continue
-            target.door_id_replacement(ReplacementDB)
-
 def combine_drop_out_scheme(StateIndexListA, A, StateIndexListB, B):
     """A 'scheme' is a dictionary that maps:
              

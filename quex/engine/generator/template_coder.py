@@ -1,10 +1,9 @@
 # (C) 2009-2011 Frank-Rene Schaefer
 import quex.engine.generator.state.transition.core  as transition_block
-from   quex.engine.generator.state.transition.code  import TextTransitionCode
-import quex.engine.generator.state.drop_out         as drop_out_coder
 import quex.engine.generator.state.entry            as entry_coder
 from   quex.engine.generator.state.core             import input_do
-from   quex.engine.generator.mega_state.core        import prepare_transition_map
+from   quex.engine.generator.mega_state.core        import prepare_transition_map, \
+                                                           drop_out_scheme_implementation
 from   quex.engine.generator.languages.address      import get_address, get_label
 from   quex.engine.generator.languages.variable_db  import variable_db
 
@@ -113,69 +112,23 @@ def do(txt, TState, TheAnalyzer):
                         DebugStateStr = "    __quex_debug_template_state(%i, state_key);\n" % TState.index)
 
     # (*) Drop Out ____________________________________________________________
-    __drop_out(txt, TState, TheAnalyzer)
+    drop_out_scheme_implementation(txt, TState, TheAnalyzer, 
+                                   "state_key", 
+                                   "__quex_debug_template_drop_out(%i, state_key);" % TState.index)
 
     # (*) Request necessary variable definition _______________________________
     #     (BEFORE we translate the transition map, somehow)
-    variable_db.require("state_key")
     __require_data(TState, TheAnalyzer)
 
     return 
-
-def __drop_out(txt, TState, TheAnalyzer):
-    """DropOut Section:
-
-       The drop out section is the place where we come if the transition map
-       does not trigger to another state. We also land here if the reload fails.
-       The routing to the different drop-outs of the related states happens by 
-       means of a switch statement, e.g.
-       
-       _4711: /* Address of the drop out */
-           switch( state_key ) {
-           case 0:
-                 ... drop out of state 815 ...
-           case 1: 
-                 ... drop out of state 541 ...
-           }
-
-       The switch statement is not necessary if all drop outs are the same, 
-       of course.
-    """
-    # (*) Central Label for the Templates Drop Out
-    #     (The rules for having or not having a label here are complicated, 
-    #      so rely on the label's usage database.)
-    txt.append("%s:\n" % get_label("$drop-out", TState.index))
-    txt.append("   __quex_debug_template_drop_out(%i, state_key);\n" % TState.index)
-
-    # (*) Drop Out Section(s)
-    if TState.uniform_drop_outs_f:
-        # -- uniform drop outs => no switch required
-        prototype = TheAnalyzer.state_db[TState.state_index_list[0]]
-        tmp = []
-        drop_out_coder.do(tmp, prototype, TheAnalyzer, DefineLabelF=False)
-        txt.extend(tmp)
-        return
-
-    # -- non-uniform drop outs => route by 'state_key'
-    case_list = []
-    for drop_out, state_index_list in TState.drop_out.iteritems():
-        # state keys related to drop out
-        state_key_list = map(lambda i: TState.state_index_list.index(i), state_index_list)
-        # drop out action
-        prototype = TheAnalyzer.state_db[state_index_list[0]]
-        action = []
-        drop_out_coder.do(action, prototype, TheAnalyzer, DefineLabelF=False)
-        case_list.append( (state_key_list, action) )
-
-    case_txt = LanguageDB.SELECTION("state_key", case_list)
-    LanguageDB.INDENT(case_txt)
-    txt.extend(case_txt)
 
 def __require_data(TState, TheAnalyzer):
     """Defines the transition targets for each involved state. Note, that recursion
        is handled as part of the general case, where all involved states target 
        a common door of the template state.
     """
+    variable_db.require("state_key")
+
     def help(AdrList):
         return "".join(["{ "] + map(lambda adr: "QUEX_LABEL(%i), " % adr, AdrList) + [" }"])
 
