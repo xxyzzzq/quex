@@ -29,7 +29,7 @@ class TemplateStateCandidate(TemplateState):
         drop_out_gain       = _compute_drop_out_gain(self.drop_out, 
                                                      StateA.drop_out, StateA.index, 
                                                      StateB.drop_out, StateB.index)
-        transition_map_gain = _transition_map_gain(self.transition_map, 
+        transition_map_gain = _transition_map_gain(self.transition_map, self.target_scheme_list,
                                                    StateA.transition_map, StateB.transition_map)
 
         self.__gain         = (entry_gain + drop_out_gain + transition_map_gain).total()
@@ -88,14 +88,14 @@ class Cost:
         result += self.__jump_n       * 8  # Bytes (= 4 bytes command + 4 bytes address)
         return result
                
-def _transition_map_gain(CombinedTM, TM_A, TM_B):
+def _transition_map_gain(CombinedTM, TargetSchemeList, TM_A, TM_B):
     """Estimate the gain that can be achieved by combining two transition
        maps into a signle one.
     
     """
     a_cost        = _transition_cost(TM_A)
     b_cost        = _transition_cost(TM_B)
-    combined_cost = _transition_cost(CombinedTM)
+    combined_cost = _transition_cost(CombinedTM, TargetSchemeList)
 
     return (a_cost + b_cost) - combined_cost
 
@@ -192,7 +192,7 @@ def _drop_out_cost(X):
     else:
         assert False
 
-def _transition_cost(TM):
+def _transition_cost(TM, TargetSchemeList=None):
     """Computes the storage consumption of a transition map.
     """
     interval_n = len(TM)
@@ -200,18 +200,12 @@ def _transition_cost(TM):
     # 
     jump_n     = interval_n * 2  # because: if 'jump', else 'jump'
     cmp_n      = border_n
-    # For each target scheme, the target state needs to be stored for each state_key.
-    target_scheme_n  = 0
-    involved_state_n = 0
-
-    for target in (t for interval, t in TM if isinstance(t, MegaState_Target)):
-        if target.scheme is None: continue
-        if involved_state_n == 0:
-            # The number of involved states is the same for all target schemes.
-            involved_state_n = len(target.scheme)
-        target_scheme_n += 1
-
-    byte_n = (target_scheme_n * involved_state_n) * 4
+    if TargetSchemeList is not None:
+        # For each target scheme, the target state needs to be stored for each state_key.
+        target_scheme_element_n  = sum(len(target.scheme) for target in TargetSchemeList)
+        byte_n = target_scheme_element_n * 4
+    else:
+        byte_n = 0
     return Cost(ComparisonN=cmp_n, JumpN=jump_n, ByteN=byte_n)
 
 

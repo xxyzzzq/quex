@@ -39,12 +39,10 @@ def test(TriggerMapList):
 
     db = templates.CombinationDB(analyzer, 33, E_Compression.TEMPLATE, analyzer.state_db.keys())
 
+    print "Gain Matrix"
+    print "State0  State1 Gain"
     for element in db.gain_matrix:
-        print
-        ## print_tm(element[2].transition_map)
-        print "Combination: %i & %i"  % (element[0], element[1])
-        print_metric(element[2].transition_map)
-        print "##Gain:        %i" % element[2].gain
+        print "%i      %i      %i" % (element[0], element[1], element[2].gain)
 
     info = db.pop_best()
     print "Best matching pair: ",
