@@ -1,6 +1,4 @@
-
-Combination: 1 & 2
-BorderN        = 5
-Target Schemes = (10, 11), (20, 21), (30, 31), (40, 41)
-##Gain:        144
+Gain Matrix
+State0  State1 Gain
+1      2      144
 Best matching pair:  (1, 2)

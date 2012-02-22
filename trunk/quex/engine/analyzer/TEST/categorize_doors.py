@@ -19,20 +19,17 @@ if "--hwut-info" in sys.argv:
 
 choice = sys.argv[1]
 
-AcceptInfo = namedtuple("AcceptInfo", ("pre_context_id", "pattern_id"))
-StoreInfo  = namedtuple("StoreInfo",  ("pre_context_id", "position_register", "offset"))
-
-A1   = [AcceptInfo(x, y) for x, y in [(1, 10), (2, 20)]]
-A2   = [AcceptInfo(x, y) for x, y in [(2, 20), (1, 10)]]
-S000 = StoreInfo(0, 0, 0) # 1
-S001 = StoreInfo(0, 0, 1) # 2
-S002 = StoreInfo(0, 0, 2) # 3
-S100 = StoreInfo(1, 0, 0) # 4
-S101 = StoreInfo(1, 0, 1) # 5
-S102 = StoreInfo(1, 0, 2) # 6
-S010 = StoreInfo(0, 1, 0) # 7
-S011 = StoreInfo(0, 1, 1) # 8
-S012 = StoreInfo(0, 1, 2) # 9
+A1   = [AccepterElement(x, y) for x, y in [(1, 10), (2, 20)]]
+A2   = [AccepterElement(x, y) for x, y in [(2, 20), (1, 10)]]
+S000 = StoreInputPosition(0, 0, 0) # 1
+S001 = StoreInputPosition(0, 0, 1) # 2
+S002 = StoreInputPosition(0, 0, 2) # 3
+S100 = StoreInputPosition(1, 0, 0) # 4
+S101 = StoreInputPosition(1, 0, 1) # 5
+S102 = StoreInputPosition(1, 0, 2) # 6
+S010 = StoreInputPosition(0, 1, 0) # 7
+S011 = StoreInputPosition(0, 1, 1) # 8
+S012 = StoreInputPosition(0, 1, 2) # 9
 
 def test(ActionDB):
     entry = Entry(0, ActionDB.keys())
@@ -118,12 +115,24 @@ elif "10" in sys.argv:
         result = copy(actions)
         del result[Index % L]
         return result
-    action_db = dict((i, get_actions(i)) for i in xrange(10))
+
+    print "ActionDB:"
+    action_db = {}
+    for i in xrange(10):
+        action_list = get_actions(i)
+        print "(0<-%i):" % i
+        txt = []
+        for action in action_list:
+            txt.append("    %s\n" % repr(action).replace("\n", ""))
+        txt.sort()
+        print "".join(txt)
+        action_db[i] = action_list
+    print "-----------------------------------"
 
 elif "11" in sys.argv:
     from quex.blackboard import setup as Setup
     Setup.state_entry_analysis_complexity_limit = 5
-    action_db = dict((i, [StoreInfo(0, 0, i)]) for i in xrange(10))
+    action_db = dict((i, [StoreInputPosition(0, 0, i)]) for i in xrange(10))
 
 elif "set_state_key" in sys.argv:
     action_list = [
@@ -136,7 +145,6 @@ elif "set_state_key" in sys.argv:
         TransitionAction(3, 2, CommandList([ SetTemplateStateKey(3) ])),
         TransitionAction(4, 2, CommandList([ SetTemplateStateKey(4) ])),
     ]
-    print "##here:"
     door_db, transition_db, door_tree_root = categorize_command_lists(4711, action_list)
     print door_tree_root.get_string(transition_db)
     sys.exit(0)
