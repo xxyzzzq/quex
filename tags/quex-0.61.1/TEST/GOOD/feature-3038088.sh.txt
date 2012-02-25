@@ -1,0 +1,20 @@
+simple.qx:13:warning: Detected implicit token identifier definitions. Proposal:
+simple.qx:13:warning:    token {
+simple.qx:13:warning:      Z;
+simple.qx:13:warning:    }
+simple.qx:2:warning: Token id 'UNINITIALIZED'
+simple.qx:8:warning: and token id 'F' have same numeric value '111'.
+simple.qx:5:warning: Token id 'C'
+simple.qx:7:warning: and token id 'E' have same numeric value '115'.
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_A             = ((QUEX_TYPE_TOKEN_ID)112);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_B             = ((QUEX_TYPE_TOKEN_ID)113);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_C             = ((QUEX_TYPE_TOKEN_ID)115);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_D             = ((QUEX_TYPE_TOKEN_ID)114);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_DEDENT        = ((QUEX_TYPE_TOKEN_ID)3);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_E             = ((QUEX_TYPE_TOKEN_ID)115);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_F             = ((QUEX_TYPE_TOKEN_ID)111);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_INDENT        = ((QUEX_TYPE_TOKEN_ID)2);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_NODENT        = ((QUEX_TYPE_TOKEN_ID)4);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_TERMINATION   = ((QUEX_TYPE_TOKEN_ID)0);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_UNINITIALIZED = ((QUEX_TYPE_TOKEN_ID)111);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_Z             = ((QUEX_TYPE_TOKEN_ID)116);

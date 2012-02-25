@@ -1,0 +1,11 @@
+token { 
+    OTHER;
+}
+
+define {
+    Q    (" "?1)?
+}
+
+mode X {
+    Q { }
+}

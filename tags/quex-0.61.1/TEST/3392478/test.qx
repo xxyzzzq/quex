@@ -1,0 +1,19 @@
+token { REST; APO; SC; NEWLINE; }
+
+define
+{
+	//-------------------------------------------------------------
+	// scripts
+	//-------------------------------------------------------------
+	APO		([a]+[\X2019])+([a]{2,})?
+}
+
+mode STANDARD
+{
+	<<EOF>>		=> QUEX_TKN_TERMINATION;
+	<<FAIL>>	=> QUEX_TKN_REST(Lexeme);
+
+    [ \n]       => QUEX_TKN_NEWLINE(LexemeNull); // Input stream contains newline!
+	[\X00AC]	=> QUEX_TKN_SC(Lexeme);
+	{APO}/[^a]	=> QUEX_TKN_APO(Lexeme);
+}
