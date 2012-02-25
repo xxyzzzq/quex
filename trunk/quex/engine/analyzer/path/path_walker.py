@@ -1,11 +1,10 @@
-from   quex.engine.analyzer.state_entry_action  import SetPathIterator, DoorID, TransitionID, TransitionAction
+from   quex.engine.analyzer.state_entry_action  import SetPathIterator, TransitionID, TransitionAction
 from   quex.engine.analyzer.mega_state          import MegaState, MegaState_Target
 from   quex.engine.state_machine.transition_map import TransitionMap
 from   quex.blackboard                          import \
                                                        E_EngineTypes, \
                                                        E_InputActions, \
-                                                       E_Compression, \
-                                                       E_StateIndices
+                                                       E_Compression
 
 class PathWalkerState(MegaState):
     """A path walker state is a state that can walk along one or more paths 

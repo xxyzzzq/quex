@@ -4,7 +4,7 @@ import quex.engine.generator.state.entry            as entry_coder
 from   quex.engine.generator.state.core             import input_do
 from   quex.engine.generator.mega_state.core        import prepare_transition_map, \
                                                            drop_out_scheme_implementation
-from   quex.engine.generator.languages.address      import get_address, get_label
+from   quex.engine.generator.languages.address      import get_address
 from   quex.engine.generator.languages.variable_db  import variable_db
 
 from   quex.blackboard import setup as Setup, E_StateIndices
