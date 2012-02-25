@@ -1,13 +1,3 @@
-class Handler:
-    def __init__(self, TheState):
-        self.force_input_dereferencing_f = False
-        if isinstance(TheState, PathWalkerState):
-            self.force_input_dereferencing_f = True
-            self.require_data = self.__path_walker_require_data
-        else:
-            self.require_data = self.__template_require_data
-
-
 from   quex.blackboard                              import setup as Setup, E_StateIndices
 from   quex.engine.generator.state.transition.code  import TextTransitionCode
 from   quex.engine.analyzer.mega_state              import MegaState_Target
@@ -16,36 +6,46 @@ from   quex.engine.generator.languages.address      import get_label
 import quex.engine.generator.state.drop_out         as drop_out_coder
 import sys
 
-def do(txt, TheState, TheAnalyzer):
-    LanguageDB = Setup.language_db
-
-    handler = Handler(TheState)
-
-    # (*) Entry _______________________________________________________________
-    entry_coder.do(txt, TheState, TheAnalyzer) 
-
-    # (*) Access input character ______________________________________________
-    input_do(txt, TheState, handler.force_input_dereferencing_f) 
-
-    # (*) MegaState specific frameworks
-    handler.framework(txt, TheState, TheAnalyzer)
-
-    # (*) Transition Map ______________________________________________________
-    prepare_transition_map(TheState)
-    transition_block.do(txt, 
-                        TheState.transition_map, 
-                        TheState.index, 
-                        TheState.engine_type, 
-                        TheState.init_state_f, 
-                        TheAnalyzer = TheAnalyzer)
-
-    # (*) Drop Out ____________________________________________________________
-    __drop_out(txt, TheState, TheAnalyzer)
-
-    # (*) Request necessary variable definition _______________________________
-    handler.require_data(TheState)
-
-    return
+#class Handler:
+#    def __init__(self, TheState):
+#        self.force_input_dereferencing_f = False
+#        if isinstance(TheState, PathWalkerState):
+#            self.force_input_dereferencing_f = True
+#            self.require_data = self.__path_walker_require_data
+#        else:
+#            self.require_data = self.__template_require_data
+#
+#
+#def do(txt, TheState, TheAnalyzer):
+#    LanguageDB = Setup.language_db
+#
+#    handler = Handler(TheState)
+#
+#    # (*) Entry _______________________________________________________________
+#    entry_coder.do(txt, TheState, TheAnalyzer) 
+#
+#    # (*) Access input character ______________________________________________
+#    input_do(txt, TheState, handler.force_input_dereferencing_f) 
+#
+#    # (*) MegaState specific frameworks
+#    handler.framework(txt, TheState, TheAnalyzer)
+#
+#    # (*) Transition Map ______________________________________________________
+#    prepare_transition_map(TheState)
+#    transition_block.do(txt, 
+#                        TheState.transition_map, 
+#                        TheState.index, 
+#                        TheState.engine_type, 
+#                        TheState.init_state_f, 
+#                        TheAnalyzer = TheAnalyzer)
+#
+#    # (*) Drop Out ____________________________________________________________
+#    __drop_out(txt, TheState, TheAnalyzer)
+#
+#    # (*) Request necessary variable definition _______________________________
+#    handler.require_data(TheState)
+#
+#    return
 
 def drop_out_scheme_implementation(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
     """DropOut Section:
