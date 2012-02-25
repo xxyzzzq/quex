@@ -16,24 +16,19 @@ def do(TheAnalyzer):
 
     assert id(Setup.language_db.analyzer) == id(TheAnalyzer)
 
-    # Track what states are treated with different methods (see below)
-    remainder  = set(TheAnalyzer.state_db.keys())
-    # The init state shall never be part of a mega state
-    remainder.discard(TheAnalyzer.init_state_index)
-
     # (*) Analyzer to generate Mega States (multiple states compressed into one)
-    mega_state_list, remainder = mega_state_analyzer(TheAnalyzer, remainder)
+    mega_state_analyzer(TheAnalyzer)
 
     # (*) Init State must be first!
     txt = []
     state_coder.do(txt, TheAnalyzer.state_db[TheAnalyzer.init_state_index], TheAnalyzer)
 
     # (*) Code the Mega States (implementing multiple states in one)
-    mega_state_coder(txt, mega_state_list, TheAnalyzer)
+    mega_state_coder(txt, TheAnalyzer.mega_state_list, TheAnalyzer)
 
     # (*) All other (normal) states (sorted by their frequency of appearance)
-    frequency_db = get_frequency_db(TheAnalyzer.state_db, remainder)
-    for state in sorted(imap(lambda i: TheAnalyzer.state_db[i], remainder), 
+    frequency_db = get_frequency_db(TheAnalyzer.state_db, TheAnalyzer.non_mega_state_index_set)
+    for state in sorted(imap(lambda i: TheAnalyzer.state_db[i], TheAnalyzer.non_mega_state_index_set), 
                         key=lambda s: frequency_db[s.index], reverse=True):
         state_coder.do(txt, state, TheAnalyzer) 
 
@@ -42,15 +37,21 @@ def do(TheAnalyzer):
 
     return txt
 
-def mega_state_analyzer(TheAnalyzer, remainder):
-    mega_state_list = []
+def mega_state_analyzer(TheAnalyzer):
+    # Track what states are treated with different methods (see below)
+    remainder  = set(TheAnalyzer.state_db.keys())
+    # The init state shall never be part of a mega state
+    remainder.discard(TheAnalyzer.init_state_index)
+
+    mega_state_list      = []
+    remainder = set(TheAnalyzer.state_db.keys())
+    remainder.remove(TheAnalyzer.init_state_index)
     for ctype in Setup.compression_type_list:
         # -- Path-Compression
         if ctype in (E_Compression.PATH, E_Compression.PATH_UNIFORM):
             done_state_index_list, \
             new_mega_state_list    = path_analyzer.do(TheAnalyzer, ctype, 
                                                       remainder, mega_state_list)
-            remainder.difference_update(done_state_index_list)
     
         # -- Template-Compression
         elif ctype in (E_Compression.TEMPLATE, E_Compression.TEMPLATE_UNIFORM):
@@ -58,15 +59,16 @@ def mega_state_analyzer(TheAnalyzer, remainder):
             new_mega_state_list    = template_analyzer.do(TheAnalyzer, 
                                                           Setup.compression_template_min_gain, ctype, 
                                                           remainder, mega_state_list)
-            remainder.difference_update(done_state_index_list)
         else:
             assert False
 
         mega_state_transition_adaption(TheAnalyzer, new_mega_state_list, mega_state_list)
 
+        remainder.difference_update(done_state_index_list)
         mega_state_list.extend(new_mega_state_list)
 
-    return mega_state_list, remainder
+    TheAnalyzer.non_mega_state_index_set = remainder
+    TheAnalyzer.mega_state_list          = mega_state_list
 
 def mega_state_transition_adaption(TheAnalyzer, NewMegaStateList, OldMegaStateList):
     """Some AnalyzerState objects have been implemented in Mega States that 

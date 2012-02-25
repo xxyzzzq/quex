@@ -326,7 +326,7 @@ class Analyzer:
         Before we do not reach a state that actually restores the position, it
         does make little sense to store the input position. 
 
-        Critical Point: Loops and Forks
+                         Critical Point: Loops and Forks
 
         If a loop is reached then the input position can no longer be determined
         by the transition number. The good news is that during 'configure_drop_out'
@@ -334,6 +334,8 @@ class Analyzer:
         Thus 'restore_position_f(register)' is enough to catch this case.
         """
         for state_index, pattern_id, info in self.__require_position_storage_list:
+            # state_index  --> state that restores the input position
+            # pattern_id   --> pattern which is concerned
             for path in info.path_list_since_positioning:
                 # Never store the input position in the state itself. The input position
                 # is reached after the entries have been passed.
