@@ -12,8 +12,8 @@ from   operator        import attrgetter
 
 """Template Compression _______________________________________________________
 
-   Consider the file 'analyzer/template/core.py' for a detailed explanation of 
-   template compression.
+   Consider the file 'analyzer/mega_state/template/core.py' for a detailed 
+   explanation of template compression.
 
    Code Generation ____________________________________________________________
 
