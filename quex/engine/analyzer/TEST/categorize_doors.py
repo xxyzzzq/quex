@@ -4,8 +4,8 @@ import os
 import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.engine.analyzer.state_entry        import *
-from   quex.engine.analyzer.state_entry_action import *
+from   quex.engine.analyzer.state.entry        import *
+from   quex.engine.analyzer.state.entry_action import *
 import help
 
 from   collections import namedtuple

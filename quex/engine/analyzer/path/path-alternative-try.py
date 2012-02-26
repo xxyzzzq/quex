@@ -1,4 +1,4 @@
-from quex.engine.analyzer.core import AnalyzerState
+from quex.engine.analyzer.state.core import AnalyzerState
 
 from quex.engine.interval_handling import NumberSet
 from quex.blackboard import E_StateIndices

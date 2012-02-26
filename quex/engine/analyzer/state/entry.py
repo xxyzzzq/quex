@@ -1,5 +1,5 @@
-import quex.engine.analyzer.state_entry_action as entry_action
-from   quex.engine.analyzer.state_entry_action import TransitionID, TransitionAction, DoorID
+import quex.engine.analyzer.state.entry_action as entry_action
+from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction, DoorID
 from   quex.blackboard          import \
                                        E_PreContextIDs,  \
                                        E_AcceptanceIDs, E_PostContextIDs, \

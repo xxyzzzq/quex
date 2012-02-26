@@ -5,11 +5,11 @@ from   copy import deepcopy
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
-from   quex.engine.interval_handling  import *
-import quex.engine.state_machine.core as     core
-from   quex.engine.analyzer.core      import AnalyzerState
-from   quex.engine.analyzer.path.core import __select_longest_intersecting_paths, CharacterPath     
-from   quex.blackboard                import E_EngineTypes
+from   quex.engine.interval_handling    import *
+import quex.engine.state_machine.core   as     core
+from   quex.engine.analyzer.state.core  import AnalyzerState
+from   quex.engine.analyzer.path.core   import __select_longest_intersecting_paths, CharacterPath     
+from   quex.blackboard                  import E_EngineTypes
 
 if "--hwut-info" in sys.argv:
     print "Paths: select_longest_intersecting_path;"
