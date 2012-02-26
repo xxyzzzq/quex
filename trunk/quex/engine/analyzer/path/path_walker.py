@@ -1,5 +1,5 @@
-from   quex.engine.analyzer.state_entry_action  import SetPathIterator, TransitionID, TransitionAction
-from   quex.engine.analyzer.mega_state          import MegaState, MegaState_Target
+from   quex.engine.analyzer.state.entry_action  import SetPathIterator, TransitionID, TransitionAction
+from   quex.engine.analyzer.mega_state.core     import MegaState, MegaState_Target
 from   quex.engine.state_machine.transition_map import TransitionMap
 from   quex.blackboard                          import \
                                                        E_EngineTypes, \

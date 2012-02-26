@@ -1,8 +1,8 @@
 import quex.engine.analyzer.template.core      as templates 
 import quex.engine.state_machine.index         as index
-from   quex.engine.analyzer.core               import AnalyzerState
-from   quex.engine.analyzer.state_entry        import Entry
-from   quex.engine.analyzer.state_entry_action import DoorID
+from   quex.engine.analyzer.state.core         import AnalyzerState
+from   quex.engine.analyzer.state.entry        import Entry
+from   quex.engine.analyzer.state.entry_action import DoorID
 from   quex.engine.analyzer.template.state     import MegaState_Target, TemplateState
 from   quex.engine.state_machine.core          import State
 from   quex.engine.interval_handling           import NumberSet, Interval

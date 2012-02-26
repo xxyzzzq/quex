@@ -1,6 +1,6 @@
-from   quex.engine.analyzer.state_entry           import repr_acceptance_id, repr_pre_context_id, repr_positioning
-from   quex.blackboard import E_PreContextIDs, E_AcceptanceIDs, E_TransitionN
-from   itertools        import ifilter, imap
+from   quex.engine.analyzer.state.entry  import repr_acceptance_id, repr_pre_context_id, repr_positioning
+from   quex.blackboard                   import E_PreContextIDs, E_AcceptanceIDs, E_TransitionN
+from   itertools                         import ifilter, imap
 
 class DropOut(object):
     """The general drop-out of a state has the following two 'sub-tasks'

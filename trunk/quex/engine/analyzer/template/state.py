@@ -1,9 +1,9 @@
 from   quex.engine.generator.state.transition.core  import assert_adjacency
-from   quex.engine.analyzer.state_entry             import Entry
-from   quex.engine.analyzer.state_entry_action      import SetTemplateStateKey, DoorID
+from   quex.engine.analyzer.state.core              import get_input_action
+from   quex.engine.analyzer.state.entry             import Entry
+from   quex.engine.analyzer.state.entry_action      import SetTemplateStateKey, DoorID
+from   quex.engine.analyzer.mega_state.core         import MegaState, MegaState_Target
 from   quex.engine.interval_handling                import Interval
-from   quex.engine.analyzer.core                    import get_input_action
-from   quex.engine.analyzer.mega_state              import MegaState, MegaState_Target
 from   quex.blackboard                              import E_StateIndices
 
 from   itertools   import chain

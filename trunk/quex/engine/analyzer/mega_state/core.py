@@ -1,6 +1,6 @@
 import quex.engine.state_machine.index         as     index
-from   quex.engine.analyzer.core               import AnalyzerState
-from   quex.engine.analyzer.state_entry_action import DoorID
+from   quex.engine.analyzer.state.core         import AnalyzerState
+from   quex.engine.analyzer.state.entry_action import DoorID
 from   quex.blackboard                         import E_StateIndices
 
 class MegaState(AnalyzerState):
