@@ -1,5 +1,5 @@
 from quex.engine.analyzer.state.core import AnalyzerState
-from quex.engine.analyzer.path.path_walker import PathWalkerState
+from quex.engine.analyzer.mega_state.path.path_walker import PathWalkerState
 from quex.blackboard import setup as Setup,  \
                             E_EngineTypes
 

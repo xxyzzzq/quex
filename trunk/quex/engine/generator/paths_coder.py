@@ -2,8 +2,8 @@
 
    Path Compression ___________________________________________________________
 
-   Consider the file 'engine/analyzer/path/core.py' for a detailed explanation 
-   of path compression.
+   Consider the file 'engine/analyzer/mega_state/path/core.py' for a detailed 
+   explanation of path compression.
 
    Code Generation ____________________________________________________________
 
