@@ -55,7 +55,7 @@ class AnalyzerState(object):
             if E_StateIndices.NONE not in FromStateIndexList:
                 FromStateIndexList.add(E_StateIndices.NONE)
 
-        # Test "quex/engine/analyzer/template/TEST/best_matching_pair.py" would not work!
+        # Test "quex/engine/analyzer/mega_state/template/TEST/best_matching_pair.py" would not work!
         # assert len(FromStateIndexList) != 0
 
         # (*) Entry Action

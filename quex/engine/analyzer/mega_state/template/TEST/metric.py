@@ -3,8 +3,8 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.engine.analyzer.template.state              import combine_maps
-from   quex.engine.analyzer.template.TEST.templates_aux import *
+from   quex.engine.analyzer.mega_state.template.state              import combine_maps
+from   quex.engine.analyzer.mega_state.template.TEST.templates_aux import *
 from   quex.engine.interval_handling import *
 
 from   quex.blackboard  import E_StateIndices

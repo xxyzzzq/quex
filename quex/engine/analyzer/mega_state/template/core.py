@@ -1,8 +1,7 @@
-from   quex.engine.analyzer.template.state     import TemplateState
-from   quex.engine.analyzer.template.candidate import TemplateStateCandidate
-from   quex.blackboard                         import E_Compression
-
-from   itertools   import ifilter, islice
+from   quex.engine.analyzer.mega_state.template.state     import TemplateState
+from   quex.engine.analyzer.mega_state.template.candidate import TemplateStateCandidate
+from   quex.blackboard import E_Compression
+from   itertools       import ifilter, islice
 
 # (C) 2010 Frank-Rene Schaefer
 """

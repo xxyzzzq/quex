@@ -1,13 +1,14 @@
-import quex.engine.analyzer.template.core      as templates 
-import quex.engine.state_machine.index         as index
-from   quex.engine.analyzer.state.core         import AnalyzerState
-from   quex.engine.analyzer.state.entry        import Entry
-from   quex.engine.analyzer.state.entry_action import DoorID
-from   quex.engine.analyzer.template.state     import MegaState_Target, TemplateState
-from   quex.engine.state_machine.core          import State
-from   quex.engine.interval_handling           import NumberSet, Interval
-from   quex.blackboard                         import E_EngineTypes
-from   operator import attrgetter
+import quex.engine.state_machine.index                as index
+from   quex.engine.analyzer.state.core                import AnalyzerState
+from   quex.engine.analyzer.state.entry               import Entry
+from   quex.engine.analyzer.state.entry_action        import DoorID
+import quex.engine.analyzer.mega_state.template.core  as templates 
+from   quex.engine.analyzer.mega_state.template.state import MegaState_Target, TemplateState
+from   quex.engine.state_machine.core                 import State
+from   quex.engine.interval_handling                  import NumberSet, Interval
+from   quex.blackboard                                import E_EngineTypes
+
+from   operator    import attrgetter
 from   collections import defaultdict
 
 import sys
