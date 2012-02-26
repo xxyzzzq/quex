@@ -6,7 +6,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.engine.interval_handling        import *
 import quex.engine.state_machine.core          as core
 import quex.engine.state_machine.algorithm.nfa_to_dfa as nfa_to_dfa
-import quex.engine.analyzer.path.core          as paths 
+import quex.engine.analyzer.mega_state.path.core          as paths 
 from   quex.engine.analyzer.core               import Analyzer
 from   quex.blackboard                         import E_EngineTypes, E_Compression
 

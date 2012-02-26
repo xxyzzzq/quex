@@ -5,11 +5,11 @@ from   copy import deepcopy
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
-import quex.engine.state_machine.core  as     core
-from   quex.engine.analyzer.state.core import AnalyzerState
-from   quex.engine.analyzer.path.core  import __filter_redundant_paths, CharacterPath     
-from   quex.blackboard                 import E_EngineTypes
-from   quex.engine.interval_handling   import *
+import quex.engine.state_machine.core             as     core
+from   quex.engine.analyzer.state.core            import AnalyzerState
+from   quex.engine.analyzer.mega_state.path.core  import __filter_redundant_paths, CharacterPath     
+from   quex.blackboard                            import E_EngineTypes
+from   quex.engine.interval_handling              import *
 
 if "--hwut-info" in sys.argv:
     print "Paths: filter_redundant_paths;"
