@@ -3,9 +3,9 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.engine.analyzer.template.core               as templates
-from   quex.engine.analyzer.template.state              import combine_maps, TemplateState
-from   quex.engine.analyzer.template.TEST.templates_aux import *
+import quex.engine.analyzer.mega_state.template.core               as templates
+from   quex.engine.analyzer.mega_state.template.state              import combine_maps, TemplateState
+from   quex.engine.analyzer.mega_state.template.TEST.templates_aux import *
 
 from   quex.engine.interval_handling import *
 

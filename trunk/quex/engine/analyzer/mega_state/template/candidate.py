@@ -6,8 +6,8 @@ from quex.engine.analyzer.core import \
                                       DropOut, \
                                       DropOutBackward, \
                                       DropOutBackwardInputPositionDetection
-from quex.engine.analyzer.template.state import TemplateState, \
-                                                get_iterable
+from quex.engine.analyzer.mega_state.template.state import TemplateState, \
+                                                           get_iterable
 from quex.blackboard import E_AcceptanceIDs, \
                             E_TransitionN
 
