@@ -23,7 +23,7 @@ Setup.language_db = languages.db["C"]
 from   quex.engine.interval_handling           import NumberSet, Interval
 from   quex.engine.state_machine.core          import State, StateMachine
 import quex.engine.state_machine.index         as index
-from   quex.engine.analyzer.state_entry_action import DoorID
+from   quex.engine.analyzer.state.entry_action import DoorID
 
 import quex.engine.generator.languages.core        as languages
 import quex.engine.generator.languages.address     as address

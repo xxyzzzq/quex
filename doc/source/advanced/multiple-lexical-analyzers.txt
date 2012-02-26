@@ -22,7 +22,28 @@ Similarly, the token class can be specified by means of ``--token-class, --tc``:
 
 specifies that the generated token class ``MyToken`` is inside the namespace
 ``castle``, which contains ``room``, which contains ``jewel_case``. If no namespace
-is specified the namespace of the lexical analyzer class.
+is specified, then the token class is placed in the namespace of the 
+lexical analyzer class. In any case, when migrating from a single to multiple
+lexical analyzers, then your code must reflect this. For example, a code fragment
+as
+
+.. code-block:: cpp
+
+   int main(int argc, char** argv) {
+        using namespace quex;
+        ALexer     qlex("example.txt");
+        ...
+   }
+
+should be adapted to something similar to
+
+.. code-block:: cpp
+
+   int main(int argc, char** argv) {
+        namespace1::ALexer     a_lexer("example.a");
+        namespace2::BLexer     b_lexer("example.b");
+        ...
+   }
 
 In conclusion, the only thing that has to be made sure is that the generated
 analyzers live in separate namespaces. All related entities of the analyzers
