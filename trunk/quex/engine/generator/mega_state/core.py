@@ -1,6 +1,6 @@
 from   quex.blackboard                              import setup as Setup, E_StateIndices
 from   quex.engine.generator.state.transition.code  import TextTransitionCode
-from   quex.engine.analyzer.mega_state              import MegaState_Target
+from   quex.engine.analyzer.mega_state.core         import MegaState_Target
 from   quex.engine.interval_handling                import Interval
 from   quex.engine.generator.languages.address      import get_label
 import quex.engine.generator.state.drop_out         as drop_out_coder

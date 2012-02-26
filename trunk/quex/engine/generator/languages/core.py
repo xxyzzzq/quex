@@ -23,7 +23,7 @@ from   quex.blackboard                           import E_StateIndices,  \
                                                         E_InputActions,  \
                                                         E_TransitionN,   \
                                                         E_PreContextIDs
-import quex.engine.analyzer.state_entry_action   as entry_action
+import quex.engine.analyzer.state.entry_action   as entry_action
 from   copy                                      import copy
 
 from   itertools import islice

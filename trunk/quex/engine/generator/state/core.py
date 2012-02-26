@@ -1,5 +1,5 @@
-from   quex.engine.analyzer.core import Analyzer, \
-                                        AnalyzerState
+from   quex.engine.analyzer.core       import Analyzer
+from   quex.engine.analyzer.state.core import AnalyzerState
 import quex.engine.generator.state.transition.core  as transition_block
 import quex.engine.generator.state.entry            as entry
 import quex.engine.generator.state.drop_out         as drop_out
