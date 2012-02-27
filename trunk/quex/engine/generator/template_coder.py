@@ -2,8 +2,6 @@
 import quex.engine.generator.state.transition.core  as transition_block
 import quex.engine.generator.state.entry            as entry_coder
 from   quex.engine.generator.state.core             import input_do
-from   quex.engine.generator.mega_state.core        import prepare_transition_map, \
-                                                           drop_out_scheme_implementation
 from   quex.engine.generator.languages.address      import get_address
 from   quex.engine.generator.languages.variable_db  import variable_db
 
@@ -86,47 +84,16 @@ from   operator        import attrgetter
             ...
             }
 """
-LanguageDB = None # Set during call to 'do()', not earlier
 
-def do(txt, TState, TheAnalyzer):
-    """Generate code for given template state 'TState'. This follows the 
-       scheme of code generation for AnalyzerState-s in 'state_coder/core.py'.
-    """
-    global LanguageDB
-    LanguageDB = Setup.language_db
-
-    # (*) Entry _______________________________________________________________
-    entry_coder.do(txt, TState, TheAnalyzer) 
-
-    # (*) Access input character ______________________________________________
+def framework(txt, TState, TheAnalyzer):
     input_do(txt, TState) 
 
-    # (*) Transition Map ______________________________________________________
-    prepare_transition_map(TState)
-    transition_block.do(txt, 
-                        TState.transition_map, 
-                        TState.index, 
-                        TState.engine_type, 
-                        TState.init_state_f, 
-                        TheAnalyzer   = TheAnalyzer, 
-                        DebugStateStr = "    __quex_debug_template_state(%i, state_key);\n" % TState.index)
-
-    # (*) Drop Out ____________________________________________________________
-    drop_out_scheme_implementation(txt, TState, TheAnalyzer, 
-                                   "state_key", 
-                                   "__quex_debug_template_drop_out(%i, state_key);" % TState.index)
-
-    # (*) Request necessary variable definition _______________________________
-    #     (BEFORE we translate the transition map, somehow)
-    __require_data(TState, TheAnalyzer)
-
-    return 
-
-def __require_data(TState, TheAnalyzer):
+def require_data(TState, TheAnalyzer):
     """Defines the transition targets for each involved state. Note, that recursion
        is handled as part of the general case, where all involved states target 
        a common door of the template state.
     """
+    LanguageDB = Setup.language_db
     variable_db.require("state_key")
 
     def help(AdrList):

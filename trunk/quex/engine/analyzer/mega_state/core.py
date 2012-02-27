@@ -1,7 +1,9 @@
-import quex.engine.state_machine.index         as     index
-from   quex.engine.analyzer.state.core         import AnalyzerState
-from   quex.engine.analyzer.state.entry_action import DoorID
-from   quex.blackboard                         import E_StateIndices
+import quex.engine.state_machine.index               as     index
+from   quex.engine.analyzer.state.core               import AnalyzerState
+from   quex.engine.analyzer.state.entry_action       import DoorID
+from   quex.blackboard                               import E_StateIndices, E_Compression
+from   quex.blackboard                               import setup as Setup
+
 
 class MegaState(AnalyzerState):
     """A MegaState is a state that implements more than one state at once.

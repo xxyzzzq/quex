@@ -36,8 +36,10 @@ from   quex.engine.analyzer.state.core            import AnalyzerState
 from   quex.engine.analyzer.state.drop_out        import DropOut,         \
                                                          DropOutBackward, \
                                                          DropOutBackwardInputPositionDetection
+import quex.engine.analyzer.mega_state.analyzer   as     mega_state_analyzer
 import quex.engine.analyzer.position_register_map as     position_register_map
 from   quex.engine.state_machine.core             import StateMachine, State
+from   quex.blackboard  import setup as Setup
 from   quex.blackboard  import E_StateIndices, \
                                E_AcceptanceIDs, \
                                E_EngineTypes, \
@@ -48,7 +50,6 @@ from   quex.blackboard  import E_StateIndices, \
 from   collections      import defaultdict
 from   operator         import itemgetter
 from   itertools        import islice, imap, izip
-from   quex.blackboard  import setup as Setup
 
 def do(SM, EngineType=E_EngineTypes.FORWARD):
     # Generate Analyzer from StateMachine
@@ -60,6 +61,9 @@ def do(SM, EngineType=E_EngineTypes.FORWARD):
     # The language database requires the analyzer for labels etc.
     if Setup.language_db is not None:
         Setup.language_db.register_analyzer(analyzer)
+
+    # If required by the user: Combine some states into mega states.
+    mega_state_analyzer.do(analyzer)
 
     return analyzer
 
