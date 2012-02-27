@@ -77,51 +77,15 @@
             ...
             }
 """
-import quex.engine.generator.state.transition.core  as transition_block
-import quex.engine.generator.state.entry            as entry_coder
 from   quex.engine.generator.state.core             import input_do
-from   quex.engine.generator.mega_state.core        import prepare_transition_map, \
-                                                           drop_out_scheme_implementation
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.blackboard                              import setup as Setup
 
 from   itertools import imap
 
-LanguageDB = None # Set during call to 'do()', not earlier
-
-def do(txt, PWState, TheAnalyzer):
-    global LanguageDB
+def framework(txt, PWState, TheAnalyzer):
     LanguageDB = Setup.language_db
-
-    # (*) Entry _______________________________________________________________
-    entry_coder.do(txt, PWState, TheAnalyzer) 
-
-    # (*) Access input character ______________________________________________
     input_do(txt, PWState, ForceInputDereferencingF=True) 
-
-    # (*) The Path Walker Framework
-    __path_walker(txt, PWState, TheAnalyzer)
-
-    # (*) Transition Map ______________________________________________________
-    prepare_transition_map(PWState)
-    transition_block.do(txt, 
-                        PWState.transition_map, 
-                        PWState.index, 
-                        PWState.engine_type, 
-                        PWState.init_state_f, 
-                        TheAnalyzer = TheAnalyzer)
-
-    # (*) Drop Out ____________________________________________________________
-    drop_out_scheme_implementation(txt, PWState, TheAnalyzer, 
-                                   "path_iterator - path_walker_%s_path_base" % PWState.index, 
-                                   "__quex_debug_path_walker_drop_out(%i);\n" % PWState.index)
-
-    # (*) Request necessary variable definition _______________________________
-    __require_data(PWState, TheAnalyzer)
-
-    return
-
-def __path_walker(txt, PWState, TheAnalyzer):
 
     # Three Versions of PathWalkers:
     if PWState.uniform_entry_command_list_along_all_paths is not None:
@@ -198,9 +162,10 @@ def __path_walker(txt, PWState, TheAnalyzer):
 
     return
 
-def __require_data(PWState, TheAnalyzer):
+def require_data(PWState, TheAnalyzer):
     """Defines the transition targets for each involved state.
     """
+    LanguageDB = Setup.language_db
     variable_db.require("path_iterator")
 
     def __state_sequences():

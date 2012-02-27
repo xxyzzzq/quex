@@ -1,51 +1,64 @@
 from   quex.blackboard                              import setup as Setup, E_StateIndices
-from   quex.engine.generator.state.transition.code  import TextTransitionCode
+from   quex.engine.analyzer.mega_state.template.state   import TemplateState
+from   quex.engine.analyzer.mega_state.path.path_walker import PathWalkerState
 from   quex.engine.analyzer.mega_state.core         import MegaState_Target
-from   quex.engine.interval_handling                import Interval
+from   quex.engine.generator.state.transition.code  import TextTransitionCode
+import quex.engine.generator.template_coder         as     template
+import quex.engine.generator.paths_coder            as     path_walker
 from   quex.engine.generator.languages.address      import get_label
 import quex.engine.generator.state.drop_out         as drop_out_coder
+import quex.engine.generator.state.entry            as entry_coder
+import quex.engine.generator.state.transition.core  as transition_block
+from   quex.engine.interval_handling                import Interval
 import sys
 
-#class Handler:
-#    def __init__(self, TheState):
-#        self.force_input_dereferencing_f = False
-#        if isinstance(TheState, PathWalkerState):
-#            self.force_input_dereferencing_f = True
-#            self.require_data = self.__path_walker_require_data
-#        else:
-#            self.require_data = self.__template_require_data
-#
-#
-#def do(txt, TheState, TheAnalyzer):
-#    LanguageDB = Setup.language_db
-#
-#    handler = Handler(TheState)
-#
-#    # (*) Entry _______________________________________________________________
-#    entry_coder.do(txt, TheState, TheAnalyzer) 
-#
-#    # (*) Access input character ______________________________________________
-#    input_do(txt, TheState, handler.force_input_dereferencing_f) 
-#
-#    # (*) MegaState specific frameworks
-#    handler.framework(txt, TheState, TheAnalyzer)
-#
-#    # (*) Transition Map ______________________________________________________
-#    prepare_transition_map(TheState)
-#    transition_block.do(txt, 
-#                        TheState.transition_map, 
-#                        TheState.index, 
-#                        TheState.engine_type, 
-#                        TheState.init_state_f, 
-#                        TheAnalyzer = TheAnalyzer)
-#
-#    # (*) Drop Out ____________________________________________________________
-#    __drop_out(txt, TheState, TheAnalyzer)
-#
-#    # (*) Request necessary variable definition _______________________________
-#    handler.require_data(TheState)
-#
-#    return
+class Handler:
+    def __init__(self, TheState):
+        if isinstance(TheState, PathWalkerState):
+            self.require_data = path_walker.require_data
+            self.framework    = path_walker.framework   
+            self.debug_transition_map_str = "    /*##########__quex_debug_template_state(%i, state_key);*/\n" % TheState.index
+            self.state_key_str            = "path_iterator - path_walker_%s_path_base" % TheState.index, 
+            self.debug_drop_out_str       = "    __quex_debug_path_walker_drop_out(%i);\n" % TheState.index
+        elif isinstance(TheState, TemplateState):
+            self.require_data = template.require_data
+            self.framework    = template.framework   
+            self.debug_transition_map_str = "    __quex_debug_template_state(%i, state_key);\n" % TheState.index
+            self.state_key_str            = "state_key"
+            self.debug_drop_out_str       = "    __quex_debug_template_drop_out(%i, state_key);\n" % TheState.index
+        else:
+            assert False
+
+def do(txt, TheState, TheAnalyzer):
+    LanguageDB = Setup.language_db
+
+    specific = Handler(TheState)
+
+    # (*) Entry _______________________________________________________________
+    entry_coder.do(txt, TheState, TheAnalyzer) 
+
+    # (*) Access input character etc. _________________________________________
+    specific.framework(txt, TheState, TheAnalyzer)
+
+    # (*) Transition Map ______________________________________________________
+    prepare_transition_map(TheState)
+    transition_block.do(txt, 
+                        TheState.transition_map, 
+                        TheState.index, 
+                        TheState.engine_type, 
+                        TheState.init_state_f, 
+                        TheAnalyzer   = TheAnalyzer, 
+                        DebugStateStr = specific.debug_transition_map_str)
+
+    # (*) Drop Out ____________________________________________________________
+    drop_out_scheme_implementation(txt, TheState, TheAnalyzer, 
+                                   specific.state_key_str, 
+                                   specific.debug_drop_out_str)
+
+    # (*) Request necessary variable definition _______________________________
+    specific.require_data(TheState, TheAnalyzer)
+
+    return
 
 def drop_out_scheme_implementation(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
     """DropOut Section:
