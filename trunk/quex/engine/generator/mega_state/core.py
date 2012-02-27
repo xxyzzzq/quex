@@ -3,12 +3,12 @@ from   quex.engine.analyzer.mega_state.template.state   import TemplateState
 from   quex.engine.analyzer.mega_state.path.path_walker import PathWalkerState
 from   quex.engine.analyzer.mega_state.core         import MegaState_Target
 from   quex.engine.generator.state.transition.code  import TextTransitionCode
-import quex.engine.generator.template_coder         as     template
-import quex.engine.generator.paths_coder            as     path_walker
-from   quex.engine.generator.languages.address      import get_label
 import quex.engine.generator.state.drop_out         as drop_out_coder
 import quex.engine.generator.state.entry            as entry_coder
 import quex.engine.generator.state.transition.core  as transition_block
+import quex.engine.generator.mega_state.template    as template
+import quex.engine.generator.mega_state.path_walker as path_walker
+from   quex.engine.generator.languages.address      import get_label
 from   quex.engine.interval_handling                import Interval
 import sys
 
