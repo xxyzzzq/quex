@@ -1,6 +1,6 @@
-<test-database execution-time-sec="7.55" date="Sun Feb 26 08:15:15 2012">
+<test-database execution-time-sec="7.59" date="Mon Feb 27 21:29:20 2012">
     <last-used-diff-display-program name=""/>
-    <test title="Single Pattern Checks" time-sum-sec="0.89"> 
+    <test title="Single Pattern Checks" time-sum-sec="0.90"> 
         <application file-name="single-pattern.py" info-request-time="1321774366L" vanished="False"/>
         <choice-list number="11" same_result="False">
            <choice name="0" result="OK" time_sec="0.08" crc="780272067"/>
@@ -16,7 +16,7 @@
            <choice name="10" result="OK" time_sec="0.08" crc="-1742178598"/>
         </choice-list>
     </test>
-    <test title="Categorize Entry Door Actions" time-sum-sec="0.99"> 
+    <test title="Categorize Entry Door Actions" time-sum-sec="1.00"> 
         <application file-name="categorize_doors.py" info-request-time="1330239007L" vanished="False"/>
         <choice-list number="13" same_result="False">
            <choice name="1" result="OK" time_sec="0.07" crc="1835383755"/>
@@ -53,7 +53,7 @@
                <choice name="1" result="OK" time_sec="0.08" crc="-1927787346"/>
             </choice-list>
         </test>
-        <test title="With Pre- and Post-Contexts" time-sum-sec="0.92"> 
+        <test title="With Pre- and Post-Contexts" time-sum-sec="0.91"> 
             <application file-name="track_analysis-pre-post.py" info-request-time="1322860511L" vanished="False"/>
             <choice-list number="9" same_result="False">
                <choice name="1" result="OK" time_sec="0.09" crc="1283879964"/>
@@ -120,7 +120,7 @@
                <choice name="" result="OK" time_sec="0.08" crc="1798832836"/>
             </choice-list>
         </test>
-        <test title="With Post-Contexts" time-sum-sec="0.74"> 
+        <test title="With Post-Contexts" time-sum-sec="0.75"> 
             <application file-name="track_analysis-post.py" info-request-time="1321859763L" vanished="False"/>
             <choice-list number="8" same_result="False">
                <choice name="3" result="OK" time_sec="0.09" crc="-1750191229"/>
