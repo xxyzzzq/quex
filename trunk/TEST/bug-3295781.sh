@@ -8,7 +8,7 @@ fi
 tmp=`pwd`
 cd $bug/ 
 quex -i test.qx -o Simple --path-compression-uniform --template-compression --language C 2>&1
-awk '(/QUEX_NAME/ && /_analyzer_function/ && ! /=/) || /__quex_debug_path_walker_iteration/ || /__quex_debug_template_state/' Simple.c
+awk '(/QUEX_NAME/ && /_analyzer_function/ && ! /=/) || /__quex_debug_path_walker_state/ || /__quex_debug_template_state/' Simple.c
 
 echo "## Compile: No output is good output"
 gcc -I${QUEX_PATH} -c Simple.c -Wall 2>&1
