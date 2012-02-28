@@ -251,6 +251,14 @@ def snap_primary(stream, PatternDict):
             if not check(stream, "}"):
                 error_msg("Missing closing '}' after reversed pattern in \\R{ ... }.", stream)
             result  = pattern.get_inverse()
+        elif lookahead == "A":
+            stream.read(1)
+            if not check(stream, "{"):
+                error_msg("Missing opening '{' after anti-pattern operator \\A.", stream)
+            result = snap_expression(stream, PatternDict) 
+            if not check(stream, "}"):
+                error_msg("Missing closing '}' after anti-pattern pattern in \\A{ ... }.", stream)
+            result.transform_to_anti_pattern()
         else:
             stream.seek(-1, 1)
             trigger_set = character_set_expression.snap_property_set(stream)
