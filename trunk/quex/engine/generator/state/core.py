@@ -31,6 +31,7 @@ def do(code, TheState, TheAnalyzer):
 
     # (*) Access the triggering character _____________________________________
     input_do(txt, TheState)
+    LanguageDB.STATE_DEBUG_INFO(txt, TheState)
 
     # (*) Transition Map ______________________________________________________
     transition_block.do(txt, 

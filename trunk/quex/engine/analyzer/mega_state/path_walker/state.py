@@ -1,8 +1,7 @@
-from   quex.engine.analyzer.state.entry_action  import SetPathIterator, TransitionID, TransitionAction
+from   quex.engine.analyzer.state.entry_action  import SetPathIterator
 from   quex.engine.analyzer.mega_state.core     import MegaState, MegaState_Target
 from   quex.engine.state_machine.transition_map import TransitionMap
-from   quex.blackboard                          import \
-                                                       E_EngineTypes, \
+from   quex.blackboard                          import E_EngineTypes, \
                                                        E_InputActions, \
                                                        E_Compression
 
@@ -243,33 +242,3 @@ class PathWalkerState(MegaState):
                 self.entry.action_db_delete_transition(state_index, from_index)
                 from_index = state_index
 
-def group(CharacterPathList, TheAnalyzer, CompressionType):
-    """Different character paths may be walked down by the same pathwalker, if
-       certain conditions are met. This function groups the given list of
-       character paths and assigns them to PathWalkerState-s. The PathWalkerState-s
-       can then immediately be used for code generation.
-    """
-    path_walker_list = []
-    for candidate in CharacterPathList:
-        for path_walker in path_walker_list:
-            if path_walker.accept(candidate): break
-        else:
-            path_walker_list.append(PathWalkerState(candidate, TheAnalyzer, CompressionType))
-
-    for path_walker in path_walker_list:
-        if path_walker.uniform_entry_command_list_along_all_paths is not None:
-            # Assign the uniform command list to the transition 'path_walker -> path_walker'
-            transition_action = TransitionAction(path_walker.index, path_walker.index, path_walker.uniform_entry_command_list_along_all_paths)
-            # Delete transitions on the path itself => No doors for them will be implemented.
-            path_walker.delete_transitions_on_path()
-        else:
-            # Nothing special to be done upon iteration over the path
-            transition_action = TransitionAction(path_walker.index, path_walker.index)
-
-        transition_id = TransitionID(path_walker.index, path_walker.index)
-        path_walker.entry.action_db[transition_id] = transition_action
-
-        # Once the entries are combined, re-configure the door tree
-        path_walker.entry.door_tree_configure(path_walker.index)
-
-    return path_walker_list

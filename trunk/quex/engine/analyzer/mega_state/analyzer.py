@@ -1,7 +1,7 @@
-import quex.engine.analyzer.mega_state.template.core as     template_analyzer
-import quex.engine.analyzer.mega_state.path.core     as     path_analyzer
-from   quex.blackboard                               import E_StateIndices, E_Compression
-from   quex.blackboard                               import setup as Setup
+import quex.engine.analyzer.mega_state.template.core    as     template_analyzer
+import quex.engine.analyzer.mega_state.path_walker.core as     path_analyzer
+from   quex.blackboard                                  import E_Compression
+from   quex.blackboard                                  import setup as Setup
 
 def do(TheAnalyzer):
     # Track what states are treated with different methods (see below)

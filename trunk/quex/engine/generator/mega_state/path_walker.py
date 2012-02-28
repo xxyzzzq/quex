@@ -86,6 +86,7 @@ from   itertools import imap
 def framework(txt, PWState, TheAnalyzer):
     LanguageDB = Setup.language_db
     input_do(txt, PWState, ForceInputDereferencingF=True) 
+    LanguageDB.STATE_DEBUG_INFO(txt, PWState)
 
     # Three Versions of PathWalkers:
     if PWState.uniform_entry_command_list_along_all_paths is not None:
@@ -132,15 +133,14 @@ def framework(txt, PWState, TheAnalyzer):
             jump_to_terminal = code
 
         # Generate Code
-        txt.extend(["    __quex_debug_path_walker_iteration(%i, path_iterator);\n" % PWState.index,
-                    "    %s"     % LanguageDB.IF_INPUT("==", "*path_iterator"),
-                    "        %s\n" % LanguageDB.PATH_ITERATOR_INCREMENT,
-                    "        %s" % LanguageDB.IF("*path_iterator", "!=", "QUEX_SETTING_PATH_TERMINATION_CODE"),
-                    "            %s\n" % jump_to_next_state,
-                    "        %s"       % LanguageDB.ELSE,                                  
+        txt.extend(["    %s"            % LanguageDB.IF_INPUT("==", "*path_iterator"),
+                    "        %s\n"      % LanguageDB.PATH_ITERATOR_INCREMENT,
+                    "        %s"        % LanguageDB.IF("*path_iterator", "!=", "QUEX_SETTING_PATH_TERMINATION_CODE"),
+                    "            %s\n"  % jump_to_next_state,
+                    "        %s"        % LanguageDB.ELSE,                                  
                     jump_to_terminal,
-                    "        %s\n" % LanguageDB.END_IF(),
-                    "    %s\n" % LanguageDB.END_IF()])
+                    "        %s\n"      % LanguageDB.END_IF(),
+                    "    %s\n"          % LanguageDB.END_IF()])
     else:
         # (3) -- Non-Uniform entries (ALONG THE PATH)
         #        (The terminal door is going to be listed in the state sequence array)
@@ -154,8 +154,7 @@ def framework(txt, PWState, TheAnalyzer):
         jump_to_next_state = "%s" % (LanguageDB.GOTO_BY_VARIABLE(next_state))
 
         # Generate Code
-        txt.extend(["    __quex_debug_path_walker_iteration(%i, path_iterator);\n" % PWState.index,
-                    "    %s"       % LanguageDB.IF_INPUT("==", "*path_iterator"),
+        txt.extend(["    %s"       % LanguageDB.IF_INPUT("==", "*path_iterator"),
                     "        %s\n" % LanguageDB.PATH_ITERATOR_INCREMENT,
                     "        %s\n" % jump_to_next_state,
                     "    %s\n"     % LanguageDB.END_IF()])

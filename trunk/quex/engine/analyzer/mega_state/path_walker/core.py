@@ -1,7 +1,8 @@
 # (C) 2010 Frank-Rene Schaefer
-from   quex.engine.analyzer.mega_state.path.path        import CharacterPath
-import quex.engine.analyzer.mega_state.path.path_walker as     path_walker
-from   quex.blackboard                                  import E_Compression
+from   quex.engine.analyzer.mega_state.path_walker.path  import CharacterPath
+from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
+from   quex.engine.analyzer.state.entry_action           import TransitionID, TransitionAction
+from   quex.blackboard                                   import E_Compression
 
 from   copy        import deepcopy
 from   collections import defaultdict
@@ -112,12 +113,43 @@ def do(TheAnalyzer, CompressionType, AvailableStateIndexList=None, MegaStateList
     # Group the paths according to their 'skeleton'. If uniformity is required
     # then this is also a grouping criteria. The result is a list of path walkers
     # that can walk the paths. They can act as AnalyzerState-s for code generation.
-    path_walker_state_list = path_walker.group(path_list, TheAnalyzer, CompressionType)
+    path_walker_state_list = group_paths(path_list, TheAnalyzer, CompressionType)
     done_set = set()
     for pw_state in path_walker_state_list:
         done_set.update(pw_state.implemented_state_index_list())
 
     return done_set, path_walker_state_list
+
+def group_paths(CharacterPathList, TheAnalyzer, CompressionType):
+    """Different character paths may be walked down by the same pathwalker, if
+       certain conditions are met. This function groups the given list of
+       character paths and assigns them to PathWalkerState-s. The PathWalkerState-s
+       can then immediately be used for code generation.
+    """
+    path_walker_list = []
+    for candidate in CharacterPathList:
+        for path_walker in path_walker_list:
+            if path_walker.accept(candidate): break
+        else:
+            path_walker_list.append(PathWalkerState(candidate, TheAnalyzer, CompressionType))
+
+    for path_walker in path_walker_list:
+        if path_walker.uniform_entry_command_list_along_all_paths is not None:
+            # Assign the uniform command list to the transition 'path_walker -> path_walker'
+            transition_action = TransitionAction(path_walker.index, path_walker.index, path_walker.uniform_entry_command_list_along_all_paths)
+            # Delete transitions on the path itself => No doors for them will be implemented.
+            path_walker.delete_transitions_on_path()
+        else:
+            # Nothing special to be done upon iteration over the path
+            transition_action = TransitionAction(path_walker.index, path_walker.index)
+
+        transition_id = TransitionID(path_walker.index, path_walker.index)
+        path_walker.entry.action_db[transition_id] = transition_action
+
+        # Once the entries are combined, re-configure the door tree
+        path_walker.entry.door_tree_configure(path_walker.index)
+
+    return path_walker_list
 
 def __filter_redundant_paths(path_list):
     """Due to the search algorithm, it is not safe to assume that there are

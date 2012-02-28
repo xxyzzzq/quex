@@ -2,10 +2,9 @@
 """
 (C) 2010-2011 Frank-Rene Schäfer
 """
-from quex.engine.analyzer.core import \
-                                      DropOut, \
-                                      DropOutBackward, \
-                                      DropOutBackwardInputPositionDetection
+from quex.engine.analyzer.state.drop_out import DropOut, \
+                                                DropOutBackward, \
+                                                DropOutBackwardInputPositionDetection
 from quex.engine.analyzer.mega_state.template.state import TemplateState, \
                                                            get_iterable
 from quex.blackboard import E_AcceptanceIDs, \

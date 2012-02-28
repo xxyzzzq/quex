@@ -6,7 +6,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine  as regex
 from   quex.engine.generator.base            import get_combined_state_machine
-from   quex.engine.analyzer.core             import E_InputActions
+from   quex.blackboard                       import E_InputActions
 from   quex.engine.analyzer.position_register_map import print_this
 import quex.engine.analyzer.core             as core
 import help

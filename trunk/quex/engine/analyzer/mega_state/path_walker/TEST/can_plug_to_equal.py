@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.engine.interval_handling  import *
-import quex.engine.analyzer.mega_state.path.path as paths 
+import quex.engine.analyzer.mega_state.path_walker.path as paths 
 
 if "--hwut-info" in sys.argv:
     print "Paths: is_difference_single_character;"
