@@ -524,6 +524,32 @@ class StateMachine(object):
         # -- for uniqueness of state ids, clone the result
         return result.clone()    
         
+    def transform_to_anti_pattern(self):
+        """Anti Pattern: 
+                          -- drop-out                  => transition to acceptance state.
+                          -- transition to acceptances => drop-out
+        """
+        original_acceptance_state_index_list = self.get_acceptance_state_index_list()
+        acceptance_state_index               = self.create_new_state(AcceptanceF=True)
+
+        for state_index, state in self.states.iteritems():
+            if state_index == acceptance_state_index: continue
+
+            # Transform DropOuts --> Transition to Acceptance
+            drop_out_trigger_set = state.transitions().get_drop_out_trigger_set_union()
+            state.add_transition(drop_out_trigger_set, acceptance_state_index)
+
+            # Transform Transitions to Acceptance --> DropOut
+            transition_map = state.transitions().get_map()
+            for target_index in original_acceptance_state_index_list:
+                if transition_map.has_key(target_index):
+                    state.transitions().delete_transitions_to_target(target_index)
+
+        # All original target states are deleted
+        for target_index in original_acceptance_state_index_list:
+            del self.states[target_index]
+
+
     def does_sequence_match(self, UserSequence):
         """Returns: True, if the sequences ends in an acceptance state.
                     False, if not.

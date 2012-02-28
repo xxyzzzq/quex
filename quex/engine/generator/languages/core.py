@@ -147,20 +147,24 @@ class LDB(dict):
                        % (EntryAction.position_register, EntryAction.offset, EntryAction.offset)
 
         elif isinstance(EntryAction, entry_action.PreConditionOK):
-            return "    pre_context_%i_fulfilled_f = 1; __quex_debug(\"pre_context_%i_fulfilled_f = true\\n\");\n" \
-                   % (EntryAction.pre_context_id, EntryAction.pre_context_id)
+            return   "    pre_context_%i_fulfilled_f = 1;\n"                         \
+                   % EntryAction.pre_context_id                                      \
+                   + "    __quex_debug(\"pre_context_%i_fulfilled_f = true\\n\");\n" \
+                   % EntryAction.pre_context_id
 
         elif isinstance(EntryAction, entry_action.SetTemplateStateKey):
-            return "    state_key = %i; __quex_debug(\"state_key = %i\\n\");\n" \
-                   % (EntryAction.value, EntryAction.value)
+            return   "    state_key = %i;\n"                      \
+                   % EntryAction.value                            \
+                   + "    __quex_debug(\"state_key = %i\\n\");\n" \
+                   % EntryAction.value
 
         elif isinstance(EntryAction, entry_action.SetPathIterator):
             offset_str = ""
             if EntryAction.offset != 0: offset_str = " + %i" % EntryAction.offset
-            txt =   "    __quex_debug_path_walker_entry(%i, %i);\n" % \
-                    (EntryAction.path_walker_id, EntryAction.path_id) \
-                  + "    path_iterator  = path_walker_%i_path_%i%s;\n" % \
-                    (EntryAction.path_walker_id, EntryAction.path_id, offset_str)
+            txt =   "    path_iterator  = path_walker_%i_path_%i%s;\n"                   \
+                  % (EntryAction.path_walker_id, EntryAction.path_id, offset_str)        \
+                  + "    __quex_debug(\"path_iterator = (Pathwalker: %i, Path: %i, Offset: %i)\\n\");\n" \
+                  % (EntryAction.path_walker_id, EntryAction.path_id, EntryAction.offset)
             return txt
 
         else:

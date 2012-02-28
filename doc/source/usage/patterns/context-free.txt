@@ -161,6 +161,20 @@ to combine them into powerful patterns.
         then reverse expanded pattern. Inside the curly brackets of ``\R{...}``
         any pattern expression may occur in the well defined manner.
 
+.. describe:: \\A{P}
+
+     The 'anti pattern' of ``P``, that is the pattern which matches what 
+     ``P`` cannot not match.
+
+     .. note::
+
+        Let L be the set of all lexemes and M the set of lexemes that cause
+        a match of P. Then, the anti pattern \A{P} matches all lexemes from the 
+        set L subtracted the lexemes of M.
+
+     For example the anti pattern of the keyword ``if`` matches all lexemes that
+     are one letter long and do not start with ``i``. Also, matches all lexemes that
+     start with ``i`` but do not continue with ``f``.
 
 .. describe:: \\0 
 
