@@ -1,6 +1,6 @@
-from   quex.blackboard                              import setup as Setup, E_StateIndices
-from   quex.engine.analyzer.mega_state.template.state   import TemplateState
-from   quex.engine.analyzer.mega_state.path.path_walker import PathWalkerState
+from   quex.blackboard                                   import setup as Setup, E_StateIndices
+from   quex.engine.analyzer.mega_state.template.state    import TemplateState
+from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.mega_state.core         import MegaState_Target
 from   quex.engine.generator.state.transition.code  import TextTransitionCode
 import quex.engine.generator.state.drop_out         as drop_out_coder
@@ -17,22 +17,47 @@ class Handler:
         if isinstance(TheState, PathWalkerState):
             self.require_data = path_walker.require_data
             self.framework    = path_walker.framework   
-            self.debug_transition_map_str = "    /*##########__quex_debug_template_state(%i, state_key);*/\n" % TheState.index
-            self.state_key_str            = "path_iterator - path_walker_%s_path_base" % TheState.index, 
-            self.debug_drop_out_str       = "    __quex_debug_path_walker_drop_out(%i);\n" % TheState.index
+            self.state_key_str      = "path_iterator - path_walker_%s_path_base" % TheState.index, 
+            self.debug_drop_out_str = "    __quex_debug_path_walker_drop_out(%i);\n" % TheState.index
         elif isinstance(TheState, TemplateState):
             self.require_data = template.require_data
             self.framework    = template.framework   
-            self.debug_transition_map_str = "    __quex_debug_template_state(%i, state_key);\n" % TheState.index
-            self.state_key_str            = "state_key"
-            self.debug_drop_out_str       = "    __quex_debug_template_drop_out(%i, state_key);\n" % TheState.index
+            self.state_key_str      = "state_key"
+            self.debug_drop_out_str = "    __quex_debug_template_drop_out(%i, state_key);\n" % TheState.index
         else:
             assert False
 
-def do(txt, TheState, TheAnalyzer):
-    LanguageDB = Setup.language_db
+        self.state = TheState
 
+    def debug_info_map_state_key_to_state_index(self, txt):
+        txt.append("#   define __QUEX_DEBUG_MAP_STATE_KEY_TO_STATE(X) ( \\\n")
+        for state_index in self.state.implemented_state_index_list()[:-1]:
+            state_key = self.state.state_index_list.index(state_index)
+            txt.append("             (X) == %i ? %i :    \\\n" % (state_key, state_index))
+
+        state_index = self.state.implemented_state_index_list()[-1]
+        state_key = self.state.state_index_list.index(state_index)
+        txt.append("             (X) == %i ? %i : 0)" % (state_key, state_index))
+
+        if isinstance(self.state, PathWalkerState):
+            txt.append("\n#   define __QUEX_DEBUG_MAP_PATH_BASE_TO_PATH_ID(PB) ( \\\n")
+            for path_id in xrange(len(self.state.path_list) - 1):
+                txt.append("             (PB) == path_walker_%i_path_%i ? %i :    \\\n" \
+                           % (self.state.index, path_id, path_id))
+            path_id = len(self.state.path_list) - 1
+            txt.append("             (PB) == path_walker_%i_path_%i ? %i : 0)" \
+                       % (self.state.index, path_id, path_id))
+
+    def debug_info_undo_map_state_key_to_state_index(self, txt):
+        txt.append("\n#   undef __QUEX_DEBUG_MAP_STATE_KEY_TO_STATE\n")
+        if isinstance(self.state, PathWalkerState):
+            txt.append("#   undef __QUEX_DEBUG_MAP_PATH_BASE_TO_PATH_ID\n")
+
+
+def do(txt, TheState, TheAnalyzer):
     specific = Handler(TheState)
+
+    specific.debug_info_map_state_key_to_state_index(txt)
 
     # (*) Entry _______________________________________________________________
     entry_coder.do(txt, TheState, TheAnalyzer) 
@@ -47,8 +72,7 @@ def do(txt, TheState, TheAnalyzer):
                         TheState.index, 
                         TheState.engine_type, 
                         TheState.init_state_f, 
-                        TheAnalyzer   = TheAnalyzer, 
-                        DebugStateStr = specific.debug_transition_map_str)
+                        TheAnalyzer = TheAnalyzer) 
 
     # (*) Drop Out ____________________________________________________________
     drop_out_scheme_implementation(txt, TheState, TheAnalyzer, 
@@ -58,6 +82,7 @@ def do(txt, TheState, TheAnalyzer):
     # (*) Request necessary variable definition _______________________________
     specific.require_data(TheState, TheAnalyzer)
 
+    specific.debug_info_undo_map_state_key_to_state_index(txt)
     return
 
 def drop_out_scheme_implementation(txt, TheState, TheAnalyzer, StateKeyString, DebugString):

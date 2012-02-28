@@ -33,19 +33,15 @@ ABSOLUTELY NO WARRANTY
 import quex.engine.analyzer.track_analysis        as     track_analysis
 import quex.engine.analyzer.optimizer             as     optimizer
 from   quex.engine.analyzer.state.core            import AnalyzerState
-from   quex.engine.analyzer.state.drop_out        import DropOut,         \
-                                                         DropOutBackward, \
-                                                         DropOutBackwardInputPositionDetection
+from   quex.engine.analyzer.state.drop_out        import DropOut
 import quex.engine.analyzer.mega_state.analyzer   as     mega_state_analyzer
 import quex.engine.analyzer.position_register_map as     position_register_map
-from   quex.engine.state_machine.core             import StateMachine, State
+from   quex.engine.state_machine.core             import StateMachine
 from   quex.blackboard  import setup as Setup
-from   quex.blackboard  import E_StateIndices, \
-                               E_AcceptanceIDs, \
+from   quex.blackboard  import E_AcceptanceIDs, \
                                E_EngineTypes, \
                                E_TransitionN, \
-                               E_PreContextIDs, \
-                               E_InputActions
+                               E_PreContextIDs
 
 from   collections      import defaultdict
 from   operator         import itemgetter

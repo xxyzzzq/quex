@@ -1,13 +1,9 @@
-from   quex.engine.state_machine.core             import State
-from   quex.engine.analyzer.state.entry           import Entry
-from   quex.engine.analyzer.state.drop_out        import DropOut,         \
-                                                         DropOutBackward, \
-                                                         DropOutBackwardInputPositionDetection
+from   quex.engine.state_machine.core      import State
+from   quex.engine.analyzer.state.entry    import Entry
+from   quex.engine.analyzer.state.drop_out import DropOutBackward, \
+                                                  DropOutBackwardInputPositionDetection
 from   quex.blackboard  import E_StateIndices, \
-                               E_AcceptanceIDs, \
                                E_EngineTypes, \
-                               E_TransitionN, \
-                               E_PreContextIDs, \
                                E_InputActions
 
 class AnalyzerState(object):

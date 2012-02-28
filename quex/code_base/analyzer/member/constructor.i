@@ -51,7 +51,9 @@ QUEX_NAME(construct_memory)(QUEX_TYPE_ANALYZER*  me,
                 || *iterator == QUEX_SETTING_PATH_TERMINATION_CODE ) {
                 QUEX_ERROR_EXIT("\nConstructor: Buffer limit code and/or path termination code appeared in buffer\n"
                                 "Constructor: when pointed to user memory. Note, that the memory pointed to must\n"
-                                "Constructor: be initialized!");
+                                "Constructor: be initialized! You might redefine QUEX_SETTING_PATH_TERMINATION_CODE\n"
+                                "Constructor: and/or QUEX_SETTING_PATH_TERMINATION_CODE; or use command line arguments\n"
+                                "Constructor: '--buffer-limit' and '--path-termination'.");
             }
         }
     }

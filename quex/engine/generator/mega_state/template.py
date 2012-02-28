@@ -1,6 +1,4 @@
 # (C) 2009-2011 Frank-Rene Schaefer
-import quex.engine.generator.state.transition.core  as transition_block
-import quex.engine.generator.state.entry            as entry_coder
 from   quex.engine.generator.state.core             import input_do
 from   quex.engine.generator.languages.address      import get_address
 from   quex.engine.generator.languages.variable_db  import variable_db
@@ -87,6 +85,8 @@ from   operator        import attrgetter
 
 def framework(txt, TState, TheAnalyzer):
     input_do(txt, TState) 
+    LanguageDB = Setup.language_db
+    LanguageDB.STATE_DEBUG_INFO(txt, TState)
 
 def require_data(TState, TheAnalyzer):
     """Defines the transition targets for each involved state. Note, that recursion

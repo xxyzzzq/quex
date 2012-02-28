@@ -23,8 +23,7 @@ def do(txt, TransitionMap,
        EngineType     = E_EngineTypes.FORWARD, 
        InitStateF     = False, 
        GotoReload_Str = None, 
-       TheAnalyzer    = None,
-       DebugStateStr  = None):
+       TheAnalyzer    = None):
     global LanguageDB
     assert isinstance(TransitionMap, list)
     assert EngineType        in E_EngineTypes
@@ -35,11 +34,6 @@ def do(txt, TransitionMap,
     assert_adjacency(TransitionMap)
 
     LanguageDB = Setup.language_db
-
-    if DebugStateStr is None:
-        LanguageDB.STATE_DEBUG_INFO(txt, StateIndex, (InitStateF and EngineType == E_EngineTypes.FORWARD))
-    else:
-        txt.append(DebugStateStr)
 
     # If a state has no transitions, no new input needs to be eaten => no reload.
     #

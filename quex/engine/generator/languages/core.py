@@ -23,8 +23,11 @@ from   quex.blackboard                           import E_StateIndices,  \
                                                         E_InputActions,  \
                                                         E_TransitionN,   \
                                                         E_PreContextIDs
-import quex.engine.analyzer.state.entry_action   as entry_action
-from   copy                                      import copy
+import quex.engine.analyzer.state.entry_action           as entry_action
+from   quex.engine.analyzer.state.core                   import AnalyzerState
+from   quex.engine.analyzer.mega_state.template.state    import TemplateState
+from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
+from   copy                                              import copy
 
 from   itertools import islice
 
@@ -385,12 +388,18 @@ class LDB(dict):
         if label is None: label = self.LABEL(index, FromStateIndex, NewlineF)
         txt.append(label)
 
-    def STATE_DEBUG_INFO(self, txt, StateIndex, InitStateForwardF):
-        assert type(InitStateForwardF) == bool
-        assert type(StateIndex) == long
-        if InitStateForwardF: 
-            txt.append("    __quex_debug(\"Init State\\n\");\n")
-        txt.append("    __quex_debug_state(%i);\n" % StateIndex)
+    def STATE_DEBUG_INFO(self, txt, TheState):
+        if isinstance(TheState, TemplateState):
+            txt.append("    __quex_debug_template_state(%i, state_key);\n" \
+                       % TheState.index)
+        elif isinstance(TheState, PathWalkerState):
+            txt.append("    __quex_debug_path_walker_state(%i, path_walker_%s_path_base, path_iterator);\n" \
+                       % (TheState.index, TheState.index))
+        else:
+            assert isinstance(TheState, AnalyzerState)
+            if TheState.init_state_forward_f: 
+                txt.append("    __quex_debug(\"Init State\\n\");\n")
+            txt.append("    __quex_debug_state(%i);\n" % TheState.index)
         return 
 
     def POSITION_REGISTER(self, Index):
