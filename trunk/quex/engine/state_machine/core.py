@@ -549,7 +549,6 @@ class StateMachine(object):
         for target_index in original_acceptance_state_index_list:
             del self.states[target_index]
 
-
     def does_sequence_match(self, UserSequence):
         """Returns: True, if the sequences ends in an acceptance state.
                     False, if not.

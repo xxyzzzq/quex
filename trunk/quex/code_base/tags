@@ -217,8 +217,6 @@ __quex_debug2	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	206;"	d	
 __quex_debug2	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	217;"	d	file:
 __quex_debug_BUFFER_LOAD	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	230;"	d	file:
 __quex_debug_BUFFER_LOAD	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	234;"	d	file:
-__quex_debug_input	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	207;"	d	file:
-__quex_debug_input	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	221;"	d	file:
 __quex_debug_TRANSITION	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/mode_handling.i	/^    __quex_debug_TRANSITION(CLASS* me, QUEX_NAME(Mode)* Source, QUEX_NAME(Mode)* Target)$/;"	f	namespace:quex
 __quex_debug_TRANSITION	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/mode_handling.i	35;"	d	file:
 QUEX_ERROR_EXIT	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	/^    QUEX_ERROR_EXIT(const char* Msg)$/;"	f	namespace:quex
