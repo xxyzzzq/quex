@@ -142,13 +142,47 @@
            : (C) == '\v' ? __QUEX_STD_fprintf(stderr, "%02X '\\v'\n", (int)(C)) \
            :               __QUEX_STD_fprintf(stderr, "%02X '%c'\n",  (int)(C), (C) < 0xFF ? (char)(C) : '?')
 
-#   define __quex_debug_state(StateIdx)                                            \
-           __quex_debug2("state %i ______________", (int)StateIdx);                \
+#   define __quex_debug_core(StateIdx, Message)                \
+           __quex_debug3("state %i ____%s", (int)(StateIdx), (Message)) 
+
+#   define __quex_debug_input(StateIdx)                                            \
            __quex_debug("input:           ");                                      \
            __QUEX_PRINT_CHAR(*(me->buffer._input_p));                              \
            __quex_debug2("input position:  %i",                                    \
                          (int)(me->buffer._input_p - me->buffer._memory._front));  \
-           __quex_optional_statistics(StateIdx)
+           __quex_optional_statistics((StateIdx))
+
+#   define __quex_debug_path_walker_core(PathWalkerIdx, PathBase, PathIterator, Message)             \
+           __quex_debug_core(__QUEX_DEBUG_MAP_STATE_KEY_TO_STATE(PathIterator-PathBase), (Message)); \
+           __quex_debug4("(path walker: %i, path: %i, offset: %i)",                                  \
+                         (int)PathWalkerIdx,                                                         \
+                         (int)__QUEX_DEBUG_MAP_PATH_BASE_TO_PATH_ID(PathBase),                       \
+                         (int)(PathIterator-PathBase)); 
+
+#   define __quex_debug_template_core(TemplateIdx, StateKey, Message)                     \
+           __quex_debug_core(__QUEX_DEBUG_MAP_STATE_KEY_TO_STATE(StateKey), (Message));   \
+           __quex_debug3("(template: %i, state key=%i)", (int)TemplateIdx, (int)StateKey)
+
+#   define __quex_debug_state(StateIdx)                \
+           __quex_debug_core(StateIdx, "__________");  \
+           __quex_debug_input(StateIdx)
+
+#   define __quex_debug_path_walker_state(PathWalkerIdx, PathBase, PathIterator)               \
+           __quex_debug_path_walker_core(PathWalkerIdx, PathBase, PathIterator, "__________"); \
+           __quex_debug_input(__QUEX_DEBUG_MAP_STATE_KEY_TO_STATE(PathIterator-PathBase))
+
+#   define __quex_debug_template_state(TemplateIdx, StateKey)                      \
+           __quex_debug_template_core(TemplateIdx, StateKey, "__________");        \
+           __quex_debug_input(__QUEX_DEBUG_MAP_STATE_KEY_TO_STATE(StateIdx))
+
+#   define __quex_debug_drop_out(StateIdx)            \
+           __quex_debug_core(StateIdx, "<DROP OUT>");  
+
+#   define __quex_debug_path_walker_drop_out(PathWalkerIdx, PathBase, PathIterator) \
+           __quex_debug_path_walker_core(PathWalkerIdx, PathBase, PathIterator, "<DROP OUT>")        
+
+#   define __quex_debug_template_drop_out(TemplateIdx, StateKey)            \
+           __quex_debug_template_core(TemplateIdx, StateKey, "<DROP OUT>")           
 
 #   define __quex_debug_buffer_info()                                                        \
            __quex_debug2("input position:  %i",                                              \
@@ -173,60 +207,27 @@
 #   define __quex_debug_counter()                        \
            QUEX_NAME(Counter_print_this)(&self.counter)
 
-#   define __quex_debug_path_walker_entry(PW_ID, PathID)                                   \
-           __quex_debug3("path walker %i: <<Enter path %i>>\n", (int)PW_ID, (int)PathID)
-#   define __quex_debug_path_walker_exit(PW_ID)                                            \
-           __quex_debug2("path walker %i: <<Exit>>\n", (int)PW_ID)
-#   define __quex_debug_path_walker_drop_out(PW_ID)                                        \
-           __quex_debug2("path walker %i: <<Drop Out>>\n", (int)PW_ID)
-
-#   define __quex_debug_path_walker_state(PathWalkerIdx, PathBase, PathIterator)   \
-           __quex_debug2("state %i ______________",                                \
-                         (int)__QUEX_DEBUG_MAP_STATE_KEY_TO_STATE(PathIterator-PathBase)); \
-           __quex_debug4("PATH WALKER %i, PATH %i, OFFSET %i",                     \
-                         (int)PathWalkerIdx,                                       \
-                         (int)__QUEX_DEBUG_MAP_PATH_BASE_TO_PATH_ID(PathBase),     \
-                         (int)(PathIterator-PathBase));                            \
-           __quex_debug("input:           ");                                      \
-           __QUEX_PRINT_CHAR(*(me->buffer._input_p));                              \
-           __quex_debug2("input position:  %i",                                    \
-                         (int)(me->buffer._input_p - me->buffer._memory._front));  \
-           __quex_optional_statistics(StateIdx)
-
-#   define __quex_debug_template_entry(TemplateID, StateIndex, StateKey)   \
-           __quex_debug4("template %i(key=%i): <<State %i>>\n",            \
-                         (int)TemplateID, (int)StateKey, (int)StateIndex)
-#   define __quex_debug_template_state(TemplateIdx, StateKey)                      \
-           __quex_debug2("state %i ______________",                                \
-                         (int)__QUEX_DEBUG_MAP_STATE_KEY_TO_STATE(StateKey));      \
-           __quex_debug3("TEMPLATE %i, STATE_KEY %i", (int)TemplateIdx, (int)StateKey); \
-           __quex_debug("input:           ");                                      \
-           __QUEX_PRINT_CHAR(*(me->buffer._input_p));                              \
-           __quex_debug2("input position:  %i",                                    \
-                         (int)(me->buffer._input_p - me->buffer._memory._front));  \
-           __quex_optional_statistics(StateIdx)
-
-#   define __quex_debug_template_drop_out(TemplateID, StateKey)                  \
-           __quex_debug3("template %i(key=%i): <<Drop Out>>\n", (int)TemplateID, (int)StateKey)
-
 
 #else /* not defined(QUEX_OPTION_DEBUG_SHOW) */
 
 #   define __quex_debug(FormatStr)                /* empty */
 #   define __quex_debug1(Str)                     /* empty */
 #   define __quex_debug2(FormatStr, Arg)          /* empty */
-#   define __quex_debug_state(StateIdx)           __quex_optional_statistics(StateIdx)
+
+#   define __quex_debug_state(StateIdx)           \
+           __quex_optional_statistics(StateIdx)
+#   define __quex_debug_path_walker_state(PathWalkerIdx, PathBase, PathIterator) \
+           __quex_optional_statistics(StateIdx)
+#   define __quex_debug_template_state(TemplateID, StateKey) \
+           __quex_optional_statistics(StateIdx)
+
+#   define __quex_debug_drop_out(StateIdx)                      /* empty */
+#   define __quex_debug_path_walker_drop_out(PW_ID)             /* empty */
+#   define __quex_debug_template_drop_out(TemplateID, StateKey) /* empty */ 
+
 #   define __quex_debug_reload_before()           /* empty */
 #   define __quex_debug_reload_after()            /* empty */
-#   define __quex_debug_input()                   /* empty */
 #   define __quex_debug_counter()                 /* empty */
-#   define __quex_debug_path_walker_entry(PW_ID, PathID)           /* empty */
-#   define __quex_debug_path_walker_exit(PW_ID)                    /* empty */
-#   define __quex_debug_path_walker_drop_out(PW_ID)                /* empty */
-#   define __quex_debug_path_walker_state(PathWalkerIdx, PathBase, PathIterator) /* empty */
-#   define __quex_debug_template_entry(TemplateID, StateIndex, StateKey) /* empty */
-#   define __quex_debug_template_state(TemplateID, StateKey)             /* empty */
-#   define __quex_debug_template_drop_out(TemplateID, StateKey)          /* empty */ 
 
 #endif /* ! QUEX_OPTION_DEBUG_SHOW */
 

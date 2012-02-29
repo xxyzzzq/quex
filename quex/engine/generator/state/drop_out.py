@@ -9,6 +9,8 @@ def do(txt, TheState, TheAnalyzer, DefineLabelF=True):
     if DefineLabelF:
         txt.append(Address("$drop-out", TheState.index))
 
+    txt.append("    __quex_debug_drop_out(%i);\n" % TheState.index)
+
     if TheState.engine_type == E_EngineTypes.BACKWARD_PRE_CONTEXT:
         txt.append("    %s\n" % LanguageDB.GOTO(E_StateIndices.END_OF_PRE_CONTEXT_CHECK))
         return

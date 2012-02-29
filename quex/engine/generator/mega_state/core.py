@@ -18,7 +18,8 @@ class Handler:
             self.require_data = path_walker.require_data
             self.framework    = path_walker.framework   
             self.state_key_str      = "path_iterator - path_walker_%s_path_base" % TheState.index, 
-            self.debug_drop_out_str = "    __quex_debug_path_walker_drop_out(%i);\n" % TheState.index
+            self.debug_drop_out_str = "    __quex_debug_path_walker_drop_out(%i, path_walker_%s_path_base, path_iterator);\n" \
+                                      % (TheState.index, TheState.index)
         elif isinstance(TheState, TemplateState):
             self.require_data = template.require_data
             self.framework    = template.framework   
