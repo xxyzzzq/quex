@@ -30,7 +30,12 @@ __header_definitions_txt = """
 #ifdef    RETURN
 #   undef RETURN
 #endif
+"""
 
+__return_with_on_after_match = """
+#   define RETURN   goto __RETURN_REPARATION;
+"""
+__return_without_on_after_match = """
 #if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
 #   define RETURN   return
 #else
@@ -38,10 +43,13 @@ __header_definitions_txt = """
 #endif
 """
 
-def __header_definitions(LanguageDB):
+def __header_definitions(LanguageDB, OnAfterMatchStr):
 
     txt = __header_definitions_txt
     txt = txt.replace("$$GOTO_START_PREPARATION$$", get_label("$re-start", U=True))
+
+    if len(OnAfterMatchStr) != 0: txt += __return_with_on_after_match
+    else:                         txt += __return_without_on_after_match
     return txt
 
 def _local_variable_definitions(VariableDB):
@@ -314,12 +322,21 @@ $$FAILURE_ACTION$$
 #undef LexemeL
 """
 
+__return_preparation_str = """
+__RETURN_REPARATION:
+$$ON_AFTER_MATCH$$
+#   if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+#   return
+#   else
+#   return __self_result_token_id;
+#   endif
+"""
 
-__on_continue_reentry_preparation_str = """
+__reentry_preparation_str = """
 $$REENTRY_PREPARATION$$:
     /* (*) Common point for **restarting** lexical analysis.
      *     at each time when CONTINUE is called at the end of a pattern. */
-    
+$$ON_AFTER_MATCH$$ 
 #   ifndef __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
 #   ifdef  QUEX_OPTION_TOKEN_POLICY_QUEUE
     if( QUEX_NAME(TokenQueue_is_full)(&self._token_queue) ) RETURN;
@@ -426,17 +443,22 @@ def get_terminal_code(AcceptanceID, pattern_action_info, SupportBeginOfLineF, La
 
 def __terminal_on_failure_prolog(LanguageDB):
     return [
-        "    %s\n" % LanguageDB.INPUT_P_TO_LEXEME_START(),
         "    if(QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {\n",
-        "        /* Next increment will stop on EOF character. */\n",
+        "        /* Init state is going to detect 'input == buffer limit code', and\n"
+        "         * enter the reload procedure, which will decide about 'end of stream'. */\n",
         "    } else {\n",
-        "        /* Step over nomatching character */\n",
-        "        %s\n" % LanguageDB.INPUT_P_INCREMENT(),
+        "        /* In init state 'input = *input_p' and we need to increment\n",
+        "         * in order to avoid getting stalled. Else, input = *(input_p - 1),\n",
+        "         * so 'input_p' points already to the next character.              */\n",
+        "        if( me->buffer._input_p == me->buffer._lexeme_start_p ) {\n",
+        "            /* Step over non-matching character */\n",
+        "            %s\n" % LanguageDB.INPUT_P_INCREMENT(),
+        "        }\n",
         "    }\n",
     ]
 
 def __terminal_states(StateMachineName, action_db, OnFailureAction, EndOfStreamAction, 
-                      SupportBeginOfLineF, PreConditionIDList, LanguageDB, VariableDB):
+                      SupportBeginOfLineF, PreConditionIDList, LanguageDB, VariableDB, OnAfterMatchStr):
     """NOTE: During backward-lexing, for a pre-condition, there is not need for terminal
              states, since only the flag 'pre-condition fulfilled is raised.
     """      
@@ -508,10 +530,16 @@ def __terminal_states(StateMachineName, action_db, OnFailureAction, EndOfStreamA
     if VariableDB.has_key("last_acceptance"):
         reset_last_acceptance_str = "last_acceptance = $$TERMINAL_FAILURE-REF$$; /* TERMINAL: FAILURE */"
 
-    reentry_preparation = blue_print(__on_continue_reentry_preparation_str,
+    return_preparation = ""
+    if OnAfterMatchStr != "":
+        return_preparation = blue_print(__return_preparation_str,
+                                        [["$$ON_AFTER_MATCH$$",  OnAfterMatchStr]])
+
+    reentry_preparation = blue_print(__reentry_preparation_str,
                           [["$$REENTRY_PREPARATION$$",                    get_label("$re-start")],
                            ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$",  "".join(delete_pre_context_flags)],
                            ["$$GOTO_START$$",                             get_label("$start", U=True)],
+                           ["$$ON_AFTER_MATCH$$",                         OnAfterMatchStr],
                            ["$$RESET_LAST_ACCEPTANCE$$",                  reset_last_acceptance_str],
                            ["$$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$", comment_on_post_context_position_init_str],
                            ["$$TERMINAL_FAILURE-REF$$",                   "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")],
@@ -522,6 +550,7 @@ def __terminal_states(StateMachineName, action_db, OnFailureAction, EndOfStreamA
     txt.append(prolog)
     txt.extend(specific_terminal_states)
     txt.append(epilog)
+    txt.append(return_preparation)
     txt.append(reentry_preparation)
 
     return txt

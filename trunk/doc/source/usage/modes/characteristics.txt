@@ -302,10 +302,16 @@ in the event handler definition. The list of event handlers is the following:
     Implicit Arguments: ``Lexeme``, ``LexemeL``, ``LexemeBegin``, ``LexemeEnd``
 
     This event handler is executed on every match that every happens while this
-    mode is active. It is executed before the pattern-action is executed that is
+    mode is active. It is executed *before* the pattern-action is executed that is
     related to the matching pattern. The implicit arguments allow access to
     the matched lexeme and correspond to what is passed to pattern-actions.
 
+.. data:: on_after_match
+
+    Implicit Arguments: ``Lexeme``, ``LexemeL``, ``LexemeBegin``, ``LexemeEnd``
+
+    The ``on_after_match`` handler is executed at every pattern match. It differs
+    from ``on_match`` in that it is executed *after* the pattern-action.
 
 .. data:: on_failure
 
@@ -317,12 +323,16 @@ in the event handler definition. The list of event handlers is the following:
              in-depth analysis, or even bug reporting, the display of the mismatching
              lexeme may give a useful hint towards a lack in the specified pattern set.
 
-   The input pointer is incremented by one, as soon as a failure is detected. This
-   may be intrusive if one tries to use it for catching exceptional patterns. You can
-   always 'undo' as described in section ''stream navigation''. However, note that
-   the philosophy of ``on_failure`` is to catch flaws in pattern definitions. If
-   anti-patterns or exceptional patterns are to be caught, they are best defined
-   explicitly. 
+   In a broader sense, 'on_failure' implements the 'anti-pattern' of all
+   occurring patterns in a mode. That is it matches the shortest lexeme that
+   cannot match any lexeme in the mode. It is ensured, that the input is
+   increased at least by one, so that the lexical analyzer is not stalled on
+   the event of match failure.  In general, the non-matching characters are
+   overstepped. If the analyzer went too fare, the 'undo' and 'seek' function
+   group allows for precise positioning of the next input (see section ''stream
+   navigation''). That the philosophy of ``on_failure`` is to catch flaws in 
+   pattern definitions. If anti-patterns or exceptional patterns are to be 
+   caught, they are best defined explicitly. 
    
    The definition of anti-patterns is not as difficult as it seems on the first 
    glance--the use of pattern precedence comes to help. If the interesting patterns
