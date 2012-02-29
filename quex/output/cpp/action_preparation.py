@@ -73,9 +73,16 @@ def do(Mode, IndentationSupportF):
 
         pattern_info.set_action(prepared_action)
     
-    return variable_db, pattern_action_pair_list, \
+    on_after_match_str = ""
+    if Mode.has_code_fragment_list("on_after_match"):
+        on_after_match_str = __prepare(Mode, Mode.get_code_fragment_list("on_after_match"), 
+                                   None, EOF_ActionF=False)
+
+    return variable_db, \
+           pattern_action_pair_list, \
            PatternActionInfo(None, end_of_stream_action), \
-           PatternActionInfo(None, on_failure_action)
+           PatternActionInfo(None, on_failure_action), \
+           on_after_match_str
 
 def get_code(CodeFragmentList, variable_db={}):
     code_str = ""
@@ -118,14 +125,14 @@ def __prepare(Mode, CodeFragment_or_CodeFragments, ThePattern,
     else:
         CodeFragmentList = [ CodeFragment_or_CodeFragments ]
 
-    on_every_match_code = ""
-    lc_count_code       = ""
-    user_code           = ""
-    variable_db         = {}
+    on_match_code = ""
+    lc_count_code = ""
+    user_code     = ""
+    variable_db   = {}
 
     # (*) Code to be performed on every match -- before the related action
     for code_info in Mode.get_code_fragment_list("on_match"):
-        on_every_match_code += code_info.get_code()
+        on_match_code = code_info.get_code()
 
     # (*) Code to count line and column numbers
     if not SelfCountingActionF: 
@@ -138,7 +145,7 @@ def __prepare(Mode, CodeFragment_or_CodeFragments, ThePattern,
     user_code, require_terminating_zero_preparation_f = get_code(CodeFragmentList, variable_db)
 
     txt  = ""
-    txt += on_every_match_code
+    txt += on_match_code
     txt += "#   ifdef __QUEX_OPTION_COUNTER\n"
     txt += lc_count_code
     txt += "    __quex_debug_counter();\n"

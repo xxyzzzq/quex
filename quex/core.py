@@ -115,16 +115,18 @@ def analyzer_functions_get(ModeDB):
         # -- prepare the source code fragments for the generator
         required_local_variables_db, \
         pattern_action_pair_list,    \
-        end_of_stream_action,        \
-        on_failure_action            = action_preparation.do(mode, IndentationSupportF)
+        on_end_of_stream_action,     \
+        on_failure_action,           \
+        on_after_match_str           = action_preparation.do(mode, IndentationSupportF)
 
         # -- prepare code generation
         generator = cpp_generator.Generator(StateMachineName       = mode.name,
                                             PatternActionPair_List = pattern_action_pair_list, 
                                             OnFailureAction        = on_failure_action, 
-                                            EndOfStreamAction      = end_of_stream_action,
+                                            EndOfStreamAction      = on_end_of_stream_action,
                                             ModeNameList           = mode_name_list,
-                                            SupportBeginOfLineF    = BeginOfLineSupportF)
+                                            SupportBeginOfLineF    = BeginOfLineSupportF,
+                                            OnAfterMatch           = on_after_match_str)
 
         # -- generate!
         analyzer_code += "".join(generator.do(required_local_variables_db))

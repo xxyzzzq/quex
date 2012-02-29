@@ -904,6 +904,7 @@ INIT_STATE_TRANSITION_BLOCK:
         case 0x7D: goto _163;
 
     }
+    __quex_debug_drop_out(160);
     
     goto _193; /* TERMINAL_FAILURE */
 
@@ -980,6 +981,7 @@ _166: /* (166 from 166) (166 from 162) (166 from 160) (166 from 174) (166 from 1
 
     }
 _194:
+    __quex_debug_drop_out(166);
     goto TERMINAL_30;
 
 
@@ -999,6 +1001,7 @@ _161: /* (161 from 161) (161 from 160) */
 
     }
 _195:
+    __quex_debug_drop_out(161);
     goto TERMINAL_4;
 
 
@@ -1024,6 +1027,7 @@ _164: /* (164 from 164) (164 from 160) */
 
     }
 _196:
+    __quex_debug_drop_out(164);
     goto TERMINAL_25;
 
 
@@ -1094,6 +1098,7 @@ _162: /* (162 from 160) */
 
     }
 _197:
+    __quex_debug_drop_out(162);
     goto TERMINAL_30;
 
 
@@ -1102,6 +1107,7 @@ _163: /* (163 from 160) */
 
     ++(me->buffer._input_p);
     __quex_debug_state(163);
+    __quex_debug_drop_out(163);
     goto TERMINAL_20;
 
 
@@ -1110,6 +1116,7 @@ _165: /* (165 from 160) */
 
     ++(me->buffer._input_p);
     __quex_debug_state(165);
+    __quex_debug_drop_out(165);
     goto TERMINAL_16;
 
 
@@ -1118,6 +1125,7 @@ _167: /* (167 from 160) */
 
     ++(me->buffer._input_p);
     __quex_debug_state(167);
+    __quex_debug_drop_out(167);
     goto TERMINAL_18;
 
 
@@ -1188,6 +1196,7 @@ _168: /* (168 from 160) */
 
     }
 _201:
+    __quex_debug_drop_out(168);
     goto TERMINAL_30;
 
 
@@ -1260,6 +1269,7 @@ _169: /* (169 from 160) */
 
     }
 _202:
+    __quex_debug_drop_out(169);
     goto TERMINAL_30;
 
 
@@ -1330,6 +1340,7 @@ _170: /* (170 from 160) */
 
     }
 _203:
+    __quex_debug_drop_out(170);
     goto TERMINAL_30;
 
 
@@ -1400,6 +1411,7 @@ _171: /* (171 from 170) */
 
     }
 _204:
+    __quex_debug_drop_out(171);
     goto TERMINAL_30;
 
 
@@ -1470,6 +1482,7 @@ _172: /* (172 from 171) */
 
     }
 _205:
+    __quex_debug_drop_out(172);
     goto TERMINAL_30;
 
 
@@ -1540,6 +1553,7 @@ _173: /* (173 from 172) */
 
     }
 _206:
+    __quex_debug_drop_out(173);
     goto TERMINAL_30;
 
 
@@ -1610,6 +1624,7 @@ _174: /* (174 from 173) */
 
     }
 _207:
+    __quex_debug_drop_out(174);
     goto TERMINAL_30;
 
 
@@ -1678,6 +1693,7 @@ _175: /* (175 from 174) */
 
     }
 _208:
+    __quex_debug_drop_out(175);
     goto TERMINAL_14;
 
 
@@ -1748,6 +1764,7 @@ _176: /* (176 from 169) */
 
     }
 _209:
+    __quex_debug_drop_out(176);
     goto TERMINAL_30;
 
 
@@ -1818,6 +1835,7 @@ _177: /* (177 from 169) */
 
     }
 _210:
+    __quex_debug_drop_out(177);
     goto TERMINAL_30;
 
 
@@ -1888,6 +1906,7 @@ _178: /* (178 from 177) */
 
     }
 _211:
+    __quex_debug_drop_out(178);
     goto TERMINAL_30;
 
 
@@ -1956,6 +1975,7 @@ _179: /* (179 from 178) */
 
     }
 _212:
+    __quex_debug_drop_out(179);
     goto TERMINAL_12;
 
 
@@ -2026,6 +2046,7 @@ _180: /* (180 from 176) */
 
     }
 _213:
+    __quex_debug_drop_out(180);
     goto TERMINAL_30;
 
 
@@ -2096,6 +2117,7 @@ _181: /* (181 from 180) */
 
     }
 _214:
+    __quex_debug_drop_out(181);
     goto TERMINAL_30;
 
 
@@ -2166,6 +2188,7 @@ _182: /* (182 from 181) */
 
     }
 _215:
+    __quex_debug_drop_out(182);
     goto TERMINAL_30;
 
 
@@ -2234,6 +2257,7 @@ _183: /* (183 from 182) */
 
     }
 _216:
+    __quex_debug_drop_out(183);
     goto TERMINAL_6;
 
 
@@ -2304,6 +2328,7 @@ _184: /* (184 from 168) */
 
     }
 _217:
+    __quex_debug_drop_out(184);
     goto TERMINAL_30;
 
 
@@ -2374,6 +2399,7 @@ _185: /* (185 from 184) */
 
     }
 _218:
+    __quex_debug_drop_out(185);
     goto TERMINAL_30;
 
 
@@ -2444,6 +2470,7 @@ _186: /* (186 from 185) */
 
     }
 _219:
+    __quex_debug_drop_out(186);
     goto TERMINAL_30;
 
 
@@ -2514,6 +2541,7 @@ _187: /* (187 from 186) */
 
     }
 _220:
+    __quex_debug_drop_out(187);
     goto TERMINAL_30;
 
 
@@ -2582,6 +2610,7 @@ _188: /* (188 from 187) */
 
     }
 _221:
+    __quex_debug_drop_out(188);
     goto TERMINAL_10;
 
 
@@ -2652,6 +2681,7 @@ _189: /* (189 from 162) */
 
     }
 _222:
+    __quex_debug_drop_out(189);
     goto TERMINAL_30;
 
 
@@ -2720,6 +2750,7 @@ _190: /* (190 from 189) */
 
     }
 _223:
+    __quex_debug_drop_out(190);
     goto TERMINAL_8;
 
     /* (*) Terminal states _______________________________________________________
@@ -2776,7 +2807,7 @@ TERMINAL_6:
 self_send(QUEX_TKN_STRUCT);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2099 "Simple.cpp"
+#   line 2130 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2797,7 +2828,7 @@ TERMINAL_8:
 self_send(QUEX_TKN_TYPE_INT);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2120 "Simple.cpp"
+#   line 2151 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2818,7 +2849,7 @@ TERMINAL_10:
 self_send(QUEX_TKN_TYPE_DOUBLE);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2141 "Simple.cpp"
+#   line 2172 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2839,7 +2870,7 @@ TERMINAL_12:
 self_send(QUEX_TKN_SEND);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2162 "Simple.cpp"
+#   line 2193 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2860,7 +2891,7 @@ TERMINAL_14:
 self_send(QUEX_TKN_EXPECT);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2183 "Simple.cpp"
+#   line 2214 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2881,7 +2912,7 @@ TERMINAL_16:
 self_send(QUEX_TKN_SEMICOLON);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2204 "Simple.cpp"
+#   line 2235 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2902,7 +2933,7 @@ TERMINAL_18:
 self_send(QUEX_TKN_BRACKET_OPEN);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2225 "Simple.cpp"
+#   line 2256 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2923,7 +2954,7 @@ TERMINAL_20:
 self_send(QUEX_TKN_BRACKET_CLOSE);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2246 "Simple.cpp"
+#   line 2277 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2946,7 +2977,7 @@ self_write_token_p()->number = atoi((char*)(Lexeme));
 self_send(QUEX_TKN_NUMBER);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2269 "Simple.cpp"
+#   line 2300 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2967,7 +2998,7 @@ TERMINAL_30:
 #   line 28 "dos_lf_2.qx"
  self_send1(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; 
 
-#   line 2290 "Simple.cpp"
+#   line 2321 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2984,7 +3015,7 @@ _191: /* TERMINAL: END_OF_STREAM */
 #   line 16 "dos_lf_2.qx"
 self_send(QUEX_TKN_TERMINATION);
 
-#   line 2307 "Simple.cpp"
+#   line 2338 "Simple.cpp"
 
     }
     /* End of Stream causes a return from the lexical analyzer, so that no
@@ -2992,12 +3023,17 @@ self_send(QUEX_TKN_TERMINATION);
     RETURN;          
 
 _193: /* TERMINAL: FAILURE */
-    me->buffer._input_p = me->buffer._lexeme_start_p;
     if(QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
-        /* Next increment will stop on EOF character. */
+        /* Init state is going to detect 'input == buffer limit code', and
+         * enter the reload procedure, which will decide about 'end of stream'. */
     } else {
-        /* Step over nomatching character */
-        ++(me->buffer._input_p);
+        /* In init state 'input = *input_p' and we need to increment
+         * in order to avoid getting stalled. Else, input = *(input_p - 1),
+         * so 'input_p' points already to the next character.              */
+        if( me->buffer._input_p == me->buffer._lexeme_start_p ) {
+            /* Step over non-matching character */
+            ++(me->buffer._input_p);
+        }
     }
 
 #   ifdef __QUEX_OPTION_COUNTER

@@ -360,7 +360,8 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
                                         OnFailureAction        = PatternActionInfo(None, on_failure_action), 
                                         EndOfStreamAction      = PatternActionInfo(None, on_failure_action), 
                                         ModeNameList           = [],
-                                        SupportBeginOfLineF    = support_begin_of_line_f)
+                                        SupportBeginOfLineF    = support_begin_of_line_f, 
+                                        OnAfterMatch           = "")
 
     code = generator.do({})
 

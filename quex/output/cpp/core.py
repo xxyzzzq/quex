@@ -18,7 +18,8 @@ class Generator(GeneratorBase):
                  StateMachineName, 
                  OnFailureAction, EndOfStreamAction, 
                  ModeNameList, 
-                 SupportBeginOfLineF):
+                 SupportBeginOfLineF, 
+                 OnAfterMatch):
 
         # Ensure that the language database as been setup propperly
         assert isinstance(Setup.language_db, dict)
@@ -29,6 +30,7 @@ class Generator(GeneratorBase):
         self.end_of_stream_action = EndOfStreamAction
         self.on_failure_action    = OnFailureAction
         self.mode_name_list       = ModeNameList
+        self.on_after_match       = OnAfterMatch
 
         GeneratorBase.__init__(self, PatternActionPair_List, StateMachineName, SupportBeginOfLineF)
 
@@ -82,7 +84,7 @@ class Generator(GeneratorBase):
                                                                self.mode_name_list, 
                                                                LanguageDB=self.language_db)
 
-        txt  = [ LanguageDB["$header-definitions"](LanguageDB) ]
+        txt  = [ LanguageDB["$header-definitions"](LanguageDB, self.on_after_match) ]
         txt += get_plain_strings(analyzer_function)
         for i, element in enumerate(txt):
             if not isinstance(element, (str, unicode)):
@@ -150,7 +152,8 @@ class Generator(GeneratorBase):
                                                      self.begin_of_line_condition_f, 
                                                      self.pre_context_sm_id_list,
                                                      self.language_db, 
-                                                     variable_db) 
+                                                     variable_db,
+                                                     self.on_after_match) 
         
         txt.extend(terminal_code)
 
