@@ -74,9 +74,8 @@ def do(Mode, IndentationSupportF):
         pattern_info.set_action(prepared_action)
     
     on_after_match_str = ""
-    if Mode.has_code_fragment_list("on_after_match"):
-        on_after_match_str = __prepare(Mode, Mode.get_code_fragment_list("on_after_match"), 
-                                   None, EOF_ActionF=False)
+    for code_info in Mode.get_code_fragment_list("on_after_match"):
+        on_after_match_str += code_info.get_code()
 
     return variable_db, \
            pattern_action_pair_list, \
@@ -125,16 +124,16 @@ def __prepare(Mode, CodeFragment_or_CodeFragments, ThePattern,
     else:
         CodeFragmentList = [ CodeFragment_or_CodeFragments ]
 
-    on_match_code = ""
-    lc_count_code = ""
     user_code     = ""
     variable_db   = {}
 
     # (*) Code to be performed on every match -- before the related action
+    on_match_code = ""
     for code_info in Mode.get_code_fragment_list("on_match"):
-        on_match_code = code_info.get_code()
+        on_match_code += code_info.get_code()
 
     # (*) Code to count line and column numbers
+    lc_count_code = ""
     if not SelfCountingActionF: 
         lc_count_code  = __get_line_and_column_counting(ThePattern, EOF_ActionF)
 

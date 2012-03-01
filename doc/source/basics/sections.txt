@@ -115,13 +115,32 @@ for the given section-name. The available sections are the following:
 
    Extensions to the lexical analyzer class definition. This is useful for 
    adding new class members to the analyzers or declaring ``friend``-ship
-   relationships to other classes.
+   relationships to other classes. For example:
+
+   .. code-block:: cpp
+
+        body {
+                int         my_counter;
+                friend void some_function(MyLexer&);
+        }
+
+   defines an additional variable ``my_counter`` and a friend function inside
+   the lexer class' body.
 
 .. data:: init
 
    Extensions to the lexical analyzer constructor. This is the place to initialize
    the additional members mentioned in the ``body`` section. Note, that as in every
-   code fragment, the analyzer itself is referred to via the ``self`` variable.
+   code fragment, the analyzer itself is referred to via the ``self`` variable. 
+   For example
+
+   .. code-block:: cpp
+
+        init {
+                self.my_counter = 4711;
+        }
+
+   Initializes a self declared member of the analyzer ``my_counter`` to 4711.
 
 A customized token type can easily be defined in a section called
 

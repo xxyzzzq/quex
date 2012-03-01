@@ -243,7 +243,9 @@ following command line options can be used.
 .. cmdoption:: --token-queue-safety-border number
 
         Specifies the number of tokens that can be sent at maximum as reaction to
-        one single pattern match.
+        one single pattern match. More precisely, it determines the number of 
+        token slots that are left empty when the token queue is detected to be
+        full.
 
         DEFAULT = ``16``
 
