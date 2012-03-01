@@ -541,6 +541,8 @@ class DoorID(object):
         assert isinstance(DoorIndex, (int, long))  or DoorIndex is None
         self.state_index = StateIndex
         self.door_index  = DoorIndex
+    def clone(self):
+        return DoorID(self.state_index, self.door_index)
     def __hash__(self):
         if isinstance(self.state_index, (int, long)): xor_sum = self.state_index + 1
         else:                                         xor_sum = 0

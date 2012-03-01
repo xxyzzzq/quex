@@ -86,6 +86,9 @@ class MegaState_Target(object):
     __slots__ = ('__index', '__scheme', '__drop_out_f', '__door_id', '__scheme')
 
     def __init__(self, Target, UniqueIndex=None):
+        if Target is None: # Only to be used by 'self.clone()'
+            return 
+
         if UniqueIndex is not None: 
             assert isinstance(Target, tuple)
         else:
@@ -101,6 +104,20 @@ class MegaState_Target(object):
         if   Target == E_StateIndices.DROP_OUT:  self.__drop_out_f  = True;   assert UniqueIndex is None
         elif isinstance(Target, DoorID):         self.__door_id     = Target; assert UniqueIndex is None
         elif isinstance(Target, tuple):          self.__scheme      = Target; assert UniqueIndex is not None
+
+    def clone(self):
+        result = MegaState_Target(Target=None) 
+        result.__index      = self.__index
+        result.__drop_out_f = self.__drop_out_f
+        if self.__door_id is None: result.__door_id = None
+        else:                      result.__door_id = self.__door_id.clone()
+        if self.__scheme is None:  result.__scheme  = None
+        else:
+            def __clone(X):
+                if X == E_StateIndices.DROP_OUT: return X
+                else:                            return X.clone()
+            result.__scheme = tuple([ __clone(x) for x in self.__scheme ])
+        return result
 
     @property
     def scheme(self):      return self.__scheme
