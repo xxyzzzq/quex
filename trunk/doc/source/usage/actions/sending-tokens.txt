@@ -203,6 +203,14 @@ defined for 'end of stream' or 'failure', the analyzer returns a
    terminating token that signified the end of a file.
 
 
+Preparing a Token Object
+------------------------
+
+Sometimes, it might be necessary to perform some more complicated operations
+on a token object, before it can be sent. In this case, on must refer to the
+current token pointer.
+
+
 .. rubric:: Footnotes
 
 .. [#f1] They are actually defined as C-preprocessor macros and they are only

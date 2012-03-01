@@ -111,10 +111,19 @@
     /* -- Assert consistency of the token queue
      * -- Assert no token is sent after token 'TERMINATION'. 
      *    If files are included the token queue is reset.   */
-#   define __QUEX_ASSERT_SEND_ENTRY() \
-           QUEX_TOKEN_QUEUE_ASSERT(&self._token_queue); \
-           __quex_assert(    self._token_queue.write_iterator == self._token_queue.begin \
-                         || (self._token_queue.write_iterator-1)->_id != __QUEX_SETTING_TOKEN_ID_TERMINATION)
+#   if ! defined(QUEX_OPTION_SEND_AFTER_TERMINATION_ADMISSIBLE)
+#       define __QUEX_ASSERT_SEND_ENTRY()                                                                   \
+               do {                                                                                         \
+                   QUEX_TOKEN_QUEUE_ASSERT(&self._token_queue);                                             \
+                   if(   self._token_queue.write_iterator != self._token_queue.begin                        \
+                      || (self._token_queue.write_iterator-1)->_id != __QUEX_SETTING_TOKEN_ID_TERMINATION ) \
+                       QUEX_ERROR_EXIT("Detected attempt to send a token after 'TERMINATION'.\n"            \
+                                       "If this is intended, compile with -DQUEX_OPTION_SEND_AFTER_TERMINATION_ADMISSIBLE'.\n"); \
+               } while( 0 )
+#   else
+#       define __QUEX_ASSERT_SEND_ENTRY()                   \
+               QUEX_TOKEN_QUEUE_ASSERT(&self._token_queue) 
+#   endif
 #else
     /* No assert about token object                         */
     /* No assert on not __QUEX_SETTING_TOKEN_ID_TERMINATION */

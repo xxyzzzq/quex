@@ -130,3 +130,11 @@ the suffix enables something, the option with the suffix disables the 'something
    Disable the warning message that is printed if a analyzer is used without
    a character encoding while it was created for a converter interface such
    as IConv or ICU.
+
+.. cmacro:: QUEX_OPTION_SEND_AFTER_TERMINATION_ADMISSIBLE 
+
+   If asserts are enabled, then quex triggers an error message whenever
+   a token is sent after the 'TERMINATION' token. In some cases, this 
+   might just be convenient, so that one might want to allow it by
+   defining this macro.
+
