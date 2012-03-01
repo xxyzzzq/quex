@@ -7,10 +7,11 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-make story >& tmp.txt
+make >& tmp.txt
 cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ '
-rm tmp.txt
+./a.out example.dat 
 
 # cleansening
+rm tmp.txt
 make clean >& /dev/null
 cd $tmp
