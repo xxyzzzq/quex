@@ -310,8 +310,25 @@ in the event handler definition. The list of event handlers is the following:
 
     Implicit Arguments: ``Lexeme``, ``LexemeL``, ``LexemeBegin``, ``LexemeEnd``
 
-    The ``on_after_match`` handler is executed at every pattern match. It differs
-    from ``on_match`` in that it is executed *after* the pattern-action.
+    The ``on_after_match`` handler is executed at every pattern match. It
+    differs from ``on_match`` in that it is executed *after* the
+    pattern-action. To make sure that the handler is executed, it is essential
+    that ``return`` is never a used in any pattern action directly. If a forced 
+    return is required, ``RETURN`` must be used. 
+
+    .. warning::
+
+    When using the token policy 'queue' and sending tokens from inside the 
+    ``on_after_match`` function, then it is highly advisable to set the safety
+    margin of the queue to the maximum number of tokens which are expected to
+    be sent from inside this handler. Define::
+
+           -DQUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER=...some number...
+ 
+    on the command line to your compiler. Alternatively, quex can be passed the 
+    command line option ``--token-policy-queue-safety-margin`` followed by the
+    specific number.
+
 
 .. data:: on_failure
 

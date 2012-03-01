@@ -326,9 +326,9 @@ __return_preparation_str = """
 __RETURN_REPARATION:
 $$ON_AFTER_MATCH$$
 #   if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-#   return
+    return;
 #   else
-#   return __self_result_token_id;
+    return __self_result_token_id;
 #   endif
 """
 
