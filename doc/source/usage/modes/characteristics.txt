@@ -318,16 +318,25 @@ in the event handler definition. The list of event handlers is the following:
 
     .. warning::
 
-    When using the token policy 'queue' and sending tokens from inside the 
-    ``on_after_match`` function, then it is highly advisable to set the safety
-    margin of the queue to the maximum number of tokens which are expected to
-    be sent from inside this handler. Define::
+        When using the token policy 'queue' and sending tokens from inside the 
+        ``on_after_match`` function, then it is highly advisable to set the safety
+        margin of the queue to the maximum number of tokens which are expected to
+        be sent from inside this handler. Define::
 
-           -DQUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER=...some number...
- 
-    on the command line to your compiler. Alternatively, quex can be passed the 
-    command line option ``--token-policy-queue-safety-margin`` followed by the
-    specific number.
+               -DQUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER=...some number...
+     
+        on the command line to your compiler. Alternatively, quex can be passed the 
+        command line option ``--token-policy-queue-safety-margin`` followed by the
+        specific number.
+
+    .. note::
+
+       Since ``on_after_match`` is executed after pattern actions have been done.
+       This includes a possible sending of the termination token. When asserts
+       are enabled, any token sending after the termination token may trigger 
+       an error. This can be disabled by the definition of the macro::
+       
+                QUEX_OPTION_SEND_AFTER_TERMINATION_ADMISSIBLE 
 
 
 .. data:: on_failure
