@@ -199,7 +199,7 @@ class TemplateState(MegaState):
 
             if Target.drop_out_f:    
                 return Target
-            clone = deepcopy(Target)
+            clone = Target.clone()
             if clone.door_id is not None:  
                 __adapt(clone.door_id)
             else:

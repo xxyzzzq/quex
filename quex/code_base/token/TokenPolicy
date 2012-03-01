@@ -116,7 +116,7 @@
                do {                                                                                         \
                    QUEX_TOKEN_QUEUE_ASSERT(&self._token_queue);                                             \
                    if(   self._token_queue.write_iterator != self._token_queue.begin                        \
-                      || (self._token_queue.write_iterator-1)->_id != __QUEX_SETTING_TOKEN_ID_TERMINATION ) \
+                      && (self._token_queue.write_iterator-1)->_id == __QUEX_SETTING_TOKEN_ID_TERMINATION ) \
                        QUEX_ERROR_EXIT("Detected attempt to send a token after 'TERMINATION'.\n"            \
                                        "If this is intended, compile with -DQUEX_OPTION_SEND_AFTER_TERMINATION_ADMISSIBLE'.\n"); \
                } while( 0 )
