@@ -208,8 +208,17 @@ Preparing a Token Object
 
 Sometimes, it might be necessary to perform some more complicated operations
 on a token object, before it can be sent. In this case, on must refer to the
-current token pointer.
+current token pointer. This can be achieved by accessing the current token
+directly using the 'write token pointer' as in
 
+   .. code-block:: cpp
+
+        some_pattern {
+            self_write_token_p()->number = 4711;
+            self_send(QUEX_TKN_SOMETHING);
+        }
+
+This approach is safe to work with token policy queue and single.
 
 .. rubric:: Footnotes
 
