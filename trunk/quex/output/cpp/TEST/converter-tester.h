@@ -34,7 +34,7 @@
  *   cp1256_to_wstring(C++)      -- C++ string to utf8 (std::wstring)
  *__________________________________________________________________________________________*/
 
-QUEX_NAMESPACE_MAIN_OPEN
+QUEX_NAMESPACE_TOKEN_OPEN
 
 QUEX_INLINE void
 __QUEX_CONVERTER_CHAR(cp1256, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
@@ -673,7 +673,7 @@ return;
 
 }
 
-QUEX_NAMESPACE_MAIN_CLOSE
+QUEX_NAMESPACE_TOKEN_CLOSE
 
 #define __QUEX_FROM         cp1256
 #define __QUEX_TYPE_SOURCE  QUEX_TYPE_CHARACTER

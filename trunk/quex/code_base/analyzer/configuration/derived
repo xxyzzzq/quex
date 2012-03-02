@@ -213,8 +213,8 @@
 #   define    QUEX_SETTING_CHAR_CODEC   8
 #endif
 
-#define ____QUEX_CONVERTER_CHAR(FROM, TO)    QUEX_NAME(FROM ## _to_ ## TO ## _character)
+#define ____QUEX_CONVERTER_CHAR(FROM, TO)    QUEX_NAME_TOKEN(FROM ## _to_ ## TO ## _character)
 #define __QUEX_CONVERTER_CHAR(FROM, TO)      ____QUEX_CONVERTER_CHAR(FROM, TO)
-#define ____QUEX_CONVERTER_STRING(FROM, TO)  QUEX_NAME(FROM ## _to_ ## TO)
+#define ____QUEX_CONVERTER_STRING(FROM, TO)  QUEX_NAME_TOKEN(FROM ## _to_ ## TO)
 #define __QUEX_CONVERTER_STRING(FROM, TO)    ____QUEX_CONVERTER_STRING(FROM, TO)
  

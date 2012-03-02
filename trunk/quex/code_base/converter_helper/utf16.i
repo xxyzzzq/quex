@@ -8,7 +8,7 @@
 #include <quex/code_base/asserts>
 
 
-QUEX_NAMESPACE_MAIN_OPEN
+QUEX_NAMESPACE_TOKEN_OPEN
 
 QUEX_INLINE void
 __QUEX_CONVERTER_CHAR(utf16, utf8)(const uint16_t** input_pp, uint8_t** output_pp)
@@ -83,7 +83,7 @@ __QUEX_CONVERTER_CHAR(utf16, utf32)(const uint16_t**  input_pp,
     }
 }
 
-QUEX_NAMESPACE_MAIN_CLOSE
+QUEX_NAMESPACE_TOKEN_CLOSE
 
 #define __QUEX_FROM         utf16
 #define __QUEX_TYPE_SOURCE  uint16_t
