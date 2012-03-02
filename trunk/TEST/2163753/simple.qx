@@ -14,7 +14,10 @@ mode ONE_AND_ONLY
     <<EOF>>     => QUEX_TKN_TERMINATION;
     {P_EMAIL}	=> QUEX_TKN_EMAIL(Lexeme);
     {P_WORD}	=> QUEX_TKN_WORD(Lexeme);
-    <<FAIL>>	=> QUEX_TKN_FAILED(Lexeme);
+    <<FAIL>> {
+        QUEX_NAME(undo_n)(&self, LexemeL - 1);
+        self_send1(QUEX_TKN_FAILED, Lexeme);
+    }
 }
 
 

@@ -403,6 +403,20 @@ in the event handler definition. The list of event handlers is the following:
          if( my_lexer.on_failure_exception_f ) abort();
          ...
 
+   .. note::
+
+      In cases where only parts of the mismatching lexeme are to be skipped,
+      it is necessary to 'undo' manually. That is if one wants to skip only
+      the first non-matching character all but one characters have to be 
+      undone as shown below
+
+      .. code-block:: cpp
+         
+         on_failure {
+             QUEX_NAME(undo_n)(&self, LexemeL - 1);
+             /* in C++: self.undo_n(LexemeL - 1) */
+             self_send1(QUEX_TKN_FAILURE, Lexeme);
+         }
 
 .. data:: on_end_of_stream
 
