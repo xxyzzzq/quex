@@ -326,7 +326,7 @@ in the event handler definition. The list of event handlers is the following:
                -DQUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER=...some number...
      
         on the command line to your compiler. Alternatively, quex can be passed the 
-        command line option ``--token-policy-queue-safety-margin`` followed by the
+        command line option ``--token-policy-queue-safety-border`` followed by the
         specific number.
 
     .. note::

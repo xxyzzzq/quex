@@ -186,13 +186,13 @@ defined for 'end of stream' or 'failure', the analyzer returns a
 
 .. note::
 
-   When using the token policies ``queue`` or ``users_queue`` while the asserts
-   are active, the engine **might** throw an exception if the user tries to
-   send a token after a ``TERMINATION`` token.  There is a scenario where
-   cannot detect it: if a ``TERMINATION`` is sent, then the queue is cleared,
-   and then new tokens are sent. Then the engine has no reference to the last sent
-   token. At the moment of token sending it cannot tell whether the last token
-   was a ``TERMINATION`` token or not.
+   When using the token policies ``queue`` while the asserts are active, the
+   engine **might** throw an exception if the user tries to send a token after
+   a ``TERMINATION`` token.  There is a scenario where it cannot detect it: if a
+   ``TERMINATION`` is sent, then the queue is cleared, and then new tokens are
+   sent. Then the engine has no reference to the last sent token. At the moment
+   of token sending it cannot tell whether the last token was a ``TERMINATION``
+   token or not.
    
    There are no worries when including other files. The include stack handler
    re-initializes the token queues as soon as the engine returns from
@@ -213,12 +213,25 @@ directly using the 'write token pointer' as in
 
    .. code-block:: cpp
 
-        some_pattern {
+        (many)+[letters] {
             self_write_token_p()->number = 4711;
             self_send(QUEX_TKN_SOMETHING);
         }
 
-This approach is safe to work with token policy queue and single.
+This approach is safe to work with token policy queue and single. Actions that
+are applied on every token, may be accomplished in the ``on_match`` handler which
+is executed before the pattern action, e.g. when using a customized token class
+that stores end values of the column counters, then
+
+   .. code-block:: cpp
+      
+       on_match {
+            self_write_token_p()->my_end_column_n = self.column_number_at_end();
+       }
+
+does the job of 'stamping' the value in each and every token that is going to
+be sent.
+    
 
 .. rubric:: Footnotes
 
