@@ -1,5 +1,5 @@
 /* (C) 2010 Frank-Rene Schaefer */
-QUEX_NAMESPACE_MAIN_OPEN
+QUEX_NAMESPACE_TOKEN_OPEN
 
 #ifndef    __QUEX_TO
 #    error "__QUEX_TO is not defined."
@@ -58,7 +58,7 @@ __QUEX_CONVERTER_STRING(__QUEX_FROM, __QUEX_TO)(const std::basic_string<__QUEX_T
 }
 #endif
 
-QUEX_NAMESPACE_MAIN_CLOSE
+QUEX_NAMESPACE_TOKEN_CLOSE
 
 #undef __QUEX_TO
 #undef __QUEX_TYPE_DRAIN

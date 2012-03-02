@@ -23,7 +23,7 @@
  *   $$CODEC$$_to_wstring(C++)      -- C++ string to utf8 (std::wstring)
  *__________________________________________________________________________________________*/
 
-QUEX_NAMESPACE_MAIN_OPEN
+QUEX_NAMESPACE_TOKEN_OPEN
 
 QUEX_INLINE void
 __QUEX_CONVERTER_CHAR($$CODEC$$, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
@@ -58,7 +58,7 @@ $$BODY_UTF8$$
 $$EPILOG$$
 }
 
-QUEX_NAMESPACE_MAIN_CLOSE
+QUEX_NAMESPACE_TOKEN_CLOSE
 
 #define __QUEX_FROM         $$CODEC$$
 #define __QUEX_TYPE_SOURCE  QUEX_TYPE_CHARACTER

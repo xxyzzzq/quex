@@ -6,7 +6,7 @@
 #   error "__QUEX_TO must be defined."
 #endif
 
-QUEX_NAMESPACE_MAIN_OPEN
+QUEX_NAMESPACE_TOKEN_OPEN
 
 QUEX_INLINE void
 __QUEX_CONVERTER_STRING(__QUEX_FROM, __QUEX_TO)(const __QUEX_TYPE_SOURCE**  source_pp, 
@@ -19,7 +19,7 @@ QUEX_INLINE std::basic_string<__QUEX_TYPE_DRAIN>
 __QUEX_CONVERTER_STRING(__QUEX_FROM, __QUEX_TO)(const std::basic_string<__QUEX_TYPE_SOURCE>& Source);
 #endif
 
-QUEX_NAMESPACE_MAIN_CLOSE
+QUEX_NAMESPACE_TOKEN_CLOSE
 
 #undef __QUEX_TO
 #undef __QUEX_TYPE_DRAIN

@@ -22,7 +22,7 @@
 #   error "__QUEX_UNI_TO has not been defined."
 #endif
 
-QUEX_NAMESPACE_MAIN_OPEN
+QUEX_NAMESPACE_TOKEN_OPEN
 
 QUEX_INLINE void
 __QUEX_CONVERTER_STRING(unicode, __QUEX_UNI_TO)(const QUEX_TYPE_CHARACTER**    source_pp, 
@@ -73,7 +73,7 @@ __QUEX_CONVERTER_STRING(unicode, __QUEX_UNI_TO)(const std::basic_string<QUEX_TYP
 }
 #endif
 
-QUEX_NAMESPACE_MAIN_CLOSE
+QUEX_NAMESPACE_TOKEN_CLOSE
 
 #undef  __QUEX_UNI_TO         
 #undef  __QUEX_UNI_TYPE_DRAIN 

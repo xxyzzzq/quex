@@ -8,7 +8,7 @@
 #include <quex/code_base/compatibility/stdint.h>
 #include <quex/code_base/asserts>
 
-QUEX_NAMESPACE_MAIN_OPEN
+QUEX_NAMESPACE_TOKEN_OPEN
 
 
 QUEX_INLINE void
@@ -127,7 +127,7 @@ __QUEX_CONVERTER_CHAR(utf8, utf32)(const uint8_t** input_pp, uint32_t** output_p
     *input_pp = iterator;
 }
 
-QUEX_NAMESPACE_MAIN_CLOSE
+QUEX_NAMESPACE_TOKEN_CLOSE
 
 #define  __QUEX_FROM         utf8
 #define  __QUEX_TYPE_SOURCE  uint8_t
