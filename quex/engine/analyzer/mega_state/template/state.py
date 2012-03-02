@@ -9,7 +9,6 @@ from   quex.blackboard                              import E_StateIndices
 from   itertools   import chain
 from   collections import defaultdict
 import sys
-from   copy import deepcopy
 
 class TemplateState_Entry(Entry):
     """
@@ -193,7 +192,7 @@ class TemplateState(MegaState):
                         else:
                             assert False, "There MUST be a non-recursive transition to '%s'." % door_id.state_index
 
-                new_door_id   = self.__get_local_door_id(transition_id.state_index, transition_id.from_state_index)
+                new_door_id = self.__get_local_door_id(transition_id.state_index, transition_id.from_state_index)
                 door_id.state_index = new_door_id.state_index
                 door_id.door_index  = new_door_id.door_index
 
