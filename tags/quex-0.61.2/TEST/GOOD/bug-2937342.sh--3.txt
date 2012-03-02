@@ -1,0 +1,11 @@
+define {
+    Q    (" "?1")"
+}
+
+mode X {
+    Q { }
+}
+test-3.qx:2:error: Regular expression parsing:
+test-3.qx:2:error: Missing closing ')' after expression; found '" "?1")"'.
+test-3.qx:2:error: Note, that patterns end with the first non-quoted whitespace.
+test-3.qx:2:error: Also, closing brackets in quotes do not close a syntax block.

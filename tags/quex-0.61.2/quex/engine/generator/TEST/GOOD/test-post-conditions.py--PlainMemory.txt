@@ -1,0 +1,19 @@
+(*) test string: 
+'x   xxxxx xxx x'
+(*) result:
+            X+ / WS  'x'
+         WHITESPACE  '   '
+            X+ / WS  'xxxxx'
+         WHITESPACE  ' '
+            X+ / WS  'xxx'
+         WHITESPACE  ' '
+                 X+  'x'
+  ''
+(*) Lexical Analyser Patterns:
+                "x"+ --> X+
+       "x"+/([ \t]+) --> X+ / WS
+            [ \t\n]+ --> WHITESPACE
+## (1) code generation
+## (2) compiling generated engine code and test
+## (3) running the test
+## (4) cleaning up

@@ -1,0 +1,3 @@
+## An Assert-Abortion might be an intended element of the experiment.
+STRING_LITERAL 'hello world' 
+<TERMINATION>

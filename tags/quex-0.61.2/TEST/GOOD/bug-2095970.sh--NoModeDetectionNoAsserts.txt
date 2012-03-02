@@ -1,0 +1,5 @@
+## An Assert-Abortion might be an intended element of the experiment.
+EVENT_MODE_CHANGE '' 
+STRING_LITERAL 'hello world' 
+EVENT_MODE_CHANGE '' 
+<TERMINATION>

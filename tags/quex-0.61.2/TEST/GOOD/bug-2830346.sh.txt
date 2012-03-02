@@ -1,0 +1,87 @@
+---------------------------------
+ Max:
+ME________	Max
+UKNOWN____	und
+MY_BROTHER	Moritz
+MARK______	,
+UKNOWN____	gar
+UKNOWN____	nicht
+UKNOWN____	träge
+MARK______	,
+Max: now happy!
+VERB______	Sägen
+UKNOWN____	heimlich
+UKNOWN____	mit
+UKNOWN____	der
+SUBJECT___	Säge
+MARK______	,
+UKNOWN____	Ritzeratze
+MARK______	!
+UKNOWN____	voller
+SUBJECT___	Tücke
+MARK______	,
+UKNOWN____	In
+UKNOWN____	die
+SUBJECT___	Brücke
+UKNOWN____	eine
+SUBJECT___	Lücke
+MARK______	.
+<TERMINATION>	
+---------------------------------
+ Moritz:
+MY_BROTHER	Max
+UKNOWN____	und
+ME________	Moritz
+MARK______	,
+UKNOWN____	gar
+UKNOWN____	nicht
+UKNOWN____	träge
+MARK______	,
+Max: now happy!
+VERB______	Sägen
+UKNOWN____	heimlich
+UKNOWN____	mit
+UKNOWN____	der
+SUBJECT___	Säge
+MARK______	,
+UKNOWN____	Ritzeratze
+MARK______	!
+UKNOWN____	voller
+SUBJECT___	Tücke
+MARK______	,
+UKNOWN____	In
+UKNOWN____	die
+SUBJECT___	Brücke
+UKNOWN____	eine
+SUBJECT___	Lücke
+MARK______	.
+<TERMINATION>	
+---------------------------------
+ Boeck:
+SCALLYWAG_	Max
+PREDICATE_	und
+SCALLYWAG_	Moritz
+MARK______	,
+FILL_WORD_	gar
+NEGATION__	nicht
+UKNOWN____	träge
+MARK______	,
+Boeck: now angry!
+VERB______	Sägen
+ADVERB____	heimlich
+PREDICATE_	mit
+ARTICLE___	der
+SUBJECT___	Säge
+MARK______	,
+UKNOWN____	Ritzeratze
+MARK______	!
+PREDICATE_	voller
+SUBJECT___	Tücke
+MARK______	,
+PREDICATE_	In
+ARTICLE___	die
+SUBJECT___	Brücke
+ARTICLE___	eine
+SUBJECT___	Lücke
+MARK______	.
+<TERMINATION>	
