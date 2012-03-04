@@ -66,9 +66,7 @@
          * Dependent on setup all counting might be set to 'null operations'.    
          * In case of no counting, we spend sizeof(void*) bytes for nothing, just
          * to keep the code uniform.                                               */
-#       ifdef __QUEX_OPTION_COUNTER
-        QUEX_NAME(Counter)              counter;
-#       endif
+        __QUEX_IF_COUNT(QUEX_NAME(Counter)              counter;)
 
         /*_________________________________________________________________________
          *       __   __                            ___  __   __  

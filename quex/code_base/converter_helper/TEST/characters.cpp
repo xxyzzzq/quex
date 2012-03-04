@@ -129,7 +129,7 @@ struct UnicodeTester {
 
     bool test_this(uint32_t UTF32Source)
     {
-        using namespace Tester;
+        using namespace TesterToken;
 
         /* Convert the characters and print the result on the screen. */
         uint8_t*   utf8_drain        = (uint8_t*)malloc((size_t)UTF8_STRING_SIZE);

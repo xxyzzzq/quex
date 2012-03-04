@@ -45,45 +45,23 @@ class UserCodeFragment(CodeFragment):
         self.filename = Filename
         self.line_n   = LineN
 
-        require_terminating_zero_f = False
-        if LanguageDB is not None and LanguageDB["$require-terminating-zero-preparation"](LanguageDB, Code):
-            require_terminating_zero_f = True
-
-        CodeFragment.__init__(self, Code, require_terminating_zero_f)
+        CodeFragment.__init__(self, Code)
 
     def get_code(self):
         return self.adorn_with_source_reference(self.get_pure_code())
 
     def adorn_with_source_reference(self, Code, ReturnToSourceF=True):
-        if Code.strip() == "": return Code
+        if len(Code.strip()) == 0: return ""
 
         # Even under Windows (tm), the '/' is accepted. Thus do not rely on 'normpath'
         norm_filename = Setup.get_file_reference(self.filename) 
         txt  = '\n#   line %i "%s"\n' % (self.line_n, norm_filename)
-        txt += self.pretty_format(Code)
+        txt += Code
         if ReturnToSourceF:
             if txt[-1] != "\n": txt = txt + "\n"
             txt += get_return_to_source_reference()
         return txt
 
-    def pretty_format(self, Code):
-        return Code
-        result = []
-        # Replace 1 tabulator at begin of line = 4 spaces.
-        # Count minimum indentation of code fragment.
-        for line in Code.split("\n"):
-            L = len(line)
-            first_non_whitespace_index = 0
-            for first_non_whitespace_index, letter in enumerate(line):
-                if not letter.isspace(): break
-            if first_non_whitespace_index != L:
-                line =   line[:first_non_whitespace_index].replace("\t", "    ") \
-                       + line[first_non_whitespace_index:]
-            result.append(line)
-            result.append("\n")
-            
-        return "".join(result)
-            
 def get_return_to_source_reference():
     return "\n" + UserCodeFragment_OpenLinePragma["C"][0][0] + "\n"
 
@@ -108,7 +86,8 @@ def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
                 line = line.replace("NUMBER", repr(int(min(line_n + 1, 32767))))
                 # Even under Windows (tm), the '/' is accepted. Thus do not rely on 'normpath'
                 line = line.replace("FILENAME", norm_filename)
-                line = line + "\n"
+                if len(line) == 0 or line[-1] != "\n":
+                    line = line + "\n"
         new_content += line
 
     fh.close()

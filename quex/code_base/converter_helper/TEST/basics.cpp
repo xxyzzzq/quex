@@ -121,7 +121,7 @@ test_this(const SourceT*     Source,
           const uint16_t*    UTF16_Expected, const size_t  UTF16_DrainSize,
           const uint32_t*    UTF32_Expected, const size_t  UTF32_DrainSize)
 {
-    using namespace Tester;
+    using namespace TesterToken;
 
     const SourceT*  source_end = Source;
     for(; *source_end; ++source_end) ;

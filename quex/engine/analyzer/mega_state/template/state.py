@@ -168,7 +168,8 @@ class TemplateState(MegaState):
             """
             def __adapt(door_id):
                 if door_id == E_StateIndices.DROP_OUT:
-                    return door_id
+                    # Nothing to be done
+                    return 
                 elif door_id.state_index == State.index:
                     transition_id = State.entry.transition_db[door_id][0]
                 elif door_id.state_index == self.index:
@@ -176,7 +177,7 @@ class TemplateState(MegaState):
                     # times in the same transition map. Thus, it may have been adapted before.
                     # This case is detected by 'door_id.state_index == self.index', which 
                     # means that nothing is to be done.
-                    return door_id
+                    return 
                 else:
                     if door_id.state_index not in self.implemented_state_index_list():
                         original_state = self.__analyzer.state_db.get(door_id.state_index)

@@ -67,9 +67,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #           endif
 #       endif
        
-#       ifdef __QUEX_OPTION_COUNTER
-        QUEX_NAME(Counter_construct)(&me->counter);
-#       endif
+        __QUEX_IF_COUNT( QUEX_NAME(Counter_construct)(&me->counter); )
 
 #       ifdef QUEX_OPTION_STRING_ACCUMULATOR
         QUEX_NAME(Accumulator_construct)(&me->accumulator, (QUEX_TYPE_ANALYZER*)me);
@@ -121,9 +119,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                            const size_t         TranslationBufferMemorySize)
         /* Reset of Components of the Lexical Analyzer Engine ____________________________*/
     {
-#       ifdef __QUEX_OPTION_COUNTER
-        QUEX_NAME(Counter_reset)(&me->counter);
-#       endif
+        __QUEX_IF_COUNT( QUEX_NAME(Counter_reset)(&me->counter); )
 
 #       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
         QUEX_NAME(TokenQueue_reset)(&me->_token_queue);

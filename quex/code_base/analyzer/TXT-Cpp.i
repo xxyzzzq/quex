@@ -63,9 +63,7 @@ QUEX_NAME(memento_pack)(QUEX_TYPE_ANALYZER*   me,
        || defined(QUEX_OPTION_ASSERTS)
     memento->DEBUG_analyzer_function_at_entry = self.DEBUG_analyzer_function_at_entry;
 #   endif
-#   ifdef __QUEX_OPTION_COUNTER
-    memento->counter                          = self.counter;
-#   endif
+    __QUEX_IF_COUNT( memento->counter         = self.counter);
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     memento->accumulator                      = self.accumulator;
 #   endif
@@ -104,9 +102,7 @@ QUEX_NAME(memento_unpack)(QUEX_TYPE_ANALYZER*  me,
        || defined(QUEX_OPTION_ASSERTS)
     self.DEBUG_analyzer_function_at_entry = memento->DEBUG_analyzer_function_at_entry;
 #   endif
-#   ifdef __QUEX_OPTION_COUNTER
-    self.counter                          = memento->counter;
-#   endif
+    __QUEX_IF_COUNT(self.counter          = memento->counter);
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     self.accumulator                      = memento->accumulator;
 #   endif
