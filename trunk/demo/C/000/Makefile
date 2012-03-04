@@ -51,7 +51,7 @@ EasyLexer.c: simple.qx $(QUEX_CORE)
 	quex -i                 simple.qx  \
 	     --engine           EasyLexer  \
 		 --token-id-offset  0x1000     \
-		 --language         C --debug-exception
+		 --language         C
 
 source-package:
 	quex -i                 simple.qx  \

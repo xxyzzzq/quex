@@ -1,13 +1,13 @@
 # (C) 2005-2010 Frank-Rene Schaefer
 # ABSOLUTELY NO WARANTY
-from   quex.DEFINITIONS                  import QUEX_PATH
-from   quex.engine.misc.file_in          import \
-                                                get_include_guard_extension, \
-                                                open_file_or_die
-from   quex.engine.misc.string_handling  import blue_print
-import quex.blackboard                   as blackboard
-import quex.engine.generator.action_info as action_info
-from   quex.blackboard                   import setup as Setup
+from   quex.DEFINITIONS                   import QUEX_PATH
+from   quex.engine.misc.file_in           import \
+                                                 get_include_guard_extension, \
+                                                 open_file_or_die
+from   quex.engine.misc.string_handling   import blue_print
+import quex.blackboard                    as     blackboard
+import quex.engine.generator.action_info  as     action_info
+from   quex.blackboard                    import setup as Setup
 
 
 def do():

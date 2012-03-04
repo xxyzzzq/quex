@@ -7,10 +7,12 @@
 
 #define QUEX_NAMESPACE_MAIN_OPEN  namespace Tester {
 #define QUEX_NAMESPACE_MAIN_CLOSE }
+#define QUEX_NAMESPACE_TOKEN_OPEN  namespace TesterToken {
+#define QUEX_NAMESPACE_TOKEN_CLOSE }
 
-#define ____QUEX_CONVERTER_CHAR(FROM, TO)    Tester_ ## FROM ## _to_ ## TO ## _character
+#define ____QUEX_CONVERTER_CHAR(FROM, TO)    TesterToken_ ## FROM ## _to_ ## TO ## _character
 #define __QUEX_CONVERTER_CHAR(FROM, TO)      ____QUEX_CONVERTER_CHAR(FROM, TO)
-#define ____QUEX_CONVERTER_STRING(FROM, TO)  Tester_ ## FROM ## _to_ ## TO
+#define ____QUEX_CONVERTER_STRING(FROM, TO)  TesterToken_ ## FROM ## _to_ ## TO
 #define __QUEX_CONVERTER_STRING(FROM, TO)    ____QUEX_CONVERTER_STRING(FROM, TO)
 
 #define QUEX_SETTING_CHAR_CODEC    8

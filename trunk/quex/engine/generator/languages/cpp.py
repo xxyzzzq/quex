@@ -288,10 +288,9 @@ __terminal_state_prolog  = """
      * There is a temporary zero stored at the end of each lexeme, if the action 
      * references to the 'Lexeme'. 'LexemeNull' provides a reference to an empty
      * zero terminated string.                                                    */
-
 #if defined(QUEX_OPTION_ASSERTS)
 #   define Lexeme       QUEX_NAME(access_Lexeme)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
-#   define LexemeBegin  QUEX_NAME(access_Lexeme)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
+#   define LexemeBegin  QUEX_NAME(access_LexemeBegin)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
 #   define LexemeL      QUEX_NAME(access_LexemeL)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
 #   define LexemeEnd    QUEX_NAME(access_LexemeEnd)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
 #else
@@ -375,26 +374,7 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
 
 def __adorn_action_code(action_info, SupportBeginOfLineF, LanguageDB): 
 
-    result = action_info.action().get_code()
-    assert type(result) != tuple
-    code_str = result
-
-    if code_str == "": return ""
-
-    txt = "\n"
-    # TODO: There could be a differenciation between a pattern that contains
-    #       newline at the end, and those that do not. Then, there need not
-    #       be a conditional question.
-    if SupportBeginOfLineF:
-        txt += LanguageDB.ASSIGN("me->buffer._character_before_lexeme_start", 
-                                 LanguageDB.INPUT_P_DEREFERENCE(-1)) + "\n"
-
-    if action_info.action().require_terminating_zero_f():
-        txt += "    QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);\n"
-
-    txt += code_str
-
-    return txt
+    return action_info.action().get_code()
 
 def get_terminal_code(AcceptanceID, pattern_action_info, SupportBeginOfLineF, LanguageDB):
     pattern     = pattern_action_info.pattern()
@@ -594,35 +574,6 @@ def __get_if_in_interval(TriggerSet):
         return "if( input == %i || input == %i ) {\n" % (TriggerSet.begin, TriggerSet.end - 1)
     else:
         return "if( input >= %i && input < %i ) {\n" % (TriggerSet.begin, TriggerSet.end)
-
-def __require_terminating_zero_preparation(LanguageDB, CodeStr):
-    CommentDelimiterList = LanguageDB.COMMENT_DELIMITERS
-    assert type(CommentDelimiterList) == list
-    ObjectName = "Lexeme"
-
-    for delimiter_info in CommentDelimiterList:
-        assert type(delimiter_info) == list, "Argument 'CommentDelimiters' must be of type [[]]"
-        assert len(delimiter_info) == 3, \
-               "Elements of argument CommentDelimiters must be arrays with three elements:\n" + \
-               "start of comment, end of comment, replacement string for comment.\n" + \
-               "received: " + repr(delimiter_info)
-
-    txt = CodeStr
-    L       = len(txt)
-    LO      = len(ObjectName)
-    found_i = -1
-    while 1 + 1 == 2:
-        # TODO: Implement the skip_whitespace() function for more general treatment of Comment
-        #       delimiters. Quotes for strings '"" shall then also be treate like comments.
-        found_i = txt.find(ObjectName, found_i + 1)
-
-        if found_i == -1: return False
-
-        # Note: The variable must be named 'exactly' like the given name. 'xLexeme' or 'Lexemey'
-        #       shall not trigger a treatment of 'Lexeme'.
-        if     (found_i == 0      or not is_identifier_start(txt[found_i - 1]))     \
-           and (found_i == L - LO or not is_identifier_continue(txt[found_i + LO])): 
-               return True
 
 def __condition(txt, CharSet):
     first_f = True

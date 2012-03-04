@@ -422,9 +422,7 @@ QUEX_NAME(memento_pack)(QUEX_TYPE_ANALYZER*   me,
        || defined(QUEX_OPTION_ASSERTS)
     memento->DEBUG_analyzer_function_at_entry = self.DEBUG_analyzer_function_at_entry;
 #   endif
-#   ifdef __QUEX_OPTION_COUNTER
-    memento->counter                          = self.counter;
-#   endif
+    __QUEX_IF_COUNT( memento->counter         = self.counter);
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     memento->accumulator                      = self.accumulator;
 #   endif
@@ -462,9 +460,7 @@ QUEX_NAME(memento_unpack)(QUEX_TYPE_ANALYZER*  me,
        || defined(QUEX_OPTION_ASSERTS)
     self.DEBUG_analyzer_function_at_entry = memento->DEBUG_analyzer_function_at_entry;
 #   endif
-#   ifdef __QUEX_OPTION_COUNTER
-    self.counter                          = memento->counter;
-#   endif
+    __QUEX_IF_COUNT(self.counter          = memento->counter);
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     self.accumulator                      = memento->accumulator;
 #   endif
@@ -574,7 +570,7 @@ QUEX_NAME_TOKEN(copy)(Token* __this, const Token* __That)
     #   endif
    
 
-#   line 587 "Simple"
+#   line 583 "Simple"
 
 #  undef Other
 #  undef self
@@ -636,7 +632,7 @@ QUEX_NAME_TOKEN(take_text)(Token*           __this,
         return false;      
    
 
-#   line 649 "Simple"
+#   line 645 "Simple"
 
 #  undef analyzer
 #  undef self
@@ -654,7 +650,7 @@ QUEX_NAME_TOKEN(repetition_n_get)(QUEX_TYPE_TOKEN* __this)
        return self.number;
    
 
-#   line 667 "Simple"
+#   line 663 "Simple"
 
 #   undef  self
 }
@@ -671,7 +667,7 @@ QUEX_NAME_TOKEN(repetition_n_set)(QUEX_TYPE_TOKEN* __this, size_t N)
        self.number = N;
    
 
-#   line 684 "Simple"
+#   line 680 "Simple"
 
 #   undef  self
 }
@@ -2765,7 +2761,7 @@ _223:
 
 #if defined(QUEX_OPTION_ASSERTS)
 #   define Lexeme       QUEX_NAME(access_Lexeme)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
-#   define LexemeBegin  QUEX_NAME(access_Lexeme)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
+#   define LexemeBegin  QUEX_NAME(access_LexemeBegin)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
 #   define LexemeL      QUEX_NAME(access_LexemeL)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
 #   define LexemeEnd    QUEX_NAME(access_LexemeEnd)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
 #else
@@ -2778,244 +2774,151 @@ _223:
 
 TERMINAL_4:
     __quex_debug("* terminal 4:   [ \\t\\r\\n]+\n");
-
-#   ifdef __QUEX_OPTION_COUNTER
-    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
-    QUEX_NAME(Counter_count)(&self.counter, self.buffer._lexeme_start_p, self.buffer._input_p);
-    __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
-    __quex_debug_counter();
-#   endif
+    __QUEX_COUNT_VOID(self.counter);
     {
- 
+
     }
     goto __REENTRY_PREPARATION;
 
 TERMINAL_6:
     __quex_debug("* terminal 6:   \"struct\"\n");
-
-#   ifdef __QUEX_OPTION_COUNTER
-    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 6);
-    __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
-    __quex_debug_counter();
-#   endif
+    __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 6);
     {
-
 #   line 19 "dos_lf_2.qx"
-self_send(QUEX_TKN_STRUCT);
-QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
-
-#   line 2130 "Simple.cpp"
+    self_send(QUEX_TKN_STRUCT);
+    QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
+    
+#   line 2115 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
 
 TERMINAL_8:
     __quex_debug("* terminal 8:   \"int\"\n");
-
-#   ifdef __QUEX_OPTION_COUNTER
-    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 3);
-    __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
-    __quex_debug_counter();
-#   endif
+    __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 3);
     {
-
 #   line 20 "dos_lf_2.qx"
-self_send(QUEX_TKN_TYPE_INT);
-QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
-
-#   line 2151 "Simple.cpp"
+    self_send(QUEX_TKN_TYPE_INT);
+    QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
+    
+#   line 2128 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
 
 TERMINAL_10:
     __quex_debug("* terminal 10:   \"double\"\n");
-
-#   ifdef __QUEX_OPTION_COUNTER
-    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 6);
-    __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
-    __quex_debug_counter();
-#   endif
+    __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 6);
     {
-
 #   line 21 "dos_lf_2.qx"
-self_send(QUEX_TKN_TYPE_DOUBLE);
-QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
-
-#   line 2172 "Simple.cpp"
+    self_send(QUEX_TKN_TYPE_DOUBLE);
+    QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
+    
+#   line 2141 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
 
 TERMINAL_12:
     __quex_debug("* terminal 12:   \"send\"\n");
-
-#   ifdef __QUEX_OPTION_COUNTER
-    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 4);
-    __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
-    __quex_debug_counter();
-#   endif
+    __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 4);
     {
-
 #   line 22 "dos_lf_2.qx"
-self_send(QUEX_TKN_SEND);
-QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
-
-#   line 2193 "Simple.cpp"
+    self_send(QUEX_TKN_SEND);
+    QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
+    
+#   line 2154 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
 
 TERMINAL_14:
     __quex_debug("* terminal 14:   \"expect\"\n");
-
-#   ifdef __QUEX_OPTION_COUNTER
-    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 6);
-    __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
-    __quex_debug_counter();
-#   endif
+    __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 6);
     {
-
 #   line 23 "dos_lf_2.qx"
-self_send(QUEX_TKN_EXPECT);
-QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
-
-#   line 2214 "Simple.cpp"
+    self_send(QUEX_TKN_EXPECT);
+    QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
+    
+#   line 2167 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
 
 TERMINAL_16:
     __quex_debug("* terminal 16:   \";\"\n");
-
-#   ifdef __QUEX_OPTION_COUNTER
-    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 1);
-    __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
-    __quex_debug_counter();
-#   endif
+    __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 1);
     {
-
 #   line 24 "dos_lf_2.qx"
-self_send(QUEX_TKN_SEMICOLON);
-QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
-
-#   line 2235 "Simple.cpp"
+    self_send(QUEX_TKN_SEMICOLON);
+    QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
+    
+#   line 2180 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
 
 TERMINAL_18:
     __quex_debug("* terminal 18:   \"{\"\n");
-
-#   ifdef __QUEX_OPTION_COUNTER
-    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 1);
-    __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
-    __quex_debug_counter();
-#   endif
+    __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 1);
     {
-
 #   line 25 "dos_lf_2.qx"
-self_send(QUEX_TKN_BRACKET_OPEN);
-QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
-
-#   line 2256 "Simple.cpp"
+    self_send(QUEX_TKN_BRACKET_OPEN);
+    QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
+    
+#   line 2193 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
 
 TERMINAL_20:
     __quex_debug("* terminal 20:   \"}\"\n");
-
-#   ifdef __QUEX_OPTION_COUNTER
-    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 1);
-    __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
-    __quex_debug_counter();
-#   endif
+    __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, 1);
     {
-
 #   line 26 "dos_lf_2.qx"
-self_send(QUEX_TKN_BRACKET_CLOSE);
-QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
-
-#   line 2277 "Simple.cpp"
+    self_send(QUEX_TKN_BRACKET_CLOSE);
+    QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
+    
+#   line 2206 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
 
 TERMINAL_25:
     __quex_debug("* terminal 25:   [0-9]+\n");
-
+    __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, LexemeL);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
-#   ifdef __QUEX_OPTION_COUNTER
-    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end +=     ((size_t)(me->buffer._input_p - me->buffer._lexeme_start_p)));
-    __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
-    __quex_debug_counter();
-#   endif
     {
-
 #   line 27 "dos_lf_2.qx"
-self_write_token_p()->number = atoi((char*)(Lexeme));
-self_send(QUEX_TKN_NUMBER);
-QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
-
-#   line 2300 "Simple.cpp"
+    self_write_token_p()->number = atoi((char*)(Lexeme));
+    self_send(QUEX_TKN_NUMBER);
+    QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
+    
+#   line 2221 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
 
 TERMINAL_30:
     __quex_debug("* terminal 30:   [_a-zA-Z]+\n");
-
+    __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, LexemeL);
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
-#   ifdef __QUEX_OPTION_COUNTER
-    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end +=     ((size_t)(me->buffer._input_p - me->buffer._lexeme_start_p)));
-    __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
-    __quex_debug_counter();
-#   endif
     {
-
 #   line 28 "dos_lf_2.qx"
- self_send1(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; 
-
-#   line 2321 "Simple.cpp"
+        self_send1(QUEX_TKN_IDENTIFIER, Lexeme); RETURN;
+    
+#   line 2234 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
 
 _191: /* TERMINAL: END_OF_STREAM */
-
-#   ifdef __QUEX_OPTION_COUNTER
-    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
-    __quex_debug_counter();
-#   endif
+    __QUEX_COUNT_END_OF_STREAM_EVENT(self.counter);
     {
-
 #   line 16 "dos_lf_2.qx"
-self_send(QUEX_TKN_TERMINATION);
-
-#   line 2338 "Simple.cpp"
+    self_send(QUEX_TKN_TERMINATION);
+    
+#   line 2245 "Simple.cpp"
 
     }
     /* End of Stream causes a return from the lexical analyzer, so that no
@@ -3035,17 +2938,12 @@ _193: /* TERMINAL: FAILURE */
             ++(me->buffer._input_p);
         }
     }
-
-#   ifdef __QUEX_OPTION_COUNTER
-    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
-    QUEX_NAME(Counter_count)(&self.counter, self.buffer._lexeme_start_p, self.buffer._input_p);
-    __quex_debug_counter();
-#   endif
+    __QUEX_COUNT_VOID(self.counter);
+    QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
     {
 QUEX_ERROR_EXIT("\n    Match failure in mode 'ONE_AND_ONLY'.\n"
-                "    No 'on_failure' section provided for this mode.\n"
-                "    Proposal: Define 'on_failure' and analyze 'Lexeme'.\n");
+    "    No 'on_failure' section provided for this mode.\n"
+    "    Proposal: Define 'on_failure' and analyze 'Lexeme'.\n");
 
     }
     goto __REENTRY_PREPARATION;
@@ -3059,7 +2957,7 @@ QUEX_ERROR_EXIT("\n    Match failure in mode 'ONE_AND_ONLY'.\n"
 __REENTRY_PREPARATION:
     /* (*) Common point for **restarting** lexical analysis.
      *     at each time when CONTINUE is called at the end of a pattern. */
-    
+ 
 #   ifndef __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
 #   ifdef  QUEX_OPTION_TOKEN_POLICY_QUEUE
     if( QUEX_NAME(TokenQueue_is_full)(&self._token_queue) ) RETURN;

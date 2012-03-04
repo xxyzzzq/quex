@@ -37,7 +37,6 @@ from   itertools import islice
 CppBase = {
     "$class-member-def":   lambda TypeStr, MaxTypeNameL, VariableName, MaxVariableL:
                            "    %s%s %s;" % (TypeStr, " " * (MaxTypeNameL - len(TypeStr)), VariableName),
-    "$require-terminating-zero-preparation": cpp.__require_terminating_zero_preparation,
     "$indentation_add":          cpp.__indentation_add,
     "$indentation_check_space":  cpp.__indentation_check_whitespace,
     #
@@ -553,6 +552,5 @@ db["C"].update([
     ("$token_template_i_file",  "/token/TXT-C.i"),
     ("$analyzer_template_file", "/analyzer/TXT-C"),
     ("$file_extension",         ".c"),
-    ("$require-terminating-zero-preparation",  cpp.__require_terminating_zero_preparation),
     ("$comment-delimiters", [["/*", "*/", ""], ["//", "\n", ""], ["\"", "\"", "\\\""]]),
 ])

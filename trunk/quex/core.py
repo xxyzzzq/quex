@@ -117,7 +117,7 @@ def analyzer_functions_get(ModeDB):
         pattern_action_pair_list,    \
         on_end_of_stream_action,     \
         on_failure_action,           \
-        on_after_match_str           = action_preparation.do(mode, IndentationSupportF)
+        on_after_match_str           = action_preparation.do(mode, IndentationSupportF, BeginOfLineSupportF)
 
         # -- prepare code generation
         generator = cpp_generator.Generator(StateMachineName       = mode.name,

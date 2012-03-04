@@ -331,10 +331,14 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     for pair in PatternActionPairList:
         print "%20s --> %s" % (pair[0], pair[1])
     # -- create default action that prints the name and the content of the token
+    store_last_character_str  = "    %s = %s;\n" % \
+                                ("me->buffer._character_before_lexeme_start", 
+                                 "*(me->buffer._input_p - 1)")
+    set_terminating_zero_str  = "    QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);\n"
     try:
         PatternActionPairList = map(lambda x: 
                                     PatternActionInfo(regex.do(x[0], PatternDictionary), 
-                                                      CodeFragment(action(x[1]), RequireTerminatingZeroF=True),
+                                                      CodeFragment(store_last_character_str + set_terminating_zero_str + action(x[1])),
                                                       PatternStr=x[0]),
                                     PatternActionPairList)
     except RegularExpressionException, x:
