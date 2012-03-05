@@ -1,13 +1,6 @@
 /* -*- C++ -*- vim: set syntax=cpp:
  *
  * (C) 2005-2009 Frank-Rene Schaefer                                                */
-#include <quex/code_base/definitions>
-#include <quex/code_base/compatibility/stdint.h>
-#include <quex/code_base/asserts>
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-#   include <string>
-#endif
-
 #ifndef   __QUEX_FROM
 #   error "__QUEX_FROM must be defined."
 #endif

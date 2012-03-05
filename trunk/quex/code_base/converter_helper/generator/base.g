@@ -1,17 +1,6 @@
 /* -*- C++ -*- vim: set syntax=cpp:
  * 
- * ACKNOWLEDGEMENT: Parts of the following utf8 conversion have been derived from 
- *                  segments of the utf8 conversion library of Alexey Vatchenko 
- *                  <av@bsdua.org>.    
- *
- * (C) 2005-2009 Frank-Rene Schaefer                                                */
-#include <quex/code_base/definitions>
-#include <quex/code_base/compatibility/stdint.h>
-#include <quex/code_base/asserts>
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-#   include <string>
-#endif
-
+ * (C) 2005-2011 Frank-Rene Schaefer                                                */
 
 /* Converter Functions: ____________________________________________________________________
  *
@@ -22,6 +11,8 @@
  *   $$CODEC$$_to_wchar(...)        -- character to wchar
  *   $$CODEC$$_to_wstring(...)      -- string to wchar
  *   $$CODEC$$_to_wstring(C++)      -- C++ string to wchar (std::wstring)
+ *
+ * $$CODEC$$ = '__QUEX_FROM' as defined by the including file.
  *__________________________________________________________________________________________*/
 
 #ifndef __QUEX_FROM
