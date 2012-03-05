@@ -19,7 +19,7 @@ that referes to the Lexeme macros.
 <<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:    global Lexeme_matcher 
 <<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:    # If 'Lexeme' occurs as an isolated word, then ensure the generation of 
 <<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:    # a terminating zero. Note, that the occurence of 'LexemeBegin' does not
-<<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:    result = (Lexeme_matcher.search(Code) is not None) 
+<<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:    require_terminating_zero_f = (Lexeme_matcher.search(code_str) is not None) 
 <<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:        txt += "                \"    Proposal: Define 'on_failure' and analyze 'Lexeme'.\\n\");\n"
 <<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:    # Lexeme does not contain newline --> count only columns
 <<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:    if character_n == -1: incr_str = "LexemeL"

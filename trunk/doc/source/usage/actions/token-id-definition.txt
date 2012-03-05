@@ -37,10 +37,10 @@ section.  Imagine a typo in the description of pattern-action pairs:
 .. code-block:: cpp
 
     ...
-           "for"  => QUEX_TKN_KEYWORT_FOR;
+           "for"  => QUEX_TKN_KEYWORD_FOR;
     ...
 
-In this case, the numeric constant for `QUEX_TKN_KEYWORT_FOR` is still
+In this case, the numeric constant for `QUEX_TKN_KEYWORD_FOR` is still
 automatically generated. But, the caller of the lexical analyzer might actually
 expect a `QUEX_TKN_KEYWORD_FOR` with a `D` in `KEYWORD`, not a `T`. Such a
 token identifier would never be reported by the lexical analyzer, because of

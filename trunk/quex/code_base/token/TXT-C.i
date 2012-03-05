@@ -63,14 +63,10 @@ $$COPY$$
     /* If the user even misses to copy the token id, then there's
      * something seriously wrong.                                 */
     __quex_assert(__this->_id == __That->_id);
-#ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
-#   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-    __quex_assert(__this->_line_n == __That->_line_n);
+#   ifdef QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+    __QUEX_IF_COUNT_LINES(__quex_assert(__this->_line_n == __That->_line_n));
+    __QUEX_IF_COUNT_COLUMNS(__quex_assert(__this->_column_n == __That->_column_n));
 #   endif
-#   ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-    __quex_assert(__this->_column_n == __That->_column_n);
-#   endif
-#endif
 }
 
 

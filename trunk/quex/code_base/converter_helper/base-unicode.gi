@@ -11,7 +11,7 @@
 #include <quex/code_base/converter_helper/utf32>
 
 /* We want to include the headers 'utf8', 'utf16', and 'utf32' here 
- * dependent on __QUEX_TYPE_CHARACTER_SIZE and keep the condition
+ * dependent on 'sizeof(QUEX_TYPE_CHARACTER)' and keep the condition
  * local to this file. Those files above, though, undefine the 
  * macros __QUEX_TYPE_DRAIN and __QUEX_TO at the end so we use 
  * a 'special' naming here that is safe from being undefined.       */

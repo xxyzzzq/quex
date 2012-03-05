@@ -501,10 +501,9 @@ QUEX_NAMESPACE_MAIN_CLOSE
  */
 #ifndef __QUEX_INCLUDE_GUARD__TOKEN__GENERATED____QUEX____TOKEN_I
 
-namespace quex {
+QUEX_NAMESPACE_TOKEN_OPEN
 
-
-inline
+QUEX_INLINE
 /* NOTE: If you get an error here, then your configuration
  *       file does not declare QUEX_TYPE0_TOKEN as Token. 
  *       The following weirdly typed constructor shall break in
@@ -517,7 +516,7 @@ Token::QUEX_TYPE0_TOKEN()
 #   undef  self
 }
 
-inline
+QUEX_INLINE
 Token::Token(const Token& Other)
 {
    QUEX_NAME_TOKEN(copy)(this, &Other);
@@ -526,7 +525,7 @@ Token::Token(const Token& Other)
 #  undef  self
 }
 
-inline
+QUEX_INLINE
 Token::~Token()
 {
 #  define self (*this)
@@ -534,20 +533,20 @@ Token::~Token()
 #  undef  self
 }
 
-inline void
+QUEX_INLINE void
 QUEX_NAME_TOKEN(construct)(Token* __this)
 {
     /* Explicit constructor call by 'placement new' */
     new ((void*)__this) QUEX_TYPE_TOKEN;
 }
 
-inline void
+QUEX_INLINE void
 QUEX_NAME_TOKEN(destruct)(Token* __this)
 {
     __this->QUEX_TYPE0_TOKEN::~QUEX_TYPE0_TOKEN();  
 }
 
-inline void
+QUEX_INLINE void
 QUEX_NAME_TOKEN(copy)(Token* __this, const Token* __That)
 {
 #  define self  (*__this)
@@ -570,7 +569,7 @@ QUEX_NAME_TOKEN(copy)(Token* __this, const Token* __That)
     #   endif
    
 
-#   line 583 "Simple"
+#   line 582 "Simple"
 
 #  undef Other
 #  undef self
@@ -632,7 +631,7 @@ QUEX_NAME_TOKEN(take_text)(Token*           __this,
         return false;      
    
 
-#   line 645 "Simple"
+#   line 644 "Simple"
 
 #  undef analyzer
 #  undef self
@@ -650,7 +649,7 @@ QUEX_NAME_TOKEN(repetition_n_get)(QUEX_TYPE_TOKEN* __this)
        return self.number;
    
 
-#   line 663 "Simple"
+#   line 662 "Simple"
 
 #   undef  self
 }
@@ -667,14 +666,13 @@ QUEX_NAME_TOKEN(repetition_n_set)(QUEX_TYPE_TOKEN* __this, size_t N)
        self.number = N;
    
 
-#   line 680 "Simple"
+#   line 679 "Simple"
 
 #   undef  self
 }
 #endif /* QUEX_OPTION_TOKEN_REPETITION_SUPPORT */
 
-} /* Closing Namespace 'quex' */
-
+QUEX_NAMESPACE_TOKEN_CLOSE
 
 #endif /* __QUEX_INCLUDE_GUARD__TOKEN__GENERATED____QUEX____TOKEN_I */
 
@@ -2758,7 +2756,6 @@ _223:
      * There is a temporary zero stored at the end of each lexeme, if the action 
      * references to the 'Lexeme'. 'LexemeNull' provides a reference to an empty
      * zero terminated string.                                                    */
-
 #if defined(QUEX_OPTION_ASSERTS)
 #   define Lexeme       QUEX_NAME(access_Lexeme)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
 #   define LexemeBegin  QUEX_NAME(access_LexemeBegin)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
@@ -2788,7 +2785,7 @@ TERMINAL_6:
     self_send(QUEX_TKN_STRUCT);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2115 "Simple.cpp"
+#   line 2114 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2801,7 +2798,7 @@ TERMINAL_8:
     self_send(QUEX_TKN_TYPE_INT);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2128 "Simple.cpp"
+#   line 2127 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2814,7 +2811,7 @@ TERMINAL_10:
     self_send(QUEX_TKN_TYPE_DOUBLE);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2141 "Simple.cpp"
+#   line 2140 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2827,7 +2824,7 @@ TERMINAL_12:
     self_send(QUEX_TKN_SEND);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2154 "Simple.cpp"
+#   line 2153 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2840,7 +2837,7 @@ TERMINAL_14:
     self_send(QUEX_TKN_EXPECT);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2167 "Simple.cpp"
+#   line 2166 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2853,7 +2850,7 @@ TERMINAL_16:
     self_send(QUEX_TKN_SEMICOLON);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2180 "Simple.cpp"
+#   line 2179 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2866,7 +2863,7 @@ TERMINAL_18:
     self_send(QUEX_TKN_BRACKET_OPEN);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2193 "Simple.cpp"
+#   line 2192 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2879,7 +2876,7 @@ TERMINAL_20:
     self_send(QUEX_TKN_BRACKET_CLOSE);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2206 "Simple.cpp"
+#   line 2205 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2894,7 +2891,7 @@ TERMINAL_25:
     self_send(QUEX_TKN_NUMBER);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2221 "Simple.cpp"
+#   line 2220 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2907,7 +2904,7 @@ TERMINAL_30:
 #   line 28 "dos_lf_2.qx"
         self_send1(QUEX_TKN_IDENTIFIER, Lexeme); RETURN;
     
-#   line 2234 "Simple.cpp"
+#   line 2233 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2918,7 +2915,7 @@ _191: /* TERMINAL: END_OF_STREAM */
 #   line 16 "dos_lf_2.qx"
     self_send(QUEX_TKN_TERMINATION);
     
-#   line 2245 "Simple.cpp"
+#   line 2244 "Simple.cpp"
 
     }
     /* End of Stream causes a return from the lexical analyzer, so that no

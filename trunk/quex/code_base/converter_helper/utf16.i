@@ -87,7 +87,7 @@ QUEX_NAMESPACE_TOKEN_CLOSE
 
 #define __QUEX_FROM         utf16
 #define __QUEX_TYPE_SOURCE  uint16_t
-#include <quex/code_base/converter_helper/base.gi>
+#include <quex/code_base/converter_helper/generator/base.gi>
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16_I */
 

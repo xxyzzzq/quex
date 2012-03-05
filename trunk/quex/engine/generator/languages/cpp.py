@@ -1,4 +1,3 @@
-from quex.engine.misc.file_in         import is_identifier_start, is_identifier_continue
 from quex.engine.misc.string_handling import blue_print
 
 from   quex.engine.generator.languages.address     import get_label, \

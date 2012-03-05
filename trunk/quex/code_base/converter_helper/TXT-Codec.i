@@ -62,7 +62,7 @@ QUEX_NAMESPACE_TOKEN_CLOSE
 
 #define __QUEX_FROM         $$CODEC$$
 #define __QUEX_TYPE_SOURCE  QUEX_TYPE_CHARACTER
-#include <quex/code_base/converter_helper/base.gi>
+#include <quex/code_base/converter_helper/generator/base.gi>
 
 
 

@@ -128,12 +128,12 @@ buffer_filler_converter = """
 """
 
 converter_helper = """
-/converter_helper/base-char-and-wchar.gi
-/converter_helper/base-core.g
-/converter_helper/base-core.gi
-/converter_helper/base.g
-/converter_helper/base.gi
-/converter_helper/base-unicode.gi
+/converter_helper/generator/base-char-and-wchar.gi
+/converter_helper/generator/base-core.g
+/converter_helper/generator/base-core.gi
+/converter_helper/generator/base.g
+/converter_helper/generator/base.gi
+/converter_helper/generator/base-unicode.gi
 """
 
 buffer_filler_iconv = """

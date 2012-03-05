@@ -268,7 +268,7 @@ DEPRECATED = {
       ("Since version 0.46.3, friend classes are no longer defined on the command line. Please,\n"
        "use the 'body { ... }' section and fill be-'friend'-ing code there.", "0.46.3"),
   "XX_token_class_name":
-      ("Command line option '--token-class--name' has been renamed to '--token-class'\n"
+      ("Command line option '--token-class-name' has been renamed to '--token-class'\n"
        "for uniformity.", "0.46.3"),
   "XX_token_class_stringless_check_f": 
       ("Command line options --token-type-no-stringless-check and --ttnsc are deprecated. Please,\n"

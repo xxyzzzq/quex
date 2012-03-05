@@ -8,7 +8,7 @@ token_type {
        #include <quex/code_base/compatibility/stdint.h>
 
        /* The following function converts the engine's codec to utf8. */
-       QUEX_NAMESPACE_MAIN_OPEN
+       QUEX_NAMESPACE_TOKEN_OPEN
        QUEX_INLINE std::string
        __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, char)(const std::basic_string<QUEX_TYPE_CHARACTER>&);
 
@@ -16,7 +16,7 @@ token_type {
        QUEX_INLINE std::wstring
        __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, wchar)(const std::basic_string<QUEX_TYPE_CHARACTER>&);
 #      endif
-       QUEX_NAMESPACE_MAIN_CLOSE
+       QUEX_NAMESPACE_TOKEN_CLOSE
    }
    standard {
         id            : uint32_t;
@@ -35,12 +35,10 @@ token_type {
         self.text   = Other.text;
         self.number = Other.number;
     #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
-    #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-            self._line_n = Other._line_n;
-    #       endif
-    #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-            self._column_n = Other._column_n;
-    #       endif
+    #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+        __QUEX_IF_COUNT_LINES(self._line_n     = Other._line_n);
+        __QUEX_IF_COUNT_COLUMNS(self._column_n = Other._column_n);
+    #   endif
     #   endif
    }
 
@@ -67,7 +65,7 @@ token_type {
         pretty_char_text() const
         {
 #           if defined(__QUEX_OPTION_CONVERTER_HELPER)
-            std::string             tmp = __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, char)(self.text);
+            std::string             tmp = QUEX_NAMESPACE_TOKEN::__QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, char)(self.text);
 #           else
             /* Converter helpers are only disabled automatically, if ASCII (Unicode in 0-FF)
              * is used and the character size is 1.                                          */
@@ -88,7 +86,7 @@ token_type {
         pretty_wchar_text() const
         {
 #           if defined(__QUEX_OPTION_CONVERTER_HELPER)
-            std::wstring             tmp = __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, wchar)(self.text);
+            std::wstring             tmp = QUEX_NAMESPACE_TOKEN::__QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, wchar)(self.text);
 #           else
             /* Converter helpers are only disabled automatically, if ASCII (Unicode in 0-FF)
              * is used and the character size is 1.                                          */
