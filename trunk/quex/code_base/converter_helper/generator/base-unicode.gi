@@ -6,9 +6,9 @@
 #include <quex/code_base/compatibility/stdint.h>
 #include <quex/code_base/asserts>
 
-#include <quex/code_base/converter_helper/utf8>
-#include <quex/code_base/converter_helper/utf16>
-#include <quex/code_base/converter_helper/utf32>
+#include <quex/code_base/converter_helper/QuexUniverse/utf8>
+#include <quex/code_base/converter_helper/QuexUniverse/utf16>
+#include <quex/code_base/converter_helper/QuexUniverse/utf32>
 
 /* We want to include the headers 'utf8', 'utf16', and 'utf32' here 
  * dependent on 'sizeof(QUEX_TYPE_CHARACTER)' and keep the condition
@@ -78,6 +78,6 @@ QUEX_NAMESPACE_TOKEN_CLOSE
 #undef  __QUEX_UNI_TO         
 #undef  __QUEX_UNI_TYPE_DRAIN 
 
-#include <quex/code_base/converter_helper/utf8.i>
-#include <quex/code_base/converter_helper/utf16.i>
-#include <quex/code_base/converter_helper/utf32.i>
+#include <quex/code_base/converter_helper/QuexUniverse/utf8.i>
+#include <quex/code_base/converter_helper/QuexUniverse/utf16.i>
+#include <quex/code_base/converter_helper/QuexUniverse/utf32.i>
