@@ -30,15 +30,15 @@
 
 #define __QUEX_TYPE_DRAIN   uint8_t
 #define __QUEX_TO           utf8
-#include <quex/code_base/converter_helper/base-core.g>
+#include <quex/code_base/converter_helper/generator/base-core.g>
 
 #define __QUEX_TYPE_DRAIN   uint16_t
 #define __QUEX_TO           utf16
-#include <quex/code_base/converter_helper/base-core.g>
+#include <quex/code_base/converter_helper/generator/base-core.g>
 
 #define __QUEX_TYPE_DRAIN   uint32_t
 #define __QUEX_TO           utf32
-#include <quex/code_base/converter_helper/base-core.g>
+#include <quex/code_base/converter_helper/generator/base-core.g>
 
 /* Note: 'char' and 'wchar_t' are mapped to 'utf8', 'utf16', 'utf32'
  *       depending on:
@@ -46,12 +46,12 @@
  *                         QUEX_SETTING_CHAR_CODEC                     */
 #define __QUEX_TYPE_DRAIN   char
 #define __QUEX_TO           char
-#include <quex/code_base/converter_helper/base-core.g>
+#include <quex/code_base/converter_helper/generator/base-core.g>
 
 #if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
 #   define __QUEX_TYPE_DRAIN  wchar_t
 #   define __QUEX_TO          wchar
-#   include <quex/code_base/converter_helper/base-core.g>
+#   include <quex/code_base/converter_helper/generator/base-core.g>
 #endif
 
 #undef __QUEX_FROM

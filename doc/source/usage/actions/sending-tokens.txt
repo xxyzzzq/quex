@@ -69,11 +69,19 @@ which are available to access the matched lexeme. In detail they are:
 
    .. warning::  If the the identifier ``Lexeme`` is not specified inside a code
                  fragment, then quex does not necessarily set the terminating zero.
-                 Then you either have to set it by hand, i.e.
+                 Alternatively the terminating zero may be set manually, i.e.
                 
-        .. code-block:: cpp 
-       
-            *LexemeEnd = (QUEX_TYPE_CHARACTER)0;
+                    .. code-block:: cpp 
+                   
+                       *LexemeEnd = (QUEX_TYPE_CHARACTER)0;
+
+                 or one might rely on the borders ``LexemeBegin`` and
+                 ``LexemeEnd``, or on ``LexemeBegin`` and ``LexemeL`` for
+                 further processing. Note, that despite its being well
+                 established common practise, the terminating zero approach is
+                 almost never the fastest and most efficient approach for
+                 string handling!  Quex respects the tradition but leaves the
+                 door open for intelligent other solutions.
 
 .. data:: LexemeL
 

@@ -80,12 +80,8 @@ token_type {
         }
         self.number = Other.number;
     #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
-    #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-            self._line_n   = Other._line_n;
-    #       endif
-    #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-            self._column_n = Other._column_n;
-    #       endif
+        __QUEX_IF_COUNT_LINES(self._line_n     = Other._line_n);
+        __QUEX_IF_COUNT_COLUMNS(self._column_n = Other._column_n);
     #   endif
    }
 

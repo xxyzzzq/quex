@@ -5,6 +5,6 @@
 
 #define  __QUEX_FROM         $$CODEC$$
 #define  __QUEX_TYPE_SOURCE  QUEX_TYPE_CHARACTER
-#include <quex/code_base/converter_helper/base.g>
+#include <quex/code_base/converter_helper/generator/base.g>
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__$$CODEC$$__ */

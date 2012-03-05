@@ -105,19 +105,18 @@ def do(setup):
                           
         token_id_txt.append(epilog)
 
-    tc_descr   = blackboard.token_type_definition
-
     content = blue_print(file_str,
                          [["$$TOKEN_ID_DEFINITIONS$$",        "".join(token_id_txt)],
                           ["$$DATE$$",                        time.asctime()],
                           ["$$TOKEN_CLASS_DEFINITION_FILE$$", Setup.get_file_reference(blackboard.token_type_definition.get_file_name())],
-                          ["$$INCLUDE_GUARD_EXT$$",           get_include_guard_extension(
-                                                                  LanguageDB.NAMESPACE_REFERENCE(tc_descr.name_space) 
-                                                                  + "__" + tc_descr.class_name)],
-                          ["$$TOKEN_PREFIX$$",                setup.token_id_prefix]])
+                          ["$$TOKEN_PREFIX$$",                setup.token_id_prefix], 
+                          ["$$INCLUDE_GUARD_EXT$$",           get_include_guard_extension(         \
+                                                                  Setup.analyzer_name_safe.upper() \
+                                                                + "__"                             \
+                                                                + Setup.token_class_name_safe.upper())], 
+                         ])
 
     return content
-
 
 standard_token_id_list = ["TERMINATION", "UNINITIALIZED", "INDENT", "NODENT", "DEDENT"]
 
