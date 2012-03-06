@@ -24,7 +24,7 @@
  *__________________________________________________________________________________________*/
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
-namespace QuexUniverse {
+namespace quex {
 #endif
 
 QUEX_INLINE void
@@ -65,7 +65,7 @@ $$EPILOG$$
 #include <quex/code_base/converter_helper/generator/base.gi>
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
-} /* namespace QuexUniverse */
+} /* namespace quex */
 #endif
 
 

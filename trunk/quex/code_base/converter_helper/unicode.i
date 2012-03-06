@@ -8,12 +8,12 @@
 #include <quex/code_base/compatibility/stdint.h>
 #include <quex/code_base/asserts>
 
-#include <quex/code_base/converter_helper/QuexUniverse/utf8.i>
-#include <quex/code_base/converter_helper/QuexUniverse/utf16.i>
-#include <quex/code_base/converter_helper/QuexUniverse/utf32.i>
+#include <quex/code_base/converter_helper/quex_universal/utf8.i>
+#include <quex/code_base/converter_helper/quex_universal/utf16.i>
+#include <quex/code_base/converter_helper/quex_universal/utf32.i>
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
-namespace QuexUniverse {
+namespace quex {
 #endif
 
 #define  __QUEX_UNI_TO          utf8
@@ -45,7 +45,7 @@ namespace QuexUniverse {
 #endif 
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
-} /* namespace QuexUniverse */
+} /* namespace quex */
 #endif
 
 #undef __QUEX_FROM

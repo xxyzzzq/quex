@@ -10,7 +10,7 @@
 #endif
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
-namespace QuexUniverse {
+namespace quex {
 #endif
 
 #define  __QUEX_FROM         $$CODEC$$
@@ -18,7 +18,7 @@ namespace QuexUniverse {
 #include <quex/code_base/converter_helper/generator/base.g>
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
-} /* namespace QuexUniverse */
+} /* namespace quex */
 #endif
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__$$CODEC$$__ */
