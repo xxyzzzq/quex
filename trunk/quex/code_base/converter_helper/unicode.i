@@ -8,6 +8,13 @@
 #include <quex/code_base/compatibility/stdint.h>
 #include <quex/code_base/asserts>
 
+#include <quex/code_base/converter_helper/QuexUniverse/utf8.i>
+#include <quex/code_base/converter_helper/QuexUniverse/utf16.i>
+#include <quex/code_base/converter_helper/QuexUniverse/utf32.i>
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+namespace QuexUniverse {
+#endif
 
 #define  __QUEX_UNI_TO          utf8
 #define  __QUEX_UNI_TYPE_DRAIN  uint8_t
@@ -36,6 +43,10 @@
 #   define __QUEX_DRAIN_CODEC   QUEX_SETTING_WCHAR_CODEC
 #   include <quex/code_base/converter_helper/generator/base-char-and-wchar.gi>
 #endif 
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+} /* namespace QuexUniverse */
+#endif
 
 #undef __QUEX_FROM
 #undef __QUEX_TYPE_SOURCE

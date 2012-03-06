@@ -12,7 +12,9 @@
 
 #include <quex/code_base/definitions>
 
-QUEX_NAMESPACE_TOKEN_OPEN
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+namespace QuexUniverse {
+#endif
 
 QUEX_INLINE void
 __QUEX_CONVERTER_CHAR(utf32, utf8)(const uint32_t**  input_pp, 
@@ -80,10 +82,12 @@ __QUEX_CONVERTER_CHAR(utf32, utf32)(const uint32_t**  input_pp,
     *((*output_pp)++) = (uint32_t)(*(*input_pp)++);
 }
 
-QUEX_NAMESPACE_TOKEN_CLOSE
-
 #define __QUEX_FROM         utf32
 #define __QUEX_TYPE_SOURCE  uint32_t
 #include <quex/code_base/converter_helper/generator/base.gi>
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+} /* namespace QuexUniverse */
+#endif
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF32_I */

@@ -1,15 +1,20 @@
-#ifndef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF8_I
-#define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF8_I
 /* -*- C++ -*- vim: set syntax=cpp:
  *
+ * ACKNOWLEDGEMENT: Parts of the following utf8 conversion have been derived from 
+ *                  segments of the utf8 conversion library of Alexey Vatchenko 
+ *                  <av@bsdua.org>.    
+ *
  * (C) 2005-2010 Frank-Rene Schaefer                                                */
+#ifndef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF8_I
+#define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF8_I
 
 #include <quex/code_base/definitions>
 #include <quex/code_base/compatibility/stdint.h>
 #include <quex/code_base/asserts>
 
-QUEX_NAMESPACE_TOKEN_OPEN
-
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+namespace QuexUniverse {
+#endif
 
 QUEX_INLINE void
 /* DrainEnd pointer is not returned, since the increment is always '1' */
@@ -127,10 +132,12 @@ __QUEX_CONVERTER_CHAR(utf8, utf32)(const uint8_t** input_pp, uint32_t** output_p
     *input_pp = iterator;
 }
 
-QUEX_NAMESPACE_TOKEN_CLOSE
-
 #define  __QUEX_FROM         utf8
 #define  __QUEX_TYPE_SOURCE  uint8_t
 #include <quex/code_base/converter_helper/generator/base.gi>
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+} /* namespace QuexUniverse */
+#endif
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF8_I */

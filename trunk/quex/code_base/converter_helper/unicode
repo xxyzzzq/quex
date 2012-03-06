@@ -2,8 +2,20 @@
 #define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UNICODE
 /* 2010 (C) Frank-Rene Schaefer; ABSOLUTELY NO WARRANTY */
 
+#include <quex/code_base/converter_helper/QuexUniverse/utf8>
+#include <quex/code_base/converter_helper/QuexUniverse/utf16>
+#include <quex/code_base/converter_helper/QuexUniverse/utf32>
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+namespace QuexUniverse {
+#endif
+
 #define  __QUEX_FROM         unicode
 #define  __QUEX_TYPE_SOURCE  QUEX_TYPE_CHARACTER
 #include <quex/code_base/converter_helper/generator/base.g>
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+} /* namespace QuexUniverse */
+#endif
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UNICODE */
