@@ -42,8 +42,8 @@ __QUEX_CORE = \
     ./buffer/plain/BufferFiller_Plain \
     ./buffer/plain/BufferFiller_Plain.i \
     ./buffer/asserts \
-    ./converter_helper/unicode \
-    ./converter_helper/unicode.i \
+    ./converter_helper/quex_universal/unicode \
+    ./converter_helper/quex_universal/unicode.i \
     ./asserts \
     ./definitions \
     ./temporary_macros_on \
