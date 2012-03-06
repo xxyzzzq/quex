@@ -13,7 +13,7 @@
 #include <quex/code_base/asserts>
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
-namespace QuexUniverse {
+namespace quex {
 #endif
 
 QUEX_INLINE void
@@ -137,7 +137,7 @@ __QUEX_CONVERTER_CHAR(utf8, utf32)(const uint8_t** input_pp, uint32_t** output_p
 #include <quex/code_base/converter_helper/generator/base.gi>
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
-} /* namespace QuexUniverse */
+} /* namespace quex */
 #endif
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF8_I */
