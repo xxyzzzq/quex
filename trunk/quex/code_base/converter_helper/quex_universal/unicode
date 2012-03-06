@@ -10,9 +10,17 @@
 namespace quex {
 #endif
 
-#define  __QUEX_FROM         unicode
-#define  __QUEX_TYPE_SOURCE  QUEX_TYPE_CHARACTER
-#include <quex/code_base/converter_helper/generator/base.g>
+#define  __QUEX_G_DRAIN_NAME          utf8
+#define  __QUEX_UNI_TYPE_DRAIN  uint8_t
+#include <quex/code_base/converter_helper/generator/base-unicode.g>
+
+#define  __QUEX_G_DRAIN_NAME         utf16
+#define  __QUEX_UNI_TYPE_DRAIN uint16_t
+#include <quex/code_base/converter_helper/generator/base-unicode.g>
+
+#define  __QUEX_G_DRAIN_NAME         utf32
+#define  __QUEX_UNI_TYPE_DRAIN uint32_t
+#include <quex/code_base/converter_helper/generator/base-unicode.g>
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 } /* namespace quex */
