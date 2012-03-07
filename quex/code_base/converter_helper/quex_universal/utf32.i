@@ -1,4 +1,20 @@
 /* -*- C++ -*- vim: set syntax=cpp:
+ *
+ * PURPOSE: 
+ *
+ * This file implements single character converter functions for conversions 
+ *
+ *            FROM utf32
+ *            TO   utf8, utf16, and utf32
+ *
+ * That is, it implements the functions:
+ *
+ *            __QUEX_CONVERTER_CHAR(utf32, utf8)(...)
+ *            __QUEX_CONVERTER_CHAR(utf32, utf16)(...)
+ *            __QUEX_CONVERTER_CHAR(utf32, utf32)(...)
+ *
+ * Those functions may be used by file "string-converter.gi" to implement
+ * string converter functions.
  * 
  * ACKNOWLEDGEMENT: Parts of the following functions have been derived from 
  *                  segments of the utf8 conversion library of Alexey 
@@ -81,10 +97,6 @@ __QUEX_CONVERTER_CHAR(utf32, utf32)(const uint32_t**  input_pp,
 {
     *((*output_pp)++) = (uint32_t)(*(*input_pp)++);
 }
-
-#define __QUEX_FROM         utf32
-#define __QUEX_TYPE_SOURCE  uint32_t
-#include <quex/code_base/converter_helper/generator/base.gi>
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 } /* namespace quex */
