@@ -129,8 +129,8 @@ buffer_filler_converter = """
 
 converter_helper = """
 /converter_helper/generator/base-char-and-wchar.gi
-/converter_helper/generator/base-core.g
-/converter_helper/generator/base-core.gi
+/converter_helper/generator/string-converter.g
+/converter_helper/generator/string-converter.gi
 /converter_helper/generator/base.g
 /converter_helper/generator/base.gi
 /converter_helper/generator/base-unicode.gi
@@ -149,20 +149,20 @@ buffer_filler_icu = """
 """
 
 converter_helper_unicode = """
-/converter_helper/unicode
-/converter_helper/unicode.i
+/converter_helper/quex_universal/unicode
+/converter_helper/quex_universal/unicode.i
 """
 converter_helper_utf16 = """
-/converter_helper/utf16
-/converter_helper/utf16.i
+/converter_helper/quex_universal/utf16
+/converter_helper/quex_universal/utf16.i
 """
 converter_helper_utf32 = """
-/converter_helper/utf32
-/converter_helper/utf32.i
+/converter_helper/quex_universal/utf32
+/converter_helper/quex_universal/utf32.i
 """
 converter_helper_utf8 = """
-/converter_helper/utf8
-/converter_helper/utf8.i
+/converter_helper/quex_universal/utf8
+/converter_helper/quex_universal/utf8.i
 """
 
 def do():

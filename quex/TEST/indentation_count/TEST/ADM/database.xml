@@ -1,4 +1,4 @@
-<test-database execution-time-sec="10.00" date="Mon Mar  5 07:41:28 2012">
+<test-database execution-time-sec="9.99" date="Tue Mar  6 07:13:39 2012">
     <last-used-diff-display-program name=""/>
     <test title="Indentation Counting and Range Skipper" time-sum-sec="2.53"> 
         <application file-name="with-skip-range.sh" info-request-time="1318614191L" vanished="False"/>
@@ -15,7 +15,7 @@
            <choice name="customized" result="OK" time_sec="1.10" crc="2010419295"/>
         </choice-list>
     </test>
-    <test title="Customized Event Handlers" time-sum-sec="4.08"> 
+    <test title="Customized Event Handlers" time-sum-sec="4.07"> 
         <application file-name="handlers.sh" info-request-time="1318614191L" vanished="False"/>
         <choice-list number="5" same_result="False">
            <choice name="check-eof" result="OK" time_sec="0.84" crc="-180552726"/>

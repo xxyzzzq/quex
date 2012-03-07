@@ -214,7 +214,6 @@ def __prepare_on_failure_action(Mode, BeginOfLineSupportF, require_terminating_z
                      BeginOfLineSupportF=BeginOfLineSupportF,
                      require_terminating_zero_preparation_f=require_terminating_zero_preparation_f) 
 
-
 def __get_line_and_column_counting(ThePattern, EOF_ActionF):
     global LanguageDB
 

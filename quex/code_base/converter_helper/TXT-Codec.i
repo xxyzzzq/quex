@@ -60,8 +60,8 @@ $$BODY_UTF8$$
 $$EPILOG$$
 }
 
-#define __QUEX_FROM         $$CODEC$$
-#define __QUEX_TYPE_SOURCE  QUEX_TYPE_CHARACTER
+#define __QUEX_G_SOURCE_NAME         $$CODEC$$
+#define __QUEX_G_SOURCE_TYPE  QUEX_TYPE_CHARACTER
 #include <quex/code_base/converter_helper/generator/base.gi>
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
