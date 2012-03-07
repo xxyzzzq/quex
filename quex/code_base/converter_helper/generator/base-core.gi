@@ -7,12 +7,12 @@
 #endif
 
 QUEX_INLINE void
-__QUEX_CONVERTER_STRING(__QUEX_FROM, __QUEX_TO)(const __QUEX_TYPE_SOURCE**  source_pp, 
-                                                const __QUEX_TYPE_SOURCE*   SourceEnd, 
+__QUEX_CONVERTER_STRING(__QUEX_G_SOURCE_NAME, __QUEX_TO)(const __QUEX_G_SOURCE_TYPE**  source_pp, 
+                                                const __QUEX_G_SOURCE_TYPE*   SourceEnd, 
                                                 __QUEX_TYPE_DRAIN**          drain_pp,  
                                                 const __QUEX_TYPE_DRAIN*     DrainEnd)
 {
-    const __QUEX_TYPE_SOURCE*  source_iterator; 
+    const __QUEX_G_SOURCE_TYPE*  source_iterator; 
     __QUEX_TYPE_DRAIN*         drain_iterator;
 
     __quex_assert(source_pp != 0x0);
@@ -26,7 +26,7 @@ __QUEX_CONVERTER_STRING(__QUEX_FROM, __QUEX_TO)(const __QUEX_TYPE_SOURCE**  sour
     while( 1 + 1 == 2 ) { 
         if( source_iterator == SourceEnd ) break;
         if( DrainEnd - drain_iterator < (ptrdiff_t)__QUEX_MAX_CHAR_SIZE ) break;
-        __QUEX_CONVERTER_CHAR(__QUEX_FROM, __QUEX_TO)(&source_iterator, &drain_iterator);
+        __QUEX_CONVERTER_CHAR(__QUEX_G_SOURCE_NAME, __QUEX_TO)(&source_iterator, &drain_iterator);
         __quex_assert(source_iterator >  *source_pp);
         __quex_assert(source_iterator <= SourceEnd);
     }
@@ -37,18 +37,18 @@ __QUEX_CONVERTER_STRING(__QUEX_FROM, __QUEX_TO)(const __QUEX_TYPE_SOURCE**  sour
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 QUEX_INLINE std::basic_string<__QUEX_TYPE_DRAIN>
-__QUEX_CONVERTER_STRING(__QUEX_FROM, __QUEX_TO)(const std::basic_string<__QUEX_TYPE_SOURCE>& Source)
+__QUEX_CONVERTER_STRING(__QUEX_G_SOURCE_NAME, __QUEX_TO)(const std::basic_string<__QUEX_G_SOURCE_TYPE>& Source)
 {
-    const __QUEX_TYPE_SOURCE*             source_iterator = (__QUEX_TYPE_SOURCE*)Source.c_str();
-    const __QUEX_TYPE_SOURCE*             source_end      = source_iterator + Source.length();
+    const __QUEX_G_SOURCE_TYPE*             source_iterator = (__QUEX_G_SOURCE_TYPE*)Source.c_str();
+    const __QUEX_G_SOURCE_TYPE*             source_end      = source_iterator + Source.length();
     __QUEX_TYPE_DRAIN                     drain[__QUEX_MAX_CHAR_SIZE + 1];
     __QUEX_TYPE_DRAIN*                    drain_iterator = 0;
     std::basic_string<__QUEX_TYPE_DRAIN>  result;
 
     while( source_iterator != source_end ) {
         drain_iterator = drain;
-        __QUEX_CONVERTER_CHAR(__QUEX_FROM, __QUEX_TO)(&source_iterator, &drain_iterator);
-        __quex_assert(source_iterator >  (__QUEX_TYPE_SOURCE*)Source.c_str());
+        __QUEX_CONVERTER_CHAR(__QUEX_G_SOURCE_NAME, __QUEX_TO)(&source_iterator, &drain_iterator);
+        __quex_assert(source_iterator >  (__QUEX_G_SOURCE_TYPE*)Source.c_str());
         __quex_assert(source_iterator <= source_end);
         result.append((__QUEX_TYPE_DRAIN*)drain, (size_t)(drain_iterator - drain));
     }

@@ -12,11 +12,11 @@
  *   $$CODEC$$_to_wstring(...)      -- string to wchar
  *   $$CODEC$$_to_wstring(C++)      -- C++ string to wchar (std::wstring)
  *
- * $$CODEC$$ = '__QUEX_FROM' as defined by the including file.
+ * $$CODEC$$ = '__QUEX_G_SOURCE_NAME' as defined by the including file.
  *__________________________________________________________________________________________*/
 
-#ifndef __QUEX_FROM
-#   error "__QUEX_FROM must be defined."
+#ifndef __QUEX_G_SOURCE_NAME
+#   error "__QUEX_G_SOURCE_NAME must be defined."
 #endif
 
 #define __QUEX_TYPE_DRAIN   uint8_t
@@ -45,5 +45,5 @@
 #   include <quex/code_base/converter_helper/generator/base-core.g>
 #endif
 
-#undef __QUEX_FROM
-#undef __QUEX_TYPE_SOURCE
+#undef __QUEX_G_SOURCE_NAME
+#undef __QUEX_G_SOURCE_TYPE

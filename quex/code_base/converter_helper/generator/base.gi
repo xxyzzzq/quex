@@ -1,11 +1,11 @@
 /* -*- C++ -*- vim: set syntax=cpp:
  *
  * (C) 2005-2009 Frank-Rene Schaefer                                                */
-#ifndef   __QUEX_FROM
-#   error "__QUEX_FROM must be defined."
+#ifndef   __QUEX_G_SOURCE_NAME
+#   error "__QUEX_G_SOURCE_NAME must be defined."
 #endif
-#ifndef   __QUEX_TYPE_SOURCE
-#   error "__QUEX_TYPE_SOURCE must be defined."
+#ifndef   __QUEX_G_SOURCE_TYPE
+#   error "__QUEX_G_SOURCE_TYPE must be defined."
 #endif
 
 /* NOTE: '__QUEX_MAX_CHAR_SIZE' referes to the maximum number of chunks.
@@ -15,17 +15,17 @@
 #define __QUEX_TYPE_DRAIN    uint8_t
 #define __QUEX_TO            utf8
 #define __QUEX_MAX_CHAR_SIZE 4
-#include <quex/code_base/converter_helper/generator/base-core.gi>
+#include <quex/code_base/converter_helper/generator/string-converter.gi>
 
 #define __QUEX_TYPE_DRAIN    uint16_t
 #define __QUEX_TO            utf16
 #define __QUEX_MAX_CHAR_SIZE 2
-#include <quex/code_base/converter_helper/generator/base-core.gi>
+#include <quex/code_base/converter_helper/generator/string-converter.gi>
 
 #define __QUEX_TYPE_DRAIN    uint32_t
 #define __QUEX_TO            utf32
 #define __QUEX_MAX_CHAR_SIZE 1
-#include <quex/code_base/converter_helper/generator/base-core.gi>
+#include <quex/code_base/converter_helper/generator/string-converter.gi>
 
 /* Adapt 'char' and 'wchar_t' to utf8, utf16 or utf32 depending on its size. */
 #define __QUEX_TYPE_DRAIN    char
@@ -40,6 +40,6 @@
 #   include <quex/code_base/converter_helper/generator/base-char-and-wchar.gi>
 #endif 
 
-#undef __QUEX_FROM
-#undef __QUEX_TYPE_SOURCE 
+#undef __QUEX_G_SOURCE_NAME
+#undef __QUEX_G_SOURCE_TYPE 
 
