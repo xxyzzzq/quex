@@ -311,12 +311,12 @@ def prepare_file_names(setup):
     setup.output_token_class_file_implementation = __prepare_file_name("-token",         E_Files.HEADER_IMPLEMTATION)
 
     if setup.buffer_codec == "utf8":
-        setup.output_buffer_codec_header   = "quex/code_base/converter_helper/utf8"
-        setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/utf8.i"
+        setup.output_buffer_codec_header   = "quex/code_base/converter_helper/quex_universal/utf8"
+        setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/quex_universal/utf8.i"
 
     elif setup.buffer_codec == "utf16":
-        setup.output_buffer_codec_header   = "quex/code_base/converter_helper/utf16"
-        setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/utf16.i"
+        setup.output_buffer_codec_header   = "quex/code_base/converter_helper/quex_universal/utf16"
+        setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/quex_universal/utf16.i"
 
     elif setup.buffer_codec != "":
         # Note, that the name may be set to 'None' if the conversion is utf8 or utf16
@@ -326,8 +326,8 @@ def prepare_file_names(setup):
         setup.output_buffer_codec_header_i = \
             __prepare_file_name("-converter-%s" % setup.buffer_codec, E_Files.HEADER_IMPLEMTATION)
     else:
-        setup.output_buffer_codec_header   = "quex/code_base/converter_helper/unicode"
-        setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/unicode.i"
+        setup.output_buffer_codec_header   = "quex/code_base/converter_helper/quex_universal/unicode"
+        setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/quex_universal/unicode.i"
 
 def make_numbers(setup):
     setup.compression_template_min_gain = __get_integer("compression_template_min_gain")

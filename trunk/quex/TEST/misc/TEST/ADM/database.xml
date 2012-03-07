@@ -1,4 +1,4 @@
-<test-database execution-time-sec="1.77" date="Mon Mar  5 07:41:36 2012">
+<test-database execution-time-sec="1.77" date="Tue Mar  6 07:13:39 2012">
     <last-used-diff-display-program name=""/>
     <test title="Customized codec files (option --codec-file)" time-sum-sec="0.27"> 
         <application file-name="customized_codec.sh" info-request-time="1310810801L" vanished="False"/>
