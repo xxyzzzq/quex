@@ -32,7 +32,7 @@ namespace quex {
 } /* namespace quex */
 #endif
 
-#undef __QUEX_FROM
-#undef __QUEX_TYPE_SOURCE
+#undef __QUEX_G_SOURCE_NAME
+#undef __QUEX_G_SOURCE_TYPE
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UNICODE_I */

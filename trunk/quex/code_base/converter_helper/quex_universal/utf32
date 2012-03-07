@@ -6,8 +6,8 @@
 namespace quex {
 #endif
 
-#define __QUEX_FROM         utf32
-#define __QUEX_TYPE_SOURCE  uint32_t
+#define __QUEX_G_SOURCE_NAME         utf32
+#define __QUEX_G_SOURCE_TYPE  uint32_t
 #include <quex/code_base/converter_helper/generator/base.g>
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)

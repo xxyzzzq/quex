@@ -1,8 +1,25 @@
-#ifndef __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16_I
-#define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16_I
 /* -*- C++ -*- vim: set syntax=cpp:
  *
+ * PURPOSE: 
+ *
+ * This file implements single character converter functions for conversions 
+ *
+ *            FROM utf16
+ *            TO   utf8, utf16, and utf32
+ *
+ * That is, it implements the functions:
+ *
+ *            __QUEX_CONVERTER_CHAR(utf16, utf8)(...)
+ *            __QUEX_CONVERTER_CHAR(utf16, utf16)(...)
+ *            __QUEX_CONVERTER_CHAR(utf16, utf32)(...)
+ *
+ * Those functions may be used by file "string-converter.gi" to implement
+ * string converter functions.
+ *
  * (C) 2005-2010 Frank-Rene Schaefer; ABSOLUTELY NO WARRANTY                      */
+#ifndef __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16_I
+#define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16_I
+
 #include <quex/code_base/definitions>
 #include <quex/code_base/compatibility/stdint.h>
 #include <quex/code_base/asserts>
@@ -84,10 +101,6 @@ __QUEX_CONVERTER_CHAR(utf16, utf32)(const uint16_t**  input_pp,
         *((*output_pp)++) = (x0 << 10) + x1 + (uint32_t)0x10000;
     }
 }
-
-#define __QUEX_FROM         utf16
-#define __QUEX_TYPE_SOURCE  uint16_t
-#include <quex/code_base/converter_helper/generator/base.gi>
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 } /* namespace quex */
