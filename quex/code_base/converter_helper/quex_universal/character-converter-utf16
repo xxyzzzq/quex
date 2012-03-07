@@ -1,0 +1,18 @@
+#ifndef __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16
+#define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16
+/* 2005-2010 (C) Frank-Rene Schaefer; ABSOLUTELY NO WARRANTY */
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+namespace quex {
+#endif
+
+#define __QUEX_G_SOURCE_NAME         utf16
+#define __QUEX_G_SOURCE_TYPE  uint16_t
+#include <quex/code_base/converter_helper/generator/base.g>
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+} /* namespace quex */
+#endif
+
+#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16 */
+

@@ -1,110 +1,58 @@
 /* -*- C++ -*- vim: set syntax=cpp:
- *
  * PURPOSE: 
  *
- * This file implements single character converter functions for conversions 
+ * Provide the implementation of character and string converter functions
+ * FROM utf16 to utf8, utf16, and utf32.
  *
- *            FROM utf16
- *            TO   utf8, utf16, and utf32
+ * Before string converter functions are generated through file 
+ * 'string-converter.gi' the character functions are included from 
+ * 'character-converter-utf16.i'.
  *
- * That is, it implements the functions:
+ * All functions in this file are universal and not dependent on the
+ * analyzer or buffer element type. Thus, they are placed in namespace 'quex'.
+ *
+ * 2010 (C) Frank-Rene Schaefer; 
+ * ABSOLUTELY NO WARRANTY                                                    */
+#ifndef __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16_I
+#define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16_I
+
+/* (1) Implement the character converters from utf16 to utf8, utf16, utf32.
+ *     (Note, that character converters are generated into namespace 'quex'.)*/
+#include <quex/code_base/converter_helper/quex_universal/character-converter-utf16.i>
+
+/* (2) Generate string converters from utf16 to utf8, utf16, utf32 based on the
+ *     definitions of 
  *
  *            __QUEX_CONVERTER_CHAR(utf16, utf8)(...)
  *            __QUEX_CONVERTER_CHAR(utf16, utf16)(...)
  *            __QUEX_CONVERTER_CHAR(utf16, utf32)(...)
  *
- * Those functions may be used by file "string-converter.gi" to implement
- * string converter functions.
- *
- * (C) 2005-2010 Frank-Rene Schaefer; ABSOLUTELY NO WARRANTY                      */
-#ifndef __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16_I
-#define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16_I
-
-#include <quex/code_base/definitions>
-#include <quex/code_base/compatibility/stdint.h>
-#include <quex/code_base/asserts>
+ *     which have been defined in (1).                                       */
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 namespace quex {
 #endif
 
+#define __QUEX_FROM          utf16
+#define __QUEX_TYPE_SOURCE   uint16_t
 
-QUEX_INLINE void
-__QUEX_CONVERTER_CHAR(utf16, utf8)(const uint16_t** input_pp, uint8_t** output_pp)
-{
-    uint32_t  x0      = (uint16_t)0;
-    uint32_t  x1      = (uint16_t)0;
-    uint32_t  unicode = (uint32_t)0;
-
-    if ( **input_pp <= (uint16_t)0x7f ) {
-        *((*output_pp)++) = (uint8_t)*(*input_pp);
-        ++(*input_pp);
-
-    } else if ( **input_pp <= (uint16_t)0x7ff ) {
-        *((*output_pp)++) = (uint8_t)(0xC0 | (*(*input_pp) >> 6)); 
-        *((*output_pp)++) = (uint8_t)(0x80 | (*(*input_pp) & (uint16_t)0x3F));
-        ++(*input_pp);
-
-    } else if ( **input_pp < (uint16_t)0xD800 ) { 
-        *((*output_pp)++) = (uint8_t)(0xE0 |  *(*input_pp)                    >> 12);
-        *((*output_pp)++) = (uint8_t)(0x80 | (*(*input_pp) & (uint16_t)0xFFF) >> 6);
-        *((*output_pp)++) = (uint8_t)(0x80 | (*(*input_pp) & (uint16_t)0x3F));
-        ++(*input_pp);
-
-    } else if ( **input_pp < (uint16_t)0xE000 ) { 
-        /* Characters > 0xFFFF need to be coded in two bytes by means of surrogates. */
-        x0 = (uint32_t)(*(*input_pp)++ - (uint32_t)0xD800);
-        x1 = (uint32_t)(*(*input_pp)++ - (uint32_t)0xDC00);
-        unicode = (x0 << 10) + x1 + 0x10000;
-
-        /* Assume that only character appear, that are defined in unicode. */
-        __quex_assert(unicode <= (uint16_t)0x1FFFFF);
-
-        *((*output_pp)++) = (uint8_t)(0xF0 | unicode                       >> 18);
-        *((*output_pp)++) = (uint8_t)(0x80 | (unicode & (uint32_t)0x3FFFF) >> 12);
-        *((*output_pp)++) = (uint8_t)(0x80 | (unicode & (uint32_t)0xFFF)   >> 6);
-        *((*output_pp)++) = (uint8_t)(0x80 | (unicode & (uint32_t)0x3F));
-
-    } else { 
-        /* Always true: **input_pp <= 0xFFFF */
-        *((*output_pp)++) = (uint8_t)(0xE0 |  *(*input_pp)                    >> 12);
-        *((*output_pp)++) = (uint8_t)(0x80 | (*(*input_pp) & (uint16_t)0xFFF) >> 6);
-        *((*output_pp)++) = (uint8_t)(0x80 | (*(*input_pp) & (uint16_t)0x3F));
-        ++(*input_pp);
-    } 
-}
-
-QUEX_INLINE void
-__QUEX_CONVERTER_CHAR(utf16, utf16)(const uint16_t**  input_pp, 
-                                    uint16_t**        output_pp)
-{
-    if( **input_pp < (uint16_t)0xD800 || **input_pp >= (uint16_t)0xE000 ) {
-        *((*output_pp)++) = *(*input_pp)++;
-    } else { 
-        *((*output_pp)++) = *(*input_pp)++;
-        *((*output_pp)++) = *(*input_pp)++;
-    }
-}
-
-QUEX_INLINE void
-__QUEX_CONVERTER_CHAR(utf16, utf32)(const uint16_t**  input_pp, 
-                                    uint32_t**        output_pp)
-{
-    uint32_t  x0 = (uint32_t)0;
-    uint32_t  x1 = (uint32_t)0;
-
-    if( **input_pp < (uint16_t)0xD800 || **input_pp >= (uint16_t)0xE000 ) {
-        *((*output_pp)++) = *(*input_pp)++;
-    } else { 
-        x0 = (uint32_t)(*(*input_pp)++) - (uint32_t)0xD800;
-        x1 = (uint32_t)(*(*input_pp)++) - (uint32_t)0xDC00;
-        *((*output_pp)++) = (x0 << 10) + x1 + (uint32_t)0x10000;
-    }
-}
+#define __QUEX_TO            utf8
+#define __QUEX_TYPE_DRAIN    uint8_t
+#include <quex/code_base/converter_helper/generator/string-converter.gi>
+#define __QUEX_TO            utf16
+#define __QUEX_TYPE_DRAIN    uint16_t
+#include <quex/code_base/converter_helper/generator/string-converter.gi>
+#define __QUEX_TO            utf32
+#define __QUEX_TYPE_DRAIN    uint32_t
+#include <quex/code_base/converter_helper/generator/string-converter.gi>
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 } /* namespace quex */
 #endif
 
-#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16_I */
+/* 'string-converter.gi' is so kind not to undef __QUEX_FROM and 
+ * __QUEX_TYPE_SOURCE, so we do it here.                                     */
+#undef __QUEX_FROM
+#undef __QUEX_TYPE_SOURCE
 
+#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16_I */

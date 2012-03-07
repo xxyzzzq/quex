@@ -1,18 +1,55 @@
+/* -*- C++ -*- vim: set syntax=cpp: */
 #ifndef __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16
 #define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16
-/* 2005-2010 (C) Frank-Rene Schaefer; ABSOLUTELY NO WARRANTY */
+
+#define __QUEX_TYPE_SOURCE uint16_t
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 namespace quex {
 #endif
 
-#define __QUEX_G_SOURCE_NAME         utf16
-#define __QUEX_G_SOURCE_TYPE  uint16_t
-#include <quex/code_base/converter_helper/generator/base.g>
+/* (1) Character converters */
+QUEX_INLINE void
+__QUEX_CONVERTER_CHAR(utf16, utf8)(const __QUEX_TYPE_SOURCE**  input_pp, 
+                                   uint8_t**                   output_pp);
+QUEX_INLINE void
+__QUEX_CONVERTER_CHAR(utf16, utf16)(const __QUEX_TYPE_SOURCE**  input_pp, 
+                                    uint16_t**                  output_pp);
+QUEX_INLINE void
+__QUEX_CONVERTER_CHAR(utf16, utf32)(const __QUEX_TYPE_SOURCE**  input_pp, 
+                                    uint32_t**                  output_pp);
+
+/* (2) String converters */
+QUEX_INLINE void
+__QUEX_CONVERTER_STRING(utf16, utf8)(const __QUEX_TYPE_SOURCE**  source_pp, 
+                                     const __QUEX_TYPE_SOURCE*   SourceEnd, 
+                                     uint8_t**                   drain_pp,  
+                                     const uint8_t*              DrainEnd);
+QUEX_INLINE void
+__QUEX_CONVERTER_STRING(utf16, utf16)(const __QUEX_TYPE_SOURCE**  source_pp, 
+                                      const __QUEX_TYPE_SOURCE*   SourceEnd, 
+                                      uint16_t**                  drain_pp,  
+                                      const uint16_t*             DrainEnd);
+QUEX_INLINE void
+__QUEX_CONVERTER_STRING(utf16, utf32)(const __QUEX_TYPE_SOURCE**  source_pp, 
+                                      const __QUEX_TYPE_SOURCE*   SourceEnd, 
+                                      __QUEX_TYPE_DRAIN**         drain_pp,  
+                                      const __QUEX_TYPE_DRAIN*    DrainEnd);
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+QUEX_INLINE std::basic_string<uint8_t>
+__QUEX_CONVERTER_STRING(utf16, utf8)(const std::basic_string<__QUEX_TYPE_SOURCE>& Source);
+QUEX_INLINE std::basic_string<uint16_t>
+__QUEX_CONVERTER_STRING(utf16, utf16)(const std::basic_string<__QUEX_TYPE_SOURCE>& Source);
+QUEX_INLINE std::basic_string<uint32_t>
+__QUEX_CONVERTER_STRING(utf16, utf32)(const std::basic_string<__QUEX_TYPE_SOURCE>& Source);
+#endif
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 } /* namespace quex */
 #endif
+
+#undef __QUEX_TYPE_SOURCE 
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16 */
 
