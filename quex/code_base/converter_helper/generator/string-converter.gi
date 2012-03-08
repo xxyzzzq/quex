@@ -12,10 +12,13 @@
  *
  * PARAMETERS (must be defined macros):
  *
- *      __QUEX_FROM        -- Name of the source character encoding.
- *      __QUEX_TO          -- Name of the target encoding.
- *      __QUEX_TYPE_SOURCE -- Type of characters that carry the source.
- *      __QUEX_TYPE_DRAIN  -- Type of characters that carry the drain.            
+ *      __QUEX_FROM          -- Name of the source character encoding.
+ *      __QUEX_TO            -- Name of the target encoding.
+ *      __QUEX_TYPE_SOURCE   -- Type of characters that carry the source.
+ *      __QUEX_TYPE_DRAIN    -- Type of characters that carry the drain.            
+ *      __QUEX_MAX_CHAR_SIZE -- [1/sizeof(__QUEX_TYPE_SOURCE)]
+ *                              Maximum character size in coding. This
+ *                              is important to maintain a safety margin.
  *
  * (C) 2010-2012 Frank-Rene Schaefer 
  * ABSOLUTELY NO WARRANTY                                                    */
@@ -30,6 +33,15 @@
 #endif
 #ifndef     __QUEX_TYPE_DRAIN
 #    error "__QUEX_TYPE_DRAIN is not defined."
+#endif
+#if   __QUEX_FROM   == utf8
+#    define __QUEX_MAX_CHAR_SIZE 4
+#elif __QUEX_FROM == utf16
+#    define __QUEX_MAX_CHAR_SIZE 2
+#elif __QUEX_FROM == utf16
+#    define __QUEX_MAX_CHAR_SIZE 1
+#elif ! defined(__QUEX_MAX_CHAR_SIZE)
+#    error "For codecs other than utf8, utf16, or utf32 __QUEX_MAX_CHAR_SIZE must be defined."
 #endif
 
 QUEX_INLINE void
