@@ -8,12 +8,14 @@
  *
  * (C) 2005-2010 Frank-Rene Schaefer                                                
  * ABSOLUTELY NO WARRANTY                                                    */
-#ifndef    __QUEX_FROM_TYPE 
+
+#if     defined(__QUEX_FROM)
+#   error "__QUEX_FROM must NOT be defined. Source name is 'unicode' for this header."
+#elif ! defined(__QUEX_FROM_TYPE)
 #   error "__QUEX_FROM_TYPE must be defined."
-#ifndef    __QUEX_TO_TYPE
+#elif ! defined(__QUEX_TO_TYPE)
 #   error "__QUEX_TO_TYPE must be defined."
-#endif
-#ifndef    __QUEX_TO
+#elif ! defined(__QUEX_TO)
 #   error "__QUEX_TO must be defined."
 #endif
 
@@ -44,7 +46,7 @@ __QUEX_CONVERTER_STRING(unicode, __QUEX_TO)(const __QUEX_FROM_TYPE** source_pp,
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 QUEX_INLINE std::basic_string<__QUEX_TO_TYPE>
-__QUEX_CONVERTER_STRING(unicode, __QUEX_UNI_TO)(const std::basic_string<__QUEX_FROM_TYPE>& Source)
+__QUEX_CONVERTER_STRING(unicode, __QUEX_TO)(const std::basic_string<__QUEX_FROM_TYPE>& Source)
 {
     switch( sizeof(__QUEX_FROM_TYPE) ) {
     case 1: {
