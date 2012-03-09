@@ -82,6 +82,9 @@ def do(ModeDB):
     codec_name = "unicode"
     if Setup.buffer_codec != "": 
         codec_name = make_safe_identifier(Setup.buffer_codec).lower()
+    character_size_str = "sizeof(QUEX_TYPE_CHARACTER)"
+    if Setup.buffer_element_size != -1:
+        character_size_str = "%i" % Setup.buffer_element_size
 
     def namespace(NameSpaceList):
         result = Setup.language_db.NAMESPACE_REFERENCE(NameSpaceList)
@@ -113,6 +116,7 @@ def do(ModeDB):
              ["$$PATH_TERMINATION_CODE$$",      "0x%X" % Setup.path_limit_code],
              ["$$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$", converter_new_str],
              ["$$QUEX_TYPE_CHARACTER$$",        Setup.buffer_element_type],
+             ["$$QUEX_SETTING_CHARACTER_SIZE$$", character_size_str],
              ["$$QUEX_VERSION$$",               QUEX_VERSION],
              ["$$TOKEN_CLASS$$",                token_descr.class_name],
              ["$$TOKEN_CLASS_NAME_SAFE$$",      token_descr.class_name_safe],

@@ -89,7 +89,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
 /* NOT: #include <quex/code_base/analyzer/headers.i>
  * otherwise we might have to provide things that we actually do not need at all. */
 #include    <quex/code_base/aux-string.i>
-#include    <quex/code_base/converter_helper/quex_universal/unicode.i>
+#include    <quex/code_base/converter_helper/universal/unicode.i>
 
 #include    <quex/code_base/analyzer/member/basic.i>
 #include    <quex/code_base/MemoryManager.i>
