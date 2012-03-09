@@ -2,11 +2,31 @@
  * PURPOSE: 
  *
  * Provide the implementation of character and string converter functions
- * FROM utf8 to utf8, utf16, and utf32.
+ * FROM utf8 to utf8, utf16, utf32, char, and wchar_t.
  *
- * Before string converter functions are generated through file 
- * 'string-converter.gi' the character functions are included from 
- * 'character-converter-utf8.i'.
+ * STEPS:
+ *
+ * (1) Include the implementation of the character converters from utf8 
+ *     to utf8, utf16, utf32, char, and wchar_t.
+ *
+ *     Use: "character-converter-utf8.i"
+ *             --> implementation for utf8
+ *
+ *          "../generator/character-converter-char-wchar_t.gi"
+ *             --> route 'char' and 'wchar_t' conversion to
+ *                 one of the converters defined before.
+ *
+ * (2) Generate the implementation of the string converters in terms
+ *     of those character converters.
+ *
+ *     Use: "../generator/implementation-string-converters.gi"
+ *
+ *          which uses
+ *
+ *              "../generator/string-converter.gi"
+ *
+ *          to implement each string converter from the given 
+ *          character converters. 
  *
  * All functions in this file are universal and not dependent on the
  * analyzer or buffer element type. Thus, they are placed in namespace 'quex'.
@@ -16,43 +36,29 @@
 #ifndef __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF8_I
 #define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF8_I
 
-/* (1) Implement the character converters from utf8 to utf8, utf16, utf32.
+#define __QUEX_FROM       utf8
+#define __QUEX_FROM_TYPE  uint8_t
+
+/* (1) Implement the character converters utf8 to utf8, utf16, utf32.
  *     (Note, that character converters are generated into namespace 'quex'.)*/
 #include <quex/code_base/converter_helper/quex_universal/character-converter-utf8.i>
-
-/* (2) Generate string converters from utf8 to utf8, utf16, utf32 based on the
- *     definitions of 
- *
- *            __QUEX_CONVERTER_CHAR(utf8, utf8)(...)
- *            __QUEX_CONVERTER_CHAR(utf8, utf16)(...)
- *            __QUEX_CONVERTER_CHAR(utf8, utf32)(...)
- *
- *     which have been defined in (1).                                       */
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 namespace quex {
 #endif
+/* (1b) Derive converters to char and wchar_t from the given set 
+ *      of converters. (Generator uses __QUEX_FROM and QUEX_FROM_TYPE)      */
+#include <quex/code_base/converter_helper/generator/character-converter-char-wchar_t.gi>
 
-#define __QUEX_FROM          utf8
-#define __QUEX_TYPE_SOURCE   uint8_t
-
-#define __QUEX_TO            utf8
-#define __QUEX_TYPE_DRAIN    uint8_t
-#include <quex/code_base/converter_helper/generator/string-converter.gi>
-#define __QUEX_TO            utf16
-#define __QUEX_TYPE_DRAIN    uint16_t
-#include <quex/code_base/converter_helper/generator/string-converter.gi>
-#define __QUEX_TO            utf32
-#define __QUEX_TYPE_DRAIN    uint32_t
-#include <quex/code_base/converter_helper/generator/string-converter.gi>
+/* (2) Generate string converters to utf8, utf16, utf32 based on the
+ *     definitions of the character converters.                             */
+#include <quex/code_base/converter_helper/generator/string-converters-to-utf8-utf16-utf32-char-wchar_t.gi>
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 } /* namespace quex */
 #endif
 
-/* 'string-converter.gi' is so kind not to undef __QUEX_FROM and 
- * __QUEX_TYPE_SOURCE, so we do it here.                                     */
 #undef __QUEX_FROM
-#undef __QUEX_TYPE_SOURCE
+#undef __QUEX_FROM_TYPE
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF8_I */
