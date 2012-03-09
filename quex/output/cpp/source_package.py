@@ -149,20 +149,20 @@ buffer_filler_icu = """
 """
 
 converter_helper_unicode = """
-/converter_helper/quex_universal/unicode
-/converter_helper/quex_universal/unicode.i
+/converter_helper/universal/unicode
+/converter_helper/universal/unicode.i
 """
 converter_helper_utf16 = """
-/converter_helper/quex_universal/utf16
-/converter_helper/quex_universal/utf16.i
+/converter_helper/universal/from-utf16
+/converter_helper/universal/from-utf16.i
 """
 converter_helper_utf32 = """
-/converter_helper/quex_universal/utf32
-/converter_helper/quex_universal/utf32.i
+/converter_helper/universal/from-utf32
+/converter_helper/universal/from-utf32.i
 """
 converter_helper_utf8 = """
-/converter_helper/quex_universal/utf8
-/converter_helper/quex_universal/utf8.i
+/converter_helper/universal/from-utf8
+/converter_helper/universal/from-utf8.i
 """
 
 def do():

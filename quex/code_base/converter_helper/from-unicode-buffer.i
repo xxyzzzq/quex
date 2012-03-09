@@ -49,15 +49,15 @@ QUEX_NAMESPACE_MAIN_OPEN
 /* (1) Implement the character converters utf8, utf16, utf32.
  *     (Note, that character converters are generated into namespace 'quex'.)*/
 #if   QUEX_SETTING_CHARACTER_SIZE == 1
-#    include <quex/code_base/converter_helper/quex_universal/from-utf8.i>
+#    include <quex/code_base/converter_helper/universal/from-utf8.i>
 #    define __QUEX_FROM       utf8
 #    define __QUEX_FROM_TYPE  uint8_t
 #elif QUEX_SETTING_CHARACTER_SIZE == 2
-#    include <quex/code_base/converter_helper/quex_universal/from-utf16.i>
+#    include <quex/code_base/converter_helper/universal/from-utf16.i>
 #    define __QUEX_FROM       utf16
 #    define __QUEX_FROM_TYPE  uint16_t
 #elif QUEX_SETTING_CHARACTER_SIZE == 4
-#    include <quex/code_base/converter_helper/quex_universal/from-utf32.i>
+#    include <quex/code_base/converter_helper/universal/from-utf32.i>
 #    define __QUEX_FROM       utf32
 #    define __QUEX_FROM_TYPE  uint32_t
 #else

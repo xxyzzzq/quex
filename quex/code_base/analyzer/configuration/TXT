@@ -269,8 +269,14 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_HELPER
  *       a 'pure C' version of the quex generated engine. Thus templating would make this 
  *       goal harder achievable.                                                            */
 #ifndef    QUEX_TYPE_CHARACTER
-#   define QUEX_TYPE_CHARACTER       $$QUEX_TYPE_CHARACTER$$
+#   define QUEX_TYPE_CHARACTER          $$QUEX_TYPE_CHARACTER$$
 #endif 
+#ifndef    QUEX_SETTING_CHARACTER_SIZE
+    /* Size of a QUEX_TYPE_CHARACTER in bytes. Try to provide a number rather
+     * than sizeof(QUEX_TYPE_CHARACTER), so that pre-processors can work
+     * with the value.                                                                     */
+#   define QUEX_SETTING_CHARACTER_SIZE  $$QUEX_SETTING_CHARACTER_SIZE$$
+#endif
 #ifndef    QUEX_TYPE_ACCEPTANCE_ID
 #   define QUEX_TYPE_ACCEPTANCE_ID   int
 #endif

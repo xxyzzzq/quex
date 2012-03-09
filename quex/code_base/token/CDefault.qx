@@ -26,19 +26,22 @@ token_type {
                                                          const QUEX_TYPE_CHARACTER*   SourceEnd, 
                                                          char**                       Drain, 
                                                          const char*                  DrainEnd);
+       QUEX_NAMESPACE_MAIN_CLOSE
+
 #      if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
        extern const wchar_t* 
        QUEX_NAME_TOKEN(pretty_wchar_text)(const QUEX_TYPE_TOKEN*  me, 
                                           wchar_t*                buffer, 
                                           size_t                  BufferSize); 
 
+       QUEX_NAMESPACE_MAIN_OPEN
        QUEX_INLINE void
        __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, wchar)(const QUEX_TYPE_CHARACTER**  Source, 
                                                           const QUEX_TYPE_CHARACTER*   SourceEnd, 
                                                           wchar_t**                    Drain, 
                                                           const wchar_t*               DrainEnd);
-#      endif
        QUEX_NAMESPACE_MAIN_CLOSE
+#      endif
    }
    standard {
         id            : uint32_t;
