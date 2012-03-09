@@ -19,7 +19,7 @@
  *
  *             ../generator/to-utf8-utf16-utf32-char-wchar_t.g
  *
- * These functions ARE DEPENDENT on the particular analyzer. 
+ * These functions ARE DEPENDENT on QUEX_TYPE_CHARACTER.
  * => Thus, they are placed in the analyzer's namespace.
  *
  * (C) 2012 Frank-Rene Schaefer. 

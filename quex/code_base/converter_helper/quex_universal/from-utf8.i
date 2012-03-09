@@ -46,6 +46,7 @@
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 namespace quex {
 #endif
+
 /* (1b) Derive converters to char and wchar_t from the given set 
  *      of converters. (Generator uses __QUEX_FROM and QUEX_FROM_TYPE)      */
 #include <quex/code_base/converter_helper/generator/character-converter-char-wchar_t.gi>
