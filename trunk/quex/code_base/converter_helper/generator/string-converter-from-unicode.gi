@@ -1,18 +1,13 @@
 /* -*- C++ -*- vim: set syntax=cpp:
  * PURPOSE:
  * 
- * This file generates a string converter from unicode to a given target codec.
- * It does so by 'routing', that is it calls the correspondent string converter
- * from the existing bank of converters. It can handle only UNICODE source 
- * codings.
- *
  * (C) 2005-2010 Frank-Rene Schaefer                                                
  * ABSOLUTELY NO WARRANTY                                                    */
 
 #if     defined(__QUEX_FROM)
 #   error "__QUEX_FROM must NOT be defined. Source name is 'unicode' for this header."
-#elif ! defined(__QUEX_FROM_TYPE)
-#   error "__QUEX_FROM_TYPE must be defined."
+#elif   defined(__QUEX_FROM_TYPE)
+#   error "__QUEX_FROM_TYPE must NOT be defined. Source type is QUEX_TYPE_CHARACTER."
 #elif ! defined(__QUEX_TO_TYPE)
 #   error "__QUEX_TO_TYPE must be defined."
 #elif ! defined(__QUEX_TO)
@@ -20,12 +15,12 @@
 #endif
 
 QUEX_INLINE void
-__QUEX_CONVERTER_STRING(unicode, __QUEX_TO)(const __QUEX_FROM_TYPE** source_pp, 
-                                            const __QUEX_FROM_TYPE*  SourceEnd, 
-                                            __QUEX_TO_TYPE**         drain_pp, 
-                                            const __QUEX_TO_TYPE*    DrainEnd)
+__QUEX_CONVERTER_STRING(unicode, __QUEX_TO)(const QUEX_TYPE_CHARACTER** source_pp, 
+                                           const QUEX_TYPE_CHARACTER*  SourceEnd, 
+                                           __QUEX_TO_TYPE**         drain_pp, 
+                                           const __QUEX_TO_TYPE*    DrainEnd)
 {
-    switch( sizeof(__QUEX_FROM_TYPE) ) {
+    switch( sizeof(QUEX_TYPE_CHARACTER) ) {
     case 1:   
         __QUEX_CONVERTER_STRING(utf8, __QUEX_TO)((const uint8_t**)source_pp, 
                                                  (const uint8_t*)SourceEnd, 
@@ -46,9 +41,9 @@ __QUEX_CONVERTER_STRING(unicode, __QUEX_TO)(const __QUEX_FROM_TYPE** source_pp,
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 QUEX_INLINE std::basic_string<__QUEX_TO_TYPE>
-__QUEX_CONVERTER_STRING(unicode, __QUEX_TO)(const std::basic_string<__QUEX_FROM_TYPE>& Source)
+__QUEX_CONVERTER_STRING(unicode, __QUEX_TO)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
 {
-    switch( sizeof(__QUEX_FROM_TYPE) ) {
+    switch( sizeof(QUEX_TYPE_CHARACTER) ) {
     case 1: {
                 std::basic_string<uint8_t>  tmp((const uint8_t*)Source.c_str());
                 return __QUEX_CONVERTER_STRING(utf8, __QUEX_TO)(tmp); 
