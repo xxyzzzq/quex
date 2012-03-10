@@ -22,7 +22,7 @@ token_type {
        /* The following function converts the engine's codec to utf8. */
        QUEX_NAMESPACE_MAIN_OPEN
        QUEX_INLINE void
-       __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, char)(const QUEX_TYPE_CHARACTER**  Source, 
+       __QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC, char)(const QUEX_TYPE_CHARACTER**  Source, 
                                                          const QUEX_TYPE_CHARACTER*   SourceEnd, 
                                                          char**                       Drain, 
                                                          const char*                  DrainEnd);
@@ -33,7 +33,7 @@ token_type {
                                           size_t                  BufferSize); 
 
        QUEX_INLINE void
-       __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, wchar)(const QUEX_TYPE_CHARACTER**  Source, 
+       __QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC, wchar)(const QUEX_TYPE_CHARACTER**  Source, 
                                                           const QUEX_TYPE_CHARACTER*   SourceEnd, 
                                                           wchar_t**                    Drain, 
                                                           const wchar_t*               DrainEnd);
@@ -204,7 +204,7 @@ token_type {
 #           if defined(__QUEX_OPTION_CONVERTER_HELPER)
             const QUEX_TYPE_CHARACTER*  SourceEnd = me->text + (size_t)(QUEX_NAME(strlen)(source)) + 1;
 
-            __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, char)(&source, SourceEnd, &drain, DrainEnd);
+            __QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC, char)(&source, SourceEnd, &drain, DrainEnd);
 #           else
             (void)me;
             /* Converter helpers are only disabled automatically, if ASCII (Unicode in 0-FF)
@@ -232,7 +232,7 @@ token_type {
 #           if defined(__QUEX_OPTION_CONVERTER_HELPER)
             const QUEX_TYPE_CHARACTER*  SourceEnd = me->text + (ptrdiff_t)(QUEX_NAME(strlen)(source)) + 1;
 
-            __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, wchar)(&source, SourceEnd, &drain, DrainEnd);
+            __QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC, wchar)(&source, SourceEnd, &drain, DrainEnd);
 #           else
             /* Converter helpers are only disabled automatically, if ASCII (Unicode in 0-FF)
              * is used and the character size is 1.                                          */

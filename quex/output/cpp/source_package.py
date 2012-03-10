@@ -194,7 +194,8 @@ def do():
                + converter_helper_utf16 \
                + converter_helper_utf32 
 
-        if Setup.buffer_codec == "": txt += converter_helper_unicode
+        if Setup.buffer_codec == "unicode": 
+            txt += converter_helper_unicode
 
     if Setup.token_policy == "queue":
         txt += token_queue

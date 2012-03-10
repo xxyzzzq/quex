@@ -113,7 +113,10 @@ def do(setup, command_line, argv):
         error_msg("More than one character converter has been specified. Note, that the\n" + \
                   "options '--icu', '--iconv', and '--converter-new' (or '--cn') are\n"    + \
                   "to be used mutually exclusively.")
-    if converter_n == 1 and setup.buffer_codec != "":  
+    if converter_n == 1 and setup.buffer_codec != "unicode":  
+        # If the buffer codec is other than unicode, then no converter shall
+        # be used to fill the buffer. Instead, the engine is transformed, so 
+        # that it works directly on the codec.
         error_msg("An engine that is to be generated for a specific codec cannot rely\n"      + \
                   "on converters. Do no use '--codec' together with '--icu', '--iconv', or\n" + \
                   "`--converter-new`.")
@@ -170,7 +173,7 @@ def do(setup, command_line, argv):
                   "Consult command line argument %s" \
                   % command_line_args_string("buffer_element_size"))
 
-    if setup.buffer_codec != "":
+    if setup.buffer_codec != "unicode":
         if setup.buffer_codec_file == "":
             verify_word_in_list(setup.buffer_codec,
                                 codec_db.get_supported_codec_list() + ["utf8", "utf16"],

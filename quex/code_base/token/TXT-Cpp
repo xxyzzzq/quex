@@ -6,6 +6,12 @@
 #define __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$INCLUDE_GUARD_EXTENSION$$
 
 #include <quex/code_base/definitions>
+#include <quex/code_base/asserts>
+#include <quex/code_base/compatibility/stdint.h>
+$$INCLUDE_CODEC_CONVERTER$$
+
+/* LexemeNull object may be used for 'take_text'. */
+extern QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject);
 
 $$HEADER$$
  
