@@ -80,8 +80,9 @@ def do(ModeDB):
 
     # -- name of the character codec
     codec_name = "unicode"
-    if Setup.buffer_codec != "": 
+    if Setup.buffer_codec != "unicode": 
         codec_name = make_safe_identifier(Setup.buffer_codec).lower()
+
     character_size_str = "sizeof(QUEX_TYPE_CHARACTER)"
     if Setup.buffer_element_size != -1:
         character_size_str = "%i" % Setup.buffer_element_size
@@ -99,7 +100,7 @@ def do(ModeDB):
     txt = blue_print(txt, 
             [
              ["$$BUFFER_LIMIT_CODE$$",          "0x%X" % Setup.buffer_limit_code],
-             ["$$CODEC_NAME$$",                 codec_name],
+             ["$$QUEX_SETTING_CHARACTER_CODEC$$",         codec_name],
              ["$$INCLUDE_GUARD_EXTENSION$$",    get_include_guard_extension(LanguageDB.NAMESPACE_REFERENCE(Setup.analyzer_name_space) + "__" + Setup.analyzer_class_name)],
              ["$$INITIAL_LEXER_MODE_ID$$",      "QUEX_NAME(ModeID_%s)" % blackboard.initial_mode.get_pure_code()],
              ["$$LEXER_BUILD_DATE$$",           time.asctime()],

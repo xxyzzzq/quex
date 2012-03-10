@@ -305,8 +305,8 @@
 
 /* For the utf8 printing: Name the function that converts the 
  * specific codec to utf8 representation.                       */
-#ifndef    QUEX_SETTING_CODEC   
-#   define QUEX_SETTING_CODEC          unicode
+#ifndef    QUEX_SETTING_CHARACTER_CODEC   
+#   define QUEX_SETTING_CHARACTER_CODEC          unicode
 #endif
 
 /* QUEX_TYPE_X  --> Type of X in global namespace 

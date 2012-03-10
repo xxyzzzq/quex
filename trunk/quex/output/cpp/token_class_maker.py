@@ -62,6 +62,10 @@ def _do(Descr):
     if Setup.language == "C":
         token_class_name = Setup.token_class_name_safe
 
+    include_character_codec_header_str = ""
+    
+
+
     txt = blue_print(template_str,
              [
               ["$$BODY$$",                    Descr.body.get_code()],
@@ -72,6 +76,7 @@ def _do(Descr):
               ["$$FOOTER$$",                  Descr.footer.get_code()],
               ["$$FUNC_TAKE_TEXT$$",          take_text_str],
               ["$$HEADER$$",                  Descr.header.get_code()],
+              ["$$INCLUDE_CODEC_CONVERTER$$", include_character_codec_header_str],
               ["$$INCLUDE_GUARD_EXTENSION$$", include_guard_extension_str],
               ["$$NAMESPACE_CLOSE$$",         LanguageDB.NAMESPACE_CLOSE(Descr.name_space)],
               ["$$NAMESPACE_OPEN$$",          LanguageDB.NAMESPACE_OPEN(Descr.name_space)],

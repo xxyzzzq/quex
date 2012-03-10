@@ -110,8 +110,8 @@
 > #   define QUEX_NAME(NAME)             TestAnalyzer_ ## NAME
 > #   define QUEX_NAME_TOKEN(NAME)       Token_ ## NAME
 > #   define QUEX_MEMBER(NAME)           TestAnalyzer::NAME                
-< #   define QUEX_SETTING_CODEC          $$CODEC_NAME$$
-> #   define QUEX_SETTING_CODEC          unicode
+< #   define QUEX_SETTING_CHARACTER_CODEC          $$CODEC_NAME$$
+> #   define QUEX_SETTING_CHARACTER_CODEC          unicode
 < #   define QUEX_TYPE_ANALYZER                struct $$LEXER_CLASS_NAME_SAFE$$_tag
 < #   define QUEX_TYPE0_ANALYZER               struct $$LEXER_CLASS_NAME_SAFE$$_tag
 < #   define QUEX_TYPE_DERIVED_ANALYZER        struct $$LEXER_CLASS_NAME_SAFE$$_tag

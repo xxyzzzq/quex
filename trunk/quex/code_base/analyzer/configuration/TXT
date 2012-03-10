@@ -277,6 +277,10 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_HELPER
      * with the value.                                                                     */
 #   define QUEX_SETTING_CHARACTER_SIZE  $$QUEX_SETTING_CHARACTER_SIZE$$
 #endif
+#ifndef    QUEX_SETTING_CHARACTER_CODEC   
+#   define QUEX_SETTING_CHARACTER_CODEC $$QUEX_SETTING_CHARACTER_CODEC$$
+#endif
+
 #ifndef    QUEX_TYPE_ACCEPTANCE_ID
 #   define QUEX_TYPE_ACCEPTANCE_ID   int
 #endif
@@ -303,12 +307,6 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_HELPER
 #   define QUEX_NAME(NAME)             $$LEXER_CLASS_NAME$$_ ## NAME
 #   define QUEX_NAME_TOKEN(NAME)       $$TOKEN_CLASS$$_ ## NAME
 #   define QUEX_MEMBER(NAME)           $$LEXER_CLASS_NAME$$::NAME                
-#endif
-
-/* For the utf8 printing: Name the function that converts the 
- * specific codec to utf8 representation.                       */
-#ifndef    QUEX_SETTING_CODEC   
-#   define QUEX_SETTING_CODEC          $$CODEC_NAME$$
 #endif
 
 /* QUEX_TYPE_X  --> Type of X in global namespace 

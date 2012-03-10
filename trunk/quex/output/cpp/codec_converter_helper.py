@@ -8,8 +8,10 @@ from quex.engine.misc.file_in          import make_safe_identifier, get_file_con
 from quex.blackboard                   import setup as Setup
 
 def do():
-    if Setup.buffer_codec == "": return None, None
-    if Setup.buffer_codec_transformation_info in ["utf8-state-split", "utf16-state-split"]: return None, None
+    if Setup.buffer_codec == "unicode": 
+        return None, None
+    elif Setup.buffer_codec_transformation_info in ["utf8-state-split", "utf16-state-split"]: 
+        return None, None
 
     assert Setup.buffer_codec_transformation_info is not None
 
