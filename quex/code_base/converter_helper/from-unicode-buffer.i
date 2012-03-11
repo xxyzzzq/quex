@@ -34,6 +34,8 @@
 #include <quex/code_base/definitions>
 #include <quex/code_base/asserts>
 
+/* (1) Access the implementation of the converter that will implement
+ *     the unicode conversion.                                               */
 #if   QUEX_SETTING_CHARACTER_SIZE == 1
 #    include <quex/code_base/converter_helper/universal/from-utf8.i>
 #    define __QUEX_FROM       utf8
@@ -52,32 +54,32 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-/* (1) Character converters */
+/* (2) Route the converters from 'buffer' to the implementing converter. */
 QUEX_INLINE void
 __QUEX_CONVERTER_CHAR(buffer, utf8)(const QUEX_TYPE_CHARACTER**  input_pp, 
                                     uint8_t**                    output_pp)
-{ quex::__QUEX_CONVERTER_CHAR(__QUEX_FROM, utf8)((const __QUEX_TYPE_FROM**)input_pp, output_pp); }
+{ __QUEX_CONVERTER_CHAR(__QUEX_FROM, utf8)((const __QUEX_TYPE_FROM**)input_pp, output_pp); }
 
 QUEX_INLINE void
 __QUEX_CONVERTER_CHAR(buffer, utf16)(const QUEX_TYPE_CHARACTER**  input_pp, 
                                      uint16_t**                   output_pp);
-{ quex::__QUEX_CONVERTER_CHAR(__QUEX_FROM, utf16)((const __QUEX_TYPE_FROM**)input_pp, output_pp); }
+{ __QUEX_CONVERTER_CHAR(__QUEX_FROM, utf16)((const __QUEX_TYPE_FROM**)input_pp, output_pp); }
 
 QUEX_INLINE void
 __QUEX_CONVERTER_CHAR(buffer, utf32)(const QUEX_TYPE_CHARACTER**  input_pp, 
                                      uint32_t**                   output_pp)
-{ quex::__QUEX_CONVERTER_CHAR(__QUEX_FROM, utf32)((const __QUEX_TYPE_FROM**)input_pp, output_pp); }
+{ __QUEX_CONVERTER_CHAR(__QUEX_FROM, utf32)((const __QUEX_TYPE_FROM**)input_pp, output_pp); }
 
 QUEX_INLINE void
 __QUEX_CONVERTER_CHAR(buffer, char)(const QUEX_TYPE_CHARACTER**  input_pp, 
                                      char**                       output_pp);
-{ quex::__QUEX_CONVERTER_CHAR(__QUEX_FROM, char)((const __QUEX_TYPE_FROM**)input_pp, output_pp); }
+{ __QUEX_CONVERTER_CHAR(__QUEX_FROM, char)((const __QUEX_TYPE_FROM**)input_pp, output_pp); }
 
 #if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
     QUEX_INLINE void
     __QUEX_CONVERTER_CHAR(buffer, wchar_t)(const QUEX_TYPE_CHARACTER**  input_pp, 
                                            wchar_t**                    output_pp);
-    { quex::__QUEX_CONVERTER_CHAR(__QUEX_FROM, wchar_t)((const __QUEX_TYPE_FROM**)input_pp, output_pp); }
+    { __QUEX_CONVERTER_CHAR(__QUEX_FROM, wchar_t)((const __QUEX_TYPE_FROM**)input_pp, output_pp); }
 #endif
 
 /* (2) String converters */
@@ -87,7 +89,7 @@ __QUEX_CONVERTER_STRING(buffer, utf8)(const QUEX_TYPE_CHARACTER**  source_pp,
                                       uint8_t**                    drain_pp,  
                                       const uint8_t*               DrainEnd)
 {
-    quex::__QUEX_CONVERTER_STRING(__QUEX_FROM, utf8)((const __QUEX_TYPE_FROM**)  source_pp, 
+    __QUEX_CONVERTER_STRING(__QUEX_FROM, utf8)((const __QUEX_TYPE_FROM**)  source_pp, 
                                                      (const __QUEX_TYPE_FROM*)   SourceEnd, 
                                                      drain_pp, DrainEnd);
 }
@@ -98,7 +100,7 @@ __QUEX_CONVERTER_STRING(buffer, utf16)(const QUEX_TYPE_CHARACTER**  source_pp,
                                        uint16_t**                   drain_pp,  
                                        const uint16_t*              DrainEnd)
 {
-    quex::__QUEX_CONVERTER_STRING(__QUEX_FROM, utf16)((const __QUEX_TYPE_FROM**)source_pp, 
+    __QUEX_CONVERTER_STRING(__QUEX_FROM, utf16)((const __QUEX_TYPE_FROM**)source_pp, 
                                                       (const __QUEX_TYPE_FROM*)SourceEnd, 
                                                       drain_pp, DrainEnd);
 }
@@ -109,7 +111,7 @@ __QUEX_CONVERTER_STRING(buffer, utf32)(const QUEX_TYPE_CHARACTER**  source_pp,
                                        uint32_t**                   drain_pp,  
                                        const uint32_t*              DrainEnd);
 {
-    quex::__QUEX_CONVERTER_STRING(__QUEX_FROM, utf32)((const __QUEX_TYPE_FROM**)source_pp, 
+    __QUEX_CONVERTER_STRING(__QUEX_FROM, utf32)((const __QUEX_TYPE_FROM**)source_pp, 
                                                       (const __QUEX_TYPE_FROM*)SourceEnd, 
                                                       drain_pp, DrainEnd);
 }
@@ -118,7 +120,7 @@ QUEX_INLINE void
 __QUEX_CONVERTER_STRING(buffer, char)(const QUEX_TYPE_CHARACTER**  input_pp, 
                                        char**                       output_pp)
 {
-    quex::__QUEX_CONVERTER_STRING(__QUEX_FROM, char)((const __QUEX_TYPE_FROM**)source_pp, 
+    __QUEX_CONVERTER_STRING(__QUEX_FROM, char)((const __QUEX_TYPE_FROM**)source_pp, 
                                                      (const __QUEX_TYPE_FROM*)SourceEnd, 
                                                      drain_pp, DrainEnd);
 }
@@ -127,7 +129,7 @@ __QUEX_CONVERTER_STRING(buffer, char)(const QUEX_TYPE_CHARACTER**  input_pp,
     __QUEX_CONVERTER_STRING(buffer, wchar_t)(const QUEX_TYPE_CHARACTER**  input_pp, 
                                               wchar_t**                 output_pp);
     {
-        quex::__QUEX_CONVERTER_STRING(__QUEX_FROM, wchar_t)((const __QUEX_TYPE_FROM**)source_pp, 
+        __QUEX_CONVERTER_STRING(__QUEX_FROM, wchar_t)((const __QUEX_TYPE_FROM**)source_pp, 
                                                             (const __QUEX_TYPE_FROM*)SourceEnd, 
                                                             drain_pp, DrainEnd);
     }
@@ -136,20 +138,20 @@ __QUEX_CONVERTER_STRING(buffer, char)(const QUEX_TYPE_CHARACTER**  input_pp,
 #if ! defined(__QUEX_OPTION_PLAIN_C)
     QUEX_INLINE std::basic_string<uint8_t>
     __QUEX_CONVERTER_STRING(buffer, utf8)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
-    { return quex::__QUEX_CONVERTER_STRING(__QUEX_FROM, utf8)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source); }
+    { return __QUEX_CONVERTER_STRING(__QUEX_FROM, utf8)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source); }
     QUEX_INLINE std::basic_string<uint16_t>
     __QUEX_CONVERTER_STRING(buffer, utf16)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
-    { return quex::__QUEX_CONVERTER_STRING(__QUEX_FROM, utf16)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source); }
+    { return __QUEX_CONVERTER_STRING(__QUEX_FROM, utf16)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source); }
     QUEX_INLINE std::basic_string<uint32_t>
     __QUEX_CONVERTER_STRING(buffer, utf32)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
-    { return quex::__QUEX_CONVERTER_STRING(__QUEX_FROM, utf32)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source); }
+    { return __QUEX_CONVERTER_STRING(__QUEX_FROM, utf32)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source); }
     QUEX_INLINE std::basic_string<char>
     __QUEX_CONVERTER_STRING(buffer, char)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
-    { return quex::__QUEX_CONVERTER_STRING(__QUEX_FROM, char)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source); }
+    { return __QUEX_CONVERTER_STRING(__QUEX_FROM, char)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source); }
 #   if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
     QUEX_INLINE std::basic_string<wchar_t>
     __QUEX_CONVERTER_STRING(buffer, wchar_t)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
-    { return quex::__QUEX_CONVERTER_STRING(__QUEX_FROM, wchar_t)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source); }
+    { return __QUEX_CONVERTER_STRING(__QUEX_FROM, wchar_t)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source); }
 #   endif
 #endif
 

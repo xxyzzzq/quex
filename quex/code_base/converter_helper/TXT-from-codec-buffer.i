@@ -85,7 +85,7 @@ $$EPILOG$$
 
 /* (2) Generate string converters to utf8, utf16, utf32 based on the
  *     definitions of the character converters.                             */
-#include <quex/code_base/converter_helper/generator/string-converters-to-utf8-utf16-utf32-char-wchar_t.gi>
+#include <quex/code_base/converter_helper/generator/implementations.gi>
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
