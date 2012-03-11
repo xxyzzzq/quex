@@ -127,15 +127,6 @@ buffer_filler_converter = """
 /buffer/converter/Converter
 """
 
-converter_helper = """
-/converter_helper/generator/base-char-and-wchar.gi
-/converter_helper/generator/string-converter.g
-/converter_helper/generator/string-converter.gi
-/converter_helper/generator/base.g
-/converter_helper/generator/base.gi
-/converter_helper/generator/base-unicode.gi
-"""
-
 buffer_filler_iconv = """
 /buffer/converter/iconv/Converter_IConv
 /buffer/converter/iconv/Converter_IConv.i
@@ -148,21 +139,32 @@ buffer_filler_icu = """
 /buffer/converter/icu/special_headers.h
 """
 
+converter_helper = """
+/converter_helper/generator/declarations.g
+/converter_helper/generator/implementations.gi
+/converter_helper/generator/string-converter.gi
+/converter_helper/generator/character-converter-to-char-wchar_t.gi
+"""
+
 converter_helper_unicode = """
-/converter_helper/universal/unicode
-/converter_helper/universal/unicode.i
+/converter_helper/from-unicode-buffer
+/converter_helper/from-unicode-buffer.i
+"""
+
+converter_helper_utf8 = """
+/converter_helper/character-converter/from-utf8.i
+/converter_helper/from-utf8
+/converter_helper/from-utf8.i
 """
 converter_helper_utf16 = """
-/converter_helper/universal/from-utf16
-/converter_helper/universal/from-utf16.i
+/converter_helper/character-converter/from-utf16.i
+/converter_helper/from-utf16
+/converter_helper/from-utf16.i
 """
 converter_helper_utf32 = """
-/converter_helper/universal/from-utf32
-/converter_helper/universal/from-utf32.i
-"""
-converter_helper_utf8 = """
-/converter_helper/universal/from-utf8
-/converter_helper/universal/from-utf8.i
+/converter_helper/character-converter/from-utf32.i
+/converter_helper/from-utf32
+/converter_helper/from-utf32.i
 """
 
 def do():

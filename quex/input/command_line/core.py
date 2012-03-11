@@ -311,16 +311,16 @@ def prepare_file_names(setup):
     setup.output_token_class_file_implementation = __prepare_file_name("-token",         E_Files.HEADER_IMPLEMTATION)
 
     if   setup.buffer_codec == "utf8":
-        setup.output_buffer_codec_header   = "quex/code_base/converter_helper/universal/from-utf8"
-        setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/universal/from-utf8.i"
+        setup.output_buffer_codec_header   = "quex/code_base/converter_helper/from-utf8"
+        setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/from-utf8.i"
 
     elif setup.buffer_codec == "utf16":
-        setup.output_buffer_codec_header   = "quex/code_base/converter_helper/universal/from-utf16"
-        setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/universal/from-utf16.i"
+        setup.output_buffer_codec_header   = "quex/code_base/converter_helper/from-utf16"
+        setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/from-utf16.i"
 
     elif setup.buffer_codec == "utf32":
-        setup.output_buffer_codec_header   = "quex/code_base/converter_helper/universal/from-utf32"
-        setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/universal/from-utf32.i"
+        setup.output_buffer_codec_header   = "quex/code_base/converter_helper/from-utf32"
+        setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/from-utf32.i"
 
     elif setup.buffer_codec != "unicode":
         # Note, that the name may be set to 'None' if the conversion is utf8 or utf16
