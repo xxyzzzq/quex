@@ -6,7 +6,7 @@ class Generator(GeneratorBase):
         assert map(lambda elm: elm.__class__.__name__, PatternActionPairList) \
                == [ "PatternActionInfo" ] * len(PatternActionPairList)
 
-        GeneratorBase.__init__(self, PatternActionPairList, StateMachineName, SupportBeginOfLineF=False)
+        GeneratorBase.__init__(self, PatternActionPairList, StateMachineName)
 
     def do(self, Option="utf8"):
         """Prepare output in the 'dot' language, that graphviz uses."""

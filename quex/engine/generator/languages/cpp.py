@@ -370,15 +370,10 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
 
     goto $$GOTO_START$$;
 """
-
-def __adorn_action_code(action_info, SupportBeginOfLineF, LanguageDB): 
-
-    return action_info.action().get_code()
-
-def get_terminal_code(AcceptanceID, pattern_action_info, SupportBeginOfLineF, LanguageDB):
+def get_terminal_code(AcceptanceID, pattern_action_info, LanguageDB):
     pattern     = pattern_action_info.pattern()
     #
-    action_code = __adorn_action_code(pattern_action_info, SupportBeginOfLineF, LanguageDB)
+    action_code = pattern_action_info.action().get_code()
         
     # (*) The 'normal' terminal state can also be reached by the terminal
     #     router and, thus, **must** restore the acceptance input position. This is so, 
@@ -437,7 +432,7 @@ def __terminal_on_failure_prolog(LanguageDB):
     ]
 
 def __terminal_states(StateMachineName, action_db, OnFailureAction, EndOfStreamAction, 
-                      SupportBeginOfLineF, PreConditionIDList, LanguageDB, VariableDB, OnAfterMatchStr):
+                      PreConditionIDList, LanguageDB, VariableDB, OnAfterMatchStr):
     """NOTE: During backward-lexing, for a pre-condition, there is not need for terminal
              states, since only the flag 'pre-condition fulfilled is raised.
     """      
@@ -446,7 +441,7 @@ def __terminal_states(StateMachineName, action_db, OnFailureAction, EndOfStreamA
     specific_terminal_states = []
     for pattern_id, pattern_action_info in action_db.items():
         if pattern_id in PreConditionIDList: continue
-        code = get_terminal_code(pattern_id, pattern_action_info, SupportBeginOfLineF, LanguageDB)
+        code = get_terminal_code(pattern_id, pattern_action_info, LanguageDB)
         specific_terminal_states.extend(code)
 
     delete_pre_context_flags = []
@@ -459,7 +454,7 @@ def __terminal_states(StateMachineName, action_db, OnFailureAction, EndOfStreamA
 
     #  -- execute 'on_failure' pattern action 
     #  -- goto initial state    
-    end_of_stream_code_action_str = __adorn_action_code(EndOfStreamAction, SupportBeginOfLineF, LanguageDB)
+    end_of_stream_code_action_str = EndOfStreamAction.action().get_code()
 
     # -- FAILURE ACTION: Under 'normal' circumstances the on_failure action is simply to be executed
     #                    since the 'get_forward()' incremented the 'current' pointer.
@@ -470,7 +465,7 @@ def __terminal_states(StateMachineName, action_db, OnFailureAction, EndOfStreamA
     #       pointer must be setup right after the lexeme start. This way, the lexer becomes a new chance as
     #       soon as possible.
     on_failure = __terminal_on_failure_prolog(LanguageDB)
-    msg        = __adorn_action_code(OnFailureAction, SupportBeginOfLineF, LanguageDB)
+    msg        = OnFailureAction.action().get_code()
 
     on_failure.append(msg)
 

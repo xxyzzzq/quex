@@ -123,10 +123,9 @@ def analyzer_functions_get(ModeDB):
         generator = cpp_generator.Generator(StateMachineName       = mode.name,
                                             PatternActionPair_List = pattern_action_pair_list, 
                                             OnFailureAction        = on_failure_action, 
-                                            EndOfStreamAction      = on_end_of_stream_action,
-                                            ModeNameList           = mode_name_list,
-                                            SupportBeginOfLineF    = BeginOfLineSupportF,
-                                            OnAfterMatch           = on_after_match_str)
+                                            OnEndOfStreamAction    = on_end_of_stream_action,
+                                            OnAfterMatch           = on_after_match_str,
+                                            ModeNameList           = mode_name_list)
 
         # -- generate!
         analyzer_code += "".join(generator.do(required_local_variables_db))

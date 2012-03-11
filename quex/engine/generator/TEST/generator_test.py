@@ -330,26 +330,33 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     print "(*) Lexical Analyser Patterns:"
     for pair in PatternActionPairList:
         print "%20s --> %s" % (pair[0], pair[1])
+
+    support_begin_of_line_f      = False
+    new_pattern_action_pair_list = []
+    for pattern_str, action_str in PatternActionPairList:
+        pattern = regex.do(pattern_str, PatternDictionary)
+        if pattern.pre_context_trivial_begin_of_line_f:
+            support_begin_of_line_f = True
+        new_pattern_action_pair_list.append((pattern_str, pattern, action_str))
+
     # -- create default action that prints the name and the content of the token
-    store_last_character_str  = "    %s = %s;\n" % \
-                                ("me->buffer._character_before_lexeme_start", 
-                                 "*(me->buffer._input_p - 1)")
+    store_last_character_str = ""
+    if support_begin_of_line_f:
+        store_last_character_str  = "    %s = %s;\n" % \
+                                    ("me->buffer._character_before_lexeme_start", 
+                                     "*(me->buffer._input_p - 1)")
     set_terminating_zero_str  = "    QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);\n"
     try:
         PatternActionPairList = map(lambda x: 
-                                    PatternActionInfo(regex.do(x[0], PatternDictionary), 
-                                                      CodeFragment(store_last_character_str + set_terminating_zero_str + action(x[1])),
-                                                      PatternStr=x[0]),
-                                    PatternActionPairList)
+                                    PatternActionInfo(x[1], 
+                                        CodeFragment(  store_last_character_str 
+                                                     + set_terminating_zero_str 
+                                                     + action(x[2])),
+                                        PatternStr=x[0]),
+                                    new_pattern_action_pair_list)
     except RegularExpressionException, x:
         print "Regular expression parsing:\n" + x.message
         sys.exit(0)
-
-    support_begin_of_line_f = False
-    for entry in PatternActionPairList:
-        if entry.pattern().pre_context_trivial_begin_of_line_f:
-            support_begin_of_line_f = True
-            break
 
     print "## (1) code generation"    
     txt = "#define  __QUEX_OPTION_UNIT_TEST\n"
@@ -362,10 +369,9 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     generator = cpp_generator.Generator(StateMachineName       = sm_name + "_UnitTest",
                                         PatternActionPair_List = PatternActionPairList, 
                                         OnFailureAction        = PatternActionInfo(None, on_failure_action), 
-                                        EndOfStreamAction      = PatternActionInfo(None, on_failure_action), 
-                                        ModeNameList           = [],
-                                        SupportBeginOfLineF    = support_begin_of_line_f, 
-                                        OnAfterMatch           = "")
+                                        OnEndOfStreamAction    = PatternActionInfo(None, on_failure_action), 
+                                        OnAfterMatch           = "",
+                                        ModeNameList           = [])
 
     code = generator.do({})
 
