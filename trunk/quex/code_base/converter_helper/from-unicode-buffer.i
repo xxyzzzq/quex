@@ -37,15 +37,15 @@
 /* (1) Access the implementation of the converter that will implement
  *     the unicode conversion.                                               */
 #if   QUEX_SETTING_CHARACTER_SIZE == 1
-#    include <quex/code_base/converter_helper/universal/from-utf8.i>
+#    include <quex/code_base/converter_helper/from-utf8.i>
 #    define __QUEX_FROM       utf8
 #    define __QUEX_FROM_TYPE  uint8_t
 #elif QUEX_SETTING_CHARACTER_SIZE == 2
-#    include <quex/code_base/converter_helper/universal/from-utf16.i>
+#    include <quex/code_base/converter_helper/from-utf16.i>
 #    define __QUEX_FROM       utf16
 #    define __QUEX_FROM_TYPE  uint16_t
 #elif QUEX_SETTING_CHARACTER_SIZE == 4
-#    include <quex/code_base/converter_helper/universal/from-utf32.i>
+#    include <quex/code_base/converter_helper/from-utf32.i>
 #    define __QUEX_FROM       utf32
 #    define __QUEX_FROM_TYPE  uint32_t
 #else
