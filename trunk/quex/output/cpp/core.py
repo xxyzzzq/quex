@@ -16,23 +16,21 @@ class Generator(GeneratorBase):
 
     def __init__(self, PatternActionPair_List, 
                  StateMachineName, 
-                 OnFailureAction, EndOfStreamAction, 
-                 ModeNameList, 
-                 SupportBeginOfLineF, 
-                 OnAfterMatch):
+                 OnFailureAction, OnEndOfStreamAction, OnAfterMatch,
+                 ModeNameList): 
 
         # Ensure that the language database as been setup propperly
         assert isinstance(Setup.language_db, dict)
         assert len(Setup.language_db) != 0
 
-        self.state_machine_name   = StateMachineName
-        self.language_db          = Setup.language_db
-        self.end_of_stream_action = EndOfStreamAction
-        self.on_failure_action    = OnFailureAction
-        self.mode_name_list       = ModeNameList
-        self.on_after_match       = OnAfterMatch
+        self.state_machine_name      = StateMachineName
+        self.language_db             = Setup.language_db
+        self.mode_name_list          = ModeNameList
+        self.on_end_of_stream_action = OnEndOfStreamAction
+        self.on_failure_action       = OnFailureAction
+        self.on_after_match          = OnAfterMatch
 
-        GeneratorBase.__init__(self, PatternActionPair_List, StateMachineName, SupportBeginOfLineF)
+        GeneratorBase.__init__(self, PatternActionPair_List, StateMachineName)
 
     def do(self, RequiredLocalVariablesDB):
         LanguageDB = Setup.language_db
@@ -148,8 +146,7 @@ class Generator(GeneratorBase):
         terminal_code = LanguageDB["$terminal-code"](self.state_machine_name,
                                                      self.action_db, 
                                                      self.on_failure_action, 
-                                                     self.end_of_stream_action, 
-                                                     self.begin_of_line_condition_f, 
+                                                     self.on_end_of_stream_action, 
                                                      self.pre_context_sm_id_list,
                                                      self.language_db, 
                                                      variable_db,
