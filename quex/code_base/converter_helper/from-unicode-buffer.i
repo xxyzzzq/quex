@@ -28,8 +28,8 @@
  *
  * 2010 (C) Frank-Rene Schaefer; 
  * ABSOLUTELY NO WARRANTY                                                    */
-#ifndef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UNICODE_I
-#define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UNICODE_I
+#ifndef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UNICODE_BUFFER_I
+#define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UNICODE_BUFFER_I
 
 #include <quex/code_base/definitions>
 #include <quex/code_base/asserts>
@@ -157,4 +157,4 @@ __QUEX_CONVERTER_STRING(buffer, char)(const QUEX_TYPE_CHARACTER**  input_pp,
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UNICODE_I */
+#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UNICODE_BUFFER_I */
