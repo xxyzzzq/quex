@@ -41,7 +41,7 @@
 
 /* (1) Implement the character converters utf8, utf16, utf32.
  *     (Note, that character converters are generated into namespace 'quex'.)*/
-#include <quex/code_base/converter_helper/universal/character-converter/from-utf16.i>
+#include <quex/code_base/converter_helper/character-converter/from-utf16.i>
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 namespace quex {
@@ -49,7 +49,7 @@ namespace quex {
 
 /* (1b) Derive converters to char and wchar_t from the given set 
  *      of converters. (Generator uses __QUEX_FROM and QUEX_FROM_TYPE)      */
-#include <quex/code_base/converter_helper/generator/character-converter-char-wchar_t.gi>
+#include <quex/code_base/converter_helper/generator/character-converter-to-char-wchar_t.gi>
 
 /* (2) Generate string converters to utf8, utf16, utf32 based on the
  *     definitions of the character converters.                             */

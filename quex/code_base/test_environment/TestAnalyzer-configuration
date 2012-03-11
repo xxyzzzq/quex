@@ -23,8 +23,8 @@
 #   define __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION
 #endif
 
-#define QUEX_SETTING_VERSION           "0.59.9-unstable"
-#define QUEX_SETTING_BUILD_DATE        "Sun Sep 25 14:59:02 2011"
+#define QUEX_SETTING_VERSION           "0.61.2"
+#define QUEX_SETTING_BUILD_DATE        "Sun Mar 11 21:41:33 2012"
 #define QUEX_SETTING_ANALYZER_VERSION  "0.0.0-pre-release"
 
 #ifndef    __QUEX_OPTION_PLAIN_C
@@ -242,7 +242,7 @@
 /* Begin of line pre-condition requires an extra flag in the buffer
  * structure. Only out-comment this in case of tough memory restrictions,
  * if no begin of line pre-condition is required.                            */
-#define    __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+/* #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION */
 
 /* Following switch is also set, if a user defined converter is defined.     */
 #ifndef    __QUEX_OPTION_CONVERTER
@@ -269,8 +269,18 @@
  *       a 'pure C' version of the quex generated engine. Thus templating would make this 
  *       goal harder achievable.                                                            */
 #ifndef    QUEX_TYPE_CHARACTER
-#   define QUEX_TYPE_CHARACTER       uint8_t
+#   define QUEX_TYPE_CHARACTER          uint8_t
 #endif 
+#ifndef    QUEX_SETTING_CHARACTER_SIZE
+    /* Size of a QUEX_TYPE_CHARACTER in bytes. Try to provide a number rather
+     * than sizeof(QUEX_TYPE_CHARACTER), so that pre-processors can work
+     * with the value.                                                                     */
+#   define QUEX_SETTING_CHARACTER_SIZE  1
+#endif
+#ifndef    QUEX_SETTING_CHARACTER_CODEC   
+#   define QUEX_SETTING_CHARACTER_CODEC unicode
+#endif
+
 #ifndef    QUEX_TYPE_ACCEPTANCE_ID
 #   define QUEX_TYPE_ACCEPTANCE_ID   int
 #endif
@@ -303,12 +313,6 @@
 #   define QUEX_MEMBER(NAME)           TestAnalyzer::NAME                
 #endif
 
-/* For the utf8 printing: Name the function that converts the 
- * specific codec to utf8 representation.                       */
-#ifndef    QUEX_SETTING_CHARACTER_CODEC   
-#   define QUEX_SETTING_CHARACTER_CODEC          unicode
-#endif
-
 /* QUEX_TYPE_X  --> Type of X in global namespace 
  * QUEX_TYPE0_X --> Type of X in local namespace (namespace omitted) */
 #ifdef __QUEX_OPTION_PLAIN_C
@@ -325,7 +329,7 @@
  * and token.                                                        */
 #   define QUEX_TYPE_ANALYZER                ::quex::TestAnalyzer
 #   define QUEX_TYPE0_ANALYZER               TestAnalyzer
-#   define QUEX_TYPE_DERIVED_ANALYZER        
+#   define QUEX_TYPE_DERIVED_ANALYZER        TestAnalyzer
 
 #   define QUEX_TYPE_TOKEN                   ::quex::Token
 #   define QUEX_TYPE0_TOKEN                  Token
