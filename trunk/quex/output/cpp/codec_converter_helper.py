@@ -18,7 +18,6 @@ def do():
     return _do(Setup.buffer_codec_transformation_info, 
                Setup.buffer_codec)
 
-
 def _do(UnicodeTrafoInfo, CodecName):
     """
     PURPOSE: Writes converters for conversion towards UTF8/UTF16/UCS2/UCS4.
