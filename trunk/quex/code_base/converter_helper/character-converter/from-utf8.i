@@ -21,8 +21,8 @@
  *                  <av@bsdua.org>.    
  *
  * (C) 2005-2010 Frank-Rene Schaefer                                                */
-#ifndef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF8_I
-#define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF8_I
+#ifndef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__CHARACTER_CONVERTER_UTF8_I
+#define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__CHARACTER_CONVERTER_UTF8_I
 
 #include <quex/code_base/definitions>
 #include <quex/code_base/compatibility/stdint.h>
@@ -152,4 +152,4 @@ __QUEX_CONVERTER_CHAR(utf8, utf32)(const uint8_t** input_pp, uint32_t** output_p
 } /* namespace quex */
 #endif
 
-#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF8_I */
+#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__CHARACTER_CONVERTER_UTF8_I */

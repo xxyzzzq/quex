@@ -17,8 +17,8 @@
  * string converter functions.
  *
  * (C) 2005-2010 Frank-Rene Schaefer; ABSOLUTELY NO WARRANTY                      */
-#ifndef __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16_I
-#define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16_I
+#ifndef __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__CHARACTER_CONVERTER_UTF16_I
+#define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__CHARACTER_CONVERTER_UTF16_I
 
 #include <quex/code_base/definitions>
 #include <quex/code_base/compatibility/stdint.h>
@@ -106,5 +106,5 @@ __QUEX_CONVERTER_CHAR(utf16, utf32)(const uint16_t**  input_pp,
 } /* namespace quex */
 #endif
 
-#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16_I */
+#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__CHARACTER_CONVERTER_UTF16_I */
 

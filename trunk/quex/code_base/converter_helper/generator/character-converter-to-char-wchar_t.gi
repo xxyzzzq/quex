@@ -45,8 +45,8 @@ __QUEX_CONVERTER_CHAR(__QUEX_FROM, char)(const __QUEX_FROM_TYPE**  source_pp,
         __QUEX_CONVERTER_CHAR(__QUEX_FROM, utf32)(source_pp, (uint32_t**)drain_pp);
         break;
     default:
-        /* Cannot be handled */
-        __quex_assert(false);
+        __quex_assert(false); /* Cannot be handled */
+    }
 }
 
 #if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
@@ -63,7 +63,6 @@ __QUEX_CONVERTER_CHAR(__QUEX_FROM, char)(const __QUEX_FROM_TYPE**  source_pp,
             __QUEX_CONVERTER_CHAR(__QUEX_FROM, utf16)(source_pp, (uint16_t**)drain_pp);
             break;
         case 4:
-            __quex_assert(sizeof(char) == 4);
             __QUEX_CONVERTER_CHAR(__QUEX_FROM, utf32)(source_pp, (uint32_t**)drain_pp);
             break;
         default:

@@ -23,8 +23,8 @@
  * (C) 2005-2010 Frank-Rene Schaefer
  * ABSOLUTELY NO WARANTY                                                      */
 
-#ifndef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF32_I
-#define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF32_I
+#ifndef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__CHARACTER_CONVERTER_UTF32_I
+#define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__CHARACTER_CONVERTER_UTF32_I
 
 #include <quex/code_base/definitions>
 
@@ -102,4 +102,4 @@ __QUEX_CONVERTER_CHAR(utf32, utf32)(const uint32_t**  input_pp,
 } /* namespace quex */
 #endif
 
-#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF32_I */
+#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__CHARACTER_CONVERTER_UTF32_I */

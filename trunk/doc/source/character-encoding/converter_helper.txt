@@ -16,17 +16,24 @@ for the types ``char`` and ``wchar_t``. UTF8 is considered to be appropriate
 for ``char``. Depending on the size of ``wchar_t`` the output may either 
 be UCS4, i.e. UTF32, or UTF16 for systems where ``sizeof(wchar_t) == 2``.
 
-Converters, however, are provided for a much broader application. Thus,
-text can be converted to ``char`` and ``wchar_t`` whenever it is needed.
-Moreover, converters from the buffer's codec to UTF8, UTF16, UTF32 are
-provided for each generated lexical analyzer. For Unicode code based
-buffers the required functions are declared and implemented by including::
+Moreover, converters from the buffer's codec to UTF8, UTF16, UTF32, ``char``
+and ``wchar_t`` are provided for each generated lexical analyzer. For Unicode
+code based buffers the required functions are declared and implemented by
+including::
 
-     #include <quex/code_base/converter_helper/unicode>
+     #include <quex/code_base/converter_helper/from-unicode-buffer>
 
 and::
 
-     #include <quex/code_base/converter_helper/unicode.i>
+     #include <quex/code_base/converter_helper/from-unicode-buffer.i>
+
+These headers depend on the definitions of::
+
+     QUEX_TYPE_CHARACTER
+     QUEX_SETTING_CHARACTER_SIZE
+     QUEX_SETTING_CHARACTER_CODEC
+
+and are thus analyzer specific. The are placed in the analyzer's namespace.
 
 When using subset of Unicode (e.g. ASCII, UCS4 or UTF32) as input encoding,
 then the buffer encoding is Unicode. Also, when using converters 
@@ -36,19 +43,19 @@ are
 
 .. code-block:: cpp
 
-    QUEX_INLINE void   QUEX_NAME(unicode_to_utf8)(...);
-    QUEX_INLINE void   QUEX_NAME(unicode_to_utf16)(...);
-    QUEX_INLINE void   QUEX_NAME(unicode_to_utf32)(...);
-    QUEX_INLINE void   QUEX_NAME(unicode_to_char)(...);
-    QUEX_INLINE void   QUEX_NAME(unicode_to_wchar)(...);
+    QUEX_INLINE void   QUEX_NAME(buffer_to_utf8)(...);
+    QUEX_INLINE void   QUEX_NAME(buffer_to_utf16)(...);
+    QUEX_INLINE void   QUEX_NAME(buffer_to_utf32)(...);
+    QUEX_INLINE void   QUEX_NAME(buffer_to_char)(...);
+    QUEX_INLINE void   QUEX_NAME(buffer_to_wchar)(...);
 
-The functions above convert a whole string. For single character
-conversions the same function group is present only ending with ``_character``
-in the function name, i.e.
+The functions above convert a whole string. For single character conversions
+the same function group is present only ending with ``_character`` in the
+function name, i.e.
 
 .. code-block:: cpp
 
-    QUEX_INLINE void   QUEX_NAME(unicode_to_utf8_character)(...);
+    QUEX_INLINE void   QUEX_NAME(buffer_to_utf8_character)(...);
 
 converts a single character from Unicode to UTF8.
 
@@ -78,15 +85,15 @@ converter in case that either source or drain is fragmented.
           for bytes.
 
 The previous converter is present in C and C++. In C++ the following converters
-are available, which are possibly not as fast but more convenient
+are available, which are possibly not as fast but more convenient.
 
 .. code-block:: cpp
 
-    QUEX_INLINE string<uint8_t>   QUEX_NAME(unicode_to_utf8)(string<qtc>);
-    QUEX_INLINE string<uint16_t>  QUEX_NAME(unicode_to_utf16)(string<qtc>);
-    QUEX_INLINE string<uint32_t>  QUEX_NAME(unicode_to_utf32)(string<qtc>);
-    QUEX_INLINE string<char>      QUEX_NAME(unicode_to_char)(string<qtc>);
-    QUEX_INLINE string<wchar_t>   QUEX_NAME(unicode_to_wchar)(string<qtc>);
+    QUEX_INLINE string<uint8_t>   QUEX_NAME(buffer_to_utf8)(string<qtc>);
+    QUEX_INLINE string<uint16_t>  QUEX_NAME(buffer_to_utf16)(string<qtc>);
+    QUEX_INLINE string<uint32_t>  QUEX_NAME(buffer_to_utf32)(string<qtc>);
+    QUEX_INLINE string<char>      QUEX_NAME(buffer_to_char)(string<qtc>);
+    QUEX_INLINE string<wchar_t>   QUEX_NAME(buffer_to_wchar)(string<qtc>);
 
 where ``string<X>`` is a shorthand for ``std::basic_string<X>`` and
 ``string<qtc>`` is a shorthand for ``std::basic_string<QUEX_TYPE_CHARACTER>``.
