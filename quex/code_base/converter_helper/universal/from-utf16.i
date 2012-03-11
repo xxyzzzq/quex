@@ -9,7 +9,7 @@
  * (1) Include the implementation of the character converters from utf16 
  *     to utf8, utf16, utf32, char, and wchar_t.
  *
- *     Use: "character-converter-utf16.i"
+ *     Use: "character-converter/from-utf16.i"
  *             --> implementation for utf16
  *
  *          "../generator/character-converter-char-wchar_t.gi"
@@ -41,7 +41,7 @@
 
 /* (1) Implement the character converters utf8, utf16, utf32.
  *     (Note, that character converters are generated into namespace 'quex'.)*/
-#include <quex/code_base/converter_helper/universal/character-converter-utf16.i>
+#include <quex/code_base/converter_helper/universal/character-converter/from-utf16.i>
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 namespace quex {
