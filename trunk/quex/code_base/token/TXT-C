@@ -8,7 +8,6 @@
 #include <quex/code_base/definitions>
 #include <quex/code_base/asserts>
 #include <quex/code_base/compatibility/stdint.h>
-$$INCLUDE_CODEC_CONVERTER$$
 
 /* LexemeNull object may be used for 'take_text'. */
 extern QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject);
@@ -32,7 +31,7 @@ $$BODY$$
 
 QUEX_INLINE void QUEX_NAME_TOKEN(construct)(QUEX_TYPE_TOKEN*);
 QUEX_INLINE void QUEX_NAME_TOKEN(copy_construct)(QUEX_TYPE_TOKEN*, 
-                                                  const QUEX_TYPE_TOKEN*);
+                                                 const QUEX_TYPE_TOKEN*);
 QUEX_INLINE void QUEX_NAME_TOKEN(copy)(QUEX_TYPE_TOKEN*, 
                                         const QUEX_TYPE_TOKEN*);
 QUEX_INLINE void QUEX_NAME_TOKEN(destruct)(QUEX_TYPE_TOKEN*);

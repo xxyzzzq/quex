@@ -64,8 +64,6 @@ def _do(Descr):
 
     include_character_codec_header_str = ""
     
-
-
     txt = blue_print(template_str,
              [
               ["$$BODY$$",                    Descr.body.get_code()],
