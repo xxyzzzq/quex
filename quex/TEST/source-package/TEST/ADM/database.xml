@@ -1,36 +1,36 @@
-<test-database execution-time-sec="11.51" date="Mon Mar 12 08:09:21 2012">
+<test-database execution-time-sec="14.43" date="Tue Mar 13 07:28:51 2012">
     <last-used-diff-display-program name=""/>
     <group name="Source Packager">
-        <test title="C++" time-sum-sec="6.41"> 
+        <test title="C++" time-sum-sec="6.85"> 
             <application file-name="test-cpp.sh" info-request-time="1318614193L" vanished="False"/>
             <choice-list number="12" same_result="True">
-               <choice name="plain" result="FAIL" time_sec="0.33" crc="1735895320"/>
-               <choice name="iconv" result="FAIL" time_sec="0.69" crc="1735895320"/>
-               <choice name="icu" result="FAIL" time_sec="0.75" crc="1735895320"/>
+               <choice name="plain" result="FAIL" time_sec="0.30" crc="1735895320"/>
+               <choice name="iconv" result="OK" time_sec="0.82" crc="1735895320"/>
+               <choice name="icu" result="OK" time_sec="0.90" crc="1735895320"/>
                <choice name="codec" result="FAIL" time_sec="0.31" crc="1735895320"/>
-               <choice name="codec-utf8" result="FAIL" time_sec="0.37" crc="1735895320"/>
+               <choice name="codec-utf8" result="FAIL" time_sec="0.32" crc="1735895320"/>
                <choice name="codec-utf16" result="FAIL" time_sec="0.31" crc="1735895320"/>
-               <choice name="post-categorizer" result="FAIL" time_sec="0.76" crc="1735895320"/>
-               <choice name="no-string-accumulator" result="FAIL" time_sec="0.32" crc="1735895320"/>
-               <choice name="no-include-stack" result="FAIL" time_sec="0.76" crc="1735895320"/>
-               <choice name="no-counter" result="FAIL" time_sec="0.33" crc="1735895320"/>
+               <choice name="post-categorizer" result="OK" time_sec="0.91" crc="1735895320"/>
+               <choice name="no-string-accumulator" result="FAIL" time_sec="0.30" crc="1735895320"/>
+               <choice name="no-include-stack" result="OK" time_sec="0.89" crc="1735895320"/>
+               <choice name="no-counter" result="FAIL" time_sec="0.31" crc="1735895320"/>
                <choice name="manual-token-class" result="OK" time_sec="0.68" crc="1735895320"/>
                <choice name="customized-token-class" result="OK" time_sec="0.80" crc="1735895320"/>
             </choice-list>
         </test>
-        <test title="C" time-sum-sec="5.10"> 
+        <test title="C" time-sum-sec="7.58"> 
             <application file-name="test-c.sh" info-request-time="1318614193L" vanished="False"/>
             <choice-list number="12" same_result="True">
-               <choice name="plain" result="FAIL" time_sec="0.38" crc="-21726970"/>
-               <choice name="iconv" result="FAIL" time_sec="0.39" crc="-21726970"/>
-               <choice name="icu" result="FAIL" time_sec="0.42" crc="-21726970"/>
-               <choice name="codec" result="FAIL" time_sec="0.31" crc="-21726970"/>
+               <choice name="plain" result="FAIL" time_sec="0.39" crc="-21726970"/>
+               <choice name="iconv" result="OK" time_sec="0.92" crc="-21726970"/>
+               <choice name="icu" result="OK" time_sec="0.94" crc="-21726970"/>
+               <choice name="codec" result="FAIL" time_sec="0.32" crc="-21726970"/>
                <choice name="codec-utf8" result="FAIL" time_sec="0.35" crc="-21726970"/>
-               <choice name="codec-utf16" result="FAIL" time_sec="0.35" crc="-21726970"/>
-               <choice name="post-categorizer" result="FAIL" time_sec="0.44" crc="-21726970"/>
-               <choice name="no-string-accumulator" result="FAIL" time_sec="0.34" crc="-21726970"/>
-               <choice name="no-include-stack" result="FAIL" time_sec="0.42" crc="-21726970"/>
-               <choice name="no-counter" result="FAIL" time_sec="0.33" crc="-21726970"/>
+               <choice name="codec-utf16" result="FAIL" time_sec="0.36" crc="-21726970"/>
+               <choice name="post-categorizer" result="OK" time_sec="1.28" crc="-21726970"/>
+               <choice name="no-string-accumulator" result="FAIL" time_sec="0.39" crc="-21726970"/>
+               <choice name="no-include-stack" result="OK" time_sec="0.93" crc="-21726970"/>
+               <choice name="no-counter" result="FAIL" time_sec="0.34" crc="-21726970"/>
                <choice name="manual-token-class" result="OK" time_sec="0.59" crc="-21726970"/>
                <choice name="customized-token-class" result="OK" time_sec="0.77" crc="-21726970"/>
             </choice-list>

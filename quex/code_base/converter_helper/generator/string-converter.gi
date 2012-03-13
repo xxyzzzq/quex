@@ -5,7 +5,7 @@
  * character codec into another. The conversion is implemented by means
  * of a character converter function given by:
  *
- *            __QUEX_CONVERTER_CHAR(FROM, TO)(in, out); 
+ *            QUEX_CONVERTER_CHAR(FROM, TO)(in, out); 
  *
  * which converts only a single character. The converter function must
  * be defined before the inclusion of this file.
@@ -44,10 +44,10 @@
 #endif
 
 QUEX_INLINE void
-__QUEX_CONVERTER_STRING(__QUEX_FROM, __QUEX_TO)(const __QUEX_FROM_TYPE**  source_pp, 
-                                                const __QUEX_FROM_TYPE*   SourceEnd, 
-                                                __QUEX_TO_TYPE**          drain_pp,  
-                                                const __QUEX_TO_TYPE*     DrainEnd)
+QUEX_CONVERTER_STRING_DEF(__QUEX_FROM, __QUEX_TO)(const __QUEX_FROM_TYPE**  source_pp, 
+                                                  const __QUEX_FROM_TYPE*   SourceEnd, 
+                                                  __QUEX_TO_TYPE**          drain_pp,  
+                                                  const __QUEX_TO_TYPE*     DrainEnd)
 {
     const __QUEX_FROM_TYPE*  source_iterator; 
     __QUEX_TO_TYPE*          drain_iterator;
@@ -63,7 +63,7 @@ __QUEX_CONVERTER_STRING(__QUEX_FROM, __QUEX_TO)(const __QUEX_FROM_TYPE**  source
     while( 1 + 1 == 2 ) { 
         if( source_iterator == SourceEnd ) break;
         if( DrainEnd - drain_iterator < (ptrdiff_t)__QUEX_FROM_MAX_LENGTH ) break;
-        __QUEX_CONVERTER_CHAR(__QUEX_FROM, __QUEX_TO)(&source_iterator, &drain_iterator);
+        QUEX_CONVERTER_CHAR(__QUEX_FROM, __QUEX_TO)(&source_iterator, &drain_iterator);
         __quex_assert(source_iterator >  *source_pp);
         __quex_assert(source_iterator <= SourceEnd);
     }
@@ -74,7 +74,7 @@ __QUEX_CONVERTER_STRING(__QUEX_FROM, __QUEX_TO)(const __QUEX_FROM_TYPE**  source
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 QUEX_INLINE std::basic_string<__QUEX_TO_TYPE>
-__QUEX_CONVERTER_STRING(__QUEX_FROM, __QUEX_TO)(const std::basic_string<__QUEX_FROM_TYPE>& Source)
+QUEX_CONVERTER_STRING_DEF(__QUEX_FROM, __QUEX_TO)(const std::basic_string<__QUEX_FROM_TYPE>& Source)
 {
     const __QUEX_FROM_TYPE*            source_iterator = (__QUEX_FROM_TYPE*)Source.c_str();
     const __QUEX_FROM_TYPE*            source_end      = source_iterator + Source.length();
@@ -84,7 +84,7 @@ __QUEX_CONVERTER_STRING(__QUEX_FROM, __QUEX_TO)(const std::basic_string<__QUEX_F
 
     while( source_iterator != source_end ) {
         drain_iterator = drain;
-        __QUEX_CONVERTER_CHAR(__QUEX_FROM, __QUEX_TO)(&source_iterator, &drain_iterator);
+        QUEX_CONVERTER_CHAR(__QUEX_FROM, __QUEX_TO)(&source_iterator, &drain_iterator);
         __quex_assert(source_iterator >  (__QUEX_FROM_TYPE*)Source.c_str());
         __quex_assert(source_iterator <= source_end);
         result.append((__QUEX_TO_TYPE*)drain, (size_t)(drain_iterator - drain));

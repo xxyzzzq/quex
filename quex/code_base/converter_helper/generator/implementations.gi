@@ -3,11 +3,11 @@
  * Generate function implementations for all string converters FROM 
  * a given codec:
  *
- *        __QUEX_CONVERTER_STRING(FROM, utf8)(...)
- *        __QUEX_CONVERTER_STRING(FROM, utf16)(...)
- *        __QUEX_CONVERTER_STRING(FROM, utf32)(...)
- *        __QUEX_CONVERTER_STRING(FROM, char)(...)
- *        __QUEX_CONVERTER_STRING(FROM, wchar_t)(...)
+ *        QUEX_CONVERTER_STRING(FROM, utf8)(...)
+ *        QUEX_CONVERTER_STRING(FROM, utf16)(...)
+ *        QUEX_CONVERTER_STRING(FROM, utf32)(...)
+ *        QUEX_CONVERTER_STRING(FROM, char)(...)
+ *        QUEX_CONVERTER_STRING(FROM, wchar_t)(...)
  *
  * It is Assumed that the character converters for each function are 
  * available!
@@ -41,5 +41,10 @@
 #   define  __QUEX_TO         wchar_t
 #   define  __QUEX_TO_TYPE    wchar_t
 #   include <quex/code_base/converter_helper/generator/string-converter.gi>
+#   undef   __QUEX_TO     
+#   undef   __QUEX_TO_TYPE 
 #endif
+
+#undef __QUEX_FROM
+#undef __QUEX_FROM_TYPE
 

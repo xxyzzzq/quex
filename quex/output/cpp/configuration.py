@@ -83,9 +83,10 @@ def do(ModeDB):
     if Setup.buffer_codec != "unicode": 
         codec_name = make_safe_identifier(Setup.buffer_codec).lower()
 
-    character_size_str = "sizeof(QUEX_TYPE_CHARACTER)"
-    if Setup.buffer_element_size != -1:
-        character_size_str = "%i" % Setup.buffer_element_size
+    # Setup.buffer_element_size can be '-1'. This signals then that 
+    # sizeof(QUEX_TYPE_CHARACTER) needs to be used. A numeric value 
+    # is required here.
+    character_size_str = "%i" % Setup.buffer_element_size
 
     def namespace(NameSpaceList):
         result = Setup.language_db.NAMESPACE_REFERENCE(NameSpaceList)

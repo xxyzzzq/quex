@@ -59,7 +59,4 @@ namespace quex {
 } /* namespace quex */
 #endif
 
-#undef __QUEX_FROM
-#undef __QUEX_FROM_TYPE
-
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF32_I */

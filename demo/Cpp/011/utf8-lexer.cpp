@@ -2,8 +2,8 @@
 
 // (*) include lexical analyser header
 #include "UTF8Lex"
-#include <quex/code_base/converter_helper/utf8>
-#include <quex/code_base/converter_helper/utf8.i>
+#include <quex/code_base/converter_helper/from-utf8>
+#include <quex/code_base/converter_helper/from-utf8.i>
 
 using namespace std;
 

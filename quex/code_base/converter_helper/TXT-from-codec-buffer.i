@@ -37,8 +37,8 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
-__QUEX_CONVERTER_CHAR($$CODEC$$, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
-                                        uint32_t**                  output_pp)
+QUEX_CONVERTER_CHAR_DEF($$CODEC$$, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
+                                          uint32_t**                  output_pp)
 {
     uint16_t             unicode = (uint32_t)0;
     QUEX_TYPE_CHARACTER  input   = *(*input_pp)++;
@@ -46,19 +46,19 @@ $$BODY_UTF32$$
 }
 
 QUEX_INLINE void
-__QUEX_CONVERTER_CHAR($$CODEC$$, utf16)(const QUEX_TYPE_CHARACTER** input_pp,
-                                        uint16_t**                  output_pp)
+QUEX_CONVERTER_CHAR_DEF($$CODEC$$, utf16)(const QUEX_TYPE_CHARACTER** input_pp,
+                                          uint16_t**                  output_pp)
 {
     uint32_t   unicode   = (uint32_t)0;
     uint32_t*  unicode_p = &unicode;
 
-    __QUEX_CONVERTER_CHAR($$CODEC$$, utf32)(input_pp, &unicode_p);
+    QUEX_CONVERTER_CHAR($$CODEC$$, utf32)(input_pp, &unicode_p);
 $$BODY_UTF16$$
 }
 
 QUEX_INLINE void
-__QUEX_CONVERTER_CHAR($$CODEC$$, utf8)(const QUEX_TYPE_CHARACTER**  input_pp, 
-                                       uint8_t**                    output_pp)
+QUEX_CONVERTER_CHAR_DEF($$CODEC$$, utf8)(const QUEX_TYPE_CHARACTER**  input_pp, 
+                                         uint8_t**                    output_pp)
 {
     uint32_t            unicode = (uint32_t)-1;
     QUEX_TYPE_CHARACTER input   = *(*input_pp)++;
@@ -69,19 +69,11 @@ $$EPILOG$$
 }
 
 #define __QUEX_FROM           $$CODEC$$
-#if   QUEX_SETTING_CHARACTER_SIZE == 1
-#    define __QUEX_FROM_TYPE  uint8_t
-#elif QUEX_SETTING_CHARACTER_SIZE == 2
-#    define __QUEX_FROM_TYPE  uint16_t
-#elif QUEX_SETTING_CHARACTER_SIZE == 4
-#    define __QUEX_FROM_TYPE  uint32_t
-#else
-#    error "Unfortunately, no character converter can be provided for the buffer's codec."
-#endif
+#define __QUEX_FROM_TYPE      QUEX_TYPE_CHARACTER
 
 /* (1b) Derive converters to char and wchar_t from the given set 
  *      of converters. (Generator uses __QUEX_FROM and QUEX_FROM_TYPE)      */
-#include <quex/code_base/converter_helper/generator/character-converter-char-wchar_t.gi>
+#include <quex/code_base/converter_helper/generator/character-converter-to-char-wchar_t.gi>
 
 /* (2) Generate string converters to utf8, utf16, utf32 based on the
  *     definitions of the character converters.                             */

@@ -3,7 +3,7 @@
 #include <quex/code_base/buffer/BufferFiller.i>
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/buffer/Buffer_debug.i>
-#include <quex/code_base/converter_helper/unicode.i>
+#include <quex/code_base/converter_helper/from-unicode-buffer.i>
 #include <string.h>
 
 int cl_has(int argc, char** argv, const char* What)

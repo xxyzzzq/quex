@@ -15,7 +15,7 @@ All string converters are built upon character converters which are implemented
 each for its particular translation. That means, that for each translation
 from a codec to a codec there is a character converter as
 
-    __QUEX_CONVERTER_CHAR(from, to)(in_type** source_p, out_type** drain_p)
+    QUEX_CONVERTER_CHAR(from, to)(in_type** source_p, out_type** drain_p)
 
 which increments the input and output pointer according to the characters that
 have been consumed and written. Those basic character converter functions are
@@ -23,9 +23,9 @@ grouped into 'character-converter/from-*.i' files. The file
 'character-converter/from-utf8.i' for example implements the character
 converter functions
 
-    __QUEX_CONVERTER_CHAR(utf8, utf8)(...)
-    __QUEX_CONVERTER_CHAR(utf8, utf16)(...)
-    __QUEX_CONVERTER_CHAR(utf8, utf32)(...)
+    QUEX_CONVERTER_CHAR(utf8, utf8)(...)
+    QUEX_CONVERTER_CHAR(utf8, utf16)(...)
+    QUEX_CONVERTER_CHAR(utf8, utf32)(...)
 
 Those functions are written in a way, so that they do neither depend on the
 analyzer, nor on the systems definition of 'char' and 'wchar_t'. Based on 
@@ -42,13 +42,13 @@ They rely on the correspondent character converters being implemented.
 Two string converters are defined for each translation
 
     QUEX_INLINE void
-    __QUEX_CONVERTER_STRING(from, to)(const in_type**  source_pp, 
+    QUEX_CONVERTER_STRING(from, to)(const in_type**  source_pp, 
                                       const in_type*   SourceEnd, 
                                       out_type**       drain_pp,  
                                       const out_type*  DrainEnd);
 
     QUEX_INLINE std::basic_string<in_type>
-    __QUEX_CONVERTER_STRING(buffer, to)(const std::basic_string<in_type>& Source);
+    QUEX_CONVERTER_STRING(buffer, to)(const std::basic_string<in_type>& Source);
 
 where the second convenient string converter is only available in C++.
 As said, the string converters are built upon the character converters
@@ -63,7 +63,7 @@ To help directly transforming a string from the analyzer's buffer a set of
 functions is provided that carry 'buffer' as the 'from' name, i.e. for 
 example
 
-    __QUEX_CONVERTER_STRING(buffer, utf16)(...)
+    QUEX_CONVERTER_STRING(buffer, utf16)(...)
 
 converts a string from the analyzer's buffer to UTF-16 without the user having
 to think about the particular buffer's type and codec. Internally, those

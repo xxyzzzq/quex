@@ -1,9 +1,9 @@
-<test-database execution-time-sec="1.84" date="Mon Mar 12 08:09:01 2012">
+<test-database execution-time-sec="1.77" date="Tue Mar 13 07:28:51 2012">
     <last-used-diff-display-program name=""/>
-    <test title="Customized codec files (option --codec-file)" time-sum-sec="0.31"> 
+    <test title="Customized codec files (option --codec-file)" time-sum-sec="0.25"> 
         <application file-name="customized_codec.sh" info-request-time="1310810801L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.31" crc="1025570625"/>
+           <choice name="" result="FAIL" time_sec="0.25" crc="1025570625"/>
         </choice-list>
     </test>
     <test title="Test code comments" time-sum-sec="0.38"> 

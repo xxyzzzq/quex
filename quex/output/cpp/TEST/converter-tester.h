@@ -714,15 +714,7 @@ return;
 }
 
 #define __QUEX_FROM           cp1256
-#if   QUEX_SETTING_CHARACTER_SIZE == 1
-#    define __QUEX_FROM_TYPE  uint8_t
-#elif QUEX_SETTING_CHARACTER_SIZE == 2
-#    define __QUEX_FROM_TYPE  uint16_t
-#elif QUEX_SETTING_CHARACTER_SIZE == 4
-#    define __QUEX_FROM_TYPE  uint32_t
-#else
-#    error "Unfortunately, no character converter can be provided for the buffer's codec."
-#endif
+#define __QUEX_FROM_TYPE      QUEX_TYPE_CHARACTER
 
 /* (1b) Derive converters to char and wchar_t from the given set 
  *      of converters. (Generator uses __QUEX_FROM and QUEX_FROM_TYPE)      */

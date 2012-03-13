@@ -44,8 +44,8 @@ This test checks wether all files in QUEX_CORE exist
 [OK] <<QUEX_PATH>>/quex/code_base/./buffer/plain/BufferFiller_Plain exists
 [OK] <<QUEX_PATH>>/quex/code_base/./buffer/plain/BufferFiller_Plain.i exists
 [OK] <<QUEX_PATH>>/quex/code_base/./buffer/asserts exists
-[OK] <<QUEX_PATH>>/quex/code_base/./converter_helper/unicode exists
-[OK] <<QUEX_PATH>>/quex/code_base/./converter_helper/unicode.i exists
+[OK] <<QUEX_PATH>>/quex/code_base/./converter_helper/from-unicode-buffer exists
+[OK] <<QUEX_PATH>>/quex/code_base/./converter_helper/from-unicode-buffer.i exists
 [OK] <<QUEX_PATH>>/quex/code_base/./asserts exists
 [OK] <<QUEX_PATH>>/quex/code_base/./definitions exists
 [OK] <<QUEX_PATH>>/quex/code_base/./temporary_macros_on exists
