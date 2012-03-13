@@ -9,9 +9,9 @@
  *
  * That is, it implements the functions:
  *
- *            __QUEX_CONVERTER_CHAR(utf16, utf8)(...)
- *            __QUEX_CONVERTER_CHAR(utf16, utf16)(...)
- *            __QUEX_CONVERTER_CHAR(utf16, utf32)(...)
+ *            QUEX_CONVERTER_CHAR_DEF(utf16, utf8)(...)
+ *            QUEX_CONVERTER_CHAR_DEF(utf16, utf16)(...)
+ *            QUEX_CONVERTER_CHAR_DEF(utf16, utf32)(...)
  *
  * Those functions may be used by file "string-converter.gi" to implement
  * string converter functions.
@@ -24,13 +24,13 @@
 #include <quex/code_base/compatibility/stdint.h>
 #include <quex/code_base/asserts>
 
-#if ! defined(__QUEX_OPTION_PLAIN_C)
+#if defined(__cplusplus)
 namespace quex {
 #endif
 
 
 QUEX_INLINE void
-__QUEX_CONVERTER_CHAR(utf16, utf8)(const uint16_t** input_pp, uint8_t** output_pp)
+QUEX_CONVERTER_CHAR_DEF(utf16, utf8)(const uint16_t** input_pp, uint8_t** output_pp)
 {
     uint32_t  x0      = (uint16_t)0;
     uint32_t  x1      = (uint16_t)0;
@@ -75,8 +75,8 @@ __QUEX_CONVERTER_CHAR(utf16, utf8)(const uint16_t** input_pp, uint8_t** output_p
 }
 
 QUEX_INLINE void
-__QUEX_CONVERTER_CHAR(utf16, utf16)(const uint16_t**  input_pp, 
-                                    uint16_t**        output_pp)
+QUEX_CONVERTER_CHAR_DEF(utf16, utf16)(const uint16_t**  input_pp, 
+                                      uint16_t**        output_pp)
 {
     if( **input_pp < (uint16_t)0xD800 || **input_pp >= (uint16_t)0xE000 ) {
         *((*output_pp)++) = *(*input_pp)++;
@@ -87,8 +87,8 @@ __QUEX_CONVERTER_CHAR(utf16, utf16)(const uint16_t**  input_pp,
 }
 
 QUEX_INLINE void
-__QUEX_CONVERTER_CHAR(utf16, utf32)(const uint16_t**  input_pp, 
-                                    uint32_t**        output_pp)
+QUEX_CONVERTER_CHAR_DEF(utf16, utf32)(const uint16_t**  input_pp, 
+                                      uint32_t**        output_pp)
 {
     uint32_t  x0 = (uint32_t)0;
     uint32_t  x1 = (uint32_t)0;
@@ -102,7 +102,7 @@ __QUEX_CONVERTER_CHAR(utf16, utf32)(const uint16_t**  input_pp,
     }
 }
 
-#if ! defined(__QUEX_OPTION_PLAIN_C)
+#if defined(__cplusplus)
 } /* namespace quex */
 #endif
 

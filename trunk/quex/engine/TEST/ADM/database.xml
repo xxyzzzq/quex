@@ -1,4 +1,4 @@
-<test-database execution-time-sec="43.24" date="Mon Mar 12 08:10:44 2012">
+<test-database execution-time-sec="43.23" date="Tue Mar 13 07:28:51 2012">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
         <test title="Super Set" time-sum-sec="0.11"> 
@@ -27,7 +27,7 @@
                <choice name="" result="OK" time_sec="0.06" crc="2115164504"/>
             </choice-list>
         </test>
-        <test title="Massive Mutual Consistency Check" time-sum-sec="31.92"> 
+        <test title="Massive Mutual Consistency Check" time-sum-sec="31.91"> 
             <application file-name="test-NumberSet-mmcc.py" info-request-time="1318614203L" vanished="False"/>
             <choice-list number="5" same_result="True">
                <choice name="union" result="OK" time_sec="7.41" crc="1624740239"/>
@@ -37,7 +37,7 @@
                <choice name="is_superset" result="OK" time_sec="0.36" crc="1624740239"/>
             </choice-list>
         </test>
-        <test title="Transform" time-sum-sec="0.16"> 
+        <test title="Transform" time-sum-sec="0.15"> 
             <application file-name="test-NumberSet-transform.py" info-request-time="1318614203L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="1" result="OK" time_sec="0.05" crc="856175348"/>

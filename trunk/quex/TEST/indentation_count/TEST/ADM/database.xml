@@ -1,6 +1,6 @@
-<test-database execution-time-sec="9.05" date="Mon Mar 12 08:08:53 2012">
+<test-database execution-time-sec="10.15" date="Tue Mar 13 07:28:51 2012">
     <last-used-diff-display-program name=""/>
-    <test title="Indentation Counting and Range Skipper" time-sum-sec="2.63"> 
+    <test title="Indentation Counting and Range Skipper" time-sum-sec="2.62"> 
         <application file-name="with-skip-range.sh" info-request-time="1318614191L" vanished="False"/>
         <choice-list number="3" same_result="False">
            <choice name="range" result="OK" time_sec="0.89" crc="-1124186354"/>
@@ -8,14 +8,14 @@
            <choice name="nested_range" result="OK" time_sec="0.86" crc="1419122518"/>
         </choice-list>
     </test>
-    <test title="Bad character detection." time-sum-sec="0.96"> 
+    <test title="Bad character detection." time-sum-sec="2.06"> 
         <application file-name="bad.sh" info-request-time="1318614191L" vanished="False"/>
         <choice-list number="2" same_result="False">
-           <choice name="default" result="FAIL" time_sec="0.50" crc="954811374"/>
-           <choice name="customized" result="FAIL" time_sec="0.45" crc="2010419295"/>
+           <choice name="default" result="OK" time_sec="1.02" crc="954811374"/>
+           <choice name="customized" result="OK" time_sec="1.04" crc="2010419295"/>
         </choice-list>
     </test>
-    <test title="Customized Event Handlers" time-sum-sec="4.41"> 
+    <test title="Customized Event Handlers" time-sum-sec="4.42"> 
         <application file-name="handlers.sh" info-request-time="1318614191L" vanished="False"/>
         <choice-list number="5" same_result="False">
            <choice name="check-eof" result="OK" time_sec="0.91" crc="-180552726"/>

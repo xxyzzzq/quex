@@ -5,7 +5,7 @@
  * character codec into 'char' or 'wchar'. The conversion is implemented by means
  * of a character converter function given by:
  *
- *            __QUEX_CONVERTER_CHAR(FROM, TO)(in, out); 
+ *            QUEX_CONVERTER_CHAR(FROM, TO)(in, out); 
  *
  * which converts only a single character. The converter function must
  * be defined before the inclusion of this file. This file implements default
@@ -30,19 +30,19 @@
 #endif
 
 QUEX_INLINE void
-__QUEX_CONVERTER_CHAR(__QUEX_FROM, char)(const __QUEX_FROM_TYPE**  source_pp, 
+QUEX_CONVERTER_CHAR_DEF(__QUEX_FROM, char)(const __QUEX_FROM_TYPE**  source_pp, 
                                          char**                    drain_pp)  
 {
     switch( sizeof(char) )
     {
     case 1:
-        __QUEX_CONVERTER_CHAR(__QUEX_FROM, utf8)(source_pp, (uint8_t**)drain_pp);
+        QUEX_CONVERTER_CHAR(__QUEX_FROM, utf8)(source_pp, (uint8_t**)drain_pp);
         break;
     case 2:
-        __QUEX_CONVERTER_CHAR(__QUEX_FROM, utf16)(source_pp, (uint16_t**)drain_pp);
+        QUEX_CONVERTER_CHAR(__QUEX_FROM, utf16)(source_pp, (uint16_t**)drain_pp);
         break;
     case 4:
-        __QUEX_CONVERTER_CHAR(__QUEX_FROM, utf32)(source_pp, (uint32_t**)drain_pp);
+        QUEX_CONVERTER_CHAR(__QUEX_FROM, utf32)(source_pp, (uint32_t**)drain_pp);
         break;
     default:
         __quex_assert(false); /* Cannot be handled */
@@ -51,19 +51,19 @@ __QUEX_CONVERTER_CHAR(__QUEX_FROM, char)(const __QUEX_FROM_TYPE**  source_pp,
 
 #if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
     QUEX_INLINE void
-    __QUEX_CONVERTER_CHAR(__QUEX_FROM, wchar_t)(const __QUEX_FROM_TYPE**  source_pp, 
+    QUEX_CONVERTER_CHAR_DEF(__QUEX_FROM, wchar_t)(const __QUEX_FROM_TYPE**  source_pp, 
                                                 wchar_t**                 drain_pp)  
     {
         switch( sizeof(wchar_t) )
         {
         case 1:
-            __QUEX_CONVERTER_CHAR(__QUEX_FROM, utf8)(source_pp, (uint8_t**)drain_pp);
+            QUEX_CONVERTER_CHAR(__QUEX_FROM, utf8)(source_pp, (uint8_t**)drain_pp);
             break;
         case 2:
-            __QUEX_CONVERTER_CHAR(__QUEX_FROM, utf16)(source_pp, (uint16_t**)drain_pp);
+            QUEX_CONVERTER_CHAR(__QUEX_FROM, utf16)(source_pp, (uint16_t**)drain_pp);
             break;
         case 4:
-            __QUEX_CONVERTER_CHAR(__QUEX_FROM, utf32)(source_pp, (uint32_t**)drain_pp);
+            QUEX_CONVERTER_CHAR(__QUEX_FROM, utf32)(source_pp, (uint32_t**)drain_pp);
             break;
         default:
             __quex_assert(false); /* Cannot be handled */

@@ -9,9 +9,9 @@
  *
  * That is, it implements the functions:
  *
- *            __QUEX_CONVERTER_CHAR(utf32, utf8)(...)
- *            __QUEX_CONVERTER_CHAR(utf32, utf16)(...)
- *            __QUEX_CONVERTER_CHAR(utf32, utf32)(...)
+ *            QUEX_CONVERTER_CHAR_DEF(utf32, utf8)(...)
+ *            QUEX_CONVERTER_CHAR_DEF(utf32, utf16)(...)
+ *            QUEX_CONVERTER_CHAR_DEF(utf32, utf32)(...)
  *
  * Those functions may be used by file "string-converter.gi" to implement
  * string converter functions.
@@ -33,7 +33,7 @@ namespace quex {
 #endif
 
 QUEX_INLINE void
-__QUEX_CONVERTER_CHAR(utf32, utf8)(const uint32_t**  input_pp, 
+QUEX_CONVERTER_CHAR_DEF(utf32, utf8)(const uint32_t**  input_pp, 
                                    uint8_t**         output_pp)
 {
     /* PURPOSE: This function converts the specified unicode character
@@ -75,7 +75,7 @@ __QUEX_CONVERTER_CHAR(utf32, utf8)(const uint32_t**  input_pp,
 }
 
 QUEX_INLINE void
-__QUEX_CONVERTER_CHAR(utf32, utf16)(const uint32_t**  input_pp, 
+QUEX_CONVERTER_CHAR_DEF(utf32, utf16)(const uint32_t**  input_pp, 
                                     uint16_t**        output_pp)
 {
     uint32_t   tmp = 0;
@@ -92,7 +92,7 @@ __QUEX_CONVERTER_CHAR(utf32, utf16)(const uint32_t**  input_pp,
 }
 
 QUEX_INLINE void
-__QUEX_CONVERTER_CHAR(utf32, utf32)(const uint32_t**  input_pp, 
+QUEX_CONVERTER_CHAR_DEF(utf32, utf32)(const uint32_t**  input_pp, 
                                     uint32_t**        output_pp)
 {
     *((*output_pp)++) = (uint32_t)(*(*input_pp)++);

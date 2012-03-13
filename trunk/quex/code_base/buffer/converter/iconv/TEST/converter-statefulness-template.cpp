@@ -1,8 +1,12 @@
 #include <cstring>
 #include <quex/code_base/test_environment/TestAnalyzer-configuration>
+#include <quex/code_base/buffer/Buffer.i>
 #include ___HEADER___
-#include <quex/code_base/converter_helper/unicode>
-#include <quex/code_base/converter_helper/unicode.i>
+#include <quex/code_base/converter_helper/from-utf8.i>
+#include <quex/code_base/converter_helper/from-utf16.i>
+#include <quex/code_base/converter_helper/from-utf32.i>
+#include <quex/code_base/converter_helper/from-unicode-buffer>
+#include <quex/code_base/converter_helper/from-unicode-buffer.i>
 using namespace std;
 using namespace quex;
 

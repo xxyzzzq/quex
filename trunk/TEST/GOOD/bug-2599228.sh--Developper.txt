@@ -41,8 +41,8 @@ installed versions of quex.
 <<QUEX_PATH>>/quex/code_base/./buffer/plain/BufferFiller_Plain
 <<QUEX_PATH>>/quex/code_base/./buffer/plain/BufferFiller_Plain.i
 <<QUEX_PATH>>/quex/code_base/./buffer/asserts
-<<QUEX_PATH>>/quex/code_base/./converter_helper/unicode
-<<QUEX_PATH>>/quex/code_base/./converter_helper/unicode.i
+<<QUEX_PATH>>/quex/code_base/./converter_helper/from-unicode-buffer
+<<QUEX_PATH>>/quex/code_base/./converter_helper/from-unicode-buffer.i
 <<QUEX_PATH>>/quex/code_base/./asserts
 <<QUEX_PATH>>/quex/code_base/./definitions
 <<QUEX_PATH>>/quex/code_base/./temporary_macros_on

@@ -7,8 +7,11 @@
 #include <quex/code_base/buffer/BufferFiller.i>
 #include <quex/code_base/MemoryManager>
 #include <quex/code_base/buffer/Buffer_debug.i>
-#include <quex/code_base/converter_helper/unicode>
-#include <quex/code_base/converter_helper/unicode.i>
+#include <quex/code_base/converter_helper/from-utf8.i>
+#include <quex/code_base/converter_helper/from-utf16.i>
+#include <quex/code_base/converter_helper/from-utf32.i>
+#include <quex/code_base/converter_helper/from-unicode-buffer>
+#include <quex/code_base/converter_helper/from-unicode-buffer.i>
 #include <string.h>
 #include <cstdio>
 

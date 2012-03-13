@@ -272,9 +272,9 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_HELPER
 #   define QUEX_TYPE_CHARACTER          $$QUEX_TYPE_CHARACTER$$
 #endif 
 #ifndef    QUEX_SETTING_CHARACTER_SIZE
-    /* Size of a QUEX_TYPE_CHARACTER in bytes. Try to provide a number rather
-     * than sizeof(QUEX_TYPE_CHARACTER), so that pre-processors can work
-     * with the value.                                                                     */
+    /* Size of a QUEX_TYPE_CHARACTER in bytes. A numeric value is required here!
+     * '-1' stands for 'Cannot be determined at code generation time'. In this case,
+     * it must be relied upon 'sizeof(QUEX_TYPE_CHARACTER)'.                                */
 #   define QUEX_SETTING_CHARACTER_SIZE  $$QUEX_SETTING_CHARACTER_SIZE$$
 #endif
 #ifndef    QUEX_SETTING_CHARACTER_CODEC   
@@ -284,6 +284,36 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_HELPER
 #ifndef    QUEX_TYPE_ACCEPTANCE_ID
 #   define QUEX_TYPE_ACCEPTANCE_ID   int
 #endif
+
+#if defined(__cplusplus)
+#   define QUEX_FUNCTION(NAMESPACE, FUNCTION)                      NAMESPACE :: FUNCTION()
+#   define QUEX_FUNCTION0(NAMESPACE, FUNCTION)                     FUNCTION()
+#   define QUEX_MEMBERF(CLASS, FUNCTION)                           CLASS :: FUNCTION()
+#   define QUEX_MEMBERF1(CLASS, FUNCTION, ARG0)                    CLASS :: FUNCTION(ARG0)
+#   define QUEX_MEMBERF2(CLASS, FUNCTION, ARG0, ARG1)              CLASS :: FUNCTION(ARG0, ARG1)
+#   define QUEX_MEMBERF3(CLASS, FUNCTION, ARG0, ARG1, ARG2)        CLASS :: FUNCTION(ARG0, ARG1, ARG2)
+#   define QUEX_MEMBERF4(CLASS, FUNCTION, ARG0, ARG1, ARG2, ARG3)  CLASS :: FUNCTION(ARG0, ARG1, ARG2, ARG3)
+#else
+#   define QUEX_FUNCTION(NAMESPACE, FUNCTION)                      NAMESPACE##_##FUNCTION()
+#   define QUEX_FUNCTION0(NAMESPACE, FUNCTION)                     NAMESPACE##_##FUNCTION()
+#   define QUEX_MEMBERF(CLASS, FUNCTION)                           CLASS##_##FUNCTION(CLASS* this)
+#   define QUEX_MEMBERF1(CLASS, FUNCTION, ARG0)                    CLASS##_## FUNCTION(ARG0)
+#   define QUEX_MEMBERF2(CLASS, FUNCTION, ARG0, ARG1)              CLASS##_## FUNCTION(ARG0, ARG1)
+#   define QUEX_MEMBERF3(CLASS, FUNCTION, ARG0, ARG1, ARG2)        CLASS##_## FUNCTION(ARG0, ARG1, ARG2)
+#   define QUEX_MEMBERF4(CLASS, FUNCTION, ARG0, ARG1, ARG2, ARG3)  CLASS##_## FUNCTION(ARG0, ARG1, ARG2, ARG3)
+#endif
+
+#define QUEX_A_MEMBERF (FUNCTION)                          QUEX_MEMBERF(QUEX_TYPE_ANALYZER0, FUNCTION)
+#define QUEX_A_MEMBERF1(FUNCTION, ARG0)                    QUEX_MEMBERF1(QUEX_TYPE_ANALYZER0, FUNCTION, ARG0)
+#define QUEX_A_MEMBERF2(FUNCTION, ARG0, ARG1)              QUEX_MEMBERF2(QUEX_TYPE_ANALYZER0, FUNCTION, ARG0, ARG1)
+#define QUEX_A_MEMBERF3(FUNCTION, ARG0, ARG1, ARG2)        QUEX_MEMBERF3(QUEX_TYPE_ANALYZER0, FUNCTION, ARG0, ARG1, ARG2)
+#define QUEX_A_MEMBERF4(FUNCTION, ARG0, ARG1, ARG2, ARG3)  QUEX_MEMBERF4(QUEX_TYPE_ANALYZER0, FUNCTION, ARG0, ARG1, ARG2, ARG3)
+
+#define QUEX_T_MEMBERF (FUNCTION)                          QUEX_MEMBERF(QUEX_TYPE_TOKEN0, FUNCTION)
+#define QUEX_T_MEMBERF1(FUNCTION, ARG0)                    QUEX_MEMBERF1(QUEX_TYPE_TOKEN0, FUNCTION, ARG0)
+#define QUEX_T_MEMBERF2(FUNCTION, ARG0, ARG1)              QUEX_MEMBERF2(QUEX_TYPE_TOKEN0, FUNCTION, ARG0, ARG1)
+#define QUEX_T_MEMBERF3(FUNCTION, ARG0, ARG1, ARG2)        QUEX_MEMBERF3(QUEX_TYPE_TOKEN0, FUNCTION, ARG0, ARG1, ARG2)
+#define QUEX_T_MEMBERF4(FUNCTION, ARG0, ARG1, ARG2, ARG3)  QUEX_MEMBERF4(QUEX_TYPE_TOKEN0, FUNCTION, ARG0, ARG1, ARG2, ARG3)
 
 #if defined(__QUEX_OPTION_PLAIN_C)
 #   define QUEX_NAMESPACE_MAIN        

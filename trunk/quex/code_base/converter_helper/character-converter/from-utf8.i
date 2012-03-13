@@ -9,9 +9,9 @@
  *
  * That is, it implements the functions:
  *
- *            __QUEX_CONVERTER_CHAR(utf8, utf8)(...)
- *            __QUEX_CONVERTER_CHAR(utf8, utf16)(...)
- *            __QUEX_CONVERTER_CHAR(utf8, utf32)(...)
+ *            QUEX_CONVERTER_CHAR_DEF(utf8, utf8)(...)
+ *            QUEX_CONVERTER_CHAR_DEF(utf8, utf16)(...)
+ *            QUEX_CONVERTER_CHAR_DEF(utf8, utf32)(...)
  *
  * Those functions may be used by file "string-converter.gi" to implement
  * string converter functions.
@@ -34,7 +34,7 @@ namespace quex {
 
 QUEX_INLINE void
 /* DrainEnd pointer is not returned, since the increment is always '1' */
-__QUEX_CONVERTER_CHAR(utf8, utf8)(const uint8_t** input_pp, uint8_t** output_pp)
+QUEX_CONVERTER_CHAR_DEF(utf8, utf8)(const uint8_t** input_pp, uint8_t** output_pp)
 {
     /* Just for comformity with other encodings: Do nothing but copying. */
     if( (**input_pp & (uint8_t)0x80) == (uint8_t)0 ) {
@@ -59,7 +59,7 @@ __QUEX_CONVERTER_CHAR(utf8, utf8)(const uint8_t** input_pp, uint8_t** output_pp)
 
 QUEX_INLINE void
 /* DrainEnd pointer is not returned, since the increment is always '1' */
-__QUEX_CONVERTER_CHAR(utf8, utf16)(const uint8_t** input_pp, uint16_t** output_pp)
+QUEX_CONVERTER_CHAR_DEF(utf8, utf16)(const uint8_t** input_pp, uint16_t** output_pp)
 {
     const uint8_t*  iterator = *input_pp;
     uint32_t        tmp = 0;
@@ -111,7 +111,7 @@ __QUEX_CONVERTER_CHAR(utf8, utf16)(const uint8_t** input_pp, uint16_t** output_p
 
 QUEX_INLINE void
 /* DrainEnd pointer is not returned, since the increment is always '1' */
-__QUEX_CONVERTER_CHAR(utf8, utf32)(const uint8_t** input_pp, uint32_t** output_pp)
+QUEX_CONVERTER_CHAR_DEF(utf8, utf32)(const uint8_t** input_pp, uint32_t** output_pp)
 {
     const uint8_t*  iterator = *input_pp;
 

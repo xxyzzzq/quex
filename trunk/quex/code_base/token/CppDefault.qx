@@ -4,9 +4,9 @@ token_type {
        #include <string>
 
        QUEX_NAMESPACE_MAIN_OPEN
-       std::string      __QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC, char)(const std::basic_string<QUEX_TYPE_CHARACTER>&);
+       std::string      QUEX_CONVERTER_STRING_DEF(QUEX_SETTING_CHARACTER_CODEC, char)(const std::basic_string<QUEX_TYPE_CHARACTER>&);
 #      if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
-       std::wstring     __QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC, wchar)(const std::basic_string<QUEX_TYPE_CHARACTER>&);
+       std::wstring     QUEX_CONVERTER_STRING_DEF(QUEX_SETTING_CHARACTER_CODEC, wchar)(const std::basic_string<QUEX_TYPE_CHARACTER>&);
 #      endif
        QUEX_NAMESPACE_MAIN_CLOSE
    }
@@ -56,7 +56,7 @@ token_type {
         const std::string 
         pretty_char_text() const
         {
-            std::string             tmp = __QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC, char)(self.text);
+            std::string             tmp = QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC, char)(self.text);
             std::string::size_type  pos = 0;
 
             while( (pos = tmp.find("\n") ) != __string::npos ) tmp.replace(pos, (size_t)1, "\\n");
@@ -70,7 +70,7 @@ token_type {
         const std::wstring 
         pretty_wchar_text() const
         {
-            std::wstring             tmp = __QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC, wchar)(self.text);
+            std::wstring             tmp = QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC, wchar)(self.text);
             std::wstring::size_type  pos = 0;
 
             while( (pos = tmp.find(L"\n") ) != __string::npos ) tmp.replace(pos, (size_t)1, L"\\n");
