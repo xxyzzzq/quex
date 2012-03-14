@@ -54,6 +54,7 @@
 #include <quex/code_base/converter_helper/from-utf32.i>
 
 QUEX_NAMESPACE_MAIN_OPEN
+#define __QUEX_CONVERTER_NAMESPACE QUEX_NAMESPACE_MAIN
 
 /* (2) Route the converters from 'unicode' to the implementing converter. */
 QUEX_INLINE void
@@ -62,10 +63,14 @@ QUEX_CONVERTER_CHAR_DEF(unicode, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
 { 
     switch( sizeof(QUEX_TYPE_CHARACTER) )
     {
+#   undef  __QUEX_CONVERTER_NAMESPACE
+#   define __QUEX_CONVERTER_NAMESPACE quex
     case 1:  QUEX_CONVERTER_CHAR(utf8, utf8)((const uint8_t**)input_pp, output_pp);   break;
     case 2:  QUEX_CONVERTER_CHAR(utf16, utf8)((const uint16_t**)input_pp, output_pp); break;
     case 4:  QUEX_CONVERTER_CHAR(utf32, utf8)((const uint32_t**)input_pp, output_pp); break;
     default: QUEX_ERROR_EXIT("Cannot derive converter for given element size.");
+#   undef  __QUEX_CONVERTER_NAMESPACE
+#   define __QUEX_CONVERTER_NAMESPACE QUEX_NAMESPACE_MAIN
     }
 }
 
@@ -75,9 +80,13 @@ QUEX_CONVERTER_CHAR_DEF(unicode, utf16)(const QUEX_TYPE_CHARACTER**  input_pp,
 { 
     switch( sizeof(QUEX_TYPE_CHARACTER) )
     {
+#   undef  __QUEX_CONVERTER_NAMESPACE
+#   define __QUEX_CONVERTER_NAMESPACE quex
     case 1:  QUEX_CONVERTER_CHAR(utf8, utf16)((const uint8_t**)input_pp, output_pp);   break;
     case 2:  QUEX_CONVERTER_CHAR(utf16, utf16)((const uint16_t**)input_pp, output_pp); break;
     case 4:  QUEX_CONVERTER_CHAR(utf32, utf16)((const uint32_t**)input_pp, output_pp); break;
+#   undef  __QUEX_CONVERTER_NAMESPACE
+#   define __QUEX_CONVERTER_NAMESPACE QUEX_NAMESPACE_MAIN
     default: QUEX_ERROR_EXIT("Cannot derive converter for given element size.");
     }
 }
@@ -88,12 +97,17 @@ QUEX_CONVERTER_CHAR_DEF(unicode, utf32)(const QUEX_TYPE_CHARACTER**  input_pp,
 { 
     switch( sizeof(QUEX_TYPE_CHARACTER) )
     {
+#   undef  __QUEX_CONVERTER_NAMESPACE
+#   define __QUEX_CONVERTER_NAMESPACE quex
     case 1:  QUEX_CONVERTER_CHAR(utf8, utf32)((const uint8_t**)input_pp, output_pp);   break;
     case 2:  QUEX_CONVERTER_CHAR(utf16, utf32)((const uint16_t**)input_pp, output_pp); break;
     case 4:  QUEX_CONVERTER_CHAR(utf32, utf32)((const uint32_t**)input_pp, output_pp); break;
+#   undef  __QUEX_CONVERTER_NAMESPACE
+#   define __QUEX_CONVERTER_NAMESPACE QUEX_NAMESPACE_MAIN
     default: QUEX_ERROR_EXIT("Cannot derive converter for given element size.");
     }
 }
+
 
 /* (2b) Derive converters to char and wchar_t from the given set 
  *      of converters. (Generator uses __QUEX_FROM and QUEX_FROM_TYPE)      */
@@ -101,11 +115,11 @@ QUEX_CONVERTER_CHAR_DEF(unicode, utf32)(const QUEX_TYPE_CHARACTER**  input_pp,
 #define  __QUEX_FROM_TYPE  QUEX_TYPE_CHARACTER
 #include <quex/code_base/converter_helper/generator/character-converter-to-char-wchar_t.gi>
 
-
 /* (3) Generate string converters to utf8, utf16, utf32 based on the
  *     definitions of the character converters.                             */
 #include <quex/code_base/converter_helper/generator/implementations.gi>
 
 QUEX_NAMESPACE_MAIN_CLOSE
+#undef __QUEX_CONVERTER_NAMESPACE
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UNICODE_BUFFER_I */

@@ -6,6 +6,11 @@
 #define __QUEX_INCLUDE_GUARD__TOKEN__GENERATED____EUROPA__DEUTSCHLAND__BADEN_WUERTEMBERG__ISPRINGEN____MEINTOKEN
 
 #include <quex/code_base/definitions>
+#include <quex/code_base/asserts>
+#include <quex/code_base/compatibility/stdint.h>
+
+/* LexemeNull object may be used for 'take_text'. */
+extern QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject);
 
 
  
@@ -166,13 +171,13 @@ public:
                                                const QUEX_TYPE_CHARACTER*  End);
 };
 
-
-
-
 } /* Closing Namespace 'europa' */
 } /* Closing Namespace 'deutschland' */
 } /* Closing Namespace 'baden_wuertemberg' */
 } /* Closing Namespace 'ispringen' */
+
+
+
 
 
 #endif /* __QUEX_INCLUDE_GUARD__TOKEN__GENERATED____EUROPA__DEUTSCHLAND__BADEN_WUERTEMBERG__ISPRINGEN____MEINTOKEN */

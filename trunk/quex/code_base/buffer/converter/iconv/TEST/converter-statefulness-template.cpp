@@ -102,9 +102,9 @@ print_content(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
     for(const QUEX_TYPE_CHARACTER* iterator = Begin; iterator != End; ++i) {
         p = utf8_c;
         switch( sizeof(QUEX_TYPE_CHARACTER) ) {
-        case 1:  QUEX_NAME_TOKEN(utf8_to_utf8_character)((const uint8_t**)&iterator, &p); break;
-        case 2:  QUEX_NAME_TOKEN(utf16_to_utf8_character)((const uint16_t**)&iterator, &p); break;
-        case 4:  QUEX_NAME_TOKEN(utf32_to_utf8_character)((const uint32_t**)&iterator, &p); break;
+        case 1:  quex::utf8_to_utf8_character((const uint8_t**)&iterator, &p); break;
+        case 2:  quex::utf16_to_utf8_character((const uint16_t**)&iterator, &p); break;
+        case 4:  quex::utf32_to_utf8_character((const uint32_t**)&iterator, &p); break;
         default: assert(false);
         }
         *p = '\0';

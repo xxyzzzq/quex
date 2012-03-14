@@ -22,6 +22,8 @@
 #    error "__QUEX_FROM must be defined!"
 #elif ! defined(__QUEX_FROM_TYPE)
 #    error "__QUEX_FROM_TYPE must be defined!"
+#elif ! defined(__QUEX_CONVERTER_NAMESPACE)
+#    error "__QUEX_CONVERTER_NAMESPACE must be defined!"
 #endif
 
 #define  __QUEX_TO         utf8
@@ -38,7 +40,7 @@
 #include <quex/code_base/converter_helper/generator/string-converter.gi>
 
 #if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
-#   define  __QUEX_TO         wchar_t
+#   define  __QUEX_TO         wchar
 #   define  __QUEX_TO_TYPE    wchar_t
 #   include <quex/code_base/converter_helper/generator/string-converter.gi>
 #   undef   __QUEX_TO     
@@ -47,4 +49,5 @@
 
 #undef __QUEX_FROM
 #undef __QUEX_FROM_TYPE
+#undef __QUEX_CONVERTER_NAMESPACE 
 

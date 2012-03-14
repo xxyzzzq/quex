@@ -28,10 +28,13 @@
 #ifndef __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__$$CODEC$$__
 #define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__$$CODEC$$__
 
+#include <quex/code_base/converter_helper/common.h>
+
 QUEX_NAMESPACE_MAIN_OPEN
 
-#define __QUEX_FROM      $$CODEC$$
-#define __QUEX_FROM_TYPE QUEX_TYPE_CHARACTER
+#define __QUEX_CONVERTER_NAMESPACE QUEX_NAMESPACE_MAIN
+#define __QUEX_FROM                $$CODEC$$
+#define __QUEX_FROM_TYPE           QUEX_TYPE_CHARACTER
 
 #include <quex/code_base/converter_helper/generator/declarations.g>
 

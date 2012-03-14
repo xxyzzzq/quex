@@ -20,21 +20,7 @@ token_type {
                                           size_t                  BufferSize); 
 #      endif
 
-       QUEX_NAMESPACE_MAIN_OPEN
-       QUEX_INLINE void
-       QUEX_CONVERTER_STRING_DEF(QUEX_SETTING_CHARACTER_CODEC, char)(const QUEX_TYPE_CHARACTER**  source_pp, 
-                                                                     const QUEX_TYPE_CHARACTER*   SourceEnd, 
-                                                                     char**                       drain_pp,  
-                                                                     const char*                  DrainEnd);
-
-#      if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
-       QUEX_INLINE void
-       QUEX_CONVERTER_STRING_DEF(QUEX_SETTING_CHARACTER_CODEC, wchar)(const QUEX_TYPE_CHARACTER**  source_pp, 
-                                                                      const QUEX_TYPE_CHARACTER*   SourceEnd, 
-                                                                      wchar_t**                    drain_pp,  
-                                                                      const wchar_t*               DrainEnd);
-#      endif
-       QUEX_NAMESPACE_MAIN_CLOSE
+#      include <quex/code_base/converter_helper/from-unicode-buffer>
    }
    standard {
         id            : uint32_t;
@@ -194,7 +180,9 @@ token_type {
             const char*                 DrainEnd  = buffer + BufferSize;
 
             const QUEX_TYPE_CHARACTER*  SourceEnd = me->text + (size_t)(QUEX_NAME(strlen)(source)) + 1;
+#           define __QUEX_CONVERTER_NAMESPACE QUEX_NAMESPACE_MAIN
             QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC, char)(&source, SourceEnd, &drain, DrainEnd);
+#           undef __QUEX_CONVERTER_NAMESPACE
             return buffer;
         }
 
@@ -209,7 +197,9 @@ token_type {
             const QUEX_TYPE_CHARACTER*  source    = me->text;
             const QUEX_TYPE_CHARACTER*  SourceEnd = me->text + (ptrdiff_t)(QUEX_NAME(strlen)(source)) + 1;
 
+#           define __QUEX_CONVERTER_NAMESPACE QUEX_NAMESPACE_MAIN
             QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC, wchar)(&source, SourceEnd, &drain, DrainEnd);
+#           undef __QUEX_CONVERTER_NAMESPACE
             return buffer;
         }
 #       endif

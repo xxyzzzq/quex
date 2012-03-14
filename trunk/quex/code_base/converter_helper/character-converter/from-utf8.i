@@ -28,9 +28,8 @@
 #include <quex/code_base/compatibility/stdint.h>
 #include <quex/code_base/asserts>
 
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-namespace quex {
-#endif
+QUEX_NAMESPACE_QUEX_OPEN
+#define __QUEX_CONVERTER_NAMESPACE quex
 
 QUEX_INLINE void
 /* DrainEnd pointer is not returned, since the increment is always '1' */
@@ -148,8 +147,7 @@ QUEX_CONVERTER_CHAR_DEF(utf8, utf32)(const uint8_t** input_pp, uint32_t** output
     *input_pp = iterator;
 }
 
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-} /* namespace quex */
-#endif
+QUEX_NAMESPACE_QUEX_CLOSE
+#undef __QUEX_CONVERTER_NAMESPACE
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__CHARACTER_CONVERTER_UTF8_I */

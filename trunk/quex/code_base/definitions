@@ -11,6 +11,14 @@
 #include<quex/code_base/compatibility/stdint.h>
 #include<quex/code_base/compatibility/stdbool-pseudo.h>
 
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+#   define QUEX_NAMESPACE_QUEX_OPEN   namespace quex {
+#   define QUEX_NAMESPACE_QUEX_CLOSE  }
+#else
+#   define QUEX_NAMESPACE_QUEX_OPEN
+#   define QUEX_NAMESPACE_QUEX_CLOSE
+#endif
+
 #if defined(_MSC_VER) && _MSC_VER >= 1600
     /* Microsoft VisualStudio(tm) 2010, i.e. Version 1600:
      * Forget about the 'CRT security enhancements' for sprintf, fopen, and setbuf. */

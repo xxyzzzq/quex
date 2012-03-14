@@ -76,14 +76,25 @@ character in the stream.  Then a post context is required of the type::
 
 To achieve this, the problem needs to be translated into to pattern matches::
 
-    X       => QUEX_TKN_X();
-    X/\A{Y} => QUEX_TKN_X();
+    X       => QUEX_TKN_SOME();
+    X/\A{Y} => QUEX_TKN_SOME();
 
 That is both matches are associated with the same actions. The first matches
 the plain pattern X. The second matches an X which is followed by something 
 that **cannot** match Y, i.e. the anti-pattern of Y.
 
+Also, post context cannot be or-ed. Consider the match rule::
 
+         A pattern X has to end with Y or is followed by Z.
+         
+To achieve this, again two separate rules have to be written that trigger the
+same action:
+
+   XY  => QUEX_TKN_SOME();
+   X/Z => QUEX_TKN_SOME();
+
+The ``<<EOF>>`` is not available as post context and ``$`` does not catch 
+an end of file post context either.
 
 
 .. rubric:: Footnotes
