@@ -50,7 +50,7 @@ QUEX_NAMESPACE_TOKEN_CLOSE
 /* END: _______________________________________________________________________*/
 
 #if defined(__QUEX_OPTION_CONVERTER_HELPER)
-#   include "quex/code_base/converter_helper/unicode"
+#   include "quex/code_base/converter_helper/from-unicode-buffer"
 #endif
 #include <quex/code_base/analyzer/headers>
 
@@ -490,7 +490,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #include <quex/code_base/temporary_macros_off>
 
 #if defined(__QUEX_OPTION_CONVERTER_HELPER)
-#   include "quex/code_base/converter_helper/unicode.i"
+#   include "quex/code_base/converter_helper/from-unicode-buffer.i"
 #endif
 #include <quex/code_base/analyzer/headers.i>
 
@@ -501,7 +501,8 @@ QUEX_NAMESPACE_MAIN_CLOSE
  */
 #ifndef __QUEX_INCLUDE_GUARD__TOKEN__GENERATED____QUEX____TOKEN_I
 
-QUEX_NAMESPACE_TOKEN_OPEN
+namespace quex {
+
 
 QUEX_INLINE
 /* NOTE: If you get an error here, then your configuration
@@ -520,17 +521,17 @@ QUEX_INLINE
 Token::Token(const Token& Other)
 {
    QUEX_NAME_TOKEN(copy)(this, &Other);
-#  define self (*this)
+#   define self (*this)
 
-#  undef  self
+#   undef  self
 }
 
 QUEX_INLINE
 Token::~Token()
 {
-#  define self (*this)
+#   define self (*this)
 
-#  undef  self
+#   undef  self
 }
 
 QUEX_INLINE void
@@ -549,40 +550,36 @@ QUEX_NAME_TOKEN(destruct)(Token* __this)
 QUEX_INLINE void
 QUEX_NAME_TOKEN(copy)(Token* __this, const Token* __That)
 {
-#  define self  (*__this)
-#  define Other (*__That)
+#   define self  (*__this)
+#   define Other (*__That)
     (void)__this;
     (void)__That;
 
-#   line 33 "<<QUEX_PATH>>/quex/code_base/token/CppDefault.qx"
+#   line 20 "<<QUEX_PATH>>/quex/code_base/token/CppDefault.qx"
 
         self._id    = Other._id;
         self.text   = Other.text;
         self.number = Other.number;
     #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
-    #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-            self._line_n = Other._line_n;
-    #       endif
-    #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-            self._column_n = Other._column_n;
-    #       endif
+    #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+        __QUEX_IF_COUNT_LINES(self._line_n     = Other._line_n);
+        __QUEX_IF_COUNT_COLUMNS(self._column_n = Other._column_n);
+    #   endif
     #   endif
    
 
-#   line 582 "Simple"
+#   line 581 "Simple"
 
-#  undef Other
-#  undef self
+#   undef Other
+#   undef self
    /* If the user even misses to copy the token id, then there's
     * something seriously wrong.                                 */
    __quex_assert(__this->_id == __That->_id);
 #ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
-#  ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-   __quex_assert(__this->_line_n == __That->_line_n);
-#  endif
-#  ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-   __quex_assert(__this->_column_n == __That->_column_n);
-#  endif
+#   ifdef QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+    __QUEX_IF_COUNT_LINES(__quex_assert(__this->_line_n == __That->_line_n));
+    __QUEX_IF_COUNT_COLUMNS(__quex_assert(__this->_column_n == __That->_column_n));
+#   endif
 #endif
 }
 
@@ -592,12 +589,12 @@ QUEX_NAME_TOKEN(take_text)(Token*           __this,
                            const QUEX_TYPE_CHARACTER* Begin, 
                            const QUEX_TYPE_CHARACTER* End)
 {
-#  define self      (*__this)
-#  define analyzer  (*__analyzer)
+#   define self      (*__this)
+#   define analyzer  (*__analyzer)
     (void)__this;
     (void)__analyzer;
 
-#   line 113 "<<QUEX_PATH>>/quex/code_base/token/CppDefault.qx"
+#   line 80 "<<QUEX_PATH>>/quex/code_base/token/CppDefault.qx"
 
 #       if 0
         {
@@ -631,48 +628,49 @@ QUEX_NAME_TOKEN(take_text)(Token*           __this,
         return false;      
    
 
-#   line 644 "Simple"
+#   line 641 "Simple"
 
-#  undef analyzer
-#  undef self
+#   undef analyzer
+#   undef self
 }
 
 #ifdef QUEX_OPTION_TOKEN_REPETITION_SUPPORT
 QUEX_INLINE size_t 
 QUEX_NAME_TOKEN(repetition_n_get)(QUEX_TYPE_TOKEN* __this)
 {
-#   define self      (*__this)
+#   define self (*__this)
     (void)__this;
     
-#   line 150 "<<QUEX_PATH>>/quex/code_base/token/CppDefault.qx"
+#   line 117 "<<QUEX_PATH>>/quex/code_base/token/CppDefault.qx"
 
        return self.number;
    
 
-#   line 662 "Simple"
+#   line 659 "Simple"
 
-#   undef  self
+#   undef self
 }
 
 QUEX_INLINE void 
 QUEX_NAME_TOKEN(repetition_n_set)(QUEX_TYPE_TOKEN* __this, size_t N)
 {
-#   define self      (*__this)
+#   define self (*__this)
     (void)__this;
     (void)N;
     
-#   line 146 "<<QUEX_PATH>>/quex/code_base/token/CppDefault.qx"
+#   line 113 "<<QUEX_PATH>>/quex/code_base/token/CppDefault.qx"
 
        self.number = N;
    
 
-#   line 679 "Simple"
+#   line 676 "Simple"
 
 #   undef  self
 }
 #endif /* QUEX_OPTION_TOKEN_REPETITION_SUPPORT */
 
-QUEX_NAMESPACE_TOKEN_CLOSE
+} /* Closing Namespace 'quex' */
+
 
 #endif /* __QUEX_INCLUDE_GUARD__TOKEN__GENERATED____QUEX____TOKEN_I */
 

@@ -28,7 +28,7 @@
 
 #include <quex/code_base/definitions>
 
-QUEX_NAMESPACE_QUEX_OPEN
+QUEX_NAMESPACE_MAIN_OPEN
 #define __QUEX_CONVERTER_NAMESPACE quex
 
 QUEX_INLINE void
@@ -97,7 +97,7 @@ QUEX_CONVERTER_CHAR_DEF(utf32, utf32)(const uint32_t**  input_pp,
     *((*output_pp)++) = (uint32_t)(*(*input_pp)++);
 }
 
-QUEX_NAMESPACE_QUEX_CLOSE
+QUEX_NAMESPACE_MAIN_CLOSE
 #undef __QUEX_CONVERTER_NAMESPACE
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__CHARACTER_CONVERTER_UTF32_I */
