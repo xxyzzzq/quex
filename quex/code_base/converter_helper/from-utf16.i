@@ -43,9 +43,8 @@
  *     (Note, that character converters are generated into namespace 'quex'.)*/
 #include <quex/code_base/converter_helper/character-converter/from-utf16.i>
 
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-namespace quex {
-#endif
+QUEX_NAMESPACE_QUEX_OPEN
+#define __QUEX_CONVERTER_NAMESPACE quex
 
 /* (1b) Derive converters to char and wchar_t from the given set 
  *      of converters. (Generator uses __QUEX_FROM and QUEX_FROM_TYPE)      */
@@ -55,8 +54,6 @@ namespace quex {
  *     definitions of the character converters.                             */
 #include <quex/code_base/converter_helper/generator/implementations.gi>
 
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-} /* namespace quex */
-#endif
+QUEX_NAMESPACE_QUEX_CLOSE
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16_I */

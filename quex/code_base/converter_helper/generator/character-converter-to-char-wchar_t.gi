@@ -27,6 +27,8 @@
 #   error "__QUEX_TO must NOT be defined!"
 #elif   defined(__QUEX_TO_CODEC)
 #   error "__QUEX_TO_CODEC must NOT be defined!"
+#elif ! defined(__QUEX_CONVERTER_NAMESPACE)
+#    error "__QUEX_CONVERTER_NAMESPACE must be defined!"
 #endif
 
 QUEX_INLINE void
@@ -51,7 +53,7 @@ QUEX_CONVERTER_CHAR_DEF(__QUEX_FROM, char)(const __QUEX_FROM_TYPE**  source_pp,
 
 #if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
     QUEX_INLINE void
-    QUEX_CONVERTER_CHAR_DEF(__QUEX_FROM, wchar_t)(const __QUEX_FROM_TYPE**  source_pp, 
+    QUEX_CONVERTER_CHAR_DEF(__QUEX_FROM, wchar)(const __QUEX_FROM_TYPE**  source_pp, 
                                                 wchar_t**                 drain_pp)  
     {
         switch( sizeof(wchar_t) )

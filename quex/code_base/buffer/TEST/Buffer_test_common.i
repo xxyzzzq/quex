@@ -49,9 +49,9 @@ show_this(const char* Name, QUEX_NAME(Buffer)* buffer, QUEX_TYPE_CHARACTER* Pos,
         const QUEX_TYPE_CHARACTER* input_p = Pos;
 
         switch( sizeof(QUEX_TYPE_CHARACTER) ) {
-        case 1:  QUEX_NAME_TOKEN(utf8_to_utf8_character)((const uint8_t**)&input_p, &p); break;
-        case 2:  QUEX_NAME_TOKEN(utf16_to_utf8_character)((const uint16_t**)&input_p, &p); break;
-        case 4:  QUEX_NAME_TOKEN(utf32_to_utf8_character)((const uint32_t**)&input_p, &p); break;
+        case 1:  quex::utf8_to_utf8_character((const uint8_t**)&input_p, &p); break;
+        case 2:  quex::utf16_to_utf8_character((const uint16_t**)&input_p, &p); break;
+        case 4:  quex::utf32_to_utf8_character((const uint32_t**)&input_p, &p); break;
         default: assert(false);
         }
         *p = '\0';

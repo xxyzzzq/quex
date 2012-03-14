@@ -28,9 +28,8 @@
 
 #include <quex/code_base/definitions>
 
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-namespace quex {
-#endif
+QUEX_NAMESPACE_QUEX_OPEN
+#define __QUEX_CONVERTER_NAMESPACE quex
 
 QUEX_INLINE void
 QUEX_CONVERTER_CHAR_DEF(utf32, utf8)(const uint32_t**  input_pp, 
@@ -98,8 +97,7 @@ QUEX_CONVERTER_CHAR_DEF(utf32, utf32)(const uint32_t**  input_pp,
     *((*output_pp)++) = (uint32_t)(*(*input_pp)++);
 }
 
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-} /* namespace quex */
-#endif
+QUEX_NAMESPACE_QUEX_CLOSE
+#undef __QUEX_CONVERTER_NAMESPACE
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__CHARACTER_CONVERTER_UTF32_I */

@@ -2,7 +2,7 @@
 #include <support/C/hwut_unit.h>
 #include <cassert>
 
-#define CONVERTER(OUTPUT)   __QUEX_CONVERTER_STRING(SOURCE_NAME, OUTPUT)
+#define CONVERTER(OUTPUT)   QUEX_CONVERTER_STRING(SOURCE_NAME, OUTPUT)
 
 #include <iostream>
 #include <cstdio>
@@ -121,7 +121,7 @@ test_this(const SourceT*     Source,
           const uint16_t*    UTF16_Expected, const size_t  UTF16_DrainSize,
           const uint32_t*    UTF32_Expected, const size_t  UTF32_DrainSize)
 {
-    using namespace TesterToken;
+    using namespace quex;
 
     const SourceT*  source_end = Source;
     for(; *source_end; ++source_end) ;

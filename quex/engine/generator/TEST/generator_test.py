@@ -302,8 +302,12 @@ def create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFall
         QuexBufferFallbackN = max(0, len(TestStr) - 3) 
 
     # Parameterize the common declarations
-    txt = test_program_common_declarations.replace("$$BUFFER_FALLBACK_N$$", repr(QuexBufferFallbackN))
-    txt = "#define QUEX_TYPE_CHARACTER unsigned char\n" + txt
+    txt  = "#define   __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION\n"
+    txt += "#define QUEX_TYPE_CHARACTER unsigned char\n" 
+
+    txt += test_program_common_declarations.replace("$$BUFFER_FALLBACK_N$$", 
+                                                    repr(QuexBufferFallbackN))
+
     txt = txt.replace("$$BUFFER_LIMIT_CODE$$", repr(BufferLimitCode))
 
     replace_str = "#define QUEX_OPTION_INDENTATION_TRIGGER"

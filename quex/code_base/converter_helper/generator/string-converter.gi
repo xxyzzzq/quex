@@ -41,6 +41,8 @@
 #   error "__QUEX_TO_TYPE must be defined."
 #elif ! defined(__QUEX_TO)
 #   error "__QUEX_TO must be defined."
+#elif ! defined(__QUEX_CONVERTER_NAMESPACE)
+#    error "__QUEX_CONVERTER_NAMESPACE must be defined!"
 #endif
 
 QUEX_INLINE void

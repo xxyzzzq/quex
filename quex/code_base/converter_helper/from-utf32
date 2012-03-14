@@ -28,18 +28,15 @@
 #ifndef __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF32
 #define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF32
 
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-namespace quex {
-#endif
+QUEX_NAMESPACE_QUEX_OPEN
 
-#define __QUEX_FROM      utf32
-#define __QUEX_FROM_TYPE uint32_t
+#define __QUEX_CONVERTER_NAMESPACE quex
+#define __QUEX_FROM                utf32
+#define __QUEX_FROM_TYPE           uint32_t
 
 #include <quex/code_base/converter_helper/generator/declarations.g>
 
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-} /* namespace quex */
-#endif
+QUEX_NAMESPACE_QUEX_CLOSE
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF32 */
 

@@ -285,38 +285,8 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_HELPER
 #   define QUEX_TYPE_ACCEPTANCE_ID   int
 #endif
 
-#if defined(__cplusplus)
-#   define QUEX_FUNCTION(NAMESPACE, FUNCTION)                      NAMESPACE :: FUNCTION()
-#   define QUEX_FUNCTION0(NAMESPACE, FUNCTION)                     FUNCTION()
-#   define QUEX_MEMBERF(CLASS, FUNCTION)                           CLASS :: FUNCTION()
-#   define QUEX_MEMBERF1(CLASS, FUNCTION, ARG0)                    CLASS :: FUNCTION(ARG0)
-#   define QUEX_MEMBERF2(CLASS, FUNCTION, ARG0, ARG1)              CLASS :: FUNCTION(ARG0, ARG1)
-#   define QUEX_MEMBERF3(CLASS, FUNCTION, ARG0, ARG1, ARG2)        CLASS :: FUNCTION(ARG0, ARG1, ARG2)
-#   define QUEX_MEMBERF4(CLASS, FUNCTION, ARG0, ARG1, ARG2, ARG3)  CLASS :: FUNCTION(ARG0, ARG1, ARG2, ARG3)
-#else
-#   define QUEX_FUNCTION(NAMESPACE, FUNCTION)                      NAMESPACE##_##FUNCTION()
-#   define QUEX_FUNCTION0(NAMESPACE, FUNCTION)                     NAMESPACE##_##FUNCTION()
-#   define QUEX_MEMBERF(CLASS, FUNCTION)                           CLASS##_##FUNCTION(CLASS* this)
-#   define QUEX_MEMBERF1(CLASS, FUNCTION, ARG0)                    CLASS##_## FUNCTION(ARG0)
-#   define QUEX_MEMBERF2(CLASS, FUNCTION, ARG0, ARG1)              CLASS##_## FUNCTION(ARG0, ARG1)
-#   define QUEX_MEMBERF3(CLASS, FUNCTION, ARG0, ARG1, ARG2)        CLASS##_## FUNCTION(ARG0, ARG1, ARG2)
-#   define QUEX_MEMBERF4(CLASS, FUNCTION, ARG0, ARG1, ARG2, ARG3)  CLASS##_## FUNCTION(ARG0, ARG1, ARG2, ARG3)
-#endif
-
-#define QUEX_A_MEMBERF (FUNCTION)                          QUEX_MEMBERF(QUEX_TYPE_ANALYZER0, FUNCTION)
-#define QUEX_A_MEMBERF1(FUNCTION, ARG0)                    QUEX_MEMBERF1(QUEX_TYPE_ANALYZER0, FUNCTION, ARG0)
-#define QUEX_A_MEMBERF2(FUNCTION, ARG0, ARG1)              QUEX_MEMBERF2(QUEX_TYPE_ANALYZER0, FUNCTION, ARG0, ARG1)
-#define QUEX_A_MEMBERF3(FUNCTION, ARG0, ARG1, ARG2)        QUEX_MEMBERF3(QUEX_TYPE_ANALYZER0, FUNCTION, ARG0, ARG1, ARG2)
-#define QUEX_A_MEMBERF4(FUNCTION, ARG0, ARG1, ARG2, ARG3)  QUEX_MEMBERF4(QUEX_TYPE_ANALYZER0, FUNCTION, ARG0, ARG1, ARG2, ARG3)
-
-#define QUEX_T_MEMBERF (FUNCTION)                          QUEX_MEMBERF(QUEX_TYPE_TOKEN0, FUNCTION)
-#define QUEX_T_MEMBERF1(FUNCTION, ARG0)                    QUEX_MEMBERF1(QUEX_TYPE_TOKEN0, FUNCTION, ARG0)
-#define QUEX_T_MEMBERF2(FUNCTION, ARG0, ARG1)              QUEX_MEMBERF2(QUEX_TYPE_TOKEN0, FUNCTION, ARG0, ARG1)
-#define QUEX_T_MEMBERF3(FUNCTION, ARG0, ARG1, ARG2)        QUEX_MEMBERF3(QUEX_TYPE_TOKEN0, FUNCTION, ARG0, ARG1, ARG2)
-#define QUEX_T_MEMBERF4(FUNCTION, ARG0, ARG1, ARG2, ARG3)  QUEX_MEMBERF4(QUEX_TYPE_TOKEN0, FUNCTION, ARG0, ARG1, ARG2, ARG3)
-
 #if defined(__QUEX_OPTION_PLAIN_C)
-#   define QUEX_NAMESPACE_MAIN        
+#   define QUEX_NAMESPACE_MAIN         $$LEXER_CLASS_NAME_SAFE$$
 #   define QUEX_NAMESPACE_MAIN_OPEN   
 #   define QUEX_NAMESPACE_MAIN_CLOSE  
 #   define QUEX_NAMESPACE_TOKEN   
@@ -341,24 +311,24 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_HELPER
 
 /* QUEX_TYPE_X  --> Type of X in global namespace 
  * QUEX_TYPE0_X --> Type of X in local namespace (namespace omitted) */
-#ifdef __QUEX_OPTION_PLAIN_C
-/* In 'C' there are no namespaces, so namespaces are coded directly
- * into the type name. Both, global and local names are equal.       */
-#   define QUEX_TYPE_ANALYZER          struct $$LEXER_CLASS_NAME_SAFE$$_tag
-#   define QUEX_TYPE0_ANALYZER         struct $$LEXER_CLASS_NAME_SAFE$$_tag
-#   define QUEX_TYPE_DERIVED_ANALYZER  struct $$LEXER_CLASS_NAME_SAFE$$_tag
-
-#   define QUEX_TYPE_TOKEN             struct $$TOKEN_CLASS_NAME_SAFE$$_tag
-#   define QUEX_TYPE0_TOKEN            struct $$TOKEN_CLASS_NAME_SAFE$$_tag
-#else
-/* Add namespaces for the global names of the classes of analyzer
- * and token.                                                        */
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+    /* Add namespaces for the global names of the classes of analyzer
+     * and token.                                                        */
 #   define QUEX_TYPE_ANALYZER          $$NAMESPACE_MAIN$$::$$LEXER_CLASS_NAME$$
 #   define QUEX_TYPE0_ANALYZER         $$LEXER_CLASS_NAME$$
 #   define QUEX_TYPE_DERIVED_ANALYZER  $$LEXER_DERIVED_CLASS_NAME$$
 
 #   define QUEX_TYPE_TOKEN             $$NAMESPACE_TOKEN$$::$$TOKEN_CLASS$$
 #   define QUEX_TYPE0_TOKEN            $$TOKEN_CLASS$$
+#else
+    /* In 'C' there are no namespaces, so namespaces are coded directly
+     * into the type name. Both, global and local names are equal.       */
+#   define QUEX_TYPE_ANALYZER          struct $$LEXER_CLASS_NAME_SAFE$$_tag
+#   define QUEX_TYPE0_ANALYZER         struct $$LEXER_CLASS_NAME_SAFE$$_tag
+#   define QUEX_TYPE_DERIVED_ANALYZER  struct $$LEXER_CLASS_NAME_SAFE$$_tag
+
+#   define QUEX_TYPE_TOKEN             struct $$TOKEN_CLASS_NAME_SAFE$$_tag
+#   define QUEX_TYPE0_TOKEN            struct $$TOKEN_CLASS_NAME_SAFE$$_tag
 #endif
 
 #ifndef    QUEX_TYPE_TOKEN_ID
