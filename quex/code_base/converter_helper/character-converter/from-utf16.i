@@ -24,7 +24,7 @@
 #include <quex/code_base/compatibility/stdint.h>
 #include <quex/code_base/asserts>
 
-QUEX_NAMESPACE_QUEX_OPEN
+QUEX_NAMESPACE_MAIN_OPEN
 #define __QUEX_CONVERTER_NAMESPACE quex
 
 QUEX_INLINE void
@@ -100,7 +100,7 @@ QUEX_CONVERTER_CHAR_DEF(utf16, utf32)(const uint16_t**  input_pp,
     }
 }
 
-QUEX_NAMESPACE_QUEX_CLOSE
+QUEX_NAMESPACE_MAIN_CLOSE
 #undef __QUEX_CONVERTER_NAMESPACE
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__CHARACTER_CONVERTER_UTF16_I */

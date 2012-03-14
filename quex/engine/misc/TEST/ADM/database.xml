@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.53" date="Wed Mar 14 07:02:23 2012">
+<test-database execution-time-sec="0.54" date="Wed Mar 14 23:19:44 2012">
     <last-used-diff-display-program name=""/>
     <test title="Enums -- Functionality Test" time-sum-sec="0.04"> 
         <application file-name="enum.py" info-request-time="1318614209L" vanished="False"/>
@@ -7,10 +7,10 @@
         </choice-list>
     </test>
     <group name="File Input">
-        <test title="Function read_until_closing_bracket(...)" time-sum-sec="0.05"> 
+        <test title="Function read_until_closing_bracket(...)" time-sum-sec="0.06"> 
             <application file-name="test-read_until_closing_bracket.py" info-request-time="1318614209L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.05" crc="1489533151"/>
+               <choice name="" result="OK" time_sec="0.06" crc="1489533151"/>
             </choice-list>
         </test>
         <test title="Function delete_comment(...)" time-sum-sec="0.05"> 

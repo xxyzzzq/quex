@@ -62,7 +62,23 @@ def _do(Descr):
     if Setup.language == "C":
         token_class_name = Setup.token_class_name_safe
 
-    include_character_codec_header_str = ""
+    if Setup.buffer_codec in ["utf8", "utf16", "utf32"]:
+        converter_declaration_include    = "#include <quex/code_base/converter_helper/from-%s>"      % Setup.buffer_codec
+        converter_implementation_include = "#include <quex/code_base/converter_helper/from-%s.i>"    % Setup.buffer_codec
+        converter_string                 = "____QUEX_CONVERTER_STRING(QUEX_NAMESPACE_MAIN,%s,char)"  % Setup.buffer_codec
+        converter_wstring                = "____QUEX_CONVERTER_STRING(QUEX_NAMESPACE_MAIN,%s,wchar)" % Setup.buffer_codec
+
+    elif Setup.buffer_codec == "unicode":
+        converter_declaration_include    = "#include <quex/code_base/converter_helper/from-unicode-buffer>"
+        converter_implementation_include = "#include <quex/code_base/converter_helper/from-unicode-buffer.i>"
+        converter_string                 = "____QUEX_CONVERTER_STRING(QUEX_NAMESPACE_MAIN,unicode,char)"
+        converter_wstring                = "____QUEX_CONVERTER_STRING(QUEX_NAMESPACE_MAIN,unicode,wchar)"
+
+    else:
+        converter_declaration_include    = "#include \"%s\"" % Setup.output_buffer_codec_header
+        converter_implementation_include = "#include \"%s\"" % Setup.output_buffer_codec_header_i
+        converter_string                 = "____QUEX_CONVERTER_STRING(QUEX_NAMESPACE_MAIN,%s,char)"  % Setup.buffer_codec
+        converter_wstring                = "____QUEX_CONVERTER_STRING(QUEX_NAMESPACE_MAIN,%s,wchar)" % Setup.buffer_codec
     
     txt = blue_print(template_str,
              [
@@ -74,7 +90,6 @@ def _do(Descr):
               ["$$FOOTER$$",                  Descr.footer.get_code()],
               ["$$FUNC_TAKE_TEXT$$",          take_text_str],
               ["$$HEADER$$",                  Descr.header.get_code()],
-              ["$$INCLUDE_CODEC_CONVERTER$$", include_character_codec_header_str],
               ["$$INCLUDE_GUARD_EXTENSION$$", include_guard_extension_str],
               ["$$NAMESPACE_CLOSE$$",         LanguageDB.NAMESPACE_CLOSE(Descr.name_space)],
               ["$$NAMESPACE_OPEN$$",          LanguageDB.NAMESPACE_OPEN(Descr.name_space)],
@@ -85,6 +100,13 @@ def _do(Descr):
               ["$$TOKEN_REPETITION_N_SET$$",  Descr.repetition_set.get_code()],
               ["$$UNION_MEMBERS$$",           get_union_members(Descr)],
               ["$$VIRTUAL_DESTRUCTOR$$",      virtual_destructor_str],
+             ])
+
+    txt = blue_print(txt, [
+              ["$$INCLUDE_CONVERTER_DECLARATION$$",    converter_declaration_include],
+              ["$$INCLUDE_CONVERTER_IMPLEMENTATION$$", converter_implementation_include],
+              ["$$CONVERTER_STRING$$",                 converter_string],
+              ["$$CONVERTER_WSTRING$$",                converter_wstring],
              ])
 
     txt_i = blue_print(template_i_str, 
@@ -101,6 +123,13 @@ def _do(Descr):
                         ["$$TOKEN_REPETITION_N_GET$$",  Descr.repetition_get.get_code()],
                         ["$$TOKEN_REPETITION_N_SET$$",  Descr.repetition_set.get_code()],
                        ])
+
+    txt_i = blue_print(txt_i, [
+              ["$$INCLUDE_CONVERTER_DECLARATION$$",    converter_declaration_include],
+              ["$$INCLUDE_CONVERTER_IMPLEMENTATION$$", converter_implementation_include],
+              ["$$CONVERTER_STRING$$",                 converter_string],
+              ["$$CONVERTER_WSTRING$$",                converter_wstring],
+             ])
 
     # Return declaration and implementation as two strings
     return txt, txt_i
