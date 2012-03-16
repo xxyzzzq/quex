@@ -62,7 +62,6 @@ def _do(Descr):
     if Setup.language == "C":
         token_class_name = Setup.token_class_name_safe
 
-    print "##CODEC:", Setup.buffer_codec
     if Setup.buffer_codec in ["utf8", "utf16", "utf32"]:
         converter_declaration_include    = "#include <quex/code_base/converter_helper/from-%s>"      % Setup.buffer_codec
         converter_implementation_include = "#include <quex/code_base/converter_helper/from-%s.i>"    % Setup.buffer_codec

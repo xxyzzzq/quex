@@ -28,8 +28,8 @@ DEFS = -DQUEX_OPTION_ASSERTS \
        -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 \
 
 # Use 'icu-config --ldflags' in order to get the linker flags
-ICU_FLAGS = \
-		   -lpthread -lm -L/usr/lib -licui18n -licuuc -licudata -lpthread -lm
+ICU_FLAGS := $(shell icu-config --ldflags) 
+CFLAGS    := $(shell icu-config --cppflags) 
 
 all: $(FILES)
 

@@ -29,7 +29,6 @@
 #include <quex/code_base/asserts>
 
 QUEX_NAMESPACE_MAIN_OPEN
-#define __QUEX_CONVERTER_NAMESPACE quex
 
 QUEX_INLINE void
 /* DrainEnd pointer is not returned, since the increment is always '1' */

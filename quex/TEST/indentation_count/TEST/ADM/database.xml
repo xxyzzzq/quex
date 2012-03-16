@@ -1,39 +1,39 @@
-<test-database execution-time-sec="10.65" date="Wed Mar 14 23:19:38 2012">
+<test-database execution-time-sec="9.78" date="Fri Mar 16 23:37:45 2012">
     <last-used-diff-display-program name=""/>
-    <test title="Indentation Counting and Range Skipper" time-sum-sec="2.81"> 
+    <test title="Indentation Counting and Range Skipper" time-sum-sec="2.62"> 
         <application file-name="with-skip-range.sh" info-request-time="1318614191L" vanished="False"/>
         <choice-list number="3" same_result="False">
-           <choice name="range" result="OK" time_sec="0.93" crc="-1124186354"/>
-           <choice name="range-2" result="OK" time_sec="0.94" crc="-1743780697"/>
-           <choice name="nested_range" result="OK" time_sec="0.94" crc="1419122518"/>
+           <choice name="range" result="OK" time_sec="0.87" crc="-1124186354"/>
+           <choice name="range-2" result="OK" time_sec="0.89" crc="-1743780697"/>
+           <choice name="nested_range" result="OK" time_sec="0.87" crc="1419122518"/>
         </choice-list>
     </test>
-    <test title="Bad character detection." time-sum-sec="2.25"> 
+    <test title="Bad character detection." time-sum-sec="2.03"> 
         <application file-name="bad.sh" info-request-time="1318614191L" vanished="False"/>
         <choice-list number="2" same_result="False">
-           <choice name="default" result="OK" time_sec="1.12" crc="954811374"/>
-           <choice name="customized" result="OK" time_sec="1.13" crc="2010419295"/>
+           <choice name="default" result="OK" time_sec="1.01" crc="954811374"/>
+           <choice name="customized" result="OK" time_sec="1.03" crc="2010419295"/>
         </choice-list>
     </test>
-    <test title="Customized Event Handlers" time-sum-sec="4.60"> 
+    <test title="Customized Event Handlers" time-sum-sec="4.26"> 
         <application file-name="handlers.sh" info-request-time="1318614191L" vanished="False"/>
         <choice-list number="5" same_result="False">
-           <choice name="check-eof" result="OK" time_sec="0.92" crc="-180552726"/>
-           <choice name="on_dedent" result="OK" time_sec="0.92" crc="-215364705"/>
-           <choice name="on_n_dedent" result="OK" time_sec="0.92" crc="-215364705"/>
-           <choice name="empty-lines" result="OK" time_sec="0.92" crc="-215364705"/>
-           <choice name="on_indentation_error" result="OK" time_sec="0.92" crc="1111494244"/>
+           <choice name="check-eof" result="OK" time_sec="0.85" crc="-180552726"/>
+           <choice name="on_dedent" result="OK" time_sec="0.85" crc="-215364705"/>
+           <choice name="on_n_dedent" result="OK" time_sec="0.85" crc="-215364705"/>
+           <choice name="empty-lines" result="OK" time_sec="0.85" crc="-215364705"/>
+           <choice name="on_indentation_error" result="OK" time_sec="0.85" crc="1111494244"/>
         </choice-list>
     </test>
-    <test title="Commonalities of Indentation Counter vs. Patterns" time-sum-sec="0.99"> 
+    <test title="Commonalities of Indentation Counter vs. Patterns" time-sum-sec="0.87"> 
         <application file-name="commonalities.sh" info-request-time="1320011885L" vanished="False"/>
         <choice-list number="6" same_result="False">
-           <choice name="1" result="OK" time_sec="0.16" crc="-1391501822"/>
-           <choice name="2" result="OK" time_sec="0.16" crc="970527046"/>
-           <choice name="3" result="OK" time_sec="0.17" crc="-1638526542"/>
-           <choice name="4" result="OK" time_sec="0.19" crc="774002524"/>
-           <choice name="5" result="OK" time_sec="0.16" crc="640949708"/>
-           <choice name="6" result="OK" time_sec="0.15" crc="1833916996"/>
+           <choice name="1" result="OK" time_sec="0.14" crc="-1391501822"/>
+           <choice name="2" result="OK" time_sec="0.14" crc="970527046"/>
+           <choice name="3" result="OK" time_sec="0.14" crc="-1638526542"/>
+           <choice name="4" result="OK" time_sec="0.18" crc="774002524"/>
+           <choice name="5" result="OK" time_sec="0.14" crc="640949708"/>
+           <choice name="6" result="OK" time_sec="0.13" crc="1833916996"/>
         </choice-list>
     </test>
 </test-database>
