@@ -34,7 +34,7 @@ def do(Data):
 template_str = """
     Skipper$$SKIPPER_INDEX$$_Opener_it = (QUEX_TYPE_CHARACTER*)Skipper$$SKIPPER_INDEX$$_Opener;
     Skipper$$SKIPPER_INDEX$$_Closer_it = (QUEX_TYPE_CHARACTER*)Skipper$$SKIPPER_INDEX$$_Closer;
-    text_end                           = QUEX_NAME(Buffer_text_end)(&me->buffer);
+    /* text_end                           = QUEX_NAME(Buffer_text_end)(&me->buffer); */
 $$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
 
 $$ENTRY$$
@@ -109,7 +109,7 @@ $$LC_COUNT_BEFORE_RELOAD$$
         $$INPUT_P_TO_LEXEME_START$$
         /* After reload, we need to increment _input_p. That's how the game is supposed to be played. 
          * But, we recovered from lexeme start pointer, and this one does not need to be incremented. */
-        text_end = QUEX_NAME(Buffer_text_end)(&me->buffer);
+        /* text_end = QUEX_NAME(Buffer_text_end)(&me->buffer); */
 $$LC_COUNT_AFTER_RELOAD$$
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
         $$GOTO_ENTRY$$ /* End of range reached.             */
@@ -152,7 +152,7 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
 
     local_variable_db = {}
     variable_db.enter(local_variable_db, "reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
-    variable_db.enter(local_variable_db, "text_end")
+    # variable_db.enter(local_variable_db, "text_end")
     variable_db.enter(local_variable_db, "counter")
     variable_db.enter(local_variable_db, "Skipper%i_Opener",    "{ %s }" % opener_str, ElementN=opener_length, 
                                          Index = skipper_index)
