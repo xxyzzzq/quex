@@ -176,6 +176,9 @@ to combine them into powerful patterns.
      are one letter long and do not start with ``i``. Also, matches all lexemes that
      start with ``i`` but do not continue with ``f``.
 
+     Note, that anti-patterns provide a means to trick the greedy match 
+     behavior of quex. This is shown in the subsequent 'pitfalls' section.
+
 .. describe:: \\0 
 
      a NULL character (ASCII/Unicode code point 0). This is to be used with *extreme caution*!

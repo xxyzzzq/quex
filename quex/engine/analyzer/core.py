@@ -71,6 +71,7 @@ class Analyzer:
         assert EngineType in E_EngineTypes
         assert isinstance(SM, StateMachine)
 
+
         self.__acceptance_state_index_list = SM.get_acceptance_state_index_list()
         self.__init_state_index = SM.init_state_index
         self.__state_machine_id = SM.get_id()
@@ -121,7 +122,7 @@ class Analyzer:
         self.__require_position_storage_list   = []
         for state_index, trace_list in self.__trace_db.iteritems():
             state = self.__state_db[state_index]
-            # trace_list: PathTrace objects for each path that guides through state.
+            # trace_list: PathTrace objects for each path that guides to state.
             self.configure_drop_out(state, trace_list)
 
         # (*) Entry Behavior
@@ -212,14 +213,16 @@ class Analyzer:
             #     Different paths to one state result in different acceptances. 
             #     There is only one way to handle this:
             #
-            #         -- The acceptance must be stored in the state where it occurs, and
-            #         -- It must be restored here.
+            #       -- The acceptance must be stored in the state where it occurs, and
+            #       -- It must be restored here.
             #
             result.accept(E_PreContextIDs.NONE, E_AcceptanceIDs.VOID)
 
             # Dependency: Related states are required to store acceptance at state entry.
             for trace in ThePathTraceList:
                 self.__require_acceptance_storage_list.extend(trace.acceptance_trace)
+            # Later on, a function will use the '__require_acceptance_storage_list' to 
+            # implement the acceptance storage.
 
         # (*) Terminal Router
         for pattern_id, info in self.__position_info_db[state.index].iteritems():
@@ -228,19 +231,26 @@ class Analyzer:
             if info.transition_n_since_positioning == E_TransitionN.VOID: 
                 # Request the storage of the position from related states.
                 self.__require_position_storage_list.append((state.index, pattern_id, info))
+            # Later on, a function will use the '__require_position_storage_list' to 
+            # implement the position storage.
 
         result.trivialize()
         state.drop_out = result
 
     def configure_entries(self):
-        """During the generation of drop-out actions for states the requirements
-           for entry actions into states have been derived. This function 
-           implements those requirements.
+        """DropOut objects may rely on acceptances and input positions being 
+           stored. This storage happens at state entries.
+           
+           Function 'configure_drop_out()' registers which states have to store
+           the input position and which ones have to store acceptances. These
+           tasks are specified in the two members:
 
-           As an optimization, it tries to postpone the acceptance and input
-           position storage as much as possible, so that every lexeme that
-           passes only to the non-storing segment profits from not having
-           to store the input position.
+                 self.__require_acceptance_storage_list
+                 self.__require_position_storage_list
+
+           It is tried to postpone the storing as much as possible along the
+           state paths from store to restore. Thus, some states may not have to
+           store, and thus the lexical analyzer becomes a little faster.
         """
         self.implement_required_acceptance_storage()
         self.implement_required_position_storage()
@@ -273,13 +283,18 @@ class Analyzer:
         ! of acceptance in the drop_out as a terminal condition.               !
         """
         postponed_db = defaultdict(set)
-        for element in self.__require_acceptance_storage_list:
-            entry = self.__state_db[element.accepting_state_index].entry
+        for acceptance_trace in self.__require_acceptance_storage_list:
+            accepting_state_index  = acceptance_trace.accepting_state_index
+            path_since_positioning = acceptance_trace.path_since_positioning
+            pre_context_id         = acceptance_trace.pre_context_id
+            pattern_id             = acceptance_trace.pattern_id
+
+            entry = self.__state_db[accepting_state_index].entry
             # Find the first place on the path where the acceptance is restored
             # - starting from the accepting state.
-            begin_i = element.path_since_positioning.index(element.accepting_state_index)
+            begin_i = path_since_positioning.index(accepting_state_index)
             prev_state_index = None
-            for state_index in islice(element.path_since_positioning, begin_i, None):
+            for state_index in islice(path_since_positioning, begin_i, None):
                 if self.__state_db[state_index].drop_out.restore_acceptance_f: 
                     break
                 prev_state_index = state_index
@@ -288,23 +303,23 @@ class Analyzer:
                 entry           = self.__state_db[state_index].entry
                 path_trace_list = self.__trace_db[prev_state_index]
                 for path_trace in path_trace_list:
-                    entry.doors_accept(prev_state_index, path_trace.acceptance_trace)
+                    entry.doors_accept(FromStateIndex=prev_state_index, PathTraceList=path_trace.acceptance_trace)
             else:
                 # Postpone:
                 #
                 # Here, storing Acceptance cannot be deferred to subsequent states, because
                 # the first state that restores acceptance is the acceptance state itself.
                 #
-                # (1) Restore is only possible if there is non-uniform acceptance. See 
+                # (1) Restore only happens if there is non-uniform acceptance. See 
                 #     function 'configure_drop_out(...)'. 
-                # (2) Non-uniform acceptance is only possible, if there are multiple paths
-                #     to the state with different trailing acceptances.
+                # (2) Non-uniform acceptance only happens, if there are multiple paths
+                #     to the same state with different trailing acceptances.
                 # (3) If there was an absolute acceptance, then all previous trailing 
                 #     acceptance were deleted (longest match). This contradicts (2).
                 #
                 # (4) => Thus, there are only pre-contexted acceptances in such a state.
-                assert element.pre_context_id != E_PreContextIDs.NONE 
-                postponed_db[element.accepting_state_index].add((element.pre_context_id, element.pattern_id))
+                assert pre_context_id != E_PreContextIDs.NONE 
+                postponed_db[accepting_state_index].add((pre_context_id, pattern_id))
 
         # Postponed: Collected acceptances to be stored in the acceptance states itself.
         #

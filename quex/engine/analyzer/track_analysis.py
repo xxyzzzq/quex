@@ -27,26 +27,23 @@ from   quex.engine.misc.tree_walker import TreeWalker
 
 from   itertools   import chain, izip
 from   copy        import copy
+from   collections import defaultdict
 
 def do(SM):
-    """RETURNS: [0] Acceptance trace database:
+    """RETURNS: Acceptance trace database:
 
-                    map: state_index --> list of PathTrace objects.
-
-                [1] Successor database:
-
-                    map: state_index --> superset of all successor states.
+                map: state_index --> list of PathTrace objects.
     """
     ta = TrackAnalysis(SM)
 
-    return ta.acceptance_trace_db, ta.successor_db
+    return ta.map_state_to_trace, None # ta.successor_db
 
 class TrackAnalysis:
     """The init function of this class walks down each possible path trough a
        given state machine. During the process of walking down the paths it 
        develops for each state its list of PathTrace objects.
        
-       The result of the process is presented by property 'acceptance_trace_db'. 
+       The result of the process is presented by property 'map_state_to_trace'. 
        It delivers for each state of the state machine a trace object that maps:
 
                    state index --> list of PathTrace objects
@@ -59,72 +56,12 @@ class TrackAnalysis:
         """SM -- state machine to be investigated."""
         self.sm = SM
 
-        # (*) Determined Set of 'Successor States'
-        self.__successor_db    = self.__successor_search() # self.sm.init_state_index, [])
-
         # (*) Collect PathTrace Information
         self.__map_state_to_trace = self.__trace_walk()
 
     @property
-    def acceptance_trace_db(self):
+    def map_state_to_trace(self):
         return self.__map_state_to_trace
-
-    @property
-    def successor_db(self):
-        return self.__successor_db
-
-    def __successor_search(self):
-        """Determine the indices of states that are part of a loop. Whenever
-           such a state appears in a path from one state A to another state B, 
-           then the number of transitions from A to B cannot be determined 
-           from the number of transitions between them.
-
-           Recursion Terminal: When a state has no target state that has not
-                               yet been handled in the path. This is implemented
-                               in the loop itself.
-        """
-        class SuccessorSearcher(TreeWalker):
-            def __init__(self, SM):
-                self.path = []
-                self.sm   = SM
-                self.done_set             = set()
-                self.empty_list           = []
-                # set of a all state indices that are on a loop-path
-                self.loop_state_index_set = set()
-                # map: state_index -> list of all successor state indices
-                self.successor_db         = dict([(i, set()) for i in SM.states.iterkeys()])
-
-            def on_enter(self, StateIndex):
-                found_f = False # StateIndex found in path?
-                for i in self.path:
-                    self.successor_db[i].add(StateIndex)
-                    if StateIndex == i: 
-                        idx = self.path.index(StateIndex)
-                        # All states from path[idx] to the current are part of a loop.
-                        self.loop_state_index_set.update(self.path[idx:])
-                        found_f = True
-
-                # Make sure, that the successor_db has still registered the state_index
-                if StateIndex in self.done_set:
-                    # All states in the path have the successor states of StateIndex
-                    for i in (i for i in self.path if i != StateIndex):
-                        self.successor_db[i].update(self.successor_db[StateIndex])
-                    return None
-
-                if found_f:
-                    return None
-
-                self.path.append(StateIndex)
-                propose_list = self.sm.states[StateIndex].transitions().get_map().keys()
-                return propose_list
-
-            def on_finished(self, StateIndex):
-                self.done_set.add(StateIndex)
-                self.path.pop()
-
-        searcher = SuccessorSearcher(self.sm)
-        searcher.do(self.sm.init_state_index)
-        return searcher.successor_db
 
     def __trace_walk(self):
         """Determine PathTrace objects for each state. The heart of this function is
@@ -138,7 +75,7 @@ class TrackAnalysis:
         """
         class TraceFinder(TreeWalker):
             def __init__(self, track_info):
-                self.path       = []
+                self.__depth    = 0
                 self.sm         = track_info.sm
                 self.empty_list = []
                 self.result     = dict([(i, []) for i in self.sm.states.iterkeys()])
@@ -149,10 +86,8 @@ class TrackAnalysis:
                 # (*) Update the information about the 'trace of acceptances'
                 State = self.sm.states[StateIndex]
 
-                if len(self.path) == 0: 
-                    trace = PathTrace(self.sm.init_state_index)
-                else: 
-                    trace = PreviousTrace.next_step(StateIndex, State, self.path) 
+                if self.__depth == 0: trace = PathTrace(self.sm.init_state_index)
+                else:                 trace = PreviousTrace.next_step(StateIndex, State) 
 
                 # (*) Recursion Termination:
                 #
@@ -178,15 +113,15 @@ class TrackAnalysis:
                 #             time, see bug-2257908.sh in $QUEX_PATH/TEST).
                 # 
                 existing_trace_list = self.result.get(StateIndex) 
-                for candidate in existing_trace_list:
-                    if trace.is_equivalent(candidate):
+                for other_trace in existing_trace_list:
+                    if trace.is_equivalent(other_trace):
                         return None # Refuse further processing of the node
 
                 # (*) Mark the current state with its acceptance trace
                 self.result[StateIndex].append(trace)
 
                 # (*) Add current state to path
-                self.path.append(StateIndex)
+                self.__depth += 1
 
                 # (*) Recurse to all (undone) target states. 
                 return [(trace, target_index) 
@@ -195,11 +130,14 @@ class TrackAnalysis:
 
             def on_finished(self, Args):
                 # self.done_set.add(StateIndex)
-                self.path.pop()
+                self.__depth -= 1
 
         trace_finder = TraceFinder(self)
         trace_finder.do((None, self.sm.init_state_index))
-        return trace_finder.result
+        class Doodle:
+            def __init__(self, X):
+                self.acceptance_trace = X.acceptance_trace
+        return dict( (key, [Doodle(x) for x in trace_list]) for key, trace_list in trace_finder.result.iteritems())
 
 class PathTrace(object):
     """ABSTRACT:
@@ -239,12 +177,6 @@ class PathTrace(object):
        For further analysis, this class provides:
 
             .acceptance_trace -- Sorted list of information about acceptances.
-                                 
-            .prioritized_pre_context_id_list -- Sorted list of pre-context-ids
-                                                in the acceptance trace.
-
-       The sort order of '.prioritized_pre_context_id_list' is the same as the
-       aforementioned sort order of '.acceptance_trace'.
 
        During the process of building path traces, the function
 
@@ -303,11 +235,7 @@ class PathTrace(object):
     def acceptance_trace(self):
         return self.__acceptance_trace
 
-    @property
-    def prioritized_pre_context_id_list(self):
-        return map(lambda x: x.pre_context_id, self.acceptance_trace)
-
-    def next_step(self, StateIndex, State, Path):
+    def next_step(self, StateIndex, State):
         """The present object of PathTrace represents the history of events 
            along a path from the init state to the state BEFORE 'this state'.
 
@@ -334,7 +262,7 @@ class PathTrace(object):
         for origin in sorted(State.origins(), key=lambda x: x.pattern_id(), reverse=True):
             # Acceptance 
             if origin.is_acceptance():
-                result.__add_on_top(origin, StateIndex)
+                result.__acceptance_trace_add_at_front(origin, StateIndex)
 
             # Store Input Position Information
             if origin.input_position_store_f():
@@ -343,7 +271,7 @@ class PathTrace(object):
         assert len(result.__acceptance_trace) >= 1
         return result
 
-    def __add_on_top(self, Origin, StateIndex):
+    def __acceptance_trace_add_at_front(self, Origin, StateIndex):
         """Assume that the 'Origin' belongs to a state with index 'StateIndex' that
            comes after all states on the before considered path.
            Assume that the 'Origin' talks about 'acceptance'.
@@ -355,14 +283,15 @@ class PathTrace(object):
 
         # Input Position Store/Restore
         pattern_id = Origin.pattern_id()
-        if not Origin.input_position_restore_f():
-            # 'Normal' patterns refer to the input position at the time of acceptance.
-            path_since_positioning = [StateIndex]
-        else:
-            # Post contexted patterns refer to the input position at the time when
-            # it was stored.
+        if Origin.input_position_restore_f():
+            # Restorage of Input Position (Post Contexts): refer to the 
+            # input position at the time when it was stored.
             entry                  = self.__storage_db[pattern_id]
             path_since_positioning = entry.path_since_positioning
+        else:
+            # Normally accepted patterns refer to the input position at 
+            # the time of acceptance.
+            path_since_positioning = [StateIndex]
 
         # Reoccurring information about an acceptance overwrites previous occurrences.
         for entry_i in (i for i, x in enumerate(self.__acceptance_trace) \

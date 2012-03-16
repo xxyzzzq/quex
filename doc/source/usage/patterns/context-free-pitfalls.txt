@@ -22,15 +22,37 @@ two patterns be defined as:
      "Else"             => TKN_KEYWORD_ELSE;
      "Else\tAugenstein" => TKN_SWABIAN_LADY(Lexeme);
 
-Now, the ``Else`` statement may be matched, but only if it is not
-followed by tabulator and `Augenstein`. On the first glance, this
-case does not seem to be very probable. Sometimes it may be necessary,
-though, to define delimiters to avoid such confusion. In the very large majority of
-cases 'greedy matching' is a convienient blessing. Imagine the problem with 
-identifiers, i.e. any chain of alphabetic characters, and a keyword '`for`'.
-If there was no greedy matching (longest match), then any variable starting
-with `for` could not propperly be detected, since the first three letters
-would result in the `for`-keyword token.
+Now, the ``Else`` statement may be matched, but only if it is not followed by
+tabulator and `Augenstein`. On the first glance, this case does not seem to be
+very probable. Greedy matching can be tricked, by the usage of anti-patterns.
+If for example there is a keyword that shall always trigger and and identifier
+that covers the keyword, such as::
+
+      key    => TKN_KEYWORD;
+      [a-z]+ => TKN_IDENTIFIER;
+
+Then the lexeme ``keyword`` would trigger and identifier, because it
+matches more. If the the desired token sequence, though, is
+
+      KEYWORD      'key'
+      IDENTIFIER   'word'
+
+Then the identifier should be expressed in terms of anti-patterns, i.e.
+
+      key           => TKN_KEYWORD;
+      \A{key}[a-z]+ => TKN_IDENTIFIER;
+
+If more than one keyword are involved, e.g. 'key', 'password', and 'secret', 
+the identifier would have to look like
+
+      \A{key|password|secret}[a-z]+ => TKN_IDENTIFIER;
+    
+In the very large majority of cases greedy matching is a convienient
+blessing. Imagine the problem with identifiers, i.e. any chain of alphabetic
+characters, and a keyword '`for`'.  If there was no greedy matching (longest
+match), then any lexeme starting with `for`, such as `forest`,  could not 
+properly be detected, since the first three letters would result in the 
+`for`-keyword token.
 
 Another pitfall is related to character codes that the lexical analyser uses to
 indicate the *buffer-limit*. The values for those codes are chosen to be out of
