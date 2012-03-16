@@ -1,3 +1,4 @@
+from   quex.engine.analyzer.track_analysis     import AcceptInfo
 import quex.engine.analyzer.state.entry_action as entry_action
 from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction, DoorID
 from   quex.blackboard          import \
@@ -109,6 +110,7 @@ class Entry(object):
         # Construct the Accepter from PathTraceList
         accepter = entry_action.Accepter()
         for path_trace in PathTraceList:
+            isinstance(path_trace, AcceptInfo)
             accepter.add(path_trace.pre_context_id, path_trace.pattern_id)
 
         self.__action_db[TransitionID(self.__state_index, FromStateIndex)].command_list.accepter = accepter
