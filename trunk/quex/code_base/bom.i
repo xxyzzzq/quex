@@ -34,15 +34,14 @@ QUEX_NAME(bom_snap)(InputHandleT* InputHandle)
     size_t         byte_n    = 0;
     size_t         read_n    = 0;
     /**/
-    STREAM_POSITION_TYPE(InputHandleT)   p0   = (STREAM_POSITION_TYPE(InputHandleT))-1;
-    STREAM_POSITION_TYPE(InputHandleT)   pEnd = (STREAM_POSITION_TYPE(InputHandleT))-1;
+    STREAM_POSITION_TYPE(InputHandleT)   p0 = (STREAM_POSITION_TYPE(InputHandleT))-1;
 
     p0     = (STREAM_POSITION_TYPE(InputHandleT))QUEX_INPUT_POLICY_TELL(InputHandle, InputHandleT);
     read_n = (size_t)QUEX_INPUT_POLICY_LOAD_BYTES(InputHandle, InputHandleT, buffer, 4);
     if( read_n == 0 ) {
         return QUEX_BOM_NONE;
     }
-    pEnd   = (STREAM_POSITION_TYPE(InputHandleT))QUEX_INPUT_POLICY_TELL(InputHandle, InputHandleT);
+    (void)(STREAM_POSITION_TYPE(InputHandleT))QUEX_INPUT_POLICY_TELL(InputHandle, InputHandleT);
 
     /* For non-existing bytes fill 0x77, because it does not occur
      * anywhere as a criteria, see 'switch' after that.             */

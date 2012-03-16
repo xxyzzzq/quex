@@ -181,8 +181,6 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void 
     QUEX_NAME(buffer_reload_backward)(QUEX_NAME(Buffer)* buffer)
     {
-        size_t                 LoadedCharacterN = 0;
-
         __quex_assert(buffer != 0x0);
         __quex_assert(buffer->filler != 0x0);
 
@@ -193,7 +191,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                              QUEX_NAME(Buffer_text_end)(buffer));
         }
 
-        LoadedCharacterN = QUEX_NAME(BufferFiller_load_backward)(buffer);
+        (void)QUEX_NAME(BufferFiller_load_backward)(buffer);
         
         /* Backward lexing happens in two cases:
          *

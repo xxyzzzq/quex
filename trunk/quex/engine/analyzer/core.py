@@ -289,7 +289,6 @@ class Analyzer:
             pre_context_id         = acceptance_trace.pre_context_id
             pattern_id             = acceptance_trace.pattern_id
 
-            entry = self.__state_db[accepting_state_index].entry
             # Find the first place on the path where the acceptance is restored
             # - starting from the accepting state.
             begin_i = path_since_positioning.index(accepting_state_index)
@@ -323,7 +322,7 @@ class Analyzer:
 
         # Postponed: Collected acceptances to be stored in the acceptance states itself.
         #
-        # It is possible that deferred acceptance are alread present in the doors. But, 
+        # It is possible that a deferred acceptance are already present in the doors. But, 
         # since they all come from trailing acceptances, we know that the acceptance of
         # this state preceeds (longest match). Thus, all the acceptances we add here 
         # preceed the already mentioned ones. Since they all trigger on lexemes of the
