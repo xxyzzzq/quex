@@ -1,4 +1,4 @@
-<test-database execution-time-sec="163.60" date="Sat Mar 17 00:22:53 2012">
+<test-database execution-time-sec="164.01" date="Sat Mar 17 00:32:37 2012">
     <last-used-diff-display-program name=""/>
     <test title="Makefile Differences to C++ Version" time-sum-sec="0.13"> 
         <application file-name="makefile-diff.sh" info-request-time="1318614211L" vanished="False"/>
@@ -55,12 +55,12 @@
                <choice name="BPC=wchar_t" result="OK" time_sec="1.82" crc="766281751"/>
             </choice-list>
         </test>
-        <test title="Byte Order Mark (BOM) Cutting" time-sum-sec="6.57"> 
+        <test title="Byte Order Mark (BOM) Cutting" time-sum-sec="6.98"> 
             <application file-name="003-bom.sh" info-request-time="1318614211L" vanished="False"/>
             <choice-list number="3" same_result="False">
-               <choice name="Without" result="FAIL" time_sec="3.04" crc="1853132003"/>
-               <choice name="UTF8-BOM" result="FAIL" time_sec="1.85" crc="-478996158"/>
-               <choice name="UTF16BE-BOM" result="FAIL" time_sec="1.68" crc="591404884"/>
+               <choice name="Without" result="OK" time_sec="3.42" crc="1853132003"/>
+               <choice name="UTF8-BOM" result="OK" time_sec="1.87" crc="-478996158"/>
+               <choice name="UTF16BE-BOM" result="OK" time_sec="1.69" crc="591404884"/>
             </choice-list>
         </test>
         <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="10.24"> 
