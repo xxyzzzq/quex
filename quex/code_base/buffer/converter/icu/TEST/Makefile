@@ -28,8 +28,7 @@ DEFS = -DQUEX_OPTION_ASSERTS \
        -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 \
 
 # Use 'icu-config --ldflags' in order to get the linker flags
-ICU_FLAGS := $(shell icu-config --ldflags) 
-CFLAGS    := $(shell icu-config --cppflags) 
+ICU_FLAGS := $(shell icu-config --ldflags --cppflags) 
 
 all: $(FILES)
 
@@ -38,7 +37,6 @@ CC = \
 		-ggdb  \
 		-Wall \
         -Werror-implicit-function-declaration \
-		$(ICU_FLAGS) \
 		-DQUEX_OPTION_CONVERTER_ICU
 
 HEADER        = \<quex\/code_base\/buffer\/converter\/icu\/Converter_ICU\.i\>
@@ -63,19 +61,23 @@ hwut-end: clean
 
 %.exe: %.cpp $(QUEX_CORE)
 	$(CC) $< -o $@ \
-        -DQUEX_TYPE_CHARACTER=uint32_t 
+        -DQUEX_TYPE_CHARACTER=uint32_t \
+		$(ICU_FLAGS) 
 
 %-16.exe: %.cpp $(QUEX_CORE)
 	$(CC) $< -o $@ \
-        -DQUEX_TYPE_CHARACTER=uint16_t 
+        -DQUEX_TYPE_CHARACTER=uint16_t \
+		$(ICU_FLAGS) 
 
 %-32.exe: %.cpp $(QUEX_CORE)
 	$(CC) $< -o $@ \
-        -DQUEX_TYPE_CHARACTER=uint32_t 
+        -DQUEX_TYPE_CHARACTER=uint32_t \
+		$(ICU_FLAGS) 
 
 seek_character_index-zikzak.exe: seek_character_index-zikzak.cpp $(QUEX_CORE)
 	$(CC) $< -o $@ \
-		-DQUEX_TYPE_CHARACTER=uint16_t 
+		-DQUEX_TYPE_CHARACTER=uint16_t \
+		$(ICU_FLAGS) 
 
 clean:
 	rm -f $(FILES)

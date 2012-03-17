@@ -9,8 +9,9 @@ __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$ --> _
 <<No INCLUDE_GUARD directive found>>                                       --> __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__UNDEFINE
 <<No INCLUDE_GUARD directive found>>                                       --> __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__VALIDATION
 <<No INCLUDE_GUARD directive found>>                                       --> __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING_UNDEF_I
-__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__$$CODEC$$__                        --> __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TXT_CODEC
-__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__$$CODEC$$_I                        --> __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TXT_CODEC_I
+<<No INCLUDE_GUARD directive found>>                                       --> __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__README_TXT
+__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__$$CODEC$$__                        --> __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TXT_FROM_CODEC_BUFFER
+__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__$$CODEC$$_I                        --> __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TXT_FROM_CODEC_BUFFER_I
 <<No INCLUDE_GUARD directive found>>                                       --> __QUEX_INCLUDE_GUARD__INCLUDE_GUARD_UNDEF
 <<No INCLUDE_GUARD directive found>>                                       --> __QUEX_INCLUDE_GUARD__TEMPORARY_MACROS_OFF
 <<No INCLUDE_GUARD directive found>>                                       --> __QUEX_INCLUDE_GUARD__TEMPORARY_MACROS_ON

@@ -3,7 +3,7 @@ token_type {
 #       include <iostream>
 #       include <string>
 
-$$INCLUDE_CONVERTER_DECLARATION$$
+$INCLUDE_CONVERTER_DECLARATION
    }
    standard {
         id            : uint32_t;
@@ -51,7 +51,7 @@ $$INCLUDE_CONVERTER_DECLARATION$$
         const std::string 
         pretty_char_text() const
         {
-            std::string             tmp = $$CONVERTER_STRING$$(self.text);
+            std::string             tmp = $CONVERTER_STRING(self.text);
             std::string::size_type  pos = 0;
 
             while( (pos = tmp.find("\n") ) != __string::npos ) tmp.replace(pos, (size_t)1, "\\n");
@@ -65,7 +65,7 @@ $$INCLUDE_CONVERTER_DECLARATION$$
         const std::wstring 
         pretty_wchar_text() const
         {
-            std::wstring             tmp = $$CONVERTER_WSTRING$$(self.text);
+            std::wstring             tmp = $CONVERTER_WSTRING(self.text);
             std::wstring::size_type  pos = 0;
 
             while( (pos = tmp.find(L"\n") ) != __string::npos ) tmp.replace(pos, (size_t)1, L"\\n");
@@ -125,7 +125,7 @@ $$INCLUDE_CONVERTER_DECLARATION$$
         { ostr << std::string(Tok); return ostr; }
         QUEX_NAMESPACE_TOKEN_CLOSE
 
-$$INCLUDE_CONVERTER_IMPLEMENTATION$$
+$INCLUDE_CONVERTER_IMPLEMENTATION
    }
 }
 

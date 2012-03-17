@@ -103,10 +103,10 @@ def _do(Descr):
              ])
 
     txt = blue_print(txt, [
-              ["$$INCLUDE_CONVERTER_DECLARATION$$",    converter_declaration_include],
-              ["$$INCLUDE_CONVERTER_IMPLEMENTATION$$", converter_implementation_include],
-              ["$$CONVERTER_STRING$$",                 converter_string],
-              ["$$CONVERTER_WSTRING$$",                converter_wstring],
+              ["$INCLUDE_CONVERTER_DECLARATION",    converter_declaration_include],
+              ["$INCLUDE_CONVERTER_IMPLEMENTATION", converter_implementation_include],
+              ["$CONVERTER_STRING",                 converter_string],
+              ["$CONVERTER_WSTRING",                converter_wstring],
              ])
 
     txt_i = blue_print(template_i_str, 
@@ -125,10 +125,10 @@ def _do(Descr):
                        ])
 
     txt_i = blue_print(txt_i, [
-              ["$$INCLUDE_CONVERTER_DECLARATION$$",    converter_declaration_include],
-              ["$$INCLUDE_CONVERTER_IMPLEMENTATION$$", converter_implementation_include],
-              ["$$CONVERTER_STRING$$",                 converter_string],
-              ["$$CONVERTER_WSTRING$$",                converter_wstring],
+              ["$INCLUDE_CONVERTER_DECLARATION",    converter_declaration_include],
+              ["$INCLUDE_CONVERTER_IMPLEMENTATION", converter_implementation_include],
+              ["$CONVERTER_STRING",                 converter_string],
+              ["$CONVERTER_WSTRING",                converter_wstring],
              ])
 
     # Return declaration and implementation as two strings
