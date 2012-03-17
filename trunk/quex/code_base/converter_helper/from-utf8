@@ -30,7 +30,6 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-#define __QUEX_CONVERTER_NAMESPACE quex
 #define __QUEX_FROM                utf8
 #define __QUEX_FROM_TYPE           uint8_t
 

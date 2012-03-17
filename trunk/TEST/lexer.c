@@ -54,7 +54,11 @@ main(int argc, char** argv)
 
         ++token_n;
         /* Check against 'termination'            */
+#   ifdef QUEX_OPTION_TOKEN_POLICY_SINGLE
+    } while( token_id != QUEX_TKN_TERMINATION );
+#   else
     } while( token_p->_id != QUEX_TKN_TERMINATION );
+#   endif
 
     printf("| [END] number of token = %i\n", token_n);
     printf("`------------------------------------------------------------------------------------\n");

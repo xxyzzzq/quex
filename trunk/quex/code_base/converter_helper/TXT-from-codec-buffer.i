@@ -35,7 +35,6 @@
 #define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__$$CODEC$$_I
 
 QUEX_NAMESPACE_MAIN_OPEN
-#define __QUEX_CONVERTER_NAMESPACE QUEX_NAMESPACE_MAIN
 
 QUEX_INLINE void
 QUEX_CONVERTER_CHAR_DEF($$CODEC$$, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
@@ -81,7 +80,6 @@ $$EPILOG$$
 #include <quex/code_base/converter_helper/generator/implementations.gi>
 
 QUEX_NAMESPACE_MAIN_CLOSE
-#undef __QUEX_CONVERTER_NAMESPACE 
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__$$CODEC$$_I */
 

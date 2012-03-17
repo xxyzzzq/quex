@@ -27,8 +27,6 @@
 #   error "__QUEX_TO must NOT be defined!"
 #elif   defined(__QUEX_TO_CODEC)
 #   error "__QUEX_TO_CODEC must NOT be defined!"
-#elif ! defined(__QUEX_CONVERTER_NAMESPACE)
-#    error "__QUEX_CONVERTER_NAMESPACE must be defined!"
 #endif
 
 QUEX_INLINE void
