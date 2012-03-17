@@ -1,6 +1,6 @@
 X = Simple
 
-LIB_CONV  = `icu-config --ldflags`
+LIB_CONV  = `icu-config --ldflags --cppflags`
 
 lex_iconv: 
 	@echo "Call to quex"
@@ -26,10 +26,10 @@ lex_icu:
 	@quex -i simple.qx -o $(X) -b 2 --icu 
 	@echo "Compiling"
 	g++ -I./ -I$(QUEX_PATH) \
-		$(LIB_CONV) \
 		$(X).cpp                      \
 		-Wall                         \
 		../lexer.cpp                  \
+		$(LIB_CONV)                   \
 		-ggdb                         \
 	   	-DQUEX_SETTING_BUFFER_SIZE=64 \
 		-DQUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE=64 \

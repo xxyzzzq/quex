@@ -49,7 +49,7 @@ class QuexSetup:
         else:                             return "%i bytes" % self.buffer_element_size
 
     def get_file_reference(self, FileName):
-        """When a source package is specified, then the must be given
+        """When a source package is specified, then it must be given
            with 'relative coordinates' to the source package directory.
            
            if 'SourcePackager':

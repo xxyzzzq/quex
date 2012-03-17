@@ -140,6 +140,7 @@ buffer_filler_icu = """
 """
 
 converter_helper = """
+/converter_helper/common.h
 /converter_helper/generator/declarations.g
 /converter_helper/generator/implementations.gi
 /converter_helper/generator/string-converter.gi
@@ -190,14 +191,14 @@ def do():
         else:
             txt += buffer_filler_plain
 
-    if Setup.converter_helper_required_f:
-        txt +=   converter_helper       \
-               + converter_helper_utf8  \
-               + converter_helper_utf16 \
-               + converter_helper_utf32 
+    # if Setup.converter_helper_required_f:
+    txt +=   converter_helper       \
+           + converter_helper_utf8  \
+           + converter_helper_utf16 \
+           + converter_helper_utf32 
 
-        if Setup.buffer_codec == "unicode": 
-            txt += converter_helper_unicode
+    # if Setup.buffer_codec == "unicode": 
+    txt += converter_helper_unicode
 
     if Setup.token_policy == "queue":
         txt += token_queue

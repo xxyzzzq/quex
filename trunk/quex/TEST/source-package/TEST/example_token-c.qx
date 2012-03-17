@@ -3,12 +3,6 @@ token_type {
        #include <stdio.h>
        #include <string.h>
 
-       #include <quex/code_base/definitions>
-       #include <quex/code_base/asserts>
-       #include <quex/code_base/compatibility/stdint.h>
-
-       extern QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject);
-
        extern const char* 
        QUEX_NAME_TOKEN(get_string)(const QUEX_TYPE_TOKEN*  me, 
                                    char*                   buffer, 
@@ -16,29 +10,17 @@ token_type {
 
        extern const char* 
        QUEX_NAME_TOKEN(pretty_char_text)(const QUEX_TYPE_TOKEN*  me, 
-                                        char*                   buffer, 
-                                        size_t                  BufferSize); 
+                                        char*                    buffer, 
+                                        size_t                   BufferSize); 
 
-       /* The following function converts the engine's codec to utf8. */
-       QUEX_NAMESPACE_MAIN_OPEN
-       QUEX_INLINE void
-       __QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC, char)(const QUEX_TYPE_CHARACTER**  Source, 
-                                                         const QUEX_TYPE_CHARACTER*   SourceEnd, 
-                                                         char**                       Drain, 
-                                                         const char*                  DrainEnd);
 #      if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
        extern const wchar_t* 
        QUEX_NAME_TOKEN(pretty_wchar_text)(const QUEX_TYPE_TOKEN*  me, 
                                           wchar_t*                buffer, 
                                           size_t                  BufferSize); 
-
-       QUEX_INLINE void
-       __QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC, wchar)(const QUEX_TYPE_CHARACTER**  Source, 
-                                                          const QUEX_TYPE_CHARACTER*   SourceEnd, 
-                                                          wchar_t**                    Drain, 
-                                                          const wchar_t*               DrainEnd);
 #      endif
-       QUEX_NAMESPACE_MAIN_CLOSE
+
+$INCLUDE_CONVERTER_DECLARATION
    }
    standard {
         id            : uint32_t;
@@ -80,12 +62,8 @@ token_type {
         }
         self.number = Other.number;
     #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
-    #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-            self._line_n   = Other._line_n;
-    #       endif
-    #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-            self._column_n = Other._column_n;
-    #       endif
+        __QUEX_IF_COUNT_LINES(self._line_n     = Other._line_n);
+        __QUEX_IF_COUNT_COLUMNS(self._column_n = Other._column_n);
     #   endif
    }
 
@@ -107,7 +85,6 @@ token_type {
             printf("'\n");
         }
 #       endif
-
 
         if( self.text != LexemeNull ) {
             QUEX_NAME(MemoryManager_Text_free)((QUEX_TYPE_CHARACTER*)self.text);
@@ -201,22 +178,9 @@ token_type {
             const QUEX_TYPE_CHARACTER*  source    = me->text;
             char*                       drain     = buffer;
             const char*                 DrainEnd  = buffer + BufferSize;
-#           if defined(__QUEX_OPTION_CONVERTER_HELPER)
-            const QUEX_TYPE_CHARACTER*  SourceEnd = me->text + (size_t)(QUEX_NAME(strlen)(source)) + 1;
 
-            __QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC, char)(&source, SourceEnd, &drain, DrainEnd);
-#           else
-            (void)me;
-            /* Converter helpers are only disabled automatically, if ASCII (Unicode in 0-FF)
-             * is used and the character size is 1.                                          */
-            __quex_assert(sizeof(QUEX_TYPE_CHARACTER) == 1);
-            while( *source && drain != DrainEnd ) {
-                *drain++ = (char)(*source++);
-            }
-            if( drain != DrainEnd ) {
-                *drain = '\0';
-            } 
-#           endif
+            const QUEX_TYPE_CHARACTER*  SourceEnd = me->text + (size_t)(QUEX_NAME(strlen)(source)) + 1;
+            $CONVERTER_STRING(&source, SourceEnd, &drain, DrainEnd);
             return buffer;
         }
 
@@ -229,25 +193,14 @@ token_type {
             wchar_t*                    drain     = buffer;
             const wchar_t*              DrainEnd  = buffer + (ptrdiff_t)BufferSize;
             const QUEX_TYPE_CHARACTER*  source    = me->text;
-#           if defined(__QUEX_OPTION_CONVERTER_HELPER)
             const QUEX_TYPE_CHARACTER*  SourceEnd = me->text + (ptrdiff_t)(QUEX_NAME(strlen)(source)) + 1;
 
-            __QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC, wchar)(&source, SourceEnd, &drain, DrainEnd);
-#           else
-            /* Converter helpers are only disabled automatically, if ASCII (Unicode in 0-FF)
-             * is used and the character size is 1.                                          */
-            __quex_assert(sizeof(QUEX_TYPE_CHARACTER) == 1);
-
-            while( *source && drain != DrainEnd ) {
-                *drain++ = (wchar_t)(*source++);
-            }
-            if( drain != DrainEnd ) {
-                *drain = L'\0';
-            } 
-#           endif
+            $CONVERTER_WSTRING(&source, SourceEnd, &drain, DrainEnd);
             return buffer;
         }
 #       endif
+
+$INCLUDE_CONVERTER_IMPLEMENTATION
    }
 }
 

@@ -36,16 +36,10 @@
  *
  * 2010 (C) Frank-Rene Schaefer; 
  * ABSOLUTELY NO WARRANTY                                                    */
-#ifndef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UNICODE_BUFFER_I
-#define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UNICODE_BUFFER_I
+#ifndef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__FROM_UNICODE_BUFFER_I
+#define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__FROM_UNICODE_BUFFER_I
 
-#include <quex/code_base/definitions>
-#include <quex/code_base/asserts>
-#include <quex/code_base/compatibility/stdint.h>
-
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-#   include <string>
-#endif
+#include <quex/code_base/converter_helper/from-unicode-buffer>
 
 /* (1) Access the implementation of the converter that will implement
  *     the unicode conversion.                                               */
@@ -108,4 +102,4 @@ QUEX_CONVERTER_CHAR_DEF(unicode, utf32)(const QUEX_TYPE_CHARACTER**  input_pp,
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UNICODE_BUFFER_I */
+#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__FROM_UNICODE_BUFFER_I */

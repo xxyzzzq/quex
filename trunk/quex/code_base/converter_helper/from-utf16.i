@@ -33,8 +33,10 @@
  *
  * 2010 (C) Frank-Rene Schaefer; 
  * ABSOLUTELY NO WARRANTY                                                    */
-#ifndef __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16_I
-#define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16_I
+#ifndef __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__FROM_UTF16_I
+#define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__FROM_UTF16_I
+
+#include <quex/code_base/converter_helper/from-utf16>
 
 #define __QUEX_FROM       utf16
 #define __QUEX_FROM_TYPE  uint16_t
@@ -55,4 +57,4 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16_I */
+#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__FROM_UTF16_I */
