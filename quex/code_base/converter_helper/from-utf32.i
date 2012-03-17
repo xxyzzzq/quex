@@ -44,7 +44,6 @@
 #include <quex/code_base/converter_helper/character-converter/from-utf32.i>
 
 QUEX_NAMESPACE_MAIN_OPEN
-#define __QUEX_CONVERTER_NAMESPACE quex
 
 /* (1b) Derive converters to char and wchar_t from the given set 
  *      of converters. (Generator uses __QUEX_FROM and QUEX_FROM_TYPE)      */
@@ -55,6 +54,5 @@ QUEX_NAMESPACE_MAIN_OPEN
 #include <quex/code_base/converter_helper/generator/implementations.gi>
 
 QUEX_NAMESPACE_MAIN_CLOSE
-#undef __QUEX_CONVERTER_NAMESPACE
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF32_I */

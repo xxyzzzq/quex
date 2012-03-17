@@ -20,8 +20,6 @@
 #   error "__QUEX_FROM must be defined!"
 #elif ! defined(__QUEX_FROM_TYPE)
 #   error "__QUEX_FROM_TYPE must be defined!"
-#elif ! defined(__QUEX_CONVERTER_NAMESPACE)
-#    error "__QUEX_CONVERTER_NAMESPACE must be defined!"
 #endif
 
 /* (1) Character converters */
@@ -90,5 +88,4 @@ QUEX_CONVERTER_STRING_DEF(__QUEX_FROM, wchar)(const __QUEX_FROM_TYPE**  source_p
 
 #undef __QUEX_FROM      
 #undef __QUEX_FROM_TYPE 
-#undef __QUEX_CONVERTER_NAMESPACE 
 

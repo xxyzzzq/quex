@@ -22,9 +22,7 @@ main(int argc, char** argv)
     for(int i=Start; i < Start + CharacterN; ++i) source[i-Start] = i;
 
     /* Convert the whole array */
-#   define __QUEX_CONVERTER_NAMESPACE QUEX_NAMESPACE_MAIN
     QUEX_CONVERTER_STRING(__QUEX_CODEC,utf8)(&source_p, source_p + CharacterN, &drain_p, drain_p + 4095);
-#   undef __QUEX_CONVERTER_NAMESPACE
 
     const int    Size = (int)(drain_p - (uint8_t*)drain);
 

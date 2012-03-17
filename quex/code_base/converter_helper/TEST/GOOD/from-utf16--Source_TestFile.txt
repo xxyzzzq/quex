@@ -1,21 +1,21 @@
 to utf8____________________________________________________
 
 with pointers:
-    GOOD: Checked 196 elements.
+    GOOD: Checked 197 elements.
 with basic_string<uint16_t>:
     GOOD: Checked 196 elements.
 
 to utf16____________________________________________________
 
 with pointers:
-    GOOD: Checked 156 elements.
+    GOOD: Checked 157 elements.
 with basic_string<uint16_t>:
     GOOD: Checked 156 elements.
 
 to utf32____________________________________________________
 
 with pointers:
-    GOOD: Checked 146 elements.
+    GOOD: Checked 147 elements.
 with basic_string<uint16_t>:
     GOOD: Checked 146 elements.
 

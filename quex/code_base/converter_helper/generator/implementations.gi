@@ -22,8 +22,6 @@
 #    error "__QUEX_FROM must be defined!"
 #elif ! defined(__QUEX_FROM_TYPE)
 #    error "__QUEX_FROM_TYPE must be defined!"
-#elif ! defined(__QUEX_CONVERTER_NAMESPACE)
-#    error "__QUEX_CONVERTER_NAMESPACE must be defined!"
 #endif
 
 #define  __QUEX_TO         utf8
@@ -49,5 +47,4 @@
 
 #undef __QUEX_FROM
 #undef __QUEX_FROM_TYPE
-#undef __QUEX_CONVERTER_NAMESPACE 
 
