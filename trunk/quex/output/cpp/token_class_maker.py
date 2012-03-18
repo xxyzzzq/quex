@@ -65,15 +65,15 @@ def _do(Descr):
     if Setup.buffer_codec in ["utf8", "utf16", "utf32"]:
         converter_declaration_include    = "#include <quex/code_base/converter_helper/from-%s>"      % Setup.buffer_codec
         converter_implementation_include = "#include <quex/code_base/converter_helper/from-%s.i>"    % Setup.buffer_codec
-        converter_string                 = "____QUEX_CONVERTER_STRING(QUEX_NAMESPACE_MAIN,%s,char)"  % Setup.buffer_codec
-        converter_wstring                = "____QUEX_CONVERTER_STRING(QUEX_NAMESPACE_MAIN,%s,wchar)" % Setup.buffer_codec
+        converter_string                 = "__QUEX_CONVERTER_STRING(%s,char)"  % Setup.buffer_codec
+        converter_wstring                = "__QUEX_CONVERTER_STRING(%s,wchar)" % Setup.buffer_codec
 
     elif Setup.buffer_codec == "unicode":
         if Setup.converter_helper_required_f:
             converter_declaration_include    = "#include <quex/code_base/converter_helper/from-unicode-buffer>"
             converter_implementation_include = "#include <quex/code_base/converter_helper/from-unicode-buffer.i>"
-            converter_string                 = "____QUEX_CONVERTER_STRING(QUEX_NAMESPACE_MAIN,unicode,char)"
-            converter_wstring                = "____QUEX_CONVERTER_STRING(QUEX_NAMESPACE_MAIN,unicode,wchar)"
+            converter_string                 = "__QUEX_CONVERTER_STRING(unicode,char)"
+            converter_wstring                = "__QUEX_CONVERTER_STRING(unicode,wchar)"
         else:
             converter_declaration_include    = "#include <quex/code_base/converter_helper/identity>"
             converter_implementation_include = "#include <quex/code_base/converter_helper/identity.i>"
@@ -85,8 +85,8 @@ def _do(Descr):
         codec_header_i = Setup.get_file_reference(Setup.output_buffer_codec_header_i)
         converter_declaration_include    = "#include \"%s\"" % codec_header
         converter_implementation_include = "#include \"%s\"" % codec_header_i
-        converter_string                 = "____QUEX_CONVERTER_STRING(QUEX_NAMESPACE_MAIN,%s,char)"  % Setup.buffer_codec
-        converter_wstring                = "____QUEX_CONVERTER_STRING(QUEX_NAMESPACE_MAIN,%s,wchar)" % Setup.buffer_codec
+        converter_string                 = "__QUEX_CONVERTER_STRING(%s,char)"  % Setup.buffer_codec
+        converter_wstring                = "__QUEX_CONVERTER_STRING(%s,wchar)" % Setup.buffer_codec
     
     txt = blue_print(template_str,
              [

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.28" date="Sun Mar 18 22:56:42 2012">
+<test-database execution-time-sec="0.29" date="Sun Mar 18 23:21:07 2012">
     <last-used-diff-display-program name=""/>
     <group name="Load Backward">
         <test title="Character=4 Byte(s), Fallback=0" make-dependent="True" time-sum-sec="0.01"> 
@@ -118,7 +118,7 @@
                <choice name="5" result="OK" time_sec="0.01" crc="1018040844"/>
             </choice-list>
         </test>
-        <test title="Backward (BPC=4)" make-dependent="True" time-sum-sec="0.03"> 
+        <test title="Backward (BPC=4)" make-dependent="True" time-sum-sec="0.04"> 
             <application file-name="Buffer_move_backward-4-fb0.exe" info-request-time="1332107798L" vanished="False"/>
             <make-procedure success="True" time_sec="0.928744"/>
             <choice-list number="5" same_result="False">
@@ -129,7 +129,7 @@
                <choice name="5" result="OK" time_sec="0.01" crc="1635091244"/>
             </choice-list>
         </test>
-        <test title="Backward (BPC=1)" make-dependent="True" time-sum-sec="0.03"> 
+        <test title="Backward (BPC=1)" make-dependent="True" time-sum-sec="0.04"> 
             <application file-name="Buffer_move_backward-1-fb1.exe" info-request-time="1332107802L" vanished="False"/>
             <make-procedure success="True" time_sec="1.072512"/>
             <choice-list number="5" same_result="False">
@@ -151,7 +151,7 @@
                <choice name="5" result="OK" time_sec="0.01" crc="1635091244"/>
             </choice-list>
         </test>
-        <test title="Forward (BPC=4)" make-dependent="True" time-sum-sec="0.03"> 
+        <test title="Forward (BPC=4)" make-dependent="True" time-sum-sec="0.02"> 
             <application file-name="Buffer_move_forward-4-fb0.exe" info-request-time="1332107799L" vanished="False"/>
             <make-procedure success="True" time_sec="0.979570"/>
             <choice-list number="5" same_result="False">
