@@ -32,6 +32,7 @@ def test(CodecName):
     os.remove("./converter-tester")
 
 quex.blackboard.setup.language_db = languages.db["C"]
+quex.blackboard.setup.output_buffer_codec_header = "converter-tester.h"
 
 test(sys.argv[1])
 

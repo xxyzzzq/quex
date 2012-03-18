@@ -43,10 +43,12 @@ def _do(UnicodeTrafoInfo, CodecName):
     FileName = os.path.normpath(  QUEX_PATH
                                 + Setup.language_db["$code_base"] 
                                 + "/converter_helper/TXT-from-codec-buffer.i")
+    codec_header = Setup.get_file_reference(Setup.output_buffer_codec_header)
+
     txt_i = blue_print(get_file_content_or_die(FileName), 
                        [["$$CODEC$$",       codec_name],
                         ["$$EPILOG$$",      utf8_epilog],
-                        ["$$CODEC_HEADER$$", Setup.get_file_reference(Setup.output_buffer_codec_header)],
+                        ["$$CODEC_HEADER$$", codec_header],
                         ["$$BODY_UTF8$$",   utf8_function_body],
                         ["$$BODY_UTF16$$",  utf16_function_body],
                         ["$$BODY_UTF32$$",  utf32_function_body]])
