@@ -4,7 +4,7 @@
 > #define __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION____QUEX____TESTANALYZER
 < #define QUEX_SETTING_VERSION           "$$QUEX_VERSION$$"
 < #define QUEX_SETTING_ANALYZER_VERSION  "$$USER_LEXER_VERSION$$"
-> #define QUEX_SETTING_VERSION           "0.59.9-unstable"
+> #define QUEX_SETTING_VERSION           "0.61.2"
 > #define QUEX_SETTING_ANALYZER_VERSION  "0.0.0-pre-release"
 < $$SWITCH$$ __QUEX_OPTION_PLAIN_C
 > /* #define __QUEX_OPTION_PLAIN_C */
@@ -75,13 +75,19 @@
 < $$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$
 > /* #   define QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  */
 < $$SWITCH$$ __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-> #define    __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+> /* #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION */
 < $$SWITCH$$ __QUEX_OPTION_CONVERTER
 > /* #define __QUEX_OPTION_CONVERTER */
 < $$SWITCH$$ __QUEX_OPTION_CONVERTER_HELPER
 > /* #define __QUEX_OPTION_CONVERTER_HELPER */
-< #   define QUEX_TYPE_CHARACTER       $$QUEX_TYPE_CHARACTER$$
-> #   define QUEX_TYPE_CHARACTER       uint8_t
+< #   define QUEX_TYPE_CHARACTER          $$QUEX_TYPE_CHARACTER$$
+> #   define QUEX_TYPE_CHARACTER          uint8_t
+< #   define QUEX_SETTING_CHARACTER_SIZE  $$QUEX_SETTING_CHARACTER_SIZE$$
+> #   define QUEX_SETTING_CHARACTER_SIZE  1
+< #   define QUEX_SETTING_CHARACTER_CODEC $$QUEX_SETTING_CHARACTER_CODEC$$
+> #   define QUEX_SETTING_CHARACTER_CODEC unicode
+< #   define QUEX_NAMESPACE_MAIN         $$LEXER_CLASS_NAME_SAFE$$
+> #   define QUEX_NAMESPACE_MAIN         TestAnalyzer
 < #   define QUEX_NAME(NAME)             $$LEXER_CLASS_NAME_SAFE$$_ ## NAME
 < #   define QUEX_NAME_TOKEN(NAME)       $$TOKEN_CLASS_NAME_SAFE$$_ ## NAME
 > #   define QUEX_NAME(NAME)             TestAnalyzer_ ## NAME
@@ -110,28 +116,26 @@
 > #   define QUEX_NAME(NAME)             TestAnalyzer_ ## NAME
 > #   define QUEX_NAME_TOKEN(NAME)       Token_ ## NAME
 > #   define QUEX_MEMBER(NAME)           TestAnalyzer::NAME                
-< #   define QUEX_SETTING_CHARACTER_CODEC          $$CODEC_NAME$$
-> #   define QUEX_SETTING_CHARACTER_CODEC          unicode
-< #   define QUEX_TYPE_ANALYZER                struct $$LEXER_CLASS_NAME_SAFE$$_tag
-< #   define QUEX_TYPE0_ANALYZER               struct $$LEXER_CLASS_NAME_SAFE$$_tag
-< #   define QUEX_TYPE_DERIVED_ANALYZER        struct $$LEXER_CLASS_NAME_SAFE$$_tag
-> #   define QUEX_TYPE_ANALYZER                struct TestAnalyzer_tag
-> #   define QUEX_TYPE0_ANALYZER               struct TestAnalyzer_tag
-> #   define QUEX_TYPE_DERIVED_ANALYZER        struct TestAnalyzer_tag
-< #   define QUEX_TYPE_TOKEN                   struct $$TOKEN_CLASS_NAME_SAFE$$_tag
-< #   define QUEX_TYPE0_TOKEN                  struct $$TOKEN_CLASS_NAME_SAFE$$_tag
-> #   define QUEX_TYPE_TOKEN                   struct quex_Token_tag
-> #   define QUEX_TYPE0_TOKEN                  struct quex_Token_tag
-< #   define QUEX_TYPE_ANALYZER                $$NAMESPACE_MAIN$$::$$LEXER_CLASS_NAME$$
-< #   define QUEX_TYPE0_ANALYZER               $$LEXER_CLASS_NAME$$
-< #   define QUEX_TYPE_DERIVED_ANALYZER        $$LEXER_DERIVED_CLASS_NAME$$
-> #   define QUEX_TYPE_ANALYZER                ::quex::TestAnalyzer
-> #   define QUEX_TYPE0_ANALYZER               TestAnalyzer
-> #   define QUEX_TYPE_DERIVED_ANALYZER        
-< #   define QUEX_TYPE_TOKEN                   $$NAMESPACE_TOKEN$$::$$TOKEN_CLASS$$
-< #   define QUEX_TYPE0_TOKEN                  $$TOKEN_CLASS$$
-> #   define QUEX_TYPE_TOKEN                   ::quex::Token
-> #   define QUEX_TYPE0_TOKEN                  Token
+< #   define QUEX_TYPE_ANALYZER          $$NAMESPACE_MAIN$$::$$LEXER_CLASS_NAME$$
+< #   define QUEX_TYPE0_ANALYZER         $$LEXER_CLASS_NAME$$
+< #   define QUEX_TYPE_DERIVED_ANALYZER  $$LEXER_DERIVED_CLASS_NAME$$
+> #   define QUEX_TYPE_ANALYZER          ::quex::TestAnalyzer
+> #   define QUEX_TYPE0_ANALYZER         TestAnalyzer
+> #   define QUEX_TYPE_DERIVED_ANALYZER  TestAnalyzer
+< #   define QUEX_TYPE_TOKEN             $$NAMESPACE_TOKEN$$::$$TOKEN_CLASS$$
+< #   define QUEX_TYPE0_TOKEN            $$TOKEN_CLASS$$
+> #   define QUEX_TYPE_TOKEN             ::quex::Token
+> #   define QUEX_TYPE0_TOKEN            Token
+< #   define QUEX_TYPE_ANALYZER          struct $$LEXER_CLASS_NAME_SAFE$$_tag
+< #   define QUEX_TYPE0_ANALYZER         struct $$LEXER_CLASS_NAME_SAFE$$_tag
+< #   define QUEX_TYPE_DERIVED_ANALYZER  struct $$LEXER_CLASS_NAME_SAFE$$_tag
+> #   define QUEX_TYPE_ANALYZER          struct TestAnalyzer_tag
+> #   define QUEX_TYPE0_ANALYZER         struct TestAnalyzer_tag
+> #   define QUEX_TYPE_DERIVED_ANALYZER  struct TestAnalyzer_tag
+< #   define QUEX_TYPE_TOKEN             struct $$TOKEN_CLASS_NAME_SAFE$$_tag
+< #   define QUEX_TYPE0_TOKEN            struct $$TOKEN_CLASS_NAME_SAFE$$_tag
+> #   define QUEX_TYPE_TOKEN             struct quex_Token_tag
+> #   define QUEX_TYPE0_TOKEN            struct quex_Token_tag
 < #   define QUEX_TYPE_TOKEN_ID        $$TOKEN_ID_TYPE$$
 > #   define QUEX_TYPE_TOKEN_ID        uint32_t
 < #   define QUEX_TYPE_TOKEN_LINE_N    $$TOKEN_LINE_N_TYPE$$

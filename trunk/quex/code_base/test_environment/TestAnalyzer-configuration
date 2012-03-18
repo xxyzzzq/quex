@@ -24,7 +24,7 @@
 #endif
 
 #define QUEX_SETTING_VERSION           "0.61.2"
-#define QUEX_SETTING_BUILD_DATE        "Sun Mar 11 21:41:33 2012"
+#define QUEX_SETTING_BUILD_DATE        "Sun Mar 18 06:44:05 2012"
 #define QUEX_SETTING_ANALYZER_VERSION  "0.0.0-pre-release"
 
 #ifndef    __QUEX_OPTION_PLAIN_C
@@ -272,9 +272,9 @@
 #   define QUEX_TYPE_CHARACTER          uint8_t
 #endif 
 #ifndef    QUEX_SETTING_CHARACTER_SIZE
-    /* Size of a QUEX_TYPE_CHARACTER in bytes. Try to provide a number rather
-     * than sizeof(QUEX_TYPE_CHARACTER), so that pre-processors can work
-     * with the value.                                                                     */
+    /* Size of a QUEX_TYPE_CHARACTER in bytes. A numeric value is required here!
+     * '-1' stands for 'Cannot be determined at code generation time'. In this case,
+     * it must be relied upon 'sizeof(QUEX_TYPE_CHARACTER)'.                                */
 #   define QUEX_SETTING_CHARACTER_SIZE  1
 #endif
 #ifndef    QUEX_SETTING_CHARACTER_CODEC   
@@ -286,7 +286,7 @@
 #endif
 
 #if defined(__QUEX_OPTION_PLAIN_C)
-#   define QUEX_NAMESPACE_MAIN        
+#   define QUEX_NAMESPACE_MAIN         TestAnalyzer
 #   define QUEX_NAMESPACE_MAIN_OPEN   
 #   define QUEX_NAMESPACE_MAIN_CLOSE  
 #   define QUEX_NAMESPACE_TOKEN   
@@ -315,24 +315,24 @@
 
 /* QUEX_TYPE_X  --> Type of X in global namespace 
  * QUEX_TYPE0_X --> Type of X in local namespace (namespace omitted) */
-#ifdef __QUEX_OPTION_PLAIN_C
-/* In 'C' there are no namespaces, so namespaces are coded directly
- * into the type name. Both, global and local names are equal.       */
-#   define QUEX_TYPE_ANALYZER                struct TestAnalyzer_tag
-#   define QUEX_TYPE0_ANALYZER               struct TestAnalyzer_tag
-#   define QUEX_TYPE_DERIVED_ANALYZER        struct TestAnalyzer_tag
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+    /* Add namespaces for the global names of the classes of analyzer
+     * and token.                                                        */
+#   define QUEX_TYPE_ANALYZER          ::quex::TestAnalyzer
+#   define QUEX_TYPE0_ANALYZER         TestAnalyzer
+#   define QUEX_TYPE_DERIVED_ANALYZER  TestAnalyzer
 
-#   define QUEX_TYPE_TOKEN                   struct quex_Token_tag
-#   define QUEX_TYPE0_TOKEN                  struct quex_Token_tag
+#   define QUEX_TYPE_TOKEN             ::quex::Token
+#   define QUEX_TYPE0_TOKEN            Token
 #else
-/* Add namespaces for the global names of the classes of analyzer
- * and token.                                                        */
-#   define QUEX_TYPE_ANALYZER                ::quex::TestAnalyzer
-#   define QUEX_TYPE0_ANALYZER               TestAnalyzer
-#   define QUEX_TYPE_DERIVED_ANALYZER        TestAnalyzer
+    /* In 'C' there are no namespaces, so namespaces are coded directly
+     * into the type name. Both, global and local names are equal.       */
+#   define QUEX_TYPE_ANALYZER          struct TestAnalyzer_tag
+#   define QUEX_TYPE0_ANALYZER         struct TestAnalyzer_tag
+#   define QUEX_TYPE_DERIVED_ANALYZER  struct TestAnalyzer_tag
 
-#   define QUEX_TYPE_TOKEN                   ::quex::Token
-#   define QUEX_TYPE0_TOKEN                  Token
+#   define QUEX_TYPE_TOKEN             struct quex_Token_tag
+#   define QUEX_TYPE0_TOKEN            struct quex_Token_tag
 #endif
 
 #ifndef    QUEX_TYPE_TOKEN_ID
