@@ -111,11 +111,20 @@ def do(argv):
                 setup.__dict__[variable_name] = value
 
     # (*) Classes and their namespace
+    if setup.analyzer_class_name.find("::") == -1:
+        if setup.language.upper() == "C++":
+            setup.analyzer_class_name = "quex::%s" % setup.analyzer_class_name
+        else:
+            setup.analyzer_class_name = "%s" % setup.analyzer_class_name
     setup.analyzer_class_name, \
     setup.analyzer_name_space, \
     setup.analyzer_name_safe   = \
          read_namespaced_name(setup.analyzer_class_name, 
                               "analyzer engine (options -o, --engine, --analyzer-class)")
+
+    ##print "## setup.analyzer_class_name:", setup.analyzer_class_name
+    ##print "## setup.analyzer_name_space:", setup.analyzer_name_space
+    ##print "## setup.analyzer_name_safe: ", setup.analyzer_name_safe   
 
     setup.analyzer_derived_class_name,       \
     setup.analyzer_derived_class_name_space, \
@@ -124,11 +133,10 @@ def do(argv):
                               "derived analyzer class (options --derived-class, --dc)",
                               AllowEmptyF=True)
 
-    if len(setup.analyzer_name_space) == 0:
-        setup.analyzer_name_space = ["quex"]
-
-    if setup.token_class_name == "":
-        setup.token_class_name = "%s::Token" % reduce(lambda a, b: a + "::" + b, setup.analyzer_name_space)
+    if setup.token_class_name.find("::") == -1:
+        # By default, setup the token in the analyzer's namespace
+        analyzer_name_space = reduce(lambda x, y: "%s::%s" % (x, y), setup.analyzer_name_space)
+        setup.token_class_name = "%s::%s" % (analyzer_name_space, setup.token_class_name)
 
     # Token classes and derived classes have the freedom not to open a namespace,
     # thus no check 'if namespace == empty'.
@@ -137,6 +145,13 @@ def do(argv):
     setup.token_class_name_safe = \
          read_namespaced_name(setup.token_class_name, 
                               "token class (options --token-class, --tc)")
+
+    ##print "##setup.token_class_name:",       setup.token_class_name
+    ##print "##setup.token_class_name_space:", setup.token_class_name_space
+    ##print "##setup.token_class_name_safe:",  setup.token_class_name_safe 
+
+    if len(setup.token_class_name_space) == 0 and not analyzer_in_root_namespace_f:
+        setup.token_class_name_space = setup.analyzer_name_space
 
     if setup.token_class_file != "":
         blackboard.token_type_definition = \

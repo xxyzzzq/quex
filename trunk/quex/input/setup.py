@@ -140,7 +140,7 @@ SETUP_INFO = {
     "include_stack_support_f":        [["--no-include-stack", "--nois"],       SetupParTypes.NEGATED_FLAG],
     "input_mode_files":               [["-i", "--mode-files"],                 SetupParTypes.LIST],
     "token_class_file":               [["--token-class-file"],                 ""],
-    "token_class_name":               [["--token-class", "--tc"],              ""],
+    "token_class_name":               [["--token-class", "--tc"],              "quex::Token"],
     "token_class_take_text_check_f":  [["--token-type-no-take_text-check",     "--ttnttc"], SetupParTypes.NEGATED_FLAG], 
     "token_id_foreign_definition_file":  [["--foreign-token-id-file"],         ""],  
     "token_id_counter_offset":        [["--token-id-offset"],                  "10000"],
