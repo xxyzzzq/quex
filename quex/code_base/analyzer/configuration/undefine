@@ -315,3 +315,90 @@
 #ifdef    __QUEX_OPTION_CONVERTER_HELPER
 #   undef __QUEX_OPTION_CONVERTER_HELPER
 #endif
+#ifdef    QUEX_SETTING_CHARACTER_SIZE
+#   undef QUEX_SETTING_CHARACTER_SIZE
+#endif
+#ifdef    QUEX_FUNCTION
+#   undef QUEX_FUNCTION
+#endif
+#ifdef    QUEX_FUNCTION0
+#   undef QUEX_FUNCTION0
+#endif
+#ifdef    QUEX_MEMBERF
+#   undef QUEX_MEMBERF
+#endif
+#ifdef    QUEX_MEMBERF1
+#   undef QUEX_MEMBERF1
+#endif
+#ifdef    QUEX_MEMBERF2
+#   undef QUEX_MEMBERF2
+#endif
+#ifdef    QUEX_MEMBERF3
+#   undef QUEX_MEMBERF3
+#endif
+#ifdef    QUEX_MEMBERF4
+#   undef QUEX_MEMBERF4
+#endif
+#ifdef    QUEX_FUNCTION
+#   undef QUEX_FUNCTION
+#endif
+#ifdef    QUEX_FUNCTION0
+#   undef QUEX_FUNCTION0
+#endif
+#ifdef    QUEX_MEMBERF
+#   undef QUEX_MEMBERF
+#endif
+#ifdef    QUEX_MEMBERF1
+#   undef QUEX_MEMBERF1
+#endif
+#ifdef    QUEX_MEMBERF2
+#   undef QUEX_MEMBERF2
+#endif
+#ifdef    QUEX_MEMBERF3
+#   undef QUEX_MEMBERF3
+#endif
+#ifdef    QUEX_MEMBERF4
+#   undef QUEX_MEMBERF4
+#endif
+#ifdef    QUEX_A_MEMBERF
+#   undef QUEX_A_MEMBERF
+#endif
+#ifdef    QUEX_A_MEMBERF1
+#   undef QUEX_A_MEMBERF1
+#endif
+#ifdef    QUEX_A_MEMBERF2
+#   undef QUEX_A_MEMBERF2
+#endif
+#ifdef    QUEX_A_MEMBERF3
+#   undef QUEX_A_MEMBERF3
+#endif
+#ifdef    QUEX_A_MEMBERF4
+#   undef QUEX_A_MEMBERF4
+#endif
+#ifdef    QUEX_T_MEMBERF
+#   undef QUEX_T_MEMBERF
+#endif
+#ifdef    QUEX_T_MEMBERF1
+#   undef QUEX_T_MEMBERF1
+#endif
+#ifdef    QUEX_T_MEMBERF2
+#   undef QUEX_T_MEMBERF2
+#endif
+#ifdef    QUEX_T_MEMBERF3
+#   undef QUEX_T_MEMBERF3
+#endif
+#ifdef    QUEX_T_MEMBERF4
+#   undef QUEX_T_MEMBERF4
+#endif
+#ifdef    ____QUEX_CONVERTER_CHAR_DEF
+#   undef ____QUEX_CONVERTER_CHAR_DEF
+#endif
+#ifdef    ____QUEX_CONVERTER_STRING_DEF
+#   undef ____QUEX_CONVERTER_STRING_DEF
+#endif
+#ifdef    QUEX_CONVERTER_CHAR_DEF
+#   undef QUEX_CONVERTER_CHAR_DEF
+#endif
+#ifdef    QUEX_CONVERTER_STRING_DEF
+#   undef QUEX_CONVERTER_STRING_DEF
+#endif

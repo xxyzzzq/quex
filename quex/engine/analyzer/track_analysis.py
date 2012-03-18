@@ -27,7 +27,6 @@ from   quex.engine.misc.tree_walker import TreeWalker
 
 from   itertools   import chain, izip
 from   copy        import copy
-from   collections import defaultdict
 
 def do(SM):
     """RETURNS: Acceptance trace database:

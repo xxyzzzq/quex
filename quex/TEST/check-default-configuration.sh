@@ -7,6 +7,7 @@ if [[ $1 == "--hwut-info" ]]; then
     #  $QUEX_PATH/quex/code_base/analyzer/configuration/
     #
     # to generate a new default configuration
+    exit
 else
     diff $QUEX_PATH/quex/code_base/analyzer/configuration/TXT \
          $QUEX_PATH/quex/code_base/test_environment/TestAnalyzer-configuration \
