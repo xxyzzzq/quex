@@ -1,7 +1,7 @@
-<test-database execution-time-sec="0.17" date="Sun Mar 18 22:56:17 2012">
+<test-database execution-time-sec="0.16" date="Sun Mar 18 23:21:06 2012">
     <last-used-diff-display-program name=""/>
     <group name="Backward">
-        <test title="Copy Region (BPC=4)" make-dependent="True" time-sum-sec="0.01"> 
+        <test title="Copy Region (BPC=4)" make-dependent="True" time-sum-sec="0.00"> 
             <application file-name="BufferFiller_backward_copy-32.exe" info-request-time="1332107768L" vanished="False"/>
             <make-procedure success="True" time_sec="0.846661"/>
             <choice-list number="2" same_result="False">
@@ -46,7 +46,7 @@
                <choice name="5" result="OK" time_sec="0.01" crc="-2065605489"/>
             </choice-list>
         </test>
-        <test title="Backward (BPC=4)" make-dependent="True" time-sum-sec="0.03"> 
+        <test title="Backward (BPC=4)" make-dependent="True" time-sum-sec="0.04"> 
             <application file-name="Buffer_move_backward-32.exe" info-request-time="1332107774L" vanished="False"/>
             <make-procedure success="True" time_sec="0.925280"/>
             <choice-list number="5" same_result="False">
@@ -57,7 +57,7 @@
                <choice name="5" result="OK" time_sec="0.01" crc="-249203724"/>
             </choice-list>
         </test>
-        <test title="Forward (BPC=4)" make-dependent="True" time-sum-sec="0.03"> 
+        <test title="Forward (BPC=4)" make-dependent="True" time-sum-sec="0.02"> 
             <application file-name="Buffer_move_forward-32.exe" info-request-time="1332107775L" vanished="False"/>
             <make-procedure success="True" time_sec="0.941035"/>
             <choice-list number="5" same_result="False">
@@ -68,7 +68,7 @@
                <choice name="5" result="OK" time_sec="0.00" crc="-2065605489"/>
             </choice-list>
         </test>
-        <test title="Backward (BPC=1)" make-dependent="True" time-sum-sec="0.05"> 
+        <test title="Backward (BPC=1)" make-dependent="True" time-sum-sec="0.06"> 
             <application file-name="Buffer_move_backward.exe" info-request-time="1332107776L" vanished="False"/>
             <make-procedure success="True" time_sec="0.921922"/>
             <choice-list number="5" same_result="False">

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="267.16" date="Sun Mar 18 22:56:44 2012">
+<test-database execution-time-sec="267.16" date="Sun Mar 18 23:21:07 2012">
     <last-used-diff-display-program name=""/>
     <test title="Basic Path Compression Test" time-sum-sec="0.16"> 
         <application file-name="test-paths.py" info-request-time="1317021015L" vanished="True"/>

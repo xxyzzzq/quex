@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.34" date="Sun Mar 18 22:56:24 2012">
+<test-database execution-time-sec="0.35" date="Sun Mar 18 23:21:06 2012">
     <last-used-diff-display-program name=""/>
     <group name="Converter">
         <test title="Plain 32 bit" make-dependent="True" time-sum-sec="0.02"> 
@@ -9,7 +9,7 @@
                <choice name="UTF-16" result="OK" time_sec="0.01" crc="-17263759"/>
             </choice-list>
         </test>
-        <test title="Possible 'statefulness' has been ruled out (16 bit)" make-dependent="True" time-sum-sec="0.01"> 
+        <test title="Possible 'statefulness' has been ruled out (16 bit)" make-dependent="True" time-sum-sec="0.02"> 
             <application file-name="converter-statefulness-16.exe" info-request-time="1332107779L" vanished="False"/>
             <make-procedure success="True" time_sec="0.781662"/>
             <choice-list number="2" same_result="False">
@@ -25,7 +25,7 @@
                <choice name="UTF-16" result="OK" time_sec="0.04" crc="-338491359"/>
             </choice-list>
         </test>
-        <test title="Possible 'statefulness' has been ruled out (32 bit)" make-dependent="True" time-sum-sec="0.01"> 
+        <test title="Possible 'statefulness' has been ruled out (32 bit)" make-dependent="True" time-sum-sec="0.02"> 
             <application file-name="converter-statefulness-32.exe" info-request-time="1332107783L" vanished="False"/>
             <make-procedure success="True" time_sec="0.791243"/>
             <choice-list number="2" same_result="False">
@@ -35,7 +35,7 @@
         </test>
     </group>
     <group name="Move by Offset">
-        <test title="Forward (BPC=4)" make-dependent="True" time-sum-sec="0.03"> 
+        <test title="Forward (BPC=4)" make-dependent="True" time-sum-sec="0.02"> 
             <application file-name="Buffer_move_forward.exe" info-request-time="1332107780L" vanished="False"/>
             <make-procedure success="True" time_sec="0.992451"/>
             <choice-list number="5" same_result="False">
@@ -46,7 +46,7 @@
                <choice name="5" result="OK" time_sec="0.00" crc="-2111283219"/>
             </choice-list>
         </test>
-        <test title="Backward (BPC=4)" make-dependent="True" time-sum-sec="0.03"> 
+        <test title="Backward (BPC=4)" make-dependent="True" time-sum-sec="0.04"> 
             <application file-name="Buffer_move_backward.exe" info-request-time="1332107782L" vanished="False"/>
             <make-procedure success="True" time_sec="1.200874"/>
             <choice-list number="5" same_result="False">
