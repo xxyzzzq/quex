@@ -1,24 +1,24 @@
-<test-database execution-time-sec="0.42" date="Fri Mar 16 23:38:23 2012">
+<test-database execution-time-sec="0.43" date="Sun Mar 18 08:48:58 2012">
     <last-used-diff-display-program name=""/>
     <test title="With token policy 'queue'." make-dependent="True" time-sum-sec="0.00"> 
-        <application file-name="simple-queue.exe" info-request-time="1331937500L" vanished="False"/>
-        <make-procedure success="True" time_sec="1.826899"/>
+        <application file-name="simple-queue.exe" info-request-time="1332054013L" vanished="False"/>
+        <make-procedure success="True" time_sec="1.913738"/>
         <choice-list number="1" same_result="False">
            <choice name="" result="OK" time_sec="0.00" crc="1902503654"/>
         </choice-list>
     </test>
-    <test title="Miscellaneous Sample Runs" time-sum-sec="0.41"> 
+    <test title="Miscellaneous Sample Runs" time-sum-sec="0.43"> 
         <application file-name="misc.sh" info-request-time="1331014319L" vanished="False"/>
         <choice-list number="4" same_result="False">
            <choice name="empty" result="OK" time_sec="0.10" crc="-1191820474"/>
            <choice name="no-namespace" result="OK" time_sec="0.12" crc="2098295666"/>
            <choice name="double-colon" result="OK" time_sec="0.10" crc="-223322448"/>
-           <choice name="token" result="OK" time_sec="0.10" crc="-26357094"/>
+           <choice name="token" result="OK" time_sec="0.11" crc="-26357094"/>
         </choice-list>
     </test>
     <test title="With token policy 'simple'." make-dependent="True" time-sum-sec="0.00"> 
-        <application file-name="simple.exe" info-request-time="1331937502L" vanished="False"/>
-        <make-procedure success="True" time_sec="1.814897"/>
+        <application file-name="simple.exe" info-request-time="1332054015L" vanished="False"/>
+        <make-procedure success="True" time_sec="1.836862"/>
         <choice-list number="1" same_result="False">
            <choice name="" result="OK" time_sec="0.00" crc="120585915"/>
         </choice-list>

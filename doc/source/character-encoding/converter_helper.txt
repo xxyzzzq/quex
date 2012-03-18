@@ -36,18 +36,29 @@ These headers depend on the definitions of::
 and are thus analyzer specific. The are placed in the analyzer's namespace.
 
 When using subset of Unicode (e.g. ASCII, UCS4 or UTF32) as input encoding,
-then the buffer encoding is Unicode. Also, when using converters 
-(see :ref:`sec-converters`) the buffer is still encoded in Unicode. Then 
-the Unicode converters in the files mentioned above can be used, as they
-are
+then the buffer encoding is Unicode. Also, when using converters (see
+:ref:`sec-converters`) the buffer is still filled with Unicode characters. 
+Then the Unicode converters in the files mentioned above can be used, as they are
 
 .. code-block:: cpp
 
-    QUEX_INLINE void   QUEX_NAME(buffer_to_utf8)(...);
-    QUEX_INLINE void   QUEX_NAME(buffer_to_utf16)(...);
-    QUEX_INLINE void   QUEX_NAME(buffer_to_utf32)(...);
-    QUEX_INLINE void   QUEX_NAME(buffer_to_char)(...);
-    QUEX_INLINE void   QUEX_NAME(buffer_to_wchar)(...);
+    QUEX_INLINE void   unicode_to_utf8(...);
+    QUEX_INLINE void   unicode_to_utf16(...);
+    QUEX_INLINE void   unicode_to_utf32(...);
+    QUEX_INLINE void   unicode_to_char(...);
+    QUEX_INLINE void   unicode_to_wchar(...);
+
+which are located in the analyzer's namespace. In plain C there are no 
+namespaces, so the analyzer's name precedes the functions name. For 
+example, if the analyzer is named 'MyLex', the function group is
+
+.. code-block:: cpp
+
+    QUEX_INLINE void   MyLex_unicode_to_utf8(...);
+    QUEX_INLINE void   MyLex_unicode_to_utf16(...);
+    QUEX_INLINE void   MyLex_unicode_to_utf32(...);
+    QUEX_INLINE void   MyLex_unicode_to_char(...);
+    QUEX_INLINE void   MyLex_unicode_to_wchar(...);
 
 The functions above convert a whole string. For single character conversions
 the same function group is present only ending with ``_character`` in the
@@ -55,7 +66,7 @@ function name, i.e.
 
 .. code-block:: cpp
 
-    QUEX_INLINE void   QUEX_NAME(buffer_to_utf8_character)(...);
+    QUEX_INLINE void   unicode_to_utf8_character(...);
 
 converts a single character from Unicode to UTF8.
 
@@ -89,16 +100,18 @@ are available, which are possibly not as fast but more convenient.
 
 .. code-block:: cpp
 
-    QUEX_INLINE string<uint8_t>   QUEX_NAME(buffer_to_utf8)(string<qtc>);
-    QUEX_INLINE string<uint16_t>  QUEX_NAME(buffer_to_utf16)(string<qtc>);
-    QUEX_INLINE string<uint32_t>  QUEX_NAME(buffer_to_utf32)(string<qtc>);
-    QUEX_INLINE string<char>      QUEX_NAME(buffer_to_char)(string<qtc>);
-    QUEX_INLINE string<wchar_t>   QUEX_NAME(buffer_to_wchar)(string<qtc>);
+    QUEX_INLINE string<uint8_t>   unicode_to_utf8(string<qtc>);
+    QUEX_INLINE string<uint16_t>  unicode_to_utf16(string<qtc>);
+    QUEX_INLINE string<uint32_t>  unicode_to_utf32(string<qtc>);
+    QUEX_INLINE string<char>      unicode_to_char(string<qtc>);
+    QUEX_INLINE string<wchar_t>   unicode_to_wchar(string<qtc>);
 
 where ``string<X>`` is a shorthand for ``std::basic_string<X>`` and
 ``string<qtc>`` is a shorthand for ``std::basic_string<QUEX_TYPE_CHARACTER>``.
 This means, that they can take a string of the type of the lexeme and
-return a string which is appropriate for the drain's codec.
+return a string which is appropriate for the drain's codec. Fortunately,
+there is nothing compared to ``std::basic_string`` in plain C. So, in 
+this case those functions do not exist.
 
 When the internal engine is designed using ``--codec`` then the buffer codec is
 some dedicated character encoding. The ``Lexeme`` that is presented to the user
@@ -110,11 +123,11 @@ UTF32. The converters follow the same scheme as for Unicode, only that
 
 .. code-block:: cpp
 
-    QUEX_INLINE void   QUEX_NAME(iso8859_7_to_utf8)(...);
-    QUEX_INLINE void   QUEX_NAME(iso8859_7_to_utf16)(...);
-    QUEX_INLINE void   QUEX_NAME(iso8859_7_to_utf32)(...);
-    QUEX_INLINE void   QUEX_NAME(iso8859_7_to_char)(...);
-    QUEX_INLINE void   QUEX_NAME(iso8859_7_to_wchar)(...);
+    QUEX_INLINE void   iso8859_7_to_utf8(...);
+    QUEX_INLINE void   iso8859_7_to_utf16(...);
+    QUEX_INLINE void   iso8859_7_to_utf32(...);
+    QUEX_INLINE void   iso8859_7_to_char(...);
+    QUEX_INLINE void   iso8859_7_to_wchar(...);
 
 are the generated converters if ``--codec iso8859-7`` was specified. The 
 converters can be included by
@@ -132,27 +145,27 @@ accessed by including
 
 .. code-block:: cpp
 
-     #include <quex/code_base/converter_helper/utf8>
-     #include <quex/code_base/converter_helper/utf16>
-     #include <quex/code_base/converter_helper/utf32>
+     #include <quex/code_base/converter_helper/from-utf8>
+     #include <quex/code_base/converter_helper/from-utf16>
+     #include <quex/code_base/converter_helper/from-utf32>
 
-and::
+for the declarations and::
 
      #include <quex/code_base/converter_helper/utf8.i>
      #include <quex/code_base/converter_helper/utf16.i>
      #include <quex/code_base/converter_helper/utf32.i>
 
-They function exactly the same way as the dedicate converters for 
-the ``--codec`` converters do. That is, their signatures are for
-example 
+for the implementations. They function exactly the same way as the dedicate 
+converters for the ``--codec`` converters do. That is, their signatures are 
+for example 
 
 .. code-block:: cpp
 
-    QUEX_INLINE void   QUEX_NAME(utf8_to_utf8)(...);
-    QUEX_INLINE void   QUEX_NAME(utf8_to_utf16)(...);
-    QUEX_INLINE void   QUEX_NAME(utf8_to_utf32)(...);
-    QUEX_INLINE void   QUEX_NAME(utf8_to_char)(...);
-    QUEX_INLINE void   QUEX_NAME(utf8_to_wchar)(...);
+    QUEX_INLINE void   utf8_to_utf8(...);
+    QUEX_INLINE void   utf8_to_utf16(...);
+    QUEX_INLINE void   utf8_to_utf32(...);
+    QUEX_INLINE void   utf8_to_char(...);
+    QUEX_INLINE void   utf8_to_wchar(...);
 
 in order to convert UTF8 strings to one of the target codecs. UTF16 
 and UTF32 work analogously.

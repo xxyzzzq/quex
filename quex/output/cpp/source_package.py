@@ -141,6 +141,8 @@ buffer_filler_icu = """
 
 converter_helper = """
 /converter_helper/common.h
+/converter_helper/identity
+/converter_helper/identity.i
 /converter_helper/generator/declarations.g
 /converter_helper/generator/implementations.gi
 /converter_helper/generator/string-converter.gi
