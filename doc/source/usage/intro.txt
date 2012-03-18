@@ -18,5 +18,4 @@ and project files.
    actions/intro.txt
    modes/intro.txt
    showtime.txt
-
-
+   names_and_namespaces.txt
