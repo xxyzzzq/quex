@@ -10,16 +10,16 @@
 int 
 main(int argc, char** argv) 
 {        
-    quex_Token*  token_p = 0x0;
-    size_t       number_of_tokens = 0;
-    EasyLexer    qlex;
+    quex_Token*     token_p = 0x0;
+    size_t          number_of_tokens = 0;
+    quex_EasyLexer  qlex;
 #   ifdef PRINT_TOKEN
-    const size_t BufferSize = 1024;
-    char         buffer[1024];
+    const size_t    BufferSize = 1024;
+    char            buffer[1024];
 #   endif
-    const char*  FileName = (argc == 1) ? "example.txt" : argv[1];
+    const char*     FileName = (argc == 1) ? "example.txt" : argv[1];
 
-    QUEX_NAME(construct_file_name)(&qlex, FileName, ENCODING_NAME, false);
+    quex_EasyLexer_construct_file_name(&qlex, FileName, ENCODING_NAME, false);
     /* Alternatives:
      * QUEX_NAME(construct_memory)(&qlex, MemoryBegin, MemorySize,
      *                             CharacterEncodingName (default 0x0),
@@ -33,7 +33,7 @@ main(int argc, char** argv)
     /* Loop until the 'termination' token arrives */
     do {
         /* Get next token from the token stream   */
-        QUEX_NAME(receive)(&qlex, &token_p);
+        quex_EasyLexer_receive(&qlex, &token_p);
 
         /* Print out token information            */
 #       ifdef PRINT_LINE_COLUMN_NUMBER

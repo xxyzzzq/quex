@@ -6,10 +6,10 @@
 int 
 main(int argc, char** argv) 
 {        
-    QUEX_TYPE_TOKEN* token_p;
-    ISO8859_7_Lex    qlex;
-    size_t           BufferSize = 1024;
-    char             buffer[1024];
+    quex_Token*        token_p;
+    quex_ISO8859_7_Lex qlex;
+    size_t             BufferSize = 1024;
+    char               buffer[1024];
     
     QUEX_NAME(construct_file_name)(&qlex, "example-iso8859-7.txt", 0x0, false);
 

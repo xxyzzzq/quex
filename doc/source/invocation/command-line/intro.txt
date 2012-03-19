@@ -42,7 +42,7 @@ as described in :ref:`sec-number-format`.
 
         generates a lexical analyzer class ``Lexer`` in default namespace ``quex``.
         
-        DEFAULT = ``lexer``
+        DEFAULT = ``Lexer``
 
 .. cmdoption:: --output-dir, --odir directory
 

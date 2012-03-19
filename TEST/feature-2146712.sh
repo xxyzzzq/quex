@@ -11,7 +11,7 @@ cd $bug/
 if [[ $1 == "Normal" ]]; then
     quex -i simple.qx --output-directory a/b/c/d
     find -path "*.svn*" -prune -or -print | sort
-    rm a/b/c/d/lexer*
+    rm a/b/c/d/Lexer*
 fi
 if [[ $1 == "NotExist" ]]; then
     quex -i simple.qx --output-directory a/b/c/x
@@ -24,5 +24,5 @@ if [[ $1 == "NoWrite" ]]; then
 fi
 
 # cleansening
-rm -f lexer.cpp lexer-token_ids 
+rm -f Lexer.cpp Lexer-token_ids 
 cd $tmp

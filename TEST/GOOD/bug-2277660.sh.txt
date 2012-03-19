@@ -9,9 +9,9 @@
 ## 9 seconds
 ## 10 seconds
 Oll Korrekt
-lexer
-lexer-configuration
-lexer.cpp
-lexer-token
-lexer-token_ids
+Lexer
+Lexer-configuration
+Lexer.cpp
+Lexer-token
+Lexer-token_ids
 tokenizer.qx

@@ -11,9 +11,9 @@ main(int argc, char** argv)
     const size_t BufferSize = 1024;
     char         buffer[1024];
 #   endif
-    QUEX_TYPE_TOKEN*   token_p = 0x0;
-    int                token_n = 0;
-    Simple             qlex;
+    quex_Token*   token_p = 0x0;
+    int           token_n = 0;
+    quex_Simple   qlex;
 #   ifdef QUEX_OPTION_TOKEN_POLICY_SINGLE
     QUEX_TYPE_TOKEN_ID token_id = (QUEX_TYPE_TOKEN_ID)0x0;
 #   endif

@@ -4,12 +4,12 @@
 #include "tiny_lexer.h"
 #include "messaging-framework.h"
 
-void test(tiny_lexer* qlex);
+void test(quex_tiny_lexer* qlex);
 
 int 
 main(int argc, char** argv) 
 {        
-    tiny_lexer           qlex;
+    quex_tiny_lexer      qlex;
     QUEX_TYPE_CHARACTER* remainder = 0x0;
 
     QUEX_NAME(construct_memory)(&qlex, 0x0, 0, (QUEX_TYPE_CHARACTER*)0x0, 0x0, false);
@@ -46,7 +46,7 @@ get_new_memory_to_analyze(QUEX_TYPE_CHARACTER** buffer, size_t* buffer_size)
 }
 
 void 
-test(tiny_lexer* qlex)
+test(quex_tiny_lexer* qlex)
 {
     QUEX_TYPE_TOKEN       token;           
     QUEX_TYPE_CHARACTER*  buffer      = 0x0;

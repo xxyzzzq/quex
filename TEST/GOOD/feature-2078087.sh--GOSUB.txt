@@ -42,4 +42,4 @@ LETTER '4'
 |             to   TWO
 | Mode change from TWO
 |             to   ONE
-lexer: <<QUEX_PATH>>/quex/code_base/analyzer/member/mode-handling.i:77: void Simple_pop_mode(Simple_tag*): Assertion `me->_mode_stack.end != me->_mode_stack.begin' failed.
+lexer: <<QUEX_PATH>>/quex/code_base/analyzer/member/mode-handling.i:77: void quex_Simple_pop_mode(quex_Simple_tag*): Assertion `me->_mode_stack.end != me->_mode_stack.begin' failed.

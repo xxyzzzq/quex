@@ -6,8 +6,8 @@
 int 
 main(int argc, char** argv) 
 {        
-    QUEX_TYPE_TOKEN*  token_p = 0x0;
-    tiny_lexer        qlex;
+    quex_Token*       token_p = 0x0;
+    quex_tiny_lexer   qlex;
     /**/
     int               number_of_tokens = 0;
     /**/

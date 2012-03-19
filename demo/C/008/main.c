@@ -2,11 +2,11 @@
 #include "Calc_parser.tab.h"
 #include "Calc_lexer.h"
 
-int Calc_yyparse(Calc_lexer  *qlex);
+int Calc_yyparse(quex_Calc_lexer  *qlex);
 
 int main(int argc, char** argv) 
 {
-	Calc_lexer qlex;
+	quex_Calc_lexer qlex;
     
     QUEX_NAME(construct_file_name)(&qlex, argc == 1 ? "example.txt" : argv[1], 0x0, false);
 

@@ -4,7 +4,7 @@
 int
 main(int argc, char** argv)
 {
-    Simple               qlex;
+    quex_Simple          qlex;
     FILE*                dummy_fh = fopen("main.c", "rb");
     QUEX_TYPE_CHARACTER* dummy_str = (QUEX_TYPE_CHARACTER*)"Otto";
     QUEX_TYPE_CHARACTER* dummy_str_end = dummy_str + strlen((const char*)dummy_str);
