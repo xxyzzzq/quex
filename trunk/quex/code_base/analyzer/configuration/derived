@@ -219,6 +219,8 @@
 #   define QUEX_FUNCTION0(NAMESPACE, FUNCTION)          FUNCTION
 #   define QUEX_FUNCTION(NAMESPACE, FUNCTION)           NAMESPACE :: FUNCTION
 #   define QUEX_SIGNATURE(CLASS, FUNCTION)              CLASS  ## :: ## FUNCTION
+#   define QUEX_THIS(C)                                 /* Nothing To Do */
+#   define QUEX_ME(C)                                   C* me = this;
 #   define QUEX_MEMBERF(C, F)                           QUEX_SIGNATURE(C, F)()
 #   define QUEX_MEMBERF1(C, F, ARG0)                    QUEX_SIGNATURE(C, F)(ARG0)
 #   define QUEX_MEMBERF2(C, F, ARG0, ARG1)              QUEX_SIGNATURE(C, F)(ARG0, ARG1)
@@ -228,7 +230,8 @@
 #   define QUEX_FUNCTION0(NAMESPACE, FUNCTION)          NAMESPACE ## _ ## FUNCTION
 #   define QUEX_FUNCTION(NAMESPACE, FUNCTION)           NAMESPACE ## _ ## FUNCTION
 #   define QUEX_SIGNATURE(CLASS, FUNCTION)              CLASS     ## _ ## FUNCTION
-#   define QUEX_THIS(C)                                 struct C ## _tag* this
+#   define QUEX_THIS(C)                                 struct C ## _tag* me
+#   define QUEX_ME(C)                                   /* Nothing To Do */
 #   define QUEX_MEMBERF(C, F)                           QUEX_SIGNATURE(C, F)(QUEX_THIS(C))
 #   define QUEX_MEMBERF1(C, F, ARG0)                    QUEX_SIGNATURE(C, F)(QUEX_THIS(C), ARG0)
 #   define QUEX_MEMBERF2(C, F, ARG0, ARG1)              QUEX_SIGNATURE(C, F)(QUEX_THIS(C), ARG0, ARG1)

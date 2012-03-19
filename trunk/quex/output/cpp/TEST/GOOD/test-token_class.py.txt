@@ -9,8 +9,6 @@
 #include <quex/code_base/asserts>
 #include <quex/code_base/compatibility/stdint.h>
 
-/* LexemeNull object may be used for 'take_text'. */
-extern QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject);
 
 
  
@@ -19,6 +17,9 @@ namespace europa {
         namespace baden_wuertemberg {
             namespace ispringen {
 
+
+/* LexemeNull object may be used for 'take_text'. */
+extern QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject);
 
 class MeinToken;
 

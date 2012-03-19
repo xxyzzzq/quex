@@ -1,8 +1,8 @@
 ## 1 seconds
 Oll Korrekt
 error.qx
-lexer
-lexer-configuration
-lexer.cpp
-lexer-token
-lexer-token_ids
+Lexer
+Lexer-configuration
+Lexer.cpp
+Lexer-token
+Lexer-token_ids

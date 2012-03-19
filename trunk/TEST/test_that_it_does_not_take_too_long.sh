@@ -20,7 +20,7 @@ while (( $time < $max_time )); do
         echo "Oll Korrekt"
         # Show the content of this directory
         ls
-        rm lexer lexer.cpp lexer-token_ids lexer-configuration
+        rm Lexer Lexer.cpp Lexer-token_ids Lexer-configuration
         exit
     fi
 done

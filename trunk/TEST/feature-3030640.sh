@@ -22,8 +22,8 @@ else
 fi
 
 # Display the generated files
-ls lexer*
+ls Lexer*
 
-rm lexer*
+rm Lexer*
 
 cd $tmp

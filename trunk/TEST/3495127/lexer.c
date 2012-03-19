@@ -13,7 +13,7 @@ main(int argc, char** argv)
 #   endif
     QUEX_TYPE_TOKEN*   token_p = 0x0;
     int                token_n = 0;
-    Simple             qlex;
+    quex_Simple        qlex;
     const char*        file_name = argc > 1 ? argv[1] : "example.txt";
     QUEX_NAME(construct_file_name)(&qlex, file_name, CHARACTER_ENCODING_NAME, false);
 

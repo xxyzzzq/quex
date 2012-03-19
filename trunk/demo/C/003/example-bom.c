@@ -16,7 +16,7 @@ main(int argc, char** argv)
     char            buffer[1024];
     int             number_of_tokens = 0;
     FILE*           fh = fopen(argc > 1 ? argv[1] : "example.txt", "rb");
-    EasyLexer       qlex;
+    quex_EasyLexer  qlex;
 
     /* Either there is no BOM, or if there is one, then it must be UTF8 */
     QUEX_TYPE_BOM   bom_type = QUEX_NAME(bom_snap)(fh);

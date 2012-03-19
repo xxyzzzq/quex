@@ -6,10 +6,10 @@
 int 
 main(int argc, char** argv) 
 {        
-    QUEX_TYPE_TOKEN*   token_p = 0x0;
-    size_t             BufferSize = 1024;
-    char               buffer[1024];
-    UTF8Lex            qlex;
+    quex_Token*   token_p = 0x0;
+    size_t        BufferSize = 1024;
+    char          buffer[1024];
+    quex_UTF8Lex  qlex;
     
     QUEX_NAME(construct_file_name)(&qlex, "example-utf8.txt", 0x0, false);
 

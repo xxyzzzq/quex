@@ -137,7 +137,7 @@ $INCLUDE_CONVERTER_DECLARATION
                         char*   buffer, 
                         size_t  BufferSize) 
         {
-            const char*  token_type_str = QUEX_NAME_TOKEN(map_id_to_name)(this->_id);
+            const char*  token_type_str = QUEX_NAME_TOKEN(map_id_to_name)(me->_id);
             const char*  BufferEnd  = buffer + BufferSize;
             const char*  iterator   = 0;
             char*        writerator = 0;
@@ -156,7 +156,7 @@ $INCLUDE_CONVERTER_DECLARATION
             }
 
             /* The String */
-            QUEX_NAME_TOKEN(pretty_char_text)(this, writerator, (size_t)(BufferEnd - writerator));
+            QUEX_NAME_TOKEN(pretty_char_text)(me, writerator, (size_t)(BufferEnd - writerator));
 
             while( *writerator ) {
                 ++writerator;
@@ -175,11 +175,11 @@ $INCLUDE_CONVERTER_DECLARATION
                         char*   buffer, 
                         size_t  BufferSize) 
         {
-            const QUEX_TYPE_CHARACTER*  source    = this->text;
+            const QUEX_TYPE_CHARACTER*  source    = me->text;
             char*                       drain     = buffer;
             const char*                 DrainEnd  = buffer + BufferSize;
 
-            const QUEX_TYPE_CHARACTER*  SourceEnd = this->text + (size_t)(QUEX_NAME(strlen)(source)) + 1;
+            const QUEX_TYPE_CHARACTER*  SourceEnd = me->text + (size_t)(QUEX_NAME(strlen)(source)) + 1;
             $CONVERTER_STRING(&source, SourceEnd, &drain, DrainEnd);
             return buffer;
         }
@@ -192,8 +192,8 @@ $INCLUDE_CONVERTER_DECLARATION
         {
             wchar_t*                    drain     = buffer;
             const wchar_t*              DrainEnd  = buffer + (ptrdiff_t)BufferSize;
-            const QUEX_TYPE_CHARACTER*  source    = this->text;
-            const QUEX_TYPE_CHARACTER*  SourceEnd = this->text + (ptrdiff_t)(QUEX_NAME(strlen)(source)) + 1;
+            const QUEX_TYPE_CHARACTER*  source    = me->text;
+            const QUEX_TYPE_CHARACTER*  SourceEnd = me->text + (ptrdiff_t)(QUEX_NAME(strlen)(source)) + 1;
 
             $CONVERTER_WSTRING(&source, SourceEnd, &drain, DrainEnd);
             return buffer;

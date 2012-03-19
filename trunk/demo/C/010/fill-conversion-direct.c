@@ -6,9 +6,9 @@
 int 
 main(int argc, char** argv) 
 {        
-    QUEX_TYPE_TOKEN       token_bank[2];
-    QUEX_TYPE_TOKEN*      prev_token;
-    tiny_lexer_utf8       qlex;
+    quex_Token            token_bank[2];
+    quex_Token*           prev_token;
+    quex_tiny_lexer_utf8  qlex;
     QUEX_TYPE_CHARACTER*  prev_lexeme_start_p = 0x0;
     size_t                BufferSize = 1024;
     char                  buffer[1024];

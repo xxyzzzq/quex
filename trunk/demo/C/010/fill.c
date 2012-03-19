@@ -10,7 +10,7 @@ main(int argc, char** argv)
 {        
     QUEX_TYPE_TOKEN       token_bank[2];
     QUEX_TYPE_TOKEN*      prev_token;
-    tiny_lexer            qlex;
+    quex_tiny_lexer       qlex;
     size_t                BufferSize = 1024;
     char                  buffer[1024];
     QUEX_TYPE_CHARACTER*  prev_lexeme_start_p = 0x0;

@@ -4,13 +4,13 @@
 #include "tiny_wlexer.h"
 
 void
-get_wfile_input(tiny_wlexer* qlex);
+get_wfile_input(quex_tiny_wlexer* qlex);
 
 int 
 main(int argc, char** argv) 
 {        
-    QUEX_TYPE_TOKEN*  token_p = 0x0;
-    tiny_wlexer       qlex;
+    quex_Token*       token_p = 0x0;
+    quex_tiny_wlexer  qlex;
     int               number_of_tokens = 0;
     const size_t      BufferSize = 1024;
     char              buffer[1024];
@@ -37,7 +37,7 @@ main(int argc, char** argv)
 }
 
 void
-get_wfile_input(tiny_wlexer* qlex)
+get_wfile_input(quex_tiny_wlexer* qlex)
 {
     /* We write the file ourselves so that there is never an issue about alignment */
     wchar_t    original[] = L"bonjour le monde hello world hallo welt";

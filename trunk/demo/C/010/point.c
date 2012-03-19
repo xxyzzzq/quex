@@ -9,7 +9,7 @@ int
 main(int argc, char** argv) 
 {        
     QUEX_TYPE_TOKEN    token;
-    tiny_lexer         qlex;
+    quex_tiny_lexer    qlex;
     size_t             BufferSize = 1024;
     char               buffer[1024];
     size_t             receive_n = (size_t)-1;

@@ -3,11 +3,11 @@
 ./a/b
 ./a/b/c
 ./a/b/c/d
-./a/b/c/d/lexer
-./a/b/c/d/lexer-configuration
-./a/b/c/d/lexer.cpp
-./a/b/c/d/lexer-token
-./a/b/c/d/lexer-token_ids
+./a/b/c/d/Lexer
+./a/b/c/d/Lexer-configuration
+./a/b/c/d/Lexer.cpp
+./a/b/c/d/Lexer-token
+./a/b/c/d/Lexer-token_ids
 ./a/b/d
 ./simple.qx
 ./x

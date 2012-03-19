@@ -108,7 +108,7 @@ SetupParTypes = Enum("LIST", "FLAG", "NEGATED_FLAG")
 SETUP_INFO = {         
     # [Name in Setup]                 [ Flags ]                                [Default / Type]
     "_debug_exception_f":             [["--debug-exception"],                  SetupParTypes.FLAG], 
-    "analyzer_class_name":            [["-o", "--engine", "--analyzer-class"], "quex::lexer"],    
+    "analyzer_class_name":            [["-o", "--engine", "--analyzer-class"], "Lexer"],    
     "analyzer_derived_class_file":    [["--derived-class-file"],               ""],
     "analyzer_derived_class_name":    [["--derived-class", "--dc"],            ""],
     "buffer_codec":                   [["--codec"],                            "unicode"],
@@ -140,7 +140,7 @@ SETUP_INFO = {
     "include_stack_support_f":        [["--no-include-stack", "--nois"],       SetupParTypes.NEGATED_FLAG],
     "input_mode_files":               [["-i", "--mode-files"],                 SetupParTypes.LIST],
     "token_class_file":               [["--token-class-file"],                 ""],
-    "token_class_name":               [["--token-class", "--tc"],              "quex::Token"],
+    "token_class_name":               [["--token-class", "--tc"],              "Token"],
     "token_class_take_text_check_f":  [["--token-type-no-take_text-check",     "--ttnttc"], SetupParTypes.NEGATED_FLAG], 
     "token_id_foreign_definition_file":  [["--foreign-token-id-file"],         ""],  
     "token_id_counter_offset":        [["--token-id-offset"],                  "10000"],

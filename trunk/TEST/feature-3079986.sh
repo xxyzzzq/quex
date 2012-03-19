@@ -19,16 +19,16 @@ quex -i simple.qx --token-prefix scope1::scope2::scope3::TKN_ --foreign-token-id
 cat tmp.txt
 
 echo "(1) check out generated sources"
-awk ' /TKN_/ { print; }' lexer.cpp >& tmp.txt
+awk ' /TKN_/ { print; }' Lexer.cpp >& tmp.txt
 cat tmp.txt
 
 echo "(2) compile -- no output is good output"
-g++ -I$QUEX_PATH -c lexer.cpp -I. -Wall -Wconversion >& tmp.txt
+g++ -I$QUEX_PATH -c Lexer.cpp -I. -Wall -Wconversion >& tmp.txt
 cat tmp.txt
 
 # cleanup
 rm -f simple.qx tmp.txt
-rm -rf lexer*
+rm -rf Lexer*
 rm -rf tmp.txt
 
 cd $tmp

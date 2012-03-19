@@ -1,5 +1,5 @@
-lexer.c
-lexer-configuration.h
-lexer.h
-lexer-token.h
-lexer-token_ids.h
+Lexer.c
+Lexer-configuration.h
+Lexer.h
+Lexer-token.h
+Lexer-token_ids.h

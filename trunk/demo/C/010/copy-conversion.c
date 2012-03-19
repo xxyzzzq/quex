@@ -11,10 +11,10 @@ typedef struct {
 int 
 main(int argc, char** argv) 
 {        
-    tiny_lexer_utf8    qlex;   
+    quex_tiny_lexer_utf8    qlex;   
 
-    QUEX_TYPE_TOKEN    token_bank[2];     /* Two tokens required, one for look-ahead */
-    QUEX_TYPE_TOKEN*   prev_token;        /* Use pointers to swap quickly.           */
+    quex_Token         token_bank[2];     /* Two tokens required, one for look-ahead */
+    quex_Token*        prev_token;        /* Use pointers to swap quickly.           */
 
     uint8_t*           rx_buffer = 0x0;   /* A pointer to the receive buffer that
     *                                      * the messaging framework provides.       */

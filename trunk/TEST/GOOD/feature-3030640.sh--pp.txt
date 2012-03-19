@@ -1,5 +1,5 @@
-lexer-configuration.hpp
-lexer.cpp
-lexer.hpp
-lexer-token.hpp
-lexer-token_ids.hpp
+Lexer-configuration.hpp
+Lexer.cpp
+Lexer.hpp
+Lexer-token.hpp
+Lexer-token_ids.hpp

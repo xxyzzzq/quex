@@ -12,8 +12,8 @@ int
 main(int argc, char** argv) 
 {        
     /* Zero pointer to constructor --> memory managed by user */
-    tiny_lexer            qlex;
-    QUEX_TYPE_TOKEN       token;           
+    quex_tiny_lexer       qlex;
+    quex_Token            token;           
     QUEX_TYPE_CHARACTER*  rx_buffer  = 0x0; /* receive buffer */
     MemoryChunk           chunk;
     size_t                size       = (size_t)-1;
