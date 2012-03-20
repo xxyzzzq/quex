@@ -27,9 +27,11 @@ def do():
     if Setup.language == "DOT": 
         return do_plot()
 
-
     mode_db = quex_file_parser.do(Setup.input_mode_files)
 
+    # (*) [Optional] Make a customized token class
+    class_token_header, class_token_implementation = token_class_maker.do()
+    
     # (*) Implement the 'quex' core class from a template
     # -- do the coding of the class framework
     configuration_header = configuration.do(mode_db) 
@@ -45,9 +47,6 @@ def do():
     token_id_header                        = token_id_maker.do(Setup) 
     function_map_id_to_name_implementation = token_id_maker.do_map_id_to_name_function()
 
-    # (*) [Optional] Make a customized token class
-    class_token_header, class_token_implementation = token_class_maker.do()
-    
     # (*) [Optional] Generate a converter helper
     codec_converter_helper_header, \
     codec_converter_helper_implementation = codec_converter_helper.do()

@@ -211,9 +211,7 @@ def do(argv):
 
     # The only case where no converter helper is required is where ASCII 
     # (Unicode restricted to [0, FF] is used.
-    setup.converter_helper_required_f = True
-    if setup.converter_f == False and setup.buffer_element_size == 1 and setup.buffer_codec == "unicode":
-        setup.converter_helper_required_f = False
+    __setup_converter_helper(setup)
 
     validation.do(setup, command_line, argv)
 
@@ -237,7 +235,6 @@ def do(argv):
             parse_token_id_file(setup.token_id_foreign_definition_file, 
                                 setup.token_id_prefix_plain, 
                                 CommentDelimiterList, IncludeRE)
-
 
     # (*) Compression Types
     compression_type_list = []
@@ -336,6 +333,13 @@ def __prepare_file_name(Suffix, ContentType):
     else:                            return os.path.normpath(setup.output_directory + "/" + file_name)
 
 def __setup_analyzer_class(setup):
+    """ X0::X1::X2::ClassName --> analyzer_class_name = ClassName
+                                  analyzer_name_space = ["X0", "X1", "X2"]
+        ::ClassName --> analyzer_class_name = ClassName
+                        analyzer_name_space = []
+        ClassName --> analyzer_class_name = ClassName
+                      analyzer_name_space = ["quex"]
+    """
     if setup.analyzer_class_name.find("::") == -1:
         setup.analyzer_class_name = "quex::%s" % setup.analyzer_class_name
 
@@ -345,9 +349,12 @@ def __setup_analyzer_class(setup):
          read_namespaced_name(setup.analyzer_class_name, 
                               "analyzer engine (options -o, --engine, --analyzer-class)")
 
-    ##print "## setup.analyzer_class_name:", setup.analyzer_class_name
-    ##print "## setup.analyzer_name_space:", setup.analyzer_name_space
-    ##print "## setup.analyzer_name_safe: ", setup.analyzer_name_safe   
+    if setup.show_name_spaces_f:
+        print "Analyzer: {"
+        print "     class_name:  %s;" % setup.analyzer_class_name
+        print "     name_space:  %s;" % repr(setup.analyzer_name_space)[1:-1]
+        print "     name_prefix: %s;" % setup.analyzer_name_safe   
+        print "}"
 
     setup.analyzer_derived_class_name,       \
     setup.analyzer_derived_class_name_space, \
@@ -357,6 +364,13 @@ def __setup_analyzer_class(setup):
                               AllowEmptyF=True)
 
 def __setup_token_class(setup):
+    """ X0::X1::X2::ClassName --> token_class_name = ClassName
+                                  token_name_space = ["X0", "X1", "X2"]
+        ::ClassName --> token_class_name = ClassName
+                        token_name_space = []
+        ClassName --> token_class_name = ClassName
+                      token_name_space = analyzer_name_space
+    """
     if setup.token_class_name.find("::") == -1:
         # By default, setup the token in the analyzer's namespace
         if len(setup.analyzer_name_space) != 0:
@@ -374,9 +388,12 @@ def __setup_token_class(setup):
          read_namespaced_name(setup.token_class_name, 
                               "token class (options --token-class, --tc)")
 
-    ##print "##setup.token_class_name:",       setup.token_class_name
-    ##print "##setup.token_class_name_space:", setup.token_class_name_space
-    ##print "##setup.token_class_name_safe:",  setup.token_class_name_safe 
+    if setup.show_name_spaces_f:
+        print "Token: {"
+        print "     class_name:  %s;" % setup.token_class_name
+        print "     name_space:  %s;" % repr(setup.token_class_name_space)[1:-1]
+        print "     name_prefix: %s;" % setup.token_class_name_safe   
+        print "}"
 
     if len(setup.token_class_name_space) == 0 and not analyzer_in_root_namespace_f:
         setup.token_class_name_space = setup.analyzer_name_space
@@ -391,3 +408,14 @@ def __setup_token_class(setup):
 
     #if len(setup.token_class_name_space) == 0:
     #    setup.token_class_name_space = deepcopy(setup.analyzer_name_space)
+
+def __setup_converter_helper(setup):
+    setup.converter_helper_required_f = True
+    if setup.converter_f == False and setup.buffer_element_size == 1 and setup.buffer_codec == "unicode":
+        setup.converter_helper_required_f = False
+
+    if setup.buffer_codec in ["utf8", "utf16", "utf32"]: setup.converter_helper_configuration = "utf*"
+    elif setup.buffer_codec == "unicode":
+        if setup.converter_helper_required_f:            setup.converter_helper_configuration = "unicode"
+        else:                                            setup.converter_helper_configuration = "identical"
+    else:                                                setup.converter_helper_configuration = "codec"

@@ -43,4 +43,4 @@ Exit:  to   ONE
 |             to   ONE
 Enter: from TWO
 TOKEN: RETURN_TO_MODE 'return'
-transition.exe: <<QUEX_PATH>>/quex/code_base/analyzer/member/mode-handling.i:77: EHLexer_pop_mode: Assertion `me->_mode_stack.end != me->_mode_stack.begin' failed.
+transition.exe: <<QUEX_PATH>>/quex/code_base/analyzer/member/mode-handling.i:77: quex_EHLexer_pop_mode: Assertion `me->_mode_stack.end != me->_mode_stack.begin' failed.
