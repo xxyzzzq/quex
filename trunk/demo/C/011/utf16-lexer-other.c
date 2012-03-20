@@ -6,10 +6,10 @@
 int 
 main(int argc, char** argv) 
 {        
-    QUEX_TYPE_TOKEN*      token_p    = 0x0;
-    bool                  BigEndianF = (argc < 2 || (strcmp(argv[1], "BE") == 0)); 
-    const char*           file_name  = BigEndianF ? "example-other-utf16be.txt" : "example-other-utf16le.txt";
-    UTF16Lex                    qlex;
+    quex_Token*      token_p    = 0x0;
+    bool             BigEndianF = (argc < 2 || (strcmp(argv[1], "BE") == 0)); 
+    const char*      file_name  = BigEndianF ? "example-other-utf16be.txt" : "example-other-utf16le.txt";
+    quex_UTF16Lex    qlex;
     const QUEX_TYPE_CHARACTER*  iterator = 0x0;
 
     if( argc == 1 ) {

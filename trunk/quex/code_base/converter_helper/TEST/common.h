@@ -5,8 +5,9 @@
 #ifndef __INCLUDE_GUARD__COMMON_H
 #define __INCLUDE_GUARD__COMMON_H
 
-#define QUEX_NAMESPACE_MAIN_OPEN  namespace Tester {
-#define QUEX_NAMESPACE_MAIN_CLOSE }
+#define QUEX_NAMESPACE_MAIN        Tester
+#define QUEX_NAMESPACE_MAIN_OPEN   namespace Tester {
+#define QUEX_NAMESPACE_MAIN_CLOSE  }
 #define QUEX_NAMESPACE_TOKEN_OPEN  namespace TesterToken {
 #define QUEX_NAMESPACE_TOKEN_CLOSE }
 

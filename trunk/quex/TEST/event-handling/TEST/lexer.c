@@ -13,7 +13,7 @@ main(int argc, char** argv)
     QUEX_TYPE_TOKEN*    token_p = 0x0;
     QUEX_TYPE_TOKEN_ID  token_id = 0;
     char                file_name[256];
-    EHLexer             qlex;
+    quex_EHLexer        qlex;
 
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
         printf(__TEST_DESCRIPTION ";\n");

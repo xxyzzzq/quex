@@ -1,4 +1,4 @@
-<history date="Mon Mar 19 08:35:39 2012" element-n="162">
+<history date="Tue Mar 20 22:19:24 2012" element-n="164">
     <day year="2009" month="04" day="07">
         <history-init time="05:54:43"/>
         <crc-error time="08:24:24" application="transition-x.exe" choice="1" database-crc="-683060918" real-crc="2085579180"/>
@@ -452,5 +452,9 @@
     </day>
     <day year="2012" month="02" day="17">
         <crc-error time="23:12:43" application="on_skip_range_open.sh" choice="default" database-crc="1314773609" real-crc="412955726"/>
+    </day>
+    <day year="2012" month="03" day="20">
+        <crc-error time="21:19:05" application="transition.sh" choice="error" database-crc="1033984840" real-crc="609096275"/>
+        <crc-error time="21:19:21" application="transition-x.sh" choice="error" database-crc="-1050387149" real-crc="-1605736885"/>
     </day>
 </history>

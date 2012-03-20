@@ -331,6 +331,12 @@ The following options support the definition of a independently customized token
         defines a token type that cannot take a ``QUEX_TYPE_CHARACTER*`` then
         quex posts a warning. By means of this flag the warning is disabled.
 
+.. cmdoptione:: ``--token-class-only``, ``--tco``
+
+        When specified, quex only creates a token class. This token class differs
+        from the normally generated token classes in that it may be shared between
+        multiple lexical analyzers (see :ref:`sec-shared-token-class`).
+
 There may be cases where the characters used to indicate buffer limit needs to
 be redefined, because the default value appear in a pattern footnote:[As for
 'normal' ASCII or Unicode based lexical analyzers, this would most probably not
@@ -703,6 +709,14 @@ The following options control the comment which is added to the generated code:
         inherited from mode `ALL`. The math operator pattern was inherited from mode
         ``CALC_OP`` and the comment start pattern "//" was implemented in ``PROGRAM`` 
         itself.
+
+The following option allows to verify that the correct name spaces have been specified
+for the analyzer and the token.
+
+.. cmdoption:: --show-name-spaces, --sns
+
+   If specified short information about the name space of the analyzer and the
+   token are printed on the console. 
 
 The comment output is framed by ``BEGIN:`` and ``END:`` markers. This facilitates the extraction
 of this information for further processing. For example, the Unix command 'awk' can be used:

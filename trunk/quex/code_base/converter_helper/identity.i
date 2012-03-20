@@ -23,10 +23,10 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
-QUEX_NAME(identical_string)(const QUEX_TYPE_CHARACTER**  source_pp, 
-                            const QUEX_TYPE_CHARACTER*   SourceEnd, 
-                            char**                       drain_pp,  
-                            const char*                  DrainEnd)
+QUEX_CONVERTER_STRING(identical, char)(const QUEX_TYPE_CHARACTER**  source_pp, 
+                                       const QUEX_TYPE_CHARACTER*   SourceEnd, 
+                                       char**                       drain_pp,  
+                                       const char*                  DrainEnd)
 {
     const QUEX_TYPE_CHARACTER* from_p = *source_pp;
     char*                      to_p   = *drain_pp;
@@ -41,10 +41,10 @@ QUEX_NAME(identical_string)(const QUEX_TYPE_CHARACTER**  source_pp,
 
 #if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
 QUEX_INLINE void
-QUEX_NAME(identical_wstring)(const QUEX_TYPE_CHARACTER**  source_pp, 
-                             const QUEX_TYPE_CHARACTER*   SourceEnd, 
-                             wchar_t**                    drain_pp,  
-                             const wchar_t*               DrainEnd)
+QUEX_CONVERTER_STRING(identical, wchar)(const QUEX_TYPE_CHARACTER**  source_pp, 
+                                        const QUEX_TYPE_CHARACTER*   SourceEnd, 
+                                        wchar_t**                    drain_pp,  
+                                        const wchar_t*               DrainEnd)
 {
     const QUEX_TYPE_CHARACTER* from_p = *source_pp;
     wchar_t*                   to_p   = *drain_pp;
@@ -61,11 +61,11 @@ QUEX_NAME(identical_wstring)(const QUEX_TYPE_CHARACTER**  source_pp,
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
     QUEX_INLINE std::basic_string<char>
-    QUEX_NAME(identical_string)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
+    QUEX_CONVERTER_STRING(identical, char)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
     { return std::string((const char*)Source.c_str()); }
 #   if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
     QUEX_INLINE std::basic_string<wchar_t>
-    QUEX_NAME(identical_wstring)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
+    QUEX_CONVERTER_STRING(identical, wchar)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
     { return std::wstring((const wchar_t*)Source.c_str()); }
 #   endif
 #endif

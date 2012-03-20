@@ -20,6 +20,8 @@
 #   error "__QUEX_FROM must be defined!"
 #elif ! defined(__QUEX_FROM_TYPE)
 #   error "__QUEX_FROM_TYPE must be defined!"
+#elif ! defined(QUEX_NAMESPACE_MAIN)
+#   error "QUEX_NAMESPACE_MAIN must be defined!"
 #endif
 
 /* (1) Character converters */

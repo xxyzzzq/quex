@@ -219,8 +219,7 @@
 #   define QUEX_FUNCTION0(NAMESPACE, FUNCTION)          FUNCTION
 #   define QUEX_FUNCTION(NAMESPACE, FUNCTION)           NAMESPACE :: FUNCTION
 #   define QUEX_SIGNATURE(CLASS, FUNCTION)              CLASS  ## :: ## FUNCTION
-#   define QUEX_THIS(C)                                 /* Nothing To Do */
-#   define QUEX_ME(C)                                   C* me = this;
+#   define QUEX_THIS_IS_ME(C)                           C* me = this;
 #   define QUEX_MEMBERF(C, F)                           QUEX_SIGNATURE(C, F)()
 #   define QUEX_MEMBERF1(C, F, ARG0)                    QUEX_SIGNATURE(C, F)(ARG0)
 #   define QUEX_MEMBERF2(C, F, ARG0, ARG1)              QUEX_SIGNATURE(C, F)(ARG0, ARG1)
@@ -231,7 +230,7 @@
 #   define QUEX_FUNCTION(NAMESPACE, FUNCTION)           NAMESPACE ## _ ## FUNCTION
 #   define QUEX_SIGNATURE(CLASS, FUNCTION)              CLASS     ## _ ## FUNCTION
 #   define QUEX_THIS(C)                                 struct C ## _tag* me
-#   define QUEX_ME(C)                                   /* Nothing To Do */
+#   define QUEX_THIS_IS_ME(C)                           /* Nothing To Do */
 #   define QUEX_MEMBERF(C, F)                           QUEX_SIGNATURE(C, F)(QUEX_THIS(C))
 #   define QUEX_MEMBERF1(C, F, ARG0)                    QUEX_SIGNATURE(C, F)(QUEX_THIS(C), ARG0)
 #   define QUEX_MEMBERF2(C, F, ARG0, ARG1)              QUEX_SIGNATURE(C, F)(QUEX_THIS(C), ARG0, ARG1)
@@ -251,18 +250,15 @@
 #define QUEX_T_MEMBERF3(FUNCTION, ARG0, ARG1, ARG2)        QUEX_MEMBERF3(QUEX_NAME_COMPLETE_TOKEN, FUNCTION, ARG0, ARG1, ARG2)
 #define QUEX_T_MEMBERF4(FUNCTION, ARG0, ARG1, ARG2, ARG3)  QUEX_MEMBERF4(QUEX_NAME_COMPLETE_TOKEN, FUNCTION, ARG0, ARG1, ARG2, ARG3)
 
-#define __QUEX_LINK(X, Y) X ## _to_ ## Y
-
 /* For function definitions, the 'namespace::' is not required. => QUEX_FUNCTION0 */
-#define __QUEX_CONVERTER_CHAR_DEF(FROM, TO)   QUEX_FUNCTION0(QUEX_NAMESPACE_MAIN,FROM ## _to_ ## TO ## _character)
-#define __QUEX_CONVERTER_STRING_DEF(FROM, TO) QUEX_FUNCTION0(QUEX_NAMESPACE_MAIN,FROM ## _to_ ## TO)
-#define QUEX_CONVERTER_CHAR_DEF(FROM, TO)     __QUEX_CONVERTER_CHAR_DEF(FROM, TO)
-#define QUEX_CONVERTER_STRING_DEF(FROM, TO)   __QUEX_CONVERTER_STRING_DEF(FROM, TO)
+#define __QUEX_CONVERTER_CHAR_DEF(N, FROM, TO)    QUEX_FUNCTION0(N, FROM ## _to_ ## TO ## _character)
+#define __QUEX_CONVERTER_STRING_DEF(N, FROM, TO)  QUEX_FUNCTION0(N, FROM ## _to_ ## TO)
+#define QUEX_CONVERTER_CHAR_DEF(FROM, TO)         __QUEX_CONVERTER_CHAR_DEF(QUEX_NAMESPACE_MAIN, FROM, TO)
+#define QUEX_CONVERTER_STRING_DEF(FROM, TO)       __QUEX_CONVERTER_STRING_DEF(QUEX_NAMESPACE_MAIN, FROM, TO)
 
 /* For function calls, the 'namespace::' IS required. => QUEX_FUNCTION */
-#define __QUEX_CONVERTER_CHAR(FROM, TO)       QUEX_FUNCTION(QUEX_NAMESPACE_MAIN, FROM ## _to_ ## TO ## _character)
-#define __QUEX_CONVERTER_STRING(FROM, TO)     QUEX_FUNCTION(QUEX_NAMESPACE_MAIN, FROM ## _to_ ## TO)
-#define QUEX_CONVERTER_CHAR(FROM, TO)         __QUEX_CONVERTER_CHAR(FROM, TO)
-#define QUEX_CONVERTER_STRING(FROM, TO)       __QUEX_CONVERTER_STRING(FROM, TO)
+#define __QUEX_CONVERTER_CHAR(N, FROM, TO)    QUEX_FUNCTION(N, FROM ## _to_ ## TO ## _character)
+#define __QUEX_CONVERTER_STRING(N, FROM, TO)  QUEX_FUNCTION(N, FROM ## _to_ ## TO)
+#define QUEX_CONVERTER_CHAR(FROM, TO)         __QUEX_CONVERTER_CHAR(QUEX_NAMESPACE_MAIN, FROM, TO)
+#define QUEX_CONVERTER_STRING(FROM, TO)       __QUEX_CONVERTER_STRING(QUEX_NAMESPACE_MAIN, FROM, TO)
  
-#undef  __QUEX_LINK

@@ -1,4 +1,4 @@
-from quex.engine.misc.string_handling import blue_print
+from   quex.engine.misc.string_handling import blue_print
 
 from   quex.engine.generator.languages.address     import get_label, \
                                                           get_address, \
@@ -299,7 +299,7 @@ __terminal_state_prolog  = """
 #   define LexemeEnd    $$INPUT_P$$
 #endif
 
-#define LexemeNull      (&QUEX_NAME(LexemeNullObject))
+#define LexemeNull      (&$$LEXEME_NULL_OBJECT$$)
 """
 
 __terminal_state_epilog = """
@@ -432,7 +432,7 @@ def __terminal_on_failure_prolog(LanguageDB):
     ]
 
 def __terminal_states(StateMachineName, action_db, OnFailureAction, EndOfStreamAction, 
-                      PreConditionIDList, LanguageDB, VariableDB, OnAfterMatchStr):
+                      PreConditionIDList, LanguageDB, VariableDB, OnAfterMatchStr, LexemeNullObjectName):
     """NOTE: During backward-lexing, for a pre-condition, there is not need for terminal
              states, since only the flag 'pre-condition fulfilled is raised.
     """      
@@ -471,8 +471,9 @@ def __terminal_states(StateMachineName, action_db, OnFailureAction, EndOfStreamA
 
     prolog = blue_print(__terminal_state_prolog,
                         [
-                          ["$$LEXEME_LENGTH$$", LanguageDB.LEXEME_LENGTH()],
-                          ["$$INPUT_P$$",       LanguageDB.INPUT_P()],
+                          ["$$LEXEME_LENGTH$$",      LanguageDB.LEXEME_LENGTH()],
+                          ["$$INPUT_P$$",            LanguageDB.INPUT_P()],
+                          ["$$LEXEME_NULL_OBJECT$$", LexemeNullObjectName],
                         ]
                        )
 
@@ -543,10 +544,15 @@ def __frame_of_all(Code, Setup):
         implementation_header_str += "#include <quex/code_base/analyzer/headers.i>\n"
         implementation_header_str += "#include <quex/code_base/analyzer/C-adaptions.h>\n"
 
+    lexeme_null_definition = ""
+    if Setup.lexeme_null_foreign == "":
+        # LexemeNull has been defined elsewhere.
+        lexeme_null_definition = "QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject) = (QUEX_TYPE_CHARACTER)0;\n"
+
     return "".join(["/* #include \"%s\"*/\n" % Setup.get_file_reference(Setup.output_header_file),
                     implementation_header_str,
                     "QUEX_NAMESPACE_MAIN_OPEN\n",
-                    "QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject) = (QUEX_TYPE_CHARACTER)0;\n",
+                    lexeme_null_definition,
                     Code,
                     "QUEX_NAMESPACE_MAIN_CLOSE\n"])                     
 

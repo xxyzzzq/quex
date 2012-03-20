@@ -28,6 +28,8 @@
 #ifndef __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__FROM_UTF16
 #define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__FROM_UTF16
 
+#include <quex/code_base/converter_helper/common.h>
+
 QUEX_NAMESPACE_MAIN_OPEN
 
 #define __QUEX_FROM                utf16
