@@ -143,8 +143,8 @@ class Generator(GeneratorBase):
         txt.extend(state_machine_code)
 
         lexeme_null_object_name = "QUEX_NAME(LexemeNullObject)"
-        if Setup.lexeme_null_foreign != "":
-            lexeme_null_object_name = Setup.lexeme_null_foreign
+        if Setup.external_lexeme_null_object != "":
+            lexeme_null_object_name = Setup.external_lexeme_null_object
 
         # -- terminal states: execution of pattern actions  
         terminal_code = LanguageDB["$terminal-code"](self.state_machine_name,

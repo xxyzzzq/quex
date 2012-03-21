@@ -15,8 +15,9 @@
  *
  * 2010 (C) Frank-Rene Schaefer; 
  * ABSOLUTELY NO WARRANTY                                                    */
-#ifndef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__IDENTITY_I
-#define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__IDENTITY_I
+#if    ! defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__IDENTITY_I) \
+    && ! defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED)
+#define          __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__IDENTITY_I
 
 #include <quex/code_base/converter_helper/identity>
 

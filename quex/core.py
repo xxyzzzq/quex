@@ -29,9 +29,27 @@ def do():
 
     mode_db = quex_file_parser.do(Setup.input_mode_files)
 
-    # (*) [Optional] Make a customized token class
-    class_token_header, class_token_implementation = token_class_maker.do()
+    # (*) [Optional] Generate a converter helper
+    codec_converter_helper_header, \
+    codec_converter_helper_implementation = codec_converter_helper.do()
     
+    # (*) [Optional] Make a customized token class
+    class_token_header, \
+    class_token_implementation = token_class_maker.do()
+
+    if Setup.token_class_only_f:
+        write_safely_and_close(blackboard.token_type_definition.get_file_name(), 
+                               class_token_header)
+        write_safely_and_close(blackboard.token_type_definition.get_file_name() + ".i", 
+                               class_token_implementation)
+        return
+
+    # (*) Generate the token ids
+    #     (This needs to happen after the parsing of mode_db, since during that
+    #      the token_id_db is developed.)
+    token_id_header                        = token_id_maker.do(Setup) 
+    function_map_id_to_name_implementation = token_id_maker.do_map_id_to_name_function()
+
     # (*) Implement the 'quex' core class from a template
     # -- do the coding of the class framework
     configuration_header = configuration.do(mode_db) 
@@ -40,16 +58,6 @@ def do():
     class_analyzer_implementation = analyzer_class.do_implementation(mode_db)
 
     mode_implementation  = mode_classes.do(mode_db)
-
-    # (*) Generate the token ids
-    #     (This needs to happen after the parsing of mode_db, since during that
-    #      the token_id_db is developed.)
-    token_id_header                        = token_id_maker.do(Setup) 
-    function_map_id_to_name_implementation = token_id_maker.do_map_id_to_name_function()
-
-    # (*) [Optional] Generate a converter helper
-    codec_converter_helper_header, \
-    codec_converter_helper_implementation = codec_converter_helper.do()
 
     # (*) implement the lexer mode-specific analyser functions
     function_analyzers_implementation = analyzer_functions_get(mode_db)

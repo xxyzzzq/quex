@@ -337,6 +337,23 @@ The following options support the definition of a independently customized token
         from the normally generated token classes in that it may be shared between
         multiple lexical analyzers (see :ref:`sec-shared-token-class`).
 
+        .. note::
+
+        When option ``--token-class-only`` is specified, then the LexemeNull is 
+        implemented along with the token class. In this case all analyzers
+        that use the token class, shall define ``--lexeme-null-object`` according
+        the token namespace.
+
+.. cmdoptions:: ``--lexeme-null-object``, ``--lno`` variable name
+
+        The 'name' is the name of the ``LexemeNull`` object. If the option is
+        not specified, then this object is created along with the analyzer
+        automatically. When using a shared token class, then this object must
+        have been created along with the token class. Announcing the name of
+        the lexeme null object prevents quex from generating a lexeme null
+        inside the engine itself.
+
+
 There may be cases where the characters used to indicate buffer limit needs to
 be redefined, because the default value appear in a pattern footnote:[As for
 'normal' ASCII or Unicode based lexical analyzers, this would most probably not

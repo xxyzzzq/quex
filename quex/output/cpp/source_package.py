@@ -155,17 +155,14 @@ converter_helper_unicode = """
 """
 
 converter_helper_utf8 = """
-/converter_helper/character-converter/from-utf8.i
 /converter_helper/from-utf8
 /converter_helper/from-utf8.i
 """
 converter_helper_utf16 = """
-/converter_helper/character-converter/from-utf16.i
 /converter_helper/from-utf16
 /converter_helper/from-utf16.i
 """
 converter_helper_utf32 = """
-/converter_helper/character-converter/from-utf32.i
 /converter_helper/from-utf32
 /converter_helper/from-utf32.i
 """

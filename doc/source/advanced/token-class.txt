@@ -923,7 +923,7 @@ element type is used as can be specified by command line option
 
 The ``LexemeNull`` is placed in the token's name space and also *implemented*
 there. Analyzers using the shared token class shall specify command line option
-``--foreign-lexeme-null`` and specify the name of it.
+``--lexeme-null-object`` and specify the name of it.
 
 .. rubric:: Footnotes
 

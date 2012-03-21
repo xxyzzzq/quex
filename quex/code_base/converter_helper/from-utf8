@@ -25,8 +25,9 @@
  *
  * (C) 2012 Frank-Rene Schaefer. 
  *     ABSOLUTELY NO WARRANTY                                                */
-#ifndef __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__FROM_UTF8
-#define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__FROM_UTF8
+#if    ! defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__FROM_UTF8) \
+    && ! defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED)
+#define          __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__FROM_UTF8
 
 #include <quex/code_base/converter_helper/common.h>
 
