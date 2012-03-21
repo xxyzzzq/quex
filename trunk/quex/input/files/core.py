@@ -58,6 +58,9 @@ def do(file_list):
     # into 'real' modes => call 'finalize()'!
     mode.finalize()
 
+    if Setup.token_class_only_f and blackboard.token_type_definition is None:
+        parse_default_token_definition()
+
     return blackboard.mode_db
 
 default_token_type_definition_triggered_by_mode_definition_f = False
@@ -155,11 +158,7 @@ def parse_section(fh):
             # When the first mode is parsed then a token_type definition must be 
             # present. If not, the default token type definition is considered.
             if blackboard.token_type_definition is None:
-                sub_fh = open_file_or_die(os.environ["QUEX_PATH"] 
-                                          + Setup.language_db["$code_base"] 
-                                          + Setup.language_db["$token-default-file"])
-                parse_section(sub_fh)
-                sub_fh.close()
+                parse_default_token_definition()
                 default_token_type_definition_triggered_by_mode_definition_f = True
 
             mode.parse(fh)
@@ -288,3 +287,10 @@ def parse_token_id_definitions(fh, NamesOnlyF=False):
         result.sort()
         return result
 
+
+def parse_default_token_definition():
+    sub_fh = open_file_or_die(os.environ["QUEX_PATH"] 
+                              + Setup.language_db["$code_base"] 
+                              + Setup.language_db["$token-default-file"])
+    parse_section(sub_fh)
+    sub_fh.close()

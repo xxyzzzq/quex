@@ -9,6 +9,7 @@ import quex.blackboard                    as     blackboard
 import quex.engine.generator.action_info  as     action_info
 from   quex.blackboard                    import setup as Setup
 
+import re
 
 def do():
     assert blackboard.token_type_definition is not None
@@ -18,6 +19,24 @@ def do():
         return None, None
 
     txt, txt_i = _do(blackboard.token_type_definition)
+
+    # Return declaration and implementation as two strings
+    if Setup.token_class_only_f:
+        txt   = clean_for_independence(txt)
+        txt_i = clean_for_independence(txt_i)
+
+        print "info: Analyzers using this token class must be generated with"
+        print "info:"
+        print "info: --token-class-file   %s"
+        print "info: --token-class        %s"
+        print "info: --lexeme-null-object QUEX_NAME_TOKEN(LexemeNullObject)"
+        print "info:"
+        print "info: The file %s implements the token class."
+        print "info: It must be included by *one* distinct source file."
+        print "info:"
+        print "info: The rest of the parameters to the analyzer has to match"
+        print "info: the parameters for this call to quex."
+        print "info:"
 
     return txt, txt_i
 
@@ -62,32 +81,11 @@ def _do(Descr):
     if Setup.language == "C":
         token_class_name = Setup.token_class_name_safe
 
-    if Setup.buffer_codec in ["utf8", "utf16", "utf32"]:
-        converter_declaration_include    = "#include <quex/code_base/converter_helper/from-%s>"   % Setup.buffer_codec
-        converter_implementation_include = "#include <quex/code_base/converter_helper/from-%s.i>" % Setup.buffer_codec
-        converter_string                 = "QUEX_CONVERTER_STRING(%s,char)"  % Setup.buffer_codec
-        converter_wstring                = "QUEX_CONVERTER_STRING(%s,wchar)" % Setup.buffer_codec
+    converter_declaration_include,   \
+    converter_implementation_include, \
+    converter_string,                 \
+    converter_wstring                 = __get_converter_configuration()
 
-    elif Setup.buffer_codec == "unicode":
-        if Setup.converter_helper_required_f:
-            converter_declaration_include    = "#include <quex/code_base/converter_helper/from-unicode-buffer>"
-            converter_implementation_include = "#include <quex/code_base/converter_helper/from-unicode-buffer.i>"
-            converter_string                 = "QUEX_CONVERTER_STRING(%s,char)"  % Setup.buffer_codec
-            converter_wstring                = "QUEX_CONVERTER_STRING(%s,wchar)" % Setup.buffer_codec
-        else:
-            converter_declaration_include    = "#include <quex/code_base/converter_helper/identity>"
-            converter_implementation_include = "#include <quex/code_base/converter_helper/identity.i>"
-            converter_string                 = "QUEX_CONVERTER_STRING(%s, char)"  % "identical"
-            converter_wstring                = "QUEX_CONVERTER_STRING(%s, wchar)" % "identical"
-
-    else:
-        codec_header   = Setup.get_file_reference(Setup.output_buffer_codec_header)
-        codec_header_i = Setup.get_file_reference(Setup.output_buffer_codec_header_i)
-        converter_declaration_include    = "#include \"%s\"" % codec_header
-        converter_implementation_include = "#include \"%s\"" % codec_header_i
-        converter_string                 = "QUEX_CONVERTER_STRING(%s,char)"  % Setup.buffer_codec
-        converter_wstring                = "QUEX_CONVERTER_STRING(%s,wchar)" % Setup.buffer_codec
-    
     txt = blue_print(template_str,
              [
               ["$$BODY$$",                    Descr.body.get_code()],
@@ -117,6 +115,10 @@ def _do(Descr):
               ["$CONVERTER_WSTRING",                converter_wstring],
              ])
 
+    lexeme_null_implementation = ""
+    if Setup.token_class_only_f:
+        lexeme_null_implementation = "QUEX_TYPE_CHARACTER  QUEX_NAME_TOKEN(LexemeNullObject) = (QUEX_TYPE_CHARACTER)0;\n"
+
     txt_i = blue_print(template_i_str, 
                        [
                         ["$$CONSTRUCTOR$$",             Descr.constructor.get_code()],
@@ -130,7 +132,9 @@ def _do(Descr):
                         ["$$TOKEN_CLASS$$",             token_class_name],
                         ["$$TOKEN_REPETITION_N_GET$$",  Descr.repetition_get.get_code()],
                         ["$$TOKEN_REPETITION_N_SET$$",  Descr.repetition_set.get_code()],
+                        ["$$LEXEME_NULL_IMPLEMENTATION$$",  lexeme_null_implementation],
                        ])
+
 
     txt_i = blue_print(txt_i, [
               ["$INCLUDE_CONVERTER_DECLARATION",    converter_declaration_include],
@@ -139,7 +143,6 @@ def _do(Descr):
               ["$CONVERTER_WSTRING",                converter_wstring],
              ])
 
-    # Return declaration and implementation as two strings
     return txt, txt_i
 
 def get_distinct_members(Descr):
@@ -290,4 +293,75 @@ def get_quick_setters(Descr):
 
     return txt
 
+def __get_converter_configuration():
+
+    if not Setup.converter_helper_required_f:
+        declaration_include    = "#include <quex/code_base/converter_helper/identity>"
+        implementation_include = "#include <quex/code_base/converter_helper/identity.i>"
+        from_codec = "identical"
+
+    elif Setup.buffer_codec in ["utf8", "utf16", "utf32"]:
+        declaration_include    = "#include <quex/code_base/converter_helper/from-%s>"   % Setup.buffer_codec
+        implementation_include = "#include <quex/code_base/converter_helper/from-%s.i>" % Setup.buffer_codec
+        from_codec = Setup.buffer_codec
+
+    elif Setup.buffer_codec == "unicode":
+        declaration_include    = "#include <quex/code_base/converter_helper/from-unicode-buffer>"
+        implementation_include = "#include <quex/code_base/converter_helper/from-unicode-buffer.i>"
+        from_codec = Setup.buffer_codec
+
+    else:
+        declaration_include    = "#include \"%s\"" % \
+                                           Setup.get_file_reference(Setup.output_buffer_codec_header)
+        implementation_include = "#include \"%s\"" % \
+                                           Setup.get_file_reference(Setup.output_buffer_codec_header_i)
+        from_codec = Setup.buffer_codec
+
+
+    if not Setup.token_class_only_f:
+        string  = "QUEX_CONVERTER_STRING(%s,char)"  % from_codec
+        wstring = "QUEX_CONVERTER_STRING(%s,wchar)" % from_codec
+
+        return declaration_include, implementation_include, string, wstring
+
+    namespace_token       = ""
+    namespace_token_open  = ""
+    namespace_token_close = ""
+    frame_begin = "#define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED)\n" \
+                  "#undef  QUEX_NAMESPACE_MAIN\n"                                   \
+                  "#undef  QUEX_NAMESPACE_MAIN_OPEN\n"                              \
+                  "#undef  QUEX_NAMESPACE_MAIN_CLOSE\n"                             \
+                  "#define QUEX_NAMESPACE_MAIN       %s\n"                          \
+                  "#define QUEX_NAMESPACE_MAIN_OPEN  %s\n"                          \
+                  "#define QUEX_NAMESPACE_MAIN_CLOSE %s\n"                          \
+                  % (namespace_token, namespace_token_open, namespace_token_close)
+
+    frame_end   = "#undef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED\n"        \
+                  "#undef  QUEX_NAMESPACE_MAIN\n"                                         \
+                  "#undef  QUEX_NAMESPACE_MAIN_OPEN\n"                                    \
+                  "#undef  QUEX_NAMESPACE_MAIN_CLOSE\n"                                   \
+                  "#define QUEX_NAMESPACE_MAIN       QUEX_NAMESPACE_MAIN_BACKUP\n"        \
+                  "#define QUEX_NAMESPACE_MAIN_OPEN  QUEX_NAMESPACE_MAIN_OPEN_BACKUP\n"  \
+                  "#define QUEX_NAMESPACE_MAIN_CLOSE QUEX_NAMESPACE_MAIN_CLOSE_BACKUP\n"
+    declaration_include    = "%s%s%s" \
+                                       % (frame_begin, declaration_include, frame_end)
+    implementation_include = "%s%s%s" \
+                                       % (frame_begin, implementation_include, frame_end)
+
+    string  = "%s_%s_to_char"  % (namespace_token, from_codec)
+    wstring = "%s_%s_to_wchar" % (namespace_token, from_codec)
+
+    return declaration_include, implementation_include, string, wstring
+
+QUEX_TYPE_CHARACTER_re        = re.compile("\\bQUEX_TYPE_CHARACTER\\b", re.UNICODE)
+QUEX_TYPE_ANALYZER_re         = re.compile("\\bQUEX_TYPE_ANALYZER\\b", re.UNICODE)
+QUEX_LexemeNullDeclaration_re = re.compile("QUEX_NAME\\(LexemeNullObject\\)", re.UNICODE)
+def clean_for_independence(txt):
+    global QUEX_TYPE_CHARACTER_re
+    global QUEX_TYPE_ANALYZER_re
+    global QUEX_LexemeNullDeclaration_re
+    txt = QUEX_TYPE_CHARACTER_re.sub(Setup.buffer_element_type, txt)
+    txt = QUEX_TYPE_ANALYZER_re.sub("void", txt)
+    txt = QUEX_LexemeNullDeclaration_re.sub("QUEX_NAME_TOKEN(LexemeNullObject)", txt)
+    return txt
 

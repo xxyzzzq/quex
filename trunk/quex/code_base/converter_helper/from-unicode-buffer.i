@@ -36,8 +36,9 @@
  *
  * 2010 (C) Frank-Rene Schaefer; 
  * ABSOLUTELY NO WARRANTY                                                    */
-#ifndef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__FROM_UNICODE_BUFFER_I
-#define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__FROM_UNICODE_BUFFER_I
+#if    ! defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__FROM_UNICODE_BUFFER_I) \
+    && ! defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED)
+#define          __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__FROM_UNICODE_BUFFER_I
 
 #include <quex/code_base/converter_helper/from-unicode-buffer>
 

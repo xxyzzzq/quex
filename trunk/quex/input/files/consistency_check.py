@@ -1,5 +1,6 @@
 from   quex.engine.misc.file_in                    import error_msg, verify_word_in_list
 import quex.blackboard                             as     blackboard
+from   quex.blackboard                             import setup as Setup
 from   quex.engine.generator.action_info           import CodeFragment
 import quex.engine.state_machine.check.commonality as     commonality_checker
 from   quex.engine.state_machine.check.commonality import E_Commonality 
@@ -16,6 +17,11 @@ def do(ModeDB):
           -- start mode is not inheritable only?
        -- Entry/Exit transitions are allows?
     """
+    if Setup.token_class_only_f:
+        if len(ModeDB) != 0:
+            error_msg("Modes found in input files. However, only a token class is generated.", DontExitF=True)
+        return
+
     if len(ModeDB) == 0:
         error_msg("No single mode defined - bailing out", Prefix="consistency check")
 

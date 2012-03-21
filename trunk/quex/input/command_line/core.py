@@ -211,7 +211,9 @@ def do(argv):
 
     # The only case where no converter helper is required is where ASCII 
     # (Unicode restricted to [0, FF] is used.
-    __setup_converter_helper(setup)
+    setup.converter_helper_required_f = True
+    if setup.converter_f == False and setup.buffer_element_size == 1 and setup.buffer_codec == "unicode":
+        setup.converter_helper_required_f = False
 
     validation.do(setup, command_line, argv)
 
@@ -409,13 +411,3 @@ def __setup_token_class(setup):
     #if len(setup.token_class_name_space) == 0:
     #    setup.token_class_name_space = deepcopy(setup.analyzer_name_space)
 
-def __setup_converter_helper(setup):
-    setup.converter_helper_required_f = True
-    if setup.converter_f == False and setup.buffer_element_size == 1 and setup.buffer_codec == "unicode":
-        setup.converter_helper_required_f = False
-
-    if setup.buffer_codec in ["utf8", "utf16", "utf32"]: setup.converter_helper_configuration = "utf*"
-    elif setup.buffer_codec == "unicode":
-        if setup.converter_helper_required_f:            setup.converter_helper_configuration = "unicode"
-        else:                                            setup.converter_helper_configuration = "identical"
-    else:                                                setup.converter_helper_configuration = "codec"

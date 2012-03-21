@@ -153,7 +153,7 @@ SETUP_INFO = {
     "token_memory_management_by_user_f": [["--token-memory-management-by-user", "--tmmbu"], SetupParTypes.FLAG],
     "mode_transition_check_f":        [["--no-mode-transition-check"],       SetupParTypes.NEGATED_FLAG],
     "language":                       [["--language", "-l"],                 "C++"],
-    "lexeme_null_foreign":            [["--foreign-lexeme-null", "--fln"],   ""],
+    "external_lexeme_null_object":    [["--lexeme-null-object", "--lno"],      ""],
     "output_file_naming_scheme":      [["--file-extension-scheme", "--fes"], ""],
     "post_categorizer_f":             [["--post-categorizer"],               SetupParTypes.FLAG],
     "output_directory":               [["--output-directory", "--odir"],     ""],

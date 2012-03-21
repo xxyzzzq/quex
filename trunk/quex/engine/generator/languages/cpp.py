@@ -545,7 +545,7 @@ def __frame_of_all(Code, Setup):
         implementation_header_str += "#include <quex/code_base/analyzer/C-adaptions.h>\n"
 
     lexeme_null_definition = ""
-    if Setup.lexeme_null_foreign == "":
+    if Setup.external_lexeme_null_object == "":
         # LexemeNull has been defined elsewhere.
         lexeme_null_definition = "QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject) = (QUEX_TYPE_CHARACTER)0;\n"
 
