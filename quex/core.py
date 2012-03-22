@@ -42,6 +42,7 @@ def do():
                                class_token_header)
         write_safely_and_close(blackboard.token_type_definition.get_file_name() + ".i", 
                                class_token_implementation)
+        do_token_class_info()
         return
 
     # (*) Generate the token ids
@@ -164,4 +165,20 @@ def do_plot():
         plotter = grapviz_generator.Generator(pattern_action_pair_list,
                                               StateMachineName = mode.name)
         plotter.do(Option=Setup.character_display)
+
+def do_token_class_info():
+    print "info: Analyzers using this token class must be generated with"
+    print "info:"
+    print "info:    --token-class-file    %s" % Setup.output_token_class_file
+    print "info:    --token-class         %s" % Setup.token_class
+    print "info:    --token-id-type       %s" % Setup.token_id_type
+    print "info:    --buffer-element-type %s" % Setup.buffer_element_type
+    print "info:    --lexeme-null-object  QUEX_NAME_TOKEN(LexemeNullObject)"
+    print "info:"
+    print "info: Implementation in file:"
+    print "info:"
+    print "info:          %s " % (Setup.output_token_class_file + ".i")
+    print "info:"
+    print "info: This file must be included by *one* distinct source file."
+    print "info:"
 

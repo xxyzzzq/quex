@@ -38,7 +38,8 @@ from   quex.blackboard                     import setup as Setup
 from   quex.engine.generator.action_info   import UserCodeFragment
 
 def do(file_list):
-    if len(file_list) == 0: error_msg("No input files.")
+    if len(file_list) == 0 and not Setup.token_class_only_f: 
+        error_msg("No input files.")
 
     prepare_default_standard_token_ids()
 

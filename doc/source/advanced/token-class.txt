@@ -925,6 +925,13 @@ The ``LexemeNull`` is placed in the token's name space and also *implemented*
 there. Analyzers using the shared token class shall specify command line option
 ``--lexeme-null-object`` and specify the name of it.
 
+.. warning::
+
+   When a token class is generated that is designed for multiple lexical
+   analyzers, then it is advisable not to make use of the ``analyzer``
+   reference in the ``take_text()`` function. The default token implementations
+   do not do so, either.
+
 .. rubric:: Footnotes
 
 .. [#f1] Section :ref:sec-token-stamping` discusses when line and column numbers 

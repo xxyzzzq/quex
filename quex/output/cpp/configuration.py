@@ -76,7 +76,7 @@ def do(ModeDB):
     txt = __switch(txt, "QUEX_OPTION_BUFFER_BASED_ANALYZIS",         Setup.buffer_based_analyzis_f)
 
     # -- token class related definitions
-    token_descr         = blackboard.token_type_definition
+    token_descr = blackboard.token_type_definition
 
     # -- name of the character codec
     codec_name = "unicode"
