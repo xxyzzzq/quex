@@ -33,7 +33,7 @@ QUEX_INLINE void QUEX_NAME_TOKEN(construct)(QUEX_TYPE_TOKEN*);
 QUEX_INLINE void QUEX_NAME_TOKEN(copy_construct)(QUEX_TYPE_TOKEN*, 
                                                  const QUEX_TYPE_TOKEN*);
 QUEX_INLINE void QUEX_NAME_TOKEN(copy)(QUEX_TYPE_TOKEN*, 
-                                        const QUEX_TYPE_TOKEN*);
+                                       const QUEX_TYPE_TOKEN*);
 QUEX_INLINE void QUEX_NAME_TOKEN(destruct)(QUEX_TYPE_TOKEN*);
 
 /* NOTE: Setters and getters as in the C++ version of the token class are not

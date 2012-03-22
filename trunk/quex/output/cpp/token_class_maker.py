@@ -25,19 +25,6 @@ def do():
         txt   = clean_for_independence(txt)
         txt_i = clean_for_independence(txt_i)
 
-        print "info: Analyzers using this token class must be generated with"
-        print "info:"
-        print "info: --token-class-file   %s"
-        print "info: --token-class        %s"
-        print "info: --lexeme-null-object QUEX_NAME_TOKEN(LexemeNullObject)"
-        print "info:"
-        print "info: The file %s implements the token class."
-        print "info: It must be included by *one* distinct source file."
-        print "info:"
-        print "info: The rest of the parameters to the analyzer has to match"
-        print "info: the parameters for this call to quex."
-        print "info:"
-
     return txt, txt_i
 
 def _do(Descr):
@@ -294,6 +281,7 @@ def get_quick_setters(Descr):
     return txt
 
 def __get_converter_configuration():
+    token_descr = blackboard.token_type_definition
 
     if not Setup.converter_helper_required_f:
         declaration_include    = "#include <quex/code_base/converter_helper/identity>"
@@ -317,23 +305,29 @@ def __get_converter_configuration():
                                            Setup.get_file_reference(Setup.output_buffer_codec_header_i)
         from_codec = Setup.buffer_codec
 
-
     if not Setup.token_class_only_f:
         string  = "QUEX_CONVERTER_STRING(%s,char)"  % from_codec
         wstring = "QUEX_CONVERTER_STRING(%s,wchar)" % from_codec
 
         return declaration_include, implementation_include, string, wstring
 
-    namespace_token       = ""
-    namespace_token_open  = ""
-    namespace_token_close = ""
-    frame_begin = "#define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED)\n" \
-                  "#undef  QUEX_NAMESPACE_MAIN\n"                                   \
+    if Setup.language.upper() == "C++":
+        namespace_token       = ""
+        namespace_token_open  = LanguageDB.NAMESPACE_OPEN(token_descr.name_space).replace("\n", "\\\n")
+        namespace_token_close = LanguageDB.NAMESPACE_CLOSE(token_descr.name_space).replace("\n", "\\\n")
+    else:
+        namespace_token       = ""
+        namespace_token_open  = ""
+        namespace_token_close = ""
+
+
+    frame_begin = "#undef  QUEX_NAMESPACE_MAIN\n"                                   \
                   "#undef  QUEX_NAMESPACE_MAIN_OPEN\n"                              \
                   "#undef  QUEX_NAMESPACE_MAIN_CLOSE\n"                             \
                   "#define QUEX_NAMESPACE_MAIN       %s\n"                          \
                   "#define QUEX_NAMESPACE_MAIN_OPEN  %s\n"                          \
                   "#define QUEX_NAMESPACE_MAIN_CLOSE %s\n"                          \
+                  "#define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED\n"  \
                   % (namespace_token, namespace_token_open, namespace_token_close)
 
     frame_end   = "#undef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED\n"        \
@@ -343,25 +337,41 @@ def __get_converter_configuration():
                   "#define QUEX_NAMESPACE_MAIN       QUEX_NAMESPACE_MAIN_BACKUP\n"        \
                   "#define QUEX_NAMESPACE_MAIN_OPEN  QUEX_NAMESPACE_MAIN_OPEN_BACKUP\n"  \
                   "#define QUEX_NAMESPACE_MAIN_CLOSE QUEX_NAMESPACE_MAIN_CLOSE_BACKUP\n"
-    declaration_include    = "%s%s%s" \
-                                       % (frame_begin, declaration_include, frame_end)
-    implementation_include = "%s%s%s" \
-                                       % (frame_begin, implementation_include, frame_end)
+    declaration_include    = "%s%s\n%s" \
+                             % (frame_begin, declaration_include, frame_end)
+    implementation_include = "%s%s\n%s" \
+                             % (frame_begin, implementation_include, frame_end)
 
-    string  = "%s_%s_to_char"  % (namespace_token, from_codec)
-    wstring = "%s_%s_to_wchar" % (namespace_token, from_codec)
+    string  = "QUEX_FUNCTION(%s, %s_to_char)"  % (namespace_token, from_codec)
+    wstring = "QUEX_FUNCTION(%s, %s_to_wchar)" % (namespace_token, from_codec)
 
     return declaration_include, implementation_include, string, wstring
 
 QUEX_TYPE_CHARACTER_re        = re.compile("\\bQUEX_TYPE_CHARACTER\\b", re.UNICODE)
 QUEX_TYPE_ANALYZER_re         = re.compile("\\bQUEX_TYPE_ANALYZER\\b", re.UNICODE)
+QUEX_TYPE_TOKEN_ID_re         = re.compile("\\bQUEX_TYPE_TOKEN_ID\\b", re.UNICODE)
 QUEX_LexemeNullDeclaration_re = re.compile("QUEX_NAME\\(LexemeNullObject\\)", re.UNICODE)
+#QUEX_LineReference_re         = re.compile("\\A\\s*\\#\\s*line", re.UNICODE)
 def clean_for_independence(txt):
     global QUEX_TYPE_CHARACTER_re
     global QUEX_TYPE_ANALYZER_re
     global QUEX_LexemeNullDeclaration_re
+    global QUEX_TYPE_TOKEN_ID_re
+    #global QUEX_LineReference_re
+
     txt = QUEX_TYPE_CHARACTER_re.sub(Setup.buffer_element_type, txt)
     txt = QUEX_TYPE_ANALYZER_re.sub("void", txt)
+    txt = QUEX_TYPE_TOKEN_ID_re.sub(Setup.token_id_type, txt)
     txt = QUEX_LexemeNullDeclaration_re.sub("QUEX_NAME_TOKEN(LexemeNullObject)", txt)
+
+    # Delete any line references (Does not work yet)
+    # result = []
+    # for line in txt.split("\n"):
+    #    if line.find("line") != -1: print "<<%s>>" % line
+    #    print "##MATCH", QUEX_LineReference_re.search(txt) 
+    #    if QUEX_LineReference_re.search(txt) is not None: 
+    #        continue
+    #    result.append(line + "\n")
+    # return "".join(result)
     return txt
 

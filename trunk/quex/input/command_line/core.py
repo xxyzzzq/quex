@@ -342,13 +342,13 @@ def __setup_analyzer_class(setup):
         ClassName --> analyzer_class_name = ClassName
                       analyzer_name_space = ["quex"]
     """
-    if setup.analyzer_class_name.find("::") == -1:
-        setup.analyzer_class_name = "quex::%s" % setup.analyzer_class_name
+    if setup.analyzer_class.find("::") == -1:
+        setup.analyzer_class = "quex::%s" % setup.analyzer_class
 
     setup.analyzer_class_name, \
     setup.analyzer_name_space, \
     setup.analyzer_name_safe   = \
-         read_namespaced_name(setup.analyzer_class_name, 
+         read_namespaced_name(setup.analyzer_class, 
                               "analyzer engine (options -o, --engine, --analyzer-class)")
 
     if setup.show_name_spaces_f:
@@ -373,21 +373,21 @@ def __setup_token_class(setup):
         ClassName --> token_class_name = ClassName
                       token_name_space = analyzer_name_space
     """
-    if setup.token_class_name.find("::") == -1:
+    if setup.token_class.find("::") == -1:
         # By default, setup the token in the analyzer's namespace
         if len(setup.analyzer_name_space) != 0:
             analyzer_name_space = reduce(lambda x, y: "%s::%s" % (x, y), setup.analyzer_name_space)
         else:
             analyzer_name_space = ""
 
-        setup.token_class_name = "%s::%s" % (analyzer_name_space, setup.token_class_name)
+        setup.token_class = "%s::%s" % (analyzer_name_space, setup.token_class)
 
     # Token classes and derived classes have the freedom not to open a namespace,
     # thus no check 'if namespace == empty'.
     setup.token_class_name,       \
     setup.token_class_name_space, \
     setup.token_class_name_safe = \
-         read_namespaced_name(setup.token_class_name, 
+         read_namespaced_name(setup.token_class, 
                               "token class (options --token-class, --tc)")
 
     if setup.show_name_spaces_f:

@@ -108,7 +108,7 @@ SetupParTypes = Enum("LIST", "FLAG", "NEGATED_FLAG")
 SETUP_INFO = {         
     # [Name in Setup]                 [ Flags ]                                [Default / Type]
     "_debug_exception_f":             [["--debug-exception"],                  SetupParTypes.FLAG], 
-    "analyzer_class_name":            [["-o", "--engine", "--analyzer-class"], "Lexer"],    
+    "analyzer_class":                 [["-o", "--engine", "--analyzer-class"], "Lexer"],    
     "analyzer_derived_class_file":    [["--derived-class-file"],               ""],
     "analyzer_derived_class_name":    [["--derived-class", "--dc"],            ""],
     "buffer_codec":                   [["--codec"],                            "unicode"],
@@ -140,7 +140,7 @@ SETUP_INFO = {
     "include_stack_support_f":        [["--no-include-stack", "--nois"],       SetupParTypes.NEGATED_FLAG],
     "input_mode_files":               [["-i", "--mode-files"],                 SetupParTypes.LIST],
     "token_class_file":               [["--token-class-file"],                 ""],
-    "token_class_name":               [["--token-class", "--tc"],              "Token"],
+    "token_class":                    [["--token-class", "--tc"],              "Token"],
     "token_class_only_f":             [["--token-class-only", "--tco"],        SetupParTypes.FLAG],
     "token_class_take_text_check_f":  [["--token-type-no-take_text-check",     "--ttnttc"], SetupParTypes.NEGATED_FLAG], 
     "token_id_foreign_definition_file":  [["--foreign-token-id-file"],         ""],  
@@ -168,10 +168,12 @@ SETUP_INFO = {
     "warning_disabled_no_token_queue_f": [["--no-warning-on-no-token-queue"], SetupParTypes.FLAG],
     # Parameters not set on the command line:
     "byte_order_is_that_of_current_system_f":    True,
+    "analyzer_class_name":                       None,
     "analyzer_name_space":                       None,
     "analyzer_name_safe":                        None,
     "analyzer_derived_class_name_space":         None,
     "analyzer_derived_class_name_safe":          None,
+    "token_class_name":                          None,
     "token_class_name_space":                    None,
     "token_class_name_safe":                     None,
     "token_id_prefix_name_space":                None,
