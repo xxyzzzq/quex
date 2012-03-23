@@ -10,7 +10,7 @@
 #include <quex/code_base/compatibility/stdint.h>
 
 /* LexemeNull object may be used for 'take_text'. */
-extern QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject);
+$$LEXEME_NULL_DECLARATION$$
 
 $$HEADER$$
  

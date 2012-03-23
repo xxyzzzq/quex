@@ -12,10 +12,10 @@
 
 $$HEADER$$
  
-$$NAMESPACE_OPEN$$
-
 /* LexemeNull object may be used for 'take_text'. */
-extern QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject);
+$$LEXEME_NULL_DECLARATION$$
+
+$$NAMESPACE_OPEN$$
 
 class $$TOKEN_CLASS$$;
 

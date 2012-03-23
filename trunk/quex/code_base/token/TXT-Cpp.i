@@ -107,9 +107,6 @@ QUEX_NAME_TOKEN(repetition_n_set)(QUEX_TYPE_TOKEN* __this, size_t N)
 }
 #endif /* QUEX_OPTION_TOKEN_REPETITION_SUPPORT */
 
-/* This is only for '--token-class-only' */
-$$LEXEME_NULL_IMPLEMENTATION$$
-
 $$NAMESPACE_CLOSE$$
 
 #endif /* __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$INCLUDE_GUARD_EXTENSION$$_I */

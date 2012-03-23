@@ -25,7 +25,18 @@ def do():
         txt   = clean_for_independence(txt)
         txt_i = clean_for_independence(txt_i)
 
-    return txt, txt_i
+    if Setup.language.upper() == "C++":
+        # In C++ we do inline, so we can do everything in the header file
+        header_txt         = "".join([txt, "\n", txt_i])
+        implementation_txt = ""
+        if Setup.token_class_only_f: implementation_txt = lexeme_null_implementation()
+    else:
+        # In C, there's a separate file in any case
+        header_txt         = txt
+        implementation_txt = txt_i + lexeme_null_implementation()
+
+    return header_txt, implementation_txt
+
 
 def _do(Descr):
     # The following things must be ensured before the function is called
@@ -100,11 +111,8 @@ def _do(Descr):
               ["$INCLUDE_CONVERTER_IMPLEMENTATION", converter_implementation_include],
               ["$CONVERTER_STRING",                 converter_string],
               ["$CONVERTER_WSTRING",                converter_wstring],
+              ["$$LEXEME_NULL_DECLARATION$$",       lexeme_null_declaration()],
              ])
-
-    lexeme_null_implementation = ""
-    if Setup.token_class_only_f:
-        lexeme_null_implementation = "QUEX_TYPE_CHARACTER  QUEX_NAME_TOKEN(LexemeNullObject) = (QUEX_TYPE_CHARACTER)0;\n"
 
     txt_i = blue_print(template_i_str, 
                        [
@@ -114,12 +122,11 @@ def _do(Descr):
                         ["$$FOOTER$$",                  Descr.footer.get_code()],
                         ["$$FUNC_TAKE_TEXT$$",          take_text_str],
                         ["$$INCLUDE_GUARD_EXTENSION$$", include_guard_extension_str],
-                        ["$$NAMESPACE_CLOSE$$",         LanguageDB.NAMESPACE_CLOSE(Descr.name_space)],
                         ["$$NAMESPACE_OPEN$$",          LanguageDB.NAMESPACE_OPEN(Descr.name_space)],
+                        ["$$NAMESPACE_CLOSE$$",         LanguageDB.NAMESPACE_CLOSE(Descr.name_space)],
                         ["$$TOKEN_CLASS$$",             token_class_name],
                         ["$$TOKEN_REPETITION_N_GET$$",  Descr.repetition_get.get_code()],
                         ["$$TOKEN_REPETITION_N_SET$$",  Descr.repetition_set.get_code()],
-                        ["$$LEXEME_NULL_IMPLEMENTATION$$",  lexeme_null_implementation],
                        ])
 
 
@@ -383,4 +390,51 @@ def clean_for_independence(txt):
                 continue
         result.append(line + "\n")
     return "".join(result)
+
+def common_lexeme_null_str():
+    if Setup.language.upper() == "C++": return "LexemeNullObject"
+    else:                               return "%s_LexemeNullObject" % Setup.token_class_name_safe
+
+def common_lexeme_null_reference():
+    LanguageDB  = Setup.language_db
+    token_descr = blackboard.token_type_definition
+
+    if Setup.language.upper() == "C++": 
+        prefix = LanguageDB.NAMESPACE_REFERENCE(token_descr.name_space) 
+        return "%sLexemeNullObject" % prefix
+    else:                               
+        return "%s_LexemeNullObject" % Setup.token_class_name_safe
+
+def lexeme_null_declaration():
+    LanguageDB  = Setup.language_db
+    token_descr = blackboard.token_type_definition
+
+    if Setup.token_class_only_f:
+        return "".join([
+                    LanguageDB.NAMESPACE_OPEN(token_descr.name_space), 
+                    "\n",
+                    "extern %s  %s;\n" % (Setup.buffer_element_type, common_lexeme_null_str()),
+                    "\n",
+                    LanguageDB.NAMESPACE_CLOSE(token_descr.name_space),
+                    "\n",
+                  ])
+    else:
+        return "".join([
+                    "QUEX_NAMESPACE_MAIN_OPEN\n",
+                    "extern %s  QUEX_NAME(LexemeNullObject);\n" % Setup.buffer_element_type,
+                    "QUEX_NAMESPACE_MAIN_CLOSE\n",
+                  ])
+
+def lexeme_null_implementation():
+    LanguageDB = Setup.language_db
+    token_descr = blackboard.token_type_definition
+    return "".join([
+                "#include \"%s\"\n" % Setup.output_token_class_file,
+                LanguageDB.NAMESPACE_OPEN(token_descr.name_space), 
+                "\n",
+                "%s  %s = (QUEX_TYPE_CHARACTER)0;\n" % (Setup.buffer_element_type, common_lexeme_null_str()),
+                "\n",
+                LanguageDB.NAMESPACE_CLOSE(token_descr.name_space),
+                "\n",
+              ])
 

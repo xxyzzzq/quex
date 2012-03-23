@@ -16,8 +16,8 @@
 #if defined(__QUEX_OPTION_PLAIN_C)
     struct  QUEX_NAME(Engine_tag);
     struct  QUEX_NAME(Memento_tag);
-    struct  TestAnalyzer_tag;    
-    typedef __QUEX_TYPE_ANALYZER_RETURN_VALUE  (*QUEX_NAME(AnalyzerFunctionP))(struct TestAnalyzer_tag*);
+    struct  quex_TestAnalyzer_tag;    
+    typedef __QUEX_TYPE_ANALYZER_RETURN_VALUE  (*QUEX_NAME(AnalyzerFunctionP))(struct quex_TestAnalyzer_tag*);
 
     /* Token Class Declaration must preceed the user's header, so that the user
      * can refer to it at ease.                                                    */
@@ -66,9 +66,9 @@ QUEX_NAMESPACE_MAIN_OPEN
     struct QUEX_NAME(Mode_tag);
 
 #  if defined(__QUEX_OPTION_PLAIN_C)
-   typedef struct TestAnalyzer_tag { 
+   typedef struct quex_TestAnalyzer_tag { 
 #      include <quex/code_base/analyzer/Engine_body>
-   } TestAnalyzer;
+   } quex_TestAnalyzer;
 #  else
    struct TestAnalyzer {
       /* Most compilers put the virtual function table in front of the object.

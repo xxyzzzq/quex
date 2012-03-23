@@ -33,7 +33,7 @@
 struct  QUEX_NAME(Engine_tag);
 struct  QUEX_NAME(Memento_tag);
 QUEX_TYPE0_ANALYZER;    /* $$LEXER_CLASS_NAME_SAFE$$ */
-typedef __QUEX_TYPE_ANALYZER_RETURN_VALUE  (*QUEX_NAME(AnalyzerFunctionP))(QUEX_TYPE_ANALYZER*);
+typedef __QUEX_TYPE_ANALYZER_RETURN_VALUE  (*QUEX_NAME(AnalyzerFunctionP))(QUEX_TYPE0_ANALYZER*);
 
 /* Token Class Declaration must preceed the user's header, so that the user
  * can refer to it at ease.                                                    */

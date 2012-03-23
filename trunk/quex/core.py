@@ -40,7 +40,7 @@ def do():
     if Setup.token_class_only_f:
         write_safely_and_close(blackboard.token_type_definition.get_file_name(), 
                                class_token_header)
-        write_safely_and_close(blackboard.token_type_definition.get_file_name() + ".i", 
+        write_safely_and_close(Setup.output_token_class_file_implementation,
                                class_token_implementation)
         do_token_class_info()
         return
@@ -173,12 +173,8 @@ def do_token_class_info():
     print "info:    --token-class         %s" % Setup.token_class
     print "info:    --token-id-type       %s" % Setup.token_id_type
     print "info:    --buffer-element-type %s" % Setup.buffer_element_type
-    print "info:    --lexeme-null-object  QUEX_NAME_TOKEN(LexemeNullObject)"
+    print "info:    --lexeme-null-object  %s" % token_class_maker.common_lexeme_null_reference()
     print "info:"
-    print "info: Implementation in file:"
-    print "info:"
-    print "info:          %s " % (Setup.output_token_class_file + ".i")
-    print "info:"
-    print "info: This file must be included by *one* distinct source file."
-    print "info:"
+    print "info: Header: \"%s\"" % blackboard.token_type_definition.get_file_name() 
+    print "info: Source: \"%s\"" % Setup.output_token_class_file_implementation
 

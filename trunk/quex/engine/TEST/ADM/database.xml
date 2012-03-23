@@ -1,7 +1,7 @@
-<test-database execution-time-sec="42.09" date="Fri Mar 23 08:10:18 2012">
+<test-database execution-time-sec="42.11" date="Fri Mar 23 21:56:20 2012">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
-        <test title="Super Set" time-sum-sec="0.09"> 
+        <test title="Super Set" time-sum-sec="0.10"> 
             <application file-name="test-NumberSet-is_superset.py" info-request-time="1318614203L" vanished="False"/>
             <choice-list number="2" same_result="False">
                <choice name="Normal" result="OK" time_sec="0.05" crc="801219498"/>
@@ -14,7 +14,7 @@
                <choice name="" result="OK" time_sec="0.06" crc="1051370365"/>
             </choice-list>
         </test>
-        <test title="Inverse" time-sum-sec="0.09"> 
+        <test title="Inverse" time-sum-sec="0.10"> 
             <application file-name="test-NumberSet-inverse.py" info-request-time="1318614203L" vanished="False"/>
             <choice-list number="2" same_result="False">
                <choice name="1" result="OK" time_sec="0.05" crc="1433382430"/>
@@ -69,7 +69,7 @@
                <choice name="500" result="OK" time_sec="0.18" crc="-352222672"/>
             </choice-list>
         </test>
-        <test title="Cut Interval" time-sum-sec="0.09"> 
+        <test title="Cut Interval" time-sum-sec="0.10"> 
             <application file-name="test-Interval-cmp.py" info-request-time="1318614203L" vanished="False"/>
             <choice-list number="2" same_result="False">
                <choice name="normal" result="OK" time_sec="0.05" crc="1145705751"/>

@@ -222,7 +222,7 @@ def run_this(Str):
         print "<<execution failed>>"
 
 def compile_and_run(Language, SourceCode, AssertsActionvation_str="", StrangeStream_str=""):
-    print "## (*) compiling generated engine code and test"    
+    print "## (2) compiling generated engine code and test"    
     if Language in ["ANSI-C", "ANSI-C-PlainMemory"]:
         extension = ".c"
         # The '-Wvariadic-macros' shall remind us that we do not want use variadic macroes.
@@ -634,7 +634,7 @@ test_program_db = {
 
     int main(int argc, char** argv)
     {
-        TestAnalyzer         lexer_state;
+        quex_TestAnalyzer    lexer_state;
         QUEX_TYPE_CHARACTER  TestString[] = "\\0$$TEST_STRING$$\\0";
         const size_t         MemorySize   = strlen((const char*)TestString+1) + 2;
 
@@ -659,7 +659,7 @@ test_program_db = {
 
     int main(int argc, char** argv)
     {
-        TestAnalyzer      lexer_state;
+        quex_TestAnalyzer lexer_state;
         /**/
         const char*       test_string = "$$TEST_STRING$$";
         FILE*             fh          = tmpfile();
