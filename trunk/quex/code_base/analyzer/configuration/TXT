@@ -288,6 +288,8 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_HELPER
 /* QUEX_TYPE_X  --> Type of X in global namespace 
  * QUEX_TYPE0_X --> Type of X in local namespace (namespace omitted) */
 #if defined(__QUEX_OPTION_PLAIN_C)
+#   define QUEX_FUNCTION_PREFIX        $$LEXER_CLASS_NAME_SAFE$$_
+#   define QUEX_FUNCTION_DEF_PREFIX    $$LEXER_CLASS_NAME_SAFE$$_
     /* In 'C' there are no namespaces, so namespaces are coded directly
      * into the type name. Both, global and local names are equal.       */
 #   define QUEX_TYPE0_ANALYZER         struct $$LEXER_CLASS_NAME_SAFE$$_tag
@@ -302,12 +304,6 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_HELPER
 #   define QUEX_NAMESPACE_MAIN         $$LEXER_CLASS_NAME_SAFE$$
 #   define QUEX_NAMESPACE_MAIN_OPEN   
 #   define QUEX_NAMESPACE_MAIN_CLOSE  
-    /* When creating a 'shared token class', some tricks are applied that rely 
-     * on temporarily defining the QUEX_NAMESPACE_MAIN as something else. To 
-     * restore it, the backup is required.                                       */
-#   define QUEX_NAMESPACE_MAIN_BACKUP        $$LEXER_CLASS_NAME_SAFE$$
-#   define QUEX_NAMESPACE_MAIN_OPEN_BACKUP   
-#   define QUEX_NAMESPACE_MAIN_CLOSE_BACKUP  
 
 #   define QUEX_NAMESPACE_TOKEN   
 #   define QUEX_NAMESPACE_TOKEN_OPEN  
@@ -316,7 +312,17 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_HELPER
 #   define QUEX_NAME(NAME)             $$LEXER_CLASS_NAME_SAFE$$_ ## NAME
 #   define QUEX_NAME_TOKEN(NAME)       $$TOKEN_CLASS_NAME_SAFE$$_ ## NAME
 #   define QUEX_MEMBER(NAME)           void /* Undefined, not required */
+    /* When creating a 'shared token class', macros are temporarily redefined.
+     * This happens to generate converters in the token's namespace. After 
+     * that, the original macros need to be restored. Thus: Backup!          */  
+#   define QUEX_NAMESPACE_MAIN_OPEN_BACKUP   
+#   define QUEX_NAMESPACE_MAIN_CLOSE_BACKUP  
+#   define QUEX_FUNCTION_PREFIX_BACKUP       $$LEXER_CLASS_NAME_SAFE$$_
+#   define QUEX_FUNCTION_DEF_PREFIX_BACKUP   $$LEXER_CLASS_NAME_SAFE$$_
+
 #else
+#   define QUEX_FUNCTION_DEF_PREFIX    /* Supposed we are IN the namespace for definition. */
+#   define QUEX_FUNCTION_PREFIX        $$NAMESPACE_MAIN$$::
     /* Add namespaces for the global names of the classes of analyzer
      * and token.                                                        */
 #   define QUEX_TYPE0_ANALYZER         $$LEXER_CLASS_NAME$$
@@ -331,12 +337,6 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_HELPER
 #   define QUEX_NAMESPACE_MAIN         $$NAMESPACE_MAIN$$
 #   define QUEX_NAMESPACE_MAIN_OPEN    $$NAMESPACE_MAIN_OPEN$$
 #   define QUEX_NAMESPACE_MAIN_CLOSE   $$NAMESPACE_MAIN_CLOSE$$
-    /* When creating a 'shared token class', some tricks are applied that rely 
-     * on temporarily defining the QUEX_NAMESPACE_MAIN as something else. To 
-     * restore it, the backup is required.                                       */
-#   define QUEX_NAMESPACE_MAIN_BACKUP        $$NAMESPACE_MAIN$$$
-#   define QUEX_NAMESPACE_MAIN_OPEN_BACKUP   $$NAMESPACE_MAIN_OPEN$$
-#   define QUEX_NAMESPACE_MAIN_CLOSE_BACKUP  $$NAMESPACE_MAIN_CLOSE$$
 
 #   define QUEX_NAMESPACE_TOKEN        $$NAMESPACE_TOKEN$$
 #   define QUEX_NAMESPACE_TOKEN_OPEN   $$NAMESPACE_TOKEN_OPEN$$
@@ -345,6 +345,13 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_HELPER
 #   define QUEX_NAME(NAME)             $$LEXER_CLASS_NAME$$_ ## NAME
 #   define QUEX_NAME_TOKEN(NAME)       $$TOKEN_CLASS$$_ ## NAME
 #   define QUEX_MEMBER(NAME)           $$LEXER_CLASS_NAME$$::NAME                
+    /* When creating a 'shared token class', macros are temporarily redefined.
+     * This happens to generate converters in the token's namespace. After 
+     * that, the original macros need to be restored. Thus: Backup!          */  
+#   define QUEX_NAMESPACE_MAIN_OPEN_BACKUP   $$NAMESPACE_MAIN_OPEN$$
+#   define QUEX_NAMESPACE_MAIN_CLOSE_BACKUP  $$NAMESPACE_MAIN_CLOSE$$
+#   define QUEX_FUNCTION_PREFIX_BACKUP        
+#   define QUEX_FUNCTION_DEF_PREFIX_BACKUP   $$NAMESPACE_MAIN$$::
 #endif
 
 

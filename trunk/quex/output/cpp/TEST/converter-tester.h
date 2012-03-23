@@ -25,8 +25,11 @@
  * (C) 2012 Frank-Rene Schaefer. 
  *     ABSOLUTELY NO WARRANTY                                                */
 /* 2010 (C) Frank-Rene Schaefer; ABSOLUTELY NO WARRANTY */
-#ifndef __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__cp1256__
-#define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__cp1256__
+#if    ! defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__cp1256__) \
+    ||   defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED)
+#if    ! defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED)
+#        defineINCLUDE_GUARD__CONVERTER_HELPER__cp1256__
+#endif
 
 #include <quex/code_base/converter_helper/common.h>
 
@@ -74,8 +77,11 @@ QUEX_NAMESPACE_MAIN_CLOSE
  *
  * 2010 (C) Frank-Rene Schaefer; 
  * ABSOLUTELY NO WARRANTY                                                    */
-#ifndef __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__cp1256_I
-#define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__cp1256_I
+#if    ! defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__cp1256_I) \
+    ||   defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED)
+#if    ! defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED)
+#        define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__cp1256_I
+#endif
 
 #include "converter-tester.h"
 

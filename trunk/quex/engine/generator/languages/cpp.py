@@ -1,10 +1,10 @@
-from   quex.engine.misc.string_handling import blue_print
+from   quex.engine.misc.string_handling        import blue_print
 
-from   quex.engine.generator.languages.address     import get_label, \
-                                                          get_address, \
-                                                          Address
-from   quex.engine.interval_handling               import NumberSet
-from   operator import itemgetter
+from   quex.engine.generator.languages.address import get_label, \
+                                                      get_address, \
+                                                      Address
+from   quex.engine.interval_handling           import NumberSet
+from   operator                                import itemgetter
 #
 
 def __nice(SM_ID): 
@@ -181,8 +181,8 @@ comment_on_post_context_position_init_str = """
      *       to reset the input position.                                              */
 """
 
-def __analyzer_function(StateMachineName, EngineClassName, SingleModeAnalyzerF,
-                        variable_definitions, function_body, ModeNameList=[], LanguageDB=None):
+def __analyzer_function(StateMachineName, Setup,
+                        variable_definitions, function_body, ModeNameList=[]):
     """EngineClassName = name of the structure that contains the engine state.
                          if a mode of a complete quex environment is created, this
                          is the mode name. otherwise, any name can be chosen. 
@@ -190,6 +190,10 @@ def __analyzer_function(StateMachineName, EngineClassName, SingleModeAnalyzerF,
                            if a stand-alone lexical engine is required (without the
                            complete mode-handling framework of quex).
     """              
+    LanguageDB          = Setup.language_db
+    EngineClassName     = Setup.analyzer_class_name
+    SingleModeAnalyzerF = Setup.single_mode_analyzer_f
+
     txt = [
             "#include <quex/code_base/temporary_macros_on>\n",
             __function_signature.replace("$$STATE_MACHINE_NAME$$", StateMachineName),
@@ -227,11 +231,13 @@ def __analyzer_function(StateMachineName, EngineClassName, SingleModeAnalyzerF,
     # Mode Names are defined as macros, so the following is not necessary.
     # for mode_name in ModeNameList:
     #    txt.append("    (void)%s;\n" % mode_name)
+    if Setup.external_lexeme_null_object == "": lexeme_null_name = "QUEX_NAME(LexemeNullObject)"
+    else:                                       lexeme_null_name = Setup.external_lexeme_null_object
 
     txt.append(                                                             \
-        "    (void)QUEX_NAME(LexemeNullObject);\n"                          \
+        "    (void)%s;\n"                          \
         "    (void)QUEX_NAME_TOKEN(DumpedTokenIdObject);\n"                 \
-        "    QUEX_ERROR_EXIT(\"Unreachable code has been reached.\\n\");\n") 
+        "    QUEX_ERROR_EXIT(\"Unreachable code has been reached.\\n\");\n" % lexeme_null_name) 
 
     ## This was once we did not know ... if there was a goto to the initial state or not.
     ## txt += "        goto %s;\n" % label.get(StateMachineName, InitialStateIndex)

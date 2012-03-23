@@ -281,6 +281,7 @@ def get_quick_setters(Descr):
     return txt
 
 def __get_converter_configuration():
+    LanguageDB  = Setup.language_db
     token_descr = blackboard.token_type_definition
 
     if not Setup.converter_helper_required_f:
@@ -311,30 +312,37 @@ def __get_converter_configuration():
 
         return declaration_include, implementation_include, string, wstring
 
+    # From Here One: 'Sharable Token Class Generation'
     if Setup.language.upper() == "C++":
-        namespace_token       = ""
-        namespace_token_open  = LanguageDB.NAMESPACE_OPEN(token_descr.name_space).replace("\n", "\\\n")
-        namespace_token_close = LanguageDB.NAMESPACE_CLOSE(token_descr.name_space).replace("\n", "\\\n")
+        function_prefix       = Setup.language_db.NAMESPACE_REFERENCE(token_descr.name_space) 
+        function_def_prefix   = ""
+        namespace_token_open  = LanguageDB.NAMESPACE_OPEN(token_descr.name_space).replace("\n", " ")
+        namespace_token_close = LanguageDB.NAMESPACE_CLOSE(token_descr.name_space).replace("\n", " ")
     else:
-        namespace_token       = ""
+        function_prefix       = token_descr.class_name_safe
+        function_def_prefix   = token_descr.class_name_safe
         namespace_token_open  = ""
         namespace_token_close = ""
 
 
-    frame_begin = "#undef  QUEX_NAMESPACE_MAIN\n"                                   \
+    frame_begin = "#undef  QUEX_FUNCTION_PREFIX\n"                                  \
+                  "#undef  QUEX_FUNCTION_DEF_PREFIX\n"                              \
                   "#undef  QUEX_NAMESPACE_MAIN_OPEN\n"                              \
                   "#undef  QUEX_NAMESPACE_MAIN_CLOSE\n"                             \
-                  "#define QUEX_NAMESPACE_MAIN       %s\n"                          \
+                  "#define QUEX_FUNCTION_PREFIX      %s\n"                          \
+                  "#define QUEX_FUNCTION_DEF_PREFIX  %s\n"                          \
                   "#define QUEX_NAMESPACE_MAIN_OPEN  %s\n"                          \
                   "#define QUEX_NAMESPACE_MAIN_CLOSE %s\n"                          \
                   "#define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED\n"  \
-                  % (namespace_token, namespace_token_open, namespace_token_close)
+                  % (function_prefix, function_def_prefix, namespace_token_open, namespace_token_close)
 
-    frame_end   = "#undef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED\n"        \
-                  "#undef  QUEX_NAMESPACE_MAIN\n"                                         \
-                  "#undef  QUEX_NAMESPACE_MAIN_OPEN\n"                                    \
-                  "#undef  QUEX_NAMESPACE_MAIN_CLOSE\n"                                   \
-                  "#define QUEX_NAMESPACE_MAIN       QUEX_NAMESPACE_MAIN_BACKUP\n"        \
+    frame_end   = "#undef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED\n"       \
+                  "#undef  QUEX_FUNCTION_PREFIX\n"                                       \
+                  "#undef  QUEX_FUNCTION_DEF_PREFIX\n"                                   \
+                  "#undef  QUEX_NAMESPACE_MAIN_OPEN\n"                                   \
+                  "#undef  QUEX_NAMESPACE_MAIN_CLOSE\n"                                  \
+                  "#define QUEX_FUNCTION_PREFIX      QUEX_FUNCTION_PREFIX_BACKUP\n"      \
+                  "#define QUEX_FUNCTION_DEF_PREFIX  QUEX_FUNCTION_PREFIX_BACKUP\n"      \
                   "#define QUEX_NAMESPACE_MAIN_OPEN  QUEX_NAMESPACE_MAIN_OPEN_BACKUP\n"  \
                   "#define QUEX_NAMESPACE_MAIN_CLOSE QUEX_NAMESPACE_MAIN_CLOSE_BACKUP\n"
     declaration_include    = "%s%s\n%s" \
@@ -342,8 +350,10 @@ def __get_converter_configuration():
     implementation_include = "%s%s\n%s" \
                              % (frame_begin, implementation_include, frame_end)
 
-    string  = "QUEX_FUNCTION(%s, %s_to_char)"  % (namespace_token, from_codec)
-    wstring = "QUEX_FUNCTION(%s, %s_to_wchar)" % (namespace_token, from_codec)
+    # In C:   Function call and def prefix is the same
+    # In C++: We are in the same namespace, no prefix, function_def_prefix is empty anyway.
+    string  = "%s%s_to_char"  % (function_def_prefix, from_codec)
+    wstring = "%s%s_to_wchar" % (function_def_prefix, from_codec)
 
     return declaration_include, implementation_include, string, wstring
 
@@ -351,7 +361,6 @@ QUEX_TYPE_CHARACTER_re        = re.compile("\\bQUEX_TYPE_CHARACTER\\b", re.UNICO
 QUEX_TYPE_ANALYZER_re         = re.compile("\\bQUEX_TYPE_ANALYZER\\b", re.UNICODE)
 QUEX_TYPE_TOKEN_ID_re         = re.compile("\\bQUEX_TYPE_TOKEN_ID\\b", re.UNICODE)
 QUEX_LexemeNullDeclaration_re = re.compile("QUEX_NAME\\(LexemeNullObject\\)", re.UNICODE)
-#QUEX_LineReference_re         = re.compile("\\A\\s*\\#\\s*line", re.UNICODE)
 def clean_for_independence(txt):
     global QUEX_TYPE_CHARACTER_re
     global QUEX_TYPE_ANALYZER_re
@@ -364,14 +373,14 @@ def clean_for_independence(txt):
     txt = QUEX_TYPE_TOKEN_ID_re.sub(Setup.token_id_type, txt)
     txt = QUEX_LexemeNullDeclaration_re.sub("QUEX_NAME_TOKEN(LexemeNullObject)", txt)
 
-    # Delete any line references (Does not work yet)
-    # result = []
-    # for line in txt.split("\n"):
-    #    if line.find("line") != -1: print "<<%s>>" % line
-    #    print "##MATCH", QUEX_LineReference_re.search(txt) 
-    #    if QUEX_LineReference_re.search(txt) is not None: 
-    #        continue
-    #    result.append(line + "\n")
-    # return "".join(result)
-    return txt
+    # Delete any line references
+    result = []
+    for line in txt.split("\n"):
+        x = line.strip()
+        if len(x) != 0 and x[0] == "#":
+            x = x[1:].strip()
+            if x.find("line") == 0: 
+                continue
+        result.append(line + "\n")
+    return "".join(result)
 

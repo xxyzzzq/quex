@@ -75,12 +75,10 @@ class Generator(GeneratorBase):
 
         # (*) Pack Pre-Context and Core State Machine into a single function
         analyzer_function = self.language_db["$analyzer-func"](self.state_machine_name, 
-                                                               Setup.analyzer_class_name,
-                                                               Setup.single_mode_analyzer_f,
+                                                               Setup,
                                                                variable_definitions, 
                                                                function_body, 
-                                                               self.mode_name_list, 
-                                                               LanguageDB=self.language_db)
+                                                               self.mode_name_list) 
 
         txt  = [ LanguageDB["$header-definitions"](LanguageDB, self.on_after_match) ]
         txt += get_plain_strings(analyzer_function)

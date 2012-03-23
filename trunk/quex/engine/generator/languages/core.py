@@ -126,7 +126,9 @@ class LDB(dict):
             else_str = ""
             txt      = []
             for element in EntryAction:
-                if element.pre_context_id != E_PreContextIDs.NONE:
+                if   element.pre_context_id == E_PreContextIDs.BEGIN_OF_LINE:
+                    txt.append("    %sif( me->buffer._character_before_lexeme_start == '\\n' )" % else_str)
+                elif element.pre_context_id != E_PreContextIDs.NONE:
                     txt.append("    %sif( pre_context_%i_fulfilled_f ) " % (else_str, element.pre_context_id))
                 else:
                     txt.append("    %s" % else_str)

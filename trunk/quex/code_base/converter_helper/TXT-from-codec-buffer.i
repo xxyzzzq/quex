@@ -32,8 +32,10 @@
  * 2010 (C) Frank-Rene Schaefer; 
  * ABSOLUTELY NO WARRANTY                                                    */
 #if    ! defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__$$CODEC$$_I) \
-    && ! defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED)
-#define          __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__$$CODEC$$_I
+    ||   defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED)
+#if    ! defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED)
+#        define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__$$CODEC$$_I
+#endif
 
 #include "$$CODEC_HEADER$$"
 
