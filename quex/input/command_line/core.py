@@ -273,7 +273,10 @@ def prepare_file_names(setup):
     setup.output_configuration_file              = __prepare_file_name("-configuration", E_Files.HEADER)
     setup.output_token_id_file                   = __prepare_file_name("-token_ids",     E_Files.HEADER)
     setup.output_token_class_file                = __prepare_file_name("-token",         E_Files.HEADER)
-    setup.output_token_class_file_implementation = __prepare_file_name("-token",         E_Files.HEADER_IMPLEMTATION)
+    if setup.token_class_only_f == False:
+        setup.output_token_class_file_implementation = __prepare_file_name("-token",     E_Files.HEADER_IMPLEMTATION)
+    else:
+        setup.output_token_class_file_implementation = __prepare_file_name("-token",     E_Files.SOURCE)
 
     if   setup.buffer_codec == "utf8":
         setup.output_buffer_codec_header   = "quex/code_base/converter_helper/from-utf8"
