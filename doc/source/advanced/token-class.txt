@@ -718,6 +718,29 @@ codec to some output codec, as they are
 
    Is the pendant to ``$CONVERTER_STRING`` for 'wchar_t' strings.
 
+.. describe:: $NAMESPACE_OPEN
+
+   Expands to namespace openers according to the token's name space. If the
+   token's name space is, for example ``X0::X1::X2``, then the above 
+   variable expands to
+
+   .. code-block:: cpp
+
+      namespace X0 { namespace X1 { namespace X2 {
+
+.. describe:: $NAMESPACE_CLOSE
+
+   Expands to the string which is necessary to close the token's name space.
+   With the example from ``$NAMESPACE_OPEN``, this variable expands to
+
+   .. code-block:: cpp
+
+      } } }
+
+   The variables ``$NAMESPACE_OPEN`` and ``$NAMESPACE_CLOSE`` may be used
+   within the ``HEADER`` and the ``FOOTER`` section to add more definitions to
+   the token's namespace.
+
 The default token specifications in CDefault.qx and CppDefault.qx demonstrate
 the usage of those helper variables. Also, the produced token class is worth
 being considered for some more deeper insight.

@@ -3,11 +3,3 @@ Output from constructed header:_______________________________________
 
 #   line 4 "error.qx"
 #   line 56 "Simple"
-#   line 20 "<<QUEX_PATH>>/quex/code_base/token/CppDefault.qx"
-#   line 587 "Simple"
-#   line 80 "<<QUEX_PATH>>/quex/code_base/token/CppDefault.qx"
-#   line 647 "Simple"
-#   line 117 "<<QUEX_PATH>>/quex/code_base/token/CppDefault.qx"
-#   line 665 "Simple"
-#   line 113 "<<QUEX_PATH>>/quex/code_base/token/CppDefault.qx"
-#   line 682 "Simple"

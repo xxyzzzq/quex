@@ -165,8 +165,10 @@ file_str = \
 #   include<stdio.h> 
 #endif
 
-/* The token class definition file can only be included after the two token identifiers have
- * been defined. Otherwise, it would rely on default values. */
+/* The token class definition file can only be included after 
+ * the definition on TERMINATION and UNINITIALIZED.          
+ * (fschaef 12y03m24d: "I do not rememember why I wrote this.
+ *  Just leave it there until I am clear if it can be deleted.")   */
 #include "$$TOKEN_CLASS_DEFINITION_FILE$$"
 
 $$TOKEN_ID_DEFINITIONS$$

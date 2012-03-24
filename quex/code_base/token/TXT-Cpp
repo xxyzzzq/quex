@@ -13,7 +13,7 @@
 $$HEADER$$
  
 /* LexemeNull object may be used for 'take_text'. */
-$$LEXEME_NULL_DECLARATION$$
+$$EXTRA_AT_BEGIN$$
 
 $$NAMESPACE_OPEN$$
 
@@ -94,5 +94,6 @@ $$NAMESPACE_CLOSE$$
 
 $$FOOTER$$
 
+$$EXTRA_AT_END$$
 
 #endif /* __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$INCLUDE_GUARD_EXTENSION$$ */

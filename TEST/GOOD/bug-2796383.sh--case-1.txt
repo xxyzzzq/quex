@@ -2,24 +2,24 @@
     } content;
     uint16_t    get_who_is_that() const            { return content.who_is_that; }
     uint16_t    get_who_is_that() const            { return content.who_is_that; }
-    void        set_who_is_that(uint16_t& Value)    { content.who_is_that = Value; }
-    void        set_who_is_that(uint16_t& Value)    { content.who_is_that = Value; }
+    void        set_who_is_that(uint16_t& Value)   { content.who_is_that = Value; }
+    void        set_who_is_that(uint16_t& Value)   { content.who_is_that = Value; }
     int8_t      get_mini_y() const                 { return content.data_0.mini_y; }
     int8_t      get_mini_y() const                 { return content.data_0.mini_y; }
-    void        set_mini_y(int8_t& Value)           { content.data_0.mini_y = Value; }
-    void        set_mini_y(int8_t& Value)           { content.data_0.mini_y = Value; }
+    void        set_mini_y(int8_t& Value)          { content.data_0.mini_y = Value; }
+    void        set_mini_y(int8_t& Value)          { content.data_0.mini_y = Value; }
     int8_t      get_mini_x() const                 { return content.data_0.mini_x; }
     int8_t      get_mini_x() const                 { return content.data_0.mini_x; }
-    void        set_mini_x(int8_t& Value)           { content.data_0.mini_x = Value; }
-    void        set_mini_x(int8_t& Value)           { content.data_0.mini_x = Value; }
+    void        set_mini_x(int8_t& Value)          { content.data_0.mini_x = Value; }
+    void        set_mini_x(int8_t& Value)          { content.data_0.mini_x = Value; }
     int16_t     get_big_x() const                  { return content.data_1.big_x; }
     int16_t     get_big_x() const                  { return content.data_1.big_x; }
-    void        set_big_x(int16_t& Value)           { content.data_1.big_x = Value; }
-    void        set_big_x(int16_t& Value)           { content.data_1.big_x = Value; }
+    void        set_big_x(int16_t& Value)          { content.data_1.big_x = Value; }
+    void        set_big_x(int16_t& Value)          { content.data_1.big_x = Value; }
     int16_t     get_big_y() const                  { return content.data_1.big_y; }
     int16_t     get_big_y() const                  { return content.data_1.big_y; }
-    void        set_big_y(int16_t& Value)           { content.data_1.big_y = Value; }
-    void        set_big_y(int16_t& Value)           { content.data_1.big_y = Value; }
+    void        set_big_y(int16_t& Value)          { content.data_1.big_y = Value; }
+    void        set_big_y(int16_t& Value)          { content.data_1.big_y = Value; }
     { _id = ID; content.data_1.big_x = Value0; content.data_1.big_y = Value1; }
     { _id = ID; content.data_0.mini_x = Value0; content.data_0.mini_y = Value1; }
     { _id = ID; content.who_is_that = Value0; }
