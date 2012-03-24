@@ -191,7 +191,6 @@ def __analyzer_function(StateMachineName, Setup,
                            complete mode-handling framework of quex).
     """              
     LanguageDB          = Setup.language_db
-    EngineClassName     = Setup.analyzer_class_name
     SingleModeAnalyzerF = Setup.single_mode_analyzer_f
 
     txt = [

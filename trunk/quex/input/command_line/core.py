@@ -27,7 +27,6 @@ from   quex.engine.generator.action_info    import CodeFragment
 
 from   quex.DEFINITIONS import QUEX_VERSION
 
-from   copy     import deepcopy
 from   StringIO import StringIO
 from   operator import itemgetter
 
@@ -399,9 +398,6 @@ def __setup_token_class(setup):
         print "     name_space:  %s;" % repr(setup.token_class_name_space)[1:-1]
         print "     name_prefix: %s;" % setup.token_class_name_safe   
         print "}"
-
-    if len(setup.token_class_name_space) == 0 and not analyzer_in_root_namespace_f:
-        setup.token_class_name_space = setup.analyzer_name_space
 
     if setup.token_class_file != "":
         blackboard.token_type_definition = \

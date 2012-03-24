@@ -10,6 +10,7 @@ import quex.blackboard
 
 quex.blackboard.setup.buffer_element_size     = 1
 quex.blackboard.setup.output_token_class_file = ""
+quex.blackboard.setup.token_class_name        = ""
 quex.blackboard.setup.token_class_name_space  = ""
 quex.blackboard.setup.token_class_name_safe   = ""
 quex.blackboard.setup.language_db             = languages.db["C++"]

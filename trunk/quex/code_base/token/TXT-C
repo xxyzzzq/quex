@@ -10,7 +10,7 @@
 #include <quex/code_base/compatibility/stdint.h>
 
 /* LexemeNull object may be used for 'take_text'. */
-$$LEXEME_NULL_DECLARATION$$
+$$EXTRA_AT_BEGIN$$
 
 $$HEADER$$
  
@@ -55,5 +55,6 @@ QUEX_INLINE size_t QUEX_NAME_TOKEN(repetition_n_get)(QUEX_TYPE_TOKEN*);
 QUEX_INLINE void   QUEX_NAME_TOKEN(repetition_n_set)(QUEX_TYPE_TOKEN*, size_t);
 #endif /* QUEX_OPTION_TOKEN_REPETITION_SUPPORT */
 
+$$EXTRA_AT_END$$
 
 #endif /* __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$INCLUDE_GUARD_EXTENSION$$ */

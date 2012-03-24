@@ -28,7 +28,7 @@
 #if    ! defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__cp1256__) \
     ||   defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED)
 #if    ! defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED)
-#        defineINCLUDE_GUARD__CONVERTER_HELPER__cp1256__
+#        define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__cp1256__
 #endif
 
 #include <quex/code_base/converter_helper/common.h>

@@ -119,11 +119,11 @@ $INCLUDE_CONVERTER_DECLARATION
    }
 
    footer {
-        QUEX_NAMESPACE_TOKEN_OPEN
+        $NAMESPACE_OPEN
         inline std::ostream&
         operator<<(std::ostream& ostr, const QUEX_TYPE_TOKEN& Tok)
         { ostr << std::string(Tok); return ostr; }
-        QUEX_NAMESPACE_TOKEN_CLOSE
+        $NAMESPACE_CLOSE
 
 $INCLUDE_CONVERTER_IMPLEMENTATION
    }

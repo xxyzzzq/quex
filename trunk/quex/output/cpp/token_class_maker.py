@@ -37,7 +37,6 @@ def do():
 
     return header_txt, implementation_txt
 
-
 def _do(Descr):
     # The following things must be ensured before the function is called
     assert Descr is not None
@@ -82,7 +81,15 @@ def _do(Descr):
     converter_declaration_include,   \
     converter_implementation_include, \
     converter_string,                 \
-    converter_wstring                 = __get_converter_configuration()
+    converter_wstring                 = __get_converter_configuration(include_guard_extension_str)
+
+    extra_at_begin_str = lexeme_null_declaration()
+    extra_at_end_str   = ""
+    if Setup.token_class_only_f:
+        extra_at_begin_str = QUEX_NAME_TOKEN_define_str % include_guard_extension_str \
+                             + extra_at_begin_str
+        extra_at_end_str   = QUEX_NAME_TOKEN_undef_str % include_guard_extension_str \
+                             + extra_at_end_str
 
     txt = blue_print(template_str,
              [
@@ -104,6 +111,8 @@ def _do(Descr):
               ["$$TOKEN_REPETITION_N_SET$$",  Descr.repetition_set.get_code()],
               ["$$UNION_MEMBERS$$",           get_union_members(Descr)],
               ["$$VIRTUAL_DESTRUCTOR$$",      virtual_destructor_str],
+              ["$$EXTRA_AT_BEGIN$$",          extra_at_begin_str],
+              ["$$EXTRA_AT_END$$",            extra_at_end_str],
              ])
 
     txt = blue_print(txt, [
@@ -111,7 +120,8 @@ def _do(Descr):
               ["$INCLUDE_CONVERTER_IMPLEMENTATION", converter_implementation_include],
               ["$CONVERTER_STRING",                 converter_string],
               ["$CONVERTER_WSTRING",                converter_wstring],
-              ["$$LEXEME_NULL_DECLARATION$$",       lexeme_null_declaration()],
+              ["$NAMESPACE_CLOSE",                  LanguageDB.NAMESPACE_CLOSE(Descr.name_space)],
+              ["$NAMESPACE_OPEN",                   LanguageDB.NAMESPACE_OPEN(Descr.name_space)],
              ])
 
     txt_i = blue_print(template_i_str, 
@@ -127,6 +137,8 @@ def _do(Descr):
                         ["$$TOKEN_CLASS$$",             token_class_name],
                         ["$$TOKEN_REPETITION_N_GET$$",  Descr.repetition_get.get_code()],
                         ["$$TOKEN_REPETITION_N_SET$$",  Descr.repetition_set.get_code()],
+                        ["$$EXTRA_AT_BEGIN$$",          extra_at_begin_str],
+                        ["$$EXTRA_AT_END$$",            extra_at_end_str],
                        ])
 
 
@@ -287,7 +299,7 @@ def get_quick_setters(Descr):
 
     return txt
 
-def __get_converter_configuration():
+def __get_converter_configuration(IncludeGuardExtension):
     LanguageDB  = Setup.language_db
     token_descr = blackboard.token_type_definition
 
@@ -326,36 +338,24 @@ def __get_converter_configuration():
         namespace_token_open  = LanguageDB.NAMESPACE_OPEN(token_descr.name_space).replace("\n", " ")
         namespace_token_close = LanguageDB.NAMESPACE_CLOSE(token_descr.name_space).replace("\n", " ")
     else:
-        function_prefix       = token_descr.class_name_safe
-        function_def_prefix   = token_descr.class_name_safe
+        function_prefix       = token_descr.class_name_safe + " ##"
+        function_def_prefix   = token_descr.class_name_safe + " ##"
         namespace_token_open  = ""
         namespace_token_close = ""
 
 
-    frame_begin = "#undef  QUEX_FUNCTION_PREFIX\n"                                  \
-                  "#undef  QUEX_FUNCTION_DEF_PREFIX\n"                              \
-                  "#undef  QUEX_NAMESPACE_MAIN_OPEN\n"                              \
-                  "#undef  QUEX_NAMESPACE_MAIN_CLOSE\n"                             \
-                  "#define QUEX_FUNCTION_PREFIX      %s\n"                          \
-                  "#define QUEX_FUNCTION_DEF_PREFIX  %s\n"                          \
-                  "#define QUEX_NAMESPACE_MAIN_OPEN  %s\n"                          \
-                  "#define QUEX_NAMESPACE_MAIN_CLOSE %s\n"                          \
-                  "#define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED\n"  \
-                  % (function_prefix, function_def_prefix, namespace_token_open, namespace_token_close)
+    before = frame_begin                                    \
+             % (IncludeGuardExtension,                      \
+                function_def_prefix, function_def_prefix,   \
+                function_prefix,     function_prefix,       \
+                namespace_token_open, namespace_token_close)
+    after  = frame_end \
+             % IncludeGuardExtension
 
-    frame_end   = "#undef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED\n"       \
-                  "#undef  QUEX_FUNCTION_PREFIX\n"                                       \
-                  "#undef  QUEX_FUNCTION_DEF_PREFIX\n"                                   \
-                  "#undef  QUEX_NAMESPACE_MAIN_OPEN\n"                                   \
-                  "#undef  QUEX_NAMESPACE_MAIN_CLOSE\n"                                  \
-                  "#define QUEX_FUNCTION_PREFIX      QUEX_FUNCTION_PREFIX_BACKUP\n"      \
-                  "#define QUEX_FUNCTION_DEF_PREFIX  QUEX_FUNCTION_PREFIX_BACKUP\n"      \
-                  "#define QUEX_NAMESPACE_MAIN_OPEN  QUEX_NAMESPACE_MAIN_OPEN_BACKUP\n"  \
-                  "#define QUEX_NAMESPACE_MAIN_CLOSE QUEX_NAMESPACE_MAIN_CLOSE_BACKUP\n"
     declaration_include    = "%s%s\n%s" \
-                             % (frame_begin, declaration_include, frame_end)
+                             % (before, declaration_include, after)
     implementation_include = "%s%s\n%s" \
-                             % (frame_begin, implementation_include, frame_end)
+                             % (before, implementation_include, after)
 
     # In C:   Function call and def prefix is the same
     # In C++: We are in the same namespace, no prefix, function_def_prefix is empty anyway.
@@ -405,17 +405,25 @@ def common_lexeme_null_reference():
     else:                               
         return "%s_LexemeNullObject" % Setup.token_class_name_safe
 
-def lexeme_null_declaration():
+def __namespace_brackets():
     LanguageDB  = Setup.language_db
     token_descr = blackboard.token_type_definition
 
+    if Setup.language.upper() == "C++":
+        return LanguageDB.NAMESPACE_OPEN(token_descr.name_space), \
+               LanguageDB.NAMESPACE_CLOSE(token_descr.name_space)
+    else:
+        return "", ""
+
+def lexeme_null_declaration():
     if Setup.token_class_only_f:
+        namespace_open, namespace_close = __namespace_brackets()
         return "".join([
-                    LanguageDB.NAMESPACE_OPEN(token_descr.name_space), 
+                    namespace_open,
                     "\n",
                     "extern %s  %s;\n" % (Setup.buffer_element_type, common_lexeme_null_str()),
                     "\n",
-                    LanguageDB.NAMESPACE_CLOSE(token_descr.name_space),
+                    namespace_close,
                     "\n",
                   ])
     else:
@@ -426,15 +434,86 @@ def lexeme_null_declaration():
                   ])
 
 def lexeme_null_implementation():
-    LanguageDB = Setup.language_db
-    token_descr = blackboard.token_type_definition
+    namespace_open, namespace_close = __namespace_brackets()
+
     return "".join([
-                "#include \"%s\"\n" % Setup.output_token_class_file,
-                LanguageDB.NAMESPACE_OPEN(token_descr.name_space), 
+                "#include \"%s\"\n" % Setup.get_file_reference(Setup.output_token_class_file),
+                namespace_open,
                 "\n",
                 "%s  %s = (QUEX_TYPE_CHARACTER)0;\n" % (Setup.buffer_element_type, common_lexeme_null_str()),
                 "\n",
-                LanguageDB.NAMESPACE_CLOSE(token_descr.name_space),
+                namespace_close,
                 "\n",
               ])
 
+QUEX_NAME_TOKEN_define_str = """
+#if ! defined(QUEX_NAME_TOKEN)
+#   if defined(__QUEX_OPTION_PLAIN_C)
+#      define QUEX_NAME_TOKEN(NAME)   $$TOKEN_CLASS_NAME_SAFE$$_ ## NAME
+#   else
+#      define QUEX_NAME_TOKEN(NAME)   $$TOKEN_CLASS$$_ ## NAME
+#   endif
+#   define __QUEX_SIGNAL_DEFINED_QUEX_NAME_TOKEN_%s
+#endif
+"""
+
+QUEX_NAME_TOKEN_undef_str = """
+#if defined(__QUEX_SIGNAL_DEFINED_QUEX_NAME_TOKEN_%s)
+#   undef QUEX_NAME_TOKEN
+#endif
+"""
+
+frame_begin = """
+#if defined(QUEX_CONVERTER_CHAR_DEF)
+#   undef  __QUEX_CONVERTER_CHAR_DEF
+#   undef  __QUEX_CONVERTER_STRING_DEF
+#   undef  QUEX_CONVERTER_CHAR_DEF
+#   undef  QUEX_CONVERTER_STRING_DEF
+#   undef  __QUEX_CONVERTER_CHAR
+#   undef  __QUEX_CONVERTER_STRING
+#   undef  QUEX_CONVERTER_CHAR
+#   undef  QUEX_CONVERTER_STRING
+#   undef  QUEX_NAMESPACE_MAIN_OPEN               
+#   undef  QUEX_NAMESPACE_MAIN_CLOSE              
+#   define __QUEX_SIGNAL_UNDEFINED_CONVERTER_MACROS_%s
+#endif
+#define    __QUEX_CONVERTER_CHAR_DEF(FROM, TO)    %sFROM ## _to_ ## TO ## _character
+#define    __QUEX_CONVERTER_STRING_DEF(FROM, TO)  %sFROM ## _to_ ## TO
+#define    QUEX_CONVERTER_CHAR_DEF(FROM, TO)      __QUEX_CONVERTER_CHAR_DEF(FROM, TO)
+#define    QUEX_CONVERTER_STRING_DEF(FROM, TO)    __QUEX_CONVERTER_STRING_DEF(FROM, TO)
+#define    __QUEX_CONVERTER_CHAR(FROM, TO)        %sFROM ## _to_ ## TO ## _character
+#define    __QUEX_CONVERTER_STRING(FROM, TO)      %sFROM ## _to_ ## TO
+#define    QUEX_CONVERTER_CHAR(FROM, TO)          __QUEX_CONVERTER_CHAR(FROM, TO)
+#define    QUEX_CONVERTER_STRING(FROM, TO)        __QUEX_CONVERTER_STRING(FROM, TO)
+#define    QUEX_NAMESPACE_MAIN_OPEN               %s
+#define    QUEX_NAMESPACE_MAIN_CLOSE              %s
+
+#define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED
+"""
+
+frame_end = """
+#undef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED
+
+#undef     __QUEX_CONVERTER_CHAR_DEF
+#undef     __QUEX_CONVERTER_STRING_DEF
+#undef     QUEX_CONVERTER_CHAR_DEF
+#undef     QUEX_CONVERTER_STRING_DEF
+#undef     __QUEX_CONVERTER_CHAR
+#undef     __QUEX_CONVERTER_STRING
+#undef     QUEX_CONVERTER_CHAR
+#undef     QUEX_CONVERTER_STRING
+#undef     QUEX_NAMESPACE_MAIN_OPEN               
+#undef     QUEX_NAMESPACE_MAIN_CLOSE              
+#if defined(__QUEX_SIGNAL_UNDEFINED_CONVERTER_MACROS_%s)
+#   define __QUEX_CONVERTER_CHAR_DEF    __QUEX_CONVERTER_CHAR_DEF_BACKUP
+#   define __QUEX_CONVERTER_STRING_DEF  __QUEX_CONVERTER_STRING_DEF_BACKUP
+#   define QUEX_CONVERTER_CHAR_DEF      QUEX_CONVERTER_CHAR_DEF_BACKUP
+#   define QUEX_CONVERTER_STRING_DEF    QUEX_CONVERTER_STRING_DEF_BACKUP
+#   define __QUEX_CONVERTER_CHAR        __QUEX_CONVERTER_CHAR_BACKUP
+#   define __QUEX_CONVERTER_STRING      __QUEX_CONVERTER_STRING_BACKUP
+#   define QUEX_CONVERTER_CHAR          QUEX_CONVERTER_CHAR_BACKUP
+#   define QUEX_CONVERTER_STRING        QUEX_CONVERTER_STRING_BACKUP
+#   define QUEX_NAMESPACE_MAIN_OPEN     QUEX_NAMESPACE_MAIN_OPEN_BACKUP               
+#   define QUEX_NAMESPACE_MAIN_CLOSE    QUEX_NAMESPACE_MAIN_CLOSE_BACKUP              
+#endif
+"""

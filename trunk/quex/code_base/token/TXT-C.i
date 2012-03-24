@@ -7,7 +7,7 @@
 
 #include <quex/code_base/definitions>
 
-extern QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject);
+$$EXTRA_AT_BEGIN$$
 
 QUEX_INLINE void 
 QUEX_NAME_TOKEN(_set)(QUEX_TYPE_TOKEN*         __this, 
@@ -118,4 +118,5 @@ QUEX_NAME_TOKEN(repetition_n_set)(QUEX_TYPE_TOKEN* __this, size_t N)
 
 $$FOOTER$$
 
+$$EXTRA_AT_END$$
 #endif /* __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$INCLUDE_GUARD_EXTENSION$$_I */
