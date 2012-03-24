@@ -14,7 +14,7 @@ $$EXTRA_AT_BEGIN$$
 
 $$HEADER$$
  
-typedef struct $$TOKEN_CLASS$$_tag {
+typedef struct $TOKEN_CLASS_tag {
     QUEX_TYPE_TOKEN_ID    _id;
 $$DISTINCT_MEMBERS$$
 $$UNION_MEMBERS$$
@@ -27,32 +27,32 @@ $$UNION_MEMBERS$$
 #       endif
 #   endif
 $$BODY$$
-} $$TOKEN_CLASS$$;
+} $TOKEN_CLASS;
 
-QUEX_INLINE void QUEX_NAME_TOKEN(construct)(QUEX_TYPE_TOKEN*);
-QUEX_INLINE void QUEX_NAME_TOKEN(copy_construct)(QUEX_TYPE_TOKEN*, 
-                                                 const QUEX_TYPE_TOKEN*);
-QUEX_INLINE void QUEX_NAME_TOKEN(copy)(QUEX_TYPE_TOKEN*, 
-                                       const QUEX_TYPE_TOKEN*);
-QUEX_INLINE void QUEX_NAME_TOKEN(destruct)(QUEX_TYPE_TOKEN*);
+QUEX_INLINE void QUEX_NAME_TOKEN(construct)($TOKEN_CLASS*);
+QUEX_INLINE void QUEX_NAME_TOKEN(copy_construct)($TOKEN_CLASS*, 
+                                                 const $TOKEN_CLASS*);
+QUEX_INLINE void QUEX_NAME_TOKEN(copy)($TOKEN_CLASS*, 
+                                       const $TOKEN_CLASS*);
+QUEX_INLINE void QUEX_NAME_TOKEN(destruct)($TOKEN_CLASS*);
 
 /* NOTE: Setters and getters as in the C++ version of the token class are not
  *       necessary, since the members are accessed directly.                   */
 
 QUEX_INLINE void 
-QUEX_NAME_TOKEN(_set)(QUEX_TYPE_TOKEN*         __this, 
+QUEX_NAME_TOKEN(_set)($TOKEN_CLASS*            __this, 
                       const QUEX_TYPE_TOKEN_ID ID);
 
 extern const char*  QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID);
 
 QUEX_INLINE bool 
-QUEX_NAME_TOKEN(take_text)(QUEX_TYPE_TOKEN*           __this, 
+QUEX_NAME_TOKEN(take_text)($TOKEN_CLASS*              __this, 
                            QUEX_TYPE_ANALYZER*        analyzer, 
                            const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End);
 
 #ifdef QUEX_OPTION_TOKEN_REPETITION_SUPPORT
-QUEX_INLINE size_t QUEX_NAME_TOKEN(repetition_n_get)(QUEX_TYPE_TOKEN*);
-QUEX_INLINE void   QUEX_NAME_TOKEN(repetition_n_set)(QUEX_TYPE_TOKEN*, size_t);
+QUEX_INLINE size_t QUEX_NAME_TOKEN(repetition_n_get)($TOKEN_CLASS*);
+QUEX_INLINE void   QUEX_NAME_TOKEN(repetition_n_set)($TOKEN_CLASS*, size_t);
 #endif /* QUEX_OPTION_TOKEN_REPETITION_SUPPORT */
 
 $$EXTRA_AT_END$$

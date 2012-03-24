@@ -52,6 +52,11 @@ def do(ModeDB):
             Setup.language_db.NAMESPACE_REFERENCE(Setup.analyzer_name_space) 
             + "__" + Setup.analyzer_class_name)
 
+    if Setup.token_id_foreign_definition_file != "":
+        token_id_definition_file = Setup.token_id_foreign_definition_file
+    else:
+        token_id_definition_file = Setup.output_token_id_file
+
     txt = blue_print(template_code_txt,
             [
                 ["$$___SPACE___$$",                      " " * (len(LexerClassName) + 1)],
@@ -74,7 +79,7 @@ def do(ModeDB):
                 ["$$TOKEN_CLASS_DEFINITION_FILE$$",      Setup.get_file_reference(token_class_file_name)],
                 ["$$TOKEN_CLASS$$",                      token_class_name],
                 ["$$TOKEN_CLASS_NAME_SAFE$$",            token_class_name_safe],
-                ["$$TOKEN_ID_DEFINITION_FILE$$",         Setup.get_file_reference(Setup.output_token_id_file)],
+                ["$$TOKEN_ID_DEFINITION_FILE$$",         Setup.get_file_reference(token_id_definition_file)],
                 ["$$CORE_ENGINE_CHARACTER_CODING$$",     quex_converter_coding_name_str],
                 ["$$USER_DEFINED_HEADER$$",              blackboard.header.get_code() + "\n"],
              ])
