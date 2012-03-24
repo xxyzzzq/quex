@@ -741,6 +741,11 @@ codec to some output codec, as they are
    within the ``HEADER`` and the ``FOOTER`` section to add more definitions to
    the token's namespace.
 
+.. describe:: $TOKEN_CLASS
+
+   Expands to the name of the token class. In C++, this does not include 
+   the token class' namespace specifier.
+
 The default token specifications in CDefault.qx and CppDefault.qx demonstrate
 the usage of those helper variables. Also, the produced token class is worth
 being considered for some more deeper insight.

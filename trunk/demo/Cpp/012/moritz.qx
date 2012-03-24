@@ -14,6 +14,6 @@ mode NORMAL
 
 mode HAPPY : NORMAL {
     on_entry {
-        printf("          Max: now happy!\n");
+        printf("          Moritz: now happy!\n");
     }
 }

@@ -10,12 +10,7 @@ $$EXTRA_AT_BEGIN$$
 $$NAMESPACE_OPEN$$
 
 QUEX_INLINE
-/* NOTE: If you get an error here, then your configuration
- *       file does not declare QUEX_TYPE0_TOKEN as $$TOKEN_CLASS$$. 
- *       The following weirdly typed constructor shall break in
- *       this particular case.                                        */
-$$TOKEN_CLASS$$::QUEX_TYPE0_TOKEN()
-/*****************************************************/
+$TOKEN_CLASS::$TOKEN_CLASS()
 {
 #   define self (*this)
 $$CONSTRUCTOR$$
@@ -23,7 +18,7 @@ $$CONSTRUCTOR$$
 }
 
 QUEX_INLINE
-$$TOKEN_CLASS$$::$$TOKEN_CLASS$$(const $$TOKEN_CLASS$$& Other)
+$TOKEN_CLASS::$TOKEN_CLASS(const $TOKEN_CLASS& Other)
 {
    QUEX_NAME_TOKEN(copy)(this, &Other);
 #   define self (*this)
@@ -32,7 +27,7 @@ $$CONSTRUCTOR$$
 }
 
 QUEX_INLINE
-$$TOKEN_CLASS$$::~$$TOKEN_CLASS$$()
+$TOKEN_CLASS::~$TOKEN_CLASS()
 {
 #   define self (*this)
 $$DESTRUCTOR$$
@@ -40,20 +35,20 @@ $$DESTRUCTOR$$
 }
 
 QUEX_INLINE void
-QUEX_NAME_TOKEN(construct)($$TOKEN_CLASS$$* __this)
+QUEX_NAME_TOKEN(construct)($TOKEN_CLASS* __this)
 {
     /* Explicit constructor call by 'placement new' */
-    new ((void*)__this) QUEX_TYPE_TOKEN;
+    new ((void*)__this) $TOKEN_CLASS;
 }
 
 QUEX_INLINE void
-QUEX_NAME_TOKEN(destruct)($$TOKEN_CLASS$$* __this)
+QUEX_NAME_TOKEN(destruct)($TOKEN_CLASS* __this)
 {
-    __this->QUEX_TYPE0_TOKEN::~QUEX_TYPE0_TOKEN();  
+    __this->$TOKEN_CLASS::~$TOKEN_CLASS();  
 }
 
 QUEX_INLINE void
-QUEX_NAME_TOKEN(copy)($$TOKEN_CLASS$$* __this, const $$TOKEN_CLASS$$* __That)
+QUEX_NAME_TOKEN(copy)($TOKEN_CLASS* __this, const $TOKEN_CLASS* __That)
 {
 #   define self  (*__this)
 #   define Other (*__That)
@@ -74,7 +69,7 @@ $$COPY$$
 }
 
 QUEX_INLINE bool 
-QUEX_NAME_TOKEN(take_text)($$TOKEN_CLASS$$*           __this, 
+QUEX_NAME_TOKEN(take_text)($TOKEN_CLASS*              __this, 
                            QUEX_TYPE_ANALYZER*        __analyzer, 
                            const QUEX_TYPE_CHARACTER* Begin, 
                            const QUEX_TYPE_CHARACTER* End)
@@ -90,7 +85,7 @@ $$FUNC_TAKE_TEXT$$
 
 #ifdef QUEX_OPTION_TOKEN_REPETITION_SUPPORT
 QUEX_INLINE size_t 
-QUEX_NAME_TOKEN(repetition_n_get)(QUEX_TYPE_TOKEN* __this)
+QUEX_NAME_TOKEN(repetition_n_get)($TOKEN_CLASS* __this)
 {
 #   define self (*__this)
     (void)__this;
@@ -99,7 +94,7 @@ QUEX_NAME_TOKEN(repetition_n_get)(QUEX_TYPE_TOKEN* __this)
 }
 
 QUEX_INLINE void 
-QUEX_NAME_TOKEN(repetition_n_set)(QUEX_TYPE_TOKEN* __this, size_t N)
+QUEX_NAME_TOKEN(repetition_n_set)($TOKEN_CLASS* __this, size_t N)
 {
 #   define self (*__this)
     (void)__this;

@@ -181,6 +181,12 @@ def do(setup, command_line, argv):
         __codec_vs_buffer_element_size("utf8", 1)
         __codec_vs_buffer_element_size("utf16", 2)
 
+    if setup.external_lexeme_null_object and setup.token_class_only_f:
+        error_msg("Specifying an external lexeme null object signalizes an\n"
+                  "external token class implementation. The 'token class only\n"
+                  "flag' generates a token class considered to be externally\n"
+                  "shared. Both flags are mutually exclusive.")
+
 def __check_identifier(setup, Candidate, Name):
     value = setup.__dict__[Candidate]
     if is_identifier(value): return

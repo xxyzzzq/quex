@@ -33,23 +33,29 @@ def do():
     codec_converter_helper_header, \
     codec_converter_helper_implementation = codec_converter_helper.do()
     
+    # (*) Generate the token ids
+    #     (This needs to happen after the parsing of mode_db, since during that
+    #      the token_id_db is developed.)
+    if Setup.external_lexeme_null_object != "":
+        # Assume external implementation
+        token_id_header                        = None
+        function_map_id_to_name_implementation = ""
+    else:
+        token_id_header                        = token_id_maker.do(Setup) 
+        function_map_id_to_name_implementation = token_id_maker.do_map_id_to_name_function()
+
     # (*) [Optional] Make a customized token class
     class_token_header, \
-    class_token_implementation = token_class_maker.do()
+    class_token_implementation = token_class_maker.do(function_map_id_to_name_implementation)
 
     if Setup.token_class_only_f:
         write_safely_and_close(blackboard.token_type_definition.get_file_name(), 
                                class_token_header)
         write_safely_and_close(Setup.output_token_class_file_implementation,
                                class_token_implementation)
+        write_safely_and_close(Setup.output_token_id_file, token_id_header)
         do_token_class_info()
         return
-
-    # (*) Generate the token ids
-    #     (This needs to happen after the parsing of mode_db, since during that
-    #      the token_id_db is developed.)
-    token_id_header                        = token_id_maker.do(Setup) 
-    function_map_id_to_name_implementation = token_id_maker.do_map_id_to_name_function()
 
     # (*) Implement the 'quex' core class from a template
     # -- do the coding of the class framework
@@ -169,11 +175,13 @@ def do_plot():
 def do_token_class_info():
     print "info: Analyzers using this token class must be generated with"
     print "info:"
-    print "info:    --token-class-file    %s" % Setup.output_token_class_file
-    print "info:    --token-class         %s" % Setup.token_class
-    print "info:    --token-id-type       %s" % Setup.token_id_type
-    print "info:    --buffer-element-type %s" % Setup.buffer_element_type
-    print "info:    --lexeme-null-object  %s" % token_class_maker.common_lexeme_null_reference()
+    print "info:    --token-class-file      %s" % Setup.output_token_class_file
+    print "info:    --token-class           %s" % Setup.token_class
+    print "info:    --token-id-type         %s" % Setup.token_id_type
+    print "info:    --buffer-element-type   %s" % Setup.buffer_element_type
+    print "info:    --lexeme-null-object    %s" % token_class_maker.common_lexeme_null_reference()
+    print "info:    --foreign-token-id-file %s" % Setup.output_token_id_file
+
     print "info:"
     print "info: Header: \"%s\"" % blackboard.token_type_definition.get_file_name() 
     print "info: Source: \"%s\"" % Setup.output_token_class_file_implementation

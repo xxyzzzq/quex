@@ -11,7 +11,7 @@ from   quex.blackboard                    import setup as Setup
 
 import re
 
-def do():
+def do(MapTokenIDToNameFunctionStr):
     assert blackboard.token_type_definition is not None
 
     if blackboard.token_type_definition.manually_written():
@@ -24,16 +24,23 @@ def do():
     if Setup.token_class_only_f:
         txt   = clean_for_independence(txt)
         txt_i = clean_for_independence(txt_i)
+        map_token_id_to_name_function_str =   get_helper_definitions() \
+                                            + clean_for_independence(MapTokenIDToNameFunctionStr)
 
     if Setup.language.upper() == "C++":
         # In C++ we do inline, so we can do everything in the header file
         header_txt         = "".join([txt, "\n", txt_i])
         implementation_txt = ""
-        if Setup.token_class_only_f: implementation_txt = lexeme_null_implementation()
+        if Setup.token_class_only_f: 
+            implementation_txt =   lexeme_null_implementation() \
+                                 + map_token_id_to_name_function_str
     else:
         # In C, there's a separate file in any case
         header_txt         = txt
-        implementation_txt = txt_i + lexeme_null_implementation()
+        implementation_txt = txt_i 
+        if Setup.token_class_only_f: 
+            implementation_txt +=  lexeme_null_implementation() \
+                                 + map_token_id_to_name_function_str
 
     return header_txt, implementation_txt
 
@@ -106,23 +113,27 @@ def _do(Descr):
               ["$$NAMESPACE_OPEN$$",          LanguageDB.NAMESPACE_OPEN(Descr.name_space)],
               ["$$QUICK_SETTERS$$",           get_quick_setters(Descr)],
               ["$$SETTERS_GETTERS$$",         get_setter_getter(Descr)],
-              ["$$TOKEN_CLASS$$",             token_class_name],
               ["$$TOKEN_REPETITION_N_GET$$",  Descr.repetition_get.get_code()],
               ["$$TOKEN_REPETITION_N_SET$$",  Descr.repetition_set.get_code()],
               ["$$UNION_MEMBERS$$",           get_union_members(Descr)],
               ["$$VIRTUAL_DESTRUCTOR$$",      virtual_destructor_str],
               ["$$EXTRA_AT_BEGIN$$",          extra_at_begin_str],
               ["$$EXTRA_AT_END$$",            extra_at_end_str],
+              ["$$TOKEN_CLASS$$",             Descr.class_name],
+              ["$$TOKEN_CLASS_NAME_SAFE$$",   Descr.class_name_safe],
              ])
 
-    txt = blue_print(txt, [
+    helper_variable_replacements = [
               ["$INCLUDE_CONVERTER_DECLARATION",    converter_declaration_include],
               ["$INCLUDE_CONVERTER_IMPLEMENTATION", converter_implementation_include],
               ["$CONVERTER_STRING",                 converter_string],
               ["$CONVERTER_WSTRING",                converter_wstring],
               ["$NAMESPACE_CLOSE",                  LanguageDB.NAMESPACE_CLOSE(Descr.name_space)],
               ["$NAMESPACE_OPEN",                   LanguageDB.NAMESPACE_OPEN(Descr.name_space)],
-             ])
+              ["$TOKEN_CLASS",                      token_class_name],
+    ]
+
+    txt = blue_print(txt, helper_variable_replacements)
 
     txt_i = blue_print(template_i_str, 
                        [
@@ -134,20 +145,16 @@ def _do(Descr):
                         ["$$INCLUDE_GUARD_EXTENSION$$", include_guard_extension_str],
                         ["$$NAMESPACE_OPEN$$",          LanguageDB.NAMESPACE_OPEN(Descr.name_space)],
                         ["$$NAMESPACE_CLOSE$$",         LanguageDB.NAMESPACE_CLOSE(Descr.name_space)],
-                        ["$$TOKEN_CLASS$$",             token_class_name],
                         ["$$TOKEN_REPETITION_N_GET$$",  Descr.repetition_get.get_code()],
                         ["$$TOKEN_REPETITION_N_SET$$",  Descr.repetition_set.get_code()],
                         ["$$EXTRA_AT_BEGIN$$",          extra_at_begin_str],
                         ["$$EXTRA_AT_END$$",            extra_at_end_str],
+                        ["$$TOKEN_CLASS$$",             Descr.class_name],
+                        ["$$TOKEN_CLASS_NAME_SAFE$$",   Descr.class_name_safe],
                        ])
 
 
-    txt_i = blue_print(txt_i, [
-              ["$INCLUDE_CONVERTER_DECLARATION",    converter_declaration_include],
-              ["$INCLUDE_CONVERTER_IMPLEMENTATION", converter_implementation_include],
-              ["$CONVERTER_STRING",                 converter_string],
-              ["$CONVERTER_WSTRING",                converter_wstring],
-             ])
+    txt_i = blue_print(txt_i, helper_variable_replacements)
 
     return txt, txt_i
 
@@ -440,7 +447,7 @@ def lexeme_null_implementation():
                 "#include \"%s\"\n" % Setup.get_file_reference(Setup.output_token_class_file),
                 namespace_open,
                 "\n",
-                "%s  %s = (QUEX_TYPE_CHARACTER)0;\n" % (Setup.buffer_element_type, common_lexeme_null_str()),
+                "%s  %s = (%s)0;\n" % (Setup.buffer_element_type, common_lexeme_null_str(), Setup.buffer_element_type),
                 "\n",
                 namespace_close,
                 "\n",
@@ -517,3 +524,33 @@ frame_end = """
 #   define QUEX_NAMESPACE_MAIN_CLOSE    QUEX_NAMESPACE_MAIN_CLOSE_BACKUP              
 #endif
 """
+
+helper_definitions = """
+#ifdef __cplusplus
+#   define QUEX_NAME_TOKEN(NAME)       %s_ ## NAME
+#   define QUEX_NAMESPACE_TOKEN_OPEN   %s
+#   define QUEX_NAMESPACE_TOKEN_CLOSE  %s
+#else
+#   define QUEX_NAME_TOKEN(NAME)       %s_ ## NAME
+#   define QUEX_NAMESPACE_TOKEN_OPEN  
+#   define QUEX_NAMESPACE_TOKEN_CLOSE 
+#endif
+#define QUEX_TYPE_TOKEN_ID             %s
+#include "%s"
+"""
+def get_helper_definitions():
+    namespace_open, namespace_close = __namespace_brackets()
+    token_descr                     = blackboard.token_type_definition
+    if Setup.token_id_foreign_definition_file != "":
+        token_id_definition_file = Setup.token_id_foreign_definition_file
+    else:
+        token_id_definition_file = Setup.output_token_id_file
+    return helper_definitions \
+           % (token_descr.class_name, \
+              namespace_open,         \
+              namespace_close,        \
+              token_descr.class_name_safe, 
+              Setup.token_id_type,
+              token_id_definition_file)
+                       
+

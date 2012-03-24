@@ -3,11 +3,11 @@ import time
 import os
 import re
 
-from quex.engine.misc.file_in  import open_file_or_die, \
-                                      delete_comment, \
-                                      extract_identifiers_with_specific_prefix, \
-                                      get_include_guard_extension, \
-                                      error_msg
+from   quex.engine.misc.file_in  import open_file_or_die, \
+                                        delete_comment, \
+                                        extract_identifiers_with_specific_prefix, \
+                                        get_include_guard_extension, \
+                                        error_msg
 
 import quex.blackboard                  as blackboard
 from   quex.blackboard                  import token_id_db
@@ -205,12 +205,12 @@ $$TOKEN_NAMES$$
        __QUEX_STD_sprintf(error_string, "<UNKNOWN TOKEN-ID: %i>", (int)TokenID);
        return error_string;
    }
-   case __QUEX_SETTING_TOKEN_ID_TERMINATION:       return termination_string;
-   case __QUEX_SETTING_TOKEN_ID_UNINITIALIZED:     return uninitialized_string;
+   case $$TOKEN_PREFIX$$TERMINATION:    return termination_string;
+   case $$TOKEN_PREFIX$$UNINITIALIZED:  return uninitialized_string;
 #  if defined(QUEX_OPTION_INDENTATION_TRIGGER)
-   case __QUEX_SETTING_TOKEN_ID_INDENT:     return indent_string;
-   case __QUEX_SETTING_TOKEN_ID_DEDENT:     return dedent_string;
-   case __QUEX_SETTING_TOKEN_ID_NODENT:     return nodent_string;
+   case $$TOKEN_PREFIX$$INDENT:         return indent_string;
+   case $$TOKEN_PREFIX$$DEDENT:         return dedent_string;
+   case $$TOKEN_PREFIX$$NODENT:         return nodent_string;
 #  endif
 $$TOKEN_ID_CASES$$
    }
@@ -234,7 +234,6 @@ def __propose_implicit_token_definitions():
     for token_name, file_name, line_n in blackboard.token_id_implicit_list:
         error_msg("     %s;" % token_name, file_name, line_n, DontExitF=True, WarningF=True)
     error_msg("   }", file_name, line_n, DontExitF=True, WarningF=True)
-
 
 def do_map_id_to_name_function():
     L = max(map(lambda name: len(name), token_id_db.keys()))
@@ -262,6 +261,7 @@ def do_map_id_to_name_function():
 
     return blue_print(func_str,
                       [["$$TOKEN_ID_CASES$$", "".join(switch_cases)],
+                       ["$$TOKEN_PREFIX$$",   Setup.token_id_prefix], 
                        ["$$TOKEN_NAMES$$",    "".join(token_names)], ])
 
 def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, IncludeRE):
