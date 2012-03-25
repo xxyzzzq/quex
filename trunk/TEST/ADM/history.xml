@@ -1,4 +1,4 @@
-<history date="Sun Mar 25 00:00:45 2012" element-n="981">
+<history date="Sun Mar 25 08:48:38 2012" element-n="987">
     <day year="2008" month="02" day="10">
         <history-init time="09:50:03"/>
         <crc-error time="09:50:07" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="118547486"/>
@@ -1841,5 +1841,13 @@
         <crc-error time="05:32:24" application="bug-2796383.sh" choice="case-1" database-crc="-28827932" real-crc="-2003720154"/>
         <crc-error time="05:34:34" application="bug-1893849.sh" choice="" database-crc="790597096" real-crc="-1275741090"/>
         <crc-error time="05:34:55" application="bug-1895066.sh" choice="" database-crc="-977156278" real-crc="-1176925590"/>
+    </day>
+    <day year="2012" month="03" day="25">
+        <crc-error time="03:50:09" application="feature-3079986.sh" choice="nnn" database-crc="1225948307" real-crc="1967245640"/>
+        <crc-error time="03:50:09" application="feature-3079986.sh" choice="nnc" database-crc="1225948307" real-crc="1967245640"/>
+        <crc-error time="03:50:10" application="feature-3079986.sh" choice="ncc" database-crc="1225948307" real-crc="1967245640"/>
+        <crc-error time="03:50:11" application="feature-3079986.sh" choice="ccc" database-crc="1225948307" real-crc="1967245640"/>
+        <crc-error time="03:51:15" application="bug-2799244.sh" choice="good-2" database-crc="-758394621" real-crc="-220834780"/>
+        <crc-error time="05:48:05" application="bug-1889086.sh" choice="" database-crc="-719842035" real-crc="28291017"/>
     </day>
 </history>

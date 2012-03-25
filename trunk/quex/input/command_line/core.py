@@ -20,7 +20,8 @@ from   quex.output.cpp.token_id_maker     import parse_token_id_file
 from   quex.engine.misc.file_in           import error_msg,                \
                                                  verify_word_in_list,      \
                                                  read_namespaced_name,     \
-                                                 read_integer
+                                                 read_integer,             \
+                                                 open_file_or_die
 import quex.engine.codec_db.core            as codec_db
 from   quex.engine.generator.languages.core import db as quex_core_engine_generator_languages_db
 from   quex.engine.generator.action_info    import CodeFragment
@@ -53,61 +54,23 @@ class ManualTokenClassSetup:
         return True
 
 def do(argv):
+    global setup
+    command_line = __interpret_command_line(argv)
+
+    if setup.token_class_file != "":
+        special_argv = __extract_extra_options_from_file(setup.token_class_file)
+        if special_argv is not None:
+            extra_command_line = __interpret_command_line(special_argv)
+            command_line.absorb(extra_command_line)
+
+    return __perform_setup(command_line, argv)
+
+def __perform_setup(command_line, argv):
     """RETURN:  True, if process needs to be started.
                 False, if job is done.
     """
     global setup
-
-    # (*) Interpret Command Line (A) _____________________________________________________
-    command_line = GetPot(argv)
-
-    if command_line.search("--version", "-v"):
-        print "Quex - Fast Universal Lexical Analyzer Generator"
-        print "Version " + QUEX_VERSION
-        print "(C) 2005-2011 Frank-Rene Schaefer"
-        print "ABSOLUTELY NO WARRANTY"
-        return False
-
-    if command_line.search("--help", "-h"):
-        print "Quex - Fast Universal Lexical Analyzer Generator"
-        print "Please, consult the quex documentation for further help, or"
-        print "visit http://quex.org"
-        print "(C) 2005-2011 Frank-Rene Schaefer"
-        print "ABSOLUTELY NO WARRANTY"
-        return False
-
-    for variable_name, info in SETUP_INFO.items():
-        # Some parameters are not set on the command line. Their entry is not associated
-        # with a description list.
-        if type(info) != list: continue
-
-        if info[1] == SetupParTypes.FLAG:
-            setup.__dict__[variable_name] = command_line.search(info[0])        
-
-        elif info[1] == SetupParTypes.NEGATED_FLAG:
-            setup.__dict__[variable_name] = not command_line.search(info[0])        
-
-        elif info[1] == SetupParTypes.LIST:
-            if not command_line.search(info[0]):
-                setup.__dict__[variable_name] = []
-            else:
-                the_list = command_line.nominus_followers(info[0])
-                if len(the_list) == 0:
-                    error_msg("Option %s\nnot followed by anything." % repr(info[0])[1:-1])
-
-                if setup.__dict__.has_key(variable_name):
-                    setup.__dict__[variable_name].extend(the_list)        
-                else:
-                    setup.__dict__[variable_name] = the_list
-
-        elif command_line.search(info[0]):
-            if not command_line.search(info[0]):
-                setup.__dict__[variable_name] = info[1]
-            else:
-                value = command_line.follow("--EMPTY--", info[0])
-                if value == "--EMPTY--":
-                    error_msg("Option %s\nnot followed by anything." % repr(info[0])[1:-1])
-                setup.__dict__[variable_name] = value
+    __interpret_command_line(argv)
 
     # (*) Classes and their namespace
     __setup_analyzer_class(setup)
@@ -118,7 +81,7 @@ def do(argv):
     setup.token_id_prefix_name_space, \
     dummy                           = \
          read_namespaced_name(setup.token_id_prefix, 
-                              "token prefix (options --token-prefix)")
+                              "token prefix (options --token-id-prefix)")
 
     if len(setup.token_id_prefix_name_space) != 0 and setup.language.upper() == "C":
          error_msg("Token id prefix cannot contain a namespaces if '--language' is set to 'C'.")
@@ -410,3 +373,108 @@ def __setup_token_class(setup):
     #if len(setup.token_class_name_space) == 0:
     #    setup.token_class_name_space = deepcopy(setup.analyzer_name_space)
 
+def __extract_extra_options_from_file(FileName):
+    """Extract an option section from a given file. The quex command line 
+       options may be given in a section surrounded by '<<<QUEX-OPTIONS>>>'
+       markers. For example:
+
+           <<<QUEX-OPTIONS>>>
+              --token-class-file      Common-token
+              --token-class           Common::Token
+              --token-id-type         uint32_t
+              --buffer-element-type   uint8_t
+              --lexeme-null-object    ::Common::LexemeNullObject
+              --foreign-token-id-file Common-token_ids
+           <<<QUEX-OPTIONS>>>
+
+       This function extracts those options and builds a new 'argv' array, i.e.
+       an array of strings are if they would come from the command line.
+    """
+    MARKER = "<<<QUEX-OPTIONS>>>"
+    fh     = open_file_or_die(FileName)
+
+    while 1 + 1 == 2:
+        line = fh.readline()
+        if line == "":
+            return None # Simply no starting marker has been found
+        elif line.find(MARKER) != -1: 
+            pos = fh.tell()
+            break
+
+    result = []
+
+    while 1 + 1 == 2:
+        line = fh.readline()
+        if line == "":
+            fh.seek(pos)
+            error_msg("Missing terminating '%s'." % MARKER, fh)
+        
+        idx = line.find("-")
+        if idx == -1: continue
+        options = line[idx:].split()
+        result.extend(options)
+        if line.find(MARKER) != -1: 
+            break
+
+    if setup.message_on_extra_options_f:
+        print "# Command line options from file '%s'" % FileName
+        print "# %s" % repr(result)[1:-1]
+        print "# (suppress this message with --no-message-on-extra-options)"
+
+    if len(result) == 0: return None
+    return result
+
+
+def __interpret_command_line(argv):
+    command_line = GetPot(argv)
+
+    if command_line.search("--version", "-v"):
+        print "Quex - Fast Universal Lexical Analyzer Generator"
+        print "Version " + QUEX_VERSION
+        print "(C) 2005-2011 Frank-Rene Schaefer"
+        print "ABSOLUTELY NO WARRANTY"
+        return False
+
+    if command_line.search("--help", "-h"):
+        print "Quex - Fast Universal Lexical Analyzer Generator"
+        print "Please, consult the quex documentation for further help, or"
+        print "visit http://quex.org"
+        print "(C) 2005-2011 Frank-Rene Schaefer"
+        print "ABSOLUTELY NO WARRANTY"
+        return False
+
+    for variable_name, info in SETUP_INFO.items():
+        # Some parameters are not set on the command line. Their entry is not associated
+        # with a description list.
+        if type(info) != list: continue
+
+        if info[1] == SetupParTypes.FLAG:
+            setup.__dict__[variable_name] = command_line.search(info[0])        
+
+        elif info[1] == SetupParTypes.NEGATED_FLAG:
+            setup.__dict__[variable_name] = not command_line.search(info[0])        
+
+        elif info[1] == SetupParTypes.LIST:
+            if not command_line.search(info[0]):
+                setup.__dict__[variable_name] = []
+            else:
+                the_list = command_line.nominus_followers(info[0])
+                if len(the_list) == 0:
+                    error_msg("Option %s\nnot followed by anything." % repr(info[0])[1:-1])
+
+                if setup.__dict__.has_key(variable_name):
+                    for element in the_list:
+                        if element not in setup.__dict__[variable_name]:
+                            setup.__dict__[variable_name].extend(the_list)        
+                else:
+                    setup.__dict__[variable_name] = list(set(the_list))
+
+        elif command_line.search(info[0]):
+            if not command_line.search(info[0]):
+                setup.__dict__[variable_name] = info[1]
+            else:
+                value = command_line.follow("--EMPTY--", info[0])
+                if value == "--EMPTY--":
+                    error_msg("Option %s\nnot followed by anything." % repr(info[0])[1:-1])
+                setup.__dict__[variable_name] = value
+    return command_line

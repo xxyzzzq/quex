@@ -3,7 +3,7 @@ if [[ $1 == "--hwut-info" ]]; then
     echo "Precedence: Larger Inheritance Tree;"
     exit
 fi
-quex -i data/large-tree.qx -o Simple --token-prefix T_
+quex -i data/large-tree.qx -o Simple --token-id-prefix T_
 g++ -I$QUEX_PATH -I. \
     -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
     $QUEX_PATH/TEST/lexer.cpp Simple.cpp -o lexer  \

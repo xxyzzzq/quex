@@ -175,6 +175,7 @@ def do_plot():
 def do_token_class_info():
     print "info: Analyzers using this token class must be generated with"
     print "info:"
+    print "info:    --token-id-prefix       %s" % Setup.token_id_prefix
     print "info:    --token-class-file      %s" % Setup.output_token_class_file
     print "info:    --token-class           %s" % Setup.token_class
     print "info:    --token-id-type         %s" % Setup.token_id_type

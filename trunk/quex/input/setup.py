@@ -128,6 +128,7 @@ SETUP_INFO = {
     "compression_path_f":             [["--path-compression"],                 SetupParTypes.FLAG],
     "compression_path_uniform_f":     [["--path-compression-uniform"],         SetupParTypes.FLAG],
     "count_column_number_f":          [["--no-count-lines"],                   SetupParTypes.NEGATED_FLAG],
+    "message_on_extra_options_f":     [["--no-message-on-extra-options"],      SetupParTypes.NEGATED_FLAG],
     "count_line_number_f":            [["--no-count-columns"],                 SetupParTypes.NEGATED_FLAG],
     "character_display":              [["--character-display"],                "utf8"],
     "path_limit_code":                [["--path-termination"],                 0x1],
@@ -144,9 +145,9 @@ SETUP_INFO = {
     "token_class_only_f":             [["--token-class-only", "--tco"],        SetupParTypes.FLAG],
     "token_class_take_text_check_f":  [["--token-type-no-take_text-check",     "--ttnttc"], SetupParTypes.NEGATED_FLAG], 
     "token_id_foreign_definition_file":  [["--foreign-token-id-file"],         ""],  
-    "token_id_counter_offset":        [["--token-id-offset"],                  "10000"],
+    "token_id_counter_offset":        [["--token-id-offset"],                "10000"],
     "token_id_type":                  [["--token-id-type"],                  "uint32_t"],
-    "token_id_prefix":                [["--token-prefix"],                   "QUEX_TKN_"],
+    "token_id_prefix":                [["--token-id-prefix"],                "QUEX_TKN_"],
     "token_queue_size":               [["--token-queue-size"],               "64"],
     "token_queue_safety_border":      [["--token-queue-safety-border"],      "16"],
     "token_policy":                   [["--token-policy", "--tp"],           "queue"],                
@@ -220,6 +221,7 @@ SETUP_INFO = {
     "XX_plot_character_display":         [["--plot-character-display", "--pcd"],  "utf8"],
     "XX_plot_graphic_format_list_f":     [["--plot-format-list"],               SetupParTypes.FLAG],
     "XX_compression_template_coef":      [["--template-compression-coefficient"], 1.0],
+    "XX_token_id_prefix":                [["--token-prefix"],                   "QUEX_TKN_"],
 }
 
 DEPRECATED = { 
@@ -333,6 +335,9 @@ DEPRECATED = {
        "'--template-compression-min-gain' which tells the minimum estimated number of\n" \
        "bytes that can be spared before two states would be combined.",
        "0.60.1"),
+  "XX_token_id_prefix":
+      ("Command line option '--token-prefix' has been renamed to '--token-id-prefix'\n"
+       "for the sake of precision in expression.", "0.62.1"),
 }
  
 global_character_type_db = {

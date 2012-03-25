@@ -228,7 +228,7 @@ TEST
 
  -- rmanoj-oss:
 
-    3079986 Allow namespace delimiter in --token-prefix for C++
+    3079986 Allow namespace delimiter in --token-id-prefix for C++
         feature-3079986.sh nnn ............................................[OK]
                            nnc ............................................[OK]
                            ncc ............................................[OK]

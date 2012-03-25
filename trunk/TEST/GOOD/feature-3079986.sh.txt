@@ -10,6 +10,11 @@
     self_send(scope1::scope2::scope3::TKN_INT);
     self_send(scope1::scope2::scope3::TKN_VAR);
     self_send(scope1::scope2::scope3::TKN_TERMINATION);
+   case scope1::scope2::scope3::TKN_TERMINATION:    return termination_string;
+   case scope1::scope2::scope3::TKN_UNINITIALIZED:  return uninitialized_string;
+   case scope1::scope2::scope3::TKN_INDENT:         return indent_string;
+   case scope1::scope2::scope3::TKN_DEDENT:         return dedent_string;
+   case scope1::scope2::scope3::TKN_NODENT:         return nodent_string;
    case scope1::scope2::scope3::TKN_INT:           return token_id_str_INT;
    case scope1::scope2::scope3::TKN_LPAREN:        return token_id_str_LPAREN;
    case scope1::scope2::scope3::TKN_OP_EQUAL:      return token_id_str_OP_EQUAL;

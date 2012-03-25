@@ -18,8 +18,8 @@ quex -i error-3.qx --engine Simple
 echo 
 echo "tokens on command line __________________________________"
 echo '(1)'
-quex --token-prefix TKN-
+quex --token-id-prefix TKN-
 echo '(2)'
-quex --token-prefix SMOEREBROED
+quex --token-id-prefix SMOEREBROED
 rm -f Simple  Simple.cpp  Simple-token_ids
 cd $tmp

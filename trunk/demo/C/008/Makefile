@@ -52,7 +52,7 @@ $(LEXER_SOURCES):  GENERATE_LEXER
 $(PARSER_SOURCES): GENERATE_PARSER
 
 GENERATE_LEXER: Calc_lexer.qx 
-	quex -i $< --engine $(LEXER_NAME) --token-prefix TKN_ \
+	quex -i $< --engine $(LEXER_NAME) --token-id-prefix TKN_ \
           --foreign-token-id-file Calc_token-ids.h                   \
 		  --language C         
 

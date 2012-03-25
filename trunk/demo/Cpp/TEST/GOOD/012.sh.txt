@@ -8,7 +8,7 @@ nicht     	UKNOWN____   UKNOWN____   NEGATION__
 träge    	UKNOWN____   UKNOWN____   UKNOWN____
 ,         	MARK______   MARK______   MARK______
           Max: now happy!
-          Max: now happy!
+          Moritz: now happy!
           Boeck: now angry!
 Sägen    	VERB______   VERB______   VERB______
 heimlich  	UKNOWN____   UKNOWN____   ADVERB____

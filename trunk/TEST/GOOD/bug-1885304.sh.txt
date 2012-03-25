@@ -2948,12 +2948,12 @@ QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID)
        __QUEX_STD_sprintf(error_string, "<UNKNOWN TOKEN-ID: %i>", (int)TokenID);
        return error_string;
    }
-   case __QUEX_SETTING_TOKEN_ID_TERMINATION:       return termination_string;
-   case __QUEX_SETTING_TOKEN_ID_UNINITIALIZED:     return uninitialized_string;
+   case QUEX_TKN_TERMINATION:    return termination_string;
+   case QUEX_TKN_UNINITIALIZED:  return uninitialized_string;
 #  if defined(QUEX_OPTION_INDENTATION_TRIGGER)
-   case __QUEX_SETTING_TOKEN_ID_INDENT:     return indent_string;
-   case __QUEX_SETTING_TOKEN_ID_DEDENT:     return dedent_string;
-   case __QUEX_SETTING_TOKEN_ID_NODENT:     return nodent_string;
+   case QUEX_TKN_INDENT:         return indent_string;
+   case QUEX_TKN_DEDENT:         return dedent_string;
+   case QUEX_TKN_NODENT:         return nodent_string;
 #  endif
    case QUEX_TKN_BRACKET_CLOSE: return token_id_str_BRACKET_CLOSE;
    case QUEX_TKN_BRACKET_OPEN:  return token_id_str_BRACKET_OPEN;
@@ -2989,8 +2989,10 @@ QUEX_NAMESPACE_TOKEN_CLOSE
 #   include<stdio.h> 
 #endif
 
-/* The token class definition file can only be included after the two token identifiers have
- * been defined. Otherwise, it would rely on default values. */
+/* The token class definition file can only be included after 
+ * the definition on TERMINATION and UNINITIALIZED.          
+ * (fschaef 12y03m24d: "I do not rememember why I wrote this.
+ *  Just leave it there until I am clear if it can be deleted.")   */
 #include "Simple-token"
 
 
