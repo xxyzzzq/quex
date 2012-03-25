@@ -1,4 +1,4 @@
-<test-database execution-time-sec="2.96" date="Sun Mar 25 08:48:40 2012">
+<test-database execution-time-sec="2.92" date="Sun Mar 25 13:33:40 2012">
     <last-used-diff-display-program name=""/>
     <test title="Anti-Patterns" time-sum-sec="0.08"> 
         <application file-name="anti-pattern.py" info-request-time="1330461519L" vanished="False"/>
@@ -72,20 +72,14 @@
                <choice name="" result="OK" time_sec="0.10" crc="-1518287255"/>
             </choice-list>
         </test>
-        <test title="Alternative Expressions" time-sum-sec="0.06"> 
+        <test title="Alternative Expressions" time-sum-sec="0.07"> 
             <application file-name="test-set-expressions.py" info-request-time="1318614195L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.06" crc="-303655243"/>
+               <choice name="" result="OK" time_sec="0.07" crc="-303655243"/>
             </choice-list>
         </test>
     </group>
     <group name="Conditional Analysis">
-        <test title="pre- and post-conditions" time-sum-sec="0.09"> 
-            <application file-name="test-pre-and-post-condition.py" info-request-time="1318614195L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.09" crc="-2052311123"/>
-            </choice-list>
-        </test>
         <test title="pre conditions" time-sum-sec="0.08"> 
             <application file-name="test-pre-condition.py" info-request-time="1320012167L" vanished="False"/>
             <choice-list number="1" same_result="False">
@@ -102,6 +96,12 @@
             <application file-name="test-post-condition.py" info-request-time="1320012164L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.08" crc="-296474085"/>
+            </choice-list>
+        </test>
+        <test title="pre- and post-conditions" time-sum-sec="0.09"> 
+            <application file-name="test-pre-and-post-condition.py" info-request-time="1318614195L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.09" crc="-2052311123"/>
             </choice-list>
         </test>
         <test title="End of Line '$' (with DOS/Windows '\r\n')" time-sum-sec="0.07"> 
@@ -126,16 +126,16 @@
         </test>
     </group>
     <group name="Unicode properties">
-        <test title="Simple" time-sum-sec="0.62"> 
+        <test title="Simple" time-sum-sec="0.61"> 
             <application file-name="test-properties.py" info-request-time="1318614195L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.62" crc="-2049050227"/>
+               <choice name="" result="OK" time_sec="0.61" crc="-2049050227"/>
             </choice-list>
         </test>
-        <test title="Set Operations" time-sum-sec="0.72"> 
+        <test title="Set Operations" time-sum-sec="0.67"> 
             <application file-name="test-properties-2.py" info-request-time="1318614195L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.72" crc="-725342255"/>
+               <choice name="" result="OK" time_sec="0.67" crc="-725342255"/>
             </choice-list>
         </test>
     </group>
