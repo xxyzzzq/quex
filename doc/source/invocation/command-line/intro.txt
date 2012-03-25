@@ -181,6 +181,13 @@ as described in :ref:`sec-number-format`.
 
         Lets quex generate an analyzer without internal column counting.
 
+.. cmdoption:: ``--no-message-on-extra-options``
+
+        Quex can parse certain source files for extra command line options
+        (see section `ref:sec-customized-token-class-formal`).
+        If it does, it prints the options it found on the standard output.
+        In case, this is disturbing the above flag disables this comment.
+
 If an independent source package is required that can be compiled without an 
 installation of quex, the following option may be used
 
@@ -216,7 +223,7 @@ following command line options can be used.
         
         DEFAULT = <empty>
 
-.. cmdoption:: --token-prefix name
+.. cmdoption:: --token-id-prefix name
     
         ``name`` = Name prefix to prepend to the name
         given in the token-id files. For example, if a token section contains

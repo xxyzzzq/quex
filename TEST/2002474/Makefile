@@ -3,7 +3,7 @@ LIB_CONV  = `icu-config --ldflags --cppflags`
 
 lex_iconv: 
 	@echo "Call to quex"
-	@quex -i simple.qx -o $(X) --bet wchar_t --iconv  --token-prefix TKN_
+	@quex -i simple.qx -o $(X) --bet wchar_t --iconv  --token-id-prefix TKN_
 	@echo "Compiling"
 	g++ -I./ -I$(QUEX_PATH) \
 		$(X).cpp                      \
@@ -17,7 +17,7 @@ lex_iconv:
 
 lex_icu: 
 	@echo "Call to quex"
-	@quex -i simple.qx -o $(X) --bet wchar_t --icu  --token-prefix TKN_
+	@quex -i simple.qx -o $(X) --bet wchar_t --icu  --token-id-prefix TKN_
 	@echo "Compiling"
 	g++ -I./ -I$(QUEX_PATH) \
 		$(X).cpp                      \
@@ -32,7 +32,7 @@ lex_icu:
 
 lex_codec: 
 	@echo "Call to quex"
-	@quex -i simple.qx -o $(X) --codec utf8  --token-prefix TKN_
+	@quex -i simple.qx -o $(X) --codec utf8  --token-id-prefix TKN_
 	@echo "Compiling"
 	g++ -I./ -I$(QUEX_PATH) \
 		$(X).cpp                      \

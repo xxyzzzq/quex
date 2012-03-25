@@ -50,20 +50,20 @@ on_skip_range_open-customized.sh: on_skip_range_open-customized.exe
 
 
 transit%.exe: transit%.qx lexer.c $(QUEX_CORE)
-	$(QUEX_PATH)/quex-exe.py -i $< --engine EHLexer --token-prefix TK_ --token-policy single --debug-exception --language C
+	$(QUEX_PATH)/quex-exe.py -i $< --engine EHLexer --token-id-prefix TK_ --token-policy single --debug-exception --language C
 	$(LD) ./lexer.c EHLexer.c -o $@ \
 		-D__TEST_DESCRIPTION='"Mode Transitions: $<"' \
 		-D__TEST_CHOICES='"1, 2, 3, error"'
 
 on_skip_range_open.exe: on_skip_range_open.qx $(QUEX_CORE)
-	$(QUEX_PATH)/quex-exe.py -i $< --engine EHLexer --token-policy single --token-prefix TK_ --debug-exception --language C
+	$(QUEX_PATH)/quex-exe.py -i $< --engine EHLexer --token-policy single --token-id-prefix TK_ --debug-exception --language C
 	$(LD) ./lexer.c EHLexer.c -o $@ \
 		-D__TEST_DESCRIPTION='"Default 'on_skip_range_open' event."' \
 		-D__TEST_CHOICES='"default"' \
           -DQUEX_SETTING_BUFFER_SIZE=4 \
 
 on_skip_range_open-customized.exe: on_skip_range_open-customized.qx $(QUEX_CORE)
-	$(QUEX_PATH)/quex-exe.py -i $< --engine EHLexer --token-policy single --token-prefix TK_ --debug-exception --language C
+	$(QUEX_PATH)/quex-exe.py -i $< --engine EHLexer --token-policy single --token-id-prefix TK_ --debug-exception --language C
 	$(LD) ./lexer.c EHLexer.c -o $@ \
 		-D__TEST_DESCRIPTION='"Customized 'on_skip_range_open' event."' \
 		-D__TEST_CHOICES='"customized"' \

@@ -8,7 +8,7 @@ with a number or a character code. The previous section already used the
 'stamping' with token identifiers that were names numeric constants. All names
 of those token identifiers must have the same prefix. The default prefix is
 `QUEX_TKN_`, but it can be also adapted using the command line option
-`--token-prefix` followed by the desired prefix. Named constants do not have to
+`--token-id-prefix` followed by the desired prefix. Named constants do not have to
 be defined explicitly, but they can be defined in a `token` section, such as in
 the following example:
 
@@ -58,7 +58,7 @@ token prefix `TOK_`, quex might be called in the following manner
 
 .. code-block:: bash
 
-    > quex (...) --foreign-token-id-file vbasic-token-ids.h --token-prefix TOK_
+    > quex (...) --foreign-token-id-file vbasic-token-ids.h --token-id-prefix TOK_
 
 Quex is still able to identify token identifiers which have not been mentioned
 in the file--in general. It is able to reflect on the content of the file to a

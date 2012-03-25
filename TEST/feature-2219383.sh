@@ -7,7 +7,7 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i simple.qx -o Simple --token-prefix TKN_ --foreign-token-id-file Calc_token-ids.h
+quex -i simple.qx -o Simple --token-id-prefix TKN_ --foreign-token-id-file Calc_token-ids.h
 
 # cleansening
 rm -f Simple Simple.cpp Simple-* *.o tmp.txt

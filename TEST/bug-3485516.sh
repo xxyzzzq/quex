@@ -7,6 +7,6 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i uuu.qx --engine UuuLexer --token-prefix UUU_TKN_ 2>&1
+quex -i uuu.qx --engine UuuLexer --token-id-prefix UUU_TKN_ 2>&1
 
 cd $tmp

@@ -9,7 +9,7 @@ all: iso8859-7-lexer utf8-lexer
 ISO8859_7_Lex.cpp: greek.qx
 	quex -i greek.qx         \
 		 --codec iso8859_7   \
-		 --token-prefix TKN_ \
+		 --token-id-prefix TKN_ \
 		 -o ISO8859_7_Lex
 
 iso8859-7-lexer.o: iso8859-7-lexer.cpp ISO8859_7_Lex.cpp
@@ -35,7 +35,7 @@ iso8859-7-lexer: iso8859-7-lexer.o ISO8859_7_Lex.cpp
 utf8-lexer: utf8-lexer.cpp 
 	quex -i greek.qx         \
 		 --codec utf8        \
-		 --token-prefix TKN_ \
+		 --token-id-prefix TKN_ \
 		 -o UTF8Lex 
 	g++ -ggdb \
 		-Wall                    \
@@ -52,7 +52,7 @@ utf8-lexer: utf8-lexer.cpp
 utf16-lexer: utf16-lexer.cpp 
 	quex -i             greek.qx  \
 		 --codec        utf16     \
-		 --token-prefix TKN_      \
+		 --token-id-prefix TKN_      \
 		 -o             UTF16Lex  \
 	     -b             2
 	g++ -ggdb -D__QUEX_TEST_OPTION_UTF16BE             \
@@ -66,7 +66,7 @@ utf16-lexer: utf16-lexer.cpp
 utf16-lexer-other: utf16-lexer-other.cpp 
 	quex -i             greek-other.qx  \
 		 --codec        utf16     \
-		 --token-prefix TKN_      \
+		 --token-id-prefix TKN_      \
 		 -o             UTF16Lex  \
 	     -b             2
 	g++ -ggdb -D__QUEX_TEST_OPTION_UTF16BE             \

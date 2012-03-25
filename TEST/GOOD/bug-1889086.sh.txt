@@ -12,6 +12,6 @@ error-3.qx:2:error: This is mandatory since Quex version 0.50.1.
 tokens on command line __________________________________
 (1)
 command line: Trailing characters '-' in 'TKN-'
-command line: for token prefix (options --token-prefix) name specification.
+command line: for token prefix (options --token-id-prefix) name specification.
 (2)
 command line: No input files.

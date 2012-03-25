@@ -750,6 +750,7 @@ The default token specifications in CDefault.qx and CppDefault.qx demonstrate
 the usage of those helper variables. Also, the produced token class is worth
 being considered for some more deeper insight.
 
+.. _sec-customized-token-class-formal:
 
 Formal Requirements on Token Classes.
 -------------------------------------
@@ -909,15 +910,39 @@ A hand written token class must comply to the following constraints:
       The conditional compilation must also be implemented for the ``__copy``
       operation which copies those values.
 
-    
-
 As long as these conventions are respected the user created token class will
 interoperate with the framework smoothly. The inner structure of the token
 class can be freely implemented according to the programmer's optimization
 concepts. 
 
+In case that the token class is specific in any way, it is a good idea to
+document this to the user. If the token class, for example, requires a special
+``QUEX_TYPE_CHARACTER``, i.e. buffer element type, then a certain value
+for ``--buffer-element-type`` must be specified to quex. A good place to
+do this is the header of the token class file. Even better, if this
+description is surrounded by the marker ``<<<QUEX-OPTIONS>>>`` then 
+quex can actually read it! The user will not have to bother to specify
+it himself. For example, a comment section as::
+
+   ... code-block:: cpp
+
+       /* My File: This file does ...
+        *    ...
+        *    <<<QUEX-OPTIONS>>>
+        *      --token-class-file      Common-token
+        *      --token-class           Common::Token
+        *      --token-id-type         uint32_t
+        *      --buffer-element-type   uint8_t
+        *      --lexeme-null-object    ::Common::LexemeNullObject
+        *      --foreign-token-id-file Common-token_ids
+        *    <<<QUEX-OPTIONS>>>
+        *    ...
+        */
+
+Lets quex consider the command line arguments as specified. It does not get
+confused by the leading ``*`` at the beginning of the line.
+
 .. _sec-shared-token-class:
-.. _sec-customized-token-class-formal:
 
 Shared Token Classes
 --------------------
@@ -951,7 +976,13 @@ element type is used as can be specified by command line option
 
 The ``LexemeNull`` is placed in the token's name space and also *implemented*
 there. Analyzers using the shared token class shall specify command line option
-``--lexeme-null-object`` and specify the name of it.
+``--lexeme-null-object`` and specify the name of it. 
+
+When quex terminates the token class generation for ``--token-class-only``,
+then the generated header will contain a section that actually defines all
+necessary options for the user of this class in a ``<<<QUEX-OPTIONS>>>```
+section in a comment at the beginning of the file. So, there is no extra effort
+involved in configuring quex for this particular implementation.
 
 .. warning::
 

@@ -74,7 +74,7 @@ in a source file to be treated by quex:
    .. note:: 
 
        The token identifier in this section are prefix-less. The token prefix, e.g. defined
-       by comand line option ``--token-prefix`` is automatically pasted in front of the 
+       by comand line option ``--token-id-prefix`` is automatically pasted in front of the 
        identifier.
 
    .. code-block:: cpp
