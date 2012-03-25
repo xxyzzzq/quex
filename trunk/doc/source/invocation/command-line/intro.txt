@@ -332,7 +332,7 @@ The following options support the definition of a independently customized token
 
         DEFAULT = ``uint32_t``
 
-.. cmdoption:: `--token-type-no-stringless-check`, `--ttnsc`
+.. cmdoption:: --token-type-no-take_text-check, --ttnttc
 
         Disable the 'stringless check' for customized token types. If the user
         defines a token type that cannot take a ``QUEX_TYPE_CHARACTER*`` then

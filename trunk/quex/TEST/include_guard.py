@@ -39,10 +39,21 @@ for root, dir_list, file_list in os.walk(os.environ["QUEX_PATH"] + "/quex"):
             if line[0] != "#":                    continue
             fields = line[1:].split()
             # include guards work with '#ifndef' or '#if ! defined( .... )'
-            if fields[0] not in ["if", "ifndef"]: continue
-            if len(fields) < 2:                   continue
-            include_guard_list.append(info(file_name, get_current_line_info_number(fh), fields[1]))
-            if len(fields[1]) > max_length: max_length = len(fields[1])
+            if fields[0] == "ifndef":
+                if len(fields) < 2:               continue
+                include_guard = fields[1]
+            elif len(fields) >= 3 and fields[0] == "if" and fields[1] == "!" and fields[2].find("defined") != -1:
+                nice_line = line[1:].replace("if", "").replace("!", "").replace("defined", "").replace("(", " ").replace(")", " ") 
+                fields = nice_line.split()
+                if len(fields) < 1: continue
+                include_guard = fields[0]
+            else:
+                continue
+
+            include_guard_list.append(info(file_name, 
+                                           get_current_line_info_number(fh), 
+                                           include_guard))
+            if len(fields[1]) > max_length: max_length = len(include_guard)
             break
         else:
             include_guard_list.append(info(file_name, -1, "<<No INCLUDE_GUARD directive found>>"))

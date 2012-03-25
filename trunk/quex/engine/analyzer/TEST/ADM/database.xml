@@ -1,4 +1,4 @@
-<test-database execution-time-sec="7.74" date="Sun Mar 25 13:29:02 2012">
+<test-database execution-time-sec="7.79" date="Sun Mar 25 23:39:06 2012">
     <last-used-diff-display-program name=""/>
     <test title="Single Pattern Checks" time-sum-sec="0.92"> 
         <application file-name="single-pattern.py" info-request-time="1330380967L" vanished="False"/>
@@ -28,7 +28,7 @@
            <choice name="7" result="OK" time_sec="0.07" crc="1708435878"/>
            <choice name="8" result="OK" time_sec="0.09" crc="-1947729231"/>
            <choice name="9" result="OK" time_sec="0.09" crc="1822988459"/>
-           <choice name="10" result="OK" time_sec="0.13" crc="-1044132079"/>
+           <choice name="10" result="OK" time_sec="0.12" crc="-1044132079"/>
            <choice name="11" result="OK" time_sec="0.07" crc="677065027"/>
            <choice name="set_state_key" result="OK" time_sec="0.07" crc="1691114680"/>
            <choice name="set_path_iterator" result="OK" time_sec="0.07" crc="1521327539"/>
@@ -39,7 +39,7 @@
         <choice-list number="6" same_result="False">
            <choice name="0" result="OK" time_sec="0.08" crc="-408437627"/>
            <choice name="1" result="OK" time_sec="0.09" crc="1697965733"/>
-           <choice name="2" result="OK" time_sec="0.11" crc="-1707127528"/>
+           <choice name="2" result="OK" time_sec="0.10" crc="-1707127528"/>
            <choice name="3" result="OK" time_sec="0.10" crc="2140567119"/>
            <choice name="4" result="OK" time_sec="0.10" crc="1907682435"/>
            <choice name="5" result="OK" time_sec="0.16" crc="-516882442"/>
@@ -61,10 +61,10 @@
                <choice name="3" result="OK" time_sec="0.10" crc="-1497413012"/>
                <choice name="4" result="OK" time_sec="0.10" crc="-835402513"/>
                <choice name="5" result="OK" time_sec="0.10" crc="-1651526726"/>
-               <choice name="6" result="OK" time_sec="0.10" crc="-725836472"/>
+               <choice name="6" result="OK" time_sec="0.09" crc="-725836472"/>
                <choice name="7" result="OK" time_sec="0.14" crc="-351472306"/>
                <choice name="9" result="OK" time_sec="0.11" crc="247757401"/>
-               <choice name="8" result="OK" time_sec="0.11" crc="-815693424"/>
+               <choice name="8" result="OK" time_sec="0.10" crc="-815693424"/>
             </choice-list>
         </test>
         <test title="Without Pre- and Post-Contexts" time-sum-sec="0.88"> 
@@ -85,7 +85,7 @@
         <test title="With Pre-Contexts" time-sum-sec="1.36"> 
             <application file-name="track_analysis-pre.py" info-request-time="1330380839L" vanished="False"/>
             <choice-list number="14" same_result="False">
-               <choice name="0" result="OK" time_sec="0.08" crc="1596736615"/>
+               <choice name="0" result="OK" time_sec="0.09" crc="1596736615"/>
                <choice name="1" result="OK" time_sec="0.08" crc="-902328655"/>
                <choice name="2" result="OK" time_sec="0.08" crc="-1127449658"/>
                <choice name="3" result="OK" time_sec="0.08" crc="-494777152"/>
@@ -96,21 +96,21 @@
                <choice name="8" result="OK" time_sec="0.09" crc="1771895140"/>
                <choice name="9" result="OK" time_sec="0.09" crc="-1199084599"/>
                <choice name="10" result="OK" time_sec="0.14" crc="-451477991"/>
-               <choice name="11" result="OK" time_sec="0.12" crc="-590215789"/>
+               <choice name="11" result="OK" time_sec="0.13" crc="-590215789"/>
                <choice name="12" result="OK" time_sec="0.14" crc="1363165512"/>
                <choice name="13" result="OK" time_sec="0.09" crc="-1909007065"/>
             </choice-list>
         </test>
-        <test title="Special Loops and Forks" time-sum-sec="1.00"> 
+        <test title="Special Loops and Forks" time-sum-sec="1.06"> 
             <application file-name="track_analysis-loops.py" info-request-time="1330380927L" vanished="False"/>
             <choice-list number="8" same_result="False">
-               <choice name="0" result="OK" time_sec="0.16" crc="-2009471132"/>
-               <choice name="1" result="OK" time_sec="0.17" crc="-1302314660"/>
+               <choice name="0" result="OK" time_sec="0.20" crc="-2009471132"/>
+               <choice name="1" result="OK" time_sec="0.18" crc="-1302314660"/>
                <choice name="2" result="OK" time_sec="0.10" crc="1440672369"/>
                <choice name="3" result="OK" time_sec="0.13" crc="-1434891363"/>
-               <choice name="4" result="OK" time_sec="0.10" crc="1638317297"/>
+               <choice name="4" result="OK" time_sec="0.11" crc="1638317297"/>
                <choice name="5" result="OK" time_sec="0.11" crc="-11816380"/>
-               <choice name="6" result="OK" time_sec="0.12" crc="948095510"/>
+               <choice name="6" result="OK" time_sec="0.13" crc="948095510"/>
                <choice name="7" result="OK" time_sec="0.11" crc="1090253960"/>
             </choice-list>
         </test>
