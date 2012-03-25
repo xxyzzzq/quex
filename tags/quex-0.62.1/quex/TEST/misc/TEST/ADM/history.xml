@@ -1,0 +1,34 @@
+<history date="Sun Mar 25 23:36:44 2012" element-n="12">
+    <day year="2011" month="02" day="10">
+        <history-init time="20:32:09"/>
+    </day>
+    <day year="2011" month="02" day="13">
+        <crc-error time="07:07:32" application="comment.sh" choice="" database-crc="-1663713497" real-crc="-868935868"/>
+    </day>
+    <day year="2011" month="03" day="18">
+        <crc-error time="06:45:06" application="comment.sh" choice="" database-crc="683586817" real-crc="-244584835"/>
+        <crc-error time="06:45:15" application="comment.sh" choice="" database-crc="-244584835" real-crc="248321084"/>
+        <crc-error time="06:45:45" application="comment.sh" choice="" database-crc="248321084" real-crc="977201913"/>
+    </day>
+    <day year="2011" month="10" day="07">
+        <crc-error time="06:11:47" application="debug_show.sh" choice="" database-crc="-218739515" real-crc="-1401362288"/>
+    </day>
+    <day year="2011" month="10" day="21">
+        <crc-error time="20:56:57" application="comment.sh" choice="" database-crc="592330964" real-crc="-989588451"/>
+    </day>
+    <day year="2012" month="02" day="19">
+        <crc-error time="06:25:48" application="debug_show.sh" choice="" database-crc="1416435023" real-crc="-358434626"/>
+    </day>
+    <day year="2012" month="02" day="27">
+        <crc-error time="22:19:09" application="debug_show.sh" choice="" database-crc="2104957585" real-crc="1894641361"/>
+    </day>
+    <day year="2012" month="02" day="29">
+        <crc-error time="07:11:05" application="debug_show.sh" choice="" database-crc="1134940786" real-crc="310378258"/>
+    </day>
+    <day year="2012" month="03" day="14">
+        <crc-error time="07:00:41" application="customized_codec.sh" choice="" database-crc="1025570625" real-crc="1446890530"/>
+    </day>
+    <day year="2012" month="03" day="24">
+        <crc-error time="05:55:19" application="customized_codec.sh" choice="" database-crc="271317904" real-crc="650831960"/>
+    </day>
+</history>

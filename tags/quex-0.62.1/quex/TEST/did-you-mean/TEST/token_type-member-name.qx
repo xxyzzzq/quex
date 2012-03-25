@@ -1,0 +1,11 @@
+token_type {
+    union {
+     	xylophon : int;
+        zepelin  : short;
+        name     : string;
+    }
+}
+
+mode X {
+    "a" => QUEX_TKN_A(xilophon=Lexeme);
+}

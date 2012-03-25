@@ -1,0 +1,86 @@
+.. _sec-multiple-inheritance:
+
+Multiple Inheritance
+====================
+
+Quex allows multiple inheritance, i.e. a mode can inherit more than one base
+mode.  Multiple inheritance is a potential cause of confusion when it comes to
+pattern match resolution or event handler sequence. The resolution sequence
+follows the 'depth-first approach'. As an example consider the following 
+mode hierarchie: 
+
+.. code-block:: cpp
+
+    mode A : B, C     { [a-z]{1,9} => T_A(Lexeme); }
+    mode C : E, F, G  { [a-z]{1,8} => T_C(Lexeme); }
+    mode G            { [a-z]{1,7} => T_G(Lexeme); }
+    mode F            { [a-z]{1,6} => T_F(Lexeme); }
+    mode B : D, E     { [a-z]{1,5} => T_B(Lexeme); }
+    mode E : I,       { [a-z]{1,4} => T_E(Lexeme); }
+    mode I            { [a-z]{1,3} => T_I(Lexeme); }
+    mode D : H        { [a-z]{1,2} => T_D(Lexeme); }
+    mode H            { [a-z]{1,1} => T_H(Lexeme); }
+
+The according mode inheritance hierarchie is show in figure :ref:`Inheritance
+Resolution <fig-inheritance-resolution>`. The letters in the boxes name the
+modes and the numbers at their right bottom edges indicate the mode's
+precedence. The applied depth-first approach implies two things:
+
+#. Modes that mentioned first in the inheritance relationship have a higher
+   precedence.  In the above example ``B`` has a higher precedence then ``C``,
+   because it is mentioned before it in the definition ``mode A : B, C { ...
+   }``.
+
+#. Modes located deeper in the inheritance structure precede
+   modes which are located in derived classes. Thus, ``I`` has a 
+   higher precedence than ``E`` because ``I`` is derived from ``E``.
+
+The diamond problem, in our example classes ``A``, ``B``, ``C``, and ``E``
+is solved automatically. The derived mode ``B`` has a higher precedence
+than ``C``, thus it is approached via the path of ``B``. ``B`` treats
+the path of ``E`` after ``C``. Thus, ``E`` has a precedence right after 
+its closest base class ``I``. 
+
+.. _fig-inheritance-resolution:
+
+.. image:: ../../figures/mode-multiple-inheritance.*
+   :align: center
+   :alt:   Multiple inheritance mode structure.
+
+What sounds complicated is in practise very intuitive. Base mode patterns have
+high precedence, thus they have a high influence on the mode's behavior. This
+follows the idea that a derived mode has the character of its base mode plus
+some extra functionality. The fact that first mentioned base classes are
+considered first, is so intuitive that mentioning it is close to a tautology.
+
+In any case, is is advisable when working with multiple inheritance, to have
+a look at the documentation string that quex produces about the pattern-action
+pairs in the generated engine source file. The aforementioned example
+caused quex to produce the following documentation::
+
+    /* MODE A:
+     ...
+     *     PATTERN-ACTION PAIRS:
+     *       ( 75) H: [a-z]{1,1}
+     *       ( 76) D: [a-z]{1,2}
+     *       ( 77) I: [a-z]{1,3}
+     *       ( 78) E: [a-z]{1,4}
+     *       ( 79) B: [a-z]{1,5}
+     *       ( 80) F: [a-z]{1,6}
+     *       ( 81) G: [a-z]{1,7}
+     *       ( 82) C: [a-z]{1,8}
+     *       ( 83) A: [a-z]{1,9}
+     ...
+
+The first column of the table gives the index that was created for the pattern.
+It is an expression of precedence.  The second column tells from what mode the
+pattern was inherited and the third column displays the pattern itself.
+
+This means, that a word of one character is matched by mode ``H``. All other
+modes can also match a word of one single character, but ``H`` has the highest
+precedence (it's the most 'base'-ic). A word of two characters is always
+matched by mode ``D``. There are other modes which can also match a two
+character word, but ``D`` is the one with the highest precedence of all modes
+that can match.
+
+
