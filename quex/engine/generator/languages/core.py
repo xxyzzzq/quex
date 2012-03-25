@@ -117,9 +117,10 @@ class LDB(dict):
         comment = Comment.replace("/*", "SLASH_STAR").replace("*/", "STAR_SLASH")
         txt.append("/* %s */\n" % comment)
 
-    def ML_COMMENT(self, txt, Comment):
-        comment = Comment.replace("/*", "SLASH_STAR").replace("*/", "STAR_SLASH").replace("\n", "\n     * ")
-        txt.append("    /* %s\n     */" % comment) 
+    def ML_COMMENT(self, txt, Comment, IndentN=4):
+        indent_str = " " * IndentN
+        comment = Comment.replace("/*", "SLASH_STAR").replace("*/", "STAR_SLASH").replace("\n", "\n%s * " % indent_str)
+        txt.append("%s/* %s\n%s */" % (indent_str, comment, indent_str))
 
     def COMMAND(self, EntryAction):
         if isinstance(EntryAction, entry_action.Accepter):
