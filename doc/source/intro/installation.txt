@@ -212,6 +212,10 @@ feature of quex:
           gives an example of how to use multiple lexical analyzers in one single
           application. 
 
+.. data:: demo/012b
+
+          deals with multiple lexical analyzers sharing the same token type.
+
 .. data:: benchmark
 
           contains a benchmark suite to measure the performance of the lexical
