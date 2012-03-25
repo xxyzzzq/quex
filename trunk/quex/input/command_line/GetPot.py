@@ -223,7 +223,11 @@ class GetPot:
             
             str += tmp
 
-
+    def absorb(self, Other):
+        tmp = copy.copy(Other.argv)
+        # Delete the application name
+        del tmp[0]
+        self.__parse_argument_vector(tmp)
 
     def __process_section_label(self, label, section_stack):                    
         #  1) subsection of actual section ('./' prefix)

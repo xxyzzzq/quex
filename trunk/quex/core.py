@@ -50,11 +50,11 @@ def do():
 
     if Setup.token_class_only_f:
         write_safely_and_close(blackboard.token_type_definition.get_file_name(), 
-                               class_token_header)
+                                 do_token_class_info() \
+                               + class_token_header)
         write_safely_and_close(Setup.output_token_class_file_implementation,
                                class_token_implementation)
         write_safely_and_close(Setup.output_token_id_file, token_id_header)
-        do_token_class_info()
         return
 
     # (*) Implement the 'quex' core class from a template
@@ -173,17 +173,30 @@ def do_plot():
         plotter.do(Option=Setup.character_display)
 
 def do_token_class_info():
+    info_list = [
+        "  --token-id-prefix       %s" % Setup.token_id_prefix,
+        "  --token-class-file      %s" % Setup.output_token_class_file,
+        "  --token-class           %s" % Setup.token_class,
+        "  --token-id-type         %s" % Setup.token_id_type,
+        "  --buffer-element-type   %s" % Setup.buffer_element_type,
+        "  --lexeme-null-object    %s" % token_class_maker.common_lexeme_null_reference(),
+        "  --foreign-token-id-file %s" % Setup.output_token_id_file,
+    ]
     print "info: Analyzers using this token class must be generated with"
     print "info:"
-    print "info:    --token-id-prefix       %s" % Setup.token_id_prefix
-    print "info:    --token-class-file      %s" % Setup.output_token_class_file
-    print "info:    --token-class           %s" % Setup.token_class
-    print "info:    --token-id-type         %s" % Setup.token_id_type
-    print "info:    --buffer-element-type   %s" % Setup.buffer_element_type
-    print "info:    --lexeme-null-object    %s" % token_class_maker.common_lexeme_null_reference()
-    print "info:    --foreign-token-id-file %s" % Setup.output_token_id_file
-
+    for line in info_list:
+        print "info:    %s" % line
     print "info:"
     print "info: Header: \"%s\"" % blackboard.token_type_definition.get_file_name() 
     print "info: Source: \"%s\"" % Setup.output_token_class_file_implementation
+
+    comment = ["<<<QUEX-OPTIONS>>>\n"]
+    for line in info_list:
+        if line.find("--token-class-file") != -1: continue
+        comment.append("%s\n" % line)
+    comment.append("<<<QUEX-OPTIONS>>>")
+    txt = []
+    Setup.language_db.ML_COMMENT(txt, "".join(comment), IndentN=0)
+    return "".join(txt) + "\n"
+
 

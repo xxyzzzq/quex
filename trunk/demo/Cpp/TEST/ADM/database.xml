@@ -1,4 +1,4 @@
-<test-database execution-time-sec="252.87" date="Sun Mar 25 08:48:38 2012">
+<test-database execution-time-sec="252.97" date="Sun Mar 25 13:08:57 2012">
     <last-used-diff-display-program name=""/>
     <group name="demo/000">
         <test title="Single Mode Example" time-sum-sec="5.87"> 
@@ -160,11 +160,11 @@
         </test>
     </group>
     <group name="demo/012b">
-        <test title="Multiple Lexical Analyzers -- shared token" time-sum-sec="12.61"> 
+        <test title="Multiple Lexical Analyzers -- shared token" time-sum-sec="12.71"> 
             <application file-name="012b.sh" info-request-time="1332648399L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="OK" time_sec="7.02" crc="1831226011"/>
-               <choice name="DEBUG" result="OK" time_sec="5.59" crc="-62717966"/>
+               <choice name="NDEBUG" result="OK" time_sec="7.11" crc="-62717966"/>
+               <choice name="DEBUG" result="OK" time_sec="5.60" crc="-62717966"/>
             </choice-list>
         </test>
     </group>

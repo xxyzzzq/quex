@@ -55,13 +55,21 @@ class ManualTokenClassSetup:
 
 def do(argv):
     global setup
-    command_line = __interpret_command_line(argv)
 
-    if setup.token_class_file != "":
-        special_argv = __extract_extra_options_from_file(setup.token_class_file)
-        if special_argv is not None:
-            extra_command_line = __interpret_command_line(special_argv)
-            command_line.absorb(extra_command_line)
+    try:    
+        idx = argv.index("--token-class-file")
+        if idx + 1 < len(argv): idx += 1
+        else:                   idx  = None
+    except: 
+        idx = None 
+
+    if idx is not None:
+        extra_argv = __extract_extra_options_from_file(argv[idx])
+        if extra_argv is not None: argv.extend(extra_argv)
+
+    command_line = __interpret_command_line(argv)
+    if command_line is None:
+        return False
 
     return __perform_setup(command_line, argv)
 
@@ -70,7 +78,6 @@ def __perform_setup(command_line, argv):
                 False, if job is done.
     """
     global setup
-    __interpret_command_line(argv)
 
     # (*) Classes and their namespace
     __setup_analyzer_class(setup)
@@ -408,20 +415,24 @@ def __extract_extra_options_from_file(FileName):
         if line == "":
             fh.seek(pos)
             error_msg("Missing terminating '%s'." % MARKER, fh)
+
+        if line.find(MARKER) != -1: 
+            break
         
         idx = line.find("-")
         if idx == -1: continue
         options = line[idx:].split()
         result.extend(options)
-        if line.find(MARKER) != -1: 
-            break
-
-    if setup.message_on_extra_options_f:
-        print "# Command line options from file '%s'" % FileName
-        print "# %s" % repr(result)[1:-1]
-        print "# (suppress this message with --no-message-on-extra-options)"
 
     if len(result) == 0: return None
+
+    if setup.message_on_extra_options_f:
+        if len(result) < 2: arg_str = result[0]
+        else:               arg_str = reduce(lambda x, y: "%s %s" % (x.strip(), y.strip()), result)
+        print "## Command line options from file '%s'" % FileName
+        print "## %s" % arg_str
+        print "## (suppress this message with --no-message-on-extra-options)"
+
     return result
 
 
@@ -433,7 +444,7 @@ def __interpret_command_line(argv):
         print "Version " + QUEX_VERSION
         print "(C) 2005-2011 Frank-Rene Schaefer"
         print "ABSOLUTELY NO WARRANTY"
-        return False
+        return None
 
     if command_line.search("--help", "-h"):
         print "Quex - Fast Universal Lexical Analyzer Generator"
@@ -441,7 +452,7 @@ def __interpret_command_line(argv):
         print "visit http://quex.org"
         print "(C) 2005-2011 Frank-Rene Schaefer"
         print "ABSOLUTELY NO WARRANTY"
-        return False
+        return None
 
     for variable_name, info in SETUP_INFO.items():
         # Some parameters are not set on the command line. Their entry is not associated
