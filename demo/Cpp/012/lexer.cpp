@@ -4,11 +4,6 @@
 #include "max_Lexer"
 #include "boeck_Lexer"
 
-/* We do not need to cut the BOM. I include it here only
- * to make sure that it remains 'multi-lexer-safe'.        */
-#include <quex/code_base/bom>
-#include <quex/code_base/bom.i>
-
 using namespace std;
 
 
@@ -16,12 +11,12 @@ int
 main(int argc, char** argv) 
 {        
     // we want to have error outputs in stdout, so that the unit test could see it.
-    max::Lexer     max_lex("example-utf16.txt", "UTF16");
-    moritz::Lexer  moritz_lex("example-ucs2.txt", "UCS-2");
-    boeck::Lexer   boeck_lex("example-utf8.txt");
-    max::Token*    max_token    = 0x0;
-    moritz::Token* moritz_token = 0x0;
-    boeck::Token*  boeck_token  = 0x0;
+    max::Lexer     max_lex("example.txt");
+    moritz::Lexer  moritz_lex("example.txt");
+    boeck::Lexer   boeck_lex("example.txt");
+    Common::Token* max_token    = 0x0;
+    Common::Token* moritz_token = 0x0;
+    Common::Token* boeck_token  = 0x0;
 
 
     // Each lexer reads one token, since the grammars are similar the lexeme 
