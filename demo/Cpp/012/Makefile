@@ -1,7 +1,9 @@
 ENGINE = \
-		boeck_Lexer.cpp   \
-		max_Lexer.cpp     \
+		boeck_Lexer.cpp              \
+		max_Lexer.cpp                \
 		moritz_Lexer.cpp             
+
+OBJS = $(ENGINE:.cpp=.o) lexer.o
 
 ifdef ASSERTS_ENABLED_F
 	CCFLAG_ASSERTS=# By default asserts are enabled
@@ -9,9 +11,13 @@ else
 	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
 endif
 
-lexer: $(ENGINE:.cpp=.o) lexer.o Common-token.o
-	g++ $^ -ggdb -o  $@ -I$(QUEX_PATH) 
+lexer: $(OBJS)
+	g++ $(OBJS) -ggdb -o  $@ \
+		-I$(QUEX_PATH) 
 	 
+# -DQUEX_OPTION_ASSERTS_DISABLED
+# -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
+
 %.o: %.cpp $(ENGINE_SOURCES)
 	g++ -c $< -ggdb -Wall -o $@ \
 		-I$(QUEX_PATH) \
@@ -20,31 +26,27 @@ lexer: $(ENGINE:.cpp=.o) lexer.o Common-token.o
 # -DQUEX_OPTION_ASSERTS_DISABLED
 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
 
-COMMON_TOKEN_OPTIONS = \
-	 --token-class-file Common-token \
-     --token-policy single --no-warning-on-no-token-queue
-		 # --no-message-on-extra-options \
-
 %.E: %.cpp
-	g++ -E $< -o  $@ -I$(QUEX_PATH) 
-	
-boeck_Lexer-token_ids \
-boeck_Lexer.cpp:  boeck.qx Common-token.cpp Common-token_ids
-	quex -i $< -o boeck::Lexer --codec utf8 $(COMMON_TOKEN_OPTIONS) # --debug-exception
+	g++ -E $< -o  $@ \
+		-I$(QUEX_PATH) 
+		
+# -DQUEX_OPTION_ASSERTS_DISABLED
+# -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
 
-max_Lexer.cpp:    max.qx Common-token.cpp Common-token_ids
-	quex -i $< -o max::Lexer --codec utf8 $(COMMON_TOKEN_OPTIONS) 
+max_Lexer.cpp:    max.qx
+	quex -i token.qx $< -o max::Lexer --iconv -b 4     \
+		 --token-id-prefix MAX_TKN_ --token-policy single \
+		 --no-warning-on-no-token-queue
 
-moritz_Lexer.cpp: moritz.qx Common-token.cpp Common-token_ids
-	quex -i $< -o moritz::Lexer --codec utf8 $(COMMON_TOKEN_OPTIONS) 
+moritz_Lexer.cpp: moritz.qx
+	quex -i token.qx $< -o moritz::Lexer --iconv -b 2     \
+		 --token-id-prefix MORITZ_TKN_ --token-policy single \
+		 --no-warning-on-no-token-queue
 
-Common-token.cpp: 
-	quex -i token_ids.qx               \
-		 --codec utf8                  \
-		 --token-id-prefix TKN_        \
-		 -o Common                     \
-		 --token-class Common::Token   \
-		 --token-class-only  --debug-exception
+boeck_Lexer.cpp:  boeck.qx
+	quex -i token.qx $< -o boeck::Lexer --codec utf8 \
+		 --token-id-prefix TKN_ --token-policy single   \
+		 --no-warning-on-no-token-queue
 
 clean:
 	rm -rf $(ENGINE)
@@ -53,7 +55,6 @@ clean:
 	rm -rf $(ENGINE:.cpp=-token_ids)
 	rm -rf $(ENGINE:.cpp=-token)
 	rm -rf $(ENGINE:.cpp=-configuration)
-	rm -rf Common-token*
 	rm -rf lexer
 	rm -rf *.E
 	rm -rf lexer.o
