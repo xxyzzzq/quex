@@ -743,8 +743,32 @@ codec to some output codec, as they are
 
 .. describe:: $TOKEN_CLASS
 
-   Expands to the name of the token class. In C++, this does not include 
-   the token class' namespace specifier.
+   Expands to the name of the token class. In C++, this does not include the
+   token class' namespace specifier. In C, it might be necessary to introduce a
+   forward declaration of the token class. This can be done with the same
+   variable, as in the following code.
+
+   .. code-block:: cpp
+
+       header {
+       struct $TOKEN_CLASS_tag;
+
+       extern const char* 
+       $TOKEN_CLASS_pretty_char_text(struct $TOKEN_CLASS_tag* me, 
+                                     char*                    buffer, 
+                                     size_t                   BufferSize); 
+           ...
+           struct $TOKEN_CLASS_tag;
+
+           extern const char* 
+           $TOKEN_CLASS_pretty_char_text(struct $TOKEN_CLASS_tag* me, 
+                                         char*                    buffer, 
+                                         size_t                   BufferSize); 
+           ...
+       }
+
+   So that functions may be declared using a token pointer before the struct
+   itself is defined, as shown in the example above. 
 
 The default token specifications in CDefault.qx and CppDefault.qx demonstrate
 the usage of those helper variables. Also, the produced token class is worth
@@ -981,8 +1005,16 @@ there. Analyzers using the shared token class shall specify command line option
 When quex terminates the token class generation for ``--token-class-only``,
 then the generated header will contain a section that actually defines all
 necessary options for the user of this class in a ``<<<QUEX-OPTIONS>>>```
-section in a comment at the beginning of the file. So, there is no extra effort
-involved in configuring quex for this particular implementation.
+section in a comment at the beginning of the file. So, there is almost no extra effort
+involved in configuring quex for this particular implementation. What
+remains is that the name of the token class file needs to be passed to quex
+similar to the following:
+
+  .. code-block:: bash
+
+      > quex ... --token-class-file MyLexer-token.h ...
+
+in the case of a generated token class in plain C.
 
 .. warning::
 

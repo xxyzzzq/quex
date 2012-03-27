@@ -19,18 +19,18 @@ from a codec to a codec there is a character converter as
 
 which increments the input and output pointer according to the characters that
 have been consumed and written. Those basic character converter functions are
-grouped into 'character-converter/from-*.i' files. The file 
-'character-converter/from-utf8.i' for example implements the character
-converter functions
+provided at the head of each 'from-*' file. The converter files are grouped
+by their source encoding (that's why they start with 'from').
+The basic character converters from utf8 to other formats are the following
 
     QUEX_CONVERTER_CHAR(utf8, utf8)(...)
     QUEX_CONVERTER_CHAR(utf8, utf16)(...)
     QUEX_CONVERTER_CHAR(utf8, utf32)(...)
 
-Those functions are written in a way, so that they do neither depend on the
-analyzer, nor on the systems definition of 'char' and 'wchar_t'. Based on 
-their definition the converters towards 'char' and 'wchar_t' are derived
-through the generator file
+All basic character converters follow this scheme. Those functions are written
+in a way, so that they do neither depend on the analyzer, nor on the systems
+definition of 'char' and 'wchar_t'. Based on their definition the converters
+towards 'char' and 'wchar_t' are derived through the generator file
 
     './generator/character-converter-to-char-wchar.gi'
 
@@ -97,13 +97,16 @@ Namespaces exist to avoid name clashes. The general scheme in quex is from
 general to specific. A function 'func()' in namespace 'space' is accessed in
 C++ via 'space::func() and in C via 'space_func()'. 
 
+The current strategy is that all functions are located in the analyzer's
+namespace. Their include guards are undone upon inclusion of another
+analyzer, in the assumption that different analyzers have to live in 
+separate namespaces.
+
 -- Universal Functions:
 
     The basic converters from and to UTF8, UTF16, and UTF32 are absolutely
     independent of the analyzer or even the system (provided it has a 
     'stdint.h' implementation). 
-
-    Namespace: quex
 
 -- System Dependent Functions:
 
@@ -111,10 +114,6 @@ C++ via 'space::func() and in C via 'space_func()'.
     clashes are only significant if the functions appear in the same application.
     Thus, without restricting generality, those functions can be considered
     'universal'. 
-
-    Namespace: quex
-
-    Include Guards: Absolute
     
 -- Unicode Buffer Functions:
 -- Customized Codec Buffer Functions:
@@ -127,24 +126,5 @@ C++ via 'space::func() and in C via 'space_func()'.
         QUEX_SETTING_CHARACTER_SIZE 
         QUEX_SETTING_CHARACTER_CODEC
 
-    Namespace: The analyzer's namespace.
+NOTE: The include guard undo happens in file: 'quex/code_base/include-guard-undef'
 
-The universal functions are implemented once and for all and their include guard
-does not need to be undone upon inclusion of a second analyzer. 
-
-   => Include guards of universal functions are NOT undone upon inclusion
-      from inside a second analyzer.
-
-The buffer specific functions work in the namespace of the specific analyzer
-and thus, their is no possible name clash between analyzers. To the contrary,
-it must be sure that they are implemented even if they are included after
-an inclusion of their counterpart from a different analyzer. 
-
-   => Include guards of universal functions ARE undone upon inclusion
-      from inside a second analyzer.
-
-This is reflected in the content of file
-
-   quex/code_base/include-guard-undef
-
-The UNDO of the converter helper for codec specifics is currently not solved.

@@ -28,7 +28,6 @@ COMMON_TOKEN_OPTIONS = \
 %.E: %.cpp
 	g++ -E $< -o  $@ -I$(QUEX_PATH) 
 	
-boeck_Lexer-token_ids \
 boeck_Lexer.cpp:  boeck.qx Common-token.cpp Common-token_ids
 	quex -i $< -o boeck::Lexer --codec utf8 $(COMMON_TOKEN_OPTIONS) # --debug-exception
 
@@ -38,6 +37,7 @@ max_Lexer.cpp:    max.qx Common-token.cpp Common-token_ids
 moritz_Lexer.cpp: moritz.qx Common-token.cpp Common-token_ids
 	quex -i $< -o moritz::Lexer --codec utf8 $(COMMON_TOKEN_OPTIONS) 
 
+Common-token_ids \
 Common-token.cpp: 
 	quex -i token_ids.qx               \
 		 --codec utf8                  \

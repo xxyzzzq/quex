@@ -70,6 +70,10 @@ def utf8_to_unicode(ByteSequence):
     for byte in ByteSequence[1:]:
         value <<= 6
         value |=  (byte & 0x3F)   # blend off the highest two bits
+        # The highest two bits in a follow byte in utf8 MUST be '10'. Thus:
+        if (byte & 0xC0) != 0x80:
+            error_msg("Error in UTF8 encoded file. Inadmissible byte sequence detected.")
+
     return value
 
 def map_utf8_to_unicode(utf8_string_or_stream):

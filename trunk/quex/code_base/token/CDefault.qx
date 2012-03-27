@@ -3,21 +3,17 @@ token_type {
        #include <stdio.h>
        #include <string.h>
 
-       extern const char* 
-       QUEX_T_MEMBERF2(get_string, 
-                       char*    buffer, 
-                       size_t   BufferSize); 
+       struct $TOKEN_CLASS_tag;
 
        extern const char* 
-       QUEX_T_MEMBERF2(pretty_char_text,
-                       char*   buffer, 
-                       size_t  BufferSize); 
+       $TOKEN_CLASS_get_string(struct $TOKEN_CLASS_tag* me,  char*  buffer, size_t   BufferSize); 
+
+       extern const char* 
+       $TOKEN_CLASS_pretty_char_text(struct $TOKEN_CLASS_tag* me, char*   buffer, size_t  BufferSize); 
 
 #      if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
        extern const wchar_t* 
-       QUEX_T_MEMBERF2(pretty_wchar_text,
-                       wchar_t*  buffer, 
-                       size_t    BufferSize); 
+       $TOKEN_CLASS_pretty_wchar_text(struct $TOKEN_CLASS_tag* me, wchar_t*  buffer, size_t BufferSize); 
 #      endif
 
 $INCLUDE_CONVERTER_DECLARATION
@@ -133,11 +129,9 @@ $INCLUDE_CONVERTER_DECLARATION
 
    footer {
         const char* 
-        QUEX_T_MEMBERF2(get_string,
-                        char*   buffer, 
-                        size_t  BufferSize) 
+        $TOKEN_CLASS_get_string($TOKEN_CLASS* me, char*   buffer, size_t  BufferSize) 
         {
-            const char*  token_type_str = QUEX_NAME_TOKEN(map_id_to_name)(me->_id);
+            const char*  token_type_str = $TOKEN_CLASS_map_id_to_name(me->_id);
             const char*  BufferEnd  = buffer + BufferSize;
             const char*  iterator   = 0;
             char*        writerator = 0;
@@ -156,7 +150,7 @@ $INCLUDE_CONVERTER_DECLARATION
             }
 
             /* The String */
-            QUEX_NAME_TOKEN(pretty_char_text)(me, writerator, (size_t)(BufferEnd - writerator));
+            $TOKEN_CLASS_pretty_char_text(me, writerator, (size_t)(BufferEnd - writerator));
 
             while( *writerator ) {
                 ++writerator;
@@ -171,9 +165,7 @@ $INCLUDE_CONVERTER_DECLARATION
         }
 
         const char* 
-        QUEX_T_MEMBERF2(pretty_char_text,
-                        char*   buffer, 
-                        size_t  BufferSize) 
+        $TOKEN_CLASS_pretty_char_text($TOKEN_CLASS* me, char*   buffer, size_t  BufferSize) 
         {
             const QUEX_TYPE_CHARACTER*  source    = me->text;
             char*                       drain     = buffer;
@@ -186,9 +178,7 @@ $INCLUDE_CONVERTER_DECLARATION
 
 #       if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
         const wchar_t* 
-        QUEX_T_MEMBERF2(pretty_wchar_text,
-                        wchar_t*  buffer, 
-                        size_t    BufferSize) 
+        $TOKEN_CLASS_pretty_wchar_text($TOKEN_CLASS* me, wchar_t*  buffer, size_t    BufferSize) 
         {
             wchar_t*                    drain     = buffer;
             const wchar_t*              DrainEnd  = buffer + (ptrdiff_t)BufferSize;

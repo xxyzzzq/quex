@@ -44,7 +44,7 @@ def do(file_list):
     prepare_default_standard_token_ids()
 
     for file in file_list:
-        fh = open_file_or_die(file, Codec="utf-8")
+        fh = open_file_or_die(file, CodecCheckF=True)
 
         # read all modes until end of file
         try:

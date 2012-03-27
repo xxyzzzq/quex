@@ -39,9 +39,9 @@ from quex.engine.misc.file_in                import read_until_letter, \
                                                     check, \
                                                     error_msg
 from quex.input.regular_expression.auxiliary import __snap_until, \
-                                                          __debug_entry, \
-                                                          __debug_exit, \
-                                                          snap_replacement
+                                                    __debug_entry, \
+                                                    __debug_exit, \
+                                                    snap_replacement
 special_character_set_db = {
     # The closing ']' is to trigger the end of the traditional character set
     "alnum":  "a-zA-Z0-9]",
