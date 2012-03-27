@@ -98,7 +98,22 @@ def _do(Descr):
         extra_at_end_str   = QUEX_NAME_TOKEN_undef_str % include_guard_extension_str \
                              + extra_at_end_str
 
-    txt = blue_print(template_str,
+    helper_variable_replacements = [
+              ["$INCLUDE_CONVERTER_DECLARATION",    converter_declaration_include],
+              ["$INCLUDE_CONVERTER_IMPLEMENTATION", converter_implementation_include],
+              ["$CONVERTER_STRING",                 converter_string],
+              ["$CONVERTER_WSTRING",                converter_wstring],
+              ["$NAMESPACE_CLOSE",                  LanguageDB.NAMESPACE_CLOSE(Descr.name_space)],
+              ["$NAMESPACE_OPEN",                   LanguageDB.NAMESPACE_OPEN(Descr.name_space)],
+              ["$TOKEN_CLASS",                      token_class_name],
+    ]
+
+    txt = blue_print(template_str, 
+            [
+              ["$$EXTRA_AT_BEGIN$$",  extra_at_begin_str],
+              ["$$EXTRA_AT_END$$",    extra_at_end_str],
+            ])
+    txt = blue_print(txt,
              [
               ["$$BODY$$",                    Descr.body.get_code()],
               ["$$CONSTRUCTOR$$",             Descr.constructor.get_code()],
@@ -117,39 +132,29 @@ def _do(Descr):
               ["$$TOKEN_REPETITION_N_SET$$",  Descr.repetition_set.get_code()],
               ["$$UNION_MEMBERS$$",           get_union_members(Descr)],
               ["$$VIRTUAL_DESTRUCTOR$$",      virtual_destructor_str],
-              ["$$EXTRA_AT_BEGIN$$",          extra_at_begin_str],
-              ["$$EXTRA_AT_END$$",            extra_at_end_str],
-              ["$$TOKEN_CLASS$$",             Descr.class_name],
               ["$$TOKEN_CLASS_NAME_SAFE$$",   Descr.class_name_safe],
              ])
 
-    helper_variable_replacements = [
-              ["$INCLUDE_CONVERTER_DECLARATION",    converter_declaration_include],
-              ["$INCLUDE_CONVERTER_IMPLEMENTATION", converter_implementation_include],
-              ["$CONVERTER_STRING",                 converter_string],
-              ["$CONVERTER_WSTRING",                converter_wstring],
-              ["$NAMESPACE_CLOSE",                  LanguageDB.NAMESPACE_CLOSE(Descr.name_space)],
-              ["$NAMESPACE_OPEN",                   LanguageDB.NAMESPACE_OPEN(Descr.name_space)],
-              ["$TOKEN_CLASS",                      token_class_name],
-    ]
-
-    txt = blue_print(txt, helper_variable_replacements)
+    txt   = blue_print(txt, helper_variable_replacements)
 
     txt_i = blue_print(template_i_str, 
+            [
+              ["$$EXTRA_AT_BEGIN$$",  extra_at_begin_str],
+              ["$$EXTRA_AT_END$$",    extra_at_end_str],
+            ])
+    txt_i = blue_print(txt_i, 
                        [
                         ["$$CONSTRUCTOR$$",             Descr.constructor.get_code()],
                         ["$$COPY$$",                    copy_str],
                         ["$$DESTRUCTOR$$",              Descr.destructor.get_code()],
                         ["$$FOOTER$$",                  Descr.footer.get_code()],
                         ["$$FUNC_TAKE_TEXT$$",          take_text_str],
+                        ["$$TOKEN_CLASS_HEADER$$",      blackboard.token_type_definition.get_file_name()],
                         ["$$INCLUDE_GUARD_EXTENSION$$", include_guard_extension_str],
                         ["$$NAMESPACE_OPEN$$",          LanguageDB.NAMESPACE_OPEN(Descr.name_space)],
                         ["$$NAMESPACE_CLOSE$$",         LanguageDB.NAMESPACE_CLOSE(Descr.name_space)],
                         ["$$TOKEN_REPETITION_N_GET$$",  Descr.repetition_get.get_code()],
                         ["$$TOKEN_REPETITION_N_SET$$",  Descr.repetition_set.get_code()],
-                        ["$$EXTRA_AT_BEGIN$$",          extra_at_begin_str],
-                        ["$$EXTRA_AT_END$$",            extra_at_end_str],
-                        ["$$TOKEN_CLASS$$",             Descr.class_name],
                         ["$$TOKEN_CLASS_NAME_SAFE$$",   Descr.class_name_safe],
                        ])
 

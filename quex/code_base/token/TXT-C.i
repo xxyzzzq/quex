@@ -5,20 +5,25 @@
 #ifndef __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$INCLUDE_GUARD_EXTENSION$$_I
 #define __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$INCLUDE_GUARD_EXTENSION$$_I
 
+#ifndef    __QUEX_OPTION_PLAIN_C
+#   define __QUEX_OPTION_PLAIN_C
+#endif
+
+#include "$$TOKEN_CLASS_HEADER$$"
 #include <quex/code_base/definitions>
 
 $$EXTRA_AT_BEGIN$$
 
 QUEX_INLINE void 
-QUEX_NAME_TOKEN(_set)($TOKEN_CLASS*         __this, 
-                      const QUEX_TYPE_TOKEN_ID ID) 
+$TOKEN_CLASS_set($TOKEN_CLASS*            __this, 
+                 const QUEX_TYPE_TOKEN_ID ID) 
 { __this->_id = ID; }
 
 QUEX_INLINE const char*    
-QUEX_NAME_TOKEN(map_id_to_name)(QUEX_TYPE_TOKEN_ID);
+$TOKEN_CLASS_map_id_to_name(QUEX_TYPE_TOKEN_ID);
 
 QUEX_INLINE void 
-QUEX_NAME_TOKEN(construct)($TOKEN_CLASS* __this)
+$TOKEN_CLASS_construct($TOKEN_CLASS* __this)
 {
 #   define self (*__this)
 #   define LexemeNull  &QUEX_NAME(LexemeNullObject)
@@ -29,15 +34,15 @@ $$CONSTRUCTOR$$
 }
 
 QUEX_INLINE void 
-QUEX_NAME_TOKEN(copy_construct)($TOKEN_CLASS*       __this, 
-                                const $TOKEN_CLASS* __That)
+$TOKEN_CLASS_copy_construct($TOKEN_CLASS*       __this, 
+                            const $TOKEN_CLASS* __That)
 {
     QUEX_NAME_TOKEN(construct)(__this);
     QUEX_NAME_TOKEN(copy)(__this, __That);
 }
 
 QUEX_INLINE void 
-QUEX_NAME_TOKEN(destruct)($TOKEN_CLASS* __this)
+$TOKEN_CLASS_destruct($TOKEN_CLASS* __this)
 {
 #   define self (*__this)
 #   define LexemeNull  &QUEX_NAME(LexemeNullObject)
@@ -48,8 +53,8 @@ $$DESTRUCTOR$$
 }
 
 QUEX_INLINE void
-QUEX_NAME_TOKEN(copy)($TOKEN_CLASS*       __this, 
-                      const $TOKEN_CLASS* __That)
+$TOKEN_CLASS_copy($TOKEN_CLASS*       __this, 
+                  const $TOKEN_CLASS* __That)
 {
 #   define self  (*__this)
 #   define Other (*__That)
@@ -71,10 +76,10 @@ $$COPY$$
 
 
 QUEX_INLINE bool 
-QUEX_NAME_TOKEN(take_text)($TOKEN_CLASS*              __this, 
-                           QUEX_TYPE_ANALYZER*        __analyzer, 
-                           const QUEX_TYPE_CHARACTER* Begin, 
-                           const QUEX_TYPE_CHARACTER* End)
+$TOKEN_CLASS_take_text($TOKEN_CLASS*              __this, 
+                       QUEX_TYPE_ANALYZER*        __analyzer, 
+                       const QUEX_TYPE_CHARACTER* Begin, 
+                       const QUEX_TYPE_CHARACTER* End)
 {
 #   define self       (*__this)
 #   define analyzer   (*__analyzer)
@@ -94,7 +99,7 @@ $$FUNC_TAKE_TEXT$$
 
 #ifdef QUEX_OPTION_TOKEN_REPETITION_SUPPORT
 QUEX_INLINE size_t 
-QUEX_NAME_TOKEN(repetition_n_get)($TOKEN_CLASS* __this)
+$TOKEN_CLASS_repetition_n_get($TOKEN_CLASS* __this)
 {
 #   define self        (*__this)
 #   define LexemeNull  &QUEX_NAME(LexemeNullObject)
@@ -105,7 +110,7 @@ QUEX_NAME_TOKEN(repetition_n_get)($TOKEN_CLASS* __this)
 }
 
 QUEX_INLINE void 
-QUEX_NAME_TOKEN(repetition_n_set)($TOKEN_CLASS* __this, size_t N)
+$TOKEN_CLASS_repetition_n_set($TOKEN_CLASS* __this, size_t N)
 {
 #   define self        (*__this)
 #   define LexemeNull  &QUEX_NAME(LexemeNullObject)

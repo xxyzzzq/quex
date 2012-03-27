@@ -14,11 +14,12 @@
 # Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 ################################################################################
-import os
-import sys
 from   copy    import copy
 from   string  import split
 from   StringIO import StringIO
+import codecs
+import os
+import sys
 
 import quex.engine.misc.similarity  as similarity
 
@@ -502,22 +503,23 @@ def clean_up():
     for file in temporary_files:
         os.system("rm %s" % file)
 
-def open_file_or_die(FileName, Mode="rb", Env=None, Codec=""):
+def open_file_or_die(FileName, Mode="rb", Env=None, CodecCheckF=True):
     file_name = FileName.replace("//","/")
     file_name = os.path.normpath(file_name)
     try:
         fh = open(file_name, Mode)
-        # if Codec != "": 
-        #    enc, dec, reader, writer = codecs.lookup('utf-8')
-        #    fh = reader(fh)
-        return fh
     except:
         if Env is not None:
             error_msg("Is environment variable '%s' set propperly?" % Env, DontExitF=True)
         error_msg("Cannot open file '%s'" % FileName)
 
+    if CodecCheckF and Mode.find("w") == -1: 
+        __check_codec(fh, FileName)
+
+    return fh
+
 def write_safely_and_close(FileName, txt):
-    fh = open_file_or_die(FileName, Mode="wb")
+    fh = open_file_or_die(FileName, Mode="wb", CodecCheckF=False)
     if os.linesep != "\n": txt = txt.replace("\n", os.linesep)
     # NOTE: According to bug 2813381, maybe due to an error in python,
     #       there appeared two "\r" instead of one "\r\r".
@@ -767,3 +769,31 @@ def get_propperly_slash_based_file_name(PathName):
     while path.find("//") != -1:
         path = path.replace("//", "/")
     return path
+
+# 'Bad' byte order marks (we only treat UTF8)
+Bad_BOM_list = [ codecs.BOM_BE, codecs.BOM_LE, codecs.BOM_UTF16, codecs.BOM_UTF16_BE, codecs.BOM_UTF16_LE, codecs.BOM_UTF32, codecs.BOM_UTF32_BE, codecs.BOM_UTF32_LE]
+def __check_codec(fh, FileName):
+    global Bad_BOM_list
+
+    begin = fh.read(4)
+    for bom in Bad_BOM_list:
+        if begin.startswith(bom):
+            error_msg("Quex requires ASCII or UTF8 input character format.\n" \
+                      "File '%s' contains Non-UTF8 Byte Order Mark." % FileName)
+
+    start_pos = 0
+    if begin.startswith(codecs.BOM_UTF8):
+        start_pos = len(codecs.BOM_UTF8) # Step over the initial BOM
+
+    content = fh.read()
+    if content.count('\0') > 1:
+        error_msg("Quex requires ASCII or UTF8 input character format.\n" \
+                  "File '%s' contains many '0' characters. Is it UTF16/UTF32 encoded?." % FileName)
+
+    try: 
+        content.decode("utf8")
+    except:
+        error_msg("Quex requires ASCII or UTF8 input character format.\n" \
+                  "File '%s' is not ASCII or UTF8 encoded. Or, it contains encoding errors." % FileName)
+    fh.seek(start_pos)
+    return fh

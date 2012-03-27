@@ -9,12 +9,11 @@
 #include <quex/code_base/asserts>
 #include <quex/code_base/compatibility/stdint.h>
 
-
-$$HEADER$$
- 
 /* LexemeNull object may be used for 'take_text'. */
 $$EXTRA_AT_BEGIN$$
 
+$$HEADER$$
+ 
 $$NAMESPACE_OPEN$$
 
 class $TOKEN_CLASS;
