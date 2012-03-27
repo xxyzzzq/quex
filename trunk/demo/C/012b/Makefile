@@ -1,7 +1,7 @@
 ENGINE = \
-		boeck_Lexer.cpp   \
-		max_Lexer.cpp     \
-		moritz_Lexer.cpp             
+		boeck_Lexer.c   \
+		max_Lexer.c     \
+		moritz_Lexer.c             
 
 ifdef ASSERTS_ENABLED_F
 	CCFLAG_ASSERTS=# By default asserts are enabled
@@ -9,11 +9,11 @@ else
 	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
 endif
 
-lexer: $(ENGINE:.cpp=.o) lexer.o Common-token.o
-	g++ $^ -ggdb -o  $@ -I$(QUEX_PATH) 
+lexer: $(ENGINE:.c=.o) lexer.o Common-token.o
+	gcc $^ -ggdb -o  $@ -I$(QUEX_PATH) 
 	 
-%.o: %.cpp $(ENGINE_SOURCES)
-	g++ -c $< -ggdb -Wall -o $@ \
+%.o: %.c $(ENGINE_SOURCES)
+	gcc -c $< -ggdb -Wall -o $@ \
 		-I$(QUEX_PATH) \
 		$(CCFLAG_ASSERTS) 
 
@@ -21,38 +21,39 @@ lexer: $(ENGINE:.cpp=.o) lexer.o Common-token.o
 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
 
 COMMON_TOKEN_OPTIONS = \
-	 --token-class-file Common-token \
+	 --token-class-file Common-token.h \
      --token-policy single --no-warning-on-no-token-queue
 		 # --no-message-on-extra-options \
 
-%.E: %.cpp
-	g++ -E $< -o  $@ -I$(QUEX_PATH) 
+%.E: %.c
+	gcc -E $< -o  $@ -I$(QUEX_PATH) 
 	
-boeck_Lexer-token_ids \
-boeck_Lexer.cpp:  boeck.qx Common-token.cpp Common-token_ids
-	quex -i $< -o boeck::Lexer --codec utf8 $(COMMON_TOKEN_OPTIONS) # --debug-exception
+boeck_Lexer.c:  boeck.qx Common-token.c Common-token_ids.h
+	quex -i $< -o boeck::Lexer --codec utf8 $(COMMON_TOKEN_OPTIONS) --language C 
 
-max_Lexer.cpp:    max.qx Common-token.cpp Common-token_ids
-	quex -i $< -o max::Lexer --codec utf8 $(COMMON_TOKEN_OPTIONS) 
+max_Lexer.c:    max.qx Common-token.c Common-token_ids.h
+	quex -i $< -o max::Lexer --codec utf8 $(COMMON_TOKEN_OPTIONS) --language C 
 
-moritz_Lexer.cpp: moritz.qx Common-token.cpp Common-token_ids
-	quex -i $< -o moritz::Lexer --codec utf8 $(COMMON_TOKEN_OPTIONS) 
+moritz_Lexer.c: moritz.qx Common-token.c Common-token_ids.h
+	quex -i $< -o moritz::Lexer --codec utf8 $(COMMON_TOKEN_OPTIONS) --language C 
 
-Common-token.cpp: 
+Common-token_ids.h \
+Common-token.c: 
 	quex -i token_ids.qx               \
 		 --codec utf8                  \
 		 --token-id-prefix TKN_        \
 		 -o Common                     \
 		 --token-class Common::Token   \
-		 --token-class-only  --debug-exception
+		 --token-class-only            \
+		 --language C 
 
 clean:
 	rm -rf $(ENGINE)
-	rm -rf $(ENGINE:.cpp=.o)
-	rm -rf $(ENGINE:.cpp=)
-	rm -rf $(ENGINE:.cpp=-token_ids)
-	rm -rf $(ENGINE:.cpp=-token)
-	rm -rf $(ENGINE:.cpp=-configuration)
+	rm -rf $(ENGINE:.c=.o)
+	rm -rf $(ENGINE:.c=)
+	rm -rf $(ENGINE:.c=-token_ids)
+	rm -rf $(ENGINE:.c=-token)
+	rm -rf $(ENGINE:.c=-configuration)
 	rm -rf Common-token*
 	rm -rf lexer
 	rm -rf *.E

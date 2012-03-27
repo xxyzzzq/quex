@@ -1,8 +1,8 @@
 #include<cstdio> 
 
-#include "moritz_Lexer"
-#include "max_Lexer"
-#include "boeck_Lexer"
+#include "moritz_Lexer.h"
+#include "max_Lexer.h"
+#include "boeck_Lexer.h"
 
 using namespace std;
 
@@ -10,14 +10,17 @@ using namespace std;
 int 
 main(int argc, char** argv) 
 {        
-    // we want to have error outputs in stdout, so that the unit test could see it.
-    max::Lexer     max_lex("example.txt");
-    moritz::Lexer  moritz_lex("example.txt");
-    boeck::Lexer   boeck_lex("example.txt");
-    Common::Token* max_token    = 0x0;
-    Common::Token* moritz_token = 0x0;
-    Common::Token* boeck_token  = 0x0;
+    /* we want to have error outputs in stdout, so that the unit test could see it. */
+    quex_max_Lexer     max_lex;
+    quex_moritz_Lexer  moritz_lex;
+    quex_boeck_Lexer   boeck_lex;
+    quex_Common_Token* max_token    = 0x0;
+    quex_Common_Token* moritz_token = 0x0;
+    quex_Common_Token* boeck_token  = 0x0;
 
+    max_Lexer_construct_file_name(&max_lex,       "example.txt", 0x0, false);
+    moritz_Lexer_construct_file_name(&moritz_lex, "example.txt", 0x0, false);
+    boeck_Lexer_construct_file_name(&boeck_lex,   "example.txt", 0x0, false);
 
     // Each lexer reads one token, since the grammars are similar the lexeme 
     // is always the same.                                                    
