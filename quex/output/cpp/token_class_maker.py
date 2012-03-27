@@ -137,6 +137,8 @@ def _do(Descr):
 
     txt   = blue_print(txt, helper_variable_replacements)
 
+    extra_at_begin_str += local_strlen_str % (Descr.class_name_safe, Setup.buffer_element_type, Setup.buffer_element_type)
+
     txt_i = blue_print(template_i_str, 
             [
               ["$$EXTRA_AT_BEGIN$$",  extra_at_begin_str],
@@ -347,11 +349,13 @@ def __get_converter_configuration(IncludeGuardExtension):
     if Setup.language.upper() == "C++":
         function_prefix       = Setup.language_db.NAMESPACE_REFERENCE(token_descr.name_space) 
         function_def_prefix   = ""
+        function_def_prefix_0 = ""
         namespace_token_open  = LanguageDB.NAMESPACE_OPEN(token_descr.name_space).replace("\n", " ")
         namespace_token_close = LanguageDB.NAMESPACE_CLOSE(token_descr.name_space).replace("\n", " ")
     else:
         function_prefix       = token_descr.class_name_safe + " ##"
         function_def_prefix   = token_descr.class_name_safe + " ##"
+        function_def_prefix_0 = token_descr.class_name_safe 
         namespace_token_open  = ""
         namespace_token_close = ""
 
@@ -371,26 +375,37 @@ def __get_converter_configuration(IncludeGuardExtension):
 
     # In C:   Function call and def prefix is the same
     # In C++: We are in the same namespace, no prefix, function_def_prefix is empty anyway.
-    string  = "%s%s_to_char"  % (function_def_prefix, from_codec)
-    wstring = "%s%s_to_wchar" % (function_def_prefix, from_codec)
+    string  = "%s%s_to_char"  % (function_def_prefix_0, from_codec)
+    wstring = "%s%s_to_wchar" % (function_def_prefix_0, from_codec)
 
     return declaration_include, implementation_include, string, wstring
 
+QUEX_MEMORY_ALLOC_re          = re.compile("QUEX_NAME\\(MemoryManager_Text_allocate\\)", re.UNICODE)
+QUEX_MEMORY_FREE_re           = re.compile("QUEX_NAME\\(MemoryManager_Text_free\\)", re.UNICODE)
+QUEX_strlen_re                = re.compile("QUEX_NAME\\(strlen\\)", re.UNICODE)
 QUEX_TYPE_CHARACTER_re        = re.compile("\\bQUEX_TYPE_CHARACTER\\b", re.UNICODE)
 QUEX_TYPE_ANALYZER_re         = re.compile("\\bQUEX_TYPE_ANALYZER\\b", re.UNICODE)
 QUEX_TYPE_TOKEN_ID_re         = re.compile("\\bQUEX_TYPE_TOKEN_ID\\b", re.UNICODE)
 QUEX_LexemeNullDeclaration_re = re.compile("QUEX_NAME\\(LexemeNullObject\\)", re.UNICODE)
 def clean_for_independence(txt):
+    token_descr = blackboard.token_type_definition
+
+    global QUEX_MEMORY_FREE_re
+    global QUEX_MEMORY_ALLOC_re
+    global QUEX_strlen_re
     global QUEX_TYPE_CHARACTER_re
     global QUEX_TYPE_ANALYZER_re
-    global QUEX_LexemeNullDeclaration_re
     global QUEX_TYPE_TOKEN_ID_re
+    global QUEX_LexemeNullDeclaration_re
     #global QUEX_LineReference_re
 
     txt = QUEX_TYPE_CHARACTER_re.sub(Setup.buffer_element_type, txt)
     txt = QUEX_TYPE_ANALYZER_re.sub("void", txt)
     txt = QUEX_TYPE_TOKEN_ID_re.sub(Setup.token_id_type, txt)
     txt = QUEX_LexemeNullDeclaration_re.sub("QUEX_NAME_TOKEN(LexemeNullObject)", txt)
+    txt = QUEX_MEMORY_ALLOC_re.sub("malloc", txt)
+    txt = QUEX_MEMORY_FREE_re.sub("free", txt)
+    txt = QUEX_strlen_re.sub("%s_strlen" % token_descr.class_name_safe, txt)
 
     # Delete any line references
     result = []
@@ -457,6 +472,17 @@ def lexeme_null_implementation():
                 namespace_close,
                 "\n",
               ])
+
+local_strlen_str = """
+static size_t 
+%s_strlen(const %s* Str)
+{
+    const %s* iterator = Str;
+    while( *iterator != 0 ) ++iterator; 
+    return (size_t)(iterator - Str);
+}
+
+"""
 
 QUEX_NAME_TOKEN_define_str = """
 #if ! defined(QUEX_NAME_TOKEN)

@@ -45,7 +45,7 @@ Common-token.c:
 		 -o Common                     \
 		 --token-class Common::Token   \
 		 --token-class-only            \
-		 --language C 
+		 --language C --debug-exception
 
 clean:
 	rm -rf $(ENGINE)
