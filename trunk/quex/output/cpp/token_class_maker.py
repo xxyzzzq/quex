@@ -365,7 +365,8 @@ def __get_converter_configuration(IncludeGuardExtension):
              % (IncludeGuardExtension,                      \
                 function_def_prefix, function_def_prefix,   \
                 function_prefix,     function_prefix,       \
-                namespace_token_open, namespace_token_close)
+                namespace_token_open, namespace_token_close,\
+                Setup.buffer_element_type)
     after  = frame_end \
              % IncludeGuardExtension
 
@@ -388,6 +389,7 @@ QUEX_TYPE_CHARACTER_re        = re.compile("\\bQUEX_TYPE_CHARACTER\\b", re.UNICO
 QUEX_TYPE_ANALYZER_re         = re.compile("\\bQUEX_TYPE_ANALYZER\\b", re.UNICODE)
 QUEX_TYPE_TOKEN_ID_re         = re.compile("\\bQUEX_TYPE_TOKEN_ID\\b", re.UNICODE)
 QUEX_LexemeNullDeclaration_re = re.compile("QUEX_NAME\\(LexemeNullObject\\)", re.UNICODE)
+QUEX_TYPE_CHARACTER_safe_re   = re.compile("\\$\\$quex_type_character\\$\\$", re.UNICODE)
 def clean_for_independence(txt):
     token_descr = blackboard.token_type_definition
 
@@ -398,7 +400,7 @@ def clean_for_independence(txt):
     global QUEX_TYPE_ANALYZER_re
     global QUEX_TYPE_TOKEN_ID_re
     global QUEX_LexemeNullDeclaration_re
-    #global QUEX_LineReference_re
+    global QUEX_TYPE_CHARACTER_safe_re
 
     txt = QUEX_TYPE_CHARACTER_re.sub(Setup.buffer_element_type, txt)
     txt = QUEX_TYPE_ANALYZER_re.sub("void", txt)
@@ -406,6 +408,7 @@ def clean_for_independence(txt):
     txt = QUEX_LexemeNullDeclaration_re.sub("QUEX_NAME_TOKEN(LexemeNullObject)", txt)
     txt = QUEX_MEMORY_ALLOC_re.sub("malloc", txt)
     txt = QUEX_MEMORY_FREE_re.sub("free", txt)
+    txt = QUEX_TYPE_CHARACTER_safe_re.sub("QUEX_TYPE_CHARACTER", txt)
     txt = QUEX_strlen_re.sub("%s_strlen" % token_descr.class_name_safe, txt)
 
     # Delete any line references
@@ -514,6 +517,7 @@ frame_begin = """
 #   undef  QUEX_CONVERTER_STRING
 #   undef  QUEX_NAMESPACE_MAIN_OPEN               
 #   undef  QUEX_NAMESPACE_MAIN_CLOSE              
+#   undef  $$quex_type_character$$
 #   define __QUEX_SIGNAL_UNDEFINED_CONVERTER_MACROS_%s
 #endif
 #define    __QUEX_CONVERTER_CHAR_DEF(FROM, TO)    %sFROM ## _to_ ## TO ## _character
@@ -526,6 +530,7 @@ frame_begin = """
 #define    QUEX_CONVERTER_STRING(FROM, TO)        __QUEX_CONVERTER_STRING(FROM, TO)
 #define    QUEX_NAMESPACE_MAIN_OPEN               %s
 #define    QUEX_NAMESPACE_MAIN_CLOSE              %s
+#define    $$quex_type_character$$                %s
 
 #define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED
 """
@@ -543,6 +548,7 @@ frame_end = """
 #undef     QUEX_CONVERTER_STRING
 #undef     QUEX_NAMESPACE_MAIN_OPEN               
 #undef     QUEX_NAMESPACE_MAIN_CLOSE              
+#undef     $$quex_type_character$$
 #if defined(__QUEX_SIGNAL_UNDEFINED_CONVERTER_MACROS_%s)
 #   define __QUEX_CONVERTER_CHAR_DEF    __QUEX_CONVERTER_CHAR_DEF_BACKUP
 #   define __QUEX_CONVERTER_STRING_DEF  __QUEX_CONVERTER_STRING_DEF_BACKUP
@@ -554,6 +560,7 @@ frame_end = """
 #   define QUEX_CONVERTER_STRING        QUEX_CONVERTER_STRING_BACKUP
 #   define QUEX_NAMESPACE_MAIN_OPEN     QUEX_NAMESPACE_MAIN_OPEN_BACKUP               
 #   define QUEX_NAMESPACE_MAIN_CLOSE    QUEX_NAMESPACE_MAIN_CLOSE_BACKUP              
+#   define $$quex_type_character$$          $$quex_type_character$$_BACKUP
 #endif
 """
 

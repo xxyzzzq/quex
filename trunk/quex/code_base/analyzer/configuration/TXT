@@ -270,6 +270,7 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_HELPER
  *       goal harder achievable.                                                            */
 #ifndef    QUEX_TYPE_CHARACTER
 #   define QUEX_TYPE_CHARACTER          $$QUEX_TYPE_CHARACTER$$
+#   define QUEX_TYPE_CHARACTER_BACKUP   $$QUEX_TYPE_CHARACTER$$
 #endif 
 #ifndef    QUEX_SETTING_CHARACTER_SIZE
     /* Size of a QUEX_TYPE_CHARACTER in bytes. A numeric value is required here!
