@@ -1,5 +1,7 @@
-/* (C) Frank-Rene Schaefer
- * ABSOLUTELY NO WARRANTY  */
+/* Common include headers for all converter functions. 
+ *
+ * (C) Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY                                                    */
 #ifndef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__COMMON_H
 #define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__COMMON_H
 

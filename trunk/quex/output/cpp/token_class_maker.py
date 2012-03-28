@@ -137,7 +137,7 @@ def _do(Descr):
 
     txt   = blue_print(txt, helper_variable_replacements)
 
-    if Setup.language.upper() != "C++":
+    if Setup.language.upper() != "C++" and Setup.token_class_only_f:
         extra_at_begin_str += local_strlen_str % (Descr.class_name_safe, Setup.buffer_element_type, Setup.buffer_element_type)
 
     txt_i = blue_print(template_i_str, 
@@ -152,7 +152,7 @@ def _do(Descr):
                         ["$$DESTRUCTOR$$",              Descr.destructor.get_code()],
                         ["$$FOOTER$$",                  Descr.footer.get_code()],
                         ["$$FUNC_TAKE_TEXT$$",          take_text_str],
-                        ["$$TOKEN_CLASS_HEADER$$",      blackboard.token_type_definition.get_file_name()],
+                        ["$$TOKEN_CLASS_HEADER$$",      Setup.get_file_reference(blackboard.token_type_definition.get_file_name())],
                         ["$$INCLUDE_GUARD_EXTENSION$$", include_guard_extension_str],
                         ["$$NAMESPACE_OPEN$$",          LanguageDB.NAMESPACE_OPEN(Descr.name_space)],
                         ["$$NAMESPACE_CLOSE$$",         LanguageDB.NAMESPACE_CLOSE(Descr.name_space)],

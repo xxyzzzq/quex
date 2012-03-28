@@ -28,8 +28,7 @@
  *          to implement each string converter from the given 
  *          character converters. 
  *
- * All functions in this file are universal and not dependent on the
- * analyzer or buffer element type. Thus, they are placed in namespace 'quex'.
+ * All functions are placed in the analyzer's namespace.
  *
  * 2010 (C) Frank-Rene Schaefer; 
  * ABSOLUTELY NO WARRANTY                                                    */
