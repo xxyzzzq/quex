@@ -15,6 +15,11 @@ quex.blackboard.setup.token_class_name_space  = ""
 quex.blackboard.setup.token_class_name_safe   = ""
 quex.blackboard.setup.language_db             = languages.db["C++"]
 
+class Something:
+    def get_file_name(self): return "filename.file"
+
+quex.blackboard.token_type_definition = Something()
+
 if "--hwut-info" in sys.argv:
     print "Token Class Template"
     sys.exit(0)

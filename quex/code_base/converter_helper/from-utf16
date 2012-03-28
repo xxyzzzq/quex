@@ -19,9 +19,7 @@
  *
  *             ../generator/declarations.g
  *
- * All functions are independent of the particular analyzer. Thus, they
- * are placed in the universal namespace 'quex' (and not in the analyzer's
- * or the token's namespace).
+ * All functions are placed in the analyzer's namespace.
  *
  * (C) 2012 Frank-Rene Schaefer. 
  *     ABSOLUTELY NO WARRANTY                                                */
