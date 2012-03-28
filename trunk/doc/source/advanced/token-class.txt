@@ -1016,6 +1016,14 @@ similar to the following:
 
 in the case of a generated token class in plain C.
 
+.. note::
+
+   The generated token class for C may rely on ``malloc`` and ``free`` in the
+   generated source file. Memory management in this case is is very critical 
+   to performance. The user may consider replacing these calls at will with 
+   whatever is better suited (e.g. something that uses a pre-allocated memory 
+   pool).
+
 .. warning::
 
    When a token class is generated that is designed for multiple lexical

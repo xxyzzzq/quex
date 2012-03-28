@@ -50,10 +50,10 @@ Common-token.c:
 clean:
 	rm -rf $(ENGINE)
 	rm -rf $(ENGINE:.c=.o)
-	rm -rf $(ENGINE:.c=)
-	rm -rf $(ENGINE:.c=-token_ids)
-	rm -rf $(ENGINE:.c=-token)
-	rm -rf $(ENGINE:.c=-configuration)
+	rm -rf $(ENGINE:.c=.h)
+	rm -rf $(ENGINE:.c=-token_ids.h)
+	rm -rf $(ENGINE:.c=-token.h)
+	rm -rf $(ENGINE:.c=-configuration.h)
 	rm -rf Common-token*
 	rm -rf lexer
 	rm -rf *.E

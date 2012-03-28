@@ -137,7 +137,8 @@ def _do(Descr):
 
     txt   = blue_print(txt, helper_variable_replacements)
 
-    extra_at_begin_str += local_strlen_str % (Descr.class_name_safe, Setup.buffer_element_type, Setup.buffer_element_type)
+    if Setup.language.upper() != "C++":
+        extra_at_begin_str += local_strlen_str % (Descr.class_name_safe, Setup.buffer_element_type, Setup.buffer_element_type)
 
     txt_i = blue_print(template_i_str, 
             [
