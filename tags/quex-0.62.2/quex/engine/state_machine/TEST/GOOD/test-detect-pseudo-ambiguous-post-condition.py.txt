@@ -1,0 +1,44 @@
+---------------------------------------------------------
+core pattern            = ab
+post condition pattern  = ab
+ambigous post condition = False
+---------------------------------------------------------
+core pattern            = a(b)*
+post condition pattern  = ab
+ambigous post condition = False
+---------------------------------------------------------
+core pattern            = (a)+
+post condition pattern  = ab
+ambigous post condition = True
+---------------------------------------------------------
+core pattern            = "xyz"+
+post condition pattern  = "xyz"
+ambigous post condition = True
+---------------------------------------------------------
+core pattern            = "xyz"+
+post condition pattern  = "xyz"+
+ambigous post condition = True
+---------------------------------------------------------
+core pattern            = "xyz"+
+post condition pattern  = [a-z]{4}
+ambigous post condition = True
+---------------------------------------------------------
+core pattern            = "xyz"+
+post condition pattern  = ("abc"|"xyz")
+ambigous post condition = True
+---------------------------------------------------------
+core pattern            = "xyz"+
+post condition pattern  = ("abc")|(("x"|"X")[a-z]{1}("z"|"Z"))
+ambigous post condition = True
+---------------------------------------------------------
+core pattern            = ("abc"+|"xyz")+
+post condition pattern  = ("abc")|(("x"|"X")[a-z]{1}("z"|"Z"))
+ambigous post condition = True
+---------------------------------------------------------
+core pattern            = ("xyz")+hello
+post condition pattern  = "xyz"hello
+ambigous post condition = False
+---------------------------------------------------------
+core pattern            = (("xyz")+hello)+
+post condition pattern  = "xyz"hello
+ambigous post condition = True

@@ -1,0 +1,30 @@
+(*) Exceptions during 'import'
+  -- AssertionError:
+command line: Assertion error -- please report a bug under
+command line:  https://sourceforge.net/tracker/?group_id=168259&atid=846112
+
+  -- KeyboardInterrupt:
+
+command line: #
+command line: # Keyboard Interrupt -- Processing unfinished.
+command line: #
+
+  -- Exception:
+command line: Exception occurred -- please, report a bug under
+command line:  https://sourceforge.net/tracker/?group_id=168259&atid=846112
+
+(*) Exceptions during 'function'
+  -- AssertionError:
+command line: Assertion error -- please report a bug under
+command line:  https://sourceforge.net/tracker/?group_id=168259&atid=846112
+
+  -- KeyboardInterrupt:
+
+command line: #
+command line: # Keyboard Interrupt -- Processing unfinished.
+command line: #
+
+  -- Exception:
+command line: Exception occurred -- please, report a bug under
+command line:  https://sourceforge.net/tracker/?group_id=168259&atid=846112
+

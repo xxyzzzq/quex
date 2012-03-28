@@ -1,0 +1,106 @@
+Pitfalls
+=========
+
+The most dangerous pitfall is related to precedence and length. Note, that a 
+pattern that is defined *before* another pattern has a higher
+precedence. Also, if a pattern can match a longer chain of characters it wins.
+Thus, if there are for example two patterns
+
+.. code-block:: cpp
+
+     [A-Z]+     => TKN_IDENTIFIER(Lexeme);
+     "PRINT"    => TKN_KEYWORD_PRINT;
+
+then the keyword ``PRINT`` will never be matched. This is so, because
+``[A-Z]`` matches also the character chain ``PRINT`` and has
+a higher precedence, because it is defined first. To illustrate the
+danger of 'greedy matching', i.e. the fact that length matters, let
+two patterns be defined as:
+
+.. code-block:: cpp
+
+     "Else"             => TKN_KEYWORD_ELSE;
+     "Else\tAugenstein" => TKN_SWABIAN_LADY(Lexeme);
+
+Now, the ``Else`` statement may be matched, but only if it is not followed by
+tabulator and `Augenstein`. On the first glance, this case does not seem to be
+very probable. Greedy matching can be tricked, by the usage of anti-patterns.
+If for example there is a keyword that shall always trigger and and identifier
+that covers the keyword, such as::
+
+      key    => TKN_KEYWORD;
+      [a-z]+ => TKN_IDENTIFIER;
+
+Then the lexeme ``keyword`` would trigger and identifier, because it
+matches more. If the the desired token sequence, though, is
+
+      KEYWORD      'key'
+      IDENTIFIER   'word'
+
+Then the identifier should be expressed in terms of anti-patterns, i.e.
+
+      key           => TKN_KEYWORD;
+      \A{key}[a-z]+ => TKN_IDENTIFIER;
+
+If more than one keyword are involved, e.g. 'key', 'password', and 'secret', 
+the identifier would have to look like
+
+      \A{key|password|secret}[a-z]+ => TKN_IDENTIFIER;
+    
+In the very large majority of cases greedy matching is a convienient
+blessing. Imagine the problem with identifiers, i.e. any chain of alphabetic
+characters, and a keyword '`for`'.  If there was no greedy matching (longest
+match), then any lexeme starting with `for`, such as `forest`,  could not 
+properly be detected, since the first three letters would result in the 
+`for`-keyword token.
+
+Another pitfall is related to character codes that the lexical analyser uses to
+indicate the *buffer-limit*. The values for those codes are chosen to be out of
+the range for sound regular expressions parsing human written text (0x0 for
+buffer-limit). If it is intended to parse binary files, and this value is supposed to occur in
+patterns, then its code need to be changed.  Section
+<<sec-formal-command-line-options>> mentions how to specify the buffer limit
+code on the command line.
+
+One more pitfall to be mentioned is actually a plain user error. But, since it
+resulted once in a bug-report [#f1]_ it is mentioned at this place. The issue comes
+into play when patterns span regions, such as HTML-tags.
+
+.. code-block:: cpp
+
+   define {
+       ...
+       P_XML   <\/?[A-Za-z!][^>]*>
+       ...
+   }
+
+Now, when parsing some larger files or database a perturbing buffer overflow
+might occur. The reason for this might be a '<' operator where it is not 
+considered as a tag opener, as in the following text::
+
+   La funzione di probabilità è data da ove "k" e "r" sono interi non
+   negativi e "p" una probabilità (0<p<1) La funzione generatrice dei 
+   momenti è: A confronto con le due ...
+
+This occurence of the ``<`` in ``(0<p<1)`` opens the ``P_XML`` pattern and 
+lets the analyzer search for the closing '>'. This might never occur.
+It is anyway inappropriate to consider this as an XML tag. Thus, 
+patterns that span regions must be protected against unintentional
+region openers. One might use the ``^``, i.e. begin of line to 
+restrict the possible matches, e.g.
+
+.. code-block:: cpp
+
+
+   define {
+       ...
+       P_XML   ^[ \t]*<\/?[A-Za-z!][^>]*>
+       ...
+   }
+
+might restrict the set of possible matches reasonably.
+
+.. rubric:: Footnotes
+
+.. [#f1] See bug report 2272677. Thanks to Prof. G. Attardi for 
+         pinpointing this issue.

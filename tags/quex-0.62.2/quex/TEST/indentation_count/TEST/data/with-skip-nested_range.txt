@@ -1,0 +1,10 @@
+one#  my comment
+    two
+    #   good
+    three # my comment
+        four # my comment
+        # my # causes next line to be treated as comment, too 
+        nothing    
+        five
+    six
+seven

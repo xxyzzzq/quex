@@ -1,0 +1,1040 @@
+.. _sec-user-defined-token-classes:
+
+User defined Token Classes
+==========================
+
+For some tokens the token identifier is sufficient information for the parse.
+This is true for tokens of the kind ``OPERATOR_PLUS`` which tells that a plus
+sign was detected. Other token types might require some information about the
+actually found lexeme. A token containing an identifier might have to carry the
+lexeme that actually represents the identifier. A number token might carry the
+actual number that was found.  Queχ provides a default token class that allows
+the storage of a string object, an integer value. It is, however, conceivable
+that there is more complex information to be stored in the token, or that the
+information can be stored more efficiently. For this case, quex allows the
+definition of a customized token class.  The first subsection introduces a
+convienent feature of quex that allows to specify a token class without
+worries.  The second subsection explains the detailed requirements for a
+customized, user written token class. 
+
+Before continuing the reader should be aware, though, that there are two basic
+ways to treat token information:
+
+#. Interpreting the lexeme at the time of lexical analysis. 
+
+   This requires in a sophisticated token class which can carry all 
+   related information.
+
+#. Interpreting the lexeme at parsing time, when a syntax tree is build.
+
+   This requires only a very basic token class that carries only the 
+   lexeme itself. 
+
+The interpretation of the lexeme needs to be done anyway.  The first
+approach puts the weight on the sholders of the lexical analyzer, the second
+approach places the responsibility on the parser. For fine tuning 
+both approaches should be studies with respect to their memory print and cache
+locality. It might not be the first approach which is always preferable.
+
+The remaining framework of quex does not any adaptions to a customized token
+class. If the token class is designed according certain rules, then it fits
+smoothly in any generated engine.
+
+.. _sec-customized-token-class:
+
+Customized Token Classes
+------------------------
+
+Quex has the ability to generate a customized token class that satisfies 
+all formal requirements automatically: In the code section ``token_type`` 
+a dedicated token type can be specified with a minimum amount of 
+information. The underlying model of a general token class is displayed
+in figure `Token Class Model <fig-token-class-model>`. The memory of
+token object consists of three regions:
+
+#. A region that contains *mandatory* information that each token requires, 
+   such as a token id, and (optionally) line and column numbers[#f1]_.
+
+   Quex provides a means to specify the concrete type of those mandatory 
+   members.
+
+#. A region that contains *distinct* members, i.e. members that appear
+   in each token object, but which are not mandatory. Each place in the
+   memory is associated with a specific type.
+
+   For distinct members, both, type and member name can be specified.
+
+#. A region of *union* members which is a chunk of memory which can 
+   be viewed differently, depending on the token id. This way, 
+   the *same* piece of memory can be associated with multiple
+   types.
+
+.. note::
+
+   All type names used in the ``token_type`` section must be available!  This
+   means, that definitions or the header files which define them must be either
+   built-in, or mentioned in the ``header`` code section.  If, for example,
+   ``std::string`` and ``std::cout`` are to be used, the code should look like
+
+   .. code-block:: cpp
+
+      header {
+      #include <string>
+      #include <iostream>
+      }
+      ...
+      token_type {
+          ...
+           distinct {
+               my_name   std::basic_string<QUEX_TYPE_CHARACTER>;
+           }
+           constructor {
+               std::cout << "Hello Constructor\n";
+           }
+           ...
+      }
+
+The following is a list of all possible fields in a ``token_type`` section. All
+fields are of the form ``keyword``, followed by ``{``, followed by content,
+followed by ``}``.
+
+.. data:: standard
+
+   .. code-block:: cpp
+
+       standard {
+           id            : unsigned;
+           line_number   : unsigned;
+           column_number : unsigned;
+       }
+
+   The standard members are implemented in the actual token class with a
+   preceeding underscore.  That means, ``id`` becomes ``_id``, ``line_number``
+   becomes ``_line_number`` and ``column_number`` becomes ``_column_number``.
+   Depending on the setting of the macros::
+
+        QUEX_OPTION_COLUMN_NUMBER_COUNTING
+        QUEX_OPTION_LINE_NUMBER_COUNTING
+
+   the members ``_line_number`` and ``_column_number`` are are enabled or 
+   disabled.
+
+.. data:: distinct
+
+   .. code-block:: cpp
+
+       distinct {
+           name        :  std::basic_string<QUEX_TYPE_CHARACTER>;
+           number_list :  std::vector<int>;
+       }
+
+.. data:: union
+
+   .. code-block:: cpp
+
+       union {
+           { 
+              mini_x : int8_t;
+              mini_y : int8_t;
+           }
+           { 
+              big_x  : int16_t;
+              big_y  : int16_t;
+           }
+           position  : uint16_t;
+       }
+
+The variable definitions inside these regions create automatically a framework
+that is able to deal with the token senders :ref:`sec:usage-sending-tokens`.
+These token senders work like overloaded functions in C++. This means that the
+particularly used setters are resolved via the type of the passed arguments. 
+For the three sections above the following setters are defined in the token 
+class
+
+  .. code-block:: cpp
+
+    void set(const QUEX_TYPE_TOKEN_ID ID);
+    void set_mini_x(const int8_t Value);
+    void set_mini_y(const int8_t Value);
+    void set_big_x(const int16_t Value);
+    void set_big_y(const int16_t Value);
+    void set_position(const int16_t Value);
+
+Those are then implicitly used in the token senders. Note, that it is
+particularly useful to have at least one member that can carry a
+``QUEX_TYPE_CHARACTER`` pointer so that it can catch the lexeme as a plain
+argument. As mentioned, the setter must be identified via the type.
+The above setters would allow token senders inside a mode to be defined as
+
+  .. code-block:: cpp
+
+    mode TEST { 
+        fred|otto|karl => QUEX_TKN_NAME(Lexeme);
+        mini_1         => QUEX_TKN_N1b(mini_x=1, position=1); 
+        big_1          => QUEX_TKN_N1c(big_x=1,  position=2);
+
+    }
+
+The brief token senders may be rely on with *named* arguments, except for 
+the two convenience pattern ``TKN_X(Lexeme)`` and ``TKN_X(Begin, End)``
+--as mentioned in :ref:`usage-sending-tokens`. 
+
+If more flexibility is required explicit C-code fragments 
+:ref:`sec:c-code-fragments` may be implemented relying on the
+current token pointer, i.e. the member function
+
+    .. code-block:: cpp
+
+        QUEX_TYPE_TOKEN*  token_p()
+
+and then explicitly call the named setters such as 
+ 
+     .. code-block:: cpp
+
+        ...
+        self.token_p()->set_name(Lexeme);
+        self.token_p()->set_mini_1(LexemeL); 
+        ...
+         
+Standard operations of the token class can be specified via three code
+sections. The variable ``self`` is a reference to the token object itself.
+
+.. note::
+
+   The assigment operator '=' is provided along the token class. However,
+   there is a potential a major performance loss due to its passing of a 
+   return value. When copying tokens, better rely on the ``__copy`` 
+   member function.
+
+
+.. data:: constructor
+
+   This code section determines the behavior at construction time. The token 
+   class provides a default constructor and a copy constructor. In case of the
+   copy constructor, the code segment is executed *after* the copy operation (see below).
+   Example:
+
+   .. code-block:: cpp
+
+       constructor { 
+           self.pointer_to_something = 0x0;   /* default */
+           std::cout << "Constructor\n"; 
+       }
+
+.. data:: destructor
+
+   The destructor code segment is executed at the time of the destruction of the
+   token object. Here, all resources owned by the token need to be released. Example:
+
+   .. code-block:: cpp
+
+       destructor { 
+           if( self.pointer_to_something != 0x0 ) delete pointer_to_something;
+           std::cout << "Destructor\n"; 
+       }
+
+.. data:: copy
+
+   This code segment allows for the definition of customized copy operations. It is
+   executed when the member function ``__copy`` is called or when the assigment 
+   operator is used. 
+
+   Implicit Argument: ``Other`` which is a reference to the token to be copied.
+
+   .. code-block:: cpp
+
+       copy { 
+           std::cout << "Copy\n"; 
+           /* Copy core elements: id, line, and column number */
+           self._id = Other._id;
+       #      ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+       #      ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+                  self._line_n = Other._line_n;
+       #      endif
+       #      ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+                  self._column_n = Other._column_n;
+       #      endif
+       #      endif
+
+           /* copy all members */
+           self.name        = Other.name;
+           self.number_list = Other.number_list;
+           /* plain content copy of the union content */
+           self.content     = Other.content;
+       }
+
+   Alternative to copying each member one-by-one, it may be advantegous to rely
+   on the optimized standard ``memcpy`` of the operating system.  The default
+   copy operation does exactly that, but is not aware of related data
+   structures. If there are non-trivial related data structures, they need to
+   be dealt with 'by hand'. This is shown in the following example:
+
+   .. code-block:: cpp
+
+       copy { 
+           /* Explicit Deletion of non-trivial members */
+           self.name.~std::basic_string<QUEX_TYPE_CHARACTER>();
+           self.number_list.~std::vector<int>();
+
+           /* Copy the plain memory chunk of the token object. */
+           __STD_QUEX_memcpy((void*)&self, (void*)&Other), sizeof(QUEX_TYPE_TOKEN));
+           
+           /* Call placement new for non-trivial types: */
+           new(&self.name)        std::basic_string<QUEX_TYPE_CHARACTER>(Other.name);
+           new(&self.number_list) std::vector<int>(Other.number_list);
+       }
+
+
+.. describe:: take_text
+
+   Optional, only a must if string accumulator is activated.
+
+   Whenever the accumulator flushes accumulated text it accesses the current
+   token and passes its content to the function ``take_text``. Inside the
+   section the following variables can be accessed:
+   
+   .. describe:: self
+
+      which is a reference to the token under concern.
+
+   .. describe:: analyzer
+
+      which gives access to the lexical analyzer so that decisions can be 
+      made according to the current mode, line numbers etc.
+
+   .. describe:: Begin, End
+
+      wich are both pointers of ``QUEX_TYPE_CHARACTER``. ``Begin`` points
+      to the first character in the text to be received by the token. ``End``
+      points to the first character *after* the string to be received.
+
+   .. describe:: LexemeNull
+
+      This is a pointer to the empty lexeme. The ``take_that`` section 
+      might consider not to allocate memory if the LexemeNull is specified,
+      i.e. ``Begin == LexemeNull``. This happens, for example, in the C default
+      token implementation.
+
+   The ``take_text`` section receives the raw memory chunk and is free to do
+   what it wants with it. However, it must return a boolean value[#f2]_.  
+   
+   .. describe:: ``true`` 
+   
+      If ``true`` is returned the token took over the ownership over the memory
+      chunk and claims responsibility to delete it. This is the case if the
+      token maintains a reference to the text and does not want it to be
+      deleted.
+
+      .. warning:: 
+      
+          It is highly dangerous to apply this strategy if ``take_text``
+          is called from inside the lexical analyzer. To claim ownership
+          would mean that the token owns a piece of memory from the
+          analyzer's buffer. This is impossible!
+
+          There is a way to check whether the memory chunk is from the 
+          analyzer's buffer. A check like the following is sufficient
+
+          .. code-block:: cpp
+
+             if(    Begin >= analyzer.buffer._memory._front 
+                 && End   <= analyzer.buffer._memory._back ) {
+                 /* Never claim ownership on analyzer's buffer ... */
+                 /* Need one more space to store the terminating zero */
+                 if( self.text != 0x0 ) {
+                     QUEX_NAME(MemoryManager_Text_free(self.text);
+                 }
+                 self.text = QUEX_NAME(MemoryManager_Text_allocate)(sizeof(QUEX_TYPE_CHARACTER)*(End - Begin + 1));
+             } else {
+                 /* Maybe, claim ownership. */
+             }
+
+   .. describe:: ``false`` 
+   
+      If ``false`` is returned the caller shall remain responsible. This can be
+      used if the token does not need the text, or has copied it in a 'private'
+      copy. 
+      
+      
+   If the token takes over the responsibility for the memory chunk it must be
+   freed in a way that correponds the memory management of the string
+   accumulator. The safe way to accomplish this is by adding something like 
+
+   .. code-block:: cpp
+
+      constructor {
+           self.text = 0x0;
+      }
+
+      destructor {
+           if( self.text ) {
+                QUEX_NAME(MemoryManager_Text_free)((void*)self.text);
+           }
+      }
+
+      take_text {
+          self.text = Begin;
+          return true;
+      }
+
+The ``take_text`` section is vital for all analyzers that rely on lexeme content.
+If it is not rock-solid, then the analyzer is on jeopardy. The default
+implementations in ``$QUEX_PATH/code_base/token`` contain disabled debug sections
+that may be copy-pasted into customized classes. For example for C, the default
+implementation in ``CDefault.qx`` contains the sections
+
+  .. code-block:: cpp
+
+        #  if 0
+           {
+               /* Hint for debug: To check take_text change "#if 0" to "#if 1" */
+               const QUEX_TYPE_CHARACTER* it = 0x0;
+               printf("previous:  '");
+               if( self.text != 0x0 ) for(it = self.text; *it ; ++it) printf("%04X.", (int)*it);
+               printf("'\n");
+               printf("take_text: '");
+               for(it = Begin; it != End; ++it) printf("%04X.", (int)*it);
+               printf("'\n");
+           }
+        #  endif
+
+           ... code of take_text ...
+
+        #  if 0
+           {
+               /* Hint for debug: To check take_text change "#if 0" to "#if 1" */
+               const QUEX_TYPE_CHARACTER* it = 0x0;
+               printf("after:     '");
+               if( self.text != 0x0 ) for(it = self.text; *it ; ++it) printf("%04X.", (int)*it);
+               printf("'\n");
+           }
+        #  endif
+
+As mentioned in the comment, these section can be activated by switching the 
+``0`` to ``1`` in the pre-processor conditionals.
+
+Additional content may be added to the class' body using the following
+code section:
+
+.. describe:: body
+
+   This allows to add constructors, member functions, friend declarations,
+   internal type definitions etc. being added the token class. The content of
+   this section is pasted as-is into the class body. Example:
+
+   .. code-block:: cpp
+
+      body {
+          typedef std::basic_string<QUEX_TYPE_CHARACTER> __string;
+
+          void    register();
+          void    de_register();
+      private:
+          friend  class MyParser;
+      }
+
+.. note:: The token class generator does not support an automatic generation
+          of all possible constructors. If this was to be done in a sound and
+          safe manner the formal language to describe this would add significant
+          complexity. Instead, defining the constructors in the ``body`` section
+          is very ease and intuitive.
+
+When token repetition (see :ref:`sec-token-repetition`) is to be used, then 
+the two following code fragments need to be defined 
+
+   .. describe:: repetition_get
+
+        The only implicit argument is ``self``. The return value shall be
+        the stored repetition number.
+
+   .. describe:: repetition_set
+
+        Implicit arguments are ``self`` for the current token and ``N`` for
+        the repetition number to be stored.
+
+The code inside these fragments specifies where and how inside the token
+the repetition number is to be stored and restored. In most cases the setting
+of an integer member will do, e.g.
+
+   .. code-block:: cpp
+
+       repetition_set {
+           self.number = N;
+       }
+
+       repetition_get {
+           return self.number;
+       }
+
+In order to paste code fragments before and after the definition of the token class,
+the following two sections may be used.
+
+.. describe:: header
+
+    In this section header files may be mentioned or ``typedef``s may be made
+    which are required for the token class definition. For example, the definition of 
+    token class members of type ``std::complex`` and ``std::string`` requires the following
+    header section.
+
+    .. code-block:: cpp
+
+       header {
+          #include <string>
+          #include <complex>
+       }
+
+.. describe:: footer
+
+    This section contains code to be pasted after the token class definition. This
+    is useful for the definition of closely related functions which require the 
+    complete type definition. The code fragment below shows the example of an
+    output operator for the token type.
+
+    .. code-block:: cpp
+
+       footer {
+            inline std::ostream&
+            operator<<(std::ostream& ostr, const QUEX_TYPE_TOKEN_XXX& Tok)
+            { ostr << std::string(Tok); return ostr; }
+       }
+
+
+The token class is written into a file that can be specified via
+
+.. data:: file_name = name ';'
+
+
+If no file name is specified the name is generated as engine name +
+``"-token-class"``. The name of the token class and its namespace can be
+specified via 
+
+.. data:: name = [namespace ... ::] token class name ';'
+
+   Where the term after the ``=`` sign can be either 
+   
+   * Solely, the name of the token class. In this case the class 
+     is placed in namespace ``quex``. 
+     
+   * A list of identifiers separated by ``::``. Then all but the 
+     last identifier is considered a name space name. The last identifier
+     is considered to be the token class name. For example, 
+
+     .. code-block:: cpp
+
+       name = europa::deutschland::baden_wuertemberg::ispringen::MeinToken;
+
+     causes the token class ``MeinToken`` to be created in the namespace ``ispringen``
+     which is a subspace of ``baden_wuertemberg``, which is a subspace of ``deutschland``,
+     which is a subspace of ``europa``.
+
+In C++, when classes can be inherited they better provide a virtual destructor.
+If this is required the flag
+
+.. data:: inheritable ';'
+
+can be specified. The following shows a sample definition of a ``token_type`` section.
+
+.. code-block:: cpp
+
+    token_type {
+       name = europa::deutschland::baden_wuertemberg::ispringen::MeinToken;
+
+       standard {
+            id            :    unsigned;
+            line_number   :    unsigned;
+            column_number :    unsigned;
+       }
+       distinct {
+           name        :  std::basic_string<QUEX_TYPE_CHARACTER>;
+           number_list :  std::vector<int>;
+       }
+       union {
+           { 
+              mini_x       : int8_t;
+              mini_y       : int8_t;
+           }
+           { 
+              big_x        : int16_t;
+              big_y        : int16_t;
+           }
+           who_is_that     : uint16_t;
+       }
+       inheritable;
+       constructor { std::cout << "Constructor\n"; }
+       destructor  { std::cout << "Destructor\n"; }
+       body        { int __nonsense__; }
+       copy        { 
+           std::cout << "Copy\n"; 
+           /* Copy core elements: id, line, and column number */
+           _id         = Other._id;
+    #      ifdef QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+    #      ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+                  _line_n = Other._line_n;
+    #      endif
+    #      ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+                  _column_n = Other._column_n;
+    #      endif
+    #      endif
+           /* copy all members */
+           name        = Other.name;
+           number_list = Other.number_list;
+           /* plain content copy of the union content */
+           content     = Other.content;
+       }
+    }
+
+which results in a generated token class in C++:
+
+.. code-block:: cpp
+
+    class MeinToken {
+    public:
+        MeinToken();
+        MeinToken(const MeinToken& That);
+        void __copy(const MeinToken& That);
+        /* operator=(..): USE WITH CAUTION--POSSIBLE MAJOR PERFORMANCE DECREASE! 
+         *                BETTER USE __copy(That)                                */
+        MeinToken operator=(const MeinToken& That) 
+        { __copy(That); return *this; }
+        virtual ~MeinToken();
+
+        std::vector<int>                       number_list;
+        std::basic_string<QUEX_TYPE_CHARACTER> name;
+
+        union {
+            struct {
+                int16_t                                big_x;
+                int16_t                                big_y;
+            } data_1;
+            struct {
+                int8_t                                 mini_x;
+                int8_t                                 mini_y;
+            } data_0;
+            uint16_t                               who_is_that;
+        } content;
+
+    public:
+        std::basic_string<QUEX_TYPE_CHARACTER> get_name() const                                              
+        { return name; }
+        void                                   set_name(std::basic_string<QUEX_TYPE_CHARACTER>& Value)        
+        { name = Value; }
+        std::vector<int>                       get_number_list() const                                       
+        { return number_list; }
+        void                                   set_number_list(std::vector<int>& Value)                       
+        { number_list = Value; }
+        int8_t                                 get_mini_x() const                                            
+        { return content.data_0.mini_x; }
+        void                                   set_mini_x(int8_t& Value)                                      
+        { content.data_0.mini_x = Value; }
+        int8_t                                 get_mini_y() const                                            
+        { return content.data_0.mini_y; }
+        void                                   set_mini_y(int8_t& Value)                                      
+        { content.data_0.mini_y = Value; }
+        uint16_t                               get_who_is_that() const                                       
+        { return content.who_is_that; }
+        void                                   set_who_is_that(uint16_t& Value)                               
+        { content.who_is_that = Value; }
+        int16_t                                get_big_x() const                                             
+        { return content.data_1.big_x; }
+        void                                   set_big_x(int16_t& Value)                                      
+        { content.data_1.big_x = Value; }
+        int16_t                                get_big_y() const                                             
+        { return content.data_1.big_y; }
+        void                                   set_big_y(int16_t& Value)                                      
+        { content.data_1.big_y = Value; }
+
+
+        void set(const QUEX_TYPE_TOKEN_ID ID) 
+        { _id = ID; }
+        void set(const QUEX_TYPE_TOKEN_ID ID, const std::basic_string<QUEX_TYPE_CHARACTER>& Value0)
+        { _id = ID; name = Value0; }
+        void set(const QUEX_TYPE_TOKEN_ID ID, const std::vector<int>& Value0)
+        { _id = ID; number_list = Value0; }
+        void set(const QUEX_TYPE_TOKEN_ID ID, const std::basic_string<QUEX_TYPE_CHARACTER>& Value0, const std::vector<int>& Value1)
+        { _id = ID; name = Value0; number_list = Value1; }
+        void set(const QUEX_TYPE_TOKEN_ID ID, const int16_t& Value0, const int16_t& Value1)
+        { _id = ID; content.data_1.big_x = Value0; content.data_1.big_y = Value1; }
+        void set(const QUEX_TYPE_TOKEN_ID ID, const int8_t& Value0, const int8_t& Value1)
+        { _id = ID; content.data_0.mini_x = Value0; content.data_0.mini_y = Value1; }
+        void set(const QUEX_TYPE_TOKEN_ID ID, const uint16_t& Value0)
+        { _id = ID; content.who_is_that = Value0; }
+
+
+            QUEX_TYPE_TOKEN_ID    _id;
+        public:
+            QUEX_TYPE_TOKEN_ID    type_id() const      { return _id; }
+            static const char*    map_id_to_name(QUEX_TYPE_TOKEN_ID);
+            const std::string     type_id_name() const { return map_id_to_name(_id); }
+
+    #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+    #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+        private:
+            QUEX_TYPE_TOKEN_LINE_N  _line_n;
+        public:
+            QUEX_TYPE_TOKEN_LINE_N    line_number() const                                 { return _line_n; }
+            void                      set_line_number(const QUEX_TYPE_TOKEN_LINE_N Value) { _line_n = Value; }
+    #       endif
+    #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+        private:
+            QUEX_TYPE_TOKEN_COLUMN_N  _column_n;
+        public:
+            QUEX_TYPE_TOKEN_COLUMN_N  column_number() const                                   { return _column_n; }
+            void                      set_column_number(const QUEX_TYPE_TOKEN_COLUMN_N Value) { _column_n = Value; }
+    #       endif
+    #   endif
+        public:
+
+       int __nonsense__; 
+    };
+
+.. _sec-customized-token-class-formal:
+
+Special Variables in Token Class Definitions
+--------------------------------------------
+
+A set of special variables support the usage of converters from the buffer's
+codec to some output codec, as they are
+
+.. describe:: $INCLUDE_CONVERTER_DECLARATION
+
+   Is replaced in the generated code by an include statement which includes
+   the appropriate converters towards utf8, utf16, utf32 and the default 
+   converters for 'char' and 'wchar_t'. See section 'conveter_helpers'.
+   
+.. describe:: $INCLUDE_CONVERTER_IMPLEMENTATION
+
+   Is replaced in the code by an include statement that catches the file 
+   with the implementation of the aforementioned converter functions.
+
+.. describe:: $CONVERTER_STRING 
+
+   Is replaced by the exact name of the function that converts a string 
+   in the buffer's codec into the default codec for 'char' (e.g. UTF8).
+   In C, this is the name of the function that converts memory chunks. In Cpp
+   the same name is shared by the converter for memory chunks and the 
+   std::string based converter.
+   
+.. describe:: $CONVERTER_WSTRING
+
+   Is the pendant to ``$CONVERTER_STRING`` for 'wchar_t' strings.
+
+.. describe:: $NAMESPACE_OPEN
+
+   Expands to namespace openers according to the token's name space. If the
+   token's name space is, for example ``X0::X1::X2``, then the above 
+   variable expands to
+
+   .. code-block:: cpp
+
+      namespace X0 { namespace X1 { namespace X2 {
+
+.. describe:: $NAMESPACE_CLOSE
+
+   Expands to the string which is necessary to close the token's name space.
+   With the example from ``$NAMESPACE_OPEN``, this variable expands to
+
+   .. code-block:: cpp
+
+      } } }
+
+   The variables ``$NAMESPACE_OPEN`` and ``$NAMESPACE_CLOSE`` may be used
+   within the ``HEADER`` and the ``FOOTER`` section to add more definitions to
+   the token's namespace.
+
+.. describe:: $TOKEN_CLASS
+
+   Expands to the name of the token class. In C++, this does not include the
+   token class' namespace specifier. In C, it might be necessary to introduce a
+   forward declaration of the token class. This can be done with the same
+   variable, as in the following code.
+
+   .. code-block:: cpp
+
+       header {
+       struct $TOKEN_CLASS_tag;
+
+       extern const char* 
+       $TOKEN_CLASS_pretty_char_text(struct $TOKEN_CLASS_tag* me, 
+                                     char*                    buffer, 
+                                     size_t                   BufferSize); 
+           ...
+           struct $TOKEN_CLASS_tag;
+
+           extern const char* 
+           $TOKEN_CLASS_pretty_char_text(struct $TOKEN_CLASS_tag* me, 
+                                         char*                    buffer, 
+                                         size_t                   BufferSize); 
+           ...
+       }
+
+   So that functions may be declared using a token pointer before the struct
+   itself is defined, as shown in the example above. 
+
+The default token specifications in CDefault.qx and CppDefault.qx demonstrate
+the usage of those helper variables. Also, the produced token class is worth
+being considered for some more deeper insight.
+
+.. _sec-customized-token-class-formal:
+
+Formal Requirements on Token Classes.
+-------------------------------------
+
+The previous section introduced a convienent feature to specify customized
+token classes.  If this is for some reason not sufficient, a manually written
+token class can be provided. 
+
+.. note:: It is always a good idea to take a token class generated by quex
+          as a basis for a manually written class. This is a safe path to
+          avoid spurious errors.
+
+The user's artwork is communicated to quex via the command line argument
+``--token-class-file`` which names the file where the token class definition is
+done. Additionally, the name and namespace of the token class must be specified
+using the option ``--token-class``. For example::
+
+  > quex ... --token-class MySpace::MySubSpace::MyToken
+
+specifies that the name of the token class is ``MyToken`` which is located in
+the namespace ``MySubSpace`` which is located in the global namespace
+``MySpace``. This sets automatically the following macros in the configuration
+file:
+
+  .. describe:: QUEX_TYPE_TOKEN
+
+     The name of the token class defined in this file together with its
+     namespace.
+  
+     .. code-block:: cpp
+
+        #define QUEX_TYPE_TOKEN   my_space::lexer::MyToken
+
+  .. describe:: QUEX_TYPE0_TOKEN
+
+     The token class without the namespace prefix, e.g.
+
+     .. code-block:: cpp
+
+        #define QUEX_TYPE0_TOKEN   MyToken
+   
+
+A hand written token class must comply to the following constraints:
+
+    * The following macro needs to be defined outside the class:
+       
+      .. describe:: QUEX_TYPE_TOKEN_ID
+
+         Defines the C-type to be used to store token-ids. It should at least
+         be large enough to carry the largest token id number.
+
+       
+      It is essential to use macro functionality rather than a typedef, since
+      later general definition files need to verify its definition. A good way
+      to do the definition is shown below:
+ 
+      .. code-block:: cpp
+
+         #ifndef    QUEX_TYPE_TOKEN_ID 
+         #   define QUEX_TYPE_TOKEN_ID              uint32_t
+         #endif
+
+      Note, that the header file might be tolerant with respect to external definitions
+      of the token id type. However, since it defines the token class, it must assume
+      that it has not been defined yet.
+
+    * A member function that maps token-ids to token-names inside the token's namespace
+    
+      .. cfunction:: const char* QUEX_NAME_TOKEN(map_id_to_name)(QUEX_TYPE_TOKEN_ID Id)
+   
+      that maps any token-id to a human readable string. Note, that queχ does
+      generate this function automatically, as long as it is not told not to do
+      so by specifying command line option ``--user-token-id-file``. The macro
+      ``QUEX_NAME_TOKEN`` adapts the mapping function to the appropriate
+      naming. Relying on the above function signature allows to define the
+      appropriate function.
+
+    * Member functions that set token content, e.g. 
+    
+      .. cfunction:: void set(token::id_type TokenID, const char*)
+      .. cfunction:: void set(token::id_type TokenID, int, int)
+      .. cfunction:: void set(token::id_type TokenID, double)
+      .. cfunction:: void set(token::id_type TokenID, double, my_type&)
+   
+     As soon as the user defines those functions, the interface for sending 
+     those tokens from the lexer is also in place. The magic of templates lets 
+     the generated lexer class provide an interface for sending of tokens that 
+     is equivalent to the following function definitions: 
+         
+     .. cfunction:: void send(token::id_type TokenID, const char*)
+     .. cfunction:: void send(token::id_type TokenID, int, int)
+     .. cfunction:: void send(token::id_type TokenID, double)
+     .. cfunction:: void send(token::id_type TokenID, int, my_type&)
+   
+     Thus, inside the pattern action pairs one can send tokens, for example 
+     using the self reference the following way:
+
+     .. code-block:: cpp 
+
+          // map lexeme to my_type-object 
+          my_type tmp(split(Lexeme, ":"), LexemeL); 
+          self_send2(TKN_SOMETHING, LexemeL, tmp); 
+          return; 
+
+    * It must provide a member ``_id`` token's identifier 
+      
+      .. cfunction:: QUEX_TYPE_TOKEN_ID   _id
+
+    * The following function must be defined. Even an empty definition will do.
+    
+      .. cfunction:: void QUEX_NAME_TOKEN(copy)(Token* me, const Token* Other) 
+
+      .. cfunction:: void QUEX_NAME_TOKEN(construct)(Token* __this)
+
+      .. cfunction:: void QUEX_NAME_TOKEN(destruct)(Token* __this)
+
+    inline void
+    QUEX_NAME_TOKEN(destruct)($$TOKEN_CLASS$$* __this)
+
+      
+      in the token's namespace which copies the content of token ``Other`` to the
+      content of token ``me``.
+
+    * If a text accumulator is to be used, i.e. ``QUEX_OPTION_STRING_ACCUMULATOR`` is 
+      defined, then there must be a function 
+    
+      .. cfunction:: bool QUEX_NAME_TOKEN(take_text)(QUEX_TYPE_TOKEN*     me, 
+                                                     QUEX_TYPE_ANALYZER*  analyzer, 
+                                                     const QUEX_TYPE_CHARACTER* Begin, 
+                                                     const QUEX_TYPE_CHARACTER* End)
+      
+
+      The meaning and requirements of this functions are the same as for the ``take_text``
+      section above.
+
+    * There must be member and member ``_line_n`` and ``_column_n`` for line and column 
+      numbers which are dependent on compilation macros. The user must
+      provide the functionality of the example code segment below.
+
+      .. code-block:: cpp
+
+         #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+         #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+                public:
+                    size_t  _line_n;
+                    size_t  line_number() const                 { return _line_n; }
+                    void    set_line_number(const size_t Value) { _line_n = Value; }
+         #       endif
+         #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+                public:
+                    size_t  _column_n;
+                    size_t  column_number() const                 { return _column_n; }
+                    void    set_column_number(const size_t Value) { _column_n = Value; }
+         #       endif
+         #   endif
+
+      The conditional compilation must also be implemented for the ``__copy``
+      operation which copies those values.
+
+As long as these conventions are respected the user created token class will
+interoperate with the framework smoothly. The inner structure of the token
+class can be freely implemented according to the programmer's optimization
+concepts. 
+
+In case that the token class is specific in any way, it is a good idea to
+document this to the user. If the token class, for example, requires a special
+``QUEX_TYPE_CHARACTER``, i.e. buffer element type, then a certain value
+for ``--buffer-element-type`` must be specified to quex. A good place to
+do this is the header of the token class file. Even better, if this
+description is surrounded by the marker ``<<<QUEX-OPTIONS>>>`` then 
+quex can actually read it! The user will not have to bother to specify
+it himself. For example, a comment section as::
+
+   ... code-block:: cpp
+
+       /* My File: This file does ...
+        *    ...
+        *    <<<QUEX-OPTIONS>>>
+        *      --token-class-file      Common-token
+        *      --token-class           Common::Token
+        *      --token-id-type         uint32_t
+        *      --buffer-element-type   uint8_t
+        *      --lexeme-null-object    ::Common::LexemeNullObject
+        *      --foreign-token-id-file Common-token_ids
+        *    <<<QUEX-OPTIONS>>>
+        *    ...
+        */
+
+Lets quex consider the command line arguments as specified. It does not get
+confused by the leading ``*`` at the beginning of the line.
+
+.. _sec-shared-token-class:
+
+Shared Token Classes
+--------------------
+
+With the command line option ``--token-class-only`` generates solely a token
+class. The token class, though, is designed to be shared between multiple
+lexical analyzers. To understand the necessity of this feature one has to know,
+that there are interdependencies between the lexical analyzer and the token
+class, as they are:
+
+  .. describe:: take_text(...)
+
+     When the token send functions are used, the ``take_text(...)`` function
+     must accept arguments of type ``QUEX_TYPE_CHARACTER``. This type is specific
+     to an analyzer.
+
+  .. describe:: LexemeNull
+
+     The ``LexemeNull`` has a signalling effect in the generated token class, 
+     and it carries a character from the type of the analyzer's buffer.
+
+  .. describe:: ``pretty_char_text(...)`` and ``pretty_wchar_text(...)``
+
+     The generated pretty printers depend on converter functions which are
+     generated by the C/C++ Preprocessor during compile time.
+
+The ``QUEX_TYPE_CHARACTER`` macro is redefined depending when multiple
+analyzers are used. Thus, when generating the isolated token class the buffer
+element type is used as can be specified by command line option
+``--buffer-element-type``. 
+
+The ``LexemeNull`` is placed in the token's name space and also *implemented*
+there. Analyzers using the shared token class shall specify command line option
+``--lexeme-null-object`` and specify the name of it. 
+
+When quex terminates the token class generation for ``--token-class-only``,
+then the generated header will contain a section that actually defines all
+necessary options for the user of this class in a ``<<<QUEX-OPTIONS>>>```
+section in a comment at the beginning of the file. So, there is almost no extra effort
+involved in configuring quex for this particular implementation. What
+remains is that the name of the token class file needs to be passed to quex
+similar to the following:
+
+  .. code-block:: bash
+
+      > quex ... --token-class-file MyLexer-token.h ...
+
+in the case of a generated token class in plain C.
+
+.. note::
+
+   The generated token class for C may rely on ``malloc`` and ``free`` in the
+   generated source file. Memory management in this case is is very critical 
+   to performance. The user may consider replacing these calls at will with 
+   whatever is better suited (e.g. something that uses a pre-allocated memory 
+   pool).
+
+.. warning::
+
+   When a token class is generated that is designed for multiple lexical
+   analyzers, then it is advisable not to make use of the ``analyzer``
+   reference in the ``take_text()`` function. The default token implementations
+   do not do so, either.
+
+.. rubric:: Footnotes
+
+.. [#f1] Section :ref:sec-token-stamping` discusses when line and column numbers 
+   are required inside the token object.
+
+.. [#f2] In C the boolean values ``true`` and ``false`` are available as macro
+   definitions in ``stdbool.h``.
