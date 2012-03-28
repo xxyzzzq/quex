@@ -81,6 +81,9 @@
 #ifdef    QUEX_TYPE_CHARACTER  
 #   undef QUEX_TYPE_CHARACTER  
 #endif
+#ifdef    QUEX_TYPE_CHARACTER_BACKUP
+#   undef QUEX_TYPE_CHARACTER_BACKUP
+#endif
 #ifdef    QUEX_TYPE_ACCEPTANCE_ID
 #   undef QUEX_TYPE_ACCEPTANCE_ID
 #endif
