@@ -76,6 +76,7 @@ class Analyzer:
         self.__init_state_index = SM.init_state_index
         self.__state_machine_id = SM.get_id()
         self.__engine_type      = EngineType
+        self.__sm               = SM
 
         # (*) PathTrace database, Successor database
         self.__trace_db, self.__successor_db = track_analysis.do(SM)
@@ -351,13 +352,15 @@ class Analyzer:
             # state_index  --> state that restores the input position
             # pattern_id   --> pattern which is concerned
             for path in info.path_list_since_positioning:
-                # Never store the input position in the state itself. The input position
-                # is reached after the entries have been passed.
-                state = self.__state_db[path[1]]
-                state.entry.doors_store(FromStateIndex   = path[0], 
-                                        PreContextID     = info.pre_context_id, 
-                                        PositionRegister = pattern_id, 
-                                        Offset           = 0)
+                from_state_index = path[0]
+                for to_state_index in self.__sm.states[from_state_index].transitions().get_map().iterkeys():
+                    # Never store the input position in the state itself. The input position
+                    # is reached after the entries have been passed.
+                    state = self.__state_db[to_state_index]
+                    state.entry.doors_store(FromStateIndex   = from_state_index, 
+                                            PreContextID     = info.pre_context_id, 
+                                            PositionRegister = pattern_id, 
+                                            Offset           = 0)
                 # offset           = -1
                 # for state_index in islice(path, 1, None):
                     # offset += 1
