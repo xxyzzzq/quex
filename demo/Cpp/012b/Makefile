@@ -29,18 +29,18 @@ COMMON_TOKEN_OPTIONS = \
 	g++ -E $< -o  $@ -I$(QUEX_PATH) 
 	
 boeck_Lexer.cpp:  boeck.qx Common-token.cpp Common-token_ids
-	quex -i $< -o boeck::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) # --debug-exception
+	quex -i $< -o boeck::Lexer --codec utf8 $(COMMON_TOKEN_OPTIONS) # --debug-exception
 
 max_Lexer.cpp:    max.qx Common-token.cpp Common-token_ids
-	quex -i $< -o max::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) 
+	quex -i $< -o max::Lexer --codec utf8 $(COMMON_TOKEN_OPTIONS) 
 
 moritz_Lexer.cpp: moritz.qx Common-token.cpp Common-token_ids
-	quex -i $< -o moritz::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) 
+	quex -i $< -o moritz::Lexer --codec utf8 $(COMMON_TOKEN_OPTIONS) 
 
 Common-token_ids \
 Common-token.cpp: 
 	quex -i token_ids.qx               \
-		 --icu -b 4                  \
+		 --codec utf8                  \
 		 --token-id-prefix TKN_        \
 		 -o Common                     \
 		 --token-class Common::Token   \
