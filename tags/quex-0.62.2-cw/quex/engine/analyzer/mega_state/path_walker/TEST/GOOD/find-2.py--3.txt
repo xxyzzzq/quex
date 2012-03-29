@@ -1,0 +1,23 @@
+digraph state_machine_0 {
+rankdir=LR;
+size="8,5"
+node [shape = doublecircle]; 11; 12; 13;
+node [shape = circle];
+10 -> 12 [label ="'a'"];
+10 -> 11 [label ="'b'"];
+11 -> 12 [label ="'a'"];
+11 -> 13 [label ="'b'"];
+11 -> 11 [label ="'c'"];
+7777 -> 10 [label ="'0'"];
+}
+
+
+# start    = 10;
+# path     = (10)--'b'-->(11)--'c'-->[11];
+# skeleton = (s=12,d=0) by 'a'; (s=13,d=0) by 'b'; 
+# wildcard = False;
+# 
+#
+# Some recursions are possible, if the skeleton contains them.
+# In this case, the path cannot contain but the 'iterative' char
+# plus some exit character.

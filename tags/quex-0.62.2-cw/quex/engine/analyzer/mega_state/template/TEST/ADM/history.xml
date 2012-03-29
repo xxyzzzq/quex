@@ -1,0 +1,45 @@
+<history date="Thu Mar 29 23:15:05 2012" element-n="33">
+    <day year="2011" month="09" day="28">
+        <history-init time="20:08:52"/>
+    </day>
+    <day year="2011" month="09" day="29">
+        <crc-error time="20:42:18" application="combine-maps.py" choice="1" database-crc="820212916" real-crc="1678558343"/>
+        <crc-error time="20:42:18" application="combine-maps.py" choice="2" database-crc="-1627687556" real-crc="-2112920410"/>
+        <crc-error time="20:42:18" application="combine-maps.py" choice="2b" database-crc="578732802" real-crc="-1958104461"/>
+        <crc-error time="20:42:19" application="best_matching_pair.py" choice="0" database-crc="-388511388" real-crc="463769672"/>
+        <crc-error time="20:42:19" application="best_matching_pair.py" choice="2" database-crc="846269955" real-crc="-1321050110"/>
+    </day>
+    <day year="2012" month="02" day="14">
+        <crc-error time="20:58:59" application="combine-simple.py" choice="plain" database-crc="-1381564096" real-crc="-2144681528"/>
+    </day>
+    <day year="2012" month="02" day="20">
+        <crc-error time="07:45:36" application="combine-simple.py" choice="plain" database-crc="-2096630557" real-crc="-673640113"/>
+        <crc-error time="07:46:49" application="combine-simple.py" choice="recursive" database-crc="-7642453" real-crc="47904335"/>
+        <crc-error time="07:48:22" application="combine-simple.py" choice="distinguished" database-crc="1109648656" real-crc="192272569"/>
+        <crc-error time="21:18:32" application="combine-maps.py" choice="1" database-crc="-892034469" real-crc="-665118599"/>
+        <crc-error time="21:18:32" application="combine-maps.py" choice="2" database-crc="-604200621" real-crc="664275895"/>
+        <crc-error time="21:18:32" application="combine-maps.py" choice="2b" database-crc="-348066796" real-crc="1741258459"/>
+        <crc-error time="21:18:32" application="combine-maps.py" choice="3" database-crc="2055694699" real-crc="909283175"/>
+        <crc-error time="21:18:32" application="combine-maps.py" choice="4" database-crc="1571523934" real-crc="1484321836"/>
+        <crc-error time="21:18:32" application="combine-maps.py" choice="recursive" database-crc="699993789" real-crc="462762661"/>
+    </day>
+    <day year="2012" month="02" day="21">
+        <crc-error time="08:22:51" application="combine-maps-2.py" choice="1" database-crc="623867792" real-crc="403402211"/>
+        <crc-error time="08:22:56" application="combine-maps-2.py" choice="2" database-crc="-260759165" real-crc="972740394"/>
+        <crc-error time="09:51:43" application="metric.py" choice="3" database-crc="-2116294388" real-crc="-749157642"/>
+        <crc-error time="09:51:58" application="metric.py" choice="3" database-crc="-749157642" real-crc="482091865"/>
+        <crc-error time="09:52:01" application="combine-maps.py" choice="1" database-crc="-665118599" real-crc="-1294371951"/>
+        <crc-error time="09:52:01" application="combine-maps.py" choice="2" database-crc="664275895" real-crc="-666103023"/>
+        <crc-error time="09:52:01" application="combine-maps.py" choice="2b" database-crc="1741258459" real-crc="87543699"/>
+        <crc-error time="09:52:01" application="combine-maps.py" choice="3" database-crc="909283175" real-crc="-341781596"/>
+        <crc-error time="09:52:01" application="combine-maps.py" choice="4" database-crc="1484321836" real-crc="640265243"/>
+        <crc-error time="09:52:01" application="combine-maps.py" choice="recursive" database-crc="462762661" real-crc="1327431436"/>
+        <crc-error time="09:52:02" application="combine-maps-2.py" choice="2" database-crc="972740394" real-crc="132411998"/>
+        <crc-error time="09:52:02" application="combine-maps-2.py" choice="recursive" database-crc="1301004420" real-crc="-562817148"/>
+        <crc-error time="09:52:02" application="combine-maps-2.py" choice="recursive-2" database-crc="-483938337" real-crc="-1421550926"/>
+        <crc-error time="09:52:02" application="combine-maps-2.py" choice="recursive-3" database-crc="328223535" real-crc="1091680709"/>
+        <crc-error time="09:52:02" application="combine-maps-2.py" choice="recursive-b" database-crc="1301004420" real-crc="-562817148"/>
+        <crc-error time="09:52:02" application="combine-maps-2.py" choice="recursive-2b" database-crc="1547619373" real-crc="298678448"/>
+        <crc-error time="09:52:02" application="best_matching_pair.py" choice="0" database-crc="463769672" real-crc="-1675777048"/>
+    </day>
+</history>

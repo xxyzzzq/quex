@@ -1,0 +1,10 @@
+include 3.txt
+include empty.txt
+include 2.txt
+include empty.txt
+include 1.txt
+include empty.txt
+include 2.txt
+include empty.txt
+include 3.txt
+include empty.txt

@@ -1,0 +1,48 @@
+-----------------------------
+IN:
+    [{ id : uint8_t; }]
+
+OUT:
+
+class:     'Token'
+namespace: ''
+type(token_id)      = uint8_t
+type(column_number) = size_t
+type(line_number)   = size_t
+distinct members {
+}
+union members {
+}
+
+-----------------------------
+IN:
+    [{ column_number : uint8_t; }]
+
+OUT:
+
+class:     'Token'
+namespace: ''
+type(token_id)      = size_t
+type(column_number) = uint8_t
+type(line_number)   = size_t
+distinct members {
+}
+union members {
+}
+
+-----------------------------
+IN:
+    [{ line_number : uint8_t; }]
+
+OUT:
+
+class:     'Token'
+namespace: ''
+type(token_id)      = size_t
+type(column_number) = size_t
+type(line_number)   = uint8_t
+distinct members {
+}
+union members {
+}
+

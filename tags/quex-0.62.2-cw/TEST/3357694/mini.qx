@@ -1,0 +1,7 @@
+token { SOME________; ELSE________; X_post_Ys_Z_; X_Ys_post_ZU; NEWLINE_____; A_Bs_post_CD; A_post_Bs_CE; }
+
+mode STANDARD
+{
+	x/y*z	      => QUEX_TKN_X_post_Ys_Z_(Lexeme);
+    on_failure    => QUEX_TKN_ELSE________(Lexeme);
+}
