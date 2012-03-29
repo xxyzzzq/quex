@@ -1,98 +1,98 @@
-<test-database execution-time-sec="0.20" date="Thu Mar 29 08:25:06 2012">
+<test-database execution-time-sec="0.19" date="Thu Mar 29 23:13:30 2012">
     <last-used-diff-display-program name=""/>
     <group name="Backward">
-        <test title="Copy Region (BPC=4)" make-dependent="True" time-sum-sec="0.01"> 
-            <application file-name="BufferFiller_backward_copy-32.exe" info-request-time="1333002299L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.701261"/>
+        <test title="Copy Region (BPC=4)" make-dependent="True" time-sum-sec="0.02"> 
+            <application file-name="BufferFiller_backward_copy-32.exe" info-request-time="1333055602L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.785824"/>
             <choice-list number="2" same_result="False">
                <choice name="Normal" result="OK" time_sec="0.01" crc="88080766"/>
-               <choice name="StartOfStream" result="OK" time_sec="0.01" crc="1311905731"/>
+               <choice name="StartOfStream" result="OK" time_sec="0.00" crc="1311905731"/>
             </choice-list>
         </test>
-        <test title="Copy Region (BPC=1)" make-dependent="True" time-sum-sec="0.01"> 
-            <application file-name="BufferFiller_backward_copy.exe" info-request-time="1333002303L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.695712"/>
+        <test title="Copy Region (BPC=1)" make-dependent="True" time-sum-sec="0.03"> 
+            <application file-name="BufferFiller_backward_copy.exe" info-request-time="1333055606L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.725628"/>
             <choice-list number="2" same_result="False">
-               <choice name="Normal" result="OK" time_sec="0.00" crc="-1439502307"/>
-               <choice name="StartOfStream" result="OK" time_sec="0.00" crc="-1889777156"/>
+               <choice name="Normal" result="OK" time_sec="0.03" crc="-1439502307"/>
+               <choice name="StartOfStream" result="OK" time_sec="0.01" crc="-1889777156"/>
             </choice-list>
         </test>
     </group>
     <group name="Forward">
-        <test title="Copy Fallback Region (BPC=4)" make-dependent="True" time-sum-sec="0.01"> 
-            <application file-name="BufferFiller_forward_copy-32.exe" info-request-time="1333002300L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.698273"/>
+        <test title="Copy Fallback Region (BPC=4)" make-dependent="True" time-sum-sec="0.00"> 
+            <application file-name="BufferFiller_forward_copy-32.exe" info-request-time="1333055603L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.725404"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.01" crc="1593425449"/>
+               <choice name="" result="OK" time_sec="0.00" crc="1593425449"/>
             </choice-list>
         </test>
         <test title="Copy Fallback Region (BPC=1)" make-dependent="True" time-sum-sec="0.01"> 
-            <application file-name="BufferFiller_forward_copy.exe" info-request-time="1333002301L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.696913"/>
+            <application file-name="BufferFiller_forward_copy.exe" info-request-time="1333055605L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.725521"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.01" crc="81375166"/>
             </choice-list>
         </test>
     </group>
     <group name="Move by Offset">
-        <test title="Forward (BPC=1)" make-dependent="True" time-sum-sec="0.04"> 
-            <application file-name="Buffer_move_forward.exe" info-request-time="1333002302L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.751216"/>
+        <test title="Forward (BPC=1)" make-dependent="True" time-sum-sec="0.02"> 
+            <application file-name="Buffer_move_forward.exe" info-request-time="1333055606L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.768948"/>
             <choice-list number="5" same_result="False">
-               <choice name="1" result="OK" time_sec="0.01" crc="-5275029"/>
-               <choice name="2" result="OK" time_sec="0.01" crc="2030137691"/>
-               <choice name="3" result="OK" time_sec="0.01" crc="336034848"/>
-               <choice name="4" result="OK" time_sec="0.01" crc="-538945832"/>
-               <choice name="5" result="OK" time_sec="0.01" crc="-2065605489"/>
+               <choice name="1" result="OK" time_sec="0.00" crc="-5275029"/>
+               <choice name="2" result="OK" time_sec="0.00" crc="2030137691"/>
+               <choice name="3" result="OK" time_sec="0.00" crc="336034848"/>
+               <choice name="4" result="OK" time_sec="0.00" crc="-538945832"/>
+               <choice name="5" result="OK" time_sec="0.00" crc="-2065605489"/>
             </choice-list>
         </test>
-        <test title="Backward (BPC=4)" make-dependent="True" time-sum-sec="0.04"> 
-            <application file-name="Buffer_move_backward-32.exe" info-request-time="1333002303L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.746401"/>
+        <test title="Backward (BPC=4)" make-dependent="True" time-sum-sec="0.03"> 
+            <application file-name="Buffer_move_backward-32.exe" info-request-time="1333055607L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.768103"/>
             <choice-list number="5" same_result="False">
-               <choice name="1" result="OK" time_sec="0.01" crc="-56330796"/>
+               <choice name="1" result="OK" time_sec="0.00" crc="-56330796"/>
                <choice name="2" result="OK" time_sec="0.01" crc="-717983527"/>
                <choice name="3" result="OK" time_sec="0.01" crc="970635954"/>
                <choice name="4" result="OK" time_sec="0.01" crc="-1221763474"/>
                <choice name="5" result="OK" time_sec="0.01" crc="-249203724"/>
             </choice-list>
         </test>
-        <test title="Forward (BPC=4)" make-dependent="True" time-sum-sec="0.04"> 
-            <application file-name="Buffer_move_forward-32.exe" info-request-time="1333002304L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.748674"/>
+        <test title="Forward (BPC=4)" make-dependent="True" time-sum-sec="0.03"> 
+            <application file-name="Buffer_move_forward-32.exe" info-request-time="1333055608L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.774774"/>
             <choice-list number="5" same_result="False">
-               <choice name="1" result="OK" time_sec="0.01" crc="-5275029"/>
+               <choice name="1" result="OK" time_sec="0.00" crc="-5275029"/>
                <choice name="2" result="OK" time_sec="0.01" crc="2030137691"/>
                <choice name="3" result="OK" time_sec="0.01" crc="336034848"/>
                <choice name="4" result="OK" time_sec="0.01" crc="-538945832"/>
-               <choice name="5" result="OK" time_sec="0.01" crc="-2065605489"/>
+               <choice name="5" result="OK" time_sec="0.00" crc="-2065605489"/>
             </choice-list>
         </test>
-        <test title="Backward (BPC=1)" make-dependent="True" time-sum-sec="0.04"> 
-            <application file-name="Buffer_move_backward.exe" info-request-time="1333002305L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.736260"/>
+        <test title="Backward (BPC=1)" make-dependent="True" time-sum-sec="0.03"> 
+            <application file-name="Buffer_move_backward.exe" info-request-time="1333055609L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.771248"/>
             <choice-list number="5" same_result="False">
                <choice name="1" result="OK" time_sec="0.01" crc="-56330796"/>
-               <choice name="2" result="OK" time_sec="0.01" crc="-717983527"/>
+               <choice name="2" result="OK" time_sec="0.00" crc="-717983527"/>
                <choice name="3" result="OK" time_sec="0.01" crc="970635954"/>
                <choice name="4" result="OK" time_sec="0.01" crc="-1221763474"/>
-               <choice name="5" result="OK" time_sec="0.01" crc="-249203724"/>
+               <choice name="5" result="OK" time_sec="0.00" crc="-249203724"/>
             </choice-list>
         </test>
     </group>
     <group name="Tell and Seek">
-        <test title="Bytes Per Character (BPC)=4" make-dependent="True" time-sum-sec="0.01"> 
-            <application file-name="Buffer_tell_and_seek-32.exe" info-request-time="1333002301L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.783295"/>
+        <test title="Bytes Per Character (BPC)=4" make-dependent="True" time-sum-sec="0.00"> 
+            <application file-name="Buffer_tell_and_seek-32.exe" info-request-time="1333055604L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.800111"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.01" crc="598085202"/>
+               <choice name="" result="OK" time_sec="0.00" crc="598085202"/>
             </choice-list>
         </test>
-        <test title="Bytes Per Character (BPC)=1" make-dependent="True" time-sum-sec="0.01"> 
-            <application file-name="Buffer_tell_and_seek.exe" info-request-time="1333002306L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.772170"/>
+        <test title="Bytes Per Character (BPC)=1" make-dependent="True" time-sum-sec="0.00"> 
+            <application file-name="Buffer_tell_and_seek.exe" info-request-time="1333055609L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.803812"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.01" crc="598085202"/>
+               <choice name="" result="OK" time_sec="0.00" crc="598085202"/>
             </choice-list>
         </test>
     </group>
