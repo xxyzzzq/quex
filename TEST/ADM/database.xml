@@ -1,4 +1,4 @@
-<test-database execution-time-sec="217.76" date="Sat Mar 31 10:54:37 2012">
+<test-database execution-time-sec="220.77" date="Sat Mar 31 16:16:04 2012">
     <last-used-diff-display-program name=""/>
     <test title="" time-sum-sec="2.01"> 
         <application file-name="bug-3509055.sh" info-request-time="1333181453L" vanished="False"/>
@@ -154,6 +154,12 @@
             <application file-name="bug-3157923.sh" info-request-time="1318614190L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="1.72" crc="-894890710"/>
+            </choice-list>
+        </test>
+        <test title="3513568 0.62.2 Memory Leak when using ICU" time-sum-sec="3.01"> 
+            <application file-name="bug-3513568.sh" info-request-time="1333203285L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="3.01" crc="1004415041"/>
             </choice-list>
         </test>
         <test title="2635012 0.36.4 Include Stack Disablement" time-sum-sec="2.75"> 
@@ -528,6 +534,14 @@
                <choice name="" result="OK" time_sec="0.13" crc="107363452"/>
             </choice-list>
         </test>
+        <test title="1935701 - 0.24.7 buffer handling size mismatch" make-dependent="True" time-sum-sec="0.00"> 
+            <application file-name="bug-1935701.exe" info-request-time="1333001550L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.409397"/>
+            <choice-list number="2" same_result="False">
+               <choice name="FILE" result="OK" time_sec="0.00" crc="-953317363"/>
+               <choice name="fstream" result="OK" time_sec="0.00" crc="-953317363"/>
+            </choice-list>
+        </test>
         <test title="1894185 Unbalanced quote and double quote in header/init/body blocks in 0.20.6" time-sum-sec="0.19"> 
             <application file-name="bug-1894185.sh" info-request-time="1318614190L" vanished="False"/>
             <choice-list number="1" same_result="False">
@@ -626,14 +640,6 @@
             <application file-name="bug-1885304.sh" info-request-time="1320218160L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.27" crc="1463299425"/>
-            </choice-list>
-        </test>
-        <test title="1935701 - 0.24.7 buffer handling size mismatch" make-dependent="True" time-sum-sec="0.00"> 
-            <application file-name="bug-1935701.exe" info-request-time="1333001550L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.409397"/>
-            <choice-list number="2" same_result="False">
-               <choice name="FILE" result="OK" time_sec="0.00" crc="-953317363"/>
-               <choice name="fstream" result="OK" time_sec="0.00" crc="-953317363"/>
             </choice-list>
         </test>
         <test title="1969629 0.25.4 token list with just TERMINATION treated empty" time-sum-sec="0.14"> 

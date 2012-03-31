@@ -158,6 +158,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /* There should be a way to call 'ucnv_flushCache()' as soon as all converters
          * are freed automatically.                                                       */
+        u_cleanup();
     }
 
     QUEX_INLINE QUEX_NAME(Converter)*

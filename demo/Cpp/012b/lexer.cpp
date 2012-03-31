@@ -12,10 +12,10 @@ main(int argc, char** argv)
 {        
     // we want to have error outputs in stdout, so that the unit test could see it.
     max::Lexer     max_lex("ucs4.txt", "UCS4");
-    moritz::Lexer  moritz_lex("ucs4.txt", "UCS4");
-    boeck::Lexer   boeck_lex("ucs4.txt", "UCS4");
     Common::Token* max_token    = 0x0;
+    moritz::Lexer  moritz_lex("ucs4.txt", "UCS4");
     Common::Token* moritz_token = 0x0;
+    boeck::Lexer   boeck_lex("ucs4.txt", "UCS4");
     Common::Token* boeck_token  = 0x0;
 
 
@@ -32,8 +32,8 @@ main(int argc, char** argv)
         (void)boeck_lex.receive();
 
         /* Lexeme is same for all three. */
-        char* lexeme = (char*)max_token->pretty_char_text().c_str();
-        int   L      = (int)max_token->text.length();
+        const char* lexeme = max_token->pretty_char_text().c_str();
+        int         L      = (int)max_token->text.length();
 
         printf("%s", lexeme);
 

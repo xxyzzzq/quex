@@ -26,7 +26,7 @@ COMMON_TOKEN_OPTIONS = \
 		 # --no-message-on-extra-options \
 
 %.E: %.cpp
-	g++ -E $< -o  $@ -I$(QUEX_PATH) `icuconfig --ld-flags`
+	g++ -E $< -o  $@ -I$(QUEX_PATH) 
 	
 boeck_Lexer.cpp:  boeck.qx Common-token.cpp Common-token_ids
 	quex -i $< -o boeck::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) # --debug-exception

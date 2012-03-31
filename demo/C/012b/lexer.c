@@ -15,6 +15,8 @@ main(int argc, char** argv)
     Common_Token* max_token    = 0x0;
     Common_Token* moritz_token = 0x0;
     Common_Token* boeck_token  = 0x0;
+    const size_t  BufferSize = 1024;
+    char          buffer[1024];
     size_t        i = 0;
 
     max_Lexer_construct_file_name(&max_lex,       "ucs4.txt", "UCS4", false);
@@ -35,7 +37,7 @@ main(int argc, char** argv)
         (void)boeck_Lexer_receive(&boeck_lex);
 
         /* Lexeme is same for all three. */
-        printf("%s", boeck_token->text);
+        printf("%s", Common_Token_pretty_char_text(boeck_token, buffer, BufferSize));
 
         size_t      preL   = (size_t)strlen((const char*)boeck_token->text);
         size_t      L      = preL < 10 ? preL : 10;

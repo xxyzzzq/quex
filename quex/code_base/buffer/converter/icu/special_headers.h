@@ -40,6 +40,7 @@ extern "C" {
 #include "unicode/ustring.h"  /* some more string fcns*/
 #include "unicode/uchar.h"    /* char names           */
 #include "unicode/uloc.h"
+#include "unicode/uclean.h"
 #if 0
 #include "unicode/unistr.h"
 #endif

@@ -30,19 +30,19 @@ def handle(TheException):
         return
 
     if   isinstance(TheException, AssertionError):
-        error_msg("Assertion error -- please report a bug under\n" + \
-                  " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+        print "Assertion error -- please report a bug under\n" + \
+              " https://sourceforge.net/tracker/?group_id=168259&atid=846112"
 
     elif isinstance(TheException, KeyboardInterrupt): 
         print
-        error_msg("#\n# Keyboard Interrupt -- Processing unfinished.\n#")
+        print "#\n# Keyboard Interrupt -- Processing unfinished.\n#"
 
     elif isinstance(TheException, SystemExit):
         pass
 
     elif isinstance(TheException, Exception):
-        error_msg("Exception occurred -- please, report a bug under\n" + \
-                  " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+        print "Exception occurred -- please, report a bug under\n" + \
+              " https://sourceforge.net/tracker/?group_id=168259&atid=846112"
     
     # Indicate Error For 'make'-procedures, etc.
     sys.exit(-1)
