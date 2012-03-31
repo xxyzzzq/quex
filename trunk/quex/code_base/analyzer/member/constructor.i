@@ -92,7 +92,7 @@ QUEX_NAME(construct_FILE)(QUEX_TYPE_ANALYZER* me,
                           const char*         CharacterEncodingName /* = 0x0   */,
                           bool                ByteOrderReversionF   /* = false */)
 {
-    if( fh == NULL )             QUEX_ERROR_EXIT("Error: received NULL as a file handle.");
+    if( fh == NULL ) QUEX_ERROR_EXIT("Error: received NULL as a file handle.");
 
     /* At the time of this writing 'stdin' as located in the C++ global namespace. 
      * This seemed suspicous to the author. To avoid compilation errors in the future

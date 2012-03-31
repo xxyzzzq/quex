@@ -20,7 +20,7 @@
  
 QUEX_NAMESPACE_MAIN_OPEN
 
-    extern QUEX_TYPE_CHARACTER QUEX_LEXEME_NULL_IN_NAMESPACE_MAIN;
+    /* extern QUEX_TYPE_CHARACTER QUEX_LEXEME_NULL_IN_NAMESPACE_MAIN; */
 
     QUEX_INLINE uint8_t*
     QUEX_NAME(MemoryManager_Default_allocate)(const size_t ByteN)

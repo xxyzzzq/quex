@@ -1,4 +1,4 @@
-<test-database execution-time-sec="172.90" date="Sat Mar 31 10:54:46 2012">
+<test-database execution-time-sec="172.99" date="Sat Mar 31 15:45:11 2012">
     <last-used-diff-display-program name=""/>
     <test title="Makefile Differences to C++ Version" time-sum-sec="0.15"> 
         <application file-name="makefile-diff.sh" info-request-time="1318614211L" vanished="False"/>
@@ -177,11 +177,11 @@
         </test>
     </group>
     <group name="demo/012b">
-        <test title="Multiple Lexical Analyzers -- shared token" time-sum-sec="8.97"> 
+        <test title="Multiple Lexical Analyzers -- shared token" time-sum-sec="9.06"> 
             <application file-name="012b.sh" info-request-time="1332911019L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="5.15" crc="-62717966"/>
-               <choice name="DEBUG" result="FAIL" time_sec="3.83" crc="-62717966"/>
+               <choice name="NDEBUG" result="OK" time_sec="5.22" crc="-62717966"/>
+               <choice name="DEBUG" result="OK" time_sec="3.84" crc="-62717966"/>
             </choice-list>
         </test>
     </group>

@@ -151,6 +151,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
 #       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE 
         QUEX_NAME(TokenQueue_destruct)(&me->_token_queue);
+#       else
+#           ifdef __QUEX_OPTION_PLAIN_C
+            QUEX_NAME_TOKEN(destruct)(me->token);
+#           endif
 #       endif
 
 #       ifdef QUEX_OPTION_INCLUDE_STACK
