@@ -11,9 +11,9 @@ int
 main(int argc, char** argv) 
 {        
     // we want to have error outputs in stdout, so that the unit test could see it.
-    max::Lexer     max_lex("example.txt");
-    moritz::Lexer  moritz_lex("example.txt");
-    boeck::Lexer   boeck_lex("example.txt");
+    max::Lexer     max_lex("ucs4.txt", "UCS4");
+    moritz::Lexer  moritz_lex("ucs4.txt", "UCS4");
+    boeck::Lexer   boeck_lex("ucs4.txt", "UCS4");
     Common::Token* max_token    = 0x0;
     Common::Token* moritz_token = 0x0;
     Common::Token* boeck_token  = 0x0;

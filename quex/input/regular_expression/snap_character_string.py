@@ -45,7 +45,7 @@ def get_character_code_sequence(sh):
     sequence = []
     while 1 + 1 == 2:
         char_code = utf8.__read_one_utf8_code_from_stream(sh)
-        if char_code == 0xFF:
+        if char_code is None:
             raise RegularExpressionException("End of file reached while parsing quoted string.")
 
         elif char_code == ord("\\"): 

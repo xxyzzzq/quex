@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# -*- coding: utf8 -*-
 import sys
 import os
 from   StringIO import StringIO
@@ -21,3 +22,4 @@ test("A-Z\\n^CD\\\"")
 test("\\\"")
 test("\\\\")
 test("\\\\n")
+test("ÿ")

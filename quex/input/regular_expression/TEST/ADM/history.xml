@@ -1,4 +1,4 @@
-<history date="Thu Mar 29 23:20:04 2012" element-n="414">
+<history date="Sat Mar 31 10:54:52 2012" element-n="415">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:16"/>
         <crc-error time="09:57:16" application="test-pattern-matching.py" choice="" database-crc="1144357218" real-crc="1999050120"/>
@@ -1080,5 +1080,8 @@
         <crc-error time="17:31:21" application="test-bol-eol.py" choice="" database-crc="-290203134" real-crc="1056889847"/>
         <crc-error time="17:31:32" application="test-pre-condition.py" choice="" database-crc="982436137" real-crc="-401518183"/>
         <crc-error time="17:31:45" application="test-pre-and-post-condition.py" choice="" database-crc="-1379740236" real-crc="-2052311123"/>
+    </day>
+    <day year="2012" month="03" day="31">
+        <crc-error time="07:33:50" application="test-string.py" choice="" database-crc="1314289117" real-crc="2044077155"/>
     </day>
 </history>

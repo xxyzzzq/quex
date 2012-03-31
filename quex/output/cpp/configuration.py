@@ -98,6 +98,10 @@ def do(ModeDB):
 
         return result[:-2]
 
+    lexeme_null_object_name = "QUEX_NAME(LexemeNullObject)"
+    if Setup.external_lexeme_null_object != "":
+        lexeme_null_object_name = Setup.external_lexeme_null_object
+
     txt = blue_print(txt, 
             [
              ["$$BUFFER_LIMIT_CODE$$",          "0x%X" % Setup.buffer_limit_code],
@@ -119,6 +123,7 @@ def do(ModeDB):
              ["$$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$", converter_new_str],
              ["$$QUEX_TYPE_CHARACTER$$",        Setup.buffer_element_type],
              ["$$QUEX_SETTING_CHARACTER_SIZE$$", character_size_str],
+             ["$$QUEX_LEXEME_NULL_IN_NAMESPACE_MAIN$$", lexeme_null_object_name],
              ["$$QUEX_VERSION$$",               QUEX_VERSION],
              ["$$TOKEN_CLASS$$",                token_descr.class_name],
              ["$$TOKEN_CLASS_NAME_SAFE$$",      token_descr.class_name_safe],

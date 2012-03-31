@@ -17,9 +17,9 @@ main(int argc, char** argv)
     Common_Token* boeck_token  = 0x0;
     size_t        i = 0;
 
-    max_Lexer_construct_file_name(&max_lex,       "example.txt", 0x0, false);
-    moritz_Lexer_construct_file_name(&moritz_lex, "example.txt", 0x0, false);
-    boeck_Lexer_construct_file_name(&boeck_lex,   "example.txt", 0x0, false);
+    max_Lexer_construct_file_name(&max_lex,       "ucs4.txt", "UCS4", false);
+    moritz_Lexer_construct_file_name(&moritz_lex, "ucs4.txt", "UCS4", false);
+    boeck_Lexer_construct_file_name(&boeck_lex,   "ucs4.txt", "UCS4", false);
 
     // Each lexer reads one token, since the grammars are similar the lexeme 
     // is always the same.                                                    

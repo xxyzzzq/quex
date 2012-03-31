@@ -57,13 +57,13 @@ def do(sh):
     char_code     = None
     quote_checker = DoubleQuoteChecker() # Checks for " appearing twice. Some users did use
     #                                    # constructs such as "-" and ended up in confusing behavior.
-    while char_code != 0xFF:
+    while 1 + 1 == 2:
         char_code = utf8.__read_one_utf8_code_from_stream(sh)
 
         quote_checker.do(char_code)
         if char_code == ord("-"):
             raise RegularExpressionException("Character range operator '-' requires a preceding character as in 'a-z'.")
-        elif char_code == 0xFF: 
+        elif char_code is None: 
             raise RegularExpressionException("Missing closing ']' in character range expression.")
         elif char_code == ord("]"):
             break
@@ -77,7 +77,7 @@ def do(sh):
             # (*) Character range:  'character0' '-' 'character1'
             char_code_2 = utf8.__read_one_utf8_code_from_stream(sh)
             quote_checker.do(char_code_2)
-            if char_code_2 in [0xFF, ord(']')]: 
+            if char_code_2 in [None, ord(']')]: 
                 raise RegularExpressionException("Character range: '-' requires a character following '-'.")
             elif char_code == ord("-"):
                 raise RegularExpressionException("Character range operator '-' followed by '-'.")
@@ -91,6 +91,8 @@ def do(sh):
                                                  % (utf8_string, utf8_string) + \
                                                  "In this case avoid range expression for clarity.")
             tracker.consider_interval(char_code, char_code_2 + 1)
+
+        if char_code is None: break
 
     if tracker.negation_f: 
         return tracker.match_set.inverse()

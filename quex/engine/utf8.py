@@ -114,16 +114,17 @@ def map_n_utf8_to_unicode(utf8_string, N=-1, RemainderF=False):
     if N != -1:
         tmp = __read_one_utf8_code_from_stream(stream)
         result.append(tmp)
-        n = 0
-        while tmp != 0xFF:
+        n   = 0
+        while tmp is not None:
             n += 1
             if n >= N: break
             tmp = __read_one_utf8_code_from_stream(stream)
+            if tmp is None: break
             result.append(tmp)
 
     else:
         tmp = __read_one_utf8_code_from_stream(stream)
-        while tmp != 0xFF:
+        while tmp is not None:
             result.append(tmp)
             tmp = __read_one_utf8_code_from_stream(stream)
 
@@ -150,9 +151,9 @@ def __read_one_utf8_code_from_stream(char_stream):
                                False if not.
     """
     character = char_stream.read(1)
-    if character == "": return 0xFF
+    if character == "": return None
     try:    head_char = ord(character)
-    except: return 0xFF
+    except: return None
 
     # (*) head characters for the the "utf-8 escape" are located in between
     #     0xC0 to 0xFD. If the chacter code falls out of this border no further
@@ -174,7 +175,7 @@ def __read_one_utf8_code_from_stream(char_stream):
     try:    bytes = [head_char] + map(lambda x: ord(x), char_stream.read(char_n))
     except:
         print "utf8.py: could not read %i utf-follow bytes" % char_n
-        return 0xFF
+        return None
     
     return utf8_to_unicode(bytes)
 

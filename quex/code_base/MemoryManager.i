@@ -20,6 +20,8 @@
  
 QUEX_NAMESPACE_MAIN_OPEN
 
+    extern QUEX_TYPE_CHARACTER QUEX_LEXEME_NULL_IN_NAMESPACE_MAIN;
+
     QUEX_INLINE uint8_t*
     QUEX_NAME(MemoryManager_Default_allocate)(const size_t ByteN)
     {
@@ -83,13 +85,11 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(MemoryManager_Text_allocate)(const size_t ByteN)
     { return (QUEX_TYPE_CHARACTER*)QUEX_NAME(MemoryManager_Default_allocate)(ByteN); }
 
-    extern QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject);
-
     QUEX_INLINE void
     QUEX_NAME(MemoryManager_Text_free)(QUEX_TYPE_CHARACTER* memory)
     { 
         /* The de-allocator shall never be called for the fix LexemeNull object. */
-        __quex_assert( memory != &(QUEX_NAME(LexemeNullObject)) );
+        __quex_assert( memory != &(QUEX_LEXEME_NULL_IN_NAMESPACE_MAIN) );
 
         if( memory != 0x0 ) {
             QUEX_NAME(MemoryManager_Default_free)((void*)memory); 

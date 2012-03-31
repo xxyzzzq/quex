@@ -23,8 +23,8 @@
 #   define __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION
 #endif
 
-#define QUEX_SETTING_VERSION           "0.61.2"
-#define QUEX_SETTING_BUILD_DATE        "Sun Mar 25 08:43:15 2012"
+#define QUEX_SETTING_VERSION           "0.62.2-cw"
+#define QUEX_SETTING_BUILD_DATE        "Sat Mar 31 10:50:33 2012"
 #define QUEX_SETTING_ANALYZER_VERSION  "0.0.0-pre-release"
 
 #ifndef    __QUEX_OPTION_PLAIN_C
@@ -270,6 +270,7 @@
  *       goal harder achievable.                                                            */
 #ifndef    QUEX_TYPE_CHARACTER
 #   define QUEX_TYPE_CHARACTER          uint8_t
+#   define QUEX_TYPE_CHARACTER_BACKUP   uint8_t
 #endif 
 #ifndef    QUEX_SETTING_CHARACTER_SIZE
     /* Size of a QUEX_TYPE_CHARACTER in bytes. A numeric value is required here!
@@ -360,7 +361,6 @@
 #   define QUEX_FUNCTION_DEF_PREFIX_BACKUP   ::quex::
 #endif
 
-
 #ifndef    QUEX_TYPE_TOKEN_ID
 #   define QUEX_TYPE_TOKEN_ID        uint32_t
 #endif
@@ -370,6 +370,8 @@
 #ifndef    QUEX_TYPE_TOKEN_COLUMN_N
 #   define QUEX_TYPE_TOKEN_COLUMN_N  size_t
 #endif
+
+#define    QUEX_LEXEME_NULL_IN_NAMESPACE_MAIN  QUEX_NAME(LexemeNullObject)
 
 #include <quex/code_base/analyzer/configuration/derived>
 
