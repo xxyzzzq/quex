@@ -8,7 +8,7 @@ if [[ $1 == "--hwut-info" ]]; then
 fi
 
 tmp=`pwd`
-echo "Generation Code for '$1'"                                                                
+echo "## Generation Code for '$1'"                                                                
 cd $bug/ 
 make $1 >& tmp.txt
 echo "No output is good output."

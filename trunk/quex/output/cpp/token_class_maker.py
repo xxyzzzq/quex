@@ -458,10 +458,11 @@ def lexeme_null_declaration():
                     "\n",
                   ])
     else:
+        # The following should hold in any both cases:
         return "".join([
-                    "QUEX_NAMESPACE_MAIN_OPEN\n",
-                    "extern QUEX_TYPE_CHARACTER   QUEX_LEXEME_NULL_IN_NAMESPACE_MAIN;\n" 
-                    "QUEX_NAMESPACE_MAIN_CLOSE\n",
+                    "QUEX_NAMESPACE_LEXEME_NULL_OPEN\n",
+                    "extern QUEX_TYPE_CHARACTER   QUEX_LEXEME_NULL_IN_ITS_NAMESPACE;\n" 
+                    "QUEX_NAMESPACE_LEXEME_NULL_CLOSE\n",
                   ])
 
 def lexeme_null_implementation():

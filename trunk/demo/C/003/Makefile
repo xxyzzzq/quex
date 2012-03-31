@@ -47,7 +47,7 @@ CC = $(COMPILER) -c \
 	 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
      # -DQUEX_OPTION_DEBUG_SHOW
    
-LD = $(COMPILER) $(LIB_CONV) 
+LD = $(COMPILER) 
 
 # (*) Determining the Converter Lib (IConv or ICU) ____________________________
 #
@@ -76,10 +76,10 @@ endif
 # (*) RULES ____________________________________________________________________
 # -- application
 lexer:          example.o EasyLexer.o
-	$(LD) -o $@ example.o EasyLexer.o 
+	$(LD) -o $@ example.o EasyLexer.o $(LIB_CONV) 
           
 bom-lexer:      example-bom.o EasyLexer.o
-	$(LD) -o $@ example-bom.o EasyLexer.o 
+	$(LD) -o $@ example-bom.o EasyLexer.o $(LIB_CONV) 
           
 # Object files:
 EasyLexer.o: EasyLexer.c 

@@ -153,6 +153,9 @@ def read_namespaced_name(FileHandle_or_String, Meaning, AllowEmptyF=False):
     else:
         fh = FileHandle_or_String
 
+    # Overstep a starting '::' if present.
+    if fh.read(2) != "::": fh.seek(-2, 1)
+
     # Parsing the namespace definition
     try:
         name_list  = [""]   # Signalize Empty by <<name_list[-1] == "">>

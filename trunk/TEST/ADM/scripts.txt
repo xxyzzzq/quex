@@ -4,3 +4,4 @@
 --not bug-.sh
 --not bug-template.sh
 --not quex_pathify.sh
+--not bug-3509055.sh
