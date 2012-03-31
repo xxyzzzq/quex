@@ -114,7 +114,7 @@ def read_character_code(fh):
         else:
             character_code = __read_one_utf8_code_from_stream(fh)
 
-        if character_code == 0xFF:
+        if character_code is None:
             error_msg("Missing utf8-character for definition of character code by character.", fh)
 
         elif fh.read(1) != '\'':

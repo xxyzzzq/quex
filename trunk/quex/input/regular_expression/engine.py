@@ -297,7 +297,7 @@ def snap_non_control_character(stream, PatternDict):
 
     # (*) read first character
     char_code = utf8.__read_one_utf8_code_from_stream(stream)
-    if char_code == 0xFF:
+    if char_code is None:
         error_msg("Character could not be interpreted as UTF8 code or End of File reached prematurely.", 
                   stream)
     result = StateMachine()

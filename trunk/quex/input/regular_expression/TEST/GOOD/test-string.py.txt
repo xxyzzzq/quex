@@ -136,3 +136,12 @@ init-state = 0L
 00002 (A)
     
 
+expression    = "ÿ"
+state machine
+init-state = 0L
+00000 ()
+     == 'ÿ' ==> 00001
+    
+00001 (A)
+    
+

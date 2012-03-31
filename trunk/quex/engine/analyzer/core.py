@@ -76,20 +76,23 @@ class Analyzer:
         self.__init_state_index = SM.init_state_index
         self.__state_machine_id = SM.get_id()
         self.__engine_type      = EngineType
-        self.__sm               = SM
 
         # (*) PathTrace database, Successor database
         self.__trace_db, self.__successor_db = track_analysis.do(SM)
 
-        # (*) 'From Database'
+        # (*) From/To Databases
         #
-        #     map:  state_index --> states from which it is entered.
+        #     from_db:  state_index --> states from which it is entered.
+        #     to_db:    state_index --> states which it enters
         #
         from_db = defaultdict(set)
+        to_db   = defaultdict(set)
         for from_index, state in SM.states.iteritems():
+            to_db[from_index] = set(state.transitions().get_map().iterkeys())
             for to_index in state.transitions().get_map().iterkeys():
                 from_db[to_index].add(from_index)
         self.__from_db = from_db
+        self.__to_db   = to_db
 
         # (*) Prepare AnalyzerState Objects
         self.__state_db = dict([(state_index, AnalyzerState(SM.states[state_index], state_index, 
@@ -150,9 +153,14 @@ class Analyzer:
     @property
     def acceptance_state_index_list(self): return self.__acceptance_state_index_list
     @property
+    def to_db(self):
+        """Map: state_index --> list of states that it enters."""
+        return self.__to_db
+    @property
     def from_db(self):
         """Map: state_index --> list of states that enter it."""
         return self.__from_db
+
     def last_acceptance_variable_required(self):
         """If one entry stores the last_acceptance, then the 
            correspondent variable is required to be defined.
@@ -352,15 +360,13 @@ class Analyzer:
             # state_index  --> state that restores the input position
             # pattern_id   --> pattern which is concerned
             for path in info.path_list_since_positioning:
-                from_state_index = path[0]
-                for to_state_index in self.__sm.states[from_state_index].transitions().get_map().iterkeys():
-                    # Never store the input position in the state itself. The input position
-                    # is reached after the entries have been passed.
-                    state = self.__state_db[to_state_index]
-                    state.entry.doors_store(FromStateIndex   = from_state_index, 
-                                            PreContextID     = info.pre_context_id, 
-                                            PositionRegister = pattern_id, 
-                                            Offset           = 0)
+                # Never store the input position in the state itself. The input position
+                # is reached after the entries have been passed.
+                state = self.__state_db[path[1]]
+                state.entry.doors_store(FromStateIndex   = path[0], 
+                                        PreContextID     = info.pre_context_id, 
+                                        PositionRegister = pattern_id, 
+                                        Offset           = 0)
                 # offset           = -1
                 # for state_index in islice(path, 1, None):
                     # offset += 1

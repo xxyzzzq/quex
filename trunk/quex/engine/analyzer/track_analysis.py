@@ -395,6 +395,7 @@ class StoreInfo(object):
 
     @property
     def loop_f(self):                         return self.__loop_f
+
     @property
     def transition_n_since_positioning(self): return self._transition_n_since_positioning
 

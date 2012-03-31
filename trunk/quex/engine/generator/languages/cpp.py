@@ -304,7 +304,7 @@ __terminal_state_prolog  = """
 #   define LexemeEnd    $$INPUT_P$$
 #endif
 
-#define LexemeNull      (&$$LEXEME_NULL_OBJECT$$)
+#define LexemeNull      (&QUEX_LEXEME_NULL_IN_NAMESPACE_MAIN)
 """
 
 __terminal_state_epilog = """

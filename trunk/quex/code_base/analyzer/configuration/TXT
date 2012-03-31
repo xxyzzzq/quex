@@ -355,7 +355,6 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_HELPER
 #   define QUEX_FUNCTION_DEF_PREFIX_BACKUP   $$NAMESPACE_MAIN$$::
 #endif
 
-
 #ifndef    QUEX_TYPE_TOKEN_ID
 #   define QUEX_TYPE_TOKEN_ID        $$TOKEN_ID_TYPE$$
 #endif
@@ -365,6 +364,8 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_HELPER
 #ifndef    QUEX_TYPE_TOKEN_COLUMN_N
 #   define QUEX_TYPE_TOKEN_COLUMN_N  $$TOKEN_COLUMN_N_TYPE$$
 #endif
+
+#define    QUEX_LEXEME_NULL_IN_NAMESPACE_MAIN  $$QUEX_LEXEME_NULL_IN_NAMESPACE_MAIN$$
 
 #include <quex/code_base/analyzer/configuration/derived>
 

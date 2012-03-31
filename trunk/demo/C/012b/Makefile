@@ -10,7 +10,7 @@ else
 endif
 
 lexer: $(ENGINE:.c=.o) lexer.o Common-token.o
-	gcc $^ -ggdb -o  $@ -I$(QUEX_PATH) 
+	gcc $^ -ggdb -o  $@ -I$(QUEX_PATH) `icu-config --ldflags` 
 	 
 %.o: %.c $(ENGINE_SOURCES)
 	gcc -c $< -ggdb -Wall -o $@ \
@@ -26,21 +26,21 @@ COMMON_TOKEN_OPTIONS = \
 		 # --no-message-on-extra-options \
 
 %.E: %.c
-	gcc -E $< -o  $@ -I$(QUEX_PATH) 
+	gcc -E $< -o  $@ -I$(QUEX_PATH)
 	
 boeck_Lexer.c:  boeck.qx Common-token.c Common-token_ids.h
-	quex -i $< -o boeck::Lexer --codec utf8 $(COMMON_TOKEN_OPTIONS) --language C 
+	quex -i $< -o boeck::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) --language C 
 
 max_Lexer.c:    max.qx Common-token.c Common-token_ids.h
-	quex -i $< -o max::Lexer --codec utf8 $(COMMON_TOKEN_OPTIONS) --language C 
+	quex -i $< -o max::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) --language C 
 
 moritz_Lexer.c: moritz.qx Common-token.c Common-token_ids.h
-	quex -i $< -o moritz::Lexer --codec utf8 $(COMMON_TOKEN_OPTIONS) --language C 
+	quex -i $< -o moritz::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) --language C 
 
 Common-token_ids.h \
 Common-token.c: 
 	quex -i token_ids.qx               \
-		 --codec utf8                  \
+		 --icu -b 4                    \
 		 --token-id-prefix TKN_        \
 		 -o Common                     \
 		 --token-class Common::Token   \

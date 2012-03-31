@@ -224,20 +224,37 @@ class DropOut_TerminalRouterElement(object):
                          == -1   --> goto terminal 'failure', nothing matched.
                          >= 0    --> goto terminal given by '.terminal_id'
 
-        .positioning      Adaption of the input pointer, before the terminal is entered.
+        .positioning     Adaption of the input pointer, before the terminal is entered.
 
-                         >= 0    --> input_p -= .positioning 
-                                     (This is possible if the number of transitions since
-                                      acceptance is determined beforehand)
-                         == None --> restore from position register
-                                     (Case of 'failure'. This info is actually redundant.)
-                         == -1   --> (Failure) position = lexeme_start_p + 1
+                         >= 0    
+                                   input_p -= .positioning 
+
+                            This is only possible if the number of transitions
+                            since acceptance is determined before run time.
+
+                         == E_TransitionN.VOID 
+                         
+                                   input_p = position[.position_register]
+
+                            Restore a stored input position from its register.
+                            A loop appeared on the path from 'store input
+                            position' to here.
+
+                         == E_TransitionN.LEXEME_START_PLUS_ONE 
+                         
+                                   input_p = lexeme_start_p + 1
+
+                            Case of failure (actually redundant information).
     """
     __slots__ = ("acceptance_id", "positioning", "position_register")
 
     def __init__(self, AcceptanceID, TransitionNSincePositioning):
-        assert    isinstance(TransitionNSincePositioning, (int, long)) \
-               or TransitionNSincePositioning in E_TransitionN
+        assert    TransitionNSincePositioning == E_TransitionN.VOID \
+               or TransitionNSincePositioning == E_TransitionN.LEXEME_START_PLUS_ONE \
+               or TransitionNSincePositioning == E_TransitionN.IRRELEVANT \
+               or TransitionNSincePositioning >= 0
+        assert    AcceptanceID in E_AcceptanceIDs \
+               or AcceptanceID >= 0
 
         self.acceptance_id     = AcceptanceID
         self.positioning       = TransitionNSincePositioning

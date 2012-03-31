@@ -377,7 +377,6 @@ class Entry(object):
         self.set_transition_db(transition_db)   # use set_transition_db() 'assert' on content
         assert self.__door_tree_root is not None
 
-
     def __repr__(self):
         def get_accepters(AccepterList):
             if len(AccepterList) == 0: return []
@@ -483,13 +482,15 @@ def repr_pre_context_id(Value):
     elif Value >= 0:                             return "PreContext_%i" % Value
     else:                                        assert False
 
-def repr_positioning(Positioning, PostContextID):
+def repr_positioning(Positioning, PositionRegisterID):
     if   Positioning == E_TransitionN.VOID: 
-        return "pos = %s;" % repr_position_register(PostContextID)
+        return "pos = %s;" % repr_position_register(PositionRegisterID)
     elif Positioning == E_TransitionN.LEXEME_START_PLUS_ONE: 
         return "pos = lexeme_start_p + 1; "
-    elif Positioning > 0:   return "pos -= %i; " % Positioning
-    elif Positioning == 0:  return ""
+    elif Positioning > 0:   
+        return "pos -= %i; " % Positioning
+    elif Positioning == 0:  
+        return ""
     else: 
         assert False
 

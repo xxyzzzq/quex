@@ -460,7 +460,7 @@ def lexeme_null_declaration():
     else:
         return "".join([
                     "QUEX_NAMESPACE_MAIN_OPEN\n",
-                    "extern %s  QUEX_NAME(LexemeNullObject);\n" % Setup.buffer_element_type,
+                    "extern QUEX_TYPE_CHARACTER   QUEX_LEXEME_NULL_IN_NAMESPACE_MAIN;\n" 
                     "QUEX_NAMESPACE_MAIN_CLOSE\n",
                   ])
 
