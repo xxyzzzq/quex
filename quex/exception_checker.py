@@ -22,7 +22,6 @@ def do_on_import(ARGV):
         do(ARGV)
 
 def handle(TheException):
-    from quex.engine.misc.file_in  import error_msg
 
     if "--debug-exception" in sys.argv:
         import traceback 

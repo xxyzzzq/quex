@@ -81,17 +81,9 @@ def __perform_setup(command_line, argv):
 
     # (*) Classes and their namespace
     __setup_analyzer_class(setup)
-
     __setup_token_class(setup)
-
-    setup.token_id_prefix_plain,      \
-    setup.token_id_prefix_name_space, \
-    dummy                           = \
-         read_namespaced_name(setup.token_id_prefix, 
-                              "token prefix (options --token-id-prefix)")
-
-    if len(setup.token_id_prefix_name_space) != 0 and setup.language.upper() == "C":
-         error_msg("Token id prefix cannot contain a namespaces if '--language' is set to 'C'.")
+    __setup_token_id_prefix(setup)
+    __setup_lexeme_null(setup)
 
     # (*) Output programming language        
     setup.language = setup.language.upper()
@@ -337,6 +329,30 @@ def __setup_analyzer_class(setup):
                               "derived analyzer class (options --derived-class, --dc)",
                               AllowEmptyF=True)
 
+def __setup_lexeme_null(setup):
+    if setup.external_lexeme_null_object != "":
+        lexeme_null_object = setup.external_lexeme_null_object
+    else:
+        lexeme_null_object = "LexemeNullObject"
+
+    if lexeme_null_object.find("::") == -1:
+        # By default, setup the token in the analyzer's namespace
+        if len(setup.analyzer_name_space) != 0:
+            analyzer_name_space = reduce(lambda x, y: "%s::%s" % (x, y), setup.analyzer_name_space)
+        else:
+            analyzer_name_space = ""
+        lexeme_null_object = "%s::%s" % (analyzer_name_space, lexeme_null_object)
+
+    setup.lexeme_null_name,        \
+    setup.lexeme_null_namespace,   \
+    setup.lexeme_null_name_safe  = \
+         read_namespaced_name(lexeme_null_object, 
+                              "lexeme null object (options --lexeme-null-object, --lno)")
+    setup.lexeme_null_full_name_cpp = "::" 
+    for name in setup.lexeme_null_namespace:
+        setup.lexeme_null_full_name_cpp += name + "::"
+    setup.lexeme_null_full_name_cpp += setup.lexeme_null_name
+
 def __setup_token_class(setup):
     """ X0::X1::X2::ClassName --> token_class_name = ClassName
                                   token_name_space = ["X0", "X1", "X2"]
@@ -351,7 +367,6 @@ def __setup_token_class(setup):
             analyzer_name_space = reduce(lambda x, y: "%s::%s" % (x, y), setup.analyzer_name_space)
         else:
             analyzer_name_space = ""
-
         setup.token_class = "%s::%s" % (analyzer_name_space, setup.token_class)
 
     # Token classes and derived classes have the freedom not to open a namespace,
@@ -434,6 +449,16 @@ def __extract_extra_options_from_file(FileName):
         print "## (suppress this message with --no-message-on-extra-options)"
 
     return result
+
+def __setup_token_id_prefix(setup):
+    setup.token_id_prefix_plain,      \
+    setup.token_id_prefix_name_space, \
+    dummy                           = \
+         read_namespaced_name(setup.token_id_prefix, 
+                              "token prefix (options --token-id-prefix)")
+
+    if len(setup.token_id_prefix_name_space) != 0 and setup.language.upper() == "C":
+         error_msg("Token id prefix cannot contain a namespaces if '--language' is set to 'C'.")
 
 
 def __interpret_command_line(argv):

@@ -26,7 +26,7 @@ QUEX_INLINE void
 $TOKEN_CLASS_construct($TOKEN_CLASS* __this)
 {
 #   define self (*__this)
-#   define LexemeNull  &QUEX_NAME(LexemeNullObject)
+#   define LexemeNull  &QUEX_LEXEME_NULL
     (void)__this;
 $$CONSTRUCTOR$$
 #   undef  LexemeNull
@@ -45,7 +45,7 @@ QUEX_INLINE void
 $TOKEN_CLASS_destruct($TOKEN_CLASS* __this)
 {
 #   define self (*__this)
-#   define LexemeNull  &QUEX_NAME(LexemeNullObject)
+#   define LexemeNull  &QUEX_LEXEME_NULL
     (void)__this;
 $$DESTRUCTOR$$
 #   undef  LexemeNull
@@ -58,7 +58,7 @@ $TOKEN_CLASS_copy($TOKEN_CLASS*       __this,
 {
 #   define self  (*__this)
 #   define Other (*__That)
-#   define LexemeNull  &QUEX_NAME(LexemeNullObject)
+#   define LexemeNull  &QUEX_LEXEME_NULL
     (void)__this;
     (void)__That;
 $$COPY$$
@@ -86,7 +86,7 @@ $TOKEN_CLASS_take_text($TOKEN_CLASS*              __this,
 #   ifdef  LexemeNull
 #   error  "Error LexemeNull shall not be defined here."
 #   endif
-#   define LexemeNull  &QUEX_NAME(LexemeNullObject)
+#   define LexemeNull  &QUEX_LEXEME_NULL
     (void)__this;
     (void)__analyzer;
     (void)Begin;
@@ -102,7 +102,7 @@ QUEX_INLINE size_t
 $TOKEN_CLASS_repetition_n_get($TOKEN_CLASS* __this)
 {
 #   define self        (*__this)
-#   define LexemeNull  &QUEX_NAME(LexemeNullObject)
+#   define LexemeNull  &QUEX_LEXEME_NULL
     (void)__this;
     $$TOKEN_REPETITION_N_GET$$
 #   undef  LexemeNull
@@ -113,7 +113,7 @@ QUEX_INLINE void
 $TOKEN_CLASS_repetition_n_set($TOKEN_CLASS* __this, size_t N)
 {
 #   define self        (*__this)
-#   define LexemeNull  &QUEX_NAME(LexemeNullObject)
+#   define LexemeNull  &QUEX_LEXEME_NULL
     (void)__this;
     (void)N;
     $$TOKEN_REPETITION_N_SET$$

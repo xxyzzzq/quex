@@ -44,8 +44,7 @@ Common-token.c:
 		 --token-id-prefix TKN_        \
 		 -o Common                     \
 		 --token-class Common::Token   \
-		 --token-class-only            \
-		 --language C --debug-exception
+		 --token-class-only            --language C
 
 clean:
 	rm -rf $(ENGINE)

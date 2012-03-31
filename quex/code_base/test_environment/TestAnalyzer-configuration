@@ -24,7 +24,7 @@
 #endif
 
 #define QUEX_SETTING_VERSION           "0.62.2-cw"
-#define QUEX_SETTING_BUILD_DATE        "Sat Mar 31 10:50:33 2012"
+#define QUEX_SETTING_BUILD_DATE        "Sun Apr  1 01:02:18 2012"
 #define QUEX_SETTING_ANALYZER_VERSION  "0.0.0-pre-release"
 
 #ifndef    __QUEX_OPTION_PLAIN_C
@@ -310,6 +310,11 @@
 #   define QUEX_NAMESPACE_TOKEN_OPEN  
 #   define QUEX_NAMESPACE_TOKEN_CLOSE 
 
+#   define QUEX_NAMESPACE_LEXEME_NULL_OPEN     
+#   define QUEX_NAMESPACE_LEXEME_NULL_CLOSE    
+#   define QUEX_LEXEME_NULL_IN_ITS_NAMESPACE   LexemeNullObject
+#   define QUEX_LEXEME_NULL                    ::quex::LexemeNullObject
+
 #   define QUEX_NAME(NAME)             quex_TestAnalyzer_ ## NAME
 #   define QUEX_NAME_TOKEN(NAME)       quex_Token_ ## NAME
 #   define QUEX_MEMBER(NAME)           void /* Undefined, not required */
@@ -347,6 +352,13 @@
 #   define QUEX_NAMESPACE_TOKEN_CLOSE  } /* Closing Namespace 'quex' */\
 
 
+#   define QUEX_NAMESPACE_LEXEME_NULL_OPEN     namespace quex {\
+
+#   define QUEX_NAMESPACE_LEXEME_NULL_CLOSE    } /* Closing Namespace 'quex' */\
+
+#   define QUEX_LEXEME_NULL_IN_ITS_NAMESPACE   LexemeNullObject
+#   define QUEX_LEXEME_NULL                    ::quex::LexemeNullObject
+
 #   define QUEX_NAME(NAME)             TestAnalyzer_ ## NAME
 #   define QUEX_NAME_TOKEN(NAME)       Token_ ## NAME
 #   define QUEX_MEMBER(NAME)           TestAnalyzer::NAME                
@@ -370,8 +382,6 @@
 #ifndef    QUEX_TYPE_TOKEN_COLUMN_N
 #   define QUEX_TYPE_TOKEN_COLUMN_N  size_t
 #endif
-
-#define    QUEX_LEXEME_NULL_IN_NAMESPACE_MAIN  QUEX_NAME(LexemeNullObject)
 
 #include <quex/code_base/analyzer/configuration/derived>
 

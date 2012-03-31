@@ -234,9 +234,9 @@ def __analyzer_function(StateMachineName, Setup,
     else:                                       lexeme_null_name = Setup.external_lexeme_null_object
 
     txt.append(                                                             \
-        "    (void)%s;\n"                          \
+        "    (void)QUEX_LEXEME_NULL;\n"                                     \
         "    (void)QUEX_NAME_TOKEN(DumpedTokenIdObject);\n"                 \
-        "    QUEX_ERROR_EXIT(\"Unreachable code has been reached.\\n\");\n" % lexeme_null_name) 
+        "    QUEX_ERROR_EXIT(\"Unreachable code has been reached.\\n\");\n") 
 
     ## This was once we did not know ... if there was a goto to the initial state or not.
     ## txt += "        goto %s;\n" % label.get(StateMachineName, InitialStateIndex)
@@ -304,7 +304,7 @@ __terminal_state_prolog  = """
 #   define LexemeEnd    $$INPUT_P$$
 #endif
 
-#define LexemeNull      (&QUEX_LEXEME_NULL_IN_NAMESPACE_MAIN)
+#define LexemeNull      (&QUEX_LEXEME_NULL)
 """
 
 __terminal_state_epilog = """
@@ -552,7 +552,7 @@ def __frame_of_all(Code, Setup):
     lexeme_null_definition = ""
     if Setup.external_lexeme_null_object == "":
         # LexemeNull has been defined elsewhere.
-        lexeme_null_definition = "QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject) = (QUEX_TYPE_CHARACTER)0;\n"
+        lexeme_null_definition = "QUEX_TYPE_CHARACTER  QUEX_LEXEME_NULL_IN_ITS_NAMESPACE = (QUEX_TYPE_CHARACTER)0;\n"
 
     return "".join(["/* #include \"%s\"*/\n" % Setup.get_file_reference(Setup.output_header_file),
                     implementation_header_str,

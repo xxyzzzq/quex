@@ -78,7 +78,7 @@ lexer:          example.o EasyLexer.o
 	$(LD) -o $@ example.o EasyLexer.o $(LIB_CONV) 
           
 bom-lexer:      example-bom.o EasyLexer.o
-	$(LD) -o $@ example-bom.o EasyLexer.o 
+	$(LD) -o $@ example-bom.o EasyLexer.o  $(LIB_CONV) 
           
 # Object files:
 EasyLexer.o: EasyLexer.cpp 

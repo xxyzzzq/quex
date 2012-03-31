@@ -10,7 +10,7 @@ else
 endif
 
 lexer: $(ENGINE:.cpp=.o) lexer.o Common-token.o
-	g++ $^ -ggdb -o  $@ `icu-config --ldflags` -I$(QUEX_PATH) 
+	g++ $^ -ggdb -o  $@ -I$(QUEX_PATH) `icu-config --ldflags`
 	 
 %.o: %.cpp $(ENGINE_SOURCES)
 	g++ -c $< -ggdb -Wall -o $@ \
@@ -44,7 +44,7 @@ Common-token.cpp:
 		 --token-id-prefix TKN_        \
 		 -o Common                     \
 		 --token-class Common::Token   \
-		 --token-class-only  --debug-exception
+		 --token-class-only 
 
 clean:
 	rm -rf $(ENGINE)

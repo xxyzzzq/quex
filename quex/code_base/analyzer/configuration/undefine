@@ -474,5 +474,8 @@
 #ifdef    QUEX_CONVERTER_STRING_BACKUP
 #   undef QUEX_CONVERTER_STRING_BACKUP
 #endif
+#ifdef    QUEX_LEXEME_NULL
+#   undef QUEX_LEXEME_NULL
+#endif
 
 

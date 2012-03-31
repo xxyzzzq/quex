@@ -2,6 +2,7 @@ from   quex.engine.misc.file_in         import get_file_content_or_die, \
                                                get_include_guard_extension, \
                                                make_safe_identifier
 
+import quex.output.cpp.token_class_maker as token_class_maker
 from   quex.engine.misc.string_handling import blue_print
 from   quex.blackboard  import setup as Setup
 import quex.blackboard  as blackboard
@@ -98,10 +99,6 @@ def do(ModeDB):
 
         return result[:-2]
 
-    lexeme_null_object_name = "QUEX_NAME(LexemeNullObject)"
-    if Setup.external_lexeme_null_object != "":
-        lexeme_null_object_name = Setup.external_lexeme_null_object
-
     txt = blue_print(txt, 
             [
              ["$$BUFFER_LIMIT_CODE$$",          "0x%X" % Setup.buffer_limit_code],
@@ -123,7 +120,11 @@ def do(ModeDB):
              ["$$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$", converter_new_str],
              ["$$QUEX_TYPE_CHARACTER$$",        Setup.buffer_element_type],
              ["$$QUEX_SETTING_CHARACTER_SIZE$$", character_size_str],
-             ["$$QUEX_LEXEME_NULL_IN_NAMESPACE_MAIN$$", lexeme_null_object_name],
+             ["$$QUEX_NAMESPACE_LEXEME_NULL_OPEN$$",   LanguageDB.NAMESPACE_OPEN(Setup.lexeme_null_namespace).replace("\n", "\\\n")],
+             ["$$QUEX_NAMESPACE_LEXEME_NULL_CLOSE$$",  LanguageDB.NAMESPACE_CLOSE(Setup.lexeme_null_namespace).replace("\n", "\\\n")],
+             ["$$QUEX_LEXEME_NULL$$",                  Setup.lexeme_null_full_name_cpp],
+             ["$$QUEX_LEXEME_NULL_SAFE$$",             Setup.lexeme_null_name_safe],
+             ["$$QUEX_LEXEME_NULL_IN_ITS_NAMESPACE$$", Setup.lexeme_null_name],
              ["$$QUEX_VERSION$$",               QUEX_VERSION],
              ["$$TOKEN_CLASS$$",                token_descr.class_name],
              ["$$TOKEN_CLASS_NAME_SAFE$$",      token_descr.class_name_safe],
