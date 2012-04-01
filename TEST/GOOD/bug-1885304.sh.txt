@@ -561,7 +561,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 /* #include "Simple"*/
 QUEX_NAMESPACE_MAIN_OPEN
-QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject) = (QUEX_TYPE_CHARACTER)0;
+QUEX_TYPE_CHARACTER  QUEX_LEXEME_NULL_IN_ITS_NAMESPACE = (QUEX_TYPE_CHARACTER)0;
 
 #include <quex/code_base/analyzer/member/basic>
 #include <quex/code_base/buffer/Buffer>
@@ -2905,7 +2905,7 @@ __STATE_ROUTER:
 
     /* Prevent compiler warning 'unused variable': use variables once in a part of the code*/
     /* that is never reached (and deleted by the compiler anyway).*/
-    (void)QUEX_NAME(LexemeNullObject);
+    (void)QUEX_LEXEME_NULL;
     (void)QUEX_NAME_TOKEN(DumpedTokenIdObject);
     QUEX_ERROR_EXIT("Unreachable code has been reached.\n");
 #   undef ONE_AND_ONLY

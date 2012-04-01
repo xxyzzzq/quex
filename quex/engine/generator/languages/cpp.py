@@ -230,9 +230,6 @@ def __analyzer_function(StateMachineName, Setup,
     # Mode Names are defined as macros, so the following is not necessary.
     # for mode_name in ModeNameList:
     #    txt.append("    (void)%s;\n" % mode_name)
-    if Setup.external_lexeme_null_object == "": lexeme_null_name = "QUEX_NAME(LexemeNullObject)"
-    else:                                       lexeme_null_name = Setup.external_lexeme_null_object
-
     txt.append(                                                             \
         "    (void)QUEX_LEXEME_NULL;\n"                                     \
         "    (void)QUEX_NAME_TOKEN(DumpedTokenIdObject);\n"                 \

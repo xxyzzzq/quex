@@ -179,7 +179,7 @@ def do_token_class_info():
         "  --token-class           %s" % Setup.token_class,
         "  --token-id-type         %s" % Setup.token_id_type,
         "  --buffer-element-type   %s" % Setup.buffer_element_type,
-        "  --lexeme-null-object    %s" % token_class_maker.common_lexeme_null_reference(),
+        "  --lexeme-null-object    %s" % Setup.lexeme_null_full_name_cpp,
         "  --foreign-token-id-file %s" % Setup.output_token_id_file,
     ]
     print "info: Analyzers using this token class must be generated with"

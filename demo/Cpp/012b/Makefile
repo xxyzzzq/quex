@@ -29,7 +29,7 @@ COMMON_TOKEN_OPTIONS = \
 	g++ -E $< -o  $@ -I$(QUEX_PATH) 
 	
 boeck_Lexer.cpp:  boeck.qx Common-token.cpp Common-token_ids
-	quex -i $< -o boeck::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) # --debug-exception
+	quex -i $< -o boeck::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) 
 
 max_Lexer.cpp:    max.qx Common-token.cpp Common-token_ids
 	quex -i $< -o max::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) 

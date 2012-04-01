@@ -83,7 +83,7 @@ def __perform_setup(command_line, argv):
     __setup_analyzer_class(setup)
     __setup_token_class(setup)
     __setup_token_id_prefix(setup)
-    __setup_lexeme_null(setup)
+    __setup_lexeme_null(setup)       # Requires 'token_class_name_space'
 
     # (*) Output programming language        
     setup.language = setup.language.upper()
@@ -330,18 +330,23 @@ def __setup_analyzer_class(setup):
                               AllowEmptyF=True)
 
 def __setup_lexeme_null(setup):
-    if setup.external_lexeme_null_object != "":
+    if len(setup.external_lexeme_null_object) != 0:
         lexeme_null_object = setup.external_lexeme_null_object
+        default_name_space = setup.analyzer_name_space
+    elif setup.token_class_only_f:
+        lexeme_null_object = "LexemeNullObject"
+        default_name_space = setup.token_class_name_space
     else:
         lexeme_null_object = "LexemeNullObject"
+        default_name_space = setup.analyzer_name_space
 
     if lexeme_null_object.find("::") == -1:
         # By default, setup the token in the analyzer's namespace
         if len(setup.analyzer_name_space) != 0:
-            analyzer_name_space = reduce(lambda x, y: "%s::%s" % (x, y), setup.analyzer_name_space)
+            name_space = reduce(lambda x, y: "%s::%s" % (x, y), default_name_space)
         else:
-            analyzer_name_space = ""
-        lexeme_null_object = "%s::%s" % (analyzer_name_space, lexeme_null_object)
+            name_space = ""
+        lexeme_null_object = "%s::%s" % (name_space, lexeme_null_object)
 
     setup.lexeme_null_name,        \
     setup.lexeme_null_namespace,   \
@@ -394,6 +399,16 @@ def __setup_token_class(setup):
 
     #if len(setup.token_class_name_space) == 0:
     #    setup.token_class_name_space = deepcopy(setup.analyzer_name_space)
+
+def __setup_token_id_prefix(setup):
+    setup.token_id_prefix_plain,      \
+    setup.token_id_prefix_name_space, \
+    dummy                           = \
+         read_namespaced_name(setup.token_id_prefix, 
+                              "token prefix (options --token-id-prefix)")
+
+    if len(setup.token_id_prefix_name_space) != 0 and setup.language.upper() == "C":
+         error_msg("Token id prefix cannot contain a namespaces if '--language' is set to 'C'.")
 
 def __extract_extra_options_from_file(FileName):
     """Extract an option section from a given file. The quex command line 
@@ -449,17 +464,6 @@ def __extract_extra_options_from_file(FileName):
         print "## (suppress this message with --no-message-on-extra-options)"
 
     return result
-
-def __setup_token_id_prefix(setup):
-    setup.token_id_prefix_plain,      \
-    setup.token_id_prefix_name_space, \
-    dummy                           = \
-         read_namespaced_name(setup.token_id_prefix, 
-                              "token prefix (options --token-id-prefix)")
-
-    if len(setup.token_id_prefix_name_space) != 0 and setup.language.upper() == "C":
-         error_msg("Token id prefix cannot contain a namespaces if '--language' is set to 'C'.")
-
 
 def __interpret_command_line(argv):
     command_line = GetPot(argv)

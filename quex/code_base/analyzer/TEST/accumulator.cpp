@@ -26,14 +26,16 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #include <quex/code_base/analyzer/Counter>
 #include <quex/code_base/analyzer/Accumulator>
 
+QUEX_NAMESPACE_LEXEME_NULL_OPEN
+QUEX_TYPE_CHARACTER  QUEX_LEXEME_NULL_IN_ITS_NAMESPACE = (QUEX_TYPE_CHARACTER)0;
+QUEX_NAMESPACE_LEXEME_NULL_CLOSE
+
 QUEX_NAMESPACE_MAIN_OPEN
 
 //#define QUEX_TOKEN_POLICY_SET_ID()       /* empty */
 //#define QUEX_TOKEN_POLICY_PREPARE_NEXT() /* empty */
 
 typedef struct { QUEX_TYPE_TOKEN_ID _id; } Token;
-
-QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject);
 
 class TestAnalyzer {
 public:
