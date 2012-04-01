@@ -1,0 +1,202 @@
+init-state = 0L
+00000 (3, 6), (10, 20), (36, 83), (62, 150), (88, 217)
+     == 'a' ==> 00001
+     == 'b' ==> 00004
+    
+00001 (3, 7, A, pre=6), (36, 85), (62, 152), (88, 218)
+     == 'd' ==> 00002
+    
+00002 (36, 86), (62, 153), (88, 221)
+     == 'e' ==> 00003
+    
+00003 (36, 87, A, pre=39), (62, 154, A, pre=65), (88, 222, A, pre=91)
+    
+00004 (10, 21, A, pre=13), (36, 84), (62, 151), (88, 219)
+     == 'b' ==> 00005
+     == 'c' ==> 00006
+     == 'd' ==> 00002
+    
+00005 (36, 88), (62, 155), (88, 220)
+     == 'c' ==> 00006
+     == 'd' ==> 00002
+    
+00006 (36, 85), (62, 152), (88, 218)
+     == 'd' ==> 00002
+    
+
+State 0:
+  .entry:
+    .from NONE:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 1:
+  .entry:
+    .from 0:
+  .drop_out:
+    if PreContext_6:  goto Pattern3;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 2:
+  .entry:
+    .from 1:
+        if      PreContext_6: last_acceptance = Pattern3
+        else: last_acceptance = Failure
+    .from 4:
+        if      PreContext_13: last_acceptance = Pattern10
+        else: last_acceptance = Failure
+        if 'PreContext_13': position[PostContext_10]  = input_p;
+    .from 5:
+        if      PreContext_13: last_acceptance = Pattern10
+        else: last_acceptance = Failure
+    .from 6:
+        if      PreContext_13: last_acceptance = Pattern10
+        else: last_acceptance = Failure
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
+        case 10: pos = position[PostContext_10] ; goto Pattern10;
+        case 3: pos -= 1;  goto Pattern3;
+
+
+State 3:
+  .entry:
+    .from 2:
+        if      PreContext_39: last_acceptance = Pattern36
+        else if PreContext_65: last_acceptance = Pattern62
+        else if PreContext_91: last_acceptance = Pattern88
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
+        case 3: pos -= 2;  goto Pattern3;
+        case 36: goto Pattern36;
+        case 10: pos = position[PostContext_10] ; goto Pattern10;
+        case 88: goto Pattern88;
+        case 62: goto Pattern62;
+
+
+State 4:
+  .entry:
+    .from 0:
+  .drop_out:
+    if PreContext_13:  goto Pattern10;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 5:
+  .entry:
+    .from 4: if 'PreContext_13': position[PostContext_10]  = input_p;
+  .drop_out:
+    if PreContext_13: pos -= 1;  goto Pattern10;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 6:
+  .entry:
+    .from 4: if 'PreContext_13': position[PostContext_10]  = input_p;
+    .from 5:
+  .drop_out:
+    if PreContext_13: pos = position[PostContext_10] ; goto Pattern10;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 0:
+        [FAILURE]: NONE/set([0L])
+
+State 1:
+        [FAILURE]: NONE/set([0L])
+        [      3]: 6/set([1L])
+
+State 2:
+        [FAILURE]: NONE/set([0L])
+        [      3]: 6/set([1L])
+    (*) [     10]: 13/set([4L])
+
+State 3:
+        [FAILURE]: NONE/set([0L])
+        [      3]: 6/set([1L])
+    (*) [     10]: 13/set([4L])
+        [     36]: 39/set([3L])
+        [     62]: 65/set([3L])
+        [     88]: 91/set([3L])
+
+State 4:
+        [FAILURE]: NONE/set([0L])
+        [     10]: 13/set([4L])
+
+State 5:
+        [FAILURE]: NONE/set([0L])
+        [     10]: 13/set([4L])
+
+State 6:
+        [FAILURE]: NONE/set([0L])
+    (*) [     10]: 13/set([4L])
+
+
+--- Optimized States ---
+
+State 2:
+  .entry:
+    .from 1:
+        if      PreContext_6: last_acceptance = Pattern3
+        else: last_acceptance = Failure
+    .from 4:
+        if      PreContext_13: last_acceptance = Pattern10
+        else: last_acceptance = Failure
+        if 'PreContext_13': position[PostContext_0]  = input_p;
+    .from 5:
+        if      PreContext_13: last_acceptance = Pattern10
+        else: last_acceptance = Failure
+    .from 6:
+        if      PreContext_13: last_acceptance = Pattern10
+        else: last_acceptance = Failure
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
+        case 10: pos = position[PostContext_0] ; goto Pattern10;
+        case 3: pos -= 1;  goto Pattern3;
+
+
+State 3:
+  .entry:
+    .from 2:
+        if      PreContext_39: last_acceptance = Pattern36
+        else if PreContext_65: last_acceptance = Pattern62
+        else if PreContext_91: last_acceptance = Pattern88
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
+        case 3: pos -= 2;  goto Pattern3;
+        case 36: goto Pattern36;
+        case 10: pos = position[PostContext_0] ; goto Pattern10;
+        case 88: goto Pattern88;
+        case 62: goto Pattern62;
+
+
+State 5:
+  .entry:
+    .from 4: if 'PreContext_13': position[PostContext_0]  = input_p;
+  .drop_out:
+    if PreContext_13: pos -= 1;  goto Pattern10;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 6:
+  .entry:
+    .from 4: if 'PreContext_13': position[PostContext_0]  = input_p;
+    .from 5:
+  .drop_out:
+    if PreContext_13: pos = position[PostContext_0] ; goto Pattern10;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+

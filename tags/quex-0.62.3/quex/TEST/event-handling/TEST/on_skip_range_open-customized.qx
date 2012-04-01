@@ -1,0 +1,12 @@
+token { X; }
+
+mode X :
+<skip_range: "/*" "*/">
+<skip:       [ \t\n]>
+{
+    . => TK_X;
+    on_skip_range_open { 
+        printf("We miss the '%s'\n", (const char*)Closer); 
+    }
+}
+

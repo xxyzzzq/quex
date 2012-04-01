@@ -1,0 +1,3 @@
+command line: Only token ids QUEX_TKN_TERMINATION and QUEX_TKN_UNINITIALIZED are defined.
+command line: Quex refuses to proceed. Please, use the 'token { ... }' section to
+command line: specify at least one other token id.
