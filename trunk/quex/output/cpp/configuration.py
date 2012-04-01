@@ -2,7 +2,6 @@ from   quex.engine.misc.file_in         import get_file_content_or_die, \
                                                get_include_guard_extension, \
                                                make_safe_identifier
 
-import quex.output.cpp.token_class_maker as token_class_maker
 from   quex.engine.misc.string_handling import blue_print
 from   quex.blackboard  import setup as Setup
 import quex.blackboard  as blackboard

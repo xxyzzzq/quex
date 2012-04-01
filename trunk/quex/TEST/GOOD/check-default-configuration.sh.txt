@@ -110,6 +110,10 @@
 > #   define QUEX_NAME_COMPLETE_TOKEN    quex_Token
 < #   define QUEX_NAMESPACE_MAIN         $$LEXER_CLASS_NAME_SAFE$$
 > #   define QUEX_NAMESPACE_MAIN         quex_TestAnalyzer
+< #   define QUEX_LEXEME_NULL_IN_ITS_NAMESPACE   $$QUEX_LEXEME_NULL_SAFE$$
+< #   define QUEX_LEXEME_NULL                    $$QUEX_LEXEME_NULL_SAFE$$
+> #   define QUEX_LEXEME_NULL_IN_ITS_NAMESPACE   quex_LexemeNullObject
+> #   define QUEX_LEXEME_NULL                    quex_LexemeNullObject
 < #   define QUEX_NAME(NAME)             $$LEXER_CLASS_NAME_SAFE$$_ ## NAME
 < #   define QUEX_NAME_TOKEN(NAME)       $$TOKEN_CLASS_NAME_SAFE$$_ ## NAME
 > #   define QUEX_NAME(NAME)             quex_TestAnalyzer_ ## NAME
@@ -137,6 +141,11 @@
 < #   define QUEX_NAMESPACE_TOKEN_OPEN   $$NAMESPACE_TOKEN_OPEN$$
 < #   define QUEX_NAMESPACE_TOKEN_CLOSE  $$NAMESPACE_TOKEN_CLOSE$$
 < 
+< #   define QUEX_NAMESPACE_LEXEME_NULL_OPEN     $$QUEX_NAMESPACE_LEXEME_NULL_OPEN$$
+< #   define QUEX_NAMESPACE_LEXEME_NULL_CLOSE    $$QUEX_NAMESPACE_LEXEME_NULL_CLOSE$$
+< #   define QUEX_LEXEME_NULL_IN_ITS_NAMESPACE   $$QUEX_LEXEME_NULL_IN_ITS_NAMESPACE$$
+< #   define QUEX_LEXEME_NULL                    $$QUEX_LEXEME_NULL$$
+< 
 < #   define QUEX_NAME(NAME)             $$LEXER_CLASS_NAME$$_ ## NAME
 < #   define QUEX_NAME_TOKEN(NAME)       $$TOKEN_CLASS$$_ ## NAME
 < #   define QUEX_MEMBER(NAME)           $$LEXER_CLASS_NAME$$::NAME                
@@ -161,6 +170,13 @@
 > #   define QUEX_NAMESPACE_TOKEN_CLOSE  } /* Closing Namespace 'quex' */\
 > 
 > 
+> #   define QUEX_NAMESPACE_LEXEME_NULL_OPEN     namespace quex {\
+> 
+> #   define QUEX_NAMESPACE_LEXEME_NULL_CLOSE    } /* Closing Namespace 'quex' */\
+> 
+> #   define QUEX_LEXEME_NULL_IN_ITS_NAMESPACE   LexemeNullObject
+> #   define QUEX_LEXEME_NULL                    ::quex::LexemeNullObject
+> 
 > #   define QUEX_NAME(NAME)             TestAnalyzer_ ## NAME
 > #   define QUEX_NAME_TOKEN(NAME)       Token_ ## NAME
 > #   define QUEX_MEMBER(NAME)           TestAnalyzer::NAME                
@@ -178,7 +194,5 @@
 > #   define QUEX_TYPE_TOKEN_LINE_N    size_t
 < #   define QUEX_TYPE_TOKEN_COLUMN_N  $$TOKEN_COLUMN_N_TYPE$$
 > #   define QUEX_TYPE_TOKEN_COLUMN_N  size_t
-< #define    QUEX_LEXEME_NULL_IN_NAMESPACE_MAIN  $$QUEX_LEXEME_NULL_IN_NAMESPACE_MAIN$$
-> #define    QUEX_LEXEME_NULL_IN_NAMESPACE_MAIN  QUEX_NAME(LexemeNullObject)
 < #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$ */
 > #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION____QUEX____TESTANALYZER */

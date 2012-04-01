@@ -24,7 +24,7 @@
 > %.E: %.c
 > 	gcc -E $< -o  $@ -I$(QUEX_PATH)
 < boeck_Lexer.cpp:  boeck.qx Common-token.cpp Common-token_ids
-< 	quex -i $< -o boeck::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) # --debug-exception
+< 	quex -i $< -o boeck::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) 
 ---
 > boeck_Lexer.c:  boeck.qx Common-token.c Common-token_ids.h
 > 	quex -i $< -o boeck::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) --language C 

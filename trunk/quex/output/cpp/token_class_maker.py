@@ -386,6 +386,7 @@ QUEX_MEMORY_ALLOC_re          = re.compile("QUEX_NAME\\(MemoryManager_Text_alloc
 QUEX_MEMORY_FREE_re           = re.compile("QUEX_NAME\\(MemoryManager_Text_free\\)", re.UNICODE)
 QUEX_strlen_re                = re.compile("QUEX_NAME\\(strlen\\)", re.UNICODE)
 QUEX_TYPE_CHARACTER_re        = re.compile("\\bQUEX_TYPE_CHARACTER\\b", re.UNICODE)
+QUEX_LEXEME_NULL_re           = re.compile("\\bQUEX_LEXEME_NULL\\b", re.UNICODE)
 QUEX_TYPE_ANALYZER_re         = re.compile("\\bQUEX_TYPE_ANALYZER\\b", re.UNICODE)
 QUEX_TYPE_TOKEN_ID_re         = re.compile("\\bQUEX_TYPE_TOKEN_ID\\b", re.UNICODE)
 QUEX_LexemeNullDeclaration_re = re.compile("QUEX_NAME\\(LexemeNullObject\\)", re.UNICODE)
@@ -401,15 +402,19 @@ def clean_for_independence(txt):
     global QUEX_TYPE_TOKEN_ID_re
     global QUEX_LexemeNullDeclaration_re
     global QUEX_TYPE_CHARACTER_safe_re
+    global QUEX_LEXEME_NULL_re
+
+    
 
     txt = QUEX_TYPE_CHARACTER_re.sub(Setup.buffer_element_type, txt)
     txt = QUEX_TYPE_ANALYZER_re.sub("void", txt)
     txt = QUEX_TYPE_TOKEN_ID_re.sub(Setup.token_id_type, txt)
-    txt = QUEX_LexemeNullDeclaration_re.sub("QUEX_NAME_TOKEN(LexemeNullObject)", txt)
+    txt = QUEX_LexemeNullDeclaration_re.sub(common_lexeme_null_str(), txt)
     txt = QUEX_MEMORY_ALLOC_re.sub("malloc", txt)
     txt = QUEX_MEMORY_FREE_re.sub("free", txt)
     txt = QUEX_TYPE_CHARACTER_safe_re.sub("QUEX_TYPE_CHARACTER", txt)
     txt = QUEX_strlen_re.sub("%s_strlen" % token_descr.class_name_safe, txt)
+    txt = QUEX_LEXEME_NULL_re.sub(common_lexeme_null_str(), txt)
 
     # Delete any line references
     result = []
@@ -423,18 +428,15 @@ def clean_for_independence(txt):
     return "".join(result)
 
 def common_lexeme_null_str():
-    if Setup.language.upper() == "C++": return "LexemeNullObject"
-    else:                               return "%s_LexemeNullObject" % Setup.token_class_name_safe
-
-def common_lexeme_null_reference():
-    LanguageDB  = Setup.language_db
     token_descr = blackboard.token_type_definition
-
+    LanguageDB  = Setup.language_db
     if Setup.language.upper() == "C++": 
-        prefix = LanguageDB.NAMESPACE_REFERENCE(token_descr.name_space) 
-        return "%sLexemeNullObject" % prefix
+        # LexemeNull's namespace == token namespace, no explicit naming.
+        return "LexemeNullObject"
     else:                               
-        return "%s_LexemeNullObject" % Setup.token_class_name_safe
+        namespace_prefix = LanguageDB.NAMESPACE_REFERENCE(token_descr.name_space) 
+        return "%sLexemeNullObject" % namespace_prefix
+
 
 def __namespace_brackets():
     LanguageDB  = Setup.language_db

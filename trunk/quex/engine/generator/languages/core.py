@@ -52,7 +52,7 @@ CppBase = {
     "$file_extension":          ".cpp",
 }
 
-class LDB(dict):
+class LanguageDB_Cpp(dict):
     def __init__(self, DB):      
         self.update(DB)
         self.__analyzer = None
@@ -516,12 +516,18 @@ __RELOAD_BACKWARD:
     QUEX_GOTO_STATE(target_state_else_index);
 """
 
-db["C++"] = LDB(CppBase)
+db["C++"] = LanguageDB_Cpp(CppBase)
 
 #________________________________________________________________________________
 # C
 #    
-db["C"] = copy(db["C++"])
+class LanguageDB_C(LanguageDB_Cpp):
+    def __init__(self, DB):      
+        LanguageDB_Cpp.__init__(self, DB)
+    def NAMESPACE_REFERENCE(self, NameList):
+        return "".join("%s_" % name for name in NameList)
+
+db["C"] = LanguageDB_C(CppBase)
 db["C"].update([
     ("$token-default-file", "/token/CDefault.qx"),
     ("$token_template_file",    "/token/TXT-C"),
