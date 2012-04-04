@@ -1,4 +1,6 @@
-#include <stdio.h>
+#include <cstdio>
+#include <iostream>
+#include <fstream>
 #define QUEX_NAME(X) (X)
 #include <quex/code_base/bom>
 #include <quex/code_base/bom.i>
@@ -20,23 +22,22 @@ main(int argc, char** argv)
                                  0x0,
     };
     const char**   iterator;
-    FILE*          fh = 0x0;
     QUEX_TYPE_BOM  bom = QUEX_BOM_NONE;
 
-    hwut_info("BOM Snap: FILE\n");
+    hwut_info("BOM Snap: ifstream\n");
 
     for(iterator = file_names; *iterator != 0x0; ++iterator ) {
-        fh = fopen(*iterator, "rb");
-        bom = quex_bom_snap(fh);
+        std::ifstream  istr(*iterator);
+        bom = quex::bom_snap(&istr);
 
         printf("%s\n", *iterator);
-        printf("   CODEC: %s\n", quex_bom_name(bom));
+        printf("   CODEC: %s\n", quex::bom_name(bom));
         printf("   BYTES: ");
-        while( ! feof(fh) )
+        while( ! istr.eof() )
         {
-            printf("%02X.", (int)fgetc(fh));
+            printf("%02X.", (int)istr.get());
         }
         printf("\n");
-        fclose(fh);
+        istr.close();
     }
 }

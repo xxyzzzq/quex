@@ -16,53 +16,99 @@
 #define __QUEX_INCLUDE_GUARD__BOM_I
 
 #include <quex/code_base/bom>
-#include <quex/code_base/buffer/InputPolicy>
 
 #include <quex/code_base/temporary_macros_on>
 
-QUEX_NAMESPACE_MAIN_OPEN
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+namespace quex {
+#endif
 
-TEMPLATE_IN(InputHandleT) QUEX_TYPE_BOM
-QUEX_NAME(bom_snap)(InputHandleT* InputHandle) 
+QUEX_INLINE QUEX_TYPE_BOM
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+bom_snap(__QUEX_STD_FILE* InputHandle)
+#else
+quex_bom_snap(__QUEX_STD_FILE* InputHandle)
+#endif
+/* This function can **only** be used with **normally** behaving streams
+ * where the position increases by one with every character being read. If
+ * this is not the case then use the **binary** option of your stream.     */
 {
-    /* This function can **only** be used with **normally** behaving streams
-     * where the position increases by one with every character being read. If
-     * this is not the case then use the **binary** option of your stream.     */
-
     uint8_t        buffer[4] = { 0, 0, 0, 0};
     QUEX_TYPE_BOM  result    = QUEX_BOM_NONE;
     size_t         byte_n    = 0;
     size_t         read_n    = 0;
+    long           p0        = __QUEX_STD_ftell(InputHandle);
+
+    read_n = (size_t)__QUEX_STD_fread((uint8_t*)buffer, 1, 4, InputHandle);
+#   if ! defined(__QUEX_OPTION_PLAIN_C)
+    result = __bom_snap_core(buffer, read_n, &byte_n);
+#   else
+    result = __quex_bom_snap_core(buffer, read_n, &byte_n);
+#   endif
+
+    /* Avoid temporary function argument. Store sum in p0. */
+    p0 += (long)byte_n;
+    __QUEX_STD_fseek(InputHandle, p0, SEEK_SET);
+
+    return result;
+}
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+template <class InputStream> QUEX_INLINE QUEX_TYPE_BOM
+QUEX_NAME(bom_snap)(InputStream* p_input_stream)
+/* This function can **only** be used with **normally** behaving streams
+ * where the position increases by one with every character being read. If
+ * this is not the case then use the **binary** option of your stream.     */
+{
+    uint8_t               buffer[4] = { 0, 0, 0, 0};
+    QUEX_TYPE_BOM         result    = QUEX_BOM_NONE;
+    size_t                byte_n    = 0;
+    size_t                read_n    = 0;
     /**/
-    STREAM_POSITION_TYPE(InputHandleT)   p0 = (STREAM_POSITION_TYPE(InputHandleT))-1;
+    const size_t                   CharSize  = sizeof(typename InputStream::char_type);
+    typename InputStream::pos_type p0 = p_input_stream->tellg() * CharSize;
 
-    p0     = (STREAM_POSITION_TYPE(InputHandleT))QUEX_INPUT_POLICY_TELL(InputHandle, InputHandleT);
-    read_n = (size_t)QUEX_INPUT_POLICY_LOAD_BYTES(InputHandle, InputHandleT, buffer, 4);
-    if( read_n == 0 ) {
-        return QUEX_BOM_NONE;
-    }
-    (void)(STREAM_POSITION_TYPE(InputHandleT))QUEX_INPUT_POLICY_TELL(InputHandle, InputHandleT);
+    p_input_stream->read((typename InputStream::char_type*)buffer, 4 / CharSize);
+    read_n = (size_t)(p_input_stream->gcount());
+    result = QUEX_NAME(__bom_snap_core)(buffer, read_n, &byte_n);
 
+    /* Avoid temporary function argument. Store sum in p0. */
+    p0 += typename InputStream::pos_type(byte_n);
+    p_input_stream->seekg(p0 / CharSize); 
+
+    return result;
+}
+#endif
+
+QUEX_INLINE QUEX_TYPE_BOM
+#if ! defined (__QUEX_OPTION_PLAIN_C)
+__bom_snap_core(uint8_t buffer[4], size_t read_n, size_t* byte_n)
+#else
+__quex_bom_snap_core(uint8_t buffer[4], size_t read_n, size_t* byte_n)
+#endif
+{
     /* For non-existing bytes fill 0x77, because it does not occur
      * anywhere as a criteria, see 'switch' after that.             */
-    switch(read_n) {
+    switch( read_n ) {
         case 0: return QUEX_BOM_NONE;
         case 1: buffer[1] = 0x77; buffer[2] = 0x77; buffer[3] = 0x77; break; 
         case 2:                   buffer[2] = 0x77; buffer[3] = 0x77; break;
         case 3:                                     buffer[3] = 0x77; break;
     }
 
-    result = QUEX_NAME(bom_identify)(buffer, &byte_n);
-
-    /* Avoid temporary function argument. Store sum in p0. */
-    p0 += (STREAM_POSITION_TYPE(InputHandleT))byte_n;
-    QUEX_INPUT_POLICY_SEEK(InputHandle, InputHandleT, p0);
-
-    return result;
+#   if ! defined(__QUEX_OPTION_PLAIN_C)
+    return bom_identify(buffer, byte_n);
+#   else
+    return quex_bom_identify(buffer, byte_n);
+#   endif
 }
 
 QUEX_INLINE QUEX_TYPE_BOM
-QUEX_NAME(bom_identify)(const uint8_t* const Buffer, size_t* n)
+#if ! defined (__QUEX_OPTION_PLAIN_C)
+bom_identify(const uint8_t* const Buffer, size_t* n)
+#else
+quex_bom_identify(const uint8_t* const Buffer, size_t* n)
+#endif
     /* Assume, that the buffer contains at least 4 elements! */
 {
     /* Table of byte order marks (BOMs), see file 'quex/code_base/bom' */
@@ -120,7 +166,11 @@ QUEX_NAME(bom_identify)(const uint8_t* const Buffer, size_t* n)
 }           
 
 QUEX_INLINE const char*
-QUEX_NAME(bom_name)(QUEX_TYPE_BOM BOM)
+#if ! defined (__QUEX_OPTION_PLAIN_C)
+bom_name(QUEX_TYPE_BOM BOM)
+#else
+quex_bom_name(QUEX_TYPE_BOM BOM)
+#endif
 {
     switch( BOM ) {
     case QUEX_BOM_UTF_8:           return "UTF_8";                      
@@ -150,7 +200,10 @@ QUEX_NAME(bom_name)(QUEX_TYPE_BOM BOM)
     }
 }
 
-QUEX_NAMESPACE_MAIN_CLOSE
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+} /* namespace quex */
+#endif
+
 
 #include <quex/code_base/temporary_macros_off>
 
