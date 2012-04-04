@@ -12,7 +12,7 @@ import help
 
 if "--hwut-info" in sys.argv:
     print "Track Analyzis: Without Pre- and Post-Contexts;"
-    print "CHOICES: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9;"
+    print "CHOICES: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10;"
     sys.exit()
 
 if "0" in sys.argv:
@@ -173,6 +173,28 @@ elif "9" in sys.argv:
    #                  │    ['a', 'e'], ['g', 'z']      ▲
    #                  └────────────────────────────────┘
    #____________________________________________________________________
+
+elif "10" in sys.argv:
+    # Generate a case where the acceptance is not clear but there are multiple 
+    # places on the path where it is stored. The last acceptance state must
+    # always store.
+    pattern_list = [
+        "a|ab",
+        "(1|ab|ax)ef",
+    ]
+   #          1
+   #      ┌──────────────────────┐
+   #      │                      ▼
+   #    ┌───┐  a   ┌────┐  x   ┌───┐  e   ┌───┐  f   ┌───┐
+   #    │ 0 │ ───▶ │ 4  │ ───▶ │ 1 │ ───▶ │ 2 │ ───▶ │ 3 │
+   #    └───┘      └────┘      └───┘      └───┘      └───┘
+   #              A1 │                      ▲        A2
+   #                 │ b                    │
+   #                 ▼                      │
+   #               ┌────┐  e                │
+   #               │ 5  │ ──────────────────┘
+   #               └────┘
+   #______________A1____________________________________________________
 
 elif "Nonsense" in sys.argv:
     pattern_list = [

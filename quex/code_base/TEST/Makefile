@@ -2,9 +2,10 @@
 include $(QUEX_PATH)/quex/code_base/core.mkd
 
 TEST_FILES = \
-	       strange_stream.exe \
+	       strange_stream.exe  \
 	       strange_wstream.exe \
-		   bom.exe
+		   bom.exe             \
+		   bom-istream.exe
 
 DEFS = \
 	   -DQUEX_OPTION_ASSERTS
@@ -18,6 +19,14 @@ bom.exe: bom.c $(QUEX_CORE)
 	gcc -D__QUEX_OPTION_PLAIN_C \
 		-DQUEX_NAMESPACE_MAIN_OPEN="" \
 		-DQUEX_NAMESPACE_MAIN_CLOSE="" \
+		-I$(HWUT_PATH) \
+		-ggdb -I$(QUEX_PATH) $(DEFS) $< -o $@
+
+bom-istream.exe: bom.cpp $(QUEX_CORE)
+	g++ \
+		-DQUEX_NAMESPACE_MAIN_OPEN="" \
+		-DQUEX_NAMESPACE_MAIN_CLOSE="" \
+		-I$(HWUT_PATH) \
 		-ggdb -I$(QUEX_PATH) $(DEFS) $< -o $@
 
 strange_stream.exe: strange_stream.cpp $(QUEX_CORE)

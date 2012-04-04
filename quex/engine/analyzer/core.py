@@ -299,8 +299,9 @@ class Analyzer:
             pattern_id             = acceptance_trace.pattern_id
 
             # Find the first place on the path where the acceptance is restored
-            # - starting from the accepting state.
-            begin_i = path_since_positioning.index(accepting_state_index)
+            # - starting from the last accepting state.
+            begin_i = acceptance_trace.index_of_last_acceptance_on_path_since_positioning()
+
             prev_state_index = None
             for state_index in islice(path_since_positioning, begin_i, None):
                 if self.__state_db[state_index].drop_out.restore_acceptance_f: 
