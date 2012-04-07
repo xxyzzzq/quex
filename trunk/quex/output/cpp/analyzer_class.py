@@ -10,6 +10,7 @@ from   quex.blackboard                  import setup as Setup
 
 def do(ModeDB):
     assert blackboard.token_type_definition is not None
+    LanguageDB = Setup.language_db
 
     QuexClassHeaderFileTemplate = os.path.normpath(  QUEX_PATH
                                                    + Setup.language_db["$code_base"] 
@@ -57,6 +58,8 @@ def do(ModeDB):
     else:
         token_id_definition_file = Setup.output_token_id_file
 
+    lexer_name_space_safe = get_include_guard_extension(LanguageDB.NAMESPACE_REFERENCE(Setup.analyzer_name_space))
+
     txt = blue_print(template_code_txt,
             [
                 ["$$___SPACE___$$",                      " " * (len(LexerClassName) + 1)],
@@ -64,6 +67,7 @@ def do(ModeDB):
                 ["$$CONVERTER_HELPER$$",                 Setup.get_file_reference(Setup.output_buffer_codec_header)],
                 ["$$INCLUDE_GUARD_EXTENSION$$",          include_guard_ext],
                 ["$$LEXER_CLASS_NAME$$",                 LexerClassName],
+                ["$$LEXER_NAME_SPACE$$",                 lexer_name_space_safe],
                 ["$$LEXER_CLASS_NAME_SAFE$$",            Setup.analyzer_name_safe],
                 ["$$LEXER_CONFIG_FILE$$",                Setup.get_file_reference(Setup.output_configuration_file)],
                 ["$$LEXER_DERIVED_CLASS_DECL$$",         derived_class_type_declaration],

@@ -115,6 +115,12 @@ as described in :ref:`sec-number-format`.
 
         DEFAULT=`"utf8"`
 
+.. cmdoption:: --normalize
+
+        If this option is set, the output of '--language dot' will be a normalized
+        state machine. If this flag is not set, the state indices are the same as
+        in the generated code.
+
 .. cmdoption:: `--debug`
 
         If provided, then code fragments are created to

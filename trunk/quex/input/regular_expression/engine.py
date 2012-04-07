@@ -244,20 +244,9 @@ def snap_primary(stream, PatternDict):
             stream.read(1)
             result = snap_case_folded_pattern(stream, PatternDict)
         elif lookahead == "R":
-            stream.read(1)
-            if not check(stream, "{"):
-                error_msg("Missing opening '{' after reverse operator \\R.", stream)
-            pattern = snap_expression(stream, PatternDict) 
-            if not check(stream, "}"):
-                error_msg("Missing closing '}' after reversed pattern in \\R{ ... }.", stream)
-            result  = pattern.get_inverse()
+            result = get_expression_in_brackets(stream, PatternDict, "reverse operator", "R").get_inverse()
         elif lookahead == "A":
-            stream.read(1)
-            if not check(stream, "{"):
-                error_msg("Missing opening '{' after anti-pattern operator \\A.", stream)
-            result = snap_expression(stream, PatternDict) 
-            if not check(stream, "}"):
-                error_msg("Missing closing '}' after anti-pattern pattern in \\A{ ... }.", stream)
+            result =  get_expression_in_brackets(stream, PatternDict, "anti-pattern operator", "A")
             result.transform_to_anti_pattern()
         else:
             stream.seek(-1, 1)
@@ -396,3 +385,16 @@ def snap_case_folded_pattern(sh, PatternDict, CharacterSetF=False):
     """
     return case_fold_expression.do(sh, PatternDict, snap_expression)
 
+def get_expression_in_brackets(stream, PatternDict, Name, TriggerChar):
+    # Read over the trigger character 
+    stream.read(1)
+    if not check(stream, "{"):
+        error_msg("Missing opening '{' after %s %s." % (Name, TriggerChar), stream)
+    pattern = snap_expression(stream, PatternDict) 
+    if check(stream, "}"):
+        return pattern
+    elif check(stream, "/") or check(stream, "$"):
+        error_msg("Pre- or post contexts are not allowed in %s \\%s{...} expressions." % (Name, TriggerChar), stream)
+    else:
+        error_msg("Missing closing '}' %s in \\%s{...}." % (Name, TriggerChar), stream)
+    return pattern

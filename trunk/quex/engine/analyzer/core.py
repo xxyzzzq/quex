@@ -78,7 +78,7 @@ class Analyzer:
         self.__engine_type      = EngineType
 
         # (*) PathTrace database, Successor database
-        self.__trace_db, self.__successor_db = track_analysis.do(SM)
+        self.__trace_db, self.__dangerous_positioning_state_set = track_analysis.do(SM)
 
         # (*) From/To Databases
         #
@@ -357,17 +357,28 @@ class Analyzer:
         any state that has undetermined positioning restores the input position.
         Thus 'restore_position_f(register)' is enough to catch this case.
         """
+        def get_positioning_state_iterable(from_state_index, path):
+            if from_state_index in self.__dangerous_positioning_state_set:
+                for to_state_index in self.__to_db[from_state_index]:
+                    yield to_state_index
+            else:
+                yield path[1]
+
         for state_index, pattern_id, info in self.__require_position_storage_list:
             # state_index  --> state that restores the input position
             # pattern_id   --> pattern which is concerned
             for path in info.path_list_since_positioning:
                 # Never store the input position in the state itself. The input position
                 # is reached after the entries have been passed.
-                state = self.__state_db[path[1]]
-                state.entry.doors_store(FromStateIndex   = path[0], 
-                                        PreContextID     = info.pre_context_id, 
-                                        PositionRegister = pattern_id, 
-                                        Offset           = 0)
+                from_state_index = path[0]
+                for to_state_index in get_positioning_state_iterable(from_state_index, path):
+                    state = self.__state_db[to_state_index]
+                    # Never store the input position in the state itself. The input position
+                    # is reached after the entries have been passed.
+                    state.entry.doors_store(FromStateIndex   = from_state_index, 
+                                            PreContextID     = info.pre_context_id, 
+                                            PositionRegister = pattern_id, 
+                                            Offset           = 0)
                 # offset           = -1
                 # for state_index in islice(path, 1, None):
                     # offset += 1

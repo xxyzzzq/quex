@@ -25,7 +25,6 @@ ABSOLUTELY NO WARRANTY
 from   quex.blackboard              import E_AcceptanceIDs, E_PreContextIDs, E_TransitionN
 from   quex.engine.misc.tree_walker import TreeWalker
 
-from   collections import defaultdict
 from   itertools   import chain, izip
 from   copy        import copy
 
@@ -33,38 +32,27 @@ def do(SM):
     """RETURNS: Acceptance trace database:
 
                 map: state_index --> list of PathTrace objects.
-    """
-    ta = TrackAnalysis(SM)
 
-    return ta.map_state_to_trace, None # ta.successor_db
-
-class TrackAnalysis:
-    """The init function of this class walks down each possible path trough a
-       given state machine. During the process of walking down the paths it 
-       develops for each state its list of PathTrace objects.
+       This function walks down each possible path trough a given state
+       machine. During the process of walking down the paths it develops for
+       each state its list of PathTrace objects.
        
        The result of the process is presented by property 'map_state_to_trace'. 
        It delivers for each state of the state machine a trace object that maps:
 
                    state index --> list of PathTrace objects
        
-       Another result of the walk is the 'successor_db' which collects for each
-       state all of its successor states.
+       Another result of the walk is the 'dangerous_positioning_state_set' which
+       collects some positioning states that have to store the position for 
+       any successor state (knot analysis, see below).
     """
+    def print_path(x):
+        print x.state_index, " ",
+        if x.parent is not None: print_path(x.parent)
+        else:                    print
 
-    def __init__(self, SM):
-        """SM -- state machine to be investigated."""
-        self.sm = SM
-
-        # (*) Collect PathTrace Information
-        self.__map_state_to_trace = self.__trace_walk()
-
-    @property
-    def map_state_to_trace(self):
-        return self.__map_state_to_trace
-
-    def __trace_walk(self):
-        """Determine PathTrace objects for each state. The heart of this function is
+    class TraceFinder(TreeWalker):
+        """Determines PathTrace objects for each state. The heart of this function is
            the call to 'PathTrace.next_step()' which incrementally develops the 
            acceptance and position storage history of a path.
 
@@ -73,107 +61,88 @@ class TrackAnalysis:
                                that if a state appears again in the path, its trace
                                must be different or the recursion terminates.
         """
-        class KnotInfo:
-            from_to_db = defaultdict(dict)
-            def __init__(self, Pioneer, Rear):
-                self.knot_trace = Pioneer
+        def __init__(self, state_machine):
+            self.__depth    = 0
+            self.sm         = state_machine
+            self.empty_list = []
+            self.result     = dict((i, []) for i in self.sm.states.iterkeys())
+            self.dangerous_positioning_state_set = set()
 
-        class TraceFinder(TreeWalker):
-            def __init__(self, track_info):
-                self.__depth          = 0
-                self.sm               = track_info.sm
-                self.empty_list       = []
-                self.result           = dict((i, []) for i in self.sm.states.iterkeys())
-                self.pruned_knot_list = []
+        def on_enter(self, Args):
+            PreviousTrace = Args[0]
+            StateIndex    = Args[1]
+            # (*) Update the information about the 'trace of acceptances'
+            State = self.sm.states[StateIndex]
 
-            def on_enter(self, Args):
-                PreviousTrace = Args[0]
-                StateIndex    = Args[1]
-                # (*) Update the information about the 'trace of acceptances'
-                State = self.sm.states[StateIndex]
+            if self.__depth == 0: trace = PathTrace(self.sm.init_state_index)
+            else:                 trace = PreviousTrace.next_step(StateIndex, State) 
 
-                if self.__depth == 0: trace = PathTrace(self.sm.init_state_index)
-                else:                 trace = PreviousTrace.next_step(StateIndex, State) 
+            # (*) Recursion Termination:
+            #
+            # If a state has been analyzed before with the same trace as result,  
+            # then it is not necessary dive into deeper investigations again. All
+            # of its successor paths have been walked along before. This catches
+            # two scenarios:
+            #   
+            # (1) Loops: A state is reached through a loop and nothing 
+            #            changed during the walk through the loop since
+            #            the last passing.
+            # 
+            #            There may be connected loops, so it is not sufficient
+            #            to detect a loop and stop.
+            #
+            # (2) Knots: A state is be reached through different branches.
+            #            However, the traces through those branches are
+            #            indifferent in their positioning and accepting 
+            #            behavior. Only one branch needs to consider the
+            #            subsequent states.
+            #
+            #     (There were cases where this blew the computation time
+            #      see bug-2257908.sh in $QUEX_PATH/TEST).
+            # 
+            existing_trace_list = self.result.get(StateIndex) 
+            for pioneer in existing_trace_list:
+                if not trace.is_equivalent(pioneer): continue
+                if trace.has_parent(pioneer):
+                    # Loop detected -- Continuation unecessary. 
+                    # Nothing new happend since last passage.
+                    # If trace was not equivalent, the loop would have to be stepped through again.
+                    return None
+                else:
+                    # Knot detected -- Continuation abbreviated.
+                    # A state is reached twice via two separate paths with
+                    # the same positioning_states and acceptance states. The
+                    # analysis of subsequent states on the path is therefore
+                    # complete. Almost: There is now alternative paths from
+                    # store to restore that must added later on.
+                    self.dangerous_positioning_state_set.update(accept_info.positioning_state_index \
+                                                                for accept_info in trace.acceptance_trace)
+                    return None
 
-                # (*) Recursion Termination:
-                #
-                # If a state has been analyzed before with the same trace as result,  
-                # then it is not necessary dive into deeper investigations again. All
-                # of its successor paths have been walked along before. This catches
-                # two scenarios:
-                #   
-                # (1) Loops: A state is reached through a loop and nothing 
-                #            changed during the walk through the loop since
-                #            the last passing.
-                # 
-                #            There may be connected loops, so it is not sufficient
-                #            to detect a loop and stop.
-                #parent = trace.parent
-                #while parent is not None:
-                #    if parent.state_index == StateIndex and parent.is_equivalent(trace): 
-                #        # Loop detected which does not add any meaning.
-                #        return None
-                #    parent = parent.parent
-                #
-                # (2) Knots: A state is be reached through different branches.
-                #            However, the traces through those branches are
-                #            indifferent in their positioning and accepting 
-                #            behavior. Only one branch needs to consider the
-                #            subsequent states.
-                #
-                #     (There were cases where this blew the computation time
-                #      see bug-2257908.sh in $QUEX_PATH/TEST).
-                # 
-                existing_trace_list = self.result.get(StateIndex) 
-                for pioneer in existing_trace_list:
-                    if not trace.is_equivalent(pioneer): continue
-                    if trace.has_parent(pioneer):
-                        # Loop detected -- Continuation unecessary. 
-                        # Nothing new happend since last passage.
-                        return None
-                    else:
-                        # Knot detected -- Continuation abbreviated.
-                        # A state is reached twice via two separate paths with
-                        # the same positioning_states and acceptance states. The
-                        # analysis of subsequent states on the path is therefore
-                        # complete. Almost: There is now alternative paths from
-                        # store to restore that must added later on.
-                        # self.knot_branch_db.append(KnotInfo(pioneer, trace))
-                        for accept_info in trace.acceptance_trace:
-                            self.pruned_knot_list.append((pioneer, accept_info.path_since_positioning))
-                        return None
-                        # return None # For now, do not further process the node.
+            # (*) Mark the current state with its acceptance trace
+            self.result[StateIndex].append(trace)
 
-                # (*) Mark the current state with its acceptance trace
-                self.result[StateIndex].append(trace)
+            # (*) Add current state to path
+            self.__depth += 1
 
-                # (*) Add current state to path
-                self.__depth += 1
+            # (*) Recurse to all (undone) target states. 
+            return [(trace, target_index) 
+                    for target_index in self.sm.states[StateIndex].transitions().get_map().iterkeys()
+                   ]
 
-                # (*) Recurse to all (undone) target states. 
-                return [(trace, target_index) 
-                        for target_index in self.sm.states[StateIndex].transitions().get_map().iterkeys()
-                       ]
+        def on_finished(self, Args):
+            # self.done_set.add(StateIndex)
+            self.__depth -= 1
 
-            def on_finished(self, Args):
-                # self.done_set.add(StateIndex)
-                self.__depth -= 1
-
-            def pruned_knot_list_post_process(self):
-                for pioneer, acceptance_trace in self.neglected_trace_db:
-                    for trace_list in self.result.itervalues():
-                        # Consider only traces that originate in the 'pioneer'.
-                        for trace in (x for x in trace_list if x.has_parent(pioneer)):
-                            sibling_trace_list = trace.generate_siblings_with_alternative_path(acceptance_trace)
-                            if sibling_trace_list is not None: 
-                                trace_list.extend(sibling_trace_list)
-
-        trace_finder = TraceFinder(self)
-        trace_finder.do((None, self.sm.init_state_index))
-        class Doodle:
-            def __init__(self, X):
-                self.acceptance_trace = X.acceptance_trace
-        return dict( (key, [Doodle(x) for x in trace_list]) for key, trace_list in trace_finder.result.iteritems())
+    trace_finder = TraceFinder(SM)
+    trace_finder.do((None, SM.init_state_index))
+    # Generate 'Doodle' objects that have only the acceptance trace member.
+    # This is to ensure that no other member is used from the PathTrace Object.
+    class Doodle:
+        def __init__(self, X):
+            self.acceptance_trace = X.acceptance_trace
+    return dict( (key, [Doodle(x) for x in trace_list]) for key, trace_list in trace_finder.result.iteritems()), \
+           trace_finder.dangerous_positioning_state_set
 
 class PathTrace(object):
     """ABSTRACT:
@@ -378,9 +347,9 @@ class PathTrace(object):
         elif len(self.__storage_db)       != len(Other.__storage_db):       return False
 
         for x, y in izip(self.__acceptance_trace, Other.__acceptance_trace):
-            if   x.pattern_id                     != y.pattern_id:              return False
-            elif x.accepting_state_index          != y.accepting_state_index:   return False
-            elif x.positioning_state_index        != y.positioning_state_index: return False
+            if   x.pattern_id                     != y.pattern_id:                     return False
+            elif x.accepting_state_index          != y.accepting_state_index:          return False
+            elif x.positioning_state_index        != y.positioning_state_index:        return False
             elif x.transition_n_since_positioning != y.transition_n_since_positioning: return False
 
         for x, y in izip(sorted(self.__storage_db.iteritems()), sorted(Other.__storage_db.iteritems())):
@@ -390,15 +359,6 @@ class PathTrace(object):
             elif x_info.loop_f                  != y_info.loop_f:                  return False
             elif x_info.positioning_state_index != y_info.positioning_state_index: return False
         return True
-
-    def generate_siblings_with_alternative_path(self, AcceptanceTrace):
-        for accept_info in AcceptanceTrace:
-            # Is there 'something' like accept_info?
-            for mine in self.acceptance_trace:
-                if     accept_info.pattern_id              == mine.pattern_id             \
-                   and accept_info.accepting_state_index   == mine.accepting_state_index  \
-                   and accept_info.positioning_state_index == mine.positioning_state_index:
-                       pass
 
     def __eq__(self, Other):
         if self.__acceptance_trace != Other.__acceptance_trace: return False
@@ -569,6 +529,7 @@ class AcceptInfo(StoreInfo):
         txt.append("    .transition_n_since_positioning = %s\n" % repr(self.transition_n_since_positioning))
         txt.append("    .accepting_state_index          = %s\n" % repr(self.accepting_state_index))
         txt.append("    .positioning_state_index        = %s\n" % repr(self.positioning_state_index))
+        txt.append(StoreInfo.__repr__(self))
         return "".join(txt)
 
 

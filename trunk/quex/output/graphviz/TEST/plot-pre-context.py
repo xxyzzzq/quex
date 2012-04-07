@@ -7,6 +7,8 @@ sys.path.append(os.environ["QUEX_PATH"])
 import quex.output.graphviz.core            as plotter
 import quex.input.regular_expression.engine as regex
 from   quex.engine.generator.action_info    import PatternActionInfo
+from   quex.blackboard import setup as Setup
+Setup.normalize_f = True
 
 if "--hwut-info" in sys.argv:
     print "Plot: Pre-Context."

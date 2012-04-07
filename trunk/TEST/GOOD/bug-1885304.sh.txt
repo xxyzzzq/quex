@@ -9,7 +9,7 @@
  * (6) Memento pack and unpack functions.
  *
  *
- * (C) 2005-2010 Frank-Rene Schaefer
+ * (C) 2005-2012 Frank-Rene Schaefer
  * ABSOLUTELY NO WARRANTY                                                      */
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED____QUEX____SIMPLE
 
@@ -17,6 +17,9 @@
     /* In case that multiple lexical analyzers are used the same header
      * files are compiled with a different setting of the macros. The
      * undef of the include guards happens in the following file.              */
+#   ifdef   __QUEX_SIGNAL_DEFINED_LEXER_IN_NAMESPACE___QUEX__
+#      error "More than one lexical analyzer have been generated in the same name space. Read documentation on command line option '-o'."
+#   endif
 #   include <quex/code_base/include-guard-undef>
 #   include <quex/code_base/analyzer/member/token-sending-undef.i>
 #   undef   __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION____QUEX____SIMPLE

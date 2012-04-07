@@ -930,6 +930,9 @@ def __parse_event(new_mode, fh, word):
     # Allow '<<EOF>>' and '<<FAIL>>' out of respect for classical tools like 'lex'
     if   word == "<<EOF>>":                  word = "on_end_of_stream"
     elif word == "<<FAIL>>":                 word = "on_failure"
+    elif word in blackboard.all_section_title_list:
+        error_msg("Pattern '%s' is a quex section title. Has the closing '}' of mode %s \n" % (word, new_mode.name) \
+                  + "been forgotten? Else use quotes, i.e. \"%s\"." % word, fh)
     elif len(word) < 3 or word[:3] != "on_": return False
 
     comment = "Unknown event handler '%s'. \n" % word + \
