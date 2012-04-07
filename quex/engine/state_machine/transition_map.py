@@ -471,7 +471,8 @@ class TransitionMap:
             else:                     target_str = "%i" % int(StateIndexMap[ti]) 
             msg += "%i -> %s [label =\"<epsilon>\"];\n" % (OwnStateIdx, target_str)
 
-        return msg
+        # Escape backslashed characters
+        return msg.replace("\\", "\\\\")
 
 class history_item(object):
     """To be used by: member function 'get_trigger_set_line_up(self)'

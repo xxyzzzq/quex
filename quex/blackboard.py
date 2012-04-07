@@ -139,6 +139,8 @@ fragment_db = {
         "memento_unpack": "memento_unpack_extension",
 }
 
+all_section_title_list = ["start", "define", "token", "mode", "repeated_token", "token_type" ] + fragment_db.keys()
+
 class PatternShorthand:
     def __init__(self, Name="", StateMachine="", Filename="", LineN=-1, RE=""):
         assert StateMachine.__class__.__name__ == "StateMachine"

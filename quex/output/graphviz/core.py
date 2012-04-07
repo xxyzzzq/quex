@@ -1,5 +1,6 @@
 from quex.engine.misc.file_in   import write_safely_and_close
 from quex.engine.generator.base import GeneratorBase
+from quex.blackboard            import setup as Setup
 
 class Generator(GeneratorBase):
     def __init__(self, PatternActionPairList, StateMachineName):
@@ -27,7 +28,7 @@ class Generator(GeneratorBase):
                 self.__do(sm, file_name, Option)
 
     def __do(self, state_machine, FileName, Option="utf8"):
-        dot_code = state_machine.get_graphviz_string(NormalizeF=True, Option=Option)
+        dot_code = state_machine.get_graphviz_string(NormalizeF=Setup.normalize_f, Option=Option)
         write_safely_and_close(FileName, dot_code)
     
 

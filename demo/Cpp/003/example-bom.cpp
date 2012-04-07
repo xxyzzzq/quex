@@ -18,9 +18,9 @@ main(int argc, char** argv)
     FILE*                 fh = fopen(argc > 1 ? argv[1] : "example.txt", "rb");
 
     /* Either there is no BOM, or if there is one, then it must be UTF8 */
-    QUEX_TYPE_BOM         bom_type = quex::QUEX_NAME(bom_snap)(fh);
+    QUEX_TYPE_BOM         bom_type = quex::bom_snap(fh);
 
-    cout << "Found BOM: " << quex::QUEX_NAME(bom_name)(bom_type) << endl;
+    cout << "Found BOM: " << quex::bom_name(bom_type) << endl;
 
     if( (bom_type & (QUEX_BOM_UTF_8 | QUEX_BOM_NONE)) == 0 ) {
         cout << "Found a non-UTF8 BOM. Exit\n";

@@ -70,7 +70,7 @@ QUEX_NAME(bom_snap)(InputStream* p_input_stream)
 
     p_input_stream->read((typename InputStream::char_type*)buffer, 4 / CharSize);
     read_n = (size_t)(p_input_stream->gcount());
-    result = QUEX_NAME(__bom_snap_core)(buffer, read_n, &byte_n);
+    result = quex::__bom_snap_core(buffer, read_n, &byte_n);
 
     /* Avoid temporary function argument. Store sum in p0. */
     p0 += typename InputStream::pos_type(byte_n);

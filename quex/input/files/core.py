@@ -77,9 +77,8 @@ def parse_section(fh):
     if word == "":
         error_msg("Missing section title.", fh)
 
-    SectionTitleList = ["start", "define", "token", "mode", "repeated_token", "token_type" ] + blackboard.fragment_db.keys()
-
-    verify_word_in_list(word, SectionTitleList, "Unknown quex section '%s'" % word, fh)
+    verify_word_in_list(word, blackboard.all_section_title_list, 
+                        "Unknown quex section '%s'" % word, fh)
     try:
         # (*) determine what is defined
         #

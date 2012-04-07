@@ -19,9 +19,9 @@ main(int argc, char** argv)
     quex_EasyLexer  qlex;
 
     /* Either there is no BOM, or if there is one, then it must be UTF8 */
-    QUEX_TYPE_BOM   bom_type = QUEX_NAME(bom_snap)(fh);
+    QUEX_TYPE_BOM   bom_type = quex_bom_snap(fh);
 
-    printf("Found BOM: %s\n", QUEX_NAME(bom_name)(bom_type));
+    printf("Found BOM: %s\n", quex_bom_name(bom_type));
 
     if( (bom_type & (QUEX_BOM_UTF_8 | QUEX_BOM_NONE)) == 0 ) {
         printf("Found a non-UTF8 BOM. Exit\n");

@@ -11,14 +11,14 @@ cd $bug/
 
 case $1 in
     utf8)
-    quex -i test.qx --language dot --debug-exception
+    quex -i test.qx --language dot --debug-exception --normalize
     cat ME_*.dot
     cat ME.dot
     cat ME-pre*.dot
     ;;
 
     hex)
-    quex -i test.qx --language dot --character-display hex --debug-exception
+    quex -i test.qx --language dot --character-display hex --debug-exception --normalize
     cat ME_*.dot
     cat ME.dot
     cat ME-pre*.dot
