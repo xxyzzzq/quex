@@ -1,0 +1,2 @@
+bash debug_show.sh
+bash comment.sh

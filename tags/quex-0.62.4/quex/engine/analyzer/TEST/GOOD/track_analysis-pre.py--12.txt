@@ -1,0 +1,196 @@
+init-state = 0L
+00000 (66, 164), (140, 362), (79, 195), (101, 252), (114, 283), (106, 266), (9, 19), (31, 76), (44, 107)
+     == 'a' ==> 00001
+    
+00001 (9, 20), (31, 77), (44, 108), (66, 165), (79, 196), (101, 253), (106, 267, A), (114, 284), (140, 363)
+     == 'b' ==> 00002
+    
+00002 (9, 21), (31, 78), (44, 109), (66, 166), (79, 197), (101, 254), (114, 285), (140, 364)
+     == 'c' ==> 00003
+    
+00003 (9, 22, A, pre=12), (31, 79), (44, 110, A, pre=47), (66, 167), (79, 198, A, pre=82), (101, 255), (114, 286, A), (140, 365)
+     == 'd' ==> 00004
+    
+00004 (31, 80), (66, 168), (101, 256), (140, 366)
+     == 'd' ==> 00004
+     == 'e' ==> 00005
+    
+00005 (31, 81, A, pre=34), (66, 169, A, pre=69), (101, 257, A, pre=104), (140, 367)
+     == 'f' ==> 00006
+    
+00006 (140, 368)
+     == 'f' ==> 00006
+     == 'g' ==> 00007
+    
+00007 (140, 369, A)
+    
+
+State 0:
+  .entry:
+    .from NONE:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 1:
+  .entry:
+    .from 0:
+  .drop_out:
+     goto Pattern106;
+
+
+State 2:
+  .entry:
+    .from 1:
+  .drop_out:
+    pos -= 1;  goto Pattern106;
+
+
+State 3:
+  .entry:
+    .from 2:
+  .drop_out:
+    if PreContext_12:  goto Pattern9;
+    else if PreContext_47:  goto Pattern44;
+    else if PreContext_82:  goto Pattern79;
+     goto Pattern114;
+
+
+State 4:
+  .entry:
+    .from 3:
+        position[PostContext_114]  = input_p;
+        if 'PreContext_12': position[PostContext_9]  = input_p;
+        if 'PreContext_47': position[PostContext_44]  = input_p;
+        if 'PreContext_82': position[PostContext_79]  = input_p;
+    .from 4:
+  .drop_out:
+    if PreContext_12: pos = position[PostContext_9] ; goto Pattern9;
+    else if PreContext_47: pos = position[PostContext_44] ; goto Pattern44;
+    else if PreContext_82: pos = position[PostContext_79] ; goto Pattern79;
+    pos = position[PostContext_114] ; goto Pattern114;
+
+
+State 5:
+  .entry:
+    .from 4:
+  .drop_out:
+    if PreContext_34:  goto Pattern31;
+    else if PreContext_69:  goto Pattern66;
+    else if PreContext_104:  goto Pattern101;
+    else if PreContext_12: pos = position[PostContext_9] ; goto Pattern9;
+    else if PreContext_47: pos = position[PostContext_44] ; goto Pattern44;
+    else if PreContext_82: pos = position[PostContext_79] ; goto Pattern79;
+    pos = position[PostContext_114] ; goto Pattern114;
+
+
+State 6:
+  .entry:
+    .from 5:
+        if 'PreContext_34': position[PostContext_31]  = input_p;
+        if 'PreContext_69': position[PostContext_66]  = input_p;
+        if 'PreContext_104': position[PostContext_101]  = input_p;
+    .from 6:
+  .drop_out:
+    if PreContext_34: pos = position[PostContext_31] ; goto Pattern31;
+    else if PreContext_69: pos = position[PostContext_66] ; goto Pattern66;
+    else if PreContext_104: pos = position[PostContext_101] ; goto Pattern101;
+    else if PreContext_12: pos = position[PostContext_9] ; goto Pattern9;
+    else if PreContext_47: pos = position[PostContext_44] ; goto Pattern44;
+    else if PreContext_82: pos = position[PostContext_79] ; goto Pattern79;
+    pos = position[PostContext_114] ; goto Pattern114;
+
+
+State 7:
+  .entry:
+    .from 6:
+  .drop_out:
+     goto Pattern140;
+
+
+State 0:
+        [FAILURE]: NONE/set([0L])
+
+State 1:
+        [    106]: NONE/set([1L])
+
+State 2:
+        [    106]: NONE/set([1L])
+
+State 3:
+        [      9]: 12/set([3L])
+        [     44]: 47/set([3L])
+        [     79]: 82/set([3L])
+        [    114]: NONE/set([3L])
+
+State 4:
+    (*) [      9]: 12/set([3L])
+    (*) [     44]: 47/set([3L])
+    (*) [     79]: 82/set([3L])
+    (*) [    114]: NONE/set([3L])
+
+State 5:
+    (*) [      9]: 12/set([3L])
+        [     31]: 34/set([5L])
+    (*) [     44]: 47/set([3L])
+        [     66]: 69/set([5L])
+    (*) [     79]: 82/set([3L])
+        [    101]: 104/set([5L])
+    (*) [    114]: NONE/set([3L])
+
+State 6:
+    (*) [      9]: 12/set([3L])
+    (*) [     31]: 34/set([5L])
+    (*) [     44]: 47/set([3L])
+    (*) [     66]: 69/set([5L])
+    (*) [     79]: 82/set([3L])
+    (*) [    101]: 104/set([5L])
+    (*) [    114]: NONE/set([3L])
+
+State 7:
+        [    140]: NONE/set([7L])
+
+
+--- Optimized States ---
+
+State 4:
+  .entry:
+    .from 3: position[PostContext_0]  = input_p;
+    .from 4:
+  .drop_out:
+    if PreContext_12: pos = position[PostContext_0] ; goto Pattern9;
+    else if PreContext_47: pos = position[PostContext_0] ; goto Pattern44;
+    else if PreContext_82: pos = position[PostContext_0] ; goto Pattern79;
+    pos = position[PostContext_0] ; goto Pattern114;
+
+
+State 5:
+  .entry:
+    .from 4:
+  .drop_out:
+    if PreContext_34:  goto Pattern31;
+    else if PreContext_69:  goto Pattern66;
+    else if PreContext_104:  goto Pattern101;
+    else if PreContext_12: pos = position[PostContext_0] ; goto Pattern9;
+    else if PreContext_47: pos = position[PostContext_0] ; goto Pattern44;
+    else if PreContext_82: pos = position[PostContext_0] ; goto Pattern79;
+    pos = position[PostContext_0] ; goto Pattern114;
+
+
+State 6:
+  .entry:
+    .from 5:
+        if 'PreContext_34': position[PostContext_1]  = input_p;
+        if 'PreContext_69': position[PostContext_1]  = input_p;
+        if 'PreContext_104': position[PostContext_1]  = input_p;
+    .from 6:
+  .drop_out:
+    if PreContext_34: pos = position[PostContext_1] ; goto Pattern31;
+    else if PreContext_69: pos = position[PostContext_1] ; goto Pattern66;
+    else if PreContext_104: pos = position[PostContext_1] ; goto Pattern101;
+    else if PreContext_12: pos = position[PostContext_0] ; goto Pattern9;
+    else if PreContext_47: pos = position[PostContext_0] ; goto Pattern44;
+    else if PreContext_82: pos = position[PostContext_0] ; goto Pattern79;
+    pos = position[PostContext_0] ; goto Pattern114;
+
+

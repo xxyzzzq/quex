@@ -1,0 +1,1 @@
+﻿token { X; } mode X { ^("ab")+ => QUEX_TKN_X; }

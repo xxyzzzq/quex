@@ -1,0 +1,8 @@
+digraph state_machine_6 {
+rankdir=LR;
+size="8,5"
+node [shape = doublecircle]; 18;
+node [shape = circle];
+17 -> 18 [label ="['\\t', '\\n'], '\\r', ' '"];
+18 -> 18 [label ="['\\t', '\\n'], '\\r', ' '"];
+}

@@ -1,0 +1,52 @@
+< 		boeck_Lexer.cpp              \
+< 		max_Lexer.cpp                \
+< 		moritz_Lexer.cpp             
+---
+> 		boeck_Lexer.c    \
+> 		max_Lexer.c      \
+> 		moritz_Lexer.c             
+< OBJS = $(ENGINE:.cpp=.o) lexer.o
+---
+> OBJS = $(ENGINE:.c=.o) lexer.o
+< 	g++ $(OBJS) -ggdb -o  $@ \
+< 		-I$(QUEX_PATH) 
+< 	 
+---
+> 	gcc $(OBJS) -ggdb -o  $@ -I$(QUEX_PATH) 
+< %.o: %.cpp $(ENGINE_SOURCES)
+< 	g++ -c $< -ggdb -Wall -o $@ \
+< 		-I$(QUEX_PATH) \
+< 		$(CCFLAG_ASSERTS) 
+< 
+---
+> %.o: %.c 
+> 	gcc -c $< -ggdb -Wall -o $@ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) 
+< %.E: %.cpp
+< 	g++ -E $< -o  $@ \
+< 		-I$(QUEX_PATH) 
+< 		
+---
+> %.E: %.c
+> 	gcc -E $< -o  $@ -I$(QUEX_PATH) 
+< max_Lexer.cpp:    max.qx
+---
+> max_Lexer.c: max.qx
+> 		 --language C                                  \
+< moritz_Lexer.cpp: moritz.qx
+---
+> moritz_Lexer.c: moritz.qx
+> 		 --language C                                     \
+< boeck_Lexer.cpp:  boeck.qx
+---
+> boeck_Lexer.c: boeck.qx
+> 		 --language C                                \
+< 	rm -rf $(ENGINE)
+< 	rm -rf $(ENGINE:.cpp=.o)
+< 	rm -rf $(ENGINE:.cpp=)
+< 	rm -rf $(ENGINE:.cpp=-token_ids)
+< 	rm -rf $(ENGINE:.cpp=-token)
+< 	rm -rf $(ENGINE:.cpp=-configuration)
+---
+> 	rm -rf boeck_Lexer*
+> 	rm -rf max_Lexer*
+> 	rm -rf moritz_Lexer*
