@@ -2,16 +2,16 @@
 #include<iostream> 
 #include<sstream> 
 
-#include <./tiny_lexer>
+#include <./tiny_lexer_st>
 
 int 
 main(int argc, char** argv) 
 {        
     using namespace std;
 
-    quex::Token       token;
+    quex::Token          token;
     // Zero pointer to constructor --> use raw memory
-    quex::tiny_lexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0);   
+    quex::tiny_lexer_st  qlex((QUEX_TYPE_CHARACTER*)0x0, 0);   
 
     cout << ",------------------------------------------------------------------------------------\n";
     cout << "| [START]\n";
