@@ -24,7 +24,7 @@ else
 	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
 endif
 COMPILER = g++ -ggdb -Wall -pedantic 
-CC = $(COMPILER) -c -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) \
+CC = $(COMPILER) -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) \
 	 # -DQUEX_OPTION_ASSERTS_DISABLED
 	 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 		 
@@ -37,9 +37,15 @@ all: lexer wlexer
 lexer: lexer.o tiny_lexer.o 
 	$(LD) -o $@  lexer.o tiny_lexer.o 
           
-stdinlexer: stdinlexer.o tiny_lexer.o 
-	$(LD) -o $@  stdinlexer.o tiny_lexer.o 
+stdinlexer: stdinlexer.cpp tiny_lexer_st.cpp 
+	$(CC) -o $@  $^
           
+tiny_lexer_st.cpp:   simple.qx $(QUEX_CORE)
+	quex -i simple.qx --engine tiny_lexer_st \
+		 --token-memory-management-by-user   \
+		 --token-policy single
+		 # CERTAINLY NOT: "--bet wchar_t" 
+		 
 $(SOURCES): simple.qx $(QUEX_CORE)
 	quex -i simple.qx --engine tiny_lexer --token-policy single
 
@@ -52,7 +58,7 @@ $(WSOURCES): simple.qx $(QUEX_CORE)
 
 # -- The general way to get .o from .cpp
 %.o: %.cpp $(SOURCES) $(WSOURCES)
-	$(CC) $< -o $@ 
+	$(CC) -c $< -o $@ 
 
 # (*) HELPERS __________________________________________________________________
 clean:	
