@@ -1,5 +1,33 @@
 ,------------------------------------------------------------------------------------
 | [START]
+before: Lexeme: a; LexemeBegin: a; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+after:  Lexeme: a; LexemeBegin: a; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+before: Lexeme: a; LexemeBegin: a; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+after:  Lexeme: a; LexemeBegin: a; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+before: Lexeme: abb; LexemeBegin: abb; LexemeEnd - LexemeBegin: 3; LexemeL: 3
+after:  Lexeme: abb; LexemeBegin: abb; LexemeEnd - LexemeBegin: 3; LexemeL: 3
+before: Lexeme: baa; LexemeBegin: baa; LexemeEnd - LexemeBegin: 3; LexemeL: 3
+after:  Lexeme: baa; LexemeBegin: baa; LexemeEnd - LexemeBegin: 3; LexemeL: 3
+before: Lexeme: abb; LexemeBegin: abb; LexemeEnd - LexemeBegin: 3; LexemeL: 3
+after:  Lexeme: abb; LexemeBegin: abb; LexemeEnd - LexemeBegin: 3; LexemeL: 3
+before: Lexeme: ba; LexemeBegin: ba; LexemeEnd - LexemeBegin: 2; LexemeL: 2
+after:  Lexeme: ba; LexemeBegin: ba; LexemeEnd - LexemeBegin: 2; LexemeL: 2
+before: Lexeme: ab; LexemeBegin: ab; LexemeEnd - LexemeBegin: 2; LexemeL: 2
+after:  Lexeme: ab; LexemeBegin: ab; LexemeEnd - LexemeBegin: 2; LexemeL: 2
+before: Lexeme: b; LexemeBegin: b; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+after:  Lexeme: b; LexemeBegin: b; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+before: Lexeme: a; LexemeBegin: a; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+after:  Lexeme: a; LexemeBegin: a; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+before: Lexeme: b; LexemeBegin: b; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+after:  Lexeme: b; LexemeBegin: b; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+before: Lexeme: 
+; LexemeBegin: 
+; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+after:  Lexeme: 
+; LexemeBegin: 
+; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+before: Lexeme: ; LexemeBegin: ; LexemeEnd - LexemeBegin: 0; LexemeL: 0
+after:  Lexeme: ; LexemeBegin: ; LexemeEnd - LexemeBegin: 0; LexemeL: 0
 (1, 1)  	ON_MATCH______: 0
 (1, 1)  	ELSE__________: a
 (1, 1)  	ON_AFTER_MATCH: 1
