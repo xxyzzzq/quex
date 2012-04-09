@@ -26,7 +26,7 @@ else
 	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
 endif
 COMPILER = gcc -ggdb -Wall -pedantic 
-CC = $(COMPILER) -c -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) \
+CC = $(COMPILER) -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) \
 	 # -DQUEX_OPTION_ASSERTS_DISABLED
 	 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 		 
@@ -39,9 +39,16 @@ all: lexer wlexer
 lexer: lexer.o tiny_lexer.o 
 	$(LD) -o $@  lexer.o tiny_lexer.o 
           
-stdinlexer: stdinlexer.o tiny_lexer.o 
-	$(LD) -o $@  stdinlexer.o tiny_lexer.o 
+stdinlexer: stdinlexer.c tiny_lexer_st.c 
+	$(CC) -o $@  $^
           
+tiny_lexer_st.c: simple.qx $(QUEX_CORE)
+	quex -i simple.qx --engine tiny_lexer_st \
+		 --language C                        \
+		 --token-memory-management-by-user   \
+		 --token-policy single
+		 # CERTAINLY NOT: "--bet wchar_t" 
+	
 $(SOURCES): simple.qx $(QUEX_CORE)
 	quex -i simple.qx --engine tiny_lexer \
 		 --language C                     \
@@ -58,12 +65,13 @@ $(WSOURCES): simple.qx $(QUEX_CORE)
 
 # -- The general way to get .o from .c
 %.o: %.c $(SOURCES) $(WSOURCES)
-	$(CC) $< -o $@ 
+	$(CC) -c $< -o $@ 
 
 # (*) HELPERS __________________________________________________________________
 clean:	
 	touch simple.qx
 	rm -f wchar_t-example.txt # created by wlexer.c
+	rm -f tiny_lexer_st*
 	rm -f $(SOURCES)
 	rm -f $(WSOURCES)
 	rm -f *.o

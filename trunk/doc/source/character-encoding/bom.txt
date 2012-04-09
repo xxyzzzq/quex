@@ -15,13 +15,29 @@ character stream. To access the following files must be included:
     #include <quex/code_base/bom>
     #include <quex/code_base/bom.i>
 
-These files declare and implement functions in in the main namespace (default
-``quex``). The function
+These files declare and implement BOM related functions in in the quex
+namespace. The list of available functions in C++ is 
 
 .. code-block:: cpp
 
-    QUEX_TYPE_BOM   QUEX_NAME(bom_snap)(InputHandleT* InputHandle);
-   
+    namespace quex {
+        QUEX_TYPE_BOM      bom_snap(FILE* fh);
+        template <class InStream> 
+        QUEX_TYPE_BOM      bom_snap(InStream* is_p);
+        QUEX_TYPE_BOM      bom_identify(const uint8_t* const Buffer, size_t* n);
+        const char*        bom_name(QUEX_TYPE_BOM BOM);
+    } 
+
+and in C
+
+.. code-block:: cpp
+
+    QUEX_TYPE_BOM  quex_bom_snap(FILE* fh);
+    QUEX_TYPE_BOM  quex_bom_identify(const uint8_t* const Buffer, size_t* n);
+    const char*    quex_bom_name(QUEX_TYPE_BOM BOM);
+
+In the further discussion the functions will be referred to without their
+name or namespace prefix. The function ``bom_snap(...)``
 checks whether the stream starts with a byte sequence that is identified
 as a byte order mark. If so, it steps over it so that the lexical analyzis
 can start immediately after it. An exception is the BOM for UTF7; this 
@@ -77,7 +93,7 @@ example
 
     using namespace quex;
 
-    bom_type = QUEX_NAME(bom_snap)(file_handle);
+    bom_type = bom_snap(file_handle);
 
     if( bom_type & (QUEX_BOM_UTF32 | QUEX_BOM_NONE) ) {
         ...
@@ -100,8 +116,7 @@ can be detected by considering the whole value, e.g.
     case QUEX_BOM_UTF_32_BE: codec_name = "UTF32BE"; break;
     /* Unkown BOM => break                                    */
     default: 
-         error_msg("Unknown BOM detected %s", 
-                   QUEX_NAME(bom_name)(bom_type)); 
+         error_msg("Unknown BOM detected %s", bom_name(bom_type)); 
     }
 
 The example above, already, mentions another helper function that maps
@@ -110,14 +125,14 @@ a BOM identifier to a human readable string
 
 .. code-block:: cpp
  
-    const char*     QUEX_NAME(bom_name)(QUEX_TYPE_BOM BOM);
+    const char*     bom_name(QUEX_TYPE_BOM BOM);
 
 If the user wishes to identify on some chunk of arbitrary memory the following
 function may be used
 
 .. code-block:: cpp
  
-    QUEX_TYPE_BOM   QUEX_NAME(bom_identify)(const uint8_t* const Buffer, size_t* n);
+    QUEX_TYPE_BOM   bom_identify(const uint8_t* const Buffer, size_t* n);
 
 It receives a byte array in ``Buffer`` which must at least be of size four.  It
 reports the found BOM as a return value and fills the number of bytes that the
@@ -127,7 +142,7 @@ One important thing to notice is that the constructor does the first
 load from the data stream. Thus, if the BOM-cutting happens after the
 construction of the lexical analyzer object the 'cut' would not have
 any effect. Thus, the constructor call must be delayed after the
-call to ``QUEX_NAME(BOM_snap)(...)``. If the initial call to the
+call to ``BOM_snap(...)``. If the initial call to the
 constructor cannot be avoided, then the call to the BOM snap function
 must be followed by a call to the ``reset(...)`` function. Also, 
 an attempt to cut the BOM, after the constructor has done its 
@@ -151,7 +166,7 @@ fragment shows an initialization in C language:
     fh = fopen(file_name, "rb");
 
     /* Either there is no BOM, or if there is one, then it must be UTF8 */
-    QUEX_TYPE_BOM   bom_type = QUEX_NAME(bom_snap)(fh);
+    QUEX_TYPE_BOM   bom_type = quex_bom_snap(fh);
     if( (bom_type & (QUEX_BOM_UTF_8 | QUEX_BOM_NONE)) == 0 ) {
         printf("Found a non-UTF8 BOM. Exit\n");
         fclose(fh);

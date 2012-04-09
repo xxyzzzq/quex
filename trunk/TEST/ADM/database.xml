@@ -1,4 +1,4 @@
-<test-database execution-time-sec="222.94" date="Sat Apr  7 09:03:25 2012">
+<test-database execution-time-sec="222.94" date="Mon Apr  9 09:27:43 2012">
     <last-used-diff-display-program name=""/>
     <group name="alexeevm">
         <test title="3022603 0.49.2 Using external buffer with Quex lexer" time-sum-sec="1.45"> 
@@ -121,7 +121,7 @@
         <test title="3495127 Event Handler on_after_match" time-sum-sec="0.86"> 
             <application file-name="feature-3495127.sh" info-request-time="1330639526L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.86" crc="1410563394"/>
+               <choice name="" result="OK" time_sec="0.86" crc="-755253233"/>
             </choice-list>
         </test>
         <test title="3485516 0.60.1 0.60.1 Exception Handling Disorder" time-sum-sec="0.13"> 
@@ -212,10 +212,12 @@
                <choice name="GOSUB-2" result="OK" time_sec="0.94" crc="338670272"/>
             </choice-list>
         </test>
-        <test title="2277660 character count pre-determination" time-sum-sec="3.29"> 
-            <application file-name="bug-2277660.sh" info-request-time="1332192420L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="3.29" crc="879596834"/>
+        <test title="2161098 0.32.1 Nested-Range Skipper Line Number Counter" time-sum-sec="5.54"> 
+            <application file-name="bug-2161098-x.sh" info-request-time="1318614190L" vanished="False"/>
+            <choice-list number="3" same_result="False">
+               <choice name="c_comments" result="OK" time_sec="1.75" crc="-572095635"/>
+               <choice name="shell_comments" result="OK" time_sec="1.84" crc="-1773697424"/>
+               <choice name="funny_comments" result="OK" time_sec="1.95" crc="-352907785"/>
             </choice-list>
         </test>
         <test title="3082041 0.52.4 Buffer Memory Size not Accepted" time-sum-sec="2.47"> 
@@ -230,12 +232,10 @@
                <choice name="" result="OK" time_sec="0.31" crc="-1737686789"/>
             </choice-list>
         </test>
-        <test title="2161098 0.32.1 Nested-Range Skipper Line Number Counter" time-sum-sec="5.54"> 
-            <application file-name="bug-2161098-x.sh" info-request-time="1318614190L" vanished="False"/>
-            <choice-list number="3" same_result="False">
-               <choice name="c_comments" result="OK" time_sec="1.75" crc="-572095635"/>
-               <choice name="shell_comments" result="OK" time_sec="1.84" crc="-1773697424"/>
-               <choice name="funny_comments" result="OK" time_sec="1.95" crc="-352907785"/>
+        <test title="2277660 character count pre-determination" time-sum-sec="3.29"> 
+            <application file-name="bug-2277660.sh" info-request-time="1332192420L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="3.29" crc="879596834"/>
             </choice-list>
         </test>
         <test title="2349109 0.33.5 Line and Column number counts with Set skippers" time-sum-sec="5.67"> 
@@ -303,6 +303,19 @@
         </test>
     </group>
     <group name="jmarsik">
+        <test title="0.58.2 history effect in UCS database interface" time-sum-sec="0.76"> 
+            <application file-name="bug-3235790.sh" info-request-time="1318614190L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.76" crc="1454506733"/>
+            </choice-list>
+        </test>
+        <test title="3115741 0.55.4 move_backward triggers assert" time-sum-sec="1.83"> 
+            <application file-name="bug-3115741.sh" info-request-time="1318614190L" vanished="False"/>
+            <choice-list number="2" same_result="False">
+               <choice name="general" result="OK" time_sec="0.93" crc="-584745426"/>
+               <choice name="undo-line-colum-count" result="OK" time_sec="0.90" crc="-415264187"/>
+            </choice-list>
+        </test>
         <test title="3307919 Support for more general Unicode categories" time-sum-sec="6.24"> 
             <application file-name="feature-3307919.sh" info-request-time="1318614190L" vanished="False"/>
             <choice-list number="10" same_result="False">
@@ -316,19 +329,6 @@
                <choice name="Z" result="OK" time_sec="0.58" crc="-2069337975"/>
                <choice name="Other" result="OK" time_sec="0.58" crc="-1715873104"/>
                <choice name="Number" result="OK" time_sec="0.61" crc="-1150894571"/>
-            </choice-list>
-        </test>
-        <test title="0.58.2 history effect in UCS database interface" time-sum-sec="0.76"> 
-            <application file-name="bug-3235790.sh" info-request-time="1318614190L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.76" crc="1454506733"/>
-            </choice-list>
-        </test>
-        <test title="3115741 0.55.4 move_backward triggers assert" time-sum-sec="1.83"> 
-            <application file-name="bug-3115741.sh" info-request-time="1318614190L" vanished="False"/>
-            <choice-list number="2" same_result="False">
-               <choice name="general" result="OK" time_sec="0.93" crc="-584745426"/>
-               <choice name="undo-line-colum-count" result="OK" time_sec="0.90" crc="-415264187"/>
             </choice-list>
         </test>
     </group>
@@ -425,18 +425,18 @@
                <choice name="" result="OK" time_sec="0.46" crc="1152736058"/>
             </choice-list>
         </test>
-        <test title="3512806 0.62.2 build error" time-sum-sec="1.37"> 
-            <application file-name="bug-3512806.sh" info-request-time="1333228883L" vanished="False"/>
-            <choice-list number="2" same_result="True">
-               <choice name="C" result="OK" time_sec="0.65" crc="2142424316"/>
-               <choice name="Cpp" result="OK" time_sec="0.72" crc="2142424316"/>
-            </choice-list>
-        </test>
         <test title="3402386 Option --language dot" time-sum-sec="0.34"> 
             <application file-name="feature-3402386.sh" info-request-time="1333742376L" vanished="False"/>
             <choice-list number="2" same_result="False">
                <choice name="hex" result="OK" time_sec="0.17" crc="1546042263"/>
                <choice name="utf8" result="OK" time_sec="0.17" crc="-2143615757"/>
+            </choice-list>
+        </test>
+        <test title="3512806 0.62.2 build error" time-sum-sec="1.37"> 
+            <application file-name="bug-3512806.sh" info-request-time="1333228883L" vanished="False"/>
+            <choice-list number="2" same_result="True">
+               <choice name="C" result="OK" time_sec="0.65" crc="2142424316"/>
+               <choice name="Cpp" result="OK" time_sec="0.72" crc="2142424316"/>
             </choice-list>
         </test>
         <test title="3403249 0.61.2 Non UTF8 encoding for *.qx files not detected." time-sum-sec="0.80"> 
@@ -510,6 +510,12 @@
                <choice name="" result="OK" time_sec="0.10" crc="-429266748"/>
             </choice-list>
         </test>
+        <test title="1885846 Empty RE in define section" time-sum-sec="0.10"> 
+            <application file-name="bug-1885846.sh" info-request-time="1318614190L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.10" crc="2110266544"/>
+            </choice-list>
+        </test>
         <test title="1908092 0.23.5 uses --token-class without --token-class-file" time-sum-sec="0.38"> 
             <application file-name="bug-1908092.sh" info-request-time="1332707133L" vanished="False"/>
             <choice-list number="1" same_result="False">
@@ -544,14 +550,6 @@
             <application file-name="bug-1889089.sh" info-request-time="1318614190L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.13" crc="107363452"/>
-            </choice-list>
-        </test>
-        <test title="1935701 - 0.24.7 buffer handling size mismatch" make-dependent="True" time-sum-sec="0.00"> 
-            <application file-name="bug-1935701.exe" info-request-time="1333779985L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.850835"/>
-            <choice-list number="2" same_result="False">
-               <choice name="FILE" result="OK" time_sec="0.00" crc="-953317363"/>
-               <choice name="fstream" result="OK" time_sec="0.00" crc="-953317363"/>
             </choice-list>
         </test>
         <test title="1894185 Unbalanced quote and double quote in header/init/body blocks in 0.20.6" time-sum-sec="0.20"> 
@@ -649,12 +647,6 @@
                <choice name="" result="OK" time_sec="0.10" crc="-2033217112"/>
             </choice-list>
         </test>
-        <test title="1887163 Single state mode causes quex to crash" time-sum-sec="0.39"> 
-            <application file-name="bug-1887163.sh" info-request-time="1318614190L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.39" crc="1510346924"/>
-            </choice-list>
-        </test>
         <test title="1889702 0.19.4 forbids derived modes that only add event handlers" time-sum-sec="0.39"> 
             <application file-name="bug-1889702.sh" info-request-time="1318614190L" vanished="False"/>
             <choice-list number="1" same_result="False">
@@ -665,6 +657,14 @@
             <application file-name="bug-1885304.sh" info-request-time="1320218160L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.00" crc="1529078211"/>
+            </choice-list>
+        </test>
+        <test title="1935701 - 0.24.7 buffer handling size mismatch" make-dependent="True" time-sum-sec="0.00"> 
+            <application file-name="bug-1935701.exe" info-request-time="1333779985L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.850835"/>
+            <choice-list number="2" same_result="False">
+               <choice name="FILE" result="OK" time_sec="0.00" crc="-953317363"/>
+               <choice name="fstream" result="OK" time_sec="0.00" crc="-953317363"/>
             </choice-list>
         </test>
         <test title="1969629 0.25.4 token list with just TERMINATION treated empty" time-sum-sec="0.14"> 
@@ -743,6 +743,12 @@
                <choice name="good-2" result="OK" time_sec="0.00" crc="1528585866"/>
             </choice-list>
         </test>
+        <test title="1887163 Single state mode causes quex to crash" time-sum-sec="0.39"> 
+            <application file-name="bug-1887163.sh" info-request-time="1318614190L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.39" crc="1510346924"/>
+            </choice-list>
+        </test>
         <test title="1905768 0.22.9 doesn't create analyzer function for event only modes" time-sum-sec="0.17"> 
             <application file-name="bug-1905768.sh" info-request-time="1318614190L" vanished="False"/>
             <choice-list number="1" same_result="False">
@@ -753,12 +759,6 @@
             <application file-name="bug-1893880.sh" info-request-time="1318614190L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.14" crc="-1800512920"/>
-            </choice-list>
-        </test>
-        <test title="1885846 Empty RE in define section" time-sum-sec="0.10"> 
-            <application file-name="bug-1885846.sh" info-request-time="1318614190L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.10" crc="2110266544"/>
             </choice-list>
         </test>
     </group>

@@ -314,12 +314,6 @@ $$END_OF_STREAM_ACTION$$
 $$TERMINAL_FAILURE-DEF$$: /* TERMINAL: FAILURE */
 $$FAILURE_ACTION$$
     goto $$GOTO_START_PREPARATION$$;
-
-#undef Lexeme
-#undef LexemeBegin
-#undef LexemeEnd
-#undef LexemeNull
-#undef LexemeL
 """
 
 __return_preparation_str = """
@@ -337,6 +331,13 @@ $$REENTRY_PREPARATION$$:
     /* (*) Common point for **restarting** lexical analysis.
      *     at each time when CONTINUE is called at the end of a pattern. */
 $$ON_AFTER_MATCH$$ 
+
+#   undef Lexeme
+#   undef LexemeBegin
+#   undef LexemeEnd
+#   undef LexemeNull
+#   undef LexemeL
+
 #   ifndef __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
 #   ifdef  QUEX_OPTION_TOKEN_POLICY_QUEUE
     if( QUEX_NAME(TokenQueue_is_full)(&self._token_queue) ) RETURN;

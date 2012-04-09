@@ -471,7 +471,7 @@ def __interpret_command_line(argv):
     if command_line.search("--version", "-v"):
         print "Quex - Fast Universal Lexical Analyzer Generator"
         print "Version " + QUEX_VERSION
-        print "(C) 2005-2011 Frank-Rene Schaefer"
+        print "(C) 2005-2012 Frank-Rene Schaefer"
         print "ABSOLUTELY NO WARRANTY"
         return None
 
@@ -479,7 +479,7 @@ def __interpret_command_line(argv):
         print "Quex - Fast Universal Lexical Analyzer Generator"
         print "Please, consult the quex documentation for further help, or"
         print "visit http://quex.org"
-        print "(C) 2005-2011 Frank-Rene Schaefer"
+        print "(C) 2005-2012 Frank-Rene Schaefer"
         print "ABSOLUTELY NO WARRANTY"
         return None
 
