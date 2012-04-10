@@ -178,3 +178,28 @@ fragment shows an initialization in C language:
 
     /* Now, the qlex is ready for analyzis. */
     ... 
+
+If a running lexer needs to set the bom dynamically, a pattern like the
+following may be followed:
+
+.. code-block:: cpp
+
+   quex::my_lexer  qlex(...);
+   ...
+   switch( quex::bom_snap(fh) )
+   {
+       case QUEX_BOM_UTF_8:      qlex.reset(fh, "utf-8");      break;
+       case QUEX_BOM_UTF_1:      qlex.reset(fh, "iso-10646");  break;
+       case QUEX_BOM_UTF_EBCDIC: qlex.reset(fh, "ebcdic-us");  break;
+       case QUEX_BOM_GB_18030:   qlex.reset(fh, "gb18030");    break;
+       case QUEX_BOM_UTF_7:      qlex.reset(fh, "utf-7");      break;
+       case QUEX_BOM_UTF_16:     qlex.reset(fh, "utf-16");     break;
+       case QUEX_BOM_UTF_16_LE:  qlex.reset(fh, "utf-16le");   break;
+       case QUEX_BOM_UTF_16_BE:  qlex.reset(fh, "utf-16be");   break;
+       case QUEX_BOM_UTF_32:     qlex.reset(fh, "utf-32");     break;
+       case QUEX_BOM_UTF_32_LE:  qlex.reset(fh, "utf-32le");   break;
+       case QUEX_BOM_UTF_32_BE:  qlex.reset(fh, "utf-32be");   break;
+       //...
+       default:                  qlex.reset(fh, get_file_encoding(fh));
+                                 break;
+  }

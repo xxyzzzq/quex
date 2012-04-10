@@ -46,6 +46,13 @@ QUEX_NAMESPACE_MAIN_OPEN
         }
 #       endif
 
+#       if      ! defined(__QUEX_OPTION_CONVERTER) \
+             ||   defined(__QUEX_OPTION_ENGINE_RUNNING_ON_CODEC)
+        if( CharacterEncodingName != (void*)0 ) {
+            __QUEX_STD_printf(__QUEX_MESSAGE_CHARACTER_ENCODING_SPECIFIED_WITHOUT_CONVERTER, CharacterEncodingName);
+        }
+#       endif
+
 #       if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
 #           if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
             /* Assume that the user will pass us a constructed token queue */

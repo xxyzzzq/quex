@@ -1,0 +1,2 @@
+interfere-indentation-newline.qx:2:error: The indentation newline pattern '[x]'
+interfere-indentation-newline.qx:3:error: has commonalities with pattern '"x"' defined here.

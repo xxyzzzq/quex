@@ -1,0 +1,2 @@
+interfere-mix2.qx:3:error: The skip_range pattern '"x"'
+interfere-mix2.qx:4:error: has commonalities with pattern '[xyz]' defined here.

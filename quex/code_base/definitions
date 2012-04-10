@@ -335,6 +335,9 @@
         "handling. This functionality cannot be used in backward load. Either\n"    \
         "renounce on pre-conditions or only use 'binary' file streams.\n"           \
         
+#define __QUEX_MESSAGE_CHARACTER_ENCODING_SPECIFIED_WITHOUT_CONVERTER \
+        "A character encoding name '%s' has been specified while the analyzer is not\n" \
+        "setup to run with a converter (icu or iconv).\n" 
 
 #define __QUEX_MESSAGE_ASSERTS_INFO \
         "## Disable this message by compile option\n"                               \

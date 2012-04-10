@@ -281,6 +281,9 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_HELPER
 #ifndef    QUEX_SETTING_CHARACTER_CODEC   
 #   define QUEX_SETTING_CHARACTER_CODEC $$QUEX_SETTING_CHARACTER_CODEC$$
 #endif
+/* The following flag indicates that the engine is running on a specific
+ * codec. Thus no converter is necessary. Use the flag to detect misuse.                    */
+$$SWITCH$$ __QUEX_OPTION_ENGINE_RUNNING_ON_CODEC
 
 #ifndef    QUEX_TYPE_ACCEPTANCE_ID
 #   define QUEX_TYPE_ACCEPTANCE_ID   int

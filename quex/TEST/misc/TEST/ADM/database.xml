@@ -1,9 +1,9 @@
-<test-database execution-time-sec="1.52" date="Sat Apr  7 08:38:11 2012">
+<test-database execution-time-sec="2.34" date="Tue Apr 10 11:54:29 2012">
     <last-used-diff-display-program name=""/>
-    <test title="Customized codec files (option --codec-file)" time-sum-sec="0.23"> 
+    <test title="Customized codec files (option --codec-file)" time-sum-sec="0.21"> 
         <application file-name="customized_codec.sh" info-request-time="1310810801L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.23" crc="650831960"/>
+           <choice name="" result="OK" time_sec="0.21" crc="650831960"/>
         </choice-list>
     </test>
     <test title="Test code comments" time-sum-sec="0.30"> 
@@ -12,10 +12,21 @@
            <choice name="" result="OK" time_sec="0.30" crc="-530152913"/>
         </choice-list>
     </test>
-    <test title="Analyzer State Tracer" time-sum-sec="0.99"> 
+    <test title="Inadmissible commonalities" time-sum-sec="0.85"> 
+        <application file-name="commonality.sh" info-request-time="1334051365L" vanished="False"/>
+        <choice-list number="6" same_result="False">
+           <choice name="skip" result="OK" time_sec="0.14" crc="-1857797599"/>
+           <choice name="skip_range" result="OK" time_sec="0.14" crc="1058321644"/>
+           <choice name="skip_nested_range" result="OK" time_sec="0.14" crc="654799333"/>
+           <choice name="indentation-newline" result="OK" time_sec="0.14" crc="-343141122"/>
+           <choice name="mix" result="OK" time_sec="0.15" crc="-1384760153"/>
+           <choice name="mix2" result="OK" time_sec="0.14" crc="-1512368359"/>
+        </choice-list>
+    </test>
+    <test title="Analyzer State Tracer" time-sum-sec="0.98"> 
         <application file-name="debug_show.sh" info-request-time="1330412982L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.99" crc="598685552"/>
+           <choice name="" result="OK" time_sec="0.98" crc="598685552"/>
         </choice-list>
     </test>
 </test-database>

@@ -28,5 +28,5 @@ mode X :
     "."      => QUEX_TKN_PERIOD(Lexeme);
     "("      => QUEX_TKN_B_OPEN(Lexeme);
     ")"      => QUEX_TKN_B_CLOSE(Lexeme);
-    .        => QUEX_TKN_UNKNOWN(Lexeme);
+    on_failure => QUEX_TKN_UNKNOWN(Lexeme);
 }
