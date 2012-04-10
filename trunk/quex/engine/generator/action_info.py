@@ -126,6 +126,11 @@ class PatternActionInfo:
     def pattern_string(self):
         return self.__pattern_str
 
+    @property
+    def line_n(self): return self.action().line_n
+    @property
+    def file_name(self): return self.action().filename
+
     def action(self):
         return self.__action
 
@@ -173,6 +178,7 @@ class LocalizedParameter:
             self.__value   = Default
             self.file_name = FH.name
             self.line_n    = get_current_line_info_number(FH)
+        self.__pattern_string = None
 
     def set(self, Value, fh):
         if self.__value is not None:
@@ -187,3 +193,8 @@ class LocalizedParameter:
         if self.__value is not None: return self.__value
         return self.__default
 
+    def set_pattern_string(self, Value):
+        self.__pattern_string = Value
+
+    def pattern_string(self):
+        return self.__pattern_string

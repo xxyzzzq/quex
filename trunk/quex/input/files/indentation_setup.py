@@ -147,7 +147,7 @@ class IndentationSetup:
 
         # Note, a space count of '0' is theoretically possible
         self.space_db[Count] = LocalizedParameter("space", CharSet, FH)
-        self.space_db[Count].pattern_str = PatternStr
+        self.space_db[Count].set_pattern_string(PatternStr)
 
     def specify_grid(self, PatternStr, CharSet, Count, FH=-1):
         self.__check("grid", self.grid_db, CharSet, FH, Key=Count)
@@ -160,22 +160,22 @@ class IndentationSetup:
                       FH, DontExitF=True)
 
         self.grid_db[Count] = LocalizedParameter("grid", CharSet, FH)
-        self.grid_db[Count].pattern_str = PatternStr
+        self.grid_db[Count].set_pattern_string(PatternStr)
 
     def specify_bad(self, PatternStr, CharSet, FH=-1):
         self.__check("bad", self.bad_character_set, CharSet, FH)
         self.bad_character_set = LocalizedParameter("bad", CharSet, FH)
-        self.bad_character_set.pattern_str = PatternStr
+        self.bad_character_set.set_pattern_string(PatternStr)
 
     def specify_newline(self, PatternStr, SM, FH=-1):
         self.__check("newline", self.newline_state_machine, SM, FH)
         self.newline_state_machine = LocalizedParameter("newline", SM, FH)
-        self.newline_state_machine.pattern_str = PatternStr
+        self.newline_state_machine.set_pattern_string(PatternStr)
 
     def specify_suppressor(self, PatternStr, SM, FH=-1):
         self.__check("suppressor", self.newline_suppressor_state_machine, SM, FH)
         self.newline_suppressor_state_machine = LocalizedParameter("suppressor", SM, FH)
-        self.newline_suppressor_state_machine.pattern_str = PatternStr
+        self.newline_suppressor_state_machine.set_pattern_string(PatternStr)
 
     def has_only_single_spaces(self):
         # Note, from about the grid_db does not accept grid values of '1'

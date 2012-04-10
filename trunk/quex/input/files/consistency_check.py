@@ -63,6 +63,12 @@ def do(ModeDB):
     for mode in ModeDB.values():
         __entry_exit_transitions(mode, mode_name_list)
 
+    # (*) A skipper shall not have commonalities with any other pattern.
+    for pattern_action_pair in mode.get_pattern_action_pair_list():
+        if pattern_action_pair.comment not in ["skip", "skip_range", "skip_nested_range"]: continue
+        __commonality(mode, pattern_action_pair, pattern_action_pair.pattern().sm, 
+                      pattern_action_pair.comment)
+
     # (*) An indentation counter shall not interfer with whatsoever pattern
     for mode in ModeDB.values():
         indentation_setup = mode.options["indentation"]
@@ -85,12 +91,12 @@ def do(ModeDB):
                or superset.do(newline_suppressor_info.get(), newline_info.get()):
 
                 error_msg("The indentation newline pattern '%s' and the newline" \
-                          % newline_info.pattern_str, 
+                          % newline_info.pattern_string(), 
                           newline_info.file_name, newline_info.line_n, 
                           DontExitF=True, WarningF=False)
 
                 error_msg("suppressor pattern '%s' match same on same lexemes." \
-                          % newline_suppressor_info.pattern_str, 
+                          % newline_suppressor_info.pattern_string(), 
                           newline_suppressor_info.file_name, newline_suppressor_info.line_n)
 
 def __commonality(mode, Info, ReferenceSM, Name):
@@ -99,9 +105,12 @@ def __commonality(mode, Info, ReferenceSM, Name):
             continue
 
         sm = pattern_action_pair.pattern().sm
+        # No 'commonalities' between self and self shall be checked
+        if id(sm) == id(ReferenceSM): continue
+
         if commonality_checker.do(ReferenceSM, sm) != E_Commonality.NONE:
             error_msg("The %s pattern '%s'" \
-                      % (Name, Info.pattern_str), Info.file_name, Info.line_n, 
+                      % (Name, Info.pattern_string()), Info.file_name, Info.line_n, 
                       DontExitF=True, WarningF=False)
 
             pattern_str       = pattern_action_pair.pattern_string()

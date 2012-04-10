@@ -718,7 +718,7 @@ def __parse_option(fh, new_mode):
                                LineN    = get_current_line_info_number(fh))
         action.data["character_set"] = trigger_set
 
-        new_mode.add_match(pattern_str, action, get_pattern_object(pattern_sm))
+        new_mode.add_match(pattern_str, action, get_pattern_object(pattern_sm), Comment=identifier)
 
         return True
 
@@ -760,7 +760,7 @@ def __parse_option(fh, new_mode):
         action.data["closer_sequence"] = closer_sequence
         action.data["mode_name"]       = new_mode.name
 
-        new_mode.add_match(opener_str, action, get_pattern_object(opener_sm))
+        new_mode.add_match(opener_str, action, get_pattern_object(opener_sm), Comment=identifier)
 
         return True
         
@@ -774,8 +774,8 @@ def __parse_option(fh, new_mode):
         suppressed_newline_pattern_str = ""
         if value.newline_suppressor_state_machine.get() is not None:
             suppressed_newline_pattern_str = \
-                  "(" + value.newline_suppressor_state_machine.pattern_str + ")" \
-                + "(" + value.newline_state_machine.pattern_str + ")"
+                  "(" + value.newline_suppressor_state_machine.pattern_string() + ")" \
+                + "(" + value.newline_state_machine.pattern_string() + ")"
                                            
             suppressed_newline_sm = \
                 sequentialize.do([value.newline_suppressor_state_machine.get(),
@@ -819,7 +819,7 @@ def __parse_option(fh, new_mode):
 
         action.data["indentation_setup"] = value
 
-        new_mode.add_match(value.newline_state_machine.pattern_str, action, 
+        new_mode.add_match(value.newline_state_machine.pattern_string(), action, 
                            get_pattern_object(sm), 
                            Comment="indentation newline")
 

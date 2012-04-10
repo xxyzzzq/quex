@@ -1,0 +1,2 @@
+interfere-skip_nested_range.qx:2:error: The skip_nested_range pattern '"/*"'
+interfere-skip_nested_range.qx:3:error: has commonalities with pattern '"/*-"' defined here.

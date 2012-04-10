@@ -116,6 +116,9 @@
 #   ifndef    __QUEX_OPTION_CONVERTER
 #      define __QUEX_OPTION_CONVERTER
 #   endif
+#   if defined(__QUEX_OPTION_ENGINE_RUNNING_ON_CODEC)
+#      error "Cannot specify QUEX_OPTION_CONVERTER_ICU or QUEX_OPTION_CONVERTER_ICU if the engine is running directly on a codec."
+#   endif
 #endif
 #if ! defined(QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW)
 #   if   defined (QUEX_OPTION_CONVERTER_ICONV)
