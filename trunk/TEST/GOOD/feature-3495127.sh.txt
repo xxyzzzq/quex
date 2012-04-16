@@ -1,33 +1,81 @@
 ,------------------------------------------------------------------------------------
 | [START]
 before: Lexeme: a; LexemeBegin: a; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+       at begin: line_n = 1; column_n = 1;
+       at end:   line_n = 1; column_n = 2;
 after:  Lexeme: a; LexemeBegin: a; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+       at begin: line_n = 1; column_n = 1;
+       at end:   line_n = 1; column_n = 2;
 before: Lexeme: a; LexemeBegin: a; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+       at begin: line_n = 1; column_n = 2;
+       at end:   line_n = 1; column_n = 3;
 after:  Lexeme: a; LexemeBegin: a; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+       at begin: line_n = 1; column_n = 2;
+       at end:   line_n = 1; column_n = 3;
 before: Lexeme: abb; LexemeBegin: abb; LexemeEnd - LexemeBegin: 3; LexemeL: 3
+       at begin: line_n = 1; column_n = 3;
+       at end:   line_n = 1; column_n = 6;
 after:  Lexeme: abb; LexemeBegin: abb; LexemeEnd - LexemeBegin: 3; LexemeL: 3
+       at begin: line_n = 1; column_n = 3;
+       at end:   line_n = 1; column_n = 6;
 before: Lexeme: baa; LexemeBegin: baa; LexemeEnd - LexemeBegin: 3; LexemeL: 3
+       at begin: line_n = 1; column_n = 6;
+       at end:   line_n = 1; column_n = 9;
 after:  Lexeme: baa; LexemeBegin: baa; LexemeEnd - LexemeBegin: 3; LexemeL: 3
+       at begin: line_n = 1; column_n = 6;
+       at end:   line_n = 1; column_n = 9;
 before: Lexeme: abb; LexemeBegin: abb; LexemeEnd - LexemeBegin: 3; LexemeL: 3
+       at begin: line_n = 1; column_n = 9;
+       at end:   line_n = 1; column_n = 12;
 after:  Lexeme: abb; LexemeBegin: abb; LexemeEnd - LexemeBegin: 3; LexemeL: 3
+       at begin: line_n = 1; column_n = 9;
+       at end:   line_n = 1; column_n = 12;
 before: Lexeme: ba; LexemeBegin: ba; LexemeEnd - LexemeBegin: 2; LexemeL: 2
+       at begin: line_n = 1; column_n = 12;
+       at end:   line_n = 1; column_n = 14;
 after:  Lexeme: ba; LexemeBegin: ba; LexemeEnd - LexemeBegin: 2; LexemeL: 2
+       at begin: line_n = 1; column_n = 12;
+       at end:   line_n = 1; column_n = 14;
 before: Lexeme: ab; LexemeBegin: ab; LexemeEnd - LexemeBegin: 2; LexemeL: 2
+       at begin: line_n = 1; column_n = 14;
+       at end:   line_n = 1; column_n = 16;
 after:  Lexeme: ab; LexemeBegin: ab; LexemeEnd - LexemeBegin: 2; LexemeL: 2
+       at begin: line_n = 1; column_n = 14;
+       at end:   line_n = 1; column_n = 16;
 before: Lexeme: b; LexemeBegin: b; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+       at begin: line_n = 1; column_n = 16;
+       at end:   line_n = 1; column_n = 17;
 after:  Lexeme: b; LexemeBegin: b; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+       at begin: line_n = 1; column_n = 16;
+       at end:   line_n = 1; column_n = 17;
 before: Lexeme: a; LexemeBegin: a; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+       at begin: line_n = 1; column_n = 17;
+       at end:   line_n = 1; column_n = 18;
 after:  Lexeme: a; LexemeBegin: a; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+       at begin: line_n = 1; column_n = 17;
+       at end:   line_n = 1; column_n = 18;
 before: Lexeme: b; LexemeBegin: b; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+       at begin: line_n = 1; column_n = 18;
+       at end:   line_n = 1; column_n = 19;
 after:  Lexeme: b; LexemeBegin: b; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+       at begin: line_n = 1; column_n = 18;
+       at end:   line_n = 1; column_n = 19;
 before: Lexeme: 
 ; LexemeBegin: 
 ; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+       at begin: line_n = 1; column_n = 19;
+       at end:   line_n = 2; column_n = 1;
 after:  Lexeme: 
 ; LexemeBegin: 
 ; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+       at begin: line_n = 1; column_n = 19;
+       at end:   line_n = 2; column_n = 1;
 before: Lexeme: ; LexemeBegin: ; LexemeEnd - LexemeBegin: 0; LexemeL: 0
+       at begin: line_n = 2; column_n = 1;
+       at end:   line_n = 2; column_n = 1;
 after:  Lexeme: ; LexemeBegin: ; LexemeEnd - LexemeBegin: 0; LexemeL: 0
+       at begin: line_n = 2; column_n = 1;
+       at end:   line_n = 2; column_n = 1;
 (1, 1)  	ON_MATCH______: 0
 (1, 1)  	ELSE__________: a
 (1, 1)  	ON_AFTER_MATCH: 1
