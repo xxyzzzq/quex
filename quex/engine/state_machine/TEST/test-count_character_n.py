@@ -3,8 +3,8 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.input.regular_expression.engine         as core
-import quex.engine.state_machine.character_counter as counter
+import quex.input.regular_expression.engine        as core
+import quex.engine.state_machine.character_counter as character_counter
 
 if "--hwut-info" in sys.argv:
     print "Predetermined Character Count: Characters"
@@ -12,14 +12,13 @@ if "--hwut-info" in sys.argv:
     
 def test(TestString):
     print ("expr.  = " + TestString).replace("\n", "\\n").replace("\t", "\\t")
-    sm = core.do(TestString, {}).sm
-    print "char-n = ", counter.get_character_n(sm)
+    pattern = core.do(TestString, {})
+    print "char-n = ", pattern.character_n
 
 test('[0-9]+')
 test('"123"')
 test('"123"|"ABC"')
 test('"1234"|"ABC"')
-
 test('"123"+')
 test('X"123"?')
 test('"123"?X')

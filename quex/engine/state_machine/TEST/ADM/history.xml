@@ -1,4 +1,4 @@
-<history date="Sat Apr  7 08:44:45 2012" element-n="559">
+<history date="Mon Apr 16 02:19:00 2012" element-n="565">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1259,5 +1259,15 @@
     <day year="2011" month="11" day="01">
         <crc-error time="15:47:29" application="test-utf8_state_split-do-2.py" choice="" database-crc="-1139775102" real-crc="-1541079576"/>
         <crc-error time="15:47:56" application="test-setup_border_conditions.py" choice="" database-crc="-231661803" real-crc="-1717267691"/>
+    </day>
+    <day year="2012" month="04" day="15">
+        <crc-error time="07:19:20" application="test-count_character_n.py" choice="" database-crc="176871467" real-crc="-842723035"/>
+        <crc-error time="07:20:12" application="test-count_newline_n.py" choice="" database-crc="-901422866" real-crc="617464190"/>
+        <crc-error time="07:29:39" application="test-count_newline_n.py" choice="" database-crc="617464190" real-crc="816931881"/>
+        <crc-error time="23:50:23" application="test-count_newline_n.py" choice="" database-crc="816931881" real-crc="-695428201"/>
+        <crc-error time="23:53:48" application="test-count_newline_n.py" choice="" database-crc="-695428201" real-crc="767220549"/>
+    </day>
+    <day year="2012" month="04" day="16">
+        <crc-error time="00:08:49" application="test-count_newline_n.py" choice="" database-crc="767220549" real-crc="-133066012"/>
     </day>
 </history>
