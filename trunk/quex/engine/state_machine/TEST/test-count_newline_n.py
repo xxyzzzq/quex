@@ -3,8 +3,8 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.input.regular_expression.engine         as regex
-import quex.engine.state_machine.character_counter as counter
+import quex.input.regular_expression.engine        as regex
+import quex.engine.state_machine.character_counter as character_counter
 
 if "--hwut-info" in sys.argv:
     print "Predetermined Character Count: Newlines"
@@ -13,8 +13,9 @@ if "--hwut-info" in sys.argv:
 def test(TestString):
     TestString = TestString.replace("\n", "\\n").replace("\t", "\\t")
     print "expression           = " + TestString
-    sm = regex.do(TestString, {}).sm
-    print "fixed newline number = ", counter.get_newline_n(sm)
+    pattern = regex.do(TestString, {})
+    print "fixed newline number = ", pattern.newline_n
+    print "fixed character number = ", pattern.character_n
 
 test('[0-9]+')
 test('"1\n\n\n3"')
@@ -48,6 +49,10 @@ test('a\n\n\nc("1\n\n\n3"?)x\n\n\nz')
 test('a\n\n\nc("1\n\n\n3"*)x\n\n\nz')
 
 test('a\n\n\nc("1\n\n\n3"|"A\n\n\nC")x\n\n\nz')
+print "## The current algorithm does not consider the refreshing nature of newline."
+print "## If a node is reached with two different column counts, then the colomn count"
+print "## is considered 'void', even if a newline undoes the column count later and"
+print "## all later counts end in acceptance with the same count."
 test('a\n\n\nc("1\n\n\n3"|"A\n\n\nC\n")x\n\n\nz')
 test('a\n\n\nc("1\n\n\n3"|"A\n\n\nC")+x\n\n\nz')
 test('a\n\n\nc("1\n\n\n3"|"A\n\n\nC")?x\n\n\nz')
@@ -61,6 +66,10 @@ test('"a\ne"|"\n\n"')
 test('A\n\n\nC("12\n\n\n"|("A\n\n\nC"|"X\n\n\nZ"))"12\n\n\n"("\n\n\nAA"|"\n\n\nBB"|"CC\n\n\n")X\n\n\nZ')
 test('A\n\n\nC("12\n\n\n"|("A\n\n\nCD"|"X\n\n\nZ"))"12\n\n\n"("\n\n\nAA"|"\n\n\nBB"|"CC\n\n\n")X\n\n\nZ')
 test('"\n"{4}("a\n\ne"|"\n\n")')
+
+test('"\n123"')
+test('"1\n23"|"A\nBC"')
+test('"1\n234"|"A\nBC"')
 
 # quex version >= 0.49.1: only treat core pattern; no pre and post-conditions
 if False:

@@ -3,8 +3,7 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.input.regular_expression.engine         as core
-import quex.engine.state_machine.character_counter as counter
+import quex.input.regular_expression.engine as core
 
 if "--hwut-info" in sys.argv:
     print "Trigger Set Check: Has Trigger "
