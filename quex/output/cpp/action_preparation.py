@@ -27,7 +27,8 @@
 from   quex.engine.generator.action_info       import CodeFragment, \
                                                       PatternActionInfo
 from   quex.engine.generator.languages.address import get_plain_strings
-from   quex.blackboard import setup as Setup
+from   quex.blackboard                         import setup as Setup, \
+                                                      E_Count
 
 import re
 
@@ -226,7 +227,7 @@ def __get_line_and_column_counting(ThePattern, EOF_ActionF):
     newline_n   = ThePattern.newline_n
     character_n = ThePattern.character_n
 
-    if   newline_n == -1:
+    if   newline_n == E_Count.VOID:
         # Run the general algorithm, since not even the number of newlines in the 
         # pattern can be determined directly from the pattern
         return "__QUEX_COUNT_VOID(self.counter);"
@@ -241,8 +242,8 @@ def __get_line_and_column_counting(ThePattern, EOF_ActionF):
         return "__QUEX_COUNT_NEWLINE_N_FIXED_COLUMN_N_VOID(self.counter, %i);" % newline_n
 
     # Lexeme does not contain newline --> count only columns
-    if character_n == -1: incr_str = "LexemeL"
-    else:                 incr_str = "%i" % int(character_n)
+    if character_n == E_Count.VOID: incr_str = "LexemeL"
+    else:                           incr_str = "%i" % int(character_n)
     return "__QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, %s);" % incr_str
 
 def pretty_code(Code, Base):

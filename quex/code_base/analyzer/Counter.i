@@ -42,14 +42,14 @@ QUEX_NAMESPACE_MAIN_OPEN
      * NOTE: Providing LexemeLength may spare a subtraction (End - Lexeme) in case 
      *       there is no newline in the lexeme (see below).                        */
     {
-#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+#   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        QUEX_TYPE_CHARACTER* it = QUEX_NAME(Counter_count_chars_to_newline_backwards)(me, Begin, End);
-        __QUEX_IF_COUNT_LINES(if( *it == '\n' ) ++(me->_line_number_at_end));
+            QUEX_TYPE_CHARACTER* it = QUEX_NAME(Counter_count_chars_to_newline_backwards)(me, Begin, End);
+            __QUEX_IF_COUNT_LINES(if( *it == '\n' ) ++(me->_line_number_at_end));
 #       else
-        QUEX_TYPE_CHARACTER* it = End;
+            QUEX_TYPE_CHARACTER* it = End;
 #       endif
-
+           
         /* The last function may have digested a newline (*it == '\n'), but then it 
          * would have increased the _line_number_at_end.                          */
         __quex_assert(it >= Begin);
@@ -59,9 +59,9 @@ QUEX_NAMESPACE_MAIN_OPEN
             --it;
             if( *it == '\n' ) ++(me->_line_number_at_end); 
         }         
-#       else
+#   else
         QUEX_NAME(Counter_count_chars_to_newline_backwards)(me, Begin, End);
-#       endif
+#   endif
     }
 
     QUEX_INLINE void  
@@ -69,6 +69,9 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                    QUEX_TYPE_CHARACTER*           Lexeme,
                                                    QUEX_TYPE_CHARACTER*           LexemeEnd,
                                                    const int                      LineNIncrement) 
+    /* This function may be used to count column and line numbers in case 
+     * that the number of newlines can be pre-determined. This makes the
+     * process a little faster.                                           */
     {
         __quex_assert( LexemeEnd > Lexeme );
 
@@ -84,19 +87,17 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(Counter_count_chars_to_newline_backwards)(QUEX_NAME(Counter)*   me, 
                                                         QUEX_TYPE_CHARACTER*  Begin,
                                                         QUEX_TYPE_CHARACTER*  End)
-    /* RETURNS: Pointer to the first newline or the beginning of the lexeme.
+    /* This is the heart of all counter functions. It counts columns and lines
+     * 'manually'. If the column and line number increment can be pre-determined
+     * for a lexeme that matches a specific pattern, then this function shall
+     * never be called. 
      *
-     * This function increases _line_number_at_end if a newline occurs and 
-     * LicenseToIncrementLineCountF = true.
+     * INCREMENTS: me->_column_number_at_end 
+     *             me->_line_number_at_end
      *
-     * NOTE: The 'license' flag shall enable the compiler to **delete** the line number counting
-     *       from the following function or implemented unconditionally, since the decision
-     *       is based, then on a condition of a constant (either true or false) -- once the 
-     *       function has been inlined.   
+     *             according to the occurring columns and lines.
      *
-     * NOTE: Quex writes a call to this function only, if there **is** a potential
-     *       newline in the lexeme. Otherwise, it adds the fixed pattern length
-     *       or the LexemeLength directly.                                      */
+     * RETURNS: Pointer to the first newline or the beginning of the lexeme.    */
     {
         QUEX_TYPE_CHARACTER* it = 0x0; 
 

@@ -1,202 +1,233 @@
+# (C) 2012 Frank-Rene Schaefer
+from quex.engine.misc.tree_walker  import TreeWalker
+from quex.engine.interval_handling import NumberSet, Interval
+from quex.blackboard               import E_Count, CounterDB
 
-# Distance Database: Store the distance from state (given by index)
-#                    to the acceptance state, i.e. map:
-# 
-#                       state_index --> distance to acceptance state
-__distance_db = {}
+from copy import copy
 
-def get_newline_n(state_machine):   
-    """
-       Counts the number of newlines that appear until the acceptance state. 
-       The part of the post condition is omitted. 
+def do(SM):
+    """Counts line and column number, if possible, from the structure
+       of the state machine that represents the pattern.
 
-       RETURNS:  0      if statemachine / pattern does not contain the newline
-                        character at all.
-                 N > 0  number of newlines that are **always** required in order to
-                        reach an acceptance state.
-                 -1     the number of newlines cannot be determined, because of 
-                        recursion or because there are different pathes to acceptance
-                        with different numbers of newlines occuring.
-
-       NOTE: Only the core pattern is concerned---not the pre- or post-condition.
-    """
-    global __distance_db
-
-    __distance_db.clear()
-    result = __dive(state_machine, state_machine.init_state_index, 0, [], CharacterToCount=ord('\n'))
-    if result is None: return -1
-    else:              return result
-
-def get_character_n(state_machine):
-    """
-       Counts the number of characters that appear until the acceptance state. 
-       The part of the post condition is omitted. 
-
-       RETURNS:  0      if statemachine / pattern does not contain the newline
-                        character at all.
-                 N > 0  number of newlines that are **always** required in order to
-                        reach an acceptance state.
-                 -1     the number of newlines cannot be determined, because of 
-                        recursion or because there are different pathes to acceptance
-                        with different numbers of newlines occuring.
-
-       NOTE: Only the core pattern is concerned---not the pre- or post-condition.
-    """
-    global __distance_db
-
-    __distance_db.clear()
-    result = __dive(state_machine, state_machine.init_state_index, 0, [], CharacterToCount=-1)
-    if result is None: return -1
-    else:              return result
-
-def __recursion_contains_critical_character(state_machine, Path, TargetStateIdx, Character):
-    """Path      = list of state indices
-       Character = character code of concern.
-                   -1 => any character.
+       State machine shall not contain pre- or post-contexts.
        
-       RETURNS:  True = the path contains the TargetStateIdx and on the path
-                        there is the critical character.
-                 False = the path does either not contain the TargetStateIdx,
-                         i.e. there will be no recursion, or the recursion
-                         path does not contain the critical character and 
-                         therefore is not dangerous.
+       DEPENDS ON: CounterDB in quex.blackboard. In this namespace the
+                   three databases 'newline', 'grid', and 'special' are
+                   defined.
 
-       NOTE: This function is required to judge whether a recursion occurs
-             that effects the number of characters to be counted. If so,
-             then the recursion signifies that the number of characters
-             to be matched cannot be determined directly from the state machine.
-             They have to be computed after a match has happend.
+       RETURN: newline_n, column_n
+
+               Each one may be 'E_Count.VOID' if the value can only
+               be determined at run time.
+
+       SHORTCOMING OF THE ALGO:
+
+       The current approach does consider the column count to be void as soon
+       as a state is reached with two different column counts. This is too rigid
+       in a sense that a newline may clear the column count later in the pattern.
+       If the column counts to the acceptance state are then equal from there on,
+       the column count could be a numeric constant.
+
+       Practically, this means that Quex will implement a column counter in some
+       special cases where a pattern contains a newline, where a fixed constant
+       could be added instead. Multi-line patterns are considered to be rare and
+       the overhead of counting from the end of the lexeme to the last newline 
+       is considered to be minimal. There is no significant performance decrease
+       expected from this shortcoming.
+
+       To fix this, another approach would have to be implemented where the 
+       state machine is inverted and then the column counts starts from rear
+       to front until the first newline. This tremendous computation time overhead
+       is shied away from, because of the aforementioned low expected value add.
     """
-    assert TargetStateIdx in Path 
-    # If all characters are relevant (Character == -1), then any recursion is critical
-    if Character == -1: return True
+    Count.init()
 
-    # -- recursion detected!
-    #    did the critical character occur in the path?
-    occurence_idx = Path.index(TargetStateIdx)
-    prev_idx      = TargetStateIdx
-    for idx in Path[occurence_idx+1:] + [TargetStateIdx]:
-        # does transition from prev_state to state contain newline?
-        trigger_set = state_machine.states[prev_idx].transitions().get_trigger_set_to_target(idx)
-        if trigger_set.contains(Character):
-            return True                       # YES! recursion with critical character
-        prev_idx = idx
+    counter = CharacterCounter(SM)
+    state   = SM.get_init_state()
+    count   = Count(0, 0)
+    # Next Node: [0] state index of target state
+    #            [1] character set that triggers to it
+    #            [2] count information
+    initial = [ (state_index, character_set, count.clone()) \
+                 for state_index, character_set in state.transitions().get_map().iteritems() ]
+    counter.do(initial)
 
-    # -- no critical character in recursion --> OK, no problem
-    # -- state has been already handled, no further treatment required
-    return False
+    return counter.result.line_n, counter.result.column_n #, counter.column_increment_per_character, counter.contains_newline_f
 
-def __dive(state_machine, state_index, character_n, passed_state_list, CharacterToCount):
-    """Once the distance to the acceptance state is determined, we store it in a cache database.
-       Note, that the distance is only stored after all possible pathes starting from the state
-       have been investigated. Note also, that the distance to the acceptance state can be 
-       '-1' meaning that there are multiple pathes of different length, i.e. it cannot be
-       determined from the pattern how many characters appear in the lexeme that matches.
-    """
-    global __distance_db
-    if __distance_db.has_key(state_index): 
-        # Total distance:   distance from current state to acceptance state
-        #                 + distance from start         to current state
-        return __distance_db[state_index] + character_n
+class CharacterCounter(TreeWalker):
+    """Recursive Algorithm to count the number of newlines, characters, or spaces
+       for each state in the state machine. It is done for each state, so that 
+       path walking can be aborted as soon as a known state is hit.
 
-    # Dive to determine total path length from start to acceptance state
-    total_path_length = ____dive(state_machine, state_index, character_n, 
-                                 passed_state_list, CharacterToCount)
+       -- A loop makes a count either (1) void if the counted character appears, 
+          or (2) is unimportant. If (1) happens, then the counter is globally
+          void. In case of (2) no change happend so any analysis starting from
+          the loop's knot point is still valid and does not have to be made 
+          again.
 
-    if total_path_length is not None:
-        if state_index not in passed_state_list:
-            # Distance to acceptance:   total path length from start to acceptance state 
-            #                         - path length       from start to current state
-            __distance_db[state_index] = total_path_length - character_n
+       -- A node it met through another path. Exactly the same consideration as
+          for loops holds again. The break-up here is also essential to avoid
+          exponential time (The total number of paths multiplies with the number
+          of branches through each knot on the path).
 
-    return total_path_length
+       ONLY PATTERNS WITHOUT PRE- AND POST-CONTEXT ARE HANDLED HERE!
+    """   
+    def __init__(self, SM):  
+        self.sm       = SM
+        self.depth    = 0
+        self.result   = Count(E_Count.VIRGIN, E_Count.VIRGIN)
+        self.known_db = {}  # state_index --> count
+        TreeWalker.__init__(self)
 
-def ____dive(state_machine, state_index, character_n, passed_state_list, CharacterToCount):
-    state = state_machine.states[state_index]
+    def on_enter(self, Info):  
+        """Info = (state_index of what is entered, character set that triggers to it)"""
+        StateIndex, CharacterSet, count = Info
 
-    new_passed_state_list = passed_state_list + [ state_index ]
+        if not count.compute(CharacterSet):
+            self.result.line_n   = E_Count.VOID
+            self.result.column_n = E_Count.VOID
+            self.abort_f = True
+            return None
 
-    prev_characters_found_n = None
-    if state.is_acceptance(): prev_characters_found_n = character_n
+        state = self.sm.states[StateIndex]
+        known = self.known_db.get(StateIndex)
+        if known is not None:
+            if known.column_n != count.column_n: self.result.column_n = E_Count.VOID
+            if known.line_n   != count.line_n:   self.result.line_n   = E_Count.VOID
+            if     self.result.line_n   == E_Count.VOID \
+               and self.result.column_n == E_Count.VOID: 
+                self.abort_f = True
 
-    # trigger_map[target_state_index] = set that triggers to target state index
-    trigger_dict = state.transitions().get_map()
+            # Rest of paths starting from this state has been walked along before
+            subsequent = None
+        else:
+            known = Count(count.column_n, count.line_n)
+            self.known_db[StateIndex] = known
 
-    # Treat linear state transitions inside a loop, this is faster
-    # and less prone to blow the call stack of python for large patterns.
-    while len(trigger_dict) == 1:
-        follow_state_index, trigger_set = trigger_dict.items()[0]
+            subsequent = [ (state_index, character_set, count.clone()) \
+                           for state_index, character_set in state.transitions().get_map().iteritems() ]
 
-        # -- Recursion:
-        if follow_state_index in new_passed_state_list: 
-            if __recursion_contains_critical_character(state_machine, new_passed_state_list, 
-                                                       follow_state_index, CharacterToCount):
-                return -1
-            break
+        if state.is_acceptance():
+            if   self.result.column_n == E_Count.VIRGIN: self.result.column_n = known.column_n
+            elif self.result.column_n != known.column_n: self.result.column_n = E_Count.VOID
+            if   self.result.line_n == E_Count.VIRGIN:   self.result.line_n = known.line_n
+            elif self.result.line_n != known.line_n:     self.result.line_n = E_Count.VOID
 
-        # -- Increment
-        increment = __get_increment(trigger_set, CharacterToCount)
-        if increment == -1: return -1
+        return subsequent
 
-        state = state_machine.states[follow_state_index]
-        new_passed_state_list.append(follow_state_index)
-        character_n += increment
+    def on_finished(self, node):   
+        pass
 
-        if state.is_acceptance(): 
-            if prev_characters_found_n is None:          prev_characters_found_n = character_n
-            elif prev_characters_found_n != character_n: return -1
+class Count(object):
+    __slots__ = ('column_n', 'line_n')
 
-        trigger_dict = state.transitions().get_map()
+    # (*) Increment per step:
+    #
+    #     If the increment per step is the same 'C' for any character that appears 
+    #     in the pattern, then the length of the pattern can be computed at run-
+    #     time by a simple subtration:
+    # 
+    #               length = (LexemeEnd - LexemeBegin) * C
+    #
+    #     provided that there is no newline in the pattern this is at the same 
+    #     time the column increment. Same holds for line number increments.
+    column_increment_per_step = E_Count.VIRGIN
+    # Just for info, in unicode there are the following candidates which may possibly
+    # have assigned a separate line number increment: Line Feed, 0x0A; Vertical Tab, 0x0B; 
+    # Form Feed, 0x0C; Carriage Return, 0x0D; Next Line, 0x85; Line Separator, 0x28; 
+    # Paragraph Separator, 0x2029; 
+    line_increment_per_step   = E_Count.VIRGIN
 
+    # (*) Contains newline?
+    contains_newline_f        = False
     
-    if len(trigger_dict) == 0: return prev_characters_found_n
+    @staticmethod
+    def init():
+        """Initialize global objects in namespace 'Count'."""
+        Count.column_increment_per_step = E_Count.VIRGIN
+        Count.line_increment_per_step   = E_Count.VIRGIN
+        Count.contains_newline_f        = False
 
-    for follow_state_index, trigger_set in trigger_dict.items():
+    def __init__(self, ColumnN, LineN):
+        self.column_n = ColumnN
+        self.line_n   = LineN
 
-        # -- Recursion:
-        if follow_state_index in new_passed_state_list: 
-            # Relevant character in recursive path => occurency number undetermined. 
-            if __recursion_contains_critical_character(state_machine, new_passed_state_list, 
-                                                       follow_state_index, CharacterToCount):
-                return -1
-            # If no influence of recursion to character count --> just ignore it.
-            continue
+    def clone(self):
+        return Count(self.column_n, self.line_n)
+
+    def compute(self, CharacterSet):
+        """Compute the increase of line and column numbers due to the given
+           character set. If both are void due to the character set then the
+           'abort_f' is raised.
+        """
+        def check(CmpSet):
+            """Compare 'CmpSet' with 'CharacterSet'
             
-        # -- Increment of character count
-        increment = __get_increment(trigger_set, CharacterToCount)
-        if increment == -1: return -1
+               RETURNS: True  -- if all characters in CharacterSet are in 
+                                 CmpSet and CharacterSet does not contain
+                                 any character beyond.
+                        False -- if CharacterSet and CmpSet have no common
+                                 characters whatsoever.
+                        None  -- if CharacterSet has some characters from 
+                                 CmpSet but also others beyond.
+            """
+            if   CmpSet.is_superset(CharacterSet):      return True
+            elif CmpSet.has_intersection(CharacterSet): return None
+            else:                                       return False
 
-        # --diving deeper into the tree
-        characters_found_n = __dive(state_machine, follow_state_index, 
-                                    character_n + increment, 
-                                    new_passed_state_list, CharacterToCount)
+        for delta_line_n, character_set in CounterDB.newline.iteritems():
+            x = check(character_set)
+            if x == False: continue
+            Count.announce_line_n_per_step(delta_line_n)
+            Count.contains_newline_f = True
 
-        if   characters_found_n      == -1:                 return -1
-        elif prev_characters_found_n is None:               prev_characters_found_n = characters_found_n
-        elif prev_characters_found_n != characters_found_n: return -1
+            if x == True:
+                self.line_n   += delta_line_n
+                self.column_n  = 0
+                return True  # 'CharacterSet' does not contain anything beyond 'character_set'
+            else:
+                self.line_n   = E_Count.VOID  # Newline together with other characters in one
+                self.column_n = E_Count.VOID  # transition. => delta line, delta column = void.
+                return False # Abort
 
-    if prev_characters_found_n is None: return -1
-    else:                               return prev_characters_found_n
+        for grid_size, character_set in CounterDB.grid.iteritems():
+            x = check(character_set)
+            if x == False: continue
+            Count.announce_column_n_per_step(E_Count.VOID)
 
-def __get_increment(trigger_set, CharacterToCount):
-        
-    if CharacterToCount == -1:
-        # (1.1) We are counting all characters, so we increment always.
-        return 1
+            if x == True:
+                self.column_n += (self.column_n // grid_size + 1) * grid_size
+                return True
+            else:
+                # Same transition with characters of different horizonzal size.
+                # => delta column_n = VOID
+                self.column_n = E_Count.VOID
+                return self.line_n is not E_Count.VOID # Abort, if line_n is also void.
 
-    elif not trigger_set.contains(CharacterToCount):
-        # (2.1) The trigger set does not contain the character to be counted at all
-        #       Thus the number of occurences is deterministic and **no increment occurence counter**.
-        return 0
+        for delta_column_n, character_set in CounterDB.special.iteritems():
+            x = check(character_set)
+            if x == False: continue
+            Count.announce_column_n_per_step(delta_column_n)
 
-    elif trigger_set.has_only_this_element(CharacterToCount):
-        # (2.2) The trigger set contains only the character to be counted.
-        #       Thus the number of occurences is deterministic and **increment occurence counter**.
-        return 1
+            if x == True:
+                self.column_n += delta_column_n
+                return True
+            else:
+                # Same transition with characters of different horizonzal size.
+                # => delta column_n = VOID
+                self.column_n = E_Count.VOID
+                return self.line_n is not E_Count.VOID # Abort, if line_n is also void.
 
-    else:
-        # (2.3) The trigger set contains the character to be counted and also others. This
-        #       means that for the transition the number of occurences (zero or one) is not
-        #       determined by the pattern. Thus the number of occurences not deterministic.
-        return -1
+        self.column_n += 1
+        Count.announce_column_n_per_step(1)
+        return True # Do not abort, yet
 
+    @staticmethod
+    def announce_line_n_per_step(DeltaLineN):
+        if Count.line_increment_per_step == E_Count.VIRGIN: Count.line_increment_per_step = DeltaLineN
+        elif Count.line_increment_per_step != DeltaLineN:   Count.line_increment_per_step = E_Count.VOID
+
+    @staticmethod
+    def announce_column_n_per_step(DeltaLineN):
+        if Count.column_increment_per_step == E_Count.VIRGIN: Count.column_increment_per_step = DeltaLineN
+        elif Count.column_increment_per_step != DeltaLineN:   Count.column_increment_per_step = E_Count.VOID

@@ -67,6 +67,7 @@ def do(SM):
             self.empty_list = []
             self.result     = dict((i, []) for i in self.sm.states.iterkeys())
             self.dangerous_positioning_state_set = set()
+            TreeWalker.__init__(self)
 
         def on_enter(self, Args):
             PreviousTrace = Args[0]

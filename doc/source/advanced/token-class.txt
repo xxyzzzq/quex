@@ -121,6 +121,11 @@ followed by ``}``.
 
 .. data:: distinct
 
+   Inside this region token members are defined which occupy a each a distinct
+   memory region. In other words, there is a memory region inside the token object
+   which is always interpreted the same way independent of the token type. They
+   are defined as follows:
+
    .. code-block:: cpp
 
        distinct {
@@ -129,6 +134,11 @@ followed by ``}``.
        }
 
 .. data:: union
+
+   The union variables are the counter example. They defined memory 
+   regions which may be interpreted in different ways. Each element
+   of the union represents of way of understanding the memory chunk.
+   The are defined as follows:
 
    .. code-block:: cpp
 
@@ -143,6 +153,11 @@ followed by ``}``.
            }
            position  : uint16_t;
        }
+
+   In the example above, a the union chunk of memory of the token object may be
+   interpreted as two byte variables ``mini_x`` and ``mini_y``, as two 16bit
+   variables ``big_x`` and ``big_y`` or as a variable ``position`` of type
+   ``uint16_t``. 
 
 The variable definitions inside these regions create automatically a framework
 that is able to deal with the token senders :ref:`sec:usage-sending-tokens`.
