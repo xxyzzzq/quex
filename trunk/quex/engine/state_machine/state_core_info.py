@@ -1,8 +1,5 @@
 from quex.blackboard import E_AcceptanceIDs, E_PreContextIDs
 
-# Special Signal Values for 'pre_context_id'
-# Add a member '_DEBUG_NAME_Xyz' so that the type of an enum value can
-# be determined by value.EnumType[-1]
 class StateCoreInfo(object): 
     """A StateCoreInfo tells about a state how it should behave in a state
        machine that represents one single isolated pattern. This is in 

@@ -25,6 +25,7 @@
 ################################################################################
 from quex.engine.generator.code_fragment_base import CodeFragment
 from quex.engine.misc.enum                    import Enum
+from quex.engine.interval_handling            import NumberSet, Interval
 from quex.input.setup                         import QuexSetup, SETUP_INFO
 from copy                                     import deepcopy
 
@@ -62,11 +63,11 @@ E_PostContextIDs = Enum("NONE",
                         "_DEBUG_NAME_E_PostContextIDs")
 
 E_EngineTypes    = Enum("FORWARD", 
-                      "BACKWARD_PRE_CONTEXT", 
-                      "BACKWARD_INPUT_POSITION",
-                      "INDENTATION_COUNTER",
-                      "ELSE",                       # skipper, or whatever ...
-                      "_DEBUG_E_EngineTypes")
+                        "BACKWARD_PRE_CONTEXT", 
+                        "BACKWARD_INPUT_POSITION",
+                        "INDENTATION_COUNTER",
+                        "ELSE",                       # skipper, or whatever ...
+                        "_DEBUG_E_EngineTypes")
 
 E_TransitionN = Enum("VOID", 
                      "LEXEME_START_PLUS_ONE",
@@ -86,12 +87,73 @@ E_Compression = Enum("PATH",
                      "TEMPLATE_UNIFORM",
                      "_DEBUG_Compression")
 
+E_Count = Enum("VIRGIN", 
+               "VOID",
+               "_DEBUG_Count")
+
 #-----------------------------------------------------------------------------------------
 # mode_db: storing the mode information into a dictionary:
 #            key  = mode name
 #            item = Mode object
 #-----------------------------------------------------------------------------------------
 mode_db = {}
+
+
+#-----------------------------------------------------------------------------------------
+# Counter Settings (Default)
+# 
+Default_NewlineCharDB = {
+    1: NumberSet([Interval(0x0A),     # Line Feed 
+                  Interval(0x0B),     # Vertical Tab 
+                  Interval(0x0C),     # Form Feed 
+                  Interval(0x85),     # Next Line 
+                  Interval(0x28),     # Line Separator 
+                  Interval(0x2029)]), # Paragraph Separator 
+    0: NumberSet(Interval(0x0D)),     # Carriage Return
+    #                                 # DOS/Windows: 0x0D, 0x0A --> 1 newline
+}
+Default_GridCharDB = {
+    4: NumberSet(ord('\t'))           # Tabulator: Grid of 4 columns
+}
+Default_SpecialCharDB = { 
+    #                                 # Special character sizes are font dependent. 
+    #                                 # No assumptions made by default.
+}
+
+class CounterDB:
+    # (*) Databases:
+    # 
+    #     Characters may trigger different increments to line numbers and column numbers.
+    #     Information about this behavior is stored in the following databases.
+    newline = Default_NewlineCharDB  # map: delta line_n   <--> character set
+    grid    = Default_GridCharDB     # map: grid  column_n <--> character set
+    #                                #      This implements grids for tabulators. The increment
+    #                                #      depends on the current value of column_n
+    special = Default_SpecialCharDB  # map: delta column_n <--> character set
+    #                                #      Normally, a character increments the column by '1'
+    #                                #      This database allows to assign different values for 
+    #                                #      special characters.
+    @staticmethod
+    def reset():
+        newline = Default_NewlineCharDB
+        grid    = Default_GridCharDB
+        special = Default_SpecialCharDB
+
+    @staticmethod
+    def assert_consistency():
+        """Character sets associated with countings cannot overlap. A character
+           may very well appear as a line counter and a grid, for example. But,
+           it should not appear twice in the same database.
+        """
+        def do(DB):
+            combined = NumberSet()
+            for number_set in DB.itervalues():
+                assert not number_set.has_intersection(combined)
+                combined.unite_with(number_set)
+        do(CounterDB.newline)
+        do(CounterDB.grid)
+        do(CounterDB.special)
+
 
 #-----------------------------------------------------------------------------------------
 # initial_mode: mode in which the lexcial analyser shall start

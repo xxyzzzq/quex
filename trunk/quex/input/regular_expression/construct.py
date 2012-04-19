@@ -1,11 +1,11 @@
-from   quex.engine.interval_handling                      import UnicodeInterval, Interval
-from   quex.engine.state_machine.utf16_state_split import ForbiddenRange
-import quex.engine.state_machine.character_counter        as character_counter
-import quex.engine.state_machine.setup_post_context       as setup_post_context
-import quex.engine.state_machine.setup_pre_context        as setup_pre_context
-import quex.engine.state_machine.transformation           as transformation
+from   quex.engine.interval_handling                import UnicodeInterval, Interval
+from   quex.engine.state_machine.utf16_state_split  import ForbiddenRange
+import quex.engine.state_machine.character_counter  as character_counter
+import quex.engine.state_machine.setup_post_context as setup_post_context
+import quex.engine.state_machine.setup_pre_context  as setup_pre_context
+import quex.engine.state_machine.transformation     as transformation
 #                                                         
-from   quex.blackboard           import setup as Setup, deprecated
+from   quex.blackboard           import setup       as Setup, deprecated
 from   quex.engine.misc.file_in  import error_msg
 
 class Pattern(object):
@@ -25,8 +25,7 @@ class Pattern(object):
         #     Currently 'transition number' is equal to 'character number'. After 
         #     transformation a transition may represent a byte or whatever the codec 
         #     does to the state machine.
-        self.__newline_n   = character_counter.get_newline_n(CoreSM)
-        self.__character_n = character_counter.get_character_n(CoreSM)
+        self.__newline_n, self.__character_n = character_counter.do(CoreSM)
 
         # (2) [Optional] Transformation according to Codec Information
         #

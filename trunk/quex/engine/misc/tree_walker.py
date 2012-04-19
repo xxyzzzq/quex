@@ -116,6 +116,9 @@ class TreeWalker:
        For debug purposes, the '.depth' property can be used to probe the depth 
        of the current recursion.
     """
+    def __init__(self):
+        self.abort_f = False
+
     def do(self, InitNode_OrInitList):
         if type(InitNode_OrInitList) == list: init_node_list = InitNode_OrInitList 
         else:                                 init_node_list = [ InitNode_OrInitList ]
@@ -127,6 +130,7 @@ class TreeWalker:
 
             node          = frame.node_list[frame.i]
             sub_node_list = self.on_enter(node)
+            if self.abort_f: return
 
             if (sub_node_list is not None) and len(sub_node_list) != 0:
                 self.work_stack.append(frame)                      # branch node
@@ -150,7 +154,8 @@ if __name__ == "__main__":
     # Example: Some tree about regions in the world and beyond. 
     class Some:
         def __init__(self, Name):
-            self.name = Name
+            self.name   = Name
+            self.places = None
     a = [Some("World"), Some("Mars") ]
     a[0].places = [ Some("Asia"), Some("Europe"), Some("Afrika") ]
     a[0].places[0].places = [ Some("China"), Some("Japan"), Some("Thailand") ]
@@ -167,12 +172,13 @@ if __name__ == "__main__":
         def __init__(self):  
             self.path = []
             self.depth = 0
+            TreeWalker.__init__(self)
 
         def on_enter(self, node):  
             self.depth += 1
             print "    " * self.depth + " + " + node.name
             self.path.append(node.name)
-            if hasattr(node, "places") == False: return []
+            if node.places is None: return []
             # print repr(self.path)[1:-1]
             return node.places
 
