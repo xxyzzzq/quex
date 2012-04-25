@@ -64,10 +64,15 @@ def do(ModeDB):
         __entry_exit_transitions(mode, mode_name_list)
 
     # (*) A skipper shall not have commonalities with any other pattern.
-    for pattern_action_pair in mode.get_pattern_action_pair_list():
-        if pattern_action_pair.comment not in ["skip", "skip_range", "skip_nested_range"]: continue
-        __commonality(mode, pattern_action_pair, pattern_action_pair.pattern().sm, 
-                      pattern_action_pair.comment)
+    #     The skipper may have no commonality, or superseed the pattern. But, 
+    #     a pattern should never win by being longer then a skipper.
+    print "##_______________________________________"
+    allowed_commonalities = [ E_Commonality.NONE, E_Commonality.BOTH, E_Commonality.B_IN_A ]
+    for mode in ModeDB.values():
+        for pattern_action_pair in mode.get_pattern_action_pair_list():
+            if pattern_action_pair.comment not in ["skip", "skip_range", "skip_nested_range"]: continue
+            __commonality(mode, pattern_action_pair, pattern_action_pair.pattern().sm, 
+                          pattern_action_pair.comment, AllowedCommonalities=allowed_commonalities)
 
     # (*) An indentation counter shall not interfer with whatsoever pattern
     for mode in ModeDB.values():
@@ -99,7 +104,8 @@ def do(ModeDB):
                           % newline_suppressor_info.pattern_string(), 
                           newline_suppressor_info.file_name, newline_suppressor_info.line_n)
 
-def __commonality(mode, Info, ReferenceSM, Name):
+def __commonality(mode, Info, ReferenceSM, Name, AllowedCommonalities=[E_Commonality.NONE]):
+
     for pattern_action_pair in mode.get_pattern_action_pair_list():
         if pattern_action_pair.comment in ["indentation newline", "indentation newline suppressor"]: 
             continue
@@ -108,7 +114,8 @@ def __commonality(mode, Info, ReferenceSM, Name):
         # No 'commonalities' between self and self shall be checked
         if id(sm) == id(ReferenceSM): continue
 
-        if commonality_checker.do(ReferenceSM, sm) != E_Commonality.NONE:
+        print "##", commonality_checker.do(ReferenceSM, sm)
+        if commonality_checker.do(ReferenceSM, sm) not in AllowedCommonalities:
             error_msg("The %s pattern '%s'" \
                       % (Name, Info.pattern_string()), Info.file_name, Info.line_n, 
                       DontExitF=True, WarningF=False)
