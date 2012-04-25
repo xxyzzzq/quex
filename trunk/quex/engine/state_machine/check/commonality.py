@@ -29,10 +29,10 @@ class Checker:
 
     def do(self):
         """RETURNS:  
-                     0, if no commonalities exist.
-                     1, if both ACCEPT a common lexeme.
-                     2, if A has a pattern that lies inside the state machine of B.
-                     3, if B has a pattern that lies inside the state machine of A.
+                     NONE    if no commonalities exist.
+                     BOTH    if both ACCEPT a common lexeme.
+                     A_IN_B  if A has a pattern that lies inside the state machine of B.
+                     B_IN_A  if B has a pattern that lies inside the state machine of A.
         """
         return self.__dive(self.a_sm.init_state_index, self.b_sm.init_state_index)
 
@@ -41,8 +41,8 @@ class Checker:
         b_state = self.b_sm.states[BTargetIdx]
         if a_state.is_acceptance(): 
             if b_state.is_acceptance(): return E_Commonality.BOTH    # both share a commonality
-            else:                       return E_Commonality.A_IN_B  # A has something in B
-        elif b_state.is_acceptance():   return E_Commonality.B_IN_A  # B has something in A
+            else:                       return E_Commonality.A_IN_B  # path in A is a path in B
+        elif b_state.is_acceptance():   return E_Commonality.B_IN_A  # path in B is a path in A
 
         # Follow the path of common trigger sets
         for a_target, a_trigger_set in a_state.transitions().get_map().items():

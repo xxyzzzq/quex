@@ -106,8 +106,9 @@ Default_NewlineCharDB = {
     1: NumberSet([Interval(0x0A),     # Line Feed 
                   Interval(0x0B),     # Vertical Tab 
                   Interval(0x0C),     # Form Feed 
+                  #        0x0D       --> set to '0' newlines, see below
                   Interval(0x85),     # Next Line 
-                  Interval(0x28),     # Line Separator 
+                  Interval(0x2028),   # Line Separator 
                   Interval(0x2029)]), # Paragraph Separator 
     0: NumberSet(Interval(0x0D)),     # Carriage Return
     #                                 # DOS/Windows: 0x0D, 0x0A --> 1 newline
@@ -133,11 +134,15 @@ class CounterDB:
     #                                #      Normally, a character increments the column by '1'
     #                                #      This database allows to assign different values for 
     #                                #      special characters.
+    __enabled_f = True
+
     @staticmethod
     def reset():
-        newline = Default_NewlineCharDB
-        grid    = Default_GridCharDB
-        special = Default_SpecialCharDB
+        """Reset the database to default values."""
+        CounterDB.newline     = Default_NewlineCharDB
+        CounterDB.grid        = Default_GridCharDB
+        CounterDB.special     = Default_SpecialCharDB
+        CounterDB.__enabled_f = True
 
     @staticmethod
     def assert_consistency():
@@ -153,6 +158,15 @@ class CounterDB:
         do(CounterDB.newline)
         do(CounterDB.grid)
         do(CounterDB.special)
+
+    @staticmethod
+    def disable():
+        """Disable character and line counting. Must be enabled with .reset()"""
+        CounterDB.__enabled_f = False
+
+    @staticmethod
+    def is_enabled(): 
+        return CounterDB.__enabled_f
 
 
 #-----------------------------------------------------------------------------------------

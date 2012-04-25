@@ -40,6 +40,9 @@ def do(SM):
        to front until the first newline. This tremendous computation time overhead
        is shied away from, because of the aforementioned low expected value add.
     """
+    if not CounterDB.is_enabled(): 
+        return E_Count.VOID, E_Count.VOID
+
     Count.init()
 
     counter = CharacterCounter(SM)
@@ -94,8 +97,8 @@ class CharacterCounter(TreeWalker):
         if known is not None:
             if known.column_n != count.column_n: self.result.column_n = E_Count.VOID
             if known.line_n   != count.line_n:   self.result.line_n   = E_Count.VOID
-            if     self.result.line_n   == E_Count.VOID \
-               and self.result.column_n == E_Count.VOID: 
+
+            if self.result.line_n == E_Count.VOID and self.result.column_n == E_Count.VOID: 
                 self.abort_f = True
 
             # Rest of paths starting from this state has been walked along before
@@ -112,6 +115,9 @@ class CharacterCounter(TreeWalker):
             elif self.result.column_n != known.column_n: self.result.column_n = E_Count.VOID
             if   self.result.line_n == E_Count.VIRGIN:   self.result.line_n = known.line_n
             elif self.result.line_n != known.line_n:     self.result.line_n = E_Count.VOID
+
+            if self.result.line_n == E_Count.VOID and self.result.column_n == E_Count.VOID: 
+                self.abort_f = True
 
         return subsequent
 
@@ -196,7 +202,7 @@ class Count(object):
             Count.announce_column_n_per_step(E_Count.VOID)
 
             if x == True:
-                self.column_n += (self.column_n // grid_size + 1) * grid_size
+                self.column_n = (self.column_n // grid_size + 1) * grid_size
                 return True
             else:
                 # Same transition with characters of different horizonzal size.
@@ -218,8 +224,12 @@ class Count(object):
                 self.column_n = E_Count.VOID
                 return self.line_n is not E_Count.VOID # Abort, if line_n is also void.
 
-        self.column_n += 1
-        Count.announce_column_n_per_step(1)
+        if   self.column_n == E_Count.VIRGIN: 
+            self.column_n = 1
+        elif self.column_n != E_Count.VOID:                               
+            self.column_n += 1
+            Count.announce_column_n_per_step(1)
+        
         return True # Do not abort, yet
 
     @staticmethod

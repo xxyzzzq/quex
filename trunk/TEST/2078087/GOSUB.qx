@@ -13,26 +13,26 @@ mode ONE : BASE {
     2 => GOSUB(TWO);
     3 => GOSUB(THREE);
     4 => GOSUB(FOUR);
-    . => QUEX_TKN_LETTER(Lexeme);
+    [^ \n\t] => QUEX_TKN_LETTER(Lexeme);
     
 }
 mode TWO : BASE {
     1 => GOSUB(ONE);
     3 => GOSUB(THREE);
     4 => GOSUB(FOUR);
-    . => QUEX_TKN_LETTER(Lexeme);
+    [^ \n\t] => QUEX_TKN_LETTER(Lexeme);
     
 }
 mode THREE : BASE {
     1 => GOSUB(ONE);
     2 => GOSUB(TWO);
     4 => GOSUB(FOUR);
-    . => QUEX_TKN_LETTER(Lexeme);
+    [^ \n\t] => QUEX_TKN_LETTER(Lexeme);
     
 }
 mode FOUR : BASE {
     1 => GOSUB(ONE);
     2 => GOSUB(TWO);
     3 => GOSUB(THREE);
-    . => QUEX_TKN_LETTER(Lexeme);
+    [^ \n\t] => QUEX_TKN_LETTER(Lexeme);
 }
