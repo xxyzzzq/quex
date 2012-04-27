@@ -168,6 +168,7 @@ SETUP_INFO = {
     "version_information":               [["--version", "-v"],                SetupParTypes.FLAG],
     "help":                              [["--help", "-h"],                   SetupParTypes.FLAG],
     "warning_disabled_no_token_queue_f": [["--no-warning-on-no-token-queue"], SetupParTypes.FLAG],
+    "warning_on_outrun_f":               [["--warning-on-outrun", "--woo"],   SetupParTypes.FLAG],
     # Parameters not set on the command line:
     "byte_order_is_that_of_current_system_f":    True,
     "analyzer_class_name":                       None,
