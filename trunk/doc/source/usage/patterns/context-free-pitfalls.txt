@@ -1,3 +1,5 @@
+.. _usage-context-free-pitfalls:
+
 Pitfalls
 =========
 
@@ -19,31 +21,47 @@ two patterns be defined as:
 
 .. code-block:: cpp
 
-     "Else"             => TKN_KEYWORD_ELSE;
-     "Else\tAugenstein" => TKN_SWABIAN_LADY(Lexeme);
-
-Now, the ``Else`` statement may be matched, but only if it is not followed by
-tabulator and `Augenstein`. On the first glance, this case does not seem to be
-very probable. Greedy matching can be tricked, by the usage of anti-patterns.
-If for example there is a keyword that shall always trigger and and identifier
-that covers the keyword, such as::
-
       key    => TKN_KEYWORD;
       [a-z]+ => TKN_IDENTIFIER;
 
-Then the lexeme ``keyword`` would trigger and identifier, because it
-matches more. If the the desired token sequence, though, is
+then the lexeme ``keyword`` would produce a single token::
+
+      IDENTIFIER   'keyword'
+
+because IDENTIFIER matches a longer lexeme than soley KEY does. If the the
+desired token sequence, though, is::
 
       KEYWORD      'key'
       IDENTIFIER   'word'
 
-Then the identifier should be expressed in terms of anti-patterns, i.e.
+the analyzer may be considered unapt. This example, highlights a bigger
+problem related to 'greedy matching':
+
+  .. warning::
+
+     When writing a pattern action pair with a high priority (such 
+     as in a base mode) one may not be aware of a pattern of lower priority
+     (e.g. in a derived mode). The assumption that high-priority patterns
+     always win when they match guides to wrong expectations.
+
+Whenever the lexer's behavior deviates from what is expected, it may make
+sense to ask Quex to print information about patterns that potentially
+outrun higher priority patterns. This happens by means of the command
+line option '--warning-on-outrun' or '--woo'. When specified with a file
+containing the aforementioned example, quex will print the following 
+notification::
+
+    mine.qx:4:warning: The pattern 'key'
+    mine.qx:5:warning: may outrun pattern '[a-z]+' defined here.
+
+Greedy matching can be tricked, by the usage of anti-patterns. For this, the
+IDENTIFIER should be expressed in terms of anti-patterns, i.e.
 
       key           => TKN_KEYWORD;
       \A{key}[a-z]+ => TKN_IDENTIFIER;
 
-If more than one keyword are involved, e.g. 'key', 'password', and 'secret', 
-the identifier would have to look like
+If more than one KEYWORD are involved, e.g. 'key', 'password', and 'secret', 
+the IDENTIFIER would have to look like
 
       \A{key|password|secret}[a-z]+ => TKN_IDENTIFIER;
     

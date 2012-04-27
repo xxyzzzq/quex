@@ -1,4 +1,4 @@
-<history date="Mon Apr 23 06:35:40 2012" element-n="568">
+<history date="Fri Apr 27 08:01:31 2012" element-n="573">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1274,5 +1274,12 @@
         <crc-error time="20:32:00" application="test-count_character_n-2.py" choice="Grid" database-crc="789475168" real-crc="-1029860625"/>
         <crc-error time="20:39:42" application="test-count_character_n-2.py" choice="Different" database-crc="545090290" real-crc="473580784"/>
         <crc-error time="20:42:15" application="test-count_character_n-2.py" choice="TwoSet" database-crc="545090290" real-crc="-2019536294"/>
+    </day>
+    <day year="2012" month="04" day="27">
+        <crc-error time="04:11:29" application="test-outrun.py" choice="" database-crc="-1303441369" real-crc="726044664"/>
+        <crc-error time="04:12:58" application="test-outrun.py" choice="" database-crc="726044664" real-crc="-1943891136"/>
+        <crc-error time="04:16:35" application="test-outrun.py" choice="" database-crc="-1943891136" real-crc="495388614"/>
+        <crc-error time="04:21:00" application="test-outrun.py" choice="" database-crc="495388614" real-crc="-697226040"/>
+        <crc-error time="06:01:31" application="test-outrun.py" choice="" database-crc="-697226040" real-crc="293006875"/>
     </day>
 </history>

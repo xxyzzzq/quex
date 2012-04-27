@@ -748,6 +748,16 @@ for the analyzer and the token.
    If specified short information about the name space of the analyzer and the
    token are printed on the console. 
 
+When the analyzer behaves unexpectedly, it may make sense to ponder over low-priority
+patterns outrunning high-priority patterns. The following flag supports these considerations.
+
+.. cmdoption:: --warning-on-outrun, --woo
+
+   When specified, each mode is investigated whether there are patterns of lower
+   priority that potentially outrun patterns of higher priority. This may happen
+   due to longer length of the matching lower priority pattern. See section 
+   :ref:`usage-context-free-pitfalls`.
+
 The comment output is framed by ``BEGIN:`` and ``END:`` markers. This facilitates the extraction
 of this information for further processing. For example, the Unix command 'awk' can be used:
 
