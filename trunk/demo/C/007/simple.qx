@@ -30,7 +30,6 @@ mode BASE :
 
     // Test, that the skippers follow the same rule as every other pattern:
     // longer match precedes. Earlier match precedes.
-    "/*-+"      => QUEX_TKN_MATH_OPERATOR_LIST;
 }
 
 

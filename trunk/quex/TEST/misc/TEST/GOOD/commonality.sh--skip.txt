@@ -1,2 +1,3 @@
-interfere-skip.qx:2:error: The skip pattern '[ ]'
-interfere-skip.qx:3:error: has commonalities with pattern '" "' defined here.
+interfere-skip.qx:5:error: The pattern '[ ]+' has lower priority but
+interfere-skip.qx:4:error: may outrun skip pattern '[ ]' defined here.
+interfere-skip.qx:5:error: This is not admissible.

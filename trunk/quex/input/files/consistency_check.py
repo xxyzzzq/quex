@@ -140,14 +140,14 @@ def __outrun_message(PatternStr, FileName, LineN, OtherPatternActionPair, Name="
     pattern_str       = OtherPatternActionPair.pattern_string()
     file_name, line_n = OtherPatternActionPair.get_action_location()
 
-    error_msg("The %spattern '%s'" \
-              % (Name, PatternStr), FileName, LineN, 
+    error_msg("The pattern '%s' has lower priority but" % pattern_str, 
+              file_name, line_n, 
               DontExitF=True, WarningF=not ExitF)
-    error_msg("may outrun pattern '%s' defined here." % pattern_str, 
-              file_name, line_n,
+    error_msg("may outrun %spattern '%s' defined here." % (Name, PatternStr), 
+              FileName, LineN,
               DontExitF=True, WarningF=not ExitF)
     if ExitF:
-        error_msg("This is not admissible.", Info.file_name, Info.line_n)
+        error_msg("This is not admissible.", file_name, line_n)
 
 def __start_mode(applicable_mode_name_list, mode_name_list):
     """If more then one mode is defined, then that requires an explicit 

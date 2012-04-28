@@ -51,8 +51,21 @@ line option '--warning-on-outrun' or '--woo'. When specified with a file
 containing the aforementioned example, quex will print the following 
 notification::
 
-    mine.qx:4:warning: The pattern 'key'
-    mine.qx:5:warning: may outrun pattern '[a-z]+' defined here.
+    mine.qx:5:warning: The pattern '[a-z]+' has lower priority
+    mine.qx:4:warning: may outrun pattern 'key' defined here.
+
+The potential of outrunning high priority patterns by low priority patterns
+can be very subtile. Consider::
+
+      'alb|albertikus' => TKN_ALB;
+      'albert'         => TKN_ALBERT;
+
+When a lexeme "alb" is not followed by 'ert', then a token ALB is produced. If
+the lexeme "albert" is not followed by 'ikus', then ALBERT matches and outruns
+ALB. Again, if "albertikus" appears in the input stream, then ALB matches and
+is no longer outrun. When complex patterns are applied, there is obviously a
+potential cause of confusion. The '--woo' command line option mentioned above
+helps to understand such behavior.
 
 Greedy matching can be tricked, by the usage of anti-patterns. For this, the
 IDENTIFIER should be expressed in terms of anti-patterns, i.e.

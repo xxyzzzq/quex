@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 if [[ $1 == "--hwut-info" ]]; then
     echo "demo/010: Direct Buffer Access (Syntactically Chunked)"
-    echo "CHOICES:  point, re-point, copy, copy-ez, fill, fill-ez, copy-conversion, copy-conversion-direct, fill-conversion-direct, stdinlexer;"
+    echo "CHOICES:  point, re-point, copy, copy-ez, fill, fill-ez, copy-conversion, copy-conversion-direct, fill-conversion-direct;"
     exit
 fi
 cd ../010

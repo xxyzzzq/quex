@@ -1,0 +1,17 @@
+start = X0;
+token { 0; 1; }
+
+mode X0 {
+      key    => TKN_0;
+      [a-z]+ => TKN_1;
+}
+
+mode X1 {
+      alb|albertikus => TKN_0;
+      albert         => TKN_1;
+}
+
+mode X2 {
+      alb|albertikus => TKN_0;
+      a|al|alb|albe|alber|albert|alberti|albertik|albertiku|albertikus => TKN_1;
+}
