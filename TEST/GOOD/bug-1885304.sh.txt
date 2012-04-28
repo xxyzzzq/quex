@@ -2768,16 +2768,17 @@ QUEX_ERROR_EXIT("\n    Match failure in mode 'ONE_AND_ONLY'.\n"
     }
     goto __REENTRY_PREPARATION;
 
-#undef Lexeme
-#undef LexemeBegin
-#undef LexemeEnd
-#undef LexemeNull
-#undef LexemeL
-
 __REENTRY_PREPARATION:
     /* (*) Common point for **restarting** lexical analysis.
      *     at each time when CONTINUE is called at the end of a pattern. */
  
+
+#   undef Lexeme
+#   undef LexemeBegin
+#   undef LexemeEnd
+#   undef LexemeNull
+#   undef LexemeL
+
 #   ifndef __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
 #   ifdef  QUEX_OPTION_TOKEN_POLICY_QUEUE
     if( QUEX_NAME(TokenQueue_is_full)(&self._token_queue) ) RETURN;

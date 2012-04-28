@@ -23,8 +23,8 @@
 #   define __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION
 #endif
 
-#define QUEX_SETTING_VERSION           "0.62.2-cw"
-#define QUEX_SETTING_BUILD_DATE        "Sun Apr  1 07:20:28 2012"
+#define QUEX_SETTING_VERSION           "0.62.4"
+#define QUEX_SETTING_BUILD_DATE        "Sat Apr 28 06:17:34 2012"
 #define QUEX_SETTING_ANALYZER_VERSION  "0.0.0-pre-release"
 
 #ifndef    __QUEX_OPTION_PLAIN_C
@@ -281,6 +281,9 @@
 #ifndef    QUEX_SETTING_CHARACTER_CODEC   
 #   define QUEX_SETTING_CHARACTER_CODEC unicode
 #endif
+/* The following flag indicates that the engine is running on a specific
+ * codec. Thus no converter is necessary. Use the flag to detect misuse.                    */
+/* #define __QUEX_OPTION_ENGINE_RUNNING_ON_CODEC */
 
 #ifndef    QUEX_TYPE_ACCEPTANCE_ID
 #   define QUEX_TYPE_ACCEPTANCE_ID   int

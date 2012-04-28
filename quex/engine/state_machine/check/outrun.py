@@ -1,5 +1,3 @@
-from quex.engine.state_machine.core import StateMachine
-from quex.engine.misc.enum          import Enum 
 from quex.engine.misc.tree_walker   import TreeWalker
 
 def do(High, Low): 

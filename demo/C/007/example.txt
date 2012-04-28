@@ -16,4 +16,4 @@ Fischer's Fritz grabs Swordfish// Fischer's Fritz
  * Einstein field equations which relate the curvature of spacetime with the
  * mass, energy, and momentum within it.                                          */
 Fischer's Fritz /* comment */hunts/**/ /**/Trouts/**/. /* comment */
-Fischer's /*Fritz*/ Fritz catches /**/Sharks./*-+ 
+Fischer's /*Fritz*/ Fritz catches /**/Sharks.

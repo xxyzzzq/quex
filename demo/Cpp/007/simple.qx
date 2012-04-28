@@ -27,10 +27,6 @@ mode BASE :
     "Fritz"     => QUEX_TKN_FRITZ;
     "Nothing"   => QUEX_TKN_NOTHING;
     [A-Z][a-z]+ => QUEX_TKN_FISCH(Lexeme);
-
-    // Test, that the skippers follow the same rule as every other pattern:
-    // longer match precedes. Earlier match precedes.
-    "/*-+"      => QUEX_TKN_MATH_OPERATOR_LIST;
 }
 
 

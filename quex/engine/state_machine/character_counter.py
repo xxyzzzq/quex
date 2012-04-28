@@ -1,9 +1,6 @@
 # (C) 2012 Frank-Rene Schaefer
 from quex.engine.misc.tree_walker  import TreeWalker
-from quex.engine.interval_handling import NumberSet, Interval
 from quex.blackboard               import E_Count, CounterDB
-
-from copy import copy
 
 def do(SM):
     """Counts line and column number, if possible, from the structure

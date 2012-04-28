@@ -1,0 +1,6 @@
+outrun.qx:17:warning: The pattern 'a|al|alb|albe|alber|albert|alberti|albertik|albertiku|albertikus' has lower priority but
+outrun.qx:16:warning: may outrun pattern 'alb|albertikus' defined here.
+outrun.qx:7:warning: The pattern '[a-z]+' has lower priority but
+outrun.qx:6:warning: may outrun pattern 'key' defined here.
+outrun.qx:12:warning: The pattern 'albert' has lower priority but
+outrun.qx:11:warning: may outrun pattern 'alb|albertikus' defined here.

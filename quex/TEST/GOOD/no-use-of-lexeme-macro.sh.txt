@@ -22,6 +22,7 @@ that referes to the Lexeme macros.
 <<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:    require_terminating_zero_f = (Lexeme_matcher.search(code_str) is not None) 
 <<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:        txt += "                \"    Proposal: Define 'on_failure' and analyze 'Lexeme'.\\n\");\n"
 <<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:    # Lexeme does not contain newline --> count only columns
-<<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:    if character_n == -1: incr_str = "LexemeL"
+<<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:    if character_n == E_Count.VOID: incr_str = "LexemeL"
 <<QUEX_PATH>>/quex/engine/generator/languages/cpp.py:LineN:    /* Lexeme setup: 
 <<QUEX_PATH>>/quex/engine/generator/languages/cpp.py:LineN:     * references to the 'Lexeme'. 'LexemeNull' provides a reference to an empty
+<<QUEX_PATH>>/quex/engine/state_machine/character_counter.py:LineN:    #               length = (LexemeEnd - LexemeBegin) * C
