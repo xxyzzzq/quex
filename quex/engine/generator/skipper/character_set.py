@@ -65,6 +65,19 @@ $$LC_COUNT_AFTER_RELOAD$$
     } 
 """
 
+# alternative_reload = """
+# $$LC_COUNT_BEFORE_RELOAD$$
+    # $$MARK_LEXEME_START$$
+    # GOTO_RELOAD_FORWARD($$RELOAD_OK_ADR$$, $$TERMINAL_EOF_ADR$$);
+# $$RELOAD_OK_LABEL$$:
+    # $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See reload procedure. */
+# $$LC_COUNT_AFTER_RELOAD$$
+    # goto _$$SKIPPER_INDEX$$_LOOP;
+# """
+ # ["$$TERMINAL_EOF_ADR$$",               get_address("$terminal-EOF", U=True)],
+ # ["$$RELOAD_OK_ADR$$",                  get_address("$skipper-reload", reload_ok_index)],
+ # ["$$RELOAD_OK_LABEL$$",                get_label("$skipper-reload", reload_ok_index)],
+
 def get_skipper(TriggerSet):
     """This function implements simple 'skipping' in the sense of passing by
        characters that belong to a given set of characters--the TriggerSet.

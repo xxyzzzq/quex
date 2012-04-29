@@ -2,7 +2,7 @@
 import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
-from   generator_test import create_nested_range_skipper_code, \
+from   quex.engine.generator.TEST.generator_test import create_nested_range_skipper_code, \
                              compile_and_run
 
 if "--hwut-info" in sys.argv:
