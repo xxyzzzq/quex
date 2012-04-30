@@ -143,7 +143,7 @@ def __outrun_message(PatternStr, FileName, LineN, OtherPatternActionPair, Name="
     error_msg("The pattern '%s' has lower priority but" % pattern_str, 
               file_name, line_n, 
               DontExitF=True, WarningF=not ExitF)
-    error_msg("may outrun %spattern '%s' defined here." % (Name, PatternStr), 
+    error_msg("may outrun %spattern '%s' as defined here." % (Name, PatternStr), 
               FileName, LineN,
               DontExitF=True, WarningF=not ExitF)
     if ExitF:

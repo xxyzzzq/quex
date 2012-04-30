@@ -40,8 +40,8 @@ lexer: lexer.o tiny_lexer.o
 stdinlexer: stdinlexer.cpp tiny_lexer_st.cpp 
 	$(CC) -o $@  $^
           
-tiny_lexer_st.cpp:   simple.qx $(QUEX_CORE)
-	quex -i simple.qx --engine tiny_lexer_st \
+tiny_lexer_st.cpp:   hello.qx $(QUEX_CORE)
+	quex -i hello.qx --engine tiny_lexer_st \
 		 --token-memory-management-by-user   \
 		 --token-policy single
 		 # CERTAINLY NOT: "--bet wchar_t" 

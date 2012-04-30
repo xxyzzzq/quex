@@ -1,37 +1,37 @@
-<test-database execution-time-sec="1.68" date="Sat Apr 28 06:41:02 2012">
+<test-database execution-time-sec="1.90" date="Sun Apr 29 21:46:37 2012">
     <last-used-diff-display-program name=""/>
-    <test title="utf8 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.04"> 
+    <test title="utf8 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.03"> 
         <application file-name="from-utf8" info-request-time="1335155415L" vanished="False"/>
         <make-procedure success="True" time_sec="0.980426"/>
         <choice-list number="3" same_result="False">
-           <choice name="Source_Empty" result="OK" time_sec="0.02" crc="-975538654"/>
+           <choice name="Source_Empty" result="OK" time_sec="0.01" crc="-975538654"/>
            <choice name="Source_TestFile" result="OK" time_sec="0.01" crc="294941333"/>
            <choice name="Drain_ToSmall" result="OK" time_sec="0.01" crc="834269970"/>
         </choice-list>
     </test>
-    <test title="utf16 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.03"> 
-        <application file-name="from-utf16" info-request-time="1335155416L" vanished="False"/>
-        <make-procedure success="True" time_sec="0.942077"/>
-        <choice-list number="3" same_result="False">
-           <choice name="Source_Empty" result="OK" time_sec="0.02" crc="-434085329"/>
-           <choice name="Source_TestFile" result="OK" time_sec="0.01" crc="38892956"/>
-           <choice name="Drain_ToSmall" result="OK" time_sec="0.00" crc="-765338234"/>
-        </choice-list>
-    </test>
-    <test title="Test of complete character set on base converters (utf8, utf16, utf32)" make-dependent="True" time-sum-sec="1.39"> 
-        <application file-name="characters" info-request-time="1335155416L" vanished="False"/>
-        <make-procedure success="True" time_sec="0.436060"/>
-        <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="1.39" crc="705934895"/>
-        </choice-list>
-    </test>
-    <test title="utf32 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.22"> 
+    <test title="utf32 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.03"> 
         <application file-name="from-utf32" info-request-time="1335155417L" vanished="False"/>
         <make-procedure success="True" time_sec="1.063650"/>
         <choice-list number="3" same_result="False">
-           <choice name="Source_Empty" result="OK" time_sec="0.22" crc="490986972"/>
-           <choice name="Source_TestFile" result="OK" time_sec="0.00" crc="1201958385"/>
-           <choice name="Drain_ToSmall" result="OK" time_sec="0.00" crc="1140718619"/>
+           <choice name="Source_Empty" result="OK" time_sec="0.02" crc="490986972"/>
+           <choice name="Source_TestFile" result="OK" time_sec="0.01" crc="1201958385"/>
+           <choice name="Drain_ToSmall" result="OK" time_sec="0.01" crc="1140718619"/>
+        </choice-list>
+    </test>
+    <test title="Test of complete character set on base converters (utf8, utf16, utf32)" make-dependent="True" time-sum-sec="1.77"> 
+        <application file-name="characters" info-request-time="1335155416L" vanished="False"/>
+        <make-procedure success="True" time_sec="0.436060"/>
+        <choice-list number="1" same_result="False">
+           <choice name="" result="OK" time_sec="1.77" crc="705934895"/>
+        </choice-list>
+    </test>
+    <test title="utf16 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.07"> 
+        <application file-name="from-utf16" info-request-time="1335155416L" vanished="False"/>
+        <make-procedure success="True" time_sec="0.942077"/>
+        <choice-list number="3" same_result="False">
+           <choice name="Source_Empty" result="OK" time_sec="0.05" crc="-434085329"/>
+           <choice name="Source_TestFile" result="OK" time_sec="0.01" crc="38892956"/>
+           <choice name="Drain_ToSmall" result="OK" time_sec="0.01" crc="-765338234"/>
         </choice-list>
     </test>
 </test-database>

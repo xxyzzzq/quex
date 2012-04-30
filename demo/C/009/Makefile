@@ -42,8 +42,8 @@ lexer: lexer.o tiny_lexer.o
 stdinlexer: stdinlexer.c tiny_lexer_st.c 
 	$(CC) -o $@  $^
           
-tiny_lexer_st.c: simple.qx $(QUEX_CORE)
-	quex -i simple.qx --engine tiny_lexer_st \
+tiny_lexer_st.c: hello.qx $(QUEX_CORE)
+	quex -i hello.qx --engine tiny_lexer_st \
 		 --language C                        \
 		 --token-memory-management-by-user   \
 		 --token-policy single
