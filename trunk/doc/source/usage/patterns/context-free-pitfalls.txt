@@ -51,8 +51,8 @@ line option '--warning-on-outrun' or '--woo'. When specified with a file
 containing the aforementioned example, quex will print the following 
 notification::
 
-    mine.qx:5:warning: The pattern '[a-z]+' has lower priority
-    mine.qx:4:warning: may outrun pattern 'key' defined here.
+    mine.qx:5:warning: The pattern '[a-z]+' has lower priority but
+    mine.qx:4:warning: may outrun pattern 'key' as defined here.
 
 The potential of outrunning high priority patterns by low priority patterns
 can be very subtile. Consider::

@@ -5,4 +5,4 @@ python *.py
 --not test-pseudo_ambiguous_post_conditions-3.py 
 --not test-track*
 --not error.py
-
+--not __init__.py
