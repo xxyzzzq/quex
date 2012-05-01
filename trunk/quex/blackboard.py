@@ -91,6 +91,9 @@ E_Count = Enum("VIRGIN",
                "VOID",
                "_DEBUG_Count")
 
+E_Commonality = Enum("NONE", "BOTH", "A_IN_B", "B_IN_A")
+
+
 #-----------------------------------------------------------------------------------------
 # mode_db: storing the mode information into a dictionary:
 #            key  = mode name

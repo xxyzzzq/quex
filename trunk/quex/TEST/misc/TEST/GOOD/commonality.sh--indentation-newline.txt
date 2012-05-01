@@ -1,2 +1,3 @@
-interfere-indentation-newline.qx:2:error: The indentation newline pattern '[x]'
-interfere-indentation-newline.qx:3:error: has commonalities with pattern '"x"' defined here.
+interfere-indentation-newline.qx:3:error: The pattern '"x"' has lower priority but
+interfere-indentation-newline.qx:2:error: has commonalities with indentation newline pattern '[x]' as defined here.
+interfere-indentation-newline.qx:3:error: This is not admissible.

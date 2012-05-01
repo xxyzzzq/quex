@@ -1,2 +1,4 @@
-src/error-3.qx:8:error: The indentation newline pattern '(\r\n)|\n'
-src/error-3.qx:12:error: has commonalities with pattern '[ \t\n]' defined here.
+## commonalities of the suppressor are no longer forbidden.
+src/error-3.qx:12:error: The pattern '[ \t\n]' has lower priority but
+src/error-3.qx:8:error: has commonalities with indentation newline pattern '(\r\n)|\n' as defined here.
+src/error-3.qx:12:error: This is not admissible.

@@ -1,4 +1,4 @@
-<history date="Sun Apr 29 21:44:56 2012" element-n="9">
+<history date="Tue May  1 11:50:23 2012" element-n="10">
     <day year="2010" month="09" day="16">
         <history-init time="09:30:49"/>
     </day>
@@ -15,5 +15,8 @@
     </day>
     <day year="2010" month="10" day="23">
         <crc-error time="22:05:13" application="commonalities.sh" choice="4" database-crc="1033537895" real-crc="774002524"/>
+    </day>
+    <day year="2012" month="05" day="01">
+        <crc-error time="09:47:55" application="commonalities.sh" choice="2" database-crc="970527046" real-crc="1346940812"/>
     </day>
 </history>

@@ -1,8 +1,9 @@
 from   quex.engine.misc.file_in                    import error_msg, verify_word_in_list
 import quex.blackboard                             as     blackboard
-from   quex.blackboard                             import setup as Setup
+from   quex.blackboard                             import setup as Setup, E_Commonality
 from   quex.engine.generator.action_info           import CodeFragment
 import quex.engine.state_machine.check.outrun      as     outrun_checker
+import quex.engine.state_machine.check.commonality as     commonality_checker
 import quex.engine.state_machine.check.superset    as     superset
 from   itertools import islice
 
@@ -75,6 +76,7 @@ def do(ModeDB):
             if pattern_action_pair.comment not in ["skip", "skip_range", "skip_nested_range"]: continue
             __outrun_check(mode, pattern_action_pair, pattern_action_pair.pattern().sm, 
                            pattern_action_pair.comment)
+            __commonality(mode, pattern_action_pair, pattern_action_pair.pattern().sm, pattern_action_pair.comment)
 
     # (*) An indentation counter shall not be outrun by another pattern.
     for mode in ModeDB.values():
@@ -85,6 +87,7 @@ def do(ModeDB):
         newline_info        = indentation_setup.newline_state_machine
         assert newline_info is not None
         __outrun_check(mode, newline_info, newline_info.get(), "indentation newline")
+        __commonality(mode, newline_info, newline_info.get(), "indentation newline")
 
         newline_suppressor_info = indentation_setup.newline_suppressor_state_machine
         if newline_suppressor_info.get() is not None:
@@ -119,8 +122,8 @@ def __outrun_investigation(mode):
             if outrun_checker.do(sm_high, sm_low):
                 pattern_str       = pap_i.pattern_string()
                 file_name, line_n = pap_i.get_action_location()
-                __outrun_message(pattern_str, file_name, line_n,
-                                 pap_k, ExitF=False)
+                __error_message(pattern_str, file_name, line_n,
+                                pap_k, ExitF=False, Symptom="may outrun")
 
 def __outrun_check(mode, Info, ReferenceSM, Name):
 
@@ -133,21 +136,34 @@ def __outrun_check(mode, Info, ReferenceSM, Name):
         if id(sm) == id(ReferenceSM): continue
 
         if outrun_checker.do(ReferenceSM, sm):
-            __outrun_message(Info.pattern_string(), Info.file_name, Info.line_n,
-                             pattern_action_pair, Name + " ", ExitF=True)
+            __error_message(Info.pattern_string(), Info.file_name, Info.line_n,
+                            pattern_action_pair, Name + " ", ExitF=True, 
+                            Symptom="may outrun")
                              
-def __outrun_message(PatternStr, FileName, LineN, OtherPatternActionPair, Name="", ExitF=False):
+def __error_message(PatternStr, FileName, LineN, OtherPatternActionPair, Name="", ExitF=False, Symptom="may outrun"):
     pattern_str       = OtherPatternActionPair.pattern_string()
     file_name, line_n = OtherPatternActionPair.get_action_location()
 
     error_msg("The pattern '%s' has lower priority but" % pattern_str, 
               file_name, line_n, 
               DontExitF=True, WarningF=not ExitF)
-    error_msg("may outrun %spattern '%s' as defined here." % (Name, PatternStr), 
+    error_msg("%s %spattern '%s' as defined here." % (Symptom, Name, PatternStr), 
               FileName, LineN,
               DontExitF=True, WarningF=not ExitF)
     if ExitF:
         error_msg("This is not admissible.", file_name, line_n)
+
+def __commonality(mode, Info, ReferenceSM, Name):
+    for pattern_action_pair in mode.get_pattern_action_pair_list():
+        if pattern_action_pair.comment in ["indentation newline", "indentation newline suppressor"]: 
+            continue
+        sm = pattern_action_pair.pattern().sm
+        if id(ReferenceSM) == id(sm): continue
+        if commonality_checker.do(ReferenceSM, sm) == E_Commonality.NONE: continue
+
+        __error_message(Info.pattern_string(), Info.file_name, Info.line_n,
+                        pattern_action_pair, Name + " ", ExitF=True, 
+                        Symptom="has commonalities with")
 
 def __start_mode(applicable_mode_name_list, mode_name_list):
     """If more then one mode is defined, then that requires an explicit 

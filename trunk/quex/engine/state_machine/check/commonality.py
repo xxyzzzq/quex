@@ -1,8 +1,5 @@
 from quex.engine.state_machine.core import StateMachine
-from quex.engine.misc.enum          import Enum 
-
-
-E_Commonality = Enum("NONE", "BOTH", "A_IN_B", "B_IN_A")
+from quex.blackboard import E_Commonality
 
 class Checker:
     def __init__(self, A, B):
