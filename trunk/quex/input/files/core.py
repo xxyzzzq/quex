@@ -287,7 +287,6 @@ def parse_token_id_definitions(fh, NamesOnlyF=False):
         result.sort()
         return result
 
-
 def parse_default_token_definition():
     sub_fh = open_file_or_die(os.environ["QUEX_PATH"] 
                               + Setup.language_db["$code_base"] 

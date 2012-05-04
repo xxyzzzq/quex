@@ -6,7 +6,7 @@ case $1 in
         ;;
 
     *)
-        quex -i outrun.qx -o Lexer --token-id-prefix TKN_ --woo 
+        quex -i outrun.qx -o Lexer --token-id-prefix TKN_ --woo --debug-exception
         rm -f Lexer*
         ;;
 esac

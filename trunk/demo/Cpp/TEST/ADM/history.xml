@@ -1,4 +1,4 @@
-<history date="Tue May  1 00:13:14 2012" element-n="777">
+<history date="Thu May  3 07:06:43 2012" element-n="783">
     <day year="2008" month="02" day="09">
         <history-init time="17:40:17"/>
     </day>
@@ -1533,5 +1533,15 @@
     <day year="2012" month="04" day="30">
         <crc-error time="22:10:51" application="009.sh" choice="lexer" database-crc="-1369462576" real-crc="1910061155"/>
         <crc-error time="22:10:55" application="009.sh" choice="wlexer" database-crc="-1369462576" real-crc="1910061155"/>
+    </day>
+    <day year="2012" month="05" day="01">
+        <crc-error time="10:32:58" application="009.sh" choice="stdinlexer" database-crc="318241765" real-crc="-828377416"/>
+        <crc-error time="10:47:31" application="009.sh" choice="lexer" database-crc="1910061155" real-crc="-828377416"/>
+        <crc-error time="10:47:35" application="009.sh" choice="wlexer" database-crc="1910061155" real-crc="-828377416"/>
+    </day>
+    <day year="2012" month="05" day="02">
+        <crc-error time="03:48:00" application="009.sh" choice="lexer" database-crc="-828377416" real-crc="-839532690"/>
+        <crc-error time="03:48:29" application="009.sh" choice="lexer" database-crc="-839532690" real-crc="1910061155"/>
+        <crc-error time="03:48:33" application="009.sh" choice="wlexer" database-crc="-828377416" real-crc="1910061155"/>
     </day>
 </history>

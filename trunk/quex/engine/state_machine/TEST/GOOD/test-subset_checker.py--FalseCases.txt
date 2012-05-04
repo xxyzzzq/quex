@@ -38,3 +38,11 @@ claim =  False
 super = "1ABC"
 sub   = "1BAC"|"1BBC"
 claim =  False
+---------------------------
+super = alb|albertikus
+sub   = albert
+claim =  False
+
+super = albert
+sub   = alb|albertikus
+claim =  False
