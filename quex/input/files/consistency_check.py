@@ -1,10 +1,10 @@
 from   quex.engine.misc.file_in                    import error_msg, verify_word_in_list
 import quex.blackboard                             as     blackboard
-from   quex.blackboard                             import setup as Setup, E_Commonality
+from   quex.blackboard                             import setup as Setup, E_Commonality, E_SpecialPatterns
 from   quex.engine.generator.action_info           import CodeFragment
 import quex.engine.state_machine.check.outrun      as     outrun_checker
-import quex.engine.state_machine.check.commonality as     commonality_checker
-import quex.engine.state_machine.check.superset    as     superset
+import quex.engine.state_machine.check.superset    as     superset_check
+import quex.engine.state_machine.check.same        as     same_check
 from   itertools import islice
 
 
@@ -64,50 +64,59 @@ def do(ModeDB):
     for mode in ModeDB.values():
         __entry_exit_transitions(mode, mode_name_list)
 
+    # (*) Indentation: Newline Pattern and Newline Suppressor Pattern
+    #     shall never trigger on common lexemes.
+    for mode in ModeDB.values():
+        __indentation_setup_check(mode)
+
     # (*) [Optional] Warnings on Outrun
     #     Warn when low priority patterns may outrun high priority patterns.
     if Setup.warning_on_outrun_f:
         for mode in ModeDB.values():
              __outrun_investigation(mode)
 
-    # (*) A skipper shall not be outrun by another pattern.
+    # (*) Special Patterns shall not match on same lexemes
     for mode in ModeDB.values():
         for pattern_action_pair in mode.get_pattern_action_pair_list():
-            if pattern_action_pair.comment not in ["skip", "skip_range", "skip_nested_range"]: continue
-            __outrun_check(mode, pattern_action_pair, pattern_action_pair.pattern().sm, 
-                           pattern_action_pair.comment)
-            __commonality(mode, pattern_action_pair, pattern_action_pair.pattern().sm, pattern_action_pair.comment)
+            if pattern_action_pair.comment not in E_SpecialPatterns: continue
+            __match_same_check(mode, pattern_action_pair)
 
-    # (*) An indentation counter shall not be outrun by another pattern.
+    # (*) Special Patterns (skip, indentation, etc.) 
+    #     shall not be outrun by another pattern.
     for mode in ModeDB.values():
-        indentation_setup = mode.options["indentation"]
-        if indentation_setup is None: continue
+        for pattern_action_pair in mode.get_pattern_action_pair_list():
+            if pattern_action_pair.comment not in E_SpecialPatterns: continue
+            __outrun_check(mode, pattern_action_pair)
 
-        # The newline pattern shall not have intersections with other patterns!
-        newline_info        = indentation_setup.newline_state_machine
-        assert newline_info is not None
-        __outrun_check(mode, newline_info, newline_info.get(), "indentation newline")
-        __commonality(mode, newline_info, newline_info.get(), "indentation newline")
+    # (*) Special Patterns shall not have common matches with patterns
+    #     of higher precedence.
+    for mode in ModeDB.values():
+        for pattern_action_pair in mode.get_pattern_action_pair_list():
+            if pattern_action_pair.comment not in E_SpecialPatterns: continue
+            __subset_check(mode, pattern_action_pair)
 
-        newline_suppressor_info = indentation_setup.newline_suppressor_state_machine
-        if newline_suppressor_info.get() is not None:
-            # Supressor *can* have commonalities with other patterns without confusion,
-            # since it does not trigger indentation handling.
-            # NOT: __commonality(mode, newline_suppressor_info, newline_suppressor_info.get(), 
-            #                    "indentation newline suppressor")
+    # (*) Check for dominated patterns
+    for mode in ModeDB.values():
+        for pattern_action_pair in mode.get_pattern_action_pair_list():
+            __dominated_pattern_check(mode, pattern_action_pair)
 
-            # Newline and newline suppressor should never have a superset/subset relation
-            if    superset.do(newline_info.get(), newline_suppressor_info.get()) \
-               or superset.do(newline_suppressor_info.get(), newline_info.get()):
 
-                error_msg("The indentation newline pattern '%s' and the newline" \
-                          % newline_info.pattern_string(), 
-                          newline_info.file_name, newline_info.line_n, 
-                          DontExitF=True, WarningF=False)
+def __indentation_setup_check(mode):
+    indentation_setup = mode.options["indentation"]
+    if indentation_setup is None: return
 
-                error_msg("suppressor pattern '%s' match same on same lexemes." \
-                          % newline_suppressor_info.pattern_string(), 
-                          newline_suppressor_info.file_name, newline_suppressor_info.line_n)
+    # The newline pattern shall not have intersections with other patterns!
+    newline_info            = indentation_setup.newline_state_machine
+    newline_suppressor_info = indentation_setup.newline_suppressor_state_machine
+    assert newline_info is not None
+    if newline_suppressor_info.get() is None: return
+
+    # Newline and newline suppressor should never have a superset/subset relation
+    if    superset_check.do(newline_info.get(), newline_suppressor_info.get()) \
+       or superset_check.do(newline_suppressor_info.get(), newline_info.get()):
+
+        __error_message(newline_info, newline_suppressor_info,
+                        ThisComment = "match on common lexemes.")
 
 def __outrun_investigation(mode):
     pattern_action_pair_list = mode.get_pattern_action_pair_list()
@@ -122,48 +131,87 @@ def __outrun_investigation(mode):
             if outrun_checker.do(sm_high, sm_low):
                 pattern_str       = pap_i.pattern_string()
                 file_name, line_n = pap_i.get_action_location()
-                __error_message(pattern_str, file_name, line_n,
-                                pap_k, ExitF=False, Symptom="may outrun")
+                __error_message(pap_k, pap_i, ExitF=False, ThisComment="may outrun")
 
-def __outrun_check(mode, Info, ReferenceSM, Name):
+def __outrun_check(mode, PAP):
+    ReferenceSM = PAP.pattern().sm 
 
-    for pattern_action_pair in mode.get_pattern_action_pair_list():
-        if pattern_action_pair.comment in ["indentation newline", "indentation newline suppressor"]: 
-            continue
-
-        sm = pattern_action_pair.pattern().sm
+    for other_pap in mode.get_pattern_action_pair_list():
+        sm = other_pap.pattern().sm
         # No 'commonalities' between self and self shall be checked
-        if id(sm) == id(ReferenceSM): continue
+        if ReferenceSM.get_id() >= sm.get_id(): continue
 
         if outrun_checker.do(ReferenceSM, sm):
-            __error_message(Info.pattern_string(), Info.file_name, Info.line_n,
-                            pattern_action_pair, Name + " ", ExitF=True, 
-                            Symptom="may outrun")
+            __error_message(other_pap, PAP, ExitF=True, 
+                            ThisComment="may outrun", 
+                            ThatComment="has lower priority but")
                              
-def __error_message(PatternStr, FileName, LineN, OtherPatternActionPair, Name="", ExitF=False, Symptom="may outrun"):
-    pattern_str       = OtherPatternActionPair.pattern_string()
-    file_name, line_n = OtherPatternActionPair.get_action_location()
+def __subset_check(mode, PAP):
+    """Checks whether a higher prioritized pattern matches a common subset
+       of the ReferenceSM. For special patterns of skipper, etc. this would
+       be highly confusing.
+    """
+    global special_pattern_list
+    ReferenceSM = PAP.pattern().sm
 
-    error_msg("The pattern '%s' has lower priority but" % pattern_str, 
+    for other_pap in mode.get_pattern_action_pair_list():
+        sm = other_pap.pattern().sm
+        if   ReferenceSM.get_id() <= sm.get_id(): continue
+        elif not superset_check.do(ReferenceSM, sm): continue
+
+        __error_message(other_pap, PAP, ExitF=True, 
+                        ThisComment="matches a subset of", 
+                        ThatComment="has higher priority and")
+
+def __match_same_check(mode, PAP):
+    """Special patterns shall never match on some common lexemes."""
+    A = PAP.pattern().sm
+    for other_pap in mode.get_pattern_action_pair_list():
+
+        B  = other_pap.pattern().sm
+        if   other_pap.comment not in E_SpecialPatterns: continue
+        elif A.get_id() == B.get_id(): continue
+
+        # A superset of B, or B superset of A => there are common matches.
+        if same_check.do(A, B):
+            __error_message(other_pap, PAP, 
+                            ThisComment="matches on some common lexemes as",
+                            ThatComment="", 
+                            ExitF=True)
+
+def __dominated_pattern_check(mode, PAP):
+    pattern_id  = PAP.pattern().sm.get_id()
+
+    for other_pap in mode.get_pattern_action_pair_list():
+        if other_pap.pattern().sm.get_id() >= pattern_id: continue
+        if superset_check.do(other_pap.pattern().sm, PAP.pattern().sm):
+            file_name, line_n = other_pap.get_action_location()
+            __error_message(other_pap, PAP, 
+                            ThisComment = "matches a superset of what is matched by",
+                            EndComment  = "The former has precedence and the latter can never match.",
+                            ExitF       = True)
+
+def __error_message(This, That, ThisComment, ThatComment="", EndComment="", ExitF=True):
+
+    def get_name(PAP, AddSpaceF=True):
+        if PAP.comment not in E_SpecialPatterns: return ""
+        result = repr(PAP.comment).replace("_", " ").lower()
+        if AddSpaceF: result += " "
+        return result
+
+    file_name, line_n = This.get_action_location()
+    error_msg("The %spattern '%s' %s" % (get_name(This), This.pattern_string(), ThisComment), 
               file_name, line_n, 
               DontExitF=True, WarningF=not ExitF)
-    error_msg("%s %spattern '%s' as defined here." % (Symptom, Name, PatternStr), 
+
+    FileName, LineN   = That.get_action_location()
+    error_msg("%s%spattern '%s'." % (ThatComment, get_name(That, AddSpaceF=len(ThatComment) != 0), That.pattern_string()), 
               FileName, LineN,
-              DontExitF=True, WarningF=not ExitF)
-    if ExitF:
-        error_msg("This is not admissible.", file_name, line_n)
+              DontExitF=not (len(EndComment) == 0 and ExitF), 
+              WarningF=not ExitF)
 
-def __commonality(mode, Info, ReferenceSM, Name):
-    for pattern_action_pair in mode.get_pattern_action_pair_list():
-        if pattern_action_pair.comment in ["indentation newline", "indentation newline suppressor"]: 
-            continue
-        sm = pattern_action_pair.pattern().sm
-        if id(ReferenceSM) == id(sm): continue
-        if commonality_checker.do(ReferenceSM, sm) == E_Commonality.NONE: continue
-
-        __error_message(Info.pattern_string(), Info.file_name, Info.line_n,
-                        pattern_action_pair, Name + " ", ExitF=True, 
-                        Symptom="has commonalities with")
+    if len(EndComment) != 0:
+        error_msg(EndComment, FileName, LineN, DontExitF=not ExitF, WarningF=not ExitF)
 
 def __start_mode(applicable_mode_name_list, mode_name_list):
     """If more then one mode is defined, then that requires an explicit 
@@ -239,4 +287,3 @@ def __entry_exit_transitions(mode, mode_name_list):
                       "or any of its base modes.",
                       that_mode.filename, that_mode.line_n)
             
-

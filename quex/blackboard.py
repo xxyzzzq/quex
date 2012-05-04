@@ -93,6 +93,12 @@ E_Count = Enum("VIRGIN",
 
 E_Commonality = Enum("NONE", "BOTH", "A_IN_B", "B_IN_A")
 
+E_SpecialPatterns = Enum("INDENTATION_NEWLINE", 
+                         "SUPPRESSED_INDENTATION_NEWLINE",
+                         "SKIP", 
+                         "SKIP_RANGE", 
+                         "SKIP_NESTED_RANGE", 
+                         "_DEBUG_PatternNames")
 
 #-----------------------------------------------------------------------------------------
 # mode_db: storing the mode information into a dictionary:

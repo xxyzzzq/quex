@@ -1,3 +1,2 @@
-interfere-mix2.qx:4:error: The pattern '[xyz]' has lower priority but
-interfere-mix2.qx:3:error: has commonalities with skip_range pattern '"x"' as defined here.
-interfere-mix2.qx:4:error: This is not admissible.
+interfere-mix2.qx:4:error: The pattern '[xyz]' matches on some common lexemes as
+interfere-mix2.qx:3:error:  skip range pattern '"x"' as defined here.

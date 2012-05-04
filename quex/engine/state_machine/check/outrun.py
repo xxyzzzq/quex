@@ -145,7 +145,7 @@ class Step2_Walker(TreeWalker):
 
         sub_node_list = []
         for b_target, b_trigger_set in Low_State.transitions().get_map().iteritems():
-            b_remaining_triggers = b_trigger_set
+            b_remaining_triggers = b_trigger_set.clone()
             for a_target, a_trigger_set in High_State.transitions().get_map().iteritems():
                 if b_trigger_set.has_intersection(a_trigger_set): 
                     # The transition in 'A' is covered by a transition in 'B'.

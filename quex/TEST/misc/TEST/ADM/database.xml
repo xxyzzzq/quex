@@ -1,38 +1,38 @@
-<test-database execution-time-sec="2.63" date="Tue May  1 12:27:13 2012">
+<test-database execution-time-sec="8.09" date="Fri May  4 06:56:44 2012">
     <last-used-diff-display-program name=""/>
-    <test title="Customized codec files (option --codec-file)" time-sum-sec="0.21"> 
+    <test title="Customized codec files (option --codec-file)" time-sum-sec="0.29"> 
         <application file-name="customized_codec.sh" info-request-time="1310810801L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.21" crc="650831960"/>
+           <choice name="" result="OK" time_sec="0.29" crc="650831960"/>
         </choice-list>
     </test>
-    <test title="Detect lower prio-patterns outrun higher-prio patterns" time-sum-sec="0.32"> 
-        <application file-name="outrun.sh" info-request-time="1335555282L" vanished="False"/>
+    <test title="Detect lower prio-patterns outrun higher-prio patterns" time-sum-sec="0.00"> 
+        <application file-name="outrun.sh" info-request-time="1336105064L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.32" crc="-1663477159"/>
+           <choice name="" result="OK" time_sec="0.00" crc="-1164005888"/>
         </choice-list>
     </test>
-    <test title="Test code comments" time-sum-sec="0.30"> 
+    <test title="Test code comments" time-sum-sec="0.33"> 
         <application file-name="comment.sh" info-request-time="1318614193L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.30" crc="-530152913"/>
+           <choice name="" result="OK" time_sec="0.33" crc="-530152913"/>
         </choice-list>
     </test>
-    <test title="Inadmissible commonalities" time-sum-sec="0.83"> 
+    <test title="Inadmissible commonalities" time-sum-sec="1.14"> 
         <application file-name="commonality.sh" info-request-time="1334051365L" vanished="False"/>
         <choice-list number="6" same_result="False">
-           <choice name="skip" result="OK" time_sec="0.14" crc="-1206532317"/>
-           <choice name="skip_range" result="OK" time_sec="0.14" crc="990727274"/>
-           <choice name="skip_nested_range" result="OK" time_sec="0.14" crc="-1390754149"/>
-           <choice name="indentation-newline" result="OK" time_sec="0.14" crc="1380801827"/>
-           <choice name="mix" result="OK" time_sec="0.14" crc="-1548853236"/>
-           <choice name="mix2" result="OK" time_sec="0.14" crc="-1551530639"/>
+           <choice name="skip" result="OK" time_sec="0.17" crc="-1846901022"/>
+           <choice name="skip_range" result="OK" time_sec="0.16" crc="866845879"/>
+           <choice name="skip_nested_range" result="OK" time_sec="0.38" crc="1543015886"/>
+           <choice name="indentation-newline" result="OK" time_sec="0.15" crc="-527157586"/>
+           <choice name="mix" result="FAIL" time_sec="0.14" crc="-822522933"/>
+           <choice name="mix2" result="OK" time_sec="0.14" crc="-1229871854"/>
         </choice-list>
     </test>
-    <test title="Analyzer State Tracer" time-sum-sec="0.97"> 
+    <test title="Analyzer State Tracer" time-sum-sec="6.33"> 
         <application file-name="debug_show.sh" info-request-time="1330412982L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.97" crc="598685552"/>
+           <choice name="" result="OK" time_sec="6.33" crc="598685552"/>
         </choice-list>
     </test>
 </test-database>

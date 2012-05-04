@@ -1,3 +1,2 @@
 interfere-skip_nested_range.qx:3:error: The pattern '"/*-"' has lower priority but
-interfere-skip_nested_range.qx:2:error: may outrun skip_nested_range pattern '"/*"' as defined here.
-interfere-skip_nested_range.qx:3:error: This is not admissible.
+interfere-skip_nested_range.qx:2:error: may outrun skip nested range pattern '"/*"' as defined here.

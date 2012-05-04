@@ -7,7 +7,8 @@ import quex.input.files.indentation_setup                  as indentation_setup
 import quex.input.files.consistency_check                  as consistency_check
 import quex.input.regular_expression.snap_character_string as snap_character_string
 from   quex.input.regular_expression.construct             import Pattern
-from   quex.blackboard                                     import setup as Setup
+from   quex.blackboard                                     import setup as Setup, \
+                                                                  E_SpecialPatterns
 
 from   quex.engine.generator.action_info                   import CodeFragment, UserCodeFragment, GeneratedCode, PatternActionInfo
 from   quex.engine.generator.languages.address             import get_label
@@ -466,28 +467,10 @@ class Mode:
             return
 
         def __add_new_pattern_action_pair(pattern_action_pair_list, PatternActionPair):
-            state_machine = PatternActionPair.pattern().sm
-            pattern       = PatternActionPair.pattern_string()
-
-            for earlier_match in pattern_action_pair_list:
-                if earlier_match.pattern().sm.get_id() > state_machine.get_id(): continue
-                if superset.do(earlier_match.pattern(), PatternActionPair.pattern()) == False: continue
-
-                file_name, line_n = earlier_match.get_action_location()
-                error_msg("Pattern '%s' matches a superset of what is matched by" % 
-                          earlier_match.pattern_string(), file_name, line_n,
-                          DontExitF=True, WarningF=False) 
-                file_name, line_n = PatternActionPair.get_action_location()
-                error_msg("pattern '%s' while the former has precedence.\n" % \
-                          pattern + "The latter can never match.\n" + \
-                          "You may switch the sequence of definition to avoid this error.",
-                          file_name, line_n)
-                # Here we already quit by error_msg(...).
-            else:
-                # Shallow copy is enough! Later on, there might be actions that 
-                # generate source code, and then the source code takes the place of
-                # the action. For this to work, inherited actions must be de-antangled.
-                pattern_action_pair_list.append(copy(PatternActionPair))
+            # Shallow copy is enough! Later on, there might be actions that 
+            # generate source code, and then the source code takes the place of
+            # the action. For this to work, inherited actions must be de-antangled.
+            pattern_action_pair_list.append(copy(PatternActionPair))
 
         result                 = []
         prev_max_pattern_index = -1
@@ -718,7 +701,8 @@ def __parse_option(fh, new_mode):
                                LineN    = get_current_line_info_number(fh))
         action.data["character_set"] = trigger_set
 
-        new_mode.add_match(pattern_str, action, get_pattern_object(pattern_sm), Comment=identifier)
+        new_mode.add_match(pattern_str, action, get_pattern_object(pattern_sm), 
+                           Comment=E_SpecialPatterns.SKIP)
 
         return True
 
@@ -748,9 +732,9 @@ def __parse_option(fh, new_mode):
             error_msg("missing closing '>' for mode option '%s'" % identifier, fh)
 
         # Skipper code is to be generated later
-        generator_function = { 
-                "skip_range":        skip_range.do,
-                "skip_nested_range": skip_nested_range.do,
+        generator_function, comment = { 
+                "skip_range":        (skip_range.do,        E_SpecialPatterns.SKIP_RANGE),
+                "skip_nested_range": (skip_nested_range.do, E_SpecialPatterns.SKIP_NESTED_RANGE),
         }[identifier]
         action = GeneratedCode(generator_function,
                                FileName = fh.name, 
@@ -760,7 +744,7 @@ def __parse_option(fh, new_mode):
         action.data["closer_sequence"] = closer_sequence
         action.data["mode_name"]       = new_mode.name
 
-        new_mode.add_match(opener_str, action, get_pattern_object(opener_sm), Comment=identifier)
+        new_mode.add_match(opener_str, action, get_pattern_object(opener_sm), Comment=comment)
 
         return True
         
@@ -788,7 +772,7 @@ def __parse_option(fh, new_mode):
 
             new_mode.add_match(suppressed_newline_pattern_str, code, 
                                get_pattern_object(suppressed_newline_sm),
-                               Comment="indentation newline suppressor")
+                               Comment=E_SpecialPatterns.SUPPRESSED_INDENTATION_NEWLINE)
 
         # When there is an empty line, then there shall be no indentation count on it.
         # Here comes the trick: 
@@ -821,7 +805,7 @@ def __parse_option(fh, new_mode):
 
         new_mode.add_match(value.newline_state_machine.pattern_string(), action, 
                            get_pattern_object(sm), 
-                           Comment="indentation newline")
+                           Comment=E_SpecialPatterns.INDENTATION_NEWLINE)
 
         # Announce the mode to which the setup belongs
         value.set_containing_mode_name(new_mode.name)

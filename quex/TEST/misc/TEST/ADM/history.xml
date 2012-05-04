@@ -1,4 +1,4 @@
-<history date="Tue May  1 12:27:13 2012" element-n="16">
+<history date="Fri May  4 06:56:44 2012" element-n="21">
     <day year="2011" month="02" day="10">
         <history-init time="20:32:09"/>
     </day>
@@ -36,5 +36,12 @@
         <crc-error time="23:28:37" application="commonality.sh" choice="skip_range" database-crc="618632385" real-crc="990727274"/>
         <crc-error time="23:28:46" application="commonality.sh" choice="skip_nested_range" database-crc="-1328238844" real-crc="-1390754149"/>
         <crc-error time="23:29:28" application="outrun.sh" choice="" database-crc="613632710" real-crc="-1663477159"/>
+    </day>
+    <day year="2012" month="05" day="03">
+        <crc-error time="19:03:37" application="commonality.sh" choice="skip_range" database-crc="990727274" real-crc="866845879"/>
+        <crc-error time="19:04:02" application="commonality.sh" choice="skip" database-crc="-1206532317" real-crc="-1846901022"/>
+        <crc-error time="19:04:25" application="commonality.sh" choice="skip_nested_range" database-crc="-1390754149" real-crc="1031458892"/>
+        <crc-error time="19:05:26" application="commonality.sh" choice="skip_nested_range" database-crc="1031458892" real-crc="1543015886"/>
+        <crc-error time="19:05:48" application="commonality.sh" choice="mix2" database-crc="-1551530639" real-crc="-1229871854"/>
     </day>
 </history>

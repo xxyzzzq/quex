@@ -12,6 +12,13 @@
 < COMPILER = g++ -ggdb -Wall -pedantic 
 ---
 > COMPILER = gcc -ggdb -Wall -pedantic 
+< stdinlexer: stdinlexer.cpp tiny_lexer_st.cpp 
+---
+> stdinlexer: stdinlexer.c tiny_lexer_st.c 
+< tiny_lexer_st.cpp:   hello.qx $(QUEX_CORE)
+---
+> tiny_lexer_st.c: hello.qx $(QUEX_CORE)
+> 		 --language C                        \
 < 	quex -i simple.qx --engine tiny_lexer --token-policy single
 ---
 > 	quex -i simple.qx --engine tiny_lexer \

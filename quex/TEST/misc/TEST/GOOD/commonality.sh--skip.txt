@@ -1,3 +1,2 @@
 interfere-skip.qx:5:error: The pattern '[ ]+' has lower priority but
 interfere-skip.qx:4:error: may outrun skip pattern '[ ]' as defined here.
-interfere-skip.qx:5:error: This is not admissible.

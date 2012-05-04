@@ -1,28 +1,32 @@
-Please, type an arbitrary sequence of the following:
--- One of the words: 'hello', 'world', 'hallo', 'welt', 'bonjour', 'le monde'.
--- An integer number.
--- The word 'bye' in order to terminate.
-Please, terminate each line with pressing [enter].
-[[Received 12 characters in line.]]
-IDENTIFIER 'Hello' 
-IDENTIFIER 'World' 
+Normal FILE input
+## FILE* (stdio.h):
+##    Note this works only when engine is generated with -b 1 (or no -b)
+##    and therefore QUEX_TYPE_CHARACTER == uint8_t.
+,-----------------------------------------------------------------
+| [START]
+HELLO 'bonjour' 
+WORLD 'le monde' 
+HELLO 'hello' 
+WORLD 'world' 
+HELLO 'hallo' 
+WORLD 'welt' 
 <TERMINATION> '' 
-[[End of Input]]
-[[Received 4 characters in line.]]
-BYE 'bye' 
-[[End of Input]]
+| [END] number of token = 7
+`-----------------------------------------------------------------
 VALGRIND:   All heap blocks were freed -- no leaks are possible
-Please, type an arbitrary sequence of the following:
--- One of the words: 'hello', 'world', 'hallo', 'welt', 'bonjour', 'le monde'.
--- An integer number.
--- The word 'bye' in order to terminate.
-Please, terminate each line with pressing [enter].
-[[Received 12 characters in line.]]
-NUMBER '212' 
-IDENTIFIER 'W32orld' 
+Normal stringstream input
+## FILE* (stdio.h):
+##    Note this works only when engine is generated with -b 1 (or no -b)
+##    and therefore QUEX_TYPE_CHARACTER == uint8_t.
+,-----------------------------------------------------------------
+| [START]
+HELLO 'bonjour' 
+WORLD 'le monde' 
+HELLO 'hello' 
+WORLD 'world' 
+HELLO 'hallo' 
+WORLD 'welt' 
 <TERMINATION> '' 
-[[End of Input]]
-[[Received 4 characters in line.]]
-BYE 'bye' 
-[[End of Input]]
+| [END] number of token = 7
+`-----------------------------------------------------------------
 VALGRIND:   All heap blocks were freed -- no leaks are possible

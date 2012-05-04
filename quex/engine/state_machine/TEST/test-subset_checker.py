@@ -39,6 +39,7 @@ elif "FalseCases" in sys.argv:
     test('"12"|"A"', '"1"')
     test('12', '1')
     test('"1BAC"|"1BBC"', '"1ABC"')
+    test('alb|albertikus', 'albert')
 
 elif "GoodCases" in sys.argv:
     test('"123"+',  '"123"')

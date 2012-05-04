@@ -1,3 +1,2 @@
-interfere-mix.qx:4:error: The pattern '[xyz]' has lower priority but
-interfere-mix.qx:3:error: has commonalities with indentation newline pattern '[x]' as defined here.
-interfere-mix.qx:4:error: This is not admissible.
+interfere-mix.qx:3:error: The pattern '[x]' matches on same lexemes as
+interfere-mix.qx:4:error:  skip pattern '[xyz]' as defined here.
