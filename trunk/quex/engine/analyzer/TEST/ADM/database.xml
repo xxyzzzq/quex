@@ -1,4 +1,4 @@
-<test-database execution-time-sec="11.82" date="Sat May  5 08:12:51 2012">
+<test-database execution-time-sec="11.78" date="Sun May  6 00:19:28 2012">
     <last-used-diff-display-program name=""/>
     <test title="Single Pattern Checks" time-sum-sec="1.32"> 
         <application file-name="single-pattern.py" info-request-time="1333341320L" vanished="False"/>
@@ -16,7 +16,7 @@
            <choice name="10" result="OK" time_sec="0.11" crc="-1742178598"/>
         </choice-list>
     </test>
-    <test title="Categorize Entry Door Actions" time-sum-sec="1.55"> 
+    <test title="Categorize Entry Door Actions" time-sum-sec="1.54"> 
         <application file-name="categorize_doors.py" info-request-time="1330239007L" vanished="False"/>
         <choice-list number="13" same_result="False">
            <choice name="1" result="OK" time_sec="0.16" crc="1835383755"/>
@@ -34,7 +34,7 @@
            <choice name="set_path_iterator" result="OK" time_sec="0.13" crc="1521327539"/>
         </choice-list>
     </test>
-    <test title="Position Register vs. Post-Context and Last Acceptance" time-sum-sec="0.94"> 
+    <test title="Position Register vs. Post-Context and Last Acceptance" time-sum-sec="0.92"> 
         <application file-name="test-position_register_map.py" info-request-time="1322455972L" vanished="False"/>
         <choice-list number="6" same_result="False">
            <choice name="0" result="OK" time_sec="0.12" crc="-408437627"/>
@@ -46,14 +46,14 @@
         </choice-list>
     </test>
     <group name="Track Analyzis">
-        <test title="Backwards - For Pre-Context" time-sum-sec="0.29"> 
+        <test title="Backwards - For Pre-Context" time-sum-sec="0.28"> 
             <application file-name="track_analysis-backwards.py" info-request-time="1321819935L" vanished="False"/>
             <choice-list number="2" same_result="False">
                <choice name="0" result="OK" time_sec="0.17" crc="-164540051"/>
                <choice name="1" result="OK" time_sec="0.11" crc="-1927787346"/>
             </choice-list>
         </test>
-        <test title="With Pre- and Post-Contexts" time-sum-sec="1.33"> 
+        <test title="With Pre- and Post-Contexts" time-sum-sec="1.34"> 
             <application file-name="track_analysis-pre-post.py" info-request-time="1330380876L" vanished="False"/>
             <choice-list number="9" same_result="False">
                <choice name="1" result="OK" time_sec="0.15" crc="1283879964"/>
@@ -67,7 +67,7 @@
                <choice name="8" result="OK" time_sec="0.14" crc="-815693424"/>
             </choice-list>
         </test>
-        <test title="Without Pre- and Post-Contexts" time-sum-sec="1.55"> 
+        <test title="Without Pre- and Post-Contexts" time-sum-sec="1.54"> 
             <application file-name="track_analysis.py" info-request-time="1333346594L" vanished="False"/>
             <choice-list number="11" same_result="False">
                <choice name="0" result="OK" time_sec="0.13" crc="-1410465898"/>
@@ -102,7 +102,7 @@
                <choice name="13" result="OK" time_sec="0.13" crc="-1909007065"/>
             </choice-list>
         </test>
-        <test title="Special Loops and Forks" time-sum-sec="1.58"> 
+        <test title="Special Loops and Forks" time-sum-sec="1.59"> 
             <application file-name="track_analysis-loops.py" info-request-time="1330380927L" vanished="False"/>
             <choice-list number="8" same_result="False">
                <choice name="0" result="OK" time_sec="0.27" crc="-2009471132"/>

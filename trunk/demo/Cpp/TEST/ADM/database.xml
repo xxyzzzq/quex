@@ -1,7 +1,7 @@
-<test-database execution-time-sec="351.77" date="Sat May  5 08:08:07 2012">
+<test-database execution-time-sec="351.78" date="Sun May  6 00:19:27 2012">
     <last-used-diff-display-program name=""/>
     <group name="demo/000">
-        <test title="Single Mode Example" time-sum-sec="8.50"> 
+        <test title="Single Mode Example" time-sum-sec="8.49"> 
             <application file-name="000.sh" info-request-time="1318614214L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="4.60" crc="-584949883"/>
@@ -147,7 +147,7 @@
         </test>
     </group>
     <group name="demo/011b">
-        <test title="Engine Encoding UTF16" time-sum-sec="8.37"> 
+        <test title="Engine Encoding UTF16" time-sum-sec="8.38"> 
             <application file-name="011b.sh" info-request-time="1318614214L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="LE" result="OK" time_sec="4.28" crc="2001714839"/>
