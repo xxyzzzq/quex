@@ -1,4 +1,4 @@
-src/error-1.qx:8:error: Pattern '(\r\n)|\n' matches a superset of what is matched by
-src/error-1.qx:14:error: pattern '\n' while the former has precedence.
-src/error-1.qx:14:error: The latter can never match.
-src/error-1.qx:14:error: You may switch the sequence of definition to avoid this error.
+## commonalities of the suppressor are no longer forbidden.
+src/error-1.qx:8:error: The indentation newline pattern '(\r\n)|\n' matches a superset of what is matched by
+src/error-1.qx:14:error: pattern '\n'.
+src/error-1.qx:14:error: The former has precedence and the latter can never match.

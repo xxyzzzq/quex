@@ -1,6 +1,6 @@
 from   quex.engine.misc.file_in                    import error_msg, verify_word_in_list
 import quex.blackboard                             as     blackboard
-from   quex.blackboard                             import setup as Setup, E_Commonality, E_SpecialPatterns
+from   quex.blackboard                             import setup as Setup, E_SpecialPatterns
 from   quex.engine.generator.action_info           import CodeFragment
 import quex.engine.state_machine.check.outrun      as     outrun_checker
 import quex.engine.state_machine.check.superset    as     superset_check
@@ -76,29 +76,33 @@ def do(ModeDB):
              __outrun_investigation(mode)
 
     # (*) Special Patterns shall not match on same lexemes
-    for mode in ModeDB.values():
-        for pattern_action_pair in mode.get_pattern_action_pair_list():
-            if pattern_action_pair.comment not in E_SpecialPatterns: continue
-            __match_same_check(mode, pattern_action_pair)
+    if Setup.error_on_special_pattern_same_f:
+        for mode in ModeDB.values():
+            for pattern_action_pair in mode.get_pattern_action_pair_list():
+                if pattern_action_pair.comment not in E_SpecialPatterns: continue
+                __match_same_check(mode, pattern_action_pair)
 
     # (*) Special Patterns (skip, indentation, etc.) 
     #     shall not be outrun by another pattern.
-    for mode in ModeDB.values():
-        for pattern_action_pair in mode.get_pattern_action_pair_list():
-            if pattern_action_pair.comment not in E_SpecialPatterns: continue
-            __outrun_check(mode, pattern_action_pair)
+    if Setup.error_on_special_pattern_outrun_f:
+        for mode in ModeDB.values():
+            for pattern_action_pair in mode.get_pattern_action_pair_list():
+                if pattern_action_pair.comment not in E_SpecialPatterns: continue
+                __outrun_check(mode, pattern_action_pair)
 
     # (*) Special Patterns shall not have common matches with patterns
     #     of higher precedence.
-    for mode in ModeDB.values():
-        for pattern_action_pair in mode.get_pattern_action_pair_list():
-            if pattern_action_pair.comment not in E_SpecialPatterns: continue
-            __subset_check(mode, pattern_action_pair)
+    if Setup.error_on_special_pattern_subset_f:
+        for mode in ModeDB.values():
+            for pattern_action_pair in mode.get_pattern_action_pair_list():
+                if pattern_action_pair.comment not in E_SpecialPatterns: continue
+                __subset_check(mode, pattern_action_pair)
 
     # (*) Check for dominated patterns
-    for mode in ModeDB.values():
-        for pattern_action_pair in mode.get_pattern_action_pair_list():
-            __dominated_pattern_check(mode, pattern_action_pair)
+    if Setup.error_on_dominated_pattern_f:
+        for mode in ModeDB.values():
+            for pattern_action_pair in mode.get_pattern_action_pair_list():
+                __dominated_pattern_check(mode, pattern_action_pair)
 
 
 def __indentation_setup_check(mode):
@@ -116,7 +120,8 @@ def __indentation_setup_check(mode):
        or superset_check.do(newline_suppressor_info.get(), newline_info.get()):
 
         __error_message(newline_info, newline_suppressor_info,
-                        ThisComment = "match on common lexemes.")
+                        ThisComment="matches on some common lexemes as",
+                        ThatComment="") 
 
 def __outrun_investigation(mode):
     pattern_action_pair_list = mode.get_pattern_action_pair_list()
@@ -129,7 +134,6 @@ def __outrun_investigation(mode):
             # priority. Check for outrun.
             sm_low = pap_k.pattern().sm
             if outrun_checker.do(sm_high, sm_low):
-                pattern_str       = pap_i.pattern_string()
                 file_name, line_n = pap_i.get_action_location()
                 __error_message(pap_k, pap_i, ExitF=False, ThisComment="may outrun")
 
@@ -143,8 +147,8 @@ def __outrun_check(mode, PAP):
 
         if outrun_checker.do(ReferenceSM, sm):
             __error_message(other_pap, PAP, ExitF=True, 
-                            ThisComment="may outrun", 
-                            ThatComment="has lower priority but")
+                            ThisComment="has lower priority but",
+                            ThatComment="may outrun")
                              
 def __subset_check(mode, PAP):
     """Checks whether a higher prioritized pattern matches a common subset
@@ -160,8 +164,8 @@ def __subset_check(mode, PAP):
         elif not superset_check.do(ReferenceSM, sm): continue
 
         __error_message(other_pap, PAP, ExitF=True, 
-                        ThisComment="matches a subset of", 
-                        ThatComment="has higher priority and")
+                        ThisComment="has higher priority and",
+                        ThatComment="matches a subset of")
 
 def __match_same_check(mode, PAP):
     """Special patterns shall never match on some common lexemes."""
@@ -184,7 +188,7 @@ def __dominated_pattern_check(mode, PAP):
 
     for other_pap in mode.get_pattern_action_pair_list():
         if other_pap.pattern().sm.get_id() >= pattern_id: continue
-        if superset_check.do(other_pap.pattern().sm, PAP.pattern().sm):
+        if superset_check.do(other_pap.pattern(), PAP.pattern()):
             file_name, line_n = other_pap.get_action_location()
             __error_message(other_pap, PAP, 
                             ThisComment = "matches a superset of what is matched by",
@@ -194,9 +198,14 @@ def __dominated_pattern_check(mode, PAP):
 def __error_message(This, That, ThisComment, ThatComment="", EndComment="", ExitF=True):
 
     def get_name(PAP, AddSpaceF=True):
-        if PAP.comment not in E_SpecialPatterns: return ""
-        result = repr(PAP.comment).replace("_", " ").lower()
-        if AddSpaceF: result += " "
+        if PAP.comment in E_SpecialPatterns: 
+            result = repr(PAP.comment).replace("_", " ").lower()
+        elif isinstance(PAP.comment, (str, unicode)):
+            result = PAP.comment
+        else:
+            return ""
+
+        if AddSpaceF and len(result) != 0: result += " "
         return result
 
     file_name, line_n = This.get_action_location()
@@ -205,7 +214,9 @@ def __error_message(This, That, ThisComment, ThatComment="", EndComment="", Exit
               DontExitF=True, WarningF=not ExitF)
 
     FileName, LineN   = That.get_action_location()
-    error_msg("%s%spattern '%s'." % (ThatComment, get_name(That, AddSpaceF=len(ThatComment) != 0), That.pattern_string()), 
+    if len(ThatComment) != 0: Space = " "
+    else:                     Space = ""
+    error_msg("%s%s%spattern '%s'." % (ThatComment, Space, get_name(That, AddSpaceF=True), That.pattern_string()), 
               FileName, LineN,
               DontExitF=not (len(EndComment) == 0 and ExitF), 
               WarningF=not ExitF)

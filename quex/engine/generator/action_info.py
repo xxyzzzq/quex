@@ -72,7 +72,7 @@ def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
     fh = open_file_or_die(filename)
     norm_filename = Setup.get_file_reference(filename)
 
-    new_content = ""
+    new_content = []
     line_n      = 0
     LinePragmaInfoList = UserCodeFragment_OpenLinePragma[Language]
     for line in fh.readlines():
@@ -88,11 +88,11 @@ def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
                 line = line.replace("FILENAME", norm_filename)
                 if len(line) == 0 or line[-1] != "\n":
                     line = line + "\n"
-        new_content += line
+        new_content.append(line)
 
     fh.close()
 
-    write_safely_and_close(filename, new_content)
+    write_safely_and_close(filename, "".join(new_content))
 
 class GeneratedCode(UserCodeFragment):
     def __init__(self, GeneratorFunction, FileName=-1, LineN=None):
@@ -198,3 +198,16 @@ class LocalizedParameter:
 
     def pattern_string(self):
         return self.__pattern_string
+
+    def get_action_location(self):
+        """RETURNS:  FileName, LineN   in case that it can be specified.
+                     -1, None          in case it cannot be specified.
+
+           This corresponds to the required input for 'error_msg'.
+        """
+        return self.file_name, self.line_n
+
+    @property
+    def comment(self):
+        return self.name
+

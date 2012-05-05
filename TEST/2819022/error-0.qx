@@ -1,7 +1,7 @@
  
 define { 
 WORD [A-Za-z0-9]+ 
-WHITESPACE [ \r\t\n]+ 
+WHITESPACE [ \r\t]+ 
 } 
  
 mode standard 

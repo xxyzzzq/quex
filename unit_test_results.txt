@@ -1,6 +1,6 @@
 ==========================================================================================
 Regression Tests on Fixed Bugs
-Sat Apr  7 09:03:25 2012
+Sat May  5 07:58:16 2012
 TEST
 ------------------------------------------------------------------------------------------
 
@@ -431,7 +431,7 @@ TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Demo-Applications for Plain C
-Sat Apr  7 08:33:02 2012
+Sat May  5 08:02:14 2012
 demo/C/TEST
 ------------------------------------------------------------------------------------------
  -- Makefile Differences to C++ Version
@@ -520,6 +520,8 @@ demo/C/TEST
 
  -- demo/009:
 
+    Standard Input (stdin/cin)
+        009b.sh ...........................................................[OK]
     Strings of 'char' and 'wchar_t'
         009.sh lexer ......................................................[OK]
                wlexer .....................................................[OK]
@@ -535,7 +537,6 @@ demo/C/TEST
                copy-conversion ............................................[OK]
                copy-conversion-direct .....................................[OK]
                fill-conversion-direct .....................................[OK]
-               stdinlexer .................................................[OK]
                re-point ...................................................[OK]
 
  -- demo/011:
@@ -569,7 +570,7 @@ demo/C/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Demo-Applications for C++
-Sat Apr  7 08:37:13 2012
+Sat May  5 08:08:07 2012
 demo/Cpp/TEST
 ------------------------------------------------------------------------------------------
 
@@ -644,6 +645,8 @@ demo/Cpp/TEST
 
  -- demo/009:
 
+    Standard Input (stdin/cin)
+        009b.sh ...........................................................[OK]
     Strings of 'char' and 'wchar_t'
         009.sh lexer ......................................................[OK]
                wlexer .....................................................[OK]
@@ -659,7 +662,6 @@ demo/Cpp/TEST
                copy-conversion ............................................[OK]
                copy-conversion-direct .....................................[OK]
                fill-conversion-direct .....................................[OK]
-               stdinlexer .................................................[OK]
                re-point ...................................................[OK]
 
  -- demo/011:
@@ -693,7 +695,7 @@ demo/Cpp/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Miscellaneous Basic Tests
-Sat Apr  7 08:37:43 2012
+Sat May  5 08:08:43 2012
 quex/TEST
 ------------------------------------------------------------------------------------------
  -- (*) Exceptions during 'import'
@@ -722,8 +724,21 @@ quex/TEST
                                                                              ( (_) | _ <
                                                                               \___/|_|\_) 
 ==========================================================================================
+<no file 'ADM/title.txt'>
+Sat May  5 08:08:44 2012
+quex/TEST/command-line/TEST
+------------------------------------------------------------------------------------------
+ -- Detect lower prio-patterns outrun higher-prio patterns
+        outrun.sh .........................................................[OK]
+ -- Disable several error messages.
+        no-error-flags.sh .................................................[OK]
+                                                                               ___  _  _
+                                                                              / _ \| |/ )
+                                                                             ( (_) | _ <
+                                                                              \___/|_|\_) 
+==========================================================================================
 Check Applications of 'Did you mean'.
-Sat Apr  7 08:37:46 2012
+Sat May  5 08:08:49 2012
 quex/TEST/did-you-mean/TEST
 ------------------------------------------------------------------------------------------
  -- Explicit Token Type Member Assignment
@@ -736,7 +751,7 @@ quex/TEST/did-you-mean/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 <no file 'ADM/title.txt'>
-Sat Apr  7 08:37:46 2012
+Sat May  5 08:08:49 2012
 quex/TEST/errors-warnings/TEST
 ------------------------------------------------------------------------------------------
  -- Token identifier definition and orthography.
@@ -747,7 +762,7 @@ quex/TEST/errors-warnings/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Event Handlers
-Sat Apr  7 08:37:50 2012
+Sat May  5 08:08:55 2012
 quex/TEST/event-handling/TEST
 ------------------------------------------------------------------------------------------
  -- Customized on_skip_range_open event.
@@ -773,7 +788,7 @@ quex/TEST/event-handling/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Include Stack Handling
-Sat Apr  7 08:37:55 2012
+Sat May  5 08:09:02 2012
 quex/TEST/include-stack/TEST
 ------------------------------------------------------------------------------------------
 
@@ -801,7 +816,7 @@ quex/TEST/include-stack/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Indentation Based Blocks
-Sat Apr  7 08:38:04 2012
+Sat May  5 08:09:15 2012
 quex/TEST/indentation_count/TEST
 ------------------------------------------------------------------------------------------
  -- Bad character detection.
@@ -830,7 +845,7 @@ quex/TEST/indentation_count/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Match Precedence in Mode Inheritance Structures
-Sat Apr  7 08:38:10 2012
+Sat May  5 08:09:23 2012
 quex/TEST/match-precedence/TEST
 ------------------------------------------------------------------------------------------
  -- Local variables.
@@ -853,13 +868,20 @@ quex/TEST/match-precedence/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 <no file 'ADM/title.txt'>
-Sat Apr  7 08:38:11 2012
+Sat May  5 08:09:27 2012
 quex/TEST/misc/TEST
 ------------------------------------------------------------------------------------------
  -- Analyzer State Tracer
         debug_show.sh .....................................................[OK]
  -- Customized codec files (option --codec-file)
         customized_codec.sh ...............................................[OK]
+ -- Inadmissible commonalities
+        commonality.sh skip ...............................................[OK]
+                       skip_range .........................................[OK]
+                       skip_nested_range ..................................[OK]
+                       indentation-newline ................................[OK]
+                       mix ................................................[OK]
+                       mix2 ...............................................[OK]
  -- Test code comments
         comment.sh ........................................................[OK]
                                                                                ___  _  _
@@ -868,7 +890,7 @@ quex/TEST/misc/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 The 'Reset' Button
-Sat Apr  7 08:38:12 2012
+Sat May  5 08:09:42 2012
 quex/TEST/reset/TEST
 ------------------------------------------------------------------------------------------
  -- Normal Reset
@@ -940,7 +962,7 @@ quex/TEST/reset/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 <no file 'ADM/title.txt'>
-Sat Apr  7 08:38:31 2012
+Sat May  5 08:10:09 2012
 quex/TEST/source-package/TEST
 ------------------------------------------------------------------------------------------
 
@@ -978,7 +1000,7 @@ quex/TEST/source-package/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Customized Token Class
-Sat Apr  7 08:38:35 2012
+Sat May  5 08:10:16 2012
 quex/TEST/token-class/TEST
 ------------------------------------------------------------------------------------------
  -- Miscellaneous Sample Runs
@@ -996,7 +1018,7 @@ quex/TEST/token-class/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Tests related to token queues
-Sat Apr  7 08:38:42 2012
+Sat May  5 08:10:25 2012
 quex/TEST/token-policies/TEST
 ------------------------------------------------------------------------------------------
 
@@ -1019,7 +1041,7 @@ quex/TEST/token-policies/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 <no file 'ADM/title.txt'>
-Sat Apr  7 08:38:44 2012
+Sat May  5 08:10:28 2012
 quex/code_base/TEST
 ------------------------------------------------------------------------------------------
 
@@ -1048,7 +1070,7 @@ quex/code_base/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Lexical Analyzer Class Template
-Sat Apr  7 08:38:51 2012
+Sat May  5 08:10:37 2012
 quex/code_base/analyzer/TEST
 ------------------------------------------------------------------------------------------
  -- Accumulator
@@ -1116,7 +1138,7 @@ quex/code_base/analyzer/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Basic Buffer Functions
-Sat Apr  7 08:38:59 2012
+Sat May  5 08:10:50 2012
 quex/code_base/buffer/TEST
 ------------------------------------------------------------------------------------------
 
@@ -1175,7 +1197,7 @@ quex/code_base/buffer/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Input Buffers Based on the IConv - Library
-Sat Apr  7 08:39:07 2012
+Sat May  5 08:11:02 2012
 quex/code_base/buffer/converter/iconv/TEST
 ------------------------------------------------------------------------------------------
 
@@ -1246,7 +1268,7 @@ quex/code_base/buffer/converter/iconv/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Testing the ICU Converter Adaption
-Sat Apr  7 08:39:16 2012
+Sat May  5 08:11:16 2012
 quex/code_base/buffer/converter/icu/TEST
 ------------------------------------------------------------------------------------------
 
@@ -1317,7 +1339,7 @@ quex/code_base/buffer/converter/icu/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Plain Buffer Filler (without conversion)
-Sat Apr  7 08:39:33 2012
+Sat May  5 08:11:39 2012
 quex/code_base/buffer/plain/TEST
 ------------------------------------------------------------------------------------------
 
@@ -1408,7 +1430,7 @@ quex/code_base/buffer/plain/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 <no file 'ADM/title.txt'>
-Sat Apr  7 08:39:34 2012
+Sat May  5 08:11:46 2012
 quex/code_base/converter_helper/TEST
 ------------------------------------------------------------------------------------------
  -- Test of complete character set on base converters (utf8, utf16, utf32)
@@ -1431,7 +1453,7 @@ quex/code_base/converter_helper/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Core Functionalities
-Sat Apr  7 08:40:15 2012
+Sat May  5 08:12:39 2012
 quex/engine/TEST
 ------------------------------------------------------------------------------------------
 
@@ -1490,7 +1512,7 @@ quex/engine/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 State Machine Trace Analysis
-Sat Apr  7 08:40:23 2012
+Sat May  5 08:12:51 2012
 quex/engine/analyzer/TEST
 ------------------------------------------------------------------------------------------
  -- Categorize Entry Door Actions
@@ -1595,7 +1617,7 @@ quex/engine/analyzer/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Compression: Path and Table
-Sat Apr  7 08:40:25 2012
+Sat May  5 08:12:55 2012
 quex/engine/analyzer/mega_state/path_walker/TEST
 ------------------------------------------------------------------------------------------
 
@@ -1642,7 +1664,7 @@ quex/engine/analyzer/mega_state/path_walker/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Template Compression Analysis
-Sat Apr  7 08:40:27 2012
+Sat May  5 08:12:57 2012
 quex/engine/analyzer/mega_state/template/TEST
 ------------------------------------------------------------------------------------------
  -- Combination of Two Transition Maps
@@ -1686,98 +1708,95 @@ quex/engine/analyzer/mega_state/template/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Code Generation for Lexical Analyzer
-Sat Apr  7 08:44:32 2012
+Sat May  5 08:17:10 2012
 quex/engine/generator/TEST
 ------------------------------------------------------------------------------------------
+ -- Indentation Counting
+        test-indentation-counter.py Uniform ...............................[OK]
+                                    NonUniform ............................[OK]
+                                    NonUniform-2 ..........................[OK]
+ -- Mode Changes
+        test-mode-changes.py ANSI-C .......................................[OK]
+                             Cpp ..........................................[OK]
+                             ANSI-C-CG ....................................[OK]
 
  -- Buffer Reload:
 
     Backwards
         test-backward_loading.py ANSI-C-PlainMemory .......................[OK]
                                  ANSI-C ...................................[OK]
+                                 ANSI-C-CG ................................[OK]
                                  Cpp ......................................[OK]
                                  Cpp-Template .............................[OK]
+                                 Cpp-Template-CG ..........................[OK]
                                  Cpp-Path .................................[OK]
                                  Cpp-PathUniform ..........................[OK]
+                                 Cpp-Path-CG ..............................[OK]
+                                 Cpp-PathUniform-CG .......................[OK]
+                                 ANSI-C-PathTemplate ......................[OK]
                                  Cpp-ASSERTS ..............................[OK]
                                  ANSI-C-ASSERTS ...........................[OK]
-                                 Cpp-Path-CG ..............................[OK]
-                                 ANSI-C-CG ................................[OK]
-                                 Cpp-PathUniform-CG .......................[OK]
-                                 Cpp-Template-CG ..........................[OK]
-                                 ANSI-C-PathTemplate ......................[OK]
     Forward Position Adaption
-        test-position_adaption.py Cpp .....................................[OK]
+        test-position_adaption.py ANSI-C-PlainMemory ......................[OK]
                                   ANSI-C ..................................[OK]
+                                  ANSI-C-CG ...............................[OK]
+                                  Cpp .....................................[OK]
                                   Cpp_StrangeStream .......................[OK]
                                   Cpp-Template ............................[OK]
-                                  ANSI-C-PlainMemory ......................[OK]
+                                  Cpp-Template-CG .........................[OK]
                                   Cpp-Path ................................[OK]
                                   Cpp-PathUniform .........................[OK]
                                   Cpp-Path-CG .............................[OK]
+                                  Cpp-PathUniform-CG ......................[OK]
+                                  ANSI-C-PathTemplate .....................[OK]
                                   Cpp-ASSERTS .............................[OK]
                                   ANSI-C-ASSERTS ..........................[OK]
-                                  ANSI-C-CG ...............................[OK]
-                                  Cpp-PathUniform-CG ......................[OK]
-                                  Cpp-Template-CG .........................[OK]
-                                  ANSI-C-PathTemplate .....................[OK]
     No Backward Reload -- Precondition at Border
-        test-no-backward-reloading.py Cpp .................................[OK]
+        test-no-backward-reloading.py ANSI-C-PlainMemory ..................[OK]
                                       ANSI-C ..............................[OK]
+                                      ANSI-C-CG ...........................[OK]
+                                      Cpp .................................[OK]
                                       Cpp_StrangeStream ...................[OK]
                                       Cpp-Template ........................[OK]
-                                      ANSI-C-PlainMemory ..................[OK]
+                                      Cpp-Template-CG .....................[OK]
                                       Cpp-Path ............................[OK]
                                       Cpp-PathUniform .....................[OK]
                                       Cpp-Path-CG .........................[OK]
+                                      Cpp-PathUniform-CG ..................[OK]
+                                      ANSI-C-PathTemplate .................[OK]
                                       Cpp-ASSERTS .........................[OK]
                                       ANSI-C-ASSERTS ......................[OK]
-                                      ANSI-C-CG ...........................[OK]
-                                      Cpp-PathUniform-CG ..................[OK]
-                                      Cpp-Template-CG .....................[OK]
-                                      ANSI-C-PathTemplate .................[OK]
 
  -- CONTINUE:
 
-    Mode Changes
-        test-mode-changes.py ANSI-C .......................................[OK]
-                             Cpp ..........................................[OK]
-                             ANSI-C-CG ....................................[OK]
     Reentry analysis without return from function
         test-continue-without-return.py ANSI-C-PlainMemory ................[OK]
                                         ANSI-C ............................[OK]
+                                        ANSI-C-CG .........................[OK]
                                         Cpp ...............................[OK]
                                         Cpp_StrangeStream .................[OK]
                                         Cpp-Template ......................[OK]
+                                        Cpp-Template-CG ...................[OK]
                                         Cpp-Path ..........................[OK]
                                         Cpp-PathUniform ...................[OK]
                                         Cpp-Path-CG .......................[OK]
-                                        ANSI-C-CG .........................[OK]
                                         Cpp-PathUniform-CG ................[OK]
-                                        Cpp-Template-CG ...................[OK]
                                         ANSI-C-PathTemplate ...............[OK]
-
- -- Indentation Count:
-
-    Indentation Counting
-        test-indentation-counter.py Uniform ...............................[OK]
-                                    NonUniform ............................[OK]
-                                    NonUniform-2 ..........................[OK]
 
  -- Post Conditions:
 
     Part 2
         test-post-conditions-2.py ANSI-C-PlainMemory ......................[OK]
                                   ANSI-C ..................................[OK]
+                                  ANSI-C-CG ...............................[OK]
                                   Cpp .....................................[OK]
                                   Cpp_StrangeStream .......................[OK]
                                   Cpp-Template ............................[OK]
+                                  Cpp-Template-CG .........................[OK]
                                   Cpp-Path ................................[OK]
                                   Cpp-PathUniform .........................[OK]
                                   Cpp-Path-CG .............................[OK]
-                                  ANSI-C-CG ...............................[OK]
                                   Cpp-PathUniform-CG ......................[OK]
-                                  Cpp-Template-CG .........................[OK]
                                   ANSI-C-PathTemplate .....................[OK]
     Part I
         test-post-conditions.py ANSI-C ....................................[OK]
@@ -1793,28 +1812,28 @@ quex/engine/generator/TEST
     Multiple Identical Pre-Conditions
         test-pre-conditions-3.py ANSI-C-PlainMemory .......................[OK]
                                  ANSI-C ...................................[OK]
+                                 ANSI-C-CG ................................[OK]
                                  Cpp ......................................[OK]
                                  Cpp_StrangeStream ........................[OK]
                                  Cpp-Template .............................[OK]
+                                 Cpp-Template-CG ..........................[OK]
                                  Cpp-Path .................................[OK]
                                  Cpp-PathUniform ..........................[OK]
                                  Cpp-Path-CG ..............................[OK]
-                                 ANSI-C-CG ................................[OK]
                                  Cpp-PathUniform-CG .......................[OK]
-                                 Cpp-Template-CG ..........................[OK]
                                  ANSI-C-PathTemplate ......................[OK]
     Part 2
         test-pre-conditions-2.py ANSI-C-PlainMemory .......................[OK]
                                  ANSI-C ...................................[OK]
+                                 ANSI-C-CG ................................[OK]
                                  Cpp ......................................[OK]
                                  Cpp_StrangeStream ........................[OK]
                                  Cpp-Template .............................[OK]
+                                 Cpp-Template-CG ..........................[OK]
                                  Cpp-Path .................................[OK]
                                  Cpp-PathUniform ..........................[OK]
                                  Cpp-Path-CG ..............................[OK]
-                                 ANSI-C-CG ................................[OK]
                                  Cpp-PathUniform-CG .......................[OK]
-                                 Cpp-Template-CG ..........................[OK]
                                  ANSI-C-PathTemplate ......................[OK]
 
  -- Pre- and Post- Conditions:
@@ -1822,15 +1841,15 @@ quex/engine/generator/TEST
     Simple
         test-pre-post-condition.py ANSI-C-PlainMemory .....................[OK]
                                    ANSI-C .................................[OK]
+                                   ANSI-C-CG ..............................[OK]
                                    Cpp ....................................[OK]
                                    Cpp_StrangeStream ......................[OK]
                                    Cpp-Template ...........................[OK]
+                                   Cpp-Template-CG ........................[OK]
                                    Cpp-Path ...............................[OK]
                                    Cpp-PathUniform ........................[OK]
                                    Cpp-Path-CG ............................[OK]
-                                   ANSI-C-CG ..............................[OK]
                                    Cpp-PathUniform-CG .....................[OK]
-                                   Cpp-Template-CG ........................[OK]
                                    ANSI-C-PathTemplate ....................[OK]
 
  -- Pre-conditions:
@@ -1845,26 +1864,26 @@ quex/engine/generator/TEST
     Part I
         test-pseudo_ambiguous_post_conditions.py ANSI-C-PlainMemory .......[OK]
                                                  ANSI-C ...................[OK]
+                                                 ANSI-C-CG ................[OK]
                                                  Cpp ......................[OK]
                                                  Cpp_StrangeStream ........[OK]
                                                  Cpp-Template .............[OK]
+                                                 Cpp-Template-CG ..........[OK]
                                                  Cpp-Path .................[OK]
                                                  Cpp-Path-CG ..............[OK]
-                                                 ANSI-C-CG ................[OK]
-                                                 Cpp-Template-CG ..........[OK]
                                                  ANSI-C-PathTemplate ......[OK]
     Part II
         test-pseudo_ambiguous_post_conditions-2.py ANSI-C-PlainMemory .....[OK]
                                                    ANSI-C .................[OK]
+                                                   ANSI-C-CG ..............[OK]
                                                    Cpp ....................[OK]
                                                    Cpp_StrangeStream ......[OK]
                                                    Cpp-Template ...........[OK]
+                                                   Cpp-Template-CG ........[OK]
                                                    Cpp-Path ...............[OK]
                                                    Cpp-PathUniform ........[OK]
                                                    Cpp-Path-CG ............[OK]
-                                                   ANSI-C-CG ..............[OK]
                                                    Cpp-PathUniform-CG .....[OK]
-                                                   Cpp-Template-CG ........[OK]
                                                    ANSI-C-PathTemplate ....[OK]
 
  -- Simple:
@@ -1872,41 +1891,41 @@ quex/engine/generator/TEST
     Begin of Line (BOL), End of Line (EOL)
         test-bol-eol.py ANSI-C-PlainMemory ................................[OK]
                         ANSI-C ............................................[OK]
+                        ANSI-C-CG .........................................[OK]
                         Cpp ...............................................[OK]
                         Cpp_StrangeStream .................................[OK]
                         Cpp-Template ......................................[OK]
+                        Cpp-Template-CG ...................................[OK]
                         Cpp-Path ..........................................[OK]
                         Cpp-PathUniform ...................................[OK]
                         Cpp-Path-CG .......................................[OK]
-                        ANSI-C-CG .........................................[OK]
                         Cpp-PathUniform-CG ................................[OK]
-                        Cpp-Template-CG ...................................[OK]
                         ANSI-C-PathTemplate ...............................[OK]
     Keywords 'for', 'forest', 'forester', and 'formidable'
         test-simple-5.py ANSI-C-PlainMemory ...............................[OK]
                          ANSI-C ...........................................[OK]
+                         ANSI-C-CG ........................................[OK]
                          Cpp ..............................................[OK]
                          Cpp_StrangeStream ................................[OK]
                          Cpp-Template .....................................[OK]
+                         Cpp-Template-CG ..................................[OK]
                          Cpp-Path .........................................[OK]
                          Cpp-PathUniform ..................................[OK]
                          Cpp-Path-CG ......................................[OK]
-                         ANSI-C-CG ........................................[OK]
                          Cpp-PathUniform-CG ...............................[OK]
-                         Cpp-Template-CG ..................................[OK]
                          ANSI-C-PathTemplate ..............................[OK]
     Maximum Length Match
         test-simple-2.py ANSI-C-PlainMemory ...............................[OK]
                          ANSI-C ...........................................[OK]
+                         ANSI-C-CG ........................................[OK]
                          Cpp ..............................................[OK]
                          Cpp_StrangeStream ................................[OK]
                          Cpp-Template .....................................[OK]
+                         Cpp-Template-CG ..................................[OK]
                          Cpp-Path .........................................[OK]
                          Cpp-PathUniform ..................................[OK]
                          Cpp-Path-CG ......................................[OK]
-                         ANSI-C-CG ........................................[OK]
                          Cpp-PathUniform-CG ...............................[OK]
-                         Cpp-Template-CG ..................................[OK]
                          ANSI-C-PathTemplate ..............................[OK]
     Reload Init State
         test-simple-3.py ANSI-C ...........................................[OK]
@@ -1926,15 +1945,15 @@ quex/engine/generator/TEST
     Tiny Expressions
         test-simple.py ANSI-C-PlainMemory .................................[OK]
                        ANSI-C .............................................[OK]
+                       ANSI-C-CG ..........................................[OK]
                        Cpp ................................................[OK]
                        Cpp_StrangeStream ..................................[OK]
                        Cpp-Template .......................................[OK]
+                       Cpp-Template-CG ....................................[OK]
                        Cpp-Path ...........................................[OK]
                        Cpp-PathUniform ....................................[OK]
                        Cpp-Path-CG ........................................[OK]
-                       ANSI-C-CG ..........................................[OK]
                        Cpp-PathUniform-CG .................................[OK]
-                       Cpp-Template-CG ....................................[OK]
                        ANSI-C-PathTemplate ................................[OK]
 
  -- Single State:
@@ -1943,6 +1962,15 @@ quex/engine/generator/TEST
         test-single-state-transitions.py A ................................[OK]
                                          B ................................[OK]
                                          C ................................[OK]
+                                                                               ___  _  _
+                                                                              / _ \| |/ )
+                                                                             ( (_) | _ <
+                                                                              \___/|_|\_) 
+==========================================================================================
+<no file 'ADM/title.txt'>
+Sat May  5 08:18:28 2012
+quex/engine/generator/skipper/TEST
+------------------------------------------------------------------------------------------
 
  -- Skip-Characters:
 
@@ -1969,21 +1997,11 @@ quex/engine/generator/TEST
 
  -- Skip-Range:
 
-    DelimiterLength=2, Large Buffer
-        test-skip-simple.py ANSI-C-PlainMemory ............................[OK]
-                            ANSI-C ........................................[OK]
-                            Cpp ...........................................[OK]
-                            Cpp_StrangeStream .............................[OK]
     Semi-Complete Delimiters, BufferSize = DelimiterLength + 2
         test-skip-simple-4.py 2 ...........................................[OK]
                               3 ...........................................[OK]
                               4 ...........................................[OK]
                               5 ...........................................[OK]
-    Varrying DelimiterLength, BufferSize = DelimiterLength + 2
-        test-skip-simple-3.py 1 ...........................................[OK]
-                              2 ...........................................[OK]
-                              3 ...........................................[OK]
-                              4 ...........................................[OK]
     Varrying DelimiterLength, Large Buffer
         test-skip-simple-2.py DL=1 ........................................[OK]
                               DL=2 ........................................[OK]
@@ -1995,7 +2013,7 @@ quex/engine/generator/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Frank-Rene Schaefers Little Python Library
-Sat Apr  7 08:44:32 2012
+Sat May  5 08:18:29 2012
 quex/engine/misc/TEST
 ------------------------------------------------------------------------------------------
  -- Enums -- Functionality Test
@@ -2030,24 +2048,9 @@ quex/engine/misc/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 State Machine Operations
-Sat Apr  7 08:44:45 2012
+Sat May  5 08:18:44 2012
 quex/engine/state_machine/TEST
 ------------------------------------------------------------------------------------------
- -- Commonality Checker
-        test-commonality.py ...............................................[OK]
- -- Pattern Identity Determination
-        test-identity_checker.py True .....................................[OK]
-                                 False ....................................[OK]
-                                 Pre-Post-Contexts-True ...................[OK]
-                                 Pre-Post-Contexts-False ..................[OK]
- -- Pattern Superset/Subset Determination
-        test-subset_checker.py Easy .......................................[OK]
-                               FalseCases .................................[OK]
-                               GoodCases ..................................[OK]
-                               FalseCasesII ...............................[OK]
-                               GoodCasesII ................................[OK]
-                               Misc .......................................[OK]
-                               Pre-Post-Conditions ........................[OK]
 
  -- DFA:
 
@@ -2061,22 +2064,9 @@ quex/engine/state_machine/TEST
                                 5 .........................................[OK]
                                 6 .........................................[OK]
                                 7 .........................................[OK]
-    Hopcroft optimization (minimize state set)
-        test-hopcroft-minimization.py NEW .................................[OK]
-                                      ADAPT ...............................[OK]
-    Hopcroft optimization (minimize state set) II
-        test-hopcroft-minimization-2.py NEW ...............................[OK]
-                                        ADAPT .............................[OK]
-    Hopcroft optimization III (state machine combination)
-        test-hopcroft-minimization-3.py NEW ...............................[OK]
-                                        ADAPT .............................[OK]
 
  -- NFA:
 
-    Conversion to DFA (subset construction)
-        test-nfa-to-dfa.py ................................................[OK]
-    Conversion to DFA - Special Case
-        test-nfa-to-dfa-special.py ........................................[OK]
     Epsilon closure (single state)
         test-StateMachine-epsilon-closure.py ..............................[OK]
     Get elementary trigger sets (target index --> trigger sets)
@@ -2094,6 +2084,11 @@ quex/engine/state_machine/TEST
 
     Characters
         test-count_character_n.py .........................................[OK]
+    Characters of different horizontal sizes.
+        test-count_character_n-2.py Same ..................................[OK]
+                                    Different .............................[OK]
+                                    TwoSet ................................[OK]
+                                    Grid ..................................[OK]
     Newlines
         test-count_newline_n.py ...........................................[OK]
 
@@ -2197,8 +2192,62 @@ quex/engine/state_machine/TEST
                                                                              ( (_) | _ <
                                                                               \___/|_|\_) 
 ==========================================================================================
+State Machine related Algorithms
+Sat May  5 08:18:45 2012
+quex/engine/state_machine/algorithm/TEST
+------------------------------------------------------------------------------------------
+
+ -- DFA:
+
+    Hopcroft optimization (minimize state set)
+        test-hopcroft-minimization.py NEW .................................[OK]
+                                      ADAPT ...............................[OK]
+    Hopcroft optimization (minimize state set) II
+        test-hopcroft-minimization-2.py NEW ...............................[OK]
+                                        ADAPT .............................[OK]
+    Hopcroft optimization III (state machine combination)
+        test-hopcroft-minimization-3.py NEW ...............................[OK]
+                                        ADAPT .............................[OK]
+
+ -- NFA:
+
+    Conversion to DFA (subset construction)
+        test-nfa-to-dfa.py ................................................[OK]
+    Conversion to DFA - Special Case
+        test-nfa-to-dfa-special.py ........................................[OK]
+                                                                               ___  _  _
+                                                                              / _ \| |/ )
+                                                                             ( (_) | _ <
+                                                                              \___/|_|\_) 
+==========================================================================================
+State Machine Checks
+Sat May  5 08:18:51 2012
+quex/engine/state_machine/check/TEST
+------------------------------------------------------------------------------------------
+ -- Commonality Checker
+        test-outrun.py ....................................................[OK]
+ -- Commonality Checker
+        test-commonality.py ...............................................[OK]
+ -- Pattern Identity Determination
+        test-identity_checker.py True .....................................[OK]
+                                 False ....................................[OK]
+                                 Pre-Post-Contexts-True ...................[OK]
+                                 Pre-Post-Contexts-False ..................[OK]
+ -- Pattern Superset/Subset Determination
+        test-subset_checker.py Easy .......................................[OK]
+                               FalseCases .................................[OK]
+                               GoodCases ..................................[OK]
+                               FalseCasesII ...............................[OK]
+                               GoodCasesII ................................[OK]
+                               Misc .......................................[OK]
+                               Pre-Post-Conditions ........................[OK]
+                                                                               ___  _  _
+                                                                              / _ \| |/ )
+                                                                             ( (_) | _ <
+                                                                              \___/|_|\_) 
+==========================================================================================
 Character Set Queries
-Sat Apr  7 08:44:57 2012
+Sat May  5 08:19:09 2012
 quex/input/TEST
 ------------------------------------------------------------------------------------------
  -- Case Folding based on Unicode Database
@@ -2275,7 +2324,7 @@ quex/input/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Regular Expression Parsing
-Sat Apr  7 08:45:01 2012
+Sat May  5 08:19:14 2012
 quex/input/regular_expression/TEST
 ------------------------------------------------------------------------------------------
  -- Anti-Patterns
@@ -2345,7 +2394,7 @@ quex/input/regular_expression/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Basic Code Writing Functionality
-Sat Apr  7 08:45:03 2012
+Sat May  5 08:19:17 2012
 quex/output/cpp/TEST
 ------------------------------------------------------------------------------------------
  -- Token Class Template
@@ -2372,7 +2421,7 @@ quex/output/cpp/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Testing Statemachine Plots
-Sat Apr  7 08:45:03 2012
+Sat May  5 08:19:17 2012
 quex/output/graphviz/TEST
 ------------------------------------------------------------------------------------------
 
@@ -2397,7 +2446,8 @@ SUMMARY:
            [OK]  demo/C/TEST
            [OK]  ..../Cpp/TEST
            [OK]  quex/TEST
-           [OK]  ..../TEST/did-you-mean/TEST
+           [OK]  ..../TEST/command-line/TEST
+           [OK]  ........./did-you-mean/TEST
            [OK]  ........./errors-warnings/TEST
            [OK]  ........./event-handling/TEST
            [OK]  ........./include-stack/TEST
@@ -2420,8 +2470,11 @@ SUMMARY:
            [OK]  ..................../mega_state/path_walker/TEST
            [OK]  .............................../template/TEST
            [OK]  .........../generator/TEST
+           [OK]  ...................../skipper/TEST
            [OK]  .........../misc/TEST
            [OK]  .........../state_machine/TEST
+           [OK]  ........................./algorithm/TEST
+           [OK]  ........................./check/TEST
            [OK]  ..../input/TEST
            [OK]  ........../regular_expression/TEST
            [OK]  ..../output/cpp/TEST
