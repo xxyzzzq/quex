@@ -8,5 +8,5 @@ fi
 tmp=`pwd`
 cd $bug/ 
 
-quex -i tmp.qx
+quex -i test.qx
 cd $tmp
