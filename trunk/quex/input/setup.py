@@ -169,6 +169,10 @@ SETUP_INFO = {
     "help":                              [["--help", "-h"],                   SetupParTypes.FLAG],
     "warning_disabled_no_token_queue_f": [["--no-warning-on-no-token-queue"], SetupParTypes.FLAG],
     "warning_on_outrun_f":               [["--warning-on-outrun", "--woo"],   SetupParTypes.FLAG],
+    "error_on_dominated_pattern_f":      [["--no-error-on-dominated-pattern",      "--neodp"],   SetupParTypes.NEGATED_FLAG],
+    "error_on_special_pattern_same_f":   [["--no-error-on-special-pattern-same",   "--neosps"],  SetupParTypes.NEGATED_FLAG],
+    "error_on_special_pattern_outrun_f": [["--no-error-on-special-pattern-outrun", "--neospo"],  SetupParTypes.NEGATED_FLAG],
+    "error_on_special_pattern_subset_f": [["--no-error-on-special-pattern-subset", "--neospsu"], SetupParTypes.NEGATED_FLAG],
     # Parameters not set on the command line:
     "byte_order_is_that_of_current_system_f":    True,
     "analyzer_class_name":                       None,

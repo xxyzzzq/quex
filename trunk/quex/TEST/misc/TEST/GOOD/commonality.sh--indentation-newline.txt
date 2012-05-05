@@ -1,4 +1,3 @@
-interfere-indentation-newline.qx:2:error: Pattern '[x]' matches a superset of what is matched by
-interfere-indentation-newline.qx:3:error: pattern '"x"' while the former has precedence.
-interfere-indentation-newline.qx:3:error: The latter can never match.
-interfere-indentation-newline.qx:3:error: You may switch the sequence of definition to avoid this error.
+interfere-indentation-newline.qx:2:error: The indentation newline pattern '[x]' matches a superset of what is matched by
+interfere-indentation-newline.qx:3:error: pattern '"x"'.
+interfere-indentation-newline.qx:3:error: The former has precedence and the latter can never match.

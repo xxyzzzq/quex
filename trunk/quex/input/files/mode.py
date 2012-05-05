@@ -37,7 +37,6 @@ import quex.engine.state_machine.repeat                    as repeat
 import quex.engine.state_machine.algorithm.beautifier             as beautifier
 import quex.engine.state_machine.algorithm.nfa_to_dfa             as nfa_to_dfa
 import quex.engine.state_machine.algorithm.hopcroft_minimization  as hopcroft
-import quex.engine.state_machine.check.superset            as superset
 
 from   copy import deepcopy
 

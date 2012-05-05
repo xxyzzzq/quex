@@ -758,6 +758,33 @@ patterns outrunning high-priority patterns. The following flag supports these co
    due to longer length of the matching lower priority pattern. See section 
    :ref:`usage-context-free-pitfalls`.
 
+.. cmdoption:: --no-error-on-dominated-pattern, --neodp
+ 
+   Disables the error check on dominated patterns, i.e. patterns that
+   may never match due to higher precedence patterns which cover a
+   superset of lexemes.
+
+.. cmdoption:: --no-error-on-special-pattern-same, --neosps
+
+   Allows special patterns (skipper, indentation, etc.) to be the
+   same without notifying an error. 
+
+.. cmdoption:: --no-error-on-special-pattern-outrun, --neospo
+
+   Allows lower precedence patterns which may outrun a special pattern
+   due to length issue. To allow this opens the door to very confusing
+   situations. For example, a comment skipper on "/*" may not trigger
+   because a lower precedence pattern matches on "/**" which is longer
+   and therefore wins.
+
+.. cmdoption:: --no-error-on-special-pattern-subset, --neospsu
+
+   Alows higher precedence patterns to match on a subset of lexemes that a
+   special pattern (skipper, indentation, etc.) matches. Again, this may cause
+   confusing situations. If this is allowed a pattern may win against a
+   skipper, for example. It is the expectation, though, that a skipper shall
+   skip--which it could not if such scenerios are allowed.
+
 The comment output is framed by ``BEGIN:`` and ``END:`` markers. This facilitates the extraction
 of this information for further processing. For example, the Unix command 'awk' can be used:
 

@@ -16,8 +16,8 @@ token {
 mode comment :
 	END_OF_FILE
 {
-	{EoL}     => QUEX_TKN_EOL;
-	{LINE}    => QUEX_TKN_LINE(Lexeme);
+	{EoL}   => QUEX_TKN_EOL;
+	Dada    => QUEX_TKN_LINE(Lexeme);
 }
 
 mode channels :
