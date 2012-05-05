@@ -1,0 +1,4 @@
+token { X; }
+mode ME {
+    xyz/xyz+/z+012 => QUEX_TKN_X;
+}

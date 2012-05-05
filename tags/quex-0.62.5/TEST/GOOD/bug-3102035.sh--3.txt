@@ -1,0 +1,10 @@
+## In this test we try to avoid issues with some 'weird' cases that
+## produced duplicate state labels. The the compiler warnings such as
+## 
+##   Case3.c:154: error: duplicate label ‘STATE_39’
+##   Case3.c:151: error: previous definition of ‘STATE_39’ was here
+##
+## would appear. If they do not, then everything is fine.
+quex -i case3.qx  --engine Case3 --language C --debug-exception
+gcc  -I./ -I<<QUEX_PATH>> -Wall -W -Wconversion -pedantic  -DPRINT_TOKEN -DPRINT_LINE_COLUMN_NUMBER -c Case3.c -o Case3.o
+rm Case3.c

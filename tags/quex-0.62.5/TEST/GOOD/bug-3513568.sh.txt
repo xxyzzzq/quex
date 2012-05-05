@@ -1,0 +1,2 @@
+Only output shall be: No memory leaks!
+VALGRIND:   All heap blocks were freed -- no leaks are possible

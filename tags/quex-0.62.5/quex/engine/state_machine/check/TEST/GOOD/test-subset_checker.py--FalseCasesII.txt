@@ -1,0 +1,24 @@
+---------------------------
+super = abc("123"+)xyz
+sub   = abcyz
+claim =  False
+
+super = abcyz
+sub   = abc("123"+)xyz
+claim =  False
+---------------------------
+super = abc("123"|"ABC")xyz
+sub   = abc1B3xyz
+claim =  False
+
+super = abc1B3xyz
+sub   = abc("123"|"ABC")xyz
+claim =  False
+---------------------------
+super = abc("123"|"ABCD")xyz
+sub   = abcABCxyc
+claim =  False
+
+super = abcABCxyc
+sub   = abc("123"|"ABCD")xyz
+claim =  False

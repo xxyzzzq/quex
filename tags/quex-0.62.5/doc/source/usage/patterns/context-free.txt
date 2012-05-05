@@ -1,0 +1,324 @@
+Context Free Regular Expressions
+==================================
+
+Context free regular expressions match against an input independent on what 
+come before or after it. For example the regular expression ``for``
+will match against the letters `f`, `o`, and `r` independent
+if there was a whitespace or whatsoever before it or after it. This is
+the 'usual' way to define patterns. More sophisticated techniques are 
+explained in the subsequent section. This sections explains how to 
+define simple *chains of characters* and `operations`
+to combine them into powerful patterns.
+
+*Chains of Characters*
+
+.. describe:: x 
+
+     matches the character 'x'.  That means, lonestanding characters match
+     simply the character that they represent.  This is true, as long as
+     those characters are not operators by which regular expressions describe
+     some fancy mechanisms---see below.
+
+.. describe:: . 
+
+      matches any character (byte) except newline and EOF. Note, that on systems
+      where newline is coded as ``0D,\,0A`` this matches also the ``0D`` character whenever 
+      a newline occurs (subject to possible change).
+
+.. describe:: [xyz]
+
+     a "character class" or "character set"; in this case, the pattern matches
+     either an ``x``, a ``y``, or a ``z``. The brackets '$[$' and '$]$' are
+     examples for lonestanding characters that are operators. If they are to be
+     matched quotes or backslashes have to be used as shown below. Character
+     sets are a form of *alternative* expressions-- for one single character.
+     For more sophisticated alternative expressions see the paragraphs below. 
+
+.. describe:: [: expression :]
+
+     matches a set of characters that result from a character set expression
+     `expression`.  Section <<formal/patterns/character-set-expressions>>
+     discusses this feature in detail.  In particual ``[:alnum:]``,
+     ``[:alpha:]`` and the like are the character sets as defined as POSIX
+     bracket expressions.
+
+.. describe:: [abj-oZ]
+
+     a "character class" with a range in it; matches an ``a``, a ``b``, any
+     letter from ``j`` through ``o``, or a ``Z``. The minus ``-`` determines
+     the range specification. Its left hand side is the start of the range.
+     Its right hand sinde the end of the range (here ``j-o`` means from ``j``
+                                                to ``o``).  Note, that ``-``
+     standards for 'range from to' where the character code of the right hand
+     side needs to be greater than the character code of the left hand side.
+
+.. describe:: [^A-Z\\n]
+
+     a "negated character class", i.e., any character but those in the
+     class.  The ``^`` character indicates *negation* at this point. 
+     This expression matches any character *except* an uppercase letter or newline.
+
+.. describe:: "[xyz]\\"foo"
+
+     the literal string: ``[xyz]"foo``.
+     That is, inside quotes the characters which are used as operators for
+     regular expressions can be applied in their original sense. A ``[``
+     stands for code point 91 (hex. 5B), matches against a ``[`` and does
+     not mean 'open character set'. Note, than inside strings one can 
+     still use the ANSI-C backslashed characters ``\n``, ``\t``, etc. as
+     well as the Unicode name property ``\N``. However, general Unicode
+     property expression ``\P`` that result in *character sets* are not dealt
+     with inside strings.
+      
+.. describe:: \\C{ R } or \\C(flags){ R }
+
+     Applies case folding for the given regular expression or character set 'R'.
+     This basically provides a shorthand for writing regular expressions that
+     need to map upper and lower case patterns, i.e.::
+
+           \C{select} 
+
+     matches for example:: 
+
+           "SELECT", "select", "sElEcT", ...
+
+     The expression ``R`` passed to the case folding operation needs to fit 
+     the environment in which it was called. If the case folding is applied
+     in a character set expression, then its content must be a character
+     set expression, i.e.::
+
+               [:\C{[:union([a-z], [ﬀİ]):]}:]   // correct
+               [:\C{[a-z]}:]                    // correct
+
+     and *not*::
+
+               [:\C{union([a-z], [ﬀİ])}:]       // wrong
+               [:\C{a-z}:]                      // wrong
+
+     The algorithm for case folding follows Unicode Standard Annex #21 
+     "CASE MAPPINGS", Section 1.3. That is for example, the character 'k'
+     is not only folded to 'k' (0x6B) and 'K' (0x4B) but also to 'K' (0x212A). 
+     Additionally, unicode defines case foldings to multi character sequences,
+     such as::
+
+            ΐ   (0390) --> ι(03B9)̈(0308)́(0301)
+            ŉ   (0149) --> ʼ(02BC)n(006E)
+            I   (0049) --> i(0069), İ(0130), ı(0131), i(0069)̇(0307)
+            ﬀ   (FB00) --> f(0066)f(0066)
+            ﬃ   (FB03) --> f(0066)f(0066)i(0069)
+            ﬗ   (FB17) --> մ(0574)խ(056D)
+
+     As a speciality of the turkish language, the 'i' with and without the dot
+     are not the same. That is, a dotless lowercase 'i' is folded to a dotless 
+     uppercase 'I' and a dotted 'i' is mapped to a dotted uppercase 'I'. This 
+     mapping, though, is mutually exclusive with the 'normal' case folding and 
+     is not active by default. The following flags can be set in order to
+     control the detailed case folding behavior:
+
+     .. describe:: s
+
+        This flag enables simple case folding *without* the multi-character
+
+     .. describe:: m
+
+        The *m* flag enables the case folding to multi-character sequences.
+        This flag is not available in character set expressions. In this
+        case the result must be a set of characters and not a set of character
+        sequences.
+
+     .. describe:: t
+
+        By setting the *t* flag, the turkish case mapping is enabled. Whenever
+        the turkish case folding is an alternative, it is preferred.
+    
+     The default behavior corresponds to the flags *s* and *m* 
+     (``\C{R}`` ≡ ``\C(sm){R}``) for patterns and *s* (``\C{R}`` ≡ ``\C(s){R}``) 
+     for character sets. Characters that are beyond the scope of the current 
+     codec or input character byte width are cut out seeminglessly. 
+
+.. describe:: \\R{ ... }
+
+     Reverse the pattern specified in brackets. If for example, it is specified::
+
+            "Hello "\R{dlroW} => QUEX_TKN_HELLO_WORD(Lexeme)
+
+     then the token ``HELLO_WORLD`` would be sent upon the appearance of 
+     'Hello World' in the input stream. This feature is mainly useful for
+     definitions of patterns of right-to-left writing systems such 
+     as Arabic, Binti and Hebrew. Chinese, Japanese, as well as ancient 
+     Greek, ancient Latin, Egyptian, and Etruscan can be written in 
+     both directions.
+
+     .. note:: 
+
+        For some reason, it has caused some confusion in the past, that pattern
+        substitution requires an extra pair of curly brackets, i.e. to reverse
+        what has been defined as ``PATTERN`` it needs to to be written::
+
+                          \R{{PATTERN}} 
+
+        which reads from inside to outside: expand the pattern definition,
+        then reverse expanded pattern. Inside the curly brackets of ``\R{...}``
+        any pattern expression may occur in the well defined manner.
+
+.. describe:: \\A{P}
+
+     The 'anti pattern' of ``P``, that is the pattern which matches what 
+     ``P`` cannot not match.
+
+     .. note::
+
+        Let L be the set of all lexemes and M the set of lexemes that cause
+        a match of P. Then, the anti pattern \A{P} matches all lexemes from the 
+        set L subtracted the lexemes of M.
+
+     For example the anti pattern of the keyword ``if`` matches all lexemes that
+     are one letter long and do not start with ``i``. Also, matches all lexemes that
+     start with ``i`` but do not continue with ``f``.
+
+     Note, that anti-patterns provide a means to trick the greedy match 
+     behavior of quex. This is shown in the subsequent 'pitfalls' section.
+
+.. describe:: \\0 
+
+     a NULL character (ASCII/Unicode code point 0). This is to be used with *extreme caution*!
+     The NULL character is also used aa buffer limitting character!
+     See section <<sec-formal-command-line-options>> for specifying a different
+     value for the buffer limit code.
+
+.. describe:: \\U11A0FF 
+
+      the character with hexadecimal value 11A0FF. A maximum of *six*
+      hexadecimal digits can be specified.  Hexadecimal numbers with less than
+      six digits must either be followed by a non-hex-digit, a delimiter such
+      as ``"``, ``[``, or ``(``, or specified with leading zeroes (i.e. use \\U00071F,
+      for hexadecimal 71F). The latter choice is probably the best candidate
+      for an 'established habit'. Hexadecimal digits can contain be uppercase or
+      lowercase letters (from A to F).
+
+.. describe:: \\X7A27 
+
+      the character with hexadecimal value 7A27. A
+      maximum of *four* hexadecimal digits can be specified. The
+      delimiting rules are are ananlogous to the rules for `\U`. 
+
+.. describe:: \\x27 
+
+    the character with hexadecimal value 27. A maximum
+    of *two* hexadecimal digits can be specified. The
+    delimiting rules are are ananlogous to the rules for `\U`. 
+
+.. describe:: \\123 
+
+    the character with octal value 123, a maximum of three
+    digits less than 8 can follow the backslash. The
+    delimiting rules are ananlogous to the rules for `\U`. 
+
+
+.. describe:: \\a, \\b, \\f, \\n, \\r, \\t, \\r, or \\v
+
+    the ANSI-C interpretation of the backslashed character.
+
+.. describe:: \\P{ Unicode Property Expression }
+
+     the set of characters for which the `Unicode Property Expression` holds.
+     Note, that these expressions cannot be used inside quoted strings.
+
+.. describe:: \\N{ UNICODE CHARACTER NAME }
+
+     the code of the character with the given Unicode character name. This is 
+     a shortcut for ``\P{Name=UNICODE CHARACTER NAME}``. For possible
+     settings of this character see \cite{Unicode 5.0}.
+
+.. describe:: \\G{ X }
+
+     the code of the character with the given *General Category* \cite{}. This is 
+     a shortcut for ``\P{General_Category=X}``. Note, that these expressions 
+     cannot be used inside quoted strings. For possible settings of the 
+     ``General_Category`` property, see section <<sec-formal-unicode-properties>>.
+
+.. describe:: \\E{ Codec Name }
+
+     the subset of unicode characters which is covered by the given codec. Using
+     this is particularly helpful to cut out uncovered characters when a codec engine
+     is used (see :ref:`Engine Codec <sec-engine-codec>`).
+
+Any character specified as character code, i.e. using `\`, `\x`, `\X`, or `\U`
+are considered to be unicode code points. For applications in english spoken
+cultures this is identical to the ASCII encoding. For details about unicode
+code tables consider the standard \cite{Unicode50}. Section
+<<sec-formal-ucs-properties>> is dedicated to an introduction to Unicode
+properties.
+
+Two special rules have to appear isolatedly, out of the context of regular
+expressions. With the following two rules the actions for the event of end of
+file and the failure event can be specified:
+
+.. describe:: <<EOF>> 
+
+    the event of an end-of-file (end of data-stream). 
+
+.. describe:: <<FAIL>> 
+
+    the event of failure, i.e. no single pattern matched. 
+    Note, this rule is of the 'lex' style, but is only available with the 
+    quex core engine.
+
+
+This syntax is more 'in recognition' of the traditional `lex` syntax. In fact
+the two event handlers '`on\_failure`' and '`on\_end\_of\_stream`' are
+a one-to-one correspondance to what is mentioned above. Possibly some later
+versions will totally dismiss the lex related engine core, and then also
+these constructs will disappear in favor of the mentioned two event handlers.
+
+*Operations*    
+
+Let ``R`` and ``S`` be regular expressions, i.e. a chain of characters specified in the
+way mentioned above, or a regular expression as a result from the operations below.
+Much of the syntax is directly based on POSIX extended regular expressions \cite{}.
+     
+.. describe:: R* 
+
+    *zero* or more occurencies of the regular expression ``R``.
+
+.. describe:: R+ 
+
+    *one* or more repetition of the regular expression ``R``.
+
+.. describe:: R? 
+
+    *zero* or *one* ``R``. That means, there maybe an ``R`` or not.
+
+.. describe:: R{2,5} 
+
+    anywhere from two to five repetitions of the regular expressions ``R``.
+
+.. describe:: R{2,} 
+
+    two or more repetitions of the regular expression ``R``.
+
+.. describe:: R{4} 
+
+    exactly four repetitions of the regular expression ``R``.
+
+.. describe:: (R) 
+
+    match an ``R``; parentheses are used to *group* operations, i.e. to override
+    precedence, in the same way as the brackets in ``(a + b) * c``
+    override the precedence of multiplication over addition.
+
+.. describe:: RS 
+
+    the regular expression ``R`` followed by the regular expression ``S``. This
+    is usually called a *concatenation* or a *sequence*.
+
+.. describe:: R|S 
+
+    either an ``R`` or an ``S``, i.e. ``R`` and ``S`` both match. This is usually 
+    called an *alternative*.
+
+.. describe:: {NAME} 
+
+    the expansion of the defined pattern "NAME". Pattern names can
+    be defined in *define* sections (see section <<sec-practical-patterns>>).
+

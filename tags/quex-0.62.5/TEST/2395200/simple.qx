@@ -1,0 +1,38 @@
+// -*- C++ -*-
+header {
+#include <cstdlib>  // for: atoi()
+}
+
+
+define {
+    // Pattern definitions for example application
+    P_WHITESPACE          [ \t\n]+
+    P_IDENTIFIER          [_a-zA-Z][_a-zA-Z0-9]*
+    P_NUMBER              [0-9]+
+}
+
+token {
+    ALIEN;
+    IDENTIFIER;
+    KEYWORD;
+    NUMBER;
+    OPERATOR;
+    SOMETHING;
+}
+
+mode ONE_AND_ONLY :
+<skip:       [ \r\n\t]>
+<skip_range: "/*" "*/">
+{
+    <<EOF>>       => QUEX_TKN_TERMINATION;
+
+    {P_NUMBER}+                 => QUEX_TKN_NUMBER(Lexeme);
+    {P_NUMBER}+"."{P_NUMBER}*   => QUEX_TKN_NUMBER(Lexeme);
+
+    "if"|"else"|"return" => QUEX_TKN_KEYWORD(Lexeme);
+    {P_IDENTIFIER}       => QUEX_TKN_IDENTIFIER(Lexeme);
+    "+"|"-"|"*"|"/"      => QUEX_TKN_OPERATOR(Lexeme);
+    "{"[\^{}}\n]*"}"     => QUEX_TKN_SOMETHING(Lexeme);
+     .                   => QUEX_TKN_ALIEN(Lexeme);
+
+}

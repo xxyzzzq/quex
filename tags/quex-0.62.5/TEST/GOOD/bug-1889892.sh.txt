@@ -1,0 +1,19 @@
+(1)
+error.qx:2:error: Regular expression parsing:
+error.qx:2:error: Missing hexadecimal number.
+(2)
+error-1.qx:2:error: Regular expression parsing:
+error-1.qx:2:error: Missing hexadecimal number.
+(3)
+error-2.qx:2:error: Regular expression parsing:
+error-2.qx:2:error: Missing hexadecimal number.
+(4)
+error-3.qx:4:warning: Mode without pattern and event handlers needs to be 'inheritable only'.
+error-3.qx:4:warning: <inheritable: only> has been added automatically.
+consistency check: There is no mode that can be applied---all existing modes are 'inheritable only'.
+consistency check: modes are = 'Hallo'
+(5)
+error-4.qx:2:warning: Pattern contained solely forbidden characters in a state transition.
+error-4.qx:2:warning: The resulting target state is deleted since no other state triggered to it.
+error-4.qx:2:error: Deletion of signal characters resulted in empty core pattern.
+error-4.qx:2:error: Consider changing the value of the buffer limit code or path delimiter.

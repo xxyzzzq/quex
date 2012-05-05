@@ -1,0 +1,33 @@
+init-state = 0L
+00000 (11, 25)
+     == 'a' ==> 00001
+     == 'b' ==> 00002
+    
+00001 (11, 26, A)
+    
+00002 (11, 27)
+     == 'c' ==> 00001
+    
+
+State 0:
+  .entry:
+    .from NONE:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 1:
+  .entry:
+    .from 0:
+    .from 2:
+  .drop_out:
+     goto Pattern11;
+
+
+State 2:
+  .entry:
+    .from 0:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
