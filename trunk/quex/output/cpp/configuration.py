@@ -94,7 +94,7 @@ def do(ModeDB):
 
         if result == "::": return ""
 
-        assert len(result) > 2, \
+        assert Setup.language.upper() != "C++" or len(result) > 2, \
                "Error while generating namespace reference '%s'" % result
 
         return result[:-2]
