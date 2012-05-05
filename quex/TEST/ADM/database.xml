@@ -1,4 +1,4 @@
-<test-database execution-time-sec="35.69" date="Sat May  5 08:08:43 2012">
+<test-database execution-time-sec="35.70" date="Sun May  6 00:19:27 2012">
     <last-used-diff-display-program name=""/>
     <test title="(*) Exceptions during 'import'" time-sum-sec="0.59"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1318614194L" vanished="False"/>

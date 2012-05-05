@@ -1,4 +1,4 @@
-<test-database execution-time-sec="19.60" date="Sat May  5 08:18:44 2012">
+<test-database execution-time-sec="19.56" date="Sun May  6 00:19:29 2012">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Superset/Subset Determination" time-sum-sec="1.40"> 
         <application file-name="test-subset_checker.py" info-request-time="1336071109L" vanished="True"/>
@@ -47,7 +47,7 @@
                <choice name="" result="OK" time_sec="0.08" crc="-1738167192"/>
             </choice-list>
         </test>
-        <test title="Get Trigger Map (intervals --&gt; target states)" time-sum-sec="0.56"> 
+        <test title="Get Trigger Map (intervals --&gt; target states)" time-sum-sec="0.55"> 
             <application file-name="test-get_trigger_map.py" info-request-time="1301139218L" vanished="False"/>
             <choice-list number="7" same_result="False">
                <choice name="1" result="OK" time_sec="0.08" crc="-537668508"/>
@@ -128,7 +128,7 @@
                <choice name="" result="OK" time_sec="0.48" crc="-842723035"/>
             </choice-list>
         </test>
-        <test title="Characters of different horizontal sizes." time-sum-sec="2.25"> 
+        <test title="Characters of different horizontal sizes." time-sum-sec="2.26"> 
             <application file-name="test-count_character_n-2.py" info-request-time="1334954318L" vanished="False"/>
             <choice-list number="4" same_result="False">
                <choice name="Same" result="OK" time_sec="0.47" crc="-1162155918"/>
@@ -229,12 +229,6 @@
                <choice name="" result="OK" time_sec="0.08" crc="-1706023851"/>
             </choice-list>
         </test>
-        <test title="NFA to DFA (subset construction)" time-sum-sec="0.09"> 
-            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1320093332L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.09" crc="1084071896"/>
-            </choice-list>
-        </test>
         <test title="Cloning" time-sum-sec="0.08"> 
             <application file-name="test-StateMachine-trace-origin-clone.py" info-request-time="1301139218L" vanished="False"/>
             <choice-list number="1" same_result="False">
@@ -245,6 +239,12 @@
             <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1320132827L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.08" crc="638605976"/>
+            </choice-list>
+        </test>
+        <test title="NFA to DFA (subset construction)" time-sum-sec="0.09"> 
+            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1320093332L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.09" crc="1084071896"/>
             </choice-list>
         </test>
         <test title="NFA to DFA (subset construction) II" time-sum-sec="0.09"> 
@@ -298,7 +298,7 @@
                <choice name="" result="OK" time_sec="0.79" crc="-544662156"/>
             </choice-list>
         </test>
-        <test title="Intervals" time-sum-sec="0.37"> 
+        <test title="Intervals" time-sum-sec="0.36"> 
             <application file-name="test-utf8_number_set_split-by-length.py" info-request-time="1305001316L" vanished="False"/>
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="0.12" crc="-1982649752"/>
@@ -307,7 +307,7 @@
                <choice name="Overlap2" result="OK" time_sec="0.08" crc="1206343695"/>
             </choice-list>
         </test>
-        <test title="Plug Intermediate States" time-sum-sec="1.05"> 
+        <test title="Plug Intermediate States" time-sum-sec="1.04"> 
             <application file-name="test-utf8_state_split.py" info-request-time="1305087793L" vanished="False"/>
             <choice-list number="12" same_result="False">
                <choice name="1.1" result="OK" time_sec="0.11" crc="-92510559"/>

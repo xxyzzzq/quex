@@ -1,4 +1,4 @@
-<test-database execution-time-sec="3.00" date="Sat May  5 08:12:55 2012">
+<test-database execution-time-sec="3.02" date="Sun May  6 00:19:28 2012">
     <last-used-diff-display-program name=""/>
     <group name="Paths">
         <test title="find_begin" time-sum-sec="0.66"> 
@@ -25,7 +25,7 @@
                <choice name="6" result="OK" time_sec="0.11" crc="-1818699120"/>
             </choice-list>
         </test>
-        <test title="select_longest_intersecting_path" time-sum-sec="0.54"> 
+        <test title="select_longest_intersecting_path" time-sum-sec="0.55"> 
             <application file-name="select_longest_paths.py" info-request-time="1330375393L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="0" result="OK" time_sec="0.10" crc="773714092"/>
@@ -45,7 +45,7 @@
                <choice name="4" result="OK" time_sec="0.11" crc="569151014"/>
             </choice-list>
         </test>
-        <test title="is_difference_single_character" time-sum-sec="0.19"> 
+        <test title="is_difference_single_character" time-sum-sec="0.20"> 
             <application file-name="can_plug_to_equal.py" info-request-time="1330375418L" vanished="False"/>
             <choice-list number="2" same_result="False">
                <choice name="1_interval" result="OK" time_sec="0.10" crc="2146992883"/>
