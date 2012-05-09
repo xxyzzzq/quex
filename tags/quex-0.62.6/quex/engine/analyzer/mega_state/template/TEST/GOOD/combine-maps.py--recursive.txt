@@ -1,0 +1,79 @@
+Involved states in First = 1L
+Involved states in Second = 2L
+=> when First triggers to 1L and Second to 2L, then both
+   are recursive and no distinction needs to be made.
+DoorTree(A):
+    [0]: (1<-1) (1<-7777) 
+    parent: [None]
+    
+DoorTree(B):
+    [0]: (2<-1) (2<-2) (2<-7777) 
+    parent: [None]
+    
+(Straight)---------------------------------------
+
+StateA: [1L]
+  [INTERVAL]   [TARGET/STATE [1]]
+  [-oo, 9]     1L
+  [10, oo]     2L
+StateB: [2L]
+  [INTERVAL]   [TARGET/STATE [2]]
+  [-oo, oo]    2L
+
+DoorTree(A|B):
+    [1]: (2<-1) (2<-7777) 
+            state_key = 1;
+    parent: [0]
+    
+    [2]: (1<-1) (2<-2) 
+    parent: [0]
+    
+    [3]: (1<-7777) 
+            state_key = 0;
+    parent: [0]
+    
+    [0]: 
+    parent: [None]
+    
+Result
+  [INTERVAL]   [TARGET/STATE [1, 2]]
+  [-oo, 9]     MST:(DoorID(s=0, d=2))
+  [10, oo]     MST:scheme((DoorID(s=0, d=1), DoorID(s=0, d=2)))
+BorderN        = 1
+Target Schemes = (0, 0)
+
+
+
+(Vice Versa)-------------------------------------
+
+StateA: [2L]
+  [INTERVAL]   [TARGET/STATE [2]]
+  [-oo, oo]    2L
+StateB: [1L]
+  [INTERVAL]   [TARGET/STATE [1]]
+  [-oo, 9]     1L
+  [10, oo]     2L
+
+DoorTree(A|B):
+    [1]: (2<-1) (2<-7777) 
+            state_key = 0;
+    parent: [0]
+    
+    [2]: (1<-1) (2<-2) 
+    parent: [0]
+    
+    [3]: (1<-7777) 
+            state_key = 1;
+    parent: [0]
+    
+    [0]: 
+    parent: [None]
+    
+Result
+  [INTERVAL]   [TARGET/STATE [2, 1]]
+  [-oo, 9]     MST:(DoorID(s=1, d=2))
+  [10, oo]     MST:scheme((DoorID(s=1, d=2), DoorID(s=1, d=1)))
+BorderN        = 1
+Target Schemes = (1, 1)
+
+

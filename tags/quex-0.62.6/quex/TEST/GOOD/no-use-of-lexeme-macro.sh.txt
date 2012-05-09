@@ -1,0 +1,28 @@
+The Lexeme macro does some safety checks when compiled with
+QUEX_OPTION_ASSERTS. These checks are sometimes nonsense in
+generated code. This test checks that no code is generated
+that referes to the Lexeme macros.
+
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:LineN:        #  QUEX_TKN_XYZ(Lexeme)     --> call take_text(Lexeme, LexemeEnd)
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:LineN:            if argument_list[0] == "Lexeme":
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:LineN:                error_msg("If one unnamed argument is specified it must be 'Lexeme'\n"          + \
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:LineN:                          "QUEX_TKN_MY_ID(Lexeme + 1, LexemeEnd - 2);\n"                             + \
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:LineN:                      "     one argument:   'Lexeme'   =>  token.take_text(..., LexemeBegin, LexemeEnd);\n"
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:LineN:            idx = value.find("Lexeme")
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:LineN:                    error_msg("Assignment of token member '%s' with 'Lexeme' directly being involved. The\n" % member_name + 
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:LineN:                              "'Lexeme' points into the text buffer and it is not owned by the token object.\n"
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:LineN:                              "   (1) Use '(Lexeme)', i.e. surround 'Lexeme' by brackets to indicate\n"
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:LineN:                              "       is not directly dependent anymore on 'Lexeme'. This is particularly\n"
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:LineN:                              "          \"%s(Lexeme+1, LexemeEnd-2)\"\n" % TokenName + 
+<<QUEX_PATH>>/quex/input/files/code_fragment.py:LineN:                              "          \"%s(Lexeme)\"\n" % TokenName + 
+<<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:Lexeme_matcher = re.compile("\\bLexeme\\b", re.UNICODE)
+<<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:    global Lexeme_matcher 
+<<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:    # If 'Lexeme' occurs as an isolated word, then ensure the generation of 
+<<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:    # a terminating zero. Note, that the occurence of 'LexemeBegin' does not
+<<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:    require_terminating_zero_f = (Lexeme_matcher.search(code_str) is not None) 
+<<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:        txt += "                \"    Proposal: Define 'on_failure' and analyze 'Lexeme'.\\n\");\n"
+<<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:    # Lexeme does not contain newline --> count only columns
+<<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:    if character_n == E_Count.VOID: incr_str = "LexemeL"
+<<QUEX_PATH>>/quex/engine/generator/languages/cpp.py:LineN:    /* Lexeme setup: 
+<<QUEX_PATH>>/quex/engine/generator/languages/cpp.py:LineN:     * references to the 'Lexeme'. 'LexemeNull' provides a reference to an empty
+<<QUEX_PATH>>/quex/engine/state_machine/character_counter.py:LineN:    #               length = (LexemeEnd - LexemeBegin) * C

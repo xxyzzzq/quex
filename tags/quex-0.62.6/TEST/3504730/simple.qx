@@ -1,0 +1,20 @@
+// -*- C++ -*-
+header {
+}
+
+token {
+  ATSIGN;
+  SOMETHING;
+  SPECIAL;
+  TERMINATION;
+}
+
+mode ONE_AND_ONLY
+{
+  [^@]+  => QUEX_TKN_SOMETHING(Lexeme);
+  @/(foo|bar|baz|quux)  => QUEX_TKN_SPECIAL(Lexeme);
+  [@,] => QUEX_TKN_ATSIGN(Lexeme);
+}
+
+
+

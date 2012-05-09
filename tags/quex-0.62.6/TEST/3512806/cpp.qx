@@ -1,0 +1,15 @@
+start = PROGRAM;
+token {
+    IDENTIFIER;
+    NUMBER;
+}
+define {
+    P_IDENTIFIER          [_a-zA-Z][_a-zA-Z0-9]*
+    P_NUMBER              [0-9]+
+}
+
+mode PROGRAM
+{
+    {P_IDENTIFIER}      => TKN_IDENTIFIER(Lexeme);
+    {P_NUMBER}          => TKN_NUMBER(Lexeme);
+}

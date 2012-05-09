@@ -1,0 +1,8 @@
+token { BOF_AB; AB; Y_DD; NEWLINE; FAILURE; }
+mode X { 
+    ^("ab")+ => QUEX_TKN_BOF_AB; 
+    (ab)+    => QUEX_TKN_AB; 
+    "ÿ"      => QUEX_TKN_Y_DD; 
+    "\n"     => QUEX_TKN_NEWLINE;
+    on_failure => QUEX_TKN_FAILURE(Lexeme);
+}

@@ -1,0 +1,16 @@
+@quuxbaz
+@bazbaz
+@barbaz
+@foobaz
+@quuxquux
+@bazquux
+@barquux
+@fooquux
+@quuxfoo
+@bazfoo
+@barfoo
+@foofoo
+@quuxbar
+@bazbar
+@barbar
+@foobar

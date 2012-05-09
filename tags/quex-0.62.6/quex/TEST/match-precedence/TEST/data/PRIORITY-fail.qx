@@ -1,0 +1,27 @@
+start = Z;
+
+mode A {
+    a => QUEX_TKN_THING;
+}
+
+mode B {
+    b => QUEX_TKN_THING;
+}
+
+mode C {
+    c => QUEX_TKN_THING;
+}
+
+mode X : A, B, C {
+    x => QUEX_TKN_THING;
+}
+
+mode Y : X {
+    y => QUEX_TKN_THING;
+}
+
+mode Z : Y {
+    q    PRIORITY-MARK;
+    z => QUEX_TKN_THING;
+    p    PRIORITY-MARK;
+}
