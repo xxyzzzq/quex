@@ -9,6 +9,8 @@ def get_index(TriggerMap):
 
     # Make sure that no cut in the middle of a switch case
     preferred_section_index = int(L / 2)
+    return preferred_section_index
+
     best_section_index      = -1
     best_dist               = L
     switch_case_range_list  = __get_switch_cases_info(TriggerMap)

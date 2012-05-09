@@ -1,10 +1,9 @@
-from   quex.engine.analyzer.track_analysis     import AcceptInfo
 import quex.engine.analyzer.state.entry_action as entry_action
 from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction, DoorID
 from   quex.blackboard          import \
                                        E_PreContextIDs,  \
                                        E_AcceptanceIDs, E_PostContextIDs, \
-                                       E_TransitionN
+                                       E_TransitionN, E_StateIndices
 from   operator                 import attrgetter
 
 class Entry(object):
@@ -74,6 +73,7 @@ class Entry(object):
         action can be provided.
     """
     __slots__ = ("__state_index", "__uniform_doors_f", "__action_db", "__door_db", "__transition_db", "__door_tree_root")
+    tmp_transition_id = TransitionID(E_StateIndices.VOID, E_StateIndices.VOID)
 
     def __init__(self, StateIndex, FromStateIndexList, PreContextFulfilledID_List=None):
         # map:  (from_state_index) --> list of actions to be taken if state is entered 
@@ -108,12 +108,11 @@ class Entry(object):
            state.
         """
         # Construct the Accepter from PathTraceList
-        accepter = entry_action.Accepter()
-        for path_trace in PathTraceList:
-            isinstance(path_trace, AcceptInfo)
-            accepter.add(path_trace.pre_context_id, path_trace.pattern_id)
+        accepter = entry_action.Accepter(PathTraceList)
 
-        self.__action_db[TransitionID(self.__state_index, FromStateIndex)].command_list.accepter = accepter
+        Entry.tmp_transition_id.state_index      = self.__state_index
+        Entry.tmp_transition_id.from_state_index = FromStateIndex
+        self.__action_db[Entry.tmp_transition_id].command_list.accepter = accepter
 
     def doors_accepter_add_front(self, PreContextID, PatternID):
         """Add an acceptance at the top of each accepter at every door. If there
@@ -129,7 +128,9 @@ class Entry(object):
         # Add 'store input position' to specific door. See 'entry_action.StoreInputPosition'
         # comment for the reason why we do not store pre-context-id.
         entry = entry_action.StoreInputPosition(PreContextID, PositionRegister, Offset)
-        self.__action_db[TransitionID(self.__state_index, FromStateIndex)].command_list.misc.add(entry)
+        Entry.tmp_transition_id.state_index      = self.__state_index
+        Entry.tmp_transition_id.from_state_index = FromStateIndex
+        self.__action_db[Entry.tmp_transition_id].command_list.misc.add(entry)
 
     @property
     def transition_db(self):

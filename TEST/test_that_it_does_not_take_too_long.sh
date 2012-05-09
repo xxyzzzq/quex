@@ -4,10 +4,11 @@
 #
 file=$1 # `pwd`/error.qx
 max_time=$2
+extra_options=$3
 quex_application=$QUEX_PATH/quex-exe.py
 
 # Start the process _________________________________________________________________
-$quex_application -i $file &
+$quex_application -i $file $extra_options &
 
 # Give it a couple of seconds _______________________________________________________
 time=0

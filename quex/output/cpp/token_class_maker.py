@@ -241,10 +241,10 @@ def get_setter_getter(Descr):
 
 def get_quick_setters(Descr):
     """NOTE: All names are unique even in combined unions."""
-    variable_db = Descr.get_member_db()
+    variable_db         = Descr.get_member_db()
     used_signature_list = []
 
-    def __quick_setter(ArgList):
+    def __quick_setter(ArgList, used_signature_list):
         """ArgList = [ [Name, Type], [Name, Type], ...]
          
            NOTE: There cannot be two signatures of the same type specification.
@@ -254,6 +254,9 @@ def get_quick_setters(Descr):
         signature = map(lambda x: x[1].get_pure_code(), ArgList)
         if signature in used_signature_list:
             return ""
+        else:
+            used_signature_list.append(signature)
+
         txt = "    void set(const QUEX_TYPE_TOKEN_ID ID, "
         i = -1
         for name, type_info in ArgList:
@@ -272,7 +275,7 @@ def get_quick_setters(Descr):
 
         return txt
 
-    def __combined_quick_setters(member_db, AllOnlyF=False):
+    def __combined_quick_setters(member_db, used_signature_list, AllOnlyF=False):
         txt = ""
         member_list = member_db.items()
         if len(member_list) == 0: return ""
@@ -290,7 +293,7 @@ def get_quick_setters(Descr):
             for i in range(L):
                 if presence_map[i]: arg_list.append(member_list[i])
 
-            txt += __quick_setter(arg_list)
+            txt += __quick_setter(arg_list, used_signature_list)
 
             # increment the presence map
             if presence_map == PresenceAll:
@@ -304,13 +307,19 @@ def get_quick_setters(Descr):
     txt = ""
 
     # (*) Quick setters for distinct members
-    txt += __combined_quick_setters(Descr.distinct_db)
+    txt += __combined_quick_setters(Descr.distinct_db, used_signature_list)
 
     # (*) Quick setters for union members
+    complete_f = True
     for name, type_info in Descr.union_db.items():
-        if type(type_info) != dict: txt += __quick_setter([[name, type_info]])
-        else:                       txt += __combined_quick_setters(type_info, AllOnlyF=True)
+        if type(type_info) != dict: setter_txt = __quick_setter([[name, type_info]], used_signature_list)
+        else:                       setter_txt = __combined_quick_setters(type_info, used_signature_list, AllOnlyF=True)
+        if len(setter_txt) == 0: complete_f = False
+        txt += setter_txt
 
+    if not complete_f:
+        txt = "   /* Not all members are accessed via quick-setters (avoid overload errors). */" \
+              + txt
 
     return txt
 

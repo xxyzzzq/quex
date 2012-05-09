@@ -292,8 +292,11 @@ class PreConditionOK(Command):
 AccepterElement = namedtuple("AccepterElement", ("pre_context_id", "pattern_id"))
 class Accepter(Command):
     __slots__ = ["__list"]
-    def __init__(self):
-        self.__list = []
+    def __init__(self, PathTraceList=None):
+        if PathTraceList is None: 
+            self.__list = []
+        else:
+            self.__list = [ AccepterElement(x.pre_context_id, x.pattern_id) for x in PathTraceList ]
 
     def clone(self):
         result = Accepter()

@@ -1,16 +1,49 @@
 import quex.engine.generator.state.transition.code      as transition_code
 import quex.engine.generator.state.transition.solution  as solution
 import quex.engine.generator.state.transition.bisection as bisection
-from   quex.engine.interval_handling                          import Interval
-from   quex.blackboard                                        import E_EngineTypes, \
-                                                                     E_StateIndices, \
-                                                                     setup as Setup
+from   quex.engine.interval_handling                    import Interval
+from   quex.blackboard                                  import E_EngineTypes, \
+                                                               E_StateIndices, \
+                                                               setup as Setup
 import sys
 from   copy      import copy
 from   operator  import itemgetter
-from   itertools import imap
+from   itertools import imap, islice
 
 LanguageDB = None
+
+class SubTriggerMap(object):
+    """A trigger map that 'points' into a subset of a trigger map.
+       Instead of creating whole new subsets, relate to the original
+       trigger map and store 'begin' and 'end' of the new map.
+    """
+    __slots__ = ("__trigger_map", "__begin_i", "__end_i")
+
+    def __init__(self, TriggerMap):
+        self.__trigger_map = TriggerMap
+        self.__begin_i     = 0
+        self.__end_i       = len(TriggerMap) - 1
+
+    def __getitem__(self, X):
+        if isinstance(X, slice):
+            result = SubTriggerMap(self.__trigger_map)
+            result.__begin_i = self.__begin_i + X.start
+            result.__end_i   = self.__begin_i + X.stop
+        else:
+            return self.__trigger_map[self.__begin_i + X]
+
+    def __len__(self):
+        return self.__end_i - self.__begin_i
+
+    def __iter__(self):
+        for x in islice(self.__trigger_map, self.__begin_i, self.__end_i):
+            yield x
+
+    @property
+    def middle(self):
+        middle_i = int((self.__end_i - self.__begin_i) / 2) + self.__begin_i
+        return self.__trigger_map[middle_i].begin
+
 
 def debug(TransitionMap, Function):
     print "##--BEGIN %s" % Function
@@ -33,17 +66,17 @@ def do(txt, TransitionMap,
 
     assert_adjacency(TransitionMap)
 
-    LanguageDB = Setup.language_db
-
     # If a state has no transitions, no new input needs to be eaten => no reload.
     #
     # NOTE: The only case where the buffer reload is not required are empty states,
     #       AND states during backward input position detection!
     if len(TransitionMap) == 0: return 
 
+    LanguageDB    = Setup.language_db
+
     # The range of possible characters may be restricted. It must be ensured,
     # that the occurring characters only belong to the admissible range.
-    __prune_character_range(TransitionMap)
+    solution.prune_range(TransitionMap)
 
     # The 'buffer-limit-code' always needs to be identified separately.
     # This helps to generate the reload procedure a little more elegantly.
@@ -58,9 +91,24 @@ def do(txt, TransitionMap,
                                                      GotoReload_Str, TheAnalyzer)) 
                        for entry in TransitionMap ]
 
-    __get_code(txt, transition_map)
+    # transition_map = SubTriggerMap(transition_map)
+    #__________________________________________________________________________
 
-def __get_code(txt, TriggerMap):
+    # (*) Determine 'outstanding' transitions and take them
+    #     out of the map.
+    outstanding = solution.prune_outstanding(transition_map) 
+    if outstanding is not None: __get_outstanding(outstanding)
+
+    # (*) Bisection until other solution is more suitable.
+    #     (This may include 'no bisectioning')
+    __bisection(txt, transition_map)
+
+    # (*) When there was an outstanding character, then the whole bisection was
+    #     implemented in an 'ELSE' block which must be closed.
+    if outstanding is not None: txt.append(LanguageDB.ENDIF)
+
+
+def __bisection(txt, TriggerMap):
     """Creates code for state transitions from this state. This function is very
        similar to the function creating code for a 'NumberSet' condition 
        (see 'interval_handling').
@@ -71,15 +119,14 @@ def __get_code(txt, TriggerMap):
     global LanguageDB
 
     T   = len(txt)
-    N   = len(TriggerMap)
     tip = solution.get(TriggerMap)
 
-    if   tip == solution.E_Type.TRANSITION:          __create_transition_code(txt, TriggerMap[0], IndentF=True)
-    elif tip == solution.E_Type.UPPER_ONLY:          __get_code(txt, TriggerMap[int(N/2):]) 
-    elif tip == solution.E_Type.OUTSTANDING:         __get_outstanding(txt, TriggerMap) 
+    # Potentially Recursive
+    if   tip == solution.E_Type.BISECTION:           __get_bisection(txt, TriggerMap)
+    # Direct Implementation / No more call to __bisection()
     elif tip == solution.E_Type.SWITCH_CASE:         __get_switch(txt, TriggerMap)
-    elif tip == solution.E_Type.BISECTION:           __get_bisection(txt, TriggerMap)
     elif tip == solution.E_Type.COMPARISON_SEQUENCE: __get_comparison_sequence(txt, TriggerMap)
+    elif tip == solution.E_Type.TRANSITION:          __get_transition(txt, TriggerMap[0], IndentF=True)
     else:                                                                 
         assert False
 
@@ -87,29 +134,11 @@ def __get_code(txt, TriggerMap):
     #     delete the last newline, to prevent additional indentation
     LanguageDB.INDENT(txt, Start=T)
 
-def __get_outstanding(txt, TriggerMap, EntryIndex):
-    """Implements the remaining transitions as:
-
-       (1) Check for an exceptionally often character
-       (2) Check for the remaining trigger map
-    """
-    assert TriggerMap[EntryIndex].size() == 1
-    OutstandingCharacter = TriggerMap[EntryIndex].begin
-
-    if EntryIndex != 0 and EntryIndex != len(TriggerMap) - 1:
-        # Leave the entry before at size '1' because its easier to test
-        if   TriggerMap[EntryIndex-1].size() == 1: TriggerMap[EntryIndex+1].begin = OutstandingCharacter
-        else:                                      TriggerMap[EntryIndex-1].end   = OutstandingCharacter + 1
-    elif EntryIndex == 0:
-        TriggerMap[EntryIndex+1].begin = OutstandingCharacter
-    elif EntryIndex == len(TriggerMap) - 1:
-        TriggerMap[EntryIndex-1].begin = OutstandingCharacter
-
-    txt.append(LanguageDB.IF_INPUT("==", OutstandingCharacter))
-    __create_transition_code(txt, TriggerMap[EntryIndex])
+def __get_outstanding(txt, TriggerMapEntry):
+    txt.append(LanguageDB.IF_INPUT("==", TriggerMapEntry[0].begin))
+    __get_transition(txt, TriggerMapEntry)
     txt.append(LanguageDB.ELSE)
-    __get_code(txt, TriggerMap)
-    txt.append(LanguageDB.ENDIF)
+    # Caller must provide later for 'ENDIF'
 
 def __get_switch(txt, TriggerMap):
     """Transitions of characters that lie close to each other can be very efficiently
@@ -140,7 +169,7 @@ def __get_switch(txt, TriggerMap):
     for interval, target in TriggerMap:
         if target.drop_out_f: continue
         target_code = []
-        __create_transition_code(target_code, (interval, target))
+        __get_transition(target_code, (interval, target))
         case_code_list.append((range(interval.begin, interval.end), target_code))
 
     txt.extend(LanguageDB.SELECTION("input", case_code_list))
@@ -187,18 +216,18 @@ def __get_bisection(txt, TriggerMap):
     txt.append(0)
     if is_only_drop_out(higher):
         txt.append(get_if_statement())
-        __get_code(txt, lower)
+        __bisection(txt, lower)
         # No 'else' case for what comes BEHIND middle => drop_out
     elif is_only_drop_out(lower):
         txt.append(get_if_statement(InverseF=True))
-        __get_code(txt, higher)
+        __bisection(txt, higher)
         # No 'else' case for what comes BEFORE middle => drop_out
     else:
         txt.append(get_if_statement())
-        __get_code(txt, lower)
+        __bisection(txt, lower)
         txt.append(0)
         txt.append(LanguageDB.ELSE)
-        __get_code(txt, higher)
+        __bisection(txt, higher)
 
     txt.append(0)
     txt.append(LanguageDB.END_IF())
@@ -244,7 +273,7 @@ def __get_comparison_sequence(txt, TriggerMap):
             txt.append(LanguageDB.IF_INPUT(_border_cmp, _border(interval), i==0))
 
         if not target.drop_out_f:
-            __create_transition_code(txt, entry, IndentF=True)
+            __get_transition(txt, entry, IndentF=True)
 
     txt.append("\n")
     txt.append(LanguageDB.END_IF(LastF=True))
@@ -301,31 +330,7 @@ def __separate_buffer_limit_code_transition(TransitionMap, EngineType):
            "Found: %s" % repr(EngineType)
     return
 
-def __prune_character_range(transition_map):
-    assert len(transition_map) != 0
-
-    LowerLimit = 0
-    UpperLimit = Setup.get_character_value_limit()
-
-    if UpperLimit == -1: return transition_map
-
-    # (*) Delete any entry that lies out of bounds
-    i    = 0
-    size = len(transition_map)
-    while i < size:
-        interval, target = transition_map[i]
-        if   interval.end < LowerLimit: 
-            del transition_map[i]
-            size -= 1
-        elif interval.begin >= UpperLimit:
-            del transition_map[i]
-            size -= 1
-        else:
-            if interval.begin < LowerLimit: interval.begin = LowerLimit
-            if interval.end   > UpperLimit: interval.end   = UpperLimit
-            i += 1
-
-def __create_transition_code(txt, TriggerMapEntry, IndentF=False):
+def __get_transition(txt, TriggerMapEntry, IndentF=False):
     global LanguageDB
 
     if IndentF:
