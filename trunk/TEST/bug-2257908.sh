@@ -12,6 +12,6 @@ file=`pwd`/error.qx
 bash ../test_that_it_does_not_take_too_long.sh $file 20
 
 # cleansening
-rm -f lexer lexer-* lexer.cpp 
+rm -f Lexer Lexer-* Lexer.cpp 
 
 cd $tmp
