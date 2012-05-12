@@ -3,6 +3,9 @@ from   quex.engine.analyzer.state.core               import AnalyzerState
 from   quex.engine.analyzer.state.entry_action       import DoorID
 from   quex.blackboard                               import E_StateIndices
 
+from itertools import chain
+from copy      import copy
+
 class MegaState(AnalyzerState):
     """A MegaState is a state that implements more than one state at once.
        Examples are 'TemplateState' and 'PathwalkerState'.
@@ -15,8 +18,10 @@ class MegaState(AnalyzerState):
 
     @property
     def engine_type(self):  return self.__analyzer.engine_type
+    
     @property
     def init_state_f(self): return False
+
     @property
     def analyzer(self):     return self.__analyzer
 
@@ -60,7 +65,7 @@ class MegaState(AnalyzerState):
 
 class MegaState_Target(object):
     """A mega state target contains the information about what the target
-       state is inside an interval for a given template key. For example,
+       state is for a given interval for a given template key. For example,
        a given interval X triggers to target scheme T, i.e. there is an
        element in the transition map:
 
@@ -68,9 +73,9 @@ class MegaState_Target(object):
                 [ X, T ]
                 ...
 
-       then 'T.scheme[key]' tells the 'door id' of the door that is entered
-       for the case the operates with the given 'key'. A key in turn, stands 
-       for a particular state.
+       then 'T.scheme[key]' tells the 'door id' of the door into a state that
+       is entered for the case the operates with the given 'key'. A key in
+       turn, stands for a particular state.
 
        There might be multiple intervals following the same target scheme,
        so the function 'TargetSchemeDB.get()' takes care of making 
@@ -92,8 +97,7 @@ class MegaState_Target(object):
         if UniqueIndex is not None: 
             assert isinstance(Target, tuple)
         else:
-            assert    isinstance(Target, DoorID) \
-                   or Target == E_StateIndices.DROP_OUT 
+            assert isinstance(Target, DoorID) or Target == E_StateIndices.DROP_OUT 
 
         self.__index       = UniqueIndex
 
@@ -169,5 +173,74 @@ class MegaState_Target(object):
             return False
         ## if self.__index != Other.__index: return False
         return self.__scheme == Other.__scheme
+
+class MegaState_DropOut(dict):
+    """Map: 'DropOut' object --> indices of states that implement the 
+                                 same drop out actions.
+
+       For example, if four states 1, 4, 7, and 9 have the same drop_out 
+       behavior DropOut_X, then this is stated by an entry in the dictionary as
+
+             { ...     DropOut_X: [1, 4, 7, 9],      ... }
+
+       For this to work, the drop-out objects must support a proper interaction
+       with the 'dict'-objects. Namely, they must support:
+
+             __hash__          --> get the right 'bucket'.
+             __eq__ or __cmp__ --> compare elements of 'bucket'.
+    """
+    def __init__(self, *StateList):
+        for state in StateList:
+            self.update_from_state(state)
+        return
+
+    @property
+    def uniform_f(self):
+        """Uniform drop-out means, that for all drop-outs mentioned the same
+           actions have to be performed. This is the case, if all states are
+           categorized under the same drop-out. Thus the dictionary's size
+           will be '1'.
+        """
+        return len(self) == 1
+
+    def is_uniform_with(self, Other):
+        """The given Other drop-out belongs to a 'normal state'. This function
+           investigates if it's drop-out behavior is the same as all in others
+           in this MegaState_DropOut. 
+
+           If this MegaState_DropOut is not uniform, then of course it cannot
+           become uniform with 'Other'.
+        """
+        if not self.uniform_f: return False
+
+        prototype = self.iterkeys().next()
+        return prototype == Other
+
+    def update_from_other(self, MS_DropOut):
+        for drop_out, state_index_set in MS_DropOut.iteritems():
+            # assert hasattr(drop_out, "__hash__")
+            # assert hasattr(drop_out, "__eq__") # PathWalker may enter 'None' in unit test
+            x = self.get(drop_out)
+            if x is None: self[drop_out] = copy(state_index_set)
+            else:         x.update(state_index_set)
+
+    def update_from_state(self, TheState):
+        drop_out = TheState.drop_out
+        if hasattr(drop_out, "iteritems"): 
+            self.update_from_other(drop_out)
+            return
+        #assert hasattr(drop_out, "__hash__")
+        #assert hasattr(drop_out, "__eq__")
+        x = self.get(drop_out)
+        if x is None: self[drop_out] = set([TheState.index])
+        else:         x.add(TheState.index)
+
+def get_state_list(X): 
+    if hasattr(X, "state_index_list"): return X.state_index_list 
+    else:                              return [ X.index ]
+
+def get_iterable(X, StateIndexList): 
+    if hasattr(X, "iteritems"): return X.iteritems()
+    else:                       return [(X, StateIndexList)]
 
 

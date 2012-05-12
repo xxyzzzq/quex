@@ -54,7 +54,6 @@ class Handler:
         if isinstance(self.state, PathWalkerState):
             txt.append("#   undef __QUEX_DEBUG_MAP_PATH_BASE_TO_PATH_ID\n")
 
-
 def do(txt, TheState, TheAnalyzer):
     specific = Handler(TheState)
 
@@ -113,8 +112,8 @@ def drop_out_scheme_implementation(txt, TheState, TheAnalyzer, StateKeyString, D
     txt.append("    %s\n" % DebugString) 
 
     # (*) Drop Out Section(s)
-    if TheState.uniform_drop_outs_f:
-        # -- uniform drop outs => no switch required
+    if TheState.drop_out.uniform_f:
+        # -- uniform drop outs => no 'switch-case' required
         prototype = TheAnalyzer.state_db[TheState.state_index_list[0]]
         tmp = []
         drop_out_coder.do(tmp, prototype, TheAnalyzer, DefineLabelF=False)
@@ -123,12 +122,12 @@ def drop_out_scheme_implementation(txt, TheState, TheAnalyzer, StateKeyString, D
 
     # -- non-uniform drop outs => route by 'state_key'
     case_list = []
-    for drop_out, state_index_list in TheState.drop_out.iteritems():
+    for drop_out, state_index_set in TheState.drop_out.iteritems():
         # state keys related to drop out
-        state_key_list = map(lambda i: TheState.state_index_list.index(i), state_index_list)
+        state_key_list = map(lambda i: TheState.state_index_list.index(i), state_index_set)
         # drop out action
-        assert len(state_index_list) != 0
-        prototype = TheAnalyzer.state_db[state_index_list.__iter__().next()]
+        assert len(state_index_set) != 0
+        prototype = TheAnalyzer.state_db[state_index_set.__iter__().next()]
         action = []
         drop_out_coder.do(action, prototype, TheAnalyzer, DefineLabelF=False)
         case_list.append( (state_key_list, action) )
