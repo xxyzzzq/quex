@@ -109,9 +109,7 @@ class PathWalkerState(MegaState):
         self.entry.action_db.update(adapted_entry.action_db)
 
         # (2c) Absorb the drop-out information
-        #      Absorb drop-out information
-        for drop_out, state_index_list in Path.drop_out.iteritems():
-            self.drop_out[drop_out].update(state_index_list) 
+        self.drop_out.update_from_other(Path.drop_out)
 
         return True
 
@@ -213,10 +211,6 @@ class PathWalkerState(MegaState):
             elif not (prototype == door_id):
                 return None
         return prototype
-
-    @property
-    def uniform_drop_outs_f(self): 
-        return len(self.drop_out) == 1
 
     def get_path_info(self, StateIdx):
         """[0] Path ID: Index of the path where StateIdx is located

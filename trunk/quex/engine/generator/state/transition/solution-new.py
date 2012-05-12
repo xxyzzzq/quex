@@ -52,18 +52,6 @@ Let M be the memory cost for an operation.
      where 'C' is indenpendent of 'E' and 'N', but M linear with E.
 
 
-(iii) Linear Comparison (forward/backward) _____________________________
-
-         if x == value1: goto state_1
-         if x == value2: goto state_2
-         ...
-         else:           goto state_else
-
-      C = N / 2 * (cmp + jump)
-      M = N * (cmp + jump)
-
-      where 'N' is the number of values in the given interval where
-      the target differs from 'state_else'.
 
 HEURISTIC: _____________________________________________________________
 
@@ -79,12 +67,147 @@ from   math                  import log
 
 E_Type = Enum("SWITCH_CASE", "BISECTION", "COMPARISON_SEQUENCE", "TRANSITION")
 
+#class Cost:
+#    def __init__(self, C, M):
+#        self.computation = C
+#        self.memory      = M
+#
+class Region:
+    @classmethod
+    def init(cls):
+        del cls.candidate_list[:]
+        del cls.good_list[:]
+
+    @classmethod
+    def consider(cls, EntryIndex, TheInterval, TheTarget):
+        cls.generate_candidates(cls.candidate_list, EntryIndex, TheInterval, TheTarget)
+
+    @classmethod
+    def terminate(cls, TheInterval, TheTarget):
+        i    = 0
+        size = len(cls.candidate_list)
+        while i < size:
+            candidate = cls.candidate_list
+            if candidate.absorb(TheInterval, Target): 
+                i += 1
+            else:
+                # Candidate has not absorbed the interval. So, its finished.
+                # If it is good, then take it. Otherwise forget about it.
+                if candidate.good():
+                    cls.good_list.append(candidate)
+                del candidate_list[i]
+                size -= 1
+
+     @staticmethod
+     def elect(RegionList*):
+         while 1 + 1 == 2:
+             # previous.begin <= current.begin
+             if current.begin < previous.end:
+                 if current.value() > previous.value(): delete(previous)
+                 else:                                  delete(current)
+
+     @property
+     def size(self):
+         return self.end_i - self.begin_i
+
+class LinearComparisonRegion(Region):
+    """Linear Comparison (forward/backward) _____________________________
+
+          if x == value1: goto state_1      'specific'
+          if x == value2: goto state_2      'specific'
+          ...
+          else:           goto state_else   'else'
+
+       Costs: Computation = N / 2 * (cmp + jump)    (in average)
+              Memory      = N * (cmp + jump)
+
+       where 'N' is the number of values in the given interval where the target
+       differs from 'state_else'.
+    """
+    candidate_list = []
+    good_list      = []
+
+    def __init__(self, BeginIndex, TheInterval, TheTarget, ElseF):
+        self.begin_i = BeginIndex
+        self.end_i   = BeginIndex + 1 # point after the last element
+        if not ElseF:
+            for i in xrange(TheInterval.begin, TheInterval.end):
+                self.specific_list.append((i, TheTarget))
+            self.else_target = None
+            self.last_else_f = False
+        else:
+            self.else_target = TheTarget 
+            self.last_else_f = True
+
+    @staticmethod
+    def generate_candidates(candidate_list, EntryIndex, TheInterval, TheTarget):
+        candidate_list.append(
+            LinearComparisonRegion(EntryIndex, TheInterval, TheTarget, ElseF=True) 
+        )
+        if len(TheInterval) < LinearComparisonRegion.max_n:
+            candidate_list.append(
+                LinearComparisonRegion(EntryIndex, TheInterval, TheTarget, ElseF=False)
+            )
+
+    def good(self):
+        return len(self.specific_list) > LinearComparisonRegion.min_n
+
+    def absorb(self, TheInterval, TheTarget):
+        if not self.last_else_f:
+            # Last target was specific => current may be 'else' or 'specific'
+            if TheTarget == self.else_target:
+                self.end_i += 1
+                self.last_else_f = True
+                return True
+        else:
+            pass # Last target was 'else' => current must be 'specific'
+
+        if TheInterval.size() + len(self.triggerdb) > LinearComparisonRegion.max_n:
+            return False
+
+        for i in xrange(TheInterval.begin, TheInterval.end):
+            self.specific_list.append((i, TheTarget))
+        self.end_i += 1
+        self.last_else_f = False
+
+        return True
+
+
+
+
+
+
+
+def watch(TriggerMap):
+    LinearComparison.init()
+    BranchTable.init()
+
+    for i, info in enumerate(TriggerMap):
+        interval, target = info
+
+        LinearComparison.consider(i, interval, target)
+        LinearComparison.terminate(interval, target)
+
+        BranchTable.consider(i, interval, target)
+        BranchTable.terminate(interval, target)
+
+    good_list = Region.elect(LinearComparison.good_list, 
+                             BranchTable.good_list)
+
+    implant(TriggerMap, good_list)
+
+def implant(trigger_map, RegionList):
+    offset = 0
+    for region in RegionList:
+        insertion_i = region.begin_i - offset
+        trigger_map[insertion_i] = region
+        del trigger_map[insertion_i + 1: insertion_i + region.size]
+        offset += region.size
+
+
 def get(TriggerMap, 
         size_all_intervals=None, 
         size_all_drop_out_intervals=None):
-    """See file 'solution-new.py' for an approach of a more sophisticated
-       implementation.
-    """
     TriggerSetN       = len(TriggerMap)
 
     if TriggerSetN == 1:

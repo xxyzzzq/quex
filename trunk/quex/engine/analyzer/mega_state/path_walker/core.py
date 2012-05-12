@@ -332,7 +332,7 @@ def __find_continuation(analyzer, StateIndex, the_path, CompressionType, Availab
 
         # Can uniformity be maintained?
         if      CompressionType == E_Compression.PATH_UNIFORM         \
-            and not (    the_path.check_uniform_drop_out(State)       \
+            and not (    the_path.drop_out.is_uniform_with(State.drop_out) \
                      and the_path.check_uniform_entry_to_state(State)):
             # The current state might be a terminal, even if a required uniformity is not 
             # possible. The terminal is not part of the path, but is entered after the

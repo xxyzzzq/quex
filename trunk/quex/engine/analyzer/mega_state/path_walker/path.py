@@ -1,6 +1,7 @@
 from   quex.engine.analyzer.state.core         import AnalyzerState
 from   quex.engine.analyzer.state.entry        import Entry
 from   quex.engine.analyzer.state.entry_action import DoorID, SetPathIterator
+from   quex.engine.analyzer.mega_state.core    import MegaState_DropOut
 import quex.engine.state_machine.index         as     index
 
 from quex.engine.interval_handling import NumberSet
@@ -43,8 +44,7 @@ class CharacterPath:
         assert isinstance(Skeleton, dict)
 
         self.entry    = PathWalkerState_Entry(index.get(), StartState.entry)
-        self.drop_out = defaultdict(set)
-        self.drop_out[StartState.drop_out].add(StartState.index)
+        self.drop_out = MegaState_DropOut(StartState) 
 
         self.__sequence         = [ (StartState.index, StartCharacter) ]
         self.__skeleton         = Skeleton
@@ -94,7 +94,7 @@ class CharacterPath:
         self.entry.update(State.entry, offset)
 
         # Adapt information about entry and drop-out actions
-        self.drop_out[State.drop_out].add(State.index)
+        self.drop_out.update_from_state(State)
 
         # Add the state on the sequence of state along the path
         self.__sequence.append((State.index, Char))
@@ -202,16 +202,6 @@ class CharacterPath:
         if not uniform_entry.is_equivalent(action.command_list):
             return False
         return True
-
-    def check_uniform_drop_out(self, State):
-        """Checks whether the State's drop-out behavior is uniform with all
-           the other State's drop out behaviors on the path.
-        """
-        if len(self.drop_out) != 1: # Actually, this could be an assert. This function is only
-            return False            # to be executed when building uniform paths.
-
-        drop_out = self.drop_out.iterkeys().next()
-        return drop_out == State.drop_out
 
     def match_skeleton(self, TransitionMap, TargetDoorID, TriggerCharToTarget):
         """A single character transition 
