@@ -201,7 +201,7 @@ def _transition_cost(TM, TargetSchemeList=None):
     if TargetSchemeList is not None:
         # For each target scheme, the target state needs to be stored for each state_key.
         target_scheme_element_n  = sum(len(target.scheme) for target in TargetSchemeList)
-        byte_n = target_scheme_element_n * 4
+        byte_n                   = target_scheme_element_n * 4
     else:
         byte_n = 0
     return Cost(ComparisonN=cmp_n, JumpN=jump_n, ByteN=byte_n)

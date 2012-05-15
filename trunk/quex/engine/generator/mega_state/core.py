@@ -1,7 +1,8 @@
 from   quex.blackboard                                   import setup as Setup, E_StateIndices
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
-from   quex.engine.analyzer.mega_state.core         import MegaState_Target
+from   quex.engine.analyzer.mega_state.core         import MegaState_Target, \
+                                                           MegaState_Target_DROP_OUT
 from   quex.engine.generator.state.transition.code  import TextTransitionCode
 import quex.engine.generator.state.drop_out         as drop_out_coder
 import quex.engine.generator.state.entry            as entry_coder
@@ -33,11 +34,11 @@ class Handler:
     def debug_info_map_state_key_to_state_index(self, txt):
         txt.append("#   define __QUEX_DEBUG_MAP_STATE_KEY_TO_STATE(X) ( \\\n")
         for state_index in self.state.implemented_state_index_list()[:-1]:
-            state_key = self.state.state_index_list.index(state_index)
+            state_key = self.state.map_state_index_to_state_key(state_index)
             txt.append("             (X) == %i ? %i :    \\\n" % (state_key, state_index))
 
         state_index = self.state.implemented_state_index_list()[-1]
-        state_key = self.state.state_index_list.index(state_index)
+        state_key   = self.state.map_state_index_to_state_key(state_index)
         txt.append("             (X) == %i ? %i : 0)" % (state_key, state_index))
 
         if isinstance(self.state, PathWalkerState):
@@ -111,26 +112,32 @@ def drop_out_scheme_implementation(txt, TheState, TheAnalyzer, StateKeyString, D
     txt.append("%s:\n" % get_label("$drop-out", TheState.index))
     txt.append("    %s\n" % DebugString) 
 
+    def implement_prototype(StateIndices, TheAnalyzer):
+        # There **must** be at least one element, at this point in time
+        assert len(StateIndices) != 0
+        prototype_i = StateIndices.__iter__().next()
+        prototype   = TheAnalyzer.state_db[prototype_i]
+        result      = []
+        drop_out_coder.do(result, prototype, TheAnalyzer, DefineLabelF=False)
+        return result
+
+
     # (*) Drop Out Section(s)
     if TheState.drop_out.uniform_f:
-        # -- uniform drop outs => no 'switch-case' required
-        prototype = TheAnalyzer.state_db[TheState.state_index_list[0]]
-        tmp = []
-        drop_out_coder.do(tmp, prototype, TheAnalyzer, DefineLabelF=False)
-        txt.extend(tmp)
+        # uniform drop outs => no 'switch-case' required
+        txt.extend(implement_prototype(TheState.implemented_state_index_list(), TheAnalyzer))
         return
 
-    # -- non-uniform drop outs => route by 'state_key'
+    # non-uniform drop outs => route by 'state_key'
     case_list = []
     for drop_out, state_index_set in TheState.drop_out.iteritems():
         # state keys related to drop out
-        state_key_list = map(lambda i: TheState.state_index_list.index(i), state_index_set)
+        state_key_list = map(lambda i: TheState.map_state_index_to_state_key(i), state_index_set)
         # drop out action
-        assert len(state_index_set) != 0
-        prototype = TheAnalyzer.state_db[state_index_set.__iter__().next()]
-        action = []
-        drop_out_coder.do(action, prototype, TheAnalyzer, DefineLabelF=False)
-        case_list.append( (state_key_list, action) )
+        # Implement drop-out for each state key. 'state_key_list' combines
+        # states that implement the same drop-out behavior. Same drop-outs
+        # are implemented only once.
+        case_list.append( (state_key_list, implement_prototype(state_index_set, TheAnalyzer)) )
 
     case_txt = LanguageDB.SELECTION(StateKeyString, case_list)
     LanguageDB.INDENT(case_txt)
@@ -161,7 +168,7 @@ def prepare_transition_map(TheState):
         # => Define an 'all drop out' trigger_map, and then later
         # => Adapt the trigger map, so that the 'buffer limit' is an 
         #    isolated single interval.
-        TheState.transition_map = [ (Interval(-sys.maxint, sys.maxint), MegaState_Target(E_StateIndices.DROP_OUT)) ]
+        TheState.transition_map = [ (Interval(-sys.maxint, sys.maxint), MegaState_Target_DROP_OUT) ]
 
     transition_map = TheState.transition_map
 

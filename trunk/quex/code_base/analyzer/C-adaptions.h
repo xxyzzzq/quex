@@ -100,7 +100,7 @@
         __quex_assert(self.accumulator.text.end < self.accumulator.text.memory_end);      \
                                                                                           \
         self_token_set_id(TokenID) ;                                                      \
-        /* If no text is to be flushed, behave as self_send */                            \
+        /* If no text is to be flushed, behave the same as self_send */                   \
         if( self.accumulator.text.begin != self.accumulator.text.end ) {                  \
             *(self.accumulator.text.end) = (QUEX_TYPE_CHARACTER)0; /* see above */        \
                                                                                           \

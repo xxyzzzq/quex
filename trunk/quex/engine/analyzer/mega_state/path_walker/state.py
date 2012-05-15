@@ -44,11 +44,8 @@ class PathWalkerState(MegaState):
 
            which represents the same mapping in a 'linear' manner.
         """
-        transition_map = TransitionMap(Skeleton).get_trigger_map()
-        for i, info in enumerate(transition_map):
-            # info[0] = interval, info[1] = target
-            transition_map[i] = (info[0], MegaState_Target(info[1]))
-        return transition_map
+        return [ (interval, MegaState_Target.create(target)) \
+                 for interval, target in TransitionMap(Skeleton).get_trigger_map() ]
 
     def accept(self, Path):
         """Accepts the given Path to be walked, if the skeleton matches.
@@ -150,6 +147,10 @@ class PathWalkerState(MegaState):
             # (It may be part of another path, though)
             result.extend(map(lambda x: x[0], path[:-1]))
         return result
+
+    def map_state_index_to_state_key(self, StateIndex):
+        # 'state_index_list' is built upon request by the property, see above.
+        return self.state_index_list.index(StateIndex)
 
     @property
     def uniform_entries_f(self):   
