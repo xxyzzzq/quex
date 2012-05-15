@@ -2,8 +2,11 @@ from   quex.engine.generator.state.transition.core  import assert_adjacency
 from   quex.engine.analyzer.state.core              import get_input_action
 from   quex.engine.analyzer.state.entry             import Entry
 from   quex.engine.analyzer.state.entry_action      import SetTemplateStateKey, DoorID
-from   quex.engine.analyzer.mega_state.core         import MegaState, MegaState_Target, MegaState_DropOut, \
-                                                           get_iterable, get_state_list
+from   quex.engine.analyzer.mega_state.core         import MegaState, \
+                                                           MegaState_Target, \
+                                                           MegaState_Target_DROP_OUT, \
+                                                           MegaState_DropOut, \
+                                                           get_state_list
 from   quex.engine.interval_handling                import Interval
 from   quex.blackboard                              import E_StateIndices
 
@@ -147,6 +150,10 @@ class TemplateState(MegaState):
     def drop_out(self):            return self.__drop_out
     @property
     def state_index_list(self):    return self.__state_index_list
+
+    def map_state_index_to_state_key(self, StateIndex):
+        return self.__state_index_list.index(StateIndex)
+
     def implemented_state_index_list(self):    
         return self.__state_index_list
 
@@ -169,14 +176,14 @@ class TemplateState(MegaState):
                That is intervals are associated with 'doors' instead of target states.
             """
             if Target == E_StateIndices.DROP_OUT: 
-                return MegaState_Target(E_StateIndices.DROP_OUT)
+                return MegaState_Target_DROP_OUT
             else:
                 assert isinstance(Target, (int, long))
                 # If 'Target' is a recursive target of the other state, then there 
                 # is no problem. We know the exact transition (StateIndex, FromStateIndex)
                 # and 'self.entry.get_door_id()' delivers the correct result. This
                 # is not so for MegaState_Target-s (see adapt_MegaState_Target())
-                return MegaState_Target(self.__get_local_door_id(Target, State.index))
+                return MegaState_Target.create(self.__get_local_door_id(Target, State.index))
 
         def adapt_MegaState_Target(Target):
             """A transition_map can refer to local door ids, as they are implemented
@@ -212,21 +219,35 @@ class TemplateState(MegaState):
                             return
                         transition_id = original_state.entry.transition_db[door_id][0]
 
-                new_door_id = self.__get_local_door_id(transition_id.state_index, 
-                                                       transition_id.from_state_index)
-                door_id.state_index = new_door_id.state_index
-                door_id.door_index  = new_door_id.door_index
+                return self.__get_local_door_id(transition_id.state_index, 
+                                                transition_id.from_state_index)
 
             if Target.drop_out_f:    
                 return Target
 
-            clone = Target.clone()
-            if clone.door_id is not None:  
-                __adapt(clone.door_id)
+            # The '__adapt' function may require an adaption of a door_id. If
+            # so, the target needs to be cloned, so that the change does not
+            # effect the original target.
+            result = Target
+            if result.door_id is not None:  
+                new_door_id = __adapt(result.door_id)
+                if new_door_id is not None: 
+                    result = result.clone() # disconnect from original
+                    result.door_id.state_index = new_door_id.state_index
+                    result.door_id.door_index  = new_door_id.door_index 
+                    
             else:
-                for door_id in clone.scheme:
-                    __adapt(door_id)
-            return clone
+                cloned_f = False
+                for i, door_id in enumerate(result.scheme):
+                    new_door_id = __adapt(door_id)
+                    if new_door_id is None: continue
+                    if not cloned_f: 
+                        result   = result.clone() # disconnect from original
+                        cloned_f = True
+                    result.scheme[i].state_index = new_door_id.state_index
+                    result.scheme[i].door_index  = new_door_id.door_index 
+
+            return result
 
         if isinstance(State, TemplateState):
             return [(interval, adapt_MegaState_Target(target)) for interval, target in State.transition_map ]
@@ -354,6 +375,7 @@ def combine_maps(StateA, AdaptedTM_A, StateB, AdaptedTM_B):
     k_itvl, k_target = TransitionMapB[k]
     while not (i == LenA - 1 and k == LenB - 1):
         end    = min(i_itvl.end, k_itvl.end)
+
         target = scheme_db.get_target(i_target, k_target)
         assert isinstance(target, MegaState_Target)
 
@@ -384,9 +406,42 @@ class TargetSchemeDB(dict):
     def __init__(self, StateA, StateB):
         dict.__init__(self)
         self.__state_a_state_index_list_length = len(get_state_list(StateA))
+        self.__state_a_index                   = StateA.index
         self.__state_b_state_index_list_length = len(get_state_list(StateB))
+        self.__state_b_index                   = StateB.index
+        self.setup_function_pointers(StateA, StateB)
 
-    def get_MegaState_Target(self, SchemeA, SchemeB):
+    def get_target(self, TA, TB):
+        assert isinstance(TA, MegaState_Target) 
+        assert isinstance(TB, MegaState_Target) 
+
+        if self.A_drop_out(TA):
+            if self.B_drop_out(TB):
+                return MegaState_Target_DROP_OUT
+            TA_scheme = (E_StateIndices.DROP_OUT,) * self.__state_a_state_index_list_length
+
+        elif self.A_is_scheme(TA):
+            TA_scheme = TA.scheme
+
+        else:
+            if (not self.B_is_scheme(TB)) and self.A_B_are_same_door_id(TA, TB):
+                return self.A_or_B_get_MegaState_Target_from_door_id(TA, TB)
+            TA_scheme = self.A_get_scheme(TA, self.__state_a_index, self.__state_a_state_index_list_length)
+
+        if self.B_drop_out(TB):
+            # TA was not drop-out, otherwise we would have returned earlier
+            TB_scheme = (E_StateIndices.DROP_OUT,) * self.__state_b_state_index_list_length
+
+        elif self.B_is_scheme(TB):
+            TB_scheme = TB.scheme
+
+        else:
+            # TA was not the same door, otherwise we would have returned earlier
+            TB_scheme = self.B_get_scheme(TB, self.__state_b_index, self.__state_b_state_index_list_length)
+
+        return self.get_MegaState_Target_from_scheme(TA_scheme, TB_scheme)
+
+    def get_MegaState_Target_from_scheme(self, SchemeA, SchemeB):
         """Checks whether the combination is already present. If so, the reference
            to the existing target scheme is returned. If not a new scheme is created
            and entered into the database.
@@ -413,7 +468,7 @@ class TargetSchemeDB(dict):
         result = dict.get(self, scheme)
         if result is None: 
             new_index    = len(self)
-            result       = MegaState_Target(scheme, new_index)
+            result       = MegaState_Target.create(scheme, new_index)
             self[scheme] = result
 
         return result
@@ -424,33 +479,62 @@ class TargetSchemeDB(dict):
             assert element.scheme is not None
         return self.values()
 
-    def get_target(self, TA, TB):
-        assert isinstance(TA, MegaState_Target) 
-        assert isinstance(TB, MegaState_Target) 
-
-        if TA.drop_out_f:
-            if TB.drop_out_f:
-                return TA
-            TA_scheme = (E_StateIndices.DROP_OUT,) * self.__state_a_state_index_list_length
-
-        elif TA.door_id is not None:
-            if TB.door_id is not None and TA.door_id == TB.door_id:
-                return TA
-            TA_scheme = (TA.door_id,) * self.__state_a_state_index_list_length
-
+    def setup_function_pointers(self, StateA, StateB):
+        a_ms_f = True# isinstance(StateA, MegaState_Target)
+        b_ms_f = True# isinstance(StateB, MegaState_Target)
+        if a_ms_f:
+            self.A_drop_out   = self.MS_drop_out
+            self.A_is_scheme  = self.MS_is_scheme
+            self.A_get_scheme = self.MS_get_scheme
         else:
-            TA_scheme = TA.scheme
+            self.A_drop_out   = self.S_drop_out
+            self.A_is_scheme  = self.S_is_scheme
+            self.A_get_scheme = self.S_get_scheme
 
-        if TB.drop_out_f:
-            # TA was not drop-out, otherwise we would have returned earlier
-            TB_scheme = (E_StateIndices.DROP_OUT,) * self.__state_b_state_index_list_length
-
-        elif TB.door_id is not None:
-            # TA was not the same door, otherwise we would have returned earlier
-            TB_scheme = (TB.door_id,) * self.__state_b_state_index_list_length
-
+        if b_ms_f:
+            self.B_drop_out   = self.MS_drop_out
+            self.B_is_scheme  = self.MS_is_scheme
+            self.B_get_scheme = self.MS_get_scheme
         else:
-            TB_scheme = TB.scheme
+            self.B_drop_out   = self.S_drop_out
+            self.B_is_scheme  = self.S_is_scheme
+            self.B_get_scheme = self.S_get_scheme
 
-        return self.get_MegaState_Target(TA_scheme, TB_scheme)
+        if a_ms_f:
+            if b_ms_f:
+                self.A_B_are_same_door_id                     = self.MS_MS_are_same_door_id
+                self.A_or_B_get_MegaState_Target_from_door_id = self.MS_MS_get_MegaState_Target_from_door_id
+            else:
+                self.A_B_are_same_door_id                     = self.MS_S_are_same_door_id
+                self.A_or_B_get_MegaState_Target_from_door_id = self.MS_S_get_MegaState_Target_from_door_id
+        else:
+            if b_ms_f:
+                self.A_B_are_same_door_id                     = self.S_MS_are_same_door_id
+                self.A_or_B_get_MegaState_Target_from_door_id = self.S_MS_get_MegaState_Target_from_door_id
+            else:
+                self.A_B_are_same_door_id                     = self.S_S_are_same_door_id
+                self.A_or_B_get_MegaState_Target_from_door_id = self.S_S_get_MegaState_Target_from_door_id
+
+    def MS_drop_out(self, T):   return T.drop_out_f
+    def S_drop_out(self, T):    return T == E_StateIndices.DROP_OUT
+    def MS_is_scheme(self, T):  return T.door_id is None
+    def S_is_scheme(self, T):   return False
+    # Assume, T is proven to be a 'door_id'
+    def MS_get_scheme(self, T, StateIndex, StateN): return (T.door_id,) * StateN
+    def S_get_scheme(self, T, StateIndex, StateN):  return (self.get_door_id(StateIndex, T),) * StateN
+
+    # Assume, TA and TB is proven to be a 'door_id'
+    def MS_MS_are_same_door_id(self, TA, TB): return TA.door_id == TB.door_id
+    def MS_S_are_same_door_id(self, TA, TB):  return TA.door_id == self.get_door_id(self.__state_b_index, TB)
+    def S_MS_are_same_door_id(self, TA, TB):  return self.get_door_id(self.__state_a_index, TA) == TB.door_id
+    def S_S_are_same_door_id(self, TA, TB): 
+        return self.get_door_id(self.__state_a_index, TA) == self.get_door_id(self.__state_b_index, TB)
+
+    # Assume, TA and TB is proven to be have same 'door_id'; return one of them 
+    def MS_MS_get_MegaState_Target_from_door_id(self, TA, TB): return TA
+    def MS_S_get_MegaState_Target_from_door_id(self, TA, TB):  return TA
+    def S_MS_get_MegaState_Target_from_door_id(self, TA, TB):  return TB
+    def S_S_get_MegaState_Target_from_door_id(self, TA, TB):
+        return MegaState_Target.create(self.get_door_id(self.__state_a_index, TA))
+
 

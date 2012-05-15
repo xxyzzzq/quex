@@ -61,7 +61,12 @@ class MegaState(AnalyzerState):
             target.door_id_replacement(ReplacementDB)
 
     def implemented_state_index_list(self):
-        assert False, "This function needs to be overwritten by derived class."""
+        assert False, "This function needs to be overwritten by derived class."
+
+    def map_state_index_to_state_key(self, StateIndex):
+        assert False, "This function needs to be overwritten by derived class."
+
+
 
 class MegaState_Target(object):
     """A mega state target contains the information about what the target
@@ -90,6 +95,13 @@ class MegaState_Target(object):
     """
     __slots__ = ('__index', '__scheme', '__drop_out_f', '__door_id', '__scheme')
 
+    @staticmethod
+    def create(Target, UniqueIndex=None):
+        assert Target is not None # Only to be used by 'self.clone()'
+
+        if Target == E_StateIndices.DROP_OUT:  return MegaState_Target_DROP_OUT
+        return MegaState_Target(Target, UniqueIndex)
+
     def __init__(self, Target, UniqueIndex=None):
         if Target is None: # Only to be used by 'self.clone()'
             return 
@@ -110,9 +122,11 @@ class MegaState_Target(object):
         elif isinstance(Target, tuple):          self.__scheme      = Target; assert UniqueIndex is not None
 
     def clone(self):
+        if self.__drop_out_f: return self 
+
         result = MegaState_Target(Target=None) 
+        result.__drop_out_f = False
         result.__index      = self.__index
-        result.__drop_out_f = self.__drop_out_f
         if self.__door_id is None: result.__door_id = None
         else:                      result.__door_id = self.__door_id.clone()
         if self.__scheme is None:  result.__scheme  = None
@@ -173,6 +187,9 @@ class MegaState_Target(object):
             return False
         ## if self.__index != Other.__index: return False
         return self.__scheme == Other.__scheme
+
+# Globally unique object to stand up for all 'drop-outs'.
+MegaState_Target_DROP_OUT = MegaState_Target(E_StateIndices.DROP_OUT)
 
 class MegaState_DropOut(dict):
     """Map: 'DropOut' object --> indices of states that implement the 
