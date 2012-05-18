@@ -4,16 +4,17 @@ from   quex.engine.analyzer.state.entry_action       import DoorID
 from   quex.blackboard                               import E_StateIndices
 
 from itertools import chain
-from copy      import copy
+from copy      import copy, deepcopy
 
 class MegaState(AnalyzerState):
     """A MegaState is a state that implements more than one state at once.
        Examples are 'TemplateState' and 'PathwalkerState'.
     """
-    def __init__(self, Analyzer):
-        AnalyzerState.set_index(self, index.get())
+    def __init__(self, TheAnalyzer, StateIndex=None):
+        if StateIndex is None: StateIndex = index.get()
+        AnalyzerState.set_index(self, StateIndex)
 
-        self.__analyzer               = Analyzer
+        self.__analyzer               = TheAnalyzer
         self.__door_id_replacement_db = None
 
     @property
@@ -35,6 +36,8 @@ class MegaState(AnalyzerState):
         if self.__door_id_replacement_db is None:
             result = {}
             for state_index in self.implemented_state_index_list():
+                # All transitions into the original state are mapped to
+                # door_ids of the new MegaState.
                 door_db = self.__analyzer.state_db[state_index].entry.door_db
                 for transition_id, door_id in door_db.iteritems():
                     new_door_id     = self.entry.door_db.get(transition_id)
@@ -66,6 +69,52 @@ class MegaState(AnalyzerState):
     def map_state_index_to_state_key(self, StateIndex):
         assert False, "This function needs to be overwritten by derived class."
 
+class PseudoMegaState(MegaState):
+    """A pseudo mega state is a state that represent a single AnalyzerState
+       but acts as it was a real 'MegaState'. This means:
+
+          -- transition_map:  interval --> DoorID
+
+             and not interval to target state.
+    """
+    def __init__(self, Represented_AnalyzerState, TheAnalyzer):
+        self.__state       = Represented_AnalyzerState
+        self.__entry_clone = deepcopy(Represented_AnalyzerState.entry)
+        MegaState.__init__(self, TheAnalyzer, StateIndex=Represented_AnalyzerState.index)
+
+        self.transition_map = self.__prepare_transition_map()
+        self.__state_index_list = [ Represented_AnalyzerState.index ]
+
+    @property
+    def entry(self):
+        return self.__entry_clone
+
+    @property
+    def drop_out(self):
+        return self.__state.drop_out
+
+    def map_state_index_to_state_key(self, StateIndex):
+        assert False, "PseudoMegaState-s exist only for analysis. They shall never be implemented."
+
+    def door_id_replacement_db(self):
+        assert False, "PseudoMegaState-s  shall never be considered as a real combination of states." \
+                      "Thus, a PseudoMegaState shall never determine a door replacement database."
+
+    @property
+    def state_index_list(self):
+        return self.__state_index_list
+    def implemented_state_index_list(self):
+        return self.__state_index_list
+
+    def __prepare_transition_map(self):
+        def adapt(Target):
+            if Target == E_StateIndices.DROP_OUT: 
+                return MegaState_Target_DROP_OUT
+            else:
+                door_id = self.analyzer.state_db[Target].entry.get_door_id(Target, self.index)
+                return MegaState_Target.create(door_id)
+
+        return [(interval, adapt(target)) for interval, target in self.__state.transition_map ]
 
 
 class MegaState_Target(object):
@@ -134,7 +183,7 @@ class MegaState_Target(object):
             def __clone(X):
                 if X == E_StateIndices.DROP_OUT: return X
                 else:                            return X.clone()
-            result.__scheme = tuple([ __clone(x) for x in self.__scheme ])
+            result.__scheme = tuple(__clone(x) for x in self.__scheme)
         return result
 
     @property
