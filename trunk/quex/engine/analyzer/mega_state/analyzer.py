@@ -48,8 +48,8 @@ def __transition_adaption(TheAnalyzer, NewMegaStateList, OldMegaStateList):
     for mega_state in NewMegaStateList:
         door_id_replacement_db.update(mega_state.door_id_replacement_db)
 
-    # All template states must set the databases about 'door-id' and 'transition-id'
-    # in the states that they implement.
+    # MegaStates must adapt their transition maps, so that the new doors
+    # are targetted. 
     for state in NewMegaStateList:
         state.replace_door_ids_in_transition_map(door_id_replacement_db)
 

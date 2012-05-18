@@ -537,31 +537,40 @@ class Door:
         return "".join(txt)
 
 class DoorID(object):
-    __slots__ = ("state_index", "door_index")
+    __slots__ = ("__state_index", "__door_index")
     def __init__(self, StateIndex, DoorIndex):
         assert isinstance(StateIndex, (int, long)) or StateIndex in E_StateIndices
         # 'DoorIndex is None' --> right after the entry commands (targetted after reload).
         assert isinstance(DoorIndex, (int, long))  or DoorIndex is None
-        self.state_index = StateIndex
-        self.door_index  = DoorIndex
+        self.__state_index = StateIndex
+        self.__door_index  = DoorIndex
+    @property
+    def state_index(self): return self.__state_index
+    @property
+    def door_index(self): return self.__door_index
+
+    def set(self, Other):
+        self.__state_index = Other.__state_index
+        self.__door_index  = Other.__door_index
+
     def clone(self):
-        return DoorID(self.state_index, self.door_index)
+        return DoorID(self.__state_index, self.__door_index)
     def __hash__(self):
-        if isinstance(self.state_index, (int, long)): xor_sum = self.state_index + 1
-        else:                                         xor_sum = 0
-        xor_sum ^= self.door_index 
+        if isinstance(self.__state_index, (int, long)): xor_sum = self.__state_index + 1
+        else:                                           xor_sum = 0
+        xor_sum ^= self.__door_index 
         return xor_sum
     def __eq__(self, Other):
         if not isinstance(Other, DoorID): return False
-        return     self.state_index == Other.state_index \
-               and self.door_index  == Other.door_index
+        return     self.__state_index == Other.__state_index \
+               and self.__door_index  == Other.__door_index
     def __cmp__(self, Other):
         if not isinstance(Other, DoorID): return -1
-        result = cmp(self.state_index, Other.state_index)
+        result = cmp(self.__state_index, Other.__state_index)
         if result != 0: return result
-        return cmp(self.door_index, Other.door_index)
+        return cmp(self.__door_index, Other.__door_index)
     def __repr__(self):
-        return "DoorID(s=%s, d=%s)" % (self.state_index, self.door_index)
+        return "DoorID(s=%s, d=%s)" % (self.__state_index, self.__door_index)
 
 def categorize_command_lists(StateIndex, TransitionActionList):
     """Better clone the TransitionActionList before calling this function, 

@@ -1,3 +1,4 @@
+from   quex.engine.analyzer.mega_state.core               import PseudoMegaState
 from   quex.engine.analyzer.mega_state.template.state     import TemplateState
 from   quex.engine.analyzer.mega_state.template.candidate import TemplateStateCandidate
 from   quex.blackboard import E_Compression
@@ -160,6 +161,8 @@ def do(TheAnalyzer, MinGain, CompressionType,
 
     done_state_index_set, template_state_list = combiner.result()
 
+    print "##RESULT:", done_state_index_set
+    print "         ", len(template_state_list), [x.index for x in template_state_list]
     return done_state_index_set, template_state_list
 
 class CombinationDB:
@@ -192,12 +195,21 @@ class CombinationDB:
         assert MinGain >= 0
         self.__uniformity_required_f = (CompressionType == E_Compression.TEMPLATE_UNIFORM)
 
-        # Database of states that are subject to combination tries.
-        # The init state and states without transition map are excluded.
-        self.__db = dict(ifilter(lambda x:     len(x[1].transition_map) != 0 
-                                           and x[0] in AvailableStateIndexList
-                                           and not x[1].init_state_f,
-                                 TheAnalyzer.state_db.iteritems()))
+        # (*) Database of states that are subject to combination tries.
+        #
+        # Do not consider: -- tates with empty transition maps
+        #                  -- states which are no more availabe for combination
+        #                  -- the init state.
+        # x[0] = state_index, x[1] = state
+        condition = lambda x:     len(x[1].transition_map) != 0 \
+                              and x[0] in AvailableStateIndexList \
+                              and x[1].init_state_f == False
+
+        # Represent each state by a PseudoMegaState that behaves uniformly with the 
+        # resulting TemplateStates.
+        self.__db = dict( (state_index, PseudoMegaState(state, TheAnalyzer)) \
+                          for state_index, state in ifilter(condition, TheAnalyzer.state_db.iteritems()) )
+
         self.__analyzer    = TheAnalyzer
         self.__min_gain    = float(MinGain)
         self.__gain_matrix = self.__base()
@@ -208,13 +220,13 @@ class CombinationDB:
            If no adequate state pair can be found 'False' is returned.
            Else, 'True'.
         """
-        candidate = self.pop_best()
-        if candidate is None: return False
+        elect = self.pop_best()
+        if elect is None: return False
 
         # The 'candidate' is a TemplateStateCandidate which is derived from 
         # TemplateState. Thus, it can play the TemplateState role without
         # modification. Only, a meaningful index has to be assigned to it.
-        self.enter(candidate)
+        self.enter(elect)
         return True
 
     def result_iterable(self):
@@ -327,18 +339,42 @@ class CombinationDB:
 
         if len(self.__gain_matrix) == 0: return None
 
-        # The entry with the highest gain is at the tail of the list.
-        i, k, candidate = self.__gain_matrix.pop()
+        # (*) The entry with the highest gain is at the tail of the list.
+        i, k, elect = self.__gain_matrix.pop()
 
-        # Delete related entries in __gain_matrix and database 
+        # (*) Delete related entries in __gain_matrix and database. 
+        # 
+        # If 'i' or 'k' referes to a 'normal' state, then any combination with each 
+        # of those is removed from the list of candidates. This candidate, let it 
+        # have state index 'p', is the only state that contains now 'i' and 'k'. Any
+        # state, with index 'q', that combines with it does not contain 'i' and 
+        # 'k'. And, on the event of combining 'p' and 'q' all other combinations
+        # related to 'p' are deleted, thus all other combinations that contain
+        # 'i' and 'k'.
+        # => The consideration of 'implemented_state_index_list' is not necessary.
         self.__gain_matrix_delete(i)
         self.__gain_matrix_delete(k)
 
-        # If the following fails, it means that states have been combined twice
+        # (*) If the following fails, it means that states have been combined twice
         del self.__db[i]
         del self.__db[k]
 
-        return candidate
+        # (*) Adapt all transition maps with their door_ids
+        replacement_db       = elect.door_id_replacement_db
+        local_replacement_db = elect.local_door_id_replacement_db
+        for state in self.__db.itervalues():
+            state.replace_door_ids_in_transition_map(replacement_db)
+            state.replace_door_ids_in_transition_map(local_replacement_db)
+            # There are no original states around here. All states are either
+            # TemplateState-s or PseudoMegaState-s where the entry databases
+            # are disconnected from the original states (by cloning).
+            state.entry.set_door_db(elect.entry.door_db)                # transition_id --> door_id
+            state.entry.transition_db.update(elect.entry.transition_db) # door_id       --> transition_id
+            state.entry.set_door_tree_root(elect.entry.door_tree_root)
+
+        print "##ELECT:", elect.index,  elect._DEBUG_combined_state_indices()
+        print "##     :", replacement_db
+        return elect
 
     def __gain_matrix_delete(self, StateIndex):
         """Delete all related entries in the '__gain_matrix' that relate to states

@@ -44,10 +44,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
 #   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-            QUEX_TYPE_CHARACTER* it = QUEX_NAME(Counter_count_chars_to_newline_backwards)(me, Begin, End);
-            __QUEX_IF_COUNT_LINES(if( *it == '\n' ) ++(me->_line_number_at_end));
+        QUEX_TYPE_CHARACTER* it = QUEX_NAME(Counter_count_chars_to_newline_backwards)(me, Begin, End);
+        if( *it == '\n' ) ++(me->_line_number_at_end);
 #       else
-            QUEX_TYPE_CHARACTER* it = End;
+        QUEX_TYPE_CHARACTER* it = End;
 #       endif
            
         /* The last function may have digested a newline (*it == '\n'), but then it 
@@ -128,6 +128,22 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         return it;
     }
+
+#   if 0
+    QUEX_INLINE void    
+    QUEX_NAME(Counter_count_with_Grid)(QUEX_NAME(Counter)* me, 
+                                       QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
+    {
+    }
+    QUEX_INLINE void  
+    QUEX_NAME(Counter_count_NoNewline_with_Grid)(QUEX_NAME(Counter)*   me,
+                                                 QUEX_TYPE_CHARACTER*  Lexeme,
+                                                 QUEX_TYPE_CHARACTER*  LexemeEnd)
+    {
+    /* This function makes sense, as soon as grids etc. are implemented.
+     * Then, it is necessary to count forward not backward towards last newline. */
+    }
+#   endif
 
     QUEX_INLINE void 
     QUEX_NAME(Counter_print_this)(QUEX_NAME(Counter)* me)
