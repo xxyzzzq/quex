@@ -1,10 +1,90 @@
 import quex.engine.state_machine.index               as     index
 from   quex.engine.analyzer.state.core               import AnalyzerState
+from   quex.engine.analyzer.state.entry              import Entry
 from   quex.engine.analyzer.state.entry_action       import DoorID
 from   quex.blackboard                               import E_StateIndices
 
 from itertools import chain
 from copy      import copy, deepcopy
+
+class MegaState_Entry(Entry):
+    def __init__(self, RelatedMegaState):
+        Entry.__init__(self, RelatedMegaState.index, FromStateIndexList=[])
+        self.__door_id_replacement_db = None
+        self.__implemented_state_index_list = RelatedMegaState.implemented_state_index_list()
+        self.__state_db                     = RelatedMegaState.analyzer.state_db
+
+    @property
+    def door_id_replacement_db(self):
+        """The MegaState implements a set of states. The entry doors of these
+           states are implemented in the MegaState_Entry. This property
+           returns a dictionary that maps from doors of original states to
+           doors of this MegaState which implement these doors.
+
+           door_db:  transition_id(x, y) --> door_id_z(si, di)
+
+           Documents that the transition into state 'x' from state 'y' is 
+           implemented by door 'door_id_z(si, di)' determined by the 
+           state index 'si' of the implementing state and the door index 'di'
+           pointing into the state's door tree. 
+
+           Now, that the state is implemented by a MegaState, the transition
+           must be associated with a DoorID from the MegateState. This documents
+           that the MegaState implements this transition.
+
+           The translation from old DoorID to new DoorID happens by means of the
+           transition_ids which remain the same.
+        """
+        if self.__door_id_replacement_db is None:
+            self.door_tree_configure()
+        return self.__door_id_replacement_db
+
+    def door_tree_configure(self):
+        """First: See 'Entry.door_tree_configure()'. 
+        
+           This overwriting function extends the base's .door_tree_configure()
+           by alse providing the '__door_id_replacement_db'. 
+           
+           A MegaState implements more than one state. Therefore, it directs
+           transitions into normal states into its own doors. Namely, the
+           TransitionID-s that originaly were associated with DoorID-s of an
+           AnalyzerState are now associated with DoorID-s of the MegaState.
+            
+           The base class' .door_tree_configure() translates the 'action_db'
+           into a door tree and provides the 'door_db' and the 'transition_db';
+           where the used DoorID-s now relate to the MegaState. Using the 
+           TransitionID keys from 'transition_db' allows to get the DoorID 
+           from the AnalyzerState's 'door_db'.
+        """
+        # Based on the now existing 'action_db' the door tree can be
+        # configured. Also, it results the 'door_db' and the 'transition_db'.
+        Entry.door_tree_configure(self)
+
+        # Derive the replacement database.
+        result = {}
+        for state_index in self.__implemented_state_index_list:
+            # map: TransitionID-s of AnalyzerState --> DoorID-s of MegaState.
+            transition_db = self.__state_db[state_index].entry.transition_db
+            for door_id, transition_id_list in transition_db.iteritems():
+                if door_id.door_index == 0:
+                    # The root node: Map to the new root door.
+                    new_door_id = self.door_tree_root.door_id
+                    continue
+                # Only one DoorID can be associated with no TransitionID: The root of
+                # the door tree. Its index is 0 and it's handled in the 'if' case above.
+                assert len(transition_id_list) != 0
+                # All TransitionID-s of a door are associate with the same commands.
+                # => They must enter through the same door in the MegaState. 
+                # => Considering any one TransitionID from the list is enough.
+                transition_id = transition_id_list[0] # Take any transition
+                new_door_id   = self.door_db.get(transition_id)
+                # The transition may have been deleted, for example, because it lies
+                # on the path of a uniform path walker.
+                if new_door_id is None: continue 
+
+                result[door_id] = new_door_id
+
+        self.__door_id_replacement_db = result
 
 class MegaState(AnalyzerState):
     """A MegaState is a state that implements more than one state at once.
@@ -25,28 +105,6 @@ class MegaState(AnalyzerState):
 
     @property
     def analyzer(self):     return self.__analyzer
-
-    @property
-    def door_id_replacement_db(self):
-        """The MegaState implements a set of states. The entry doors of these
-           states are now implemented in the MegaState_Entry. This property
-           returns a dictionary that maps from doors of original states to
-           doors of this MegaState which implement these doors.
-        """
-        if self.__door_id_replacement_db is None:
-            result = {}
-            for state_index in self.implemented_state_index_list():
-                # All transitions into the original state are mapped to
-                # door_ids of the new MegaState.
-                door_db = self.__analyzer.state_db[state_index].entry.door_db
-                for transition_id, door_id in door_db.iteritems():
-                    new_door_id     = self.entry.door_db.get(transition_id)
-                    # The transition may have been deleted, for example, because
-                    # it lies on the path of a uniform path walker.
-                    if new_door_id is None: continue 
-                    result[door_id] = new_door_id
-            self.__door_id_replacement_db = result
-        return self.__door_id_replacement_db
 
     def replace_door_ids_in_transition_map(self, ReplacementDB):
         """ReplacementDB:    DoorID --> Replacement DoorID
@@ -95,10 +153,6 @@ class PseudoMegaState(MegaState):
 
     def map_state_index_to_state_key(self, StateIndex):
         assert False, "PseudoMegaState-s exist only for analysis. They shall never be implemented."
-
-    def door_id_replacement_db(self):
-        assert False, "PseudoMegaState-s  shall never be considered as a real combination of states." \
-                      "Thus, a PseudoMegaState shall never determine a door replacement database."
 
     @property
     def state_index_list(self):

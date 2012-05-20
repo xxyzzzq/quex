@@ -46,7 +46,7 @@ def __transition_adaption(TheAnalyzer, NewMegaStateList, OldMegaStateList):
     # be redirected from the original states to doors of the mega states.
     door_id_replacement_db = {}
     for mega_state in NewMegaStateList:
-        door_id_replacement_db.update(mega_state.door_id_replacement_db)
+        door_id_replacement_db.update(mega_state.entry.door_id_replacement_db)
 
     # MegaStates must adapt their transition maps, so that the new doors
     # are targetted. 
