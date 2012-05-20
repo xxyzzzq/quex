@@ -381,9 +381,13 @@ class CombinationDB:
             for door_id in state.entry.door_db.itervalues():
                 assert door_id.state_index != i 
                 assert door_id.state_index != k 
+                assert self.__db.has_key(door_id.state_index), \
+                       "%s--\n%s\n" % (state.entry.transition_db, door_id)
             for door_id in state.entry.transition_db.iterkeys():
                 assert door_id.state_index != i 
                 assert door_id.state_index != k 
+                assert self.__db.has_key(door_id.state_index), \
+                       "%s--\n%s\n" % (state.entry.transition_db, door_id)
             for interval, target in state.transition_map:
                 if target.drop_out_f: 
                     continue
