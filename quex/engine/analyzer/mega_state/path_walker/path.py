@@ -1,7 +1,8 @@
 from   quex.engine.analyzer.state.core         import AnalyzerState
 from   quex.engine.analyzer.state.entry        import Entry
 from   quex.engine.analyzer.state.entry_action import DoorID, SetPathIterator
-from   quex.engine.analyzer.mega_state.core    import MegaState_DropOut
+from   quex.engine.analyzer.mega_state.core    import MegaState_Entry, \
+                                                      MegaState_DropOut
 import quex.engine.state_machine.index         as     index
 
 from quex.engine.interval_handling import NumberSet
@@ -10,12 +11,16 @@ from itertools   import ifilter
 from operator    import itemgetter
 from collections import defaultdict
 
-class PathWalkerState_Entry(Entry):
-    def __init__(self, StateIndex, TheEntry):
-        Entry.__init__(self, StateIndex, [])
-        self.update(TheEntry, 0)
+class PathWalkerState_Entry(MegaState_Entry):
+    def __init__(self, RelatedMegaState, TheEntry):
+        MegaState_Entry.__init__(self, RelatedMegaState)
 
-    def update(self, TheEntry, Offset):
+        # '.action_db' => '.door_tree_configure()' => '.door_db'
+        #                                             '.transition_db'
+        #                                             '.door_id_replacement_db'
+        self.action_db_update(TheEntry, 0)
+
+    def action_db_update(self, TheEntry, Offset):
         """Include 'TheState.entry.action_db' into this state. That means,
            that any mapping:
            

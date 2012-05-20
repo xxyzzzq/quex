@@ -360,14 +360,31 @@ class Entry(object):
         # (*) Configure the entry door tree
         self.door_tree_configure() # May be this is not necessary here (?).
 
-    def door_tree_configure(self, StateIndex=None):
-        """Mega States may want to define a 'StateIndex' so that the doors
-           refer to the state index of the mega states. All others do not 
-           specify 'StateIndex'.
-        """
-        if StateIndex is not None:
-            self.__state_index = StateIndex
+    def door_tree_configure(self):
+        """Configure the 'door tree' (see module 'entry_action).
 
+           BEFORE: An 'action_db' maps 
+
+                   TransitionID  ---> CommandList
+
+           That is, the action_db tells for a given transition (state_index,
+           from_state_index) what commands are to be executed. Based on 
+           action_db a 'door tree' is configured. The door tree profits from
+           the fact, that some commands may be the same for more than one 
+           transition into the state. Now, the state can be entered via these
+           doors.
+           
+           AFTER: There are two more databases:
+
+              (1)  door_db:       TransitionID --> DoorID
+
+              which tells for a given transition (state, from_state) what the
+              door is into the door tree which has been configured.
+           
+              (2)  transition_db: DoorID ---> list of TransitionID-s
+
+              which tells what transitions are implemented by a given door.
+        """
         # (*) Categorize action lists
         transition_action_list = [ transition_action.clone() for transition_action in self.__action_db.itervalues() ]
         door_db,       \

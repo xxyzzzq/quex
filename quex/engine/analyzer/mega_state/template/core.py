@@ -3,6 +3,7 @@ from   quex.engine.analyzer.mega_state.template.state     import TemplateState
 from   quex.engine.analyzer.mega_state.template.candidate import TemplateStateCandidate
 from   quex.blackboard import E_Compression
 from   itertools       import ifilter, islice
+from   collections     import defaultdict
 
 # (C) 2010 Frank-Rene Schaefer
 """
@@ -360,17 +361,49 @@ class CombinationDB:
         del self.__db[k]
 
         # (*) Adapt all transition maps with their door_ids
-        replacement_db       = elect.door_id_replacement_db
-        local_replacement_db = elect.local_door_id_replacement_db
+        replacement_db = elect.entry.door_id_replacement_db
+        replacement_db.update(elect.local_door_id_replacement_db)
         for state in self.__db.itervalues():
             state.replace_door_ids_in_transition_map(replacement_db)
-            state.replace_door_ids_in_transition_map(local_replacement_db)
-            # There are no original states around here. All states are either
-            # TemplateState-s or PseudoMegaState-s where the entry databases
-            # are disconnected from the original states (by cloning).
-            state.entry.set_door_db(elect.entry.door_db)                # transition_id --> door_id
-            state.entry.transition_db.update(elect.entry.transition_db) # door_id       --> transition_id
-            state.entry.set_door_tree_root(elect.entry.door_tree_root)
+            t_db = defaultdict(list)
+            for door_id, transition_id_list in elect.entry.transition_db.iteritems():
+                if door_id.door_index == 0:
+                    # The root door
+                    t_db[door_id] = []
+                else:
+                    for transition_id in transition_id_list:
+                        if not state.entry.door_db.has_key(transition_id): continue
+                        t_db[door_db].append(transition_id)
+            state.entry.set_transition_db(t_db)
+
+        # Double Check: No state shall refer to a Door of the combined states.
+        for state in self.__db.itervalues():
+            for door_id in state.entry.door_db.itervalues():
+                assert door_id.state_index != i 
+                assert door_id.state_index != k 
+            for door_id in state.entry.transition_db.iterkeys():
+                assert door_id.state_index != i 
+                assert door_id.state_index != k 
+            for interval, target in state.transition_map:
+                if target.drop_out_f: 
+                    continue
+                elif target.door_id is not None:
+                    assert door_id.state_index != i 
+                    assert door_id.state_index != k 
+                    assert self.__db.has_key(door_id.state_index), \
+                           "%s--\n%s\n" % (state.entry.transition_db, door_id)
+                    target_state = self.__db[door_id.state_index]
+                    assert target_state.entry.transition_db.has_key(door_id), \
+                           "%s--\n%s\n" % (state.entry.transition_db, door_id)
+                else:
+                    for door_id in target.scheme:
+                        assert door_id.state_index != i 
+                        assert door_id.state_index != k 
+                        assert self.__db.has_key(door_id.state_index), \
+                               "%s--\n%s\n" % (state.entry.transition_db, door_id)
+                        target_state = self.__db[door_id.state_index]
+                        assert target_state.entry.transition_db.has_key(door_id), \
+                               "%s--\n%s\n" % (state.entry.transition_db, door_id)
 
         print "##ELECT:", elect.index,  elect._DEBUG_combined_state_indices()
         print "##     :", replacement_db

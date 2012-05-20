@@ -454,8 +454,8 @@ class Door:
     """
     state_index                      = None
     id_counter                       = 0
-    transition_id_to_door_id_db      = {} # map: (transition_id) --> DoorID
-    door_id_to_transition_id_list_db = {} # map: DoorID             --> transition_id list 
+    transition_id_to_door_id_db      = {} # map: TransitionID --> DoorID
+    door_id_to_transition_id_list_db = {} # map: DoorID       --> list of TransitionID
 
     def __init__(self, Parent, CommonCommandList, TransitionActionList):
         self.door_id             = DoorID(Door.state_index, Door.id_counter)
@@ -469,6 +469,10 @@ class Door:
     def register(DoorIdentifier, TransitionActionList):
         transition_id_list = [x.transition_id for x in TransitionActionList]
         Door.transition_id_to_door_id_db.update((i, DoorIdentifier) for i in transition_id_list)
+        # There might be a door with zero transition actions related to it: The root door,
+        # if there are no common actions at all between the command lists.
+        # Thus: It is OK that a door might be assigned an empty transition_id_list.
+        assert Door.id_counter == 0 or len(transition_id_list) != 0
         Door.door_id_to_transition_id_list_db[DoorIdentifier] = transition_id_list
         Door.id_counter += 1
 
