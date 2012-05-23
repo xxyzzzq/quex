@@ -13,6 +13,7 @@ from   quex.blackboard                              import E_StateIndices
 
 from   itertools   import chain
 from   collections import defaultdict
+from   copy        import copy
 import sys
 
 class TemplateState_Entry(MegaState_Entry):
@@ -123,9 +124,9 @@ class TemplateState(MegaState):
         # accepted element of a state machine. This makes sense, in particular
         # for TemplateStateCandidates (derived from TemplateState). 
         MegaState.__init__(self, TheAnalyzer)
-        print "##", self.index
-        print "##A", StateA.index, StateA.transition_map
-        print "##B", StateB.index, StateB.transition_map
+        ## print "##", self.index
+        ## print "##A", StateA.index, StateA.transition_map
+        ## print "##B", StateB.index, StateB.transition_map
 
         self.__analyzer         = TheAnalyzer
         self.__state_a          = StateA
@@ -138,23 +139,15 @@ class TemplateState(MegaState):
         self.__entry = TemplateState_Entry(self, self.__state_index_to_state_key_db, StateA.entry, StateB.entry)
         self.__entry.door_tree_configure()
 
-        # Double Check: No state shall refer to a Door of the combined states.
-        for door_id in self.__entry.door_db.itervalues():
-            assert door_id.state_index != StateA.index 
-            assert door_id.state_index != StateB.index 
-        for door_id in self.__entry.transition_db.iterkeys():
-            assert door_id.state_index != StateA.index 
-            assert door_id.state_index != StateB.index 
-
         self.__drop_out = MegaState_DropOut(StateA, StateB)
 
         # Local door_id replacement database
-        self.__local_replacement_db = self.__get_local_replacement_db()
+        self.__door_id_update_db = self.__door_id_update_db_construct()
 
         # Adapt the door ids of the transition maps and bring them all into a form of 
         # (interval --> MegaState_Target)
-        tm_a = self.__get_adapted_transition_map(StateA)
-        tm_b = self.__get_adapted_transition_map(StateB)
+        tm_a = self.__door_id_update_db_get_transition_map(StateA)
+        tm_b = self.__door_id_update_db_get_transition_map(StateB)
 
         self.transition_map,    \
         self.__target_scheme_list = combine_maps(StateA, tm_a, StateB, tm_b)
@@ -175,7 +168,22 @@ class TemplateState(MegaState):
     @property
     def state_index_list(self):    return self.__state_index_list
     @property
-    def local_door_id_replacement_db(self): return self.__local_replacement_db
+    def door_id_update_db(self):   
+        """The 'door_id_update_db' provides how doors from the two states which
+           are combined are mapped to doors to this new template state.
+        """
+        # Double check the basic assumptions:
+        a = self.__state_a.index
+        b = self.__state_b.index
+        for original, replacement in self.__door_id_update_db.iteritems():
+            assert original.state_index == a or original.state_index == b
+            assert replacement.state_index == self.index
+        # The 'door_id_replacement_db' that tells about the implementation of
+        # AnalyzerState-s in this TemplateState shall not contain outdated DoorID-s.
+        for replacement in self.entry.door_id_replacement_db.itervalues():
+            assert replacement.state_index != a and replacement.state_index != b
+
+        return self.__door_id_update_db
 
     def map_state_index_to_state_key(self, StateIndex):
         return self.__state_index_to_state_key_db[StateIndex]
@@ -183,21 +191,37 @@ class TemplateState(MegaState):
     def implemented_state_index_list(self):    
         return self.__state_index_list
 
-    def __get_local_replacement_db(self):
+    def target_scheme_list_update(self, ReplacementDB):
+        target_scheme_list = self.__target_scheme_list
+        clone_f = False
+        for i, prototype in enumerate(target_scheme_list):
+            new_prototype = prototype.door_id_replacement(ReplacementDB)
+            if new_prototype is not None:
+                if not clone_f:
+                    target_scheme_list = copy(target_scheme_list)
+                    clone_f = True
+                target_scheme_list[i] = new_prototype
+
+        if clone_f:
+            self.__target_scheme_list = target_scheme_list
+
+    def __door_id_update_db_construct(self):
         """Door replacement database that is solely concerned with the doors
            of '__state_a' and '__state_b'.
         """
         def extract(result, TheState):
-            print "##TheState:", TheState.__class__.__name__, TheState.index
             state_entry = TheState.entry
             state_index = TheState.index
-            print "##", state_entry.transition_db
             for door_id, transition_id_list in state_entry.transition_db.iteritems():
                 if door_id.state_index != state_index: 
                     continue
-                elif door_id.door_index == 0:
+                elif len(transition_id_list) == 0:
                     # The root node: Map to the new root door.
-                    result[door_id] = self.entry.door_tree_root.door_id
+                    assert door_id.door_index == 0
+                    # If no transition is associated with a door, it does not have to be
+                    # mentioned. Exception: The root door of a TemplateState.
+                    assert isinstance(TheState, TemplateState)
+                    # result[door_id] = self.entry.door_tree_root.door_id
                 else:
                     # One DoorID can be associated with no actions, and therefore 
                     # no transitions: The root door. Its door index is 0.
@@ -205,16 +229,13 @@ class TemplateState(MegaState):
                     assert len(transition_id_list) != 0
                     transition_id   = transition_id_list[0] # Take any transition
                     result[door_id] = self.entry.door_db[transition_id]
-                print "##Replace:", door_id, result[door_id]
-            print "##<-"
 
-        print "##__________________"
         result = {}
         extract(result, self.__state_a)
         extract(result, self.__state_b)
         return result
 
-    def __get_adapted_transition_map(self, State):
+    def __door_id_update_db_get_transition_map(self, State):
         """Purpose of this function is to identify places in the transition map
            where it referes to one of the two states which are currently combined.
            A transition to '__state_a' or '__state_b' is to be replaced by a transition
@@ -226,45 +247,18 @@ class TemplateState(MegaState):
            MegaState_Target this function detects whether it needs to be adapted.
            If so, it disconnected (cloned) and the new door_ids are entered.
         """
-        def adapt(Target):
-            def __adapt(door_id):
-                """Check whether a door_id belongs to one of the two states that
-                   are currently combined. If so, translate the door_id into a 
-                   door_id of this state.
-                """
-                if   door_id == E_StateIndices.DROP_OUT:
-                    return # Nothing to be adapted
-                elif    door_id.state_index == self.__state_a.index \
-                     or door_id.state_index == self.__state_b.index:
-                    new_door_id = self.__local_replacement_db[door_id]
-                    ## print "##adapted: %s --> %s" % (transition_id, new_door_id)
-                    return new_door_id
-                else:
-                    return # Nothing to be adapted
+        cloned_f       = False
+        transition_map = State.transition_map
+        for i, info in enumerate(transition_map):
+            interval, target = info
+            new_target = target.door_id_replacement(self.__door_id_update_db)
+            if new_target is not None: 
+                if not cloned_f:
+                    transition_map = copy(transition_map) # Disconnect transition_map => clone!
+                    cloned_f       = True
+                transition_map[i] = (interval, new_target)
 
-            if Target.drop_out_f: return Target
-            # If a door_id needs to be really adapted, then the Target needs to be
-            # cloned, i.e. disconnected from its original. Thus changes to it wont
-            # effect the original.
-            result = Target
-            if result.door_id is not None:  
-                new_door_id = __adapt(result.door_id)
-                if new_door_id is not None: 
-                    result = result.clone() # disconnect from original
-                    result.door_id.set(new_door_id)
-            else:
-                cloned_f = False
-                for i, door_id in enumerate(result.scheme):
-                    new_door_id = __adapt(door_id)
-                    if new_door_id is None: continue
-                    if not cloned_f: 
-                        result   = result.clone() # disconnect from original
-                        cloned_f = True
-                    result.scheme[i].set(new_door_id)
-
-            return result
-
-        return [(interval, adapt(target)) for interval, target in State.transition_map ]
+        return transition_map
 
 def combine_maps(StateA, AdaptedTM_A, StateB, AdaptedTM_B):
     """RETURNS:
@@ -486,5 +480,5 @@ class TargetSchemeDB(dict):
         result = self.values()
         for element in result:
             assert element.scheme is not None
-        return self.values()
+        return result
 

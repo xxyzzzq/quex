@@ -66,13 +66,13 @@ class MegaState_Entry(Entry):
             # map: TransitionID-s of AnalyzerState --> DoorID-s of MegaState.
             transition_db = self.__state_db[state_index].entry.transition_db
             for door_id, transition_id_list in transition_db.iteritems():
-                if door_id.door_index == 0:
-                    # The root node: Map to the new root door.
-                    new_door_id = self.door_tree_root.door_id
+                if len(transition_id_list) == 0:
+                    # Only one DoorID can possibly be associated with no TransitionID: 
+                    # The root of the door tree. Its index is 0. Since no transition
+                    # happens through this door, it does not need to be mentioned.
+                    assert door_id.door_index == 0
                     continue
-                # Only one DoorID can be associated with no TransitionID: The root of
-                # the door tree. Its index is 0 and it's handled in the 'if' case above.
-                assert len(transition_id_list) != 0
+
                 # All TransitionID-s of a door are associate with the same commands.
                 # => They must enter through the same door in the MegaState. 
                 # => Considering any one TransitionID from the list is enough.
@@ -117,9 +117,12 @@ class MegaState(AnalyzerState):
            with the DoorID 'Dyxm' which is the MegaState's entry that represents
            'from Y to X'. Any transition 'Dyx' must now be replaced by 'Dyxm'.
         """
-        for interval, target in self.transition_map:
+        for i, info in enumerate(self.transition_map):
+            interval, target = info
             if target.drop_out_f: continue
-            target.door_id_replacement(ReplacementDB)
+            new_target = target.door_id_replacement(ReplacementDB)
+            if new_target is not None:
+                self.transition_map[i] = (interval, new_target)
 
     def implemented_state_index_list(self):
         assert False, "This function needs to be overwritten by derived class."
@@ -247,17 +250,43 @@ class MegaState_Target(object):
     def door_id(self):     return self.__door_id
 
     def door_id_replacement(self, ReplacementDB):
-        def replace_if_required(DoorId):
-            replacement = ReplacementDB.get(DoorId)
-            if replacement is not None: return replacement
-            return DoorId
+        """RETURNS: 
+             None    -- if ReplacementDB does not have any effect on the
+                        MegaState_Target object.
+             Object  -- if an adaption according to ReplacementDB had to 
+                        occur. In this case, the MegaState_Target creates
+                        a clone of itself, modifies it according to 
+                        ReplacementDB and returns that clone.
+        """
+        if self.drop_out_f: 
+            return # The whole target is not need to be modified!
 
-        if self.__door_id is not None:
-            new_door_id = ReplacementDB.get(self.__door_id)
-            if new_door_id is not None:
-                self.__door_id = new_door_id
-        else:
-            self.__scheme = tuple(replace_if_required(door_id) for door_id in self.__scheme)
+        result  = self
+        # If a door_id needs to be really adapted, then the Target needs to be
+        # cloned, i.e. disconnected from its original. Thus changes to it wont
+        # effect the original.
+        if self.door_id is not None:  
+            # (*) Target Uniform DoorID
+            new_door_id = ReplacementDB.get(self.door_id)
+            if new_door_id is not None: 
+                result   = self.clone()     # disconnect from original
+                result.door_id.set(new_door_id)
+                return result
+            return # No change to 'self'
+
+        cloned_f = False
+        for i, door_id in enumerate(result.scheme):
+            new_door_id = ReplacementDB.get(door_id)
+            if new_door_id is not None: 
+                if not cloned_f: 
+                    result   = result.clone() # Disconnect from original
+                    cloned_f = True
+                result.scheme[i].set(new_door_id)
+
+        if not cloned_f: 
+            return # The whole target does not need to be touched!
+
+        return result
 
     @property
     def drop_out_f(self):  return self.__drop_out_f
