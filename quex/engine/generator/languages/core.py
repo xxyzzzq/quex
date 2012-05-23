@@ -174,7 +174,7 @@ class LanguageDB_Cpp(dict):
 
 
     def ADDRESS_BY_DOOR_ID(self, DoorId):
-        print "## %s --> %s" % (DoorId, get_address("$entry", DoorId, U=True, R=True))
+        ## print "## %s --> %s" % (DoorId, get_address("$entry", DoorId, U=True, R=True))
         return get_address("$entry", DoorId, U=True, R=True)
 
     def ADDRESS(self, StateIndex, FromStateIndex):
