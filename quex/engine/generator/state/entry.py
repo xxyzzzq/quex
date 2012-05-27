@@ -23,7 +23,7 @@ def do(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
               or (TheState.engine_type == E_EngineTypes.BACKWARD_INPUT_POSITION)): 
         txt.append("    %s\n" % LanguageDB.UNREACHABLE)
 
-    if TheState.engine_type == E_EngineTypes.BACKWARD_INPUT_POSITION:
+    if TheAnalyzer.engine_type == E_EngineTypes.BACKWARD_INPUT_POSITION:
         BIPD_ID = TheAnalyzer.state_machine_id
     else:
         BIPD_ID = None

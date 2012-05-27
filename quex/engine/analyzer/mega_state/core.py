@@ -8,11 +8,9 @@ from itertools import chain
 from copy      import copy, deepcopy
 
 class MegaState_Entry(Entry):
-    def __init__(self, RelatedMegaState):
-        Entry.__init__(self, RelatedMegaState.index, FromStateIndexList=[])
+    def __init__(self, MegaStateIndex):
+        Entry.__init__(self, MegaStateIndex, FromStateIndexList=[])
         self.__door_id_replacement_db = None
-        self.__implemented_state_index_list = RelatedMegaState.implemented_state_index_list()
-        self.__state_db                     = RelatedMegaState.analyzer.state_db
 
     @property
     def door_id_replacement_db(self):
@@ -35,11 +33,11 @@ class MegaState_Entry(Entry):
            The translation from old DoorID to new DoorID happens by means of the
            transition_ids which remain the same.
         """
-        if self.__door_id_replacement_db is None:
-            self.door_tree_configure()
+        assert self.__door_id_replacement_db is not None, \
+               ".door_tree_configure(StateDB, ImplementedStateIndexList) must be called before."
         return self.__door_id_replacement_db
 
-    def door_tree_configure(self):
+    def door_tree_configure(self, StateDB, ImplementedStateIndexList):
         """First: See 'Entry.door_tree_configure()'. 
         
            This overwriting function extends the base's .door_tree_configure()
@@ -62,9 +60,9 @@ class MegaState_Entry(Entry):
 
         # Derive the replacement database.
         result = {}
-        for state_index in self.__implemented_state_index_list:
+        for state_index in ImplementedStateIndexList:
             # map: TransitionID-s of AnalyzerState --> DoorID-s of MegaState.
-            transition_db = self.__state_db[state_index].entry.transition_db
+            transition_db = StateDB[state_index].entry.transition_db
             for door_id, transition_id_list in transition_db.iteritems():
                 if len(transition_id_list) == 0:
                     # Only one DoorID can possibly be associated with no TransitionID: 
@@ -90,21 +88,15 @@ class MegaState(AnalyzerState):
     """A MegaState is a state that implements more than one state at once.
        Examples are 'TemplateState' and 'PathwalkerState'.
     """
-    def __init__(self, TheAnalyzer, StateIndex=None):
+    def __init__(self, StateIndex=None):
+        assert StateIndex is None or isinstance(StateIndex, long)
         if StateIndex is None: StateIndex = index.get()
         AnalyzerState.set_index(self, StateIndex)
 
-        self.__analyzer               = TheAnalyzer
         self.__door_id_replacement_db = None
 
     @property
-    def engine_type(self):  return self.__analyzer.engine_type
-    
-    @property
     def init_state_f(self): return False
-
-    @property
-    def analyzer(self):     return self.__analyzer
 
     def replace_door_ids_in_transition_map(self, ReplacementDB):
         """ReplacementDB:    DoorID --> Replacement DoorID
@@ -138,13 +130,38 @@ class PseudoMegaState(MegaState):
 
              and not interval to target state.
     """
-    def __init__(self, Represented_AnalyzerState, TheAnalyzer):
+    def __init__(self, Represented_AnalyzerState):
         self.__state       = Represented_AnalyzerState
-        self.__entry_clone = deepcopy(Represented_AnalyzerState.entry)
-        MegaState.__init__(self, TheAnalyzer, StateIndex=Represented_AnalyzerState.index)
+        MegaState.__init__(self, StateIndex=Represented_AnalyzerState.index)
 
-        self.transition_map = self.__prepare_transition_map()
+        self.__entry_clone  = self.__entry_construct()
         self.__state_index_list = [ Represented_AnalyzerState.index ]
+
+    def transition_map_construct(self, StateDB):
+        def adapt(Target):
+            if Target == E_StateIndices.DROP_OUT: 
+                return MegaState_Target_DROP_OUT
+            else:
+                door_id = StateDB[Target].entry.get_door_id(Target, self.index)
+                return MegaState_Target.create(door_id)
+
+        self.transition_map = [(interval, adapt(target)) \
+                               for interval, target in self.__state.transition_map ]
+        if False and self.index == 79:
+            StateA = self.__state
+            print "##self.index:", self.index
+            for key, value in self.entry.door_db.iteritems():
+                print "##", key, value
+            # print "##door tree:", self.entry.door_tree_root.get_string(self.__entry.transition_db)
+            print "##transition_db:"
+            for door_id, transition_id_list in self.__entry_clone.transition_db.iteritems():
+                print "##", door_id, " --> ", transition_id_list
+            print "##transition_map:"
+            for interval, target in StateA.transition_map:
+                print "##", target
+            for interval, target in self.transition_map:
+                print "##tm_a", target
+
 
     @property
     def entry(self):
@@ -163,16 +180,50 @@ class PseudoMegaState(MegaState):
     def implemented_state_index_list(self):
         return self.__state_index_list
 
-    def __prepare_transition_map(self):
-        def adapt(Target):
-            if Target == E_StateIndices.DROP_OUT: 
-                return MegaState_Target_DROP_OUT
-            else:
-                door_id = self.analyzer.state_db[Target].entry.get_door_id(Target, self.index)
-                return MegaState_Target.create(door_id)
+    def __entry_construct(self):
+        """Configure information about entry into the state. There is one special thing to 
+           consider: The door of the recursive transition (from_state == to_state) must be
+           different from the other doors. Later when the state is implemented in a MegaState,
+           the recursive door does not need the state_key to be set, while all other transitions
+           into the state require this. 
 
-        return [(interval, adapt(target)) for interval, target in self.__state.transition_map ]
+           The exact structure of the door tree is totally unimportant at this point in
+           time.
+        """
+        result = deepcopy(self.__state.entry)
 
+        # (*) Search for a recursive transition
+        transition_db = result.transition_db
+        door_db       = result.door_db
+        for transition_id, door_id in door_db.iteritems():
+            if transition_id.state_index != transition_id.from_state_index: continue
+            break # We found the recursive transition in the state 
+            #     # => Go and handle it.
+        else:
+            return result # (*) None found, no worry.
+
+        # (*) The recurive transition 'transition_id'
+
+        #  -- Check whether it has an isolated DoorID
+        transition_id_list = transition_db[door_id]
+        assert len(transition_id_list) > 0
+        if len(transition_id_list) == 1: 
+            assert transition_id_list[0] == transition_id
+            return result # (*) Recursive transition is isolated from rest, no worry.
+
+        # -- It shares the door with other transitions.
+        # => Put the recursive transition into an extra door.
+        #    Find the largest door_index => new door_index = max + 1
+        max_door_id = max(x.door_index for x in transition_db.iterkeys())
+        extra_door  = DoorID(door_id.state_index, max_door_id + 1)
+        transition_db[extra_door] = [transition_id]
+        door_db[transition_id]    = extra_door
+
+        # -- Delete the recursive transition from 'transition_id_list'
+        #    => This deletes its reference in 'door_db'
+        del transition_id_list[transition_id_list.index(transition_id)]
+
+        return result
 
 class MegaState_Target(object):
     """A mega state target contains the information about what the target

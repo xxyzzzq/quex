@@ -32,10 +32,8 @@ def test(SM, EngineType = E_EngineTypes.FORWARD, PrintPRM_F = False):
     states_txt_db = {}
     for state in plain:
         if EngineType == E_EngineTypes.FORWARD:
-            if state.index == SM.init_state_index: 
-                assert state.input == E_InputActions.DEREF
-            else:
-                assert state.input == E_InputActions.INCREMENT_THEN_DEREF
+            # if state.index == SM.init_state_index: assert state.input == E_InputActions.DEREF
+            # else: assert state.input == E_InputActions.INCREMENT_THEN_DEREF
         plain_txt = state.get_string(InputF=False, TransitionMapF=False)
         states_txt_db[state.index] = plain_txt
         print plain_txt

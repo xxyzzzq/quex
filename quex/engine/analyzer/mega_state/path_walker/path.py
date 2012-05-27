@@ -12,8 +12,8 @@ from operator    import itemgetter
 from collections import defaultdict
 
 class PathWalkerState_Entry(MegaState_Entry):
-    def __init__(self, RelatedMegaState, TheEntry):
-        MegaState_Entry.__init__(self, RelatedMegaState)
+    def __init__(self, MegaStateIndex, TheEntry):
+        MegaState_Entry.__init__(self, MegaStateIndex)
 
         # '.action_db' => '.door_tree_configure()' => '.door_db'
         #                                             '.transition_db'
@@ -48,16 +48,18 @@ class CharacterPath:
         assert isinstance(StartCharacter, (int, long))
         assert isinstance(Skeleton, dict)
 
-        self.entry    = PathWalkerState_Entry(index.get(), StartState.entry)
+        self.index    = index.get()
+        self.entry    = PathWalkerState_Entry(self.index, StartState.entry)
         self.drop_out = MegaState_DropOut(StartState) 
 
         self.__sequence         = [ (StartState.index, StartCharacter) ]
         self.__skeleton         = Skeleton
         self.__skeleton_key_set = set(Skeleton.keys())
-        # Character that may trigger to any state. This character is
-        # adapted when the first character of the path is different
-        # from the wild card character. Then it must trigger to whatever
-        # the correspondent state triggers.
+
+        # Character that may trigger to any state. This character is adapted
+        # when the first character of the path is different from the wild card
+        # character. Then it must trigger to whatever the correspondent state
+        # triggers.
         self.__wildcard_character = StartCharacter
 
     @property
@@ -70,14 +72,6 @@ class CharacterPath:
 
     def sequence(self):
         return self.__sequence
-
-    def index(self):
-        # Path index = index of the first state in the path
-        try:    
-            return self.__sequence[0][0]
-        except: 
-            assert False, \
-                   "Character with either no sequence or wrong setup sequence element."
 
     def skeleton(self):
         assert isinstance(self.__skeleton, dict)
@@ -96,7 +90,7 @@ class CharacterPath:
         offset = len(self.__sequence)
 
         # Adapt the entry's action_db: include the entries of the new state
-        self.entry.update(State.entry, offset)
+        self.entry.action_db_update(State.entry, offset)
 
         # Adapt information about entry and drop-out actions
         self.drop_out.update_from_state(State)
