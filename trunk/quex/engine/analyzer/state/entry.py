@@ -1,10 +1,9 @@
 import quex.engine.analyzer.state.entry_action as entry_action
 from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction, DoorID
-from   quex.blackboard          import \
-                                       E_PreContextIDs,  \
-                                       E_AcceptanceIDs, E_PostContextIDs, \
-                                       E_TransitionN, E_StateIndices
-from   operator                 import attrgetter
+from   quex.blackboard import E_PreContextIDs,  \
+                              E_AcceptanceIDs, E_PostContextIDs, \
+                              E_TransitionN, E_StateIndices
+from   operator        import attrgetter
 
 class Entry(object):
     """An Entry object stores commands to be executed at entry into a state.
@@ -180,7 +179,6 @@ class Entry(object):
                 del self.__action_db[transition_id]
                 return
         return
-
 
     def set_action_db(self, ActionDB):
         self.__action_db = ActionDB

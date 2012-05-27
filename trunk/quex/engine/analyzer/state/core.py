@@ -44,9 +44,6 @@ class AnalyzerState(object):
         self.__init_state_f = InitStateF
         self.__engine_type  = EngineType
 
-        # (*) Input
-        self.input = get_input_action(EngineType, self.__init_state_f)
-
         if self.__init_state_f: 
             if E_StateIndices.NONE not in FromStateIndexList:
                 FromStateIndexList.add(E_StateIndices.NONE)
@@ -115,7 +112,7 @@ class AnalyzerState(object):
 
     def get_string_array(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
         txt = [ "State %s:\n" % repr(self.index).replace("L", "") ]
-        if InputF:         txt.append("  .input: move position %s\n" % repr(self.input))
+        # if InputF:         txt.append("  .input: move position %s\n" % repr(self.input))
         if EntryF:         txt.append("  .entry:\n"); txt.append(repr(self.entry))
         if TransitionMapF: txt.append("  .transition_map:\n")
         if DropOutF:       txt.extend(["  .drop_out:\n",    repr(self.drop_out)])
@@ -136,9 +133,24 @@ class AnalyzerState(object):
     def __repr__(self):
         return self.get_string()
 
-def get_input_action(EngineType, InitStateF):
+def get_input_action(EngineType, TheState, ForceInputDereferencingF):
     if EngineType == E_EngineTypes.FORWARD:
-        if InitStateF: return E_InputActions.DEREF
-        else:          return E_InputActions.INCREMENT_THEN_DEREF
-    else:              return E_InputActions.DECREMENT_THEN_DEREF
+        if TheState.init_state_f: action = E_InputActions.DEREF
+        else:                     action = E_InputActions.INCREMENT_THEN_DEREF
+    else:                         action = E_InputActions.DECREMENT_THEN_DEREF
+
+    if TheState.transition_map_empty_f:
+        # If the state has no further transitions then the input character does 
+        # not have to be read. This is so, since without a transition map, the 
+        # state immediately drops out. The drop out transits to a terminal. 
+        # Then, the next action will happen from the init state where we work
+        # on the same position. If required the reload happens at that moment.
+        #
+        # This is not true for Path Walker States, so we offer the option 
+        # 'ForceInputDereferencingF'
+        if not ForceInputDereferencingF:
+            if   action == E_InputActions.INCREMENT_THEN_DEREF: return E_InputActions.INCREMENT
+            elif action == E_InputActions.DECREMENT_THEN_DEREF: return E_InputActions.DECREMENT
+
+    return action
 

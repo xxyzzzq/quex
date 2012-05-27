@@ -280,11 +280,13 @@ class LanguageDB_Cpp(dict):
         direction = { 
             E_EngineTypes.FORWARD:              "FORWARD",
             E_EngineTypes.BACKWARD_PRE_CONTEXT: "BACKWARD",
-            E_EngineTypes.BACKWARD_INPUT_POSITION: "",
+            E_EngineTypes.BACKWARD_INPUT_POSITION: None,
             E_EngineTypes.INDENTATION_COUNTER:  "FORWARD",
             # There is never a reload on backward input position detection.
             # The lexeme to parse must lie inside the borders!
         }[EngineType]
+        assert direction is not None, \
+               "There is no reload during BACKWARD_INPUT_POSITION detection."
 
         # 'DoorIndex == 0' is the entry into the state without any actions.
         on_success = get_address("$entry", entry_action.DoorID(StateIndex, DoorIndex=0), U=True)

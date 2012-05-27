@@ -472,7 +472,6 @@ class Door:
         # There might be a door with zero transition actions related to it: The root door,
         # if there are no common actions at all between the command lists.
         # Thus: It is OK that a door might be assigned an empty transition_id_list.
-        assert Door.id_counter == 0 or len(transition_id_list) != 0
         Door.door_id_to_transition_id_list_db[DoorIdentifier] = transition_id_list
         Door.id_counter += 1
 

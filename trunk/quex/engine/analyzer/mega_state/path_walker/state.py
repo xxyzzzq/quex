@@ -11,7 +11,7 @@ class PathWalkerState(MegaState):
        this class are the basis for code generation.
     """
     def __init__(self, FirstPath, TheAnalyzer, CompressionType):
-        MegaState.__init__(self, TheAnalyzer)
+        MegaState.__init__(self, FirstPath.index)
 
         self.__path_list      = [ FirstPath.sequence() ]
         self.entry            = self.__adapt_path_walker_id_and_path_id(FirstPath.entry, PathID=0)
@@ -21,14 +21,10 @@ class PathWalkerState(MegaState):
         # into a transition map:                     # list: [ ... (interval, target) ... ]
         self.transition_map   = self.__determine_transition_map(self.__skeleton) 
 
-        self.input = { 
-            E_EngineTypes.FORWARD:                 E_InputActions.INCREMENT_THEN_DEREF,
-            E_EngineTypes.BACKWARD_PRE_CONTEXT:    E_InputActions.DECREMENT_THEN_DEREF,
-            E_EngineTypes.BACKWARD_INPUT_POSITION: E_InputActions.DECREMENT_THEN_DEREF,
-        }[TheAnalyzer.engine_type]
-
-        self.__uniformity_required_f = (CompressionType == E_Compression.PATH_UNIFORM)
+        self.__uniformity_required_f                 = (CompressionType == E_Compression.PATH_UNIFORM)
         self.__uniform_entry_command_list_along_path = FirstPath.get_uniform_entry_command_list_along_path()
+        self.__uniform_terminal_entry_door_id        = PathWalkerState.get_terminal_door_id(FirstPath.sequence(), \
+                                                                                            TheAnalyzer.state_db)
 
         self.__state_index_list     = None # Computed on demand
         self.__end_state_index_list = None # Computed on demand
@@ -47,7 +43,7 @@ class PathWalkerState(MegaState):
         return [ (interval, MegaState_Target.create(target)) \
                  for interval, target in TransitionMap(Skeleton).get_trigger_map() ]
 
-    def accept(self, Path):
+    def accept(self, Path, StateDB):
         """Accepts the given Path to be walked, if the skeleton matches.
            If additionally uniformity is required, then only states with
            same drop_out and entry are accepted.
@@ -64,17 +60,17 @@ class PathWalkerState(MegaState):
             return False
 
         # (1b) If uniformity is required and not maintained, then refuse.
-        # (*) Check Entry Uniformity
-        if self.__uniform_entry_command_list_along_path is None:
-            uniform_entry_f = False
-        else:
+        #      Uniformity: -- There exists uniformity in all previously accepted 
+        #                     paths. 
+        #                  -- There is a uniform command list along the path
+        #                  -- The uniform command list is equivalent with the 
+        #                     existing one.
+        uniform_entry_f = False
+        if self.__uniform_entry_command_list_along_path is not None:
             uniform_entry = Path.get_uniform_entry_command_list_along_path()
-            if uniform_entry is None:
-                uniform_entry_f = False
-            elif not uniform_entry.is_equivalent(self.__uniform_entry_command_list_along_path):
-                uniform_entry_f = False
-            else:
-                uniform_entry_f = True
+            if     uniform_entry is not None \
+               and uniform_entry.is_equivalent(self.__uniform_entry_command_list_along_path):
+                    uniform_entry_f = True
 
         if self.__uniformity_required_f:
             # If uniformity is required, then a non-uniform entry should never been
@@ -98,7 +94,12 @@ class PathWalkerState(MegaState):
         path_id = len(self.__path_list) 
 
         # (2a) Absorb the state sequence of the path
+        #      (verify/falsify the uniform terminal entry)
         self.__path_list.append(Path.sequence())
+        if self.__uniform_terminal_entry_door_id is not None:
+            if    self.__uniform_terminal_entry_door_id \
+               != PathWalkerState.get_terminal_door_id(Path.sequence(), StateDB):
+                 self.__uniform_terminal_entry_door_id = None
 
         # (2b) Absorb Entry Information
         #      Absorb entry's action_db (maps: 'transition_id --> command_list')
@@ -110,15 +111,37 @@ class PathWalkerState(MegaState):
 
         return True
 
+    def replace_door_ids_in_transition_map(self, ReplacementDB):
+        MegaState.replace_door_ids_in_transition_map(self, ReplacementDB)
+        # The uniform terminal entry door may have to be replaced, also.
+        if self.__uniform_terminal_entry_door_id is None:
+            return
+        # If the uniform terminal entry door id is subjec to replacement,
+        # then do so.
+        print "##udidad", self.__uniform_terminal_entry_door_id
+        replacement = ReplacementDB.get(self.__uniform_terminal_entry_door_id)
+        for orig, repl in ReplacementDB.iteritems():
+            print "##", orig, repl
+        if replacement is not None:
+            self.__uniform_terminal_entry_door_id = replacement
+            print  "##Done"
+
     def __adapt_path_walker_id_and_path_id(self, TheEntry, PathID):
         """Ensure that any 'SetPathIterator' contains the right references
            to the pathwalker and path id.
         """
         for action in TheEntry.action_db.itervalues():
+            found_f = False
             for command in action.command_list:
                 if isinstance(command, SetPathIterator):
+                    assert not found_f # Double check that there are not more than one 
+                    #                  # such command per command_list.
+                    found_f = True
                     command.set_path_walker_id(self.index)
                     command.set_path_id(PathID)
+                    # There shall not be more then one 'SetPathIterator' command 
+                    # for one transition.
+
         return TheEntry
 
     @property
@@ -179,19 +202,19 @@ class PathWalkerState(MegaState):
         assert door_id is not None, "There MUST be a door for the uniform entry command list."
         return door_id
 
-    def terminal_door_id_of_path(self, PathID):
+    @staticmethod
+    def get_terminal_door_id(Path, StateDB):
         """Determine the DoorID by which the path number 'PathID' enters
            the terminal state of the path (which is not implemented by 
            the pathwalker).
         """
-        sequence = self.__path_list[PathID]
-        assert len(sequence) >= 2
+        assert len(Path) >= 2
 
-        before_terminal_state_index = sequence[-2][0]
-        terminal_state_index        = sequence[-1][0]
+        before_terminal_state_index = Path[-2][0]
+        terminal_state_index        = Path[-1][0]
         # Determine DoorID by transition
-        return self.analyzer.state_db[terminal_state_index].entry.get_door_id(terminal_state_index, 
-                                                                              before_terminal_state_index)
+        return StateDB[terminal_state_index].entry.get_door_id(terminal_state_index, 
+                                                               before_terminal_state_index)
 
     @property
     def uniform_terminal_entry_door_id(self):
@@ -199,19 +222,7 @@ class PathWalkerState(MegaState):
                                terminal state through the same entry door.
                     None   -- if not.
         """
-        assert len(self.path_list) != 0
-        if len(self.__path_list) == 1:
-            return self.terminal_door_id_of_path(0)
-
-        prototype = None
-        for path_id in xrange(len(self.__path_list)):
-            # Determine door entered from last but one to last state on the path
-            door_id = self.terminal_door_id_of_path(path_id)
-            if prototype is None: 
-                prototype = door_id
-            elif not (prototype == door_id):
-                return None
-        return prototype
+        return self.__uniform_terminal_entry_door_id
 
     def get_path_info(self, StateIdx):
         """[0] Path ID: Index of the path where StateIdx is located

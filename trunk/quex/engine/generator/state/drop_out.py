@@ -3,13 +3,14 @@ from   quex.blackboard                           import E_EngineTypes, E_Accepta
                                                         E_TransitionN, E_PostContextIDs, E_PreContextIDs, \
                                                         setup as Setup
 
-def do(txt, TheState, TheAnalyzer, DefineLabelF=True):
+def do(txt, TheState, TheAnalyzer, DefineLabelF=True, MentionStateIndexF=True):
     LanguageDB          = Setup.language_db
 
     if DefineLabelF:
         txt.append(Address("$drop-out", TheState.index))
 
-    txt.append("    __quex_debug_drop_out(%i);\n" % TheState.index)
+    if MentionStateIndexF:
+        txt.append("    __quex_debug_drop_out(%i);\n" % TheState.index)
 
     if TheState.engine_type == E_EngineTypes.BACKWARD_PRE_CONTEXT:
         txt.append("    %s\n" % LanguageDB.GOTO(E_StateIndices.END_OF_PRE_CONTEXT_CHECK))

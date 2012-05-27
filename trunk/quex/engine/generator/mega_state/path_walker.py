@@ -77,15 +77,15 @@
             ...
             }
 """
-from   quex.engine.generator.state.core             import input_do
-from   quex.engine.generator.languages.variable_db  import variable_db
-from   quex.blackboard                              import setup as Setup
-
-from   itertools import imap
+from quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
+from quex.engine.generator.state.core                  import input_do
+from quex.engine.generator.languages.variable_db       import variable_db
+from quex.blackboard import setup as Setup
+from itertools       import imap
 
 def framework(txt, PWState, TheAnalyzer):
     LanguageDB = Setup.language_db
-    input_do(txt, PWState, ForceInputDereferencingF=True) 
+    input_do(txt, PWState, TheAnalyzer, ForceInputDereferencingF=True) 
     LanguageDB.STATE_DEBUG_INFO(txt, PWState)
 
     # Three Versions of PathWalkers:
@@ -106,23 +106,23 @@ def framework(txt, PWState, TheAnalyzer):
             jump_to_next_state = LanguageDB.GOTO_BY_DOOR_ID(uniform_entry_door_id)
             jump_to_terminal   = "            %s\n" % LanguageDB.GOTO_BY_DOOR_ID(uniform_terminal_entry_door_id)
         else:
-            #   (2) -- Uniform entries (ALONG THE PATH)
-            #       -- The terminal of the paths are different
+            # (2) -- Uniform entries (ALONG THE PATH)
+            #     -- The terminal of the paths are different
             # 
-            #        if input == *path_iterator:
-            #           path_iterator += 1
-            #           if *path_iterator != TerminationCode: 
-            #              goto the single path walker entry  # jump to next state
-            #           else:
-            #              # jump to terminal 
-            #              if      path_iterator == path_0_end:  goto terminal_0
-            #              else if path_iterator == path_1_end:  goto terminal_1
-            #              else if path_iterator == path_2_end:  goto terminal_2
-            #              ...
+            #      if input == *path_iterator:
+            #         path_iterator += 1
+            #         if *path_iterator != TerminationCode: 
+            #            goto the single path walker entry  # jump to next state
+            #         else:
+            #            # jump to terminal 
+            #            if      path_iterator == path_0_end:  goto terminal_0
+            #            else if path_iterator == path_1_end:  goto terminal_1
+            #            else if path_iterator == path_2_end:  goto terminal_2
+            #            ...
             jump_to_next_state = LanguageDB.GOTO_BY_DOOR_ID(uniform_entry_door_id)
             code     = ""
             for path_id, sequence in enumerate(PWState.path_list):
-                terminal_door_id = PWState.terminal_door_id_of_path(PathID=path_id)
+                terminal_door_id = PathWalkerState.get_terminal_door_id(sequence, TheAnalyzer.state_db)
                 code +=  "            %s"       % LanguageDB.IF("path_iterator", "==", "path_walker_%i_path_%i + %s" %  \
                                                                 (PWState.index, path_id, len(sequence)-1),              \
                                                                 FirstF=(path_id == 0))                                  \
@@ -194,7 +194,6 @@ def require_data(PWState, TheAnalyzer):
         return offset, result
 
     def __character_sequences():
-
         result = ["{\n"]
         offset = 0
         for path_id, path in enumerate(PWState.path_list):

@@ -129,7 +129,7 @@ def group_paths(CharacterPathList, TheAnalyzer, CompressionType):
     path_walker_list = []
     for candidate in CharacterPathList:
         for path_walker in path_walker_list:
-            if path_walker.accept(candidate): break
+            if path_walker.accept(candidate, TheAnalyzer.state_db): break
         else:
             path_walker_list.append(PathWalkerState(candidate, TheAnalyzer, CompressionType))
 
@@ -147,7 +147,8 @@ def group_paths(CharacterPathList, TheAnalyzer, CompressionType):
         path_walker.entry.action_db[transition_id] = transition_action
 
         # Once the entries are combined, re-configure the door tree
-        path_walker.entry.door_tree_configure(path_walker.index)
+        path_walker.entry.door_tree_configure(TheAnalyzer.state_db, \
+                                              path_walker.implemented_state_index_list())
 
     return path_walker_list
 

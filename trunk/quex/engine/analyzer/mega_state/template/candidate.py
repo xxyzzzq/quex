@@ -19,9 +19,8 @@ class TemplateStateCandidate(TemplateState):
        measure. The member '.total()' determines a scalar value by means
        of a heuristics.
     """
-    def __init__(self, StateA, StateB, TheAnalyzer):
-        TemplateState.__init__(self, StateA, StateB, TheAnalyzer)
-        self.__asserts(TheAnalyzer)
+    def __init__(self, StateA, StateB, StateDB):
+        TemplateState.__init__(self, StateA, StateB, StateDB)
 
         entry_gain          = _compute_entry_gain(self.entry, StateA.entry, StateB.entry)
         drop_out_gain       = _compute_drop_out_gain(self.drop_out, 
@@ -31,20 +30,6 @@ class TemplateStateCandidate(TemplateState):
                                                    StateA.transition_map, StateB.transition_map)
 
         self.__gain         = (entry_gain + drop_out_gain + transition_map_gain).total()
-
-    def __asserts(self, TheAnalyzer):
-        if TheAnalyzer is None: return
-
-        # All states in the state_index_list must be from the original analyzer
-        def _check(StateIndexList):
-            for state_index in StateIndexList:
-                assert TheAnalyzer.state_db.has_key(state_index)
-
-        _check(self.state_index_list)
-        # for entry, state_index_list in self.entry.iteritems():
-        #    check(state_index_list)
-        for drop_out, state_index_list in self.drop_out.iteritems():
-            _check(state_index_list)
 
     @property 
     def gain(self):

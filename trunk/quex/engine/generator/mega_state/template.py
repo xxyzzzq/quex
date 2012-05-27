@@ -84,7 +84,7 @@ from   operator        import attrgetter
 """
 
 def framework(txt, TState, TheAnalyzer):
-    input_do(txt, TState) 
+    input_do(txt, TState, TheAnalyzer) 
     LanguageDB = Setup.language_db
     LanguageDB.STATE_DEBUG_INFO(txt, TState)
 

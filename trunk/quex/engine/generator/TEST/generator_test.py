@@ -16,11 +16,11 @@ from   quex.engine.generator.action_info       import PatternActionInfo, CodeFra
 import quex.output.cpp.core                    as cpp_generator
 
 # import quex.engine.generator.skipper.core          as skipper
-from   quex.engine.generator.languages.variable_db  import VariableDB
+from   quex.engine.generator.languages.variable_db import VariableDB
 import quex.engine.generator.skipper.character_set as character_set_skipper
 import quex.engine.generator.skipper.range         as range_skipper
 import quex.engine.generator.skipper.nested_range  as nested_range_skipper
-import quex.input.regular_expression.engine         as regex
+import quex.input.regular_expression.engine        as regex
 #
 from   quex.blackboard import setup as Setup
 
@@ -31,7 +31,7 @@ else:     REMOVE_FILES = False
 
 # Switch: Verbose debug output: 
 #         'False' --> Verbose debug output
-if False:
+if True:
     SHOW_TRANSITIONS_STR  = ""
     SHOW_BUFFER_LOADS_STR = ""
 else:
