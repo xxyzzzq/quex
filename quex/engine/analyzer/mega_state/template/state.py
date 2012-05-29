@@ -139,35 +139,8 @@ class TemplateState(MegaState):
         # Local door_id replacement database
         self.__door_id_update_db = self.__door_id_update_db_construct()
 
-        # Adapt the door ids of the transition maps and bring them all into a form of 
-        # (interval --> MegaState_Target)
-        tm_a = self.__door_id_update_db_get_transition_map(StateA)
-        tm_b = self.__door_id_update_db_get_transition_map(StateB)
-
         self.transition_map,    \
-        self.__target_scheme_list = combine_maps(StateA, tm_a, StateB, tm_b)
-
-        if False and self.index == 91:
-            print "##self.index:", self.index
-            for key, value in self.__entry.door_db.iteritems():
-                print "##", key, value
-            print "##door tree:", self.__entry.door_tree_root.get_string(self.__entry.transition_db)
-            print "##A.index:", StateA.index, StateA.implemented_state_index_list()
-            print "##A.transition_db:"
-            for door_id, transition_id_list in StateA.entry.transition_db.iteritems():
-                print "##A", door_id, " --> ", transition_id_list
-            print "##A.transition_map:"
-            for interval, target in StateA.transition_map:
-                print "##A", target
-            print "##B.index:", StateB.index, StateB.implemented_state_index_list()
-            print "##B.transition_db:"
-            for door_id, transition_id_list in StateB.entry.transition_db.iteritems():
-                print "##B", door_id, " --> ", transition_id_list
-            for interval, target in StateB.transition_map:
-                print "##B", target
-
-            for interval, target in tm_a:
-                print "##tm_a", target
+        self.__target_scheme_list = combine_maps(StateA, StateB)
 
         # Compatible with AnalyzerState
         # (A template state can never mimik an init state)
@@ -245,32 +218,7 @@ class TemplateState(MegaState):
         extract(result, self.__state_b)
         return result
 
-    def __door_id_update_db_get_transition_map(self, State):
-        """Purpose of this function is to identify places in the transition map
-           where it referes to one of the two states which are currently combined.
-           A transition to '__state_a' or '__state_b' is to be replaced by a transition
-           to this state. This happens by replacing the door_ids in the 
-           MegaState_Target objects.
-
-           A MegaState_Target may be a single door (transition same for all state keys)
-           or a scheme (transition depends on state key). Depending on the type of
-           MegaState_Target this function detects whether it needs to be adapted.
-           If so, it disconnected (cloned) and the new door_ids are entered.
-        """
-        cloned_f       = False
-        transition_map = State.transition_map
-        for i, info in enumerate(transition_map):
-            interval, target = info
-            new_target = target.door_id_replacement(self.__door_id_update_db)
-            if new_target is not None: 
-                if not cloned_f:
-                    transition_map = copy(transition_map) # Disconnect transition_map => clone!
-                    cloned_f       = True
-                transition_map[i] = (interval, new_target)
-
-        return transition_map
-
-def combine_maps(StateA, AdaptedTM_A, StateB, AdaptedTM_B):
+def combine_maps(StateA, StateB, AdaptedTM_B):
     """RETURNS:
 
           -- Transition map = combined transition map of StateA and StateB.
@@ -376,8 +324,8 @@ def combine_maps(StateA, AdaptedTM_A, StateB, AdaptedTM_B):
         assert_adjacency(TM, TotalRangeF=True)
         return TM, len(TM)
 
-    TransitionMapA, LenA = __help(AdaptedTM_A)
-    TransitionMapB, LenB = __help(AdaptedTM_B)
+    TransitionMapA, LenA = __help(StateA.transition_map)
+    TransitionMapB, LenB = __help(StateB.transition_map)
 
 
     # Intervals in trigger map are always adjacent, so the '.begin' member is
@@ -433,10 +381,10 @@ class TargetSchemeDB(dict):
                 return TA
             TA_scheme = (E_StateIndices.DROP_OUT,) * self.__state_a_state_index_list_length
 
-        elif TA.door_id is not None:
-            if TB.door_id is not None and TA.door_id == TB.door_id:
+        elif TA.target_state_index is not None:
+            if TB.target_state_index is not None and TA.target_state_index == TB.target_state_index:
                 return TA
-            TA_scheme = (TA.door_id,) * self.__state_a_state_index_list_length
+            TA_scheme = (TA.target_state_index,) * self.__state_a_state_index_list_length
 
         else:
             TA_scheme = TA.scheme
@@ -445,9 +393,9 @@ class TargetSchemeDB(dict):
             # TA was not drop-out, otherwise we would have returned earlier
             TB_scheme = (E_StateIndices.DROP_OUT,) * self.__state_b_state_index_list_length
 
-        elif TB.door_id is not None:
+        elif TB.target_state_index is not None:
             # TA was not the same door, otherwise we would have returned earlier
-            TB_scheme = (TB.door_id,) * self.__state_b_state_index_list_length
+            TB_scheme = (TB.target_state_index,) * self.__state_b_state_index_list_length
 
         else:
             TB_scheme = TB.scheme
@@ -476,7 +424,7 @@ class TargetSchemeDB(dict):
         scheme = SchemeA + SchemeB
 
         for target in scheme:
-            assert isinstance(target, DoorID) or target == E_StateIndices.DROP_OUT 
+            assert isinstance(target, long) or target == E_StateIndices.DROP_OUT 
 
         result = dict.get(self, scheme)
         if result is None: 

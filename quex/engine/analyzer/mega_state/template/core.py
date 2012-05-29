@@ -93,9 +93,9 @@ from   copy            import copy
           (1.2) Do not consider to combine states where the 'gain' is 
                 below MinGain.
 
-          (1.3) Register the candidate in 'gain_matrix'.
+          (1.3) Register the candidate in 'candidate_list'.
 
-      (4) Pop best candidate from gain_matrix. If no more reasonable
+      (4) Pop best candidate from candidate_list. If no more reasonable
           candidates present, then stop.
             
       (5) With given candidate goto (1.1)
@@ -157,15 +157,11 @@ def do(TheAnalyzer, MinGain, CompressionType,
     # (A 'state' in the above sense can also be a TemplateState)
     combiner = CombinationDB(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList)
 
-    # Combine states until there is nothing that can be reasonably be combined.
+    # Combine states until there is nothing that can reasonably be combined.
     while combiner.combine_best():
         pass
 
-    done_state_index_set, template_state_list = combiner.result()
-
-    ## print "##RESULT:", done_state_index_set
-    ## print "         ", len(template_state_list), [x.index for x in template_state_list]
-    return done_state_index_set, template_state_list
+    return combiner.result()
 
 class CombinationDB:
     """Contains the 'Gain' for each possible combination of states. This includes
@@ -314,16 +310,12 @@ class CombinationDB:
         MaxSize     = len(self.__candidate_list) + MaxIncrease
         self.__candidate_list.extend([None] * MaxIncrease)
 
-        NewElect.replace_door_ids_in_transition_map(self.__door_id_replacement_db)
-        self.__assert_transition_map(NewElect)
         for state in self.__elect_db.itervalues():
             if self.__uniformity_required_f:
                 # Rely on __eq__ operator (used '=='). '!=' uses __neq__ 
                 if   not (state.drop_out == NewElect.drop_out):    continue
                 elif not (state.entry.is_uniform(NewElect.entry)): continue
 
-            state.replace_door_ids_in_transition_map(self.__door_id_replacement_db)
-            self.__assert_transition_map(state)
             candidate = TemplateStateCandidate(NewElect, state, self.__all_db)
 
             if candidate.gain >= self.__min_gain:
@@ -352,46 +344,18 @@ class CombinationDB:
         self.enter(elect)
         return True
 
-    def result_iterable(self):
-        """RETURNS: List of TemplateStates. Those are the states that have been 
-                    generated from combinations of analyzer states.
-        """
-        return ifilter(lambda x: isinstance(x, TemplateState), self.__elect_db.itervalues())
-
     def result(self):
-        """RETURNS: List of TemplateStates. Those are the states that have been 
-                    generated from combinations of analyzer states.
+        """RETURNS: Map from 'absorbed AnalyzerState' indices to the Template state 
+                    which implements it.
         """
-        template_state_list = [x for x in self.__elect_db.itervalues() if isinstance(x, TemplateState)]
-        done_state_index_set = set()
-        for state in template_state_list:
-            done_state_index_set.update(state.state_index_list)
-            state.target_scheme_list_update(self.__door_id_replacement_db)
-            #if state.index == 2374:
-                #print "##transition_map: {"
-                #for key, value in state.transition_map:
-                #    print "## %s --> %s" % (key.get_string(Option="hex"), value)
-                #print "##}"
-                
+        result = {}
+        for state in (x for x in self.__elect_db.itervalues() if isinstance(x, TemplateState)):
+            result.update((i, state) for i in state.implemented_state_index_list())
 
-        #state = self.__analyzer.state_db[350]
-        #print "##AFTER: transition_db (350): {"
-        #for key, value in state.entry.transition_db.iteritems():
-        #    print "## %s --> %s" % (key, value)
-        #print "##}"
-        #print "##AFTER: door_db (350): {"
-        #for key, value in state.entry.door_db.iteritems():
-        #    print "## %s --> %s" % (key, value)
-        #print "##}"
-        #print "##door_id_replacement_db: {"
-        #for key, value in sorted(self.__door_id_replacement_db.iteritems()):
-        #    print "## %s --> %s" % (key, value)
-        #print "##}"
-
-        return done_state_index_set, template_state_list
+        return result
 
     @property
-    def gain_matrix(self):
+    def candidate_list(self):
         return self.__candidate_list
 
     def pop_best(self):
@@ -413,7 +377,6 @@ class CombinationDB:
         i, k, elect = self.__candidate_list.pop()
 
         # print "##ELECT:", elect.index,  elect._DEBUG_combined_state_indices()
-        # print "##     :", self.__door_id_replacement_db
 
         # (*) __elect_db:    Remove 'i' and 'k' from '__elect_db'.
         #     __candidate_list: Remove any TemplateStateCandidate that combines 
@@ -431,45 +394,6 @@ class CombinationDB:
         self.__candidate_list_delete_references(i, k)
         del self.__elect_db[i]
         del self.__elect_db[k]
-
-        # -- Extend the 'door_id_replacement_db' by what has been implemented in 'elect'
-        self.__door_id_replacement_db.update(elect.entry.door_id_replacement_db)
-        self.__door_id_replacement_db.update(elect.door_id_update_db)
-
-        #print "##121,2 --> ", self.__door_id_replacement_db.get(DoorID(121L, 2))
-        #if elect.index == 121:
-        #    for interval, target in elect.transition_map:
-        #        print "##", target
-
-        # -- All previous replacements from 'i' and 'k' must be replaced
-        #    by DoorID-s from 'elect'.
-        for original, replacement in self.__door_id_replacement_db.items():
-            if    replacement.state_index == i \
-               or replacement.state_index == k: 
-                # Get a more recent replacement for 'original'
-                self.__door_id_replacement_db[original] = elect.door_id_update_db[replacement]
-
-        ## -- All states that may be potentially combined must have their
-        ##    transition maps adapted.
-        #for state in self.__elect_db.itervalues():
-        #    state.replace_door_ids_in_transition_map(self.__door_id_replacement_db)
-
-        # -- The implemented states must give the right 'advice'
-        for state_index in elect.implemented_state_index_list():
-            original         = self.__all_db[state_index] 
-            original_door_db = original.entry.door_db
-            t_db = defaultdict(list)
-            d_db = {}
-            for door_id, transition_id_list in elect.entry.transition_db.iteritems():
-                concerned_list = [ transition_id for transition_id in transition_id_list \
-                                   if original_door_db.has_key(transition_id) ]
-                if len(concerned_list) == 0:
-                    continue
-                t_db[door_id] = concerned_list
-                d_db.update((transition_id, door_id) for transition_id in concerned_list)   
-                   
-            original.entry.set_transition_db(t_db)
-            original.entry.set_door_db(d_db)
 
         return elect
 
@@ -526,71 +450,3 @@ class CombinationDB:
             if door_id.door_index == 0:
                 assert isinstance(state, TemplateState)
 
-        # Double Check: No state shall refer to a Door of the combined states.
-        if False:
-            for state in self.__elect_db.itervalues():
-                for door_id in state.entry.door_db.itervalues():
-                    assert door_id.state_index != i 
-                    assert door_id.state_index != k 
-                    if door_id.state_index != elect.index:
-                        assert self.__elect_db.has_key(door_id.state_index), \
-                               "%s\n--\n%s\n" % (state.entry.transition_db, door_id)
-                        target_state = self.__elect_db[door_id.state_index]
-                        assert target_state.entry.transition_db.has_key(door_id), \
-                               "%s\n--\n%s\n" % (target_state.entry.transition_db, door_id)
-                for door_id in state.entry.transition_db.iterkeys():
-                    assert door_id.state_index != i 
-                    assert door_id.state_index != k 
-                    if door_id.state_index != elect.index:
-                        assert self.__elect_db.has_key(door_id.state_index), \
-                               "%s\n--\n%s\n" % (state.entry.transition_db, door_id)
-                        target_state = self.__elect_db[door_id.state_index]
-                        assert target_state.entry.transition_db.has_key(door_id), \
-                               "%s\n--\n%s\n" % (target_state.entry.transition_db, door_id)
-                for interval, target in state.transition_map:
-                    if target.drop_out_f: 
-                        continue
-                    elif target.door_id is not None:
-                        assert door_id.state_index != i 
-                        assert door_id.state_index != k 
-                        if door_id.state_index != elect.index:
-                            assert self.__elect_db.has_key(door_id.state_index), \
-                                   "%s\n--\n%s\n" % (state.entry.transition_db, door_id)
-                            target_state = self.__elect_db[door_id.state_index]
-                            assert target_state.entry.transition_db.has_key(door_id), \
-                                   "%s\n--\n%s\n" % (target_state.entry.transition_db, door_id)
-                    else:
-                        for door_id in target.scheme:
-                            assert door_id.state_index != i 
-                            assert door_id.state_index != k 
-                            if door_id.state_index != elect.index:
-                                assert self.__elect_db.has_key(door_id.state_index), \
-                                       "[%i] %s\n--\n%s\n" % (state.index, state.entry.transition_db, door_id)
-                                target_state = self.__elect_db[door_id.state_index]
-                                assert target_state.entry.transition_db.has_key(door_id), \
-                                       "%s\n--\n%s\n" % (target_state.entry.transition_db, door_id)
-
-    def __assert_transition_map(self, TheState):
-        """A transition map shall never contain the root door of
-           a TemplateState, except of its own.
-        """
-        for interval, target in TheState.transition_map:
-            if target.drop_out_f: 
-                continue
-            elif target.door_id is not None:
-                if   target.door_id == E_StateIndices.DROP_OUT:
-                    continue
-                elif target.door_id.door_index != 0: 
-                    continue
-                elif target.door_id.state_index != TheState.index: 
-                    target_state = self.__all_db[target.door_id.state_index]
-                    assert not isinstance(target_state, TemplateState)
-            else:
-                for door_id in target.scheme:
-                    if   door_id == E_StateIndices.DROP_OUT:
-                        continue
-                    elif door_id.door_index != 0: 
-                        continue
-                    elif door_id.state_index != TheState.index: 
-                        target_state = self.__all_db[door_id.state_index]
-                        assert not isinstance(target_state, TemplateState)

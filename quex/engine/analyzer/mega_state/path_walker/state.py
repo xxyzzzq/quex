@@ -113,18 +113,16 @@ class PathWalkerState(MegaState):
 
     def replace_door_ids_in_transition_map(self, ReplacementDB):
         MegaState.replace_door_ids_in_transition_map(self, ReplacementDB)
+
         # The uniform terminal entry door may have to be replaced, also.
         if self.__uniform_terminal_entry_door_id is None:
             return
         # If the uniform terminal entry door id is subjec to replacement,
         # then do so.
-        print "##udidad", self.__uniform_terminal_entry_door_id
         replacement = ReplacementDB.get(self.__uniform_terminal_entry_door_id)
         for orig, repl in ReplacementDB.iteritems():
-            print "##", orig, repl
         if replacement is not None:
             self.__uniform_terminal_entry_door_id = replacement
-            print  "##Done"
 
     def __adapt_path_walker_id_and_path_id(self, TheEntry, PathID):
         """Ensure that any 'SetPathIterator' contains the right references
