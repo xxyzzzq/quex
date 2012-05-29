@@ -10,79 +10,6 @@ from copy      import copy, deepcopy
 class MegaState_Entry(Entry):
     def __init__(self, MegaStateIndex):
         Entry.__init__(self, MegaStateIndex, FromStateIndexList=[])
-        self.__door_id_replacement_db = None
-
-    @property
-    def door_id_replacement_db(self):
-        """The MegaState implements a set of states. The entry doors of these
-           states are implemented in the MegaState_Entry. This property
-           returns a dictionary that maps from doors of original states to
-           doors of this MegaState which implement these doors.
-
-           door_db:  transition_id(x, y) --> door_id_z(si, di)
-
-           Documents that the transition into state 'x' from state 'y' is 
-           implemented by door 'door_id_z(si, di)' determined by the 
-           state index 'si' of the implementing state and the door index 'di'
-           pointing into the state's door tree. 
-
-           Now, that the state is implemented by a MegaState, the transition
-           must be associated with a DoorID from the MegateState. This documents
-           that the MegaState implements this transition.
-
-           The translation from old DoorID to new DoorID happens by means of the
-           transition_ids which remain the same.
-        """
-        assert self.__door_id_replacement_db is not None, \
-               ".door_tree_configure(StateDB, ImplementedStateIndexList) must be called before."
-        return self.__door_id_replacement_db
-
-    def door_tree_configure(self, StateDB, ImplementedStateIndexList):
-        """First: See 'Entry.door_tree_configure()'. 
-        
-           This overwriting function extends the base's .door_tree_configure()
-           by alse providing the '__door_id_replacement_db'. 
-           
-           A MegaState implements more than one state. Therefore, it directs
-           transitions into normal states into its own doors. Namely, the
-           TransitionID-s that originaly were associated with DoorID-s of an
-           AnalyzerState are now associated with DoorID-s of the MegaState.
-            
-           The base class' .door_tree_configure() translates the 'action_db'
-           into a door tree and provides the 'door_db' and the 'transition_db';
-           where the used DoorID-s now relate to the MegaState. Using the 
-           TransitionID keys from 'transition_db' allows to get the DoorID 
-           from the AnalyzerState's 'door_db'.
-        """
-        # Based on the now existing 'action_db' the door tree can be
-        # configured. Also, it results the 'door_db' and the 'transition_db'.
-        Entry.door_tree_configure(self)
-
-        # Derive the replacement database.
-        result = {}
-        for state_index in ImplementedStateIndexList:
-            # map: TransitionID-s of AnalyzerState --> DoorID-s of MegaState.
-            transition_db = StateDB[state_index].entry.transition_db
-            for door_id, transition_id_list in transition_db.iteritems():
-                if len(transition_id_list) == 0:
-                    # Only one DoorID can possibly be associated with no TransitionID: 
-                    # The root of the door tree. Its index is 0. Since no transition
-                    # happens through this door, it does not need to be mentioned.
-                    assert door_id.door_index == 0
-                    continue
-
-                # All TransitionID-s of a door are associate with the same commands.
-                # => They must enter through the same door in the MegaState. 
-                # => Considering any one TransitionID from the list is enough.
-                transition_id = transition_id_list[0] # Take any transition
-                new_door_id   = self.door_db.get(transition_id)
-                # The transition may have been deleted, for example, because it lies
-                # on the path of a uniform path walker.
-                if new_door_id is None: continue 
-
-                result[door_id] = new_door_id
-
-        self.__door_id_replacement_db = result
 
 class MegaState(AnalyzerState):
     """A MegaState is a state that implements more than one state at once.
@@ -97,24 +24,6 @@ class MegaState(AnalyzerState):
 
     @property
     def init_state_f(self): return False
-
-    def replace_door_ids_in_transition_map(self, ReplacementDB):
-        """ReplacementDB:    DoorID --> Replacement DoorID
-
-           The Existence of MegaStates has the consequence that transitions
-           have to be adapted. Let 'X' be a state that has been absorbed by 
-           a MegaState 'M'. Then a transition from another state 'Y' to 'X' is 
-           originally associated with DoorID 'Dyx'. Since 'X' is now part
-           of a MegaState, the transition 'from Y to X' has been associated
-           with the DoorID 'Dyxm' which is the MegaState's entry that represents
-           'from Y to X'. Any transition 'Dyx' must now be replaced by 'Dyxm'.
-        """
-        for i, info in enumerate(self.transition_map):
-            interval, target = info
-            if target.drop_out_f: continue
-            new_target = target.door_id_replacement(ReplacementDB)
-            if new_target is not None:
-                self.transition_map[i] = (interval, new_target)
 
     def implemented_state_index_list(self):
         assert False, "This function needs to be overwritten by derived class."
@@ -134,96 +43,50 @@ class PseudoMegaState(MegaState):
         self.__state       = Represented_AnalyzerState
         MegaState.__init__(self, StateIndex=Represented_AnalyzerState.index)
 
-        self.__entry_clone  = self.__entry_construct()
         self.__state_index_list = [ Represented_AnalyzerState.index ]
 
     def transition_map_construct(self, StateDB):
-        def adapt(Target):
-            if Target == E_StateIndices.DROP_OUT: 
-                return MegaState_Target_DROP_OUT
-            else:
-                door_id = StateDB[Target].entry.get_door_id(Target, self.index)
-                return MegaState_Target.create(door_id)
-
-        self.transition_map = [(interval, adapt(target)) \
+        self.transition_map = [(interval, MegaState_Target.create(target)) \
                                for interval, target in self.__state.transition_map ]
-        if False and self.index == 79:
-            StateA = self.__state
-            print "##self.index:", self.index
-            for key, value in self.entry.door_db.iteritems():
-                print "##", key, value
-            # print "##door tree:", self.entry.door_tree_root.get_string(self.__entry.transition_db)
-            print "##transition_db:"
-            for door_id, transition_id_list in self.__entry_clone.transition_db.iteritems():
-                print "##", door_id, " --> ", transition_id_list
-            print "##transition_map:"
-            for interval, target in StateA.transition_map:
-                print "##", target
-            for interval, target in self.transition_map:
-                print "##tm_a", target
-
 
     @property
     def entry(self):
-        return self.__entry_clone
+        return self.__state.entry
 
     @property
     def drop_out(self):
         return self.__state.drop_out
 
-    def map_state_index_to_state_key(self, StateIndex):
-        assert False, "PseudoMegaState-s exist only for analysis. They shall never be implemented."
-
     @property
     def state_index_list(self):
         return self.__state_index_list
+
     def implemented_state_index_list(self):
         return self.__state_index_list
 
-    def __entry_construct(self):
-        """Configure information about entry into the state. There is one special thing to 
-           consider: The door of the recursive transition (from_state == to_state) must be
-           different from the other doors. Later when the state is implemented in a MegaState,
-           the recursive door does not need the state_key to be set, while all other transitions
-           into the state require this. 
+    def map_state_index_to_state_key(self, StateIndex):
+        assert False, "PseudoMegaState-s exist only for analysis. They shall never be implemented."
 
-           The exact structure of the door tree is totally unimportant at this point in
-           time.
+class AbsorbedState_Entry:
+    def __init__(self, TransitionDB):
+        """Map: Transition --> DoorID of the implementing state.
         """
-        result = deepcopy(self.__state.entry)
+        self.transition_db = TransitionDB
 
-        # (*) Search for a recursive transition
-        transition_db = result.transition_db
-        door_db       = result.door_db
-        for transition_id, door_id in door_db.iteritems():
-            if transition_id.state_index != transition_id.from_state_index: continue
-            break # We found the recursive transition in the state 
-            #     # => Go and handle it.
-        else:
-            return result # (*) None found, no worry.
-
-        # (*) The recurive transition 'transition_id'
-
-        #  -- Check whether it has an isolated DoorID
-        transition_id_list = transition_db[door_id]
-        assert len(transition_id_list) > 0
-        if len(transition_id_list) == 1: 
-            assert transition_id_list[0] == transition_id
-            return result # (*) Recursive transition is isolated from rest, no worry.
-
-        # -- It shares the door with other transitions.
-        # => Put the recursive transition into an extra door.
-        #    Find the largest door_index => new door_index = max + 1
-        max_door_id = max(x.door_index for x in transition_db.iterkeys())
-        extra_door  = DoorID(door_id.state_index, max_door_id + 1)
-        transition_db[extra_door] = [transition_id]
-        door_db[transition_id]    = extra_door
-
-        # -- Delete the recursive transition from 'transition_id_list'
-        #    => This deletes its reference in 'door_db'
-        del transition_id_list[transition_id_list.index(transition_id)]
-
-        return result
+class AbsorbedState(AnalyzerState):
+    """An AbsorbedState object represents an AnalyzerState which has
+       been implemented by a MegaState. Its sole purpose is to pinpoint
+       to the MegaState which implements it and to translate the transtions
+       into itself to DoorIDs into the MegaState.
+    """
+    def __init__(self, AbsorbedAnalyzerState, AbsorbingMegaState, TransitionDB)
+        AnalyzerState.set_index(self, AbsorbedAnalyzerState.index)
+        # The absorbing MegaState may, most likely, contain other transitions
+        # than the transitions into the AbsorbedAnalyzerState. Those, others
+        # do not do any harm, though. Filtering out those out of the hash map
+        # does, most likely, not bring any benefit.
+        self.entry       = ImplementedState_Entry(AbsorbingMegaState.entry.transition_db)
+        self.absorbed_by = AbsorbingMegaState
 
 class MegaState_Target(object):
     """A mega state target contains the information about what the target
@@ -235,10 +98,15 @@ class MegaState_Target(object):
                 [ X, T ]
                 ...
 
-       then 'T.scheme[key]' tells the 'door id' of the door into a state that
-       is entered for the case the operates with the given 'key'. A key in
-       turn, stands for a particular state.
+       then 'T.scheme[key]' tells the 'target state index' for a given state
+       key. The door through which it enters is determined by the transition
 
+           TransitionID(FromStateIndex = state associated with 'key', 
+                        ToStateIndex   = T.scheme[key])
+
+       Which can be translated into a DoorID by the target state's entry
+       database 'transition_db'.
+       
        There might be multiple intervals following the same target scheme,
        so the function 'TargetSchemeDB.get()' takes care of making 
        those schemes unique.
@@ -250,7 +118,7 @@ class MegaState_Target(object):
                      later to define the scheme only once, even it appears
                      twice or more.
     """
-    __slots__ = ('__index', '__scheme', '__drop_out_f', '__door_id', '__scheme')
+    __slots__ = ('__index', '__scheme', '__drop_out_f', '__target_state_index', '__scheme')
 
     @staticmethod
     def create(Target, UniqueIndex=None):
@@ -266,17 +134,17 @@ class MegaState_Target(object):
         if UniqueIndex is not None: 
             assert isinstance(Target, tuple)
         else:
-            assert isinstance(Target, DoorID) or Target == E_StateIndices.DROP_OUT 
+            assert isinstance(Target, long) or Target == E_StateIndices.DROP_OUT 
 
-        self.__index       = UniqueIndex
+        self.__index = UniqueIndex
+        self.__drop_out_f         = False
+        self.__target_state_index = None
+        self.__scheme             = None
 
-        self.__drop_out_f  = False
-        self.__door_id     = None
-        self.__scheme      = None
-
-        if   Target == E_StateIndices.DROP_OUT:  self.__drop_out_f  = True;   assert UniqueIndex is None
-        elif isinstance(Target, DoorID):         self.__door_id     = Target; assert UniqueIndex is None
-        elif isinstance(Target, tuple):          self.__scheme      = Target; assert UniqueIndex is not None
+        if   Target == E_StateIndices.DROP_OUT: self.__drop_out_f         = True;   assert UniqueIndex is None
+        elif isinstance(Target, long):          self.__target_state_index = Target; assert UniqueIndex is None
+        elif isinstance(Target, tuple):         self.__scheme             = Target; assert UniqueIndex is not None
+        else:                                   assert False
 
     def clone(self):
         if self.__drop_out_f: return self 
@@ -284,86 +152,39 @@ class MegaState_Target(object):
         result = MegaState_Target(Target=None) 
         result.__drop_out_f = False
         result.__index      = self.__index
-        if self.__door_id is None: result.__door_id = None
-        else:                      result.__door_id = self.__door_id.clone()
-        if self.__scheme is None:  result.__scheme  = None
-        else:
-            def __clone(X):
-                if X == E_StateIndices.DROP_OUT: return X
-                else:                            return X.clone()
-            result.__scheme = tuple(__clone(x) for x in self.__scheme)
+        result.__target_state_index = self.__target_state_index
+        if self.__scheme is None: result.__scheme = None
+        else:                     result.__scheme = copy(self.__scheme) # Shallow copy sufficient for numbers
         return result
 
     @property
-    def scheme(self):      return self.__scheme
-
+    def scheme(self):              return self.__scheme
     @property
-    def door_id(self):     return self.__door_id
-
-    def door_id_replacement(self, ReplacementDB):
-        """RETURNS: 
-             None    -- if ReplacementDB does not have any effect on the
-                        MegaState_Target object.
-             Object  -- if an adaption according to ReplacementDB had to 
-                        occur. In this case, the MegaState_Target creates
-                        a clone of itself, modifies it according to 
-                        ReplacementDB and returns that clone.
-        """
-        if self.drop_out_f: 
-            return # The whole target is not need to be modified!
-
-        result  = self
-        # If a door_id needs to be really adapted, then the Target needs to be
-        # cloned, i.e. disconnected from its original. Thus changes to it wont
-        # effect the original.
-        if self.door_id is not None:  
-            # (*) Target Uniform DoorID
-            new_door_id = ReplacementDB.get(self.door_id)
-            if new_door_id is not None: 
-                result   = self.clone()     # disconnect from original
-                result.door_id.set(new_door_id)
-                return result
-            return # No change to 'self'
-
-        cloned_f = False
-        for i, door_id in enumerate(result.scheme):
-            new_door_id = ReplacementDB.get(door_id)
-            if new_door_id is not None: 
-                if not cloned_f: 
-                    result   = result.clone() # Disconnect from original
-                    cloned_f = True
-                result.scheme[i].set(new_door_id)
-
-        if not cloned_f: 
-            return # The whole target does not need to be touched!
-
-        return result
-
+    def target_state_index(self):  return self.__target_state_index
     @property
-    def drop_out_f(self):  return self.__drop_out_f
-
+    def drop_out_f(self):          return self.__drop_out_f
     @property
-    def index(self):       return self.__index
+    def index(self):               return self.__index
 
     def __repr__(self):
-        if   self.drop_out_f:          return "MegaState_Target:DropOut"
-        elif self.door_id is not None: return "MegaState_Target:(%s)" % repr(self.__door_id)
-        elif self.scheme  is not None: return "MegaState_Target:scheme(%s)" % repr(self.__scheme)
-        else:                          return "MegaState_Target:<ERROR>"
+        if   self.drop_out_f:                     return "MegaState_Target:DropOut"
+        elif self.target_state_index is not None: return "MegaState_Target:(%s)"       % repr(self.__target_state_index)
+        elif self.scheme  is not None:            return "MegaState_Target:scheme(%s)" % repr(self.__scheme)
+        else:                                     return "MegaState_Target:<ERROR>"
 
     def __hash__(self):
-        if   self.__drop_out_f:          return 0
-        elif self.__door_id is not None: return self.__door_id.state_index
-        elif self.__scheme is not None:  return self.__scheme[0].state_index
-        else:                            assert False
+        if   self.__drop_out_f:                     return 0
+        elif self.__target_state_index is not None: return self.__target_state_index.state_index
+        elif self.__scheme is not None:             return self.__scheme[0].state_index
+        else:                                       assert False
 
     def __eq__(self, Other):
         if   isinstance(Other, MegaState_Target) == False: 
             return False
         elif self.__drop_out_f and Other.__drop_out_f: 
             return True
-        elif self.__door_id is not None and Other.__door_id is not None:
-            return self.__door_id == Other.__door_id
+        elif self.__target_state_index is not None and Other.__target_state_index is not None:
+            return self.__target_state_index == Other.__target_state_index
         elif self.__scheme  is not None and Other.__scheme  is not None:
             return self.__scheme == Other.__scheme
         else:

@@ -147,8 +147,7 @@ def group_paths(CharacterPathList, TheAnalyzer, CompressionType):
         path_walker.entry.action_db[transition_id] = transition_action
 
         # Once the entries are combined, re-configure the door tree
-        path_walker.entry.door_tree_configure(TheAnalyzer.state_db, \
-                                              path_walker.implemented_state_index_list())
+        path_walker.entry.door_tree_configure()
 
     return path_walker_list
 

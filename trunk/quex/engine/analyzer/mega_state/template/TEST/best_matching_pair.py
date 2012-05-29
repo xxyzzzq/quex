@@ -41,7 +41,7 @@ def test(TriggerMapList):
 
     print "Gain Matrix"
     print "State0  State1 Gain"
-    for element in db.gain_matrix:
+    for element in db.candidate_list:
         print "%i      %i      %i" % (element[0], element[1], element[2].gain)
 
     info = db.pop_best()

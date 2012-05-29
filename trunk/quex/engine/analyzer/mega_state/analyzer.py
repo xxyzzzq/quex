@@ -15,23 +15,23 @@ def do(TheAnalyzer):
     for ctype in Setup.compression_type_list:
         # -- Path-Compression
         if ctype in (E_Compression.PATH, E_Compression.PATH_UNIFORM):
-            done_state_index_list, \
-            new_mega_state_list    = path_analyzer.do(TheAnalyzer, ctype, 
-                                                      remainder, mega_state_list)
+            absorbance_db = path_analyzer.do(TheAnalyzer, ctype, 
+                                             remainder, mega_state_list)
     
         # -- Template-Compression
         elif ctype in (E_Compression.TEMPLATE, E_Compression.TEMPLATE_UNIFORM):
-            done_state_index_list, \
-            new_mega_state_list    = template_analyzer.do(TheAnalyzer, 
-                                                          Setup.compression_template_min_gain, ctype, 
-                                                          remainder, mega_state_list)
+            absorbance_db = template_analyzer.do(TheAnalyzer, 
+                                                 Setup.compression_template_min_gain, ctype, 
+                                                 remainder, mega_state_list)
         else:
             assert False
 
-        __transition_adaption(TheAnalyzer, new_mega_state_list, mega_state_list)
+        # Replace the absorbed AnalyzerState by its dummy.
+        for state_index, mega_state in absorbance_db.iteritems():
+            TheAnalyzer.state_db[state_index] = AbsorbedState(state_index, mega_state)
 
-        remainder.difference_update(done_state_index_list)
-        mega_state_list.extend(new_mega_state_list)
+        remainder.difference_update(absorbance_db.iterkeys())
+        mega_state_list.extend(absorbance_db.itervalues())
 
     TheAnalyzer.non_mega_state_index_set = remainder
     TheAnalyzer.mega_state_list          = mega_state_list

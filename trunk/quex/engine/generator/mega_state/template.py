@@ -102,9 +102,10 @@ def require_data(TState, TheAnalyzer):
     for target_scheme in sorted(TState.target_scheme_list, key=attrgetter("index")):
         assert len(target_scheme.scheme) == len(TState.state_index_list)
         def address(DoorId):
-            if door_id == E_StateIndices.DROP_OUT:
+            if Target == E_StateIndices.DROP_OUT:
                 return get_address("$drop-out", TState.index, U=True, R=True)
             else:
+                door_id = TheAnalyzer.state_db[Target].entry.get_door_id(Target, FromStateIndex=StateIndexList[i])
                 return LanguageDB.ADDRESS_BY_DOOR_ID(door_id)
 
         address_list = [ address(door_id) for door_id in target_scheme.scheme ]
