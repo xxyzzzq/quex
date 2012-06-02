@@ -247,11 +247,6 @@ class CombinationDB:
         all_db   = dict(StateDB)
         all_db.update(elect_db)
 
-        # The door_db and transition_db may have changed. The transition map can
-        # only be adapted after all database are constructed. 
-        for state in elect_db.itervalues():
-            state.transition_map_construct(all_db)
-
         return elect_db, all_db
 
     def __candidate_list_construct(self):
@@ -328,7 +323,6 @@ class CombinationDB:
         self.__candidate_list.sort(key=lambda x: x[2].gain)
 
         self.__elect_db[NewElect.index] = NewElect
-
 
     def combine_best(self):
         """Finds the two best matching states and combines them into one.

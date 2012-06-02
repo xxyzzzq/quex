@@ -2,6 +2,7 @@ import quex.engine.state_machine.index                as index
 from   quex.engine.analyzer.state.core                import AnalyzerState
 from   quex.engine.analyzer.state.entry               import Entry
 from   quex.engine.analyzer.state.entry_action        import DoorID
+from   quex.engine.analyzer.mega_state.core           import PseudoMegaState 
 import quex.engine.analyzer.mega_state.template.core  as templates 
 from   quex.engine.analyzer.mega_state.template.state import MegaState_Target, TemplateState
 from   quex.engine.state_machine.core                 import State
@@ -97,22 +98,16 @@ def configure_States(TriggerMapA, StateN_A, TriggerMapB, StateN_B):
 
 def test_combination(StateA, StateB, analyzer, DrawF=False):
     print
-    if isinstance(StateA, TemplateState): 
-        state_a_list = StateA.state_index_list
-        print "States:", StateA.state_index_list
-    else:                                 
-        state_a_list = [StateA.index]
-        print "StateA:", state_a_list
-    print_tm(StateA.transition_map, state_a_list)
+    if not isinstance(StateA, TemplateState): 
+        StateA = PseudoMegaState(StateA)
+    print "StateA:", StateA.state_index_list
+    print_tm(StateA.transition_map, StateA.state_index_list)
 
-    if isinstance(StateB, TemplateState): 
-        state_b_list = StateB.state_index_list
-        print "States:", StateB.state_index_list
-    else:                                 
-        state_b_list = [StateB.index]
-        print "StateB:", state_b_list
+    if not isinstance(StateB, TemplateState): 
+        StateB = PseudoMegaState(StateB)
+    print "StateB:", StateB.state_index_list
+    print_tm(StateB.transition_map, StateB.state_index_list)
 
-    print_tm(StateB.transition_map, state_b_list)
     print
     result = TemplateState(StateA, StateB, analyzer)
 
@@ -136,7 +131,7 @@ class TestAnalyzer:
 
 def scheme_str(X):
     if X.scheme is not None: 
-        return str(tuple(x.state_index for x in X.scheme)).replace("L", "")
+        return str(X.scheme).replace("L", "")
     elif X.door_id is not None:
         return "door(s%sd%s)" % (X.door_id.state_index, X.door_id.door_index)
     elif X.recursive_f:

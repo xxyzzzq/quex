@@ -120,9 +120,9 @@ class PathWalkerState(MegaState):
         # If the uniform terminal entry door id is subjec to replacement,
         # then do so.
         replacement = ReplacementDB.get(self.__uniform_terminal_entry_door_id)
-        for orig, repl in ReplacementDB.iteritems():
-        if replacement is not None:
-            self.__uniform_terminal_entry_door_id = replacement
+        for orig, replacement in ReplacementDB.iteritems():
+            if replacement is not None:
+                self.__uniform_terminal_entry_door_id = replacement
 
     def __adapt_path_walker_id_and_path_id(self, TheEntry, PathID):
         """Ensure that any 'SetPathIterator' contains the right references
@@ -172,6 +172,9 @@ class PathWalkerState(MegaState):
     def map_state_index_to_state_key(self, StateIndex):
         # 'state_index_list' is built upon request by the property, see above.
         return self.state_index_list.index(StateIndex)
+
+    def map_state_key_to_state_index(self, StateKey):
+        return self.state_index_list[StateKey]
 
     @property
     def uniform_entries_f(self):   

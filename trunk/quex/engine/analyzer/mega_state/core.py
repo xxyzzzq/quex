@@ -31,11 +31,14 @@ class MegaState(AnalyzerState):
     def map_state_index_to_state_key(self, StateIndex):
         assert False, "This function needs to be overwritten by derived class."
 
+    def map_state_key_to_state_index(self, StateKey):
+        assert False, "This function needs to be overwritten by derived class."
+
 class PseudoMegaState(MegaState):
     """A pseudo mega state is a state that represent a single AnalyzerState
-       but acts as it was a real 'MegaState'. This means:
+       but acts as it was a real 'MegaState'. That means:
 
-          -- transition_map:  interval --> DoorID
+          -- .transition_map:  maps   interval --> MegaState_Target
 
              and not interval to target state.
     """
@@ -45,9 +48,40 @@ class PseudoMegaState(MegaState):
 
         self.__state_index_list = [ Represented_AnalyzerState.index ]
 
-    def transition_map_construct(self, StateDB):
-        self.transition_map = [(interval, MegaState_Target.create(target)) \
-                               for interval, target in self.__state.transition_map ]
+        self.transition_map     = self.__transition_map_construct()
+
+    def __transition_map_construct(self):
+        """Build a transition map that triggers to MegaState_Target-s rather
+           than simply to target states.
+
+           CAVEAT: In general, it is **NOT TRUE** that if two transitions (x,a)
+           and (x, b) to a state 'x' share a DoorID in the original state, then
+           they share the DoorID in the MegaState. 
+           
+           The critical case is the recursive transition (x,x). It may trigger
+           the same actions as another transition (x,a) in the original state.
+           However, when 'x' is implemented in a MegaState it needs to set a
+           'state_key' upon entry from 'a'. This is, or may be, necessary to
+           tell the MegaState on which's behalf it has to operate. The
+           recursive transition from 'x' to 'x', though, does not have to set
+           the state_key, since the MegaState still operates on behalf of the
+           same state. While (x,x) and (x,a) have the same DoorID in the
+           original state, their DoorID differs in the MegaState which
+           implements 'x'.
+
+           THUS: A translation 'old DoorID' --> 'new DoorID' is not sufficient
+           to adapt transition maps!
+
+           Here, the recursive target is implemented as a 'scheme' in order to
+           prevent that it may be treated as 'uniform' with other targets.
+        """
+
+        def get(Target, SelfIndex):
+            if Target == SelfIndex: return MegaState_Target.create((Target,))
+            else:                   return MegaState_Target.create(Target)
+
+        return [ (interval, get(target, self.index)) \
+                 for interval, target in self.__state.transition_map]
 
     @property
     def entry(self):
@@ -67,11 +101,16 @@ class PseudoMegaState(MegaState):
     def map_state_index_to_state_key(self, StateIndex):
         assert False, "PseudoMegaState-s exist only for analysis. They shall never be implemented."
 
-class AbsorbedState_Entry:
-    def __init__(self, TransitionDB):
+    def map_state_key_to_state_index(self, StateKey):
+        assert False, "PseudoMegaState-s exist only for analysis. They shall never be implemented."
+
+class AbsorbedState_Entry(Entry):
+    def __init__(self, StateIndex, TransitionDB, DoorDB):
         """Map: Transition --> DoorID of the implementing state.
         """
-        self.transition_db = TransitionDB
+        Entry.__init__(self, StateIndex, FromStateIndexList=[])
+        self.set_transition_db(TransitionDB)
+        self.set_door_db(DoorDB)
 
 class AbsorbedState(AnalyzerState):
     """An AbsorbedState object represents an AnalyzerState which has
@@ -79,14 +118,21 @@ class AbsorbedState(AnalyzerState):
        to the MegaState which implements it and to translate the transtions
        into itself to DoorIDs into the MegaState.
     """
-    def __init__(self, AbsorbedAnalyzerState, AbsorbingMegaState, TransitionDB)
+    def __init__(self, AbsorbedAnalyzerState, AbsorbingMegaState):
         AnalyzerState.set_index(self, AbsorbedAnalyzerState.index)
         # The absorbing MegaState may, most likely, contain other transitions
         # than the transitions into the AbsorbedAnalyzerState. Those, others
         # do not do any harm, though. Filtering out those out of the hash map
         # does, most likely, not bring any benefit.
-        self.entry       = ImplementedState_Entry(AbsorbingMegaState.entry.transition_db)
+        self.entry       = AbsorbedState_Entry(AbsorbedAnalyzerState.index, 
+                                               AbsorbingMegaState.entry.transition_db,
+                                               AbsorbingMegaState.entry.door_db)
         self.absorbed_by = AbsorbingMegaState
+        self.__state     = AbsorbedAnalyzerState
+
+    @property
+    def drop_out(self):
+        return self.__state.drop_out
 
 class MegaState_Target(object):
     """A mega state target contains the information about what the target
@@ -118,35 +164,52 @@ class MegaState_Target(object):
                      later to define the scheme only once, even it appears
                      twice or more.
     """
-    __slots__ = ('__index', '__scheme', '__drop_out_f', '__target_state_index', '__scheme')
+    __slots__ = ('__scheme', '__drop_out_f', '__target_state_index', 'code')
+
+    __object_db = dict()
 
     @staticmethod
-    def create(Target, UniqueIndex=None):
-        assert Target is not None # Only to be used by 'self.clone()'
+    def init():
+        """Initializes: '__object_db' which keeps track of generated MegaState_Target-s."""
+        MegaState_Target.__object_db.clear()
+        # The Drop-Out target must be always in there.
+        MegaState_Target.__object_db[E_StateIndices.DROP_OUT] = MegaState_Target_DROP_OUT
 
-        if Target == E_StateIndices.DROP_OUT:  return MegaState_Target_DROP_OUT
-        return MegaState_Target(Target, UniqueIndex)
+    @staticmethod
+    def disconnect_object_db():
+        """Disconnects the '__object_db' so that it may be used without influencing 
+           the '__object_db' of MegaState_Target.
+        """
+        tmp_object_db                = MegaState_Target.__object_db
+        MegaState_Target.__object_db = dict()
+        return tmp_object_db
 
-    def __init__(self, Target, UniqueIndex=None):
+    @staticmethod
+    def create(Target):
+        assert Target is not None 
+
+        result = MegaState_Target.__object_db.get(Target)
+        if result is None: 
+            result = MegaState_Target(Target)
+            MegaState_Target.__object_db[Target] = result
+
+        return result
+
+    def __init__(self, Target):
         if Target is None: # Only to be used by 'self.clone()'
             return 
 
-        if UniqueIndex is not None: 
-            assert isinstance(Target, tuple)
-        else:
-            assert isinstance(Target, long) or Target == E_StateIndices.DROP_OUT 
-
-        self.__index = UniqueIndex
         self.__drop_out_f         = False
         self.__target_state_index = None
         self.__scheme             = None
 
-        if   Target == E_StateIndices.DROP_OUT: self.__drop_out_f         = True;   assert UniqueIndex is None
-        elif isinstance(Target, long):          self.__target_state_index = Target; assert UniqueIndex is None
-        elif isinstance(Target, tuple):         self.__scheme             = Target; assert UniqueIndex is not None
-        else:                                   assert False
+        if   Target == E_StateIndices.DROP_OUT: self.__drop_out_f         = True   
+        elif isinstance(Target, long):          self.__target_state_index = Target 
+        elif isinstance(Target, tuple):         self.__scheme             = Target
+        else:                                   assert False, Target.__class__.__name__
 
     def clone(self):
+        assert False # Why cloning?
         if self.__drop_out_f: return self 
 
         result = MegaState_Target(Target=None) 

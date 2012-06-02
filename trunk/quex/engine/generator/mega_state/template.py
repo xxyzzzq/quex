@@ -1,6 +1,6 @@
 # (C) 2009-2011 Frank-Rene Schaefer
 from   quex.engine.generator.state.core             import input_do
-from   quex.engine.generator.languages.address      import get_address
+from   quex.engine.generator.languages.address      import get_address, get_label
 from   quex.engine.generator.languages.variable_db  import variable_db
 
 from   quex.blackboard import setup as Setup, E_StateIndices
@@ -89,32 +89,12 @@ def framework(txt, TState, TheAnalyzer):
     LanguageDB.STATE_DEBUG_INFO(txt, TState)
 
 def require_data(TState, TheAnalyzer):
-    """Defines the transition targets for each involved state. Note, that recursion
-       is handled as part of the general case, where all involved states target 
-       a common door of the template state.
+    """Requires all variables which are necessary to implement the TemplateState.
+
+       NOTE: The target schemes are required from inside 'require_scheme_variable()' 
+             in quex.engine.generator.mega_state.core.py
     """
-    LanguageDB = Setup.language_db
     variable_db.require("state_key")
+    get_label("$state-router", U=True) # Ensure reference of state router
 
-    def help(AdrList):
-        return "".join(["{ "] + map(lambda adr: "QUEX_LABEL(%i), " % adr, AdrList) + [" }"])
-
-    for target_scheme in sorted(TState.target_scheme_list, key=attrgetter("index")):
-        assert len(target_scheme.scheme) == len(TState.state_index_list)
-        def address(DoorId):
-            if Target == E_StateIndices.DROP_OUT:
-                return get_address("$drop-out", TState.index, U=True, R=True)
-            else:
-                door_id = TheAnalyzer.state_db[Target].entry.get_door_id(Target, FromStateIndex=StateIndexList[i])
-                return LanguageDB.ADDRESS_BY_DOOR_ID(door_id)
-
-        address_list = [ address(door_id) for door_id in target_scheme.scheme ]
-
-        variable_db.require_array("template_%i_target_%i", 
-                                  ElementN = len(TState.state_index_list), 
-                                  Initial  = help(address_list),
-                                  Index    = (TState.index, target_scheme.index))
-
-    # Drop outs: all drop outs end up at the end of the transition map, where
-    # it is routed via the state_key to the state's particular drop out.
 
