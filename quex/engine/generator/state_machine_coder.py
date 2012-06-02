@@ -29,14 +29,14 @@ def do(TheAnalyzer):
 
     return txt
 
-def get_frequency_db(StateDict, RemainderStateIndexList):
+def get_frequency_db(StateDB, RemainderStateIndexList):
     """Sort the list in a away, so that states that are used more
        often appear earlier. This happens in the hope of more 
        cache locality. 
     """
     # Count number of transitions to a state: frequency_db
     frequency_db = defaultdict(int)
-    for state in StateDict.itervalues():
+    for state in (StateDB[i] for i in RemainderStateIndexList):
         for interval, target_index in state.transition_map:
             frequency_db[target_index] += 1
     return frequency_db

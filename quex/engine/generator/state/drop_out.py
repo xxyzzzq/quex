@@ -12,11 +12,11 @@ def do(txt, TheState, TheAnalyzer, DefineLabelF=True, MentionStateIndexF=True):
     if MentionStateIndexF:
         txt.append("    __quex_debug_drop_out(%i);\n" % TheState.index)
 
-    if TheState.engine_type == E_EngineTypes.BACKWARD_PRE_CONTEXT:
+    if TheAnalyzer.engine_type == E_EngineTypes.BACKWARD_PRE_CONTEXT:
         txt.append("    %s\n" % LanguageDB.GOTO(E_StateIndices.END_OF_PRE_CONTEXT_CHECK))
         return
 
-    elif TheState.engine_type == E_EngineTypes.BACKWARD_INPUT_POSITION:
+    elif TheAnalyzer.engine_type == E_EngineTypes.BACKWARD_INPUT_POSITION:
         if TheState.drop_out.reachable_f:
             # Backward input position detectors are always isolated state machines.
             # => TheAnalyzer.state_machine_id = id of the backward input position detector.

@@ -26,7 +26,9 @@ class TemplateStateCandidate(TemplateState):
         drop_out_gain       = _compute_drop_out_gain(self.drop_out, 
                                                      StateA.drop_out, StateA.index, 
                                                      StateB.drop_out, StateB.index)
-        transition_map_gain = _transition_map_gain(self.transition_map, self.target_scheme_list,
+
+        target_scheme_list  = [ target.scheme for target in self.target_db.itervalues() if target.scheme is not None ]
+        transition_map_gain = _transition_map_gain(self.transition_map, target_scheme_list,
                                                    StateA.transition_map, StateB.transition_map)
 
         self.__gain         = (entry_gain + drop_out_gain + transition_map_gain).total()
@@ -185,7 +187,7 @@ def _transition_cost(TM, TargetSchemeList=None):
     cmp_n      = border_n
     if TargetSchemeList is not None:
         # For each target scheme, the target state needs to be stored for each state_key.
-        target_scheme_element_n  = sum(len(target.scheme) for target in TargetSchemeList)
+        target_scheme_element_n  = sum(len(scheme) for scheme in TargetSchemeList)
         byte_n                   = target_scheme_element_n * 4
     else:
         byte_n = 0

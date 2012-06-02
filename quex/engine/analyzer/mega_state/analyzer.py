@@ -1,24 +1,29 @@
+from   quex.engine.analyzer.mega_state.core             import AbsorbedState
 import quex.engine.analyzer.mega_state.template.core    as     template_analyzer
 import quex.engine.analyzer.mega_state.path_walker.core as     path_analyzer
 from   quex.blackboard                                  import E_Compression
 from   quex.blackboard                                  import setup as Setup
 
 def do(TheAnalyzer):
-    # Track what states are treated with different methods (see below)
-    remainder  = set(TheAnalyzer.state_db.keys())
-    # The init state shall never be part of a mega state
-    remainder.discard(TheAnalyzer.init_state_index)
-
-    mega_state_list = []
-    remainder       = set(TheAnalyzer.state_db.keys())
+    """Build the MegaState-s.
+    
+       Normal states are now absorbed by MegaState-s which represent
+       more than one single state at once.
+    """
+    mega_state_db = {}
+    # -- The 'remainder' keeps track of states which have not yet been
+    #    absorbed into a MegaState.
+    remainder = set(TheAnalyzer.state_db.keys())
     remainder.remove(TheAnalyzer.init_state_index)
+
     for ctype in Setup.compression_type_list:
-        # -- Path-Compression
+        mega_state_list = mega_state_db.values()
+        # -- MegaState-s by Path-Compression
         if ctype in (E_Compression.PATH, E_Compression.PATH_UNIFORM):
             absorbance_db = path_analyzer.do(TheAnalyzer, ctype, 
                                              remainder, mega_state_list)
     
-        # -- Template-Compression
+        # -- MegaState-s by Template-Compression
         elif ctype in (E_Compression.TEMPLATE, E_Compression.TEMPLATE_UNIFORM):
             absorbance_db = template_analyzer.do(TheAnalyzer, 
                                                  Setup.compression_template_min_gain, ctype, 
@@ -26,15 +31,26 @@ def do(TheAnalyzer):
         else:
             assert False
 
-        # Replace the absorbed AnalyzerState by its dummy.
+        # -- Post-process the absorption of AnalyzerState-s into MegaState-s
         for state_index, mega_state in absorbance_db.iteritems():
-            TheAnalyzer.state_db[state_index] = AbsorbedState(state_index, mega_state)
+            # Replace the absorbed AnalyzerState by its dummy.
+            TheAnalyzer.state_db[state_index] = \
+                        AbsorbedState(TheAnalyzer.state_db[state_index], mega_state)
 
-        remainder.difference_update(absorbance_db.iterkeys())
-        mega_state_list.extend(absorbance_db.itervalues())
+            # Track the remaining not-yet-absorbed states
+            assert state_index in remainder
+            remainder.remove(state_index)
 
+            # Track MegaStates. A 'itervalues()' may contain the same MegaState
+            # twice. Use a dictionary to keep them unique.
+            if mega_state not in mega_state_db:
+                mega_state_db[mega_state.index] = mega_state 
+
+    # Let the analyzer know about the MegaState-s and what states they left
+    # unabsorbed. 
     TheAnalyzer.non_mega_state_index_set = remainder
-    TheAnalyzer.mega_state_list          = mega_state_list
+    TheAnalyzer.mega_state_list          = mega_state_db.values()
+
 
 def __transition_adaption(TheAnalyzer, NewMegaStateList, OldMegaStateList):
     """Some AnalyzerState objects have been implemented in Mega States that 

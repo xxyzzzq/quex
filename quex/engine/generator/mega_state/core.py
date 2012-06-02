@@ -9,7 +9,8 @@ import quex.engine.generator.state.entry            as entry_coder
 import quex.engine.generator.state.transition.core  as transition_block
 import quex.engine.generator.mega_state.template    as template
 import quex.engine.generator.mega_state.path_walker as path_walker
-from   quex.engine.generator.languages.address      import get_label
+from   quex.engine.generator.languages.address      import get_label, get_address
+from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.interval_handling                import Interval
 import sys
 
@@ -67,7 +68,7 @@ def do(txt, TheState, TheAnalyzer):
     specific.framework(txt, TheState, TheAnalyzer)
 
     # (*) Transition Map ______________________________________________________
-    prepare_transition_map(TheState)
+    prepare_transition_map(TheState, TheAnalyzer)
     transition_block.do(txt, 
                         TheState.transition_map, 
                         TheState.index, 
@@ -144,8 +145,52 @@ def drop_out_scheme_implementation(txt, TheState, TheAnalyzer, StateKeyString, D
     LanguageDB.INDENT(case_txt)
     txt.extend(case_txt)
 
-def prepare_transition_map(TheState):
-    """Prepare the transition map of the MegaState for code generation.
+def prepare_MegaState_Target(SchemeID, Target, TheState, StateDB):
+    LanguageDB = Setup.language_db
+
+    def scheme_code(SchemeID, Scheme, TheState, StateDB):
+        label       = "template_%i_target_%i[state_key]" % (TheState.index, SchemeID)
+        code        = LanguageDB.GOTO_BY_VARIABLE(label)
+        require_scheme_variable(SchemeID, Scheme, TheState, StateDB)
+        return SchemeID + 1, TextTransitionCode([code])
+
+    if Target.drop_out_f:
+        code = LanguageDB.GOTO_DROP_OUT(TheState.index)
+        return SchemeID, E_StateIndices.DROP_OUT
+
+    if Target.scheme is not None:
+        return scheme_code(SchemeID, Target.scheme, TheState, StateDB)
+
+    else:
+        assert Target.target_state_index is not None
+        # Do not conclude to quickly that the common 'target_state_index' means
+        # that there is a common target state. The DoorID configuration may
+        # have changed, so that the DoorID by which an AbsorbedState enters
+        # a target state may be different, i.e. a state key may be set for
+        # example for one, and not for another state.
+        target_entry = StateDB[Target.target_state_index].entry
+        prototype    = None
+        for state_index in TheState.implemented_state_index_list():
+            state_key = TheState.map_state_index_to_state_key(state_index)
+            door_id   = target_entry.get_door_id(Target.target_state_index, state_index)
+            if prototype is None:      prototype = door_id
+            elif prototype == door_id: continue
+
+            # The door_ids are not uniform => generate a scheme
+            scheme = (Target.target_state_index,) * len(TheState.implemented_state_index_list())
+            return scheme_code(SchemeID, scheme, TheState, StateDB)
+        else:
+            # All has been uniform => generate transition through common DoorID
+            code = LanguageDB.GOTO_BY_DOOR_ID(prototype)
+            return TextTransitionCode([code])
+
+def prepare_transition_map(TheState, TheAnalyzer):
+    """Generate targets in the transition map which the code generation can 
+       handle. The transition map will consist of pairs of
+    
+                          (Interval, TextTransitionCode)
+    
+       objects. 
 
        NOTE: A word about the reload procedure.
        
@@ -171,31 +216,40 @@ def prepare_transition_map(TheState):
         #    isolated single interval.
         TheState.transition_map = [ (Interval(-sys.maxint, sys.maxint), MegaState_Target_DROP_OUT) ]
 
-    transition_map = TheState.transition_map
-
-    for i, info in enumerate(transition_map):
+    scheme_counter_n = 0
+    for i, info in enumerate(TheState.transition_map):
         interval, target = info
-        
-        if   target.drop_out_f:
-            # Later functions detect the 'DROP_OUT' in the transition map, so
-            # we do not want to put it in text here. Namely function:
-            # __separate_buffer_limit_code_transition(...) which implements the
-            # buffer limit code insertion.
-            transition_map[i] = (interval, E_StateIndices.DROP_OUT)
-            continue
-
-        if target.door_id is not None:
-            text = LanguageDB.GOTO_BY_DOOR_ID(target.door_id)
-
-        else:
-            get_label("$state-router", U=True) # Ensure reference of state router
-            # Transition target depends on state key
-            label = "template_%i_target_%i[state_key]" % (TheState.index, target.index)
-            text  = LanguageDB.GOTO_BY_VARIABLE(label)
-
-        # Replace target 'i' by written text
-        target            = TextTransitionCode([text])
-        transition_map[i] = (interval, target)
+        scheme_counter_n, new_target = prepare_MegaState_Target(scheme_counter_n, target, TheState, TheAnalyzer.state_db)
+        TheState.transition_map[i] = (interval, new_target)
 
     return
+
+def require_scheme_variable(SchemeID, Scheme, TState, StateDB):
+    """Defines the transition targets for each involved state. Note, that recursion
+       is handled as part of the general case, where all involved states target 
+       a common door of the template state.
+    """
+    LanguageDB = Setup.language_db
+
+    def get_code(AdrList):
+        return "".join(["{ "] + map(lambda adr: "QUEX_LABEL(%i), " % adr, AdrList) + [" }"])
+
+    assert len(Scheme) == len(TState.implemented_state_index_list())
+    def address(Target, StateKey, TheState):
+        if Target == E_StateIndices.DROP_OUT:
+            # All drop outs end up at the end of the transition map, where
+            # it is routed via the state_key to the state's particular drop out.
+            return get_address("$drop-out", TState.index, U=True, R=True)
+        else:
+            from_state_index = TheState.map_state_key_to_state_index(StateKey)
+            door_id = StateDB[Target].entry.get_door_id(Target, FromStateIndex=from_state_index)
+            return LanguageDB.ADDRESS_BY_DOOR_ID(door_id)
+
+    address_list = [ address(target_index, i, TState) for i, target_index in enumerate(Scheme) ]
+
+    variable_db.require_array("template_%i_target_%i", 
+                              ElementN = len(TState.state_index_list), 
+                              Initial  = get_code(address_list),
+                              Index    = (TState.index, SchemeID))
+
 
