@@ -19,7 +19,7 @@ class Handler:
         if isinstance(TheState, PathWalkerState):
             self.require_data = path_walker.require_data
             self.framework    = path_walker.framework   
-            self.state_key_str      = "path_iterator - path_walker_%s_path_base" % TheState.index, 
+            self.state_key_str      = "path_iterator - path_walker_%s_path_base" % TheState.index 
             self.debug_drop_out_str = "__quex_debug_path_walker_drop_out(%i, path_walker_%s_path_base, path_iterator);\n" \
                                       % (TheState.index, TheState.index)
         elif isinstance(TheState, TemplateState):
@@ -68,7 +68,7 @@ def do(txt, TheState, TheAnalyzer):
     specific.framework(txt, TheState, TheAnalyzer)
 
     # (*) Transition Map ______________________________________________________
-    prepare_transition_map(TheState, TheAnalyzer)
+    prepare_transition_map(TheState, TheAnalyzer, specific.state_key_str)
     transition_block.do(txt, 
                         TheState.transition_map, 
                         TheState.index, 
@@ -145,11 +145,11 @@ def drop_out_scheme_implementation(txt, TheState, TheAnalyzer, StateKeyString, D
     LanguageDB.INDENT(case_txt)
     txt.extend(case_txt)
 
-def prepare_MegaState_Target(SchemeID, Target, TheState, StateDB):
+def prepare_MegaState_Target(SchemeID, Target, TheState, StateDB, StateKeyStr):
     LanguageDB = Setup.language_db
 
     def scheme_code(SchemeID, Scheme, TheState, StateDB):
-        label       = "template_%i_target_%i[state_key]" % (TheState.index, SchemeID)
+        label       = "template_%i_target_%i[%s]" % (TheState.index, SchemeID, StateKeyStr)
         code        = LanguageDB.GOTO_BY_VARIABLE(label)
         require_scheme_variable(SchemeID, Scheme, TheState, StateDB)
         return SchemeID + 1, TextTransitionCode([code])
@@ -158,22 +158,38 @@ def prepare_MegaState_Target(SchemeID, Target, TheState, StateDB):
         code = LanguageDB.GOTO_DROP_OUT(TheState.index)
         return SchemeID, E_StateIndices.DROP_OUT
 
-    if Target.scheme is not None:
-        return scheme_code(SchemeID, Target.scheme, TheState, StateDB)
+    elif Target.scheme is not None:
+        # NO TOO QUICK JUDGEMENT: The 'scheme' may result in the same DoorID of a 
+        #    MegaState, for example. In that case  case the 'scheme' would translate 
+        #    into a direct transition to target state.
+        prototype    = None
+        for state_index in TheState.implemented_state_index_list():
+            state_key          = TheState.map_state_index_to_state_key(state_index)
+            target_state_index = Target.scheme[state_key]
+            if target_state_index != E_StateIndices.DROP_OUT:
+                # DROP_OUT cannot be in a scheme, if there was some non-DROP-OUT there.
+                # => Only give it a chance as long as no DROP_OUT target appears.
+                target_entry       = StateDB[target_state_index].entry
+                door_id            = target_entry.get_door_id(target_state_index, state_index)
+                if prototype is None:      prototype = door_id; continue
+                elif prototype == door_id: continue
+
+            # The scheme is indeed not uniform => Implement the scheme
+            return scheme_code(SchemeID, Target.scheme, TheState, StateDB)
+        else:
+            # All has been uniform => generate transition through common DoorID
+            return SchemeID, TextTransitionCode([LanguageDB.GOTO_BY_DOOR_ID(prototype)])
 
     else:
         assert Target.target_state_index is not None
-        # Do not conclude to quickly that the common 'target_state_index' means
-        # that there is a common target state. The DoorID configuration may
-        # have changed, so that the DoorID by which an AbsorbedState enters
-        # a target state may be different, i.e. a state key may be set for
-        # example for one, and not for another state.
+        # NO TOO QUICK JUDGEMENT: The common target state may be entered by 
+        #    different doors depending on the 'from_state' which is currently
+        #    implemented by the MegaState. Then, it translates into a scheme.
         target_entry = StateDB[Target.target_state_index].entry
         prototype    = None
         for state_index in TheState.implemented_state_index_list():
-            state_key = TheState.map_state_index_to_state_key(state_index)
             door_id   = target_entry.get_door_id(Target.target_state_index, state_index)
-            if prototype is None:      prototype = door_id
+            if prototype is None:      prototype = door_id; continue
             elif prototype == door_id: continue
 
             # The door_ids are not uniform => generate a scheme
@@ -181,10 +197,9 @@ def prepare_MegaState_Target(SchemeID, Target, TheState, StateDB):
             return scheme_code(SchemeID, scheme, TheState, StateDB)
         else:
             # All has been uniform => generate transition through common DoorID
-            code = LanguageDB.GOTO_BY_DOOR_ID(prototype)
-            return TextTransitionCode([code])
+            return SchemeID, TextTransitionCode([LanguageDB.GOTO_BY_DOOR_ID(prototype)])
 
-def prepare_transition_map(TheState, TheAnalyzer):
+def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr):
     """Generate targets in the transition map which the code generation can 
        handle. The transition map will consist of pairs of
     
@@ -219,7 +234,7 @@ def prepare_transition_map(TheState, TheAnalyzer):
     scheme_counter_n = 0
     for i, info in enumerate(TheState.transition_map):
         interval, target = info
-        scheme_counter_n, new_target = prepare_MegaState_Target(scheme_counter_n, target, TheState, TheAnalyzer.state_db)
+        scheme_counter_n, new_target = prepare_MegaState_Target(scheme_counter_n, target, TheState, TheAnalyzer.state_db, StateKeyStr)
         TheState.transition_map[i] = (interval, new_target)
 
     return

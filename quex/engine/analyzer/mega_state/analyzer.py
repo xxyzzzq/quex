@@ -50,6 +50,9 @@ def do(TheAnalyzer):
     # unabsorbed. 
     TheAnalyzer.non_mega_state_index_set = remainder
     TheAnalyzer.mega_state_list          = mega_state_db.values()
+    # Only now: We enter the MegaState-s into the 'state_db'. If it was done before,
+    # the MegaStates might try to absorb each other.
+    TheAnalyzer.state_db.update(mega_state_db)
 
 
 def __transition_adaption(TheAnalyzer, NewMegaStateList, OldMegaStateList):
@@ -63,14 +66,6 @@ def __transition_adaption(TheAnalyzer, NewMegaStateList, OldMegaStateList):
     door_id_replacement_db = {}
     for mega_state in NewMegaStateList:
         door_id_replacement_db.update(mega_state.entry.door_id_replacement_db)
-
-    # MegaStates must adapt their transition maps, so that the new doors
-    # are targetted. 
-    for state in NewMegaStateList:
-        state.replace_door_ids_in_transition_map(door_id_replacement_db)
-
-    for state in OldMegaStateList:
-        state.replace_door_ids_in_transition_map(door_id_replacement_db)
 
     # We must leave the databases in place, until the replacements are made
     for mega_state in NewMegaStateList:

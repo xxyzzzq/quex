@@ -1,4 +1,4 @@
-from   quex.engine.analyzer.state.entry_action  import SetPathIterator
+from   quex.engine.analyzer.state.entry_action  import SetPathIterator, DoorID
 from   quex.engine.analyzer.mega_state.core     import MegaState, MegaState_Target
 from   quex.engine.state_machine.transition_map import TransitionMap
 from   quex.blackboard                          import E_EngineTypes, \
@@ -23,8 +23,6 @@ class PathWalkerState(MegaState):
 
         self.__uniformity_required_f                 = (CompressionType == E_Compression.PATH_UNIFORM)
         self.__uniform_entry_command_list_along_path = FirstPath.get_uniform_entry_command_list_along_path()
-        self.__uniform_terminal_entry_door_id        = PathWalkerState.get_terminal_door_id(FirstPath.sequence(), \
-                                                                                            TheAnalyzer.state_db)
 
         self.__state_index_list     = None # Computed on demand
         self.__end_state_index_list = None # Computed on demand
@@ -40,7 +38,10 @@ class PathWalkerState(MegaState):
 
            which represents the same mapping in a 'linear' manner.
         """
-        return [ (interval, MegaState_Target.create(target)) \
+        def adapt(Target):
+            if isinstance(Target, DoorID): return Target.state_index
+            return Target
+        return [ (interval, MegaState_Target.create(adapt(target))) \
                  for interval, target in TransitionMap(Skeleton).get_trigger_map() ]
 
     def accept(self, Path, StateDB):
@@ -96,10 +97,6 @@ class PathWalkerState(MegaState):
         # (2a) Absorb the state sequence of the path
         #      (verify/falsify the uniform terminal entry)
         self.__path_list.append(Path.sequence())
-        if self.__uniform_terminal_entry_door_id is not None:
-            if    self.__uniform_terminal_entry_door_id \
-               != PathWalkerState.get_terminal_door_id(Path.sequence(), StateDB):
-                 self.__uniform_terminal_entry_door_id = None
 
         # (2b) Absorb Entry Information
         #      Absorb entry's action_db (maps: 'transition_id --> command_list')
@@ -110,19 +107,6 @@ class PathWalkerState(MegaState):
         self.drop_out.update_from_other(Path.drop_out)
 
         return True
-
-    def replace_door_ids_in_transition_map(self, ReplacementDB):
-        MegaState.replace_door_ids_in_transition_map(self, ReplacementDB)
-
-        # The uniform terminal entry door may have to be replaced, also.
-        if self.__uniform_terminal_entry_door_id is None:
-            return
-        # If the uniform terminal entry door id is subjec to replacement,
-        # then do so.
-        replacement = ReplacementDB.get(self.__uniform_terminal_entry_door_id)
-        for orig, replacement in ReplacementDB.iteritems():
-            if replacement is not None:
-                self.__uniform_terminal_entry_door_id = replacement
 
     def __adapt_path_walker_id_and_path_id(self, TheEntry, PathID):
         """Ensure that any 'SetPathIterator' contains the right references
@@ -217,13 +201,18 @@ class PathWalkerState(MegaState):
         return StateDB[terminal_state_index].entry.get_door_id(terminal_state_index, 
                                                                before_terminal_state_index)
 
-    @property
-    def uniform_terminal_entry_door_id(self):
+    def get_uniform_terminal_entry_door_id(self, StateDB):
         """RETURNS: DoorID -- if all paths which are involved enter the same 
                                terminal state through the same entry door.
                     None   -- if not.
         """
-        return self.__uniform_terminal_entry_door_id
+        prototype = None
+        for sequence in self.__path_list:
+            if prototype is None:
+                prototype = PathWalkerState.get_terminal_door_id(sequence, StateDB)
+            elif prototype != PathWalkerState.get_terminal_door_id(sequence, StateDB):
+                return None
+        return prototype
 
     def get_path_info(self, StateIdx):
         """[0] Path ID: Index of the path where StateIdx is located
