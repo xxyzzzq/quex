@@ -113,12 +113,7 @@ def do(TheAnalyzer, CompressionType, AvailableStateIndexList=None, MegaStateList
     # Group the paths according to their 'skeleton'. If uniformity is required
     # then this is also a grouping criteria. The result is a list of path walkers
     # that can walk the paths. They can act as AnalyzerState-s for code generation.
-    path_walker_state_list = group_paths(path_list, TheAnalyzer, CompressionType)
-    done_set = set()
-    for pw_state in path_walker_state_list:
-        done_set.update(pw_state.implemented_state_index_list())
-
-    return done_set, path_walker_state_list
+    return group_paths(path_list, TheAnalyzer, CompressionType)
 
 def group_paths(CharacterPathList, TheAnalyzer, CompressionType):
     """Different character paths may be walked down by the same pathwalker, if
@@ -129,11 +124,16 @@ def group_paths(CharacterPathList, TheAnalyzer, CompressionType):
     path_walker_list = []
     for candidate in CharacterPathList:
         for path_walker in path_walker_list:
+            # Set-up the walk in an existing PathWalkerState
             if path_walker.accept(candidate, TheAnalyzer.state_db): break
         else:
+            # Create a new PathWalkerState
             path_walker_list.append(PathWalkerState(candidate, TheAnalyzer, CompressionType))
 
+    absorbance_db = defaultdict(set)
     for path_walker in path_walker_list:
+        absorbance_db.update((i, path_walker) for i in path_walker.implemented_state_index_list())
+
         if path_walker.uniform_entry_command_list_along_all_paths is not None:
             # Assign the uniform command list to the transition 'path_walker -> path_walker'
             transition_action = TransitionAction(path_walker.index, path_walker.index, path_walker.uniform_entry_command_list_along_all_paths)
@@ -149,7 +149,7 @@ def group_paths(CharacterPathList, TheAnalyzer, CompressionType):
         # Once the entries are combined, re-configure the door tree
         path_walker.entry.door_tree_configure()
 
-    return path_walker_list
+    return absorbance_db
 
 def __filter_redundant_paths(path_list):
     """Due to the search algorithm, it is not safe to assume that there are

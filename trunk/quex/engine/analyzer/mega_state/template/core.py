@@ -225,8 +225,8 @@ class CombinationDB:
                             -- the init state.
         """
         # x[0] = state_index, x[1] = state
-        condition = lambda x:     len(x[1].transition_map) != 0 \
-                              and x[0] in AvailableStateIndexList \
+        condition = lambda x:     x[0] in AvailableStateIndexList \
+                              and len(x[1].transition_map) != 0   \
                               and x[1].init_state_f == False
 
         # state = self.__analyzer.state_db[358]
