@@ -3,16 +3,16 @@
 
 States: [0L, 1L]
   [INTERVAL]   [TARGET/STATE [0, 1]]
-  [-oo, 9]     MST:scheme((DoorID(s=10, d=0), DoorID(s=11, d=0)))
-  [10, oo]     MST:scheme((DoorID(s=20, d=0), DoorID(s=21, d=0)))
+  [-oo, 9]     MST:scheme((10, 11))
+  [10, oo]     MST:scheme((20, 21))
 States: [2L, 3L]
   [INTERVAL]   [TARGET/STATE [2, 3]]
-  [-oo, oo]    MST:(DoorID(s=5, d=1))
+  [-oo, oo]    MST:(5)
 
 Result
   [INTERVAL]   [TARGET/STATE [0, 1, 2, 3]]
-  [-oo, 9]     MST:scheme((DoorID(s=10, d=0), DoorID(s=11, d=0), DoorID(s=6, d=1), DoorID(s=6, d=1)))
-  [10, oo]     MST:scheme((DoorID(s=20, d=0), DoorID(s=21, d=0), DoorID(s=6, d=1), DoorID(s=6, d=1)))
+  [-oo, 9]     MST:scheme((10, 11, 6, 6))
+  [10, oo]     MST:scheme((20, 21, 6, 6))
 BorderN        = 1
 Target Schemes = (10, 11, 6, 6), (20, 21, 6, 6)
 
@@ -21,16 +21,16 @@ Target Schemes = (10, 11, 6, 6), (20, 21, 6, 6)
 
 States: [2L, 3L]
   [INTERVAL]   [TARGET/STATE [2, 3]]
-  [-oo, oo]    MST:(DoorID(s=5, d=1))
+  [-oo, oo]    MST:(5)
 States: [0L, 1L]
   [INTERVAL]   [TARGET/STATE [0, 1]]
-  [-oo, 9]     MST:scheme((DoorID(s=10, d=0), DoorID(s=11, d=0)))
-  [10, oo]     MST:scheme((DoorID(s=20, d=0), DoorID(s=21, d=0)))
+  [-oo, 9]     MST:scheme((10, 11))
+  [10, oo]     MST:scheme((20, 21))
 
 Result
   [INTERVAL]   [TARGET/STATE [2, 3, 0, 1]]
-  [-oo, 9]     MST:scheme((DoorID(s=7, d=1), DoorID(s=7, d=1), DoorID(s=10, d=0), DoorID(s=11, d=0)))
-  [10, oo]     MST:scheme((DoorID(s=7, d=1), DoorID(s=7, d=1), DoorID(s=20, d=0), DoorID(s=21, d=0)))
+  [-oo, 9]     MST:scheme((7, 7, 10, 11))
+  [10, oo]     MST:scheme((7, 7, 20, 21))
 BorderN        = 1
 Target Schemes = (7, 7, 10, 11), (7, 7, 20, 21)
 

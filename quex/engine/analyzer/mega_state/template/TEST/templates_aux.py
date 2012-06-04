@@ -2,7 +2,7 @@ import quex.engine.state_machine.index                as index
 from   quex.engine.analyzer.state.core                import AnalyzerState
 from   quex.engine.analyzer.state.entry               import Entry
 from   quex.engine.analyzer.state.entry_action        import DoorID
-from   quex.engine.analyzer.mega_state.core           import PseudoMegaState 
+from   quex.engine.analyzer.mega_state.core           import PseudoMegaState, MegaState
 import quex.engine.analyzer.mega_state.template.core  as templates 
 from   quex.engine.analyzer.mega_state.template.state import MegaState_Target, TemplateState
 from   quex.engine.state_machine.core                 import State
@@ -57,7 +57,8 @@ def setup_AnalyzerStates(StatesDescription):
         state_index = long(state_index)
         sm_state = sm_state_db.get(state_index)
         if sm_state is None: sm_state = setup_sm_state(state_index, [])
-        state    = AnalyzerState(sm_state, state_index, False, EngineType, set(from_state_list))
+        raw_state    = AnalyzerState(sm_state, state_index, False, EngineType, set(from_state_list))
+        state        = PseudoMegaState(raw_state)
         state.entry.door_tree_configure()
         analyzer.state_db[state_index] = state
 
@@ -98,12 +99,12 @@ def configure_States(TriggerMapA, StateN_A, TriggerMapB, StateN_B):
 
 def test_combination(StateA, StateB, analyzer, DrawF=False):
     print
-    if not isinstance(StateA, TemplateState): 
+    if not isinstance(StateA, MegaState): 
         StateA = PseudoMegaState(StateA)
     print "StateA:", StateA.state_index_list
     print_tm(StateA.transition_map, StateA.state_index_list)
 
-    if not isinstance(StateB, TemplateState): 
+    if not isinstance(StateB, MegaState): 
         StateB = PseudoMegaState(StateB)
     print "StateB:", StateB.state_index_list
     print_tm(StateB.transition_map, StateB.state_index_list)
