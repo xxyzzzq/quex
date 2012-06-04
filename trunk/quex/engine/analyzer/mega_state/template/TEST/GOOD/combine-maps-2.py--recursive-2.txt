@@ -3,8 +3,8 @@
 
 States: [0L, 1L]
   [INTERVAL]   [TARGET/STATE [0, 1]]
-  [-oo, 19]    MST:scheme((DoorID(s=10, d=0), DoorID(s=20, d=0)))
-  [20, oo]     MST:scheme((DoorID(s=3, d=2), DoorID(s=3, d=1)))
+  [-oo, 19]    MST:scheme((10, 20))
+  [20, oo]     MST:scheme((3, 3))
 StateB: [2L]
   [INTERVAL]   [TARGET/STATE [2]]
   [-oo, oo]    2L
@@ -30,8 +30,8 @@ DoorTree(A|B):
     
 Result
   [INTERVAL]   [TARGET/STATE [0, 1, 2]]
-  [-oo, 19]    MST:scheme((DoorID(s=10, d=0), DoorID(s=20, d=0), DoorID(s=4, d=2)))
-  [20, oo]     MST:scheme((DoorID(s=4, d=2), DoorID(s=4, d=1), DoorID(s=4, d=2)))
+  [-oo, 19]    MST:scheme((10, 20, 4))
+  [20, oo]     MST:scheme((4, 4, 4))
 BorderN        = 1
 Target Schemes = (4, 4, 4), (10, 20, 4)
 
@@ -43,8 +43,8 @@ StateA: [2L]
   [-oo, oo]    2L
 States: [0L, 1L]
   [INTERVAL]   [TARGET/STATE [0, 1]]
-  [-oo, 19]    MST:scheme((DoorID(s=10, d=0), DoorID(s=20, d=0)))
-  [20, oo]     MST:scheme((DoorID(s=3, d=2), DoorID(s=3, d=1)))
+  [-oo, 19]    MST:scheme((10, 20))
+  [20, oo]     MST:scheme((3, 3))
 
 DoorTree(A|B):
     [1]: (0<-1) (0<-7777) 
@@ -67,8 +67,8 @@ DoorTree(A|B):
     
 Result
   [INTERVAL]   [TARGET/STATE [2, 0, 1]]
-  [-oo, 19]    MST:scheme((DoorID(s=5, d=2), DoorID(s=10, d=0), DoorID(s=20, d=0)))
-  [20, oo]     MST:scheme((DoorID(s=5, d=2), DoorID(s=5, d=2), DoorID(s=5, d=1)))
+  [-oo, 19]    MST:scheme((5, 10, 20))
+  [20, oo]     MST:scheme((5, 5, 5))
 BorderN        = 1
 Target Schemes = (5, 5, 5), (5, 10, 20)
 

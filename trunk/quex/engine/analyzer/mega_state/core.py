@@ -43,7 +43,8 @@ class PseudoMegaState(MegaState):
              and not interval to target state.
     """
     def __init__(self, Represented_AnalyzerState):
-        self.__state       = Represented_AnalyzerState
+        assert not isinstance(Represented_AnalyzerState, MegaState)
+        self.__state = Represented_AnalyzerState
         MegaState.__init__(self, StateIndex=Represented_AnalyzerState.index)
 
         self.__state_index_list = [ Represented_AnalyzerState.index ]
@@ -232,13 +233,13 @@ class MegaState_Target(object):
     def __repr__(self):
         if   self.drop_out_f:                     return "MegaState_Target:DropOut"
         elif self.target_state_index is not None: return "MegaState_Target:(%s)"       % repr(self.__target_state_index)
-        elif self.scheme  is not None:            return "MegaState_Target:scheme(%s)" % repr(self.__scheme)
+        elif self.scheme  is not None:            return "MegaState_Target:scheme(%s)" % repr(self.__scheme).replace("L", "")
         else:                                     return "MegaState_Target:<ERROR>"
 
     def __hash__(self):
         if   self.__drop_out_f:                     return 0
         elif self.__target_state_index is not None: return self.__target_state_index.state_index
-        elif self.__scheme is not None:             return self.__scheme[0].state_index
+        elif self.__scheme is not None:             return hash(self.__scheme)
         else:                                       assert False
 
     def __eq__(self, Other):
