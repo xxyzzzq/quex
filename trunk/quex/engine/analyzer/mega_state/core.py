@@ -20,8 +20,6 @@ class MegaState(AnalyzerState):
         if StateIndex is None: StateIndex = index.get()
         AnalyzerState.set_index(self, StateIndex)
 
-        self.__door_id_replacement_db = None
-
     @property
     def init_state_f(self): return False
 
@@ -33,6 +31,14 @@ class MegaState(AnalyzerState):
 
     def map_state_key_to_state_index(self, StateKey):
         assert False, "This function needs to be overwritten by derived class."
+
+    def finalize_transition_map(self, StateDB):
+        scheme_db = {}
+        for i, info in enumerate(self.transition_map):
+            interval, target = info
+            adapted = target.finalize(self, StateDB, scheme_db)
+            if adapted is None: continue
+            self.transition_map[i] = (interval, adapted)
 
 class PseudoMegaState(MegaState):
     """A pseudo mega state is a state that represent a single AnalyzerState
@@ -76,12 +82,7 @@ class PseudoMegaState(MegaState):
            Here, the recursive target is implemented as a 'scheme' in order to
            prevent that it may be treated as 'uniform' with other targets.
         """
-
-        def get(Target, SelfIndex):
-            if Target == SelfIndex: return MegaState_Target.create((Target,))
-            else:                   return MegaState_Target.create(Target)
-
-        return [ (interval, get(target, self.index)) \
+        return [ (interval, MegaState_Target.create(target)) \
                  for interval, target in self.__state.transition_map]
 
     @property
@@ -165,7 +166,7 @@ class MegaState_Target(object):
                      later to define the scheme only once, even it appears
                      twice or more.
     """
-    __slots__ = ('__scheme', '__drop_out_f', '__target_state_index', 'code')
+    __slots__ = ('__scheme', '__scheme_id', '__drop_out_f', '__target_state_index')
 
     __object_db = dict()
 
@@ -203,6 +204,7 @@ class MegaState_Target(object):
         self.__drop_out_f         = False
         self.__target_state_index = None
         self.__scheme             = None
+        self.__scheme_id          = None # Only set in 'finalize'
 
         if   Target == E_StateIndices.DROP_OUT: self.__drop_out_f         = True   
         elif isinstance(Target, long):          self.__target_state_index = Target 
@@ -214,8 +216,8 @@ class MegaState_Target(object):
         if self.__drop_out_f: return self 
 
         result = MegaState_Target(Target=None) 
-        result.__drop_out_f = False
-        result.__index      = self.__index
+        result.__drop_out_f         = False
+        result.__scheme_id          = self.__scheme_id
         result.__target_state_index = self.__target_state_index
         if self.__scheme is None: result.__scheme = None
         else:                     result.__scheme = copy(self.__scheme) # Shallow copy sufficient for numbers
@@ -228,11 +230,84 @@ class MegaState_Target(object):
     @property
     def drop_out_f(self):          return self.__drop_out_f
     @property
-    def index(self):               return self.__index
+    def scheme_id(self):           return self.__scheme_id
+
+    def finalize(self, TheMegaState, StateDB, scheme_db):
+        """Once the whole state configuration and the states' entry doors are
+           determined, the actual MegaState_Target object can be finalized.
+           That is:
+           
+           -- A common target may become a scheme, if the DoorIDs differ
+              depending on the 'from_state_index' (which is one of the
+              .implemented_state_index_list()).
+
+           -- A scheme may become a common target, if the target DoorID 
+              is the same for all indices in .implemented_state_index_list().
+        """
+
+        if self.drop_out_f:
+            return
+
+        implemented_state_index_list = TheMegaState.implemented_state_index_list()
+        L = len(implemented_state_index_list)
+        assert L > 1
+
+        def determine_scheme_id(scheme_db, Scheme):
+            scheme_id = scheme_db.get(Scheme)
+            if scheme_id is None: 
+                scheme_id = len(scheme_db)
+                scheme_db[Scheme] = scheme_id
+            return scheme_id
+
+        if self.scheme is not None:
+            assert len(self.scheme) == L, \
+                   "%s\n%s" % (repr(self.scheme), implemented_state_index_list)
+            # The 'scheme' may result in the same DoorID of a MegaState, for
+            # example. In that case  case the 'scheme' would translate into a
+            # direct transition to target state.
+            prototype = None
+            for state_index in implemented_state_index_list:
+                state_key = TheMegaState.map_state_index_to_state_key(state_index)
+                target_state_index = self.scheme[state_key]
+
+                if target_state_index != E_StateIndices.DROP_OUT:
+                    # DROP_OUT cannot be in a scheme, if there was some non-DROP-OUT there.
+                    # => Only give it a chance as long as no DROP_OUT target appears.
+                    target_entry = StateDB[target_state_index].entry
+                    door_id      = target_entry.get_door_id(target_state_index, state_index)
+                    if prototype is None:      prototype = door_id; continue
+                    elif prototype == door_id: continue
+
+                # The scheme is indeed not uniform => Stay with the scheme
+                self.__scheme_id = determine_scheme_id(scheme_db, self.__scheme)
+                return # Nothing to be done
+            else:
+                # All has been uniform => generate transition through common DoorID
+                return MegaState_Target.create(target_state_index)
+
+        else:
+            assert self.target_state_index is not None
+            # The common target state may be entered by different doors
+            # depending on the 'from_state' which is currently implemented by
+            # the MegaState. Then, it translates into a scheme.
+            target_entry = StateDB[self.target_state_index].entry
+            prototype    = None
+            for state_index in implemented_state_index_list:
+                door_id   = target_entry.get_door_id(self.target_state_index, state_index)
+                if prototype is None:      prototype = door_id; continue
+                elif prototype == door_id: continue
+
+                # The door_ids are not uniform => generate a scheme
+                result = MegaState_Target.create((self.target_state_index,) * L)
+                result.__scheme_id = determine_scheme_id(scheme_db, result.scheme)
+                return result
+            else:
+                # All has been uniform => Stay with 'target_state_index'
+                return # Nothing to be done
 
     def __repr__(self):
         if   self.drop_out_f:                     return "MegaState_Target:DropOut"
-        elif self.target_state_index is not None: return "MegaState_Target:(%s)"       % repr(self.__target_state_index)
+        elif self.target_state_index is not None: return "MegaState_Target:(%s)"       % repr(self.__target_state_index).replace("L", "")
         elif self.scheme  is not None:            return "MegaState_Target:scheme(%s)" % repr(self.__scheme).replace("L", "")
         else:                                     return "MegaState_Target:<ERROR>"
 
@@ -253,7 +328,7 @@ class MegaState_Target(object):
             return self.__scheme == Other.__scheme
         else:
             return False
-        ## if self.__index != Other.__index: return False
+        ## if self.__scheme_id != Other.__scheme_id: return False
         return self.__scheme == Other.__scheme
 
 # Globally unique object to stand up for all 'drop-outs'.

@@ -1,11 +1,11 @@
 
 (Straight)---------------------------------------
 
-States: [0L, 1L, 2L]
+StateA: [0L, 1L, 2L]
   [INTERVAL]   [TARGET/STATE [0, 1, 2]]
   [-oo, 19]    MST:scheme((100, 200, 300))
   [20, oo]     MST:(100)
-States: [3L, 4L, 5L]
+StateB: [3L, 4L, 5L]
   [INTERVAL]   [TARGET/STATE [3, 4, 5]]
   [-oo, 9]     MST:scheme((100, 200, 300))
   [10, 19]     MST:(100)
@@ -24,13 +24,13 @@ Target Schemes = (100, 100, 100, 100, 200, 300), (100, 200, 300, 100, 100, 100),
 
 (Vice Versa)-------------------------------------
 
-States: [3L, 4L, 5L]
+StateA: [3L, 4L, 5L]
   [INTERVAL]   [TARGET/STATE [3, 4, 5]]
   [-oo, 9]     MST:scheme((100, 200, 300))
   [10, 19]     MST:(100)
   [20, 29]     MST:scheme((100, 200, 300))
   [30, oo]     MST:(100)
-States: [0L, 1L, 2L]
+StateB: [0L, 1L, 2L]
   [INTERVAL]   [TARGET/STATE [0, 1, 2]]
   [-oo, 19]    MST:scheme((100, 200, 300))
   [20, oo]     MST:(100)

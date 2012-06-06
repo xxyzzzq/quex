@@ -1,4 +1,4 @@
-<history date="Mon Jun  4 08:28:49 2012" element-n="46">
+<history date="Tue Jun  5 06:00:24 2012" element-n="54">
     <day year="2011" month="09" day="28">
         <history-init time="20:08:52"/>
     </day>
@@ -56,5 +56,15 @@
         <crc-error time="06:28:29" application="combine-maps-2.py" choice="recursive-3" database-crc="1091680709" real-crc="1026173306"/>
         <crc-error time="06:28:39" application="combine-maps-2.py" choice="recursive-b" database-crc="-562817148" real-crc="1202017180"/>
         <crc-error time="06:28:48" application="combine-maps-2.py" choice="recursive-2b" database-crc="298678448" real-crc="1315164732"/>
+        <crc-error time="16:58:44" application="combine-maps.py" choice="1" database-crc="-1294371951" real-crc="-1445811063"/>
+        <crc-error time="16:58:58" application="combine-maps.py" choice="2" database-crc="-666103023" real-crc="-1612938100"/>
+        <crc-error time="16:59:08" application="combine-maps.py" choice="2b" database-crc="87543699" real-crc="-1894629620"/>
+        <crc-error time="16:59:21" application="combine-maps.py" choice="3" database-crc="-341781596" real-crc="-1308775497"/>
+        <crc-error time="16:59:30" application="combine-maps.py" choice="4" database-crc="640265243" real-crc="-103244750"/>
+        <crc-error time="16:59:38" application="combine-maps.py" choice="recursive" database-crc="1327431436" real-crc="-1429545679"/>
+    </day>
+    <day year="2012" month="06" day="05">
+        <crc-error time="03:37:22" application="combine-simple.py" choice="plain" database-crc="-673640113" real-crc="-2141069942"/>
+        <crc-error time="04:00:22" application="combine-simple.py" choice="plain" database-crc="-2141069942" real-crc="939872630"/>
     </day>
 </history>

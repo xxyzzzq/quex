@@ -37,8 +37,8 @@ DoorTree(A|B):
     
 Result
   [INTERVAL]   [TARGET/STATE [1, 2]]
-  [-oo, 9]     MST:(DoorID(s=0, d=2))
-  [10, oo]     MST:scheme((DoorID(s=0, d=1), DoorID(s=0, d=2)))
+  [-oo, 9]     MST:(0)
+  [10, oo]     MST:scheme((0, 0))
 BorderN        = 1
 Target Schemes = (0, 0)
 
@@ -71,8 +71,8 @@ DoorTree(A|B):
     
 Result
   [INTERVAL]   [TARGET/STATE [2, 1]]
-  [-oo, 9]     MST:(DoorID(s=1, d=2))
-  [10, oo]     MST:scheme((DoorID(s=1, d=2), DoorID(s=1, d=1)))
+  [-oo, 9]     MST:(1)
+  [10, oo]     MST:scheme((1, 1))
 BorderN        = 1
 Target Schemes = (1, 1)
 

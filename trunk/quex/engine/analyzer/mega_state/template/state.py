@@ -141,6 +141,11 @@ class TemplateState(MegaState):
         self.transition_map, \
         self.__target_db     = combine_maps(StateA, StateB)
 
+        L = len(self.__state_index_list)
+        for interval, target in self.transition_map:
+            if target.scheme is None: continue
+            assert len(target.scheme) == L
+
         # Compatible with AnalyzerState
         # (A template state can never mimik an init state)
         self.__engine_type = None # StateA.engine_type
