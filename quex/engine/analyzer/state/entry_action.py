@@ -539,6 +539,30 @@ class Door:
         else:                   txt.append("parent: [%s]\n" % repr(self.parent.door_id.door_index))
         return "".join(txt)
 
+    @staticmethod
+    def replace_node_by_parent(Node):
+        parent = Node.parent
+        assert parent is not None
+
+        # Remove node as child of parent
+        del parent.child_list[parent.child_list.index(Node)]
+
+        # Connect childs of node to its parents
+        # -- The parent of node becomes the parent of all childs.
+        for child in Node.child_list:
+            child.parent = parent
+        # -- The childs of node become childs of the node's parent.
+        parent.child_list.extend(Node.child_list)
+
+        # Relate the node's transition_ids to the parent door:
+        #  -- update door_id_to_transition_id_list_db
+        #  -- update transition_id_to_door_id_db
+        transition_id_list = Door.door_id_to_transition_id_list_db[Node.door_id]
+        Door.transition_id_to_door_id_db.update((transition_id, parent.door_id) \
+                                                for transition_id in transition_id_list)
+        Door.door_id_to_transition_id_list_db[parent.door_id].extend(transition_id_list)
+        del Door.door_id_to_transition_id_list_db[Node.door_id]
+
 class DoorID(object):
     __slots__ = ("__state_index", "__door_index")
     def __init__(self, StateIndex, DoorIndex):
@@ -587,7 +611,20 @@ def categorize_command_lists(StateIndex, TransitionActionList):
 
     root         = Door(None, CommandList(), [])
     parent       = root
-    pending_list = TransitionActionList 
+
+    empties, non_sharing, pending_list = pre_investigate(TransitionActionList)
+
+    # All empty transition actions are associated with the root node.
+    for TA in empties:
+        Door.door_id_to_transition_id_list_db[root.door_id].append(TA.transition_id)
+        Door.transition_id_to_door_id_db[TA.transition_id] = root.door_id
+
+    # All non-sharing actions get their own door.
+    for TA in non_sharing:
+        door = Door(parent, TA.command_list, [TA])
+        parent.child_list.append(door)
+
+    # All pending are subject to investigation
     work_list    = [ (parent, pending_list) ]
     while len(work_list) != 0:
         parent, pending_list = work_list.pop()
@@ -642,12 +679,55 @@ def categorize_command_lists(StateIndex, TransitionActionList):
         work_list.sort(key=itemgetter(1))
 
     assert root is not None
-    root = clear_door_tree(root)
+    remove_empty_nodes(root)
     assert root is not None
 
     return copy(Door.transition_id_to_door_id_db), \
            copy(Door.door_id_to_transition_id_list_db), \
            root
+
+def pre_investigate(TransitionActionList):
+    """Categorize the TransitionActions into one of three kinds:
+
+       -- 'empties' where there is no action whatsoever.
+
+       -- 'non_sharing' which are CommandList-s that do not share
+          any command with any other.
+
+       -- 'remainder' which do not fall into 'empties' or 'non_sharing'.
+    """
+    empties     = []
+    non_sharing = []
+    remainder   = []
+    done_set    = set()
+    L           = len(TransitionActionList)
+    for i, x in enumerate(TransitionActionList):
+        if x.command_list.is_empty(): 
+            empties.append(x)
+            continue
+        elif i in done_set: 
+            continue
+
+        shared_f = False
+        for k in xrange(i+1, L):
+            y = TransitionActionList[k]
+            if y.command_list.is_empty(): 
+                empties.append(y)
+                done_set.add(k)     
+                continue
+            for y_action in y.command_list:
+                if not x.command_list.has_action(y_action): continue
+                shared_f = True
+                remainder.append(x)
+                remainder.append(y)
+                done_set.add(k) # 'k' has proven to share
+                #               # 'i' won't appear anyway a second time
+                break
+            if shared_f: break
+        if not shared_f: 
+            non_sharing.append(x)
+
+    return empties, non_sharing, remainder
 
 def get_best_common_command_list(TransitionActionList):
     """
@@ -660,48 +740,50 @@ def get_best_common_command_list(TransitionActionList):
     collect all doors that may match a certain command list, i.e.
 
          count_db:  command_list -->  doors that have all its actions
-                                     (and may be other actions).
+                                      (and may be other actions).
 
     If no common command list is determined, then the transition actions
     with no commands are the 'sharing_transition_action_list' of an empty 
     'shared_command_list'.
     """
     def get_common_command_list(Al, Bl):
-        return CommandList([action for action in Al if Bl.has_action(action)])
+        return CommandList(action for action in Al if Bl.has_action(action))
 
-    same_db = defaultdict(set)
+    cmdlist_db = defaultdict(set)
+    # Map: CommandList --> TransitionAction-s that do exactly that CommandList
     for x in TransitionActionList:
-        same_db[x.command_list].add(x)
+        cmdlist_db[x.command_list].add(x)
 
-    # Shortcut: if all doors are the same, then the result can be computed quickly: best = all common
-    if len(same_db) == 1:
+    # Shortcut: If all transitions require exactly the same CommandList,
+    #           then the result can be computed quickly: best = all common.
+    if len(cmdlist_db) == 1:
         return TransitionActionList[0].command_list.clone(), [x for x in TransitionActionList]
 
-    if len(same_db) > Setup.state_entry_analysis_complexity_limit:
+    if len(cmdlist_db) > Setup.state_entry_analysis_complexity_limit:
         # PROBLEM:  Computation time propotional to square of size!
         #           ONLY A PROBLEM IN VERY EXTREME CASES WHERE size >> 1000.
         # In such cases, live with a possibly sub-optimal solution. Reduce
         # the set of candidates to what may be a good guess: The 1000 
         # command_lists with the most doors related to them.
-        error_msg("A certain border of complexity has been detected. To be able to\n"
-                  "handle the analysis, Quex decided to reduce the complexity with\n"     
+        error_msg("The limit of state entry action complexity has been exceeded. To be \n"
+                  "able to handle the analysis, Quex decided to reduce the complexity with\n"     
                   "the risk that the result may not be the absolute optimum. Currently,\n" 
                   "this value is set to %i. It can be modified with the command line\n"      
                   "option '--state-entry-analysis-complexity-limit'." \
                   % Setup.state_entry_analysis_complexity_limit,
                   DontExitF=True)
-        iterable = sorted(same_db.iteritems(), key=lambda x: len(x[1]))
+        iterable = sorted(cmdlist_db.iteritems(), key=lambda x: len(x[1]))
         iterable = islice(iterable, Setup.state_entry_analysis_complexity_limit)
-        same_db  = dict( iterable )
+        cmdlist_db = dict( iterable )
 
     count_db = defaultdict(set) # map: command_list --> 'cost' of comand list
     cost_db  = {}               # map: command_list --> set of doors that share it.
-    for command_list, door_list in same_db.iteritems():
+    for command_list, door_list in cmdlist_db.iteritems():
         if len(door_list) > 1: 
             count_db[command_list].update(door_list)
             cost_db[command_list] = command_list.cost()
     
-    for x, y in combinations(same_db.iteritems(), 2):
+    for x, y in combinations(cmdlist_db.iteritems(), 2):
         x_command_list, x_door_list = x
         y_command_list, y_door_list = y
         common_command_list = get_common_command_list(x_command_list, y_command_list)
@@ -765,47 +847,58 @@ def get_best_common_command_list(TransitionActionList):
     else:
         return best_command_list.clone(), best_combination
             
-def clear_door_tree(RootNode):
-    """Cleaning the door tree considers only one case:
-
-       There is only one child which has no common_commands. Then this 
-       child can be replaced by the root node. This basically means, 
-       that all transitions assigned to it are now assigned to the
-       root node. 
-       
-       Historical Note: 
-
-       Previously a more sophisticated analyzis has been applied. But, the
-       result was only effecting the 'root' node. We need, that there is an
-       entry without any action directly to the place where we access the next
-       input character. Thus this function was abolished, but left in comment
-       below in this file.
+def remove_empty_nodes(RootNode):
+    """Remove nodes without any command lists from the door tree.
     """
-    assert RootNode.common_command_list.is_empty()
-    if len(RootNode.child_list) != 1: return RootNode
+    work_list = [ child for child in RootNode.child_list ]
 
-    child = RootNode.child_list[0]
-    if not child.common_command_list.is_empty(): return RootNode
+    while len(work_list) != 0:
+        node = work_list.pop()
+        work_list.extend(node.child_list)
+        if node.common_command_list.is_empty():
+            Door.replace_node_by_parent(node)
 
-    # If the command list is empty there should be no
-    assert len(child.child_list) == 0
-
-    del RootNode.child_list[0]
-
-    door_id            = child.door_id
-    transition_id_list = Door.door_id_to_transition_id_list_db[door_id] 
-
-    # The only 'transition_id'-s  in the database are the ones in the child node
-    Door.door_id_to_transition_id_list_db.clear()
-    Door.transition_id_to_door_id_db.clear()
-
-    # Assign all transitions to the root node
-    Door.door_id_to_transition_id_list_db[RootNode.door_id] = transition_id_list
-
-    Door.transition_id_to_door_id_db.update((x, RootNode.door_id) \
-                                            for x in transition_id_list)
-    return RootNode
-
+#def clear_door_tree(RootNode):
+#    """Cleaning the door tree considers only one case:
+#
+#       There is only one child which has no common_commands. Then this 
+#       child can be replaced by the root node. This basically means, 
+#       that all transitions assigned to it are now assigned to the
+#       root node. 
+#       
+#       Historical Note: 
+#
+#       Previously a more sophisticated analyzis has been applied. But, the
+#       result was only effecting the 'root' node. We need, that there is an
+#       entry without any action directly to the place where we access the next
+#       input character. Thus this function was abolished, but left in comment
+#       below in this file.
+#    """
+#    assert RootNode.common_command_list.is_empty()
+#    if len(RootNode.child_list) != 1: return RootNode
+#
+#    child = RootNode.child_list[0]
+#    if not child.common_command_list.is_empty(): return RootNode
+#
+#    # If the command list is empty there should be no
+#    assert len(child.child_list) == 0
+#
+#    del RootNode.child_list[0]
+#
+#    door_id            = child.door_id
+#    transition_id_list = Door.door_id_to_transition_id_list_db[door_id] 
+#
+#    # The only 'transition_id'-s  in the database are the ones in the child node
+#    Door.door_id_to_transition_id_list_db.clear()
+#    Door.transition_id_to_door_id_db.clear()
+#
+#    # Assign all transitions to the root node
+#    Door.door_id_to_transition_id_list_db[RootNode.door_id] = transition_id_list
+#
+#    Door.transition_id_to_door_id_db.update((x, RootNode.door_id) \
+#                                            for x in transition_id_list)
+#    return RootNode
+#
 #def clear_door_tree(Node):
 #    """In the door tree, there might be nodes that have
 #       (Was originally applied on the Door.root object, not necessary)

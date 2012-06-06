@@ -2,17 +2,17 @@
 
 StateA: [10L]
   [INTERVAL]   [TARGET/STATE [10]]
-  [-oo, 9]     1L
-  [10, oo]     2L
+  [-oo, 9]     MST:(1)
+  [10, oo]     MST:(2)
 StateB: [20L]
   [INTERVAL]   [TARGET/STATE [20]]
-  [-oo, 9]     2L
-  [10, oo]     1L
+  [-oo, 9]     MST:(2)
+  [10, oo]     MST:(1)
 
 Result
   [INTERVAL]   [TARGET/STATE [10, 20]]
-  [-oo, 9]     MST:scheme((DoorID(s=1, d=0), DoorID(s=2, d=0)))
-  [10, oo]     MST:scheme((DoorID(s=2, d=0), DoorID(s=1, d=0)))
+  [-oo, 9]     MST:scheme((1, 2))
+  [10, oo]     MST:scheme((2, 1))
 BorderN        = 1
 Target Schemes = (1, 2), (2, 1)
 
@@ -22,17 +22,17 @@ Target Schemes = (1, 2), (2, 1)
 
 StateA: [20L]
   [INTERVAL]   [TARGET/STATE [20]]
-  [-oo, 9]     2L
-  [10, oo]     1L
+  [-oo, 9]     MST:(2)
+  [10, oo]     MST:(1)
 StateB: [10L]
   [INTERVAL]   [TARGET/STATE [10]]
-  [-oo, 9]     1L
-  [10, oo]     2L
+  [-oo, 9]     MST:(1)
+  [10, oo]     MST:(2)
 
 Result
   [INTERVAL]   [TARGET/STATE [20, 10]]
-  [-oo, 9]     MST:scheme((DoorID(s=2, d=0), DoorID(s=1, d=0)))
-  [10, oo]     MST:scheme((DoorID(s=1, d=0), DoorID(s=2, d=0)))
+  [-oo, 9]     MST:scheme((2, 1))
+  [10, oo]     MST:scheme((1, 2))
 BorderN        = 1
 Target Schemes = (1, 2), (2, 1)
 

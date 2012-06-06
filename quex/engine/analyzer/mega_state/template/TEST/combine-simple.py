@@ -21,9 +21,9 @@ def print_tm(TM):
     for interval, target in TM:
         if   isinstance(target, (int, long)) \
            or isinstance(target, MegaState_Target) and not target.drop_out_f:
-            print "(%s, %s), " % (interval, target),
+            print "(%s, %s), " % (interval, repr(target).replace("MegaState_Target", "MST")),
         else:
-            print "%s " % target,
+            print "%s " % repr(target).replace("MegaState_Target", "MST"),
     print
 
 def combine_states(A, B):
@@ -42,11 +42,11 @@ def combine_states(A, B):
     print "        ",
     print_tm(result.transition_map)
     print "official template state index:", result.index
-    print "DoorReplacementDB:"
-    for old, new in sorted(result.door_id_replacement_db.iteritems(), 
-                           key=lambda x: (x[0].state_index, x[0].door_index)):
-        print "    %s -> %s" % (old, new)
-    print
+    #print "DoorReplacementDB:"
+    #for old, new in sorted(result.door_id_replacement_db.iteritems(), 
+    #                       key=lambda x: (x[0].state_index, x[0].door_index)):
+    #    print "    %s -> %s" % (old, new)
+    #print
     print "door tree root:"
     print result.entry.door_tree_root.get_string(result.entry.transition_db)
     return result_state_index
