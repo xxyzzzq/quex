@@ -177,8 +177,6 @@ def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr):
         #    isolated single interval.
         TheState.transition_map = [ (Interval(-sys.maxint, sys.maxint), MegaState_Target_DROP_OUT) ]
 
-    TheState.finalize_transition_map(TheAnalyzer.state_db)
-
     for i, info in enumerate(TheState.transition_map):
         interval, target = info
         new_target = prepare_target(target, TheState, TheAnalyzer.state_db, StateKeyStr)
@@ -199,6 +197,9 @@ def prepare_target(Target, TheState, StateDB, StateKeyStr):
         door_id          = target_entry.get_door_id(Target.target_state_index, from_state_index)
         assert door_id is not None
         return TextTransitionCode([LanguageDB.GOTO_BY_DOOR_ID(door_id)])
+
+    elif Target.target_door_id is not None:
+        return TextTransitionCode([LanguageDB.GOTO_BY_DOOR_ID(Target.target_door_id)])
 
     elif Target.scheme is not None:
         label = "template_%i_target_%i[%s]" % (TheState.index, Target.scheme_id, StateKeyStr)

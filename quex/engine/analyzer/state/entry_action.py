@@ -151,6 +151,7 @@ class CommandList:
 
         if self.accepter is not None:
             xor_sum ^= hash(self.accepter)
+
         return xor_sum
 
     def is_equivalent(self, Other):
@@ -608,21 +609,21 @@ def categorize_command_lists(StateIndex, TransitionActionList):
              a second time with freshly loaded data.
     """
     Door.init(StateIndex)
-
     root         = Door(None, CommandList(), [])
     parent       = root
 
-    empties, non_sharing, pending_list = pre_investigate(TransitionActionList)
+    ## empties, non_sharing, pending_list = pre_investigate(TransitionActionList)
+    pending_list = TransitionActionList
 
     # All empty transition actions are associated with the root node.
-    for TA in empties:
-        Door.door_id_to_transition_id_list_db[root.door_id].append(TA.transition_id)
-        Door.transition_id_to_door_id_db[TA.transition_id] = root.door_id
+    ##for TA in empties:
+    ##    Door.door_id_to_transition_id_list_db[root.door_id].append(TA.transition_id)
+    ##    Door.transition_id_to_door_id_db[TA.transition_id] = root.door_id
 
     # All non-sharing actions get their own door.
-    for TA in non_sharing:
-        door = Door(parent, TA.command_list, [TA])
-        parent.child_list.append(door)
+    ##for TA in non_sharing:
+    ##    door = Door(parent, TA.command_list, [TA])
+    ##    parent.child_list.append(door)
 
     # All pending are subject to investigation
     work_list    = [ (parent, pending_list) ]
@@ -698,7 +699,7 @@ def pre_investigate(TransitionActionList):
     """
     empties     = []
     non_sharing = []
-    remainder   = []
+    remainder   = set()
     done_set    = set()
     L           = len(TransitionActionList)
     for i, x in enumerate(TransitionActionList):
@@ -718,8 +719,8 @@ def pre_investigate(TransitionActionList):
             for y_action in y.command_list:
                 if not x.command_list.has_action(y_action): continue
                 shared_f = True
-                remainder.append(x)
-                remainder.append(y)
+                remainder.add(i)
+                remainder.add(k)
                 done_set.add(k) # 'k' has proven to share
                 #               # 'i' won't appear anyway a second time
                 break
@@ -727,7 +728,11 @@ def pre_investigate(TransitionActionList):
         if not shared_f: 
             non_sharing.append(x)
 
-    return empties, non_sharing, remainder
+    #print "##", len(empties), len(non_sharing), len(remainder)
+    #if len(remainder) > 20:
+    #    print [TransitionActionList[i] for i in remainder]
+    #    sys.exit()
+    return empties, non_sharing, [TransitionActionList[i] for i in remainder]
 
 def get_best_common_command_list(TransitionActionList):
     """
@@ -778,14 +783,14 @@ def get_best_common_command_list(TransitionActionList):
 
     count_db = defaultdict(set) # map: command_list --> 'cost' of comand list
     cost_db  = {}               # map: command_list --> set of doors that share it.
-    for command_list, door_list in cmdlist_db.iteritems():
-        if len(door_list) > 1: 
-            count_db[command_list].update(door_list)
+    for command_list, ta_list in cmdlist_db.iteritems():
+        if len(ta_list) > 1: 
+            count_db[command_list].update(ta_list)
             cost_db[command_list] = command_list.cost()
     
     for x, y in combinations(cmdlist_db.iteritems(), 2):
-        x_command_list, x_door_list = x
-        y_command_list, y_door_list = y
+        x_command_list, x_ta_list = x
+        y_command_list, y_ta_list = y
         common_command_list = get_common_command_list(x_command_list, y_command_list)
         action_cost         = cost_db.get(common_command_list)
         if action_cost is None: 
@@ -797,8 +802,8 @@ def get_best_common_command_list(TransitionActionList):
             # if all other doors have the same comand list. Therefore, any door where 
             # cost(all action_cost) * N < best_action_cost * 2 can be dropped.
         entry = count_db[common_command_list]
-        entry.update(x_door_list)
-        entry.update(y_door_list)
+        entry.update(x_ta_list)
+        entry.update(y_ta_list)
 
     # Determine the best combination: max(cost * door number)
     def __precedence(BestCombination, Combination):

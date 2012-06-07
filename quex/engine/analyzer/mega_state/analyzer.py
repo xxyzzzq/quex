@@ -50,6 +50,10 @@ def do(TheAnalyzer):
     # unabsorbed. 
     TheAnalyzer.non_mega_state_index_set = remainder
     TheAnalyzer.mega_state_list          = mega_state_db.values()
+
+    for mega_state in TheAnalyzer.mega_state_list:
+        mega_state.finalize_transition_map(TheAnalyzer.state_db)
+
     # Only now: We enter the MegaState-s into the 'state_db'. If it was done before,
     # the MegaStates might try to absorb each other.
     TheAnalyzer.state_db.update(mega_state_db)

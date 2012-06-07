@@ -14,33 +14,30 @@ DoorTree(B):
 
 StateA: [1L]
   [INTERVAL]   [TARGET/STATE [1]]
-  [-oo, 9]     1L
-  [10, oo]     2L
+  [-oo, 9]     MST:(1)
+  [10, oo]     MST:(2)
 StateB: [2L]
   [INTERVAL]   [TARGET/STATE [2]]
-  [-oo, oo]    2L
+  [-oo, oo]    MST:(2)
 
 DoorTree(A|B):
     [1]: (2<-1) (2<-7777) 
             state_key = 1;
     parent: [0]
     
-    [2]: (1<-1) (2<-2) 
-    parent: [0]
-    
     [3]: (1<-7777) 
             state_key = 0;
     parent: [0]
     
-    [0]: 
+    [0]: (1<-1) (2<-2) 
     parent: [None]
     
 Result
   [INTERVAL]   [TARGET/STATE [1, 2]]
-  [-oo, 9]     MST:(0)
-  [10, oo]     MST:scheme((0, 0))
+  [-oo, 9]     MST:DoorID(s=0, d=0)
+  [10, oo]     MST:scheme((2, 2))
 BorderN        = 1
-Target Schemes = (0, 0)
+Target Schemes = (2, 2)
 
 
 
@@ -48,32 +45,29 @@ Target Schemes = (0, 0)
 
 StateA: [2L]
   [INTERVAL]   [TARGET/STATE [2]]
-  [-oo, oo]    2L
+  [-oo, oo]    MST:(2)
 StateB: [1L]
   [INTERVAL]   [TARGET/STATE [1]]
-  [-oo, 9]     1L
-  [10, oo]     2L
+  [-oo, 9]     MST:(1)
+  [10, oo]     MST:(2)
 
 DoorTree(A|B):
     [1]: (2<-1) (2<-7777) 
             state_key = 0;
     parent: [0]
     
-    [2]: (1<-1) (2<-2) 
-    parent: [0]
-    
     [3]: (1<-7777) 
             state_key = 1;
     parent: [0]
     
-    [0]: 
+    [0]: (1<-1) (2<-2) 
     parent: [None]
     
 Result
   [INTERVAL]   [TARGET/STATE [2, 1]]
-  [-oo, 9]     MST:(1)
-  [10, oo]     MST:scheme((1, 1))
+  [-oo, 9]     MST:DoorID(s=1, d=0)
+  [10, oo]     MST:scheme((2, 2))
 BorderN        = 1
-Target Schemes = (1, 1)
+Target Schemes = (2, 2)
 
 

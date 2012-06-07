@@ -1,20 +1,17 @@
 
 (Straight)---------------------------------------
 
-States: [0L, 1L]
+StateA: [0L, 1L]
   [INTERVAL]   [TARGET/STATE [0, 1]]
   [-oo, 19]    MST:scheme((10, 20))
   [20, oo]     MST:scheme((3, 3))
 StateB: [2L]
   [INTERVAL]   [TARGET/STATE [2]]
-  [-oo, oo]    2L
+  [-oo, oo]    MST:(2)
 
 DoorTree(A|B):
     [1]: (0<-1) (0<-7777) 
             state_key = 0;
-    parent: [0]
-    
-    [2]: (0<-0) (2<-2) 
     parent: [0]
     
     [3]: (1<-7777) 
@@ -25,7 +22,7 @@ DoorTree(A|B):
             state_key = 2;
     parent: [0]
     
-    [0]: 
+    [0]: (0<-0) (2<-2) 
     parent: [None]
     
 Result
@@ -40,8 +37,8 @@ Target Schemes = (4, 4, 4), (10, 20, 4)
 
 StateA: [2L]
   [INTERVAL]   [TARGET/STATE [2]]
-  [-oo, oo]    2L
-States: [0L, 1L]
+  [-oo, oo]    MST:(2)
+StateB: [0L, 1L]
   [INTERVAL]   [TARGET/STATE [0, 1]]
   [-oo, 19]    MST:scheme((10, 20))
   [20, oo]     MST:scheme((3, 3))
@@ -49,9 +46,6 @@ States: [0L, 1L]
 DoorTree(A|B):
     [1]: (0<-1) (0<-7777) 
             state_key = 1;
-    parent: [0]
-    
-    [2]: (0<-0) (2<-2) 
     parent: [0]
     
     [3]: (1<-7777) 
@@ -62,7 +56,7 @@ DoorTree(A|B):
             state_key = 0;
     parent: [0]
     
-    [0]: 
+    [0]: (0<-0) (2<-2) 
     parent: [None]
     
 Result

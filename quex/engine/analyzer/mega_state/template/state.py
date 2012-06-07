@@ -151,6 +151,8 @@ class TemplateState(MegaState):
         self.__engine_type = None # StateA.engine_type
         # self.input         = None # StateA.input # get_input_action(StateA.engine_type, InitStateF=False)
 
+        self.__bad_company = None # To be set after accepted combination
+
     def _DEBUG_combined_state_indices(self): return self.__state_a.index, self.__state_b.index
 
     @property
@@ -163,6 +165,7 @@ class TemplateState(MegaState):
     def state_index_list(self):    return self.__state_index_list
     @property
     def door_id_update_db(self):   
+        assert False
         """The 'door_id_update_db' provides how doors from the two states which
            are combined are mapped to doors to this new template state.
         """
@@ -178,6 +181,14 @@ class TemplateState(MegaState):
             assert replacement.state_index != a and replacement.state_index != b
 
         return self.__door_id_update_db
+
+    def bad_company(self):
+        """RETURN: List of state indices with which the template state 
+                   does not combine well.
+        """
+        if self.__bad_company is None:
+            self.__bad_company = self.__state_a.bad_company().union(self.__state_b.bad_company())
+        return self.__bad_company
 
     def map_state_index_to_state_key(self, StateIndex):
         return self.__state_index_to_state_key_db[StateIndex]

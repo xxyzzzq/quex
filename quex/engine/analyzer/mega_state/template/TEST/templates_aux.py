@@ -2,7 +2,7 @@ import quex.engine.state_machine.index                as index
 from   quex.engine.analyzer.state.core                import AnalyzerState
 from   quex.engine.analyzer.state.entry               import Entry
 from   quex.engine.analyzer.state.entry_action        import DoorID
-from   quex.engine.analyzer.mega_state.core           import PseudoMegaState, MegaState
+from   quex.engine.analyzer.mega_state.core           import PseudoMegaState, MegaState, AbsorbedState
 import quex.engine.analyzer.mega_state.template.core  as templates 
 from   quex.engine.analyzer.mega_state.template.state import MegaState_Target, TemplateState
 from   quex.engine.state_machine.core                 import State
@@ -97,16 +97,16 @@ def configure_States(TriggerMapA, StateN_A, TriggerMapB, StateN_B):
 
     return analyzer, state_a, state_b
 
-def test_combination(StateA, StateB, analyzer, DrawF=False):
+def test_combination(StateA, StateB, analyzer, StateA_Name="A", StateB_Name="B", DrawF=False):
     print
     if not isinstance(StateA, MegaState): 
         StateA = PseudoMegaState(StateA)
-    print "StateA:", StateA.state_index_list
+    print "State%s:" % StateA_Name, StateA.state_index_list
     print_tm(StateA.transition_map, StateA.state_index_list)
 
     if not isinstance(StateB, MegaState): 
         StateB = PseudoMegaState(StateB)
-    print "StateB:", StateB.state_index_list
+    print "State%s:" % StateB_Name, StateB.state_index_list
     print_tm(StateB.transition_map, StateB.state_index_list)
 
     print
@@ -116,10 +116,17 @@ def test_combination(StateA, StateB, analyzer, DrawF=False):
         print "DoorTree(A|B):"
         print "    " + result.entry.door_tree_root.get_string(result.entry.transition_db).replace("\n", "\n    ")
     print "Result"
+
+    for state_index in result.implemented_state_index_list():
+        analyzer.state_db[state_index] = AbsorbedState(analyzer.state_db[state_index], 
+                                                       result)
+
+    result.finalize_transition_map(analyzer.state_db)
     print_tm(result.transition_map, result.state_index_list)
     print_metric(result.transition_map)
     print
     print
+    return result
 
 class TestAnalyzer:
     def __init__(self, EngineType):
