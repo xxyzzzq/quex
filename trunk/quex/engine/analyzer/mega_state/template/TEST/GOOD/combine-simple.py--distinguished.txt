@@ -1,13 +1,9 @@
 ----------------------------------------------------------
-State0:  DROP_OUT  ([10], 1000),  DROP_OUT 
-State1:  DROP_OUT  ([10], 2000),  DROP_OUT 
+State0:  MST:DropOut  ([10], MST:(1000)),  MST:DropOut 
+State1:  MST:DropOut  ([10], MST:(2000)),  MST:DropOut 
 State5 = Template(State0 + State1)
-         MegaState_Target:DropOut  ([10], MegaState_Target:scheme((DoorID(s=1000, d=0), DoorID(s=2000, d=0)))),  MegaState_Target:DropOut 
+         MST:DropOut  ([10], MST:scheme((1000, 2000))),  MST:DropOut 
 official template state index: 5
-DoorReplacementDB:
-    DoorID(s=0, d=0) -> DoorID(s=5, d=1)
-    DoorID(s=1, d=0) -> DoorID(s=5, d=2)
-
 door tree root:
 [1]: (0<-7777) 
         state_key = 0;
@@ -21,15 +17,11 @@ parent: [0]
 parent: [None]
 
 ----------------------------------------------------------
-State2:  DROP_OUT  ([10], 3000),  DROP_OUT 
-State3:  DROP_OUT  ([10], 4000),  DROP_OUT 
+State2:  MST:DropOut  ([10], MST:(3000)),  MST:DropOut 
+State3:  MST:DropOut  ([10], MST:(4000)),  MST:DropOut 
 State6 = Template(State2 + State3)
-         MegaState_Target:DropOut  ([10], MegaState_Target:scheme((DoorID(s=3000, d=0), DoorID(s=4000, d=0)))),  MegaState_Target:DropOut 
+         MST:DropOut  ([10], MST:scheme((3000, 4000))),  MST:DropOut 
 official template state index: 6
-DoorReplacementDB:
-    DoorID(s=2, d=0) -> DoorID(s=6, d=1)
-    DoorID(s=3, d=0) -> DoorID(s=6, d=2)
-
 door tree root:
 [1]: (2<-7777) 
         state_key = 0;
@@ -43,17 +35,11 @@ parent: [0]
 parent: [None]
 
 ----------------------------------------------------------
-State5:  MegaState_Target:DropOut  ([10], MegaState_Target:scheme((DoorID(s=1000, d=0), DoorID(s=2000, d=0)))),  MegaState_Target:DropOut 
-State6:  MegaState_Target:DropOut  ([10], MegaState_Target:scheme((DoorID(s=3000, d=0), DoorID(s=4000, d=0)))),  MegaState_Target:DropOut 
+State5:  MST:DropOut  ([10], MST:scheme((1000, 2000))),  MST:DropOut 
+State6:  MST:DropOut  ([10], MST:scheme((3000, 4000))),  MST:DropOut 
 State7 = Template(State5 + State6)
-         MegaState_Target:DropOut  ([10], MegaState_Target:scheme((DoorID(s=1000, d=0), DoorID(s=2000, d=0), DoorID(s=3000, d=0), DoorID(s=4000, d=0)))),  MegaState_Target:DropOut 
+         MST:DropOut  ([10], MST:scheme((1000, 2000, 3000, 4000))),  MST:DropOut 
 official template state index: 7
-DoorReplacementDB:
-    DoorID(s=0, d=0) -> DoorID(s=7, d=1)
-    DoorID(s=1, d=0) -> DoorID(s=7, d=2)
-    DoorID(s=2, d=0) -> DoorID(s=7, d=3)
-    DoorID(s=3, d=0) -> DoorID(s=7, d=4)
-
 door tree root:
 [1]: (0<-7777) 
         state_key = 0;
@@ -75,18 +61,11 @@ parent: [0]
 parent: [None]
 
 ----------------------------------------------------------
-State4:  DROP_OUT  ([10], 5000),  DROP_OUT 
-State7:  MegaState_Target:DropOut  ([10], MegaState_Target:scheme((DoorID(s=1000, d=0), DoorID(s=2000, d=0), DoorID(s=3000, d=0), DoorID(s=4000, d=0)))),  MegaState_Target:DropOut 
+State4:  MST:DropOut  ([10], MST:(5000)),  MST:DropOut 
+State7:  MST:DropOut  ([10], MST:scheme((1000, 2000, 3000, 4000))),  MST:DropOut 
 State8 = Template(State4 + State7)
-         MegaState_Target:DropOut  ([10], MegaState_Target:scheme((DoorID(s=5000, d=0), DoorID(s=1000, d=0), DoorID(s=2000, d=0), DoorID(s=3000, d=0), DoorID(s=4000, d=0)))),  MegaState_Target:DropOut 
+         MST:DropOut  ([10], MST:scheme((5000, 1000, 2000, 3000, 4000))),  MST:DropOut 
 official template state index: 8
-DoorReplacementDB:
-    DoorID(s=0, d=0) -> DoorID(s=8, d=1)
-    DoorID(s=1, d=0) -> DoorID(s=8, d=2)
-    DoorID(s=2, d=0) -> DoorID(s=8, d=3)
-    DoorID(s=3, d=0) -> DoorID(s=8, d=4)
-    DoorID(s=4, d=0) -> DoorID(s=8, d=5)
-
 door tree root:
 [1]: (0<-7777) 
         state_key = 1;

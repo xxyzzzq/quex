@@ -283,6 +283,10 @@ class CombinationDB:
                 if candidate.gain >= self.__min_gain:
                     result[n] = (i_state.index, k_state.index, candidate)
                     n += 1
+                else:
+                    # Mention the states for which the other does not combine properly
+                    i_state.bad_company_add(i_state.index)
+                    k_state.bad_company_add(k_state.index)
 
         if n != MaxSize:
             del result[n:]
@@ -304,6 +308,8 @@ class CombinationDB:
         n           = len(self.__candidate_list)
         MaxSize     = len(self.__candidate_list) + MaxIncrease
         self.__candidate_list.extend([None] * MaxIncrease)
+        ImplementedStateIndexList = set(NewElect.implemented_state_index_list())
+        bad_company               = NewElect.bad_company()
 
         for state in self.__elect_db.itervalues():
             if self.__uniformity_required_f:
@@ -311,11 +317,21 @@ class CombinationDB:
                 if   not (state.drop_out == NewElect.drop_out):    continue
                 elif not (state.entry.is_uniform(NewElect.entry)): continue
 
+            # Do not try to combine states that have proven to be 'bad_company'.
+            if   not bad_company.isdisjoint(state.implemented_state_index_list()): continue
+            elif not state.bad_company().isdisjoint(ImplementedStateIndexList):    continue
+            elif     state.index in bad_company:                                   continue
+            # IMPOSSIBLE: NewElect.index in state.bad_company() 
+            #             because when 'state' was created, 'NewElect' did not exist.
             candidate = TemplateStateCandidate(NewElect, state, self.__all_db)
 
             if candidate.gain >= self.__min_gain:
                 self.__candidate_list[n] = (state.index, NewElect.index, candidate)
                 n += 1
+            else:
+                # Mention the states for which the other does not combine properly
+                state.bad_company_add(NewElect.index)
+                bad_company.add(state.index)
 
         if n != MaxSize:
             del self.__candidate_list[n:]
@@ -369,8 +385,6 @@ class CombinationDB:
 
         # (*) The entry with the highest gain is at the tail of the list.
         i, k, elect = self.__candidate_list.pop()
-
-        # print "##ELECT:", elect.index,  elect._DEBUG_combined_state_indices()
 
         # (*) __elect_db:    Remove 'i' and 'k' from '__elect_db'.
         #     __candidate_list: Remove any TemplateStateCandidate that combines 

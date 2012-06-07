@@ -20,11 +20,22 @@ class MegaState(AnalyzerState):
         if StateIndex is None: StateIndex = index.get()
         AnalyzerState.set_index(self, StateIndex)
 
+        # Maintain a list of states with which the state may not combine well
+        self.__bad_company = set()
+
     @property
     def init_state_f(self): return False
 
     def implemented_state_index_list(self):
         assert False, "This function needs to be overwritten by derived class."
+
+    def bad_company_add(self, StateIndex):
+        self.__bad_company.add(StateIndex)
+    def bad_company(self):
+        """RETURN: List of state indices with which the MegaState does not 
+                   combine well.
+        """
+        return self.__bad_company
 
     def map_state_index_to_state_key(self, StateIndex):
         assert False, "This function needs to be overwritten by derived class."
@@ -166,7 +177,7 @@ class MegaState_Target(object):
                      later to define the scheme only once, even it appears
                      twice or more.
     """
-    __slots__ = ('__scheme', '__scheme_id', '__drop_out_f', '__target_state_index')
+    __slots__ = ('__drop_out_f', '__scheme', '__scheme_id', '__target_state_index', '__door_id')
 
     __object_db = dict()
 
@@ -204,11 +215,13 @@ class MegaState_Target(object):
         self.__drop_out_f         = False
         self.__target_state_index = None
         self.__scheme             = None
-        self.__scheme_id          = None # Only set in 'finalize'
+        self.__scheme_id          = None # Only possibly set in 'finalize'
+        self.__door_id            = None # Only possibly set in 'finalize'
 
         if   Target == E_StateIndices.DROP_OUT: self.__drop_out_f         = True   
         elif isinstance(Target, long):          self.__target_state_index = Target 
         elif isinstance(Target, tuple):         self.__scheme             = Target
+        elif isinstance(Target, DoorID):        self.__door_id            = Target # only by '.finalize()'
         else:                                   assert False, Target.__class__.__name__
 
     def clone(self):
@@ -227,6 +240,8 @@ class MegaState_Target(object):
     def scheme(self):              return self.__scheme
     @property
     def target_state_index(self):  return self.__target_state_index
+    @property
+    def target_door_id(self):      return self.__door_id
     @property
     def drop_out_f(self):          return self.__drop_out_f
     @property
@@ -260,8 +275,7 @@ class MegaState_Target(object):
             return scheme_id
 
         if self.scheme is not None:
-            assert len(self.scheme) == L, \
-                   "%s\n%s" % (repr(self.scheme), implemented_state_index_list)
+            assert len(self.scheme) == L
             # The 'scheme' may result in the same DoorID of a MegaState, for
             # example. In that case  case the 'scheme' would translate into a
             # direct transition to target state.
@@ -283,7 +297,8 @@ class MegaState_Target(object):
                 return # Nothing to be done
             else:
                 # All has been uniform => generate transition through common DoorID
-                return MegaState_Target.create(target_state_index)
+                assert prototype is not None
+                return MegaState_Target.create(prototype)
 
         else:
             assert self.target_state_index is not None
@@ -308,7 +323,8 @@ class MegaState_Target(object):
     def __repr__(self):
         if   self.drop_out_f:                     return "MegaState_Target:DropOut"
         elif self.target_state_index is not None: return "MegaState_Target:(%s)"       % repr(self.__target_state_index).replace("L", "")
-        elif self.scheme  is not None:            return "MegaState_Target:scheme(%s)" % repr(self.__scheme).replace("L", "")
+        elif self.target_door_id is not None:     return "MegaState_Target:%s"         % repr(self.__door_id).replace("L", "")
+        elif self.scheme is not None:             return "MegaState_Target:scheme(%s)" % repr(self.__scheme).replace("L", "")
         else:                                     return "MegaState_Target:<ERROR>"
 
     def __hash__(self):
