@@ -137,6 +137,15 @@ class AbsorbedState(AnalyzerState):
         # than the transitions into the AbsorbedAnalyzerState. Those, others
         # do not do any harm, though. Filtering out those out of the hash map
         # does, most likely, not bring any benefit.
+        assert AbsorbedAnalyzerState.index in AbsorbingMegaState.implemented_state_index_list()
+        if False:
+            for transition_id in AbsorbedAnalyzerState.entry.door_db.iterkeys():
+                if transition_id.state_index != AbsorbedAnalyzerState.index: continue
+                assert AbsorbingMegaState.entry.door_db.has_key(transition_id), \
+                       "MegaState %i absorbed %s but does not implement transition %s" % \
+                       (AbsorbingMegaState.index, AbsorbingMegaState.implemented_state_index_list(), transition_id)
+        #----------------------------------------------------------------------
+
         self.entry       = AbsorbedState_Entry(AbsorbedAnalyzerState.index, 
                                                AbsorbingMegaState.entry.transition_db,
                                                AbsorbingMegaState.entry.door_db)

@@ -97,7 +97,7 @@ def configure_States(TriggerMapA, StateN_A, TriggerMapB, StateN_B):
 
     return analyzer, state_a, state_b
 
-def test_combination(StateA, StateB, analyzer, StateA_Name="A", StateB_Name="B", DrawF=False):
+def test_combination(StateA, StateB, analyzer, StateA_Name="A", StateB_Name="B", DrawF=False, FinalizeF=True):
     print
     if not isinstance(StateA, MegaState): 
         StateA = PseudoMegaState(StateA)
@@ -111,9 +111,10 @@ def test_combination(StateA, StateB, analyzer, StateA_Name="A", StateB_Name="B",
 
     print
     result = TemplateState(StateA, StateB, analyzer)
+    result.entry.door_tree_configure()
 
     if DrawF:
-        print "DoorTree(A|B):"
+        print "DoorTree(%s|%s):" % (StateA_Name, StateB_Name)
         print "    " + result.entry.door_tree_root.get_string(result.entry.transition_db).replace("\n", "\n    ")
     print "Result"
 
@@ -121,7 +122,9 @@ def test_combination(StateA, StateB, analyzer, StateA_Name="A", StateB_Name="B",
         analyzer.state_db[state_index] = AbsorbedState(analyzer.state_db[state_index], 
                                                        result)
 
-    result.finalize_transition_map(analyzer.state_db)
+    if FinalizeF:
+        result.finalize_transition_map(analyzer.state_db)
+
     print_tm(result.transition_map, result.state_index_list)
     print_metric(result.transition_map)
     print

@@ -1,92 +1,152 @@
-----------------------------------------------------------
-State0:  MST:DropOut  ([10], MST:(1000)),  MST:DropOut 
-State1:  MST:DropOut  ([10], MST:(2000)),  MST:DropOut 
-State5 = Template(State0 + State1)
-         MST:DropOut  ([10], MST:scheme((1000, 2000))),  MST:DropOut 
-official template state index: 5
-door tree root:
-[1]: (0<-7777) 
-        state_key = 0;
-parent: [0]
 
-[2]: (1<-7777) 
-        state_key = 1;
-parent: [0]
+State0: [0L]
+  [INTERVAL]   [TARGET/STATE [0]]
+  [-oo, 9]     MST:DropOut
+  [10]         MST:(1000)
+  [11, oo]     MST:DropOut
+State1: [1L]
+  [INTERVAL]   [TARGET/STATE [1]]
+  [-oo, 9]     MST:DropOut
+  [10]         MST:(2000)
+  [11, oo]     MST:DropOut
 
-[0]: 
-parent: [None]
+DoorTree(0|1):
+    [1]: (0<-7777) 
+            state_key = 0;
+    parent: [0]
+    
+    [2]: (1<-7777) 
+            state_key = 1;
+    parent: [0]
+    
+    [0]: 
+    parent: [None]
+    
+Result
+  [INTERVAL]   [TARGET/STATE [0, 1]]
+  [-oo, 9]     MST:DropOut
+  [10]         MST:scheme((1000, 2000))
+  [11, oo]     MST:DropOut
+BorderN        = 2
+Target Schemes = (1000, 2000)
 
-----------------------------------------------------------
-State2:  MST:DropOut  ([10], MST:(3000)),  MST:DropOut 
-State3:  MST:DropOut  ([10], MST:(4000)),  MST:DropOut 
-State6 = Template(State2 + State3)
-         MST:DropOut  ([10], MST:scheme((3000, 4000))),  MST:DropOut 
-official template state index: 6
-door tree root:
-[1]: (2<-7777) 
-        state_key = 0;
-parent: [0]
 
-[2]: (3<-7777) 
-        state_key = 1;
-parent: [0]
 
-[0]: 
-parent: [None]
+State2: [2L]
+  [INTERVAL]   [TARGET/STATE [2]]
+  [-oo, 9]     MST:DropOut
+  [10]         MST:(3000)
+  [11, oo]     MST:DropOut
+State3: [3L]
+  [INTERVAL]   [TARGET/STATE [3]]
+  [-oo, 9]     MST:DropOut
+  [10]         MST:(4000)
+  [11, oo]     MST:DropOut
 
-----------------------------------------------------------
-State5:  MST:DropOut  ([10], MST:scheme((1000, 2000))),  MST:DropOut 
-State6:  MST:DropOut  ([10], MST:scheme((3000, 4000))),  MST:DropOut 
-State7 = Template(State5 + State6)
-         MST:DropOut  ([10], MST:scheme((1000, 2000, 3000, 4000))),  MST:DropOut 
-official template state index: 7
-door tree root:
-[1]: (0<-7777) 
-        state_key = 0;
-parent: [0]
+DoorTree(2|3):
+    [1]: (2<-7777) 
+            state_key = 0;
+    parent: [0]
+    
+    [2]: (3<-7777) 
+            state_key = 1;
+    parent: [0]
+    
+    [0]: 
+    parent: [None]
+    
+Result
+  [INTERVAL]   [TARGET/STATE [2, 3]]
+  [-oo, 9]     MST:DropOut
+  [10]         MST:scheme((3000, 4000))
+  [11, oo]     MST:DropOut
+BorderN        = 2
+Target Schemes = (3000, 4000)
 
-[2]: (1<-7777) 
-        state_key = 1;
-parent: [0]
 
-[3]: (2<-7777) 
-        state_key = 2;
-parent: [0]
 
-[4]: (3<-7777) 
-        state_key = 3;
-parent: [0]
+State5: [0L, 1L]
+  [INTERVAL]   [TARGET/STATE [0, 1]]
+  [-oo, 9]     MST:DropOut
+  [10]         MST:scheme((1000, 2000))
+  [11, oo]     MST:DropOut
+State6: [2L, 3L]
+  [INTERVAL]   [TARGET/STATE [2, 3]]
+  [-oo, 9]     MST:DropOut
+  [10]         MST:scheme((3000, 4000))
+  [11, oo]     MST:DropOut
 
-[0]: 
-parent: [None]
+DoorTree(5|6):
+    [1]: (0<-7777) 
+            state_key = 0;
+    parent: [0]
+    
+    [2]: (1<-7777) 
+            state_key = 1;
+    parent: [0]
+    
+    [3]: (2<-7777) 
+            state_key = 2;
+    parent: [0]
+    
+    [4]: (3<-7777) 
+            state_key = 3;
+    parent: [0]
+    
+    [0]: 
+    parent: [None]
+    
+Result
+  [INTERVAL]   [TARGET/STATE [0, 1, 2, 3]]
+  [-oo, 9]     MST:DropOut
+  [10]         MST:scheme((1000, 2000, 3000, 4000))
+  [11, oo]     MST:DropOut
+BorderN        = 2
+Target Schemes = (1000, 2000, 3000, 4000)
 
-----------------------------------------------------------
-State4:  MST:DropOut  ([10], MST:(5000)),  MST:DropOut 
-State7:  MST:DropOut  ([10], MST:scheme((1000, 2000, 3000, 4000))),  MST:DropOut 
-State8 = Template(State4 + State7)
-         MST:DropOut  ([10], MST:scheme((5000, 1000, 2000, 3000, 4000))),  MST:DropOut 
-official template state index: 8
-door tree root:
-[1]: (0<-7777) 
-        state_key = 1;
-parent: [0]
 
-[2]: (1<-7777) 
-        state_key = 2;
-parent: [0]
 
-[3]: (2<-7777) 
-        state_key = 3;
-parent: [0]
+State4: [4L]
+  [INTERVAL]   [TARGET/STATE [4]]
+  [-oo, 9]     MST:DropOut
+  [10]         MST:(5000)
+  [11, oo]     MST:DropOut
+State5: [0L, 1L, 2L, 3L]
+  [INTERVAL]   [TARGET/STATE [0, 1, 2, 3]]
+  [-oo, 9]     MST:DropOut
+  [10]         MST:scheme((1000, 2000, 3000, 4000))
+  [11, oo]     MST:DropOut
 
-[4]: (3<-7777) 
-        state_key = 4;
-parent: [0]
+DoorTree(4|5):
+    [1]: (0<-7777) 
+            state_key = 1;
+    parent: [0]
+    
+    [2]: (1<-7777) 
+            state_key = 2;
+    parent: [0]
+    
+    [3]: (2<-7777) 
+            state_key = 3;
+    parent: [0]
+    
+    [4]: (3<-7777) 
+            state_key = 4;
+    parent: [0]
+    
+    [5]: (4<-7777) 
+            state_key = 0;
+    parent: [0]
+    
+    [0]: 
+    parent: [None]
+    
+Result
+  [INTERVAL]   [TARGET/STATE [4, 0, 1, 2, 3]]
+  [-oo, 9]     MST:DropOut
+  [10]         MST:scheme((5000, 1000, 2000, 3000, 4000))
+  [11, oo]     MST:DropOut
+BorderN        = 2
+Target Schemes = (5000, 1000, 2000, 3000, 4000)
 
-[5]: (4<-7777) 
-        state_key = 0;
-parent: [0]
-
-[0]: 
-parent: [None]
 

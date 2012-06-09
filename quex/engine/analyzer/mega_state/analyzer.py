@@ -58,7 +58,6 @@ def do(TheAnalyzer):
     # the MegaStates might try to absorb each other.
     TheAnalyzer.state_db.update(mega_state_db)
 
-
 def __transition_adaption(TheAnalyzer, NewMegaStateList, OldMegaStateList):
     """Some AnalyzerState objects have been implemented in Mega States that 
        contain multiple states in once. Thus, the transitions to those AnalyzerState-s

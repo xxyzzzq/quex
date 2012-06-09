@@ -1,4 +1,4 @@
-<history date="Thu Jun  7 06:39:03 2012" element-n="73">
+<history date="Sat Jun  9 07:06:23 2012" element-n="76">
     <day year="2011" month="09" day="28">
         <history-init time="20:08:52"/>
     </day>
@@ -89,5 +89,10 @@
         <crc-error time="04:33:37" application="combine-simple.py" choice="plain" database-crc="-762358456" real-crc="-1004142137"/>
         <crc-error time="04:34:50" application="combine-simple.py" choice="distinguished" database-crc="-1189709231" real-crc="-514424701"/>
         <crc-error time="04:39:02" application="combine-simple.py" choice="recursive" database-crc="-975107438" real-crc="1765684673"/>
+    </day>
+    <day year="2012" month="06" day="09">
+        <crc-error time="04:28:25" application="best_matching_pair.py" choice="0" database-crc="-722672771" real-crc="-1563767364"/>
+        <crc-error time="04:28:53" application="best_matching_pair.py" choice="2" database-crc="1285456427" real-crc="-1506293018"/>
+        <crc-error time="05:05:12" application="combine-simple.py" choice="recursive" database-crc="-670543503" real-crc="1765684673"/>
     </day>
 </history>

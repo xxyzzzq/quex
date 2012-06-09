@@ -180,9 +180,8 @@ class CommandList:
 
 class Command(object):
     @staticmethod
-    def type_id():      assert False
-    def priority(self): assert False
-
+    def type_id():           assert False
+    def priority(self):      assert False
     def clone(self):         assert False, "Derived class must implement 'clone()'"
     def cost(self):          assert False, "Derived class must implement 'cost()'"
     def __hash__(self):      assert False, "Derived class must implement '__hash__()'"
@@ -728,10 +727,6 @@ def pre_investigate(TransitionActionList):
         if not shared_f: 
             non_sharing.append(x)
 
-    #print "##", len(empties), len(non_sharing), len(remainder)
-    #if len(remainder) > 20:
-    #    print [TransitionActionList[i] for i in remainder]
-    #    sys.exit()
     return empties, non_sharing, [TransitionActionList[i] for i in remainder]
 
 def get_best_common_command_list(TransitionActionList):

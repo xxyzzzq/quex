@@ -138,7 +138,8 @@ def group_paths(CharacterPathList, TheAnalyzer, CompressionType):
             # Assign the uniform command list to the transition 'path_walker -> path_walker'
             transition_action = TransitionAction(path_walker.index, path_walker.index, path_walker.uniform_entry_command_list_along_all_paths)
             # Delete transitions on the path itself => No doors for them will be implemented.
-            path_walker.delete_transitions_on_path()
+            path_walker.delete_transitions_on_path() # LEAVE THIS! This is the way to 
+            #                                        # indicate unimportant entry doors!
         else:
             # Nothing special to be done upon iteration over the path
             transition_action = TransitionAction(path_walker.index, path_walker.index)

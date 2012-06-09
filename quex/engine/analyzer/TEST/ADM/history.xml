@@ -1,4 +1,4 @@
-<history date="Wed Jun  6 23:07:26 2012" element-n="738">
+<history date="Sat Jun  9 06:34:05 2012" element-n="739">
     <day year="2011" month="04" day="29">
         <history-init time="04:18:51"/>
     </day>
@@ -886,5 +886,8 @@
     </day>
     <day year="2012" month="02" day="22">
         <crc-error time="06:45:43" application="categorize_doors.py" choice="11" database-crc="-593211105" real-crc="1849807097"/>
+    </day>
+    <day year="2012" month="06" day="09">
+        <crc-error time="04:34:05" application="categorize_doors.py" choice="11" database-crc="677065027" real-crc="1786630541"/>
     </day>
 </history>

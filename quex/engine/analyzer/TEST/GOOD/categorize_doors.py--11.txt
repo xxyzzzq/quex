@@ -1,5 +1,5 @@
-command line: A certain border of complexity has been detected. To be able to
-command line: handle the analysis, Quex decided to reduce the complexity with
+command line: The limit of state entry action complexity has been exceeded. To be 
+command line: able to handle the analysis, Quex decided to reduce the complexity with
 command line: the risk that the result may not be the absolute optimum. Currently,
 command line: this value is set to 5. It can be modified with the command line
 command line: option '--state-entry-analysis-complexity-limit'.
