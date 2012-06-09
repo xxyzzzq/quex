@@ -85,6 +85,19 @@ def _transition_map_gain(CombinedTM, TargetSchemeList, TM_A, TM_B):
     return (a_cost + b_cost) - combined_cost
 
 def _compute_entry_gain(Combined, A, B):
+    # Every different command list requires a separate door.
+    # => Entry cost is proportional to number of unique command lists.
+    # => Gain =   number of unique command lists of A an B each
+    #           - number of unique command lists of Combined(A, B)
+    A_unique_cl_set = set(ta.command_list for ta in A.action_db.itervalues())
+    B_unique_cl_set = set(ta.command_list for ta in B.action_db.itervalues())
+    A_size = len(A_unique_cl_set)
+    B_size = len(B_unique_cl_set)
+    Combined_cl_set = A_unique_cl_set#
+    Combined_cl_set.update(B_unique_cl_set)
+    return Cost(AssignmentN = A_size + B_size - len(Combined_cl_set))
+    
+def OLD_compute_entry_gain(Combined, A, B):
     """Computes cost of each entry by recursively walking through the
        door tree--summing up the cost of each command list in the nodes.
     """

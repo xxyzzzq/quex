@@ -1,35 +1,35 @@
-<test-database execution-time-sec="2.28" date="Wed Jun  6 23:13:25 2012">
+<test-database execution-time-sec="1.90" date="Sat Jun  9 06:15:59 2012">
     <last-used-diff-display-program name=""/>
-    <test title="Token Class Template" time-sum-sec="0.11"> 
+    <test title="Token Class Template" time-sum-sec="0.08"> 
         <application file-name="test-token_class.py" info-request-time="1332915021L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.11" crc="-1622329096"/>
+           <choice name="" result="OK" time_sec="0.08" crc="-1622329096"/>
         </choice-list>
     </test>
     <group name="Converter">
-        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="0.25"> 
+        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="0.20"> 
             <application file-name="test-converter-x.py" info-request-time="1318614196L" vanished="False"/>
             <choice-list number="3" same_result="False">
-               <choice name="1" result="OK" time_sec="0.10" crc="816612133"/>
-               <choice name="2" result="OK" time_sec="0.08" crc="1067358446"/>
+               <choice name="1" result="OK" time_sec="0.06" crc="816612133"/>
+               <choice name="2" result="OK" time_sec="0.07" crc="1067358446"/>
                <choice name="3" result="OK" time_sec="0.07" crc="-1013101497"/>
             </choice-list>
         </test>
-        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="1.58"> 
+        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="1.34"> 
             <application file-name="test-converter-C.py" info-request-time="1332054517L" vanished="False"/>
             <choice-list number="3" same_result="False">
-               <choice name="cp737" result="OK" time_sec="0.56" crc="1246986017"/>
-               <choice name="cp866" result="OK" time_sec="0.49" crc="822098519"/>
-               <choice name="cp1256" result="OK" time_sec="0.54" crc="1051252697"/>
+               <choice name="cp737" result="OK" time_sec="0.47" crc="1246986017"/>
+               <choice name="cp866" result="OK" time_sec="0.43" crc="822098519"/>
+               <choice name="cp1256" result="OK" time_sec="0.44" crc="1051252697"/>
             </choice-list>
         </test>
-        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="0.34"> 
+        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="0.28"> 
             <application file-name="test-converter.py" info-request-time="1318614196L" vanished="False"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="OK" time_sec="0.10" crc="700229258"/>
-               <choice name="2" result="OK" time_sec="0.07" crc="-1075785192"/>
-               <choice name="3" result="OK" time_sec="0.08" crc="-1324094235"/>
-               <choice name="4" result="OK" time_sec="0.08" crc="-489839902"/>
+               <choice name="1" result="OK" time_sec="0.06" crc="700229258"/>
+               <choice name="2" result="OK" time_sec="0.08" crc="-1075785192"/>
+               <choice name="3" result="OK" time_sec="0.07" crc="-1324094235"/>
+               <choice name="4" result="OK" time_sec="0.07" crc="-489839902"/>
             </choice-list>
         </test>
     </group>

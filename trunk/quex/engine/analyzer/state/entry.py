@@ -204,12 +204,9 @@ class Entry(object):
         self.__door_db = DoorDB
 
     def get_door_id(self, StateIndex, FromStateIndex):
-        # Assume that iterating over the whole set is much faster
-        # than creating a temporary TransitionID object.
-        for transition_id, door_id in self.__door_db.iteritems():
-            if transition_id.state_index == StateIndex and transition_id.from_state_index == FromStateIndex:
-                return door_id
-        return None
+        Entry.tmp_transition_id.state_index      = StateIndex
+        Entry.tmp_transition_id.from_state_index = FromStateIndex
+        return self.__door_db.get(Entry.tmp_transition_id)
 
     def get_door_id_by_command_list(self, TheCommandList):
         """Finds the DoorID of the door that implements TheCommandList.
@@ -245,8 +242,9 @@ class Entry(object):
         """Assume that 'door_tree_root' has been built alread."""
 
         # (1) Find the door for 'StateIndex' from 'FromStateIndex'
-        transition_id = TransitionID(StateIndex, FromStateIndex)
-        door_id       = self.__door_db.get(transition_id)
+        Entry.tmp_transition_id.state_index      = StateIndex
+        Entry.tmp_transition_id.from_state_index = FromStateIndex
+        door_id = self.__door_db.get(Entry.tmp_transition_id)
         # A transition that does not exist, does not have commands related to it.
         if door_id is None: return False
         door          = self.door_find(door_id)

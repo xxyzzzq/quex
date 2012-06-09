@@ -192,11 +192,18 @@ def prepare_target(Target, TheState, StateDB, StateKeyStr):
         return E_StateIndices.DROP_OUT
 
     elif Target.target_state_index is not None:
-        from_state_index = TheState.implemented_state_index_list()[0]
-        target_entry     = StateDB[Target.target_state_index].entry
-        door_id          = target_entry.get_door_id(Target.target_state_index, from_state_index)
-        assert door_id is not None
-        return TextTransitionCode([LanguageDB.GOTO_BY_DOOR_ID(door_id)])
+        # NOTE: Not all transitions of from 'x' to 'Target.target_state_index' may
+        #       be relevant. For example, if the transition lies on a uniform path
+        #       which is implemented by the MegaState. The MegaState indicates
+        #       the irrelevance by deleting the transition_id. 
+        # HOWEVER: If no transition_id is found, then transition_map is erroneous!
+        for from_state_index in TheState.implemented_state_index_list():
+            target_entry     = StateDB[Target.target_state_index].entry
+            door_id          = target_entry.get_door_id(Target.target_state_index, from_state_index)
+            if door_id is not None: 
+                return TextTransitionCode([LanguageDB.GOTO_BY_DOOR_ID(door_id)])
+        else:
+            assert False, "TransitionID was not resolved in target state's entry."
 
     elif Target.target_door_id is not None:
         return TextTransitionCode([LanguageDB.GOTO_BY_DOOR_ID(Target.target_door_id)])

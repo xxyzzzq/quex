@@ -285,8 +285,8 @@ class CombinationDB:
                     n += 1
                 else:
                     # Mention the states for which the other does not combine properly
-                    i_state.bad_company_add(i_state.index)
-                    k_state.bad_company_add(k_state.index)
+                    i_state.bad_company_add(k_state.index)
+                    k_state.bad_company_add(i_state.index)
 
         if n != MaxSize:
             del result[n:]
@@ -318,9 +318,9 @@ class CombinationDB:
                 elif not (state.entry.is_uniform(NewElect.entry)): continue
 
             # Do not try to combine states that have proven to be 'bad_company'.
-            if   not bad_company.isdisjoint(state.implemented_state_index_list()): continue
+            if       state.index in bad_company:                                   continue
+            elif not bad_company.isdisjoint(state.implemented_state_index_list()): continue
             elif not state.bad_company().isdisjoint(ImplementedStateIndexList):    continue
-            elif     state.index in bad_company:                                   continue
             # IMPOSSIBLE: NewElect.index in state.bad_company() 
             #             because when 'state' was created, 'NewElect' did not exist.
             candidate = TemplateStateCandidate(NewElect, state, self.__all_db)
@@ -360,6 +360,7 @@ class CombinationDB:
         """
         result = {}
         for state in (x for x in self.__elect_db.itervalues() if isinstance(x, TemplateState)):
+            state.entry.door_tree_configure()
             result.update((i, state) for i in state.implemented_state_index_list())
 
         return result
@@ -434,27 +435,4 @@ class CombinationDB:
     def iteritems(self):
         for x in self.__elect_db.iteritems():
             yield x
-
-    def __DEBUG_checks(self):
-        # CHECKS
-        original_set    = set(self.__door_id_replacement_db.iterkeys())
-        replacement_set = set(self.__door_id_replacement_db.itervalues())
-        if not original_set.isdisjoint(replacement_set): 
-            # print "##", self.__door_id_replacement_db
-            # for x in original_set.intersection(replacement_set):
-            #     print "##", x, "-->", self.__door_id_replacement_db[x]
-            #     for p, q in self.__door_id_replacement_db.iteritems():
-            #         if q == x: print "##", p, "-->", q
-            assert False
-
-        # -- The 'replacement' doors must all be in '__elect_db' states.
-        # -- The root door of a TemplateState can not be targetted directly
-        #    from outside (state key must be set).
-        for door_id in replacement_set:
-            state = self.__elect_db.get(door_id.state_index)
-            if state is None and door_id.state_index == elect.index:
-                state = elect
-            assert state is not None
-            if door_id.door_index == 0:
-                assert isinstance(state, TemplateState)
 
