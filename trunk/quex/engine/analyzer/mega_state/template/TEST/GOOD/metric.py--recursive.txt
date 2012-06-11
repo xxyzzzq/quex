@@ -7,21 +7,21 @@ StateA: [0L, 1L]
   [10, oo]     MST:scheme((20, 21))
 StateB: [2L, 3L]
   [INTERVAL]   [TARGET/STATE [2, 3]]
-  [-oo, oo]    MST:(5)
+  [-oo, oo]    MST:scheme((2, 3))
 
 Result
   [INTERVAL]   [TARGET/STATE [0, 1, 2, 3]]
-  [-oo, 9]     MST:scheme((10, 11, 6, 6))
-  [10, oo]     MST:scheme((20, 21, 6, 6))
+  [-oo, 9]     MST:scheme((10, 11, 2, 3))
+  [10, oo]     MST:scheme((20, 21, 2, 3))
 BorderN        = 1
-Target Schemes = (10, 11, 6, 6), (20, 21, 6, 6)
+Target Schemes = (10, 11, 2, 3), (20, 21, 2, 3)
 
 
 (Vice Versa)-------------------------------------
 
 StateA: [2L, 3L]
   [INTERVAL]   [TARGET/STATE [2, 3]]
-  [-oo, oo]    MST:(5)
+  [-oo, oo]    MST:scheme((2, 3))
 StateB: [0L, 1L]
   [INTERVAL]   [TARGET/STATE [0, 1]]
   [-oo, 9]     MST:scheme((10, 11))
@@ -29,9 +29,9 @@ StateB: [0L, 1L]
 
 Result
   [INTERVAL]   [TARGET/STATE [2, 3, 0, 1]]
-  [-oo, 9]     MST:scheme((7, 7, 10, 11))
-  [10, oo]     MST:scheme((7, 7, 20, 21))
+  [-oo, 9]     MST:scheme((2, 3, 10, 11))
+  [10, oo]     MST:scheme((2, 3, 20, 21))
 BorderN        = 1
-Target Schemes = (7, 7, 10, 11), (7, 7, 20, 21)
+Target Schemes = (2, 3, 10, 11), (2, 3, 20, 21)
 
 

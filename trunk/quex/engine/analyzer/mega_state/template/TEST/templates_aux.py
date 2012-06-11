@@ -101,13 +101,13 @@ def test_combination(StateA, StateB, analyzer, StateA_Name="A", StateB_Name="B",
     print
     if not isinstance(StateA, MegaState): 
         StateA = PseudoMegaState(StateA)
-    print "State%s:" % StateA_Name, StateA.state_index_list
-    print_tm(StateA.transition_map, StateA.state_index_list)
+    print "State%s:" % StateA_Name, StateA.state_index_sequence()
+    print_tm(StateA.transition_map, StateA.state_index_sequence())
 
     if not isinstance(StateB, MegaState): 
         StateB = PseudoMegaState(StateB)
-    print "State%s:" % StateB_Name, StateB.state_index_list
-    print_tm(StateB.transition_map, StateB.state_index_list)
+    print "State%s:" % StateB_Name, StateB.state_index_sequence()
+    print_tm(StateB.transition_map, StateB.state_index_sequence())
 
     print
     result = TemplateState(StateA, StateB, analyzer)
@@ -125,7 +125,7 @@ def test_combination(StateA, StateB, analyzer, StateA_Name="A", StateB_Name="B",
     if FinalizeF:
         result.finalize_transition_map(analyzer.state_db)
 
-    print_tm(result.transition_map, result.state_index_list)
+    print_tm(result.transition_map, result.state_index_sequence())
     print_metric(result.transition_map)
     print
     print

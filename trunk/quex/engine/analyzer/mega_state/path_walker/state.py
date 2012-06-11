@@ -1,9 +1,7 @@
 from   quex.engine.analyzer.state.entry_action  import SetPathIterator, DoorID
 from   quex.engine.analyzer.mega_state.core     import MegaState, MegaState_Target
 from   quex.engine.state_machine.transition_map import TransitionMap
-from   quex.blackboard                          import E_EngineTypes, \
-                                                       E_InputActions, \
-                                                       E_Compression
+from   quex.blackboard                          import E_Compression
 
 class PathWalkerState(MegaState):
     """A path walker state is a state that can walk along one or more paths 
@@ -11,11 +9,12 @@ class PathWalkerState(MegaState):
        this class are the basis for code generation.
     """
     def __init__(self, FirstPath, TheAnalyzer, CompressionType):
-        MegaState.__init__(self, FirstPath.index)
 
-        self.__path_list      = [ FirstPath.sequence() ]
-        self.entry            = self.__adapt_path_walker_id_and_path_id(FirstPath.entry, PathID=0)
-        self.drop_out         = FirstPath.drop_out   # map: drop_out --> state_index_list
+        self.__path_list = [ FirstPath.sequence() ]
+        entry    = PathWalkerState.adapt_path_walker_id_and_path_id(FirstPath.index, FirstPath.entry, PathID=0)
+        drop_out = FirstPath.drop_out   # map: drop_out --> state_index_list
+        MegaState.__init__(self, entry, drop_out, FirstPath.index)
+
         self.__skeleton       = FirstPath.skeleton() # map: target_index --> trigger set
         # The skeleton does not contain wild cards anymore, so we can already transform it
         # into a transition map:                     # list: [ ... (interval, target) ... ]
@@ -24,8 +23,7 @@ class PathWalkerState(MegaState):
         self.__uniformity_required_f                 = (CompressionType == E_Compression.PATH_UNIFORM)
         self.__uniform_entry_command_list_along_path = FirstPath.get_uniform_entry_command_list_along_path()
 
-        self.__state_index_list     = None # Computed on demand
-        self.__end_state_index_list = None # Computed on demand
+        self.__state_index_sequence = None # Computed on demand
 
     def __determine_transition_map(self, Skeleton):
         """Transforms a 'skeleton', i.e. a map:
@@ -100,7 +98,7 @@ class PathWalkerState(MegaState):
 
         # (2b) Absorb Entry Information
         #      Absorb entry's action_db (maps: 'transition_id --> command_list')
-        adapted_entry = self.__adapt_path_walker_id_and_path_id(Path.entry, PathID=path_id)
+        adapted_entry = PathWalkerState.adapt_path_walker_id_and_path_id(self.index, Path.entry, PathID=path_id)
         self.entry.action_db.update(adapted_entry.action_db)
 
         # (2c) Absorb the drop-out information
@@ -108,7 +106,8 @@ class PathWalkerState(MegaState):
 
         return True
 
-    def __adapt_path_walker_id_and_path_id(self, TheEntry, PathID):
+    @staticmethod
+    def adapt_path_walker_id_and_path_id(PathWalkerIndex, TheEntry, PathID):
         """Ensure that any 'SetPathIterator' contains the right references
            to the pathwalker and path id.
         """
@@ -119,7 +118,7 @@ class PathWalkerState(MegaState):
                     assert not found_f # Double check that there are not more than one 
                     #                  # such command per command_list.
                     found_f = True
-                    command.set_path_walker_id(self.index)
+                    command.set_path_walker_id(PathWalkerIndex)
                     command.set_path_id(PathID)
                     # There shall not be more then one 'SetPathIterator' command 
                     # for one transition.
@@ -131,21 +130,7 @@ class PathWalkerState(MegaState):
         assert type(self.__path_list) == list
         return self.__path_list
 
-    @property
-    def state_index_list(self):
-        """map:   state_key --> state_index of involved state
-        """
-        if self.__state_index_list is None:
-            result = [] # **MUST** be a list, because we identify 'state_keys' with it.
-            for path in self.__path_list:
-                result.extend(map(lambda x: x[0], path))
-            self.__state_index_list = result
-        return self.__state_index_list
-
     def implemented_state_index_list(self):
-        """This is different from 'state_index_list', because the end state
-           of a path is not implemented!
-        """
         result = [] # **MUST** be a list, because we might identify 'state_keys' with it.
         for path in self.__path_list:
             # The end state of each path is not implemented
@@ -154,11 +139,23 @@ class PathWalkerState(MegaState):
         return result
 
     def map_state_index_to_state_key(self, StateIndex):
-        # 'state_index_list' is built upon request by the property, see above.
-        return self.state_index_list.index(StateIndex)
+        return self.state_index_sequence().index(StateIndex)
 
     def map_state_key_to_state_index(self, StateKey):
-        return self.state_index_list[StateKey]
+        return self.state_index_sequence()[StateKey]
+
+    def state_index_sequence(self):
+        """RETURN: The sequence of involved states according to the position on
+           the path that they occur. This is different from
+           'implemented_state_index_list' because it maintains the 'order' and 
+           it allows to associate a 'state_index' with a 'state_key'.
+        """
+        if self.__state_index_sequence is None:
+            result = [] # **MUST** be a list, because we identify 'state_keys' with it.
+            for path in self.__path_list:
+                result.extend(map(lambda x: x[0], path))
+            self.__state_index_sequence = result
+        return self.__state_index_sequence
 
     @property
     def uniform_entries_f(self):   

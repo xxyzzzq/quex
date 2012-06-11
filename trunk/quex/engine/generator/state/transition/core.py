@@ -107,7 +107,6 @@ def do(txt, TransitionMap,
     #     implemented in an 'ELSE' block which must be closed.
     if outstanding is not None: txt.append(LanguageDB.ENDIF)
 
-
 def __bisection(txt, TriggerMap):
     """Creates code for state transitions from this state. This function is very
        similar to the function creating code for a 'NumberSet' condition 

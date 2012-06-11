@@ -1,10 +1,9 @@
 # (C) 2009-2011 Frank-Rene Schaefer
 from   quex.engine.generator.state.core             import input_do
-from   quex.engine.generator.languages.address      import get_address, get_label
+from   quex.engine.generator.languages.address      import get_label
 from   quex.engine.generator.languages.variable_db  import variable_db
 
-from   quex.blackboard import setup as Setup, E_StateIndices
-from   operator        import attrgetter
+from   quex.blackboard import setup as Setup
 
 """Template Compression _______________________________________________________
 

@@ -23,8 +23,8 @@
 #   define __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION
 #endif
 
-#define QUEX_SETTING_VERSION           "0.62.4"
-#define QUEX_SETTING_BUILD_DATE        "Sat Apr 28 06:17:34 2012"
+#define QUEX_SETTING_VERSION           "0.62.6"
+#define QUEX_SETTING_BUILD_DATE        "Sun Jun 10 11:11:43 2012"
 #define QUEX_SETTING_ANALYZER_VERSION  "0.0.0-pre-release"
 
 #ifndef    __QUEX_OPTION_PLAIN_C
@@ -119,6 +119,8 @@
 #ifndef    QUEX_OPTION_COLUMN_NUMBER_COUNTING          
 #define    QUEX_OPTION_COLUMN_NUMBER_COUNTING       
 #endif
+
+#define    QUEX_IF_IS_NEWLINE(X)    if( X == '\n' )
 
 #ifndef QUEX_OPTION_POST_CATEGORIZER
 /* #define QUEX_OPTION_POST_CATEGORIZER */

@@ -1,8 +1,7 @@
 from   quex.blackboard                                   import setup as Setup, E_StateIndices
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
-from   quex.engine.analyzer.mega_state.core         import MegaState_Target, \
-                                                           MegaState_Target_DROP_OUT
+from   quex.engine.analyzer.mega_state.core         import MegaState_Target_DROP_OUT
 from   quex.engine.generator.state.transition.code  import TextTransitionCode
 import quex.engine.generator.state.drop_out         as drop_out_coder
 import quex.engine.generator.state.entry            as entry_coder
@@ -164,8 +163,6 @@ def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr):
        jump to the state's drop-out in case of failure. There is no difference
        here in the template state example.
     """
-    LanguageDB = Setup.language_db
-
     # Transition map of the 'skeleton'        
     if TheState.transition_map_empty_f:
         # Transition Map Empty:
@@ -241,7 +238,7 @@ def require_scheme_variable(SchemeID, Scheme, TState, StateDB):
     address_list = [ address(target_index, i, TState) for i, target_index in enumerate(Scheme) ]
 
     variable_db.require_array("template_%i_target_%i", 
-                              ElementN = len(TState.state_index_list), 
+                              ElementN = len(TState.implemented_state_index_list()), 
                               Initial  = get_code(address_list),
                               Index    = (TState.index, SchemeID))
 
