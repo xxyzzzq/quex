@@ -31,10 +31,9 @@ def test(sm):
     analyzer = Analyzer(sm, E_EngineTypes.FORWARD)
     for state in analyzer.state_db.itervalues():
         state.entry.door_tree_configure()
-    result   = paths.find_begin(analyzer, 
-                                sm.init_state_index, sm.init_state_index, 
-                                CompressionType=E_Compression.PATH, 
-                                AvailableStateIndexList=analyzer.state_db.keys())
+    result   = paths.collect(analyzer, 
+                             CompressionType=E_Compression.PATH, 
+                             AvailableStateIndexList=analyzer.state_db.keys())
     for path in result:
         print "# " + repr(path).replace("\n", "\n# ")
 
