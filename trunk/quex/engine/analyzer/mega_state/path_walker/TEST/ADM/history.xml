@@ -1,4 +1,4 @@
-<history date="Mon Jun 11 05:09:12 2012" element-n="14">
+<history date="Tue Jun 12 01:01:43 2012" element-n="22">
     <day year="2011" month="09" day="28">
         <history-init time="20:08:52"/>
     </day>
@@ -16,5 +16,15 @@
         <crc-error time="21:05:59" application="find-3.py" choice="2" database-crc="-1453543211" real-crc="-1385245539"/>
         <crc-error time="21:06:12" application="find-3.py" choice="3" database-crc="-1557722122" real-crc="1801143014"/>
         <crc-error time="21:06:26" application="find-3.py" choice="4" database-crc="1601858541" real-crc="569151014"/>
+    </day>
+    <day year="2012" month="06" day="11">
+        <crc-error time="22:36:58" application="find-3.py" choice="1" database-crc="-1098295415" real-crc="931787559"/>
+        <crc-error time="22:37:24" application="find-3.py" choice="1" database-crc="931787559" real-crc="-1033104587"/>
+        <crc-error time="22:37:41" application="find-3.py" choice="3" database-crc="1801143014" real-crc="-1906330432"/>
+        <crc-error time="22:37:57" application="find.py" choice="6" database-crc="-1287995301" real-crc="-450040430"/>
+        <crc-error time="22:38:23" application="find-2.py" choice="2" database-crc="-1596755628" real-crc="1509291432"/>
+        <crc-error time="22:59:05" application="find.py" choice="4" database-crc="-196460889" real-crc="1618828949"/>
+        <crc-error time="22:59:25" application="find.py" choice="4" database-crc="1618828949" real-crc="-873326368"/>
+        <crc-error time="22:59:40" application="find.py" choice="4" database-crc="-873326368" real-crc="929442033"/>
     </day>
 </history>

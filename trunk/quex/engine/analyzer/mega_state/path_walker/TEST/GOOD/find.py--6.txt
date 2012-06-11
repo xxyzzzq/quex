@@ -14,13 +14,13 @@ node [shape = circle];
 }
 
 
-# start    = 2;
-# path     = (2)--'d'-->(4)--'e'-->[6];
+# start    = 1;
+# path     = (1)--'c'-->(2)--'d'-->(4)--'e'-->[6];
 # skeleton = (s=5,d=0) by 'd'; (s=3,d=0) by 'c'; 
 # wildcard = False;
 # 
-# start    = 1;
-# path     = (1)--'c'-->(2)--'d'-->(4)--'e'-->[6];
+# start    = 2;
+# path     = (2)--'d'-->(4)--'e'-->[6];
 # skeleton = (s=5,d=0) by 'd'; (s=3,d=0) by 'c'; 
 # wildcard = False;
 # 

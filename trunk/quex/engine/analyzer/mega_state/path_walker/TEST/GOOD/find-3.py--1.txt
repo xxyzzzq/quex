@@ -17,13 +17,13 @@ node [shape = circle];
 }
 
 
-# start    = 1;
-# path     = (1)--'p'-->(4)--'z'-->[5];
+# start    = 0;
+# path     = (0)--'p'-->(1)--'p'-->(4)--'z'-->[5];
 # skeleton = (s=2,d=0) by ['a', 'o']; (s=3,d=0) by ['q', 'z']; (s=6,d=0) by 'p'; 
 # wildcard = False;
 # 
-# start    = 0;
-# path     = (0)--'p'-->(1)--'p'-->(4)--'z'-->[5];
+# start    = 1;
+# path     = (1)--'p'-->(4)--'z'-->[5];
 # skeleton = (s=2,d=0) by ['a', 'o']; (s=3,d=0) by ['q', 'z']; (s=6,d=0) by 'p'; 
 # wildcard = False;
 # 
