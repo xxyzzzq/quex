@@ -498,4 +498,8 @@
 #ifdef    __QUEX_OPTION_ENGINE_RUNNING_ON_CODEC
 #   undef __QUEX_OPTION_ENGINE_RUNNING_ON_CODEC
 #endif
+#ifdef    QUEX_IF_IS_NEWLINE
+#   undef QUEX_IF_IS_NEWLINE
+#endif
+
 

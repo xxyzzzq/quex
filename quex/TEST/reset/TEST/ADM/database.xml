@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.52" date="Sat Jun  9 06:15:55 2012">
+<test-database execution-time-sec="0.52" date="Sun Jun 10 11:14:15 2012">
     <last-used-diff-display-program name=""/>
     <test title="Normal Reset" make-dependent="True" time-sum-sec="0.08"> 
         <application file-name="lexer-x" info-request-time="1338842266L" vanished="False"/>

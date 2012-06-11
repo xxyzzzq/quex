@@ -1,4 +1,4 @@
-<test-database execution-time-sec="8.92" date="Sat Jun  9 06:15:54 2012">
+<test-database execution-time-sec="8.88" date="Sun Jun 10 11:42:21 2012">
     <last-used-diff-display-program name=""/>
     <test title="(*) Exceptions during 'import'" time-sum-sec="0.41"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1318614194L" vanished="False"/>
@@ -12,22 +12,22 @@
            <choice name="" result="OK" time_sec="0.05" crc="1951689648"/>
         </choice-list>
     </test>
-    <test title="&lt; #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$" time-sum-sec="0.04"> 
-        <application file-name="check-default-configuration.sh" info-request-time="1333227552L" vanished="False"/>
+    <test title="&lt; #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$" time-sum-sec="0.01"> 
+        <application file-name="check-default-configuration.sh" info-request-time="1339319475L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.04" crc="1542945420"/>
+           <choice name="" result="OK" time_sec="0.01" crc="1977758644"/>
         </choice-list>
     </test>
-    <test title="Code Check with pyflakes" time-sum-sec="7.58"> 
+    <test title="Code Check with pyflakes" time-sum-sec="7.55"> 
         <application file-name="pyflakes-check.sh" info-request-time="1318614194L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="7.58" crc="176785168"/>
+           <choice name="" result="OK" time_sec="7.55" crc="176785168"/>
         </choice-list>
     </test>
-    <test title="Propper undefinition of configuration parameters." time-sum-sec="0.05"> 
+    <test title="Propper undefinition of configuration parameters." time-sum-sec="0.07"> 
         <application file-name="macro-check.py" info-request-time="1332568026L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.05" crc="-1467740473"/>
+           <choice name="" result="OK" time_sec="0.07" crc="-1467740473"/>
         </choice-list>
     </test>
     <test title="Prepare Pattern Information for Code Generation" time-sum-sec="0.08"> 

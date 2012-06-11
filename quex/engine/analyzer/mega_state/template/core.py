@@ -1,11 +1,8 @@
 from   quex.engine.analyzer.mega_state.core               import PseudoMegaState
 from   quex.engine.analyzer.mega_state.template.state     import TemplateState
 from   quex.engine.analyzer.mega_state.template.candidate import TemplateStateCandidate
-from   quex.engine.analyzer.state.entry_action       import DoorID
-from   quex.blackboard import E_Compression, E_StateIndices
+from   quex.blackboard import E_Compression
 from   itertools       import ifilter, islice
-from   collections     import defaultdict
-from   copy            import copy
 
 # (C) 2010 Frank-Rene Schaefer
 """

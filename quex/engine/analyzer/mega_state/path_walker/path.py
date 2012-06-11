@@ -1,5 +1,4 @@
 from   quex.engine.analyzer.state.core         import AnalyzerState
-from   quex.engine.analyzer.state.entry        import Entry
 from   quex.engine.analyzer.state.entry_action import DoorID, SetPathIterator
 from   quex.engine.analyzer.mega_state.core    import MegaState_Entry, \
                                                       MegaState_DropOut
@@ -9,7 +8,6 @@ from quex.engine.interval_handling import NumberSet
 
 from itertools   import ifilter
 from operator    import itemgetter
-from collections import defaultdict
 
 class PathWalkerState_Entry(MegaState_Entry):
     def __init__(self, MegaStateIndex, TheEntry):

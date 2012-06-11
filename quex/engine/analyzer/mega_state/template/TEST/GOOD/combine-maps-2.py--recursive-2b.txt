@@ -3,7 +3,7 @@
 
 StateA: [0L, 1L]
   [INTERVAL]   [TARGET/STATE [0, 1]]
-  [-oo, 19]    MST:scheme((3, 3))
+  [-oo, 19]    MST:scheme((1, 0))
   [20, oo]     MST:(10)
 StateB: [2L]
   [INTERVAL]   [TARGET/STATE [2]]
@@ -27,10 +27,10 @@ DoorTree(A|B):
     
 Result
   [INTERVAL]   [TARGET/STATE [0, 1, 2]]
-  [-oo, 19]    MST:scheme((4, 4, 4))
-  [20, oo]     MST:scheme((10, 10, 4))
+  [-oo, 19]    MST:scheme((1, 0, 2))
+  [20, oo]     MST:scheme((10, 10, 2))
 BorderN        = 1
-Target Schemes = (4, 4, 4), (10, 10, 4)
+Target Schemes = (1, 0, 2), (10, 10, 2)
 
 
 (Vice Versa)-------------------------------------
@@ -40,7 +40,7 @@ StateA: [2L]
   [-oo, oo]    MST:(2)
 StateB: [0L, 1L]
   [INTERVAL]   [TARGET/STATE [0, 1]]
-  [-oo, 19]    MST:scheme((3, 3))
+  [-oo, 19]    MST:scheme((1, 0))
   [20, oo]     MST:(10)
 
 DoorTree(A|B):
@@ -61,9 +61,9 @@ DoorTree(A|B):
     
 Result
   [INTERVAL]   [TARGET/STATE [2, 0, 1]]
-  [-oo, 19]    MST:scheme((5, 5, 5))
-  [20, oo]     MST:scheme((5, 10, 10))
+  [-oo, 19]    MST:scheme((2, 1, 0))
+  [20, oo]     MST:scheme((2, 10, 10))
 BorderN        = 1
-Target Schemes = (5, 5, 5), (5, 10, 10)
+Target Schemes = (2, 1, 0), (2, 10, 10)
 
 

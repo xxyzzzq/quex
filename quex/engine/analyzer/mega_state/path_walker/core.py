@@ -3,11 +3,20 @@ from   quex.engine.analyzer.mega_state.path_walker.path  import CharacterPath
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.state.entry_action           import TransitionID, TransitionAction
 from   quex.blackboard                                   import E_Compression
-
 from   copy        import deepcopy
 from   collections import defaultdict
-"""
-   Path Compression ___________________________________________________________
+"""PATH COMPRESSION: __________________________________________________________
+
+   Path compression tries to find paths of single character transitions inside
+   a state machine. A sequence of single character transitions is called a
+   'path'.  Instead of implementing each state in isolation a special
+   MegaState, a 'PathWalkerState', implements the states on the path by 'path
+   walking'. That is, it compares the current input with the current character
+   on the path. If it fits, it continues on the path, if not it enters the
+   PathWalkerState's transition map. The transition map of all AnalyzerState-s
+   absorbed by a PathWalkerState must be the same.
+
+   EXPLANATION: _______________________________________________________________
 
    For path compression it is necessary to identify traits of single character
    transitions while the remaining transitions of the involved states are the
@@ -22,10 +31,11 @@ from   collections import defaultdict
         `--([a-eg-z])---`--([a-np-z])---`--([a-qs-z])-->(( 4 ))<-----------'
 
 
-   The states 0, 1, and 2 can be implemented by a 'path walker', that is 
-   a common transition map, that is preceded by a single character check.
-   The single character check changes along a fixed path: the sequence of
-   characters 'f', 'o', 'r'. This is shown in the following pseudo-code:
+   The states 0, 1, and 2 can be implemented by a special MegaState'path
+   walker', that is a common transition map, that is preceded by a single
+   character check.  The single character check changes along a fixed path: the
+   sequence of characters 'f', 'o', 'r'. This is shown in the following
+   pseudo-code:
 
      PATH_WALKER_1:
         /* Single Character Check */
@@ -38,81 +48,74 @@ from   collections import defaultdict
         else:         goto STATE_4
 
    It is assumed that the array with the character sequence ends with a
-   terminating character (e.g. zero, but must be different from buffer limit
-   code).  This way it can be detected when to trigger to the correspondent end
-   state.
+   terminating character (such as the 'terminating zero' in classical C
+   Strings), which must be different from buffer limit code. This way it can be
+   detected when to trigger to the correspondent end state.
 
-   For a state that is part of a 'path', a 'goto state' is transformed into a
-   'set path_iterator' plus a 'goto path'. The path iterator determines the
-   current character to be checked. The 'path' determines the reminder of the
-   transition map. It holds
+   Each state which is part of a path, can be identified by the identifier
+   of the PathWalkerState + the position on the path (+ the id of the path,
+   if a PathWalkerState walks more than one path), i.e.
 
-            path state <--> (path index, path iterator position)
+            state on path <--> (PathWalkerState.index, path iterator position)
 
    Assume that in the above example the path is the 'PATH_WALKER_1' and the 
    character sequence is given by an array:
 
             path_1_sequence = { 'f', 'o', 'r', 0x0 };
             
-    then the three states 0, 1, 2 are identified as follows
+   then the three states 0, 1, 2 are identified as follows
 
             STATE_0  <--> (PATH_WALKER_1, path_1_sequence)
             STATE_1  <--> (PATH_WALKER_1, path_1_sequence + 1)
             STATE_2  <--> (PATH_WALKER_1, path_1_sequence + 2)
 
-   Result ______________________________________________________________________
+   The PathWalkerState implements dedicated entries for each state on a 
+   path, where the path iterator is set to the appropriate position.
+
+   RESULT: _____________________________________________________________________
+
+   Dictionary:
+
+          AnalyzerState.index  --->  PathWalkerState which implements it.
 
 
-   The result of analysis of path compression is:
-    
-                       A dictionary mapping  
-                  
-            start state indices <--> 'CharacterPath' objects. 
+   NOTE: _______________________________________________________________________
 
-   A character path represents a single character sequence that was found in
-   the state machine, together with the 'skeleton' which is the remaining
-   trigger map. Concrete:
+   Inheritance:
 
-         .sequence()        --> The character sequence of the path
-         .end_state_index() --> State index of the state that is
-                                entered after the path is terminated.
-         .skeleton()        --> Remaining trigger map, that must be
-                                applied after the single char check.
+         AnalyzerState <----- MegaState <------- PathWalkerState
 
-   There might be multiple pathes starting from the same start state. And,
-   start states might possibly appear in other paths.
 
-   Filtering Pathes ___________________________________________________________
-
-   First, paths that are subsets of other paths might be filtered out without
-   loss.
-
+   (C) 2009-2012 Frank-Rene Schaefer
 """
 def do(TheAnalyzer, CompressionType, AvailableStateIndexList=None, MegaStateList=None):
     assert CompressionType in [E_Compression.PATH, E_Compression.PATH_UNIFORM]
 
     if AvailableStateIndexList is None: AvailableStateIndexList = TheAnalyzer.state_db.keys()
 
+    # (*) Find all single character transitions (paths) inside TheAnalyzer's 
+    #     state machine.
     path_list = find_begin(TheAnalyzer, 
                            TheAnalyzer.init_state_index, 
                            TheAnalyzer.init_state_index, 
                            CompressionType, 
                            AvailableStateIndexList)
 
+    # (*) Filter subsets of longer paths
+    #
+    #     Only the longest path alternative remains.
     __filter_redundant_paths(path_list)
 
-    # A state can only appear in one path, so make sure that intersecting
-    # paths are avoided. Always choose the longest alternative.
+    # (*) Avoid intersections
+    #
+    #     An AnalyzerState can only be implemented by one PathWalkerState.
+    #     If paths intersect choose the longest alternative.
     __select_longest_intersecting_paths(path_list)
 
-    # The filtering of intersecting paths implies that there are no paths
-    # that have the same initial state. 
-    #    -- no paths appear twice.
-    #    -- no state appears in two paths.
-
-    # Group the paths according to their 'skeleton'. If uniformity is required
-    # then this is also a grouping criteria. The result is a list of path walkers
-    # that can walk the paths. They can act as AnalyzerState-s for code generation.
+    # (*) Group paths
+    #    
+    #     Different paths may have the same common transition map. If this is
+    #     the case, they can be implemented by the same PathWalkerState.
     return group_paths(path_list, TheAnalyzer, CompressionType)
 
 def group_paths(CharacterPathList, TheAnalyzer, CompressionType):

@@ -6,7 +6,6 @@ from quex.engine.analyzer.state.drop_out import DropOut, \
                                                 DropOutBackward, \
                                                 DropOutBackwardInputPositionDetection
 from quex.engine.analyzer.mega_state.template.state import TemplateState
-from quex.engine.analyzer.mega_state.core           import get_iterable
 from quex.blackboard import E_AcceptanceIDs, \
                             E_TransitionN
 
@@ -115,6 +114,10 @@ def OLD_compute_entry_gain(Combined, A, B):
 
     return Cost(AssignmentN = (a_cost + b_cost) - combined_cost)
 
+def get_iterable(X, StateIndexList): 
+    if hasattr(X, "iteritems"): return X.iteritems()
+    else:                       return [(X, StateIndexList)]
+
 def _compute_drop_out_gain(Combined, A, StateA_Index, B, StateB_Index):
     """Computes the gain of combining two objects 'A' and 'B' into the combined
        object 'Combined'. Objects can be state Entry-s or state DropOut-s. By
@@ -122,11 +125,11 @@ def _compute_drop_out_gain(Combined, A, StateA_Index, B, StateB_Index):
        below:
 
              [ ...
-               (X, [state_index_list])
+               (X, [state_index_sequence])
                ...
              ]
 
-       The 'X' contains an unique object and 'state_index_list' contains the
+       The 'X' contains an unique object and 'state_index_sequence' contains the
        list of indices from the original state machine that require this
        particular object (be it 'DropOut' or 'Entry'). For original states this
        list is, of course, simply [ (Object, [state_index]) ]. But, by this

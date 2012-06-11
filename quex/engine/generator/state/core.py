@@ -5,7 +5,6 @@ import quex.engine.generator.state.transition.core  as transition_block
 import quex.engine.generator.state.entry            as entry
 import quex.engine.generator.state.drop_out         as drop_out
 from   quex.blackboard import E_StateIndices, \
-                              E_InputActions, \
                               E_EngineTypes,  \
                               setup as Setup
 
