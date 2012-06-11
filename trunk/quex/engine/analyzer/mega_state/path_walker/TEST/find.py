@@ -11,7 +11,7 @@ from   quex.engine.analyzer.core               import Analyzer
 from   quex.blackboard                         import E_EngineTypes, E_Compression
 
 if "--hwut-info" in sys.argv:
-    print "Paths: find_begin;"
+    print "Paths: collect;"
     print "CHOICES: 1, 2, 3, 4, 5, 6;"
     sys.exit(0)
 
@@ -56,10 +56,9 @@ def test(Skeleton, *StringPaths):
     analyzer = Analyzer(sm, E_EngineTypes.FORWARD)
     for state in analyzer.state_db.itervalues():
         state.entry.door_tree_configure()
-    result = paths.find_begin(analyzer, 
-                              sm.init_state_index, sm.init_state_index, 
-                              CompressionType=E_Compression.PATH, 
-                              AvailableStateIndexList=analyzer.state_db.keys())
+    result = paths.collect(analyzer, 
+                           CompressionType=E_Compression.PATH, 
+                           AvailableStateIndexList=analyzer.state_db.keys())
     norm_db, x, x = sm.get_state_index_normalization()
     for path in result:
         print "# " + path.get_string(norm_db).replace("\n", "\n# ")

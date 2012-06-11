@@ -105,11 +105,7 @@ def do(TheAnalyzer, CompressionType, AvailableStateIndexList=None, MegaStateList
 
     # (*) Find all single character transitions (paths) inside TheAnalyzer's 
     #     state machine.
-    path_list = find_begin(TheAnalyzer, 
-                           TheAnalyzer.init_state_index, 
-                           TheAnalyzer.init_state_index, 
-                           CompressionType, 
-                           AvailableStateIndexList)
+    path_list = collect(TheAnalyzer, CompressionType, AvailableStateIndexList)
 
     # (*) Filter subsets of longer paths
     #
@@ -128,7 +124,7 @@ def do(TheAnalyzer, CompressionType, AvailableStateIndexList=None, MegaStateList
     #     the case, they can be implemented by the same PathWalkerState.
     return group_paths(path_list, TheAnalyzer, CompressionType)
 
-def find_begin(TheAnalyzer, StateIndex, InitStateIndex, CompressionType, AvailableStateIndexList):
+def collect(TheAnalyzer, CompressionType, AvailableStateIndexList):
     path_list = []
     for state_index, state in TheAnalyzer.state_db.iteritems():
         if   state_index == TheAnalyzer.init_state_index: continue
