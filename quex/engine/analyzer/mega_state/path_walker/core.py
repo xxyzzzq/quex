@@ -125,6 +125,9 @@ def do(TheAnalyzer, CompressionType, AvailableStateIndexList=None, MegaStateList
     return group_paths(path_list, TheAnalyzer, CompressionType)
 
 def collect(TheAnalyzer, CompressionType, AvailableStateIndexList):
+    """Starting from each state in the state machine, search for paths
+       which begin from it.
+    """
     path_list = []
     for state_index, state in TheAnalyzer.state_db.iteritems():
         if   state_index == TheAnalyzer.init_state_index: continue
