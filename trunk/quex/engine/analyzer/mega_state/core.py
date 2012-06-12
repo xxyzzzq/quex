@@ -169,34 +169,64 @@ class MegaState(AnalyzerState):
             self.transition_map[i] = (interval, adapted)
 
 class MegaState_Target(object):
-    """A mega state target contains the information about what the target
-       state is for a given interval for a given template key. For example,
-       a given interval X triggers to target scheme T, i.e. there is an
-       element in the transition map:
+    """ABSTRACT: ______________________________________________________________
+    
+    Where an AnalyzerState's transition map associates a character interval
+    with a target state index, a MegaState's transition map associates a
+    character interval with a MegaState_Target.
 
-                ...
-                [ X, T ]
-                ...
+    A MegaState_Target determines the target state, or target state's entry
+    door, by means of a state key. It is very well possible that it is
+    homogeneous and independent of the state key. In that case, it contains a
+    '.target_state_index' or '.door_id'. If not, the '.scheme' member describes
+    the relationship between and target state index. For example, a given
+    interval X triggers to MegaState_Target T, i.e. there is an element in the
+    transition map:
 
-       then 'T.scheme[key]' tells the 'target state index' for a given state
-       key. The door through which it enters is determined by the transition
+             ...
+             [ X, T ]
+             ...
 
-           TransitionID(FromStateIndex = state associated with 'key', 
-                        ToStateIndex   = T.scheme[key])
+    then 'T.scheme[state key]' tells the 'target state index' for a given state key.
+    The door through which it enters is determined by the transition id:
 
-       Which can be translated into a DoorID by the target state's entry
-       database 'transition_db'.
+        TransitionID(FromStateIndex = MS.map_state_key_to_state_index(state key), 
+                     ToStateIndex   = T.scheme[state key])
+
+    where MS is the MegaState that contains the transition map. The
+    TransitionID can be translated into a DoorID by the target state's entry
+    database 'transition_db'.
+    
+    TRACKING SCHEMES: _________________________________________________________
+
+    There might be multiple intervals following the same target scheme. This class
+    keeps track of the schemes by means of the '.object_db'. Before handling 
+    a transition map the function
+
+              MegaState_Target.init()
+
+    initializes the .object_db. An independent copy of the .object_db can be
+    obtained by
+
+              my_copy = MegaState_Target.disconnect_object_db()
+
+    FINALIZATION: _____________________________________________________________
+
+    Once the whole state configuration and the states' entry doors are
+    determined, the actual MegaState_Target object can be finalized. That is:
        
-       There might be multiple intervals following the same target scheme,
-       so the function 'TargetSchemeDB.get()' takes care of making 
-       those schemes unique.
+       -- A common target may become a scheme, if the DoorIDs differ depending
+          on the 'from_state_index' (from .implemented_state_index_list()).
 
-           .scheme = Target state index scheme as explained above.
+       -- A scheme may become a common target, if the target DoorID 
+          is the same for all indices in .implemented_state_index_list().
 
-           .index  = Unique index of the target scheme. This value is 
-                     determined by 'TargetSchemeDB.get()'. It helps
-                     later to define the scheme only once, even it appears
-                     twice or more.
+    Finalization sets the 'scheme_id' if it is a scheme. It set's the
+    '.door_id' if the target state's door is the same for all involved states.
+
+    ___________________________________________________________________________
+    NOTE: All 'DropOut' MegaState_Target are represented by the single object
+          'MegaState_Target_DROP_OUT'. This saves memory.
     """
     __slots__ = ('__drop_out_f', '__scheme', '__scheme_id', '__target_state_index', '__door_id')
 
@@ -245,18 +275,6 @@ class MegaState_Target(object):
         elif isinstance(Target, DoorID):        self.__door_id            = Target # only by '.finalize()'
         else:                                   assert False, Target.__class__.__name__
 
-    def clone(self):
-        assert False # Why cloning?
-        if self.__drop_out_f: return self 
-
-        result = MegaState_Target(Target=None) 
-        result.__drop_out_f         = False
-        result.__scheme_id          = self.__scheme_id
-        result.__target_state_index = self.__target_state_index
-        if self.__scheme is None: result.__scheme = None
-        else:                     result.__scheme = copy(self.__scheme) # Shallow copy sufficient for numbers
-        return result
-
     @property
     def scheme(self):              return self.__scheme
     @property
@@ -270,8 +288,8 @@ class MegaState_Target(object):
 
     def finalize(self, TheMegaState, StateDB, scheme_db):
         """Once the whole state configuration and the states' entry doors are
-           determined, the actual MegaState_Target object can be finalized.
-           That is:
+        determined, the actual MegaState_Target object can be finalized.
+        That is:
            
            -- A common target may become a scheme, if the DoorIDs differ
               depending on the 'from_state_index' (which is one of the
@@ -280,7 +298,6 @@ class MegaState_Target(object):
            -- A scheme may become a common target, if the target DoorID 
               is the same for all indices in .implemented_state_index_list().
         """
-
         if self.drop_out_f:
             return
 
@@ -372,19 +389,22 @@ class MegaState_Target(object):
 MegaState_Target_DROP_OUT = MegaState_Target(E_StateIndices.DROP_OUT)
 
 class MegaState_DropOut(dict):
-    """Map: 'DropOut' object --> indices of states that implement the 
+    """ABSTRACT: ______________________________________________________________
+    
+    Map: 'DropOut' object --> indices of states that implement the 
                                  same drop out actions.
 
-       For example, if four states 1, 4, 7, and 9 have the same drop_out 
-       behavior DropOut_X, then this is stated by an entry in the dictionary as
+    For example, if four states 1, 4, 7, and 9 have the same drop_out behavior
+    DropOut_X, then this is stated by an entry in the dictionary as
 
              { ...     DropOut_X: [1, 4, 7, 9],      ... }
 
-       For this to work, the drop-out objects must support a proper interaction
-       with the 'dict'-objects. Namely, they must support:
+    For this to work, the drop-out objects must support a proper interaction
+    with the 'dict'-objects. Namely, they must support:
 
              __hash__          --> get the right 'bucket'.
              __eq__ or __cmp__ --> compare elements of 'bucket'.
+    ___________________________________________________________________________
     """
     def __init__(self, *StateList):
         for state in StateList:
@@ -394,19 +414,19 @@ class MegaState_DropOut(dict):
     @property
     def uniform_f(self):
         """Uniform drop-out means, that for all drop-outs mentioned the same
-           actions have to be performed. This is the case, if all states are
-           categorized under the same drop-out. Thus the dictionary's size
-           will be '1'.
+        actions have to be performed. This is the case, if all states are
+        categorized under the same drop-out. Thus the dictionary's size
+        will be '1'.
         """
         return len(self) == 1
 
     def is_uniform_with(self, Other):
         """The given Other drop-out belongs to a 'normal state'. This function
-           investigates if it's drop-out behavior is the same as all in others
-           in this MegaState_DropOut. 
+        investigates if it's drop-out behavior is the same as all in others
+        in this MegaState_DropOut. 
 
-           If this MegaState_DropOut is not uniform, then of course it cannot
-           become uniform with 'Other'.
+        If this MegaState_DropOut is not uniform, then of course it cannot
+        become uniform with 'Other'.
         """
         if not self.uniform_f: return False
 
@@ -432,14 +452,18 @@ class MegaState_DropOut(dict):
         if x is None: self[drop_out] = set([TheState.index])
         else:         x.add(TheState.index)
 
-class PseudoMegaState(MegaState):
-    """Represents an AnalyzerState in a way to that it acts homogeneously
-       with other MegaState-s. That is, the transition_map is adapted
-       so that it maps from a character interval to a MegaState_Target.
+class PseudoMegaState(MegaState): 
+    """ABSTRACT: ______________________________________________________________
+    
+    Represents an AnalyzerState in a way to that it acts homogeneously with
+    other MegaState-s. That is, the transition_map is adapted so that it maps
+    from a character interval to a MegaState_Target.
 
               transition_map:  interval --> MegaState_Target
 
-       instead of mapping to a target state index.
+    instead of mapping to a target state index.
+
+    ___________________________________________________________________________
     """
     def __init__(self, Represented_AnalyzerState):
         assert not isinstance(Represented_AnalyzerState, MegaState)
@@ -452,28 +476,27 @@ class PseudoMegaState(MegaState):
 
     def __transition_map_construct(self):
         """Build a transition map that triggers to MegaState_Target-s rather
-           than simply to target states.
+        than simply to target states.
 
-           CAVEAT: In general, it is **NOT TRUE** that if two transitions (x,a)
-           and (x, b) to a state 'x' share a DoorID in the original state, then
-           they share the DoorID in the MegaState. 
-           
-           The critical case is the recursive transition (x,x). It may trigger
-           the same actions as another transition (x,a) in the original state.
-           However, when 'x' is implemented in a MegaState it needs to set a
-           'state_key' upon entry from 'a'. This is, or may be, necessary to
-           tell the MegaState on which's behalf it has to operate. The
-           recursive transition from 'x' to 'x', though, does not have to set
-           the state_key, since the MegaState still operates on behalf of the
-           same state. While (x,x) and (x,a) have the same DoorID in the
-           original state, their DoorID differs in the MegaState which
-           implements 'x'.
-
-           THUS: A translation 'old DoorID' --> 'new DoorID' is not sufficient
-           to adapt transition maps!
-
-           Here, the recursive target is implemented as a 'scheme' in order to
-           prevent that it may be treated as 'uniform' with other targets.
+        CAVEAT: In general, it is **NOT TRUE** that if two transitions (x,a) and
+        (x, b) to a state 'x' share a DoorID in the original state, then they
+        share the DoorID in the MegaState. 
+        
+        The critical case is the recursive transition (x,x). It may trigger the
+        same actions as another transition (x,a) in the original state.
+        However, when 'x' is implemented in a MegaState it needs to set a
+        'state_key' upon entry from 'a'. This is, or may be, necessary to tell
+        the MegaState on which's behalf it has to operate. The recursive
+        transition from 'x' to 'x', though, does not have to set the state_key,
+        since the MegaState still operates on behalf of the same state. While
+        (x,x) and (x,a) have the same DoorID in the original state, their DoorID
+        differs in the MegaState which implements 'x'.
+        
+        THUS: A translation 'old DoorID' --> 'new DoorID' is not sufficient to
+        adapt transition maps!
+        
+        Here, the recursive target is implemented as a 'scheme' in order to
+        prevent that it may be treated as 'uniform' with other targets.
         """
         return [ (interval, MegaState_Target.create(target)) \
                  for interval, target in self.__state.transition_map]
@@ -492,8 +515,8 @@ class PseudoMegaState(MegaState):
 
 class AbsorbedState_Entry(Entry):
     """The information about what transition is implemented by what
-       DoorID is stored in this Entry. It is somewhat isolated from
-       the AbsorbedState's Entry object.
+    DoorID is stored in this Entry. It is somewhat isolated from the
+    AbsorbedState's Entry object.
     """
     def __init__(self, StateIndex, TransitionDB, DoorDB):
         Entry.__init__(self, StateIndex, FromStateIndexList=[])
@@ -501,10 +524,13 @@ class AbsorbedState_Entry(Entry):
         self.set_door_db(DoorDB)
 
 class AbsorbedState(AnalyzerState):
-    """An AbsorbedState object represents an AnalyzerState which has
-       been implemented by a MegaState. Its sole purpose is to pinpoint
-       to the MegaState which implements it and to translate the transtions
-       into itself to DoorIDs into the MegaState.
+    """ABSTRACT: ______________________________________________________________
+    
+    An AbsorbedState object represents an AnalyzerState which has been
+    implemented by a MegaState. Its sole purpose is to pinpoint to the
+    MegaState which implements it and to translate the transtions into itself
+    to DoorIDs into the MegaState.
+    ___________________________________________________________________________
     """
     def __init__(self, AbsorbedAnalyzerState, AbsorbingMegaState):
         AnalyzerState.set_index(self, AbsorbedAnalyzerState.index)
@@ -518,7 +544,8 @@ class AbsorbedState(AnalyzerState):
                 if transition_id.state_index != AbsorbedAnalyzerState.index: continue
                 assert AbsorbingMegaState.entry.door_db.has_key(transition_id), \
                        "MegaState %i absorbed %s but does not implement transition %s" % \
-                       (AbsorbingMegaState.index, AbsorbingMegaState.implemented_state_index_list(), transition_id)
+                       (AbsorbingMegaState.index,                                        \
+                        AbsorbingMegaState.implemented_state_index_list(), transition_id)
         #----------------------------------------------------------------------
 
         self.__entry     = AbsorbedState_Entry(AbsorbedAnalyzerState.index, 
