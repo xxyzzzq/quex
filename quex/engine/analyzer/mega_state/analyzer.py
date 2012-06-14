@@ -8,12 +8,15 @@ from   quex.blackboard                                  import setup as Setup
 def do(TheAnalyzer):
     """MegaState Construction
 
-       Normal states are potentially absorbed by MegaState-s which represent
-       more than one single state at once.
+    ABSTRACT: _________________________________________________________________
 
-       The setting 'Setup.compression_type_list' defines what type of
-       algorithms have to be executed in to constructu MegaStates (if any at
-       all).
+    Normal states are potentially absorbed by MegaState-s which represent more
+    than one single state at once.
+
+    The setting 'Setup.compression_type_list' defines what type of algorithms
+    have to be executed in to construct MegaStates (if any at all). Consider
+    'core.py' in this directory for further reading.
+    ___________________________________________________________________________
     """
     mega_state_db = {}
     # -- The 'remainder' keeps track of states which have not yet been
@@ -46,9 +49,9 @@ def do(TheAnalyzer):
             assert state_index in remainder
             remainder.remove(state_index)
 
-            # Track MegaStates. A 'itervalues()' may contain the same MegaState
-            # twice. Use a dictionary to keep them unique.
-            if mega_state not in mega_state_db:
+            # Track MegaStates. A 'absorbance_db.itervalues()' may contain 
+            # the same MegaState twice. Use a dictionary to keep them unique.
+            if mega_state.index not in mega_state_db:
                 mega_state_db[mega_state.index] = mega_state 
 
     # Let the analyzer know about the MegaState-s and what states they left

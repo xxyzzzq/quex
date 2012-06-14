@@ -12,7 +12,7 @@ from   quex.blackboard                         import E_EngineTypes, E_Compressi
 
 if "--hwut-info" in sys.argv:
     print "Paths: collect;"
-    print "CHOICES: 1, 2, 3, 4, 5, 6;"
+    print "CHOICES: 1, 2, 3, 4, 5, 6;" #, extreme;"
     sys.exit(0)
 
 def construct_path(sm, StartStateIdx, String, Skeleton):
@@ -35,7 +35,10 @@ def number_set(IntervalList):
     result = NumberSet(map(lambda x: Interval(x[0], x[1]), IntervalList))
     return result
 
+filter_f = False
 def test(Skeleton, *StringPaths):
+    global filter_f
+
     sm = core.StateMachine()
 
     idx0 = sm.init_state_index
@@ -59,6 +62,9 @@ def test(Skeleton, *StringPaths):
     result = paths.collect(analyzer, 
                            CompressionType=E_Compression.PATH, 
                            AvailableStateIndexList=analyzer.state_db.keys())
+    if filter_f:
+        result = paths.select(result)
+
     norm_db, x, x = sm.get_state_index_normalization()
     for path in result:
         print "# " + path.get_string(norm_db).replace("\n", "\n# ")
@@ -108,4 +114,10 @@ elif "3" in sys.argv: test(skeleton_0, "ca")
 elif "4" in sys.argv: test(skeleton_3, "ccccb")
 elif "5" in sys.argv: test(skeleton_1, "abc", "cde")
 elif "6" in sys.argv: test(skeleton_4, "cde")
+elif "extreme" in sys.argv: 
+    filter_f=True; 
+    # test_str = "abcdefghijklmnopqrstuvwxyz" * (- int(sys.argv[2]))
+    test_str = "abcdefghijklmnopqrstuvw" * (- int(sys.argv[2]))
+    print "#", test_str
+    test(skeleton_0, test_str)
 

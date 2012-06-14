@@ -36,7 +36,7 @@ class DropOut(object):
 
     def __init__(self):
         self.acceptance_checker = []
-        self.terminal_router  = []
+        self.terminal_router    = []
 
     @property
     def restore_acceptance_f(self):
@@ -65,7 +65,7 @@ class DropOut(object):
 
     def __eq__(self, Other):
         if   len(self.acceptance_checker) != len(Other.acceptance_checker): return False
-        elif len(self.terminal_router)  != len(Other.terminal_router):  return False
+        elif len(self.terminal_router)    != len(Other.terminal_router):    return False
         for dummy, dummy in ifilter(lambda x: not x[0].is_equal(x[1]), zip(self.acceptance_checker, Other.acceptance_checker)):
             return False
         for dummy, dummy in ifilter(lambda x: not x[0].is_equal(x[1]), zip(self.terminal_router, Other.terminal_router)):

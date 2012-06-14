@@ -50,7 +50,7 @@ characters 'f', 'o', 'r'. This is shown in the following pseudo-code:
      elif input == PTC:     goto StateAfterPath;
      elif *p == 0:          goto STATE_3;
 
-     /* Common Transition Map */
+     /* Common Transition Map: The 'skeleton transition map' */
      if   x < 'a': drop out
      elif x > 'z': drop out
      else:         goto STATE_4
@@ -58,6 +58,13 @@ characters 'f', 'o', 'r'. This is shown in the following pseudo-code:
 The array with the character sequence ends with a path terminating character
 PTC.  It acts similar to the 'terminating zero' in classical C Strings. This
 way it can be detected when to trigger to the first state after the path.
+The common transition map is called 'skeleton'. For a state to be part 
+of the path, it must hold that 
+
+    'state.transition_map - character transition' matches 'skeleton'
+
+where 'character transition' is the character on which it transits to its
+subsequent state. 
 
 Each state which is part of a path, can be identified by the identifier of the
 PathWalkerState + the position on the path (+ the id of the path, if a
@@ -107,30 +114,35 @@ def do(TheAnalyzer, CompressionType, AvailableStateIndexList=None, MegaStateList
     #     state machine.
     path_list = collect(TheAnalyzer, CompressionType, AvailableStateIndexList)
 
-    # (*) Filter subsets of longer paths
-    #
-    #     Only the longest path alternative remains.
-    __filter_redundant_paths(path_list)
-
-    # (*) Avoid intersections
-    #
-    #     An AnalyzerState can only be implemented by one PathWalkerState.
-    #     If paths intersect choose the longest alternative.
-    __select_longest_intersecting_paths(path_list)
+    # (*) Select paths, so that a maximum of states is implemented by path walkers.
+    path_list = select(path_list)
 
     # (*) Group paths
     #    
     #     Different paths may have the same common transition map. If this is
     #     the case, they can be implemented by the same PathWalkerState.
-    return group_paths(path_list, TheAnalyzer, CompressionType)
+    return group(path_list, TheAnalyzer, CompressionType)
 
+done_set = set()
 def collect(TheAnalyzer, CompressionType, AvailableStateIndexList):
     """Starting from each state in the state machine, search for paths
        which begin from it.
     """
+    global done_set
+    done_set.clear()
+
     path_list = []
-    for state_index, state in TheAnalyzer.state_db.iteritems():
+    for state_index in TheAnalyzer.state_db[TheAnalyzer.init_state_index].map_target_index_to_character_set.iterkeys():
         if   state_index == TheAnalyzer.init_state_index: continue
+        elif state_index not in AvailableStateIndexList:  continue
+
+        path_list.extend(__find(TheAnalyzer, state_index,
+                                CompressionType, AvailableStateIndexList))
+        done_set.add(state_index)
+
+    for state_index in TheAnalyzer.state_db.iterkeys():
+        if   state_index in done_set:                     continue
+        elif state_index == TheAnalyzer.init_state_index: continue
         elif state_index not in AvailableStateIndexList:  continue
 
         path_list.extend(__find(TheAnalyzer, state_index,
@@ -138,21 +150,15 @@ def collect(TheAnalyzer, CompressionType, AvailableStateIndexList):
     return path_list
 
 def __find(analyzer, StateIndex, CompressionType, AvailableStateIndexList):
-    """Searches for the beginning of a path, i.e. a single character transition
-    to a subsequent state. If such a transition is found, a 'skeleton' (a
-    transition map which must be the same for follow-up states on the path) is
-    computed in the 'CharacterPath' object. With this object a continuation of
-    the path is searched starting from the transitions target state. 
+    """Searches for the BEGINNING of a path, i.e. a single character transition
+    to a subsequent state. If such a transition is found, a 'skeleton' transition
+    map is computed. A 'skeleton' is a transition map which contains 'wildcards' 
+    for the characters which constitute the path's transition. For a subsequent
+    state to be part of the path, its transition map must match that skeleton. 
        
-    In any case, it is tried to find a path begin in the target state.  Even if
-    the target state is part of a path, it might have non-path targets that
-    lead to paths. Thus,
-
-       IT CANNOT BE AVOIDED THAT THE RESULT CONTAINS PATHS WHICH ARE 
-                           SUB-PATHS OF OTHERS.
-
-    __dive --> This mark is only here to indicate that some recursion 
-               is involved. 
+    This function is not recursive. It simply iterates over all states in the
+    state machine. For each state, in isolation, it checks wether it might be
+    the beginning of a path.
     """
     result_list = []
 
@@ -167,11 +173,6 @@ def __find(analyzer, StateIndex, CompressionType, AvailableStateIndexList):
         path_char = trigger_set.get_the_only_element()
         if path_char is None: continue
 
-        # A new path begins, find the 'skeleton'.
-        # The 'skeleton' is the transition map without the single transition
-
-        # Adapt trigger_map: -- map from DoorID to TriggerSet
-        #                    -- extract the transition to 'target_idx'.
         # The skeleton is possibly changed in __find_continuation(), but then
         # a 'deepcopy' is applied to disconnect it, see __find_continuation().
         skeleton = get_adapted_trigger_map_shallow_copy(transition_map, analyzer, State.index, 
@@ -179,13 +180,17 @@ def __find(analyzer, StateIndex, CompressionType, AvailableStateIndexList):
 
         path = CharacterPath(State, path_char, skeleton)
             
-        result_list.extend(__find_continuation(analyzer, target_idx, path, CompressionType, AvailableStateIndexList))
+        result_list.extend(__find_continuation(analyzer, target_idx, path, CompressionType, 
+                                               AvailableStateIndexList))
 
     return result_list
 
 def __find_continuation(analyzer, StateIndex, the_path, CompressionType, AvailableStateIndexList):
     """A basic skeleton of the path and the remaining trigger map is given. Now,
        try to find a subsequent path step.
+
+    __dive --> This mark is only here to indicate that some recursion 
+               is involved. 
     """
 
     # Check "StateIndex in AvailableStateIndexList" is done by 'continue' in the 
@@ -203,23 +208,26 @@ def __find_continuation(analyzer, StateIndex, the_path, CompressionType, Availab
         path_char = trigger_set.get_the_only_element()
         if path_char is None: continue
 
-        # A recursion cannot be covered by a 'path state'. We cannot extract a
-        # state that contains recursions and replace it with a skeleton plus a
-        # 'character string position'. Omit this path!
-        if the_path.contains(target_idx): continue # Recursion ahead! Don't go!
+        # A PathWalkerState cannot implement a recursion.
+        if the_path.contains(target_idx): continue # Recursion ahead--don't go!
 
         # Do the transitions fit the 'skeleton'?
         adapted_transition_map = get_adapted_trigger_map_shallow_copy(transition_map, analyzer, State.index, 
                                                                       ExceptTargetIndex=None)
-        target_door_id         = analyzer.state_db[target_idx].entry.get_door_id(target_idx, State.index)
-        plug = the_path.match_skeleton(adapted_transition_map, target_door_id, path_char)
-        if plug is None: continue # No match possible 
+        target_door_id = analyzer.state_db[target_idx].entry.get_door_id(target_idx, State.index)
+        print "#skeleton", the_path.skeleton()
+        print "#adapted_transition_map:", adapted_transition_map
+        plug           = the_path.match_skeleton(adapted_transition_map, target_door_id, path_char)
+        if plug is None: 
+            print "#the_path: no match!"
+            print "#", the_path.sequence()
+            continue # No match possible 
 
         single_char_transition_found_f = True
 
         # Deepcopy is required to completely isolate the transition map and the
         # entry/drop_out schemes that may now be changed.
-        path_copy = deepcopy(the_path)
+        path_copy = the_path.clone()
         if plug != -1: path_copy.plug_wildcard(plug)
 
         # Can uniformity be maintained?
@@ -245,89 +253,7 @@ def __find_continuation(analyzer, StateIndex, the_path, CompressionType, Availab
 
     return result_list
 
-def __filter_redundant_paths(path_list):
-    """Due to the search algorithm, it is not safe to assume that there are
-       no paths which are sub-pathes of others. Those pathes are identified.
-       Pathes that are sub-pathes of others are deleted.
-
-       Function modifies 'path_list'.
-    """
-    size = len(path_list)
-    i    = 0
-    while i < size: 
-        i_path = path_list[i]
-        # k = i, does not make sense; a path covers itself, so what!?
-        k = i + 1
-        while k < size: 
-            k_path = path_list[k]
-
-            if k_path.covers(i_path):
-                # if 'i' is a subpath of something => delete, no further considerations
-                del path_list[i]
-                size -= 1
-                # No change to 'i' since the elements are shifted
-                break
-
-            elif i_path.covers(k_path):
-                del path_list[k]
-                size -= 1
-                # No break, 'i' is greater than 'k' so just continue analyzis.
-
-            else:
-                k += 1
-        else:
-            # If the loop is not left by break (element 'i' was deleted), then ...
-            i += 1
-
-    # Content of path_list is changed
-    return
-
-def __select_longest_intersecting_paths(path_list):
-    """The desribed paths may have intersections, but a state can only
-       appear in one single path. From each set of intersecting pathes 
-       choose only the longest one.
-
-       Function modifies 'path_list'.
-    """
-    # The intersection db maps: intersection state --> involved path indices
-    intersection_db = defaultdict(list)
-    for i, path_i in enumerate(path_list):
-        k = i # is incremented to 'i+1' in the first iteration
-        for path_k in path_list[i + 1:]:
-            k += 1
-            intersection_state_list = path_i.get_intersections(path_k)
-            for state_index in intersection_state_list:
-                intersection_db[state_index].extend([i, k])
-
-    return __filter_longest_options(path_list, intersection_db)
-
-def __filter_longest_options(path_list, equivalence_db):
-    def __longest_path(PathIndexList):
-        max_i      = -1
-        max_length = -1
-        for path_index in PathIndexList:
-            length = len(path_list[path_index])
-            if length > max_length: 
-                max_i      = path_index
-                max_length = length
-        return max_i
-
-    # Determine the list of states to be deleted
-    delete_list = set([])
-    for intersection_state, path_index_list in equivalence_db.items():
-        i = __longest_path(path_index_list)
-        delete_list.update(filter(lambda index: index != i, path_index_list))
-
-    # Now, delete
-    offset = 0
-    for i in delete_list:
-        del path_list[i - offset]
-        offset += 1
-
-    # Content of path_list is changed
-    return
-
-def  get_adapted_trigger_map_shallow_copy(TriggerMap, TheAnalyzer, StateIndex, ExceptTargetIndex):
+def get_adapted_trigger_map_shallow_copy(TriggerMap, TheAnalyzer, StateIndex, ExceptTargetIndex):
     """Before: 
     
              TriggerMap:  target_state_index ---> NumberSet that triggers to it
@@ -355,7 +281,130 @@ def  get_adapted_trigger_map_shallow_copy(TriggerMap, TheAnalyzer, StateIndex, E
         return dict(adapt(target_index, number_set) \
                     for target_index, number_set in TriggerMap.iteritems())
 
-def group_paths(CharacterPathList, TheAnalyzer, CompressionType):
+def select(path_list):
+    """The desribed paths may have intersections, but a state can only
+       appear in one single path. From each set of intersecting pathes 
+       choose only the longest one.
+
+       Function modifies 'path_list'.
+    """
+    def get_best_path(AvailablePathList):
+        """The best path is the path that brings the most gain. The 'gain'
+        of a path is a function of the number of states it implements minus
+        the states that may not be implemented because other intersecting
+        paths cannot be chosen anymore.
+
+        RETURN: [0] winning path
+                [1] list of indices of paths which would be no longer 
+                    available, because the winning path intersects.
+        """
+        print "#get_best_path_________________________"
+        opportunity_db = get_opportunity_db(AvailablePathList)
+        max_gain = None
+        winner                       = None
+        winner_forbidden_path_id_set = None
+        for path in AvailablePathList:
+            print "# path:", len(path.state_index_set), path.state_index_set 
+            print "# max:", max_gain
+            if max_gain is not None and len(path.state_index_set) < max_gain: continue # No chance
+
+            gain, forbidden_path_id_set = compute_gain(path, opportunity_db, 
+                                                       (p for p in AvailablePathList if p.index != path.index))
+
+            print "#gain:", gain
+            if max_gain is None:
+                winner                       = path
+                winner_forbidden_path_id_set = forbidden_path_id_set
+                max_gain                     = gain
+            elif max_gain == gain:
+                if len(winner.state_index_set) < len(path.state_index_set):
+                    winner                       = path
+                    winner_forbidden_path_id_set = forbidden_path_id_set
+                    max_gain                     = gain
+            elif max_gain < gain:
+                winner                       = path
+                winner_forbidden_path_id_set = forbidden_path_id_set
+                max_gain                     = gain
+
+
+        return winner, winner_forbidden_path_id_set
+
+    def get_opportunity_db(AvailablePathList):
+        """opportunity_db: 
+          
+                      state_index --> paths of which state_index is part. 
+        """
+        result = defaultdict(set)
+        for path in AvailablePathList:
+            for state_index in path.state_index_set:
+                result[state_index].add(path.index)
+        return result
+
+    def compute_gain(path, opportunity_db, AvailablePathListIterable):
+        """What happens if 'path' is chosen?
+
+       -- Paths which contain any of its state_indices become unavailable.
+          (states can only be implemented once) => forbidden paths.
+
+       -- States in a forbidden path which are not in state_index_set cannot
+          be implemented, except that they are implemented by another path
+          which does not intersect with this path.
+
+       RETURN: 
+
+          [0] 'gain' of choosing 'path' 
+          [1] set of ids of paths which are forbidden if 'path' is chosen.
+        """
+        # -- The states implemented by path
+        state_index_set = path.state_index_set
+
+        # -- Forbidden are those paths which have a state in common with 'path'
+        # -- Those states implemented in forbiddent paths become endangered.
+        #    I.e. they might not to be implemented by a PathWalkerState.
+        endangered_set = set()
+        forbidden_path_id_set = set()
+        for other_path in AvailablePathListIterable:
+            if state_index_set.isdisjoint(other_path.state_index_set): continue
+            endangered_set.update(other_path.state_index_set - state_index_set)
+            forbidden_path_id_set.add(other_path.index)
+
+        # (*) Function to model 'cost for an endangered state'
+        # 
+        #                       1 / (1 + alternative_n)
+        # 
+        #  = 1,  if there is no alternative implementation for 'state_index'. 
+        #        The state is definitely not implemented in a PathWalkerState. 
+        #
+        #  decreasing, with the number of remaining alternatives.
+        #
+        # 'Cost' of choosing 'path' = sum of costs for endangered state indices.
+        cost = 0 
+        for endangered_state_index in endangered_set:
+            alternative_n = len(opportunity_db[endangered_state_index]) 
+            cost += 1 / (1 + alternative_n)
+
+        # Gain: Each implemented state counts as '1'
+        gain = len(state_index_set)
+        return gain - cost, forbidden_path_id_set
+
+    work_db = dict((path.index, path) for path in path_list)
+
+    for path in path_list:
+        print "#ps:", len(path.state_index_set), path.state_index_set
+
+    result = []
+    while len(work_db):
+        elect, dropped_list = get_best_path(sorted(work_db.values(), 
+                                                   key=lambda p: - len(p.state_index_set)))
+        assert elect is not None
+        for path_id in dropped_list:
+            del work_db[path_id]
+        result.append(elect)
+        del work_db[elect.index]
+    return result
+
+            
+def group(CharacterPathList, TheAnalyzer, CompressionType):
     """Different character paths may be walked down by the same pathwalker, if
        certain conditions are met. This function groups the given list of
        character paths and assigns them to PathWalkerState-s. The PathWalkerState-s

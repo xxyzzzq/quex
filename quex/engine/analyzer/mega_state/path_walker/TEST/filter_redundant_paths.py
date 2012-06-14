@@ -7,7 +7,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.engine.state_machine.core             as     core
 from   quex.engine.analyzer.state.core            import AnalyzerState
-from   quex.engine.analyzer.mega_state.path_walker.core  import __filter_redundant_paths, CharacterPath     
+from   quex.engine.analyzer.mega_state.path_walker.core  import select, CharacterPath     
 from   quex.blackboard                            import E_EngineTypes
 from   quex.engine.interval_handling              import *
 
@@ -52,7 +52,7 @@ def __test(path_list):
     for i, path in enumerate(path_list):
         print "  ", i, map(lambda x: x[0], path.sequence())
 
-    __filter_redundant_paths(path_list)
+    path_list = select(path_list)
 
     print "AFTER:"
     for i, path in enumerate(path_list):

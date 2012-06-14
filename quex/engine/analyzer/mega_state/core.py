@@ -392,7 +392,9 @@ class MegaState_DropOut(dict):
     """ABSTRACT: ______________________________________________________________
     
     Map: 'DropOut' object --> indices of states that implement the 
-                                 same drop out actions.
+                              same drop out actions.
+
+    EXPLANATION: ______________________________________________________________
 
     For example, if four states 1, 4, 7, and 9 have the same drop_out behavior
     DropOut_X, then this is stated by an entry in the dictionary as
@@ -407,6 +409,9 @@ class MegaState_DropOut(dict):
     ___________________________________________________________________________
     """
     def __init__(self, *StateList):
+        """Receives a list of states, extracts the drop outs and associates 
+        each DropOut with the state indices that implement it.
+        """
         for state in StateList:
             self.update_from_state(state)
         return
