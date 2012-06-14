@@ -71,6 +71,9 @@ def test(Skeleton, *StringPaths):
 
     # print "## String paths were = " + repr(StringPaths)
 
+skeleton_blah = { 
+   6666666L: NumberSet(Interval(ord('#'))),
+}
 skeleton_0 = { 
    66L: NumberSet(Interval(ord('a'))),
 }
@@ -119,5 +122,5 @@ elif "extreme" in sys.argv:
     # test_str = "abcdefghijklmnopqrstuvwxyz" * (- int(sys.argv[2]))
     test_str = "abcdefghijklmnopqrstuvw" * (- int(sys.argv[2]))
     print "#", test_str
-    test(skeleton_0, test_str)
+    test(skeleton_blah, test_str)
 

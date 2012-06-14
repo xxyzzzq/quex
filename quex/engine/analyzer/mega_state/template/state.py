@@ -4,7 +4,8 @@ from   quex.engine.analyzer.state.entry_action      import SetTemplateStateKey
 from   quex.engine.analyzer.mega_state.core         import MegaState, \
                                                            MegaState_Target, \
                                                            MegaState_Entry, \
-                                                           MegaState_DropOut
+                                                           MegaState_DropOut, \
+                                                           zipped_transition_map_iterable
 from   quex.engine.interval_handling                import Interval
 from   quex.blackboard                              import E_StateIndices
 
@@ -270,44 +271,16 @@ def combine_maps(StateA, StateB):
     computation of target schemes. For this reason no dictionary
     {state_index->target} is used.
     """
-    def __help(TM):
-        assert_adjacency(TM, TotalRangeF=True)
-        return TM, len(TM)
+    assert_adjacency(StateA.transition_map, TotalRangeF=True)
+    assert_adjacency(StateB.transition_map, TotalRangeF=True)
 
-    TransitionMapA, LenA = __help(StateA.transition_map)
-    TransitionMapB, LenB = __help(StateB.transition_map)
-
-    # Intervals in trigger map are always adjacent, so the '.begin' member is
-    # not required.
     MegaState_Target.init() # Initialize the tracking of generated MegaState_Target-s
-    factory   = TargetFactory(StateA, StateB)
-    result    = []
-    prev_end  = - sys.maxint
-    i                = 0 # iterator over TransitionMapA
-    k                = 0 # iterator over TransitionMapB
-    i_itvl, i_target = TransitionMapA[i]
-    k_itvl, k_target = TransitionMapB[k]
-    while not (i == LenA - 1 and k == LenB - 1):
-        end    = min(i_itvl.end, k_itvl.end)
-
-        target = factory.get(i_target, k_target)
-        assert isinstance(target, MegaState_Target)
-
+    factory = TargetFactory(StateA, StateB)
+    result  = []
+    for prev_end, end, a_target, b_target in zipped_transition_map_iterable(StateA.transition_map, 
+                                                                            StateB.transition_map):
+        target = factory.get(a_target, b_target)
         result.append((Interval(prev_end, end), target))
-        prev_end  = end
-
-        if   i_itvl.end == k_itvl.end: 
-            i += 1; i_itvl, i_target = TransitionMapA[i]
-            k += 1; k_itvl, k_target = TransitionMapB[k]
-        elif i_itvl.end <  k_itvl.end: 
-            i += 1; i_itvl, i_target = TransitionMapA[i]
-        else:                          
-            k += 1; k_itvl, k_target = TransitionMapB[k]
-
-    # Treat the last trigger interval
-    target = factory.get(TransitionMapA[-1][1], TransitionMapB[-1][1])
-
-    result.append((Interval(prev_end, sys.maxint), target))
 
     # Return the database of generated MegaState_Target objects
     mega_state_target_db = MegaState_Target.disconnect_object_db()

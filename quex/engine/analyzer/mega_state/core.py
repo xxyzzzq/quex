@@ -69,6 +69,7 @@ from   quex.engine.analyzer.state.entry_action       import DoorID
 from   quex.blackboard                               import E_StateIndices
 
 from   copy import copy
+import sys
 
 class MegaState_Entry(Entry):
     """Implements a common base class for Entry classes of MegaState-s.
@@ -566,4 +567,42 @@ class AbsorbedState(AnalyzerState):
     @property
     def entry(self): 
         return self.__entry
+
+def zipped_transition_map_iterable(TransitionMapA, TransitionMapB):
+    """Produces iterable over two transition maps at once. The borders in the
+    zipped transition map consist of a superset of all borders of transition
+    map 'A' and 'B'. Whenever a border hits a new interval is notified. 
+
+            YIELDS:  begin, end, a_target, b_target
+
+    Interval [begin, end) is homogenous in the zipped transition map, i.e.
+    inside this interval 'A' triggers to 'a_target' and 'B' to 'b_target'.  
+    """
+    LenA             = len(TransitionMapA)
+    LenB             = len(TransitionMapB)
+    i                = 0 # iterator over TransitionMapA
+    k                = 0 # iterator over TransitionMapB
+    i_itvl, i_target = TransitionMapA[i]
+    k_itvl, k_target = TransitionMapB[k]
+    prev_end         = - sys.maxint
+    # Intervals in trigger map are always adjacent, so the '.begin' member is
+    # not accessed.
+    while not (i == LenA - 1 and k == LenB - 1):
+        end    = min(i_itvl.end, k_itvl.end)
+
+        yield prev_end, end, i_target, k_target
+
+        prev_end  = end
+
+        if   i_itvl.end == k_itvl.end: 
+            i += 1; i_itvl, i_target = TransitionMapA[i]
+            k += 1; k_itvl, k_target = TransitionMapB[k]
+        elif i_itvl.end <  k_itvl.end: 
+            i += 1; i_itvl, i_target = TransitionMapA[i]
+        else:                          
+            k += 1; k_itvl, k_target = TransitionMapB[k]
+
+    # Treat the last trigger interval
+    yield prev_end, sys.maxint, TransitionMapA[-1][1], TransitionMapB[-1][1]
+    return
 
