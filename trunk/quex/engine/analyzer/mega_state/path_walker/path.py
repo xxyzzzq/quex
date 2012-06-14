@@ -37,14 +37,18 @@ class PathWalkerState_Entry(MegaState_Entry):
 
             self.action_db[transition_id] = clone
 
-class CharacterPath:
+class CharacterPath(object):
     """A set of states that can be walked along with a character sequence plus
        a common remaining transition map (here called 'skeleton').
     """
+    __slots__ = ("index", "entry", "drop_out", "__sequence", "__skeleton", "__skeleton_key_set", "__wildcard_character")
+
     def __init__(self, StartState, StartCharacter, Skeleton):
-        assert isinstance(StartState, AnalyzerState)
-        assert isinstance(StartCharacter, (int, long))
-        assert isinstance(Skeleton, dict)
+        assert StartState is None     or isinstance(StartState, AnalyzerState)
+        assert StartCharacter is None or isinstance(StartCharacter, (int, long))
+        assert Skeleton is None       or isinstance(Skeleton, dict)
+
+        if StartState is None: return # Only for Clone
 
         self.index    = index.get()
         self.entry    = PathWalkerState_Entry(self.index, StartState.entry)
@@ -60,16 +64,32 @@ class CharacterPath:
         # triggers.
         self.__wildcard_character = StartCharacter
 
+    def clone(self):
+        result = CharacterPath(None, None, None)
+        result.index    = self.index
+        result.entry    = self.entry
+        result.drop_out = self.drop_out
+        result.__sequence         = [x for x in self.__sequence]
+        result.__skeleton         = dict((key, value.clone()) for key, value in self.__skeleton.iteritems())
+        result.__skeleton_key_set = set(self.__skeleton_key_set)
+        result.__wildcard_character = self.__wildcard_character
+        return result
+
     @property
-    def state_index_list(self):
+    def state_index_set(self):
         """Result **MUST** be a list, because, later on a state key may be 
            associated with it.
         """
         assert len(self.__sequence) > 1
-        return map(lambda x: x[0], self.__sequence[:-1])
+        return set(x[0] for x in self.__sequence[:-1])
 
     def sequence(self):
         return self.__sequence
+
+    def has_state_index(self, StateIndex):
+        for state_index, char in self.__sequence[:-1]:
+            if state_index == StateIndex: return True
+        return False
 
     def skeleton(self):
         assert isinstance(self.__skeleton, dict)
@@ -83,7 +103,6 @@ class CharacterPath:
         self.__sequence.append((StateIndex, None))
 
     def append(self, State, Char):
-
         # The index of the state on the path determines the path iterator's offset
         offset = len(self.__sequence)
 

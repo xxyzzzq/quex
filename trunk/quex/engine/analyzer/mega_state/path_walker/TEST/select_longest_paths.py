@@ -8,7 +8,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.engine.interval_handling    import *
 import quex.engine.state_machine.core   as     core
 from   quex.engine.analyzer.state.core  import AnalyzerState
-from   quex.engine.analyzer.mega_state.path_walker.core   import __select_longest_intersecting_paths, CharacterPath     
+from   quex.engine.analyzer.mega_state.path_walker.core   import select, CharacterPath     
 from   quex.blackboard                  import E_EngineTypes
 
 if "--hwut-info" in sys.argv:
@@ -52,7 +52,7 @@ def __test(path_list):
     for i, path in enumerate(path_list):
         print "  ", i, map(lambda x: x[0], path.sequence())
 
-    __select_longest_intersecting_paths(path_list)
+    path_list = select(path_list)
 
     print "AFTER:"
     for i, path in enumerate(path_list):

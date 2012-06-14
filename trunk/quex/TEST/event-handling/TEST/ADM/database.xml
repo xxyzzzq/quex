@@ -1,35 +1,35 @@
-<test-database execution-time-sec="0.69" date="Sun Jun 10 11:14:15 2012">
+<test-database execution-time-sec="0.74" date="Wed Jun 13 08:10:35 2012">
     <last-used-diff-display-program name=""/>
-    <test title="Customized on_skip_range_open event." make-dependent="True" time-sum-sec="0.04"> 
-        <application file-name="on_skip_range_open-customized.sh" info-request-time="1338842233L" vanished="False"/>
-        <make-procedure success="True" time_sec="0.742514"/>
+    <test title="Customized on_skip_range_open event." make-dependent="True" time-sum-sec="0.03"> 
+        <application file-name="on_skip_range_open-customized.sh" info-request-time="1339567831L" vanished="False"/>
+        <make-procedure success="True" time_sec="0.890697"/>
         <choice-list number="1" same_result="False">
-           <choice name="customized" result="OK" time_sec="0.04" crc="-1869838464"/>
+           <choice name="customized" result="OK" time_sec="0.03" crc="-1869838464"/>
         </choice-list>
     </test>
-    <test title="Default on_skip_range_open event." make-dependent="True" time-sum-sec="0.06"> 
-        <application file-name="on_skip_range_open.sh" info-request-time="1338842234L" vanished="False"/>
-        <make-procedure success="True" time_sec="0.723741"/>
+    <test title="Default on_skip_range_open event." make-dependent="True" time-sum-sec="0.03"> 
+        <application file-name="on_skip_range_open.sh" info-request-time="1339567832L" vanished="False"/>
+        <make-procedure success="True" time_sec="1.019409"/>
         <choice-list number="1" same_result="False">
-           <choice name="default" result="OK" time_sec="0.06" crc="412955726"/>
+           <choice name="default" result="OK" time_sec="0.03" crc="412955726"/>
         </choice-list>
     </test>
     <group name="Mode Transitions">
-        <test title="transition-x.qx" make-dependent="True" time-sum-sec="0.28"> 
-            <application file-name="transition-x.sh" info-request-time="1338842234L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.938525"/>
+        <test title="transition-x.qx" make-dependent="True" time-sum-sec="0.38"> 
+            <application file-name="transition-x.sh" info-request-time="1339567834L" vanished="False"/>
+            <make-procedure success="True" time_sec="1.159133"/>
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="0.04" crc="140187343"/>
-               <choice name="2" result="OK" time_sec="0.03" crc="1810777269"/>
-               <choice name="3" result="OK" time_sec="0.03" crc="784591852"/>
-               <choice name="error" result="OK" time_sec="0.18" crc="-1605736885"/>
+               <choice name="2" result="OK" time_sec="0.02" crc="1810777269"/>
+               <choice name="3" result="OK" time_sec="0.02" crc="784591852"/>
+               <choice name="error" result="OK" time_sec="0.31" crc="-1605736885"/>
             </choice-list>
         </test>
-        <test title="transition.qx" make-dependent="True" time-sum-sec="0.31"> 
-            <application file-name="transition.sh" info-request-time="1338842235L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.962700"/>
+        <test title="transition.qx" make-dependent="True" time-sum-sec="0.30"> 
+            <application file-name="transition.sh" info-request-time="1339567835L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.997478"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="OK" time_sec="0.04" crc="140187343"/>
+               <choice name="1" result="OK" time_sec="0.03" crc="140187343"/>
                <choice name="2" result="OK" time_sec="0.03" crc="1810777269"/>
                <choice name="3" result="OK" time_sec="0.03" crc="784591852"/>
                <choice name="error" result="OK" time_sec="0.21" crc="609096275"/>

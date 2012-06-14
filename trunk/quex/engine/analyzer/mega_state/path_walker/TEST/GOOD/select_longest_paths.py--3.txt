@@ -14,5 +14,5 @@ BEFORE:
    1 [1L, 2L]
    2 [1L, 2L, 3L]
 AFTER:
-   0 [2L, 3L, 4L]
+   0 [1L, 2L, 3L]
 
