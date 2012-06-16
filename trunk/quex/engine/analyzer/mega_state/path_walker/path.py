@@ -2,9 +2,11 @@ from   quex.engine.analyzer.state.core         import AnalyzerState
 from   quex.engine.analyzer.state.entry_action import DoorID, SetPathIterator
 from   quex.engine.analyzer.mega_state.core    import MegaState_Entry, \
                                                       MegaState_DropOut
+import quex.engine.analyzer.transition_map     as transition_map_tools
 import quex.engine.state_machine.index         as     index
 
-from quex.engine.interval_handling import NumberSet
+from   quex.engine.interval_handling import NumberSet
+from   quex.blackboard               import E_StateIndices
 
 from itertools   import ifilter
 from operator    import itemgetter
@@ -41,12 +43,12 @@ class CharacterPath(object):
     """A set of states that can be walked along with a character sequence plus
        a common remaining transition map (here called 'skeleton').
     """
-    __slots__ = ("index", "entry", "drop_out", "__sequence", "__skeleton", "__skeleton_key_set", "__wildcard_character")
+    __slots__ = ("index", "entry", "drop_out", "__sequence", "__transition_map", "__wildcard_char")
 
-    def __init__(self, StartState, StartCharacter, Skeleton):
+    def __init__(self, StartState, StartCharacter, AdaptedTransitionMap):
         assert StartState is None     or isinstance(StartState, AnalyzerState)
         assert StartCharacter is None or isinstance(StartCharacter, (int, long))
-        assert Skeleton is None       or isinstance(Skeleton, dict)
+        assert AdaptedTransitionMap is None or isinstance(AdaptedTransitionMap, list)
 
         if StartState is None: return # Only for Clone
 
@@ -55,24 +57,19 @@ class CharacterPath(object):
         self.drop_out = MegaState_DropOut(StartState) 
 
         self.__sequence         = [ (StartState.index, StartCharacter) ]
-        self.__skeleton         = Skeleton
-        self.__skeleton_key_set = set(Skeleton.keys())
-
-        # Character that may trigger to any state. This character is adapted
-        # when the first character of the path is different from the wild card
-        # character. Then it must trigger to whatever the correspondent state
-        # triggers.
-        self.__wildcard_character = StartCharacter
+        self.__transition_map   = AdaptedTransitionMap
+        # Set the 'void' target to indicate wildcard.
+        transition_map_tools.set(self.__transition_map, StartCharacter, E_StateIndices.VOID)
+        self.__wildcard_char  = StartCharacter
 
     def clone(self):
         result = CharacterPath(None, None, None)
         result.index    = self.index
         result.entry    = self.entry
         result.drop_out = self.drop_out
-        result.__sequence         = [x for x in self.__sequence]
-        result.__skeleton         = dict((key, value.clone()) for key, value in self.__skeleton.iteritems())
-        result.__skeleton_key_set = set(self.__skeleton_key_set)
-        result.__wildcard_character = self.__wildcard_character
+        result.__sequence       = [x for x in self.__sequence]
+        result.__transition_map = transition_map_tools.clone(self.__transition_map)
+        result.__wildcard_char  = self.__wildcard_char
         return result
 
     @property
@@ -149,52 +146,10 @@ class CharacterPath(object):
         # Since len(sequence) >= 2, then there is a 'prototype' at this point.
         return prototype
 
-    def contains(self, StateIndex):
+    def contains_state(self, StateIndex):
         for dummy in ifilter(lambda x: x[0] == StateIndex, self.__sequence):
             return True
         return False
-
-    def covers(self, Other):
-        assert isinstance(Other, CharacterPath)
-        assert len(self.__sequence) >= 2
-        assert len(Other.__sequence) >= 2
-
-        def __find(StateIndex):
-            for i, x in enumerate(self.__sequence):
-                if x[0] == StateIndex: return i
-            return -1
-
-        # Sequences should not be empty, but if (for some weird reason) it happens
-        # make sure it is deleted by __filter_redundant_paths()
-        if len(Other.__sequence) == 0: return False
-
-        start_state_index = Other.__sequence[0][0]
-        i = __find(start_state_index)
-        if i == -1: return False
-
-        # Do the remaining indices fit?
-        L = len(self.__sequence)
-        for state_index, char in Other.__sequence[1:]:
-            i += 1
-            if i >= L: 
-                return False
-            if self.__sequence[i][0] != state_index: 
-                return False
-
-        return True
-
-    def get_intersections(self, Other):
-        """Determines the state at which the sequences intersect. This
-           is mathematically simple the 'intersection' of both sets.
-        """
-
-        # The end states are not considered 'intersections'. They are the target
-        # states that are transitted after the path is terminated. There is no
-        # harm in entering a path after exiting another.
-        set_a = set(map(lambda x: x[0], self.__sequence[:-1]))
-        set_b = set(map(lambda x: x[0], Other.__sequence[:-1]))
-
-        return set_a.intersection(set_b)
 
     def check_uniform_entry_to_state(self, State):
         """Checks whether the entry from the end of the path to the state
@@ -219,7 +174,7 @@ class CharacterPath(object):
             return False
         return True
 
-    def match_skeleton(self, TransitionMap, TargetDoorID, TriggerCharToTarget):
+    def match(self, TransitionMap, TargetDoorID, TriggerCharToTarget):
         """A single character transition 
 
                         TriggerCharToTarget --> DoorID
@@ -241,104 +196,31 @@ class CharacterPath(object):
                    None, if there is no way that the skeleton and the
                          TransitionMap could match.
         """
-        assert isinstance(TargetDoorID, DoorID)
-        ## ?? The element of a path cannot be triggered by the skeleton! ??
-        ## ?? if self.__skeleton.has_key(TargetDoorID): return False        ?? 
-        ## ?? Why would it not? (fschaef9: 10y04m11d)                    ??
+        wildcard_target = -1
+        for begin, end, a_target, b_target in transition_map_tools.zipped_iterable(self.__transition_map,
+                                                                                   TransitionMap):
+            if a_target == b_target: continue    # There is no problem at all
 
-        # wildcard character is None:  wild card is taken and entered into 'skeleton'
-        #                    not None: target for 'wildcard_character' can still be 
-        #                              chosen freely.
-        if self.__wildcard_character is not None: wildcard_target = None # unused
-        else:                                     wildcard_target = -1   # used before
+            size = end - begin
+            assert size > 0
 
-        transition_map_key_set = set(TransitionMap.keys())
-        # (1) Target States In TransitionMap and Not in Skeleton
-        #
-        #     All target states of TransitionMap must be in Skeleton, except:
-        #
-        #      (1.1) The single char transition target TargetDoorID.
-        #      (1.2) Maybe, one that is reached by a single char
-        #            transition of wildcard.
-        delta_set  = transition_map_key_set - self.__skeleton_key_set
-        delta_size = len(delta_set)
-        if delta_size > 2: return None
+            if size == 1:  
+                if   a_target == E_StateIndices.VOID: wildcard_target = b_target; continue
+                elif b_target == TargetDoorID:        continue
+                else:                                 return None
+            else:
+                return None
 
-        for target_door_id in delta_set:
-            if   target_door_id == TargetDoorID: continue # (1.1)
-            elif wildcard_target is not None:                                                return None
-            elif not TransitionMap[target_door_id].contains_only(self.__wildcard_character): return None
-            wildcard_target = target_door_id              # (1.2)
-
-        # (2) Target States In Skeleton and Not in TransitionMap
-        #
-        #     All target states of Skeleton must be in TransitionMap, except:
-        #
-        #     (2.1) Transition to the target index in skeleton which is 
-        #           covered by current single character transition.
-        delta_set  = self.__skeleton_key_set - transition_map_key_set
-        delta_size = len(delta_set)
-        if delta_size > 1: 
-            return None
-        if delta_size == 1:
-            target_door_id = delta_set.__iter__().next()
-            if not self.__skeleton[target_door_id].contains_only(TriggerCharToTarget): return None
-            # (2.1) OK, single char covers the transition in skeleton.
-
-        # (3) Target States in both, Skeleton and Transition Map
-        #
-        #     All correspondent trigger sets must be equal, except:
-        #
-        #     (3.1) single char transition covers the hole, i.e.
-        #           trigger set in transition map + single char ==
-        #           trigger set in skeleton. (check this first,
-        #           don't waste wildcard).
-        #     (3.2) trigger set in skeleton + wildcard == trigger set 
-        #           in transition map.
-        #      
-        common_set = self.__skeleton_key_set & transition_map_key_set
-        for target_door_id in common_set:
-            sk_trigger_set = self.__skeleton[target_door_id]
-            tm_trigger_set = TransitionMap[target_door_id]
-
-            if sk_trigger_set.is_equal(tm_trigger_set): continue
-
-            # (3.1) Maybe the current single transition covers the 'hole'.
-            #       (check this first, we do not want to waste the wilcard)
-            if can_plug_to_equal(tm_trigger_set, TriggerCharToTarget, sk_trigger_set):
-                continue
-
-            elif wildcard_target is None:
-                # (3.2) Can difference between trigger sets be plugged by the wildcard?
-                if can_plug_to_equal(sk_trigger_set, self.__wildcard_character, tm_trigger_set): 
-                    wildcard_target = target_door_id
-                    continue
-                # (3.3) A set extended by wilcard may have only a 'hole' of the
-                #       size of the single transition char.
-                if can_plug_to_equal(tm_trigger_set, 
-                                     TriggerCharToTarget,
-                                     sk_trigger_set.union(NumberSet(self.__wildcard_character))): 
-                    wildcard_target = target_door_id
-                    continue
-
-            # Trigger sets differ and no wildcard or single transition can
-            # 'excuse' that => skeleton does not fit.
-            return None
-
-        if wildcard_target is None: return -1 # No plugging necessary
+        # Here: The transition maps match, but possibly require the use of a wildcard.
         return wildcard_target
 
-    def plug_wildcard(self, WildcardPlug):
-        assert isinstance(WildcardPlug, DoorID)
+    def plug_wildcard(self, Target):
+        assert isinstance(Target, DoorID)
+        assert self.__wildcard_char is not None
 
-        # If there is a plugging to be performed, then do it.
-        if self.__skeleton.has_key(WildcardPlug):
-            self.__skeleton[WildcardPlug].unite_with(NumberSet(self.__wildcard_character))
-        else:
-            self.__skeleton[WildcardPlug] = NumberSet(self.__wildcard_character)
-        self.__skeleton_key_set.add(WildcardPlug)
-        self.__wildcard_character = None # There is no more wildcard now
+        transition_map_tools.set(self.__transition_map, self.__wildcard_char, Target)
         
+        self.__wildcard_char = None
         return 
 
     def get_string(self, NormalizeDB=None):

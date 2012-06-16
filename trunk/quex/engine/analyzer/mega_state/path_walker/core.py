@@ -1,4 +1,5 @@
 # (C) 2010 Frank-Rene Schaefer
+import quex.engine.analyzer.transition_map               as transition_map_tools
 from   quex.engine.analyzer.mega_state.path_walker.path  import CharacterPath
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.state.entry_action           import TransitionID, TransitionAction
@@ -163,9 +164,10 @@ def __find(analyzer, StateIndex, CompressionType, AvailableStateIndexList):
     result_list = []
 
     State          = analyzer.state_db[StateIndex]
-    transition_map = State.map_target_index_to_character_set
+    target_map     = State.map_target_index_to_character_set
+    transition_map = transition_map_tools.relate_to_door_ids(State.transition_map, analyzer, State.index)
 
-    for target_idx, trigger_set in transition_map.iteritems():
+    for target_idx, trigger_set in target_map.iteritems():
         if   target_idx not in AvailableStateIndexList: continue # State is not an option.
         elif target_idx == StateIndex:                  continue # Recursion! Do not go further!
 
@@ -173,12 +175,7 @@ def __find(analyzer, StateIndex, CompressionType, AvailableStateIndexList):
         path_char = trigger_set.get_the_only_element()
         if path_char is None: continue
 
-        # The skeleton is possibly changed in __find_continuation(), but then
-        # a 'deepcopy' is applied to disconnect it, see __find_continuation().
-        skeleton = get_adapted_trigger_map_shallow_copy(transition_map, analyzer, State.index, 
-                                                        ExceptTargetIndex=target_idx)
-
-        path = CharacterPath(State, path_char, skeleton)
+        path = CharacterPath(State, path_char, transition_map)
             
         result_list.extend(__find_continuation(analyzer, target_idx, path, CompressionType, 
                                                AvailableStateIndexList))
@@ -194,41 +191,35 @@ def __find_continuation(analyzer, StateIndex, the_path, CompressionType, Availab
     """
 
     # Check "StateIndex in AvailableStateIndexList" is done by 'continue' in the 
-    # loops, if "target_idx not in AvailableStateIndexList".
+    # loops, if "target_index not in AvailableStateIndexList".
     State       = analyzer.state_db[StateIndex]
     result_list = []
 
-    transition_map = State.map_target_index_to_character_set
+    # list: (interval, target)
+    transition_map = transition_map_tools.relate_to_door_ids(State.transition_map, analyzer, State.index)
+    # map:  target --> number set that triggers to it
+    target_map     = State.map_target_index_to_character_set
 
     single_char_transition_found_f = False
-    for target_idx, trigger_set in transition_map.items():
-        if target_idx not in AvailableStateIndexList: continue
+    for target_index, trigger_set in target_map.iteritems():
+        if target_index not in AvailableStateIndexList: continue
 
         # Only consider single character transitions can be element of a path.
         path_char = trigger_set.get_the_only_element()
         if path_char is None: continue
 
         # A PathWalkerState cannot implement a recursion.
-        if the_path.contains(target_idx): continue # Recursion ahead--don't go!
+        if the_path.contains_state(target_index): continue # Recursion ahead--don't go!
 
         # Do the transitions fit the 'skeleton'?
-        adapted_transition_map = get_adapted_trigger_map_shallow_copy(transition_map, analyzer, State.index, 
-                                                                      ExceptTargetIndex=None)
-        target_door_id = analyzer.state_db[target_idx].entry.get_door_id(target_idx, State.index)
-        print "#skeleton", the_path.skeleton()
-        print "#adapted_transition_map:", adapted_transition_map
-        plug           = the_path.match_skeleton(adapted_transition_map, target_door_id, path_char)
-        if plug is None: 
-            print "#the_path: no match!"
-            print "#", the_path.sequence()
-            continue # No match possible 
+        target_door_id = analyzer.state_db[target_index].entry.get_door_id(target_index, State.index)
+        plug           = the_path.match(transition_map, target_door_id, path_char)
+        if plug is None: continue # No match possible 
 
         single_char_transition_found_f = True
 
-        # Deepcopy is required to completely isolate the transition map and the
-        # entry/drop_out schemes that may now be changed.
-        path_copy = the_path.clone()
-        if plug != -1: path_copy.plug_wildcard(plug)
+        path_clone = the_path.clone()
+        if plug != -1: path_clone.plug_wildcard(plug)
 
         # Can uniformity be maintained?
         if      CompressionType == E_Compression.PATH_UNIFORM         \
@@ -237,14 +228,17 @@ def __find_continuation(analyzer, StateIndex, the_path, CompressionType, Availab
             # The current state might be a terminal, even if a required uniformity is not 
             # possible. The terminal is not part of the path, but is entered after the
             # path has ended. 
-            if len(path_copy) > 1:            # A path must be more than 'Begin and Terminal'
-                path_copy.set_end_state_index(State.index)
-                result_list.append(path_copy) # Path must end here.
+            if len(path_clone) > 1:            # A path must be more than 'Begin and Terminal'
+                path_clone.set_end_state_index(State.index)
+                result_list.append(path_clone) # Path must end here.
             continue
 
         # Find a continuation of the path
-        path_copy.append(State, path_char)
-        result_list.extend(__find_continuation(analyzer, target_idx, path_copy, CompressionType, AvailableStateIndexList))
+        path_clone.append(State, path_char)
+
+        child_results = __find_continuation(analyzer, target_index, path_clone, 
+                                            CompressionType, AvailableStateIndexList)
+        result_list.extend(child_results)
 
     if not single_char_transition_found_f and len(the_path) != 1:
         if len(the_path) > 1:            # A path must be more than 'Begin and Terminal'
@@ -252,34 +246,6 @@ def __find_continuation(analyzer, StateIndex, the_path, CompressionType, Availab
             result_list.append(the_path)
 
     return result_list
-
-def get_adapted_trigger_map_shallow_copy(TriggerMap, TheAnalyzer, StateIndex, ExceptTargetIndex):
-    """Before: 
-    
-             TriggerMap:  target_state_index ---> NumberSet that triggers to it
-
-       After: 
-
-             TriggerMap:  DoorID             ---> NumberSet that triggers to it.
-    
-       The adapted trigger map is possibly changed in __find_continuation(), but then a
-       'deepcopy' is applied to disconnect it, see __find_continuation().
-
-       RETURN: A trigger map that triggers to DoorID objects, rather 
-               than plain states. This is required. A pathwalker
-               can only walk propperly, if it enters the same doors.
-    """
-    def adapt(TargetIndex, TriggerSet):
-        return (TheAnalyzer.state_db[TargetIndex].entry.get_door_id(StateIndex=TargetIndex, FromStateIndex=StateIndex),
-                TriggerSet.clone())
-
-    if ExceptTargetIndex is not None:
-        return dict(adapt(target_index, number_set) \
-                    for target_index, number_set in TriggerMap.iteritems() \
-                    if target_index != ExceptTargetIndex)
-    else:
-        return dict(adapt(target_index, number_set) \
-                    for target_index, number_set in TriggerMap.iteritems())
 
 def select(path_list):
     """The desribed paths may have intersections, but a state can only
