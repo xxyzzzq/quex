@@ -4,8 +4,8 @@ from   quex.engine.analyzer.state.entry_action      import SetTemplateStateKey
 from   quex.engine.analyzer.mega_state.core         import MegaState, \
                                                            MegaState_Target, \
                                                            MegaState_Entry, \
-                                                           MegaState_DropOut, \
-                                                           zipped_transition_map_iterable
+                                                           MegaState_DropOut
+import quex.engine.analyzer.transition_map          as transition_map_tools
 from   quex.engine.interval_handling                import Interval
 from   quex.blackboard                              import E_StateIndices
 
@@ -277,10 +277,10 @@ def combine_maps(StateA, StateB):
     MegaState_Target.init() # Initialize the tracking of generated MegaState_Target-s
     factory = TargetFactory(StateA, StateB)
     result  = []
-    for prev_end, end, a_target, b_target in zipped_transition_map_iterable(StateA.transition_map, 
-                                                                            StateB.transition_map):
+    for begin, end, a_target, b_target in transition_map_tools.zipped_iterable(StateA.transition_map, 
+                                                                               StateB.transition_map):
         target = factory.get(a_target, b_target)
-        result.append((Interval(prev_end, end), target))
+        result.append((Interval(begin, end), target))
 
     # Return the database of generated MegaState_Target objects
     mega_state_target_db = MegaState_Target.disconnect_object_db()
