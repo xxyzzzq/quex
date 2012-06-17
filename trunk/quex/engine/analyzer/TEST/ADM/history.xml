@@ -1,4 +1,4 @@
-<history date="Sat Jun 16 07:05:48 2012" element-n="739">
+<history date="Sat Jun 16 22:08:26 2012" element-n="743">
     <day year="2011" month="04" day="29">
         <history-init time="04:18:51"/>
     </day>
@@ -889,5 +889,11 @@
     </day>
     <day year="2012" month="06" day="09">
         <crc-error time="04:34:05" application="categorize_doors.py" choice="11" database-crc="677065027" real-crc="1786630541"/>
+    </day>
+    <day year="2012" month="06" day="16">
+        <crc-error time="10:38:46" application="transition_map_tools.py" choice="AbsorbC" database-crc="1839296274" real-crc="2085925369"/>
+        <crc-error time="19:55:18" application="transition_map_tools.py" choice="AbsorbA" database-crc="1278030050" real-crc="54034854"/>
+        <crc-error time="19:56:00" application="transition_map_tools.py" choice="AbsorbB" database-crc="-1235141682" real-crc="825164361"/>
+        <crc-error time="20:03:57" application="transition_map_tools.py" choice="AbsorbC" database-crc="2085925369" real-crc="1438611652"/>
     </day>
 </history>

@@ -1,3 +1,4 @@
+import quex.engine.analyzer.transition_map              as transition_map_tools
 import quex.engine.generator.state.transition.code      as transition_code
 import quex.engine.generator.state.transition.solution  as solution
 import quex.engine.generator.state.transition.bisection as bisection
@@ -64,7 +65,7 @@ def do(txt, TransitionMap,
     assert StateIndex        is None or isinstance(StateIndex, long)
     assert GotoReload_Str    is None or isinstance(GotoReload_Str, (str, unicode))
 
-    assert_adjacency(TransitionMap)
+    transition_map_tools.assert_adjacency(TransitionMap)
 
     # If a state has no transitions, no new input needs to be eaten => no reload.
     #
@@ -345,20 +346,4 @@ def __get_transition(txt, TriggerMapEntry, IndentF=False):
     else: 
         txt.append("\n")
     return 
-
-def assert_adjacency(TransitionMap, TotalRangeF=False):
-    """Check that the trigger map consist of sorted adjacent intervals 
-       This assumption is critical because it is assumed that for any isolated
-       interval the bordering intervals have bracketed the remaining cases!
-    """
-    if len(TransitionMap) == 0: return
-    iterable = TransitionMap.__iter__()
-    if TotalRangeF: previous_end = - sys.maxint
-    else:           previous_end = iterable.next()[0].end 
-    for interval in imap(itemgetter(0), iterable):
-        assert interval.begin == previous_end # Intervals are adjacent!
-        assert interval.end > interval.begin  # Interval size > 0! 
-        previous_end = interval.end
-
-    assert (not TotalRangeF) or TransitionMap[-1][0].end == sys.maxint
 

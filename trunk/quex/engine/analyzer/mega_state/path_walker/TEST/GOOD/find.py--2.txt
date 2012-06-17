@@ -1,4 +1,4 @@
-digraph state_machine_1 {
+digraph state_machine_2 {
 rankdir=LR;
 size="8,5"
 node [shape = doublecircle]; 2; 3; 4;
@@ -13,11 +13,23 @@ node [shape = circle];
 
 # start    = 1;
 # path     = (1)--'c'-->(3)--'a'-->[2];
-# skeleton = (s=2,d=0) by 'a'; (s=4,d=0) by 'c'; 
+# skeleton = {
+#    [-oo, '`'] -> DROP_OUT
+#    'a'        -> DoorID(s=2, d=0)
+#    'b'        -> DROP_OUT
+#    'c'        -> DoorID(s=4, d=0)
+#    ['d', oo]  -> DROP_OUT
+# }
 # wildcard = False;
 # 
 # start    = 1;
 # path     = (1)--'c'-->(3)--'c'-->[4];
-# skeleton = (s=2,d=0) by 'a'; 
+# skeleton = {
+#    [-oo, '`'] -> DROP_OUT
+#    'a'        -> DoorID(s=2, d=0)
+#    'b'        -> DROP_OUT
+#    'c'        -> VOID
+#    ['d', oo]  -> DROP_OUT
+# }
 # wildcard = True;
 # 

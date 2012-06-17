@@ -56,6 +56,9 @@ class Interval(object):
             else:    
                 self.end = End
             
+    def clone(self):
+        return Interval(self.begin, self.end)
+
     def is_empty(self):
         return self.begin == self.end
 
@@ -171,6 +174,7 @@ class Interval(object):
         return self.get_string(Option="")
 
     def get_string(self, Option="", Delimiter=", "):
+        assert Option in ("hex", "dec", "utf8", "")
         assert self.end >= self.begin
         if Option == "hex":    __repr = lambda x: "%04X" % x
         elif Option == "utf8": __repr = lambda x: utf8.unicode_to_pretty_utf8(x)

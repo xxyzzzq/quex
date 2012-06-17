@@ -29,11 +29,11 @@ def get_path_list(PlainLists):
 
     result = []
     for sequence in PlainLists:
-        path = CharacterPath(get_analyzer_state(dummy_sm, sequence[0]), dummy_char, {})
+        path = CharacterPath(get_analyzer_state(dummy_sm, sequence[0]), dummy_char, [(Interval(-sys.maxint, sys.maxint), "1")])
         for state_index in sequence[1:-1]:
-            path.append(get_analyzer_state(dummy_sm, state_index), dummy_char) 
+            path.append_state(get_analyzer_state(dummy_sm, state_index), dummy_char)
 
-        path.set_end_state_index(sequence[-1])
+        path.append_state(get_analyzer_state(dummy_sm, sequence[-1]))
         result.append(path)
     return result
 

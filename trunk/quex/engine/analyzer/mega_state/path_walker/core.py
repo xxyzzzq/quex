@@ -1,4 +1,5 @@
 # (C) 2010 Frank-Rene Schaefer
+from   quex.engine.misc.tree_walker                      import TreeWalker
 import quex.engine.analyzer.transition_map               as transition_map_tools
 from   quex.engine.analyzer.mega_state.path_walker.path  import CharacterPath
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
@@ -124,13 +125,12 @@ def do(TheAnalyzer, CompressionType, AvailableStateIndexList=None, MegaStateList
     #     the case, they can be implemented by the same PathWalkerState.
     return group(path_list, TheAnalyzer, CompressionType)
 
-done_set = set()
 def collect(TheAnalyzer, CompressionType, AvailableStateIndexList):
     """Starting from each state in the state machine, search for paths
        which begin from it.
     """
-    global done_set
-    done_set.clear()
+    AvailableStateIndexSet = set(AvailableStateIndexList)
+    done_set = set()
 
     path_list = []
     for state_index in TheAnalyzer.state_db[TheAnalyzer.init_state_index].map_target_index_to_character_set.iterkeys():
@@ -138,7 +138,7 @@ def collect(TheAnalyzer, CompressionType, AvailableStateIndexList):
         elif state_index not in AvailableStateIndexList:  continue
 
         path_list.extend(__find(TheAnalyzer, state_index,
-                                CompressionType, AvailableStateIndexList))
+                                CompressionType, AvailableStateIndexSet))
         done_set.add(state_index)
 
     for state_index in TheAnalyzer.state_db.iterkeys():
@@ -147,10 +147,10 @@ def collect(TheAnalyzer, CompressionType, AvailableStateIndexList):
         elif state_index not in AvailableStateIndexList:  continue
 
         path_list.extend(__find(TheAnalyzer, state_index,
-                                CompressionType, AvailableStateIndexList))
+                                CompressionType, AvailableStateIndexSet))
     return path_list
 
-def __find(analyzer, StateIndex, CompressionType, AvailableStateIndexList):
+def __find(analyzer, StateIndex, CompressionType, AvailableStateIndexSet):
     """Searches for the BEGINNING of a path, i.e. a single character transition
     to a subsequent state. If such a transition is found, a 'skeleton' transition
     map is computed. A 'skeleton' is a transition map which contains 'wildcards' 
@@ -168,21 +168,112 @@ def __find(analyzer, StateIndex, CompressionType, AvailableStateIndexList):
     transition_map = transition_map_tools.relate_to_door_ids(State.transition_map, analyzer, State.index)
 
     for target_idx, trigger_set in target_map.iteritems():
-        if   target_idx not in AvailableStateIndexList: continue # State is not an option.
-        elif target_idx == StateIndex:                  continue # Recursion! Do not go further!
+        if   target_idx not in AvailableStateIndexSet: continue # State is not an option.
+        elif target_idx == StateIndex:                 continue # Recursion! Do not go further!
 
         # Only single character transitions can be element of a path.
-        path_char = trigger_set.get_the_only_element()
-        if path_char is None: continue
+        transition_char = trigger_set.get_the_only_element()
+        if transition_char is None: continue
 
-        path = CharacterPath(State, path_char, transition_map)
-            
-        result_list.extend(__find_continuation(analyzer, target_idx, path, CompressionType, 
-                                               AvailableStateIndexList))
+        result = __find_continuation(analyzer, CompressionType, AvailableStateIndexSet, 
+                                     State, transition_map, transition_char, target_idx)
+
+        result_list.extend(result)
 
     return result_list
 
-def __find_continuation(analyzer, StateIndex, the_path, CompressionType, AvailableStateIndexList):
+def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet, 
+                        FromState, FromTransitionMap, TransitionChar, TargetIndex):
+    class PathFinder(TreeWalker):
+        """Determines PathTrace objects for each state. The heart of this function is
+           the call to 'PathTrace.next_step()' which incrementally develops the 
+           acceptance and position storage history of a path.
+
+           Recursion Terminal: When state has no target state that has not yet been
+                               handled in the 'path' in the same manner. That means,
+                               that if a state appears again in the path, its trace
+                               must be different or the recursion terminates.
+        """
+        def __init__(self, TheAnalyzer, CompressionType, AvailableStateIndexSet):
+            self.__depth       = 0
+            self.analyzer      = TheAnalyzer
+            self.available_set = AvailableStateIndexSet
+            self.uniform_f     = CompressionType == E_Compression.PATH_UNIFORM
+            self.result        = []
+            TreeWalker.__init__(self)
+
+        def on_enter(self, Args):
+            path                  = Args[0]
+            State                 = Args[1]
+            FromToToHereCharacter = Args[2]
+
+            # Can uniformity be maintained?
+            if      self.uniform_f                                             \
+                and not (    path.drop_out.is_uniform_with(FromState.drop_out) \
+                         and path.check_uniform_entry_to_state(FromState)):
+                # The current state might be a terminal, even if a required uniformity is not 
+                # possible. The terminal is not part of the path, but is entered after the
+                # path has ended. This handled by 'on_finished'.
+                pass
+
+            # list: (interval, target)
+            transition_map = transition_map_tools.relate_to_door_ids(State.transition_map, 
+                                                                     self.analyzer, 
+                                                                     State.index)
+            # List of follow-states to consider. ______________________________
+            sub_list = []
+            for target_index, trigger_set in State.map_target_index_to_character_set.iteritems():
+                if target_index not in self.available_set: return
+
+                # Only single character transitions can be element of a path.
+                transition_char = trigger_set.get_the_only_element()
+                if transition_char is None: continue
+
+                # A PathWalkerState cannot implement a recursion.
+                if path.contains_state(target_index): continue # Recursion--don't go!
+
+                target_state = self.analyzer.state_db[target_index]
+                # Do the transitions fit the 'skeleton'?
+                target_door_id = target_state.entry.get_door_id(target_index, State.index)
+                plug           = path.match(transition_map, target_door_id, transition_char)
+                if plug is None: continue # No match possible 
+
+                new_path = path.clone() # May be, we do not have to clone the transition map if plug == -1
+                # Find a continuation of the path
+                new_path.append_state(State, transition_char)
+                if plug != -1: new_path.plug_wildcard(plug)
+
+                sub_list.append((new_path, target_state, transition_char))
+
+            # Termination Condition: 'sub_list = empty' _______________________
+            #
+            # There are no further transitions to be considered. This is 
+            # includes, of course, the case where a state is a dead-end.
+            if len(sub_list) == 0 and len(path) > 1: 
+                path.append_state(State) # transition_to_next_character = None
+                path.finalize()
+                self.result.append(path)
+
+            return sub_list
+
+        def on_finished(self, Args):
+            self.__depth -= 1
+
+    tm_clone     = transition_map_tools.clone(FromTransitionMap)
+    target_state = analyzer.state_db[TargetIndex]
+    path         = CharacterPath(FromState, TransitionChar, tm_clone)
+
+    trace_finder = PathFinder(analyzer, CompressionType, AvailableStateIndexSet)
+    # FromState         = Args[0]
+    # FromTransitionMap = Args[1]  # FromState's adapted transition map
+    # FromToCharacter   = Args[2]
+    # Plug              = Args[3]
+    # ToState           = Args[4]
+    # ThePath           = Args[5]
+    trace_finder.do((path, target_state, TransitionChar))
+    return trace_finder.result
+
+def __OLD_find_continuation(analyzer, StateIndex, the_path, CompressionType, AvailableStateIndexList):
     """A basic skeleton of the path and the remaining trigger map is given. Now,
        try to find a subsequent path step.
 
@@ -240,10 +331,10 @@ def __find_continuation(analyzer, StateIndex, the_path, CompressionType, Availab
                                             CompressionType, AvailableStateIndexList)
         result_list.extend(child_results)
 
-    if not single_char_transition_found_f and len(the_path) != 1:
-        if len(the_path) > 1:            # A path must be more than 'Begin and Terminal'
-            the_path.set_end_state_index(StateIndex)
-            result_list.append(the_path)
+    if not single_char_transition_found_f and len(the_path) > 1:
+        # (len(the_path) > 1, because a path must be more than 'Begin and Terminal')
+        the_path.set_end_state_index(StateIndex)
+        result_list.append(the_path)
 
     return result_list
 

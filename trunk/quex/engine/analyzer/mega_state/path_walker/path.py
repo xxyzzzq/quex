@@ -39,6 +39,15 @@ class PathWalkerState_Entry(MegaState_Entry):
 
             self.action_db[transition_id] = clone
 
+class CharacterPathElement(object):
+    __slots__ = ("state_index", "transition_char_to_next")
+    def __init__(self, StateIndex, TransitionChar):
+        self.state_index             = StateIndex
+        self.transition_char_to_next = TransitionChar
+
+    def clone(self):
+        return CharacterPathElement(self.state_index, self.transition_char_to_next)
+
 class CharacterPath(object):
     """A set of states that can be walked along with a character sequence plus
        a common remaining transition map (here called 'skeleton').
@@ -56,19 +65,24 @@ class CharacterPath(object):
         self.entry    = PathWalkerState_Entry(self.index, StartState.entry)
         self.drop_out = MegaState_DropOut(StartState) 
 
-        self.__sequence         = [ (StartState.index, StartCharacter) ]
+        self.__sequence         = [ CharacterPathElement(StartState.index, StartCharacter) ]
         self.__transition_map   = AdaptedTransitionMap
         # Set the 'void' target to indicate wildcard.
         transition_map_tools.set(self.__transition_map, StartCharacter, E_StateIndices.VOID)
         self.__wildcard_char  = StartCharacter
+
+        ## print "#construct: {\n%s}" % transition_map_tools.get_string(self.__transition_map)
 
     def clone(self):
         result = CharacterPath(None, None, None)
         result.index    = self.index
         result.entry    = self.entry
         result.drop_out = self.drop_out
-        result.__sequence       = [x for x in self.__sequence]
-        result.__transition_map = transition_map_tools.clone(self.__transition_map)
+        result.__sequence = [x.clone() for x in self.__sequence]
+        def adapt(Target):
+            if hasattr(Target, "clone"): return Target.clone()
+            else:                        return Target
+        result.__transition_map = [(interval.clone(), adapt(target)) for interval, target in self.__transition_map]
         result.__wildcard_char  = self.__wildcard_char
         return result
 
@@ -78,7 +92,7 @@ class CharacterPath(object):
            associated with it.
         """
         assert len(self.__sequence) > 1
-        return set(x[0] for x in self.__sequence[:-1])
+        return set(x.state_index for x in self.__sequence[:-1])
 
     def sequence(self):
         return self.__sequence
@@ -94,12 +108,10 @@ class CharacterPath(object):
 
     def end_state_index(self):
         if len(self.__sequence) == 0: return -1
-        return self.__sequence[-1][0]
+        return self.__sequence[-1].state_index
 
-    def set_end_state_index(self, StateIndex):
-        self.__sequence.append((StateIndex, None))
+    def append_state(self, State, TransitionCharacterToNextState=None):
 
-    def append(self, State, Char):
         # The index of the state on the path determines the path iterator's offset
         offset = len(self.__sequence)
 
@@ -110,7 +122,8 @@ class CharacterPath(object):
         self.drop_out.update_from_state(State)
 
         # Add the state on the sequence of state along the path
-        self.__sequence.append((State.index, Char))
+        self.__sequence.append(CharacterPathElement(State.index, 
+                                                    TransitionCharacterToNextState))
 
     def get_uniform_entry_command_list_along_path(self):
         """When a state is entered (possibly) some commands are executed, for
@@ -130,7 +143,7 @@ class CharacterPath(object):
         # A path where there are not at least two states, is not a path.
         assert len(self.__sequence) >= 2
 
-        prev_state_index = self.__sequence[0][0]
+        prev_state_index = self.__sequence[0].state_index
         prototype        = None
         for state_index, char in self.__sequence[1:-1]:
             action = self.entry.action_db_get_command_list(state_index, prev_state_index)
@@ -147,7 +160,7 @@ class CharacterPath(object):
         return prototype
 
     def contains_state(self, StateIndex):
-        for dummy in ifilter(lambda x: x[0] == StateIndex, self.__sequence):
+        for dummy in ifilter(lambda x: x.state_index == StateIndex, self.__sequence):
             return True
         return False
 
@@ -169,7 +182,7 @@ class CharacterPath(object):
         uniform_entry = self.get_uniform_entry_command_list_along_path()
         if uniform_entry is None: # Actually, this could be an assert. This function is only
             return False          # to be executed when building uniform paths.
-        action = self.entry.action_db_get_command_list(State.index, self.__sequence[-1][0])
+        action = self.entry.action_db_get_command_list(State.index, self.__sequence[-1].state_index)
         if not uniform_entry.is_equivalent(action.command_list):
             return False
         return True
@@ -205,8 +218,8 @@ class CharacterPath(object):
             assert size > 0
 
             if size == 1:  
-                if   a_target == E_StateIndices.VOID: wildcard_target = b_target; continue
-                elif b_target == TargetDoorID:        continue
+                if   b_target == TargetDoorID:        continue
+                elif a_target == E_StateIndices.VOID: wildcard_target = b_target; continue
                 else:                                 return None
             else:
                 return None
@@ -214,11 +227,24 @@ class CharacterPath(object):
         # Here: The transition maps match, but possibly require the use of a wildcard.
         return wildcard_target
 
+    def finalize(self):
+        # Ensure that there is no wildcard in the transition map
+        if self.__wildcard_char is None: return
+
+        transition_map_tools.smoothen(self.__transition_map, self.__wildcard_char)
+        self.__wildcard_char = None
+
     def plug_wildcard(self, Target):
-        assert isinstance(Target, DoorID)
+        assert isinstance(Target, DoorID) or Target == E_StateIndices.DROP_OUT, repr(Target)
         assert self.__wildcard_char is not None
+        assert transition_map_tools.get_target(self.__transition_map, self.__wildcard_char) == E_StateIndices.VOID
+
+        ## print "#wildcard:", chr(self.__wildcard_char), Target
+        ## print "#before plug: {\n%s}" % transition_map_tools.get_string(self.__transition_map)
 
         transition_map_tools.set(self.__transition_map, self.__wildcard_char, Target)
+
+        ## print "#after plug: {\n%s}" % transition_map_tools.get_string(self.__transition_map)
         
         self.__wildcard_char = None
         return 
@@ -229,22 +255,22 @@ class CharacterPath(object):
             assert isinstance(X, (int, long)) or X is None
             return X if NormalizeDB is None else NormalizeDB[X]
 
+        L            = max(len(x[0].get_utf8_string()) for x in self.__transition_map)
         skeleton_txt = ""
-        for target_door_id, trigger_set in sorted(self.__skeleton.iteritems(), key=itemgetter(0)):
-            skeleton_txt += "(s=%s,d=%i) by " % (norm(target_door_id.state_index), target_door_id.door_index)
-            skeleton_txt += trigger_set.get_utf8_string()
-            skeleton_txt += "; "
+        for interval, target_door_id in self.__transition_map:
+            interval_str  = interval.get_utf8_string()
+            skeleton_txt += "   %s%s -> %s\n" % (interval_str, " " * (L - len(interval_str)), target_door_id)
 
         sequence_txt = ""
-        for state_idx, char in self.__sequence[:-1]:
-            state_idx = norm(state_idx)
-            sequence_txt += "(%i)--'%s'-->" % (state_idx, chr(char))
-        sequence_txt += "[%i]" % norm(self.__sequence[-1][0])
+        for x in self.__sequence[:-1]:
+            state_idx = norm(x.state_index)
+            sequence_txt += "(%i)--'%s'-->" % (x.state_index, chr(x.transition_char_to_next))
+        sequence_txt += "[%i]" % norm(self.__sequence[-1].state_index)
 
-        return "".join(["start    = %i;\n" % norm(self.__sequence[0][0]),
+        return "".join(["start    = %i;\n" % norm(self.__sequence[0].state_index),
                         "path     = %s;\n" % sequence_txt,
-                        "skeleton = %s\n"  % skeleton_txt, 
-                        "wildcard = %s;\n" % repr(self.__wildcard_character is not None)])
+                        "skeleton = {\n%s}\n"  % skeleton_txt, 
+                        "wildcard = %s;\n" % repr(self.__wildcard_char is not None)])
 
     def __repr__(self):
         return self.get_string()
