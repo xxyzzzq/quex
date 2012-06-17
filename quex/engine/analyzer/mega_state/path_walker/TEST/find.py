@@ -52,9 +52,8 @@ def test(Skeleton, *StringPaths):
     sm.add_transition(7777L, ord('0'), sm.init_state_index)
     sm.init_state_index = 7777L
 
-    # print Skeleton
-    ## print "##w/o normalize:\n", sm.get_graphviz_string(NormalizeF=False)
-    print sm.get_graphviz_string(NormalizeF=True)
+    sm = sm.normalized_clone()
+    print sm.get_graphviz_string(NormalizeF=False)
     print
     analyzer = Analyzer(sm, E_EngineTypes.FORWARD)
     for state in analyzer.state_db.itervalues():
@@ -65,11 +64,8 @@ def test(Skeleton, *StringPaths):
     if filter_f:
         result = paths.select(result)
 
-    norm_db, x, x = sm.get_state_index_normalization()
-    for path in result:
-        print "# " + path.get_string(norm_db).replace("\n", "\n# ")
-
-    # print "## String paths were = " + repr(StringPaths)
+    for path in sorted(result, key=lambda x: (-len(x), x.sequence()[0].state_index)):
+        print "# " + path.get_string().replace("\n", "\n# ")
 
 skeleton_blah = { 
    6666666L: NumberSet(Interval(ord('#'))),
@@ -121,6 +117,6 @@ elif "extreme" in sys.argv:
     filter_f=True; 
     # test_str = "abcdefghijklmnopqrstuvwxyz" * (- int(sys.argv[2]))
     test_str = "abcdefghijklmnopqrstuvw" * (- int(sys.argv[2]))
-    print "#", test_str
     test(skeleton_blah, test_str)
+    print "#", test_str
 

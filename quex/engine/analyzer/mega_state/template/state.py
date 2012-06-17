@@ -1,5 +1,5 @@
-import quex.engine.state_machine.index               as    index
-from   quex.engine.generator.state.transition.core  import assert_adjacency
+import quex.engine.state_machine.index              as     index
+import quex.engine.analyzer.transition_map          as     transition_map_tools
 from   quex.engine.analyzer.state.entry_action      import SetTemplateStateKey
 from   quex.engine.analyzer.mega_state.core         import MegaState, \
                                                            MegaState_Target, \
@@ -271,8 +271,8 @@ def combine_maps(StateA, StateB):
     computation of target schemes. For this reason no dictionary
     {state_index->target} is used.
     """
-    assert_adjacency(StateA.transition_map, TotalRangeF=True)
-    assert_adjacency(StateB.transition_map, TotalRangeF=True)
+    transition_map_tools.assert_adjacency(StateA.transition_map, TotalRangeF=True)
+    transition_map_tools.assert_adjacency(StateB.transition_map, TotalRangeF=True)
 
     MegaState_Target.init() # Initialize the tracking of generated MegaState_Target-s
     factory = TargetFactory(StateA, StateB)

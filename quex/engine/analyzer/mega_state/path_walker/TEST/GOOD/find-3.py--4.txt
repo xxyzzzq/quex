@@ -16,7 +16,13 @@ node [shape = circle];
 
 # start    = 0;
 # path     = (0)--'p'-->(1)--'z'-->[3];
-# skeleton = (s=2,d=0) by ['a', 'o'], ['q', 'z']; 
+# skeleton = {
+#    [-oo, '`'] -> DROP_OUT
+#    ['a', 'o'] -> DoorID(s=2, d=0)
+#    'p'        -> DROP_OUT
+#    ['q', 'z'] -> DoorID(s=2, d=0)
+#    ['{', oo]  -> DROP_OUT
+# }
 # wildcard = True;
 # 
 #
