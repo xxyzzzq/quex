@@ -17,5 +17,5 @@ node [shape = circle];
 #    'a'        -> DoorID(s=2, d=0)
 #    ['b', oo]  -> DROP_OUT
 # }
-# wildcard = True;
+# wildcard = False;
 # 
