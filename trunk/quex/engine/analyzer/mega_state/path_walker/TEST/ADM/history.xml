@@ -1,4 +1,4 @@
-<history date="Mon Jun 18 07:50:19 2012" element-n="51">
+<history date="Mon Jun 18 07:59:08 2012" element-n="56">
     <day year="2011" month="09" day="28">
         <history-init time="20:08:52"/>
     </day>
@@ -63,5 +63,10 @@
     <day year="2012" month="06" day="18">
         <crc-error time="05:50:19" application="select_longest_paths.py" choice="11a" database-crc="-379941737" real-crc="377544216"/>
         <crc-error time="05:50:19" application="select_longest_paths.py" choice="11b" database-crc="889524467" real-crc="-2040023964"/>
+        <crc-error time="05:55:24" application="select_longest_paths.py" choice="11a" database-crc="377544216" real-crc="-379941737"/>
+        <crc-error time="05:55:35" application="select_longest_paths.py" choice="11b" database-crc="-2040023964" real-crc="889524467"/>
+        <crc-error time="05:58:32" application="find-3.py" choice="4" database-crc="909039491" real-crc="687699620"/>
+        <crc-error time="05:58:55" application="find.py" choice="2" database-crc="-102936551" real-crc="225548120"/>
+        <crc-error time="05:59:03" application="find.py" choice="3" database-crc="526973542" real-crc="1562864869"/>
     </day>
 </history>

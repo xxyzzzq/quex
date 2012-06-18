@@ -23,7 +23,7 @@ node [shape = circle];
 #    ['q', 'z'] -> DoorID(s=2, d=0)
 #    ['{', oo]  -> DROP_OUT
 # }
-# wildcard = True;
+# wildcard = False;
 # 
 #
 # Some recursions are possible, if the skeleton contains them.
