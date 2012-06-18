@@ -12,8 +12,8 @@ from   quex.engine.analyzer.mega_state.path_walker.core   import select, Charact
 from   quex.blackboard                  import E_EngineTypes
 
 if "--hwut-info" in sys.argv:
-    print "Paths: select_longest_intersecting_path;"
-    print "CHOICES: 0, 1, 2, 3, 4, 5;"
+    print "Paths: select;"
+    print "CHOICES: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11a, 11b, 12;"
     sys.exit(0)
     
 
@@ -50,13 +50,13 @@ def __test(path_list):
     print
     print "BEFORE:"
     for i, path in enumerate(path_list):
-        print "  ", i, map(lambda x: x[0], path.sequence())
+        print "  ", i, map(lambda x: x.state_index, path.sequence())
 
     path_list = select(path_list)
 
     print "AFTER:"
     for i, path in enumerate(path_list):
-        print "  ", i, map(lambda x: x[0], path.sequence())
+        print "  ", i, map(lambda x: x.state_index, path.sequence())
     print
 
 
@@ -88,3 +88,30 @@ elif "5" in sys.argv:
     test([1L, 2L, 3L],
          [1L, 4L])
 
+elif "6" in sys.argv:
+    test([1L, 2L, 3L],
+         [2L, 3L])
+elif "7" in sys.argv:
+    test([1L, 2L, 3L],
+         [1L, 2L])
+elif "8" in sys.argv:
+    test([1L, 2L, 3L],
+         [1L, 2L],
+         [2L, 3L])
+elif "9" in sys.argv:
+    test([1L, 2L, 3L],
+         [1L, 2L, 3L])
+elif "10" in sys.argv:
+    test([1L, 2L, 3L],
+         [2L, 3L, 4L])
+elif "11a" in sys.argv:
+    test([1L, 2L, 3L],
+         [1L, 2L],
+         [2L, 3L, 4L])
+elif "11b" in sys.argv:
+    test([1L, 2L, 3L],
+         [2L, 3L, 4L],
+         [1L, 2L])
+elif "12" in sys.argv:
+    test([1L, 2L, 3L, 4L],
+         [2L, 3L])
