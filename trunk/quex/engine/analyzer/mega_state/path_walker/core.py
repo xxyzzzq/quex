@@ -202,21 +202,15 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
             self.result        = []
             TreeWalker.__init__(self)
 
+        def __check_uniformity(ThePath, TargetState):
+            return     ThePath.drop_out.is_uniform_with(TargetState.drop_out) \
+                   and ThePath.check_uniform_entry_to_state(TargetState)
+
         def on_enter(self, Args):
-            path                  = Args[0]
-            State                 = Args[1]
-            FromToToHereCharacter = Args[2]
+            path   = Args[0]
+            State  = Args[1]
 
-            # Can uniformity be maintained?
-            if      self.uniform_f                                             \
-                and not (    path.drop_out.is_uniform_with(FromState.drop_out) \
-                         and path.check_uniform_entry_to_state(FromState)):
-                # The current state might be a terminal, even if a required uniformity is not 
-                # possible. The terminal is not part of the path, but is entered after the
-                # path has ended. This handled by 'on_finished'.
-                pass
-
-            # list: (interval, target)
+            # list: (interval, target)  --> (interval, door_id)
             transition_map = transition_map_tools.relate_to_door_ids(State.transition_map, 
                                                                      self.analyzer, 
                                                                      State.index)
@@ -238,21 +232,28 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
                 plug           = path.match(transition_map, target_door_id, transition_char)
                 if plug is None: continue # No match possible 
 
-                new_path = path.clone() # May be, we do not have to clone the transition map if plug == -1
+                # If required, can uniformity be maintained?
+                if self.uniform_f and not self.__check_uniformity(new_path, target_state): continue
+
+                # May be, we do not have to clone the transition map if plug == -1
+                new_path = path.clone() 
+
                 # Find a continuation of the path
                 new_path.append_state(State, transition_char)
                 if plug != -1: new_path.plug_wildcard(plug)
 
-                sub_list.append((new_path, target_state, transition_char))
+                sub_list.append((new_path, target_state))
 
             # Termination Condition: 'sub_list = empty' _______________________
             #
             # There are no further transitions to be considered. This is 
             # includes, of course, the case where a state is a dead-end.
-            if len(sub_list) == 0 and len(path) > 1: 
-                path.append_state(State) # transition_to_next_character = None
-                path.finalize()
-                self.result.append(path)
+            if len(sub_list) == 0:
+                if len(path) > 1: 
+                    path.append_state(State) # transition_to_next_character = None
+                    path.finalize()
+                    self.result.append(path)
+                return
 
             return sub_list
 
@@ -263,80 +264,15 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
     target_state = analyzer.state_db[TargetIndex]
     path         = CharacterPath(FromState, TransitionChar, tm_clone)
 
-    trace_finder = PathFinder(analyzer, CompressionType, AvailableStateIndexSet)
+    path_finder = PathFinder(analyzer, CompressionType, AvailableStateIndexSet)
     # FromState         = Args[0]
     # FromTransitionMap = Args[1]  # FromState's adapted transition map
     # FromToCharacter   = Args[2]
     # Plug              = Args[3]
     # ToState           = Args[4]
     # ThePath           = Args[5]
-    trace_finder.do((path, target_state, TransitionChar))
-    return trace_finder.result
-
-def __OLD_find_continuation(analyzer, StateIndex, the_path, CompressionType, AvailableStateIndexList):
-    """A basic skeleton of the path and the remaining trigger map is given. Now,
-       try to find a subsequent path step.
-
-    __dive --> This mark is only here to indicate that some recursion 
-               is involved. 
-    """
-
-    # Check "StateIndex in AvailableStateIndexList" is done by 'continue' in the 
-    # loops, if "target_index not in AvailableStateIndexList".
-    State       = analyzer.state_db[StateIndex]
-    result_list = []
-
-    # list: (interval, target)
-    transition_map = transition_map_tools.relate_to_door_ids(State.transition_map, analyzer, State.index)
-    # map:  target --> number set that triggers to it
-    target_map     = State.map_target_index_to_character_set
-
-    single_char_transition_found_f = False
-    for target_index, trigger_set in target_map.iteritems():
-        if target_index not in AvailableStateIndexList: continue
-
-        # Only consider single character transitions can be element of a path.
-        path_char = trigger_set.get_the_only_element()
-        if path_char is None: continue
-
-        # A PathWalkerState cannot implement a recursion.
-        if the_path.contains_state(target_index): continue # Recursion ahead--don't go!
-
-        # Do the transitions fit the 'skeleton'?
-        target_door_id = analyzer.state_db[target_index].entry.get_door_id(target_index, State.index)
-        plug           = the_path.match(transition_map, target_door_id, path_char)
-        if plug is None: continue # No match possible 
-
-        single_char_transition_found_f = True
-
-        path_clone = the_path.clone()
-        if plug != -1: path_clone.plug_wildcard(plug)
-
-        # Can uniformity be maintained?
-        if      CompressionType == E_Compression.PATH_UNIFORM         \
-            and not (    the_path.drop_out.is_uniform_with(State.drop_out) \
-                     and the_path.check_uniform_entry_to_state(State)):
-            # The current state might be a terminal, even if a required uniformity is not 
-            # possible. The terminal is not part of the path, but is entered after the
-            # path has ended. 
-            if len(path_clone) > 1:            # A path must be more than 'Begin and Terminal'
-                path_clone.set_end_state_index(State.index)
-                result_list.append(path_clone) # Path must end here.
-            continue
-
-        # Find a continuation of the path
-        path_clone.append(State, path_char)
-
-        child_results = __find_continuation(analyzer, target_index, path_clone, 
-                                            CompressionType, AvailableStateIndexList)
-        result_list.extend(child_results)
-
-    if not single_char_transition_found_f and len(the_path) > 1:
-        # (len(the_path) > 1, because a path must be more than 'Begin and Terminal')
-        the_path.set_end_state_index(StateIndex)
-        result_list.append(the_path)
-
-    return result_list
+    path_finder.do((path, target_state))
+    return path_finder.result
 
 def select(path_list):
     """The desribed paths may have intersections, but a state can only
@@ -355,20 +291,20 @@ def select(path_list):
                 [1] list of indices of paths which would be no longer 
                     available, because the winning path intersects.
         """
-        print "#get_best_path_________________________"
+        ##print "#get_best_path_________________________"
         opportunity_db = get_opportunity_db(AvailablePathList)
         max_gain = None
         winner                       = None
         winner_forbidden_path_id_set = None
         for path in AvailablePathList:
-            print "# path:", len(path.state_index_set), path.state_index_set 
-            print "# max:", max_gain
+            ##print "# path:", len(path.state_index_set), path.state_index_set 
+            ##print "# max:", max_gain
             if max_gain is not None and len(path.state_index_set) < max_gain: continue # No chance
 
             gain, forbidden_path_id_set = compute_gain(path, opportunity_db, 
                                                        (p for p in AvailablePathList if p.index != path.index))
 
-            print "#gain:", gain
+            ##print "#gain:", gain
             if max_gain is None:
                 winner                       = path
                 winner_forbidden_path_id_set = forbidden_path_id_set
@@ -382,7 +318,6 @@ def select(path_list):
                 winner                       = path
                 winner_forbidden_path_id_set = forbidden_path_id_set
                 max_gain                     = gain
-
 
         return winner, winner_forbidden_path_id_set
 
@@ -446,8 +381,8 @@ def select(path_list):
 
     work_db = dict((path.index, path) for path in path_list)
 
-    for path in path_list:
-        print "#ps:", len(path.state_index_set), path.state_index_set
+    ##for path in path_list:
+    ##    print "#ps:", len(path.state_index_set), path.state_index_set
 
     result = []
     while len(work_db):
