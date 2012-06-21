@@ -221,7 +221,7 @@ def require_data(PWState, TheAnalyzer):
             # memory.append(LanguageDB.COMMENT("".join(sequence_str)) + "\n")
             # Last element of sequence contains only the 'end state'.
             result.append("        ")
-            result.extend(imap(lambda x: "%i, " % x[1], path[:-1]))
+            result.extend("%i, " % x.transition_char_to_next for x in path[:-1])
             result.append("QUEX_SETTING_PATH_TERMINATION_CODE,")
             result.append("\n")
 

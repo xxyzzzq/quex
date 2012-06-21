@@ -94,6 +94,9 @@ class CharacterPath(object):
         assert len(self.__sequence) > 1
         return set(x.state_index for x in self.__sequence[:-1])
 
+    def has_wildcard(self):
+        return self.__wildcard_char is not None
+
     def sequence(self):
         return self.__sequence
 
@@ -102,28 +105,38 @@ class CharacterPath(object):
             if state_index == StateIndex: return True
         return False
 
-    def skeleton(self):
-        assert isinstance(self.__skeleton, dict)
-        return self.__skeleton
+    @property
+    def transition_map(self):
+        return self.__transition_map
 
     def end_state_index(self):
         if len(self.__sequence) == 0: return -1
         return self.__sequence[-1].state_index
 
     def append_state(self, State, TransitionCharacterToNextState=None):
+        """Append 'State' to path. If 'TransitionCharacterToNextState' is
+        None, then the state is considered a terminal state. Terminal states
+        are not themselves implemented inside a PathWalkerState. Thus, their
+        entry and drop out information does not have to be absorbed.
+
+        Terminal states are indicated in the 'sequence' by a 'transition_char_to_next'
+        of 'None' (which corresponds well with the aforementioned.
+        """
 
         # The index of the state on the path determines the path iterator's offset
         offset = len(self.__sequence)
 
-        # Adapt the entry's action_db: include the entries of the new state
-        self.entry.action_db_update(State.entry, offset)
-
-        # Adapt information about entry and drop-out actions
-        self.drop_out.update_from_state(State)
-
         # Add the state on the sequence of state along the path
         self.__sequence.append(CharacterPathElement(State.index, 
                                                     TransitionCharacterToNextState))
+
+        if TransitionCharacterToNextState is not None:
+            # Adapt the entry's action_db: include the entries of the new state
+            self.entry.action_db_update(State.entry, offset)
+
+            # Adapt information about entry and drop-out actions
+            self.drop_out.update_from_state(State)
+
 
     def get_uniform_entry_command_list_along_path(self):
         """When a state is entered (possibly) some commands are executed, for
@@ -145,8 +158,8 @@ class CharacterPath(object):
 
         prev_state_index = self.__sequence[0].state_index
         prototype        = None
-        for state_index, char in self.__sequence[1:-1]:
-            action = self.entry.action_db_get_command_list(state_index, prev_state_index)
+        for x in self.__sequence[1:-1]:
+            action = self.entry.action_db_get_command_list(x.state_index, prev_state_index)
             if prototype is not None:
                 if not prototype.is_equivalent(action.command_list):
                     return None
@@ -154,7 +167,7 @@ class CharacterPath(object):
                 prototype = action.command_list.clone()
                 prototype.delete_SetPathIterator_commands()
 
-            prev_state_index = state_index
+            prev_state_index = x.state_index
 
         # Since len(sequence) >= 2, then there is a 'prototype' at this point.
         return prototype
@@ -226,6 +239,25 @@ class CharacterPath(object):
 
         # Here: The transition maps match, but possibly require the use of a wildcard.
         return wildcard_target
+
+    def get_sibling(self, StateIndex, Other):
+        """The 'Other' path intersects at 'StateIndex' with this path (StateIndex
+        can only appear once in path, since recursion is not possible). This function
+        generates a sibling where the Other path is docked to this path at the
+        position of 'StateIndex'.
+        """
+        assert self.__wildcard_char is None   # As long as there is a wildcard, the 
+        assert Other.__wildcard_char is None  # transition map is not frozen.
+        #                                     # => No siblings can be determined.
+
+        for i, x in self.__sequence:
+            if x.state_index == StateIndex: break
+        else:
+            assert False, "StateIndex must be part of path."
+
+        new_sequence =  Other.sequence() \
+                      + [ CharacterPathElement(StateIndex, TransitionChar) ] \
+                      + self.__sequence[:i+1]
 
     def finalize(self):
         # Ensure that there is no wildcard in the transition map

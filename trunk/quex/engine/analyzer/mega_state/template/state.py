@@ -5,6 +5,7 @@ from   quex.engine.analyzer.mega_state.core         import MegaState, \
                                                            MegaState_Target, \
                                                            MegaState_Entry, \
                                                            MegaState_DropOut
+from   quex.engine.analyzer.mega_state.template.candidate  import TargetFactory
 import quex.engine.analyzer.transition_map          as transition_map_tools
 from   quex.engine.interval_handling                import Interval
 from   quex.blackboard                              import E_StateIndices
@@ -114,13 +115,13 @@ class TemplateState(MegaState):
        Notably, the derived class TemplateStateCandidate takes an important
        role in the construction of the TemplateState.
     """
-    def __init__(self, StateA, StateB, StateDB):
+    def __init__(self, CandidateState):
         # The 'index' remains None, as long as the TemplateState is not an 
         # accepted element of a state machine. This makes sense, in particular
         # for TemplateStateCandidates (derived from TemplateState). 
-        my_index                = index.get()
-        self.__state_a          = StateA
-        self.__state_b          = StateB
+        my_index                    = index.get()
+        self.__state_a              = Candidate.state_a()
+        self.__state_b              = Candidate.state_b()
         self.__state_index_sequence = StateA.state_index_sequence() + StateB.state_index_sequence()
         self.__state_index_to_state_key_db = dict((state_index, i) for i, state_index in enumerate(self.__state_index_sequence))
 
@@ -129,13 +130,10 @@ class TemplateState(MegaState):
         drop_out = MegaState_DropOut(StateA, StateB)
         MegaState.__init__(self, entry, drop_out, my_index)
 
-        self.transition_map, \
-        self.__target_db     = combine_maps(StateA, StateB)
+        self.__transition_map, \
+        self.__target_db     = combine_maps(self.__state_a, self.__state_b)
 
         L = len(self.__state_index_sequence)
-        for interval, target in self.transition_map:
-            if target.scheme is None: continue
-            assert len(target.scheme) == L
 
         # Compatible with AnalyzerState
         # (A template state can never mimik an init state)
@@ -146,8 +144,13 @@ class TemplateState(MegaState):
 
     def _DEBUG_combined_state_indices(self): return self.__state_a.index, self.__state_b.index
 
+    @property 
+    def transition_map(self): 
+        return self.__transition_map
+
     @property
-    def target_db(self):  return self.__target_db
+    def target_db(self):  
+        return self.__target_db
 
     def state_index_sequence(self):    
         return self.__state_index_sequence
@@ -285,42 +288,4 @@ def combine_maps(StateA, StateB):
     # Return the database of generated MegaState_Target objects
     mega_state_target_db = MegaState_Target.disconnect_object_db()
     return result, mega_state_target_db
-
-class TargetFactory:
-    """Produces MegaState_Target-s based on the combination of two MegaState_Target-s
-       which are associated each with a State (MegaState, or PseudoMegaState).
-    """
-    def __init__(self, StateA, StateB):
-        self.__length_a = len(StateA.implemented_state_index_list())
-        self.__length_b = len(StateB.implemented_state_index_list())
-
-    def get(self, TA, TB):
-        assert isinstance(TA, MegaState_Target) 
-        assert isinstance(TB, MegaState_Target) 
-
-        if TA.drop_out_f:
-            if TB.drop_out_f:
-                return TA
-            TA_scheme = (E_StateIndices.DROP_OUT,) * self.__length_a
-
-        elif TA.target_state_index is not None:
-            if TB.target_state_index is not None and TA.target_state_index == TB.target_state_index:
-                return TA
-            TA_scheme = (TA.target_state_index,) * self.__length_a
-
-        else:
-            TA_scheme = TA.scheme
-
-        if TB.drop_out_f:
-            # TA was not drop-out, otherwise we would have returned earlier
-            TB_scheme = (E_StateIndices.DROP_OUT,) * self.__length_b
-
-        elif TB.target_state_index is not None:
-            # TA was not the same door, otherwise we would have returned earlier
-            TB_scheme = (TB.target_state_index,) * self.__length_b
-
-        else:
-            TB_scheme = TB.scheme
-
-        return MegaState_Target.create(TA_scheme + TB_scheme)
 

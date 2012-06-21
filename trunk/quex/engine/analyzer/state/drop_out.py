@@ -20,11 +20,11 @@ class DropOut(object):
                 }
 
        The first sub-task is described by the member '.acceptance_checker' which is a list
-       of objects of class 'DropOut_AcceptanceCheckerElement'. An empty list means that
+       of objects of class 'AcceptanceCheckerElement'. An empty list means that
        there is no check and the acceptance has to be restored from 'last_acceptance'.
        
        The second sub-task is described by member '.terminal_router' which is a list of 
-       objects of class 'DropOut_TerminalRouterElement'.
+       objects of class 'TerminalRouterElement'.
 
        The exact content of both lists is determined by analysis of the acceptance
        trances.
@@ -51,11 +51,11 @@ class DropOut(object):
 
     def accept(self, PreContextID, PatternID):
         self.acceptance_checker.append(
-             DropOut_AcceptanceCheckerElement(PreContextID, PatternID))
+             AcceptanceCheckerElement(PreContextID, PatternID))
 
     def route_to_terminal(self, PatternID, TransitionNSincePositioning):
         self.terminal_router.append(
-             DropOut_TerminalRouterElement(PatternID, TransitionNSincePositioning))
+             TerminalRouterElement(PatternID, TransitionNSincePositioning))
 
     def __hash__(self):
         return hash(len(self.acceptance_checker) * 10 + len(self.terminal_router))
@@ -64,12 +64,8 @@ class DropOut(object):
         assert False, "Use __eq__()"
 
     def __eq__(self, Other):
-        if   len(self.acceptance_checker) != len(Other.acceptance_checker): return False
-        elif len(self.terminal_router)    != len(Other.terminal_router):    return False
-        for dummy, dummy in ifilter(lambda x: not x[0].is_equal(x[1]), zip(self.acceptance_checker, Other.acceptance_checker)):
-            return False
-        for dummy, dummy in ifilter(lambda x: not x[0].is_equal(x[1]), zip(self.terminal_router, Other.terminal_router)):
-            return False
+        if   self.acceptance_checker != Other.acceptance_checker: return False
+        elif self.terminal_router    != Other.terminal_router:    return False
         return True
 
     def is_equal(self, Other):
@@ -85,7 +81,7 @@ class DropOut(object):
            then the drop-out action can be trivialized.
 
            RETURNS: None                          -- if the drop out is not trivial
-                    DropOut_TerminalRouterElement -- if the drop-out is trivial
+                    TerminalRouterElement -- if the drop-out is trivial
         """
         if E_AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK in imap(lambda x: x.acceptance_id, self.terminal_router):
             assert len(self.acceptance_checker) == 1
@@ -155,7 +151,38 @@ class DropOut(object):
 
         return "".join(txt)
 
-class DropOut_AcceptanceCheckerElement(object):
+class DropOutBackward(DropOut):
+    def __init__(self):
+        DropOut.__init__(self)
+
+        self.acceptance_checker.append(AcceptanceCheckerElement(E_PreContextIDs.NONE, 
+                                                                E_AcceptanceIDs.VOID))
+        self.terminal_router.append(TerminalRouterElement(E_AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK, 
+                                                          E_TransitionN.IRRELEVANT))
+    def finish(self, PositionRegisterMap):
+        pass
+
+class DropOutBackwardInputPositionDetection(object):
+    __slots__ = ("__reachable_f")
+    def __init__(self, AcceptanceF):
+        """A non-acceptance drop-out can never be reached, because we walk a 
+           path backward, that we walked forward before.
+        """
+        self.__reachable_f = AcceptanceF
+
+    def finish(self, PositionRegisterMap):
+        pass
+
+    @property
+    def reachable_f(self):         return self.__reachable_f
+
+    def __hash__(self):            return self.__reachable_f
+    def __eq__(self, Other):       return self.__reachable_f == Other.__reachable_f
+    def __repr__(self):
+        if not self.__reachable_f: return "<unreachable>"
+        else:                      return "<backward input position detected>"
+
+class AcceptanceCheckerElement(object):
     """Objects of this class shall describe a check sequence such as
 
             if     ( pre_condition_5_f ) last_acceptance = 34;
@@ -192,8 +219,7 @@ class DropOut_AcceptanceCheckerElement(object):
         self.pre_context_id = PreContextID
         self.acceptance_id  = AcceptanceID
 
-    def is_equal(self, Other):
-        """Explictly avoid default usage of '__eq__'"""
+    def __eq__(self, Other):
         return     self.pre_context_id == Other.pre_context_id \
                and self.acceptance_id  == Other.acceptance_id
 
@@ -203,7 +229,7 @@ class DropOut_AcceptanceCheckerElement(object):
                                         repr_acceptance_id(self.acceptance_id)))
         return "".join(txt)
 
-class DropOut_TerminalRouterElement(object):
+class TerminalRouterElement(object):
     """Objects of this class shall be elements to build a router to the terminal
        based on the setting 'last_acceptance', i.e.
 
@@ -260,8 +286,7 @@ class DropOut_TerminalRouterElement(object):
         self.positioning       = TransitionNSincePositioning
         self.position_register = AcceptanceID                 # May later be adapted.
 
-    def is_equal(self, Other):
-        """Explictly avoid default usage of '__eq__'"""
+    def __eq__(self, Other):
         return     self.acceptance_id     == Other.acceptance_id   \
                and self.positioning       == Other.positioning     \
                and self.position_register == Other.position_register
@@ -278,35 +303,3 @@ class DropOut_TerminalRouterElement(object):
             return "case %s: goto %s;" % (repr_acceptance_id(self.acceptance_id, PatternStrF=False),
                                           repr_acceptance_id(self.acceptance_id))
         
-class DropOutBackward(DropOut):
-    def __init__(self):
-        DropOut.__init__(self)
-
-        self.acceptance_checker.append(DropOut_AcceptanceCheckerElement(E_PreContextIDs.NONE, 
-                                                                        E_AcceptanceIDs.VOID))
-        self.terminal_router.append(DropOut_TerminalRouterElement(E_AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK, 
-                                                                  E_TransitionN.IRRELEVANT))
-    def finish(self, PositionRegisterMap):
-        pass
-
-class DropOutBackwardInputPositionDetection(object):
-    __slots__ = ("__reachable_f")
-    def __init__(self, AcceptanceF):
-        """A non-acceptance drop-out can never be reached, because we walk a 
-           path backward, that we walked forward before.
-        """
-        self.__reachable_f = AcceptanceF
-
-    def finish(self, PositionRegisterMap):
-        pass
-
-    @property
-    def reachable_f(self):         return self.__reachable_f
-
-    def __hash__(self):            return self.__reachable_f
-    def __eq__(self, Other):       return self.__reachable_f == Other.__reachable_f
-    def __repr__(self):
-        if not self.__reachable_f: return "<unreachable>"
-        else:                      return "<backward input position detected>"
-
-

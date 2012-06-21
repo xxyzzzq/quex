@@ -2,14 +2,13 @@
 """
 (C) 2010-2011 Frank-Rene Schäfer
 """
-from quex.engine.analyzer.state.drop_out import DropOut, \
-                                                DropOutBackward, \
-                                                DropOutBackwardInputPositionDetection
-from quex.engine.analyzer.mega_state.template.state import TemplateState
-from quex.blackboard import E_AcceptanceIDs, \
-                            E_TransitionN
+import quex.engine.analyzer.transition_map as     transition_map_tools
+from   quex.engine.analyzer.state.drop_out import DropOut, \
+                                                  DropOutBackward, \
+                                                  DropOutBackwardInputPositionDetection
+from   quex.blackboard import E_AcceptanceIDs, E_TransitionN
 
-class TemplateStateCandidate(TemplateState):
+class TemplateStateCandidate(object):
     """A TemplateStateCandidate determines a tentative template combination 
        of two states (where each one of them may already be a TemplateState).
        It sets up a TemplateState and determines the 'gain of combination'.
@@ -18,23 +17,29 @@ class TemplateStateCandidate(TemplateState):
        measure. The member '.total()' determines a scalar value by means
        of a heuristics.
     """
+    __slots__ = ("__gain", "__state_a", "__state_b")
+
     def __init__(self, StateA, StateB, StateDB):
         TemplateState.__init__(self, StateA, StateB, StateDB)
 
-        entry_gain          = _compute_entry_gain(self.entry, StateA.entry, StateB.entry)
-        drop_out_gain       = _compute_drop_out_gain(self.drop_out, 
-                                                     StateA.drop_out, StateA.index, 
-                                                     StateB.drop_out, StateB.index)
+        involved_state_n    = len(StateA.implemented_state_index_list()) + len(StateB.implemented_state_index_list())
 
-        target_scheme_list  = [ target.scheme for target in self.target_db.itervalues() if target.scheme is not None ]
-        transition_map_gain = _transition_map_gain(self.transition_map, target_scheme_list,
+        entry_gain          = _compute_entry_gain(StateA.entry, StateB.entry)
+        drop_out_gain       = _compute_drop_out_gain(StateA.drop_out, StateA.index, 
+                                                     StateB.drop_out, StateB.index)
+        transition_map_gain = _transition_map_gain(involved_state_n,
                                                    StateA.transition_map, StateB.transition_map)
 
         self.__gain         = (entry_gain + drop_out_gain + transition_map_gain).total()
+        self.__state_a      = StateA
+        self.__state_b      = StateB
 
     @property 
-    def gain(self):
-        return self.__gain
+    def gain(self):    return self.__gain
+    @property
+    def state_a(self): return self.__state_a
+    @property
+    def state_b(self): return self.__state_b
 
 class Cost:
     """We start of with a multi-attribute cost, that is then translated into a
@@ -72,18 +77,21 @@ class Cost:
         result += self.__jump_n       * 8  # Bytes (= 4 bytes command + 4 bytes address)
         return result
                
-def _transition_map_gain(CombinedTM, TargetSchemeList, TM_A, TM_B):
+def _transition_map_gain(CombinedTM, InvolvedStateN, TM_A, TM_B):
     """Estimate the gain that can be achieved by combining two transition
        maps into a signle one.
     
     """
     a_cost        = _transition_cost(TM_A)
     b_cost        = _transition_cost(TM_B)
-    combined_cost = _transition_cost(CombinedTM, TargetSchemeList)
+    combined_cost = _transition_cost_combined(TM_A, TM_B, InvolvedStateN)
 
     return (a_cost + b_cost) - combined_cost
 
-def _compute_entry_gain(Combined, A, B):
+def _compute_entry_gain(A, B):
+    """Computes 'gain' with respect to entry actions, if two states are
+    combined.
+    """
     # Every different command list requires a separate door.
     # => Entry cost is proportional to number of unique command lists.
     # => Gain =   number of unique command lists of A an B each
@@ -96,55 +104,19 @@ def _compute_entry_gain(Combined, A, B):
     Combined_cl_set.update(B_unique_cl_set)
     return Cost(AssignmentN = A_size + B_size - len(Combined_cl_set))
     
-def OLD_compute_entry_gain(Combined, A, B):
-    """Computes cost of each entry by recursively walking through the
-       door tree--summing up the cost of each command list in the nodes.
+def _compute_drop_out_gain(A, B):
+    """Computes 'gain' with respect to drop-out actions, if two states are
+    combined.
     """
-    def __dive(Node):
-        assert Node is not None, "Entry has not been 'finish()-ed'"
-        result  = sum(__dive(child) for child in Node.child_list)
-        result += Node.common_command_list.cost()
-        return result
+    a_cost_db = dict((drop_out, __cost(drop_out)) for drop_out in A.itervalues())
+    b_cost_db = dict((drop_out, __cost(drop_out)) for drop_out in A.itervalues())
 
-    # Cost of each object if separated in two states
-    a_cost        = __dive(A.door_tree_root)
-    b_cost        = __dive(B.door_tree_root)
-    # Cost if it is combined
-    combined_cost = __dive(Combined.door_tree_root)
+    combined_cost_db = a_cost_db
+    combined_cost_db.update(b_cost_db)
 
-    return Cost(AssignmentN = (a_cost + b_cost) - combined_cost)
-
-def get_iterable(X, StateIndexList): 
-    if hasattr(X, "iteritems"): return X.iteritems()
-    else:                       return [(X, StateIndexList)]
-
-def _compute_drop_out_gain(Combined, A, StateA_Index, B, StateB_Index):
-    """Computes the gain of combining two objects 'A' and 'B' into the combined
-       object 'Combined'. Objects can be state Entry-s or state DropOut-s. By
-       means of the function 'get_iterable' a list of tuples is obtained as 
-       below:
-
-             [ ...
-               (X, [state_index_sequence])
-               ...
-             ]
-
-       The 'X' contains an unique object and 'state_index_sequence' contains the
-       list of indices from the original state machine that require this
-       particular object (be it 'DropOut' or 'Entry'). For original states this
-       list is, of course, simply [ (Object, [state_index]) ]. But, by this
-       adaption it is possible to treat TemplateState-s and AnalyzerState-s in
-       a unified manner.
-    """
-    def __cost(Iterable):
-        return sum(map(lambda element: _drop_out_cost(element[0]), Iterable), Cost())
-
-    # Cost of each object if separated in two states
-    a_cost        = __cost(get_iterable(A, StateA_Index))
-    b_cost        = __cost(get_iterable(B, StateB_Index))
-    # Cost if it is combined
-    combined_cost = __cost(Combined.iteritems())
-
+    a_cost        = sum(cost for cost in a_cost_db.itervalues())
+    b_cost        = sum(cost for cost in b_cost_db.itervalues())
+    combined_cost = sum(cost for cost in combined_cost_db.itervalues())
     return (a_cost + b_cost) - combined_cost
 
 def _drop_out_cost(X):
@@ -193,6 +165,30 @@ def _drop_out_cost(X):
     else:
         assert False
 
+def _transition_cost_combined(TM_A, TM_B, InvolvedStateN):
+    """Computes the storage consumption of a transition map.
+    """
+    interval_n              = 0
+    target_scheme_element_n = 0
+    scheme_set              = set()
+    cost                    = 0
+    for begin, end, a_target, b_target in transition_map_tools.zipped_iterable(TM_A, TM_B):
+        interval_n += 1
+        cost       += TargetFactory.combination_cost(a_target, b_target, scheme_set)
+
+    # '1' cost means: a target scheme has been represented
+    # => 'real cost' = cost * InvolvedStateN
+    cost *= InvolvedStateN
+
+    border_n   = interval_n - 1
+    # 
+    jump_n     = interval_n * 2  # because: if 'jump', else 'jump'
+    cmp_n      = border_n
+
+    target_scheme_element_n
+    byte_n                  = target_scheme_element_n * 4
+    return Cost(ComparisonN=cmp_n, JumpN=jump_n, ByteN=byte_n)
+
 def _transition_cost(TM, TargetSchemeList=None):
     """Computes the storage consumption of a transition map.
     """
@@ -208,5 +204,82 @@ def _transition_cost(TM, TargetSchemeList=None):
     else:
         byte_n = 0
     return Cost(ComparisonN=cmp_n, JumpN=jump_n, ByteN=byte_n)
+
+class TargetFactory:
+    """Produces MegaState_Target-s based on the combination of two MegaState_Target-s
+       which are associated each with a State (MegaState, or PseudoMegaState).
+    """
+    def __init__(self, StateA, StateB):
+        self.__length_a = len(StateA.implemented_state_index_list())
+        self.__length_b = len(StateB.implemented_state_index_list())
+        self.__drop_out_scheme_a = (E_StateIndices.DROP_OUT,) * self.__length_a
+        self.__drop_out_scheme_b = (E_StateIndices.DROP_OUT,) * self.__length_b
+
+    def get(self, TA, TB):
+        assert isinstance(TA, MegaState_Target) 
+        assert isinstance(TB, MegaState_Target) 
+
+        if TA.drop_out_f:
+            if TB.drop_out_f:
+                return TA
+            TA_scheme = self.__drop_out_scheme_a
+
+        elif TA.target_state_index is not None:
+            if TB.target_state_index is not None and TA.target_state_index == TB.target_state_index:
+                return TA
+            TA_scheme = (TA.target_state_index,) * self.__length_a
+
+        else:
+            TA_scheme = TA.scheme
+
+        if TB.drop_out_f:
+            # TA was not drop-out, otherwise we would have returned earlier
+            TB_scheme = self.__drop_out_scheme_b
+
+        elif TB.target_state_index is not None:
+            # TA was not the same door, otherwise we would have returned earlier
+            TB_scheme = (TB.target_state_index,) * self.__length_b
+
+        else:
+            TB_scheme = TB.scheme
+
+        return MegaState_Target.create(TA_scheme + TB_scheme)
+
+    @staticmethod
+    def combination_cost(TA, TB, scheme_set):
+        assert isinstance(TA, MegaState_Target) 
+        assert isinstance(TB, MegaState_Target) 
+
+        if TA.drop_out_f:
+            if TB.drop_out_f:
+                return 0
+            TA_scheme_r = E_StateIndices.DROP_OUT # We only need a 'key'
+
+        elif TA.target_state_index is not None:
+            if TB.target_state_index is not None and TA.target_state_index == TB.target_state_index:
+                return 0
+            TA_scheme_r = TA.target_state_index # We only need a 'key' 
+
+        else:
+            TA_scheme_r = TA.scheme
+
+        if TB.drop_out_f:
+            # TA was not drop-out, otherwise we would have returned earlier
+            TB_scheme_r = E_StateIndices.DROP_OUT # We only need a 'key'
+
+        elif TB.target_state_index is not None:
+            # TA was not the same door, otherwise we would have returned earlier
+            TB_scheme_r = TB.target_state_index # We only need a 'key' 
+
+        else:
+            TB_scheme_r = TB.scheme
+
+        scheme_representive = (TA_scheme_r, TB_scheme_r)
+        if scheme_representive in scheme_set:
+            return 0
+        else:
+            scheme_set.add(scheme_representive)
+
+        return 1
 
 

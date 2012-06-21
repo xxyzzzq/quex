@@ -2,7 +2,7 @@ from   quex.engine.interval_handling import Interval
 from   quex.blackboard import E_StateIndices
 import sys
 from   copy import deepcopy
-from   itertools import imap
+from   itertools import imap, izip
 from   operator  import itemgetter
 
 def zipped_iterable(TransitionMapA, TransitionMapB):
@@ -203,6 +203,13 @@ def smoothen(transition_map, Character):
         del transition_map[i]
     else:
         assert False
+
+def is_equal(One, Other):
+    if len(One) != len(Other): return False
+    for x, y in izip(One, Other):
+        if   x[0] != y[0]: return False  # Interval
+        elif x[1] != y[1]: return False  # Target
+    return True
 
 
 def get_target(transition_map, Character):
