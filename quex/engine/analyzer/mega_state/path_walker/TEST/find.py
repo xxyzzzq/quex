@@ -12,7 +12,7 @@ from   quex.blackboard                         import E_EngineTypes, E_Compressi
 
 if "--hwut-info" in sys.argv:
     print "Paths: collect;"
-    print "CHOICES: 1, 2, 3, 4, 5, 6;" #, extreme;"
+    print "CHOICES: 1, 2, 3, 4, 5, 6;"#, extreme;"
     sys.exit(0)
 
 def construct_path(sm, StartStateIdx, String, Skeleton):

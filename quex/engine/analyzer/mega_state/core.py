@@ -473,11 +473,16 @@ class PseudoMegaState(MegaState):
     def __init__(self, Represented_AnalyzerState):
         assert not isinstance(Represented_AnalyzerState, MegaState)
         self.__state = Represented_AnalyzerState
-        MegaState.__init__(self, self.__state.entry, self.__state.drop_out, Represented_AnalyzerState.index)
+
+        pseudo_mega_state_drop_out = MegaState_DropOut(Represented_AnalyzerState)
+
+        MegaState.__init__(self, self.__state.entry, 
+                           pseudo_mega_state_drop_out,
+                           Represented_AnalyzerState.index)
 
         self.__state_index_sequence = [ Represented_AnalyzerState.index ]
 
-        self.transition_map     = self.__transition_map_construct()
+        self.transition_map = self.__transition_map_construct()
 
     def __transition_map_construct(self):
         """Build a transition map that triggers to MegaState_Target-s rather

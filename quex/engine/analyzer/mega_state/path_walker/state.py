@@ -1,12 +1,13 @@
+import quex.engine.analyzer.transition_map      as transition_map_tools
 from   quex.engine.analyzer.state.entry_action  import SetPathIterator, DoorID
 from   quex.engine.analyzer.mega_state.core     import MegaState, MegaState_Target
 from   quex.engine.state_machine.transition_map import TransitionMap
 from   quex.blackboard                          import E_Compression
 
 class PathWalkerState(MegaState):
-    """A path walker state is a state that can walk along one or more paths 
-       with the same 'skeleton', i.e. remaining transition map. Objects of
-       this class are the basis for code generation.
+    """A path walker state is a state that can walk along one or more paths
+    with the same remaining transition map. Objects of this class are the basis
+    for code generation.
     """
     def __init__(self, FirstPath, TheAnalyzer, CompressionType):
 
@@ -15,47 +16,45 @@ class PathWalkerState(MegaState):
         drop_out = FirstPath.drop_out   # map: drop_out --> state_index_list
         MegaState.__init__(self, entry, drop_out, FirstPath.index)
 
-        self.__skeleton       = FirstPath.skeleton() # map: target_index --> trigger set
-        # The skeleton does not contain wild cards anymore, so we can already transform it
-        # into a transition map:                     # list: [ ... (interval, target) ... ]
-        self.transition_map   = self.__determine_transition_map(self.__skeleton) 
+        # original_transition_map: interval --> DoorID
+        # transition_map:          interval --> MegaState_Target
+        self.__original_transition_map = FirstPath.transition_map
+        self.transition_map = PathWalkerState.prepare_transition_map(self.__original_transition_map)
 
         self.__uniformity_required_f                 = (CompressionType == E_Compression.PATH_UNIFORM)
         self.__uniform_entry_command_list_along_path = FirstPath.get_uniform_entry_command_list_along_path()
 
         self.__state_index_sequence = None # Computed on demand
 
-    def __determine_transition_map(self, Skeleton):
-        """Transforms a 'skeleton', i.e. a map:
+    @staticmethod
+    def prepare_transition_map(TM):
+        """Character Path objects contain transition maps of the form
 
-                target-door  -->  NumberSet that triggers to it
+                list of (interval, DoorID)
 
-           into a transition map, i.e. a list of tuples
+        which has now to be transformed into the form
 
-                (interval, MegaState_Target)
+                list of (interval, MegaState_Target)
 
-           which represents the same mapping in a 'linear' manner.
+        This is the form that code generation requires for MegaState-s.
         """
         def adapt(Target):
             if isinstance(Target, DoorID): return Target.state_index
             return Target
         return [ (interval, MegaState_Target.create(adapt(target))) \
-                 for interval, target in TransitionMap(Skeleton).get_trigger_map() ]
+                 for interval, target in TM ]
 
     def accept(self, Path, StateDB):
-        """Accepts the given Path to be walked, if the skeleton matches.
-           If additionally uniformity is required, then only states with
-           same drop_out and entry are accepted.
-        """
-        def __transition_maps_equal(A, B):
-            if set(A.iterkeys()) != set(B.iterkeys()): return False
-            for key, trigger_set in A.iteritems():
-                if not trigger_set.is_equal(B[key]): return False
-            return True
+        """Accepts the given Path to be walked, if the remaining transition_maps
+        match. If additionally uniformity is required, then only states with
+        same drop_out and entry are accepted.
 
-        # (1) Compare the transition maps, i.e. the 'skeletons'.
-        #     If they do not fit, refuse immediately.
-        if not __transition_maps_equal(self.__skeleton, Path.skeleton()): 
+        RETURNS: False -- Path does not fit the PathWalkerState.
+                 True  -- Path can be walked by PathWalkerState and 
+                          has been accepted.
+        """
+        # (1) Compare the transition maps.
+        if not transition_map_tools.is_equal(self.__original_transition_map, Path.transition_map): 
             return False
 
         # (1b) If uniformity is required and not maintained, then refuse.
@@ -77,7 +76,7 @@ class PathWalkerState(MegaState):
             assert self.__uniform_entry_command_list_along_path is not None
             # If uniformity is a required, more than one drop-out scheme should never
             # been accepted. 
-            assert len(Path.drop_out) == 1 
+            assert len(Path.drop_out) == 1, repr(Path.drop_out)
 
             # (*) Check Entry Uniformity
             if   not uniform_entry_f:            return False
@@ -135,7 +134,7 @@ class PathWalkerState(MegaState):
         for path in self.__path_list:
             # The end state of each path is not implemented
             # (It may be part of another path, though)
-            result.extend(map(lambda x: x[0], path[:-1]))
+            result.extend(x.state_index for x in path[:-1])
         return result
 
     def map_state_index_to_state_key(self, StateIndex):
@@ -153,7 +152,7 @@ class PathWalkerState(MegaState):
         if self.__state_index_sequence is None:
             result = [] # **MUST** be a list, because we identify 'state_keys' with it.
             for path in self.__path_list:
-                result.extend(map(lambda x: x[0], path))
+                result.extend(x.state_index for x in path)
             self.__state_index_sequence = result
         return self.__state_index_sequence
 
@@ -192,8 +191,8 @@ class PathWalkerState(MegaState):
         """
         assert len(Path) >= 2
 
-        before_terminal_state_index = Path[-2][0]
-        terminal_state_index        = Path[-1][0]
+        before_terminal_state_index = Path[-2].state_index
+        terminal_state_index        = Path[-1].state_index
         # Determine DoorID by transition
         return StateDB[terminal_state_index].entry.get_door_id(terminal_state_index, 
                                                                before_terminal_state_index)
@@ -230,8 +229,8 @@ class PathWalkerState(MegaState):
            somewhere else, they still remain in place.
         """
         for sequence in self.__path_list:
-            from_index = sequence[0][0]
-            for state_index, dummy in sequence[1:-1]:
-                self.entry.action_db_delete_transition(state_index, from_index)
-                from_index = state_index
+            from_index = sequence[0].state_index
+            for x in sequence[1:-1]:
+                self.entry.action_db_delete_transition(x.state_index, from_index)
+                from_index = x.state_index
 

@@ -185,14 +185,28 @@ def __find(analyzer, StateIndex, CompressionType, AvailableStateIndexSet):
 def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet, 
                         FromState, FromTransitionMap, TransitionChar, TargetIndex):
     class PathFinder(TreeWalker):
-        """Determines PathTrace objects for each state. The heart of this function is
-           the call to 'PathTrace.next_step()' which incrementally develops the 
-           acceptance and position storage history of a path.
+        """Recursive search for single character transition paths inside the 
+        given state machine. Assume, that a first single character transition
+        has been found. As a result, a CharacterPath object must have been
+        created which contains a 'wild card', i.e. a character that is left
+        to be chosen freely, because it is covered by the first transition
+        character.
 
-           Recursion Terminal: When state has no target state that has not yet been
-                               handled in the 'path' in the same manner. That means,
-                               that if a state appears again in the path, its trace
-                               must be different or the recursion terminates.
+        RECURSION STEP: 
+        
+                -- Add current path add the end of the given path.
+                -- If required: Plug the wildcard.
+
+        BRANCH: Branch to all follow-up states where:
+
+                -- There is a single character transition to them.
+                -- The state itself is not part of the path yet.
+                   recursions cannot be modelled by a PathWalkerState.
+                -- The transition map fits the transition map of the 
+                   given path.
+
+        TERMINAL: There are no further single character transitions which
+                  meet the aforementioned criteria.
         """
         def __init__(self, TheAnalyzer, CompressionType, AvailableStateIndexSet):
             self.__depth       = 0
@@ -200,11 +214,8 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
             self.available_set = AvailableStateIndexSet
             self.uniform_f     = CompressionType == E_Compression.PATH_UNIFORM
             self.result        = []
+            self.info_db       = defaultdict(list)
             TreeWalker.__init__(self)
-
-        def __check_uniformity(ThePath, TargetState):
-            return     ThePath.drop_out.is_uniform_with(TargetState.drop_out) \
-                   and ThePath.check_uniform_entry_to_state(TargetState)
 
         def on_enter(self, Args):
             path   = Args[0]
@@ -214,7 +225,8 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
             transition_map = transition_map_tools.relate_to_door_ids(State.transition_map, 
                                                                      self.analyzer, 
                                                                      State.index)
-            # List of follow-states to consider. ______________________________
+
+            # BRANCH __________________________________________________________
             sub_list = []
             for target_index, trigger_set in State.map_target_index_to_character_set.iteritems():
                 if target_index not in self.available_set: return
@@ -233,8 +245,9 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
                 if plug is None: continue # No match possible 
 
                 # If required, can uniformity be maintained?
-                if self.uniform_f and not self.__check_uniformity(new_path, target_state): continue
+                if self.uniform_f and not PathFinder.check_uniformity(path, target_state): continue
 
+                # RECURSION STEP ______________________________________________
                 # May be, we do not have to clone the transition map if plug == -1
                 new_path = path.clone() 
 
@@ -244,15 +257,12 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
 
                 sub_list.append((new_path, target_state))
 
-            # Termination Condition: 'sub_list = empty' _______________________
-            #
-            # There are no further transitions to be considered. This is 
-            # includes, of course, the case where a state is a dead-end.
+            # TERMINATION _____________________________________________________
             if len(sub_list) == 0:
                 if len(path) > 1: 
-                    path.append_state(State) # transition_to_next_character = None
+                    path.append_state(State, None) # trans. char = None => do not consider entry_db
                     path.finalize()
-                    self.result.append(path)
+                    self.add_result(path)
                 return
 
             return sub_list
@@ -260,17 +270,57 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
         def on_finished(self, Args):
             self.__depth -= 1
 
+        def add_result(self, ThePath):
+            self.result.append(ThePath)
+            #for x in ThePath.sequence()[:-1]:
+            #    self.info_db[x.state_index].append(ThePath) 
+
+        @staticmethod
+        def check_uniformity(ThePath, TargetState):
+            assert len(ThePath.drop_out) == 1
+            drop_out_uniform_f = ThePath.drop_out.is_uniform_with(TargetState.drop_out) 
+            entry_uniform_f    = ThePath.check_uniform_entry_to_state(TargetState)
+            return drop_out_uniform_f and entry_uniform_f
+
+        def consider_other_paths_through_state(self, StateIndex, ThePath):
+            """If 'ThePath' is completely a sub-path of another, than there is no
+            need to even consider it. If the path has the same transition map (without
+            wildcard) as another path, then concatinations may be made without further
+            diving deeper into the state machine's graph.
+
+            RETURNS: 'True' sub-graph has to be considered.
+                     'False' sub-graph does not have to be considered.
+            """
+            if   ThePath.has_wildcard():      return True
+            elif StateIndex not in self.info_db: return True
+
+            done_f = False
+            for path in self.info_db[StateIndex]:
+                if not transition_map_tools.is_equal(path.transition_map, ThePath.transition_map):
+                    continue
+                    
+                # Does 'path' cover 'ThePath' completely?
+                if path.is_superpath(ThePath): 
+                    return False
+
+                self.add_result(path.get_sibling(ThePath))
+
+                # There is a path that already contains 'StateIndex' and its
+                # transition map is also the same, so diving deeper in the
+                # state machines graph is not necessary.
+                done_f = True
+
+            return not done_f
+
     tm_clone     = transition_map_tools.clone(FromTransitionMap)
     target_state = analyzer.state_db[TargetIndex]
     path         = CharacterPath(FromState, TransitionChar, tm_clone)
 
     path_finder = PathFinder(analyzer, CompressionType, AvailableStateIndexSet)
-    # FromState         = Args[0]
-    # FromTransitionMap = Args[1]  # FromState's adapted transition map
-    # FromToCharacter   = Args[2]
-    # Plug              = Args[3]
-    # ToState           = Args[4]
-    # ThePath           = Args[5]
+
+    if path_finder.uniform_f and not PathFinder.check_uniformity(path, target_state): 
+        return []
+
     path_finder.do((path, target_state))
     return path_finder.result
 
@@ -291,20 +341,16 @@ def select(path_list):
                 [1] list of indices of paths which would be no longer 
                     available, because the winning path intersects.
         """
-        ##print "#get_best_path_________________________"
         opportunity_db = get_opportunity_db(AvailablePathList)
         max_gain = None
         winner                       = None
         winner_forbidden_path_id_set = None
         for path in AvailablePathList:
-            ##print "# path:", len(path.state_index_set), path.state_index_set 
-            ##print "# max:", max_gain
             if max_gain is not None and len(path.state_index_set) < max_gain: continue # No chance
 
             gain, forbidden_path_id_set = compute_gain(path, opportunity_db, 
                                                        (p for p in AvailablePathList if p.index != path.index))
 
-            ##print "#gain:", gain
             if max_gain is None:
                 winner                       = path
                 winner_forbidden_path_id_set = forbidden_path_id_set
@@ -380,9 +426,6 @@ def select(path_list):
         return gain - cost, forbidden_path_id_set
 
     work_db = dict((path.index, path) for path in path_list)
-
-    ##for path in path_list:
-    ##    print "#ps:", len(path.state_index_set), path.state_index_set
 
     result = []
     while len(work_db):

@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 import generator_test
 
-choice = generator_test.hwut_input("Simple: Keywords 'for', 'forest', 'forester', and 'formidable'", "SAME;")
+choice = generator_test.hwut_input("Simple: Keywords 'for', 'forest', 'forester', and 'formidable'", "SAME;", DeleteChoices=("Cpp-PathUniform", "Cpp-PathUniform-CG"))
 
 pattern_action_pair_list = [
     # pre-conditioned expressions need to preceed same (non-preoconditioned) expressions,
