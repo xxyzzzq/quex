@@ -5,7 +5,6 @@ from   quex.engine.analyzer.mega_state.path_walker.path  import CharacterPath
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.state.entry_action           import TransitionID, TransitionAction
 from   quex.blackboard                                   import E_Compression
-from   copy        import deepcopy
 from   collections import defaultdict
 """
 PATH COMPRESSION: __________________________________________________________

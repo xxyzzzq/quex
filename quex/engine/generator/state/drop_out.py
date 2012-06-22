@@ -44,7 +44,7 @@ def do(txt, TheState, TheAnalyzer, DefineLabelF=True, MentionStateIndexF=True):
 
     # (2) Separate: Pre-Context Check and Routing to Terminal
     # (2.1) Pre-Context Check
-    for i, element in enumerate(TheState.drop_out.acceptance_checker):
+    for i, element in enumerate(TheState.drop_out.get_acceptance_checker()):
         if     element.pre_context_id == E_PreContextIDs.NONE \
            and element.acceptance_id  == E_AcceptanceIDs.VOID: 
                break
@@ -74,7 +74,7 @@ def do(txt, TheState, TheAnalyzer, DefineLabelF=True, MentionStateIndexF=True):
     #                LanguageDB.GOTO_TERMINAL(E_AcceptanceIDs.VOID)))
     #else:
     case_list = []
-    for element in TheState.drop_out.terminal_router:
+    for element in TheState.drop_out.get_terminal_router():
         if element.positioning == E_TransitionN.VOID: register = element.position_register
         else:                                         register = None
         case_list.append((LanguageDB.ACCEPTANCE(element.acceptance_id), 

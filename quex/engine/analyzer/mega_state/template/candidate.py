@@ -3,10 +3,13 @@
 (C) 2010-2011 Frank-Rene Schäfer
 """
 import quex.engine.analyzer.transition_map as     transition_map_tools
+from   quex.engine.analyzer.mega_state.core import MegaState_Target
 from   quex.engine.analyzer.state.drop_out import DropOut, \
                                                   DropOutBackward, \
                                                   DropOutBackwardInputPositionDetection
-from   quex.blackboard import E_AcceptanceIDs, E_TransitionN
+from   quex.blackboard import E_AcceptanceIDs, E_TransitionN, E_StateIndices
+
+import sys
 
 class TemplateStateCandidate(object):
     """A TemplateStateCandidate determines a tentative template combination 
@@ -19,18 +22,13 @@ class TemplateStateCandidate(object):
     """
     __slots__ = ("__gain", "__state_a", "__state_b")
 
-    def __init__(self, StateA, StateB, StateDB):
-        TemplateState.__init__(self, StateA, StateB, StateDB)
-
-        involved_state_n    = len(StateA.implemented_state_index_list()) + len(StateB.implemented_state_index_list())
+    def __init__(self, StateA, StateB):
 
         entry_gain          = _compute_entry_gain(StateA.entry, StateB.entry)
-        drop_out_gain       = _compute_drop_out_gain(StateA.drop_out, StateA.index, 
-                                                     StateB.drop_out, StateB.index)
-        transition_map_gain = _transition_map_gain(involved_state_n,
-                                                   StateA.transition_map, StateB.transition_map)
+        drop_out_gain       = _compute_drop_out_gain(StateA.drop_out, StateB.drop_out)
+        transition_map_gain = _transition_map_gain(StateA, StateB)
 
-        self.__gain         = (entry_gain + drop_out_gain + transition_map_gain).total()
+        self.__gain         = entry_gain + drop_out_gain + transition_map_gain
         self.__state_a      = StateA
         self.__state_b      = StateB
 
@@ -77,16 +75,17 @@ class Cost:
         result += self.__jump_n       * 8  # Bytes (= 4 bytes command + 4 bytes address)
         return result
                
-def _transition_map_gain(CombinedTM, InvolvedStateN, TM_A, TM_B):
+def _transition_map_gain(StateA, StateB):
     """Estimate the gain that can be achieved by combining two transition
        maps into a signle one.
     
     """
-    a_cost        = _transition_cost(TM_A)
-    b_cost        = _transition_cost(TM_B)
-    combined_cost = _transition_cost_combined(TM_A, TM_B, InvolvedStateN)
 
-    return (a_cost + b_cost) - combined_cost
+    a_cost        = _transition_cost_single(StateA)
+    b_cost        = _transition_cost_single(StateB)
+    combined_cost = _transition_cost_combined(StateA, StateB)
+
+    return ((a_cost + b_cost) - combined_cost).total()
 
 def _compute_entry_gain(A, B):
     """Computes 'gain' with respect to entry actions, if two states are
@@ -102,22 +101,29 @@ def _compute_entry_gain(A, B):
     B_size = len(B_unique_cl_set)
     Combined_cl_set = A_unique_cl_set#
     Combined_cl_set.update(B_unique_cl_set)
-    return Cost(AssignmentN = A_size + B_size - len(Combined_cl_set))
+    return Cost(AssignmentN = A_size + B_size - len(Combined_cl_set)).total()
     
 def _compute_drop_out_gain(A, B):
     """Computes 'gain' with respect to drop-out actions, if two states are
     combined.
     """
-    a_cost_db = dict((drop_out, __cost(drop_out)) for drop_out in A.itervalues())
-    b_cost_db = dict((drop_out, __cost(drop_out)) for drop_out in A.itervalues())
+    a_cost_db = dict((drop_out, _drop_out_cost(drop_out)) for drop_out in A.iterkeys())
+    b_cost_db = dict((drop_out, _drop_out_cost(drop_out)) for drop_out in A.iterkeys())
 
     combined_cost_db = a_cost_db
     combined_cost_db.update(b_cost_db)
 
-    a_cost        = sum(cost for cost in a_cost_db.itervalues())
-    b_cost        = sum(cost for cost in b_cost_db.itervalues())
-    combined_cost = sum(cost for cost in combined_cost_db.itervalues())
-    return (a_cost + b_cost) - combined_cost
+    ab_sum = 0
+    for cost in a_cost_db.itervalues():
+        ab_sum += cost.total()
+    for cost in b_cost_db.itervalues():
+        ab_sum += cost.total()
+
+    c_sum = 0
+    for cost in combined_cost_db.itervalues():
+        c_sum += cost.total()
+
+    return ab_sum - c_sum
 
 def _drop_out_cost(X):
     if   isinstance(X, DropOut):
@@ -128,7 +134,7 @@ def _drop_out_cost(X):
         #        acceptance = Const;
         #     After:
         #        ...
-        La = len(filter(lambda x: x.acceptance_id != E_AcceptanceIDs.VOID, X.acceptance_checker))
+        La = len(filter(lambda x: x.acceptance_id != E_AcceptanceIDs.VOID, X.get_acceptance_checker()))
         assignment_n  = La
         goto_n        = La
         cmp_n         = La
@@ -141,10 +147,10 @@ def _drop_out_cost(X):
         #         goto TerminalYZ
         #     Next1:
         #         ...
-        Lt = len(X.terminal_router)
+        Lt = len(X.get_terminal_router())
         assignment_n += len(filter(lambda x:     x.positioning != E_TransitionN.VOID 
                                              and x.positioning != E_TransitionN.LEXEME_START_PLUS_ONE, 
-                            X.terminal_router))
+                            X.get_terminal_router()))
         cmp_n  += Lt
         goto_n += Lt  
 
@@ -163,47 +169,44 @@ def _drop_out_cost(X):
         return Cost(0, 0, 0)
 
     else:
-        assert False
+        assert False, X.__class__.__name__
 
-def _transition_cost_combined(TM_A, TM_B, InvolvedStateN):
+def __transition_cost(InvolvedStateN, IntervalN, SchemeN):
+    border_n = IntervalN - 1
+    jump_n   = IntervalN * 2  # because: if 'jump', else 'jump'
+    cmp_n    = border_n
+    byte_n   = SchemeN * InvolvedStateN * 4  # assume 4 bytes per entry in scheme
+    return Cost(ComparisonN=cmp_n, JumpN=jump_n, ByteN=byte_n)
+
+def _transition_cost_single(State):
     """Computes the storage consumption of a transition map.
     """
-    interval_n              = 0
-    target_scheme_element_n = 0
-    scheme_set              = set()
-    cost                    = 0
+    if hasattr(State, "target_scheme_n"): scheme_n = State.target_scheme_n
+    else:                                 scheme_n = 0
+
+    return __transition_cost(InvolvedStateN = len(State.implemented_state_index_list()), 
+                             IntervalN      = len(State.transition_map),
+                             SchemeN        = scheme_n)
+    
+
+def _transition_cost_combined(StateA, StateB):
+    """Computes the storage consumption of a transition map.
+    """
+    involved_state_n = len(StateA.implemented_state_index_list()) + len(StateB.implemented_state_index_list())
+    TM_A = StateA.transition_map
+    TM_B = StateB.transition_map
+
+    # Count the number of unique schemes and the total interval number
+    interval_n = 0
+    scheme_set = set()
     for begin, end, a_target, b_target in transition_map_tools.zipped_iterable(TM_A, TM_B):
         interval_n += 1
-        cost       += TargetFactory.combination_cost(a_target, b_target, scheme_set)
+        TargetFactory.update_scheme_set(a_target, b_target, scheme_set)
 
-    # '1' cost means: a target scheme has been represented
-    # => 'real cost' = cost * InvolvedStateN
-    cost *= InvolvedStateN
+    scheme_n = len(scheme_set)
 
-    border_n   = interval_n - 1
-    # 
-    jump_n     = interval_n * 2  # because: if 'jump', else 'jump'
-    cmp_n      = border_n
 
-    target_scheme_element_n
-    byte_n                  = target_scheme_element_n * 4
-    return Cost(ComparisonN=cmp_n, JumpN=jump_n, ByteN=byte_n)
-
-def _transition_cost(TM, TargetSchemeList=None):
-    """Computes the storage consumption of a transition map.
-    """
-    interval_n = len(TM)
-    border_n   = interval_n - 1
-    # 
-    jump_n     = interval_n * 2  # because: if 'jump', else 'jump'
-    cmp_n      = border_n
-    if TargetSchemeList is not None:
-        # For each target scheme, the target state needs to be stored for each state_key.
-        target_scheme_element_n  = sum(len(scheme) for scheme in TargetSchemeList)
-        byte_n                   = target_scheme_element_n * 4
-    else:
-        byte_n = 0
-    return Cost(ComparisonN=cmp_n, JumpN=jump_n, ByteN=byte_n)
+    return __transition_cost(involved_state_n, interval_n, scheme_n)
 
 class TargetFactory:
     """Produces MegaState_Target-s based on the combination of two MegaState_Target-s
@@ -246,40 +249,18 @@ class TargetFactory:
         return MegaState_Target.create(TA_scheme + TB_scheme)
 
     @staticmethod
-    def combination_cost(TA, TB, scheme_set):
+    def update_scheme_set(TA, TB, scheme_set):
         assert isinstance(TA, MegaState_Target) 
         assert isinstance(TB, MegaState_Target) 
 
         if TA.drop_out_f:
             if TB.drop_out_f:
-                return 0
-            TA_scheme_r = E_StateIndices.DROP_OUT # We only need a 'key'
+                return 
 
         elif TA.target_state_index is not None:
             if TB.target_state_index is not None and TA.target_state_index == TB.target_state_index:
-                return 0
-            TA_scheme_r = TA.target_state_index # We only need a 'key' 
+                return 
 
-        else:
-            TA_scheme_r = TA.scheme
-
-        if TB.drop_out_f:
-            # TA was not drop-out, otherwise we would have returned earlier
-            TB_scheme_r = E_StateIndices.DROP_OUT # We only need a 'key'
-
-        elif TB.target_state_index is not None:
-            # TA was not the same door, otherwise we would have returned earlier
-            TB_scheme_r = TB.target_state_index # We only need a 'key' 
-
-        else:
-            TB_scheme_r = TB.scheme
-
-        scheme_representive = (TA_scheme_r, TB_scheme_r)
-        if scheme_representive in scheme_set:
-            return 0
-        else:
-            scheme_set.add(scheme_representive)
-
-        return 1
-
+        my_hash = TA.get_hash() ^ TB.get_hash()
+        scheme_set.add(my_hash)
 

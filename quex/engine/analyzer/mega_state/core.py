@@ -154,6 +154,9 @@ class MegaState(AnalyzerState):
     def bad_company_add(self, StateIndex):
         self.__bad_company.add(StateIndex)
 
+    def bad_company_set(self, StateIndexSet):
+        self.__bad_company = StateIndexSet
+
     def bad_company(self):
         """RETURN: List of state indices with which the MegaState does not 
                    combine well.
@@ -167,6 +170,8 @@ class MegaState(AnalyzerState):
             adapted = target.finalize(self, StateDB, scheme_db)
             if adapted is None: continue
             self.transition_map[i] = (interval, adapted)
+
+MegaState_Target_DROP_OUT_hash = hash(E_StateIndices.DROP_OUT)
 
 class MegaState_Target(object):
     """ABSTRACT: ______________________________________________________________
@@ -228,7 +233,7 @@ class MegaState_Target(object):
     NOTE: All 'DropOut' MegaState_Target are represented by the single object
           'MegaState_Target_DROP_OUT'. This saves memory.
     """
-    __slots__ = ('__drop_out_f', '__scheme', '__scheme_id', '__target_state_index', '__door_id')
+    __slots__ = ('__drop_out_f', '__scheme', '__scheme_id', '__hash', '__target_state_index', '__door_id')
 
     __object_db = dict()
 
@@ -260,21 +265,33 @@ class MegaState_Target(object):
         return result
 
     def __init__(self, Target):
+        global MegaState_Target_DROP_OUT_hash
         if Target is None: # Only to be used by 'self.clone()'
             return 
 
-        self.__drop_out_f         = False
         self.__target_state_index = None
         self.__scheme             = None
         self.__scheme_id          = None # Only possibly set in 'finalize'
         self.__door_id            = None # Only possibly set in 'finalize'
 
-        if   Target == E_StateIndices.DROP_OUT: self.__drop_out_f         = True   
-        elif isinstance(Target, long):          self.__target_state_index = Target 
-        elif isinstance(Target, tuple):         self.__scheme             = Target
-        elif isinstance(Target, DoorID):        self.__door_id            = Target # only by '.finalize()'
-        else:                                   assert False, Target.__class__.__name__
+        if   Target == E_StateIndices.DROP_OUT: 
+            self.__drop_out_f = True; 
+            self.__hash       = MegaState_Target_DROP_OUT_hash 
+            return
 
+        self.__drop_out_f = False
+        self.__hash       = None
+        if   isinstance(Target, long):   self.__target_state_index = Target 
+        elif isinstance(Target, tuple):  self.__scheme             = Target
+        elif isinstance(Target, DoorID): self.__door_id            = Target # only by '.finalize()'
+        else:                            assert False, Target.__class__.__name__
+
+    def get_hash(self):
+        if self.__hash is None: 
+            if self.__target_state_index is not None: self.__hash = hash(self.__target_state_index)
+            elif self.__scheme is not None:           self.__hash = hash(self.__scheme)
+            else:                                     self.__hash = hash(self.__door_id)
+        return self.__hash
     @property
     def scheme(self):              return self.__scheme
     @property
@@ -386,7 +403,7 @@ class MegaState_Target(object):
         return self.__scheme == Other.__scheme
 
 # Globally unique object to stand up for all 'drop-outs'.
-MegaState_Target_DROP_OUT = MegaState_Target(E_StateIndices.DROP_OUT)
+MegaState_Target_DROP_OUT      = MegaState_Target(E_StateIndices.DROP_OUT)
 
 class MegaState_DropOut(dict):
     """ABSTRACT: ______________________________________________________________

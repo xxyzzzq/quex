@@ -1,7 +1,6 @@
 import quex.engine.analyzer.transition_map      as transition_map_tools
 from   quex.engine.analyzer.state.entry_action  import SetPathIterator, DoorID
 from   quex.engine.analyzer.mega_state.core     import MegaState, MegaState_Target
-from   quex.engine.state_machine.transition_map import TransitionMap
 from   quex.blackboard                          import E_Compression
 
 class PathWalkerState(MegaState):
