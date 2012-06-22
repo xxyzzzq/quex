@@ -80,7 +80,7 @@ def bisect_begin(transition_map, Value, lower=0):
     delta = upper - lower
     while delta > 1:
         i       = lower + delta / 2
-        current = transtion_map[i][0].begin
+        current = transition_map[i][0].begin
         if   current > Value: upper = i 
         elif current < Value: lower = i
         else:                 return i

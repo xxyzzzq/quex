@@ -32,47 +32,61 @@ class DropOut(object):
        NOTE: This type supports being a dictionary key by '__hash__' and '__eq__'.
              Required for the optional 'template compression'.
     """
-    __slots__ = ("acceptance_checker", "terminal_router")
+    __slots__ = ("__acceptance_checker", "__terminal_router")
 
     def __init__(self):
-        self.acceptance_checker = []
-        self.terminal_router    = []
+        self.__acceptance_checker = []
+        self.__terminal_router    = []
 
     @property
     def restore_acceptance_f(self):
-        for element in self.acceptance_checker:
+        for element in self.__acceptance_checker:
             if element.acceptance_id == E_AcceptanceIDs.VOID: return True
         return False
 
+    def set_acceptance_checker(self, AC):
+        assert isinstance(AC, list)
+        self.__acceptance_checker = AC
+
+    def get_acceptance_checker(self):
+        return self.__acceptance_checker
+
+    def set_terminal_router(self, TR):
+        assert isinstance(TR, list)
+        self.__terminal_router = TR
+
+    def get_terminal_router(self):
+        return self.__terminal_router
+
     def restore_position_f(self, RegisterIndex):
-        for element in [x for x in self.terminal_router if x.position_register == RegisterIndex]:
+        for element in [x for x in self.__terminal_router if x.position_register == RegisterIndex]:
             return element.positioning == E_TransitionN.VOID
         return False
 
     def accept(self, PreContextID, PatternID):
-        self.acceptance_checker.append(
+        self.__acceptance_checker.append(
              AcceptanceCheckerElement(PreContextID, PatternID))
 
     def route_to_terminal(self, PatternID, TransitionNSincePositioning):
-        self.terminal_router.append(
+        self.__terminal_router.append(
              TerminalRouterElement(PatternID, TransitionNSincePositioning))
 
     def __hash__(self):
-        return hash(len(self.acceptance_checker) * 10 + len(self.terminal_router))
+        return hash(len(self.__acceptance_checker) * 10 + len(self.__terminal_router))
 
     def __neq__(self, Other):
         assert False, "Use __eq__()"
 
     def __eq__(self, Other):
-        if   self.acceptance_checker != Other.acceptance_checker: return False
-        elif self.terminal_router    != Other.terminal_router:    return False
+        if   self.__acceptance_checker != Other.__acceptance_checker: return False
+        elif self.__terminal_router    != Other.__terminal_router:    return False
         return True
 
     def is_equal(self, Other):
         return self.__eq__(Other)
 
     def finish(self, PositionRegisterMap):
-        for element in self.terminal_router:
+        for element in self.__terminal_router:
             if element.positioning is not E_TransitionN.VOID: continue
             element.position_register = PositionRegisterMap[element.position_register]
 
@@ -83,25 +97,25 @@ class DropOut(object):
            RETURNS: None                          -- if the drop out is not trivial
                     TerminalRouterElement -- if the drop-out is trivial
         """
-        if E_AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK in imap(lambda x: x.acceptance_id, self.terminal_router):
-            assert len(self.acceptance_checker) == 1
-            assert self.acceptance_checker[0].pre_context_id == E_PreContextIDs.NONE
-            assert self.acceptance_checker[0].acceptance_id  == E_AcceptanceIDs.VOID
-            assert len(self.terminal_router) == 1
-            return [None, self.terminal_router[0]]
+        if E_AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK in imap(lambda x: x.acceptance_id, self.__terminal_router):
+            assert len(self.__acceptance_checker) == 1
+            assert self.__acceptance_checker[0].pre_context_id == E_PreContextIDs.NONE
+            assert self.__acceptance_checker[0].acceptance_id  == E_AcceptanceIDs.VOID
+            assert len(self.__terminal_router) == 1
+            return [None, self.__terminal_router[0]]
 
-        for dummy in ifilter(lambda x: x.acceptance_id == E_AcceptanceIDs.VOID, self.acceptance_checker):
+        for dummy in ifilter(lambda x: x.acceptance_id == E_AcceptanceIDs.VOID, self.__acceptance_checker):
             # There is a stored acceptance involved, thus need acceptance_checker + terminal_router.
             return None
 
         result = []
-        for check in self.acceptance_checker:
-            for route in self.terminal_router:
+        for check in self.__acceptance_checker:
+            for route in self.__terminal_router:
                 if route.acceptance_id == check.acceptance_id: break
             else:
                 assert False, \
                        "Acceptance ID '%s' not found in terminal_router.\nFound: %s" % \
-                       (check.acceptance_id, map(lambda x: x.acceptance_id, self.terminal_router))
+                       (check.acceptance_id, map(lambda x: x.acceptance_id, self.__terminal_router))
             result.append((check, route))
             # NOTE: "if check.pre_context_id is None: break"
             #       is not necessary since get_drop_out_object() makes sure that the acceptance_checker
@@ -110,7 +124,7 @@ class DropOut(object):
         return result
 
     def __repr__(self):
-        if len(self.acceptance_checker) == 0 and len(self.terminal_router) == 0:
+        if len(self.__acceptance_checker) == 0 and len(self.__terminal_router) == 0:
             return "    <unreachable code>"
         info = self.trivialize()
         if info is not None:
@@ -135,7 +149,7 @@ class DropOut(object):
 
         txt = ["    Checker:\n"]
         if_str = "if     "
-        for element in self.acceptance_checker:
+        for element in self.__acceptance_checker:
             if element.pre_context_id != E_PreContextIDs.NONE:
                 txt.append("        %s %s\n" % (if_str, repr(element)))
             else:
@@ -146,7 +160,7 @@ class DropOut(object):
             if_str = "else if"
 
         txt.append("    Router:\n")
-        for element in self.terminal_router:
+        for element in self.__terminal_router:
             txt.append("        %s\n" % repr(element))
 
         return "".join(txt)
@@ -155,10 +169,10 @@ class DropOutBackward(DropOut):
     def __init__(self):
         DropOut.__init__(self)
 
-        self.acceptance_checker.append(AcceptanceCheckerElement(E_PreContextIDs.NONE, 
-                                                                E_AcceptanceIDs.VOID))
-        self.terminal_router.append(TerminalRouterElement(E_AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK, 
-                                                          E_TransitionN.IRRELEVANT))
+        DropOut.set_acceptance_checker(self, [AcceptanceCheckerElement(E_PreContextIDs.NONE, 
+                                                                       E_AcceptanceIDs.VOID)])
+        DropOut.set_terminal_router(self, [TerminalRouterElement(E_AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK, 
+                                                                 E_TransitionN.IRRELEVANT)])
     def finish(self, PositionRegisterMap):
         pass
 

@@ -6,10 +6,8 @@ from   quex.engine.interval_handling                    import Interval
 from   quex.blackboard                                  import E_EngineTypes, \
                                                                E_StateIndices, \
                                                                setup as Setup
-import sys
 from   copy      import copy
-from   operator  import itemgetter
-from   itertools import imap, islice
+from   itertools import islice
 
 LanguageDB = None
 

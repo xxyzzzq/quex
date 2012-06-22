@@ -5,11 +5,9 @@ from   quex.engine.analyzer.mega_state.core    import MegaState_Entry, \
 import quex.engine.analyzer.transition_map     as transition_map_tools
 import quex.engine.state_machine.index         as     index
 
-from   quex.engine.interval_handling import NumberSet
 from   quex.blackboard               import E_StateIndices
 
 from itertools   import ifilter
-from operator    import itemgetter
 
 class PathWalkerState_Entry(MegaState_Entry):
     def __init__(self, MegaStateIndex, TheEntry):
@@ -240,7 +238,7 @@ class CharacterPath(object):
         # Here: The transition maps match, but possibly require the use of a wildcard.
         return wildcard_target
 
-    def get_sibling(self, StateIndex, Other):
+    def get_sibling(self, StateIndex, TransitionChar, Other):
         """The 'Other' path intersects at 'StateIndex' with this path (StateIndex
         can only appear once in path, since recursion is not possible). This function
         generates a sibling where the Other path is docked to this path at the
@@ -258,6 +256,7 @@ class CharacterPath(object):
         new_sequence =  Other.sequence() \
                       + [ CharacterPathElement(StateIndex, TransitionChar) ] \
                       + self.__sequence[:i+1]
+        return CharacterPathElement(new_sequence)
 
     def finalize(self):
         # Ensure that there is no wildcard in the transition map
@@ -295,7 +294,6 @@ class CharacterPath(object):
 
         sequence_txt = ""
         for x in self.__sequence[:-1]:
-            state_idx = norm(x.state_index)
             sequence_txt += "(%i)--'%s'-->" % (x.state_index, chr(x.transition_char_to_next))
         sequence_txt += "[%i]" % norm(self.__sequence[-1].state_index)
 

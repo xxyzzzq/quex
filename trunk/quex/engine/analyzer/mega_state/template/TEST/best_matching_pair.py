@@ -5,7 +5,8 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
 from   quex.engine.analyzer.core                        import Analyzer
-import quex.engine.analyzer.mega_state.template.core               as     templates 
+import quex.engine.analyzer.mega_state.template.core    as     templates 
+from   quex.engine.analyzer.mega_state.template.state   import TemplateState
 from   quex.engine.analyzer.mega_state.template.TEST.templates_aux import *
 from   quex.engine.state_machine.core                   import StateMachine
 from   quex.blackboard                                  import E_EngineTypes, E_Compression
@@ -44,10 +45,12 @@ def test(TriggerMapList):
     for element in db.candidate_list:
         print "%i      %i      %i" % (element[0], element[1], element[2].gain)
 
-    info = db.pop_best()
+    elect = db.pop_best()
     print "Best matching pair: ",
-    if info is None: print "None"
-    else:            print str(tuple(info.state_index_sequence())).replace("L", "")
+    if elect is None: print "None"
+    else:            
+        best = TemplateState(elect)
+        print str(tuple(best.state_index_sequence())).replace("L", "")
 
 if "0" in sys.argv:
     trigger_map_list = [

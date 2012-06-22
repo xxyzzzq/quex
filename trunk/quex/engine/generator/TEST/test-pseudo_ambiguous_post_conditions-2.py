@@ -1,7 +1,8 @@
 #! /usr/bin/env python
 import generator_test
 
-choice = generator_test.hwut_input("Pseudo Ambgiguous Post Condition: Part II", "SAME;")
+choice = generator_test.hwut_input("Pseudo Ambgiguous Post Condition: Part II", "SAME;", 
+                                   DeleteChoices=["Cpp-PathUniform", "Cpp-PathUniform-CG"])
 
 pattern_list = [
     # -- pre-conditioned expressions need to preceed same (non-preoconditioned) expressions,

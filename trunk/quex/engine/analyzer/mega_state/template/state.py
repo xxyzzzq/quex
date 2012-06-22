@@ -6,11 +6,8 @@ from   quex.engine.analyzer.mega_state.core         import MegaState, \
                                                            MegaState_Entry, \
                                                            MegaState_DropOut
 from   quex.engine.analyzer.mega_state.template.candidate  import TargetFactory
-import quex.engine.analyzer.transition_map          as transition_map_tools
 from   quex.engine.interval_handling                import Interval
-from   quex.blackboard                              import E_StateIndices
 
-import sys
 
 class TemplateState_Entry(MegaState_Entry):
     """MegaState-Entry for Template States.
@@ -115,13 +112,15 @@ class TemplateState(MegaState):
        Notably, the derived class TemplateStateCandidate takes an important
        role in the construction of the TemplateState.
     """
-    def __init__(self, CandidateState):
+    def __init__(self, Candidate):
         # The 'index' remains None, as long as the TemplateState is not an 
         # accepted element of a state machine. This makes sense, in particular
         # for TemplateStateCandidates (derived from TemplateState). 
+        StateA = Candidate.state_a
+        StateB = Candidate.state_b
         my_index                    = index.get()
-        self.__state_a              = Candidate.state_a()
-        self.__state_b              = Candidate.state_b()
+        self.__state_a              = StateA
+        self.__state_b              = StateB
         self.__state_index_sequence = StateA.state_index_sequence() + StateB.state_index_sequence()
         self.__state_index_to_state_key_db = dict((state_index, i) for i, state_index in enumerate(self.__state_index_sequence))
 
@@ -131,16 +130,14 @@ class TemplateState(MegaState):
         MegaState.__init__(self, entry, drop_out, my_index)
 
         self.__transition_map, \
-        self.__target_db     = combine_maps(self.__state_a, self.__state_b)
-
-        L = len(self.__state_index_sequence)
+        self.__target_scheme_n = combine_maps(self.__state_a, self.__state_b)
 
         # Compatible with AnalyzerState
         # (A template state can never mimik an init state)
         self.__engine_type = None # StateA.engine_type
         # self.input         = None # StateA.input # get_input_action(StateA.engine_type, InitStateF=False)
 
-        self.__bad_company = None # To be set after accepted combination
+        MegaState.bad_company_set(self, self.__state_a.bad_company().union(self.__state_b.bad_company()))
 
     def _DEBUG_combined_state_indices(self): return self.__state_a.index, self.__state_b.index
 
@@ -149,19 +146,11 @@ class TemplateState(MegaState):
         return self.__transition_map
 
     @property
-    def target_db(self):  
-        return self.__target_db
+    def target_scheme_n(self):  
+        return self.__target_scheme_n
 
     def state_index_sequence(self):    
         return self.__state_index_sequence
-
-    def bad_company(self):
-        """RETURN: List of state indices with which the template state 
-                   does not combine well.
-        """
-        if self.__bad_company is None:
-            self.__bad_company = self.__state_a.bad_company().union(self.__state_b.bad_company())
-        return self.__bad_company
 
     def map_state_index_to_state_key(self, StateIndex):
         return self.__state_index_to_state_key_db[StateIndex]
@@ -287,5 +276,9 @@ def combine_maps(StateA, StateB):
 
     # Return the database of generated MegaState_Target objects
     mega_state_target_db = MegaState_Target.disconnect_object_db()
-    return result, mega_state_target_db
+    # Number of different target schemes:
+    scheme_n = 0
+    for x in (key for key in mega_state_target_db.iterkeys() if isinstance(key, tuple)):
+        scheme_n += 1
+    return result, scheme_n
 

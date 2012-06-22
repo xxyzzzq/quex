@@ -1,13 +1,14 @@
-import quex.engine.state_machine.index                as index
-from   quex.engine.analyzer.state.core                import AnalyzerState
-from   quex.engine.analyzer.state.entry               import Entry
-from   quex.engine.analyzer.state.entry_action        import DoorID
-from   quex.engine.analyzer.mega_state.core           import PseudoMegaState, MegaState, AbsorbedState
-import quex.engine.analyzer.mega_state.template.core  as templates 
-from   quex.engine.analyzer.mega_state.template.state import MegaState_Target, TemplateState
-from   quex.engine.state_machine.core                 import State
-from   quex.engine.interval_handling                  import NumberSet, Interval
-from   quex.blackboard                                import E_EngineTypes
+import quex.engine.state_machine.index                      as index
+from   quex.engine.analyzer.state.core                      import AnalyzerState
+from   quex.engine.analyzer.state.entry                     import Entry
+from   quex.engine.analyzer.state.entry_action              import DoorID
+from   quex.engine.analyzer.mega_state.core                 import PseudoMegaState, MegaState, AbsorbedState
+import quex.engine.analyzer.mega_state.template.core        as templates 
+from   quex.engine.analyzer.mega_state.template.state       import MegaState_Target, TemplateState
+from   quex.engine.analyzer.mega_state.template.candidate   import TemplateStateCandidate
+from   quex.engine.state_machine.core                       import State
+from   quex.engine.interval_handling                        import NumberSet, Interval
+from   quex.blackboard                                      import E_EngineTypes
 
 from   operator    import attrgetter
 from   collections import defaultdict
@@ -68,12 +69,12 @@ def setup_AnalyzerStates(StatesDescription):
 def setup_TemplateState(analyzer, StateIndexList):
     assert len(StateIndexList) > 1
 
-    result = TemplateState(analyzer.state_db[StateIndexList[0]], 
-                           analyzer.state_db[StateIndexList[1]], 
-                           analyzer)
+    candidate = TemplateStateCandidate(analyzer.state_db[StateIndexList[0]], 
+                                       analyzer.state_db[StateIndexList[1]]) 
+    result    = TemplateState(candidate)
     for i in StateIndexList[2:]:
-        result = TemplateState(result, analyzer.state_db[i], 
-                               analyzer)
+        candidate = TemplateStateCandidate(result, analyzer.state_db[i]) 
+        result    = TemplateState(candidate)
     return result
 
 def configure_States(TriggerMapA, StateN_A, TriggerMapB, StateN_B):
@@ -110,7 +111,8 @@ def test_combination(StateA, StateB, analyzer, StateA_Name="A", StateB_Name="B",
     print_tm(StateB.transition_map, StateB.state_index_sequence())
 
     print
-    result = TemplateState(StateA, StateB, analyzer)
+    candidate = TemplateStateCandidate(StateA, StateB)
+    result = TemplateState(candidate)
     result.entry.door_tree_configure()
 
     if DrawF:

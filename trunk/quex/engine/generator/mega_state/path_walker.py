@@ -81,7 +81,6 @@ from quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from quex.engine.generator.state.core                  import input_do
 from quex.engine.generator.languages.variable_db       import variable_db
 from quex.blackboard import setup as Setup
-from itertools       import imap
 
 def framework(txt, PWState, TheAnalyzer):
     """Implement the Pathwalker's framework. The scheme for a path-walker

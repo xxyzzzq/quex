@@ -1,4 +1,4 @@
 Gain Matrix
 State0  State1 Gain
-1      2      156
-Best matching pair:  (1, 2)
+1      2      188
+Best matching pair: 

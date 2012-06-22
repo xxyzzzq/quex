@@ -133,11 +133,11 @@ def do(TheAnalyzer, MinGain, CompressionType,
 
        ALGORITHM: 
 
-       The CombinationDB computes for all possible combinations of states A and
+       The Process computes for all possible combinations of states A and
        B an object of class TemplateStateCandidate. That is a template state that
        represents the combination of A and B. By means of a call to '.combine_best()'
        the candidate with the highest expected gain replaces the two states that 
-       it represents. This candidate enters the CombinationDB as any other state
+       it represents. This candidate enters the Process as any other state
        and candidates of combinations with other states are computed. In this sense
        the iteration of calls to '.combine_next()' happen until no meaningful
        combination of states can be identified.
@@ -147,12 +147,12 @@ def do(TheAnalyzer, MinGain, CompressionType,
 
     # (*) The Combination Process
     #
-    # CombinationDB: -- Keep track of possible combinations between states.
-    #                -- Can determine best matching state candidates for combination.
-    #                -- Replaces two combined states by TemplateState.
+    # Process: -- Keep track of possible combinations between states.
+    #          -- Can determine best matching state candidates for combination.
+    #          -- Replaces two combined states by TemplateState.
     #
     # (A 'state' in the above sense can also be a TemplateState)
-    combiner = CombinationDB(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList)
+    combiner = Process(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList)
 
     # Combine states until there is nothing that can reasonably be combined.
     while combiner.combine_best():
@@ -160,7 +160,7 @@ def do(TheAnalyzer, MinGain, CompressionType,
 
     return combiner.result()
 
-class CombinationDB:
+class Process:
     """Contains the 'Gain' for each possible combination of states. This includes
        TemplateStates which are already combined. States are referred by state
        index. Internally, a list is maintained that stores for each possible 
@@ -194,13 +194,13 @@ class CombinationDB:
         # NOTE: States in '__elect_db' cannot be candidates listed in '__candidate_list'
         #       and vice versa. Candidates in '__candidate_list' combine two elects from
         #       '__elect_db' and the best candidates become elements of '__elect_db'.
-        self.__elect_db,      \
-        self.__all_db         = self.__elect_db_construct(TheAnalyzer.state_db, 
-                                                          AvailableStateIndexList)
+        self.__elect_db = Process.__elect_db_construct(TheAnalyzer.state_db, 
+                                                       AvailableStateIndexList)
         self.__candidate_list = self.__candidate_list_construct()
         self.__door_id_replacement_db = {}
 
-    def __elect_db_construct(self, StateDB, AvailableStateIndexList):
+    @staticmethod
+    def __elect_db_construct(StateDB, AvailableStateIndexList):
         """Elect Database:
         
            Collects states which have been filtered out to be part of the final 
@@ -226,25 +226,12 @@ class CombinationDB:
                               and len(x[1].transition_map) != 0   \
                               and x[1].init_state_f == False
 
-        # state = self.__analyzer.state_db[358]
-        # print "##transition_map (358): {"
-        # for key, value in state.transition_map:
-        #     print "## %s --> %s" % (key.get_string(Option="hex"), value)
-        # print "##}"
-        # state = self.__analyzer.state_db[350]
-        # print "##transition_db (350): {"
-        # for key, value in state.entry.transition_db.iteritems():
-        #     print "## %s --> %s" % (key, value)
-        # print "##}"
-
         # Represent AnalyzerState-s by PseudoMegaState-s so they behave
         # uniformly with TemplateState-s.
         elect_db = dict((state_index, PseudoMegaState(state)) \
                         for state_index, state in ifilter(condition, StateDB.iteritems()) )
-        all_db   = dict(StateDB)
-        all_db.update(elect_db)
 
-        return elect_db, all_db
+        return elect_db
 
     def __candidate_list_construct(self):
         """Compute TemplateStateCandidate-s for each possible combination of 
@@ -275,7 +262,7 @@ class CombinationDB:
                     if   not (i_state.drop_out == k_state.drop_out):    continue
                     elif not (i_state.entry.is_uniform(k_state.entry)): continue
 
-                candidate = TemplateStateCandidate(i_state, k_state, self.__all_db)
+                candidate = TemplateStateCandidate(i_state, k_state)
 
                 if candidate.gain >= self.__min_gain:
                     result[n] = (i_state.index, k_state.index, candidate)
@@ -289,53 +276,54 @@ class CombinationDB:
             del result[n:]
 
         # Sort according to delta cost
-        result.sort(key=lambda x: x[2].gain)
+        result.sort(key=lambda x: x[2].gain) # 'best' must be at end
+        print "#result:", [ x[2].gain for x in result ]
         return result
 
     def enter(self, NewElect):
         """Adapt the __candidate_list to include candidates of combinations with
            the NewElect.
         """
-        assert isinstance(NewElect, TemplateState)
+        assert isinstance(NewElect, TemplateStateCandidate)
         # The new state index must be known. It is used in the gain matrix.
         # But, the new state does not need to be entered into the db, yet.
 
+        newcomer    = TemplateState(NewElect)
         # Avoid extensive 'appends' by single allocation (see initial computation)
         MaxIncrease = len(self.__elect_db) 
         n           = len(self.__candidate_list)
         MaxSize     = len(self.__candidate_list) + MaxIncrease
         self.__candidate_list.extend([None] * MaxIncrease)
-        ImplementedStateIndexList = set(NewElect.implemented_state_index_list())
-        bad_company               = NewElect.bad_company()
+        ImplementedStateIndexList = set(newcomer.implemented_state_index_list())
 
         for state in self.__elect_db.itervalues():
             if self.__uniformity_required_f:
                 # Rely on __eq__ operator (used '=='). '!=' uses __neq__ 
-                if   not (state.drop_out == NewElect.drop_out):    continue
-                elif not (state.entry.is_uniform(NewElect.entry)): continue
+                if   not (state.drop_out == newcomer.drop_out):    continue
+                elif not (state.entry.is_uniform(newcomer.entry)): continue
 
             # Do not try to combine states that have proven to be 'bad_company'.
-            if       state.index in bad_company:                                   continue
-            elif not bad_company.isdisjoint(state.implemented_state_index_list()): continue
-            elif not state.bad_company().isdisjoint(ImplementedStateIndexList):    continue
-            # IMPOSSIBLE: NewElect.index in state.bad_company() 
-            #             because when 'state' was created, 'NewElect' did not exist.
-            candidate = TemplateStateCandidate(NewElect, state, self.__all_db)
+            if       state.index in newcomer.bad_company():                                   continue
+            elif not newcomer.bad_company().isdisjoint(state.implemented_state_index_list()): continue
+            elif not state.bad_company().isdisjoint(ImplementedStateIndexList):             continue
+            # IMPOSSIBLE: newcomer.index in state.bad_company() 
+            #             because when 'state' was created, 'newcomer' did not exist.
+            candidate = TemplateStateCandidate(newcomer, state)
 
             if candidate.gain >= self.__min_gain:
-                self.__candidate_list[n] = (state.index, NewElect.index, candidate)
+                self.__candidate_list[n] = (state.index, newcomer.index, candidate)
                 n += 1
             else:
                 # Mention the states for which the other does not combine properly
-                state.bad_company_add(NewElect.index)
-                bad_company.add(state.index)
+                state.bad_company_add(newcomer.index)
+                newcomer.bad_company_add(state.index)
 
         if n != MaxSize:
             del self.__candidate_list[n:]
 
-        self.__candidate_list.sort(key=lambda x: x[2].gain)
+        self.__candidate_list.sort(key=lambda x: x[2].gain) # 'best' must be at end
 
-        self.__elect_db[NewElect.index] = NewElect
+        self.__elect_db[newcomer.index] = newcomer
 
     def combine_best(self):
         """Finds the two best matching states and combines them into one.
@@ -343,6 +331,7 @@ class CombinationDB:
            Else, 'True'.
         """
         elect = self.pop_best()
+        if elect is not None: print "#gain:", elect.gain
         if elect is None: return False
 
         # The 'candidate' is a TemplateStateCandidate which is derived from 
