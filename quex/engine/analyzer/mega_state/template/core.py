@@ -277,7 +277,6 @@ class Process:
 
         # Sort according to delta cost
         result.sort(key=lambda x: x[2].gain) # 'best' must be at end
-        print "#result:", [ x[2].gain for x in result ]
         return result
 
     def enter(self, NewElect):
@@ -331,7 +330,6 @@ class Process:
            Else, 'True'.
         """
         elect = self.pop_best()
-        if elect is not None: print "#gain:", elect.gain
         if elect is None: return False
 
         # The 'candidate' is a TemplateStateCandidate which is derived from 

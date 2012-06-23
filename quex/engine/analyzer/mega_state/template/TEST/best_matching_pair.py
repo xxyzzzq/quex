@@ -38,7 +38,7 @@ def test(TriggerMapList):
     for state in analyzer.state_db.itervalues():
         state.entry.door_tree_configure()
 
-    db = templates.CombinationDB(analyzer, 33, E_Compression.TEMPLATE, analyzer.state_db.keys())
+    db = templates.Process(analyzer, 33, E_Compression.TEMPLATE, analyzer.state_db.keys())
 
     print "Gain Matrix"
     print "State0  State1 Gain"
