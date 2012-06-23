@@ -1,66 +1,66 @@
-"""MegaStates:
+"""MegaStates _________________________________________________________________
 
-   A 'MegaState' is a state which absorbs and implements multiple
-   AnalyzerState-s in a manner that is beneficial in terms of code size,
-   computational speed, or both. All MegaState-s shall be derived from class
-   MegaState, and thus are committed to the described interface. The final
-   product of a MegaState is a piece of code which can act on behalf of its
-   absorbed AnalyzerState-s. 
-   
-   A 'state_key' indicates for any point in time the AnalyzerState which the
-   MegaState represents. 
+A 'MegaState' is a state which absorbs and implements multiple AnalyzerState-s
+in a manner that is beneficial in terms of code size, computational speed, or
+both. All MegaState-s shall be derived from class MegaState, and thus are
+committed to the described interface. The final product of a MegaState is a
+piece of code which can act on behalf of its absorbed AnalyzerState-s. 
 
-   The following scheme displays the general idea of a class hierarchy with a
-   MegaState involved. At the time of this writing there are two derived
-   classes 'TemplateState' and 'PathWalkerState'--each represent a compression
-   algorith: 
+A 'state_key' indicates for any point in time the AnalyzerState which the
+MegaState represents. 
 
-        AnalyzerState <------- MegaState <----+---- TemplateState
-                                              |
-                                              '---- PathWalkerState
+The following scheme displays the general idea of a class hierarchy with a
+MegaState involved. At the time of this writing there are two derived classes
+'TemplateState' and 'PathWalkerState'--each represent a compression algorith: 
 
-   
-   Analogous to the AnalyzerState, a MegaState has special classes to implement
-   'Entry' and 'DropOut', namely 'MegaState_Entry' and 'MegaState_DropOut'.
-   Where an AnalyzerState's transition_map associates a character interval with
-   a target state index, the MegaState's transition_map associates a character
-   interval with a 'MegaState_Target'. Given a state_key, the MegaState_Target
-   provides the target state index for the given character interval.
+    AnalyzerState <------- MegaState <----+---- TemplateState
+                                          |
+                                          '---- PathWalkerState
 
-   The following pinpoints the general idea of a MegaState.
-    
-   --------------------------------------------------------------------------
-        MegaStateEntry:
-     
-            ... entry doors of absorbed states ...
 
-        /* Some Specific Actions ... */
+Analogous to the AnalyzerState, a MegaState has special classes to implement
+'Entry' and 'DropOut', namely 'MegaState_Entry' and 'MegaState_DropOut'.  Where
+an AnalyzerState's transition_map associates a character interval with a target
+state index, the MegaState's transition_map associates a character interval
+with a 'MegaState_Target'. Given a state_key, the MegaState_Target provides the
+target state index for the given character interval.
 
-        tansition_map( input ) {
-            in interval_0:  MegaState_Target_0[state_key];  --> Target states
-            in interval_1:  MegaState_Target_1[state_key];  --> depending on
-            in interval_2:  MegaState_Target_2[state_key];  --> current input
-            ...                                             --> character.
-            in interval_N:  MegaState_Target_N[state_key]; 
-        }
+The following pinpoints the general idea of a MegaState.
 
-        MegaState_DropOut:
+--------------------------------------------------------------------------
+    MegaStateEntry:
+ 
+        ... entry doors of absorbed states ...
 
-            ... drop-out actions of absorbed states ...
+    /* Some Specific Actions ... */
 
-   --------------------------------------------------------------------------
+    tansition_map( input ) {
+        in interval_0:  MegaState_Target_0[state_key];  --> Target states
+        in interval_1:  MegaState_Target_1[state_key];  --> depending on
+        in interval_2:  MegaState_Target_2[state_key];  --> current input
+        ...                                             --> character.
+        in interval_N:  MegaState_Target_N[state_key]; 
+    }
 
-   This file provides two special classes for states:
+    MegaState_DropOut:
 
-   -- PseudoMegaState: represents an AnalyzerState as if it was a 
-                       MegaState. This way, it may act homogeneously in 
-                       algorithms that work on MegaState-s and AnalyzerState-s
-                       at the same time.
+        ... drop-out actions of absorbed states ...
 
-   -- AbsorbedState:   represent an AnalyzerState in the original state database,
-                       even though it is absorbed by a MegaState.
+--------------------------------------------------------------------------
 
-   (C) 2012 Frank-Rene Schaefer
+This file provides two special classes for to represent 'normal' 
+AnalyzerState-s:
+
+-- PseudoMegaState: represents an AnalyzerState as if it was a 
+                    MegaState. This way, it may act homogeneously in 
+                    algorithms that work on MegaState-s and AnalyzerState-s
+                    at the same time.
+ 
+-- AbsorbedState:   represent an AnalyzerState in the original state database,
+                    even though it is absorbed by a MegaState.
+
+--------------------------------------------------------------------------
+(C) 2012 Frank-Rene Schaefer
 """
 from   quex.engine.analyzer.state.core               import AnalyzerState
 from   quex.engine.analyzer.state.entry              import Entry
@@ -71,13 +71,18 @@ from   quex.blackboard                               import E_StateIndices
 from   copy import copy
 
 class MegaState_Entry(Entry):
-    """Implements a common base class for Entry classes of MegaState-s.
+    """________________________________________________________________________
+    
+    Implements a common base class for Entry classes of MegaState-s.
+    ___________________________________________________________________________
     """
     def __init__(self, MegaStateIndex):
         Entry.__init__(self, MegaStateIndex, FromStateIndexList=[])
 
 class MegaState(AnalyzerState):
-    """Interface for all derived MegaState-s:
+    """________________________________________________________________________
+    
+    Interface for all derived MegaState-s:
 
        .implemented_state_index_list():
        
@@ -111,6 +116,7 @@ class MegaState(AnalyzerState):
 
           The transition_map can only be finalized after ALL MegaState-s have
           been generated.
+    ___________________________________________________________________________
     """ 
     def __init__(self, TheEntry, TheDropOut, StateIndex):
         # A 'PseudoMegaState' does not implement a 'MegaState_Entry' and 'MegaState_DropOut'.
@@ -174,7 +180,7 @@ class MegaState(AnalyzerState):
 MegaState_Target_DROP_OUT_hash = hash(E_StateIndices.DROP_OUT)
 
 class MegaState_Target(object):
-    """ABSTRACT: ______________________________________________________________
+    """________________________________________________________________________
     
     Where an AnalyzerState's transition map associates a character interval
     with a target state index, a MegaState's transition map associates a
@@ -475,7 +481,7 @@ class MegaState_DropOut(dict):
         else:         x.add(TheState.index)
 
 class PseudoMegaState(MegaState): 
-    """ABSTRACT: ______________________________________________________________
+    """________________________________________________________________________
     
     Represents an AnalyzerState in a way to that it acts homogeneously with
     other MegaState-s. That is, the transition_map is adapted so that it maps
@@ -484,7 +490,6 @@ class PseudoMegaState(MegaState):
               transition_map:  interval --> MegaState_Target
 
     instead of mapping to a target state index.
-
     ___________________________________________________________________________
     """
     def __init__(self, Represented_AnalyzerState):
@@ -541,9 +546,12 @@ class PseudoMegaState(MegaState):
         assert False, "PseudoMegaState-s exist only for analysis. They shall never be implemented."
 
 class AbsorbedState_Entry(Entry):
-    """The information about what transition is implemented by what
+    """________________________________________________________________________
+
+    The information about what transition is implemented by what
     DoorID is stored in this Entry. It is somewhat isolated from the
     AbsorbedState's Entry object.
+    ___________________________________________________________________________
     """
     def __init__(self, StateIndex, TransitionDB, DoorDB):
         Entry.__init__(self, StateIndex, FromStateIndexList=[])
@@ -551,12 +559,12 @@ class AbsorbedState_Entry(Entry):
         self.set_door_db(DoorDB)
 
 class AbsorbedState(AnalyzerState):
-    """ABSTRACT: ______________________________________________________________
+    """________________________________________________________________________
     
     An AbsorbedState object represents an AnalyzerState which has been
     implemented by a MegaState. Its sole purpose is to pinpoint to the
     MegaState which implements it and to translate the transtions into itself
-    to DoorIDs into the MegaState.
+    to DoorIDs of the implementing MegaState.
     ___________________________________________________________________________
     """
     def __init__(self, AbsorbedAnalyzerState, AbsorbingMegaState):
