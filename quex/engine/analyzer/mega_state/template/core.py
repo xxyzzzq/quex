@@ -6,124 +6,123 @@ from   itertools       import ifilter, islice
 
 # (C) 2010 Frank-Rene Schaefer
 """
-   Template Compression _______________________________________________________
+TEMPLATE COMPRESSION _______________________________________________________
 
-   The idea behind 'template compression' is to combine the transition maps of
-   multiple similar states into a single transition map. The difference in the
-   transition maps is dealt with by an adaption table. For example the three
-   states
+The idea behind 'template compression' is to combine the transition maps of
+multiple similar states into a single transition map. The difference in the
+transition maps is dealt with by an adaption table. For example the three
+states
 
-         .---- 'a' --> 2        .---- 'a' --> 2        .---- 'a' --> 2
-         |                      |                      |
-       ( A )-- 'e' --> 0      ( B )-- 'e' --> 1      ( C )-- 'e' --> 2
-         |                      |                      |
-         `---- 'x' --> 5        `---- 'x' --> 5        `---- 'y' --> 5
+     .---- 'a' --> 2        .---- 'a' --> 2        .---- 'a' --> 2
+     |                      |                      |
+   ( A )-- 'e' --> 0      ( B )-- 'e' --> 1      ( C )-- 'e' --> 2
+     |                      |                      |
+     `---- 'x' --> 5        `---- 'x' --> 5        `---- 'y' --> 5
 
-   can be combined into a single template state
+can be combined into a single template state
 
-                         .----- 'a' --> 2 
-                         |               
-                      ( T1 )--- 'e' --> Target0 
-                         |\               
-                         \  `-- 'x' --> Target1
-                          \
-                           `--- 'y' --> Target2
+                     .----- 'a' --> 2 
+                     |               
+                  ( T1 )--- 'e' --> Target0 
+                     |\               
+                     \  `-- 'x' --> Target1
+                      \
+                       `--- 'y' --> Target2
 
-   where the targets Target0, Target1, and Target2 are adapted. If the template
-   has to mimik state A then Target0 needs to be 1, Target1 is 5, and Target2
-   is 'drop-out'. The adaptions can be stored in a table:
+where the targets Target0, Target1, and Target2 are adapted. If the template
+has to mimik state A then Target0 needs to be 1, Target1 is 5, and Target2
+is 'drop-out'. The adaptions can be stored in a table:
 
-                                A     B     C
-                       Target0  0     1     2
-                       Target1  5     5     drop
-                       Target2  drop  drop  5
+                            A     B     C
+                   Target0  0     1     2
+                   Target1  5     5     drop
+                   Target2  drop  drop  5
 
-   The columns in the table tell how the template behaves if it operates on
-   behalf of a certain state--here A, B, and C. Practically, a state_key is
-   associated with each state, e.g. 0 for state A, 1 for state B, and 2 for
-   state C.  Thus, a state that is implemented in a template is identified by
-   'template index' and 'state key', i.e.
+The columns in the table tell how the template behaves if it operates on
+behalf of a certain state--here A, B, and C. Practically, a state_key is
+associated with each state, e.g. 0 for state A, 1 for state B, and 2 for
+state C.  Thus, a state that is implemented in a template is identified by
+'template index' and 'state key', i.e.
 
-            templated state <--> (template index, state_key)
+        templated state <--> (template index, state_key)
 
-   The combination of multiple states reduces memory consumption. The
-   efficiency increases with the similarity of the transition maps involved.
-   The less differences there are in the trigger intervals, the less additional
-   intervals need to be added. The less differences there are in target states,
-   the less information needs to be stored in adaption tables.
+The combination of multiple states reduces memory consumption. The
+efficiency increases with the similarity of the transition maps involved.
+The less differences there are in the trigger intervals, the less additional
+intervals need to be added. The less differences there are in target states,
+the less information needs to be stored in adaption tables.
 
-   Result ______________________________________________________________________
+RESULT ______________________________________________________________________
 
+The result of analyzis of template state compression is:
 
-   The result of analyzis of template state compression is:
-    
-              A list of 'TemplateState' objects. 
+          A list of 'TemplateState' objects. 
 
-   A TemplateState carries:
-   
-     -- A trigger map, i.e. a list of intervals together with target state
-        lists to which they trigger. If there is only one associated target
-        state, this means that all involved states trigger to the same target
-        state.
+A TemplateState carries:
 
-     -- A list of involved states. A state at position 'i' in the list has
-        the state key 'i'. It is the key into the adaption table mentioned
-        above.
+ -- A trigger map, i.e. a list of intervals together with target state
+    lists to which they trigger. If there is only one associated target
+    state, this means that all involved states trigger to the same target
+    state.
 
-   Algorithm __________________________________________________________________
+ -- A list of involved states. A state at position 'i' in the list has
+    the state key 'i'. It is the key into the adaption table mentioned
+    above.
 
-   Not necessarily all states can be combined efficiently with each other. The
-   following algorithm finds successively best combinations and stops when no
-   further useful combinations can be found. 
+ALGORITHM __________________________________________________________________
 
-   Each state has a transition map, i.e. an object that tells on what character
-   code the analyzer jump to what states:
+Not necessarily all states can be combined efficiently with each other. The
+following algorithm finds successively best combinations and stops when no
+further useful combinations can be found. 
 
-             transition map:  interval  --> target state
+Each state has a transition map, i.e. an object that tells on what character
+code the analyzer jump to what states:
 
-   The algorithm works as follows:
+         transition map:  interval  --> target state
 
-      (1) Compute for each possible pair of states a TemplateStateCandidate. 
+The algorithm works as follows:
 
-          (1.1) Compute the 'gain of combination' for candidate.
+  (1) Compute for each possible pair of states a TemplateStateCandidate. 
 
-          (1.2) Do not consider to combine states where the 'gain' is 
-                below MinGain.
+      (1.1) Compute the 'gain of combination' for candidate.
 
-          (1.3) Register the candidate in 'candidate_list'.
+      (1.2) Do not consider to combine states where the 'gain' is 
+            below MinGain.
 
-      (4) Pop best candidate from candidate_list. If no more reasonable
-          candidates present, then stop.
-            
-      (5) With given candidate goto (1.1)
+      (1.3) Register the candidate in 'candidate_list'.
 
-   The above algorithm is supported by TemplateStateCandidate being derived
-   from TemplateState.
+  (4) Pop best candidate from candidate_list. If no more reasonable
+      candidates present, then stop.
+        
+  (5) With given candidate goto (1.1)
 
-   Measurement of the 'Gain Value' ____________________________________________
+The above algorithm is supported by TemplateStateCandidate being derived
+from TemplateState.
 
-   The measurement of the gain value happens inside a TemplateStateCandidate. 
-   It is a function of the similarity of the states. In particular the entries, 
-   the drop_outs and the transition map is considered. 
+Measurement of the 'Gain Value' ____________________________________________
 
-   Transition Map of a TemplateState __________________________________________
+The measurement of the gain value happens inside a TemplateStateCandidate. 
+It is a function of the similarity of the states. In particular the entries, 
+the drop_outs and the transition map is considered. 
 
-   The transition map of a template state is a list of (interval, target)
-   tuples as it is in a normal AnalyzerState. In an AnalyzerState the target
-   can only be a scalar value indicating the target state. The target object of
-   a TemplateState, though, can be one of the following:
+Transition Map of a TemplateState __________________________________________
 
-        E_StateIndices.RECURSIVE -- which means that the template recurses
-                                    to itself.
+The transition map of a template state is a list of (interval, target)
+tuples as it is in a normal AnalyzerState. In an AnalyzerState the target
+can only be a scalar value indicating the target state. The target object of
+a TemplateState, though, can be one of the following:
 
-        Scalar Value X           -- All states that are involved in the template
-                                    trigger for the given interval to the same
-                                    state given by 'X'.
+    E_StateIndices.RECURSIVE -- which means that the template recurses
+                                to itself.
 
-        MegaState_Target T       -- which means that the target state depends 
-                                    on the state_key. 'T[state_key]' tells the
-                                    target state when the templates operates
-                                    for a state given by 'state_key'.
+    Scalar Value X           -- All states that are involved in the template
+                                trigger for the given interval to the same
+                                state given by 'X'.
+
+    MegaState_Target T       -- which means that the target state depends 
+                                on the state_key. 'T[state_key]' tells the
+                                target state when the templates operates
+                                for a state given by 'state_key'.
 
 """
 def do(TheAnalyzer, MinGain, CompressionType, 
