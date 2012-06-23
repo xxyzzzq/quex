@@ -1,0 +1,73 @@
+---------------------------
+Pattern0 = [A-MO-RT-Z][a-z]*
+Pattern1 = [A-MO-RT-Z][a-z]*
+claim =  True
+
+Pattern0 = [A-MO-RT-Z][a-z]*
+Pattern1 = [A-MO-RT-Z][a-z]*
+claim =  True
+---------------------------
+Pattern0 = [abd-fh-z][a-z]*
+Pattern1 = [abd-fh-z][a-z]*
+claim =  True
+
+Pattern0 = [abd-fh-z][a-z]*
+Pattern1 = [abd-fh-z][a-z]*
+claim =  True
+---------------------------
+Pattern0 = 12(A(B?)C|DE(F?))+
+Pattern1 = 12(DE(F?)|A(B?)C)+
+claim =  True
+
+Pattern0 = 12(DE(F?)|A(B?)C)+
+Pattern1 = 12(A(B?)C|DE(F?))+
+claim =  True
+---------------------------
+Pattern0 = 12((B?)|(F?))34
+Pattern1 = 12[BF]?34
+claim =  True
+
+Pattern0 = 12[BF]?34
+Pattern1 = 12((B?)|(F?))34
+claim =  True
+---------------------------
+Pattern0 = [a-cx-z]*((B?)|(F?))34
+Pattern1 = (a?|b?|c?|x?|y?|z?)+[BF]?34
+claim =  True
+
+Pattern0 = (a?|b?|c?|x?|y?|z?)+[BF]?34
+Pattern1 = [a-cx-z]*((B?)|(F?))34
+claim =  True
+---------------------------
+Pattern0 = [a-c]?A
+Pattern1 = (a?|b|c)A
+claim =  True
+
+Pattern0 = (a?|b|c)A
+Pattern1 = [a-c]?A
+claim =  True
+NOTE: The '?' creates a 'free path' so that 'a?|b' is equivalent to 'a?|b?' and '[ab]?'
+---------------------------
+Pattern0 = 12((A?|D)(A?|E))*34
+Pattern1 = 12((A?|E)(A?|D))+34
+claim =  True
+
+Pattern0 = 12((A?|E)(A?|D))+34
+Pattern1 = 12((A?|D)(A?|E))*34
+claim =  True
+---------------------------
+Pattern0 = 12(("Alf"?|"Didi")("Alf"?|"Elf"))*34
+Pattern1 = 12(("Alf"?|"Elf")("Alf"?|"Didi"))+34
+claim =  True
+
+Pattern0 = 12(("Alf"?|"Elf")("Alf"?|"Didi"))+34
+Pattern1 = 12(("Alf"?|"Didi")("Alf"?|"Elf"))*34
+claim =  True
+---------------------------
+Pattern0 = 12((A?|D|E))*34
+Pattern1 = 12((A?|E)(A?|D))+34
+claim =  True
+
+Pattern0 = 12((A?|E)(A?|D))+34
+Pattern1 = 12((A?|D|E))*34
+claim =  True

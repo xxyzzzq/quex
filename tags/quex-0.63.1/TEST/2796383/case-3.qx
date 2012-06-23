@@ -1,0 +1,11 @@
+token_type {
+name = a;
+standard {
+}
+}
+token {
+A;
+}
+mode START {
+"A" => QUEX_TKN_A;
+}

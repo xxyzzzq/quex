@@ -1,0 +1,25 @@
+class QToken;
+inline void    QUEX_NAME_TOKEN(construct)(QToken* __this);
+inline void    QUEX_NAME_TOKEN(destruct)(QToken* __this);
+inline void    QUEX_NAME_TOKEN(copy)(QToken* me, const QToken* That);
+inline bool    QUEX_NAME_TOKEN(take_text)(QToken*            __this, 
+inline size_t  QUEX_NAME_TOKEN(repetition_n_get)(QToken* __this);
+inline void    QUEX_NAME_TOKEN(repetition_n_set)(QToken* __this, size_t N);
+class QToken {
+    QToken();
+    QToken(const QToken& That);
+    QToken& operator=(const QToken& That) 
+    ~QToken();
+        friend void QUEX_NAME_TOKEN(copy)(QToken* me, const QToken* That);
+        friend bool QUEX_NAME_TOKEN(take_text)(QToken*            __this, 
+QToken::QToken()
+QToken::QToken(const QToken& Other)
+QToken::~QToken()
+QUEX_NAME_TOKEN(construct)(QToken* __this)
+    new ((void*)__this) QToken;
+QUEX_NAME_TOKEN(destruct)(QToken* __this)
+    __this->QToken::~QToken();  
+QUEX_NAME_TOKEN(copy)(QToken* __this, const QToken* __That)
+QUEX_NAME_TOKEN(take_text)(QToken*              __this, 
+QUEX_NAME_TOKEN(repetition_n_get)(QToken* __this)
+QUEX_NAME_TOKEN(repetition_n_set)(QToken* __this, size_t N)

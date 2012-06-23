@@ -1,0 +1,59 @@
+init-state = 0L
+00000 (15, 30), (28, 58), (1, 2), (5, 10)
+     == 'a' ==> 00001
+    
+00001 (1, 3, A), (5, 11, A, pre=8), (15, 31), (28, 59)
+     == 'b' ==> 00002
+    
+00002 (15, 32, A, pre=18), (28, 60)
+     == 'c' ==> 00003
+    
+00003 (28, 61, A, pre=31)
+    
+
+State 0:
+  .entry:
+    .from NONE:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 1:
+  .entry:
+    .from 0:
+  .drop_out:
+     goto Pattern1;
+
+
+State 2:
+  .entry:
+    .from 1:
+  .drop_out:
+    if PreContext_18:  goto Pattern15;
+    pos -= 1;  goto Pattern1;
+
+
+State 3:
+  .entry:
+    .from 2:
+  .drop_out:
+    if PreContext_31:  goto Pattern28;
+    else if PreContext_18: pos -= 1;  goto Pattern15;
+    pos -= 2;  goto Pattern1;
+
+
+State 0:
+        [FAILURE]: NONE/set([0L])
+
+State 1:
+        [      1]: NONE/set([1L])
+
+State 2:
+        [      1]: NONE/set([1L])
+        [     15]: 18/set([2L])
+
+State 3:
+        [      1]: NONE/set([1L])
+        [     15]: 18/set([2L])
+        [     28]: 31/set([3L])
+

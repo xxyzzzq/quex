@@ -1,0 +1,39 @@
+< SOURCES  = tiny_lexer  tiny_lexer.cpp  tiny_lexer-token_ids  \
+< 		   tiny_lexer-configuration
+< WSOURCES = tiny_wlexer tiny_wlexer.cpp tiny_wlexer-token_ids \
+< 		   tiny_wlexer-configuration
+---
+> SOURCES  = tiny_lexer.h  tiny_lexer.c  tiny_lexer-token_ids.h  \
+> 		   tiny_lexer-token.h tiny_lexer-token.c \
+> 		   tiny_lexer-configuration.h
+> WSOURCES = tiny_wlexer.h tiny_wlexer.c tiny_wlexer-token_ids.h \
+> 		   tiny_wlexer-token.h tiny_wlexer-token.c \
+> 		   tiny_wlexer-configuration.h
+< COMPILER = g++ -ggdb -Wall -pedantic 
+---
+> COMPILER = gcc -ggdb -Wall -pedantic 
+< stdinlexer: stdinlexer.cpp tiny_lexer_st.cpp 
+---
+> stdinlexer: stdinlexer.c tiny_lexer_st.c 
+< tiny_lexer_st.cpp:   hello.qx $(QUEX_CORE)
+---
+> tiny_lexer_st.c: hello.qx $(QUEX_CORE)
+> 		 --language C                        \
+< 	quex -i simple.qx --engine tiny_lexer --token-policy single
+---
+> 	quex -i simple.qx --engine tiny_lexer \
+> 		 --language C                     \
+> 		 # CERTAINLY NOT: "--bet wchar_t" 
+< 	quex -i simple.qx --engine tiny_wlexer --bet wchar_t --token-policy single
+---
+> 	quex -i simple.qx --engine tiny_wlexer \
+> 		 --language C                      \
+> 	  	 --bet wchar_t 
+< # -- The general way to get .o from .cpp
+< %.o: %.cpp $(SOURCES) $(WSOURCES)
+---
+> # -- The general way to get .o from .c
+> %.o: %.c $(SOURCES) $(WSOURCES)
+< 	rm -f wchar_t-example.txt # created by wlexer.cpp
+---
+> 	rm -f wchar_t-example.txt # created by wlexer.c
