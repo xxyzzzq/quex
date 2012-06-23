@@ -9,8 +9,6 @@ from   quex.engine.analyzer.state.drop_out import DropOut, \
                                                   DropOutBackwardInputPositionDetection
 from   quex.blackboard import E_AcceptanceIDs, E_TransitionN, E_StateIndices
 
-import sys
-
 class TemplateStateCandidate(object):
     """A TemplateStateCandidate determines a tentative template combination 
        of two states (where each one of them may already be a TemplateState).
@@ -28,6 +26,7 @@ class TemplateStateCandidate(object):
         drop_out_gain       = _compute_drop_out_gain(StateA.drop_out, StateB.drop_out)
         transition_map_gain = _transition_map_gain(StateA, StateB)
 
+        ## print "#gains:", entry_gain, drop_out_gain, transition_map_gain
         self.__gain         = entry_gain + drop_out_gain + transition_map_gain
         self.__state_a      = StateA
         self.__state_b      = StateB
@@ -75,6 +74,99 @@ class Cost:
         result += self.__jump_n       * 8  # Bytes (= 4 bytes command + 4 bytes address)
         return result
                
+def _compute_entry_gain(A, B):
+    """Computes 'gain' with respect to entry actions, if two states are
+    combined.
+    """
+    # Every different command list requires a separate door.
+    # => Entry cost is proportional to number of unique command lists.
+    # => Gain =   number of unique command lists of A an B each
+    #           - number of unique command lists of Combined(A, B)
+    A_unique_cl_set = set(ta.command_list for ta in A.action_db.itervalues())
+    B_unique_cl_set = set(ta.command_list for ta in B.action_db.itervalues())
+    # (1) Compute sizes BEFORE setting Combined_cl_set = A_unique_cl_set
+    A_size = len(A_unique_cl_set)
+    B_size = len(B_unique_cl_set)
+    # (2) Compute combined cost
+    Combined_cl_set = A_unique_cl_set  # reuse 'A_unique_cl_set'
+    Combined_cl_set.update(B_unique_cl_set)
+    return Cost(AssignmentN = A_size + B_size - len(Combined_cl_set)).total()
+    
+def _compute_drop_out_gain(A, B):
+    """Computes 'gain' with respect to drop-out actions, if two states are
+    combined.
+    """
+    a_cost_db = dict((drop_out, _drop_out_cost(drop_out, len(state_index_list))) \
+                     for drop_out, state_index_list in A.iteritems())
+    b_cost_db = dict((drop_out, _drop_out_cost(drop_out, len(state_index_list))) \
+                     for drop_out, state_index_list in B.iteritems())
+
+    # (1) Compute sum BEFORE setting 'combined_cost_db = a_cost_db'!
+    ab_sum = 0
+    for cost in a_cost_db.itervalues():
+        ab_sum += cost
+
+    for cost in b_cost_db.itervalues():
+        ab_sum += cost
+
+    # (2) Compute combined cost
+    combined_cost_db = a_cost_db       # reuse 'a_cost_db'
+    combined_cost_db.update(b_cost_db)
+
+    # Each state in the Template requires some routing: switch(state_key) { ... case 4: ... }
+    # Thus, there is some 'cost = C * state number' for a template state. However, 
+    # "state_a_n * C + state_b_n * C = combined_state_n * C" which falls out
+    # when the subtraction is done.
+    c_sum = 0
+    for cost in combined_cost_db.itervalues():
+        c_sum += cost
+
+    return ab_sum - c_sum
+
+def _drop_out_cost(X, StateIndexN):
+    if   isinstance(X, DropOutBackward):
+        # Drop outs in pre-context checks all simply transit to the begin 
+        # of the forward analyzer. No difference.
+        return Cost(0, 0, 0).total()
+
+    elif isinstance(X, DropOutBackwardInputPositionDetection):
+        # Drop outs of backward input position handling either do not
+        # happen or terminate input position detection.
+        return Cost(0, 0, 0).total()
+
+    assert isinstance(X, DropOut)
+    # One Acceptance Check implies:
+    #    if( pre_condition == Const ) acceptance = const; 
+    # in pseudo-assembler:
+    #    jump-if-not (pre_condition == Const) --> goto After
+    #    acceptance = Const;
+    # After:
+    #        ...
+    La = len(filter(lambda x: x.acceptance_id != E_AcceptanceIDs.VOID, X.get_acceptance_checker()))
+    assignment_n  = La
+    goto_n        = La
+    cmp_n         = La
+    # (2) Terminal Routing:
+    #         jump-if-not (acceptance == Const0 ) --> Next0
+    #         goto TerminalXY
+    #     Next0:
+    #         jump-if-not (acceptance == Const0 ) --> Next1
+    #         position = something;
+    #         goto TerminalYZ
+    #     Next1:
+    #         ...
+    Lt = len(X.get_terminal_router())
+    assignment_n += len(filter(lambda x:     x.positioning != E_TransitionN.VOID 
+                                         and x.positioning != E_TransitionN.LEXEME_START_PLUS_ONE, 
+                        X.get_terminal_router()))
+    cmp_n  += Lt
+    goto_n += Lt  
+
+    return Cost(AssignmentN = assignment_n, 
+                ComparisonN = cmp_n, 
+                JumpN       = goto_n).total() * StateIndexN
+
+
 def _transition_map_gain(StateA, StateB):
     """Estimate the gain that can be achieved by combining two transition
        maps into a signle one.
@@ -87,97 +179,6 @@ def _transition_map_gain(StateA, StateB):
 
     return ((a_cost + b_cost) - combined_cost).total()
 
-def _compute_entry_gain(A, B):
-    """Computes 'gain' with respect to entry actions, if two states are
-    combined.
-    """
-    # Every different command list requires a separate door.
-    # => Entry cost is proportional to number of unique command lists.
-    # => Gain =   number of unique command lists of A an B each
-    #           - number of unique command lists of Combined(A, B)
-    A_unique_cl_set = set(ta.command_list for ta in A.action_db.itervalues())
-    B_unique_cl_set = set(ta.command_list for ta in B.action_db.itervalues())
-    A_size = len(A_unique_cl_set)
-    B_size = len(B_unique_cl_set)
-    Combined_cl_set = A_unique_cl_set#
-    Combined_cl_set.update(B_unique_cl_set)
-    return Cost(AssignmentN = A_size + B_size - len(Combined_cl_set)).total()
-    
-def _compute_drop_out_gain(A, B):
-    """Computes 'gain' with respect to drop-out actions, if two states are
-    combined.
-    """
-    a_cost_db = dict((drop_out, _drop_out_cost(drop_out)) for drop_out in A.iterkeys())
-    b_cost_db = dict((drop_out, _drop_out_cost(drop_out)) for drop_out in A.iterkeys())
-
-    combined_cost_db = a_cost_db
-    combined_cost_db.update(b_cost_db)
-
-    ab_sum = 0
-    for cost in a_cost_db.itervalues():
-        ab_sum += cost.total()
-    for cost in b_cost_db.itervalues():
-        ab_sum += cost.total()
-
-    c_sum = 0
-    for cost in combined_cost_db.itervalues():
-        c_sum += cost.total()
-
-    return ab_sum - c_sum
-
-def _drop_out_cost(X):
-    if   isinstance(X, DropOut):
-        # (1) One Acceptance Check implies:
-        #        if( pre_condition == Const ) acceptance = const; 
-        #     in pseudo-assembler:
-        #        jump-if-not (pre_condition == Const) --> goto After
-        #        acceptance = Const;
-        #     After:
-        #        ...
-        La = len(filter(lambda x: x.acceptance_id != E_AcceptanceIDs.VOID, X.get_acceptance_checker()))
-        assignment_n  = La
-        goto_n        = La
-        cmp_n         = La
-        # (2) Terminal Routing:
-        #         jump-if-not (acceptance == Const0 ) --> Next0
-        #         goto TerminalXY
-        #     Next0:
-        #         jump-if-not (acceptance == Const0 ) --> Next1
-        #         position = something;
-        #         goto TerminalYZ
-        #     Next1:
-        #         ...
-        Lt = len(X.get_terminal_router())
-        assignment_n += len(filter(lambda x:     x.positioning != E_TransitionN.VOID 
-                                             and x.positioning != E_TransitionN.LEXEME_START_PLUS_ONE, 
-                            X.get_terminal_router()))
-        cmp_n  += Lt
-        goto_n += Lt  
-
-        return Cost(AssignmentN = assignment_n, 
-                    ComparisonN = cmp_n, 
-                    JumpN       = goto_n)
-
-    elif isinstance(X, DropOutBackward):
-        # Drop outs in pre-context checks all simply transit to the begin 
-        # of the forward analyzer. No difference.
-        return Cost(0, 0, 0)
-
-    elif isinstance(X, DropOutBackwardInputPositionDetection):
-        # Drop outs of backward input position handling either do not
-        # happen or terminate input position detection.
-        return Cost(0, 0, 0)
-
-    else:
-        assert False, X.__class__.__name__
-
-def __transition_cost(InvolvedStateN, IntervalN, SchemeN):
-    border_n = IntervalN - 1
-    jump_n   = IntervalN * 2  # because: if 'jump', else 'jump'
-    cmp_n    = border_n
-    byte_n   = SchemeN * InvolvedStateN * 4  # assume 4 bytes per entry in scheme
-    return Cost(ComparisonN=cmp_n, JumpN=jump_n, ByteN=byte_n)
-
 def _transition_cost_single(State):
     """Computes the storage consumption of a transition map.
     """
@@ -188,7 +189,6 @@ def _transition_cost_single(State):
                              IntervalN      = len(State.transition_map),
                              SchemeN        = scheme_n)
     
-
 def _transition_cost_combined(StateA, StateB):
     """Computes the storage consumption of a transition map.
     """
@@ -205,8 +205,14 @@ def _transition_cost_combined(StateA, StateB):
 
     scheme_n = len(scheme_set)
 
-
     return __transition_cost(involved_state_n, interval_n, scheme_n)
+
+def __transition_cost(InvolvedStateN, IntervalN, SchemeN):
+    border_n = IntervalN - 1
+    jump_n   = IntervalN * 2  # because: if 'jump', else 'jump'
+    cmp_n    = border_n
+    byte_n   = SchemeN * InvolvedStateN * 4  # assume 4 bytes per entry in scheme
+    return Cost(ComparisonN=cmp_n, JumpN=jump_n, ByteN=byte_n)
 
 class TargetFactory:
     """Produces MegaState_Target-s based on the combination of two MegaState_Target-s

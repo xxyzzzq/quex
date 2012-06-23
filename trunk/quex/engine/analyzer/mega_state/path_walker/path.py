@@ -135,7 +135,6 @@ class CharacterPath(object):
             # Adapt information about entry and drop-out actions
             self.drop_out.update_from_state(State)
 
-
     def get_uniform_entry_command_list_along_path(self):
         """When a state is entered (possibly) some commands are executed, for
            example 'position[1] = input_p' or 'last_acceptance = 13'. The states

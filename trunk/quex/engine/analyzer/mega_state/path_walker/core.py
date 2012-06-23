@@ -200,7 +200,7 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
 
                 -- There is a single character transition to them.
                 -- The state itself is not part of the path yet.
-                   recursions cannot be modelled by a PathWalkerState.
+                   Loops cannot be modelled by a PathWalkerState.
                 -- The transition map fits the transition map of the 
                    given path.
 
@@ -234,17 +234,21 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
                 transition_char = trigger_set.get_the_only_element()
                 if transition_char is None: continue
 
-                # A PathWalkerState cannot implement a recursion.
-                if path.contains_state(target_index): continue # Recursion--don't go!
+                # A PathWalkerState cannot implement a loop.
+                if path.contains_state(target_index): continue # Loop--don't go!
 
                 target_state = self.analyzer.state_db[target_index]
-                # Do the transitions fit the 'skeleton'?
+
+                # Do the transitions fit the path's transition map?
                 target_door_id = target_state.entry.get_door_id(target_index, State.index)
                 plug           = path.match(transition_map, target_door_id, transition_char)
                 if plug is None: continue # No match possible 
 
                 # If required, can uniformity be maintained?
-                if self.uniform_f and not PathFinder.check_uniformity(path, target_state): continue
+                uniform_drop_out_expected_f = False
+                if self.uniform_f:
+                    if not PathFinder.check_uniformity(path, target_state): continue
+                    uniform_drop_out_expected_f = True
 
                 # RECURSION STEP ______________________________________________
                 # May be, we do not have to clone the transition map if plug == -1
@@ -252,6 +256,10 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
 
                 # Find a continuation of the path
                 new_path.append_state(State, transition_char)
+
+                if uniform_drop_out_expected_f:
+                    assert len(new_path.drop_out) == 1
+
                 if plug != -1: new_path.plug_wildcard(plug)
 
                 sub_list.append((new_path, target_state))

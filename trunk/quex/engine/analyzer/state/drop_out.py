@@ -32,11 +32,12 @@ class DropOut(object):
        NOTE: This type supports being a dictionary key by '__hash__' and '__eq__'.
              Required for the optional 'template compression'.
     """
-    __slots__ = ("__acceptance_checker", "__terminal_router")
+    __slots__ = ("__acceptance_checker", "__terminal_router", "__hash")
 
     def __init__(self):
         self.__acceptance_checker = []
         self.__terminal_router    = []
+        self.__hash               = None
 
     @property
     def restore_acceptance_f(self):
@@ -47,6 +48,7 @@ class DropOut(object):
     def set_acceptance_checker(self, AC):
         assert isinstance(AC, list)
         self.__acceptance_checker = AC
+        self.__hash               = None
 
     def get_acceptance_checker(self):
         return self.__acceptance_checker
@@ -54,6 +56,7 @@ class DropOut(object):
     def set_terminal_router(self, TR):
         assert isinstance(TR, list)
         self.__terminal_router = TR
+        self.__hash            = None
 
     def get_terminal_router(self):
         return self.__terminal_router
@@ -66,13 +69,22 @@ class DropOut(object):
     def accept(self, PreContextID, PatternID):
         self.__acceptance_checker.append(
              AcceptanceCheckerElement(PreContextID, PatternID))
+        self.__hash = None
 
     def route_to_terminal(self, PatternID, TransitionNSincePositioning):
         self.__terminal_router.append(
              TerminalRouterElement(PatternID, TransitionNSincePositioning))
+        self.__hash = None
 
     def __hash__(self):
-        return hash(len(self.__acceptance_checker) * 10 + len(self.__terminal_router))
+        if self.__hash is None:
+            h = 0x5A5A5A5A
+            for x in self.__acceptance_checker:
+                h ^= hash(x.pre_context_id) ^ hash(x.acceptance_id)
+            for x in self.__terminal_router:
+                h ^= hash(x.positioning) ^ hash(x.acceptance_id)
+            self.__hash = h
+        return self.__hash
 
     def __neq__(self, Other):
         assert False, "Use __eq__()"
