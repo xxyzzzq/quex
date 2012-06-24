@@ -1,4 +1,4 @@
-"""MegaStates _________________________________________________________________
+"""MEGA STATES _________________________________________________________________
 
 A 'MegaState' is a state which absorbs and implements multiple AnalyzerState-s
 in a manner that is beneficial in terms of code size, computational speed, or
@@ -27,7 +27,6 @@ target state index for the given character interval.
 
 The following pinpoints the general idea of a MegaState.
 
---------------------------------------------------------------------------
     MegaStateEntry:
  
         ... entry doors of absorbed states ...
@@ -45,8 +44,7 @@ The following pinpoints the general idea of a MegaState.
     MegaState_DropOut:
 
         ... drop-out actions of absorbed states ...
-
---------------------------------------------------------------------------
+_______________________________________________________________________________
 
 This file provides two special classes for to represent 'normal' 
 AnalyzerState-s:
@@ -59,21 +57,27 @@ AnalyzerState-s:
 -- AbsorbedState:   represent an AnalyzerState in the original state database,
                     even though it is absorbed by a MegaState.
 
---------------------------------------------------------------------------
+_______________________________________________________________________________
 (C) 2012 Frank-Rene Schaefer
 """
-from   quex.engine.analyzer.state.core               import AnalyzerState
-from   quex.engine.analyzer.state.entry              import Entry
-from   quex.engine.analyzer.state.drop_out           import DropOut, DropOutBackward, DropOutBackwardInputPositionDetection
-from   quex.engine.analyzer.state.entry_action       import DoorID
-from   quex.blackboard                               import E_StateIndices
+from quex.engine.analyzer.state.core         import AnalyzerState
+from quex.engine.analyzer.state.entry        import Entry
+from quex.engine.analyzer.state.drop_out     import DropOut, \
+                                                    DropOutBackward, \
+                                                    DropOutBackwardInputPositionDetection
+from quex.engine.analyzer.state.entry_action import DoorID
+from quex.blackboard                         import E_StateIndices
 
-from   copy import copy
+from copy import copy
 
 class MegaState_Entry(Entry):
     """________________________________________________________________________
     
-    Implements a common base class for Entry classes of MegaState-s.
+    Implements a common base class for Entry classes of MegaState-s. During
+    analysis, only the '.action_db' (map: TransitionID --> ComandList) is
+    worked upon. Once, all MegaState-s are configured the entries function
+    '.door_tree_configure()' may be called to termined '.door_db' and 
+    '.transition_db' as well as the 'door tree' itself.
     ___________________________________________________________________________
     """
     def __init__(self, MegaStateIndex):
@@ -99,7 +103,7 @@ class MegaState(AnalyzerState):
           Determines the state_index on whose behalf the MegaState acts, if its
           state_key is as specified.
 
-       'bad_company'
+       '.bad_company'
 
           Keeps track of indices of AnalyzerState-s which are not good company.
           Algorithms that try to combine multiple MegaState-s into one (e.g.
@@ -170,6 +174,12 @@ class MegaState(AnalyzerState):
         return self.__bad_company
 
     def finalize_transition_map(self, StateDB):
+        """Finalizes the all involved targets in the transition map. Due
+        to some mega state analysis door ids may have changed. Thus, some 
+        common states may be entered through different doors, etc.
+
+        Call '.finalize()' for each involved MegaState_Target.
+        """
         scheme_db = {}
         for i, info in enumerate(self.transition_map):
             interval, target = info
@@ -337,9 +347,9 @@ class MegaState_Target(object):
 
         if self.scheme is not None:
             assert len(self.scheme) == L
-            # The 'scheme' may result in the same DoorID of a MegaState, for
-            # example. In that case  case the 'scheme' would translate into a
-            # direct transition to target state.
+            # The targets in a 'scheme' may be implemented by the same MegaState--
+            # with the CommandList at state entry. In this case, a target state
+            # scheme translates into a common transition to target DoorID.
             prototype = None
             for state_index in implemented_state_index_list:
                 state_key = TheMegaState.map_state_index_to_state_key(state_index)
@@ -350,7 +360,7 @@ class MegaState_Target(object):
                     # => Only give it a chance as long as no DROP_OUT target appears.
                     target_entry = StateDB[target_state_index].entry
                     door_id      = target_entry.get_door_id(target_state_index, state_index)
-                    if prototype is None:      prototype = door_id; continue
+                    if   prototype is None:    prototype = door_id; continue
                     elif prototype == door_id: continue
 
                 # The scheme is indeed not uniform => Stay with the scheme
@@ -365,7 +375,9 @@ class MegaState_Target(object):
             assert self.target_state_index is not None
             # The common target state may be entered by different doors
             # depending on the 'from_state' which is currently implemented by
-            # the MegaState. Then, it translates into a scheme.
+            # the MegaState. Then, a common 'target_state_index' translates into 
+            # a target scheme. DoorID's for each element are computed later
+            # depending on the '.implemented_state_index_list'.
             target_entry = StateDB[self.target_state_index].entry
             prototype    = None
             for state_index in implemented_state_index_list:
@@ -412,12 +424,10 @@ class MegaState_Target(object):
 MegaState_Target_DROP_OUT      = MegaState_Target(E_StateIndices.DROP_OUT)
 
 class MegaState_DropOut(dict):
-    """ABSTRACT: ______________________________________________________________
+    """_________________________________________________________________________
     
     Map: 'DropOut' object --> indices of states that implement the 
                               same drop out actions.
-
-    EXPLANATION: ______________________________________________________________
 
     For example, if four states 1, 4, 7, and 9 have the same drop_out behavior
     DropOut_X, then this is stated by an entry in the dictionary as
@@ -429,7 +439,7 @@ class MegaState_DropOut(dict):
 
              __hash__          --> get the right 'bucket'.
              __eq__ or __cmp__ --> compare elements of 'bucket'.
-    ___________________________________________________________________________
+    ____________________________________________________________________________
     """
     def __init__(self, *StateList):
         """Receives a list of states, extracts the drop outs and associates 
