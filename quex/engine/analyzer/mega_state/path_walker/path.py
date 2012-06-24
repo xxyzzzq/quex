@@ -1,15 +1,30 @@
 from   quex.engine.analyzer.state.core         import AnalyzerState
-from   quex.engine.analyzer.state.entry_action import DoorID, SetPathIterator
+from   quex.engine.analyzer.state.entry_action import DoorID, \
+                                                      SetPathIterator
 from   quex.engine.analyzer.mega_state.core    import MegaState_Entry, \
                                                       MegaState_DropOut
-import quex.engine.analyzer.transition_map     as transition_map_tools
+import quex.engine.analyzer.transition_map     as     transition_map_tools
 import quex.engine.state_machine.index         as     index
 
-from   quex.blackboard               import E_StateIndices
+from   quex.blackboard import E_StateIndices
 
-from itertools   import ifilter
+from   itertools import ifilter
 
 class PathWalkerState_Entry(MegaState_Entry):
+    """________________________________________________________________________
+
+    Entry into a PathWalkerState. A PathWalkerState is a MegaState, meaning 
+    it implements multiple states at once. Entries into the PathWalkerState
+    must set the 'state key' for the state that it is about to represent.
+    The 'state key' of a PathWalkerState' is the offset of the path iterator
+    from the character path's base.
+
+    During analysis, only the '.action_db' is of interest. There the 
+    'SetPathIterator' Command is added for each transition. After analysis
+    '.door_tree_configure()' may be called and those actions are combined
+    propperly.
+    ___________________________________________________________________________
+    """
     def __init__(self, MegaStateIndex, TheEntry):
         MegaState_Entry.__init__(self, MegaStateIndex)
 
@@ -20,15 +35,15 @@ class PathWalkerState_Entry(MegaState_Entry):
 
     def action_db_update(self, TheEntry, Offset):
         """Include 'TheState.entry.action_db' into this state. That means,
-           that any mapping:
+        that any mapping:
            
                 transition (StateIndex, FromStateIndex) --> CommandList 
 
-           is absorbed in 'self.__action_db'. Additionally, any command list
-           must contain the 'SetTemplateStateKey' command that sets the state key for
-           TheState. At each (external) entry into the Template state the
-           'state_key' must be set, so that the template state can operate
-           accordingly.  
+        is absorbed in 'self.__action_db'. Additionally, any command list must
+        contain the 'SetTemplateStateKey' command that sets the state key for
+        TheState. At each (external) entry into the Template state the
+        'state_key' must be set, so that the template state can operate
+        accordingly.  
         """
         for transition_id, action in TheEntry.action_db.iteritems():
             clone = action.clone()
@@ -38,6 +53,16 @@ class PathWalkerState_Entry(MegaState_Entry):
             self.action_db[transition_id] = clone
 
 class CharacterPathElement(object):
+    """________________________________________________________________________
+
+    Element on the path: '.state_index' of the state on the path and 
+    '.transition_char_to_next' which is the character which triggers
+    to the subsequent state.
+
+    '.transition_char_to_next' == None indicates that '.state_index' is
+    the terminal state of a path.
+    ___________________________________________________________________________
+    """
     __slots__ = ("state_index", "transition_char_to_next")
     def __init__(self, StateIndex, TransitionChar):
         self.state_index             = StateIndex
@@ -47,17 +72,20 @@ class CharacterPathElement(object):
         return CharacterPathElement(self.state_index, self.transition_char_to_next)
 
 class CharacterPath(object):
-    """A set of states that can be walked along with a character sequence plus
-       a common remaining transition map (here called 'skeleton').
+    """________________________________________________________________________
+
+    A chain of states that can be walked along with a character sequence plus a
+    common remaining transition map.
+    ___________________________________________________________________________
     """
     __slots__ = ("index", "entry", "drop_out", "__sequence", "__transition_map", "__wildcard_char")
 
     def __init__(self, StartState, StartCharacter, AdaptedTransitionMap):
-        assert StartState is None     or isinstance(StartState, AnalyzerState)
-        assert StartCharacter is None or isinstance(StartCharacter, (int, long))
-        assert AdaptedTransitionMap is None or isinstance(AdaptedTransitionMap, list)
-
         if StartState is None: return # Only for Clone
+
+        assert StartState is None           or isinstance(StartState, AnalyzerState)
+        assert StartCharacter is None       or isinstance(StartCharacter, (int, long))
+        assert AdaptedTransitionMap is None or isinstance(AdaptedTransitionMap, list)
 
         self.index    = index.get()
         self.entry    = PathWalkerState_Entry(self.index, StartState.entry)
@@ -65,11 +93,10 @@ class CharacterPath(object):
 
         self.__sequence         = [ CharacterPathElement(StartState.index, StartCharacter) ]
         self.__transition_map   = AdaptedTransitionMap
-        # Set the 'void' target to indicate wildcard.
-        transition_map_tools.set(self.__transition_map, StartCharacter, E_StateIndices.VOID)
-        self.__wildcard_char  = StartCharacter
 
-        ## print "#construct: {\n%s}" % transition_map_tools.get_string(self.__transition_map)
+        # Set the 'void' target to indicate wildcard.
+        self.__wildcard_char    = StartCharacter
+        transition_map_tools.set(self.__transition_map, StartCharacter, E_StateIndices.VOID)
 
     def clone(self):
         result = CharacterPath(None, None, None)
@@ -98,11 +125,6 @@ class CharacterPath(object):
     def sequence(self):
         return self.__sequence
 
-    def has_state_index(self, StateIndex):
-        for state_index, char in self.__sequence[:-1]:
-            if state_index == StateIndex: return True
-        return False
-
     @property
     def transition_map(self):
         return self.__transition_map
@@ -112,13 +134,21 @@ class CharacterPath(object):
         return self.__sequence[-1].state_index
 
     def append_state(self, State, TransitionCharacterToNextState=None):
-        """Append 'State' to path. If 'TransitionCharacterToNextState' is
-        None, then the state is considered a terminal state. Terminal states
-        are not themselves implemented inside a PathWalkerState. Thus, their
-        entry and drop out information does not have to be absorbed.
+        """Append 'State' to path:
 
-        Terminal states are indicated in the 'sequence' by a 'transition_char_to_next'
-        of 'None' (which corresponds well with the aforementioned.
+        -- add 'State' to the sequence of states on the path.
+
+        -- absorb the 'State's' drop-out and entry actions into 
+           the path's drop-out and entry actions.
+        
+        If 'TransitionCharacterToNextState' is None, then the state is
+        considered a terminal state. Terminal states are not themselves
+        implemented inside a PathWalkerState. Thus, their entry and drop out
+        information does not have to be absorbed.
+
+        Terminal states are indicated in the 'sequence' by a
+        'transition_char_to_next' of 'None' (which corresponds well with the
+        aforementioned).
         """
 
         # The index of the state on the path determines the path iterator's offset
@@ -137,18 +167,18 @@ class CharacterPath(object):
 
     def get_uniform_entry_command_list_along_path(self):
         """When a state is entered (possibly) some commands are executed, for
-           example 'position[1] = input_p' or 'last_acceptance = 13'. The states
-           on the path may require also actions to be taken when walking along
-           the path. 
+        example 'position[1] = input_p' or 'last_acceptance = 13'. The states
+        on the path may require also actions to be taken when walking along the
+        path. 
 
-           This function determines whether those commands are always the same
-           or not.
+        This function determines whether those commands are always the same
+        or not.
 
-           THIS DOES NOT INCLUDE THE TERMINAL STATE! 
-           THE ENTRY OF THE TERMINAL STATE IS NOT PART OF THE PATHWALKER!
+        THIS DOES NOT INCLUDE THE TERMINAL STATE! 
+        THE ENTRY OF THE TERMINAL STATE IS NOT PART OF THE PATHWALKER!
 
-           RETURNS: ComandList -- if the commands are uniform.
-                    None       -- if the commands are not uniform.
+        RETURNS: ComandList -- if the commands are uniform.
+                 None       -- if the commands are not uniform.
         """
         # A path where there are not at least two states, is not a path.
         assert len(self.__sequence) >= 2
@@ -192,6 +222,7 @@ class CharacterPath(object):
         uniform_entry = self.get_uniform_entry_command_list_along_path()
         if uniform_entry is None: # Actually, this could be an assert. This function is only
             return False          # to be executed when building uniform paths.
+
         action = self.entry.action_db_get_command_list(State.index, self.__sequence[-1].state_index)
         if not uniform_entry.is_equivalent(action.command_list):
             return False
@@ -202,22 +233,20 @@ class CharacterPath(object):
 
                         TriggerCharToTarget --> DoorID
 
-           has been detected. The question is, if the remaining transitions of
-           the state match the skeleton of the current path. There might be a
-           wild card, that is the character that is overlapped by the first
-           single character transition.  As long as a transition map differs
-           only by this single character, the wild card is plugged into the
-           position.
+        has been detected. The question is, if the remaining transitions of the
+        state match the transition map of the current path. There might be a wild
+        card, that is the character that is overlapped by the first single
+        character transition.  As long as a transition map differs only by this
+        single character, the wild card is plugged into the position.
 
-           RETURNS: 
-                int > 0, the character that the wild card shall take so
-                         that the skeleton matches the TransitionMap.
+        RETURNS: int > 0, the character that the wild card shall take so that the
+                          path's transition map matches the TransitionMap.
 
-                    - 1, if skeleton and TransitionMap match anyway and
-                         no wild card plug is necessary.
+                     - 1, if path's transition map and TransitionMap match anyway 
+                          and no wild card plug is necessary.
 
-                   None, if there is no way that the skeleton and the
-                         TransitionMap could match.
+                    None, if there is no way that the path's transition map and the
+                          TransitionMap could match.
         """
         wildcard_target = -1
         for begin, end, a_target, b_target in transition_map_tools.zipped_iterable(self.__transition_map,
@@ -255,6 +284,7 @@ class CharacterPath(object):
         new_sequence =  Other.sequence() \
                       + [ CharacterPathElement(StateIndex, TransitionChar) ] \
                       + self.__sequence[:i+1]
+
         return CharacterPathElement(new_sequence)
 
     def finalize(self):
@@ -269,13 +299,8 @@ class CharacterPath(object):
         assert self.__wildcard_char is not None
         assert transition_map_tools.get_target(self.__transition_map, self.__wildcard_char) == E_StateIndices.VOID
 
-        ## print "#wildcard:", chr(self.__wildcard_char), Target
-        ## print "#before plug: {\n%s}" % transition_map_tools.get_string(self.__transition_map)
-
         transition_map_tools.set(self.__transition_map, self.__wildcard_char, Target)
 
-        ## print "#after plug: {\n%s}" % transition_map_tools.get_string(self.__transition_map)
-        
         self.__wildcard_char = None
         return 
 
@@ -307,35 +332,3 @@ class CharacterPath(object):
     def __len__(self):
         return len(self.__sequence)
 
-def can_plug_to_equal(Set0, Char, Set1):
-    """Determine whether the character 'Char' can be plugged
-       to Set0 to make both sets equal.
-
-       (1) If Set0 contains elements that are not in Set1, then 
-           this is impossible.
-       (2) If Set1 contains elements that are not in Set0, then
-           it is possible, if the difference is a single character.
-
-       NOTE:
-                Set subtraction: A - B != empty, 
-                                 A contains elements that are not in B.
-    """
-    # If interval number differs more than one, then no single
-    # character can do the job.
-    if Set1.interval_number() - Set0.interval_number() > 1: return False
-    # It is possible that Set0 has more intervals than Set1, e.g.
-    # Set0 = {[1,2], [4]}, and Set1={[1,4]}. In this example, '3'
-    # can plug Set0 to be equal to Set1. A difference > 1 is impossible,
-    # because, one character can plug at max. one 'hole'.
-    if Set0.interval_number() - Set1.interval_number() > 1: return False
-
-    # Does Set0 contain elements that are not in Set1?
-    # if not Set0.difference(Set1).is_empty(): return False
-    if not Set1.is_superset(Set0): return False
-
-    # If there is no difference to make up for, then no plugging possible.
-    # if Set1.difference(Set0).is_empty(): return False
-    if Set0.is_superset(Set1): return False
-
-    delta = Set1.difference(Set0)
-    return delta.contains_only(Char)

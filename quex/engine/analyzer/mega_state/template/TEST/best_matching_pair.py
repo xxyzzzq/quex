@@ -38,14 +38,15 @@ def test(TriggerMapList):
     for state in analyzer.state_db.itervalues():
         state.entry.door_tree_configure()
 
-    db = templates.Process(analyzer, 33, E_Compression.TEMPLATE, analyzer.state_db.keys())
+    elect_db       = templates.ElectDB(analyzer.state_db, analyzer.state_db.keys())
+    candidate_list = templates.CandidateList(elect_db, False, 33)
 
     print "Gain Matrix"
     print "State0  State1 Gain"
-    for element in db.candidate_list:
+    for element in candidate_list:
         print "%i      %i      %i" % (element[0], element[1], element[2].gain)
 
-    elect = db.pop_best()
+    elect = candidate_list.pop_best()
     print "Best matching pair: ",
     if elect is None: print "None"
     else:            

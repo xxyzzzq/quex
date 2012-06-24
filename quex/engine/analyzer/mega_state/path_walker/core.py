@@ -1,115 +1,124 @@
-# (C) 2010 Frank-Rene Schaefer
-from   quex.engine.misc.tree_walker                      import TreeWalker
-import quex.engine.analyzer.transition_map               as transition_map_tools
+# (C) 2010-2012 Frank-Rene Schaefer
 from   quex.engine.analyzer.mega_state.path_walker.path  import CharacterPath
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
-from   quex.engine.analyzer.state.entry_action           import TransitionID, TransitionAction
+from   quex.engine.analyzer.state.entry_action           import TransitionID, \
+                                                                TransitionAction
+import quex.engine.analyzer.transition_map               as     transition_map_tools
+from   quex.engine.misc.tree_walker                      import TreeWalker
 from   quex.blackboard                                   import E_Compression
+
 from   collections import defaultdict
-"""
-PATH COMPRESSION: __________________________________________________________
 
-Path compression tries to find paths of single character transitions inside a
-state machine. A sequence of single character transitions is called a 'path'.
-Instead of implementing each state in isolation a special MegaState, a
-'PathWalkerState', implements the states on the path by 'path walking'. That
-is, it compares the current input with the current character on the path. If it
-fits, it continues on the path, if not it enters the PathWalkerState's
-transition map. The transition map of all AnalyzerState-s absorbed by a
-PathWalkerState must be the same.
-
-EXPLANATION: _______________________________________________________________
-
-For path compression, traits of single character transitions are identified
-while the remaining transitions of the involved states are the same (or covered
-by what is triggered by the current path element). This type of compression is
-useful in languages that contain keywords. Consider for example a state
-machine, containing the key-word 'for':
-
-
-( 0 )-- 'f' --->( 1 )-- 'o' --->( 2 )-- 'r' -------->(( 3 ))--( [a-z] )-.
-   \               \               \                                    |
-    \               \               \                                   |
-     `--([a-eg-z])---`--([a-np-z])---`--([a-qs-z])-->(( 4 ))<-----------'
-
-
-The states 0, 1, and 2 can be implemented by a special MegaState 'path walker'.
-It consists of a common transition map which is preceded by a single character
-check. The single character check changes along a fixed path: the sequence of
-characters 'f', 'o', 'r'. This is shown in the following pseudo-code:
-
-  /* Character sequence of path is stored in array. */
-  character array[4] = { 'f', 'o', 'r', PTC, };
-
-  0: p = &array[0]; goto PATH_WALKER_1;
-  1: p = &array[1]; goto PATH_WALKER_1;
-  2: p = &array[2]; goto PATH_WALKER_1;
-
-  PATH_WALKER_1:
-     /* Single Character Check */
-     if   input == *p: ++p; goto PATH_WALKER_1;
-     elif input == PTC:     goto StateAfterPath;
-     elif *p == 0:          goto STATE_3;
-
-     /* Common Transition Map: The 'skeleton transition map' */
-     if   x < 'a': drop out
-     elif x > 'z': drop out
-     else:         goto STATE_4
-
-The array with the character sequence ends with a path terminating character
-PTC.  It acts similar to the 'terminating zero' in classical C Strings. This
-way it can be detected when to trigger to the first state after the path.
-The common transition map is called 'skeleton'. For a state to be part 
-of the path, it must hold that 
-
-    'state.transition_map - character transition' matches 'skeleton'
-
-where 'character transition' is the character on which it transits to its
-subsequent state. 
-
-Each state which is part of a path, can be identified by the identifier of the
-PathWalkerState + the position on the path (+ the id of the path, if a
-PathWalkerState walks more than one path), i.e.
-
-     state on path <--> (PathWalkerState.index, path iterator position)
-
-Assume that in the above example the path is the 'PATH_WALKER_1' and the
-character sequence is given by an array:
-
-     path_1_sequence = { 'f', 'o', 'r', PTC };
-         
-then the three states 0, 1, 2 are identified as follows
-
-         STATE_0  <--> (PATH_WALKER_1, path_1_sequence)
-         STATE_1  <--> (PATH_WALKER_1, path_1_sequence + 1)
-         STATE_2  <--> (PATH_WALKER_1, path_1_sequence + 2)
-
-The PathWalkerState implements dedicated entries for each state on a path,
-where the path iterator is set to the appropriate position.
-
-RESULT: _____________________________________________________________________
-
-Dictionary:
-
-       AnalyzerState.index  --->  PathWalkerState which implements it.
-
-That is, all keys of the returned dictionary are AnalyzerState-s which have
-been absorbed by a PathWalkerState.
-
-NOTE: _______________________________________________________________________
-
-Inheritance:
-
-      AnalyzerState <----- MegaState <------- PathWalkerState
-
-
-(C) 2009-2012 Frank-Rene Schaefer
-"""
 def do(TheAnalyzer, CompressionType, AvailableStateIndexList=None, MegaStateList=None):
+    """PATH COMPRESSION: _______________________________________________________
 
+    Path compression tries to find paths of single character transitions inside a
+    state machine. A sequence of single character transitions is called a 'path'.
+    Instead of implementing each state in isolation a special MegaState, a
+    'PathWalkerState', implements the states on the path by 'path walking'. That
+    is, it compares the current input with the current character on the path. If it
+    fits, it continues on the path. If it does not it enters the PathWalkerState's
+    transition map. The transition map of all AnalyzerState-s absorbed by a
+    PathWalkerState must be the same.
+
+    (In practical, the transition map may be adapted later. DoorIDs may change as 
+    target states from the transition map are implemented by MegaState-s.)
+
+    EXPLANATION: _______________________________________________________________
+
+    For path compression, traits of single character transitions are identified
+    while the remaining transitions of the involved states are the same (or covered
+    by what is triggered by the current path element). This type of compression is
+    useful in languages that contain keywords. Consider for example a state
+    machine, containing the key-word 'for':
+
+
+    ( 0 )-- 'f' --->( 1 )-- 'o' --->( 2 )-- 'r' -------->(( 3 ))--( [a-z] )-.
+       \               \               \                                    |
+        \               \               \                                   |
+         `--([a-eg-z])---`--([a-np-z])---`--([a-qs-z])-->(( 4 ))<-----------'
+
+
+    The states 0, 1, and 2 can be implemented by a special MegaState 'path walker'.
+    It consists of a common transition map which is preceded by a single character
+    check. The single character check changes along a fixed path: the sequence of
+    characters 'f', 'o', 'r'. This is shown in the following pseudo-code:
+
+      /* Character sequence of path is stored in array. */
+      character array[4] = { 'f', 'o', 'r', PTC, };
+
+      0: p = &array[0]; goto PATH_WALKER_1;
+      1: p = &array[1]; goto PATH_WALKER_1;
+      2: p = &array[2]; goto PATH_WALKER_1;
+
+      PATH_WALKER_1:
+         /* Single Character Check */
+         if   input == *p: ++p; goto PATH_WALKER_1;
+         elif input == PTC:     goto StateAfterPath;
+         elif *p == 0:          goto STATE_3;
+
+         /* Common Transition Map: The 'skeleton transition map' */
+         if   x < 'a': drop out
+         elif x > 'z': drop out
+         else:         goto STATE_4
+
+    The array with the character sequence ends with a path terminating character
+    PTC.  It acts similar to the 'terminating zero' in classical C Strings. This
+    way it can be detected when to trigger to the terminal state, i.e. the first
+    state after the path. For a state to be part of the path, it must hold that 
+
+                'state.transition_map - transition character' 
+        matches 'path.transition_map'
+
+    where 'transition character' is the character on which it transits to its
+    subsequent state. The 'transition character' is a 'wildcard', because it 
+    is handled in the pathwalker's head and not as part of the path walker's
+    body (if state_key = this state).
+
+    Each state which is part of a path, can be identified by the identifier of the
+    PathWalkerState + the position on the path (+ the id of the path, if a
+    PathWalkerState walks more than one path), i.e.
+
+         state on path <--> (PathWalkerState.index, path iterator position)
+
+    Assume that in the above example the path is the 'PATH_WALKER_1' and the
+    character sequence is given by an array:
+
+         path_1_sequence = { 'f', 'o', 'r', PTC };
+             
+    then the three states 0, 1, 2 are identified as follows
+
+             STATE_0  <--> (PATH_WALKER_1, path_1_sequence)
+             STATE_1  <--> (PATH_WALKER_1, path_1_sequence + 1)
+             STATE_2  <--> (PATH_WALKER_1, path_1_sequence + 2)
+
+    In the MegaState terminology, the path iterator position acts as a 'state_key'
+    which identifies the state the pathwalker current represents.  The
+    PathWalkerState implements dedicated entry doors for each state on a path,
+    where the path iterator (~ state  key) is set to the appropriate position.
+
+    RESULT: _____________________________________________________________________
+
+    Dictionary:
+
+           AnalyzerState.index  --->  PathWalkerState which implements it.
+
+    That is, all keys of the returned dictionary are AnalyzerState-s which have
+    been absorbed by a PathWalkerState.
+
+    NOTE: _______________________________________________________________________
+
+    Inheritance:
+
+          AnalyzerState <----- MegaState <------- PathWalkerState
+
+
+    (C) 2009-2012 Frank-Rene Schaefer
+    """
     assert CompressionType in [E_Compression.PATH, E_Compression.PATH_UNIFORM]
 
-    if AvailableStateIndexList is None: AvailableStateIndexList = TheAnalyzer.state_db.keys()
+    if AvailableStateIndexList is None: 
+        AvailableStateIndexList = TheAnalyzer.state_db.keys()
 
     # (*) Find all single character transitions (paths) inside TheAnalyzer's 
     #     state machine.
@@ -125,12 +134,13 @@ def do(TheAnalyzer, CompressionType, AvailableStateIndexList=None, MegaStateList
     return group(path_list, TheAnalyzer, CompressionType)
 
 def collect(TheAnalyzer, CompressionType, AvailableStateIndexList):
-    """Starting from each state in the state machine, search for paths
-       which begin from it.
+    """Starting point of path search. Try for each state in the state
+    machine to find paths which branch from it.
     """
     AvailableStateIndexSet = set(AvailableStateIndexList)
     done_set = set()
 
+    # (1) Consider first the states which immediately follow the initial state.
     path_list = []
     for state_index in TheAnalyzer.state_db[TheAnalyzer.init_state_index].map_target_index_to_character_set.iterkeys():
         if   state_index == TheAnalyzer.init_state_index: continue
@@ -140,6 +150,8 @@ def collect(TheAnalyzer, CompressionType, AvailableStateIndexList):
                                 CompressionType, AvailableStateIndexSet))
         done_set.add(state_index)
 
+    # (2) All other states. Their analysis may actually be covered
+    #     already by what was triggered by (1)
     for state_index in TheAnalyzer.state_db.iterkeys():
         if   state_index in done_set:                     continue
         elif state_index == TheAnalyzer.init_state_index: continue
@@ -151,14 +163,10 @@ def collect(TheAnalyzer, CompressionType, AvailableStateIndexList):
 
 def __find(analyzer, StateIndex, CompressionType, AvailableStateIndexSet):
     """Searches for the BEGINNING of a path, i.e. a single character transition
-    to a subsequent state. If such a transition is found, a 'skeleton' transition
-    map is computed. A 'skeleton' is a transition map which contains 'wildcards' 
-    for the characters which constitute the path's transition. For a subsequent
-    state to be part of the path, its transition map must match that skeleton. 
-       
-    This function is not recursive. It simply iterates over all states in the
-    state machine. For each state, in isolation, it checks wether it might be
-    the beginning of a path.
+    to a subsequent state. If such a transition is found, a search for a path
+    is initiated (call to '__find_continuation(..)').
+
+    This function itself it not recursive.
     """
     result_list = []
 
@@ -172,7 +180,7 @@ def __find(analyzer, StateIndex, CompressionType, AvailableStateIndexSet):
 
         # Only single character transitions can be element of a path.
         transition_char = trigger_set.get_the_only_element()
-        if transition_char is None: continue
+        if transition_char is None:                    continue # Not a single char transition.
 
         result = __find_continuation(analyzer, CompressionType, AvailableStateIndexSet, 
                                      State, transition_map, transition_char, target_idx)
@@ -183,6 +191,14 @@ def __find(analyzer, StateIndex, CompressionType, AvailableStateIndexSet):
 
 def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet, 
                         FromState, FromTransitionMap, TransitionChar, TargetIndex):
+    """A single character transition has been found for a given state 'FromState'.
+    Thus, this function sets up a CharacterPath object that is the 'head' of
+    a potential path to be found. 
+
+    This function is its nature recursive. To avoid problems with stack size,
+    it relies on 'TreeWalker'.
+    """
+
     class PathFinder(TreeWalker):
         """Recursive search for single character transition paths inside the 
         given state machine. Assume, that a first single character transition
@@ -224,7 +240,6 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
             transition_map = transition_map_tools.relate_to_door_ids(State.transition_map, 
                                                                      self.analyzer, 
                                                                      State.index)
-
             # BRANCH __________________________________________________________
             sub_list = []
             for target_index, trigger_set in State.map_target_index_to_character_set.iteritems():
@@ -298,7 +313,7 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
             RETURNS: 'True' sub-graph has to be considered.
                      'False' sub-graph does not have to be considered.
             """
-            if   ThePath.has_wildcard():      return True
+            if   ThePath.has_wildcard():         return True
             elif StateIndex not in self.info_db: return True
 
             done_f = False
@@ -332,11 +347,11 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
     return path_finder.result
 
 def select(path_list):
-    """The desribed paths may have intersections, but a state can only
-       appear in one single path. From each set of intersecting pathes 
-       choose only the longest one.
+    """The desribed paths may have intersections, but a state can only appear
+    in one single path. From each set of intersecting pathes choose only the
+    longest one.
 
-       Function modifies 'path_list'.
+    Function modifies 'path_list'.
     """
     def get_best_path(AvailablePathList):
         """The best path is the path that brings the most gain. The 'gain'
@@ -388,17 +403,15 @@ def select(path_list):
     def compute_gain(path, opportunity_db, AvailablePathListIterable):
         """What happens if 'path' is chosen?
 
-       -- Paths which contain any of its state_indices become unavailable.
-          (states can only be implemented once) => forbidden paths.
-
-       -- States in a forbidden path which are not in state_index_set cannot
-          be implemented, except that they are implemented by another path
-          which does not intersect with this path.
-
-       RETURN: 
-
-          [0] 'gain' of choosing 'path' 
-          [1] set of ids of paths which are forbidden if 'path' is chosen.
+           -- Paths which contain any of its state_indices become unavailable.
+              (states can only be implemented once) => forbidden paths.
+           
+           -- States in a forbidden path which are not in state_index_set cannot
+              be implemented, except that they are implemented by another path
+              which does not intersect with this path.
+           
+          RETURNS: [0] 'gain' of choosing 'path' 
+                   [1] set of ids of paths which are forbidden if 'path' is chosen.
         """
         # -- The states implemented by path
         state_index_set = path.state_index_set
@@ -445,12 +458,11 @@ def select(path_list):
         del work_db[elect.index]
     return result
 
-            
 def group(CharacterPathList, TheAnalyzer, CompressionType):
     """Different character paths may be walked down by the same pathwalker, if
-       certain conditions are met. This function groups the given list of
-       character paths and assigns them to PathWalkerState-s. The PathWalkerState-s
-       can then immediately be used for code generation.
+    certain conditions are met. This function groups the given list of
+    character paths and assigns them to PathWalkerState-s. The
+    PathWalkerState-s can then immediately be used for code generation.  
     """
     path_walker_list = []
     for candidate in CharacterPathList:

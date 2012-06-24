@@ -8,9 +8,9 @@ from   quex.engine.analyzer.mega_state.core         import MegaState, \
 from   quex.engine.analyzer.mega_state.template.candidate  import TargetFactory
 from   quex.engine.interval_handling                import Interval
 
-
 class TemplateState_Entry(MegaState_Entry):
-    """MegaState-Entry for Template States.
+    """________________________________________________________________________
+    MegaState-Entry for Template States.
 
        Recall some things about a state's 'Entry': 
        
@@ -32,6 +32,7 @@ class TemplateState_Entry(MegaState_Entry):
 
        -- 'Entry.door_db' maps:       'TransitionID' --> 'DoorID'
        -- 'Entry.transition_db' maps: 'DoorID' --> 'TransitionID'
+    ___________________________________________________________________________
     """
     def __init__(self, RelatedMegaStateIndex, StateIndexToStateKeyDB, *EntryList):
         MegaState_Entry.__init__(self, RelatedMegaStateIndex)

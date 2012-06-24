@@ -1,14 +1,12 @@
 # (C) 2012 Frank-Rene Schaefer
-from   quex.engine.analyzer.mega_state.core             import AbsorbedState
 import quex.engine.analyzer.mega_state.template.core    as     template_analyzer
 import quex.engine.analyzer.mega_state.path_walker.core as     path_analyzer
-from   quex.blackboard                                  import E_Compression
-from   quex.blackboard                                  import setup as Setup
+from   quex.engine.analyzer.mega_state.core             import AbsorbedState
+from   quex.blackboard                                  import setup as Setup, \
+                                                               E_Compression
 
 def do(TheAnalyzer):
-    """MegaState Construction
-
-    ABSTRACT: _________________________________________________________________
+    """MegaState Analysis _____________________________________________________
 
     Normal states are potentially absorbed by MegaState-s which represent more
     than one single state at once.
@@ -19,8 +17,9 @@ def do(TheAnalyzer):
     ___________________________________________________________________________
     """
     mega_state_db = {}
-    # -- The 'remainder' keeps track of states which have not yet been
-    #    absorbed into a MegaState.
+
+    # The 'remainder' keeps track of states which have not yet been
+    # absorbed into a MegaState.
     remainder = set(TheAnalyzer.state_db.keys())
     remainder.remove(TheAnalyzer.init_state_index)
 

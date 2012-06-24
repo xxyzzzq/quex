@@ -1,21 +1,32 @@
+# (C) 2010-2012 Frank-Rene Schaefer
 import quex.engine.analyzer.transition_map      as transition_map_tools
 from   quex.engine.analyzer.state.entry_action  import SetPathIterator, DoorID
 from   quex.engine.analyzer.mega_state.core     import MegaState, MegaState_Target
 from   quex.blackboard                          import E_Compression
 
 class PathWalkerState(MegaState):
-    """A path walker state is a state that can walk along one or more paths
+    """________________________________________________________________________
+    A path walker state is a state that can walk along one or more paths
     with the same remaining transition map. Objects of this class are the basis
     for code generation.
+    ___________________________________________________________________________
     """
     def __init__(self, FirstPath, TheAnalyzer, CompressionType):
 
         self.__path_list = [ FirstPath.sequence() ]
-        entry    = PathWalkerState.adapt_path_walker_id_and_path_id(FirstPath.index, FirstPath.entry, PathID=0)
+
+        entry    = PathWalkerState.adapt_path_walker_id_and_path_id(FirstPath.index, 
+                                                                    FirstPath.entry, 
+                                                                    PathID=0)
         drop_out = FirstPath.drop_out   # map: drop_out --> state_index_list
+
         MegaState.__init__(self, entry, drop_out, FirstPath.index)
 
         # original_transition_map: interval --> DoorID
+        #
+        #     '.accept(...)' requires a 'DoorID - transition_map' for 
+        #     comparison. Thus, keep original transition map as reference.
+        #
         # transition_map:          interval --> MegaState_Target
         self.__original_transition_map = FirstPath.transition_map
         self.transition_map = PathWalkerState.prepare_transition_map(self.__original_transition_map)
@@ -107,7 +118,7 @@ class PathWalkerState(MegaState):
     @staticmethod
     def adapt_path_walker_id_and_path_id(PathWalkerIndex, TheEntry, PathID):
         """Ensure that any 'SetPathIterator' contains the right references
-           to the pathwalker and path id.
+        to the pathwalker and path id.
         """
         for action in TheEntry.action_db.itervalues():
             found_f = False
@@ -208,19 +219,6 @@ class PathWalkerState(MegaState):
             elif prototype != PathWalkerState.get_terminal_door_id(sequence, StateDB):
                 return None
         return prototype
-
-    def get_path_info(self, StateIdx):
-        """[0] Path ID: Index of the path where StateIdx is located
-                        (This can only be one)
-           [1] Path Offset: Position of StateIdx in its path.
-           [2] Base Offset: Position of StateIdx in the path walkers
-                            character sequence 'base'.
-        """
-        for path_id, path in enumerate(self.__path_list):
-            # Last state path[-1][0] is the first state after path is terminated.
-            for path_offset, candidate in enumerate(path[:-1]):
-                if candidate[0] == StateIdx: return path_id, path_offset
-        assert False
 
     def delete_transitions_on_path(self):
         """Deletes all transitions that lie on the path. That is safe with respect
