@@ -1,22 +1,27 @@
 # vim:set encoding=utf8:
-"""
-(C) 2010-2011 Frank-Rene Schäfer
-"""
-import quex.engine.analyzer.transition_map as     transition_map_tools
+# (C) 2010-2012 Frank-Rene Schäfer
 from   quex.engine.analyzer.mega_state.core import MegaState_Target
-from   quex.engine.analyzer.state.drop_out import DropOut, \
-                                                  DropOutBackward, \
-                                                  DropOutBackwardInputPositionDetection
-from   quex.blackboard import E_AcceptanceIDs, E_TransitionN, E_StateIndices
+from   quex.engine.analyzer.state.drop_out  import DropOut, \
+                                                   DropOutBackward, \
+                                                   DropOutBackwardInputPositionDetection
+import quex.engine.analyzer.transition_map  as     transition_map_tools
+
+from   quex.blackboard import E_AcceptanceIDs, \
+                              E_TransitionN, \
+                              E_StateIndices
 
 class TemplateStateCandidate(object):
-    """A TemplateStateCandidate determines a tentative template combination 
-       of two states (where each one of them may already be a TemplateState).
-       It sets up a TemplateState and determines the 'gain of combination'.
+    """________________________________________________________________________
+    
+    A TemplateStateCandidate determines a tentative template combination of two
+    states (where each one of them may already be a TemplateState).  It sets up
+    a TemplateState and determines the 'gain of combination'.
 
-       The 'Cost' class is used to describe gain/cost as a multi-attribute
-       measure. The member '.total()' determines a scalar value by means
-       of a heuristics.
+    The 'Cost' class is used to describe gain/cost as a multi-attribute
+    measure. The member '.total()' determines a scalar value by means of a
+    heuristics.
+
+    ___________________________________________________________________________
     """
     __slots__ = ("__gain", "__state_a", "__state_b")
 
@@ -26,7 +31,6 @@ class TemplateStateCandidate(object):
         drop_out_gain       = _compute_drop_out_gain(StateA.drop_out, StateB.drop_out)
         transition_map_gain = _transition_map_gain(StateA, StateB)
 
-        ## print "#gains:", entry_gain, drop_out_gain, transition_map_gain
         self.__gain         = entry_gain + drop_out_gain + transition_map_gain
         self.__state_a      = StateA
         self.__state_b      = StateB
@@ -63,10 +67,10 @@ class Cost:
                     ByteN       = self.__byte_n       - Other.__byte_n)
 
     def total(self):
-        """The following is only a heuristic with no claim to be perfect.
-           It is able to distinguish between the good and the bad cases.
-           But, it may fail to distinguish properly between cases that 
-           are close to each other in quality. So, no too much to worry about.
+        """The following is only a heuristic with no claim to be perfect.  It
+        is able to distinguish between the good and the bad cases.  But, it may
+        fail to distinguish properly between cases that are close to each other
+        in quality. So, no too much to worry about.
         """
         result  = self.__byte_n
         result += self.__assignment_n * 12 # Bytes (= 4 bytes command + 4 bytes address + 4 bytes value) 
@@ -215,8 +219,21 @@ def __transition_cost(InvolvedStateN, IntervalN, SchemeN):
     return Cost(ComparisonN=cmp_n, JumpN=jump_n, ByteN=byte_n)
 
 class TargetFactory:
-    """Produces MegaState_Target-s based on the combination of two MegaState_Target-s
-       which are associated each with a State (MegaState, or PseudoMegaState).
+    """________________________________________________________________________
+    
+    The 'TargetFactory' is concerned with the combination of two 
+    MegaState_Target-s from two transition maps--assumed that they trigger on
+    the same character range. The TargetFactory accomplishes two jobs:
+
+        .get(A, B): 
+        
+           --> MegaState_Target target implements target A and B.
+
+        .update_scheme_set(A, B, scheme_set)
+
+           --> supports cost computation for the combination of two 
+               transition maps.
+    ___________________________________________________________________________
     """
     def __init__(self, StateA, StateB):
         self.__length_a = len(StateA.implemented_state_index_list())
@@ -225,6 +242,14 @@ class TargetFactory:
         self.__drop_out_scheme_b = (E_StateIndices.DROP_OUT,) * self.__length_b
 
     def get(self, TA, TB):
+        """RETURNS:
+        
+        A MegaState_Target which represents the combination of target A and
+        target B. If both are equal the MegaState_Target may have the
+        '.target_state_index' set. If not a 'scheme' is developped is
+        developed, which determines a target based on a state key, i.e.
+        'target_state_index = scheme[state_key]'.
+        """
         assert isinstance(TA, MegaState_Target) 
         assert isinstance(TB, MegaState_Target) 
 
@@ -256,12 +281,15 @@ class TargetFactory:
 
     @staticmethod
     def update_scheme_set(TA, TB, scheme_set):
+        """This function is used to count the number of different schemes in a
+        combination of transition maps. The number of different schemes is used
+        to determine the cost a combination of transition maps.
+        """
         assert isinstance(TA, MegaState_Target) 
         assert isinstance(TB, MegaState_Target) 
 
-        if TA.drop_out_f:
-            if TB.drop_out_f:
-                return 
+        if TA.drop_out_f and TB.drop_out_f:
+            return 
 
         elif TA.target_state_index is not None:
             if TB.target_state_index is not None and TA.target_state_index == TB.target_state_index:

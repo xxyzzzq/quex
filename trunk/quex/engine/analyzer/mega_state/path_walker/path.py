@@ -13,11 +13,17 @@ from   itertools import ifilter
 class PathWalkerState_Entry(MegaState_Entry):
     """________________________________________________________________________
 
-    Entry into a PathWalkerState. A PathWalkerState is a MegaState, meaning 
-    it implements multiple states at once. Entries into the PathWalkerState
-    must set the 'state key' for the state that it is about to represent.
-    The 'state key' of a PathWalkerState' is the offset of the path iterator
-    from the character path's base.
+    Entry into a PathWalkerState. As the base's base class 'Entry' it holds
+    information about what CommandList is to be executed upon entry from a
+    particular source state.
+    
+    PRELIMINARY: Documentation of class 'MegaState_Entry'.
+
+    A PathWalkerState is a MegaState, meaning it implements multiple states at
+    once. Entries into the PathWalkerState must have an action that sets the
+    'state key' for the state that it is about to represent. The 'state key'
+    of a PathWalkerState' is the offset of the path iterator from the character
+    path's base.
 
     During analysis, only the '.action_db' is of interest. There the 
     'SetPathIterator' Command is added for each transition. After analysis
@@ -28,9 +34,6 @@ class PathWalkerState_Entry(MegaState_Entry):
     def __init__(self, MegaStateIndex, TheEntry):
         MegaState_Entry.__init__(self, MegaStateIndex)
 
-        # '.action_db' => '.door_tree_configure()' => '.door_db'
-        #                                             '.transition_db'
-        #                                             '.door_id_replacement_db'
         self.action_db_update(TheEntry, 0)
 
     def action_db_update(self, TheEntry, Offset):
