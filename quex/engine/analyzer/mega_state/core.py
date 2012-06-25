@@ -73,11 +73,15 @@ from copy import copy
 class MegaState_Entry(Entry):
     """________________________________________________________________________
     
-    Implements a common base class for Entry classes of MegaState-s. During
-    analysis, only the '.action_db' (map: TransitionID --> ComandList) is
-    worked upon. Once, all MegaState-s are configured the entries function
-    '.door_tree_configure()' may be called to termined '.door_db' and 
-    '.transition_db' as well as the 'door tree' itself.
+    Implements a common base class for Entry classes of MegaState-s. Entries of
+    MegaState-s are special in a sense that they implement transitions to more
+    than one state. The '.action_db' of an Entry of an AnalyzerState contains
+    only transitions (from_index, to_index) where 'to_index == state_index'. A
+    MegaState implements two or more AnalyzerState-s, so the 'to_index' may
+    have more than one value in keys of '.action_db'.
+    
+    PRELIMINARY: Documentation of class 'Entry'.
+
     ___________________________________________________________________________
     """
     def __init__(self, MegaStateIndex):

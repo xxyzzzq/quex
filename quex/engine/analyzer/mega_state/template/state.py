@@ -1,59 +1,51 @@
-import quex.engine.state_machine.index              as     index
-import quex.engine.analyzer.transition_map          as     transition_map_tools
-from   quex.engine.analyzer.state.entry_action      import SetTemplateStateKey
 from   quex.engine.analyzer.mega_state.core         import MegaState, \
                                                            MegaState_Target, \
                                                            MegaState_Entry, \
                                                            MegaState_DropOut
 from   quex.engine.analyzer.mega_state.template.candidate  import TargetFactory
-from   quex.engine.interval_handling                import Interval
+import quex.engine.analyzer.transition_map          as     transition_map_tools
+from   quex.engine.analyzer.state.entry_action      import SetTemplateStateKey
+import quex.engine.state_machine.index              as     index
+from   quex.engine.interval_handling                       import Interval
 
 class TemplateState_Entry(MegaState_Entry):
     """________________________________________________________________________
-    MegaState-Entry for Template States.
 
-       Recall some things about a state's 'Entry': 
-       
-       -- An 'Entry' holds information about what actions are to be performed
-          upon entry into a state from a specific 'source state'. 
+    Entry into a TemplateState. As the base's base class 'Entry' it holds
+    information about what CommandList is to be executed upon entry from a
+    particular source state.
 
-       -- A 'TransitionID' consists of a pair 'source state index' and 'target
-          state index' and identifies a state transition.
+    PRELIMINARY: Documentation of class 'MegaState_Entry'.
 
-       -- A 'CommandList' contains a list commands to be coded.
-                  
-       -- The 'Entry.action_db' maps TransitionID-s to CommandList objects.
-          That is, it tells what commands have to be executed when the state is
-          entered from a specific source state.
+    A TemplateState is a MegaState, meaning it implements multiple states at
+    once. Entries into the TemplateState must have an action that sets the
+    'state key' for the state that it is about to represent. The 'state key'
+    of a PathWalkerState' is the offset of the path iterator from the character
+    path's base.
 
-       -- There are common elements in command lists. To avoid double code,
-          these are analyzed and the result is the 'door tree'.  Each 'source
-          state' can be associated with a door in the door tree.
-
-       -- 'Entry.door_db' maps:       'TransitionID' --> 'DoorID'
-       -- 'Entry.transition_db' maps: 'DoorID' --> 'TransitionID'
+    During analysis, only the '.action_db' is of interest. There the 
+    'SetTemplateStateKey' Command is added for each transition. After analysis
+    '.door_tree_configure()' may be called and those actions are combined
+    propperly.
     ___________________________________________________________________________
     """
     def __init__(self, RelatedMegaStateIndex, StateIndexToStateKeyDB, *EntryList):
         MegaState_Entry.__init__(self, RelatedMegaStateIndex)
 
-        # '.action_db' => '.door_tree_configure()' => '.door_db'
-        #                                             '.transition_db'
-        #                                             '.door_id_replacement_db'
         for entry in EntryList:
             self.action_db_update(entry, StateIndexToStateKeyDB)
 
     def action_db_update(self, TheEntry, StateIndexToStateKeyDB):
         """Include 'TheState.entry.action_db' into this state. That means,
-           that any mapping:
+        that any mapping:
            
-                transition (StateIndex, FromStateIndex) --> CommandList 
+              transition (StateIndex, FromStateIndex) --> CommandList 
 
-           is absorbed in 'self.__action_db'. Additionally, any command list
-           must contain the 'SetTemplateStateKey' command that sets the state
-           key for TheState. At each (external) entry into the Template state
-           the 'state_key' must be set, so that the template state can operate
-           accordingly.  
+        is absorbed in '.action_db'. Additionally, any CommandList must contain
+        the 'SetTemplateStateKey' command that sets the state key for the state
+        which is currently represented. At each (external) entry into the
+        Template state the 'state_key' must be set, so that the template state
+        can operate accordingly.
         """
         for transition_id, action in TheEntry.action_db.iteritems():
             clone = action.clone()
@@ -88,35 +80,17 @@ class TemplateState_Entry(MegaState_Entry):
             self.action_db[transition_id] = clone
 
 class TemplateState(MegaState):
-    """A TemplateState is a state that is implemented to represent multiple
-       similar states. For this it keeps a special transition map. If the
-       target state for a character interval depends on the represented state,
-       there is a target map which together with a 'state key' delivers the
-       target state when the templates acts on behalf of the state key's state.
+    """________________________________________________________________________
 
-       The template states are combined successively by the combination of 
-       two states where each one of them may also be a TemplateState. The
-       combination happens by means of the functions:
-       
-          self.__update_entry(...)  Which takes over the mappings from 
-                                    transition_id to command list. Also, 
-                                    it adds the 'SetTemplateStateKey' for each
-                                    entry.
+    A TemplateState implements multiple similar AnalyzerState-s. Its transition
+    map, its entry and drop-out sections function based on a 'state_key'. That
+    is, when a 'state_key' of an implemented AnalyzerState is set, the
+    transition map, the entry and drop-out sections act the same as the
+    correspondent sections in the original AnalyzerState.
 
-          combine_maps(...) which combines the transition maps of the 
-                            two states into a single transition map that
-                            may contain MegaState_Target-s. 
-                               
-          combine_drop_out_scheme(...) which combines DropOut and Entry schemes
-                                       of the two states.
-
-       Notably, the derived class TemplateStateCandidate takes an important
-       role in the construction of the TemplateState.
+    ___________________________________________________________________________
     """
     def __init__(self, Candidate):
-        # The 'index' remains None, as long as the TemplateState is not an 
-        # accepted element of a state machine. This makes sense, in particular
-        # for TemplateStateCandidates (derived from TemplateState). 
         StateA = Candidate.state_a
         StateB = Candidate.state_b
         my_index                    = index.get()

@@ -6,70 +6,81 @@ from   quex.blackboard import E_PreContextIDs,  \
 from   operator        import attrgetter
 
 class Entry(object):
-    """An Entry object stores commands to be executed at entry into a state.
-              
-       BASICS _________________________________________________________________
+    """________________________________________________________________________
 
-       Entry actions are relative from which state it is entered. Thus there
-       is something like a mapping 
+    An Entry object stores commands to be executed at entry into a state
+    depending on a particular source state.
+    
+    BASICS _________________________________________________________________
 
-                 from_state_index  --> list of commands
+    To keep track of entry actions, CommandList-s need to 
+    be associated with a TransitionID-s, i.e. pairs of (state_index,
+    from_state_index). This happens in the member '.action_db', i.e.
+    
+       .action_db:    (state_index, from_state_index) --> actions
 
-       A MegaState implements multiple (normal) states in once. Thus, the list
-       of commands need to be associated with a transition (state_index,
-       from_state_index) where the 'state_index' is one of the states that it
-       implements. This association happens in the 'action_db'
+    precisely in terms of classes:
 
-           action_db:    (state_index, from_state_index) --> commands
+       .action_db:    TransitionID --> TransitionAction
 
-       precisely in terms of classes:
+    where a TransitionID stores a pair of (StateIndex, FromStateIndex) and
+    a TransitionAction stores a TransitionID along with a CommandList of
+    commands that are executed for the given transition.
 
-           action_db:    TransitionID --> TransitionAction
+    The actions associated with transitions may be equal or have many
+    commonalities. In order to avoid multiple definitions of the same
+    action, a 'door tree' is constructed. Now, transitions need to be
+    associated with doors into the entry. After '.door_tree_configure()'
+    has been called the two databases:
 
-       where a TransitionID stores a pair of (StateIndex, FromStateIndex) and
-       a TransitionAction stores a transition id along with a CommandList of
-       commands that are executed for the given transition.
+        .transition_db: DoorID --> list of TransitionID-s
 
-       DOOR TREE ______________________________________________________________
+        .door_db:       TransitionID --> DoorID
 
-       For code generation, the TransitionActions are organized more efficiently.
-       Many transitions may share some commands, so that they could actually enter
-       the state through the same or similar doors. Example:
+    inform about the relation between TransitionID-s and the DoorID-s
+    through which they enter.
 
-           (4, from 1) --> accept 4711; store input position;
-           (4, from 2) --> accept 4711; 
-           (4, from 2) --> nothing;
+    DOOR TREE ______________________________________________________________
 
-       Then, the entry could look like this:
+    For code generation, the TransitionActions are organized more efficiently.
+    Many transitions may share some commands, so that they could actually enter
+    the state through the same or similar doors. Example:
 
-           Door2: store input position; 
-                  goto Door1;
-           Door1: accept 4711; 
-                  goto Door0;
-           Door0: /* nothing */
+        (4, from 1) --> accept 4711; store input position;
+        (4, from 2) --> accept 4711; 
+        (4, from 2) --> nothing;
 
-           ... the transition map ...
+    Then, the entry could look like this:
 
-       This configuration is done in function 'door_tree_configure()'. As a result
-       the following mappings are available:
+        Door2: store input position; 
+               goto Door1;
+        Door1: accept 4711; 
+               goto Door0;
+        Door0: /* nothing */
 
-           transition_db:  DoorID --> list of TransitionID
+        ... the transition map ...
 
-                           Tells for every door what transitions it implements.
+    This configuration is done in function 'door_tree_configure()'. As a result
+    the following mappings are available:
 
-           door_db:        TransitionID --> DoorID
+       transition_db:  DoorID --> list of TransitionID
 
-                           Tells for every transition what door implements a given 
-                           transition.
+                       Tells for every door what transitions it implements.
 
-           door_tree_root: The hierarchically organized tree of doors as shown in
-                           the example above.
+       door_db:        TransitionID --> DoorID
 
-        BRIEF REMARK: _________________________________________________________
+                       Tells for every transition what door implements a given 
+                       transition.
 
-        Before '.door_tree_configure()' is called no assumptions about doors
-        can be made. Then, only information about what transition causes what
-        action can be provided.
+       door_tree_root: The hierarchically organized tree of doors as shown in
+                       the example above.
+
+    BRIEF REMARK: _________________________________________________________
+
+    Before '.door_tree_configure()' is called no assumptions about doors
+    can be made. Then, only information about what transition causes what
+    action can be provided.
+    ___________________________________________________________________________
     """
     __slots__ = ("__state_index", "__uniform_doors_f", "__action_db", "__door_db", "__transition_db", "__door_tree_root")
     tmp_transition_id = TransitionID(E_StateIndices.VOID, E_StateIndices.VOID)
@@ -81,7 +92,7 @@ class Entry(object):
         self.__state_index = StateIndex
         self.__action_db   = dict((TransitionID(StateIndex, i),     \
                                    TransitionAction(StateIndex, i)) \
-                                  for i in FromStateIndexList)
+                                   for i in FromStateIndexList)
 
         # Are the actions for all doors the same?
         self.__uniform_doors_f = None 

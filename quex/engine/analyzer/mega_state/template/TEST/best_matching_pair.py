@@ -44,7 +44,7 @@ def test(TriggerMapList):
     print "Gain Matrix"
     print "State0  State1 Gain"
     for element in candidate_list:
-        print "%i      %i      %i" % (element[0], element[1], element[2].gain)
+        print "%i      %i      %i" % (element.state_a.index, element.state_b.index, element.gain)
 
     elect = candidate_list.pop_best()
     print "Best matching pair: ",

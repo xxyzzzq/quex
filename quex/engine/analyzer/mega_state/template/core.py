@@ -4,6 +4,7 @@ from   quex.engine.analyzer.mega_state.template.state     import TemplateState
 from   quex.engine.analyzer.mega_state.template.candidate import TemplateStateCandidate
 from   quex.blackboard import E_Compression
 from   itertools       import ifilter, islice
+from   operator        import attrgetter
 
 def do(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList, MegaStateList):
     """TEMPLATE COMPRESSION ____________________________________________________
@@ -87,30 +88,10 @@ def do(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList, MegaState
        A list of TemplateStateCandidate-s. A candidate represents the possible
        combination of two states from the 'elects'. A candidate contains information
        about the possible gain which could be expected from combining two
-       particular states from the '__elect_db'.
-
-    Procedure:
-
-      (1) Compute for each possible pair of states a TemplateStateCandidate. 
-          (includes the computation of the 'combination gain'.)
-
-          If the gain of TemplateStateCandidate is below MinGain drop it--
-          else register it in __candidate_list.
-
-      (4) Elect best candidate from candidate_list. 
-
-          -- Create new TemplateState from TemplateStateCandidate.
-          -- Remove the states which combine to TemplateStateCandidate
-             from the '.__elect_db'
-          -- Enter new state into the '.__elect_db'
-          -- Compute its possible combinations with other 'elects'.
-             Thus, enter the new TemplateStateCandidate-s into the 
-             '__candidate_list.
-      
-      (5) Stop, if no more reasonable candidates present.
+       particular states from the 'elect_db'.
 
     To support the homogeneity of the algorithm all AnalyzerState-s are
-    translated into PseudoMegaState-s before the analysis.
+    translated into PseudoMegaState-s prior the analysis procedure.
 
     COMBINATION GAIN VALUE ____________________________________________________
 
@@ -147,15 +128,27 @@ def do(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList, MegaState
         #    (After 'update' to avoid combination with itself)
         elect_db[elect.index] = elect
 
-    return elect_db.get_template_state_list()
+    return elect_db.get_template_states()
 
 class CandidateList(list):
+    """________________________________________________________________________
+
+    Maintain list of possible state combinations into a TemplateState. States
+    to be combined can be AnalyzerState-s (i.e. PseudoMegaState-s) or 
+    TemplateState-s. For each possible combination a 'gain' needs to be computed.
+    This happens during the construction of a 'TemplateStateCandidate'. This
+    list maintains all candidates that provide a minimum gain in a sorted 
+    order. Thus '.pop_best()' allows to get the best possible combination.
+    If '.pop_best()'. returns None, then there is no combination candidate that
+    provides the minimum gain.
+    ___________________________________________________________________________
+    """
     def __init__(self, TheElectDB, UniformityF, MinGain):
         """Compute TemplateStateCandidate-s for each possible combination of 
            two states in the '__elect_db'. If the gain of a combination is less 
            that 'self.__min_gain' then it is not considered.
         """
-        self.__min_gain = MinGain
+        self.__min_gain              = MinGain
         self.__uniformity_required_f = UniformityF
         state_list = TheElectDB.values()
         L          = len(state_list)
@@ -184,7 +177,7 @@ class CandidateList(list):
                 candidate = TemplateStateCandidate(i_state, k_state)
 
                 if candidate.gain >= self.__min_gain:
-                    result[n] = (i_state.index, k_state.index, candidate)
+                    result[n] = candidate
                     n += 1
                 else:
                     # Mention the states for which the other does not combine properly
@@ -195,7 +188,7 @@ class CandidateList(list):
             del result[n:]
 
         # Sort according to delta cost
-        result.sort(key=lambda x: x[2].gain) # 'best' must be at end
+        self.sort(key=attrgetter("gain")) # 'best' must be at end
         self.extend(result)
 
     def update(self, TheElectDB, NewElect):
@@ -203,8 +196,7 @@ class CandidateList(list):
            the NewElect.
         """
         assert isinstance(NewElect, TemplateState)
-        # The new state index must be known. It is used in the gain matrix.
-        # But, the new state does not need to be entered into the db, yet.
+        assert NewElect.index not in TheElectDB    # Avoid combination with self.
 
         # Avoid extensive 'appends' by single allocation (see initial computation)
         MaxIncrease = len(TheElectDB) 
@@ -222,13 +214,13 @@ class CandidateList(list):
             # Do not try to combine states that have proven to be 'bad_company'.
             if       state.index in NewElect.bad_company():                                   continue
             elif not NewElect.bad_company().isdisjoint(state.implemented_state_index_list()): continue
-            elif not state.bad_company().isdisjoint(ImplementedStateIndexList):             continue
+            elif not state.bad_company().isdisjoint(ImplementedStateIndexList):               continue
             # IMPOSSIBLE: NewElect.index in state.bad_company() 
             #             because when 'state' was created, 'NewElect' did not exist.
             candidate = TemplateStateCandidate(NewElect, state)
 
             if candidate.gain >= self.__min_gain:
-                self[n] = (state.index, NewElect.index, candidate)
+                self[n] = candidate
                 n += 1
             else:
                 # Mention the states for which the other does not combine properly
@@ -238,7 +230,7 @@ class CandidateList(list):
         if n != MaxSize:
             del self[n:]
 
-        self.sort(key=lambda x: x[2].gain) # 'best' must be at end
+        self.sort(key=attrgetter("gain")) # 'best' must be at end
 
     def pop_best(self):
         """Determines the two states that result in the greatest gain if they are 
@@ -255,20 +247,20 @@ class CandidateList(list):
         if len(self) == 0: return None
 
         # (*) The entry with the highest gain is at the tail of the list.
-        i, k, best = self.pop()
+        best = self.pop()
 
-        # (*) __elect_db:    Remove 'i' and 'k' from '__elect_db'.
-        #     __candidate_list: Remove any TemplateStateCandidate that combines 
-        #                    'i' or 'k'. States have been implemented. No
-        #                    other candidate has a chance.
+        # (*) Remove any TemplateStateCandidate that combines 'i' or 'k' which
+        #     are now implemented by 'best'. No other candidate that combines
+        #     'i' and 'k' shall get a chance.
         # 
-        # If 'i' or 'k' refere to an AnalyzerState, then any combination where 'i'
-        # or 'k' is involved is removed from the __candidate_list. The 'elect', let it 
+        # If 'i' or 'k' refer to an AnalyzerState, then any combination where 'i'
+        # or 'k' is involved is removed from the candidate list. The 'best', let it 
         # have state index 'p', is the only state that contains now 'i' and 'k'. Any
         # state, with index 'q', that combines with it does not contain 'i' and 
         # 'k'. And, on the event of combining 'p' and other 'q' all other combinations
         # related to 'p' are deleted, thus all other combinations that contain
         # 'i' and 'k' are impossible.
+        #
         # => The consideration of 'implemented_state_index_list' is not necessary.
         self.__delete_references(best.state_a.index, best.state_b.index)
 
@@ -281,11 +273,12 @@ class CandidateList(list):
         combined with another state anymore.
         """
 
-        size = len(self)
-        i    = 0
+        size     = len(self)
+        i        = 0
+        done_set = (I, K)
         while i < size:
             entry = self[i]
-            if entry[0] == I or entry[0] == K or entry[1] == I or entry[1] == K:
+            if entry.state_a.index in done_set or entry.state_b.index in done_set:
                 del self[i]
                 size -= 1
             else:
@@ -294,26 +287,25 @@ class CandidateList(list):
         return 
 
 class ElectDB(dict):
+    """________________________________________________________________________
+
+    Database of states which are either AnalyzerState-s (i.e.
+    PseudoMegaState-s) from the original state machine, or TemplateState-s
+    which implement two or more of such AnalyzerState-s. 
+    
+    Whenever two states are combined into one TemplateState, the two
+    implemented states themselves are removed from the ElectDB and the
+    implementing TemplateState is entered.
+    ___________________________________________________________________________
+    """
     def __init__(self, StateDB, AvailableStateIndexList):
-        """Elect Database:
+        """At the beginning all AnalyzerState-s are elected (and they remain
+        elected if they cannot be efficiently combined). However, some states
+        may NOT be considered as they are:
         
-           Collects states which have been filtered out to be part of the final 
-           state machine. The content of the elect database changes during the 
-           process of TemplateState-finding. On the event of adding electing a
-           new combination:
-           
-            -- The elected candidate, which combines two states (possibly
-               already TemplateState) is entered into the '__elect_db'.
-            -- The two states which the elect combines (and all states
-               state they implement) must be deleted from the '__elect_db'.
-        
-           At the beginning all AnalyzerState-s are elected (and they remain
-           elected if they cannot be efficiently combined). However, some 
-           states may not be considered as they are:
-        
-           Do not consider: -- states with empty transition maps
-                            -- states which are no more availabe for combination
-                            -- the init state.
+           NOT: -- states with empty transition maps.
+                -- states which are no longer available for implementation.
+                -- the init-state..
         """
         # x[0] = state_index, x[1] = state
         condition = lambda x:     x[0] in AvailableStateIndexList \
@@ -327,7 +319,7 @@ class ElectDB(dict):
 
         self.update(result)
 
-    def get_template_state_list(self):
+    def get_template_states(self):
         """RETURNS: Map from 'absorbed AnalyzerState' indices to the Template state 
                     which implements it.
         """
