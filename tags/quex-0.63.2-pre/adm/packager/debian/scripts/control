@@ -1,0 +1,19 @@
+Essential: no
+Architecture: all
+Provides: quex
+Package: quex
+Section: misc
+Depends: python
+Maintainer: Frank-Rene Schaefer
+Priority: optional
+Version: ##QUEX_VERSION-##PACKAGE_VERSION
+Installed-Size: 22989
+Description: Quex Lexical Analyser Generator.
+             A Fast Universal Lexical Analyser Generator
+             Quex is a lexical analyzer generator that produces
+             a directly coded lexical analyzer engine. Special 
+             features are sophisticated buffer handling, analyzer 
+             modes that can be inherited, event handlers for modes, 
+             Unicode support as well as a large variety of 
+             character encodings.
+

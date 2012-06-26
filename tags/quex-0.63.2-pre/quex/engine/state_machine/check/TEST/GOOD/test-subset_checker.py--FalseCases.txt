@@ -1,0 +1,48 @@
+---------------------------
+super = [a-n]
+sub   = [m-z]
+claim =  False
+
+super = [m-z]
+sub   = [a-n]
+claim =  False
+---------------------------
+super = "1234"|"ABC"
+sub   = "123"
+claim =  False
+
+super = "123"
+sub   = "1234"|"ABC"
+claim =  False
+---------------------------
+super = "12"|"A"
+sub   = "1"
+claim =  False
+
+super = "1"
+sub   = "12"|"A"
+claim =  False
+---------------------------
+super = 12
+sub   = 1
+claim =  False
+
+super = 1
+sub   = 12
+claim =  False
+---------------------------
+super = "1BAC"|"1BBC"
+sub   = "1ABC"
+claim =  False
+
+super = "1ABC"
+sub   = "1BAC"|"1BBC"
+claim =  False
+---------------------------
+super = alb|albertikus
+sub   = albert
+claim =  False
+
+super = albert
+sub   = alb|albertikus
+claim =  False

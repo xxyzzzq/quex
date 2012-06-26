@@ -1,0 +1,1 @@
+error-6.qx:6:error: Digit 'A' cannot be part of an expression of base 10.

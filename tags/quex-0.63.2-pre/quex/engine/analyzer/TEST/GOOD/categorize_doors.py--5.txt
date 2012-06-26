@@ -1,0 +1,32 @@
+[6]: (0<-0) 
+    pre(1) --> store[0] = input_p - 0;
+parent: [2]
+
+[7]: (0<-1) 
+    pre(1) --> store[0] = input_p - 1;
+parent: [2]
+
+[2]: 
+    pre(0) --> store[0] = input_p - 0;
+parent: [1]
+
+[4]: (0<-2) 
+    pre(1) --> store[0] = input_p - 2;
+parent: [3]
+
+[5]: (0<-3) 
+    pre(0) --> store[1] = input_p - 0;
+parent: [3]
+
+[3]: 
+    pre(0) --> store[0] = input_p - 1;
+parent: [1]
+
+[1]: 
+    pre(1) --> accept(10)
+    pre(2) --> accept(20)
+parent: [0]
+
+[0]: 
+parent: [None]
+
