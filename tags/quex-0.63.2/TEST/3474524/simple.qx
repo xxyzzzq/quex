@@ -1,0 +1,16 @@
+// -*- C++ -*-
+header {
+}
+
+token {
+   SPACE;
+}
+
+mode ONE_AND_ONLY
+{
+    <<EOF>>     => QUEX_TKN_TERMINATION;
+    [:space:]+     => QUEX_TKN_SPACE;
+}
+
+
+

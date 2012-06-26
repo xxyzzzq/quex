@@ -1,0 +1,53 @@
+<history date="Tue Jun 26 22:15:40 2012" element-n="45">
+    <day year="2010" month="12" day="17">
+        <history-init time="06:48:46"/>
+    </day>
+    <day year="2010" month="12" day="18">
+        <crc-error time="04:27:57" application="test-c.sh" choice="plain" database-crc="691667453" real-crc="-359142566"/>
+        <crc-error time="04:27:57" application="test-c.sh" choice="iconv" database-crc="691667453" real-crc="-359142566"/>
+        <crc-error time="04:27:57" application="test-c.sh" choice="icu" database-crc="691667453" real-crc="-359142566"/>
+        <crc-error time="04:27:58" application="test-c.sh" choice="codec" database-crc="691667453" real-crc="-359142566"/>
+        <crc-error time="04:27:58" application="test-c.sh" choice="codec-utf8" database-crc="691667453" real-crc="-359142566"/>
+        <crc-error time="04:27:58" application="test-c.sh" choice="codec-utf16" database-crc="691667453" real-crc="-359142566"/>
+        <crc-error time="04:27:58" application="test-c.sh" choice="post-categorizer" database-crc="691667453" real-crc="-359142566"/>
+        <crc-error time="04:27:59" application="test-c.sh" choice="no-string-accumulator" database-crc="691667453" real-crc="-359142566"/>
+        <crc-error time="04:27:59" application="test-c.sh" choice="no-include-stack" database-crc="691667453" real-crc="-359142566"/>
+        <crc-error time="04:27:59" application="test-c.sh" choice="no-counter" database-crc="691667453" real-crc="-359142566"/>
+        <crc-error time="04:42:35" application="test-c.sh" choice="plain" database-crc="-359142566" real-crc="881272033"/>
+        <crc-error time="04:42:40" application="test-c.sh" choice="iconv" database-crc="-359142566" real-crc="881272033"/>
+        <crc-error time="04:42:41" application="test-c.sh" choice="icu" database-crc="-359142566" real-crc="881272033"/>
+        <crc-error time="04:42:41" application="test-c.sh" choice="codec" database-crc="-359142566" real-crc="881272033"/>
+        <crc-error time="04:42:42" application="test-c.sh" choice="codec-utf8" database-crc="-359142566" real-crc="881272033"/>
+        <crc-error time="04:42:42" application="test-c.sh" choice="codec-utf16" database-crc="-359142566" real-crc="881272033"/>
+        <crc-error time="04:42:43" application="test-c.sh" choice="post-categorizer" database-crc="-359142566" real-crc="881272033"/>
+        <crc-error time="04:42:44" application="test-c.sh" choice="no-string-accumulator" database-crc="-359142566" real-crc="881272033"/>
+        <crc-error time="04:42:44" application="test-c.sh" choice="no-include-stack" database-crc="-359142566" real-crc="881272033"/>
+        <crc-error time="04:42:45" application="test-c.sh" choice="no-counter" database-crc="-359142566" real-crc="881272033"/>
+    </day>
+    <day year="2010" month="12" day="25">
+        <crc-error time="12:05:51" application="test-c.sh" choice="iconv" database-crc="881272033" real-crc="-21726970"/>
+        <crc-error time="12:05:52" application="test-c.sh" choice="icu" database-crc="881272033" real-crc="-21726970"/>
+        <crc-error time="12:05:53" application="test-c.sh" choice="codec" database-crc="881272033" real-crc="-21726970"/>
+        <crc-error time="12:05:53" application="test-c.sh" choice="codec-utf8" database-crc="881272033" real-crc="-21726970"/>
+        <crc-error time="12:05:54" application="test-c.sh" choice="codec-utf16" database-crc="881272033" real-crc="-21726970"/>
+        <crc-error time="12:05:55" application="test-c.sh" choice="post-categorizer" database-crc="881272033" real-crc="-21726970"/>
+        <crc-error time="12:05:55" application="test-c.sh" choice="no-string-accumulator" database-crc="881272033" real-crc="-21726970"/>
+        <crc-error time="12:05:56" application="test-c.sh" choice="no-include-stack" database-crc="881272033" real-crc="-21726970"/>
+        <crc-error time="12:05:57" application="test-c.sh" choice="no-counter" database-crc="881272033" real-crc="-21726970"/>
+        <crc-error time="12:05:57" application="test-c.sh" choice="manual-token-class" database-crc="881272033" real-crc="-21726970"/>
+        <crc-error time="12:05:58" application="test-c.sh" choice="customized-token-class" database-crc="881272033" real-crc="-21726970"/>
+        <crc-error time="12:06:11" application="test-cpp.sh" choice="iconv" database-crc="-359142566" real-crc="1735895320"/>
+        <crc-error time="12:06:11" application="test-cpp.sh" choice="icu" database-crc="-359142566" real-crc="1735895320"/>
+        <crc-error time="12:06:12" application="test-cpp.sh" choice="codec" database-crc="-359142566" real-crc="1735895320"/>
+        <crc-error time="12:06:13" application="test-cpp.sh" choice="codec-utf8" database-crc="-359142566" real-crc="1735895320"/>
+        <crc-error time="12:06:14" application="test-cpp.sh" choice="codec-utf16" database-crc="-359142566" real-crc="1735895320"/>
+        <crc-error time="12:06:15" application="test-cpp.sh" choice="post-categorizer" database-crc="-359142566" real-crc="1735895320"/>
+        <crc-error time="12:06:15" application="test-cpp.sh" choice="no-string-accumulator" database-crc="-359142566" real-crc="1735895320"/>
+        <crc-error time="12:06:16" application="test-cpp.sh" choice="no-include-stack" database-crc="-359142566" real-crc="1735895320"/>
+        <crc-error time="12:06:17" application="test-cpp.sh" choice="no-counter" database-crc="-359142566" real-crc="1735895320"/>
+        <crc-error time="12:06:17" application="test-cpp.sh" choice="manual-token-class" database-crc="-359142566" real-crc="1735895320"/>
+        <crc-error time="12:06:18" application="test-cpp.sh" choice="customized-token-class" database-crc="-359142566" real-crc="1735895320"/>
+        <crc-error time="12:06:49" application="test-c.sh" choice="plain" database-crc="881272033" real-crc="-21726970"/>
+        <crc-error time="12:06:57" application="test-cpp.sh" choice="plain" database-crc="-359142566" real-crc="1735895320"/>
+    </day>
+</history>

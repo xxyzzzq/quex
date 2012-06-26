@@ -1,0 +1,5 @@
+Stripped Down Scanner:
+(No output is good output)
+
+Not-So-Stripped Down Scanner:
+(No output is good output)

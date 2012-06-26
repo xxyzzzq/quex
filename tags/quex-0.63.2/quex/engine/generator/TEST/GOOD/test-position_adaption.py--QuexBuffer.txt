@@ -1,0 +1,122 @@
+(*) test string: 
+'
+XXXXXXXXXX
+AAAAAAAAAAA
+XXXXXXXXXY
+AAAAAAAAAA
+XXXXXXXXXZ
+AAAAAAAAA
+XXXXXXXXXA
+AAAAAAAA
+XXXXXXXXXX
+AAAAAAA
+XXXXXXXXXY
+AAAAAA
+XXXXXXXXXZ
+AAAAA
+XXXXXXXXXA
+AAAA
+XXXXXXXXXX
+AAA
+XXXXXXXXXY
+AA
+XXXXXXXXXZ
+A
+XXXXXXXXXA
+'
+(*) result:
+         WHITESPACE  '
+'
+        1 X / ... X  'X'
+         IDENTIFIER  'XXXXXXXXX'
+         WHITESPACE  '
+'
+         IDENTIFIER  'AAAAAAAAAAA'
+         WHITESPACE  '
+'
+        2 X / ... Y  'XX'
+         IDENTIFIER  'XXXXXXXY'
+         WHITESPACE  '
+'
+         IDENTIFIER  'AAAAAAAAAA'
+         WHITESPACE  '
+'
+        3 X / ... Z  'XXX'
+         IDENTIFIER  'XXXXXXZ'
+         WHITESPACE  '
+'
+         IDENTIFIER  'AAAAAAAAA'
+         WHITESPACE  '
+'
+        4 X / ... A  'XXXX'
+         IDENTIFIER  'XXXXXA'
+         WHITESPACE  '
+'
+         IDENTIFIER  'AAAAAAAA'
+         WHITESPACE  '
+'
+        1 X / ... X  'X'
+         IDENTIFIER  'XXXXXXXXX'
+         WHITESPACE  '
+'
+         IDENTIFIER  'AAAAAAA'
+         WHITESPACE  '
+'
+        2 X / ... Y  'XX'
+         IDENTIFIER  'XXXXXXXY'
+         WHITESPACE  '
+'
+         IDENTIFIER  'AAAAAA'
+         WHITESPACE  '
+'
+        3 X / ... Z  'XXX'
+         IDENTIFIER  'XXXXXXZ'
+         WHITESPACE  '
+'
+         IDENTIFIER  'AAAAA'
+         WHITESPACE  '
+'
+        4 X / ... A  'XXXX'
+         IDENTIFIER  'XXXXXA'
+         WHITESPACE  '
+'
+         IDENTIFIER  'AAAA'
+         WHITESPACE  '
+'
+        1 X / ... X  'X'
+         IDENTIFIER  'XXXXXXXXX'
+         WHITESPACE  '
+'
+         IDENTIFIER  'AAA'
+         WHITESPACE  '
+'
+        2 X / ... Y  'XX'
+         IDENTIFIER  'XXXXXXXY'
+         WHITESPACE  '
+'
+         IDENTIFIER  'AA'
+         WHITESPACE  '
+'
+        3 X / ... Z  'XXX'
+         IDENTIFIER  'XXXXXXZ'
+         WHITESPACE  '
+'
+         IDENTIFIER  'A'
+         WHITESPACE  '
+'
+        4 X / ... A  'XXXX'
+         IDENTIFIER  'XXXXXA'
+         WHITESPACE  '
+'
+  ''
+(*) Lexical Analyser Patterns:
+     "X"/"XXXXXXXXX" --> 1 X / ... X
+     "XX"/"XXXXXXXY" --> 2 X / ... Y
+     "XXX"/"XXXXXXZ" --> 3 X / ... Z
+     "XXXX"/"XXXXXA" --> 4 X / ... A
+[_a-zA-Z][_a-zA-Z0-9]* --> IDENTIFIER
+            [ \t\n]+ --> WHITESPACE
+## (1) code generation
+## (2) compiling generated engine code and test
+## (3) running the test
+## (4) cleaning up

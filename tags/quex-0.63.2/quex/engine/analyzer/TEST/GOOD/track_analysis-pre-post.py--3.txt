@@ -1,0 +1,116 @@
+init-state = 0L
+00000 (18, 43), (33, 84), (35, 92), (3, 6)
+     == 'a' ==> 00001
+    
+00001 (3, 7, A, pre=6), (18, 44, S), (33, 85, S), (35, 93, A)
+     == 'b' ==> 00002
+    
+00002 (18, 45), (33, 86)
+     == 'b' ==> 00003
+     == 'c' ==> 00005
+    
+00003 (18, 45)
+     == 'b' ==> 00003
+     == 'c' ==> 00004
+    
+00004 (18, 46, A, R)
+    
+00005 (18, 46, A, R), (33, 87)
+     == 'd' ==> 00006
+    
+00006 (33, 88)
+     == 'e' ==> 00007
+    
+00007 (33, 89, A, R)
+    
+
+State 0:
+  .entry:
+    .from NONE:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 1:
+  .entry:
+    .from 0:
+  .drop_out:
+    if PreContext_6:  goto Pattern3;
+     goto Pattern35;
+
+
+State 2:
+  .entry:
+    .from 1:
+        position[PostContext_18]  = input_p;
+        position[PostContext_35]  = input_p;
+        if 'PreContext_6': position[PostContext_3]  = input_p;
+  .drop_out:
+    if PreContext_6: pos -= 1;  goto Pattern3;
+    pos -= 1;  goto Pattern35;
+
+
+State 3:
+  .entry:
+    .from 2:
+    .from 3:
+  .drop_out:
+    if PreContext_6: pos = position[PostContext_3] ; goto Pattern3;
+    pos = position[PostContext_35] ; goto Pattern35;
+
+
+State 4:
+  .entry:
+    .from 3:
+  .drop_out:
+    pos = position[PostContext_18] ; goto Pattern18;
+
+
+State 5:
+  .entry:
+    .from 2:
+  .drop_out:
+    pos -= 2;  goto Pattern18;
+
+
+State 6:
+  .entry:
+    .from 5:
+  .drop_out:
+    pos -= 3;  goto Pattern18;
+
+
+State 7:
+  .entry:
+    .from 6:
+  .drop_out:
+    pos -= 4;  goto Pattern33;
+
+
+
+--- Optimized States ---
+
+State 2:
+  .entry:
+    .from 1: position[PostContext_0]  = input_p;
+  .drop_out:
+    if PreContext_6: pos -= 1;  goto Pattern3;
+    pos -= 1;  goto Pattern35;
+
+
+State 3:
+  .entry:
+    .from 2:
+    .from 3:
+  .drop_out:
+    if PreContext_6: pos = position[PostContext_0] ; goto Pattern3;
+    pos = position[PostContext_0] ; goto Pattern35;
+
+
+State 4:
+  .entry:
+    .from 3:
+  .drop_out:
+    pos = position[PostContext_0] ; goto Pattern18;
+
+
