@@ -99,9 +99,17 @@
         /* All functions must ensure: there is one cell to store terminating zero. */     \
         __quex_assert(self.accumulator.text.end < self.accumulator.text.memory_end);      \
                                                                                           \
+        /* If no text is to be flushed, behave the same as self_send    */                \
+        /* That is: self_token_set_id(ID);                              */                \
+        /*          QUEX_TOKEN_POLICY_PREPARE_NEXT();                   */                \
+        /*          BUT: We clear the text of the otherwise void token. */                \
         self_token_set_id(TokenID) ;                                                      \
-        /* If no text is to be flushed, behave the same as self_send */                   \
-        if( self.accumulator.text.begin != self.accumulator.text.end ) {                  \
+        if( self.accumulator.text.begin == self.accumulator.text.end ) {                  \
+            QUEX_NAME_TOKEN(take_text)(__QUEX_CURRENT_TOKEN_P, &self,                     \
+                                       &QUEX_LEXEME_NULL,                                 \
+                                       (&QUEX_LEXEME_NULL) + 1);                           \
+        }                                                                                 \
+        else {                                                                            \
             *(self.accumulator.text.end) = (QUEX_TYPE_CHARACTER)0; /* see above */        \
                                                                                           \
             if( QUEX_NAME_TOKEN(take_text)(__QUEX_CURRENT_TOKEN_P, &self,                 \
