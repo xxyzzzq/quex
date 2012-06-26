@@ -9,7 +9,7 @@ from   quex.blackboard                                   import E_Compression
 
 from   collections import defaultdict
 
-def do(TheAnalyzer, CompressionType, AvailableStateIndexList=None, MegaStateList=None):
+def do(TheAnalyzer, CompressionType, AvailableStateIndexList=None):
     """PATH COMPRESSION: _______________________________________________________
 
     Path compression tries to find paths of single character transitions inside a

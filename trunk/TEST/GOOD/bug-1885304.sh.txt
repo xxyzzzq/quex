@@ -604,10 +604,10 @@ QUEX_NAME(ONE_AND_ONLY_analyzer_function)(QUEX_TYPE_ANALYZER* me)
 #   endif
 #   define self (*((QUEX_TYPE_ANALYZER*)me))
     void*                          position                       = (void*)0x0;
-    QUEX_TYPE_GOTO_LABEL           target_state_else_index        = ((QUEX_TYPE_CHARACTER)0x0);
+    QUEX_TYPE_GOTO_LABEL           target_state_else_index        = QUEX_GOTO_LABEL_VOID;
     const size_t                   PositionRegisterN              = (size_t)0;
     QUEX_TYPE_CHARACTER            input                          = (QUEX_TYPE_CHARACTER)(0x00);
-    QUEX_TYPE_GOTO_LABEL           target_state_index             = ((QUEX_TYPE_CHARACTER)0x0);
+    QUEX_TYPE_GOTO_LABEL           target_state_index             = QUEX_GOTO_LABEL_VOID;
 #   ifndef QUEX_OPTION_COMPUTED_GOTOS
 #   endif /* QUEX_OPTION_COMPUTED_GOTOS */
 #   define ONE_AND_ONLY    (QUEX_NAME(ONE_AND_ONLY))

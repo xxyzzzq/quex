@@ -24,17 +24,15 @@ def do(TheAnalyzer):
     remainder.remove(TheAnalyzer.init_state_index)
 
     for ctype in Setup.compression_type_list:
-        mega_state_list = mega_state_db.values()
         # -- MegaState-s by Path-Compression
         if ctype in (E_Compression.PATH, E_Compression.PATH_UNIFORM):
-            absorbance_db = path_analyzer.do(TheAnalyzer, ctype, 
-                                             remainder, mega_state_list)
+            absorbance_db = path_analyzer.do(TheAnalyzer, ctype, remainder)
     
         # -- MegaState-s by Template-Compression
         elif ctype in (E_Compression.TEMPLATE, E_Compression.TEMPLATE_UNIFORM):
             absorbance_db = template_analyzer.do(TheAnalyzer, 
                                                  Setup.compression_template_min_gain, ctype, 
-                                                 remainder, mega_state_list)
+                                                 remainder)
         else:
             assert False
 
@@ -51,6 +49,7 @@ def do(TheAnalyzer):
             # Track MegaStates. A 'absorbance_db.itervalues()' may contain 
             # the same MegaState twice. Use a dictionary to keep them unique.
             if mega_state.index not in mega_state_db:
+                assert mega_state.index not in mega_state_db
                 mega_state_db[mega_state.index] = mega_state 
 
     # Let the analyzer know about the MegaState-s and what states they left
