@@ -349,6 +349,12 @@ class MegaState_Target(object):
                 scheme_db[Scheme] = scheme_id
             return scheme_id
 
+        # NOTE: Due to the possible cover-up of parts of the transition map, it
+        #       is possible that not all implemented states of a MegaState trigger
+        #       to '.target_state_index' or the states mentioned in '.scheme'.
+        #
+        #       This results in 'target_entry.get_door_id(To, From)' being 'None'
+        #       sometimes. This is not an error!
         if self.scheme is not None:
             assert len(self.scheme) == L
             # The targets in a 'scheme' may be implemented by the same MegaState--
@@ -395,6 +401,7 @@ class MegaState_Target(object):
                 return result
             else:
                 # All has been uniform => Stay with 'target_state_index'
+                assert prototype is not None
                 return # Nothing to be done
 
     def __repr__(self):
@@ -588,13 +595,6 @@ class AbsorbedState(AnalyzerState):
         # do not do any harm, though. Filtering out those out of the hash map
         # does, most likely, not bring any benefit.
         assert AbsorbedAnalyzerState.index in AbsorbingMegaState.implemented_state_index_list()
-        if False:
-            for transition_id in AbsorbedAnalyzerState.entry.door_db.iterkeys():
-                if transition_id.state_index != AbsorbedAnalyzerState.index: continue
-                assert AbsorbingMegaState.entry.door_db.has_key(transition_id), \
-                       "MegaState %i absorbed %s but does not implement transition %s" % \
-                       (AbsorbingMegaState.index,                                        \
-                        AbsorbingMegaState.implemented_state_index_list(), transition_id)
         #----------------------------------------------------------------------
 
         self.__entry     = AbsorbedState_Entry(AbsorbedAnalyzerState.index, 

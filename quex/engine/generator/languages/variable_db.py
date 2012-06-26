@@ -19,20 +19,20 @@ class Variable:
 
 
 candidate_db = {
-# Name                             Type(0),                         InitialValue(2),                    PriorityF(3)
-"input":                          ["QUEX_TYPE_CHARACTER",           "(QUEX_TYPE_CHARACTER)(0x00)",      False],
-"target_state_index":             ["QUEX_TYPE_GOTO_LABEL",          "((QUEX_TYPE_CHARACTER)0x0)",       False],
-"target_state_else_index":        ["QUEX_TYPE_GOTO_LABEL",          "((QUEX_TYPE_CHARACTER)0x0)",       False],
-"last_acceptance":                ["QUEX_TYPE_ACCEPTANCE_ID",       None,                               False],
-"PositionRegisterN":              ["const size_t",                  None,                               False],
-"position":                       ["QUEX_TYPE_CHARACTER_POSITION",  None,                               False],
-"pre_context_%i_fulfilled_f":     ["int",                           "0",                                False], 
-"counter":                        ["size_t",                        "0",                                False],
-"end_of_core_pattern_position":   ["QUEX_TYPE_CHARACTER_POSITION",  "((QUEX_TYPE_CHARACTER*)0x0)",      False],
+# Name                             Type(0),                         InitialValue(2),               PriorityF(3)
+"input":                          ["QUEX_TYPE_CHARACTER",           "(QUEX_TYPE_CHARACTER)(0x00)", False],
+"target_state_index":             ["QUEX_TYPE_GOTO_LABEL",          "QUEX_GOTO_LABEL_VOID",        False],
+"target_state_else_index":        ["QUEX_TYPE_GOTO_LABEL",          "QUEX_GOTO_LABEL_VOID",        False],
+"last_acceptance":                ["QUEX_TYPE_ACCEPTANCE_ID",       None,                          False],
+"PositionRegisterN":              ["const size_t",                  None,                          False],
+"position":                       ["QUEX_TYPE_CHARACTER_POSITION",  None,                          False],
+"pre_context_%i_fulfilled_f":     ["int",                           "0",                           False], 
+"counter":                        ["size_t",                        "0",                           False],
+"end_of_core_pattern_position":   ["QUEX_TYPE_CHARACTER_POSITION",  "((QUEX_TYPE_CHARACTER*)0x0)", False],
 #                                 
 # (*) Path Compression
 "path_iterator":                  ["const QUEX_TYPE_CHARACTER*",       "((const QUEX_TYPE_CHARACTER*)0x0)", False],
-"path_end_state":                 ["QUEX_TYPE_GOTO_LABEL",             "QUEX_GOTO_STATE_LABEL_INIT_VALUE",  False], 
+"path_end_state":                 ["QUEX_TYPE_GOTO_LABEL",             "QUEX_GOTO_LABEL_VOID",  False], 
 "path_walker_%i_path_%i":         ["const QUEX_TYPE_CHARACTER* const", None,                                False],
 "path_walker_%i_path_base":       ["const QUEX_TYPE_CHARACTER",        None,                                True],
 "path_walker_%i_path_%i_states":  ["const QUEX_TYPE_GOTO_LABEL* const",None,                                False],

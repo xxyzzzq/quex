@@ -215,8 +215,14 @@ class Entry(object):
         self.__door_db = DoorDB
 
     def get_door_id(self, StateIndex, FromStateIndex):
+        """RETURN: DoorID of the door which implements the transition 
+                          (FromStateIndex, StateIndex).
+                   None,  if the transition is not implemented in this
+                          state.
+        """
         Entry.tmp_transition_id.state_index      = StateIndex
         Entry.tmp_transition_id.from_state_index = FromStateIndex
+        
         return self.__door_db.get(Entry.tmp_transition_id)
 
     def get_door_id_by_command_list(self, TheCommandList):

@@ -79,8 +79,7 @@
 /* Support of computed goto */
 #ifdef QUEX_OPTION_COMPUTED_GOTOS
     typedef  void*     QUEX_TYPE_GOTO_LABEL;
-#   define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE        (&&TERMINAL_FAILURE)
-#   define QUEX_GOTO_STATE_LABEL_INIT_VALUE           (QUEX_TYPE_GOTO_LABEL)(0x0)
+#   define QUEX_GOTO_LABEL_VOID                       (QUEX_TYPE_GOTO_LABEL)(0x0)
 #   define QUEX_LABEL(StateIndex)                     &&_##StateIndex 
 
 #   define QUEX_GOTO_TERMINAL(LABEL)                  goto *LABEL;
@@ -94,8 +93,7 @@
 #else
     typedef  int32_t  QUEX_TYPE_GOTO_LABEL;          /* > 0: State index
                                                       * < 0: Drop Out of a state abs(Label). */
-#   define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE       (QUEX_TYPE_GOTO_LABEL)(-1)
-#   define QUEX_GOTO_STATE_LABEL_INIT_VALUE          (QUEX_TYPE_GOTO_LABEL)(-1)
+#   define QUEX_GOTO_LABEL_VOID                      (QUEX_TYPE_GOTO_LABEL)(-1)
 #   define QUEX_LABEL(StateIndex)                    StateIndex 
 
 #   define QUEX_GOTO_TERMINAL(LABEL)                 last_acceptance = LABEL; \

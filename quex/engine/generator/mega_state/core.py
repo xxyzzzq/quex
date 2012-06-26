@@ -222,7 +222,15 @@ def require_scheme_variable(SchemeID, Scheme, TState, StateDB):
     LanguageDB = Setup.language_db
 
     def get_code(AdrList):
-        return "".join(["{ "] + map(lambda adr: "QUEX_LABEL(%i), " % adr, AdrList) + [" }"])
+        last_i = len(AdrList) - 1
+        txt = ["{ "]
+        for i, adr in enumerate(AdrList):
+            if i != last_i:
+                txt.append("%s, " % LanguageDB.LABEL_BY_ADDRESS(adr)) 
+            else:
+                txt.append("%s " % LanguageDB.LABEL_BY_ADDRESS(adr)) 
+        txt.append(" }")
+        return "".join(txt)
 
     assert len(Scheme) == len(TState.implemented_state_index_list())
     def address(Target, StateKey, TheState):
@@ -230,12 +238,29 @@ def require_scheme_variable(SchemeID, Scheme, TState, StateDB):
             # All drop outs end up at the end of the transition map, where
             # it is routed via the state_key to the state's particular drop out.
             return get_address("$drop-out", TState.index, U=True, R=True)
+
+        from_state_index = TheState.map_state_key_to_state_index(StateKey)
+        door_id          = StateDB[Target].entry.get_door_id(Target, 
+                                                             FromStateIndex=from_state_index)
+
+        if door_id is None:
+            # IMPORTANT NOTE: (This case is separated to make this comment)
+            #
+            # A MegaState's transition map may be partly covered by the
+            # MegaState's head.  This implies, that not all implemented
+            # states trigger to the state mentioned in the transition map.
+            # (A 'pseudo-common' .target_state_index may be split into a
+            # scheme, because the entering doors differ.) As a result the
+            # '.get_door_id()' may result in a totally legal 'None' for
+            # a particular 'state_key'.
+            # 
+            # Later: 'LABEL_BY_ADDRESS(None) --> "QUEX_GOTO_LABEL_VOID"
+            return None 
         else:
-            from_state_index = TheState.map_state_key_to_state_index(StateKey)
-            door_id = StateDB[Target].entry.get_door_id(Target, FromStateIndex=from_state_index)
             return LanguageDB.ADDRESS_BY_DOOR_ID(door_id)
 
-    address_list = [ address(target_index, i, TState) for i, target_index in enumerate(Scheme) ]
+    address_list = [ address(target_index, state_key, TState) \
+                     for state_key, target_index in enumerate(Scheme) ]
 
     variable_db.require_array("template_%i_target_%i", 
                               ElementN = len(TState.implemented_state_index_list()), 

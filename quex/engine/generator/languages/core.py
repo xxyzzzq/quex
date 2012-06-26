@@ -76,6 +76,7 @@ class LanguageDB_Cpp(dict):
 
     PATH_ITERATOR_INCREMENT  = "++(path_iterator);"
     BUFFER_LIMIT_CODE        = "QUEX_SETTING_BUFFER_LIMIT_CODE"
+    STATE_LABEL_VOID         = "QUEX_GOTO_LABEL_VOID"
     COMMENT_DELIMITERS       = [["/*", "*/", ""], ["//", "\n", ""], ["\"", "\"", "\\\""]]
     def LEXEME_START_SET(self, PositionStorage=None):
         if PositionStorage is None: return "me->buffer._lexeme_start_p = me->buffer._input_p;"
@@ -172,7 +173,6 @@ class LanguageDB_Cpp(dict):
         else:
             assert False, "Unknown Entry Action"
 
-
     def ADDRESS_BY_DOOR_ID(self, DoorId):
         ## print "## %s --> %s" % (DoorId, get_address("$entry", DoorId, U=True, R=True))
         return get_address("$entry", DoorId, U=True, R=True)
@@ -216,6 +216,12 @@ class LanguageDB_Cpp(dict):
         label = self.__label_name(StateIndex, FromStateIndex)
         if NewlineF: return label + ":\n"
         return label + ":"
+
+    def LABEL_BY_ADDRESS(self, Address):
+        if Address is None:
+            return "QUEX_GOTO_LABEL_VOID"
+        else:
+            return "QUEX_LABEL(%i)" % Address
 
     def LABEL_BY_DOOR_ID(self, DoorId):
         label = self.__label_name_by_door_id(DoorId)

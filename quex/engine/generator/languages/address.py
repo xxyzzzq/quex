@@ -61,7 +61,7 @@ class AddressDB:
         return StateIndex
 
     def get_entry(self, DoorId):
-        assert DoorId.__class__.__name__ == "DoorID"
+        assert DoorId.__class__.__name__ == "DoorID", "%s\n%s"  % (repr(DoorId), DoorId.__class__.__name__)
         # TODO: door_index == 0 is a special: The entry into the state without any
         #       commands/actions being applied. This is also the entry after reload.
         #       In this case, the the addess be the state index itself.

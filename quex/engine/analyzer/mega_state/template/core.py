@@ -6,7 +6,7 @@ from   quex.blackboard import E_Compression
 from   itertools       import ifilter, islice
 from   operator        import attrgetter
 
-def do(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList, MegaStateList):
+def do(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList):
     """TEMPLATE COMPRESSION ____________________________________________________
 
     The 'template compression' algorithm tries to combine the transition maps of
@@ -188,8 +188,8 @@ class CandidateList(list):
             del result[n:]
 
         # Sort according to delta cost
-        self.sort(key=attrgetter("gain")) # 'best' must be at end
         self.extend(result)
+        self.sort(key=attrgetter("gain")) # 'best' must be at end
 
     def update(self, TheElectDB, NewElect):
         """Adapt the __candidate_list to include candidates of combinations with
