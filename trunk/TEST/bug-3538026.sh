@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-bug=bellon-tmp
+bug=3538026
 if [[ $1 == "--hwut-info" ]]; then
     echo "sbellon: $bug Handling of spurious transition in PathWalkerState"
     exit
