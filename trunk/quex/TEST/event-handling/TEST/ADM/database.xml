@@ -1,37 +1,37 @@
-<test-database execution-time-sec="0.64" date="Tue Jun 26 22:14:47 2012">
+<test-database execution-time-sec="0.54" date="Wed Jun 27 05:28:34 2012">
     <last-used-diff-display-program name=""/>
-    <test title="Customized on_skip_range_open event." make-dependent="True" time-sum-sec="0.04"> 
-        <application file-name="on_skip_range_open-customized.sh" info-request-time="1340741683L" vanished="False"/>
-        <make-procedure success="True" time_sec="0.742059"/>
+    <test title="Customized on_skip_range_open event." make-dependent="True" time-sum-sec="0.02"> 
+        <application file-name="on_skip_range_open-customized.sh" info-request-time="1340767711L" vanished="False"/>
+        <make-procedure success="True" time_sec="0.718315"/>
         <choice-list number="1" same_result="False">
-           <choice name="customized" result="OK" time_sec="0.04" crc="-1869838464"/>
+           <choice name="customized" result="OK" time_sec="0.02" crc="-1869838464"/>
         </choice-list>
     </test>
-    <test title="Default on_skip_range_open event." make-dependent="True" time-sum-sec="0.02"> 
-        <application file-name="on_skip_range_open.sh" info-request-time="1340741685L" vanished="False"/>
-        <make-procedure success="True" time_sec="0.744410"/>
+    <test title="Default on_skip_range_open event." make-dependent="True" time-sum-sec="0.03"> 
+        <application file-name="on_skip_range_open.sh" info-request-time="1340767712L" vanished="False"/>
+        <make-procedure success="True" time_sec="0.721087"/>
         <choice-list number="1" same_result="False">
-           <choice name="default" result="OK" time_sec="0.02" crc="412955726"/>
+           <choice name="default" result="OK" time_sec="0.03" crc="412955726"/>
         </choice-list>
     </test>
     <group name="Mode Transitions">
-        <test title="transition-x.qx" make-dependent="True" time-sum-sec="0.33"> 
-            <application file-name="transition-x.sh" info-request-time="1340741684L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.918106"/>
+        <test title="transition-x.qx" make-dependent="True" time-sum-sec="0.28"> 
+            <application file-name="transition-x.sh" info-request-time="1340767712L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.961284"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="OK" time_sec="0.03" crc="140187343"/>
+               <choice name="1" result="OK" time_sec="0.02" crc="140187343"/>
                <choice name="2" result="OK" time_sec="0.02" crc="1810777269"/>
                <choice name="3" result="OK" time_sec="0.02" crc="784591852"/>
-               <choice name="error" result="OK" time_sec="0.25" crc="-1605736885"/>
+               <choice name="error" result="OK" time_sec="0.22" crc="-1605736885"/>
             </choice-list>
         </test>
-        <test title="transition.qx" make-dependent="True" time-sum-sec="0.25"> 
-            <application file-name="transition.sh" info-request-time="1340741686L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.917947"/>
+        <test title="transition.qx" make-dependent="True" time-sum-sec="0.22"> 
+            <application file-name="transition.sh" info-request-time="1340767713L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.919753"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="OK" time_sec="0.03" crc="140187343"/>
-               <choice name="2" result="OK" time_sec="0.03" crc="1810777269"/>
-               <choice name="3" result="OK" time_sec="0.04" crc="784591852"/>
+               <choice name="1" result="OK" time_sec="0.02" crc="140187343"/>
+               <choice name="2" result="OK" time_sec="0.02" crc="1810777269"/>
+               <choice name="3" result="OK" time_sec="0.02" crc="784591852"/>
                <choice name="error" result="OK" time_sec="0.16" crc="609096275"/>
             </choice-list>
         </test>
