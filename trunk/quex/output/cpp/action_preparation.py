@@ -22,7 +22,7 @@
        that tells that the user did not define an 'on_failure'
        handler.
 
-(C) 2005-2011 Frank-Rene Schaefer
+(C) 2005-2012 Frank-Rene Schaefer
 """
 from   quex.engine.generator.action_info       import CodeFragment, \
                                                       PatternActionInfo
@@ -216,6 +216,30 @@ def __prepare_on_failure_action(Mode, BeginOfLineSupportF, require_terminating_z
                      require_terminating_zero_preparation_f=require_terminating_zero_preparation_f) 
 
 def __get_line_and_column_counting(ThePattern, EOF_ActionF):
+    """Prepare additional actions which are required for line and column
+    number counting. 
+    
+    The '.newline_n' and '.column_n' of a given 'Pattern' may be given by the
+    pattern itself. For example the pattern "\n\n" increments the line number
+    always by 2. The pattern "\n+" however increments the line number depending
+    on how many '\n' it matches at runtime. These considerations where done
+    by means of 
+
+              quex.engine.state_machine.character_counter.do(...)
+
+    at the time when the Pattern object was constructed in 
+
+              class quex.input.regular_expression.construct.Pattern
+
+    Depending on the newline_n and column_n increment being pre-determined,
+    the counting behavior may be adapted. The following options exist:
+
+        __QUEX_COUNT_END_OF_STREAM_EVENT(me)
+        __QUEX_COUNT_VOID(me)
+        __QUEX_COUNT_NEWLINE_N_FIXED_COLUMN_N_VOID(me, NewlineN) 
+        __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(me, ColumnN) 
+
+    """
     global LanguageDB
 
     if EOF_ActionF:

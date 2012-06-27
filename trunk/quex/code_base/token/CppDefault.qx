@@ -50,6 +50,7 @@ $INCLUDE_CONVERTER_DECLARATION
     
         const std::string 
         pretty_char_text() const
+        /* Provides a somehow pretty-print of the text in the token. */
         {
             std::string             tmp = $CONVERTER_STRING(self.text);
             std::string::size_type  pos = 0;

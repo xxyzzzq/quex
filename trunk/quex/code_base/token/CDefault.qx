@@ -166,6 +166,8 @@ $INCLUDE_CONVERTER_DECLARATION
 
         const char* 
         $TOKEN_CLASS_pretty_char_text($TOKEN_CLASS* me, char*   buffer, size_t  BufferSize) 
+        /* Provides a somehow pretty-print of the text in the token. Note, that the buffer
+         * in case of UTF8 should be 4bytes longer than the longest expected string.       */
         {
             const QUEX_TYPE_CHARACTER*  source    = me->text;
             char*                       drain     = buffer;

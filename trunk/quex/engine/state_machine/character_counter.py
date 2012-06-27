@@ -1,41 +1,52 @@
 # (C) 2012 Frank-Rene Schaefer
 from quex.engine.misc.tree_walker  import TreeWalker
-from quex.blackboard               import E_Count, CounterDB
+from quex.blackboard               import E_Count, \
+                                          CounterDB
 
 def do(SM):
-    """Counts line and column number, if possible, from the structure
-       of the state machine that represents the pattern.
+    """LINE AND COLUMN NUMBER PRE-DETERMINATION _______________________________
+    
+    Counts line and column number, if possible, from the structure of the state
+    machine that represents the pattern.
 
-       State machine shall not contain pre- or post-contexts.
-       
-       DEPENDS ON: CounterDB in quex.blackboard. In this namespace the
-                   three databases 'newline', 'grid', and 'special' are
-                   defined.
+    RETURN: [0] newline_n -- Number of newlines in a lexeme that
+                             matches the pattern given by 'SM'
+            [1] column_n  -- Number of columns in a lexeme that 
+                             is matched by 'SM'.
 
-       RETURN: newline_n, column_n
+            Each one may be 'E_Count.VOID' if the value can only
+            be determined at run time.
 
-               Each one may be 'E_Count.VOID' if the value can only
-               be determined at run time.
+    NOTES _____________________________________________________________________
 
-       SHORTCOMING OF THE ALGO:
+    State machine shall not contain pre- or post-contexts.
+    
+    DEPENDS ON: CounterDB in quex.blackboard providing three databases:
 
-       The current approach does consider the column count to be void as soon
-       as a state is reached with two different column counts. This is too rigid
-       in a sense that a newline may clear the column count later in the pattern.
-       If the column counts to the acceptance state are then equal from there on,
-       the column count could be a numeric constant.
+                .newline
+                .grid
+                .special 
 
-       Practically, this means that Quex will implement a column counter in some
-       special cases where a pattern contains a newline, where a fixed constant
-       could be added instead. Multi-line patterns are considered to be rare and
-       the overhead of counting from the end of the lexeme to the last newline 
-       is considered to be minimal. There is no significant performance decrease
-       expected from this shortcoming.
+    SHORTCOMING _______________________________________________________________
 
-       To fix this, another approach would have to be implemented where the 
-       state machine is inverted and then the column counts starts from rear
-       to front until the first newline. This tremendous computation time overhead
-       is shied away from, because of the aforementioned low expected value add.
+    The current approach does consider the column count to be void as soon
+    as a state is reached with two different column counts. This is too rigid
+    in a sense that a newline may clear the column count later in the pattern.
+    If the column counts to the acceptance state are then equal from there on,
+    the column count could be a numeric constant.
+
+    Practically, this means that Quex will implement a column counter in some
+    special cases where a pattern contains a newline, where a fixed constant
+    could be added instead. Multi-line patterns are considered to be rare and
+    the overhead of counting from the end of the lexeme to the last newline 
+    is considered to be minimal. There is no significant performance decrease
+    expected from this shortcoming.
+
+    To fix this, another approach would have to be implemented where the state
+    machine is inverted and then the column counts starts from rear to front
+    until the first newline. This tremendous computation time overhead is shied
+    away from, because of the aforementioned low expected value add.
+    ___________________________________________________________________________
     """
     if not CounterDB.is_enabled(): 
         return E_Count.VOID, E_Count.VOID
@@ -49,28 +60,31 @@ def do(SM):
     #            [1] character set that triggers to it
     #            [2] count information
     initial = [ (state_index, character_set, count.clone()) \
-                 for state_index, character_set in state.transitions().get_map().iteritems() ]
+                for state_index, character_set in state.transitions().get_map().iteritems() ]
     counter.do(initial)
 
     return counter.result.line_n, counter.result.column_n #, counter.column_increment_per_character, counter.contains_newline_f
 
 class CharacterCounter(TreeWalker):
-    """Recursive Algorithm to count the number of newlines, characters, or spaces
-       for each state in the state machine. It is done for each state, so that 
-       path walking can be aborted as soon as a known state is hit.
+    """________________________________________________________________________
+    
+    Recursive Algorithm to count the number of newlines, characters, or spaces
+    for each state in the state machine. It is done for each state, so that 
+    path walking can be aborted as soon as a known state is hit.
 
-       -- A loop makes a count either (1) void if the counted character appears, 
-          or (2) is unimportant. If (1) happens, then the counter is globally
-          void. In case of (2) no change happend so any analysis starting from
+       -- A loop makes a count either (i) void if the counted character appears, 
+          or (ii) is unimportant. If (i) happens, then the counter is globally
+          void. In case of (ii) no change happened so any analysis starting from
           the loop's knot point is still valid and does not have to be made 
           again.
 
-       -- A node it met through another path. Exactly the same consideration as
+       -- A node is met through another path. Exactly the same consideration as
           for loops holds again. The break-up here is also essential to avoid
           exponential time (The total number of paths multiplies with the number
           of branches through each knot on the path).
 
-       ONLY PATTERNS WITHOUT PRE- AND POST-CONTEXT ARE HANDLED HERE!
+    ONLY PATTERNS WITHOUT PRE- AND POST-CONTEXT ARE HANDLED HERE!
+    ___________________________________________________________________________
     """   
     def __init__(self, SM):  
         self.sm       = SM
@@ -128,14 +142,14 @@ class Count(object):
     #
     #     If the increment per step is the same 'C' for any character that appears 
     #     in the pattern, then the length of the pattern can be computed at run-
-    #     time by a simple subtration:
+    #     time by a simple subtraction:
     # 
     #               length = (LexemeEnd - LexemeBegin) * C
     #
     #     provided that there is no newline in the pattern this is at the same 
     #     time the column increment. Same holds for line number increments.
     column_increment_per_step = E_Count.VIRGIN
-    # Just for info, in unicode there are the following candidates which may possibly
+    # Just for info, in Unicode there are the following candidates which may possibly
     # have assigned a separate line number increment: Line Feed, 0x0A; Vertical Tab, 0x0B; 
     # Form Feed, 0x0C; Carriage Return, 0x0D; Next Line, 0x85; Line Separator, 0x28; 
     # Paragraph Separator, 0x2029; 
@@ -160,19 +174,20 @@ class Count(object):
 
     def compute(self, CharacterSet):
         """Compute the increase of line and column numbers due to the given
-           character set. If both are void due to the character set then the
-           'abort_f' is raised.
+        character set. If both are void due to the character set then the
+        'abort_f' is raised.
         """
+
         def check(CmpSet):
             """Compare 'CmpSet' with 'CharacterSet'
             
-               RETURNS: True  -- if all characters in CharacterSet are in 
-                                 CmpSet and CharacterSet does not contain
-                                 any character beyond.
-                        False -- if CharacterSet and CmpSet have no common
-                                 characters whatsoever.
-                        None  -- if CharacterSet has some characters from 
-                                 CmpSet but also others beyond.
+            RETURNS: True  -- if all characters in CharacterSet are in CmpSet 
+                              and CharacterSet does not contain any character 
+                              beyond.
+                     False -- if CharacterSet and CmpSet have no common
+                              characters whatsoever.
+                     None  -- if CharacterSet has some characters from CmpSet
+                              but also others beyond.
             """
             if   CmpSet.is_superset(CharacterSet):      return True
             elif CmpSet.has_intersection(CharacterSet): return None
@@ -231,10 +246,14 @@ class Count(object):
 
     @staticmethod
     def announce_line_n_per_step(DeltaLineN):
-        if Count.line_increment_per_step == E_Count.VIRGIN: Count.line_increment_per_step = DeltaLineN
-        elif Count.line_increment_per_step != DeltaLineN:   Count.line_increment_per_step = E_Count.VOID
+        if Count.line_increment_per_step == E_Count.VIRGIN: 
+            Count.line_increment_per_step = DeltaLineN
+        elif Count.line_increment_per_step != DeltaLineN:   
+            Count.line_increment_per_step = E_Count.VOID
 
     @staticmethod
     def announce_column_n_per_step(DeltaLineN):
-        if Count.column_increment_per_step == E_Count.VIRGIN: Count.column_increment_per_step = DeltaLineN
-        elif Count.column_increment_per_step != DeltaLineN:   Count.column_increment_per_step = E_Count.VOID
+        if Count.column_increment_per_step == E_Count.VIRGIN: 
+            Count.column_increment_per_step = DeltaLineN
+        elif Count.column_increment_per_step != DeltaLineN:   
+            Count.column_increment_per_step = E_Count.VOID

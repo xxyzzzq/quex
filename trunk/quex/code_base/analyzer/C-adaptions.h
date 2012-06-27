@@ -107,7 +107,7 @@
         if( self.accumulator.text.begin == self.accumulator.text.end ) {                  \
             QUEX_NAME_TOKEN(take_text)(__QUEX_CURRENT_TOKEN_P, &self,                     \
                                        &QUEX_LEXEME_NULL,                                 \
-                                       (&QUEX_LEXEME_NULL) + 1);                           \
+                                       (&QUEX_LEXEME_NULL) + 1);                          \
         }                                                                                 \
         else {                                                                            \
             *(self.accumulator.text.end) = (QUEX_TYPE_CHARACTER)0; /* see above */        \

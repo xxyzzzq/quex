@@ -3,15 +3,15 @@ Names and Name Spaces
 
 Quex follows an object oriented design. Early versions of Quex only produced
 C++ code. When plain C support was added a consistent naming and function call
-scheme had to be introduced. This was necessry so that the large majority of
-code could be used for C++ and plain C. 
+scheme had to be introduced. This was necessary so that the large majority of
+code could be shared between C++ and plain C. 
 
 C does not support name spaces and it does not support member functions. The
 rule that associates functions and object names in C with their C++
 counterparts is described in the present section.
 
 Let a C++ member function ``member`` in class ``class``, an object ``object`` and 
-a global function ``function`` be defined in some namespace ``X0::X1::X2``. Then
+a global function ``function`` be defined in some name space ``X0::X1::X2``. Then
 their C++ code would look as follows:
 
    .. code-block:: cpp
@@ -111,8 +111,9 @@ expected::
 
        >
 
-It may be essential to provide the engine's implementation, because it contains
-the implementation of ``LexemeNull`` which would else not be referenced. In many
-cases it may make sense to compile with the '-E' option which does an expansion of
-all macros and shows all included content in a single file.
+It may be necessary to link with the generated lexical analyzer engine's
+sources. They contains an implementation of ``LexemeNull`` which would else not
+be referenced. In critical cases, it is advisable to run the GNU Compiler with
+the '-E' over the generated code, in order to see whether all macros are
+expanded as expected.
 

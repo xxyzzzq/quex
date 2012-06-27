@@ -35,12 +35,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void    
     QUEX_NAME(Counter_count)(QUEX_NAME(Counter)* me, 
                              QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
-    /* PURPOSE:
-     *   Adapts the column number and the line number according to the newlines
-     *   and letters of the last line occuring in the lexeme.
-     *
-     * NOTE: Providing LexemeLength may spare a subtraction (End - Lexeme) in case 
-     *       there is no newline in the lexeme (see below).                        */
+    /* Adapts the column number and the line number according to the newlines
+     * and letters of the last line occurring in the lexeme.                       */
     {
 #   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
@@ -66,9 +62,9 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void  
     QUEX_NAME(Counter_count_FixNewlineN)(QUEX_NAME(Counter)*  me,
-                                                   QUEX_TYPE_CHARACTER*           Lexeme,
-                                                   QUEX_TYPE_CHARACTER*           LexemeEnd,
-                                                   const int                      LineNIncrement) 
+                                         QUEX_TYPE_CHARACTER* Lexeme,
+                                         QUEX_TYPE_CHARACTER* LexemeEnd,
+                                         const int            LineNIncrement) 
     /* This function may be used to count column and line numbers in case 
      * that the number of newlines can be pre-determined. This makes the
      * process a little faster.                                           */
