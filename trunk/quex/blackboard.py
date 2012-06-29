@@ -89,6 +89,7 @@ E_Compression = Enum("PATH",
 
 E_Count = Enum("VIRGIN", 
                "VOID",
+               "NONE",
                "_DEBUG_Count")
 
 E_Commonality = Enum("NONE", "BOTH", "A_IN_B", "B_IN_A")

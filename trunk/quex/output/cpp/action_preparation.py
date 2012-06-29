@@ -239,6 +239,12 @@ def __get_line_and_column_counting(ThePattern, EOF_ActionF):
         __QUEX_COUNT_NEWLINE_N_FIXED_COLUMN_N_VOID(me, NewlineN) 
         __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(me, ColumnN) 
 
+    Their definition appears in 
+
+             $QUEX_PATH/quex/code_base/definitions
+
+    Where they are mapped to macros and functions which accomplish the job.
+
     """
     global LanguageDB
 
@@ -250,6 +256,9 @@ def __get_line_and_column_counting(ThePattern, EOF_ActionF):
 
     newline_n   = ThePattern.newline_n
     character_n = ThePattern.character_n
+    grid        = ThePattern.count.grid
+    line_ipc    = ThePattern.count.increment_line_n_per_char
+    column_ipc  = ThePattern.count.increment_column_n_per_char
 
     if   newline_n == E_Count.VOID:
         # Run the general algorithm, since not even the number of newlines in the 

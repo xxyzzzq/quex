@@ -25,7 +25,7 @@ class Pattern(object):
         #     Currently 'transition number' is equal to 'character number'. After 
         #     transformation a transition may represent a byte or whatever the codec 
         #     does to the state machine.
-        self.__newline_n, self.__character_n = character_counter.do(CoreSM)
+        self.__count = character_counter.do(CoreSM)
 
         # (2) [Optional] Transformation according to Codec Information
         #
@@ -60,9 +60,11 @@ class Pattern(object):
         self.__validate(fh)
 
     @property
-    def newline_n(self):                           return self.__newline_n
+    def count(self):                               return self.__count
     @property
-    def character_n(self):                         return self.__character_n
+    def newline_n(self):                           return self.__count.line_n
+    @property
+    def character_n(self):                         return self.__count.column_n
     @property
     def sm(self):                                  return self.__sm
     @property
