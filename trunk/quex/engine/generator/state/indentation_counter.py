@@ -15,6 +15,7 @@ from   math import log
 import sys
 
 class IndentationCounter(TransitionCode):
+    __slots__ = ("type", "state_index", "number", "variable_name")
     def __init__(self, Type, Number, StateIndex):
         self.type        = Type
         self.number      = Number

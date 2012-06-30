@@ -29,6 +29,7 @@ from   quex.engine.generator.action_info       import CodeFragment, \
 from   quex.engine.generator.languages.address import get_plain_strings
 from   quex.blackboard                         import setup as Setup, \
                                                       E_Count
+import quex.output.cpp.line_and_column_counter as     line_and_column_counter
 
 import re
 
@@ -151,7 +152,7 @@ def __prepare(Mode, CodeFragment_or_CodeFragments, ThePattern,
     # (*) Code to count line and column numbers
     lc_count_code = ""
     if not SelfCountingActionF: 
-        lc_count_code = "    %s\n" % __get_line_and_column_counting(ThePattern, EOF_ActionF)
+        lc_count_code = "    %s\n" % line_and_column_counter.do(ThePattern, EOF_ActionF)
 
     #if (not Default_ActionF) and (not EOF_ActionF):
     #    lc_count_code += "    __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);\n"
@@ -214,70 +215,6 @@ def __prepare_on_failure_action(Mode, BeginOfLineSupportF, require_terminating_z
                      None, Default_ActionF=True, 
                      BeginOfLineSupportF=BeginOfLineSupportF,
                      require_terminating_zero_preparation_f=require_terminating_zero_preparation_f) 
-
-def __get_line_and_column_counting(ThePattern, EOF_ActionF):
-    """Prepare additional actions which are required for line and column
-    number counting. 
-    
-    The '.newline_n' and '.column_n' of a given 'Pattern' may be given by the
-    pattern itself. For example the pattern "\n\n" increments the line number
-    always by 2. The pattern "\n+" however increments the line number depending
-    on how many '\n' it matches at runtime. These considerations where done
-    by means of 
-
-              quex.engine.state_machine.character_counter.do(...)
-
-    at the time when the Pattern object was constructed in 
-
-              class quex.input.regular_expression.construct.Pattern
-
-    Depending on the newline_n and column_n increment being pre-determined,
-    the counting behavior may be adapted. The following options exist:
-
-        __QUEX_COUNT_END_OF_STREAM_EVENT(me)
-        __QUEX_COUNT_VOID(me)
-        __QUEX_COUNT_NEWLINE_N_FIXED_COLUMN_N_VOID(me, NewlineN) 
-        __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(me, ColumnN) 
-
-    Their definition appears in 
-
-             $QUEX_PATH/quex/code_base/definitions
-
-    Where they are mapped to macros and functions which accomplish the job.
-
-    """
-    global LanguageDB
-
-    if EOF_ActionF:
-        return "__QUEX_COUNT_END_OF_STREAM_EVENT(self.counter);"
-
-    if ThePattern is None:
-        return "__QUEX_COUNT_VOID(self.counter);"
-
-    newline_n   = ThePattern.newline_n
-    character_n = ThePattern.character_n
-    grid        = ThePattern.count.grid
-    line_ipc    = ThePattern.count.increment_line_n_per_char
-    column_ipc  = ThePattern.count.increment_column_n_per_char
-
-    if   newline_n == E_Count.VOID:
-        # Run the general algorithm, since not even the number of newlines in the 
-        # pattern can be determined directly from the pattern
-        return "__QUEX_COUNT_VOID(self.counter);"
-
-    elif newline_n != 0:
-        if ThePattern.sm.get_ending_character_set().contains_only(ord('\n')):
-            # A pattern that ends with newline, lets the next column start at one.
-            return "__QUEX_COUNT_NEWLINE_N_FIXED_COLUMN_N_ZERO(self.counter, %i);" % newline_n
-        # TODO: Try to determine number of characters backwards to newline directly
-        #       from the pattern state machine. (Those seldom cases won't bring much
-        #       speed-up)
-        return "__QUEX_COUNT_NEWLINE_N_FIXED_COLUMN_N_VOID(self.counter, %i);" % newline_n
-
-    # Lexeme does not contain newline --> count only columns
-    if character_n == E_Count.VOID: incr_str = "LexemeL"
-    else:                           incr_str = "%i" % int(character_n)
-    return "__QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, %s);" % incr_str
 
 def pretty_code(Code, Base):
     """-- Delete empty lines at the beginning
