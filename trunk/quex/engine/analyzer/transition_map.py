@@ -15,6 +15,13 @@ def zipped_iterable(TransitionMapA, TransitionMapB):
     Interval [begin, end) is homogenous in the zipped transition map, i.e.
     inside this interval 'A' triggers to 'a_target' and 'B' to 'b_target'.  
     """
+    assert len(TransitionMapA) != 0 
+    assert TransitionMapA[0][0].begin == - sys.maxint
+    assert TransitionMapA[-1][0].end  == sys.maxint
+    assert len(TransitionMapB) != 0 
+    assert TransitionMapB[0][0].begin == - sys.maxint
+    assert TransitionMapB[-1][0].end  == sys.maxint
+
     LenA             = len(TransitionMapA)
     LenB             = len(TransitionMapB)
     i                = 0 # iterator over TransitionMapA
@@ -58,17 +65,21 @@ def relate_to_door_ids(transition_map, TheAnalyzer, StateIndex):
 
     return [(interval, adapt(target)) for interval, target in transition_map]
 
-def get_string(transition_map, Option="utf8"):
+def get_string(transition_map, Option="utf8", IntervalF=True):
     assert Option in ("hex", "dec", "utf8")
+    def get(X):
+        if   X == sys.maxint:   return "+oo"
+        elif X == - sys.maxint: return "-oo"
+        return "%i" % X
     if len(transition_map) == 0:
         return "   <empty>"
     L = max(len(x[0].get_string(Option)) for x in transition_map)
     txt = []
     for interval, target in transition_map:
-        interval_str = interval.get_string(Option)
+        if IntervalF: interval_str = interval.get_string(Option)
+        else:         interval_str = "[%s:%s)" % (get(interval.begin), get(interval.end))
         txt.append("   %s%s %s\n" % (interval_str, " " * (L - len(interval_str)), target))
     return "".join(txt)
-
 
 def bisect_begin(transition_map, Value, lower=0):
     """Find entry 'i' by bisectioning so that it holds:
@@ -211,6 +222,31 @@ def is_equal(One, Other):
         elif x[1] != y[1]: return False  # Target
     return True
 
+def fill_gaps(transition_map, Target):
+    """Fill gaps in the transition map. This function does not smoothen out.
+    So, it is assumed that the Target does not appear at the borders of the
+    transition map. If this is required, the function needs to be adapted
+    to work similar like 'smoothen'.
+    """
+    # If outer borders are lacking, then add them
+    if transition_map[0][0].begin != -sys.maxint: 
+        transition_map.insert(0, [Interval(-sys.maxint, transition_map[0][0].begin), Target])
+    if transition_map[-1][0].end != sys.maxint: 
+        transition_map.append([Interval(transition_map[-1][0].end, sys.maxint), Target])
+
+    # Fill gaps between the intervals
+    previous_end = -sys.maxint
+    i    = 0
+    size = len(transition_map)
+    while i < size:
+        interval = transition_map[i][0]
+        if interval.begin != previous_end: 
+            assert transition_map[i][1] != Target # See comment at entry of function
+            transition_map.insert(i, [Interval(previous_end, interval.begin), Target])
+            i    += 1
+            size += 1
+        i += 1
+        previous_end = interval.end
 
 def get_target(transition_map, Character):
     # TODO: Bisectioning
@@ -218,3 +254,6 @@ def get_target(transition_map, Character):
         if   interval.end   <  Character + 1: continue
         elif interval.begin <= Character: return target
     return None
+
+def sort(transition_map):
+    transition_map.sort(key=lambda x: x[0].begin)

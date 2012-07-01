@@ -133,7 +133,7 @@ def __pattern_with_newline(Count):
             # There are solely newline characters involved in the pattern.
             # Thus, the line number increment can be determined by the number
             # of newline characters, IF all have the same increment.
-            if line_n_increment_fixed_f
+            if line_n_increment_fixed_f:
                 assert isinstance(Count.increment_line_n_per_char, (int, long))
                 return "__QUEX_COUNT_NEWLINE_N_FIXED_COLUMN_N_ZERO(self.counter, LexemeL * %i);" \
                        % Count.increment_line_n_per_char

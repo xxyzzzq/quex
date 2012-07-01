@@ -151,9 +151,9 @@ accessed by including
 
 for the declarations and::
 
-     #include <quex/code_base/converter_helper/utf8.i>
-     #include <quex/code_base/converter_helper/utf16.i>
-     #include <quex/code_base/converter_helper/utf32.i>
+     #include <quex/code_base/converter_helper/from-utf8.i>
+     #include <quex/code_base/converter_helper/from-utf16.i>
+     #include <quex/code_base/converter_helper/from-utf32.i>
 
 for the implementations. They function exactly the same way as the dedicate 
 converters for the ``--codec`` converters do. That is, their signatures are 

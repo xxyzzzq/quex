@@ -23,7 +23,7 @@ namespace. The list of available functions in C++ is
     namespace quex {
         QUEX_TYPE_BOM      bom_snap(FILE* fh);
         template <class InStream> 
-        QUEX_TYPE_BOM      bom_snap(InStream* is_p);
+        QUEX_TYPE_BOM      QUEX_NAME(bom_snap)(InStream* is_p);
         QUEX_TYPE_BOM      bom_identify(const uint8_t* const Buffer, size_t* n);
         const char*        bom_name(QUEX_TYPE_BOM BOM);
     } 

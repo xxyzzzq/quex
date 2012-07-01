@@ -83,7 +83,7 @@ class TransitionCode:
     @property
     def drop_out_f(self): return self.__drop_out_f
 
-    def __eq__(self, Other): assert False  # Must be implemented by derived class
+    def __eq__(self, Other):  assert False  # Must be implemented by derived class
     def __neq__(self, Other): assert False  # Must be implemented by derived class
 
 
