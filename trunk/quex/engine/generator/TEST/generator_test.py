@@ -17,6 +17,7 @@ import quex.output.cpp.core                    as cpp_generator
 
 # import quex.engine.generator.skipper.core          as skipper
 from   quex.engine.generator.languages.variable_db import VariableDB
+import quex.engine.generator.languages.variable_db as variable_db
 import quex.engine.generator.skipper.character_set as character_set_skipper
 import quex.engine.generator.skipper.range         as range_skipper
 import quex.engine.generator.skipper.nested_range  as nested_range_skipper
@@ -388,12 +389,12 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
 def create_customized_analyzer_function(Language, TestStr, EngineSourceCode, 
                                         QuexBufferSize, CommentTestStrF, ShowPositionF, EndStr, MarkerCharList,
-                                        LocalVariableDB, IndentationSupportF=False, TokenQueueF=False):
+                                        LocalVariableDB, IndentationSupportF=False, TokenQueueF=False, ReloadF=False):
 
     txt  = create_common_declarations(Language, QuexBufferSize, TestStr, 
                                       IndentationSupportF=IndentationSupportF, 
                                       TokenQueueF=TokenQueueF)
-    txt += my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, EngineSourceCode, EndStr, LocalVariableDB)
+    txt += my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, EngineSourceCode, EndStr, LocalVariableDB, ReloadF)
     txt += create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF)
 
     return txt
@@ -538,7 +539,7 @@ run_test(const char* TestString, const char* Comment, QUEX_TYPE_ANALYZER* lexer)
 }
 """
 
-def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndStr, LocalVariableDB={}):
+def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndStr, LocalVariableDB={},ReloadF=False):
     LanguageDB = Setup.language_db
     if ShowPositionF: show_position_str = "1"
     else:             show_position_str = "0"
@@ -553,6 +554,19 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
     if type(SourceCode) == list:
         SourceCode = "".join(address.get_plain_strings(SourceCode))
 
+    reload_str = ""
+    if ReloadF: 
+        txt = []
+        for x in LanguageDB.RELOAD():
+            txt.extend(x.code)
+        # Ensure that '__RELOAD_FORWARD' and '__RELOAD_BACKWARD' is referenced
+        txt.append("__STATE_ROUTER:\n")
+        txt.append("   goto __RELOAD_FORWARD;\n")
+        txt.append("   goto __RELOAD_BACKWARD;\n")
+        reload_str = "".join(txt)
+        variable_db.enter(LocalVariableDB, "target_state_else_index")
+        variable_db.enter(LocalVariableDB, "target_state_index")
+
     return blue_print(customized_unit_test_function_txt,
                       [("$$MARKER_LIST$$",            ml_txt),
                        ("$$SHOW_POSITION$$",          show_position_str),
@@ -561,6 +575,7 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
                        ("$$SOURCE_CODE$$",            SourceCode),
                        ("$$INPUT_P_DEREFERENCE$$",    LanguageDB.ASSIGN("input", LanguageDB.INPUT_P_DEREFERENCE())),
                        ("$$TERMINAL_END_OF_STREAM$$", address.get_label("$terminal-EOF")),
+                       ("$$RELOAD$$",                 reload_str),
                        ("$$END_STR$$",                EndStr)])
 
 
@@ -613,6 +628,7 @@ $$MARKER_LIST$$
 /*________________________________________________________________________________________*/
 $$SOURCE_CODE$$
 /*________________________________________________________________________________________*/
+$$RELOAD$$
 
 __REENTRY:
     /* Originally, the reentry preparation does not increment or do anything to _input_p

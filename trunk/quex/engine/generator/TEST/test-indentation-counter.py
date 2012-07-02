@@ -2,11 +2,11 @@
 import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
-from   quex.engine.interval_handling import NumberSet, Interval
-from   generator_test                     import compile_and_run, create_customized_analyzer_function, __Setup_init_language_database
-from   quex.input.files.indentation_setup import IndentationSetup
-import quex.engine.generator.state.indentation_counter as indentation_counter
-from   quex.engine.generator.languages.address               import init_address_handling
+from   quex.engine.interval_handling                   import NumberSet, Interval
+from   generator_test                                  import compile_and_run, create_customized_analyzer_function, __Setup_init_language_database
+from   quex.input.files.indentation_setup              import IndentationSetup
+import quex.engine.generator.state.indentation_counter as     indentation_counter
+from   quex.engine.generator.languages.address         import init_address_handling
 
 if "--hwut-info" in sys.argv:
     print "Indentation Counting"
@@ -36,7 +36,8 @@ def test(TestStr, IndentationSetup):
                                               EndStr=EndStr, MarkerCharList=map(ord, " :\t"),
                                               LocalVariableDB=local_variable_db, 
                                               IndentationSupportF=True,
-                                              TokenQueueF=True)
+                                              TokenQueueF=True, 
+                                              ReloadF=True)
     compile_and_run(Language, txt)
 
 indentation_setup = IndentationSetup()
