@@ -11,45 +11,6 @@ from   itertools import islice
 
 LanguageDB = None
 
-class SubTriggerMap(object):
-    """A trigger map that 'points' into a subset of a trigger map.
-       Instead of creating whole new subsets, relate to the original
-       trigger map and store 'begin' and 'end' of the new map.
-    """
-    __slots__ = ("__trigger_map", "__begin_i", "__end_i")
-
-    def __init__(self, TriggerMap):
-        self.__trigger_map = TriggerMap
-        self.__begin_i     = 0
-        self.__end_i       = len(TriggerMap) - 1
-
-    def __getitem__(self, X):
-        if isinstance(X, slice):
-            result = SubTriggerMap(self.__trigger_map)
-            result.__begin_i = self.__begin_i + X.start
-            result.__end_i   = self.__begin_i + X.stop
-        else:
-            return self.__trigger_map[self.__begin_i + X]
-
-    def __len__(self):
-        return self.__end_i - self.__begin_i
-
-    def __iter__(self):
-        for x in islice(self.__trigger_map, self.__begin_i, self.__end_i):
-            yield x
-
-    @property
-    def middle(self):
-        middle_i = int((self.__end_i - self.__begin_i) / 2) + self.__begin_i
-        return self.__trigger_map[middle_i].begin
-
-
-def debug(TransitionMap, Function):
-    print "##--BEGIN %s" % Function
-    for entry in TransitionMap:
-        print "##", entry[0]
-    print "##--END %s" % Function
-
 def do(txt, TransitionMap, 
        StateIndex     = None,  
        EngineType     = E_EngineTypes.FORWARD, 
@@ -105,6 +66,44 @@ def do(txt, TransitionMap,
     # (*) When there was an outstanding character, then the whole bisection was
     #     implemented in an 'ELSE' block which must be closed.
     if outstanding is not None: txt.append(LanguageDB.ENDIF)
+
+class SubTriggerMap(object):
+    """A trigger map that 'points' into a subset of a trigger map.
+       Instead of creating whole new subsets, relate to the original
+       trigger map and store 'begin' and 'end' of the new map.
+    """
+    __slots__ = ("__trigger_map", "__begin_i", "__end_i")
+
+    def __init__(self, TriggerMap):
+        self.__trigger_map = TriggerMap
+        self.__begin_i     = 0
+        self.__end_i       = len(TriggerMap) - 1
+
+    def __getitem__(self, X):
+        if isinstance(X, slice):
+            result = SubTriggerMap(self.__trigger_map)
+            result.__begin_i = self.__begin_i + X.start
+            result.__end_i   = self.__begin_i + X.stop
+        else:
+            return self.__trigger_map[self.__begin_i + X]
+
+    def __len__(self):
+        return self.__end_i - self.__begin_i
+
+    def __iter__(self):
+        for x in islice(self.__trigger_map, self.__begin_i, self.__end_i):
+            yield x
+
+    @property
+    def middle(self):
+        middle_i = int((self.__end_i - self.__begin_i) / 2) + self.__begin_i
+        return self.__trigger_map[middle_i].begin
+
+def debug(TransitionMap, Function):
+    print "##--BEGIN %s" % Function
+    for entry in TransitionMap:
+        print "##", entry[0]
+    print "##--END %s" % Function
 
 def __bisection(txt, TriggerMap):
     """Creates code for state transitions from this state. This function is very

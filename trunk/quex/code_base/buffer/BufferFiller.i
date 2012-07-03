@@ -169,6 +169,37 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE size_t
     QUEX_NAME(BufferFiller_load_forward)(QUEX_NAME(Buffer)* buffer)
+    /*_________________________________________________________________________
+     * This function is to be called as a reaction to a buffer limit code 'BLC'
+     * as returned by 'get_forward()'. Its task is to load new content into the
+     * buffer such that 'get_forward() can continue iterating. This means that
+     * the '_input_p' points to one of the following positions:
+     *
+     *  (1) Beginning of the Buffer: In this case, no reload needs to take place.
+     *      It can basically only appear if 'load_forward()' is called after
+     *      'get_backward()'---and this does not make sense. But returning a '0'
+     *      (which is >= 0 and indicates that everything is ok) tells the application 
+     *      that nothing has been loaded, and the next 'get_forward()' will work 
+     *      normally.
+     *
+     *  (2) End of File Pointer: (which may be equal to the end of the buffer) 
+     *      In this case no further content can be loaded. The function returns '0'.
+     *
+     *  (3) End of Buffer (if it is != End of File Pointer): Here a 'normal' load of
+     *      new data into the buffer can happen.
+     *
+     * RETURNS: '>= 0'   number of characters that were loaded forward in the stream.
+     *          '-1'     if forward loading was not possible (end of file)                      
+     *_________________________________________________________________________
+     *
+     * There is a seemingly dangerous case where the loading **just**
+     * fills the buffer to the limit. In this case no 'End Of File' is
+     * detected, no end of file pointer is set, and as a consequence a new
+     * loading will happen later. This new loading, though, will only copy
+     * the fallback-region. The 'LoadedN == 0' will cause the
+     * _memory._end_of_file_p to be set to the end of the copied
+     * fallback-region. And everything is fine.                          
+     *_______________________________________________________________________*/
     {
         const ptrdiff_t      ContentSize  = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(buffer);
         QUEX_TYPE_CHARACTER* ContentFront = QUEX_NAME(Buffer_content_front)(buffer);
@@ -178,33 +209,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_TYPE_CHARACTER* new_content_begin = 0x0;
         size_t               LoadedN           = (size_t)-1;
 
-        /* PURPOSE: This function is to be called as a reaction to a buffer limit code 'BLC'
-         *          as returned by 'get_forward()'. Its task is to load new content into the 
-         *          buffer such that 'get_forward() can continue iterating. This means that the 
-         *          '_input_p' points to one of the following positions:
-         *
-         *          (1) Beginning of the Buffer: In this case, no reload needs to take place.
-         *              It can basically only appear if 'load_forward()' is called after
-         *              'get_backward()'---and this does not make sense. But returning a '0'
-         *              (which is >= 0 and indicates that everything is ok) tells the application 
-         *              that nothing has been loaded, and the next 'get_forward()' will work 
-         *              normally.
-         *
-         *          (2) End of File Pointer: (which may be equal to the end of the buffer) 
-         *              In this case no further content can be loaded. The function returns '0'.
-         *
-         *          (3) End of Buffer (if it is != End of File Pointer): Here a 'normal' load of
-         *              new data into the buffer can happen.
-         *
-         * RETURNS: '>= 0'   number of characters that were loaded forward in the stream.
-         *          '-1'     if forward loading was not possible (end of file)                      */
-        /* 
-         * NOTE: There is a seemingly dangerous case where the loading **just** fills the buffer to 
-         *       the limit. In this case no 'End Of File' is detected, no end of file pointer is set,
-         *       and as a consequence a new loading will happen later. This new loading, though,
-         *       will only copy the fallback-region. The 'LoadedN == 0' will cause the _memory._end_of_file_p
-         *       to be set to the end of the copied fallback-region. And everything is fine.
-         */
         QUEX_NAME(BufferFiller)*  me = buffer->filler;
         if( me == 0x0 ) return 0; /* This case it totally rational, if no filler has been specified */
 

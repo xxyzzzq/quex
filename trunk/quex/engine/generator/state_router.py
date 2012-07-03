@@ -42,9 +42,10 @@ def do(StateRouterInfoList):
     return Address("$state-router", Code=[prolog] + txt + [epilog])
 
 def get_info(StateIndexList):
-    # In some strange cases, a 'dummy' state router is required so that 
-    # 'goto __STATE_ROUTER;' does not reference a non-existing label. Then,
-    # we return an empty text array.
+    """In some strange cases, a 'dummy' state router is required so that 
+    'goto __STATE_ROUTER;' does not reference a non-existing label. Then,
+    we return an empty text array.
+    """
     if len(StateIndexList) == 0: return []
 
     # Make sure, that for every state the 'drop-out' state is also mentioned

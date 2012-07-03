@@ -34,7 +34,6 @@ __Setup_init_language_database(Language)
 TestStr  = "abcdefg_HIJKLMNOP-qrstuvw'XYZ12ok3"
 
 compile_and_run(Language, create_character_set_skipper_code(Language, TestStr, trigger_set, QuexBufferSize=BS))
-
 TestStr  = "-hijklmnop_qrstuvw#xyz9"
 
 compile_and_run(Language, create_character_set_skipper_code(Language, TestStr, trigger_set, QuexBufferSize=BS))

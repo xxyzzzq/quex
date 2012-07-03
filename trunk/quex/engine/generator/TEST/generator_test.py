@@ -12,6 +12,7 @@ from quex.blackboard             import PatternShorthand, E_Compression
 #
 from   quex.engine.generator.languages.core    import db
 import quex.engine.generator.languages.address as address
+import quex.engine.generator.state_router      as     state_router_generator
 from   quex.engine.generator.action_info       import PatternActionInfo, CodeFragment
 import quex.output.cpp.core                    as cpp_generator
 
@@ -388,8 +389,10 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     return txt + "".join(code)
 
 def create_customized_analyzer_function(Language, TestStr, EngineSourceCode, 
-                                        QuexBufferSize, CommentTestStrF, ShowPositionF, EndStr, MarkerCharList,
-                                        LocalVariableDB, IndentationSupportF=False, TokenQueueF=False, ReloadF=False):
+                                        QuexBufferSize, CommentTestStrF, ShowPositionF, 
+                                        EndStr, MarkerCharList,
+                                        LocalVariableDB, IndentationSupportF=False, 
+                                        TokenQueueF=False, ReloadF=False):
 
     txt  = create_common_declarations(Language, QuexBufferSize, TestStr, 
                                       IndentationSupportF=IndentationSupportF, 
@@ -415,7 +418,8 @@ def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferS
     return create_customized_analyzer_function(Language, TestStr, skipper_code,
                                                QuexBufferSize, CommentTestStrF=False, 
                                                ShowPositionF=False, EndStr=end_str,
-                                               MarkerCharList=marker_char_list, LocalVariableDB=local_variable_db)
+                                               MarkerCharList=marker_char_list, 
+                                               LocalVariableDB=local_variable_db, ReloadF=True)
 
 def create_range_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=1024, 
                               CommentTestStrF=False, ShowPositionF=False):
@@ -560,9 +564,12 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
         for x in LanguageDB.RELOAD():
             txt.extend(x.code)
         # Ensure that '__RELOAD_FORWARD' and '__RELOAD_BACKWARD' is referenced
-        txt.append("__STATE_ROUTER:\n")
-        txt.append("   goto __RELOAD_FORWARD;\n")
-        txt.append("   goto __RELOAD_BACKWARD;\n")
+        routed_address_set = address.get_address_set_subject_to_routing()
+        routed_address_set.add(address.get_address("$terminal-EOF", U=True))
+        routed_state_info_list = state_router_generator.get_info(routed_address_set)
+        txt.extend(address.get_plain_strings([state_router_generator.do(routed_state_info_list)]))
+        txt.append("    goto __RELOAD_FORWARD;\n")
+        txt.append("    goto __RELOAD_BACKWARD;\n")
         reload_str = "".join(txt)
         variable_db.enter(LocalVariableDB, "target_state_else_index")
         variable_db.enter(LocalVariableDB, "target_state_index")

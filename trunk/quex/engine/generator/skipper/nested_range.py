@@ -29,6 +29,9 @@ def do(Data):
                                Mode=Mode, 
                                IndentationCounterTerminalID=indentation_counter_terminal_id) 
 
+    # Reload requires the state router; mark as 'used'
+    # get_label("$state-router", U=True)
+
     return code_str, db
 
 template_str = """

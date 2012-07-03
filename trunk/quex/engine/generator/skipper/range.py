@@ -27,6 +27,9 @@ def do(Data):
 
     code_str, db = get_skipper(ClosingSequence, Mode, indentation_counter_terminal_id) 
 
+    # Reload requires the state router; mark as 'used'
+    # get_label("$state-router", U=True)
+
     return code_str, db
 
 template_str = """
