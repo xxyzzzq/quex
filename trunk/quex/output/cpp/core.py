@@ -1,3 +1,4 @@
+import quex.output.cpp.action_preparation              as     action_preparation
 from   quex.engine.generator.languages.variable_db     import variable_db
 from   quex.engine.generator.languages.address         import get_address, \
                                                               get_plain_strings, \
@@ -11,6 +12,28 @@ import quex.engine.analyzer.core                       as     analyzer_generator
 from   quex.blackboard                                 import E_StateIndices, \
                                                               E_EngineTypes,  \
                                                               setup as Setup
+
+def do(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
+
+    init_address_handling({})
+
+    # -- prepare the source code fragments for the generator
+    required_local_variables_db, \
+    pattern_action_pair_list,    \
+    on_end_of_stream_action,     \
+    on_failure_action,           \
+    on_after_match_str           = action_preparation.do(Mode, IndentationSupportF, BeginOfLineSupportF)
+
+    # -- prepare code generation
+    generator = Generator(StateMachineName       = Mode.name,
+                          PatternActionPair_List = pattern_action_pair_list, 
+                          OnFailureAction        = on_failure_action, 
+                          OnEndOfStreamAction    = on_end_of_stream_action,
+                          OnAfterMatch           = on_after_match_str,
+                          ModeNameList           = ModeNameList)
+
+    # -- generate!
+    return "".join(generator.do(required_local_variables_db))
 
 class Generator(GeneratorBase):
 
@@ -38,8 +61,6 @@ class Generator(GeneratorBase):
         # (*) Initialize the label and variable trackers
         variable_db.init(RequiredLocalVariablesDB)
         variable_db.require("input") 
-
-        init_address_handling({})
 
         # (*) Pre Context State Machine
         #     (If present: All pre-context combined in single backward analyzer.)

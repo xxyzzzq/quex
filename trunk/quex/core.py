@@ -14,7 +14,6 @@ import quex.output.cpp.token_class_maker        as token_class_maker
 import quex.output.cpp.analyzer_class           as analyzer_class
 import quex.output.cpp.configuration            as configuration 
 import quex.output.cpp.mode_classes             as mode_classes
-import quex.output.cpp.action_preparation       as action_preparation
 import quex.output.cpp.codec_converter_helper   as codec_converter_helper 
 
 import quex.output.graphviz.core                as grapviz_generator
@@ -126,23 +125,7 @@ def analyzer_functions_get(ModeDB):
         # -- some modes only define event handlers that are inherited
         if len(mode.get_pattern_action_pair_list()) == 0: continue
 
-        # -- prepare the source code fragments for the generator
-        required_local_variables_db, \
-        pattern_action_pair_list,    \
-        on_end_of_stream_action,     \
-        on_failure_action,           \
-        on_after_match_str           = action_preparation.do(mode, IndentationSupportF, BeginOfLineSupportF)
-
-        # -- prepare code generation
-        generator = cpp_generator.Generator(StateMachineName       = mode.name,
-                                            PatternActionPair_List = pattern_action_pair_list, 
-                                            OnFailureAction        = on_failure_action, 
-                                            OnEndOfStreamAction    = on_end_of_stream_action,
-                                            OnAfterMatch           = on_after_match_str,
-                                            ModeNameList           = mode_name_list)
-
-        # -- generate!
-        analyzer_code += "".join(generator.do(required_local_variables_db))
+        analyzer_code += cpp_generator.do(mode, mode_name_list, IndentationSupportF, BeginOfLineSupportF)
 
         if Setup.comment_mode_patterns_f:
             inheritance_info_str += mode.get_documentation()

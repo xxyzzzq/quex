@@ -15,7 +15,7 @@ testcase=$1
 sed "s/Parserbase-XXX/Parserbase-$testcase/" simple-XXX.qx > simple.qx
 
 echo "(0) quexify -- no output is good output"
-quex -i simple.qx --token-id-prefix scope1::scope2::scope3::TKN_ --foreign-token-id-file Parserbase-$testcase.h >& tmp.txt
+quex -i simple.qx --token-id-prefix scope1::scope2::scope3::TKN_ --foreign-token-id-file Parserbase-$testcase.h --debug-exception >& tmp.txt
 cat tmp.txt
 
 echo "(1) check out generated sources"

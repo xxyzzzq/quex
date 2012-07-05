@@ -408,7 +408,8 @@ def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferS
     end_str += '    return false;\n'
 
     address.init_address_handling({})
-    skipper_code, local_variable_db = character_set_skipper.get_skipper(TriggerSet)
+    Data = { "character_set": TriggerSet }
+    skipper_code, local_variable_db = character_set_skipper.do(Data)
 
     marker_char_list = []
     for interval in TriggerSet.get_intervals():

@@ -110,7 +110,6 @@ def is_label_referenced(Type, Arg=None):
     return label in __referenced_label_set
 
 __routed_address_set = set([])
-
 def init_address_handling(DirectTransitionDB):
     __referenced_label_set.clear()
     __routed_address_set.clear()

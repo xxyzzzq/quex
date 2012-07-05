@@ -1,4 +1,5 @@
 # (C) 2012 Frank-Rene Schaefer
+from quex.blackboard import E_Count
 
 def do(ThePattern, EOF_ActionF):
     """Prepare additional actions which are required for line and column
@@ -118,7 +119,6 @@ def __new_do(ThePattern, EOF_ActionF):
         return __pattern_without_newline(ThePattern.count)
     else:
         return __pattern_with_newline(ThePattern.count)
-
 
 def __pattern_with_newline(Count):
     columns_involved_f       = (Count.column_n != 0 or Count.grid != E_Count.NONE)

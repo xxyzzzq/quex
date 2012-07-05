@@ -1,43 +1,89 @@
 import quex.engine.state_machine.index              as     sm_index
+import quex.engine.analyzer.transition_map          as     transition_map_tools
+from   quex.engine.analyzer.state.entry_action      import DoorID
 import quex.engine.generator.state.transition.core  as     transition_block
 from   quex.engine.generator.state.transition.code  import TextTransitionCode
 from   quex.engine.generator.languages.address      import get_label, get_address
 import quex.engine.generator.languages.variable_db  as     variable_db
 from   quex.engine.generator.skipper.common         import line_column_counter_in_loop
-from   quex.engine.state_machine.transition_map     import TransitionMap 
 from   quex.blackboard                              import E_EngineTypes, E_StateIndices, setup as Setup
 from   quex.engine.misc.string_handling             import blue_print
 
 def do(Data):
+    """________________________________________________________________________
+    Generate a character set skipper state. As long as characters of a given
+    character set appears it iterates to itself.
+    ___________________________________________________________________________
+    """
     LanguageDB   = Setup.language_db
+    CharacterSet = Data["character_set"]
+    assert CharacterSet.__class__.__name__ == "NumberSet"
+    assert not CharacterSet.is_empty()
 
-    code_str, db = get_skipper(Data["character_set"])   
+    LanguageDB     = Setup.language_db
 
-    txt = []
-    txt.append("    ")
-    LanguageDB.COMMENT(txt, "Character set skipper state")
-    txt.extend(code_str)
+    skipper_index  = sm_index.get()
+    skipper_door   = DoorID(skipper_index, 0)
+    skipper_label  = LanguageDB.LABEL_BY_DOOR_ID(skipper_door)
+    skipper_adr    = "%i" % LanguageDB.ADDRESS_BY_DOOR_ID(skipper_door)
 
-    return txt, db
+    upon_reload_done_door = DoorID(sm_index.get(), 0)
+    upon_reload_done_adr = "%i" % LanguageDB.ADDRESS_BY_DOOR_ID(upon_reload_done_door)
+
+    iteration_code = __get_transition_block(CharacterSet, skipper_door, skipper_adr)
+
+    # Line and column number counting
+    prolog = __lc_counting_replacements(prolog_txt, CharacterSet)
+    prolog = blue_print(prolog,
+                        [
+                         ["$$DELIMITER_COMMENT$$",     CharacterSet.get_utf8_string()],
+                         ["$$SKIPPER_LABEL$$",         skipper_label], 
+                         ["$$SKIPPER_ADR$$",           skipper_adr], 
+                         ["$$INPUT_GET$$",             LanguageDB.ACCESS_INPUT()],
+                         ["$$INPUT_P_INCREMENT$$",     LanguageDB.INPUT_P_INCREMENT()],
+                         ["$$UPON_RELOAD_DONE_ADR$$",  upon_reload_done_adr],
+                        ])
+
+    epilog = __lc_counting_replacements(epilog_txt, CharacterSet)
+    epilog = blue_print(epilog,
+                        [
+                         ["$$BUFFER_LIMIT_CODE$$",     LanguageDB.BUFFER_LIMIT_CODE],
+                         ["$$SKIPPER_ADR$$",           skipper_adr], 
+                         ["$$TERMINAL_EOF_ADR$$",      "%i" % get_address("$terminal-EOF", U=True)],
+                         # When things were skipped, no change to acceptance flags or modes has
+                         # happend. One can jump immediately to the start without re-entry preparation.
+                         ["$$REENTRY$$",               get_label("$start", U=True)], 
+                         ["$$MARK_LEXEME_START$$",     LanguageDB.LEXEME_START_SET()],
+                         ["$$UPON_RELOAD_DONE_ADR$$",  upon_reload_done_adr],
+                        ])
+
+    code = [ prolog ]
+    code.extend(iteration_code)
+    code.append(epilog)
+
+    local_variable_db = {}
+    variable_db.enter(local_variable_db, "reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
+
+    # Mark as 'used'
+    get_label("$state-router", U=True)  # 'reload' requires state router
+    get_address("$entry", upon_reload_done_door) # 
+
+    return code, local_variable_db
 
 prolog_txt = """
-    $$DELIMITER_COMMENT$$
-    __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));
-
-
     QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
     __quex_assert(QUEX_NAME(Buffer_content_size)(&me->buffer) >= 1);
 
-    /* For character set skippers the end of content does not have to be overwriten 
-     * with anything (as done for range skippers). This is so, because the abort
-     * criteria is that a character occurs which does not belong to the trigger 
-     * set. The BufferLimitCode, though, does never belong to any trigger set and
-     * thus, no special character is to be set.                                   */
+    /* Character Set Skipper: $$DELIMITER_COMMENT$$ */
+    __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));
+
     goto _ENTRY_$$SKIPPER_ADR$$;
 
-$$SKIPPER_LABEL$$
+_$$UPON_RELOAD_DONE_ADR$$: /* Upon 'reload done' */
+    __QUEX_IF_COUNT_COLUMNS(reference_p = me->buffer._input_p + 1);
+$$SKIPPER_LABEL$$ /* Skipper state's loop entry */      
     $$INPUT_P_INCREMENT$$
-_ENTRY_$$SKIPPER_ADR$$:
+_ENTRY_$$SKIPPER_ADR$$: /* First entry into skipper state */
 $$INPUT_GET$$$$LC_COUNT_IN_LOOP$$
 """
 
@@ -49,89 +95,16 @@ epilog_txt = """$$LC_COUNT_END_PROCEDURE$$
      * No need for re-entry preparation. Acceptance flags and modes are untouched after skipping. */
     goto $$REENTRY$$;
 
-$$RELOAD$$:
+_RELOAD_$$SKIPPER_ADR$$:
     /* -- When loading new content it is always taken care that the beginning of the lexeme
      *    is not 'shifted' out of the buffer. In the case of skipping, we do not care about
      *    the lexeme at all, so do not restrict the load procedure and set the lexeme start
      *    to the actual input position.                                                   
      * -- The input_p will at this point in time always point to the buffer border.        */
-$$LC_COUNT_BEFORE_RELOAD$$
+    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer) - reference_p));
     $$MARK_LEXEME_START$$
-    QUEX_GOTO_RELOAD_FORWARD($$SKIPPER_ADR$$, $$TERMINAL_EOF_ADR$$);
+    QUEX_GOTO_RELOAD_FORWARD($$UPON_RELOAD_DONE_ADR$$, $$TERMINAL_EOF_ADR$$);
 """
-
-def get_skipper(TriggerSet):
-    """This function implements simple 'skipping' in the sense of passing by
-       characters that belong to a given set of characters--the TriggerSet.
-    """
-    global template_str
-    assert TriggerSet.__class__.__name__ == "NumberSet"
-    assert not TriggerSet.is_empty()
-
-    LanguageDB    = Setup.language_db
-
-    skipper_index = sm_index.get()
-
-    # Mini trigger map:  [ trigger set ] --> loop start
-    # That means: As long as characters of the trigger set appear, we go to the loop start.
-    transition_map = TransitionMap() # (don't worry about 'drop-out-ranges' etc.)
-    transition_map.add_transition(TriggerSet, skipper_index)
-    # On buffer limit code, the skipper must transit to a dedicated reloader
-
-    goto_loop_str = [ " goto _%i;\n" % LanguageDB.ADDRESS(skipper_index, None)]
-    trigger_map = transition_map.get_trigger_map()
-    for i, info in enumerate(trigger_map):
-        interval, target = info
-        if target == E_StateIndices.DROP_OUT: continue
-        trigger_map[i] = (interval, TextTransitionCode(goto_loop_str))
-
-    iteration_code = []
-    transition_block.do(iteration_code, 
-                        trigger_map, 
-                        skipper_index, 
-                        E_EngineTypes.ELSE,
-                        GotoReload_Str="goto %s;" % get_label("$reload", skipper_index))
-
-    tmp = []
-    LanguageDB.COMMENT(tmp, "Skip any character in " + TriggerSet.get_utf8_string())
-    comment_str = "".join(tmp)
-
-    # Line and column number counting
-    prolog = __lc_counting_replacements(prolog_txt, TriggerSet)
-    epilog = __lc_counting_replacements(epilog_txt, TriggerSet)
-
-    prolog = blue_print(prolog,
-                        [
-                         ["$$DELIMITER_COMMENT$$",  comment_str],
-                         ["$$SKIPPER_LABEL$$",      LanguageDB.LABEL(skipper_index)], 
-                         ["$$INPUT_GET$$",          LanguageDB.ACCESS_INPUT()],
-                         ["$$INPUT_P_INCREMENT$$",  LanguageDB.INPUT_P_INCREMENT()],
-                         ["$$SKIPPER_ADR$$",        "%i" % LanguageDB.ADDRESS(skipper_index, None)], 
-                        ])
-
-    epilog = blue_print(epilog,
-                        [
-                         ["$$BUFFER_LIMIT_CODE$$",              LanguageDB.BUFFER_LIMIT_CODE],
-                         ["$$RELOAD$$",                         get_label("$reload", skipper_index)],
-                         ["$$SKIPPER_ADR$$",                    "%i" % LanguageDB.ADDRESS(skipper_index, None)], 
-                         ["$$TERMINAL_EOF_ADR$$",               "%i" % get_address("$terminal-EOF", U=True)],
-                         # When things were skipped, no change to acceptance flags or modes has
-                         # happend. One can jump immediately to the start without re-entry preparation.
-                         ["$$REENTRY$$",                        get_label("$start", U=True)], 
-                         ["$$MARK_LEXEME_START$$",              LanguageDB.LEXEME_START_SET()],
-                        ])
-
-    code = [ prolog ]
-    code.extend(iteration_code)
-    code.append(epilog)
-
-    local_variable_db = {}
-    variable_db.enter(local_variable_db, "reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
-
-    # Reload requires the state router; mark as 'used'
-    get_label("$state-router", U=True)
-
-    return code, local_variable_db
 
 def __lc_counting_replacements(code_str, CharacterSet):
     """Line and Column Number Counting(Range Skipper):
@@ -150,16 +123,35 @@ def __lc_counting_replacements(code_str, CharacterSet):
 
        NOTE: On reload we do count the column numbers and reset the column_p.
     """
-    in_loop       = ""
+    in_loop = ""
     # Does the end delimiter contain a newline?
     if CharacterSet.contains(ord("\n")): in_loop = line_column_counter_in_loop()
 
     end_procedure = "    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(me->buffer._input_p - reference_p));\n" 
-    before_reload = "    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(me->buffer._input_p - reference_p));\n" 
 
     return blue_print(code_str,
                      [
                       ["$$LC_COUNT_IN_LOOP$$",       in_loop],
                       ["$$LC_COUNT_END_PROCEDURE$$", end_procedure],
-                      ["$$LC_COUNT_BEFORE_RELOAD$$", before_reload],
                       ])
+
+def __get_transition_block(CharacterSet, SkipperDoorID, SkipperAdr):
+    LanguageDB     = Setup.language_db
+
+    goto_loop_str  = [ " goto _%i;\n" % LanguageDB.ADDRESS_BY_DOOR_ID(SkipperDoorID)]
+    target_code    = TextTransitionCode(goto_loop_str)
+    transition_map = []
+    for interval in CharacterSet.get_intervals(PromiseToTreatWellF=True):
+        transition_map.append((interval, target_code))
+
+    # 'CharacterSet.get_intervals()' returned a sorted list.
+    # => transition_map_tools.sort() not necessary, 
+    transition_map_tools.fill_gaps(transition_map, E_StateIndices.DROP_OUT)
+
+    txt = []
+    transition_block.do(txt, transition_map, 
+                        SkipperDoorID.state_index, 
+                        E_EngineTypes.ELSE,
+                        GotoReload_Str="goto _RELOAD_%s;" % SkipperAdr)
+    return txt
+

@@ -48,18 +48,16 @@ def do(Data):
         Mode = blackboard.mode_db[IndentationSetup.containing_mode_name()]
 
     counter_index        = sm_index.get()
-    
     transition_block_str = __get_transition_block(IndentationSetup, counter_index)
-
     end_procedure        = __get_end_procedure(IndentationSetup, Mode)
 
     # The finishing touch
     prolog = blue_print(prolog_txt,
                          [
-                           ["$$INPUT_GET$$",     LanguageDB.ACCESS_INPUT()],
-                           ["$$INPUT_P_INCREMENT$$",              LanguageDB.INPUT_P_INCREMENT()],
-                           ["$$COUNTER_LABEL$$",                  LanguageDB.LABEL(counter_index)], 
-                           ["$$COUNTER_ADR$$",                    "%i" % (LanguageDB.ADDRESS(counter_index, None))], 
+                           ["$$INPUT_GET$$",          LanguageDB.ACCESS_INPUT()],
+                           ["$$INPUT_P_INCREMENT$$",  LanguageDB.INPUT_P_INCREMENT()],
+                           ["$$COUNTER_LABEL$$",      LanguageDB.LABEL(counter_index)], 
+                           ["$$COUNTER_ADR$$",        "%i" % (LanguageDB.ADDRESS(counter_index, None))], 
                          ])
 
     # The finishing touch
@@ -91,6 +89,37 @@ def do(Data):
     get_label("$state-router", U=True)
 
     return txt, local_variable_db
+
+prolog_txt = """
+    QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
+    __quex_assert(QUEX_NAME(Buffer_content_size)(&me->buffer) >= 1);
+
+    /* Indentation Counter:
+     * Skip whitespace at line begin; Count indentation. */
+
+    reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
+    me->counter._indentation = (QUEX_TYPE_INDENTATION)0;
+
+    goto _ENTRY_$$COUNTER_ADR$$;
+
+$$COUNTER_LABEL$$
+    $$INPUT_P_INCREMENT$$ 
+_ENTRY_$$COUNTER_ADR$$:
+$$INPUT_GET$$ 
+"""
+
+epilog_txt = """
+    /* Here's where the first non-whitespace appeared after newline. */
+$$END_PROCEDURE$$                           
+    /* No need for re-entry preparation. Acceptance flags and modes are untouched. */
+    goto $$REENTRY$$;
+
+$$RELOAD$$:
+    $$LEXEME_START_SET_TO_REF$$
+    QUEX_GOTO_RELOAD_FORWARD($$COUNTER_ADR$$, $$TERMINAL_EOF_ADR$$);
+
+$$BAD_CHARACTER_HANDLING$$
+"""
 
 class IndentationCounter(TransitionCode):
     """________________________________________________________________________
@@ -203,7 +232,7 @@ class Detect_Bad(IndentationCounter):
     ___________________________________________________________________________
     """
     def __init__(self, StateIndex):
-        assert self.state_index != -1
+        assert StateIndex != -1
         self.state_index = StateIndex
         
     def __eq__(self, Other):
@@ -212,42 +241,7 @@ class Detect_Bad(IndentationCounter):
 
     @property
     def code(self):
-        return "goto INDENTATION_COUNTER_%i_BAD_CHARACTER;\n" % self.state_index
-
-
-prolog_txt = """
-    /* Skip whitespace at line begin; count indentation. */
-    reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    me->counter._indentation = (QUEX_TYPE_INDENTATION)0;
-
-    QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
-    __quex_assert(QUEX_NAME(Buffer_content_size)(&me->buffer) >= 1);
-    goto _ENTRY_$$COUNTER_ADR$$;
-
-$$COUNTER_LABEL$$
-    $$INPUT_P_INCREMENT$$ 
-_ENTRY_$$COUNTER_ADR$$:
-$$INPUT_GET$$ 
-"""
-
-epilog_txt = """
-    /* Here's where the first non-whitespace appeared after newline. */
-$$END_PROCEDURE$$                           
-    /* No need for re-entry preparation. Acceptance flags and modes are untouched. */
-    goto $$REENTRY$$;
-
-$$RELOAD$$:
-    /* -- In the case of 'indentation counting' we do not worry about the lexeme at all --
-     *    HERE, WE DO! We can only set the lexeme start to the current reference_p, i.e.
-     *    the point of the last newline!
-     *    The appplication might actually do something with indented region.
-     *
-     * -- The input_p will at this point in time always point to the buffer border.     */
-    $$LEXEME_START_SET_TO_REF$$
-    QUEX_GOTO_RELOAD_FORWARD($$COUNTER_ADR$$, $$TERMINAL_EOF_ADR$$);
-
-$$BAD_CHARACTER_HANDLING$$
-"""
+        return "goto _BAD_CHARACTER_%i;\n" % self.state_index
 
 def __get_bad_character_handler(Mode, IndentationSetup, CounterIdx):
     if Mode is None: 
@@ -256,7 +250,7 @@ def __get_bad_character_handler(Mode, IndentationSetup, CounterIdx):
     if IndentationSetup.bad_character_set.get().is_empty(): 
         return ""
 
-    txt  = "INDENTATION_COUNTER_%i_BAD_CHARACTER:\n" % CounterIdx
+    txt  = "_BAD_CHARACTER_%i:\n" % CounterIdx
     if not Mode.has_code_fragment_list("on_indentation_bad"):
         txt += 'QUEX_ERROR_EXIT("Lexical analyzer mode \'%s\': bad indentation character detected!\\n"' \
                                 % Mode.name + \
@@ -270,40 +264,38 @@ def __get_bad_character_handler(Mode, IndentationSetup, CounterIdx):
     return txt
 
 def __get_transition_block(IndentationSetup, CountersStateIndex):
-    # Mini trigger map:  [ trigger set ] --> loop start
-    # That means: As long as characters of the trigger set appear, we go to the loop start.
 
-    # If the indentation consists only of spaces, than it is 'uniform' ...
     if IndentationSetup.has_only_single_spaces():
+        # If the indentation consists only of spaces, than it is 'uniform' ...
         # Count indentation/column at end of run;
         # simply: current position - reference_p
-        character_set = IndentationSetup.space_db.values()[0].get()
-        interval_list = character_set.get_intervals(PromiseToTreatWellF=True)
-        result        = [ (interval, CountersStateIndex) for interval in interval_list ]
+        character_set  = IndentationSetup.space_db.values()[0].get()
+        interval_list  = character_set.get_intervals(PromiseToTreatWellF=True)
+        transition_map = [ (interval, CountersStateIndex) for interval in interval_list ]
 
     else:
-        result = []
+        transition_map = []
         # Add the space counters
         for count, character_set in IndentationSetup.space_db.items():
             interval_list = character_set.get().get_intervals(PromiseToTreatWellF=True)
-            result.extend((interval, Count_Space(count, CountersStateIndex)) \
-                          for interval in interval_list)
+            transition_map.extend((interval, Count_Space(count, CountersStateIndex)) \
+                                  for interval in interval_list)
         # Add the grid counters
         for count, character_set in IndentationSetup.grid_db.items():
             interval_list = character_set.get().get_intervals(PromiseToTreatWellF=True)
-            result.extend((interval, Count_Grid(count, CountersStateIndex)) \
-                          for interval in interval_list)
+            transition_map.extend((interval, Count_Grid(count, CountersStateIndex)) \
+                                  for interval in interval_list)
 
     # Bad character detection
     if IndentationSetup.bad_character_set.get().is_empty() == False:
         for interval in IndentationSetup.bad_character_set.get().get_intervals(PromiseToTreatWellF=True):
-            result.append((interval, Detect_Bad(CountersStateIndex)))
+            transition_map.append((interval, Detect_Bad(CountersStateIndex)))
 
-    transition_map_tools.sort(result)
-    transition_map_tools.fill_gaps(result, E_StateIndices.DROP_OUT)
+    transition_map_tools.sort(transition_map)
+    transition_map_tools.fill_gaps(transition_map, E_StateIndices.DROP_OUT)
 
     txt = []
-    transition_block.do(txt, result, 
+    transition_block.do(txt, transition_map, 
                         StateIndex     = CountersStateIndex, 
                         EngineType     = E_EngineTypes.INDENTATION_COUNTER,
                         GotoReload_Str = "goto %s;" % get_label("$reload", CountersStateIndex))
