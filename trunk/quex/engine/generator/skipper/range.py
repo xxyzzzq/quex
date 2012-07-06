@@ -58,7 +58,7 @@ _$$SKIPPER_INDEX$$_LOOP:
             goto _$$SKIPPER_INDEX$$_LOOP_EXIT;
         $$ENDIF$$
 $$LC_COUNT_IN_LOOP$$
-        $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
+    $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
     goto _$$SKIPPER_INDEX$$_LOOP;
 _$$SKIPPER_INDEX$$_LOOP_EXIT:
 

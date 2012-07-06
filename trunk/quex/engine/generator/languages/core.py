@@ -187,11 +187,8 @@ class LanguageDB_Cpp(dict):
 
         door_id = self.__analyzer.state_db[StateIndex].entry.get_door_id(StateIndex, FromStateIndex)
 
-        assert isinstance(door_id, entry_action.DoorID), \
-               "No door_id for 'StateIndex=%s, FromStateIndex=%s' in state '%s'. Received '%s'.\n" \
-               % (StateIndex, FromStateIndex, StateIndex, door_id) \
-               + "Door Tree:\n" \
-               + self.__analyzer.state_db[StateIndex].entry.door_tree_root.get_string(self.__analyzer.state_db[StateIndex].entry.transition_db)
+        assert isinstance(door_id, entry_action.DoorID)
+
         return self.ADDRESS_BY_DOOR_ID(door_id)
 
     def ADDRESS_DROP_OUT(self, StateIndex):
@@ -223,6 +220,9 @@ class LanguageDB_Cpp(dict):
         else:
             return "QUEX_LABEL(%i)" % Address
 
+    def ADDRESS_LABEL(self, Address):
+        return "_%i" % Address
+
     def LABEL_BY_DOOR_ID(self, DoorId):
         label = self.__label_name_by_door_id(DoorId)
         # if NewlineF: return label + ":\n"
@@ -253,6 +253,12 @@ class LanguageDB_Cpp(dict):
         # state from where we come.
         result = "goto %s;" % self.__label_name(TargetStateIndex, FromStateIndex)
         return result
+
+    def GOTO_ADDRESS(self, Address):
+        """Skippers and Indentation Counters circumvent the 'TransitionID -> DoorID'
+        mapping. They rely on providing directly an address as target of the goto.
+        """
+        return "goto %s;" % self.ADDRESS_LABEL(Address)
 
     def GOTO_BY_VARIABLE(self, VariableName):
         return "QUEX_GOTO_STATE(%s);" % VariableName 

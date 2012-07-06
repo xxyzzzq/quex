@@ -5,7 +5,8 @@ import quex.blackboard                              as     blackboard
 import quex.engine.state_machine.index              as     sm_index
 import quex.engine.analyzer.transition_map          as     transition_map_tools
 import quex.engine.generator.state.transition.core  as     transition_block
-from   quex.engine.generator.state.transition.code  import TransitionCode
+from   quex.engine.generator.state.transition.code  import TransitionCode, \
+                                                           TextTransitionCode
 from   quex.engine.generator.languages.variable_db  import Variable
 from   quex.engine.generator.languages.address      import get_label, get_address
 from   quex.engine.interval_handling                import Interval
@@ -47,33 +48,32 @@ def do(Data):
     if IndentationSetup.containing_mode_name() != "":
         Mode = blackboard.mode_db[IndentationSetup.containing_mode_name()]
 
-    counter_index        = sm_index.get()
-    transition_block_str = __get_transition_block(IndentationSetup, counter_index)
+    # The 'TransitionCode -> DoorID' has to be circumvented, because this state
+    # is not officially part of the state machine.
+    counter_adr          = sm_index.get()
+    counter_label        = LanguageDB.ADDRESS_LABEL(counter_adr)
+    counter_adr_str      = "%i" % counter_adr
+    transition_block_str = __get_transition_block(IndentationSetup, counter_adr)
     end_procedure        = __get_end_procedure(IndentationSetup, Mode)
 
     # The finishing touch
     prolog = blue_print(prolog_txt,
                          [
-                           ["$$INPUT_GET$$",          LanguageDB.ACCESS_INPUT()],
-                           ["$$INPUT_P_INCREMENT$$",  LanguageDB.INPUT_P_INCREMENT()],
-                           ["$$COUNTER_LABEL$$",      LanguageDB.LABEL(counter_index)], 
-                           ["$$COUNTER_ADR$$",        "%i" % (LanguageDB.ADDRESS(counter_index, None))], 
+                           ["$$INPUT_GET$$",         LanguageDB.ACCESS_INPUT()],
+                           ["$$INPUT_P_INCREMENT$$", LanguageDB.INPUT_P_INCREMENT()],
+                           ["$$LABEL$$",             counter_label],
+                           ["$$ADDRESS$$",           counter_adr_str], 
                          ])
 
     # The finishing touch
     epilog = blue_print(epilog_txt,
                       [
-                       ["$$COUNTER_LABEL$$",                  LanguageDB.LABEL(counter_index)], 
-                       ["$$COUNTER_ADR$$",                    "%i" % (LanguageDB.ADDRESS(counter_index, None))], 
-                       ["$$IF_INPUT_EQUAL_BUFFER_LIMIT_CODE$$",  LanguageDB.IF_INPUT("==", LanguageDB.BUFFER_LIMIT_CODE)],
-                       ["$$RELOAD$$",                         get_label("$reload", counter_index)],
-                       ["$$TERMINAL_EOF_ADR$$",               "%i" % (get_address("$terminal-EOF", U=True))],
-                       ["$$LEXEME_START_SET_TO_REF$$",        LanguageDB.LEXEME_START_SET("reference_p")],
-                       # When things were skipped, no change to acceptance flags or modes has
-                       # happend. One can jump immediately to the start without re-entry preparation.
-                       ["$$END_PROCEDURE$$",                  "".join(end_procedure)],
-                       ["$$REENTRY$$",                        get_label("$start", U=True)],
-                       ["$$BAD_CHARACTER_HANDLING$$",         __get_bad_character_handler(Mode, IndentationSetup, counter_index)],
+                       ["$$ADDRESS$$",                 counter_adr_str], 
+                       ["$$TERMINAL_EOF_ADR$$",        "%i" % (get_address("$terminal-EOF", U=True))],
+                       ["$$LEXEME_START_SET_TO_REF$$", LanguageDB.LEXEME_START_SET("reference_p")],
+                       ["$$END_PROCEDURE$$",           "".join(end_procedure)],
+                       ["$$REENTRY$$",                 get_label("$start", U=True)],
+                       ["$$BAD_CHARACTER_HANDLING$$",  __get_bad_character_handler(Mode, IndentationSetup, counter_adr)],
                       ])
 
     txt = [prolog]
@@ -97,14 +97,14 @@ prolog_txt = """
     /* Indentation Counter:
      * Skip whitespace at line begin; Count indentation. */
 
-    reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
+    reference_p              = me->buffer._input_p;
     me->counter._indentation = (QUEX_TYPE_INDENTATION)0;
 
-    goto _ENTRY_$$COUNTER_ADR$$;
+    goto _ENTRY_$$ADDRESS$$;
 
-$$COUNTER_LABEL$$
+$$LABEL$$:
     $$INPUT_P_INCREMENT$$ 
-_ENTRY_$$COUNTER_ADR$$:
+_ENTRY_$$ADDRESS$$:
 $$INPUT_GET$$ 
 """
 
@@ -114,9 +114,11 @@ $$END_PROCEDURE$$
     /* No need for re-entry preparation. Acceptance flags and modes are untouched. */
     goto $$REENTRY$$;
 
-$$RELOAD$$:
+_RELOAD_$$ADDRESS$$:
+    /* The application might actually be interested in the indentation string.
+     * => make sure it remains in the buffer upon reload.                    */
     $$LEXEME_START_SET_TO_REF$$
-    QUEX_GOTO_RELOAD_FORWARD($$COUNTER_ADR$$, $$TERMINAL_EOF_ADR$$);
+    QUEX_GOTO_RELOAD_FORWARD($$ADDRESS$$, $$TERMINAL_EOF_ADR$$);
 
 $$BAD_CHARACTER_HANDLING$$
 """
@@ -144,10 +146,10 @@ class IndentationCounter(TransitionCode):
     bad' code fragment.
     ___________________________________________________________________________
     """
-    def __init__(self, Type, Number, StateIndex):
+    def __init__(self, Type, Number, CounterAdr):
         self.type        = Type
         self.number      = Number
-        self.state_index = StateIndex
+        self.counter_adr = CounterAdr
 
     def __ne__(self, Other):
         return not self.__eq__(Other)
@@ -166,9 +168,9 @@ class Count_Space(IndentationCounter):
     The '_indentation' is incremented by a fixed number.
     ___________________________________________________________________________
     """
-    def __init__(self, Number, StateIndex):
+    def __init__(self, Number, CounterAdr):
         self.number        = Number
-        self.state_index   = StateIndex
+        self.counter_adr   = CounterAdr
         self.variable_name = None        # not yet implemented
 
     def __eq__(self, Other):
@@ -183,7 +185,7 @@ class Count_Space(IndentationCounter):
         # Spaces simply increment
         if self.number != -1: add_str = "%i" % self.number
         else:                 add_str = "me->" + self.variable_name
-        return "me->counter._indentation += %s;" % add_str + LanguageDB.GOTO(self.state_index)
+        return "me->counter._indentation += %s;" % add_str + LanguageDB.GOTO_ADDRESS(self.counter_adr)
 
 class Count_Grid(IndentationCounter):
     """________________________________________________________________________
@@ -192,9 +194,9 @@ class Count_Grid(IndentationCounter):
     The '_indentation' is incremented to the next value on a grid.
     ___________________________________________________________________________
     """
-    def __init__(self, Number, StateIndex):
-        self.number      = Number
-        self.state_index = StateIndex
+    def __init__(self, Number, CounterAdr):
+        self.number        = Number
+        self.counter_adr   = CounterAdr
         self.variable_name = None        # not yet implemented
 
     def __eq__(self, Other):
@@ -214,7 +216,7 @@ class Count_Grid(IndentationCounter):
                 mask = (1 << int(log2)) - 1
                 return "me->counter._indentation &= ~ ((QUEX_TYPE_INDENTATION)0x%X);\n" % mask + \
                        "me->counter._indentation += %i;\n" % self.number + \
-                       LanguageDB.GOTO(self.state_index)
+                       LanguageDB.GOTO_ADDRESS(self.counter_adr)
             else:
                 add_str = "%i" % self.number
         else:   
@@ -222,7 +224,7 @@ class Count_Grid(IndentationCounter):
 
         return "me->counter._indentation = (me->counter._indentation - (me->counter._indentation %% %s)) + %s;" \
                % (add_str, add_str) + \
-               LanguageDB.GOTO(self.state_index)
+               LanguageDB.GOTO_ADDRESS(self.counter_adr)
 
 class Detect_Bad(IndentationCounter):
     """________________________________________________________________________
@@ -231,17 +233,17 @@ class Detect_Bad(IndentationCounter):
     detection of a grid character. 
     ___________________________________________________________________________
     """
-    def __init__(self, StateIndex):
-        assert StateIndex != -1
-        self.state_index = StateIndex
+    def __init__(self, CounterAdr):
+        assert CounterAdr != -1
+        self.counter_adr = CounterAdr
         
     def __eq__(self, Other):
         if Other.__class__ != Detect_Bad: return False
-        return self.state_index == Other.state_index
+        return self.counter_adr == Other.counter_adr
 
     @property
     def code(self):
-        return "goto _BAD_CHARACTER_%i;\n" % self.state_index
+        return "goto _BAD_CHARACTER_%i;\n" % self.counter_adr
 
 def __get_bad_character_handler(Mode, IndentationSetup, CounterIdx):
     if Mode is None: 
@@ -263,42 +265,52 @@ def __get_bad_character_handler(Mode, IndentationSetup, CounterIdx):
 
     return txt
 
-def __get_transition_block(IndentationSetup, CountersStateIndex):
+def __get_transition_block(IndentationSetup, CounterAdr):
+    """Generate the transition block.
+    
+    The transition code MUST circumvent the 'TransitionID --> DoorID' mapping.
+    This is so, since the implemented state is not 'officially' part of the
+    analyzer state machine. The transition_map relies on 'TextTransitionCode'
+    objects as target.
+    """
+    LanguageDB = Setup.language_db
 
+    def extend(transition_map, character_set, Target):
+        interval_list = character_set.get().get_intervals(PromiseToTreatWellF=True)
+        transition_map.extend((interval, Target) for interval in interval_list)
+
+    transition_map = []
     if IndentationSetup.has_only_single_spaces():
         # If the indentation consists only of spaces, than it is 'uniform' ...
         # Count indentation/column at end of run;
         # simply: current position - reference_p
-        character_set  = IndentationSetup.space_db.values()[0].get()
-        interval_list  = character_set.get_intervals(PromiseToTreatWellF=True)
-        transition_map = [ (interval, CountersStateIndex) for interval in interval_list ]
+        character_set  = IndentationSetup.space_db.values()[0]
+        extend(transition_map, character_set, 
+               TextTransitionCode(LanguageDB.GOTO_ADDRESS(CounterAdr)))
 
     else:
         transition_map = []
         # Add the space counters
         for count, character_set in IndentationSetup.space_db.items():
-            interval_list = character_set.get().get_intervals(PromiseToTreatWellF=True)
-            transition_map.extend((interval, Count_Space(count, CountersStateIndex)) \
-                                  for interval in interval_list)
+            extend(transition_map, character_set, Count_Space(count, CounterAdr))
+
         # Add the grid counters
         for count, character_set in IndentationSetup.grid_db.items():
-            interval_list = character_set.get().get_intervals(PromiseToTreatWellF=True)
-            transition_map.extend((interval, Count_Grid(count, CountersStateIndex)) \
-                                  for interval in interval_list)
+            extend(transition_map, character_set, Count_Grid(count, CounterAdr))
 
     # Bad character detection
     if IndentationSetup.bad_character_set.get().is_empty() == False:
-        for interval in IndentationSetup.bad_character_set.get().get_intervals(PromiseToTreatWellF=True):
-            transition_map.append((interval, Detect_Bad(CountersStateIndex)))
+        extend(transition_map, IndentationSetup.bad_character_set, 
+               Detect_Bad(CounterAdr))
 
     transition_map_tools.sort(transition_map)
     transition_map_tools.fill_gaps(transition_map, E_StateIndices.DROP_OUT)
 
     txt = []
     transition_block.do(txt, transition_map, 
-                        StateIndex     = CountersStateIndex, 
+                        StateIndex     = CounterAdr, 
                         EngineType     = E_EngineTypes.INDENTATION_COUNTER,
-                        GotoReload_Str = "goto %s;" % get_label("$reload", CountersStateIndex))
+                        GotoReload_Str = "goto _RELOAD_%s;" % CounterAdr)
     txt.append("\n")
 
     return txt
@@ -311,7 +323,7 @@ def __get_end_procedure(IndentationSetup, Mode):
     txt = []
     if IndentationSetup.has_only_single_spaces():
         # Reference Pointer: Define Variable, Initialize, determine how to subtact.
-        txt.append(indent_str + "me->counter._indentation = (size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer) - reference_p);\n")
+        txt.append(indent_str + "me->counter._indentation = (size_t)(me->buffer._input_p - reference_p);\n")
     else:
         # Reference Pointer: Not required.
         #                    No subtraction 'current_position - reference_p'.

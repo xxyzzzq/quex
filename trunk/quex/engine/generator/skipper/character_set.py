@@ -22,43 +22,43 @@ def do(Data):
 
     LanguageDB     = Setup.language_db
 
-    skipper_index  = sm_index.get()
-    skipper_door   = DoorID(skipper_index, 0)
-    skipper_label  = LanguageDB.LABEL_BY_DOOR_ID(skipper_door)
-    skipper_adr    = "%i" % LanguageDB.ADDRESS_BY_DOOR_ID(skipper_door)
+    # The 'TransitionCode -> DoorID' has to be circumvented, because this state
+    # is not officially part of the state machine.
+    skipper_adr     = sm_index.get()
+    skipper_label   = LanguageDB.ADDRESS_LABEL(skipper_adr)
+    skipper_adr_str = "%i" % skipper_adr
 
-    upon_reload_done_door = DoorID(sm_index.get(), 0)
-    upon_reload_done_adr = "%i" % LanguageDB.ADDRESS_BY_DOOR_ID(upon_reload_done_door)
+    upon_reload_done_adr     = sm_index.get()
+    upon_reload_done_label   = LanguageDB.ADDRESS_LABEL(upon_reload_done_label)
+    upon_reload_done_adr_str = "%i" % upon_reload_done_adr
 
-    iteration_code = __get_transition_block(CharacterSet, skipper_door, skipper_adr)
+    transition_block_str = __get_transition_block(CharacterSet, skipper_adr)
 
     # Line and column number counting
     prolog = __lc_counting_replacements(prolog_txt, CharacterSet)
     prolog = blue_print(prolog,
                         [
-                         ["$$DELIMITER_COMMENT$$",     CharacterSet.get_utf8_string()],
-                         ["$$SKIPPER_LABEL$$",         skipper_label], 
-                         ["$$SKIPPER_ADR$$",           skipper_adr], 
-                         ["$$INPUT_GET$$",             LanguageDB.ACCESS_INPUT()],
-                         ["$$INPUT_P_INCREMENT$$",     LanguageDB.INPUT_P_INCREMENT()],
-                         ["$$UPON_RELOAD_DONE_ADR$$",  upon_reload_done_adr],
+                         ["$$DELIMITER_COMMENT$$",      CharacterSet.get_utf8_string()],
+                         ["$$LABEL$$",                  skipper_label], 
+                         ["$$ADDRESS$$",                skipper_adr_str], 
+                         ["$$INPUT_GET$$",              LanguageDB.ACCESS_INPUT()],
+                         ["$$INPUT_P_INCREMENT$$",      LanguageDB.INPUT_P_INCREMENT()],
+                         ["$$UPON_RELOAD_DONE_LABEL$$", upon_reload_done_label],
                         ])
 
     epilog = __lc_counting_replacements(epilog_txt, CharacterSet)
     epilog = blue_print(epilog,
                         [
                          ["$$BUFFER_LIMIT_CODE$$",     LanguageDB.BUFFER_LIMIT_CODE],
-                         ["$$SKIPPER_ADR$$",           skipper_adr], 
+                         ["$$ADDRESS$$",           skipper_adr_str], 
                          ["$$TERMINAL_EOF_ADR$$",      "%i" % get_address("$terminal-EOF", U=True)],
-                         # When things were skipped, no change to acceptance flags or modes has
-                         # happend. One can jump immediately to the start without re-entry preparation.
                          ["$$REENTRY$$",               get_label("$start", U=True)], 
                          ["$$MARK_LEXEME_START$$",     LanguageDB.LEXEME_START_SET()],
-                         ["$$UPON_RELOAD_DONE_ADR$$",  upon_reload_done_adr],
+                         ["$$UPON_RELOAD_DONE_ADR$$",  upon_reload_done_adr_str],
                         ])
 
     code = [ prolog ]
-    code.extend(iteration_code)
+    code.extend(transition_block_str)
     code.append(epilog)
 
     local_variable_db = {}
@@ -66,7 +66,7 @@ def do(Data):
 
     # Mark as 'used'
     get_label("$state-router", U=True)  # 'reload' requires state router
-    get_address("$entry", upon_reload_done_door) # 
+    get_address("$entry", upon_reload_done_adr) # 
 
     return code, local_variable_db
 
@@ -75,15 +75,15 @@ prolog_txt = """
     __quex_assert(QUEX_NAME(Buffer_content_size)(&me->buffer) >= 1);
 
     /* Character Set Skipper: $$DELIMITER_COMMENT$$ */
-    __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));
+    __QUEX_IF_COUNT_COLUMNS(reference_p = me->buffer._input_p);
 
-    goto _ENTRY_$$SKIPPER_ADR$$;
+    goto _ENTRY_$$ADDRESS$$;
 
-_$$UPON_RELOAD_DONE_ADR$$: /* Upon 'reload done' */
+$$UPON_RELOAD_DONE_LABEL$$: /* Upon 'reload done' */
     __QUEX_IF_COUNT_COLUMNS(reference_p = me->buffer._input_p + 1);
-$$SKIPPER_LABEL$$ /* Skipper state's loop entry */      
+$$LABEL$$: /* Skipper state's loop entry */      
     $$INPUT_P_INCREMENT$$
-_ENTRY_$$SKIPPER_ADR$$: /* First entry into skipper state */
+_ENTRY_$$ADDRESS$$: /* First entry into skipper state */
 $$INPUT_GET$$$$LC_COUNT_IN_LOOP$$
 """
 
@@ -95,13 +95,13 @@ epilog_txt = """$$LC_COUNT_END_PROCEDURE$$
      * No need for re-entry preparation. Acceptance flags and modes are untouched after skipping. */
     goto $$REENTRY$$;
 
-_RELOAD_$$SKIPPER_ADR$$:
+_RELOAD_$$ADDRESS$$:
     /* -- When loading new content it is always taken care that the beginning of the lexeme
      *    is not 'shifted' out of the buffer. In the case of skipping, we do not care about
      *    the lexeme at all, so do not restrict the load procedure and set the lexeme start
      *    to the actual input position.                                                   
      * -- The input_p will at this point in time always point to the buffer border.        */
-    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer) - reference_p));
+    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(me->buffer._input_p - reference_p));
     $$MARK_LEXEME_START$$
     QUEX_GOTO_RELOAD_FORWARD($$UPON_RELOAD_DONE_ADR$$, $$TERMINAL_EOF_ADR$$);
 """
@@ -135,14 +135,26 @@ def __lc_counting_replacements(code_str, CharacterSet):
                       ["$$LC_COUNT_END_PROCEDURE$$", end_procedure],
                       ])
 
-def __get_transition_block(CharacterSet, SkipperDoorID, SkipperAdr):
-    LanguageDB     = Setup.language_db
+def __get_transition_block(CharacterSet, SkipperAdr):
+    """Generate the transition block.
+    
+    The transition code MUST circumvent the 'TransitionID --> DoorID' mapping.
+    This is so, since the implemented state is not 'officially' part of the
+    analyzer state machine. The transition_map relies on 'TextTransitionCode'
+    objects as target.
+    """
+    LanguageDB = Setup.language_db
 
-    goto_loop_str  = [ " goto _%i;\n" % LanguageDB.ADDRESS_BY_DOOR_ID(SkipperDoorID)]
-    target_code    = TextTransitionCode(goto_loop_str)
+    def extend(transition_map, character_set, Target):
+        interval_list = character_set.get_intervals(PromiseToTreatWellF=True)
+        transition_map.extend((interval, Target) for interval in interval_list)
+
+    # Circumvent the State-DoorID mechanism by providing TextTransitionCode objects
+    # in the transition map. Those are not subject to 'transition_id->door_id'
+    # mapping.
     transition_map = []
-    for interval in CharacterSet.get_intervals(PromiseToTreatWellF=True):
-        transition_map.append((interval, target_code))
+    extend(transition_map, CharacterSet, 
+           TextTransitionCode(LanguageDB.GOTO_ADDRESS(SkipperAdr)))
 
     # 'CharacterSet.get_intervals()' returned a sorted list.
     # => transition_map_tools.sort() not necessary, 
@@ -150,7 +162,7 @@ def __get_transition_block(CharacterSet, SkipperDoorID, SkipperAdr):
 
     txt = []
     transition_block.do(txt, transition_map, 
-                        SkipperDoorID.state_index, 
+                        SkipperAdr, 
                         E_EngineTypes.ELSE,
                         GotoReload_Str="goto _RELOAD_%s;" % SkipperAdr)
     return txt

@@ -33,15 +33,15 @@ class TransitionCode:
         """
         LanguageDB = Setup.language_db
 
-        assert EngineType        in E_EngineTypes
-        assert type(InitStateF)  == bool
-        assert StateIndex        is None or isinstance(StateIndex, long)
-        assert GotoReload_Str    is None or isinstance(GotoReload_Str, (str, unicode))
+        assert EngineType       in E_EngineTypes
+        assert type(InitStateF) == bool
+        assert StateIndex       is None or isinstance(StateIndex, long)
+        assert GotoReload_Str   is None or isinstance(GotoReload_Str, (str, unicode))
 
-        self.__target              = Target
-        self.__state_index         = StateIndex
-        self.__init_state_f        = InitStateF
-        self.__engine_type         = EngineType
+        self.__target       = Target
+        self.__state_index  = StateIndex
+        self.__init_state_f = InitStateF
+        self.__engine_type  = EngineType
 
         if   Target == E_StateIndices.RELOAD_PROCEDURE:
             self.__drop_out_f = False
@@ -89,10 +89,14 @@ class TransitionCode:
 
 class TextTransitionCode(TransitionCode):
     def __init__(self, Code, DropOutF=False):
-        assert isinstance(Code, list)
-        for elm in Code: 
-            assert isinstance(elm, (int, str, unicode))
-        self.__code       = Code
+        if isinstance(Code, list):
+            for elm in Code: 
+                assert isinstance(elm, (int, str, unicode))
+            self.__code = Code
+        else:
+            assert isinstance(Code, (str, unicode))
+            self.__code = [ Code ]
+
         self.__drop_out_f = DropOutF
 
     @property
