@@ -3,7 +3,9 @@ import quex.engine.analyzer.transition_map          as     transition_map_tools
 from   quex.engine.analyzer.state.entry_action      import DoorID
 import quex.engine.generator.state.transition.core  as     transition_block
 from   quex.engine.generator.state.transition.code  import TextTransitionCode
-from   quex.engine.generator.languages.address      import get_label, get_address
+from   quex.engine.generator.languages.address      import get_label, \
+                                                           get_address, \
+                                                           address_set_subject_to_routing_add
 import quex.engine.generator.languages.variable_db  as     variable_db
 from   quex.engine.generator.skipper.common         import line_column_counter_in_loop
 from   quex.blackboard                              import E_EngineTypes, E_StateIndices, setup as Setup
@@ -29,8 +31,13 @@ def do(Data):
     skipper_adr_str = "%i" % skipper_adr
 
     upon_reload_done_adr     = sm_index.get()
-    upon_reload_done_label   = LanguageDB.ADDRESS_LABEL(upon_reload_done_label)
+    upon_reload_done_label   = LanguageDB.ADDRESS_LABEL(upon_reload_done_adr)
     upon_reload_done_adr_str = "%i" % upon_reload_done_adr
+
+    # Mark as 'used'
+    get_label("$state-router", U=True)  # 'reload' requires state router
+    address_set_subject_to_routing_add(upon_reload_done_adr) 
+    address_set_subject_to_routing_add(skipper_adr) 
 
     transition_block_str = __get_transition_block(CharacterSet, skipper_adr)
 
@@ -63,10 +70,6 @@ def do(Data):
 
     local_variable_db = {}
     variable_db.enter(local_variable_db, "reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
-
-    # Mark as 'used'
-    get_label("$state-router", U=True)  # 'reload' requires state router
-    get_address("$entry", upon_reload_done_adr) # 
 
     return code, local_variable_db
 

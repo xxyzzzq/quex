@@ -8,7 +8,9 @@ import quex.engine.generator.state.transition.core  as     transition_block
 from   quex.engine.generator.state.transition.code  import TransitionCode, \
                                                            TextTransitionCode
 from   quex.engine.generator.languages.variable_db  import Variable
-from   quex.engine.generator.languages.address      import get_label, get_address
+from   quex.engine.generator.languages.address      import get_label, \
+                                                           get_address, \
+                                                           address_set_subject_to_routing_add
 from   quex.engine.interval_handling                import Interval
 from   quex.engine.misc.string_handling             import blue_print
 import quex.output.cpp.action_preparation           as     action_preparation
@@ -55,6 +57,10 @@ def do(Data):
     counter_adr_str      = "%i" % counter_adr
     transition_block_str = __get_transition_block(IndentationSetup, counter_adr)
     end_procedure        = __get_end_procedure(IndentationSetup, Mode)
+
+    # Mark as 'used'
+    get_label("$state-router", U=True)  # 'reload' requires state router
+    address_set_subject_to_routing_add(counter_adr) 
 
     # The finishing touch
     prolog = blue_print(prolog_txt,

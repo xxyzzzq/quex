@@ -15,7 +15,7 @@ from   quex.blackboard                                 import E_StateIndices, \
 
 def do(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
 
-    init_address_handling({})
+    init_address_handling()
 
     # -- prepare the source code fragments for the generator
     required_local_variables_db, \

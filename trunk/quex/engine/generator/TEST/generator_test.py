@@ -166,6 +166,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
                                                        BufferLimitCode)
 
     if len(SecondPatternActionPairList) != 0:
+        address.init_address_handling()
         state_machine_code += create_state_machine_function(SecondPatternActionPairList, 
                                                             PatternDictionary, 
                                                             BufferLimitCode,
@@ -407,7 +408,7 @@ def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferS
     end_str  = '    printf("end\\n");'
     end_str += '    return false;\n'
 
-    address.init_address_handling({})
+    address.init_address_handling()
     Data = { "character_set": TriggerSet }
     skipper_code, local_variable_db = character_set_skipper.do(Data)
 
@@ -430,7 +431,7 @@ def create_range_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=102
     end_str += '    return false;\n'
 
     __Setup_init_language_database(Language)
-    address.init_address_handling({})
+    address.init_address_handling()
 
     skipper_code, local_variable_db = range_skipper.get_skipper(EndSequence, OnSkipRangeOpenStr=end_str)
 
@@ -446,7 +447,7 @@ def create_nested_range_skipper_code(Language, TestStr, OpenSequence, CloseSeque
     end_str += '    return false;\n'
 
     __Setup_init_language_database(Language)
-    address.init_address_handling({})
+    address.init_address_handling()
     skipper_code, local_variable_db = nested_range_skipper.get_skipper(OpenSequence, CloseSequence, 
                                                                        OnSkipRangeOpenStr=end_str)
 

@@ -24,7 +24,6 @@ class AddressDB:
             "__REENTRY_PREPARATION", 
             "__REENTRY",
         ])
-        self.__direct_transition_db = {}
 
     def get(self, NameOrTerminalID):
         """NameOrTerminalID is something that identifies a position/address 
@@ -47,18 +46,6 @@ class AddressDB:
         entry = index.get()
         self.__db[NameOrTerminalID] = entry
         return entry
-
-    def set_direct_transitions(self, DirectTransitionDB):
-        assert type(DirectTransitionDB) == dict
-        self.__direct_transition_db = DirectTransitionDB
-
-    def get_real(self, StateIndex):
-        if self.__direct_transition_db.has_key(StateIndex):
-            result = self.__direct_transition_db[StateIndex]
-            assert type(result) in [int, long]
-            return result
-
-        return StateIndex
 
     def get_entry(self, DoorId):
         assert DoorId.__class__.__name__ == "DoorID", "%s\n%s"  % (repr(DoorId), DoorId.__class__.__name__)
@@ -110,13 +97,22 @@ def is_label_referenced(Type, Arg=None):
     return label in __referenced_label_set
 
 __routed_address_set = set([])
-def init_address_handling(DirectTransitionDB):
+def init_address_handling():
     __referenced_label_set.clear()
     __routed_address_set.clear()
-    __address_db.set_direct_transitions(DirectTransitionDB)
 
 def get_address_set_subject_to_routing():
     return __routed_address_set
+
+def address_set_subject_to_routing_add(Address):
+    """Skippers and Indentation Counters use transition maps without being
+    an official state of the state machine. Their addresses may be subject
+    to routing, but they are not part of the scheme 'TransitionID->DoorID'.
+
+    This function gives them a back-door to register their addresses.
+    """
+    assert isinstance(Address, long)
+    __routed_address_set.add(Address)
 
 def get_address(Type, Arg=None, U=False, R=False):
     """U -- mark as 'used' if True
@@ -132,7 +128,7 @@ def get_address(Type, Arg=None, U=False, R=False):
            "Label type '%s' is not suited for routing. Found %s" % (Type, result)
     
     if U: __referenced_label_set_add(get_label_of_address(result))
-    if R: __routed_address_set.add(__address_db.get_real(result))
+    if R: __routed_address_set.add(result)
 
     return result
 
@@ -154,7 +150,7 @@ def get_label(LabelType, Arg=None, U=False, R=False):
     if R: 
         assert type(label_id) in [int, long], \
                "Only labels that expand to addresses can be routed."
-        __routed_address_set.add(__address_db.get_real(label_id))
+        __routed_address_set.add(label_id)
 
     return result
 

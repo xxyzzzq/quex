@@ -31,7 +31,7 @@ import quex.engine.generator.state.transition.core as transition_block
 
 from   quex.blackboard import E_EngineTypes
 
-address.init_address_handling({})
+address.init_address_handling()
 
 if "--hwut-info" in sys.argv:
     print "Single State: Transition Code Generation;"
