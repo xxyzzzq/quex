@@ -62,13 +62,6 @@ E_PostContextIDs = Enum("NONE",
                         "IRRELEVANT",
                         "_DEBUG_NAME_E_PostContextIDs")
 
-E_EngineTypes    = Enum("FORWARD", 
-                        "BACKWARD_PRE_CONTEXT", 
-                        "BACKWARD_INPUT_POSITION",
-                        "INDENTATION_COUNTER",
-                        "ELSE",                       # skipper, or whatever ...
-                        "_DEBUG_E_EngineTypes")
-
 E_TransitionN = Enum("VOID", 
                      "LEXEME_START_PLUS_ONE",
                      "IRRELEVANT",

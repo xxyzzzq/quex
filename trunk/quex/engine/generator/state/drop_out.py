@@ -1,7 +1,7 @@
-from   quex.engine.generator.languages.address   import Address
-from   quex.blackboard                           import E_EngineTypes, E_AcceptanceIDs,  E_StateIndices, \
-                                                        E_TransitionN, E_PostContextIDs, E_PreContextIDs, \
-                                                        setup as Setup
+from   quex.engine.generator.languages.address    import Address
+from   quex.blackboard                            import E_AcceptanceIDs,  E_StateIndices, \
+                                                         E_TransitionN, E_PostContextIDs, E_PreContextIDs, \
+                                                         setup as Setup
 
 def do(txt, TheState, TheAnalyzer, DefineLabelF=True, MentionStateIndexF=True):
     LanguageDB          = Setup.language_db
@@ -12,11 +12,11 @@ def do(txt, TheState, TheAnalyzer, DefineLabelF=True, MentionStateIndexF=True):
     if MentionStateIndexF:
         txt.append("    __quex_debug_drop_out(%i);\n" % TheState.index)
 
-    if TheAnalyzer.engine_type == E_EngineTypes.BACKWARD_PRE_CONTEXT:
+    if TheAnalyzer.engine_type.is_BACKWARD_PRE_CONTEXT():
         txt.append("    %s\n" % LanguageDB.GOTO(E_StateIndices.END_OF_PRE_CONTEXT_CHECK))
         return
 
-    elif TheAnalyzer.engine_type == E_EngineTypes.BACKWARD_INPUT_POSITION:
+    elif TheAnalyzer.engine_type.is_BACKWARD_INPUT_POSITION():
         if TheState.drop_out.reachable_f:
             # Backward input position detectors are always isolated state machines.
             # => TheAnalyzer.state_machine_id = id of the backward input position detector.

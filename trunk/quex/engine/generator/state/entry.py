@@ -1,7 +1,8 @@
-from quex.engine.analyzer.state.core                   import AnalyzerState
-from quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
-from quex.blackboard import setup as Setup,  \
-                            E_EngineTypes
+from   quex.engine.analyzer.state.core                   import AnalyzerState
+import quex.engine.analyzer.engine_supply_factory      as     engine
+from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
+
+from quex.blackboard import setup as Setup
 
 from operator import attrgetter
 
@@ -20,10 +21,10 @@ def do(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
     txt.append("\n\n")
     if      UnreachablePrefixF \
         and (    (not TheState.init_state_f) \
-              or (TheState.engine_type == E_EngineTypes.BACKWARD_INPUT_POSITION)): 
+              or (TheState.engine_type.is_BACKWARD_INPUT_POSITION())): 
         txt.append("    %s\n" % LanguageDB.UNREACHABLE)
 
-    if TheAnalyzer.engine_type == E_EngineTypes.BACKWARD_INPUT_POSITION:
+    if TheAnalyzer.engine_type.is_BACKWARD_INPUT_POSITION():
         BIPD_ID = TheAnalyzer.state_machine_id
     else:
         BIPD_ID = None

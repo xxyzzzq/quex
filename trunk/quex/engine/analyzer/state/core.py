@@ -3,11 +3,61 @@ from   quex.engine.analyzer.state.entry    import Entry
 from   quex.engine.analyzer.state.drop_out import DropOutBackward, \
                                                   DropOutBackwardInputPositionDetection
 from   quex.blackboard  import E_StateIndices, \
-                               E_EngineTypes, \
                                E_InputActions
 
+class EngineSupplyFactory_Interface:
+    def create_Entry(self, State, FromStateIndexList): assert False
+    def create_DropOut(self):                          assert False
+
+    def is_FORWARD(self):                  return False
+    def is_BACKWARD_PRE_CONTEXT(self):     return False
+    def is_BACKWARD_INPUT_POSITION(self):  return False
+    def direction_str(self):               return None
+
+class EngineSupplyFactory_FORWARD(EngineSupplyFactory_Interface):
+    def is_FORWARD(self):                  
+        return True
+
+    def direction_str(self): 
+        return "FORWARD"
+
+    def create_Entry(self, SM_State, StateIndex, FromStateIndexList):
+        return Entry(StateIndex, FromStateIndexList)
+
+    def create_DropOut(self):                          
+        # DropOut and Entry interact and require sophisticated analysis
+        # => See "Analyzer.get_drop_out_object(...)"
+        return None 
+
+class EngineSupplyFactory_BACKWARD_PRE_CONTEXT(EngineSupplyFactory_Interface):
+    def is_BACKWARD_PRE_CONTEXT(self):     
+        return True
+
+    def direction_str(self): 
+        return "BACKWARD"
+
+    def create_Entry(self, SM_State, StateIndex, FromStateIndexList):
+        pre_context_id_fulfilled_list = [ origin.pattern_id() for origin in SM_State.origins() \
+                                                              if origin.is_acceptance() ]
+        return Entry(StateIndex, FromStateIndexList, pre_context_id_fulfilled_list)
+
+    def create_DropOut(self):                        
+        return DropOutBackward()
+
+class EngineSupplyFactory_BACKWARD_INPUT_POSITION(EngineSupplyFactory_Interface):
+    def is_BACKWARD_INPUT_POSITION(self):  
+        return True
+
+    def create_Entry(self, SM_State, StateIndex, FromStateIndexList):
+        return Entry(StateIndex, FromStateIndexList)
+
+    def create_DropOut(self):                          
+        return DropOutBackwardInputPositionDetection(SM_State.is_acceptance())
+
 class AnalyzerState(object):
-    """AnalyzerState consists of the following major components:
+    """________________________________________________________________________
+    
+    AnalyzerState consists of the following major components:
 
        entry -- tells what has to happen at entry to the state (depending 
                 on the state from which it is entered).
@@ -20,6 +70,7 @@ class AnalyzerState(object):
 
        drop_out -- contains information about what happens when the 
                    transition map cannot trigger on the character.
+    ___________________________________________________________________________
     """
     __slots__ = ("__index", 
                  "__init_state_f", 
@@ -37,7 +88,6 @@ class AnalyzerState(object):
         assert isinstance(SM_State, State)
         assert isinstance(StateIndex, (int, long))
         assert type(InitStateF) is bool
-        assert EngineType in E_EngineTypes
         assert isinstance(FromStateIndexList, set)
 
         self.__index        = StateIndex
@@ -52,25 +102,9 @@ class AnalyzerState(object):
         # assert len(FromStateIndexList) != 0
 
         # (*) Entry Action
-        if   EngineType == E_EngineTypes.FORWARD: 
-            self.entry = Entry(self.__index, FromStateIndexList)
-        elif EngineType == E_EngineTypes.BACKWARD_PRE_CONTEXT: 
-            pre_context_id_fulfilled_list = [ origin.pattern_id() for origin in SM_State.origins() \
-                                                                  if origin.is_acceptance() ]
-            self.entry = Entry(self.__index, FromStateIndexList, pre_context_id_fulfilled_list)
-        elif EngineType == E_EngineTypes.BACKWARD_INPUT_POSITION: 
-            self.entry = Entry(self.__index, FromStateIndexList)
-        else:
-            assert False
+        self.entry = EngineType.create_Entry(SM_State, StateIndex, FromStateIndexList)
 
         # (*) Transition
-        if EngineType == E_EngineTypes.BACKWARD_INPUT_POSITION:
-            # During backward input detection, an acceptance SM_State triggers a
-            # return from the searcher, thus no further transitions are necessary.
-            # (orphaned states, also, need to be deleted).
-            ## if SM_State.is_acceptance(): assert state.transitions().is_empty()
-            pass
-
         self.transition_map                    = SM_State.transitions().get_trigger_map()
         self.__target_index_list               = SM_State.transitions().get_map().keys()
         # Currently, the following is only used for path compression. If the alternative
@@ -78,15 +112,7 @@ class AnalyzerState(object):
         self.map_target_index_to_character_set = SM_State.transitions().get_map()
 
         # (*) Drop Out
-        if   EngineType == E_EngineTypes.FORWARD: 
-            # DropOut and Entry interact and require sophisticated analysis
-            # => See "Analyzer.get_drop_out_object(...)"
-            self.drop_out = None 
-
-        elif EngineType == E_EngineTypes.BACKWARD_PRE_CONTEXT:
-            self.drop_out = DropOutBackward()
-        elif EngineType == E_EngineTypes.BACKWARD_INPUT_POSITION:
-            self.drop_out = DropOutBackwardInputPositionDetection(SM_State.is_acceptance())
+        self.drop_out     = EngineType.create_DropOut(SM_State)
 
         self._origin_list = SM_State.origins().get_list()
 
@@ -96,10 +122,9 @@ class AnalyzerState(object):
     @property
     def init_state_f(self):           return self.__init_state_f
     @property
-    def init_state_forward_f(self):   return self.__init_state_f and self.__engine_type == E_EngineTypes.FORWARD
+    def init_state_forward_f(self):   return self.__init_state_f and self.__engine_type.is_FORWARD()
     @property
     def engine_type(self):            return self.__engine_type
-    def set_engine_type(self, Value): assert Value in E_EngineTypes; self.__engine_type = Value     
     @property
     def target_index_list(self):      return self.__target_index_list
     @property
@@ -134,10 +159,7 @@ class AnalyzerState(object):
         return self.get_string()
 
 def get_input_action(EngineType, TheState, ForceInputDereferencingF):
-    if EngineType == E_EngineTypes.FORWARD:
-        if TheState.init_state_f: action = E_InputActions.DEREF
-        else:                     action = E_InputActions.INCREMENT_THEN_DEREF
-    else:                         action = E_InputActions.DECREMENT_THEN_DEREF
+    action = EngineType.input_action(TheState.init_state_f)
 
     if TheState.transition_map_empty_f:
         # If the state has no further transitions then the input character does 

@@ -8,7 +8,8 @@ import quex.input.regular_expression.engine       as regex
 import quex.engine.analyzer.core                  as core
 import quex.engine.analyzer.position_register_map as position_register_map
 from   quex.engine.generator.base                 import get_combined_state_machine
-from   quex.blackboard                            import E_EngineTypes, E_TransitionN
+import quex.engine.analyzer.engine_supply_factory as     engine
+from   quex.blackboard                            import  E_TransitionN
 from   operator import itemgetter
 import help
 
@@ -84,7 +85,7 @@ print sm
 # For DEBUG purposes: specify 'DRAW' on command line (in sys.argv)
 help.if_DRAW_in_sys_argv(sm)
 
-analyzer = core.Analyzer(sm, E_EngineTypes.FORWARD)
+analyzer = core.Analyzer(sm, engine.FORWARD)
 
 print "Positioning Info __________________________________"
 position_register_map.print_this(analyzer.position_info_db)

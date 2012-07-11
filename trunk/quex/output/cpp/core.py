@@ -1,8 +1,9 @@
 import quex.output.cpp.action_preparation              as     action_preparation
+import quex.engine.analyzer.engine_supply_factory      as     engine
 from   quex.engine.generator.languages.variable_db     import variable_db
-from   quex.engine.generator.languages.address         import get_address, \
-                                                              get_plain_strings, \
-                                                              init_address_handling, \
+from   quex.engine.generator.languages.address         import get_address,                        \
+                                                              get_plain_strings,                  \
+                                                              init_address_handling,              \
                                                               get_address_set_subject_to_routing, \
                                                               is_label_referenced
 import quex.engine.generator.state_machine_coder       as     state_machine_coder
@@ -10,110 +11,87 @@ import quex.engine.generator.state_router              as     state_router_gener
 from   quex.engine.generator.base                      import GeneratorBase
 import quex.engine.analyzer.core                       as     analyzer_generator
 from   quex.blackboard                                 import E_StateIndices, \
-                                                              E_EngineTypes,  \
                                                               setup as Setup
 
 def do(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
 
+    # (*) Initialize address handling
+    #     (Must happen before call to constructor of Generator, because 
+    #      constructor creates some addresses.)
     init_address_handling()
 
-    # -- prepare the source code fragments for the generator
-    required_local_variables_db, \
-    pattern_action_pair_list,    \
-    on_end_of_stream_action,     \
-    on_failure_action,           \
-    on_after_match_str           = action_preparation.do(Mode, IndentationSupportF, BeginOfLineSupportF)
+    local_variable_db,        \
+    pattern_action_pair_list, \
+    on_end_of_stream_action,  \
+    on_failure_action,        \
+    on_after_match            = action_preparation.do(Mode, 
+                                                      IndentationSupportF, 
+                                                      BeginOfLineSupportF)
 
-    # -- prepare code generation
-    generator = Generator(StateMachineName       = Mode.name,
+    generator = Generator(StateMachineName       = Mode.name, 
                           PatternActionPair_List = pattern_action_pair_list, 
-                          OnFailureAction        = on_failure_action, 
-                          OnEndOfStreamAction    = on_end_of_stream_action,
-                          OnAfterMatch           = on_after_match_str,
-                          ModeNameList           = ModeNameList)
+                          Action_OnEndOfStream   = on_end_of_stream_action, 
+                          Action_OnFailure       = on_failure_action, 
+                          Action_OnAfterMatch    = on_after_match, 
+                          ModeNameList           = ModeNameList,
+                          LocalVariableDB        = local_variable_db)
 
-    # -- generate!
-    return "".join(generator.do(required_local_variables_db))
+    return _do(generator)
+
+def _do(generator):
+    # (*) Initialize the label and variable trackers
+    variable_db.init(generator.local_variable_db)
+    variable_db.require("input") 
+
+    # (*) Pre Context State Machine
+    #     (If present: All pre-context combined in single backward analyzer.)
+    pre_context          = generator.code_pre_context_state_machine()
+        
+    # (*) Main State Machine -- try to match core patterns
+    main                 = generator.code_main_state_machine()
+
+    # (*) Backward input position detection
+    #     (Seldomly present -- only for Pseudo-Ambiguous Post Contexts)
+    bipd                 = generator.code_backward_input_position_detection()
+
+    # (*) State Router
+    #     (Something that can goto a state address by an given integer value)
+    state_router         = generator.state_router()
+
+    # (*) Variable Definitions
+    #     (Code that defines all required variables for the analyzer)
+    variable_definitions = generator.variable_definitions()
+
+    # (*) Putting it all together
+    result               = generator.analyzer_function(pre_context, main, bipd, 
+                                                       state_router, 
+                                                       variable_definitions)
+
+    return "".join(result)
 
 class Generator(GeneratorBase):
 
-    def __init__(self, PatternActionPair_List, 
-                 StateMachineName, 
-                 OnFailureAction, OnEndOfStreamAction, OnAfterMatch,
-                 ModeNameList): 
+    def __init__(self, StateMachineName, PatternActionPair_List,
+                 Action_OnEndOfStream, Action_OnFailure, Action_OnAfterMatch, ModeNameList, LocalVariableDB): 
 
         # Ensure that the language database as been setup propperly
         assert isinstance(Setup.language_db, dict)
         assert len(Setup.language_db) != 0
 
-        self.state_machine_name      = StateMachineName
-        self.language_db             = Setup.language_db
-        self.mode_name_list          = ModeNameList
-        self.on_end_of_stream_action = OnEndOfStreamAction
-        self.on_failure_action       = OnFailureAction
-        self.on_after_match          = OnAfterMatch
+        # -- prepare the source code fragments for the generator
+        self.local_variable_db       = LocalVariableDB
+        self.on_end_of_stream_action = Action_OnEndOfStream
+        self.on_failure_action       = Action_OnFailure
+        self.on_after_match          = Action_OnAfterMatch
 
-        GeneratorBase.__init__(self, PatternActionPair_List, StateMachineName)
 
-    def do(self, RequiredLocalVariablesDB):
-        LanguageDB = Setup.language_db
+        self.state_machine_name = StateMachineName
+        self.language_db        = Setup.language_db
+        self.mode_name_list     = ModeNameList
 
-        # (*) Initialize the label and variable trackers
-        variable_db.init(RequiredLocalVariablesDB)
-        variable_db.require("input") 
+        GeneratorBase.__init__(self, PatternActionPair_List, self.state_machine_name)
 
-        # (*) Pre Context State Machine
-        #     (If present: All pre-context combined in single backward analyzer.)
-        pre_context = self.__code_pre_context_state_machine()
-            
-        # (*) Main State Machine -- try to match core patterns
-        main        = self.__code_main_state_machine()
-
-        # (*) Backward input position detection
-        #     (Seldomly present -- only for Pseudo-Ambiguous Post Contexts)
-        bipd        = self.__code_backward_input_position_detection()
-
-        # (*) Determine required labels and variables
-        routed_address_set = get_address_set_subject_to_routing()
-        routed_address_set.add(get_address("$terminal-EOF", U=True))
-        routed_state_info_list = state_router_generator.get_info(routed_address_set)
-        state_router           = [ state_router_generator.do(routed_state_info_list) ]
-
-        variable_db.require("target_state_index", Condition_ComputedGoto=False) 
-
-        if is_label_referenced("$reload-FORWARD") or is_label_referenced("$reload-BACKWARD"):
-            variable_db.require("target_state_else_index")
-            variable_db.require("target_state_index")
-
-        # Following function refers to the global 'variable_db'
-        variable_definitions = self.language_db.VARIABLE_DEFINITIONS(variable_db)
-
-        function_body = []
-        function_body.extend(pre_context)  # implementation of pre-contexts (if there are some)
-        function_body.extend(main)         # main pattern matcher
-        function_body.extend(bipd)         # (seldom != empty; only for pseudo-ambiguous post contexts)
-        function_body.extend(state_router) # route to state by index (only if no computed gotos)
-
-        # (*) Pack Pre-Context and Core State Machine into a single function
-        analyzer_function = self.language_db["$analyzer-func"](self.state_machine_name, 
-                                                               Setup,
-                                                               variable_definitions, 
-                                                               function_body, 
-                                                               self.mode_name_list) 
-
-        txt  = [ LanguageDB["$header-definitions"](LanguageDB, self.on_after_match) ]
-        txt += get_plain_strings(analyzer_function)
-        for i, element in enumerate(txt):
-            if not isinstance(element, (str, unicode)):
-                print element.__class__.__name__
-                for k in range(max(0,i-10)):
-                    print "before:", k, txt[k]
-                for k in range(i+1, min(i+10, len(txt))):
-                    print "after: ", k, txt[k]
-                assert False
-        return txt
-
-    def __code_pre_context_state_machine(self):
+    def code_pre_context_state_machine(self):
         LanguageDB = self.language_db
 
         if len(self.pre_context_sm_list) == 0: return []
@@ -128,7 +106,7 @@ class Generator(GeneratorBase):
                                   "END: PRE-CONTEXT STATE MACHINE") 
             txt.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
 
-        analyzer = analyzer_generator.do(self.pre_context_sm, E_EngineTypes.BACKWARD_PRE_CONTEXT)
+        analyzer = analyzer_generator.do(self.pre_context_sm, engine.BACKWARD_PRE_CONTEXT)
         msg      = state_machine_coder.do(analyzer)
         txt.extend(msg)
 
@@ -142,7 +120,7 @@ class Generator(GeneratorBase):
 
         return txt
 
-    def __code_main_state_machine(self):
+    def code_main_state_machine(self):
         assert len(self.sm.get_orphaned_state_index_list()) == 0
 
         LanguageDB = self.language_db 
@@ -157,7 +135,7 @@ class Generator(GeneratorBase):
             txt.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
 
         # -- implement the state machine itself
-        analyzer           = analyzer_generator.do(self.sm, E_EngineTypes.FORWARD)
+        analyzer           = analyzer_generator.do(self.sm, engine.FORWARD)
         state_machine_code = state_machine_coder.do(analyzer)
         txt.extend(state_machine_code)
 
@@ -196,7 +174,7 @@ class Generator(GeneratorBase):
 
         return txt
 
-    def __code_backward_input_position_detection(self):
+    def code_backward_input_position_detection(self):
         result = []
         for sm in self.papc_backward_detector_state_machine_list:
             result.extend(self.__code_backward_input_position_detection_core(sm))
@@ -207,18 +185,68 @@ class Generator(GeneratorBase):
         
         txt = []
         if Setup.comment_state_machine_f: 
-            Setup.language_db.ML_COMMENT(txt, 
+            self.language_db.ML_COMMENT(txt, 
                                          "BEGIN: BACKWARD DETECTOR STATE MACHINE\n" + \
                                          SM.get_string(NormalizeF=False)            + \
                                          "\nEND: BACKWARD DETECTOR STATE MACHINE")
             txt.append("\n")
 
-        analyzer      = analyzer_generator.do(SM, E_EngineTypes.BACKWARD_INPUT_POSITION)
+        analyzer      = analyzer_generator.do(SM, engine.BACKWARD_INPUT_POSITION)
         function_body = state_machine_coder.do(analyzer)
 
         txt.extend(function_body)
 
         return txt
+
+    def state_router(self):
+        # (*) Determine required labels and variables
+        routed_address_set = get_address_set_subject_to_routing()
+        routed_address_set.add(get_address("$terminal-EOF", U=True))
+        routed_state_info_list = state_router_generator.get_info(routed_address_set)
+        return [ state_router_generator.do(routed_state_info_list) ]
+
+    def variable_definitions(self):
+        variable_db.require("target_state_index", Condition_ComputedGoto=False) 
+
+        if is_label_referenced("$reload-FORWARD") or is_label_referenced("$reload-BACKWARD"):
+            variable_db.require("target_state_else_index")
+            variable_db.require("target_state_index")
+
+        # Following function refers to the global 'variable_db'
+        return self.language_db.VARIABLE_DEFINITIONS(variable_db)
+
+    def analyzer_function(self, PreContext, Main, BIPD, StateRouter, VariableDefs):
+        function_body = []
+        function_body.extend(PreContext)  # implementation of pre-contexts (if there are some)
+        function_body.extend(Main)        # main pattern matcher
+        function_body.extend(BIPD)        # (seldom != empty; only for pseudo-ambiguous post contexts)
+        function_body.extend(StateRouter) # route to state by index (only if no computed gotos)
+
+        # (*) Pack Pre-Context and Core State Machine into a single function
+        analyzer_function = self.language_db["$analyzer-func"](self.state_machine_name, 
+                                                               Setup,
+                                                               VariableDefs, 
+                                                               function_body, 
+                                                               self.mode_name_list) 
+
+        txt  = [ self.language_db["$header-definitions"](self.language_db, self.on_after_match) ]
+        txt += get_plain_strings(analyzer_function)
+
+        Generator.assert_txt(txt)
+
+        return txt
+
+    @staticmethod
+    def assert_txt(txt):
+        for i, element in enumerate(txt):
+            if isinstance(element, (str, unicode)): continue
+            print element.__class__.__name__
+            for k in range(max(0,i-10)):
+                print "before:", k, txt[k]
+            for k in range(i+1, min(i+10, len(txt))):
+                print "after: ", k, txt[k]
+            assert False
+
 
 def frame_this(Code):
     return Setup.language_db["$frame"](Code, Setup)

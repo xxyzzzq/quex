@@ -9,7 +9,7 @@ from   quex.engine.interval_handling    import *
 import quex.engine.state_machine.core   as     core
 from   quex.engine.analyzer.state.core  import AnalyzerState
 from   quex.engine.analyzer.mega_state.path_walker.core   import select, CharacterPath     
-from   quex.blackboard                  import E_EngineTypes
+import quex.engine.analyzer.engine_supply_factory      as     engine
 
 if "--hwut-info" in sys.argv:
     print "Paths: select;"
@@ -19,7 +19,7 @@ if "--hwut-info" in sys.argv:
 
 def get_analyzer_state(sm, state_index):
     sm.states[state_index] = core.State()
-    state = AnalyzerState(sm.states[state_index], state_index, state_index == sm.init_state_index, E_EngineTypes.FORWARD, set()) 
+    state = AnalyzerState(sm.states[state_index], state_index, state_index == sm.init_state_index, engine.FORWARD, set()) 
     state.entry.door_tree_configure()
     return state
 

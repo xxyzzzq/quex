@@ -9,7 +9,8 @@ import quex.engine.analyzer.mega_state.template.core    as     templates
 from   quex.engine.analyzer.mega_state.template.state   import TemplateState
 from   quex.engine.analyzer.mega_state.template.TEST.templates_aux import *
 from   quex.engine.state_machine.core                   import StateMachine
-from   quex.blackboard                                  import E_EngineTypes, E_Compression
+import quex.engine.analyzer.engine_supply_factory       as     engine
+from   quex.blackboard                                  import E_Compression
 from   quex.engine.interval_handling                    import *
 
 
@@ -34,7 +35,7 @@ def test(TriggerMapList):
 
     ## print "##sm:", sm
     # Backward analyzers do not consider so much entry and drop-out ...
-    analyzer = Analyzer(sm, E_EngineTypes.BACKWARD_PRE_CONTEXT)
+    analyzer = Analyzer(sm, engine.BACKWARD_PRE_CONTEXT)
     for state in analyzer.state_db.itervalues():
         state.entry.door_tree_configure()
 

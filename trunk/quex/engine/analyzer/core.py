@@ -36,10 +36,10 @@ from   quex.engine.analyzer.state.core            import AnalyzerState
 from   quex.engine.analyzer.state.drop_out        import DropOut
 import quex.engine.analyzer.mega_state.analyzer   as     mega_state_analyzer
 import quex.engine.analyzer.position_register_map as     position_register_map
+import quex.engine.analyzer.engine_supply_factory as     engine
 from   quex.engine.state_machine.core             import StateMachine
 from   quex.blackboard  import setup as Setup
 from   quex.blackboard  import E_AcceptanceIDs, \
-                               E_EngineTypes, \
                                E_TransitionN, \
                                E_PreContextIDs
 
@@ -47,7 +47,7 @@ from   collections      import defaultdict
 from   operator         import itemgetter
 from   itertools        import islice, imap, izip
 
-def do(SM, EngineType=E_EngineTypes.FORWARD):
+def do(SM, EngineType=engine.FORWARD):
     # Generate Analyzer from StateMachine
     analyzer = Analyzer(SM, EngineType)
 
@@ -68,7 +68,7 @@ class Analyzer:
        effective code generation.
     """
     def __init__(self, SM, EngineType):
-        assert EngineType in E_EngineTypes
+        assert isinstance(EngineType, engine.Base), EngineType.__class__.__name__
         assert isinstance(SM, StateMachine)
 
 
@@ -95,13 +95,13 @@ class Analyzer:
         self.__to_db   = to_db
 
         # (*) Prepare AnalyzerState Objects
-        self.__state_db = dict([(state_index, AnalyzerState(SM.states[state_index], state_index, 
+        self.__state_db = dict([(state_index, AnalyzerState(SM.states[state_index], state_index,
                                                             state_index == SM.init_state_index, 
                                                             EngineType, 
                                                             from_db[state_index])) 
                                  for state_index in self.__trace_db.iterkeys()])
 
-        if EngineType != E_EngineTypes.FORWARD:
+        if not EngineType.is_FORWARD():
             # BACKWARD_INPUT_POSITION, BACKWARD_PRE_CONTEXT:
             #
             # DropOut and Entry do not require any construction beyond what is
@@ -127,7 +127,7 @@ class Analyzer:
         for state_index, trace_list in self.__trace_db.iteritems():
             state = self.__state_db[state_index]
             # trace_list: PathTrace objects for each path that guides to state.
-            self.configure_drop_out(state, trace_list)
+            state.drop_out = self.configure_drop_out(state_index, trace_list)
 
         # (*) Entry Behavior
         #     Implement the required entry actions.
@@ -165,18 +165,20 @@ class Analyzer:
         """If one entry stores the last_acceptance, then the 
            correspondent variable is required to be defined.
         """
-        if self.__engine_type != E_EngineTypes.FORWARD: return False
+        if not self.__engine_type.is_FORWARD(): 
+            return False
         for entry in imap(lambda x: x.entry, self.__state_db.itervalues()):
             if entry.has_accepter(): return True
         return False
 
-    def configure_drop_out(self, state, ThePathTraceList):
-        """Every analysis step ends with a 'drop-out'. At this moment it is
-           decided what pattern has won. Also, the input position pointer
-           must be set so that it indicates the right location where the
-           next step starts the analysis. 
+    def configure_drop_out(self, StateIndex, ThePathTraceList):
+        """____________________________________________________________________
+        Every analysis step ends with a 'drop-out'. At this moment it is
+        decided what pattern has won. Also, the input position pointer must be
+        set so that it indicates the right location where the next step starts
+        the analysis. 
 
-           Consequently, a drop-out action contains two elements:
+        Consequently, a drop-out action contains two elements:
 
             -- Acceptance Checker: Dependent on the fulfilled pre-contexts a
                winning pattern is determined. 
@@ -193,12 +195,14 @@ class Analyzer:
                then the storing states are requested to store the input
                position.
 
-           --------------------------------------------------------------------
-           HINT:
-           A state may be reached via multiple paths. For each path there is a
-           separate PathTrace. Each PathTrace tells what has to happen in the state
-           depending on the pre-contexts being fulfilled or not (if there are
-           even any pre-context patterns).
+        _______________________________________________________________________
+        HINT:
+
+        A state may be reached via multiple paths. For each path there is a
+        separate PathTrace. Each PathTrace tells what has to happen in the
+        state depending on the pre-contexts being fulfilled or not (if there
+        are even any pre-context patterns).
+        _______________________________________________________________________
         """
         assert len(ThePathTraceList) != 0
         result = DropOut()
@@ -234,17 +238,17 @@ class Analyzer:
             # implement the acceptance storage.
 
         # (*) Terminal Router
-        for pattern_id, info in self.__position_info_db[state.index].iteritems():
+        for pattern_id, info in self.__position_info_db[StateIndex].iteritems():
             result.route_to_terminal(pattern_id, info.transition_n_since_positioning)
 
             if info.transition_n_since_positioning == E_TransitionN.VOID: 
                 # Request the storage of the position from related states.
-                self.__require_position_storage_list.append((state.index, pattern_id, info))
+                self.__require_position_storage_list.append((StateIndex, pattern_id, info))
             # Later on, a function will use the '__require_position_storage_list' to 
             # implement the position storage.
 
         result.trivialize()
-        state.drop_out = result
+        return result
 
     def configure_entries(self):
         """DropOut objects may rely on acceptances and input positions being 

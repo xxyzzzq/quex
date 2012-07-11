@@ -1,6 +1,6 @@
-from quex.blackboard import E_StateIndices, \
-                            E_EngineTypes,  \
-                            setup as Setup
+import quex.engine.analyzer.engine_supply_factory      as     engine
+from   quex.blackboard import E_StateIndices, \
+                              setup as Setup
 
 def do(Target, StateIndex, InitStateF, EngineType, GotoReload_Str, TheAnalyzer=None):
     """Generate a 'real' target action object based on a given Target that 
@@ -33,7 +33,7 @@ class TransitionCode:
         """
         LanguageDB = Setup.language_db
 
-        assert EngineType       in E_EngineTypes
+        assert isinstance(EngineType, engine.Base)
         assert type(InitStateF) == bool
         assert StateIndex       is None or isinstance(StateIndex, long)
         assert GotoReload_Str   is None or isinstance(GotoReload_Str, (str, unicode))

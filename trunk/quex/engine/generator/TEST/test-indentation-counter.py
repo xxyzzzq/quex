@@ -10,7 +10,7 @@ from   quex.engine.generator.languages.address         import init_address_handl
 
 if "--hwut-info" in sys.argv:
     print "Indentation Counting"
-    print "CHOICES: Uniform, NonUniform, NonUniform-2;"
+    print "CHOICES: Uniform, Uniform-Reloaded, NonUniform, NonUniform-2;"
     sys.exit(0)
 
 if len(sys.argv) < 2: 
@@ -25,14 +25,15 @@ EndStr = \
 #   undef self
 """
 
-def test(TestStr, IndentationSetup):
+def test(TestStr, IndentationSetup, BufferSize=1024):
     Language = "Cpp"
     __Setup_init_language_database("Cpp")
     init_address_handling()
     code_str, local_variable_db = indentation_counter.do({"indentation_setup": IndentationSetup})
 
     txt = create_customized_analyzer_function("Cpp", TestStr, code_str, 
-                                              QuexBufferSize=1024, CommentTestStrF="", ShowPositionF=False, 
+                                              QuexBufferSize=1024, 
+                                              CommentTestStrF="", ShowPositionF=False, 
                                               EndStr=EndStr, MarkerCharList=map(ord, " :\t"),
                                               LocalVariableDB=local_variable_db, 
                                               IndentationSupportF=True,
@@ -56,6 +57,22 @@ if "Uniform" in sys.argv:
          "  i\n"
          "  j\n"
          , indentation_setup)
+
+elif "Uniform-Reloaded" in sys.argv:
+
+    indentation_setup.specify_space("[ ]", NumberSet([Interval(ord(" ")), Interval(ord(":"))]), 1)
+
+    test("\n"
+         "  a\n"
+         "                                     \n"
+         "       b\n"
+         "         c\n"
+         "       d\n"
+         "       e\n"
+         "       h\n"
+         "  i\n"
+         "  j\n"
+         , indentation_setup, BufferSize=10)
 
 elif "NonUniform" in sys.argv:
     indentation_setup.specify_space("[ \\:]", NumberSet([Interval(ord(" ")), Interval(ord(":"))]), 1)

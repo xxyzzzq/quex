@@ -1,9 +1,9 @@
 from   quex.blackboard                              import setup as Setup, \
-                                                           E_StateIndices, \
-                                                           E_EngineTypes
+                                                           E_StateIndices
 import quex.blackboard                              as     blackboard
 import quex.engine.state_machine.index              as     sm_index
 import quex.engine.analyzer.transition_map          as     transition_map_tools
+import quex.engine.analyzer.engine_supply_factory   as     engine
 import quex.engine.generator.state.transition.core  as     transition_block
 from   quex.engine.generator.state.transition.code  import TransitionCode, \
                                                            TextTransitionCode
@@ -315,7 +315,7 @@ def __get_transition_block(IndentationSetup, CounterAdr):
     txt = []
     transition_block.do(txt, transition_map, 
                         StateIndex     = CounterAdr, 
-                        EngineType     = E_EngineTypes.INDENTATION_COUNTER,
+                        EngineType     = engine.FORWARD,
                         GotoReload_Str = "goto _RELOAD_%s;" % CounterAdr)
     txt.append("\n")
 

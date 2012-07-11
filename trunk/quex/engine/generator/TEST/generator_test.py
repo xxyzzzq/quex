@@ -375,12 +375,13 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
     generator = cpp_generator.Generator(StateMachineName       = sm_name + "_UnitTest",
                                         PatternActionPair_List = PatternActionPairList, 
-                                        OnFailureAction        = PatternActionInfo(None, on_failure_action), 
-                                        OnEndOfStreamAction    = PatternActionInfo(None, on_failure_action), 
-                                        OnAfterMatch           = "",
-                                        ModeNameList           = [])
+                                        Action_OnFailure       = PatternActionInfo(None, on_failure_action), 
+                                        Action_OnEndOfStream   = PatternActionInfo(None, on_failure_action), 
+                                        Action_OnAfterMatch    = "",
+                                        ModeNameList           = [], 
+                                        LocalVariableDB        = {})
 
-    code = generator.do({})
+    code = cpp_generator._do(generator)
 
     for i, elm in enumerate(code):
         if type(elm) != str: 

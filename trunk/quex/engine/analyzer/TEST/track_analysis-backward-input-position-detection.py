@@ -7,7 +7,8 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.input.regular_expression.engine  as regex
 from   quex.engine.generator.base            import get_combined_state_machine
 import quex.engine.analyzer.core             as core
-from   quex.blackboard                       import E_EngineTypes, E_InputActions
+import quex.engine.analyzer.engine_supply_factory      as     engine
+from   quex.blackboard                       import E_InputActions
 import help
 
 from   operator import attrgetter
@@ -27,5 +28,5 @@ sm                 = sm.normalized_clone()
 
 # For DEBUG purposes: specify 'DRAW' on command line (in sys.argv)
 help.if_DRAW_in_sys_argv(sm)
-help.test(sm, E_EngineTypes.BACKWARD_INPUT_POSITION)
+help.test(sm, engine.BACKWARD_INPUT_POSITION)
 

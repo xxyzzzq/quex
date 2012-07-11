@@ -2,13 +2,13 @@ import quex.engine.state_machine.index                      as index
 from   quex.engine.analyzer.state.core                      import AnalyzerState
 from   quex.engine.analyzer.state.entry                     import Entry
 from   quex.engine.analyzer.state.entry_action              import DoorID
+import quex.engine.analyzer.engine_supply_factory           as     engine
 from   quex.engine.analyzer.mega_state.core                 import PseudoMegaState, MegaState, AbsorbedState
 import quex.engine.analyzer.mega_state.template.core        as templates 
 from   quex.engine.analyzer.mega_state.template.state       import MegaState_Target, TemplateState
 from   quex.engine.analyzer.mega_state.template.candidate   import TemplateStateCandidate
 from   quex.engine.state_machine.core                       import State
 from   quex.engine.interval_handling                        import NumberSet, Interval
-from   quex.blackboard                                      import E_EngineTypes
 
 from   operator    import attrgetter
 from   collections import defaultdict
@@ -33,14 +33,14 @@ def setup_AnalyzerStates(StatesDescription):
 
     # Use 'BACKWARD_PRE_CONTEXT' so that the drop-out objects are created
     # without larger analyzsis.
-    EngineType     = E_EngineTypes.BACKWARD_PRE_CONTEXT
+    EngineType     = engine.BACKWARD_PRE_CONTEXT
 
     # Pseudo transitions from init state to all
     InitStateIndex = 7777L
     init_tm        = [ (Interval(i, i+1), long(state_index)) for i, state_index in enumerate(requested_state_index_list) ]
     init_state     = setup_sm_state(InitStateIndex, init_tm)
     sm_state_db    = dict((state_index, setup_sm_state(long(state_index), tm)) for state_index, tm in StatesDescription)
-    analyzer       = TestAnalyzer(E_EngineTypes.BACKWARD_PRE_CONTEXT)
+    analyzer       = TestAnalyzer(engine.BACKWARD_PRE_CONTEXT)
 
     # Make sure, that the transitions appear in the 'entry' member of the
     # states. Collect transition information.

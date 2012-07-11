@@ -1,11 +1,11 @@
 from   quex.engine.analyzer.core       import Analyzer
 from   quex.engine.analyzer.state.core import AnalyzerState, \
                                               get_input_action
+import quex.engine.analyzer.engine_supply_factory   as     engine
 import quex.engine.generator.state.transition.core  as transition_block
 import quex.engine.generator.state.entry            as entry
 import quex.engine.generator.state.drop_out         as drop_out
 from   quex.blackboard import E_StateIndices, \
-                              E_EngineTypes,  \
                               setup as Setup
 
 LanguageDB = None
@@ -100,7 +100,7 @@ def UNUSED_is_state_entered_from_some_other_state(TheState):
        RETURNS: True  -- if state is entered from some other state.
                 False -- if state is not entered at all from any other state.
     """
-    if TheState.engine_type != E_EngineTypes.BACKWARD_INPUT_POSITION:
+    if TheState.engine_type != engine.BACKWARD_INPUT_POSITION:
         # There is possibly always reload involved and reload requires a jump
         # to the state where the buffer border was hit.
         # => Whenever reload is possible, the state is targetted.

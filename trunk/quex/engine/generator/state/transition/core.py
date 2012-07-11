@@ -1,10 +1,10 @@
 import quex.engine.analyzer.transition_map              as transition_map_tools
+import quex.engine.analyzer.engine_supply_factory       as engine
 import quex.engine.generator.state.transition.code      as transition_code
 import quex.engine.generator.state.transition.solution  as solution
 import quex.engine.generator.state.transition.bisection as bisection
 from   quex.engine.interval_handling                    import Interval
-from   quex.blackboard                                  import E_EngineTypes, \
-                                                               E_StateIndices, \
+from   quex.blackboard                                  import E_StateIndices, \
                                                                setup as Setup
 from   copy      import copy
 from   itertools import islice
@@ -13,13 +13,13 @@ LanguageDB = None
 
 def do(txt, TransitionMap, 
        StateIndex     = None,  
-       EngineType     = E_EngineTypes.FORWARD, 
+       EngineType     = engine.FORWARD, 
        InitStateF     = False, 
        GotoReload_Str = None, 
        TheAnalyzer    = None):
     global LanguageDB
     assert isinstance(TransitionMap, list)
-    assert EngineType        in E_EngineTypes
+    assert isinstance(EngineType, engine.Base)
     assert isinstance(InitStateF, bool)
     assert StateIndex        is None or isinstance(StateIndex, long)
     assert GotoReload_Str    is None or isinstance(GotoReload_Str, (str, unicode))
@@ -42,7 +42,7 @@ def do(txt, TransitionMap,
     # This helps to generate the reload procedure a little more elegantly.
     # (Backward input position detection does not reload. It only moves 
     #  inside the current lexeme, which must be inside the buffer.)
-    if EngineType != E_EngineTypes.BACKWARD_INPUT_POSITION:
+    if not EngineType.is_BACKWARD_INPUT_POSITION():
         __separate_buffer_limit_code_transition(TransitionMap, EngineType)
 
     # All transition information related to intervals become proper objects of 
@@ -287,7 +287,7 @@ def __separate_buffer_limit_code_transition(TransitionMap, EngineType):
 
         if   target_index == E_StateIndices.RELOAD_PROCEDURE:   
             assert interval.contains_only(Setup.buffer_limit_code) 
-            assert EngineType != E_EngineTypes.BACKWARD_INPUT_POSITION
+            assert not EngineType.is_BACKWARD_INPUT_POSITION()
             # Transition 'buffer limit code --> E_StateIndices.RELOAD_PROCEDURE' 
             # has been setup already.
             return
@@ -322,7 +322,7 @@ def __separate_buffer_limit_code_transition(TransitionMap, EngineType):
 
     # Any transition map, except for backward input position detection, 
     # must have a trigger on reload.
-    assert EngineType in [E_EngineTypes.BACKWARD_INPUT_POSITION, E_EngineTypes.INDENTATION_COUNTER], \
+    assert EngineType.is_BACKWARD_INPUT_POSITION() or EngineType.is_INDENTATION_COUNTER(), \
            "Engine types other than 'backward input position detection' or 'indentation counter' must contain BLC.\n" \
            "Found: %s" % repr(EngineType)
     return

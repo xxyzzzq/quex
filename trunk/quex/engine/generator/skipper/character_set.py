@@ -1,5 +1,6 @@
 import quex.engine.state_machine.index              as     sm_index
 import quex.engine.analyzer.transition_map          as     transition_map_tools
+import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.state.entry_action      import DoorID
 import quex.engine.generator.state.transition.core  as     transition_block
 from   quex.engine.generator.state.transition.code  import TextTransitionCode
@@ -8,7 +9,7 @@ from   quex.engine.generator.languages.address      import get_label, \
                                                            address_set_subject_to_routing_add
 import quex.engine.generator.languages.variable_db  as     variable_db
 from   quex.engine.generator.skipper.common         import line_column_counter_in_loop
-from   quex.blackboard                              import E_EngineTypes, E_StateIndices, setup as Setup
+from   quex.blackboard                              import E_StateIndices, setup as Setup
 from   quex.engine.misc.string_handling             import blue_print
 
 def do(Data):
@@ -166,7 +167,7 @@ def __get_transition_block(CharacterSet, SkipperAdr):
     txt = []
     transition_block.do(txt, transition_map, 
                         SkipperAdr, 
-                        E_EngineTypes.ELSE,
+                        engine.FORWARD,
                         GotoReload_Str="goto _RELOAD_%s;" % SkipperAdr)
     return txt
 

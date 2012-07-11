@@ -24,12 +24,12 @@ from   quex.engine.interval_handling           import NumberSet, Interval
 from   quex.engine.state_machine.core          import State, StateMachine
 import quex.engine.state_machine.index         as index
 from   quex.engine.analyzer.state.entry_action import DoorID
+import quex.engine.analyzer.engine_supply_factory  as     engine
 
 import quex.engine.generator.languages.core        as languages
 import quex.engine.generator.languages.address     as address
 import quex.engine.generator.state.transition.core as transition_block
 
-from   quex.blackboard import E_EngineTypes
 
 address.init_address_handling()
 
@@ -119,7 +119,7 @@ function  = [
 transition_block.do(function, 
                     state.transitions().get_trigger_map(), 
                     StateIndex=StateIndex,
-                    EngineType=E_EngineTypes.BACKWARD_INPUT_POSITION,
+                    EngineType=engine.BACKWARD_INPUT_POSITION,
                     GotoReload_Str="return -1;")
 
 function.extend(states)

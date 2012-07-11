@@ -18,7 +18,6 @@ from   quex.engine.generator.languages.address   import get_address, \
                                                         get_label, \
                                                         Address
 from   quex.blackboard                           import E_StateIndices,  \
-                                                        E_EngineTypes,   \
                                                         E_AcceptanceIDs, \
                                                         E_InputActions,  \
                                                         E_TransitionN,   \
@@ -289,20 +288,13 @@ class LanguageDB_Cpp(dict):
            Thus: The reload behavior can be determined based on **one** state index.
                  The related drop-out label can be determined here.
         """
-        direction = { 
-            E_EngineTypes.FORWARD:              "FORWARD",
-            E_EngineTypes.BACKWARD_PRE_CONTEXT: "BACKWARD",
-            E_EngineTypes.BACKWARD_INPUT_POSITION: None,
-            E_EngineTypes.INDENTATION_COUNTER:  "FORWARD",
-            # There is never a reload on backward input position detection.
-            # The lexeme to parse must lie inside the borders!
-        }[EngineType]
+        direction = EngineType.direction_str() 
         assert direction is not None, \
                "There is no reload during BACKWARD_INPUT_POSITION detection."
 
         # 'DoorIndex == 0' is the entry into the state without any actions.
         on_success = get_address("$entry", entry_action.DoorID(StateIndex, DoorIndex=0), U=True)
-        if InitStateIndexF and EngineType == E_EngineTypes.FORWARD:
+        if InitStateIndexF and EngineType.is_FORWARD():
             on_fail = get_address("$terminal-EOF", U=True) 
         else:
             on_fail = get_address("$drop-out", StateIndex, U=True, R=True) 
@@ -397,9 +389,9 @@ class LanguageDB_Cpp(dict):
     def STATE_ENTRY(self, txt, TheState, FromStateIndex=None, NewlineF=True, BIPD_ID=None):
         label = None
         if TheState.init_state_f:
-            if   TheState.engine_type == E_EngineTypes.FORWARD: 
+            if   TheState.engine_type.is_FORWARD(): 
                 index = TheState.index
-            elif TheState.engine_type == E_EngineTypes.BACKWARD_INPUT_POSITION:
+            elif TheState.engine_type.is_BACKWARD_INPUT_POSITION():
                 label = "%s:\n" % self.LABEL_NAME_BACKWARD_INPUT_POSITION_DETECTOR(BIPD_ID) 
             else:
                 index = TheState.index

@@ -1,7 +1,8 @@
 import quex.engine.analyzer.core      as core
 import quex.engine.analyzer.optimizer as optimizer
 from   quex.engine.analyzer.position_register_map import print_this
-from   quex.blackboard                import E_EngineTypes, E_InputActions, setup as Setup
+import quex.engine.analyzer.engine_supply_factory      as     engine
+from   quex.blackboard                import E_InputActions, setup as Setup
 
 import sys
 import os
@@ -22,7 +23,7 @@ def if_DRAW_in_sys_argv(sm):
     os.remove("tmp1.dot")
     sys.exit()
 
-def test(SM, EngineType = E_EngineTypes.FORWARD, PrintPRM_F = False):
+def test(SM, EngineType = engine.FORWARD, PrintPRM_F = False):
     
     print SM.get_string(NormalizeF=True)
 
@@ -31,7 +32,7 @@ def test(SM, EngineType = E_EngineTypes.FORWARD, PrintPRM_F = False):
     # Print plain analyzer, note down what changed during optimization
     states_txt_db = {}
     for state in plain:
-        #if EngineType == E_EngineTypes.FORWARD:
+        #if EngineType.is_FORWARD():
         #    # if state.index == SM.init_state_index: assert state.input == E_InputActions.DEREF
         #    # else: assert state.input == E_InputActions.INCREMENT_THEN_DEREF
         plain_txt = state.get_string(InputF=False, TransitionMapF=False)

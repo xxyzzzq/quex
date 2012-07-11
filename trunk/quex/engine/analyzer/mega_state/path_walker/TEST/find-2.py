@@ -6,8 +6,9 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.engine.interval_handling   import *
 import quex.engine.state_machine.core  as core
 import quex.engine.analyzer.mega_state.path_walker.core  as paths 
+import quex.engine.analyzer.engine_supply_factory      as     engine
 from   quex.engine.analyzer.core       import Analyzer
-from   quex.blackboard                 import E_EngineTypes, E_Compression
+from   quex.blackboard                 import E_Compression
 
 if "--hwut-info" in sys.argv:
     print "Paths: find_path (mean tests);"
@@ -28,7 +29,7 @@ def test(sm):
     # print Skeleton
     print sm.get_graphviz_string(NormalizeF=False)
     print
-    analyzer = Analyzer(sm, E_EngineTypes.FORWARD)
+    analyzer = Analyzer(sm, engine.FORWARD)
     for state in analyzer.state_db.itervalues():
         state.entry.door_tree_configure()
     result   = paths.collect(analyzer, 
