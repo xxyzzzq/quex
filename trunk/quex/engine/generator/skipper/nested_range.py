@@ -6,8 +6,8 @@ import quex.engine.state_machine.index              as     sm_index
 from   quex.blackboard                              import setup as Setup
 from   quex.engine.misc.string_handling             import blue_print
 from   quex.engine.generator.languages.address      import __nice, get_label
-import quex.engine.generator.languages.variable_db  as variable_db
-import quex.blackboard                              as blackboard
+from   quex.engine.generator.languages.variable_db  import variable_db
+import quex.blackboard                              as     blackboard
 from   quex.blackboard                              import E_StateIndices
 
 def do(Data):
@@ -25,14 +25,14 @@ def do(Data):
     if ModeName != "":
         Mode = blackboard.mode_db[ModeName]
 
-    code_str, db = get_skipper(OpeningSequence, ClosingSequence, 
-                               Mode=Mode, 
-                               IndentationCounterTerminalID=indentation_counter_terminal_id) 
+    code_str = get_skipper(OpeningSequence, ClosingSequence, 
+                           Mode=Mode, 
+                           IndentationCounterTerminalID=indentation_counter_terminal_id) 
 
     # Reload requires the state router; mark as 'used'
     # get_label("$state-router", U=True)
 
-    return code_str, db
+    return code_str
 
 template_str = """
     Skipper$$SKIPPER_INDEX$$_Opener_it = (QUEX_TYPE_CHARACTER*)Skipper$$SKIPPER_INDEX$$_Opener;
@@ -153,27 +153,15 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
     if OnSkipRangeOpenStr != "": on_skip_range_open_str = OnSkipRangeOpenStr
     else:                        on_skip_range_open_str = get_on_skip_range_open(Mode, CloserSequence)
 
-    local_variable_db = {}
-    variable_db.enter(local_variable_db, "reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
+    variable_db.require("reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
     # variable_db.enter(local_variable_db, "text_end")
-    variable_db.enter(local_variable_db, "counter")
-    variable_db.enter(local_variable_db, "Skipper%i_Opener",    "{ %s }" % opener_str, ElementN=opener_length, 
-                                         Index = skipper_index)
-    variable_db.enter(local_variable_db, "Skipper%i_OpenerEnd", 
-                                         "Skipper%i_Opener + (ptrdiff_t)%i" % (skipper_index, opener_length),
-                                         Index = skipper_index) 
-    variable_db.enter(local_variable_db, "Skipper%i_Opener_it", "0x0", 
-                                         Index = skipper_index) 
-    variable_db.enter(local_variable_db, "Skipper%i_Closer",    "{ %s }" % closer_str, ElementN=closer_length, 
-                                         Index = skipper_index) 
-    variable_db.enter(local_variable_db, "Skipper%i_CloserEnd", 
-                                         "Skipper%i_Closer + (ptrdiff_t)%i" % (skipper_index, closer_length),
-                                         Index = skipper_index) 
-    variable_db.enter(local_variable_db, "Skipper%i_Closer_it", "0x0", 
-                                         Index = skipper_index) 
-
-   
-    reference_p_def = "    __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
+    variable_db.require("counter")
+    variable_db.require_array("Skipper%i_Opener", Initial="{ %s }" % opener_str, ElementN=opener_length, Index = skipper_index)
+    variable_db.require("Skipper%i_OpenerEnd", "Skipper%i_Opener + (ptrdiff_t)%i" % (skipper_index, opener_length), Index = skipper_index) 
+    variable_db.require("Skipper%i_Opener_it", "0x0", Index = skipper_index) 
+    variable_db.require_array("Skipper%i_Closer", Initial="{ %s }" % closer_str, ElementN=closer_length, Index = skipper_index) 
+    variable_db.require("Skipper%i_CloserEnd", "Skipper%i_Closer + (ptrdiff_t)%i" % (skipper_index, closer_length), Index = skipper_index) 
+    variable_db.require("Skipper%i_Closer_it", "0x0", Index = skipper_index) 
 
     reference_p_def = "    __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
     before_reload   = "    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
@@ -215,6 +203,6 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
                            ["$$LC_COUNT_AFTER_RELOAD$$",                after_reload],
                           ])
 
-    return code_str, local_variable_db
+    return code_str
 
 

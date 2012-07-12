@@ -7,6 +7,9 @@ from   generator_test                                  import compile_and_run, c
 from   quex.input.files.indentation_setup              import IndentationSetup
 import quex.engine.generator.state.indentation_counter as     indentation_counter
 from   quex.engine.generator.languages.address         import init_address_handling
+from   quex.engine.generator.languages.variable_db     import variable_db
+
+from   copy import deepcopy
 
 if "--hwut-info" in sys.argv:
     print "Indentation Counting"
@@ -29,13 +32,13 @@ def test(TestStr, IndentationSetup, BufferSize=1024):
     Language = "Cpp"
     __Setup_init_language_database("Cpp")
     init_address_handling()
-    code_str, local_variable_db = indentation_counter.do({"indentation_setup": IndentationSetup})
+    code_str = indentation_counter.do({"indentation_setup": IndentationSetup})
 
     txt = create_customized_analyzer_function("Cpp", TestStr, code_str, 
                                               QuexBufferSize=1024, 
                                               CommentTestStrF="", ShowPositionF=False, 
                                               EndStr=EndStr, MarkerCharList=map(ord, " :\t"),
-                                              LocalVariableDB=local_variable_db, 
+                                              LocalVariableDB=deepcopy(variable_db.get()), 
                                               IndentationSupportF=True,
                                               TokenQueueF=True, 
                                               ReloadF=True)

@@ -7,7 +7,7 @@ import quex.engine.analyzer.engine_supply_factory   as     engine
 import quex.engine.generator.state.transition.core  as     transition_block
 from   quex.engine.generator.state.transition.code  import TransitionCode, \
                                                            TextTransitionCode
-from   quex.engine.generator.languages.variable_db  import Variable
+from   quex.engine.generator.languages.variable_db  import Variable, variable_db
 from   quex.engine.generator.languages.address      import get_label, \
                                                            get_address, \
                                                            address_set_subject_to_routing_add
@@ -41,6 +41,8 @@ def do(Data):
     the analyzer will immediately be back to the indentation counter state.
     ___________________________________________________________________________
     """
+    global variable_db
+
     LanguageDB = Setup.language_db
 
     IndentationSetup = Data["indentation_setup"]
@@ -86,15 +88,10 @@ def do(Data):
     txt.extend(transition_block_str)
     txt.append(epilog)
 
-    local_variable_db = { "reference_p" : Variable("reference_p", 
-                                                   "QUEX_TYPE_CHARACTER_POSITION", None, 
-                                                   "(QUEX_TYPE_CHARACTER_POSITION)0x0")
-    }
+    get_label("$state-router", U=True) # mark as 'used'
+    variable_db.require("reference_p")
 
-    # Reload requires the state router; mark as 'used'
-    get_label("$state-router", U=True)
-
-    return txt, local_variable_db
+    return txt
 
 prolog_txt = """
     QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);

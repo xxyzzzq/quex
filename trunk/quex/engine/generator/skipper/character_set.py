@@ -7,7 +7,7 @@ from   quex.engine.generator.state.transition.code  import TextTransitionCode
 from   quex.engine.generator.languages.address      import get_label, \
                                                            get_address, \
                                                            address_set_subject_to_routing_add
-import quex.engine.generator.languages.variable_db  as     variable_db
+from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.generator.skipper.common         import line_column_counter_in_loop
 from   quex.blackboard                              import E_StateIndices, setup as Setup
 from   quex.engine.misc.string_handling             import blue_print
@@ -69,10 +69,9 @@ def do(Data):
     code.extend(transition_block_str)
     code.append(epilog)
 
-    local_variable_db = {}
-    variable_db.enter(local_variable_db, "reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
+    variable_db.require("reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
 
-    return code, local_variable_db
+    return code
 
 prolog_txt = """
     QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);

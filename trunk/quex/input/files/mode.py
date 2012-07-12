@@ -9,8 +9,10 @@ import quex.input.regular_expression.snap_character_string as snap_character_str
 from   quex.input.regular_expression.construct             import Pattern
 from   quex.blackboard                                     import setup as Setup, \
                                                                   E_SpecialPatterns
-
-from   quex.engine.generator.action_info                   import CodeFragment, UserCodeFragment, GeneratedCode, PatternActionInfo
+from   quex.engine.generator.action_info                   import CodeFragment, \
+                                                                  UserCodeFragment, \
+                                                                  GeneratedCode, \
+                                                                  PatternActionInfo
 from   quex.engine.generator.languages.address             import get_label
 import quex.engine.generator.skipper.character_set         as     skip_character_set
 import quex.engine.generator.skipper.range                 as     skip_range

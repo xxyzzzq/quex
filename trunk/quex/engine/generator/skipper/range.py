@@ -5,7 +5,7 @@ from   quex.engine.generator.skipper.common        import line_counter_in_loop, 
                                                           get_on_skip_range_open, \
                                                           line_column_counter_in_loop
 from   quex.engine.generator.languages.address     import __nice, get_label
-import quex.engine.generator.languages.variable_db as     variable_db
+from   quex.engine.generator.languages.variable_db import variable_db
 from   quex.blackboard                             import setup as Setup
 from   quex.engine.misc.string_handling            import blue_print
 import quex.blackboard                             as     blackboard
@@ -25,12 +25,12 @@ def do(Data):
     if ModeName != "":
         Mode = blackboard.mode_db[ModeName]
 
-    code_str, db = get_skipper(ClosingSequence, Mode, indentation_counter_terminal_id) 
+    code_str = get_skipper(ClosingSequence, Mode, indentation_counter_terminal_id) 
 
     # Reload requires the state router; mark as 'used'
     # get_label("$state-router", U=True)
 
-    return code_str, db
+    return code_str
 
 template_str = """
     $$DELIMITER_COMMENT$$
@@ -149,8 +149,6 @@ def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSki
     assert len(EndSequence) >= 1
     assert map(type, EndSequence) == [int] * len(EndSequence)
 
-    local_variable_db = {}
-
     global template_str
 
     LanguageDB   = Setup.language_db
@@ -221,12 +219,12 @@ def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSki
                            ["$$GOTO_RELOAD$$",   get_label("$reload", skipper_index)]])
 
     if reference_p_f:
-        variable_db.enter(local_variable_db, "reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
+        variable_db.require("reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
 
-    variable_db.enter(local_variable_db, "Skipper%i", "{ %s }" % delimiter_str, delimiter_length, Index=skipper_index)
-    variable_db.enter(local_variable_db, "Skipper%iL", "%i" % delimiter_length,                   Index=skipper_index)
-    variable_db.enter(local_variable_db, "text_end")
-    return code_str, local_variable_db
+    variable_db.require_array("Skipper%i", Initial="{ %s }" % delimiter_str, ElementN=delimiter_length, Index=skipper_index)
+    variable_db.require("Skipper%iL", "%i" % delimiter_length, Index=skipper_index)
+    variable_db.require("text_end")
+    return code_str
 
 def __lc_counting_replacements(code_str, EndSequence):
     """Line and Column Number Counting(Range Skipper):

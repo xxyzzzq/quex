@@ -35,7 +35,7 @@ if [[ $1 == "on_indentation_error" ]]; then
     txt_file=data/on_indentation_error.txt
     buffer_size=30
 fi
-quex -i $qx_file -o EasyLexer --language C
+quex -i $qx_file -o EasyLexer --language C --debug-exception
 
 gcc \
     -I$QUEX_PATH -I.                                 \

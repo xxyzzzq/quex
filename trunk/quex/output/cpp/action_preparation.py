@@ -1,35 +1,33 @@
 """Action Preparation:
 
-   Functions to prepare a source code fragment to be sticked into the
-   lexical analyzer. This includes the following:
+Functions to prepare a source code fragment to be sticked into the lexical
+analyzer. This includes the following:
 
-    -- pattern matches: 
-    
-       (optional) line and column counting based on the character 
-       content of the lexeme. Many times, the character or line
-       number count is determined by the pattern, so counting can
-       be replaced by an addition of a constant (or even no count
-       at all).
-                            
-    -- end of file/stream action:
+-- pattern matches: 
 
-       If not defined by the user, send 'TERMINATION' token and
-       return.
+   (optional) line and column counting based on the character content of the
+   lexeme. Many times, the character or line number count is determined by the
+   pattern, so counting can be replaced by an addition of a constant (or even
+   no count at all).
+                        
+-- end of file/stream action:
 
-    -- failure action (no match):
+   If not defined by the user, send 'TERMINATION' token and return.
 
-       If not defined by the user, abort program with a message 
-       that tells that the user did not define an 'on_failure'
-       handler.
+-- failure action (no match):
+
+   If not defined by the user, abort program with a message that tells that the
+   user did not define an 'on_failure' handler.
 
 (C) 2005-2012 Frank-Rene Schaefer
 """
-from   quex.engine.generator.action_info       import CodeFragment, \
-                                                      PatternActionInfo
-from   quex.engine.generator.languages.address import get_plain_strings
-from   quex.blackboard                         import setup as Setup, \
-                                                      E_Count
-import quex.output.cpp.line_and_column_counter as     line_and_column_counter
+from   quex.engine.generator.action_info           import CodeFragment, \
+                                                          PatternActionInfo
+from   quex.engine.generator.languages.variable_db import variable_db
+from   quex.engine.generator.languages.address     import get_plain_strings
+from   quex.blackboard                             import setup as Setup, \
+                                                          E_Count
+import quex.output.cpp.line_and_column_counter     as     line_and_column_counter
 
 import re
 
@@ -37,8 +35,8 @@ LanguageDB = None
 
 def do(Mode, IndentationSupportF, BeginOfLineSupportF):
     """The module 'quex.output.cpp.core' produces the code for the 
-       state machine. However, it requires a certain data format. This function
-       adapts the mode information to this format. Additional code is added 
+   state machine. However, it requires a certain data format. This function
+   adapts the mode information to this format. Additional code is added 
 
        -- for counting newlines and column numbers. This happens inside
           the function ACTION_ENTRY().
@@ -46,25 +44,23 @@ def do(Mode, IndentationSupportF, BeginOfLineSupportF):
        -- (optional) for debug output that tells the line number and column number.
     """
     global LanguageDB
+    global variable_db
     LanguageDB = Setup.language_db
 
     assert Mode.__class__.__name__ == "Mode"
-    variable_db              = {}
 
     # -- 'on after match' action
     on_after_match_str = ""
     require_terminating_zero_preparation_f = False
     if Mode.has_code_fragment_list("on_after_match"):
         on_after_match_str, \
-        require_terminating_zero_preparation_f = get_code(Mode.get_code_fragment_list("on_after_match"), variable_db)
+        require_terminating_zero_preparation_f = get_code(Mode.get_code_fragment_list("on_after_match"))
 
     # -- 'end of stream' action
-    end_of_stream_action, db = __prepare_end_of_stream_action(Mode, IndentationSupportF, BeginOfLineSupportF)
-    variable_db.update(db)
+    end_of_stream_action = __prepare_end_of_stream_action(Mode, IndentationSupportF, BeginOfLineSupportF)
 
     # -- 'on failure' action (on the event that nothing matched)
-    on_failure_action, db = __prepare_on_failure_action(Mode, BeginOfLineSupportF, require_terminating_zero_preparation_f)
-    variable_db.update(db)
+    on_failure_action    = __prepare_on_failure_action(Mode, BeginOfLineSupportF, require_terminating_zero_preparation_f)
 
     # -- pattern-action pairs
     pattern_action_pair_list        = Mode.get_pattern_action_pair_list()
@@ -80,30 +76,26 @@ def do(Mode, IndentationSupportF, BeginOfLineSupportF):
         if hasattr(action, "data") and type(action.data) == dict:   
             action.data["indentation_counter_terminal_id"] = indentation_counter_terminal_id
 
-        prepared_action, db = __prepare(Mode, action, pattern, \
-                                        SelfCountingActionF=False, \
-                                        BeginOfLineSupportF=BeginOfLineSupportF, 
-                                        require_terminating_zero_preparation_f=require_terminating_zero_preparation_f)
-        variable_db.update(db)
+        prepared_action = __prepare(Mode, action, pattern, \
+                                    SelfCountingActionF=False, \
+                                    BeginOfLineSupportF=BeginOfLineSupportF, 
+                                    require_terminating_zero_preparation_f=require_terminating_zero_preparation_f)
 
         pattern_info.set_action(prepared_action)
     
-    return variable_db, \
-           pattern_action_pair_list, \
-           PatternActionInfo(None, end_of_stream_action), \
-           PatternActionInfo(None, on_failure_action), \
+    return pattern_action_pair_list, \
+           end_of_stream_action, \
+           on_failure_action, \
            on_after_match_str
 
 Lexeme_matcher = re.compile("\\bLexeme\\b", re.UNICODE)
-def get_code(CodeFragmentList, variable_db={}, IndentationBase=1):
+def get_code(CodeFragmentList, IndentationBase=1):
     global Lexeme_matcher 
+    global variable_db
 
     code_str = ""
     for code_info in CodeFragmentList:
         result = code_info.get_code()
-        if type(result) == tuple: 
-            result, add_variable_db = result
-            variable_db.update(add_variable_db)
 
         if type(result) == list: code_str += "".join(get_plain_strings(result))
         else:                    code_str += result        
@@ -140,13 +132,10 @@ def __prepare(Mode, CodeFragment_or_CodeFragments, ThePattern,
     else:
         CodeFragmentList = [ CodeFragment_or_CodeFragments ]
 
-    user_code     = ""
-    variable_db   = {}
-
     # (*) Code to be performed on every match -- before the related action
     on_match_code = ""
     if Mode.has_code_fragment_list("on_match"):
-        on_match_code, rtzp_f = get_code(Mode.get_code_fragment_list("on_match"), variable_db)
+        on_match_code, rtzp_f = get_code(Mode.get_code_fragment_list("on_match"))
         require_terminating_zero_preparation_f = require_terminating_zero_preparation_f or rtzp_f
 
     # (*) Code to count line and column numbers
@@ -158,7 +147,7 @@ def __prepare(Mode, CodeFragment_or_CodeFragments, ThePattern,
     #    lc_count_code += "    __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);\n"
 
     # (*) THE user defined action to be performed in case of a match
-    user_code, rtzp_f = get_code(CodeFragmentList, variable_db)
+    user_code, rtzp_f = get_code(CodeFragmentList)
     require_terminating_zero_preparation_f = require_terminating_zero_preparation_f or rtzp_f
 
     store_last_character_str = ""
@@ -179,7 +168,7 @@ def __prepare(Mode, CodeFragment_or_CodeFragments, ThePattern,
     txt += user_code
     txt += "\n    }"
 
-    return CodeFragment(txt), variable_db
+    return CodeFragment(txt)
 
 def __prepare_end_of_stream_action(Mode, IndentationSupportF, BeginOfLineSupportF):
     if not Mode.has_code_fragment_list("on_end_of_stream"):
@@ -200,8 +189,9 @@ def __prepare_end_of_stream_action(Mode, IndentationSupportF, BeginOfLineSupport
         Mode.insert_code_fragment_at_front("on_end_of_stream", code_fragment)
 
     # RETURNS: end_of_stream_action, db 
-    return __prepare(Mode, Mode.get_code_fragment_list("on_end_of_stream"), 
-                     None, EOF_ActionF=True, BeginOfLineSupportF=BeginOfLineSupportF)
+    result = __prepare(Mode, Mode.get_code_fragment_list("on_end_of_stream"), 
+                       None, EOF_ActionF=True, BeginOfLineSupportF=BeginOfLineSupportF)
+    return PatternActionInfo(None, result)
 
 def __prepare_on_failure_action(Mode, BeginOfLineSupportF, require_terminating_zero_preparation_f):
     if not Mode.has_code_fragment_list("on_failure"):
@@ -211,10 +201,11 @@ def __prepare_on_failure_action(Mode, BeginOfLineSupportF, require_terminating_z
         Mode.set_code_fragment_list("on_failure", CodeFragment(txt))
 
     # RETURNS: on_failure_action, db 
-    return __prepare(Mode, Mode.get_code_fragment_list("on_failure"), 
-                     None, Default_ActionF=True, 
-                     BeginOfLineSupportF=BeginOfLineSupportF,
-                     require_terminating_zero_preparation_f=require_terminating_zero_preparation_f) 
+    result = __prepare(Mode, Mode.get_code_fragment_list("on_failure"), 
+                       None, Default_ActionF=True, 
+                       BeginOfLineSupportF=BeginOfLineSupportF,
+                       require_terminating_zero_preparation_f=require_terminating_zero_preparation_f) 
+    return PatternActionInfo(None, result)
 
 def pretty_code(Code, Base):
     """-- Delete empty lines at the beginning

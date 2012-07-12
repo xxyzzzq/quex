@@ -2903,7 +2903,7 @@ __STATE_ROUTER:
 
         default:
             __QUEX_STD_fprintf(stderr, "State router: index = %i\n", (int)target_state_index);
-            QUEX_ERROR_EXIT("State router: unknown index.");
+            QUEX_ERROR_EXIT("State router: unknown index.\n");
     }
 #   endif /* QUEX_OPTION_COMPUTED_GOTOS */
 

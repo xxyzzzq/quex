@@ -26,6 +26,7 @@ import quex.input.regular_expression.engine        as regex
 #
 from   quex.blackboard import setup as Setup
 
+from   copy import deepcopy
 # Switch: Removal of source and executable file
 #         'False' --> No removal.
 if False: REMOVE_FILES = True
@@ -378,8 +379,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
                                         Action_OnFailure       = PatternActionInfo(None, on_failure_action), 
                                         Action_OnEndOfStream   = PatternActionInfo(None, on_failure_action), 
                                         Action_OnAfterMatch    = "",
-                                        ModeNameList           = [], 
-                                        LocalVariableDB        = {})
+                                        ModeNameList           = []) 
 
     code = cpp_generator._do(generator)
 
@@ -410,8 +410,9 @@ def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferS
     end_str += '    return false;\n'
 
     address.init_address_handling()
+    variable_db.variable_db.init()
     Data = { "character_set": TriggerSet }
-    skipper_code, local_variable_db = character_set_skipper.do(Data)
+    skipper_code = character_set_skipper.do(Data)
 
     marker_char_list = []
     for interval in TriggerSet.get_intervals():
@@ -422,7 +423,8 @@ def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferS
                                                QuexBufferSize, CommentTestStrF=False, 
                                                ShowPositionF=False, EndStr=end_str,
                                                MarkerCharList=marker_char_list, 
-                                               LocalVariableDB=local_variable_db, ReloadF=True)
+                                               LocalVariableDB=deepcopy(variable_db.variable_db.get()), 
+                                               ReloadF=True)
 
 def create_range_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=1024, 
                               CommentTestStrF=False, ShowPositionF=False):
@@ -433,12 +435,13 @@ def create_range_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=102
 
     __Setup_init_language_database(Language)
     address.init_address_handling()
+    variable_db.variable_db.init()
 
-    skipper_code, local_variable_db = range_skipper.get_skipper(EndSequence, OnSkipRangeOpenStr=end_str)
+    skipper_code = range_skipper.get_skipper(EndSequence, OnSkipRangeOpenStr=end_str)
 
     return create_customized_analyzer_function(Language, TestStr, skipper_code,
                                                QuexBufferSize, CommentTestStrF, ShowPositionF, end_str,
-                                               MarkerCharList=[], LocalVariableDB=local_variable_db) 
+                                               MarkerCharList=[], LocalVariableDB=deepcopy(variable_db.variable_db.get())) 
 
 def create_nested_range_skipper_code(Language, TestStr, OpenSequence, CloseSequence, 
                                      QuexBufferSize=1024, CommentTestStrF=False, ShowPositionF=False):
@@ -449,12 +452,13 @@ def create_nested_range_skipper_code(Language, TestStr, OpenSequence, CloseSeque
 
     __Setup_init_language_database(Language)
     address.init_address_handling()
-    skipper_code, local_variable_db = nested_range_skipper.get_skipper(OpenSequence, CloseSequence, 
-                                                                       OnSkipRangeOpenStr=end_str)
+    variable_db.variable_db.init()
+    skipper_code = nested_range_skipper.get_skipper(OpenSequence, CloseSequence, 
+                                                    OnSkipRangeOpenStr=end_str)
 
     return create_customized_analyzer_function(Language, TestStr, skipper_code,
                                                QuexBufferSize, CommentTestStrF, ShowPositionF, end_str,
-                                               MarkerCharList=[], LocalVariableDB=local_variable_db) 
+                                               MarkerCharList=[], LocalVariableDB=deepcopy(variable_db.variable_db.get())) 
 
 def action(PatternName): 
     ##txt = 'fprintf(stderr, "%19s  \'%%s\'\\n", Lexeme);\n' % PatternName # DEBUG

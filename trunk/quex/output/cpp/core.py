@@ -19,8 +19,13 @@ def do(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
     #     (Must happen before call to constructor of Generator, because 
     #      constructor creates some addresses.)
     init_address_handling()
+    variable_db.init()
 
-    local_variable_db,        \
+    # (*) Skippers, Indentation Handlers, etc. are generated in the 
+    #     frame of 'action_preparation'. In there, somewhere, a call to
+    #     'get_code()' happens. During parsing a 'GeneratedCode' object
+    #     has been generated. When its 'get_code()' function is called,
+    #     the skipper/indentation counter generation function is called.
     pattern_action_pair_list, \
     on_end_of_stream_action,  \
     on_failure_action,        \
@@ -33,14 +38,12 @@ def do(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
                           Action_OnEndOfStream   = on_end_of_stream_action, 
                           Action_OnFailure       = on_failure_action, 
                           Action_OnAfterMatch    = on_after_match, 
-                          ModeNameList           = ModeNameList,
-                          LocalVariableDB        = local_variable_db)
+                          ModeNameList           = ModeNameList)
 
     return _do(generator)
 
 def _do(generator):
     # (*) Initialize the label and variable trackers
-    variable_db.init(generator.local_variable_db)
     variable_db.require("input") 
 
     # (*) Pre Context State Machine
@@ -66,20 +69,18 @@ def _do(generator):
     result               = generator.analyzer_function(pre_context, main, bipd, 
                                                        state_router, 
                                                        variable_definitions)
-
     return "".join(result)
 
 class Generator(GeneratorBase):
 
     def __init__(self, StateMachineName, PatternActionPair_List,
-                 Action_OnEndOfStream, Action_OnFailure, Action_OnAfterMatch, ModeNameList, LocalVariableDB): 
+                 Action_OnEndOfStream, Action_OnFailure, Action_OnAfterMatch, ModeNameList): 
 
         # Ensure that the language database as been setup propperly
         assert isinstance(Setup.language_db, dict)
         assert len(Setup.language_db) != 0
 
         # -- prepare the source code fragments for the generator
-        self.local_variable_db       = LocalVariableDB
         self.on_end_of_stream_action = Action_OnEndOfStream
         self.on_failure_action       = Action_OnFailure
         self.on_after_match          = Action_OnAfterMatch
@@ -246,7 +247,6 @@ class Generator(GeneratorBase):
             for k in range(i+1, min(i+10, len(txt))):
                 print "after: ", k, txt[k]
             assert False
-
 
 def frame_this(Code):
     return Setup.language_db["$frame"](Code, Setup)

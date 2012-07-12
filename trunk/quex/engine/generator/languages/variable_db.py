@@ -80,6 +80,9 @@ class VariableDB:
         if InitialDB is None: self.__db.clear()
         else:                 self.__db = copy(InitialDB)
 
+    def update(self, Other):
+        self.__db.update(Other)
+
     def get(self):
         return self.__db
 
@@ -104,10 +107,14 @@ class VariableDB:
             assert type(Condition_ComputedGoto) == bool
             return "QUEX_OPTION_COMPUTED_GOTOS", not Condition_ComputedGoto
 
-    def require(self, Name, Initial=None, Index=None, Condition_ComputedGoto=None, Type=None):
+    def require(self, Name, Initial=None, Index=None, Condition_ComputedGoto=None, Type=None, Condition=None):
         global candidate_db
 
-        condition, condition_negated_f = self.__condition(Condition_ComputedGoto)
+        if Condition is not None:
+            condition           = Condition
+            condition_negated_f = False
+        else:
+            condition, condition_negated_f = self.__condition(Condition_ComputedGoto)
 
         # Name --> Type(0), InitialValue(1), PriorityF(2)
         x = candidate_db[Name]
