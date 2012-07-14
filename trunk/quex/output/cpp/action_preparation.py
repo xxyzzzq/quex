@@ -146,6 +146,11 @@ def __prepare(Mode, CodeFragment_or_CodeFragments, ThePattern,
     #if (not Default_ActionF) and (not EOF_ActionF):
     #    lc_count_code += "    __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);\n"
 
+    # (*) Pseudo-ambiguous psot contexts require a backward search of the next
+    #     input position. If the pattern is not 'pseudo-ambiguous' (which it most
+    #     likely isn't), then 'user_code_prefix' will be "".
+    user_code_prolog = input_position_search_backward_plug_code(ThePattern)
+
     # (*) THE user defined action to be performed in case of a match
     user_code, rtzp_f = get_code(CodeFragmentList)
     require_terminating_zero_preparation_f = require_terminating_zero_preparation_f or rtzp_f
@@ -160,6 +165,7 @@ def __prepare(Mode, CodeFragment_or_CodeFragments, ThePattern,
         set_terminating_zero_str += "    QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);\n"
 
     txt  = ""
+    txt += user_code_prolog
     txt += lc_count_code
     txt += store_last_character_str
     txt += set_terminating_zero_str
@@ -169,6 +175,26 @@ def __prepare(Mode, CodeFragment_or_CodeFragments, ThePattern,
     txt += "\n    }"
 
     return CodeFragment(txt)
+
+def input_position_search_backward_plug_code(ThePattern):
+    """Pseudo Ambiguous Post Contexts:
+
+       (1) Jump to the BIPD (backward input position detector)
+       (2) Provide the jump-back label so that BIPD can jump to it
+           once the next input position has been found.
+
+    NOTE: Pseudo-Ambiguous Post Context require that the end of the core 
+    pattern is to be searched! One cannot simply restore a positoin register.
+    """
+    if ThePattern is None: return ""
+    if ThePattern.input_position_search_backward_sm is None: return ""
+
+    bipd_id   = ThePattern.input_position_search_backward_sm.get_id()
+    bipd_str  = "    goto %s;\n" % LanguageDB.LABEL_NAME_BACKWARD_INPUT_POSITION_DETECTOR(bipd_id)
+    # After having finished the analyzis, enter the terminal code, here.
+    bipd_str += "%s:\n" % LanguageDB.LABEL_NAME_BACKWARD_INPUT_POSITION_RETURN(bipd_id) 
+    return bipd_str
+
 
 def __prepare_end_of_stream_action(Mode, IndentationSupportF, BeginOfLineSupportF):
     if not Mode.has_code_fragment_list("on_end_of_stream"):

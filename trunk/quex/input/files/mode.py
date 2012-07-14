@@ -1,44 +1,31 @@
 
-import quex.blackboard as blackboard
-
 import quex.input.regular_expression.core                  as regular_expression
+import quex.input.files.mode_option                        as mode_option
 import quex.input.files.code_fragment                      as code_fragment
-import quex.input.files.indentation_setup                  as indentation_setup
 import quex.input.files.consistency_check                  as consistency_check
 import quex.input.regular_expression.snap_character_string as snap_character_string
-from   quex.input.regular_expression.construct             import Pattern
-from   quex.blackboard                                     import setup as Setup, \
-                                                                  E_SpecialPatterns
+import quex.engine.state_machine.check.identity            as identity_checker
+import quex.engine.generator.state.indentation_counter     as     indentation_counter
 from   quex.engine.generator.action_info                   import CodeFragment, \
                                                                   UserCodeFragment, \
                                                                   GeneratedCode, \
                                                                   PatternActionInfo
-from   quex.engine.generator.languages.address             import get_label
-import quex.engine.generator.skipper.character_set         as     skip_character_set
-import quex.engine.generator.skipper.range                 as     skip_range
-import quex.engine.generator.skipper.nested_range          as     skip_nested_range
-import quex.engine.generator.state.indentation_counter     as     indentation_counter
-from   quex.engine.misc.file_in                            import EndOfStreamException, \
-                                                                  check, \
-                                                                  check_or_die, \
-                                                                  copy, \
-                                                                  error_msg, \
-                                                                  get_current_line_info_number, \
-                                                                  read_identifier, \
-                                                                  read_option_start, \
-                                                                  read_option_value, \
-                                                                  read_until_letter, \
-                                                                  read_until_whitespace, \
-                                                                  skip_whitespace, \
-                                                                  verify_word_in_list
-
-from   quex.engine.state_machine.core                      import StateMachine
-import quex.engine.state_machine.check.identity            as identity_checker
-import quex.engine.state_machine.sequentialize             as sequentialize
-import quex.engine.state_machine.repeat                    as repeat
-import quex.engine.state_machine.algorithm.beautifier             as beautifier
-import quex.engine.state_machine.algorithm.nfa_to_dfa             as nfa_to_dfa
-import quex.engine.state_machine.algorithm.hopcroft_minimization  as hopcroft
+from   quex.engine.misc.file_in import EndOfStreamException, \
+                                       check, \
+                                       check_or_die, \
+                                       copy, \
+                                       error_msg, \
+                                       get_current_line_info_number, \
+                                       read_identifier, \
+                                       read_until_letter, \
+                                       read_until_whitespace, \
+                                       skip_whitespace, \
+                                       verify_word_in_list
+import quex.blackboard as blackboard
+from   quex.blackboard import setup as Setup, \
+                              E_SpecialPatterns, \
+                              event_handler_db, \
+                              mode_option_info_db 
 
 from   copy import deepcopy
 
@@ -54,15 +41,6 @@ from   copy import deepcopy
 #                      item = ModeDescription object
 #-----------------------------------------------------------------------------------------
 mode_description_db = {}
-
-class OptionInfo:
-    """This type is used only in context of a dictionary, the key
-       to the dictionary is the option's name."""
-    def __init__(self, Type, Domain=None, Default=-1):
-        # self.name = Option see comment above
-        self.type          = Type
-        self.domain        = Domain
-        self.default_value = Default
 
 class ModeDescription:
     def __init__(self, Name, Filename, LineN):
@@ -250,8 +228,8 @@ class Mode:
         """
         for info in self.__pattern_action_pair_list:
             action = info.action()
-            if   action.__class__.__name__ != "GeneratedCode": continue
-            elif action.function != indentation_counter.do:    continue
+            if   action.__class__ != GeneratedCode:         continue
+            elif action.function != indentation_counter.do: continue
             return info.pattern().sm.get_id()
         return None
 
@@ -510,46 +488,6 @@ class Mode:
                 # Need to decouple by means of 'deepcopy'
                 self.options.setdefault(name, []).extend(mode.options[name])
 
-mode_option_info_db = {
-   # -- a mode can be inheritable or not or only inheritable. if a mode
-   #    is only inheritable it is not printed on its on, only as a base
-   #    mode for another mode. default is 'yes'
-   "inheritable":       OptionInfo("single", ["no", "yes", "only"], Default="yes"),
-   # -- a mode can restrict the possible modes to exit to. this for the
-   #    sake of clarity. if no exit is explicitly mentioned all modes are
-   #    possible. if it is tried to transit to a mode which is not in
-   #    the list of explicitly stated exits, an error occurs.
-   #    entrys work respectively.
-   "exit":              OptionInfo("list", Default=[]),
-   "entry":             OptionInfo("list", Default=[]),
-   # -- a mode can restrict the exits and entrys explicitly mentioned
-   #    then, a derived mode cannot add now exits or entrys
-   "restrict":          OptionInfo("list", ["exit", "entry"], Default=[]),
-   # -- a mode can have 'skippers' that effectivels skip ranges that are out of interest.
-   "skip":              OptionInfo("list", Default=[]), # "multiple: RE-character-set
-   "skip_range":        OptionInfo("list", Default=[]), # "multiple: RE-character-string RE-character-string
-   "skip_nested_range": OptionInfo("list", Default=[]), # "multiple: RE-character-string RE-character-string
-   # -- indentation setup information
-   "indentation":       OptionInfo("single", Default=None),
-}
-
-event_handler_db = {
-    "on_entry":                  "On entry of a mode.",
-    "on_exit":                   "On exit of a mode.", 
-    "on_indent":                 "On opening indentation.",
-    "on_nodent":                 "On same indentation.",
-    "on_dedent":                 "On closing indentation'.",
-    "on_n_dedent":               "On closing indentation'.",
-    "on_indentation_error":      "Closing indentation on non-border.",
-    "on_indentation_bad":        "On bad character in indentation.",
-    "on_indentation":            "General Indentation Handler.",
-    "on_match":                  "On each match (before pattern action).",
-    "on_after_match":            "On each match (after pattern action).",
-    "on_failure":                "In case that no pattern matches.",
-    "on_skip_range_open":        "On missing skip range delimiter.",
-    "on_end_of_stream":          "On end of file/stream.",
-}
-
 def parse(fh):
     """This function parses a mode description and enters it into the 
        'mode_description_db'. Once all modes are parsed
@@ -607,7 +545,7 @@ def __parse_option_list(new_mode, fh):
 
         __parse_base_mode_list(fh, new_mode)
         
-        while __parse_option(fh, new_mode):
+        while mode_option.parse(fh, new_mode):
             pass
 
     except EndOfStreamException:
@@ -645,187 +583,6 @@ def __parse_base_mode_list(fh, new_mode):
                       % (new_mode.base_modes[-1], dummy_identifier) + \
                       "(The comma separator is mandatory since quex 0.53.1)", fh)
         fh.seek(pos)
-
-def __parse_string(fh, Name):
-    pos = fh.tell()
-    if fh.read(1) != "\"":
-        pos = fh.tell()
-        msg = fh.read(5)
-        fh.seek(pos)
-        error_msg("%s can\n" % Name + 
-                  "only be a string and must start with a quote like \".\n" +
-                  "Found '%s'" % msg, fh)
-
-    sequence = snap_character_string.get_character_code_sequence(fh)
-    end_pos  = fh.tell()
-    fh.seek(pos)
-    msg      = fh.read(end_pos - pos)
-    return msg, sequence
-
-def __parse_option(fh, new_mode):
-    def get_pattern_object(SM):
-        if not SM.is_DFA_compliant(): result = nfa_to_dfa.do(SM)
-        else:                         result = SM
-        result = hopcroft.do(result, CreateNewStateMachineF=False)
-        return Pattern(result, AllowStateMachineTrafoF=True)
-
-    identifier = read_option_start(fh)
-    if identifier is None: return False
-
-    verify_word_in_list(identifier, mode_option_info_db.keys(),
-                        "mode option", fh.name, get_current_line_info_number(fh))
-
-    if identifier == "skip":
-        # A skipper 'eats' characters at the beginning of a pattern that belong
-        # to a specified set of characters. A useful application is most probably
-        # the whitespace skipper '[ \t\n]'. The skipper definition allows quex to
-        # implement a very effective way to skip these regions.
-        pattern_str, trigger_set = regular_expression.parse_character_set(fh, PatternStringF=True)
-        skip_whitespace(fh)
-
-        if fh.read(1) != ">":
-            error_msg("missing closing '>' for mode option '%s'." % identifier, fh)
-
-        if trigger_set.is_empty():
-            error_msg("Empty trigger set for skipper." % identifier, fh)
-
-        # TriggerSet skipping is implemented the following way: As soon as one element of the 
-        # trigger set appears, the state machine enters the 'trigger set skipper section'.
-        # Enter the skipper as if the opener pattern was a normal pattern and the 'skipper' is the action.
-        # NOTE: The correspondent CodeFragment for skipping is created in 'implement_skippers(...)'
-        pattern_sm  = StateMachine()
-        pattern_sm.add_transition(pattern_sm.init_state_index, trigger_set, AcceptanceF=True)
-
-        # Skipper code is to be generated later
-        action = GeneratedCode(skip_character_set.do, 
-                               FileName = fh.name, 
-                               LineN    = get_current_line_info_number(fh))
-        action.data["character_set"] = trigger_set
-
-        new_mode.add_match(pattern_str, action, get_pattern_object(pattern_sm), 
-                           Comment=E_SpecialPatterns.SKIP)
-
-        return True
-
-    elif identifier in ["skip_range", "skip_nested_range"]:
-        # A non-nesting skipper can contain a full fledged regular expression as opener,
-        # since it only effects the trigger. Not so the nested range skipper-see below.
-
-        # -- opener
-        skip_whitespace(fh)
-        if identifier == "skip_nested_range":
-            # Nested range state machines only accept 'strings' not state machines
-            opener_str, opener_sequence = __parse_string(fh, "Opener pattern for 'skip_nested_range'")
-            opener_sm = StateMachine.from_sequence(opener_sequence)
-        else:
-            opener_str, opener_pattern = regular_expression.parse(fh)
-            opener_sm = opener_pattern.sm
-            # For 'range skipping' the opener sequence is not needed, only the opener state
-            # machine is webbed into the pattern matching state machine.
-            opener_sequence       = None
-
-        skip_whitespace(fh)
-
-        # -- closer
-        closer_str, closer_sequence = __parse_string(fh, "Closing pattern for 'skip_range' or 'skip_nested_range'")
-        skip_whitespace(fh)
-        if fh.read(1) != ">":
-            error_msg("missing closing '>' for mode option '%s'" % identifier, fh)
-
-        # Skipper code is to be generated later
-        generator_function, comment = { 
-                "skip_range":        (skip_range.do,        E_SpecialPatterns.SKIP_RANGE),
-                "skip_nested_range": (skip_nested_range.do, E_SpecialPatterns.SKIP_NESTED_RANGE),
-        }[identifier]
-        action = GeneratedCode(generator_function,
-                               FileName = fh.name, 
-                               LineN    = get_current_line_info_number(fh))
-
-        action.data["opener_sequence"] = opener_sequence
-        action.data["closer_sequence"] = closer_sequence
-        action.data["mode_name"]       = new_mode.name
-
-        new_mode.add_match(opener_str, action, get_pattern_object(opener_sm), Comment=comment)
-
-        return True
-        
-    elif identifier == "indentation":
-        value = indentation_setup.do(fh)
-
-        # Enter 'Newline' and 'Suppressed Newline' as matches into the engine.
-        # Similar to skippers, the indentation count is then triggered by the newline.
-        # -- Suppressed Newline = Suppressor followed by Newline,
-        #    then newline does not trigger indentation counting.
-        suppressed_newline_pattern_str = ""
-        if value.newline_suppressor_state_machine.get() is not None:
-            suppressed_newline_pattern_str = \
-                  "(" + value.newline_suppressor_state_machine.pattern_string() + ")" \
-                + "(" + value.newline_state_machine.pattern_string() + ")"
-                                           
-            suppressed_newline_sm = \
-                sequentialize.do([value.newline_suppressor_state_machine.get(),
-                                  value.newline_state_machine.get()])
-                 
-            FileName = value.newline_suppressor_state_machine.file_name
-            LineN    = value.newline_suppressor_state_machine.line_n
-            # Go back to start.
-            code = UserCodeFragment("goto %s;" % get_label("$start", U=True), FileName, LineN)
-
-            new_mode.add_match(suppressed_newline_pattern_str, code, 
-                               get_pattern_object(suppressed_newline_sm),
-                               Comment=E_SpecialPatterns.SUPPRESSED_INDENTATION_NEWLINE)
-
-        # When there is an empty line, then there shall be no indentation count on it.
-        # Here comes the trick: 
-        #
-        #      Let               newline         
-        #      be defined as:    newline ([space]* newline])*
-        # 
-        # This way empty lines are eating away before the indentation count is activated.
-
-        # -- 'space'
-        x0 = StateMachine()
-        x0.add_transition(x0.init_state_index, value.indentation_count_character_set(), 
-                          AcceptanceF=True)
-        # -- '[space]*'
-        x1 = repeat.do(x0)
-        # -- '[space]* newline'
-        x2 = sequentialize.do([x1, value.newline_state_machine.get()])
-        # -- '([space]* newline)*'
-        x3 = repeat.do(x2)
-        # -- 'newline ([space]* newline)*'
-        x4 = sequentialize.do([value.newline_state_machine.get(), x3])
-        # -- nfa to dfa; hopcroft optimization
-        sm = beautifier.do(x4)
-
-        FileName = value.newline_state_machine.file_name
-        LineN    = value.newline_state_machine.line_n
-        action   = GeneratedCode(indentation_counter.do, FileName, LineN)
-
-        action.data["indentation_setup"] = value
-
-        new_mode.add_match(value.newline_state_machine.pattern_string(), action, 
-                           get_pattern_object(sm), 
-                           Comment=E_SpecialPatterns.INDENTATION_NEWLINE)
-
-        # Announce the mode to which the setup belongs
-        value.set_containing_mode_name(new_mode.name)
-    else:
-        value = read_option_value(fh)
-
-    # The 'verify_word_in_list()' call must have ensured that the following holds
-    assert mode_option_info_db.has_key(identifier)
-
-    # Is the option of the appropriate value?
-    option_info = mode_option_info_db[identifier]
-    if option_info.domain is not None and value not in option_info.domain:
-        error_msg("Tried to set value '%s' for option '%s'. " % (value, identifier) + \
-                  "Though, possible for this option are only: %s." % repr(option_info.domain)[1:-1], fh)
-
-    # Finally, set the option
-    new_mode.add_option(identifier, value)
-
-    return True
 
 def __parse_element(new_mode, fh):
     """Returns: False, if a closing '}' has been found.

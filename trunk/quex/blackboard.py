@@ -178,6 +178,62 @@ class CounterDB:
 initial_mode = CodeFragment()
 
 #-----------------------------------------------------------------------------------------
+# mode_option_info_db: Information about properties of mode options.
+#-----------------------------------------------------------------------------------------
+class ModeOptionInfo:
+    """This type is used only in context of a dictionary, the key
+       to the dictionary is the option's name."""
+    def __init__(self, Type, Domain=None, Default=-1):
+        # self.name = Option see comment above
+        self.type          = Type
+        self.domain        = Domain
+        self.default_value = Default
+
+mode_option_info_db = {
+   # -- a mode can be inheritable or not or only inheritable. if a mode
+   #    is only inheritable it is not printed on its on, only as a base
+   #    mode for another mode. default is 'yes'
+   "inheritable":       ModeOptionInfo("single", ["no", "yes", "only"], Default="yes"),
+   # -- a mode can restrict the possible modes to exit to. this for the
+   #    sake of clarity. if no exit is explicitly mentioned all modes are
+   #    possible. if it is tried to transit to a mode which is not in
+   #    the list of explicitly stated exits, an error occurs.
+   #    entrys work respectively.
+   "exit":              ModeOptionInfo("list", Default=[]),
+   "entry":             ModeOptionInfo("list", Default=[]),
+   # -- a mode can restrict the exits and entrys explicitly mentioned
+   #    then, a derived mode cannot add now exits or entrys
+   "restrict":          ModeOptionInfo("list", ["exit", "entry"], Default=[]),
+   # -- a mode can have 'skippers' that effectivels skip ranges that are out of interest.
+   "skip":              ModeOptionInfo("list", Default=[]), # "multiple: RE-character-set
+   "skip_range":        ModeOptionInfo("list", Default=[]), # "multiple: RE-character-string RE-character-string
+   "skip_nested_range": ModeOptionInfo("list", Default=[]), # "multiple: RE-character-string RE-character-string
+   # -- indentation setup information
+   "indentation":       ModeOptionInfo("single", Default=None),
+}
+
+#-----------------------------------------------------------------------------------------
+# event_handler_db: Stores names of event handler functions as keys and their meaning
+#                   as their associated values.
+#-----------------------------------------------------------------------------------------
+event_handler_db = {
+    "on_entry":                  "On entry of a mode.",
+    "on_exit":                   "On exit of a mode.", 
+    "on_indent":                 "On opening indentation.",
+    "on_nodent":                 "On same indentation.",
+    "on_dedent":                 "On closing indentation'.",
+    "on_n_dedent":               "On closing indentation'.",
+    "on_indentation_error":      "Closing indentation on non-border.",
+    "on_indentation_bad":        "On bad character in indentation.",
+    "on_indentation":            "General Indentation Handler.",
+    "on_match":                  "On each match (before pattern action).",
+    "on_after_match":            "On each match (after pattern action).",
+    "on_failure":                "In case that no pattern matches.",
+    "on_skip_range_open":        "On missing skip range delimiter.",
+    "on_end_of_stream":          "On end of file/stream.",
+}
+
+#-----------------------------------------------------------------------------------------
 # header: code fragment that is to be pasted before mode transitions
 #         and pattern action pairs (e.g. '#include<something>'
 #-----------------------------------------------------------------------------------------

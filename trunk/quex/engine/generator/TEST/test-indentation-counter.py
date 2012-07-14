@@ -44,11 +44,11 @@ def test(TestStr, IndentationSetup, BufferSize=1024):
                                               ReloadF=True)
     compile_and_run(Language, txt)
 
-indentation_setup = IndentationSetup()
+indent_setup = IndentationSetup()
 
 if "Uniform" in sys.argv:
 
-    indentation_setup.specify_space("[ \\:]", NumberSet([Interval(ord(" ")), Interval(ord(":"))]), 1)
+    indent_setup.specify_space("[ \\:]", NumberSet([Interval(ord(" ")), Interval(ord(":"))]), 1)
 
     test("\n"
          "  a\n"
@@ -59,11 +59,11 @@ if "Uniform" in sys.argv:
          "  :    h\n"
          "  i\n"
          "  j\n"
-         , indentation_setup)
+         , indent_setup)
 
 elif "Uniform-Reloaded" in sys.argv:
 
-    indentation_setup.specify_space("[ ]", NumberSet([Interval(ord(" ")), Interval(ord(":"))]), 1)
+    indent_setup.specify_space("[ ]", NumberSet([Interval(ord(" ")), Interval(ord(":"))]), 1)
 
     test("\n"
          "  a\n"
@@ -75,11 +75,11 @@ elif "Uniform-Reloaded" in sys.argv:
          "       h\n"
          "  i\n"
          "  j\n"
-         , indentation_setup, BufferSize=10)
+         , indent_setup, BufferSize=10)
 
 elif "NonUniform" in sys.argv:
-    indentation_setup.specify_space("[ \\:]", NumberSet([Interval(ord(" ")), Interval(ord(":"))]), 1)
-    indentation_setup.specify_grid("[\\t]", NumberSet(ord("\t")), 4)
+    indent_setup.specify_space("[ \\:]", NumberSet([Interval(ord(" ")), Interval(ord(":"))]), 1)
+    indent_setup.specify_grid("[\\t]", NumberSet(ord("\t")), 4)
 
     test("\n"
          "    a\n"     # 4 spaces
@@ -89,12 +89,12 @@ elif "NonUniform" in sys.argv:
          "   \te\n"    # 3 spaces + 1 tab = 4
          "    \tf\n"   # 4 spaces + 1 tab = 8
          "        g\n" # 8 spaces         = 8
-         , indentation_setup)
+         , indent_setup)
 
 
 elif "NonUniform-2" in sys.argv:
-    indentation_setup.specify_space("[ \\:]", NumberSet([Interval(ord(" ")), Interval(ord(":"))]), 1)
-    indentation_setup.specify_grid("[\\t]", NumberSet(ord("\t")), 4)
+    indent_setup.specify_space("[ \\:]", NumberSet([Interval(ord(" ")), Interval(ord(":"))]), 1)
+    indent_setup.specify_grid("[\\t]", NumberSet(ord("\t")), 4)
 
     test("\n"
          "        a\n" # 8 spaces
@@ -102,6 +102,6 @@ elif "NonUniform-2" in sys.argv:
          "\t  \tc\n"   # tab + 2 + tab = 8
          "\t   \td\n"  # tab + 3 + tab = 8
          "\t    e\n"   # tab + 4       = 8
-         , indentation_setup)
+         , indent_setup)
 
 

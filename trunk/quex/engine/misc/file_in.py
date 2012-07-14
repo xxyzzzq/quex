@@ -646,46 +646,6 @@ def get_include_guard_extension(Filename):
     """Transforms the letters of a filename, so that they can appear in a C-macro."""
     return make_safe_identifier(Filename, NoCodeF=False)
 
-def read_option_start(fh):
-    skip_whitespace(fh)
-
-    # (*) base modes 
-    if fh.read(1) != "<": 
-        ##fh.seek(-1, 1) 
-        return None
-
-    skip_whitespace(fh)
-    identifier = read_identifier(fh).strip()
-
-    if identifier == "":  error_msg("missing identifer after start of mode option '<'", fh)
-    skip_whitespace(fh)
-    if fh.read(1) != ":": error_msg("missing ':' after option name '%s'" % identifier, fh)
-    skip_whitespace(fh)
-
-    return identifier
-
-def read_option_value(fh):
-
-    position = fh.tell()
-
-    value = ""
-    depth = 1
-    while 1 + 1 == 2:
-        try: 
-            letter = fh.read(1)
-        except EndOfStreamException:
-            fh.seek(position)
-            error_msg("missing closing '>' for mode option.", fh)
-
-        if letter == "<": 
-            depth += 1
-        if letter == ">": 
-            depth -= 1
-            if depth == 0: break
-        value += letter
-
-    return value.strip()
-
 def check(fh, Word):
     position = fh.tell()
     try:

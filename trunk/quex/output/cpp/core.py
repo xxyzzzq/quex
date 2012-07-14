@@ -51,6 +51,7 @@ def _do(generator):
     pre_context          = generator.code_pre_context_state_machine()
         
     # (*) Main State Machine -- try to match core patterns
+    #     Post-context handling is webbed into the main state machine.
     main                 = generator.code_main_state_machine()
 
     # (*) Backward input position detection

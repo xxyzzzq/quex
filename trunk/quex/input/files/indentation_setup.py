@@ -273,7 +273,7 @@ class IndentationSetup:
 
         return txt
 
-def do(fh):
+def parse(fh):
     """Parses pattern definitions of the form:
    
           [ \t]                                       => grid 4;
@@ -282,7 +282,7 @@ def do(fh):
        In other words the right hand side *must* be a character set.
           
     """
-    indentation_setup = IndentationSetup(fh)
+    indent_setup = IndentationSetup(fh)
 
     # NOTE: Catching of EOF happens in caller: parse_section(...)
     #
@@ -292,9 +292,9 @@ def do(fh):
         skip_whitespace(fh)
 
         if check(fh, ">"): 
-            indentation_setup.seal()
-            indentation_setup.consistency_check(fh)
-            return indentation_setup
+            indent_setup.seal()
+            indent_setup.consistency_check(fh)
+            return indent_setup
         
         # A regular expression state machine
         pattern_str, pattern = regular_expression.parse(fh)
@@ -325,36 +325,36 @@ def do(fh):
         if identifier == "space":
             value = read_integer(fh)
             if value is not None: 
-                indentation_setup.specify_space(pattern_str, trigger_set, value, fh)
+                indent_setup.specify_space(pattern_str, trigger_set, value, fh)
             else:
                 # not a number received, is it an identifier?
                 variable = read_identifier(fh)
                 if variable != "":
-                    indentation_setup.specify_space(pattern_str, trigger_set, variable, fh)
+                    indent_setup.specify_space(pattern_str, trigger_set, variable, fh)
                 else:
-                    indentation_setup.specify_space(pattern_str, trigger_set, 1, fh)
+                    indent_setup.specify_space(pattern_str, trigger_set, 1, fh)
 
         elif identifier == "grid":
             value = read_integer(fh)
             if value is not None: 
-                indentation_setup.specify_grid(pattern_str, trigger_set, value, fh)
+                indent_setup.specify_grid(pattern_str, trigger_set, value, fh)
             else:
                 # not a number received, is it an identifier?
                 skip_whitespace(fh)
                 variable = read_identifier(fh)
                 if variable != "":
-                    indentation_setup.specify_grid(pattern_str, trigger_set, variable, fh)
+                    indent_setup.specify_grid(pattern_str, trigger_set, variable, fh)
                 else:
                     error_msg("Missing integer or variable name after keyword 'grid'.", fh) 
 
         elif identifier == "bad":
-            indentation_setup.specify_bad(pattern_str, trigger_set, fh)
+            indent_setup.specify_bad(pattern_str, trigger_set, fh)
 
         elif identifier == "newline":
-            indentation_setup.specify_newline(pattern_str, pattern.sm, fh)
+            indent_setup.specify_newline(pattern_str, pattern.sm, fh)
 
         elif identifier == "suppressor":
-            indentation_setup.specify_suppressor(pattern_str, pattern.sm, fh)
+            indent_setup.specify_suppressor(pattern_str, pattern.sm, fh)
 
         else:
             assert False, "Unreachable code reached."

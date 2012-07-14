@@ -1,4 +1,4 @@
-quex -i error.qx -o Simple 
+quex -i error.qx -o Simple --debug-exception
 (*) Test that character sets are not modified.
 ## An Assert-Abortion might be an intended element of the experiment.
 NUM '3' 

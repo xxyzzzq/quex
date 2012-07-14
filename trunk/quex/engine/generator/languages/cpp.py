@@ -249,20 +249,18 @@ def __analyzer_function(StateMachineName, Setup,
     return txt
 
 __terminal_router_prolog_str = """
-#   if defined(QUEX_OPTION_COMPUTED_GOTOS)
     __quex_assert_no_passage();
-    /* Scenario: -- QUEX_GOTO_TERMINAL(last_acceptance) defined
-     *              => required __TERMINAL_ROUTER
-     *           -- all last_acceptance are 'failure' 
-     *              => no routing.
-     *           -- Compilation with 'QUEX_OPTION_COMPUTED_GOTOS'.
-     *              => no state router required.                     
-     * Then: There is no 'goto' to __TERMINAL_ROUTER and the compiler
-     *       would complain about an unreferenced label. Avoid this by
-     *       putting an explicit, never reached 'goto' here.               */
+#   if defined(QUEX_OPTION_COMPUTED_GOTOS)
+    /* Avoid compilers warning 'unreferenced label __TERMINAL_ROUTER'. Avoid 
+     * this by adding an explicit goto here.                               
+     *
+     * This may happen if: 
+     * -- QUEX_GOTO_TERMINAL(last_acceptance) defined => goto __TERMINAL_ROUTER.
+     * -- All last_acceptance are 'failure'           => no routing.
+     * -- 'QUEX_OPTION_COMPUTED_GOTOS' defined        => no router necessary. */
     goto __TERMINAL_ROUTER;
 #   endif
-    __quex_assert_no_passage();
+
 __TERMINAL_ROUTER:
     __quex_debug("terminal router");
     /*  if last_acceptance => goto correspondent acceptance terminal state */
@@ -375,13 +373,8 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
 """
 def get_terminal_code(AcceptanceID, pattern_action_info, LanguageDB):
     pattern     = pattern_action_info.pattern()
-    #
     action_code = pattern_action_info.action().get_code()
         
-    # (*) The 'normal' terminal state can also be reached by the terminal
-    #     router and, thus, **must** restore the acceptance input position. This is so, 
-    #     because when the 'goto last_acceptance' is triggered the 'last_acceptance'
-    #     may lay backwards and needs to be restored.
     result      = []
     for letter in pattern_action_info.pattern_string():
         if letter in ['\\', '"', '\n', '\t', '\r', '\a', '\v']:
@@ -389,28 +382,9 @@ def get_terminal_code(AcceptanceID, pattern_action_info, LanguageDB):
         result.append(letter)
 
     safe_pattern = "".join(result)
-
-    input_position_search_backward_str = ""
-    if pattern.input_position_search_backward_sm is not None:
-        # Pseudo Ambiguous Post Contexts:
-        # (Retrieving the input position for the next run)
-        # -- Requires that the end of the core pattern is to be searched! One 
-        #    cannot simply restore some stored input position.
-        # -- The pseudo-ambiguous post condition is translated into a 'normal'
-        #    pattern. However, after a match a backward detection of the end
-        #    of the core pattern is done. Here, we first need to go to the point
-        #    where the 'normal' pattern ended, then we can do a backward detection.
-
-        bipd_id   = pattern.input_position_search_backward_sm.get_id()
-        bipd_str  = "    goto %s;\n" % LanguageDB.LABEL_NAME_BACKWARD_INPUT_POSITION_DETECTOR(bipd_id)
-        # After having finished the analyzis, enter the terminal code, here.
-        bipd_str += "%s:\n" % LanguageDB.LABEL_NAME_BACKWARD_INPUT_POSITION_RETURN(bipd_id) 
-        input_position_search_backward_str = bipd_str
-
-
+    
     txt = [
             "\nTERMINAL_%i:\n" % AcceptanceID,
-            input_position_search_backward_str,
             "    __quex_debug(\"* terminal %i:   %s\\n\");\n" % (AcceptanceID, safe_pattern),
             action_code, "\n",
             "    goto %s;\n" % get_label("$re-start", U=True)
@@ -418,21 +392,21 @@ def get_terminal_code(AcceptanceID, pattern_action_info, LanguageDB):
 
     return txt
 
-def __terminal_on_failure_prolog(LanguageDB):
-    return [
-        "    if(QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {\n",
-        "        /* Init state is going to detect 'input == buffer limit code', and\n"
-        "         * enter the reload procedure, which will decide about 'end of stream'. */\n",
-        "    } else {\n",
-        "        /* In init state 'input = *input_p' and we need to increment\n",
-        "         * in order to avoid getting stalled. Else, input = *(input_p - 1),\n",
-        "         * so 'input_p' points already to the next character.              */\n",
-        "        if( me->buffer._input_p == me->buffer._lexeme_start_p ) {\n",
-        "            /* Step over non-matching character */\n",
-        "            %s\n" % LanguageDB.INPUT_P_INCREMENT(),
-        "        }\n",
-        "    }\n",
-    ]
+def __terminal_on_failure(LanguageDB, OnFailureAction):
+    return \
+      "    if(QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {\n" \
+    + "        /* Init state is going to detect 'input == buffer limit code', and\n"\
+    + "         * enter the reload procedure, which will decide about 'end of stream'. */\n" \
+    + "    } else {\n" \
+    + "        /* In init state 'input = *input_p' and we need to increment\n" \
+    + "         * in order to avoid getting stalled. Else, input = *(input_p - 1),\n" \
+    + "         * so 'input_p' points already to the next character.              */\n" \
+    + "        if( me->buffer._input_p == me->buffer._lexeme_start_p ) {\n" \
+    + "            /* Step over non-matching character */\n" \
+    + "            %s\n" % LanguageDB.INPUT_P_INCREMENT() \
+    + "        }\n" \
+    + "    }\n" \
+    + "%s" % OnFailureAction.action().get_code()
 
 def __terminal_states(StateMachineName, action_db, OnFailureAction, EndOfStreamAction, 
                       PreConditionIDList, LanguageDB, VariableDB, OnAfterMatchStr, LexemeNullObjectName):
@@ -447,81 +421,66 @@ def __terminal_states(StateMachineName, action_db, OnFailureAction, EndOfStreamA
         code = get_terminal_code(pattern_id, pattern_action_info, LanguageDB)
         specific_terminal_states.extend(code)
 
-    delete_pre_context_flags = []
-    for pre_context_sm_id in PreConditionIDList:
-        delete_pre_context_flags.append("    ")
-        delete_pre_context_flags.append(LanguageDB.ASSIGN("pre_context_%s_fulfilled_f" % __nice(pre_context_sm_id), 0))
-
     # If there is at least a single terminal, the the 're-entry' preparation must be accomplished
-    if len(action_db) != 0: get_label("$re-start", U=True)
+    if len(action_db) != 0: get_label("$re-start", U=True) # mark as 'used'
 
-    #  -- execute 'on_failure' pattern action 
-    #  -- goto initial state    
-    end_of_stream_code_action_str = EndOfStreamAction.action().get_code()
+    end_of_stream_code_str = EndOfStreamAction.action().get_code()
+    on_failure_str         = __terminal_on_failure(LanguageDB, OnFailureAction)
 
-    # -- FAILURE ACTION: Under 'normal' circumstances the on_failure action is simply to be executed
-    #                    since the 'get_forward()' incremented the 'current' pointer.
-    #                    HOWEVER, when end of file has been reached the 'current' pointer has to
-    #                    be reset so that the initial state can drop out on the buffer limit code
-    #                    and then transit to the end of file action.
-    # NOTE: It is possible that 'miss' happens after a chain of characters appeared. In any case the input
-    #       pointer must be setup right after the lexeme start. This way, the lexer becomes a new chance as
-    #       soon as possible.
-    on_failure = __terminal_on_failure_prolog(LanguageDB)
-    msg        = OnFailureAction.action().get_code()
+    terminal_failure_ref   = "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")
 
-    on_failure.append(msg)
+    prolog = blue_print(__terminal_state_prolog, [
+          ["$$LEXEME_LENGTH$$",      LanguageDB.LEXEME_LENGTH()],
+          ["$$INPUT_P$$",            LanguageDB.INPUT_P()],
+          ["$$LEXEME_NULL_OBJECT$$", LexemeNullObjectName],
+    ])
 
-    prolog = blue_print(__terminal_state_prolog,
-                        [
-                          ["$$LEXEME_LENGTH$$",      LanguageDB.LEXEME_LENGTH()],
-                          ["$$INPUT_P$$",            LanguageDB.INPUT_P()],
-                          ["$$LEXEME_NULL_OBJECT$$", LexemeNullObjectName],
-                        ]
-                       )
-
-    router = Address("$terminal-router", None,
-                  [
-                      blue_print(__terminal_router_prolog_str,
-                      [
-                       ["$$TERMINAL_FAILURE-REF$$",         "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")],
-                       ["$$TERMINAL_FAILURE$$",             get_label("$terminal-FAILURE")],
-                      ]),
-                      # DO NOT 'U=True' for the state router. This is done automatically if 
-                      # 'goto reload' is used. 
-                      get_label("$state-router"), ";",
-                      __terminal_router_epilog_str, 
-                  ])
+    router = Address("$terminal-router", None, [
+          blue_print(__terminal_router_prolog_str,
+          [
+           ["$$TERMINAL_FAILURE-REF$$", terminal_failure_ref],
+           ["$$TERMINAL_FAILURE$$",     get_label("$terminal-FAILURE")],
+          ]),
+          # DO NOT 'U=True' for the state router. This is done automatically if 
+          # 'goto reload' is used. 
+          get_label("$state-router"), ";",
+          __terminal_router_epilog_str, 
+    ])
                      
-    epilog = blue_print(__terminal_state_epilog, 
-             [
-              ["$$FAILURE_ACTION$$",             "".join(on_failure)],
-              ["$$END_OF_STREAM_ACTION$$",       end_of_stream_code_action_str],
-              ["$$TERMINAL_END_OF_STREAM-DEF$$", get_label("$terminal-EOF")],
-              ["$$TERMINAL_FAILURE-DEF$$",       get_label("$terminal-FAILURE")],
-              ["$$STATE_MACHINE_NAME$$",         StateMachineName],
-              ["$$GOTO_START_PREPARATION$$",     get_label("$re-start", U=True)],
-             ])
+    epilog = blue_print(__terminal_state_epilog, [
+          ["$$FAILURE_ACTION$$",             on_failure_str],
+          ["$$END_OF_STREAM_ACTION$$",       end_of_stream_code_str],
+          ["$$TERMINAL_END_OF_STREAM-DEF$$", get_label("$terminal-EOF")],
+          ["$$TERMINAL_FAILURE-DEF$$",       get_label("$terminal-FAILURE")],
+          ["$$STATE_MACHINE_NAME$$",         StateMachineName],
+          ["$$GOTO_START_PREPARATION$$",     get_label("$re-start", U=True)],
+    ])
 
-
-    reset_last_acceptance_str = ""
-    if VariableDB.has_key("last_acceptance"):
-        reset_last_acceptance_str = "last_acceptance = $$TERMINAL_FAILURE-REF$$; /* TERMINAL: FAILURE */"
 
     return_preparation = ""
     if OnAfterMatchStr != "":
         return_preparation = blue_print(__return_preparation_str,
                                         [["$$ON_AFTER_MATCH$$",  OnAfterMatchStr]])
 
-    reentry_preparation = blue_print(__reentry_preparation_str,
-                          [["$$REENTRY_PREPARATION$$",                    get_label("$re-start")],
-                           ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$",  "".join(delete_pre_context_flags)],
-                           ["$$GOTO_START$$",                             get_label("$start", U=True)],
-                           ["$$ON_AFTER_MATCH$$",                         OnAfterMatchStr],
-                           ["$$RESET_LAST_ACCEPTANCE$$",                  reset_last_acceptance_str],
-                           ["$$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$", comment_on_post_context_position_init_str],
-                           ["$$TERMINAL_FAILURE-REF$$",                   "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")],
-                          ])
+    # (*) Unset all pre-context flags which may have possibly been set
+    unset_pre_context_flags_str = "".join([
+        "    " + LanguageDB.ASSIGN("pre_context_%s_fulfilled_f" % __nice(pre_context_id), 0)
+        for pre_context_id in PreConditionIDList
+    ])
+
+    reset_last_acceptance_str = ""
+    if VariableDB.has_key("last_acceptance"):
+        reset_last_acceptance_str = "last_acceptance = $$TERMINAL_FAILURE-REF$$; /* TERMINAL: FAILURE */"
+
+    reentry_preparation = blue_print(__reentry_preparation_str, [
+          ["$$REENTRY_PREPARATION$$",                    get_label("$re-start")],
+          ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$",  unset_pre_context_flags_str],
+          ["$$GOTO_START$$",                             get_label("$start", U=True)],
+          ["$$ON_AFTER_MATCH$$",                         OnAfterMatchStr],
+          ["$$RESET_LAST_ACCEPTANCE$$",                  reset_last_acceptance_str],
+          ["$$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$", comment_on_post_context_position_init_str],
+          ["$$TERMINAL_FAILURE-REF$$",                   terminal_failure_ref],
+    ])
 
     txt = []
     txt.append(router)

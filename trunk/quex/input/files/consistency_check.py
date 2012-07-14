@@ -106,12 +106,12 @@ def do(ModeDB):
 
 
 def __indentation_setup_check(mode):
-    indentation_setup = mode.options["indentation"]
-    if indentation_setup is None: return
+    indent_setup = mode.options["indentation"]
+    if indent_setup is None: return
 
     # The newline pattern shall not have intersections with other patterns!
-    newline_info            = indentation_setup.newline_state_machine
-    newline_suppressor_info = indentation_setup.newline_suppressor_state_machine
+    newline_info            = indent_setup.newline_state_machine
+    newline_suppressor_info = indent_setup.newline_suppressor_state_machine
     assert newline_info is not None
     if newline_suppressor_info.get() is None: return
 
