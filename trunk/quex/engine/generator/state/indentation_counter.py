@@ -112,7 +112,14 @@ $$INPUT_GET$$
 """
 
 epilog_txt = """
-    /* Here's where the first non-whitespace appeared after newline. */
+    /* Here's where the first non-whitespace appeared after newline. 
+     * 
+     * NOTE: The entry into the indentation counter happens by matching the pattern:
+     * 
+     *                   newline ([space]* newline)*'
+     *
+     * Thus, it is not possible that here a newline appears. All empty lines have 
+     * been eaten by the pattern match.                                            */
 $$END_PROCEDURE$$                           
     /* No need for re-entry preparation. Acceptance flags and modes are untouched. */
     goto $$REENTRY$$;

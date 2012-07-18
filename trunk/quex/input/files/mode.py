@@ -3,7 +3,6 @@ import quex.input.regular_expression.core                  as regular_expression
 import quex.input.files.mode_option                        as mode_option
 import quex.input.files.code_fragment                      as code_fragment
 import quex.input.files.consistency_check                  as consistency_check
-import quex.input.regular_expression.snap_character_string as snap_character_string
 import quex.engine.state_machine.check.identity            as identity_checker
 import quex.engine.generator.state.indentation_counter     as     indentation_counter
 from   quex.engine.generator.action_info                   import CodeFragment, \

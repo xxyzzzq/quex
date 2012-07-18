@@ -96,7 +96,6 @@ def get_code(CodeFragmentList, IndentationBase=1):
     code_str = ""
     for code_info in CodeFragmentList:
         result = code_info.get_code()
-
         if type(result) == list: code_str += "".join(get_plain_strings(result))
         else:                    code_str += result        
 
@@ -143,10 +142,7 @@ def __prepare(Mode, CodeFragment_or_CodeFragments, ThePattern,
     if not SelfCountingActionF: 
         lc_count_code = "    %s\n" % line_and_column_counter.do(ThePattern, EOF_ActionF)
 
-    #if (not Default_ActionF) and (not EOF_ActionF):
-    #    lc_count_code += "    __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);\n"
-
-    # (*) Pseudo-ambiguous psot contexts require a backward search of the next
+    # (*) Pseudo-ambiguous post contexts require a backward search of the next
     #     input position. If the pattern is not 'pseudo-ambiguous' (which it most
     #     likely isn't), then 'user_code_prefix' will be "".
     user_code_prolog = input_position_search_backward_plug_code(ThePattern)
@@ -157,6 +153,12 @@ def __prepare(Mode, CodeFragment_or_CodeFragments, ThePattern,
 
     store_last_character_str = ""
     if BeginOfLineSupportF:
+        # IDEA (TODO): The character before lexeme start does not have to be
+        # written into a special register. Simply, make sure that
+        # '_lexeme_start_p - 1' is always in the buffer. This may include that
+        # on the first buffer load '\n' needs to be at the beginning of the
+        # buffer before the content is loaded. Not so easy; must be carefully
+        # approached.
         store_last_character_str = "    %s\n" % LanguageDB.ASSIGN("me->buffer._character_before_lexeme_start", 
                                                                   LanguageDB.INPUT_P_DEREFERENCE(-1))
 

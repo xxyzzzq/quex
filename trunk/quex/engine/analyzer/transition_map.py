@@ -1,7 +1,7 @@
 from   quex.engine.interval_handling import Interval
 from   quex.blackboard import E_StateIndices
 import sys
-from   copy import deepcopy
+from   copy import deepcopy, copy
 from   itertools import imap, izip
 from   operator  import itemgetter
 
@@ -257,3 +257,24 @@ def get_target(transition_map, Character):
 
 def sort(transition_map):
     transition_map.sort(key=lambda x: x[0].begin)
+
+def add_transition_actions(transition_map, TransitionActionMap):
+    """'TransitionActionMap' describes actions to be taken upon the 
+    occurence of a particular character. The actions are to be added
+    to the 'transition_map'.
+    """
+    def extend(Target, ActionList):
+        result = ActionList
+        if isinstance(Target, (int, long)):
+            result = copy(ActionList)
+            result.append(ActionGoto(Target))
+        else:
+            result = copy(Target)
+            result.extend(ActionList)
+
+    result = []
+    for begin, end, target, action_list in zipped_iterable(transition_map, TransitionActionMap):
+        result.append(Interval(begin, end), extend(target, action_list))
+    return result
+
+

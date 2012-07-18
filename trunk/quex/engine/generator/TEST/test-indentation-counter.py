@@ -13,7 +13,7 @@ from   copy import deepcopy
 
 if "--hwut-info" in sys.argv:
     print "Indentation Counting"
-    print "CHOICES: Uniform, Uniform-Reloaded, NonUniform, NonUniform-2;"
+    print "CHOICES: Uniform, NonUniform, NonUniform-2;"
     sys.exit(0)
 
 if len(sys.argv) < 2: 
