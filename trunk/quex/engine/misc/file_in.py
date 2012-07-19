@@ -100,21 +100,27 @@ def is_identifier(identifier, TolerantF=False):
 
     return True
 
-def read_identifier(fh, TolerantF=False):
-    txt = fh.read(1)
-    if txt == "": return ""
+def read_identifier(fh, TolerantF=False, OnMissingStr=None):
+    def __read(fh, TolerantF):
+        txt = fh.read(1)
+        if len(txt) == 0: return ""
 
-    if TolerantF:
-        if is_identifier_continue(txt) == False: fh.seek(-1, 1); return ""
-    else:
-        if is_identifier_start(txt) == False: fh.seek(-1, 1); return ""
+        if TolerantF:
+            if is_identifier_continue(txt) == False: fh.seek(-1, 1); return ""
+        else:
+            if is_identifier_start(txt) == False: fh.seek(-1, 1); return ""
 
-    while 1 + 1 == 2:
-        tmp = fh.read(1)
-        if tmp == "": return txt
+        while 1 + 1 == 2:
+            tmp = fh.read(1)
+            if len(tmp) == 0: return txt
 
-        if is_identifier_continue(tmp): txt += tmp
-        else:                           fh.seek(-1, 1); return txt
+            if is_identifier_continue(tmp): txt += tmp
+            else:                           fh.seek(-1, 1); return txt
+    result = __read(fh, TolerantF)
+
+    if len(result) == 0 and OnMissingStr is not None: 
+        error_msg(OnMissingStr, fh)
+    return result
 
 def find_end_of_identifier(Txt, StartIdx, L):
     for i in range(StartIdx, L):

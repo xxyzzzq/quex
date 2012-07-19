@@ -11,7 +11,7 @@ from   quex.engine.interval_handling      import NumberSet
 from   quex.engine.state_machine.core     import StateMachine
 import quex.input.regular_expression.core as     regular_expression
 
-class IndentationSetup:
+class CounterSetup:
     def __init__(self, fh=-1):
         self.fh = fh
         if fh != -1:
@@ -23,14 +23,9 @@ class IndentationSetup:
 
         self.space_db = {}  # Maps: space width --> character_set
         self.grid_db  = {}  # Maps: grid width  --> character_set
-        self.bad_character_set                = LocalizedParameter("bad",        NumberSet())
-        self.newline_state_machine            = LocalizedParameter("newline",    None)
-        self.newline_suppressor_state_machine = LocalizedParameter("suppressor", None)
-        self.comment_range_state_machine         = LocalizedParameter("comment_range",         None)
-        self.comment_nested_range_state_machine  = LocalizedParameter("comment_nested_range",  None)
-        self.comment_until_newline_state_machine = LocalizedParameter("comment_until_newline", None)
 
         self.__containing_mode_name = ""
+        self.identifier_list        = ["space", "grid"]
 
     def seal(self):
         if len(self.space_db) == 0 and len(self.grid_db) == 0:
@@ -144,11 +139,6 @@ class IndentationSetup:
             self.__error_msg_if_character_set_empty(Setting, FH)
         self.__error_if_intersection(Setting, FH, Name)
 
-    def __specify(self, parameter, Value, PatternStr, FH):
-        self.__check(parameter.name, parameter, Value, FH)
-        parameter.set(Value, FH)
-        parameter.set_pattern_string(PatternStr)
-
     def specify_space(self, PatternStr, CharSet, Count, FH=-1):
         self.__check("space", self.space_db, CharSet, FH, Key=Count)
 
@@ -169,25 +159,7 @@ class IndentationSetup:
         self.grid_db[Count] = LocalizedParameter("grid", CharSet, FH)
         self.grid_db[Count].set_pattern_string(PatternStr)
 
-    def specify_bad(self, PatternStr, CharSet, FH=-1):
-        self.__specify(self.bad_character_set, CharSet, PatternStr, FH)
-
-    def specify_newline(self, PatternStr, SM, FH=-1):
-        self.__specify(self.newline_state_machine, SM, PatternStr, FH)
-
-    def specify_suppressor(self, PatternStr, SM, FH=-1):
-        self.__specify(self.newline_suppressor_state_machine, SM, PatternStr, FH)
-
-    def specify_comment_range(self, PatternStr, SM, FH=-1):
-        self.__specify(self.comment_range, SM, PatternStr, FH)
-
-    def specify_comment_until_newline(self, PatternStr, SM, FH=-1):
-        self.__specify(self.comment_until_newline_state_machine, SM, PatternStr, FH)
-
-    def specify_comment_nested_range(self, PatternStr, SM, FH=-1):
-        self.__specify(self.comment_nested_range_state_machine, SM, PatternStr, FH)
-
-    def has_only_single_spaces(self):
+    def homogeneous_spaces(self):
         # Note, from about the grid_db does not accept grid values of '1'
         if   len(self.grid_db) != 0:   return False
         elif len(self.space_db) != 1 : return False
@@ -239,18 +211,6 @@ class IndentationSetup:
                               "of 1 are the fastest to compute.", 
                               space_def.file_name, space_def.line_n, DontExitF=True)
 
-    def indentation_count_character_set(self):
-        """Returns the superset of all characters that are involved in
-           indentation counting. That is the set of character that can
-           appear between newline and the first non whitespace character.
-        """
-        result = NumberSet()
-        for character_set in self.space_db.values():
-            result.unite_with(character_set.get())
-        for character_set in self.grid_db.values():
-            result.unite_with(character_set.get())
-        return result
-
     def __repr__(self):
 
         txt = ""
@@ -283,16 +243,51 @@ class IndentationSetup:
 
         return txt
 
-def parse(fh):
+class IndentationSetup(CounterSetup):
+    def __init__(self, fh=-1):
+        CounterSetup.__init__(self, fh)
+
+        self.bad_character_set                = LocalizedParameter("bad",        NumberSet())
+        self.newline_state_machine            = LocalizedParameter("newline",    None)
+        self.newline_suppressor_state_machine = LocalizedParameter("suppressor", None)
+        self.identifier_list                  = ["space", "grid", "bad", "newline", "suppressor"]
+
+    def __specify(self, parameter, Value, PatternStr, FH):
+        self.__check(parameter.name, parameter, Value, FH)
+        parameter.set(Value, FH)
+        parameter.set_pattern_string(PatternStr)
+
+    def specify_bad(self, PatternStr, CharSet, FH=-1):
+        self.__specify(self.bad_character_set, CharSet, PatternStr, FH)
+
+    def specify_newline(self, PatternStr, SM, FH=-1):
+        self.__specify(self.newline_state_machine, SM, PatternStr, FH)
+
+    def specify_suppressor(self, PatternStr, SM, FH=-1):
+        self.__specify(self.newline_suppressor_state_machine, SM, PatternStr, FH)
+
+    def indentation_count_character_set(self):
+        """Returns the superset of all characters that are involved in
+        indentation counting. That is the set of character that can appear
+        between newline and the first non whitespace character.
+        """
+        result = NumberSet()
+        for character_set in self.space_db.values():
+            result.unite_with(character_set.get())
+        for character_set in self.grid_db.values():
+            result.unite_with(character_set.get())
+        return result
+
+def parse(fh, IndentationSetupF):
     """Parses pattern definitions of the form:
    
           [ \t]                                       => grid 4;
           [:intersection([:alpha:], [\X064-\X066]):]  => space 1;
 
        In other words the right hand side *must* be a character set.
-          
     """
-    indent_setup = IndentationSetup(fh)
+    if IndentationSetupF: result = IndentationSetup(fh)
+    else:                 result = CounterSetup(fh)
 
     # NOTE: Catching of EOF happens in caller: parse_section(...)
     #
@@ -302,60 +297,45 @@ def parse(fh):
         skip_whitespace(fh)
 
         if check(fh, ">"): 
-            indent_setup.seal()
-            indent_setup.consistency_check(fh)
-            return indent_setup
+            break
         
         # A regular expression state machine
         pattern_str, pattern = regular_expression.parse(fh)
 
         skip_whitespace(fh)
-        if not check(fh, "=>"):
-            error_msg("Missing '=>' after character set definition.", fh)
+        check_or_die(fh, "=>", " after character set definition.", fh)
 
         skip_whitespace(fh)
-        identifier = read_identifier(fh)
-        if identifier == "":
-            error_msg("Missing identifier for indentation element definition.", fh)
+        identifier = read_identifier(fh, OnMissingStr="Missing identifier for indentation element definition.")
 
-        verify_word_in_list(identifier, 
-                            ["space", "grid", "bad", "newline", "suppressor", 
-                             "comment_range", "comment_until_newline", "comment_nested_range"],
+        verify_word_in_list(identifier, result.identifier_list, 
                             "Unrecognized indentation specifier '%s'." % identifier, fh)
 
+        # The following treats ALL possible identifiers, including those which may be 
+        # inadmissible for a setup. 'verify_word_in_list()' would abort in case that
+        # an inadmissible identifier has been found--so there is no harm.
         skip_whitespace(fh)
         if identifier == "space":
             value = read_value_specifier(fh, "space", 1)
-            indent_setup.specify_space(pattern_str, extract_trigger_set(fh, "space", pattern), value, fh)
-
+            result.specify_space(pattern_str, extract_trigger_set(fh, "space", pattern), value, fh)
         elif identifier == "grid":
             value = read_value_specifier(fh, "grid")
-            indent_setup.specify_grid(pattern_str, extract_trigger_set(fh, "grid", pattern), value, fh)
-
+            result.specify_grid(pattern_str, extract_trigger_set(fh, "grid", pattern), value, fh)
         elif identifier == "bad":
-            indent_setup.specify_bad(pattern_str, extract_trigger_set(fh, "bad", pattern), fh)
-
+            result.specify_bad(pattern_str, extract_trigger_set(fh, "bad", pattern), fh)
         elif identifier == "newline":
-            indent_setup.specify_newline(pattern_str, pattern.sm, fh)
-
+            result.specify_newline(pattern_str, pattern.sm, fh)
         elif identifier == "suppressor":
-            indent_setup.specify_suppressor(pattern_str, pattern.sm, fh)
-
-        elif identifier == "comment_range":
-            indent_setup.specify_comment_range(pattern_str, pattern.sm, fh)
-
-        elif identifier == "comment_until_newline":
-            indent_setup.specify_comment_until_newline(pattern_str, pattern.sm, fh)
-
-        elif identifier == "comment_nested_range":
-            indent_setup.specify_comment_nested_range(pattern_str, pattern.sm, fh)
-
+            result.specify_suppressor(pattern_str, pattern.sm, fh)
         else:
             assert False, "Unreachable code reached."
 
         if not check(fh, ";"):
             error_msg("Missing ';' after indentation '%s' specification." % identifier, fh)
 
+    result.seal()
+    result.consistency_check(fh)
+    return result
 
 def read_value_specifier(fh, Keyword, Default=None):
     value = read_integer(fh)
@@ -369,7 +349,6 @@ def read_value_specifier(fh, Keyword, Default=None):
         return Default
     else:
         error_msg("Missing integer or variable name after keyword '%s'." % Keyword, fh) 
-
 
 def extract_trigger_set(fh, Keyword, Pattern):
     if len(Pattern.sm.states) != 2:

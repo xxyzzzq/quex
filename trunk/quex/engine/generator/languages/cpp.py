@@ -554,7 +554,7 @@ def __indentation_add(Info):
     # (0) If all involved counts are single spaces, the 'counting' can be done
     #     easily by subtracting 'end - begin', no adaption.
     indent_txt = " " * 16
-    if Info.has_only_single_spaces():
+    if Info.homogeneous_spaces():
         return ""
 
     def __do(txt, CharSet, Operation):

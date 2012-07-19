@@ -5,8 +5,8 @@ sys.path.append(os.environ["QUEX_PATH"])
 
 from StringIO import StringIO
 
-import quex.input.files.indentation_setup as     indentation
-from   quex.engine.misc.file_in           import EndOfStreamException, error_msg
+import quex.input.files.counter_setup as     indentation
+from   quex.engine.misc.file_in       import EndOfStreamException, error_msg
 
 if "--hwut-info" in sys.argv:
     print "Parse Indentation Setup;"

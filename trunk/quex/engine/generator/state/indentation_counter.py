@@ -290,7 +290,7 @@ def __get_transition_block(IndentationSetup, CounterAdr):
         transition_map.extend((interval, Target) for interval in interval_list)
 
     transition_map = []
-    if IndentationSetup.has_only_single_spaces():
+    if IndentationSetup.homogeneous_spaces():
         # If the indentation consists only of spaces, than it is 'uniform' ...
         # Count indentation/column at end of run;
         # simply: current position - reference_p
@@ -331,7 +331,7 @@ def __get_end_procedure(IndentationSetup, Mode):
     #       -- column number = indentation at the end of the process
     indent_str = "    "
     txt = []
-    if IndentationSetup.has_only_single_spaces():
+    if IndentationSetup.homogeneous_spaces():
         # Reference Pointer: Define Variable, Initialize, determine how to subtact.
         txt.append(indent_str + "me->counter._indentation = (size_t)(me->buffer._input_p - reference_p);\n")
     else:
@@ -349,3 +349,4 @@ def __get_end_procedure(IndentationSetup, Mode):
                    % Mode.name)
 
     return txt
+

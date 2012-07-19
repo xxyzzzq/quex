@@ -1,4 +1,4 @@
-import quex.input.files.indentation_setup                  as indentation_setup
+import quex.input.files.counter_setup                      as counter_setup
 from   quex.input.regular_expression.construct             import Pattern
 import quex.input.regular_expression.core                  as regular_expression
 import quex.input.regular_expression.snap_character_string as snap_character_string
@@ -138,7 +138,7 @@ def __parse_range_skipper_option(fh, identifier, new_mode):
     new_mode.add_match(opener_str, action, get_pattern_object(opener_sm), Comment=comment)
 
 def __parse_indentation_handler_setup(fh, new_mode):
-    value = indentation_setup.parse(fh)
+    value = counter_setup.parse(fh, IndentationSetupF=True)
 
     # Enter 'Newline' and 'Suppressed Newline' as matches into the engine.
     # Similar to skippers, the indentation count is then triggered by the newline.
@@ -210,9 +210,8 @@ def read_option_start(fh):
         return None
 
     skip_whitespace(fh)
-    identifier = read_identifier(fh).strip()
+    identifier = read_identifier(fh, OnMissingStr="Missing identifer after start of mode option '<'").strip()
 
-    if identifier == "":  error_msg("missing identifer after start of mode option '<'", fh)
     skip_whitespace(fh)
     if fh.read(1) != ":": error_msg("missing ':' after option name '%s'" % identifier, fh)
     skip_whitespace(fh)

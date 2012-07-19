@@ -73,9 +73,7 @@ def parse_section(fh):
     #       section. Thus, the end-of-file catcher does not encompass the beginning.
     position = fh.tell()
     skip_whitespace(fh)
-    word = read_identifier(fh)
-    if word == "":
-        error_msg("Missing section title.", fh)
+    word = read_identifier(fh, OnMissingStr="Missing section title")
 
     verify_word_in_list(word, blackboard.all_section_title_list, 
                         "Unknown quex section '%s'" % word, fh)
@@ -198,9 +196,7 @@ def parse_pattern_name_definitions(fh):
         
         # -- get the name of the pattern
         skip_whitespace(fh)
-        pattern_name = read_identifier(fh)
-        if pattern_name == "":
-            error_msg("Missing identifier for pattern definition.", fh)
+        pattern_name = read_identifier(fh, OnMissingStr="Missing identifier for pattern definition.")
 
         skip_whitespace(fh)
 
@@ -242,10 +238,7 @@ def parse_token_id_definitions(fh, NamesOnlyF=False):
     while check(fh, "}") == False:
         skip_whitespace(fh)
 
-        candidate = read_identifier(fh, TolerantF=True)
-
-        if candidate == "":
-            error_msg("Missing valid token identifier." % candidate, fh)
+        candidate = read_identifier(fh, TolerantF=True, OnMissingStr="Missing valid token identifier.")
 
         # -- check the name, if it starts with the token prefix paste a warning
         if candidate.find(token_prefix) == 0:

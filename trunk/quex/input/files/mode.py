@@ -496,9 +496,7 @@ def parse(fh):
 
     # NOTE: Catching of EOF happens in caller: parse_section(...)
     skip_whitespace(fh)
-    mode_name = read_identifier(fh)
-    if mode_name == "":
-        error_msg("missing identifier at beginning of mode definition.", fh)
+    mode_name = read_identifier(fh, OnMissingStr="Missing identifier at beginning of mode definition.")
 
     # NOTE: constructor does register this mode in the mode_db
     new_mode  = ModeDescription(mode_name, fh.name, get_current_line_info_number(fh))
