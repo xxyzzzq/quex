@@ -1,6 +1,7 @@
 from quex.engine.misc.file_in import get_current_line_info_number, \
                                      error_msg, \
                                      check, \
+                                     check_or_die, \
                                      skip_whitespace, \
                                      read_identifier, \
                                      verify_word_in_list, \
@@ -133,21 +134,21 @@ class CounterSetup:
         # it ends with characters which are subject to indentation counting, then there is
         # no harm or confusion.
 
-    def __check(self, Name, Before, Setting, FH, Key=None):
+    def _check(self, Name, Before, Setting, FH, Key=None):
         self.__error_msg_if_defined_earlier(Before, FH, Key=Key, Name=Name)
         if Setting.__class__ == NumberSet: 
             self.__error_msg_if_character_set_empty(Setting, FH)
         self.__error_if_intersection(Setting, FH, Name)
 
     def specify_space(self, PatternStr, CharSet, Count, FH=-1):
-        self.__check("space", self.space_db, CharSet, FH, Key=Count)
+        self._check("space", self.space_db, CharSet, FH, Key=Count)
 
         # Note, a space count of '0' is theoretically possible
         self.space_db[Count] = LocalizedParameter("space", CharSet, FH)
         self.space_db[Count].set_pattern_string(PatternStr)
 
     def specify_grid(self, PatternStr, CharSet, Count, FH=-1):
-        self.__check("grid", self.grid_db, CharSet, FH, Key=Count)
+        self._check("grid", self.grid_db, CharSet, FH, Key=Count)
 
         if Count == 0: 
             error_msg("A grid count of 0 is nonsense. May be define a space count of 0.", FH)
@@ -253,7 +254,7 @@ class IndentationSetup(CounterSetup):
         self.identifier_list                  = ["space", "grid", "bad", "newline", "suppressor"]
 
     def __specify(self, parameter, Value, PatternStr, FH):
-        self.__check(parameter.name, parameter, Value, FH)
+        self._check(parameter.name, parameter, Value, FH)
         parameter.set(Value, FH)
         parameter.set_pattern_string(PatternStr)
 
@@ -303,7 +304,7 @@ def parse(fh, IndentationSetupF):
         pattern_str, pattern = regular_expression.parse(fh)
 
         skip_whitespace(fh)
-        check_or_die(fh, "=>", " after character set definition.", fh)
+        check_or_die(fh, "=>", " after character set definition.")
 
         skip_whitespace(fh)
         identifier = read_identifier(fh, OnMissingStr="Missing identifier for indentation element definition.")
