@@ -43,7 +43,7 @@ class Base:
         if len(self.space_db) == 0 and len(self.grid_db) == 0:
             error_msg("No space or grid defined for indentation counting. Default\n"
                       "values ' ' and '\\t' could not be used since they are specified as 'bad'.",
-                      bad.file_name, bad.line_n)
+                      ParameterBad.file_name, ParameterBad.line_n)
 
     def set_containing_mode_name(self, ModeName):
         assert isinstance(ModeName, (str, unicode))
@@ -57,6 +57,11 @@ class Base:
         if Setting.__class__ == NumberSet: 
             self._error_msg_if_character_set_empty(Setting, FH)
         self._error_if_intersection(Setting, FH, Name)
+
+    def _specify(self, parameter, Value, PatternStr, FH):
+        self._check(parameter.name, parameter, Value, FH)
+        parameter.set(Value, FH)
+        parameter.set_pattern_string(PatternStr)
 
     def specify_space(self, PatternStr, CharSet, Count, FH=-1):
         if not isinstance(CharSet, NumberSet):
@@ -83,6 +88,14 @@ class Base:
 
         self.grid_db[Count] = LocalizedParameter("grid", CharSet, FH)
         self.grid_db[Count].set_pattern_string(PatternStr)
+
+    def homogeneous_spaces(self):
+        # Note, from about the grid_db does not accept grid values of '1'
+        if   len(self.grid_db) != 0:   return False
+        elif len(self.space_db) != 1 : return False
+        # Here, the space_db can have only one value. If it is '1' than 
+        # the indentation is based soley on single spaces.
+        return self.space_db.has_key(1)
 
     def consistency_check(self, fh):
         def check_grid_values_integer_multiples(GridDB):
@@ -263,11 +276,6 @@ class LineColumnCounter(Base):
         if self.newline.get() is None:
             self.specify_newline("[:newline:]", Default_NewlineCharDB[1], self.fh)
 
-    def _specify(self, parameter, Value, PatternStr, FH):
-        self._check(parameter.name, parameter, Value, FH)
-        parameter.set(Value, FH)
-        parameter.set_pattern_string(PatternStr)
-
     def _error_if_intersection(self, Setting, FH, Name):
         assert Setting.__class__ == NumberSet
         self._error_if_intersection_base(Setting, FH, Name)
@@ -277,14 +285,6 @@ class LineColumnCounter(Base):
             CharSet = extract_trigger_set(FH, "newline", Pattern=CharSet)
 
         self._specify(self.newline_state_machine, SM, PatternStr, FH)
-
-    def homogeneous_spaces(self):
-        # Note, from about the grid_db does not accept grid values of '1'
-        if   len(self.grid_db) != 0:   return False
-        elif len(self.space_db) != 1 : return False
-        # Here, the space_db can have only one value. If it is '1' than 
-        # the indentation is based soley on single spaces.
-        return self.space_db.has_key(1)
 
     def __repr__(self):
         txt = Base.__repr__(self)
@@ -300,7 +300,7 @@ class IndentationSetup(Base):
         self.newline_suppressor_state_machine = LocalizedParameter("suppressor", None)
 
     def seal(self):
-        Base.seal(self.bad_character_set)
+        Base.seal(self, self.bad_character_set)
 
         if self.newline_state_machine.get() is None:
             sm      = StateMachine()
@@ -366,7 +366,7 @@ class IndentationSetup(Base):
     def indentation_count_character_set(self):
         """Returns the superset of all characters that are involved in
         indentation counting. That is the set of character that can appear
-        between newline and the first non whitespace character.
+        between newline and the first non whitespace character.  
         """
         result = NumberSet()
         for character_set in self.space_db.values():
