@@ -39,22 +39,25 @@ problem related to 'greedy matching':
 
   .. warning::
 
-     When writing a pattern action pair with a high priority (such 
+     When specifying a pattern action pair with a high-priority (such 
      as in a base mode) one may not be aware of a pattern of lower priority
-     (e.g. in a derived mode). The assumption that high-priority patterns
-     always win when they match guides to wrong expectations.
+     (e.g. in a derived mode). Lower priority patterns may very well win
+     against high-priority patterns if they match longer lexemes. 
+     
+     Assumptions such as 'high-priority patterns always win' or 'base mode 
+     patterns always win' are not correct for the aforementioned reason.
 
-Whenever the lexer's behavior deviates from what is expected, it may make
-sense to ask Quex to print information about patterns that potentially
-outrun higher priority patterns. This happens by means of the command
-line option '--warning-on-outrun' or '--woo'. When specified with a file
-containing the aforementioned example, quex will print the following 
-notification::
+An unexpected outrunning of lower-priority patterns manifests itself in a lexer
+that seems to work sometimes and sometimes not. The behavior then often seems
+to depend on some padding characters such as whitespace.  Quex can help to
+detect unexpected outruns by the command line options '--warning-on-outrun' or
+'--woo'. When specified with a file containing the aforementioned example, quex
+will print the following notification::
 
     mine.qx:5:warning: The pattern '[a-z]+' has lower priority but
     mine.qx:4:warning: may outrun pattern 'key' as defined here.
 
-The potential of outrunning high priority patterns by low priority patterns
+The potential outrunning of high priority patterns by low priority patterns
 can be very subtile. Consider::
 
       'alb|albertikus' => TKN_ALB;
@@ -68,13 +71,13 @@ potential cause of confusion. The '--woo' command line option mentioned above
 helps to understand such behavior.
 
 Greedy matching can be tricked, by the usage of anti-patterns. For this, the
-IDENTIFIER should be expressed in terms of anti-patterns, i.e.
+IDENTIFIER should be expressed in terms of anti-patterns, i.e.::
 
       key           => TKN_KEYWORD;
       \A{key}[a-z]+ => TKN_IDENTIFIER;
 
 If more than one KEYWORD are involved, e.g. 'key', 'password', and 'secret', 
-the IDENTIFIER would have to look like
+the IDENTIFIER would have to look like::
 
       \A{key|password|secret}[a-z]+ => TKN_IDENTIFIER;
     
@@ -88,8 +91,8 @@ properly be detected, since the first three letters would result in the
 Another pitfall is related to character codes that the lexical analyser uses to
 indicate the *buffer-limit*. The values for those codes are chosen to be out of
 the range for sound regular expressions parsing human written text (0x0 for
-buffer-limit). If it is intended to parse binary files, and this value is supposed to occur in
-patterns, then its code need to be changed.  Section
+buffer-limit). If it is intended to parse binary files, and this value is
+supposed to occur in patterns, then its code need to be changed.  Section
 <<sec-formal-command-line-options>> mentions how to specify the buffer limit
 code on the command line.
 
