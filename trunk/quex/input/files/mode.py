@@ -2,6 +2,7 @@
 import quex.input.regular_expression.core                  as regular_expression
 import quex.input.files.mode_option                        as mode_option
 import quex.input.files.code_fragment                      as code_fragment
+from   quex.input.files.counter_setup                      import LineColumnCounterSetup_Default, CounterDB
 import quex.input.files.consistency_check                  as consistency_check
 import quex.engine.state_machine.check.identity            as identity_checker
 import quex.engine.generator.state.indentation_counter     as     indentation_counter
@@ -58,7 +59,7 @@ class ModeDescription:
         self.__repriorization_db = {}  # patterns of the base class to be reprioritized
         #                              # map: pattern --> new pattern index
         self.__deletion_db       = {}  # patterns of the base class to be deleted
-
+        
         # The list of actual pattern action pairs is constructed inside the function
         # '__post_process(...)'. Function 'get_pattern_action_pairs(...) calls it
         # in case that this variable is still [].
@@ -173,6 +174,11 @@ class Mode:
         self.__base_mode_sequence = []
         self.__determine_base_mode_sequence(Other, [])
 
+        # (0) Determine Line/Column Counter Database
+        self.__counter_db = self.__prepare_counter_db(self.__base_mode_sequence)
+        self.__indentation_counter_terminal_index, \
+        primary_pap_list  = self.__prepare_indentation_counter()
+
         # (1) Collect Event Handlers
         self.__event_handler_code_fragment_list = {}
         self.__collect_event_handler()
@@ -180,7 +186,7 @@ class Mode:
         # (2) Collect Pattern/Action Pairs
         self.__history_repriorization = []
         self.__history_deletion       = []
-        self.__pattern_action_pair_list = self.__collect_pattern_action_pairs()
+        self.__pattern_action_pair_list = self.__collect_pattern_action_pairs(primary_pap_list)
 
         # (3) Collection Options
         self.__collect_options()
@@ -225,12 +231,10 @@ class Mode:
                      > 0,  terminal id of the terminal that contains the indentation
                            counter.
         """
-        for info in self.__pattern_action_pair_list:
-            action = info.action()
-            if   action.__class__ != GeneratedCode:         continue
-            elif action.function != indentation_counter.do: continue
-            return info.pattern().sm.get_id()
-        return None
+        return self.__indentation_counter_terminal_index
+
+    def get_counter_db(self):
+        return self.__counter_db
 
     def get_documentation(self):
         L = max(map(lambda mode: len(mode.name), self.__base_mode_sequence))
@@ -301,6 +305,10 @@ class Mode:
            'C' because they are the childs of a preceding base mode.
 
            This function detects circular inheritance.
+
+        __dive -- inserted this keyword for the sole purpose to signal 
+                  that here is a case of recursion, which may be solved
+                  later on by a TreeWalker.
         """
         if ModeDescr.name in InheritancePath:
             msg = "mode '%s'\n" % InheritancePath[0]
@@ -328,6 +336,153 @@ class Mode:
 
         return self.__base_mode_sequence
 
+    def __prepare_counter_db(self, BaseModeSequence):
+        """Counters can only be specified at one place. This function checks whether 
+           the counter setups are unique or doubly specified.
+        """
+        def check(used_char_set_list, Parameter):
+            """Checks whether the character set in 'Parameter' is alread in
+            use. If so, an error is triggered. If not, the character set 
+            is registered as being used now.
+            """
+            char_set = Parameter.get()
+            for char_set, parameter in UsedCharSetList:
+                if char_set.has_intersection(CharSet):
+                    counter_setup.Base._error_character_set_intersection(parameter, Parameter)
+            used_char_set_list.append(char_set, Parameter)
+
+        # Loop over all related modes in the base mode sequence and collect
+        # data about line/column number counting. At the same time double-check
+        # whether there are some conflicting definitions. If so, report an
+        # error message.
+        used_char_set_list = []
+        prep_space_db   = defaultdict(list)
+        prep_grid_db    = defaultdict(list)
+        prep_newline_db = []
+
+        # Iterate from the base to the top
+        for mode_descr in self.__base_mode_sequence:
+            csetup = mode_descr.options["counter"]
+
+            for count, par_char_set in csetup.prep_space_db.iteritems():
+                char_set = check(used_char_set_list, par_char_set)
+                prep_space_db[count].extend(char_set.get_intervals(PromiseToTreatWellF=True))
+
+            for count, par_char_set in csetup.prep_grid_db.iteritems():
+                char_set = check(used_char_set_list, par_char_set)
+                prep_grid_db[count].extend(char_set.get_intervals(PromiseToTreatWellF=True))
+
+            char_set = check(used_char_set_list, csetup.prep_newline_db)
+            prep_newline_db.extend(char_set.get_intervals(PromiseToTreatWellF=True))
+
+        # Construct a 'CounterDB' object that simply maps from counts to the 
+        # character set that is involved.
+        space_db = {}
+        grid_db  = {}
+        newline  = NumberSet(sorted(prep_newline))
+        for count, interval_list in prep_space_db.iteritems():
+            interval_list.sort()
+            space_db[count] = NumberSet(interval_list)
+
+        for count, interval_list in prep_grid_db.iteritems():
+            interval_list.sort()
+            grid_db[count] = NumberSet(interval_list)
+
+        return CounterDB(space_db, grid_db, newline)
+
+    def __prepare_indentation_counter(self):
+        """Prepare indentation counter. An indentation counter is implemented by the 
+        following:
+
+             -- A 'newline' pattern triggers as soon as an unsuppressed newline 
+                occurs. The related action to this 'newline pattern' is the 
+                indentation counter.
+             -- A suppressed newline prevents that the next line is considered
+                as the beginning of a line. The pattern matches longer and eats
+                the 'newline' before it can match.
+
+        As said, the indentation counter engine is entered upon the triggering
+        of the 'newline' pattern. It is the action which is related to it.
+
+        The two aforementioned patterns better have preceedence over any other
+        pattern. So, if there is indentation counting, then they have to be 
+        considered 'primary' patterns'.
+
+        RETURNS: [0] Terminal ID of the 'newline' pattern.
+                 [1] Primaray pattern action pair list
+
+        The primary pattern action pair list is to be the head of all pattern
+        action pairs.
+        """
+
+        # Iterate from the base to the top
+        isetup = None
+        for mode_descr in self.__base_mode_sequence:
+            isetup = mode_descr.options["indentation"]
+            if isetup is None: 
+                continue
+            elif isetup is not None:
+                error_msg("Hierarchie of mode '%s' contains more than one specification of\n" % self.name + \
+                          "an indentation counter. First one here and second one\n",
+                          isetup.fh, DontExitF=True, WarningF=False)
+                error_msg("at this place.", isetup.fh)
+            else:
+                isetup = isetup
+
+        if isetup is None:
+            return None, []
+
+        # The indentation counter is entered upon the appearance of the unsuppressed
+        # newline pattern. 
+        primary_pap_list       = []
+        pap_suppressed_newline = None
+        if isetup.newline_suppressor_state_machine.get() is not None:
+            pattern_str =   "(" + isetup.newline_suppressor_state_machine.pattern_string() + ")" \
+                          + "(" + isetup.newline_state_machine.pattern_string() +            ")"
+            sm = sequentialize.do([isetup.newline_suppressor_state_machine.get(),
+                                   isetup.newline_state_machine.get()])
+
+            # When a suppressed newline is detected, restart the analysis.
+            code = UserCodeFragment("goto %s;" % get_label("$start", U=True), 
+                                    isetup.newline_suppressor_state_machine.file_name, 
+                                    isetup.newline_suppressor_state_machine.line_n)
+            pap_suppressed_newline = PatternActionInfo(get_pattern_object(sm), code, 
+                                                       pattern_str, 
+                                                       ModeName=self.name, 
+                                                       Comment=E_SpecialPatterns.SUPPRESSED_INDENTATION_NEWLINE)
+
+            primary_pap_list.append(pap_suppressed_newline)
+
+        # When there is an empty line, then there shall be no indentation count on it.
+        # Here comes the trick: 
+        #
+        #      Let               newline         
+        #      be defined as:    newline ([space]* newline])*
+        # 
+        # This way empty lines are eaten away before the indentation count is activated.
+        x0 = StateMachine()                                             # 'space'
+        x0.add_transition(x0.init_state_index, isetup.indentation_count_character_set(), 
+                          AcceptanceF=True)
+        x1 = repeat.do(x0)                                              # '[space]*'
+        x2 = sequentialize.do([x1, isetup.newline_state_machine.get()]) # '[space]* newline'
+        x3 = repeat.do(x2)                                              # '([space]* newline)*'
+        x4 = sequentialize.do([isetup.newline_state_machine.get(), x3]) # 'newline ([space]* newline)*'
+        sm = beautifier.do(x4)                                          # nfa to dfa; hopcroft optimization
+
+        action   = GeneratedCode(indentation_counter.do, 
+                                 isetup.newline_state_machine.file_name, 
+                                 isetup.newline_state_machine.line_n)
+        action.data["indentation_setup"] = isetup
+
+        pap_newline = PatternActionInfo(get_pattern_object(sm), action, 
+                                        isetup.newline_state_machine.pattern_string(), 
+                                        ModeName=self.name, 
+                                        Comment=E_SpecialPatterns.INDENTATION_NEWLINE)
+
+        primary_pap_list.append(pap_newline)
+
+        return sm.get_id(), primary_pap_list
+
     def __collect_event_handler(self):
         """Collect event handlers from base mode and the current mode.
            Event handlers of the most 'base' mode come first, then the 
@@ -347,14 +502,14 @@ class Mode:
 
         return 
 
-    def __collect_pattern_action_pairs(self):
+    def __collect_pattern_action_pairs(self, primary_pattern_action_pair_list):
         """Collect patterns of all inherited modes. Patterns are like virtual functions
            in C++ or other object oriented programming languages. Also, the patterns of the
            uppest mode has the highest priority, i.e. comes first.
         """
         def __ensure_pattern_indeces_follow_precedence(MatchList, RepriorizationDB, PrevMaxPatternIndex):
             """When a derived mode is defined before its base mode, then its pattern ids
-               (according to the time they were created) are lower than thos of the base
+               (according to the time they were created) are lower than those of the base
                mode. This would imply that they have higher precedence, which is against
                our matching rules. Here, pattern ids are adapted to be higher than a certain
                minimum, and follow the same precedence sequence.
@@ -450,7 +605,7 @@ class Mode:
             # the action. For this to work, inherited actions must be de-antangled.
             pattern_action_pair_list.append(copy(PatternActionPair))
 
-        result                 = []
+        result                 = primary_pattern_action_pair_list
         prev_max_pattern_index = -1
         # Iterate from the base to the top (include this mode's pattern)
         for mode_descr in self.__base_mode_sequence:
@@ -603,7 +758,7 @@ def __parse_element(new_mode, fh):
 
         fh.seek(position)
         description = "Start of mode element: regular expression"
-        pattern_str, pattern = regular_expression.parse(fh)
+        pattern_str, pattern = regular_expression.parse(fh, CounterDB=blackboard.CounterDB)
 
         if new_mode.has_pattern(pattern_str):
             previous = new_mode.get_pattern_action_pair(pattern_str)

@@ -186,8 +186,12 @@ class LocalizedParameter:
             error_msg("previous definition has been here.\n", self.file_name, self.line_n)
                       
         self.__value   = Value
-        self.file_name = fh.name
-        self.line_n    = get_current_line_info_number(fh)
+        if fh == -1:
+            self.file_name = "<string>"
+            self.line_n    = 0
+        else:
+            self.file_name = fh.name
+            self.line_n    = get_current_line_info_number(fh)
 
     def get(self):
         if self.__value is not None: return self.__value

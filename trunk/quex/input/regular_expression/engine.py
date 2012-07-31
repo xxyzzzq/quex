@@ -58,8 +58,9 @@ import quex.engine.state_machine.repeat                  as repeat
 CONTROL_CHARACTERS = [ "+", "*", "\"", "/", "(", ")", "{", "}", "|", "[", "]", "$"] 
 
 def do(UTF8_String_or_Stream, PatternDict, 
-       AllowNothingIsNecessaryF     = False,
-       AllowStateMachineTrafoF      = True): 
+       AllowNothingIsNecessaryF = False,
+       AllowStateMachineTrafoF  = True, 
+       CounterDB                = None): 
     assert type(AllowNothingIsNecessaryF) == bool
     assert type(PatternDict) == dict
 
@@ -106,7 +107,8 @@ def do(UTF8_String_or_Stream, PatternDict,
                            post_context    = post, 
                            fh              = stream,
                            AllowNothingIsNecessaryF   = AllowNothingIsNecessaryF,
-                           AllowStateMachineTrafoF    = AllowStateMachineTrafoF)
+                           AllowStateMachineTrafoF    = AllowStateMachineTrafoF,
+                           CounterDB       = CounterDB)
     
     return pattern
 

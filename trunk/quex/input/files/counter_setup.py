@@ -12,6 +12,8 @@ from   quex.engine.interval_handling      import NumberSet
 from   quex.engine.state_machine.core     import StateMachine
 import quex.input.regular_expression.core as     regular_expression
 
+from collections import namedtuple
+
 class Base:
     def __init__(self, fh, Name, IdentifierList):
         self.fh = fh
@@ -148,7 +150,6 @@ class Base:
         elif len(self.grid_db) == 0:
             check_homogenous_space_counts(self.space_db)
 
-
     def _error_if_intersection(self, FH, Name):
         assert False, "Must be implemented by derived class."
 
@@ -156,13 +157,14 @@ class Base:
         # 'space'
         for character_set in self.space_db.values():
             if character_set.get().has_intersection(Candidate): 
-                self._error_character_set_intersection(Name, character_set, FH)
+                Base._error_character_set_intersection(Name, character_set, FH)
 
         # 'grid'
         for character_set in self.grid_db.values():
             if character_set.get().has_intersection(Candidate):
-                self._error_character_set_intersection(Name, character_set, FH)
+                Base._error_character_set_intersection(Name, character_set, FH)
 
+    @staticmethod
     def _error_character_set_intersection(Name, Before, FH):
         error_msg("Character set specification '%s' intersects" % Name, FH, 
                   DontExitF=True, WarningF=False)
@@ -196,57 +198,6 @@ class Base:
         if not CharSet.is_empty(): return
         error_msg("Empty character set found.", FH)
 
-    def consistency_check(self, fh):
-        def check_grid_values_integer_multiples(GridDB):
-            """If there are no spaces and the grid is on a homogeneous scale,
-               => then the grid can be transformed into 'easy-to-compute' spaces.
-            """
-            # If there is one single variable grid value, then no assumptions can be made
-            for value in GridDB.iterkeys():
-                if type(value) in [str, unicode]: 
-                    return
-
-            grid_value_list = sorted(GridDB.keys())
-            min_grid_value  = min(grid_value_list)
-            # Are all grid values a multiple of the minimum?
-            if len(filter(lambda x: x % min_grid_value == 0, grid_value_list)) != len(grid_value_list):
-                return
-
-            grid_def = GridDB[min_grid_value]
-            error_msg("%s setup does not contain spaces, only grids (tabulators). All grid\n" \
-                      % self.name + \
-                      "widths are multiples of %i. The grid setup %s\n" \
-                      % (min_grid_value, repr(sorted(grid_value_list))[1:-1]) + \
-                      "is equivalent to a setup with space counts %s.\n" \
-                      % repr(map(lambda x: x / min_grid_value, sorted(grid_value_list)))[1:-1] + \
-                      "Space counts are faster to compute.", 
-                      grid_def.file_name, grid_def.line_n, DontExitF=True)
-
-        def check_homogenous_space_counts(SpaceDB):
-            # If there is one single space count depending on a variable, then no assumptions can be made
-            for value in SpaceDB.keys():
-                if type(value) in [str, unicode]: 
-                    return
-
-            # If all space values are the same, then they can be replaced by '1' spaces
-            if len(SpaceDB) == 1 and SpaceDB.keys()[0] != 1:
-                space_count, space_def = SpaceDB.items()[0]
-                error_msg("%s does not contain a grid but only homogeneous space counts of %i.\n" \
-                          % (self.name, space_count) + \
-                          "This setup is equivalent to a setup with space counts of 1. Space counts\n" + \
-                          "of 1 are the fastest to compute.", 
-                          space_def.file_name, space_def.line_n, DontExitF=True)
-
-        # Are the required elements present for indentation handling?
-        assert len(self.space_db) != 0 or len(self.grid_db) != 0
-        assert not self.newline_state_machine.get().is_empty()
-
-        if len(self.space_db) == 0:
-            check_grid_values_integer_multiples(self.grid_db)
-                
-        elif len(self.grid_db) == 0:
-            check_homogenous_space_counts(self.space_db)
-
     def __repr__(self):
         txt = ""
         txt += "Spaces:\n"
@@ -264,8 +215,7 @@ class Base:
                 txt += "    %3i by %s\n" % (count, character_set.get().get_utf8_string())
         return txt
 
-
-class LineColumnCounter(Base):
+class LineColumnCounterSetup(Base):
     def __init__(self, fh=-1):
         Base.__init__(self, fh, "Line/column counter", ("space", "grid", "newline"))
         self.newline = LocalizedParameter("newline", None)
@@ -274,22 +224,24 @@ class LineColumnCounter(Base):
         Base.seal(self)
 
         if self.newline.get() is None:
-            self.specify_newline("[:newline:]", Default_NewlineCharDB[1], self.fh)
+            self.specify_newline("\n", NumberSet(ord('\n')), self.fh)
 
     def _error_if_intersection(self, Setting, FH, Name):
         assert Setting.__class__ == NumberSet
         self._error_if_intersection_base(Setting, FH, Name)
 
-    def specify_newline(self, PatternStr, SM, FH=-1):
+    def specify_newline(self, PatternStr, CharSet, FH=-1):
         if not isinstance(CharSet, NumberSet):
             CharSet = extract_trigger_set(FH, "newline", Pattern=CharSet)
 
-        self._specify(self.newline_state_machine, SM, PatternStr, FH)
+        self._specify(self.newline, CharSet, PatternStr, FH)
 
     def __repr__(self):
         txt = Base.__repr__(self)
         txt += "Newline: %s" % self.newline.get().get_utf8_string()
         return txt
+
+CounterDB = namedtuple("CounterDB", ("space_db", "grid_db", "newline"))
 
 class IndentationSetup(Base):
     def __init__(self, fh=-1):
@@ -330,7 +282,7 @@ class IndentationSetup(Base):
             # 'bad' indentation characters are not subject to indentation counting so they
             # very well intersect with newline or suppressor.
             if self.bad_character_set.get().has_intersection(candidate):                
-                self._error_character_set_intersection(Name, self.bad_character_set, FH)
+                Base._error_character_set_intersection(Name, self.bad_character_set, FH)
 
         # 'newline'
         if Name != "bad" and self.newline_state_machine.get() is not None:
@@ -402,7 +354,7 @@ def parse(fh, IndentationSetupF):
        In other words the right hand side *must* be a character set.
     """
     if IndentationSetupF: result = IndentationSetup(fh)
-    else:                 result = CounterSetup(fh)
+    else:                 result = LineColumnCounterSetup(fh)
 
     # NOTE: Catching of EOF happens in caller: parse_section(...)
     #
@@ -472,4 +424,7 @@ def extract_trigger_set(fh, Keyword, Pattern):
     transition_map = Pattern.sm.get_init_state().transitions().get_map()
     assert len(transition_map) == 1
     return transition_map.values()[0]
+
+LineColumnCounterSetup_Default = LineColumnCounterSetup()
+LineColumnCounterSetup_Default.seal()
 

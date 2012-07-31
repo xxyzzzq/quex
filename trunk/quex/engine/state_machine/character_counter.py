@@ -1,9 +1,8 @@
 # (C) 2012 Frank-Rene Schaefer
 from quex.engine.misc.tree_walker  import TreeWalker
-from quex.blackboard               import E_Count, \
-                                          CounterDB
+from quex.blackboard               import E_Count
 
-def do(SM):
+def do(SM, CounterDB):
     """LINE AND COLUMN NUMBER PRE-DETERMINATION _______________________________
     
     Count line and column number, if possible, from the structure of the state
@@ -107,7 +106,6 @@ class CountInfo(object):
             else:
                 self.increment_column_n_per_char = 0
 
-
 def _determine_grid_parameter(SM):
     """The CharacterCountTracer has been aborted (which is a good thing). Now,
     the grid information has to be determined extra. As mentioned in the calling
@@ -134,7 +132,6 @@ def _determine_grid_parameter(SM):
                     elif prototype != grid_size:    return E_Count.VOID
 
     return prototype
-
 
 class CharacterCountTracer(TreeWalker):
     """________________________________________________________________________

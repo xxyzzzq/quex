@@ -11,14 +11,15 @@ from   quex.input.regular_expression.construct                import Pattern
 import quex.input.regular_expression.character_set_expression as charset_expression
 import quex.input.regular_expression.snap_character_string    as snap_character_string
 
-def parse(fh, AllowNothingIsFineF=False, AllowStateMachineTrafoF=True):
+def parse(fh, AllowNothingIsFineF=False, AllowStateMachineTrafoF=True, CounterDB=None):
 
     start_position = fh.tell()
     try:
         # (*) parse regular expression, build state machine
         pattern = regex.do(fh, blackboard.shorthand_db, 
-                           AllowNothingIsNecessaryF   = AllowNothingIsFineF,
-                           AllowStateMachineTrafoF    = AllowStateMachineTrafoF)
+                           AllowNothingIsNecessaryF = AllowNothingIsFineF,
+                           AllowStateMachineTrafoF  = AllowStateMachineTrafoF, 
+                           CounterDB                = CounterDB)
 
 
     except RegularExpressionException, x:

@@ -210,6 +210,8 @@ mode_option_info_db = {
    "skip_nested_range": ModeOptionInfo("list", Default=[]), # "multiple: RE-character-string RE-character-string
    # -- indentation setup information
    "indentation":       ModeOptionInfo("single", Default=None),
+   # --line/column counter information
+   "counter":           ModeOptionInfo("single", Default=None),
 }
 
 #-----------------------------------------------------------------------------------------

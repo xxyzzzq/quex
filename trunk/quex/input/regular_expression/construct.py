@@ -12,7 +12,8 @@ class Pattern(object):
     """Let's start as a mimiker ... """
     def __init__(self, CoreSM, PreContextSM=None, PostContextSM=None, 
                  BeginOfLineF=False, EndOfLineF=False, 
-                 AllowStateMachineTrafoF=None, fh=-1):
+                 AllowStateMachineTrafoF=None, fh=-1, 
+                 CounterDB=None):
         assert AllowStateMachineTrafoF is not None
         pre_context  = PreContextSM
         core_sm      = CoreSM
@@ -25,7 +26,10 @@ class Pattern(object):
         #     Currently 'transition number' is equal to 'character number'. After 
         #     transformation a transition may represent a byte or whatever the codec 
         #     does to the state machine.
-        self.__count = character_counter.do(CoreSM)
+        if CounterDB is not None:
+            self.__count = character_counter.do(CoreSM, CounterDB)
+        else:
+            self.__count = None
 
         # (2) [Optional] Transformation according to Codec Information
         #
@@ -139,8 +143,9 @@ def do(core_sm,
        begin_of_line_f=False, pre_context=None, 
        end_of_line_f=False,   post_context=None, 
        fh=-1, 
-       AllowNothingIsNecessaryF=False,
-       AllowStateMachineTrafoF=True):
+       AllowNothingIsNecessaryF = False,
+       AllowStateMachineTrafoF  = True, 
+       CounterDB                = None):
 
     assert type(begin_of_line_f) == bool
     assert type(end_of_line_f) == bool
@@ -175,7 +180,8 @@ def do(core_sm,
 
     return Pattern(core_sm, pre_context, post_context, 
                    begin_of_line_f, end_of_line_f, 
-                   AllowStateMachineTrafoF, fh)
+                   AllowStateMachineTrafoF, fh, 
+                   CounterDB=CounterDB)
 
 def __detect_initial_orphaned_states(sm, fh):
 
