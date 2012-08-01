@@ -113,7 +113,7 @@ def __parse_range_skipper_option(fh, identifier, new_mode):
         opener_str, opener_sequence = __parse_string(fh, "Opener pattern for 'skip_nested_range'")
         opener_sm = StateMachine.from_sequence(opener_sequence)
     else:
-        opener_str, opener_pattern = regular_expression.parse(fh, CounterDB=CounterDB)
+        opener_str, opener_pattern = regular_expression.parse(fh)
         opener_sm = opener_pattern.sm
         # For 'range skipping' the opener sequence is not needed, only the opener state
         # machine is webbed into the pattern matching state machine.

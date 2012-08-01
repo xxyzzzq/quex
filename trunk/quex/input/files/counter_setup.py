@@ -425,6 +425,12 @@ def extract_trigger_set(fh, Keyword, Pattern):
     assert len(transition_map) == 1
     return transition_map.values()[0]
 
-LineColumnCounterSetup_Default = LineColumnCounterSetup()
-LineColumnCounterSetup_Default.seal()
+_LineColumnCounterSetup_Default = None
+def LineColumnCounterSetup_Default():
+    global _LineColumnCounterSetup_Default
+
+    if _LineColumnCounterSetup_Default is None:
+        _LineColumnCounterSetup_Default = LineColumnCounterSetup()
+        _LineColumnCounterSetup_Default.seal()
+    return _LineColumnCounterSetup_Default
 

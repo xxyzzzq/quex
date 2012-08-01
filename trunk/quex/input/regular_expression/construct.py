@@ -9,29 +9,22 @@ from   quex.blackboard           import setup       as Setup, deprecated
 from   quex.engine.misc.file_in  import error_msg
 
 class Pattern(object):
-    """Let's start as a mimiker ... """
     def __init__(self, CoreSM, PreContextSM=None, PostContextSM=None, 
                  BeginOfLineF=False, EndOfLineF=False, 
-                 AllowStateMachineTrafoF=None, fh=-1, 
-                 CounterDB=None):
+                 AllowStateMachineTrafoF=None, fh=-1):
         assert AllowStateMachineTrafoF is not None
         pre_context  = PreContextSM
         core_sm      = CoreSM
         post_context = PostContextSM
 
-        # (1) Character/Newline counting
+        # (*) Backup: Original Core State Machine
         #
-        #     !! BEFORE Transformation !!
-        #
-        #     Currently 'transition number' is equal to 'character number'. After 
-        #     transformation a transition may represent a byte or whatever the codec 
-        #     does to the state machine.
-        if CounterDB is not None:
-            self.__count = character_counter.do(CoreSM, CounterDB)
-        else:
-            self.__count = None
+        #     The original core state machine represents the core pattern without
+        #     the post context in UNICODE(!) not the possibly transformed character
+        #     encoding. This state machine is required later for character counting.
+        self.__original_core_sm = core_sm.clone()
 
-        # (2) [Optional] Transformation according to Codec Information
+        # (*) [Optional] Transformation according to Codec Information
         #
         #     !! BEFORE Pre- and Post-Context Setup !!
         #
@@ -49,19 +42,36 @@ class Pattern(object):
             sm = transformation.try_this(post_context, fh)
             if sm is not None: post_context = sm
 
+        # (*) Setup the whole pattern
         self.__sm = core_sm
 
-        # (3) Pre- and Post-Context Setup
+        # -- [optional] post contexts
         self.__post_context_f = (post_context is not None)
 
         self.__sm,                               \
         self.__input_position_search_backward_sm = setup_post_context.do(self.__sm, post_context, EndOfLineF, fh=fh) 
 
+        # -- [optional] pre contexts
         self.__pre_context_sm_inverse = setup_pre_context.do(self.__sm, pre_context, BeginOfLineF)
 
         self.__pre_context_trivial_begin_of_line_f = (BeginOfLineF and self.__pre_context_sm_inverse is None)
         
         self.__validate(fh)
+
+        self.__count = None
+
+    def do_count(self, LineColumn_CountDB):                
+        """Perform line/column counting on the core pattern, i.e. the pattern
+        which is not concerned with the post context. The counting happens 
+        on a UNICODE state machine--not on a possibly transformed codec state
+        machine.
+        """
+        if self.__count is None:
+            self.__count = character_counter.do(self.__original_core_sm, 
+                                                LineColumn_CounterDB)
+            # Original core state machine is no longer required.
+            self.__original_core_sm = None # Shall trigger a deletion
+        return self.__count
 
     @property
     def count(self):                               return self.__count
@@ -144,8 +154,7 @@ def do(core_sm,
        end_of_line_f=False,   post_context=None, 
        fh=-1, 
        AllowNothingIsNecessaryF = False,
-       AllowStateMachineTrafoF  = True, 
-       CounterDB                = None):
+       AllowStateMachineTrafoF  = True):
 
     assert type(begin_of_line_f) == bool
     assert type(end_of_line_f) == bool
@@ -180,8 +189,7 @@ def do(core_sm,
 
     return Pattern(core_sm, pre_context, post_context, 
                    begin_of_line_f, end_of_line_f, 
-                   AllowStateMachineTrafoF, fh, 
-                   CounterDB=CounterDB)
+                   AllowStateMachineTrafoF, fh)
 
 def __detect_initial_orphaned_states(sm, fh):
 

@@ -112,7 +112,7 @@ class PatternActionInfo:
         assert (ThePattern.__class__.__name__ == "Pattern") or (ThePattern is None)
 
 
-        self.__pattern_state_machine = ThePattern
+        self.__pattern = ThePattern
         if type(Action) in [str, unicode]: self.__action = CodeFragment(Action)
         else:                              self.__action = Action
 
@@ -121,7 +121,7 @@ class PatternActionInfo:
         self.comment       = Comment
 
     def pattern(self):
-        return self.__pattern_state_machine
+        return self.__pattern
 
     def pattern_string(self):
         return self.__pattern_str

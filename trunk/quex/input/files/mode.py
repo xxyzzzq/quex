@@ -188,7 +188,11 @@ class Mode:
         self.__history_deletion       = []
         self.__pattern_action_pair_list = self.__collect_pattern_action_pairs(primary_pap_list)
 
-        # (3) Collection Options
+        # (3) Try to determine line column counts
+        for pap in self.__pattern_action_pair_list:
+            pap.pattern().do_count(self.__counter_db)
+
+        # (4) Collection Options
         self.__collect_options()
 
     def insert_code_fragment_at_front(self, EventName, TheCodeFragment):
@@ -336,59 +340,53 @@ class Mode:
 
         return self.__base_mode_sequence
 
+    def __collect_options(self):
+        for mode in self.__base_mode_sequence[:-1]:
+            for name, option_descr in mode_option_info_db.items():
+                if option_descr.type != "list": continue
+                # Need to decouple by means of 'deepcopy'
+                self.options.setdefault(name, []).extend(mode.options[name])
+
+    def __get_unique_setup_option(self, OptionName):
+        """Loop over all related modes in the base mode sequence and search for
+        setup data. Make sure, that the whole inheritance tree does not contain
+        two setup options. Setups of a kind must happen in one single mode.
+        """
+        assert OptionName in ["indentation", "counter"] # In case of extension see 'setup_name' below!
+        # Iterate from the base to the top
+        setup = None
+        for mode_descr in self.__base_mode_sequence:
+            local = mode_descr.options[OptionName]
+            if local is None: 
+                continue
+            elif setup is not None:
+                setup_name = { "indentation": "indentation counter", 
+                               "counter":     "line column counter",
+                             }[OptionName]
+                error_msg("Hierarchie of mode '%s' contains more than one specification of\n" % self.name + \
+                          "an %s. First one here and second one\n", setup_name
+                          setup.fh, DontExitF=True, WarningF=False)
+                error_msg("at this place.", setup.fh)
+            else:
+                setup = local
+
+        return setup
+
     def __prepare_counter_db(self, BaseModeSequence):
         """Counters can only be specified at one place. This function checks whether 
            the counter setups are unique or doubly specified.
         """
-        def check(used_char_set_list, Parameter):
-            """Checks whether the character set in 'Parameter' is alread in
-            use. If so, an error is triggered. If not, the character set 
-            is registered as being used now.
-            """
-            char_set = Parameter.get()
-            for char_set, parameter in UsedCharSetList:
-                if char_set.has_intersection(CharSet):
-                    counter_setup.Base._error_character_set_intersection(parameter, Parameter)
-            used_char_set_list.append(char_set, Parameter)
+        lcc_setup = self.__get_unique_setup_option("counter") # Line/Column Counter Setup
 
-        # Loop over all related modes in the base mode sequence and collect
-        # data about line/column number counting. At the same time double-check
-        # whether there are some conflicting definitions. If so, report an
-        # error message.
-        used_char_set_list = []
-        prep_space_db   = defaultdict(list)
-        prep_grid_db    = defaultdict(list)
-        prep_newline_db = []
-
-        # Iterate from the base to the top
-        for mode_descr in self.__base_mode_sequence:
-            csetup = mode_descr.options["counter"]
-
-            for count, par_char_set in csetup.prep_space_db.iteritems():
-                char_set = check(used_char_set_list, par_char_set)
-                prep_space_db[count].extend(char_set.get_intervals(PromiseToTreatWellF=True))
-
-            for count, par_char_set in csetup.prep_grid_db.iteritems():
-                char_set = check(used_char_set_list, par_char_set)
-                prep_grid_db[count].extend(char_set.get_intervals(PromiseToTreatWellF=True))
-
-            char_set = check(used_char_set_list, csetup.prep_newline_db)
-            prep_newline_db.extend(char_set.get_intervals(PromiseToTreatWellF=True))
+        if lcc_setup is None:
+            return LineColumnCounterSetup_Default()
 
         # Construct a 'CounterDB' object that simply maps from counts to the 
         # character set that is involved.
-        space_db = {}
-        grid_db  = {}
-        newline  = NumberSet(sorted(prep_newline))
-        for count, interval_list in prep_space_db.iteritems():
-            interval_list.sort()
-            space_db[count] = NumberSet(interval_list)
+        space_db = dict((count, parameter.get()) for count, parameter in lcc_setup.space_db)
+        grid_db  = dict((count, parameter.get()) for count, parameter in lcc_setup.grid_db)
 
-        for count, interval_list in prep_grid_db.iteritems():
-            interval_list.sort()
-            grid_db[count] = NumberSet(interval_list)
-
-        return CounterDB(space_db, grid_db, newline)
+        return CounterDB(space_db, grid_db, lcc_setup.newline.get())
 
     def __prepare_indentation_counter(self):
         """Prepare indentation counter. An indentation counter is implemented by the 
@@ -415,19 +413,7 @@ class Mode:
         action pairs.
         """
 
-        # Iterate from the base to the top
-        isetup = None
-        for mode_descr in self.__base_mode_sequence:
-            isetup = mode_descr.options["indentation"]
-            if isetup is None: 
-                continue
-            elif isetup is not None:
-                error_msg("Hierarchie of mode '%s' contains more than one specification of\n" % self.name + \
-                          "an indentation counter. First one here and second one\n",
-                          isetup.fh, DontExitF=True, WarningF=False)
-                error_msg("at this place.", isetup.fh)
-            else:
-                isetup = isetup
+        isetup = self.__get_unique_setup_option("indentation")
 
         if isetup is None:
             return None, []
@@ -635,13 +621,6 @@ class Mode:
 
         return result
 
-    def __collect_options(self):
-        for mode in self.__base_mode_sequence[:-1]:
-            for name, option_descr in mode_option_info_db.items():
-                if option_descr.type != "list": continue
-                # Need to decouple by means of 'deepcopy'
-                self.options.setdefault(name, []).extend(mode.options[name])
-
 def parse(fh):
     """This function parses a mode description and enters it into the 
        'mode_description_db'. Once all modes are parsed
@@ -758,7 +737,7 @@ def __parse_element(new_mode, fh):
 
         fh.seek(position)
         description = "Start of mode element: regular expression"
-        pattern_str, pattern = regular_expression.parse(fh, CounterDB=blackboard.CounterDB)
+        pattern_str, pattern = regular_expression.parse(fh)
 
         if new_mode.has_pattern(pattern_str):
             previous = new_mode.get_pattern_action_pair(pattern_str)

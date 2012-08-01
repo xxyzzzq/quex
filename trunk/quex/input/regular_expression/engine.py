@@ -59,8 +59,7 @@ CONTROL_CHARACTERS = [ "+", "*", "\"", "/", "(", ")", "{", "}", "|", "[", "]", "
 
 def do(UTF8_String_or_Stream, PatternDict, 
        AllowNothingIsNecessaryF = False,
-       AllowStateMachineTrafoF  = True, 
-       CounterDB                = None): 
+       AllowStateMachineTrafoF  = True): 
     assert type(AllowNothingIsNecessaryF) == bool
     assert type(PatternDict) == dict
 
@@ -106,9 +105,8 @@ def do(UTF8_String_or_Stream, PatternDict,
                            end_of_line_f   = end_of_line_f,
                            post_context    = post, 
                            fh              = stream,
-                           AllowNothingIsNecessaryF   = AllowNothingIsNecessaryF,
-                           AllowStateMachineTrafoF    = AllowStateMachineTrafoF,
-                           CounterDB       = CounterDB)
+                           AllowNothingIsNecessaryF = AllowNothingIsNecessaryF,
+                           AllowStateMachineTrafoF  = AllowStateMachineTrafoF)
     
     return pattern
 
