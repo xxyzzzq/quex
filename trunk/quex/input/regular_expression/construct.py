@@ -60,7 +60,7 @@ class Pattern(object):
 
         self.__count = None
 
-    def do_count(self, LineColumn_CountDB):                
+    def do_count(self, LineColumn_CounterDB):                
         """Perform line/column counting on the core pattern, i.e. the pattern
         which is not concerned with the post context. The counting happens 
         on a UNICODE state machine--not on a possibly transformed codec state

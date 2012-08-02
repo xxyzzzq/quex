@@ -188,7 +188,7 @@ class Mode:
         self.__history_deletion       = []
         self.__pattern_action_pair_list = self.__collect_pattern_action_pairs(primary_pap_list)
 
-        # (3) Try to determine line column counts
+        # (3) Try to determine line and column counts
         for pap in self.__pattern_action_pair_list:
             pap.pattern().do_count(self.__counter_db)
 
@@ -236,9 +236,6 @@ class Mode:
                            counter.
         """
         return self.__indentation_counter_terminal_index
-
-    def get_counter_db(self):
-        return self.__counter_db
 
     def get_documentation(self):
         L = max(map(lambda mode: len(mode.name), self.__base_mode_sequence))
@@ -364,8 +361,8 @@ class Mode:
                                "counter":     "line column counter",
                              }[OptionName]
                 error_msg("Hierarchie of mode '%s' contains more than one specification of\n" % self.name + \
-                          "an %s. First one here and second one\n", setup_name
-                          setup.fh, DontExitF=True, WarningF=False)
+                          "an %s. First one here and second one\n" % setup_name, \
+                          local.fh, DontExitF=True, WarningF=False)
                 error_msg("at this place.", setup.fh)
             else:
                 setup = local

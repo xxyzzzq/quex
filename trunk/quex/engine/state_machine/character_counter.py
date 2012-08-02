@@ -32,7 +32,7 @@ def do(SM, CounterDB):
 
     State machine shall not contain pre- or post-contexts.
     
-    DEPENDS ON: CounterDB in quex.blackboard providing three databases:
+    DEPENDS ON: CounterDB providing three databases:
 
                 .newline
                 .grid
@@ -59,10 +59,10 @@ def do(SM, CounterDB):
     away from, because of the aforementioned low expected value add.
     ___________________________________________________________________________
     """
-    if not CounterDB.is_enabled(): 
-        return E_Count.VOID, E_Count.VOID
+    ## if not CounterDB.is_enabled(): 
+    ##    return E_Count.VOID, E_Count.VOID
 
-    Count.init()
+    Count.init(CounterDB)
 
     counter = CharacterCountTracer(SM)
     state   = SM.get_init_state()
@@ -80,7 +80,7 @@ def do(SM, CounterDB):
         # If the count procedure was aborted, possibly NOT all character
         # transitions have been investigated. So the value for 'grid' must
         # determined now, independently of the 'counter.do()'.
-        grid = _determine_grid_parameter(SM)
+        grid = _determine_grid_parameter(SM, CounterDB)
 
     return CountInfo(counter.result.line_n, counter.result.column_n, \
                      grid, \
@@ -106,7 +106,7 @@ class CountInfo(object):
             else:
                 self.increment_column_n_per_char = 0
 
-def _determine_grid_parameter(SM):
+def _determine_grid_parameter(SM, CounterDB):
     """The CharacterCountTracer has been aborted (which is a good thing). Now,
     the grid information has to be determined extra. As mentioned in the calling
     function 'grid' can have the following three values:
@@ -230,12 +230,16 @@ class Count(object):
     line_increment_per_step   = E_Count.VIRGIN
     grid                      = E_Count.NONE
 
+    # Line/Column count information
+    counter_db                = None
+
     @staticmethod
-    def init():
+    def init(CounterDB):
         """Initialize global objects in namespace 'Count'."""
         Count.column_increment_per_step = E_Count.VIRGIN
         Count.line_increment_per_step   = E_Count.VIRGIN
         Count.grid                      = E_Count.NONE
+        Count.counter_db                = CounterDB
 
     def __init__(self, ColumnN, LineN):
         self.column_n = ColumnN
@@ -251,7 +255,7 @@ class Count(object):
         raised.
         """
 
-        for delta_line_n, character_set in CounterDB.newline.iteritems():
+        for delta_line_n, character_set in Count.counter_db.newline.iteritems():
             x = _check_set(character_set, CharacterSet)
             if x == False: continue
             Count.announce_line_n_per_step(delta_line_n)
@@ -265,7 +269,7 @@ class Count(object):
                 self.column_n = E_Count.VOID  # transition. => delta line, delta column = void.
                 return False # Abort
 
-        for grid_size, character_set in CounterDB.grid.iteritems():
+        for grid_size, character_set in Count.counter_db.grid.iteritems():
             x = _check_set(character_set, CharacterSet)
             if x == False: continue
             Count.announce_grid_size(grid_size)
@@ -280,7 +284,7 @@ class Count(object):
                 self.column_n = E_Count.VOID
                 return self.line_n is not E_Count.VOID # Abort, if line_n is also void.
 
-        for delta_column_n, character_set in CounterDB.special.iteritems():
+        for delta_column_n, character_set in Count.counter_db.special.iteritems():
             x = _check_set(character_set, CharacterSet)
             if x == False: continue
             Count.announce_column_n_per_step(delta_column_n)
