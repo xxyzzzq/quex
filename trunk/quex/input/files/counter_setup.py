@@ -72,8 +72,7 @@ class Base:
         self._check("space", self.space_db, CharSet, FH, Key=Count)
 
         # Note, a space count of '0' is theoretically possible
-        self.space_db[Count] = LocalizedParameter("space", CharSet, FH)
-        self.space_db[Count].set_pattern_string(PatternStr)
+        self.space_db[Count] = LocalizedParameter("space", CharSet, FH, PatternStr)
 
     def specify_grid(self, PatternStr, CharSet, Count, FH=-1):
         if not isinstance(CharSet, NumberSet):
@@ -88,8 +87,7 @@ class Base:
                       "count of '1'. The latter is faster to compute.",
                       FH, DontExitF=True)
 
-        self.grid_db[Count] = LocalizedParameter("grid", CharSet, FH)
-        self.grid_db[Count].set_pattern_string(PatternStr)
+        self.grid_db[Count] = LocalizedParameter("grid", CharSet, FH, PatternStr)
 
     def homogeneous_spaces(self):
         # Note, from about the grid_db does not accept grid values of '1'
@@ -198,50 +196,59 @@ class Base:
         if not CharSet.is_empty(): return
         error_msg("Empty character set found.", FH)
 
-    def __repr__(self):
-        txt = ""
-        txt += "Spaces:\n"
-        for count, character_set in sorted(self.space_db.items()):
+    @staticmethod
+    def _db_to_text(db, title):
+        txt = "%s:\n" % title
+        for count, character_set in sorted(db.items()):
             if type(count) in [str, unicode]:
                 txt += "    %s by %s\n" % (count, character_set.get().get_utf8_string())
             else:
                 txt += "    %3i by %s\n" % (count, character_set.get().get_utf8_string())
+        return txt
 
-        txt += "Grids:\n"
-        for count, character_set in sorted(self.grid_db.items()):
-            if type(count) in [str, unicode]:
-                txt += "    %s by %s\n" % (count, character_set.get().get_utf8_string())
-            else:
-                txt += "    %3i by %s\n" % (count, character_set.get().get_utf8_string())
+    def __repr__(self):
+        txt  = Base._db_to_text("Spaces", self.space_db)
+        txt += Base._db_to_text("Grids", self.grid_db)
         return txt
 
 class LineColumnCounterSetup(Base):
     def __init__(self, fh=-1):
         Base.__init__(self, fh, "Line/column counter", ("space", "grid", "newline"))
-        self.newline = LocalizedParameter("newline", None)
+        self.newline_db = {}
 
     def seal(self):
         Base.seal(self)
 
-        if self.newline.get() is None:
-            self.specify_newline("\n", NumberSet(ord('\n')), self.fh)
+        default_newline = ord('\n')
+        if len(self.space_db) == 0:
+            default_newline = NumberSet([Interval(0x0A), # Line Feed 
+                              Interval(0x0B),            # Vertical Tab 
+                              Interval(0x0C),            # Form Feed 
+                              #        0x0D              --> set to '0' newlines, left out.
+                              Interval(0x85),            # Next Line 
+                              Interval(0x2028),          # Line Separator 
+                              Interval(0x2029)]),        # Paragraph Separator 
+            self.specify_newline("[ ]", default_newline, 1, self.fh)
 
     def _error_if_intersection(self, Setting, FH, Name):
         assert Setting.__class__ == NumberSet
         self._error_if_intersection_base(Setting, FH, Name)
 
-    def specify_newline(self, PatternStr, CharSet, FH=-1):
+    def specify_newline(self, PatternStr, CharSet, Count, FH=-1):
         if not isinstance(CharSet, NumberSet):
             CharSet = extract_trigger_set(FH, "newline", Pattern=CharSet)
 
-        self._specify(self.newline, CharSet, PatternStr, FH)
+        self._check("newline", self.newline_db, CharSet, FH, Key=Count)
+
+        # Note, a space count of '0' is theoretically possible
+        self.newline_db[Count] = LocalizedParameter("newline", CharSet, FH, PatternStr)
 
     def __repr__(self):
-        txt = Base.__repr__(self)
-        txt += "Newline: %s" % self.newline.get().get_utf8_string()
+        txt  = Base.__repr__(self)
+        txt += Base._db_to_text("Newlines", self.newline_db)
         return txt
 
-CounterDB = namedtuple("CounterDB", ("space_db", "grid_db", "newline"))
+CounterDB = namedtuple("CounterDB", ("special", "grid", "newline"))
 
 class IndentationSetup(Base):
     def __init__(self, fh=-1):

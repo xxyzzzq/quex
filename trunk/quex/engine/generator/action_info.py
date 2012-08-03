@@ -167,7 +167,7 @@ class PatternActionInfo:
         return txt
 
 class LocalizedParameter:
-    def __init__(self, Name, Default, FH=-1):
+    def __init__(self, Name, Default, FH=-1, PatternStr = None):
         self.name      = Name
         self.__default = Default
         if FH == -1:
@@ -178,7 +178,7 @@ class LocalizedParameter:
             self.__value   = Default
             self.file_name = FH.name
             self.line_n    = get_current_line_info_number(FH)
-        self.__pattern_string = None
+        self.__pattern_string = PatternStr
 
     def set(self, Value, fh):
         if self.__value is not None:

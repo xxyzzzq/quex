@@ -376,14 +376,17 @@ class Mode:
         lcc_setup = self.__get_unique_setup_option("counter") # Line/Column Counter Setup
 
         if lcc_setup is None:
-            return LineColumnCounterSetup_Default()
+            lcc_setup = LineColumnCounterSetup_Default()
 
         # Construct a 'CounterDB' object that simply maps from counts to the 
         # character set that is involved.
-        space_db = dict((count, parameter.get()) for count, parameter in lcc_setup.space_db)
-        grid_db  = dict((count, parameter.get()) for count, parameter in lcc_setup.grid_db)
+        def adapt(db):
+            return dict((count, parameter.get()) for count, parameter in db.iteritems())
+        space_db   = adapt(lcc_setup.space_db)
+        grid_db    = adapt(lcc_setup.grid_db)
+        newline_db = adapt(lcc_setup.newline_db)
 
-        return CounterDB(space_db, grid_db, lcc_setup.newline.get())
+        return CounterDB(space_db, grid_db, newline_db)
 
     def __prepare_indentation_counter(self):
         """Prepare indentation counter. An indentation counter is implemented by the 
