@@ -28,9 +28,9 @@ def test(Text):
     sh.name = "test_string"
 
     descr = None
-    # descr = indentation.do(sh)
+    # descr = indentation.parse(sh, IndentationSetupF=True)
     try:    
-        descr = indentation.do(sh)
+        descr = indentation.parse(sh, IndentationSetupF=True)
         pass
 
     except EndOfStreamException:

@@ -25,7 +25,7 @@ Exception!
 
 (6) |[\v\a] => grid 4;>|
 
-test_string:1:warning: Indentation setup does not contain spaces, only grids (tabulators). All grid
+test_string:1:warning: Indentation counter setup does not contain spaces, only grids (tabulators). All grid
 test_string:1:warning: widths are multiples of 4. The grid setup 4
 test_string:1:warning: is equivalent to a setup with space counts 1.
 test_string:1:warning: Space counts are faster to compute.
@@ -75,7 +75,7 @@ Suppressor:
 
 (8) |[\v\a] => space 0rXVI;>|
 
-test_string:1:warning: Indentation does not contain a grid but only homogenous space counts of 16.
+test_string:1:warning: Indentation counter does not contain a grid but only homogeneous space counts of 16.
 test_string:1:warning: This setup is equivalent to a setup with space counts of 1. Space counts
 test_string:1:warning: of 1 are the fastest to compute.
 Spaces:

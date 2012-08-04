@@ -4,7 +4,7 @@ abc* => newline;
 [ce] => space;>
 ::
 
-test_string:2:error: Character set specification 'space' intersects
+test_string:2:error: Character set specification 'space' intersects with
 test_string:1:error: the ending of the pattern for 'newline' at this place.
 test_string:2:error: Note, that 'newline' and cannot end with a character which is subject
 test_string:2:error: to indentation counting (i.e. 'space' or 'grid').
@@ -16,7 +16,7 @@ abc* => newline;
 [be] => space;>
 ::
 
-test_string:2:error: Character set specification 'space' intersects
+test_string:2:error: Character set specification 'space' intersects with
 test_string:1:error: the ending of the pattern for 'newline' at this place.
 test_string:2:error: Note, that 'newline' and cannot end with a character which is subject
 test_string:2:error: to indentation counting (i.e. 'space' or 'grid').
@@ -28,7 +28,7 @@ ac*b? => newline;
 [ce] => space;>
 ::
 
-test_string:2:error: Character set specification 'space' intersects
+test_string:2:error: Character set specification 'space' intersects with
 test_string:1:error: the ending of the pattern for 'newline' at this place.
 test_string:2:error: Note, that 'newline' and cannot end with a character which is subject
 test_string:2:error: to indentation counting (i.e. 'space' or 'grid').

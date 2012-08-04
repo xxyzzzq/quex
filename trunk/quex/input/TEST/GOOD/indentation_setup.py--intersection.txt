@@ -24,7 +24,7 @@ Exception!
 [cde] => suppressor;>
 ::
 
-test_string:1:warning: Indentation does not contain a grid but only homogenous space counts of 10.
+test_string:1:warning: Indentation counter does not contain a grid but only homogeneous space counts of 10.
 test_string:1:warning: This setup is equivalent to a setup with space counts of 1. Space counts
 test_string:1:warning: of 1 are the fastest to compute.
 Spaces:
@@ -90,7 +90,7 @@ Exception!
 [cde] => suppressor;>
 ::
 
-test_string:1:warning: Indentation setup does not contain spaces, only grids (tabulators). All grid
+test_string:1:warning: Indentation counter setup does not contain spaces, only grids (tabulators). All grid
 test_string:1:warning: widths are multiples of 10. The grid setup 10
 test_string:1:warning: is equivalent to a setup with space counts 1.
 test_string:1:warning: Space counts are faster to compute.
@@ -215,7 +215,7 @@ Exception!
 [cde] => grid  10;>
 ::
 
-test_string:2:error: Character set specification 'grid' intersects
+test_string:2:error: Character set specification 'grid' intersects with
 test_string:1:error: the ending of the pattern for 'newline' at this place.
 test_string:2:error: Note, that 'newline' and cannot end with a character which is subject
 test_string:2:error: to indentation counting (i.e. 'space' or 'grid').
@@ -227,7 +227,7 @@ Exception!
 [cde] => space;>
 ::
 
-test_string:2:error: Character set specification 'space' intersects
+test_string:2:error: Character set specification 'space' intersects with
 test_string:1:error: the ending of the pattern for 'newline' at this place.
 test_string:2:error: Note, that 'newline' and cannot end with a character which is subject
 test_string:2:error: to indentation counting (i.e. 'space' or 'grid').
@@ -293,7 +293,7 @@ Suppressor:
 [cde] => grid  10;>
 ::
 
-test_string:2:warning: Indentation setup does not contain spaces, only grids (tabulators). All grid
+test_string:2:warning: Indentation counter setup does not contain spaces, only grids (tabulators). All grid
 test_string:2:warning: widths are multiples of 10. The grid setup 10
 test_string:2:warning: is equivalent to a setup with space counts 1.
 test_string:2:warning: Space counts are faster to compute.
