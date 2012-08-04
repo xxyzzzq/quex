@@ -54,7 +54,12 @@ Suppressor:
 test_string:1:error: Missing ';' after indentation 'space' specification.
 Exception!
 
-(5) |>|
+(5) |\default => space variable;>|
+
+test_string:1:error: Keyword '\default' cannot be used in indentation setup.
+Exception!
+
+(6) |>|
 
 Spaces:
       1 by ' '
@@ -78,7 +83,7 @@ Suppressor:
     <none>
 
 
-(6) |/* empty will do */>|
+(7) |/* empty will do */>|
 
 Spaces:
       1 by ' '
