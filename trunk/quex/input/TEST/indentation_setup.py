@@ -44,6 +44,7 @@ def test(Text):
 
 if "basic" in sys.argv:
 
+    test(">")
     test("[\\v\\a]")
     test("[\\v\\a] >")
     test("[\\v\\a] => grid")

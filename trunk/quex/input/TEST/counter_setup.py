@@ -44,6 +44,7 @@ def test(Text):
 
 if "basic" in sys.argv:
 
+    test(">")
     test("[\\v\\a]")
     test("[\\v\\a] >")
     test("[\\v\\a] => grid")
@@ -55,6 +56,8 @@ if "basic" in sys.argv:
     test("[\\v\\a] => newline;>")
     test("[\\v\\a] => space;\n[\\t] => grid 10;")
     test("[\\v\\a] => space;\n[\\t] => grid 10;>")
+    test("[\\n]    => space;>")
+    test("x        => newline; [\\n]    => space 2;>")
 
 elif "twice" in sys.argv:
     test("[\\v\\a] => space 10;\n[\\t] => space 10; \\default => space 66;>")
@@ -74,10 +77,11 @@ elif "intersection" in sys.argv:
 
 elif "intersection-2" in sys.argv:
 
-    test("abc* => newline;\n[ce] => space;>")
-    test("abc* => newline;\n[be] => space;>")
-    test("ac*b? => newline;\n[ce] => space;>")
-    test("ac*b => newline;\n[ce] => space;>")
+    test("c+ => newline;\n[ce] => space;>")
+    test("e+ => newline;\n[be] => space;>")
+    test("a? => newline;\n[ce] => space;>")
+    test("ae* => newline;\n[ce] => space;>")
+    test("a => newline;\nc => space;>")
 
 elif "non-numeric" in sys.argv:
     test("[\\v\\a] => grid variable;>")
