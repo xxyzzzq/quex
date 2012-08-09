@@ -2,6 +2,7 @@ from   quex.engine.misc.file_in          import EndOfStreamException, \
                                                 check, \
                                                 check_or_die, \
                                                 error_msg, \
+                                                error_eof, \
                                                 get_current_line_info_number, \
                                                 read_integer, \
                                                 read_namespaced_name, \
@@ -94,7 +95,7 @@ def __parse_brief_token_sender(fh, ContinueF):
 
     except EndOfStreamException:
         fh.seek(position)
-        error_msg("End of file reached while parsing token shortcut.", fh)
+        error_eof("token", fh)
 
 def read_character_code(fh):
     # NOTE: This function is tested with the regeression test for feature request 2251359.
@@ -173,7 +174,7 @@ def __parse_function_argument_list(fh, ReferenceName):
                 text = ""
             elif tmp == "":
                 fh.seek(position)
-                error_msg("End of file reached while parsing argument list for %s." % ReferenceName, fh)
+                error_eof("argument list for %s" % ReferenceName, fh)
             else:
                 text += tmp
 
@@ -185,7 +186,7 @@ def __parse_function_argument_list(fh, ReferenceName):
 
     except EndOfStreamException:
         fh.seek(position)
-        error_msg("End of file reached while parsing token shortcut.", fh)
+        error_eof("token", fh)
 
 def __parse_token_id_specification_by_character_code(fh):
     ## pos = fh.tell(); print "##input:", fh.read(3); fh.seek(pos)

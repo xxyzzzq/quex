@@ -1,7 +1,7 @@
 from StringIO import StringIO
 from   quex.blackboard import setup as Setup
 
-from   quex.engine.misc.file_in       import EndOfStreamException, error_msg
+from   quex.engine.misc.file_in       import EndOfStreamException, error_msg, error_eof
 from   quex.exception                 import RegularExpressionException
 from   quex.engine.interval_handling  import NumberSet, Interval
 from   quex.engine.state_machine.core import StateMachine 
@@ -27,7 +27,7 @@ def parse(fh, AllowNothingIsFineF=False, AllowStateMachineTrafoF=True):
 
     except EndOfStreamException:
         fh.seek(start_position)
-        error_msg("End of file reached while parsing regular expression.", fh)
+        error_eof("regular expression", fh)
 
     return __post_process(fh, start_position, pattern, ReturnRE_StringF=True)
 
@@ -48,7 +48,7 @@ def parse_character_string(Txt_or_File, PatternStringF=False):
 
     except EndOfStreamException:
         if sh_ref != -1: sh_ref.seek(start_position)
-        error_msg("End of character string reached while parsing.", sh_ref)
+        error_eof("character string", sh_ref)
 
     return __post_process(sh, start_position, state_machine, PatternStringF)
 
@@ -74,7 +74,7 @@ def parse_character_set(Txt_or_File, PatternStringF=False):
 
     except EndOfStreamException:
         if sh_ref != -1: sh_ref.seek(start_position)
-        error_msg("End of character set expression reached while parsing.", sh_ref)
+        error_eof("character set expression", sh_ref)
 
     return __post_process(sh, start_position, character_set, PatternStringF)
 

@@ -33,15 +33,16 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void    
-    QUEX_NAME(Counter_count)(QUEX_NAME(Counter)* me, 
-                             QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
+    QUEX_NAME(Counter_homogeneous_count)(QUEX_NAME(Counter)*        me, 
+                                         const QUEX_TYPE_CHARACTER* Begin, 
+                                         const QUEX_TYPE_CHARACTER* End)
     /* Adapts the column number and the line number according to the newlines
      * and letters of the last line occurring in the lexeme.                       */
     {
 #   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        QUEX_TYPE_CHARACTER* it = QUEX_NAME(Counter_count_chars_to_newline_backwards)(me, Begin, End);
-        if( *it == '\n' ) ++(me->_line_number_at_end);
+        QUEX_TYPE_CHARACTER* it = QUEX_NAME(Counter_homogeneous_count_to_newline_backwards)(me, Begin, End);
+        if( __QUEX_COUNTER_IS_NEWLINE(*it) ) ++(me->_line_number_at_end);
 #       else
         QUEX_TYPE_CHARACTER* it = End;
 #       endif
@@ -53,36 +54,19 @@ QUEX_NAMESPACE_MAIN_OPEN
          * (recall the lexeme is traced from the rear)                            */
         while( it != Begin ) {
             --it;
-            if( *it == '\n' ) ++(me->_line_number_at_end); 
+            if( __QUEX_COUNTER_IS_NEWLINE(*it) ) ++(me->_line_number_at_end); 
         }         
 #   else
-        QUEX_NAME(Counter_count_chars_to_newline_backwards)(me, Begin, End);
+        (void)QUEX_NAME(Counter_homogeneous_count_to_newline_backwards)(me, Begin, End);
 #   endif
+
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(me); \
     }
-
-    QUEX_INLINE void  
-    QUEX_NAME(Counter_count_FixNewlineN)(QUEX_NAME(Counter)*  me,
-                                         QUEX_TYPE_CHARACTER* Lexeme,
-                                         QUEX_TYPE_CHARACTER* LexemeEnd,
-                                         const int            LineNIncrement) 
-    /* This function may be used to count column and line numbers in case 
-     * that the number of newlines can be pre-determined. This makes the
-     * process a little faster.                                           */
-    {
-        __quex_assert( LexemeEnd > Lexeme );
-
-#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        QUEX_NAME(Counter_count_chars_to_newline_backwards)(me, (QUEX_TYPE_CHARACTER*)Lexeme, 
-                                                            (QUEX_TYPE_CHARACTER*)(LexemeEnd)); 
-#       endif
-        __QUEX_IF_COUNT_LINES(me->_line_number_at_end += (size_t)LineNIncrement);
-    }
-
 
     QUEX_INLINE QUEX_TYPE_CHARACTER*
-    QUEX_NAME(Counter_count_chars_to_newline_backwards)(QUEX_NAME(Counter)*   me, 
-                                                        QUEX_TYPE_CHARACTER*  Begin,
-                                                        QUEX_TYPE_CHARACTER*  End)
+    QUEX_NAME(Counter_homogeneous_count_to_newline_backwards)(QUEX_NAME(Counter)*         me, 
+                                                              const QUEX_TYPE_CHARACTER*  Begin,
+                                                              const QUEX_TYPE_CHARACTER*  End)
     /* This is the heart of all counter functions. It counts columns and lines
      * 'manually'. If the column and line number increment can be pre-determined
      * for a lexeme that matches a specific pattern, then this function shall
@@ -97,6 +81,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         QUEX_TYPE_CHARACTER* it = 0x0; 
 
+        __QUEX_COUNTER_SHIFT_VALUES(ME);
         __quex_assert(Begin < End);  /* LexemeLength >= 1 */
 
         /* loop from [End] to [Begin]:
@@ -106,7 +91,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          *     \n xxxxxxxxxxxxxxxxxxxxxxxx[End]
          *               <---------
          *                                                */
-        for(it = End - 1; *it != '\n' ; --it) {
+        for(it = End - 1; false == __QUEX_COUNTER_IS_NEWLINE(*it) ; --it) {
             if( it == Begin ) {
                 /* -- In case NO newline occurs, the column index is to be INCREASED 
                  *    by the length of the string -1, since counting starts at zero
@@ -122,29 +107,67 @@ QUEX_NAMESPACE_MAIN_OPEN
          *    the number of letters from newline to end of string             */
         __QUEX_IF_COUNT_COLUMNS(me->_column_number_at_end = (size_t)(End - it));
 
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(me); \
+
         return it;
     }
 
-#   if 0
     QUEX_INLINE void    
-    QUEX_NAME(Counter_count_with_Grid)(QUEX_NAME(Counter)* me, 
-                                       QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
+    QUEX_NAME(Counter_count)(QUEX_NAME(Counter)*        me, 
+                             const QUEX_TYPE_CHARACTER* Begin, 
+                             const QUEX_TYPE_CHARACTER* End)
     {
+        const QUEX_TYPE_CHARACTER* it = Lexeme;
+
+        __QUEX_COUNTER_SHIFT_VALUES(ME);
+
+        while( it != LexemeEnd )
+        {
+            __QUEX_COUNTER_RULES_WITHOUT_GRID(*me, *it);
+        }
+
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(me); \
     }
-    QUEX_INLINE void  
-    QUEX_NAME(Counter_count_NoNewline_with_Grid)(QUEX_NAME(Counter)*   me,
-                                                 QUEX_TYPE_CHARACTER*  Lexeme,
-                                                 QUEX_TYPE_CHARACTER*  LexemeEnd)
+
+    QUEX_INLINE void    
+    QUEX_NAME(Counter_count_with_grid)(QUEX_NAME(Counter)*        me, 
+                                       const QUEX_TYPE_CHARACTER* Lexeme, 
+                                       const QUEX_TYPE_CHARACTER* LexemeEnd)
+    /* Adapts the column number and the line number according to the newlines
+     * and letters of the last line occurring in the lexeme.                       */
     {
-    /* This function makes sense, as soon as grids etc. are implemented.
-     * Then, it is necessary to count forward not backward towards last newline. */
+        const QUEX_TYPE_CHARACTER* it = Lexeme;
+
+        __QUEX_COUNTER_SHIFT_VALUES(ME);
+
+        while( it != LexemeEnd )
+        {
+            __QUEX_COUNTER_RULES(*me, *it);
+        }
+
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(me); \
     }
-#   endif
+
+    QUEX_INLINE void    
+    QUEX_NAME(Counter_count_newlines)(QUEX_NAME(Counter)*        me, 
+                                      const QUEX_TYPE_CHARACTER* Begin, 
+                                      const QUEX_TYPE_CHARACTER* End)
+    {
+        QUEX_TYPE_CHARACTER* it = (void*)0;
+
+        __QUEX_COUNTER_SHIFT_VALUES(ME);
+
+        while( it != End )
+        {
+            __QUEX_COUNTER_NEWLINE_RULES(*me, *it);
+        }
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(me); \
+    }
 
     QUEX_INLINE void 
     QUEX_NAME(Counter_print_this)(QUEX_NAME(Counter)* me)
     {
-        __QUEX_IF_COUNT_INDENTATION(size_t* iterator = 0x0);
+        __QUEX_IF_COUNT_INDENTATION(size_t* it = 0x0);
 
         __QUEX_STD_printf("   Counter:\n");
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
@@ -158,7 +181,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       ifdef  QUEX_OPTION_INDENTATION_TRIGGER
         __QUEX_STD_printf("   _indentation = %i;\n", (int)me->_indentation);
         __QUEX_STD_printf("   _indentation_stack = {");
-        for(iterator = me->_indentation_stack.front; iterator != me->_indentation_stack.back + 1; ++iterator) {
+        for(it = me->_indentation_stack.front; it != me->_indentation_stack.back + 1; ++it) {
             __QUEX_STD_printf("%i, ", (int)me->_indentation);
         }
         __QUEX_STD_printf("}");

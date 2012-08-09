@@ -634,6 +634,9 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=Tr
 
     if not DontExitF: sys.exit(-1)  # Here, sys.exit(-1) is accepted
 
+def error_eof(title, fh):
+    error_msg("End of file reached while parsing '%s' section." % title, fh)
+
 def make_safe_identifier(String, NoCodeF=True):
     txt = ""
     for letter in String:

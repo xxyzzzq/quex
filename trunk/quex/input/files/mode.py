@@ -15,6 +15,7 @@ from   quex.engine.misc.file_in import EndOfStreamException, \
                                        check_or_die, \
                                        copy, \
                                        error_msg, \
+                                       error_eof, \
                                        get_current_line_info_number, \
                                        read_identifier, \
                                        read_until_letter, \
@@ -681,7 +682,7 @@ def __parse_option_list(new_mode, fh):
 
     except EndOfStreamException:
         fh.seek(position)
-        error_msg("End of file reached while parsing options of mode '%s'." % new_mode.name, fh)
+        error_eof("mode '%s'." % new_mode.name, fh)
 
 def __parse_base_mode_list(fh, new_mode):
     new_mode.base_modes = []
@@ -752,7 +753,7 @@ def __parse_element(new_mode, fh):
 
     except EndOfStreamException:
         fh.seek(position)
-        error_msg("End of file reached while parsing %s." % description, fh)
+        error_eof(description, fh)
 
     return True
 
@@ -795,7 +796,7 @@ def __parse_action(new_mode, fh, pattern_str, pattern):
 
     except EndOfStreamException:
         fh.seek(position)
-        error_msg("End of file reached while parsing action code for pattern.", fh)
+        error_eof("pattern action", fh)
 
 def __parse_event(new_mode, fh, word):
     pos = fh.tell()

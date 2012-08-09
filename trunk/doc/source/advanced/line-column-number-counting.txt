@@ -7,40 +7,70 @@ apply. Most of those texts are written by humans, and humans occasionally make
 errors and disrespect rules. A gentle compiler tells its user about his errors
 and also tells it about the place where the error occured. Using quex's ability
 to count lines and columns facilitates the task of pointing into the user's
-code. Line and column numbers are activated by means of the command line options
+code. 
+
+The first section elaborates on how to access line and column numbers for a
+given token. A second section explains how to resolve the problem that the line
+and column numbers are only precise at the time they match in case of the token
+policy 'queue'. Finally, it is explained how the line and column number
+counting can be configured to fit very specific usages.
+
+Usage
+=====
+
+Line and column numbers are activated by means of the command line options
 
 .. describe:: --line-count
 
 .. describe:: --column-count
 
-Both options can be set independently.  The analyzer's member functions to
-access the current line and column number are:
+Both options can be set independently. Inside pattern actions, the following
+macros may be used to access line and column number counts:
 
-.. cfunction:: int  line_number()
-.. cfunction:: int  line_number_at_begin()
-.. cfunction:: int  line_number_at_end()
-.. cfunction:: int  column_number()
-.. cfunction:: int  column_number_at_begin()
-.. cfunction:: int  column_number_at_end()
+.. code-block:: cpp
 
-The return the line and column number at the begin and the end of the currently
-matched lexeme. ``line_number()`` is a synonyme for ``line_number_at_begin``
-and ``column_number()`` is a synonyme for ``column_number_at_begin``.
+     self_line_number_at_begin()   
+     self_line_number_at_end()    
+     self_line_number()            
+     self_column_number_at_begin()
+     self_column_number_at_end()  
+     self_column_number()         
 
-Queχ tries to analyze patterns so that the column and line number counting
-can be reduced at run time, in many cases, to a plain constant addition.
-There is a general default algorithm to count lines and columns that is always
-applied in case that there is no better alternative. Queχ analyzes the patterns
-and adapts the way of counting lines and columns according to special
-characteristics [#f1]_.  If the pattern contains, for example, a fixed number
-of newlines, then only a fixed number is added and no newlines are counted at
-runtime. The mechanisms for line and column counting are optimized for the most
-reasonable pattern characteristics[#f2]_. For reasonable applications
-as known from popular programming languages the mechanisms of counting should
-be optimal.
+They return the line and column number at the begin and the end of the
+currently matched lexeme. ``self_line_number()`` is equivalent to
+``self_line_number_at_begin()`` and ``self_column_number()`` is equivalent to
+``self_column_number_at_begin()``. The C++ API provides the following analyzer
+member functions:
 
-For some purposes, it might be necessary to set the line and column number
-actively. Then the following member functions may be used:
+.. cfunction:: size_t  line_number()
+.. cfunction:: size_t  line_number_at_begin()
+.. cfunction:: size_t  line_number_at_end()
+.. cfunction:: size_t  column_number()
+.. cfunction:: size_t  column_number_at_begin()
+.. cfunction:: size_t  column_number_at_end()
+
+Queχ tries to determine the line and column count of a pattern beforehand, so
+that it must not be computed at runtime. This works for homogenous patterns
+which do not contain arbitrary repetition or optional paths. If the analyzing
+algorithm signalizes a run-time dependency, then code is produced which counts
+the line and columns at the time when the lexeme matches.  
+
+By default, a tabulator, i.e. Unicode character 0x09, causes a grid step of
+four columns. That is, if there is a line starting with::
+
+    0123\t0\t01\t012\tx
+
+will report::
+
+    (1)  "0123"
+    (8)  "0"
+    (12) "01"
+    (16) "012"
+    (20) "x"
+
+where the term in brackets is the column number and the string in quotes is the
+matched lexeme. For some purposes, it might be necessary to set the line and
+column number actively. Then the following member functions may be used:
 
 .. code-block:: cpp
 
@@ -61,9 +91,9 @@ number counting should be in place for error reporting.
 .. warning::
 
    The member functions for reporting line and column numbers always report the
-   *current* state. If the token policy ``queue`` (default) or ``users_queue``
-   (see :ref:`sec-token-policies`) is used, then a these function only report
-   correct values inside pattern actions!
+   *current* state. If the token policy ``queue`` (see :ref:`sec-token-policies`)
+   is used, then a these function only report correct values inside pattern
+   actions!
 
    From ouside, i.e. after a call to ``.receive(...)`` the line and column
    numbers represent the values for the last token in the queue. If precise
@@ -74,7 +104,7 @@ number counting should be in place for error reporting.
 .. _sec-token-stamping:
 
 Stamping Tokens
----------------
+===============
 
 Tokens can be stamped at the time that they are sent with the current line
 and/or column number. Indeed, this is what happens by default.  If line or
@@ -95,6 +125,97 @@ abovementioned default settings the macro
 may be used to adapt to disable stamping mechanism. If line or column numbering
 is disabled, also the stamping of the corresponding value is disabled. Further,
 no member in the tokens is reserved to carry that value.
+
+.. _sec-counter-def:
+
+Customization
+=============
+
+By default, Quex counts line numbers and columns with the following values:
+
+    Spaces:   1 by [-oo, '\b'], ['\v', oo]
+    Grids:    4 by '\t'
+    Newlines: 1 by '\n'
+
+When issues of 'character fonts' or Unicode character widths become an
+issue the default counting behavior may not be sufficient. To specify
+a different counting behavior the mode option ``counter`` may be used.
+
+.. code-block:: cpp
+
+    mode X :
+    <counter:
+       \default => space 1;
+       [\t]     => grid 4;
+       \n       => newline 1;
+    >
+    {
+        ...
+    }
+
+defines the default aforementioned counting behavior. The syntax of ``counter``
+parameter definition follows the scheme:
+
+.. code-block:: cpp
+
+       pattern '=>' parameter-name [argument] ';'
+
+Available parameter names are ``space``, ``grid``, and ``newline``. They are
+explained below:
+
+   .. describe :: space [number|variable]
+
+      The ``space`` parameter defines the column with of a set of characters
+      given by ``pattern``. It may be a constant number or defined dynamically
+      by the setting of ``variable`` which will be defined as a member of the
+      lexical analyzer.
+
+      If ``\default`` is defined as pattern then this refers to all characters
+      which have not been mentioned in any other parameter.
+
+   .. describe :: grid [number|variable]
+   
+      A column number grid step trigger may be defined by the ``grid``
+      parameter. The ``pattern`` defines a set of characters which trigger a
+      step to the next grid value. The width of the grid is either a constant
+      number or a variable which will become a member variable of the analyzer
+      object. 
+
+   .. describe :: newline [number|variable]
+
+      By the parameter name ``newline`` a character set is defined that increments
+      the line number. As with the parameter before, the value may be even
+      constant or controlled by a member variable of  the analyzer.
+
+      .. note::  
+      
+         By default Quex only considers ``\n`` as newline character that
+         increments the line number by one. In Unicode, though, there are
+         several code points that may are related to newline, as they
+         are:
+
+            * ``0x0A``:    Line Feed.
+            * ``0x0B``:    Vertical Tab. 
+            * ``0x0C``:    Form Feed. 
+            * ``0x0D``:    (Carriage Return)
+            * ``0x85``:    Next Line. 
+            * ``0x2028``:  Line Separator. 
+            * ``0x2029``:  Paragraph Separator.
+
+         The ``0x0D`` character does actually not increment the line number,
+         it rather resets the input to the beginning of the line.
+
+   Each of the aforementioned parameters may occur, of course, multiple times.
+   Their character sets, though, may not intersect.
+
+.. note:: 
+
+   It makes sense to use a mode with a ``counter`` definition to multiple
+   derived classes as a means to share with them the same counting behavior.
+   However, Quex only allows for one ``counter`` definition in a mode
+   hierarchy. The rationale behind this was to prevent the information 
+   about the counting behavior being scattered around different modes. 
+   Such configurations are prone to be confusing.
 
 .. rubric:: Footnotes
 

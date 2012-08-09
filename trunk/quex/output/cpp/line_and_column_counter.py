@@ -75,33 +75,98 @@ def __new_do(ThePattern, EOF_ActionF):
     on how many '\n' it matches at runtime. These considerations where done
     by means of 
 
-              quex.engine.state_machine.character_counter.do(...)
+         quex.engine.state_machine.character_counter.do(...)
 
-    at the time when the Pattern object was constructed in 
+    at the time when the patterns were absorbed into a 'real' mode in
 
-              class quex.input.regular_expression.construct.Pattern
+         quex.input.files.mode.Mode.__init__(...)
+
+    which calls
+
+         quex.input.regular_expression.construct.Pattern.do_count(CounterDB)
 
     Depending on the newline_n and column_n increment being pre-determined,
-    the counting behavior may be adapted. The following options exist:
+    the counting behavior may be adapted. A set of counting functions try
+    to profit from such pre-determinations:
 
-            __QUEX_COUNT_NEWLINE_*
+            __QUEX_COUNT_NEWLINE_*_COLUMN_*_GRID_*
 
-            __QUEX_COUNT_COLUMN_*
+    where '*' may have one of the following values:
+
+        * = 0: Increment = Zero.
+        * = S: Not increment, instead set to a particular value 
+               (may be derived from LexemeL).
+        * = N: Fixed, increment passed as argument.
+        * = X: Increment = Undetermined.
+
+    'Homogenous':
+        All characters have the same with (except grid characters). That is
+        the column number increment can be determined by 'LexemeL * X' 
+        -- where X is some constant.
+
+    For NEWLINE: 0, N, X
+
+    For COLUMN:  X, N, S
+
+    For GRID:    0, X
+                 Not 'N', because A fixed number of grid triggers does not 
+                 provide any computational advantage.
 
 
-    An increment that can be determined by the length of the lexeme is passed
-    as 'LexemeL * Increment' of an 'N' function.
+"""
 
-            __QUEX_COUNT_NEWLINE_X
-            __QUEX_COUNT_NEWLINE_X
-            __QUEX_COUNT_NEWLINE_N
-            __QUEX_COUNT_NEWLINE_N
-            __QUEX_COUNT_NEWLINE_N
-            __QUEX_COUNT_NEWLINE_0
-            __QUEX_COUNT_NEWLINE_0
-            __QUEX_COUNT_NEWLINE_0
+solution_db = {
+#        NewlineN   ColumnN   Grid  Homogeneous  Function(s)
+        ("0",       "0",      "0", None):  "-- impossible --",
+        ("0",       "0",      "X", None):  "Counter_count_with_grid()",
+        ("0",       "S",      "X", None):  "-- impossible --",
+        ("0",       "N",      "0", None):  "column_n += N",
+        ("0",       "N",      "X", None):  "-- impossible --",
+        ("0",       "X",      "0", True):  "Counter_homogeneous_count_to_newline_backwards()",
+        ("0",       "X",      "0", False): "Counter_count_with_grid()",
+        ("0",       "X",      "X", None):  "Counter_count_with_grid()",
 
-    Their definition appears in 
+        ("N",       "0",      "0", None):  "line_n += N",
+        ("N",       "0",      "X", None):  "Counter_count_with_grid()",
+        ("N",       "S",      "X", None):  "-- impossible --",
+        ("N",       "N",      "0", None):  "column_n += N; line_n += N;",
+        ("N",       "N",      "X", None):  "-- impossible --",
+        ("N",       "X",      "0", True):  "Counter_homogeneous_count_to_newline_backwards()" \
+                                           "line_n += N;",
+        ("N",       "X",      "0", False): "Counter_count_with_grid()",
+        ("N",       "X",      "X", None):  "Counter_count_with_grid()",
+
+        ("X",       "0",      "0", None):  "Counter_count_newlines()",
+        ("X",       "0",      "X", None):  "Counter_count_with_grid()",
+        ("X",       "S",      "X", None):  "-- impossible --",
+        ("X",       "N",      "0", None):  "column_n += N; " \
+                                           "Counter_count_newlines();",
+        ("X",       "N",      "X", None):  "-- impossible --",
+        ("X",       "X",      "0", True):  "Counter_homogeneous_count_to_newline_backwards()" \
+                                           "Counter_count_newlines(Begin, NewlinePos);",
+        ("X",       "X",      "0", False): "Counter_count_with_grid()",
+        ("X",       "X",      "X", None):  "Counter_count_with_grid()",
+}
+    
+"""
+
+    Option NEWLINE_N only makes sense with GRID_0, because only then, the
+    column number can be determined by counting backwards to the last 
+    newline. 
+    
+    Option COLUMN_N cannot appear with GRID_X, because any grid makes the
+    column number increment un-pre-determined.
+
+    If parameters are only 'N' and '0' then everything is pre-determined.
+
+    __QUEX_COUNT_NEWLINE_0_COLUMN_X_GRID_0 --> Counter_count_homogenously_to_newline_backwards(...)
+    __QUEX_COUNT_NEWLINE_0_COLUMN_X_GRID_X --> Counter_count_with_grid(...)
+    __QUEX_COUNT_NEWLINE_N_COLUMN_X_GRID_0 --> Counter_count_homogenously_to_newline_backwards(...)
+                                               line_n += Fixed Value
+    __QUEX_COUNT_NEWLINE_X_COLUMN_X_GRID_0 --> Counter_count(...)
+    __QUEX_COUNT_NEWLINE_X_COLUMN_X_GRID_X --> Counter_count_with_grid(...)
+    __QUEX_COUNT_NEWLINE_X_COLUMN_N_GRID_0 --> Counter_count_newlines(...)
+                                               column += Fixed Value
 
              $QUEX_PATH/quex/code_base/definitions
 

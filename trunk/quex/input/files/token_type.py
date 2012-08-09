@@ -3,6 +3,7 @@ from   quex.engine.misc.file_in          import EndOfStreamException, \
                                                 check_or_die, \
                                                 get_current_line_info_number, \
                                                 error_msg, \
+                                                error_eof, \
                                                 read_identifier, \
                                                 verify_word_in_list, \
                                                 read_namespaced_name, \
@@ -272,7 +273,7 @@ def parse(fh):
             result = parse_section(fh, descriptor, already_defined_list)
         except EndOfStreamException:
             fh.seek(position)
-            error_msg("End of file reached while parsing token_type section.", fh)
+            error_eof("token_type", fh)
 
         
     if not check(fh, "}"):
@@ -298,7 +299,7 @@ def parse_section(fh, descriptor, already_defined_list):
         return __parse_section(fh, descriptor, already_defined_list)
     except EndOfStreamException:
         fh.seek(pos)
-        error_msg("End of file reached while parsing token_type section.", fh)
+        error_eof("token_type", fh)
 
 def __parse_section(fh, descriptor, already_defined_list):
     global token_type_code_fragment_db
@@ -372,7 +373,7 @@ def parse_standard_members(fh, section_name, descriptor, already_defined_list):
             result = parse_variable_definition(fh) 
         except EndOfStreamException:
             fh.seek(position)
-            error_msg("End of file reached while parsing token_type 'standard' section.", fh)
+            error_eof("standard", fh)
 
         if result is None: return
         type_code_fragment, name = result[0], result[1]
@@ -416,7 +417,7 @@ def parse_variable_definition_list(fh, SectionName, already_defined_list, GroupF
             result = parse_variable_definition(fh, GroupF=True, already_defined_list=already_defined_list) 
         except EndOfStreamException:
             fh.seek(position)
-            error_msg("End of file reached while parsing token_type '%s' subsection." % SectionName, fh)
+            error_eof(SectionName, fh)
 
         if result is None: return db
 

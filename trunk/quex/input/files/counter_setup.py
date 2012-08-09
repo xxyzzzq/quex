@@ -8,7 +8,7 @@ from quex.engine.misc.file_in import get_current_line_info_number, \
                                      read_integer
 
 from   quex.engine.generator.action_info  import LocalizedParameter
-from   quex.engine.interval_handling      import NumberSet
+from   quex.engine.interval_handling      import NumberSet, Interval
 from   quex.engine.state_machine.core     import StateMachine
 import quex.input.regular_expression.core as     regular_expression
 
@@ -31,6 +31,11 @@ class Base:
         self.__containing_mode_name = ""
 
     def seal(self, ParameterBad=None):
+        if len(self.space_db) != 0 or len(self.grid_db) != 0:
+            # If spaces ore grids (or both) are defined, then it can be 
+            # assumed that the specification as is, is intended
+            return
+
         default_space = ord(' ')
         default_tab   = ord('\t')
         Bad           = None if ParameterBad is None else ParameterBad.get()
@@ -140,7 +145,6 @@ class Base:
 
         # Are the required elements present for indentation handling?
         assert len(self.space_db) != 0 or len(self.grid_db) != 0
-        assert not self.newline_state_machine.get().is_empty()
 
         if len(self.space_db) == 0:
             check_grid_values_integer_multiples(self.grid_db)
@@ -169,8 +173,9 @@ class Base:
         error_msg("with definition for '%s' at this place." % Before.name, 
                   Before.file_name, Before.line_n)
 
+    @staticmethod
     def _error_state_machine_intersection(Name, Before, FH):
-        error_msg("Character set specification '%s' intersects" % Name, FH, 
+        error_msg("Character set specification '%s' intersects with" % Name, FH, 
                   DontExitF=True, WarningF=False)
         error_msg("the ending of the pattern for '%s' at this place." % Before.name, 
                   Before.file_name, Before.line_n,
@@ -180,9 +185,6 @@ class Base:
 
     def _error_msg_if_defined_earlier(self, Before, FH, Key=None, Name=""):
         """If Key is not None, than 'Before' is a database."""
-
-        if Name in ["newline", "suppressor"] and Before.get() is None: return
-
         if Key is None:
             if Before.get().is_empty(): return
             error_msg("'" + Before.name + "' has been defined before;", FH, DontExitF=True, WarningF=False)
@@ -197,9 +199,9 @@ class Base:
         error_msg("Empty character set found.", FH)
 
     @staticmethod
-    def _db_to_text(db, title):
+    def _db_to_text(title, db):
         txt = "%s:\n" % title
-        for count, character_set in sorted(db.items()):
+        for count, character_set in sorted(db.iteritems()):
             if type(count) in [str, unicode]:
                 txt += "    %s by %s\n" % (count, character_set.get().get_utf8_string())
             else:
@@ -216,23 +218,46 @@ class LineColumnCounterSetup(Base):
         Base.__init__(self, fh, "Line/column counter", ("space", "grid", "newline"))
         self.newline_db = {}
 
-    def seal(self):
+    def seal(self, DefaultSpaceSpec, FH):
         Base.seal(self)
 
         default_newline = ord('\n')
-        if len(self.space_db) == 0:
-            default_newline = NumberSet([Interval(0x0A), # Line Feed 
-                              Interval(0x0B),            # Vertical Tab 
-                              Interval(0x0C),            # Form Feed 
-                              #        0x0D              --> set to '0' newlines, left out.
-                              Interval(0x85),            # Next Line 
-                              Interval(0x2028),          # Line Separator 
-                              Interval(0x2029)]),        # Paragraph Separator 
-            self.specify_newline("[ ]", default_newline, 1, self.fh)
+        if len(self.newline_db) == 0:
+            default_newline = NumberSet(ord('\n'))
+            # default_newline = NumberSet([Interval(0x0A), # Line Feed 
+            #                  Interval(0x0B),            # Vertical Tab 
+            #                  Interval(0x0C),            # Form Feed 
+            #                  #        0x0D              --> set to '0' newlines, left out.
+            #                  Interval(0x85),            # Next Line 
+            #                  Interval(0x2028),          # Line Separator 
+            #                  Interval(0x2029)])         # Paragraph Separator 
+            # self.specify_newline("[\x0A\x0B\x0C\x85\X2028\X2029]", 
+            self.specify_newline("[\\n]", default_newline, 1, self.fh)
+
+        if DefaultSpaceSpec is not None:
+            # Collect all characters mentioned in 'space_db', 'grid_db', 'newline_db'
+            def extract(db):
+                result = []
+                for x in db.itervalues():
+                    result.extend(x.get().get_intervals(PromiseToTreatWellF=True))
+                return result
+            all_char_set = NumberSet(  extract(self.space_db) 
+                                     + extract(self.grid_db) 
+                                     + extract(self.newline_db))
+            remainder = all_char_set.inverse()
+            before = self.space_db.get(DefaultSpaceSpec)
+            if before is not None:
+                remainder.unite_with(before.get())
+            self.space_db[DefaultSpaceSpec] = LocalizedParameter("space", remainder, FH, "PatternStr")
 
     def _error_if_intersection(self, Setting, FH, Name):
         assert Setting.__class__ == NumberSet
         self._error_if_intersection_base(Setting, FH, Name)
+
+        # 'newline'
+        for character_set in self.newline_db.values():
+            if character_set.get().has_intersection(Setting): 
+                Base._error_character_set_intersection(Name, character_set, FH)
 
     def specify_newline(self, PatternStr, CharSet, Count, FH=-1):
         if not isinstance(CharSet, NumberSet):
@@ -297,12 +322,20 @@ class IndentationSetup(Base):
             # not used for indentation counting.
             ending_character_set = self.newline_state_machine.get().get_ending_character_set()
             if ending_character_set.has_intersection(candidate):            
-                self._error_state_machine_intersection(Name, self.newline_state_machine, FH)
+                Base._error_state_machine_intersection(Name, self.newline_state_machine, FH)
 
         # 'suppressor'
         # Note, the suppressor pattern is free. No indentation is counted after it. Thus if
         # it ends with characters which are subject to indentation counting, then there is
         # no harm or confusion.
+
+    def _error_msg_if_defined_earlier(self, Before, FH, Key=None, Name=""):
+        """If Key is not None, than 'Before' is a database."""
+
+        if Name in ["newline", "suppressor"] and Before.get() is None: 
+            return
+        Base._error_msg_if_defined_earlier(self, Before, FH, Key, Name)
+
 
     def specify_bad(self, PatternStr, CharSet, FH=-1):
         if not isinstance(CharSet, NumberSet):
@@ -333,6 +366,10 @@ class IndentationSetup(Base):
         for character_set in self.grid_db.values():
             result.unite_with(character_set.get())
         return result
+
+    def consistency_check(self):
+        Base.consistency_check(self)
+        assert not self.newline_state_machine.get().is_empty()
 
     def __repr__(self):
         txt = Base.__repr__(self)
@@ -367,6 +404,7 @@ def parse(fh, IndentationSetupF):
     #
     skip_whitespace(fh)
 
+    default_space_spec = 1 # Define spacing of remaining characters
     while 1 + 1 == 2:
         skip_whitespace(fh)
 
@@ -374,7 +412,10 @@ def parse(fh, IndentationSetupF):
             break
         
         # A regular expression state machine
-        pattern_str, pattern = regular_expression.parse(fh)
+        if check(fh, "\\default"):
+            pattern_str, pattern = "\\default", None
+        else:
+            pattern_str, pattern = regular_expression.parse(fh)
 
         skip_whitespace(fh)
         check_or_die(fh, "=>", " after character set definition.")
@@ -385,29 +426,45 @@ def parse(fh, IndentationSetupF):
         verify_word_in_list(identifier, result.identifier_list, 
                             "Unrecognized indentation specifier '%s'." % identifier, fh)
 
-        # The following treats ALL possible identifiers, including those which may be 
-        # inadmissible for a setup. 'verify_word_in_list()' would abort in case that
-        # an inadmissible identifier has been found--so there is no harm.
-        skip_whitespace(fh)
-        if identifier == "space":
-            value = read_value_specifier(fh, "space", 1)
-            result.specify_space(pattern_str, pattern, value, fh)
-        elif identifier == "grid":
-            value = read_value_specifier(fh, "grid")
-            result.specify_grid(pattern_str, pattern, value, fh)
-        elif identifier == "bad":
-            result.specify_bad(pattern_str, pattern, fh)
-        elif identifier == "newline":
-            result.specify_newline(pattern_str, pattern, fh)
-        elif identifier == "suppressor":
-            result.specify_suppressor(pattern_str, pattern, fh)
+        if pattern is None:
+            # The '\\default' only has meaning for 'space' in a counter setup
+            if identifier != "space":
+                error_msg("Keyword '\\default' can only be used for definition of 'space'.", fh)
+            elif IndentationSetupF:
+                error_msg("Keyword '\\default' cannot be used in indentation setup.", fh)
+            default_space_spec = read_value_specifier(fh, "space", 1)
         else:
-            assert False, "Unreachable code reached."
+            # The following treats ALL possible identifiers, including those which may be 
+            # inadmissible for a setup. 'verify_word_in_list()' would abort in case that
+            # an inadmissible identifier has been found--so there is no harm.
+            skip_whitespace(fh)
+            if identifier == "space":
+                value = read_value_specifier(fh, "space", 1)
+                result.specify_space(pattern_str, pattern, value, fh)
+            elif identifier == "grid":
+                value = read_value_specifier(fh, "grid")
+                result.specify_grid(pattern_str, pattern, value, fh)
+            elif identifier == "bad":
+                result.specify_bad(pattern_str, pattern, fh)
+            elif identifier == "newline":
+                if IndentationSetupF:
+                    result.specify_newline(pattern_str, pattern, fh)
+                else:
+                    value = read_value_specifier(fh, "newline", 1)
+                    result.specify_newline(pattern_str, pattern, value, fh)
+            elif identifier == "suppressor":
+                result.specify_suppressor(pattern_str, pattern, fh)
+            else:
+                assert False, "Unreachable code reached."
 
-        if not check(fh, ";"):
-            error_msg("Missing ';' after indentation '%s' specification." % identifier, fh)
+            if not check(fh, ";"):
+                error_msg("Missing ';' after '%s' specification." % identifier, fh)
 
-    result.seal()
+    if IndentationSetupF:
+        assert default_space_spec is None
+        result.seal()
+    else:
+        result.seal(default_space_spec, fh)
     result.consistency_check(fh)
     return result
 
@@ -425,9 +482,29 @@ def read_value_specifier(fh, Keyword, Default=None):
         error_msg("Missing integer or variable name after keyword '%s'." % Keyword, fh) 
 
 def extract_trigger_set(fh, Keyword, Pattern):
-    if len(Pattern.sm.states) != 2:
-        error_msg("For indentation '%s' only patterns are addmissible which\n" % Keyword + \
-                  "can be matched by a single character, e.g. \" \" or [a-z].", fh)
+    def check_can_be_matched_by_single_character(SM):
+        bad_f      = False
+        init_state = SM.get_init_state()
+        if SM.get_init_state().is_acceptance(): 
+            bad_f = True
+        elif len(SM.states) != 2:
+            bad_f = True
+        # Init state MUST transit to second state. Second state MUST not have any transitions
+        elif len(init_state.transitions().get_target_state_index_list()) != 1:
+            bad_f = True
+        else:
+            tmp = set(SM.states.keys())
+            tmp.remove(SM.init_state_index)
+            other_state_index = tmp.__iter__().next()
+            if len(SM.states[other_state_index].transitions().get_target_state_index_list()) != 0:
+                bad_f = True
+
+        if bad_f:
+            error_msg("For '%s' only patterns are addmissible which\n" % Keyword + \
+                      "can be matched by a single character, e.g. \" \" or [a-z].", fh)
+
+    check_can_be_matched_by_single_character(Pattern.sm)
+
     transition_map = Pattern.sm.get_init_state().transitions().get_map()
     assert len(transition_map) == 1
     return transition_map.values()[0]

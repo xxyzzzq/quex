@@ -19,6 +19,7 @@
 from   quex.engine.misc.file_in            import EndOfStreamException, \
                                                   check, \
                                                   error_msg, \
+                                                  error_eof, \
                                                   get_current_line_info_number, \
                                                   open_file_or_die, \
                                                   os, \
@@ -168,7 +169,7 @@ def parse_section(fh):
 
     except EndOfStreamException:
         fh.seek(position)
-        error_msg("End of file reached while parsing '%s' section" % word, fh)
+        error_eof(word, fh)
 
 def parse_pattern_name_definitions(fh):
     """Parses pattern definitions of the form:

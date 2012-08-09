@@ -1,7 +1,7 @@
 .. _sec-advanced-indentation-blocks:
 
 Indentation Based Blocks
-========================
+------------------------
 
 With the rise of the Python programming language, the use of indentation as the
 block delimiter has become popular. Classical programming languages such as C,
@@ -96,8 +96,8 @@ the setting of the above parameters.
 Indentation Parameters
 ======================
 
-The syntax of parameter settings in the ``indentation`` option follows
-the scheme:
+As with ``counter`` definitions (see :ref:`sec-counter-def`), the syntax of
+parameter settings in the ``indentation`` option follows the scheme:
 
 .. code-block:: cpp
 
