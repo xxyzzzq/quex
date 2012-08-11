@@ -218,23 +218,8 @@ class Count_Grid(IndentationCounter):
         """Indentation counters may count as a consequence of a 'triggering'."""
         LanguageDB = Setup.language_db
 
-        if self.number != -1: 
-            log2 = log(self.number)/log(2)
-            if log2.is_integer():
-                # For k = a potentials of 2, the expression 'x - x % k' can be written as: x & ~log2(mask) !
-                # Thus: x = x - x % k + k = x & mask + k
-                mask = (1 << int(log2)) - 1
-                return "me->counter._indentation &= ~ ((QUEX_TYPE_INDENTATION)0x%X);\n" % mask + \
-                       "me->counter._indentation += %i;\n" % self.number + \
-                       LanguageDB.GOTO_ADDRESS(self.counter_adr)
-            else:
-                add_str = "%i" % self.number
-        else:   
-            add_str = "me->" + self.variable_name
-
-        return "me->counter._indentation = (me->counter._indentation - (me->counter._indentation %% %s)) + %s;" \
-               % (add_str, add_str) + \
-               LanguageDB.GOTO_ADDRESS(self.counter_adr)
+        return   LanguageDB.GRID_STEP("me->counter._indentation", "QUEX_TYPE_INDENTATION", self.number) + "\n" \
+               + LanguageDB.GOTO_ADDRESS(self.counter_adr)
 
 class Detect_Bad(IndentationCounter):
     """________________________________________________________________________

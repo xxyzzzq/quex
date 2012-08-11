@@ -29,6 +29,7 @@ from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   copy                                              import copy
 
 from   itertools import islice
+from   math      import log
 
 #________________________________________________________________________________
 # C++
@@ -315,6 +316,48 @@ class LanguageDB_Cpp(dict):
     def GOTO_SHARED_ENTRY(self, TemplateIndex, EntryN=None):
         if EntryN is None: return "goto _%i_shared_entry;"    % TemplateIndex
         else:              return "goto _%i_shared_entry_%i;" % (TemplateIndex, EntryN)
+
+    def GRID_STEP(self, VariableName, TypeName, GridWidth, Multiplier=None):
+        """A grid step is an addition which depends on the current value 
+        of a variable. It sets the value to the next valid value on a grid
+        with a given width. The general solution is 
+
+                  x  = (x - x % GridWidth) # go back to last grid.
+                  x += GridWidth           # go to next grid step.
+
+        For 'GridWidth' as a power of '2' there is a slightly more
+        efficient solution.
+        """
+
+        def get_log2_if_power_of_2(GridWidth):
+            if not isinstance(GridWidth, (int, long)):
+                return None
+            log2 = log(GridWidth)/log(2)
+            if not log2.is_integer(): return None
+            return log2
+            
+        if isinstance(GridWidth, (str, unicode)):
+            grid_with_str = "me->" + GridWidth
+        else:
+            grid_with_str = "%s" % GridWidth
+
+        log2 = get_log2_if_power_of_2(GridWidth)
+        if log2 is not None:
+            # For k = a potentials of 2, the expression 'x - x % k' can be written as: x & ~mask(log2) !
+            # Thus: x = x - x % k + k = x & mask + k
+            mask = (1 << int(log2)) - 1
+            cut_str = "%s &= ~ ((%s)0x%X);\n" \
+                      % (VariableName, TypeName, mask)
+        else:
+            cut_str = "%s -= (%s %% %s);" \
+                      % (VariableName, VariableName, grid_with_str)
+
+        if Multiplier is not None:
+            add_str = "%s += %s * %s;" % (VariableName, grid_with_str, Multiplier)
+        else:
+            add_str = "%s += %s;"      % (VariableName, grid_with_str)
+
+        return cut_str + add_str
 
     def MODE_GOTO(self, Mode):
         return "QUEX_NAME(enter_mode)(&self, &%s);" % Mode

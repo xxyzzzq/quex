@@ -130,28 +130,14 @@
  * __QUEX_COUNT_NEWLINE_N_COLUMN_N_GRID_X() 
  * __QUEX_COUNT_NEWLINE_N_COLUMN_X_GRID_0_H() 
  *    '-- newline number pre-determined and column number not? what a strange 
- *        pattern. Use general 'Counter_homogeneous_count()'
+ *        pattern. Use general  __QUEX_COUNT_NEWLINE_X_COLUMN_X_GRID_X
+ * __QUEX_COUNT_NEWLINE_N_COLUMN_X_GRID_0(Y) 
+ *    '-- newline number pre-determined and column number not? what a strange 
+ *        pattern. Use general  __QUEX_COUNT_NEWLINE_X_COLUMN_X_GRID_X
+ * __QUEX_COUNT_NEWLINE_X_COLUMN_0_GRID_X() 
+ *    '-- nonsense; if there can be a grid, then the column increment must
+ *        be there.
 */
-
-#   define __QUEX_COUNT_NEWLINE_0_COLUMN_0_GRID_X()     Counter_count_with_grid();
-#   define __QUEX_COUNT_NEWLINE_0_COLUMN_N_GRID_0(X)    __QUEX_IF_COUNT_COLUMNS_ADD(X);
-#   define __QUEX_COUNT_NEWLINE_0_COLUMN_X_GRID_0_H()   Counter_homogeneous_count_to_newline_backwards();
-#   define __QUEX_COUNT_NEWLINE_0_COLUMN_X_GRID_0()     Counter_count_with_grid();
-#   define __QUEX_COUNT_NEWLINE_0_COLUMN_X_GRID_X()     Counter_count_with_grid();
-#   define __QUEX_COUNT_NEWLINE_N_COLUMN_0_GRID_0(Y)    __QUEX_IF_COUNT_LINES_ADD(Y);
-#   define __QUEX_COUNT_NEWLINE_N_COLUMN_0_GRID_X()     Counter_count_with_grid();
-#   define __QUEX_COUNT_NEWLINE_N_COLUMN_N_GRID_0(X, Y) __QUEX_IF_COUNT_COLUMNS_ADD(X);\
-                                                        __QUEX_IF_COUNT_LINES_ADD(Y);
-#   define __QUEX_COUNT_NEWLINE_N_COLUMN_X_GRID_0()     Counter_count();
-#   define __QUEX_COUNT_NEWLINE_N_COLUMN_X_GRID_X()     Counter_count_with_grid();
-#   define __QUEX_COUNT_NEWLINE_X_COLUMN_0_GRID_0()     Counter_count_newlines();
-#   define __QUEX_COUNT_NEWLINE_X_COLUMN_0_GRID_X()     Counter_count_with_grid();
-#   define __QUEX_COUNT_NEWLINE_X_COLUMN_N_GRID_0(X)    Counter_count_newlines();       \
-                                                        __QUEX_IF_COUNT_COLUMNS_ADD(X);
-#   define __QUEX_COUNT_NEWLINE_X_COLUMN_X_GRID_0_H()   Counter_homogeneous_count(); \
-#   define __QUEX_COUNT_NEWLINE_X_COLUMN_X_GRID_0()     Counter_count();
-#   define __QUEX_COUNT_NEWLINE_X_COLUMN_X_GRID_X()     Counter_count_with_grid();
-
 #   define __QUEX_COUNT_VOID(ME) \
            __QUEX_COUNTER_SHIFT_VALUES(ME);                                                    \
            QUEX_NAME(Counter_count)(&(ME), self.buffer._lexeme_start_p, self.buffer._input_p); \

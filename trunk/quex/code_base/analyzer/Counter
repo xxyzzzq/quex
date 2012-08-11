@@ -45,23 +45,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void  QUEX_NAME(Counter_copy_construct)(QUEX_NAME(Counter)*      me, 
                                                        const QUEX_NAME(Counter)* That);
 
-    /* General Count: Characters involved in column counting do NOT have the same width. */
-    QUEX_INLINE void  QUEX_NAME(Counter_homogeneous_count)(QUEX_NAME(Counter)*         me, 
-                                                           const QUEX_TYPE_CHARACTER*  Lexeme, 
-                                                           const QUEX_TYPE_CHARACTER*  LexemeEnd);
-    /* Counter_homogeneous_count_with_grid(...) is efficiently implemented by
-     * Counter_count_with_grid(...).                                                     */
-    QUEX_INLINE QUEX_TYPE_CHARACTER*
-                      QUEX_NAME(Counter_homogeneous_count_to_newline_backwards)(QUEX_NAME(Counter)*         me, 
-                                                                                const QUEX_TYPE_CHARACTER*  Begin,
-                                                                                const QUEX_TYPE_CHARACTER*  End);
     /* General Count: All involved characters for column counting do have the same width. */
     QUEX_INLINE void  QUEX_NAME(Counter_count)(QUEX_NAME(Counter)*                   me, 
                                                          const QUEX_TYPE_CHARACTER*  Lexeme, 
                                                          const QUEX_TYPE_CHARACTER*  LexemeEnd);
-    QUEX_INLINE void  QUEX_NAME(Counter_count_with_grid)(QUEX_NAME(Counter)*        me,
-                                                         const QUEX_TYPE_CHARACTER* Lexeme,
-                                                         const QUEX_TYPE_CHARACTER* LexemeEnd);
     QUEX_INLINE void  QUEX_NAME(Counter_count_newlines)(QUEX_NAME(Counter)*        me,
                                                         const QUEX_TYPE_CHARACTER* Lexeme,
                                                         const QUEX_TYPE_CHARACTER* LexemeEnd);

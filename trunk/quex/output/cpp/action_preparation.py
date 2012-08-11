@@ -197,7 +197,6 @@ def input_position_search_backward_plug_code(ThePattern):
     bipd_str += "%s:\n" % LanguageDB.LABEL_NAME_BACKWARD_INPUT_POSITION_RETURN(bipd_id) 
     return bipd_str
 
-
 def __prepare_end_of_stream_action(Mode, IndentationSupportF, BeginOfLineSupportF):
     if not Mode.has_code_fragment_list("on_end_of_stream"):
         # We cannot make any assumptions about the token class, i.e. whether

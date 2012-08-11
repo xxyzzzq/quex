@@ -65,6 +65,57 @@ def do(ThePattern, EOF_ActionF):
     else:                           incr_str = "%i" % int(character_n)
     return "__QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, %s);" % incr_str
 
+def __doodle():
+    return __new_do() \
+           + "__quex_debug_counter();\n"
+
+def __new_do(ThePattern, EOF_ActionF):
+
+    if EOF_ActionF:
+        return "__QUEX_COUNTER_SHIFT_VALUES(&self);\n" 
+
+    counter = None
+
+    if not counter.is_determined():
+        if not counter.has_grid():
+            return "QUEX_NAME(Counter_count)(&self.counter, LexemeBegin, LexemeEnd);\n"
+        else:
+            return "QUEX_NAME(Counter_count_with_grid)(&self.counter, LexemeBegin, LexemeEnd);\n"
+
+    if counter.newline_n == E_Count.LEXEME_L:
+        line_txt = "__QUEX_IF_COUNT_LINES_ADD(LexemeL);\n" 
+    elif counter.newline_n > 0:
+        line_txt = "__QUEX_IF_COUNT_LINES_ADD(%i);\n" % counter.newline_n
+    elif counter.newline_n < 0:
+        # Line number increment proportional to LexemeL
+        line_txt = "__QUEX_IF_COUNT_LINES_ADD(LexemeL * %s);\n" % (- counter.newline_n)
+    else:
+        line_txt = ""
+
+    if counter.column_n == E_Count.LEXEME_L:
+        column_txt = "__QUEX_IF_COUNT_LINES_ADD(LexemeL);\n" 
+    elif counter.column_n > 0:
+        column_txt = "__QUEX_IF_COUNT_LINES_ADD(%i);\n" % counter.column_n
+    elif counter.column_n < 0:
+        # Line number increment proportional to LexemeL
+        column_txt = "__QUEX_IF_COUNT_LINES_ADD(LexemeL * %s);\n" % (- counter.column_n)
+    else:
+        column_txt = ""
+
+    if counter.grid_width == E_Count.LEXEME_L:
+        column_txt = "__QUEX_IF_COUNT_LINES_ADD(LexemeL);\n" 
+    elif counter.grid_n > 0:
+        column_txt = "__QUEX_IF_COUNT_LINES_ADD(%i);\n" % counter.column_n
+    elif counter.grid_n < 0:
+        # Line number increment proportional to LexemeL
+        column_txt = "__QUEX_IF_COUNT_LINES_ADD(LexemeL * %s);\n" % (- counter.column_n)
+    else:
+        column_txt = ""
+
+    return "__QUEX_COUNTER_SHIFT_VALUES(&self);\n" \
+           + line_txt \
+           + column_txt
+
 def __new_do(ThePattern, EOF_ActionF):
     """Prepare additional actions around a pattern action which are required 
     for line and column number counting. 
@@ -111,44 +162,6 @@ def __new_do(ThePattern, EOF_ActionF):
     For GRID:    0, X
                  Not 'N', because A fixed number of grid triggers does not 
                  provide any computational advantage.
-
-
-"""
-
-solution_db = {
-#        NewlineN   ColumnN   Grid  Homogeneous  Function(s)
-        ("0",       "0",      "0", None):  "-- impossible --",
-        ("0",       "0",      "X", None):  "Counter_count_with_grid()",
-        ("0",       "S",      "X", None):  "-- impossible --",
-        ("0",       "N",      "0", None):  "column_n += N",
-        ("0",       "N",      "X", None):  "-- impossible --",
-        ("0",       "X",      "0", True):  "Counter_homogeneous_count_to_newline_backwards()",
-        ("0",       "X",      "0", False): "Counter_count_with_grid()",
-        ("0",       "X",      "X", None):  "Counter_count_with_grid()",
-
-        ("N",       "0",      "0", None):  "line_n += N",
-        ("N",       "0",      "X", None):  "Counter_count_with_grid()",
-        ("N",       "S",      "X", None):  "-- impossible --",
-        ("N",       "N",      "0", None):  "column_n += N; line_n += N;",
-        ("N",       "N",      "X", None):  "-- impossible --",
-        ("N",       "X",      "0", True):  "Counter_homogeneous_count_to_newline_backwards()" \
-                                           "line_n += N;",
-        ("N",       "X",      "0", False): "Counter_count_with_grid()",
-        ("N",       "X",      "X", None):  "Counter_count_with_grid()",
-
-        ("X",       "0",      "0", None):  "Counter_count_newlines()",
-        ("X",       "0",      "X", None):  "Counter_count_with_grid()",
-        ("X",       "S",      "X", None):  "-- impossible --",
-        ("X",       "N",      "0", None):  "column_n += N; " \
-                                           "Counter_count_newlines();",
-        ("X",       "N",      "X", None):  "-- impossible --",
-        ("X",       "X",      "0", True):  "Counter_homogeneous_count_to_newline_backwards()" \
-                                           "Counter_count_newlines(Begin, NewlinePos);",
-        ("X",       "X",      "0", False): "Counter_count_with_grid()",
-        ("X",       "X",      "X", None):  "Counter_count_with_grid()",
-}
-    
-"""
 
     Option NEWLINE_N only makes sense with GRID_0, because only then, the
     column number can be determined by counting backwards to the last 
