@@ -367,8 +367,8 @@ class IndentationSetup(Base):
             result.unite_with(character_set.get())
         return result
 
-    def consistency_check(self):
-        Base.consistency_check(self)
+    def consistency_check(self, fh):
+        Base.consistency_check(self, fh)
         assert not self.newline_state_machine.get().is_empty()
 
     def __repr__(self):
@@ -416,6 +416,7 @@ def parse(fh, IndentationSetupF):
             pattern_str, pattern = "\\default", None
         else:
             pattern_str, pattern = regular_expression.parse(fh)
+            assert pattern is not None
 
         skip_whitespace(fh)
         check_or_die(fh, "=>", " after character set definition.")
@@ -461,7 +462,7 @@ def parse(fh, IndentationSetupF):
                 error_msg("Missing ';' after '%s' specification." % identifier, fh)
 
     if IndentationSetupF:
-        assert default_space_spec is None
+        assert default_space_spec is 1
         result.seal()
     else:
         result.seal(default_space_spec, fh)
@@ -515,6 +516,6 @@ def LineColumnCounterSetup_Default():
 
     if _LineColumnCounterSetup_Default is None:
         _LineColumnCounterSetup_Default = LineColumnCounterSetup()
-        _LineColumnCounterSetup_Default.seal()
+        _LineColumnCounterSetup_Default.seal(DefaultSpaceSpec=1, FH=-1)
     return _LineColumnCounterSetup_Default
 

@@ -17,12 +17,12 @@ def do(SM, CounterDB):
             
                              E_Count.NONE,   
 
-                             if no grid character is involved.
+                                if no grid character is involved.
 
                              E_Count.VOID,
 
-                             if some grid characters are involved, but increase 
-                             of column_n must be determined at run-time.
+                                if some grid characters are involved, but increase 
+                                of column_n must be determined at run-time.
 
     If [0] or [1] is 'E_Count.VOID', then the its value depends on the matched
     lexeme. Then, the pattern itself does not directly allow to determine its 

@@ -317,7 +317,7 @@ class LanguageDB_Cpp(dict):
         if EntryN is None: return "goto _%i_shared_entry;"    % TemplateIndex
         else:              return "goto _%i_shared_entry_%i;" % (TemplateIndex, EntryN)
 
-    def GRID_STEP(self, VariableName, TypeName, GridWidth, Multiplier=None):
+    def GRID_STEP(self, VariableName, TypeName, GridWidth, StepN=1):
         """A grid step is an addition which depends on the current value 
         of a variable. It sets the value to the next valid value on a grid
         with a given width. The general solution is 
@@ -336,10 +336,8 @@ class LanguageDB_Cpp(dict):
             if not log2.is_integer(): return None
             return log2
             
-        if isinstance(GridWidth, (str, unicode)):
-            grid_with_str = "me->" + GridWidth
-        else:
-            grid_with_str = "%s" % GridWidth
+        if isinstance(GridWidth, (str, unicode)): grid_with_str = "me->" + GridWidth
+        else:                                     grid_with_str = "%s" % GridWidth
 
         log2 = get_log2_if_power_of_2(GridWidth)
         if log2 is not None:
@@ -352,10 +350,8 @@ class LanguageDB_Cpp(dict):
             cut_str = "%s -= (%s %% %s);" \
                       % (VariableName, VariableName, grid_with_str)
 
-        if Multiplier is not None:
-            add_str = "%s += %s * %s;" % (VariableName, grid_with_str, Multiplier)
-        else:
-            add_str = "%s += %s;"      % (VariableName, grid_with_str)
+        if StepN != 1: add_str = "%s += %s * %s;" % (VariableName, grid_with_str, StepN)
+        else:          add_str = "%s += %s;"      % (VariableName, grid_with_str)
 
         return cut_str + add_str
 

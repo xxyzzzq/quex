@@ -1,15 +1,19 @@
 
-import quex.input.regular_expression.core                  as regular_expression
-import quex.input.files.mode_option                        as mode_option
-import quex.input.files.code_fragment                      as code_fragment
-from   quex.input.files.counter_setup                      import LineColumnCounterSetup_Default, CounterDB
-import quex.input.files.consistency_check                  as consistency_check
-import quex.engine.state_machine.check.identity            as identity_checker
-import quex.engine.generator.state.indentation_counter     as     indentation_counter
-from   quex.engine.generator.action_info                   import CodeFragment, \
-                                                                  UserCodeFragment, \
-                                                                  GeneratedCode, \
-                                                                  PatternActionInfo
+import quex.input.regular_expression.core              as     regular_expression
+import quex.input.files.mode_option                    as     mode_option
+import quex.input.files.code_fragment                  as     code_fragment
+from   quex.input.files.counter_setup                  import LineColumnCounterSetup_Default, CounterDB
+import quex.input.files.consistency_check              as     consistency_check
+import quex.engine.state_machine.check.identity        as     identity_checker
+import quex.engine.generator.state.indentation_counter as     indentation_counter
+from   quex.engine.generator.action_info               import CodeFragment, \
+                                                              UserCodeFragment, \
+                                                              GeneratedCode, \
+                                                              PatternActionInfo
+from   quex.engine.state_machine.core                  import StateMachine
+import quex.engine.state_machine.repeat                as     repeat
+import quex.engine.state_machine.sequentialize         as     sequentialize
+import quex.engine.state_machine.algorithm.beautifier  as     beautifier
 from   quex.engine.misc.file_in import EndOfStreamException, \
                                        check, \
                                        check_or_die, \
@@ -433,7 +437,7 @@ class Mode:
             code = UserCodeFragment("goto %s;" % get_label("$start", U=True), 
                                     isetup.newline_suppressor_state_machine.file_name, 
                                     isetup.newline_suppressor_state_machine.line_n)
-            pap_suppressed_newline = PatternActionInfo(get_pattern_object(sm), code, 
+            pap_suppressed_newline = PatternActionInfo(mode_option.get_pattern_object(sm), code, 
                                                        pattern_str, 
                                                        ModeName=self.name, 
                                                        Comment=E_SpecialPatterns.SUPPRESSED_INDENTATION_NEWLINE)
@@ -461,7 +465,7 @@ class Mode:
                                  isetup.newline_state_machine.line_n)
         action.data["indentation_setup"] = isetup
 
-        pap_newline = PatternActionInfo(get_pattern_object(sm), action, 
+        pap_newline = PatternActionInfo(mode_option.get_pattern_object(sm), action, 
                                         isetup.newline_state_machine.pattern_string(), 
                                         ModeName=self.name, 
                                         Comment=E_SpecialPatterns.INDENTATION_NEWLINE)

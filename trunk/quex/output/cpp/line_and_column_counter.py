@@ -65,7 +65,7 @@ def do(ThePattern, EOF_ActionF):
     else:                           incr_str = "%i" % int(character_n)
     return "__QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(self.counter, %s);" % incr_str
 
-def __doodle():
+def do(ThePattern, EOF_ActionF):
     return __new_do() \
            + "__quex_debug_counter();\n"
 
@@ -82,35 +82,38 @@ def __new_do(ThePattern, EOF_ActionF):
         else:
             return "QUEX_NAME(Counter_count_with_grid)(&self.counter, LexemeBegin, LexemeEnd);\n"
 
-    if counter.newline_n == E_Count.LEXEME_L:
-        line_txt = "__QUEX_IF_COUNT_LINES_ADD(LexemeL);\n" 
-    elif counter.newline_n > 0:
-        line_txt = "__QUEX_IF_COUNT_LINES_ADD(%i);\n" % counter.newline_n
-    elif counter.newline_n < 0:
-        # Line number increment proportional to LexemeL
-        line_txt = "__QUEX_IF_COUNT_LINES_ADD(LexemeL * %s);\n" % (- counter.newline_n)
+    # (*) Column Number Increment Considerations
+    if counter.grid != E_Count.NONE:
+        if counter.grid > 0:
+            if   counter.grid_step_n == 1:                     arg = None
+            elif counter.grid_step_n == E_Count.LEXEME_LENGTH: arg = "LexemeL"
+            else:                                              assert False
+
+            core_txt = LanguageDB.GRID_STEP("self.counter._column_number_at_end", 
+                                            counter.grid_width, arg)
+            column_txt = "__QUEX_IF_COUNT_COLUMNS(%s);\n" % core_txt
+        else:
+            return "QUEX_NAME(Counter_count_with_grid)(&self.counter, LexemeBegin, LexemeEnd);\n"
     else:
+        if   counter.column_n == 0:
+            column_txt = ""
+        else:
+            if counter.column_n_proportional_to_lexeme_length():
+                if counter.column_n == 1: arg = "LexemeL"
+                else:                     arg = "LexemeL * %i" % counter.column_n
+            else:                         arg = "%i" % counter.column_n
+            column_txt = "__QUEX_IF_COUNT_COLUMNS_ADD(%s);\n" % arg
+
+
+    # (*) Line Number Increment Considerations
+    if   counter.newline_n == 0:
         line_txt = ""
-
-    if counter.column_n == E_Count.LEXEME_L:
-        column_txt = "__QUEX_IF_COUNT_LINES_ADD(LexemeL);\n" 
-    elif counter.column_n > 0:
-        column_txt = "__QUEX_IF_COUNT_LINES_ADD(%i);\n" % counter.column_n
-    elif counter.column_n < 0:
-        # Line number increment proportional to LexemeL
-        column_txt = "__QUEX_IF_COUNT_LINES_ADD(LexemeL * %s);\n" % (- counter.column_n)
     else:
-        column_txt = ""
-
-    if counter.grid_width == E_Count.LEXEME_L:
-        column_txt = "__QUEX_IF_COUNT_LINES_ADD(LexemeL);\n" 
-    elif counter.grid_n > 0:
-        column_txt = "__QUEX_IF_COUNT_LINES_ADD(%i);\n" % counter.column_n
-    elif counter.grid_n < 0:
-        # Line number increment proportional to LexemeL
-        column_txt = "__QUEX_IF_COUNT_LINES_ADD(LexemeL * %s);\n" % (- counter.column_n)
-    else:
-        column_txt = ""
+        if counter.newline_n_proportional_to_lexeme_length():
+            if counter.newline_n == 1: arg = "LexemeL"
+            else:                      arg = "LexemeL * %i" % counter.newline_n
+        else:                          arg = "%i" % counter.newline_n
+        line_txt = "__QUEX_IF_COUNT_LINES_ADD(%s);\n" % arg
 
     return "__QUEX_COUNTER_SHIFT_VALUES(&self);\n" \
            + line_txt \
