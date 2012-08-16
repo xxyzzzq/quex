@@ -106,6 +106,24 @@ class CountInfo(object):
             else:
                 self.increment_column_n_per_char = 0
 
+    def is_determined(self):
+        # Note, that 'grid' only tells about grid sizes being homogeneous.
+        return self.line_n != E_Count.VOID and self.column_n != E_Count.VOID
+
+    def has_grid(self):
+        return self.grid != E_Count.VIRGIN
+
+    def column_n_proportional_to_lexeme_length(self):
+        return     self.column_increment_per_step != E_Count.VOID \
+               and self.column_n                  == E_Count.VOID
+
+    def line_n_proportional_to_lexeme_length(self):
+        return     self.line_increment_per_step != E_Count.VOID \
+               and self.line_n                  == E_Count.VOID
+
+
+
+
 def _determine_grid_parameter(SM, CounterDB):
     """The CharacterCountTracer has been aborted (which is a good thing). Now,
     the grid information has to be determined extra. As mentioned in the calling
@@ -118,7 +136,7 @@ def _determine_grid_parameter(SM, CounterDB):
       E_Count.VOID, if some grid characters are involved, but increase of 
                     column_n must be determined at run-time.
     """
-    prototype = E_Count.NONE
+    prototype = E_Count.VIRGIN
     for state in SM.states.itervalues():
         for character_set in state.transitions().get_map().itervalues():
             for grid_size, grid_character_set in CounterDB.grid.iteritems():
@@ -128,8 +146,8 @@ def _determine_grid_parameter(SM, CounterDB):
                 if x is None:            # Grid appears, but also others.
                     return E_Count.VOID
                 elif x == True:          # Only 'Grid' appears.
-                    if   prototype is E_Count.NONE: prototype = grid_size
-                    elif prototype != grid_size:    return E_Count.VOID
+                    if   prototype == E_Count.VIRGIN: prototype = grid_size
+                    elif prototype != grid_size:      return E_Count.VOID
 
     return prototype
 
@@ -269,62 +287,89 @@ class Count(object):
                 self.column_n = E_Count.VOID  # transition. => delta line, delta column = void.
                 return False # Abort
 
-        for grid_size, character_set in Count.counter_db.grid.iteritems():
-            x = _check_set(character_set, CharacterSet)
-            if x == False: continue
-            Count.announce_grid_size(grid_size)
-            Count.contains_grid_f = True
+        if self.column_n != E_Count.VOID:
+            for grid_size, character_set in Count.counter_db.grid.iteritems():
+                x = _check_set(character_set, CharacterSet)
+                if x == False: continue
+                Count.announce_grid_size(grid_size)
 
-            if x == True:
-                self.column_n = (self.column_n // grid_size + 1) * grid_size
-                return True
-            else:
-                # Same transition with characters of different horizonzal size.
-                # => delta column_n = VOID
+                # In any case, as soon as a 'grid step' comes into play, the column
+                # number increment becomes VOID, because it depends on the current
+                # column number.
                 self.column_n = E_Count.VOID
                 return self.line_n is not E_Count.VOID # Abort, if line_n is also void.
 
-        for delta_column_n, character_set in Count.counter_db.special.iteritems():
-            x = _check_set(character_set, CharacterSet)
-            if x == False: continue
-            Count.announce_column_n_per_step(delta_column_n)
+            # Still, 'self.column_n != E_Count.VOID'. Otherwise, 'return' was triggered.
+            for delta_column_n, character_set in Count.counter_db.special.iteritems():
+                x = _check_set(character_set, CharacterSet)
+                if x == False: continue
+                Count.announce_column_n_per_step(delta_column_n)
 
-            if x == True:
-                self.column_n += delta_column_n
-                return True
-            else:
-                # Same transition with characters of different horizonzal size.
-                # => delta column_n = VOID
-                self.column_n = E_Count.VOID
-                return self.line_n is not E_Count.VOID # Abort, if line_n is also void.
+                if x == True and Count.grid == E_Count.VIRGIN:
+                    self.column_n += delta_column_n
+                    return True
+                else:
+                    # Same transition with characters of different horizonzal size.
+                    # => delta column_n = VOID
+                    self.column_n = E_Count.VOID
+                    return self.line_n is not E_Count.VOID # Abort, if line_n is also void.
 
-        if   self.column_n == E_Count.VIRGIN: 
-            self.column_n = 1
-        elif self.column_n != E_Count.VOID:                               
-            self.column_n += 1
-            Count.announce_column_n_per_step(1)
-        
         return True # Do not abort, yet
 
     @staticmethod
+    def announce_column_n_per_step(DeltaLineN):
+        if  Count.grid != E_Count.VIRGIN: 
+            # A column_n step makes the grid steps automaticall inhomogeneous, 
+            # and vice versa.
+            Count.grid                      = E_Count.VOID
+            Count.column_increment_per_step = E_Count.VOID
+
+        elif Count.column_increment_per_step == E_Count.VOID:   
+            return # Has been 'voided' before. 
+
+        elif Count.column_increment_per_step == E_Count.VIRGIN: 
+            Count.column_increment_per_step = DeltaLineN
+
+        elif Count.column_increment_per_step != DeltaLineN:     
+            # If a different column_n step appeared before, then things are void.
+            Count.column_increment_per_step = E_Count.VOID
+
+        else:                                                   
+            return # .column_increment_per_step remains '== 'DeltaLineN'
+
+    @staticmethod
     def announce_grid_size(GridSize):
-        if   Count.grid == E_Count.NONE: Count.grid = GridSize
-        elif Count.grid != GridSize:     Count.grid = E_Count.VOID
-        else:                            pass # Count.grid remains 'GridSize'
+        if Count.column_increment_per_step != E_Count.VIRGIN: 
+            # A column_n step makes the grid steps automatically inhomogeneous, 
+            # and vice versa.
+            Count.grid                      = E_Count.VOID
+            Count.column_increment_per_step = E_Count.VOID
+
+        elif Count.grid == E_Count.VOID:   
+            return # Has been 'voided' before. 
+
+        elif Count.grid == E_Count.VIRGIN: 
+            Count.grid = GridSize
+
+        elif Count.grid != GridSize:     
+            # If a different column_n step appeared before, then things are void.
+            Count.grid = E_Count.VOID
+
+        else:                                                   
+            return # .grid remains '== GridSize'
 
     @staticmethod
     def announce_line_n_per_step(DeltaLineN):
-        if Count.line_increment_per_step == E_Count.VIRGIN: 
+        if   Count.line_increment_per_step == E_Count.VOID:
+            return # Has been 'voided' before.
+        
+        elif Count.line_increment_per_step == E_Count.VIRGIN: 
             Count.line_increment_per_step = DeltaLineN
+
         elif Count.line_increment_per_step != DeltaLineN:   
             Count.line_increment_per_step = E_Count.VOID
-
-    @staticmethod
-    def announce_column_n_per_step(DeltaLineN):
-        if Count.column_increment_per_step == E_Count.VIRGIN: 
-            Count.column_increment_per_step = DeltaLineN
-        elif Count.column_increment_per_step != DeltaLineN:   
-            Count.column_increment_per_step = E_Count.VOID
+        else:
+            return # .line_increment_per_step remains '== DeltaLineN'
 
 def _check_set(CmpSet, CharacterSet):
     """Compare 'CmpSet' with 'CharacterSet'

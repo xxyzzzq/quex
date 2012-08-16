@@ -195,7 +195,7 @@ class Mode:
 
         # (3) Try to determine line and column counts
         for pap in self.__pattern_action_pair_list:
-            pap.pattern().do_count(self.__counter_db)
+            pap.pattern().prepare_count_info(self.__counter_db)
 
         # (4) Collection Options
         self.__collect_options()

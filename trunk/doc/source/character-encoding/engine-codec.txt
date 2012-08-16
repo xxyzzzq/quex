@@ -178,8 +178,24 @@ generated lexical analyzer. This enables lexical analyzers that run fast on
 codecs different from Unicode or ASCII. However, there are two drawbacks. First
 of all not all possible codecs are supported[#f1]_. Second, once an engine has
 been created for a particular codec, the codec is fixed and the engine can only
-run on this codec. Thus subsequent sections focuss on the 'converter approach'
+run on this codec. Thus subsequent sections focus on the 'converter approach'
 where the internal engine remains running on Unicode, but the buffer filler
 performs the conversion. It is not run time efficient as the internal engine
 codec, but more flexible, in case that the generated analyzer has to deal with
 a wide range of codecs.
+
+.. warning:: 
+
+    At the time of this writing, the line and column counting for codec-based
+    engines may not work properly for patterns where the length can only be
+    determined at run-time. This is due to the fact that not all characters are
+    necessarily represented by the same number of bytes and the dynamic line
+    and column counter does not reflect on the level of interpreted bytes.
+    That means, that it does not know about UTF8, UTF16, etc. Future versions
+    may very well incorporate an advanced line and column counter for
+    codec-engines.
+
+    With this respect, it is advantageous to use a converter with a Unicode
+    based buffer, rather than the more compact and possibly faster codec
+    based approach.
+

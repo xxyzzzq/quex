@@ -58,27 +58,23 @@ class Pattern(object):
         
         self.__validate(fh)
 
-        self.__count = None
+        self.__count_info = None
 
-    def do_count(self, LineColumn_CounterDB):                
+    def prepare_count_info(self, LineColumn_CounterDB):                
         """Perform line/column counting on the core pattern, i.e. the pattern
         which is not concerned with the post context. The counting happens 
         on a UNICODE state machine--not on a possibly transformed codec state
         machine.
         """
-        if self.__count is None:
-            self.__count = character_counter.do(self.__original_core_sm, 
+        if self.__count_info is None:
+            self.__count_info = character_counter.do(self.__original_core_sm, 
                                                 LineColumn_CounterDB)
             # Original core state machine is no longer required.
             self.__original_core_sm = None # Shall trigger a deletion
-        return self.__count
+        return self.__count_info
 
     @property
-    def count(self):                               return self.__count
-    @property
-    def newline_n(self):                           return self.__count.line_n
-    @property
-    def character_n(self):                         return self.__count.column_n
+    def count_info(self):                               return self.__count_info
     @property
     def sm(self):                                  return self.__sm
     @property
