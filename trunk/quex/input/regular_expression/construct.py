@@ -73,7 +73,6 @@ class Pattern(object):
             self.__original_core_sm = None # Shall trigger a deletion
         return self.__count_info
 
-    @property
     def count_info(self):                               return self.__count_info
     @property
     def sm(self):                                  return self.__sm

@@ -24,20 +24,24 @@ def do(ThePattern, EOF_ActionF):
     that the 'prepare_count_info()' function has not been called for it.  
     """
     return __do(ThePattern, EOF_ActionF) \
-           + "__quex_debug_counter();\n"
+           + "    __quex_debug_counter();\n"
 
 def __do(ThePattern, EOF_ActionF):
 
     if EOF_ActionF:
-        return "__QUEX_COUNTER_SHIFT_VALUES(&self);\n" 
+        return "__QUEX_COUNTER_SHIFT_VALUES(self.counter);\n" 
 
-    counter = ThePattern.count()
+    if ThePattern is None:
+        # 'on_failure' ... count any appearing character
+        return "QUEX_NAME(Counter_count)(&self.counter, LexemeBegin, LexemeEnd);\n"
+        ## return "QUEX_NAME(Counter_count_with_grid)(&self.counter, LexemeBegin, LexemeEnd);\n"
+
+    counter = ThePattern.count_info()
 
     if not counter.is_determined():
-        if not counter.has_grid():
             return "QUEX_NAME(Counter_count)(&self.counter, LexemeBegin, LexemeEnd);\n"
-        else:
-            return "QUEX_NAME(Counter_count_with_grid)(&self.counter, LexemeBegin, LexemeEnd);\n"
+        ## else:
+        ##    return "QUEX_NAME(Counter_count_with_grid)(&self.counter, LexemeBegin, LexemeEnd);\n"
 
     # (*) Column Number Increment Considerations
     if counter.has_grid():
@@ -50,7 +54,8 @@ def __do(ThePattern, EOF_ActionF):
                                             counter.grid_width, arg)
             column_txt = "__QUEX_IF_COUNT_COLUMNS(%s);\n" % core_txt
         else:
-            return "QUEX_NAME(Counter_count_with_grid)(&self.counter, LexemeBegin, LexemeEnd);\n"
+            return "QUEX_NAME(Counter_count)(&self.counter, LexemeBegin, LexemeEnd);\n"
+            ## return "QUEX_NAME(Counter_count_with_grid)(&self.counter, LexemeBegin, LexemeEnd);\n"
     else:
         if   counter.column_n == 0:
             column_txt = ""
@@ -74,7 +79,7 @@ def __do(ThePattern, EOF_ActionF):
         else:                  arg = "%i" % counter.newline_n
         line_txt = "__QUEX_IF_COUNT_LINES_ADD(%s);\n" % arg
 
-    return "__QUEX_COUNTER_SHIFT_VALUES(&self);\n" \
+    return "__QUEX_COUNTER_SHIFT_VALUES(self.counter);\n" \
            + line_txt \
            + column_txt
 
