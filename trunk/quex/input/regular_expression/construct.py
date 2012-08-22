@@ -68,7 +68,8 @@ class Pattern(object):
         """
         if self.__count_info is None:
             self.__count_info = character_counter.do(self.__original_core_sm, 
-                                                LineColumn_CounterDB)
+                                                     LineColumn_CounterDB, 
+                                                     self.__pre_context_trivial_begin_of_line_f)
             # Original core state machine is no longer required.
             self.__original_core_sm = None # Shall trigger a deletion
         return self.__count_info

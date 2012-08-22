@@ -940,6 +940,5 @@ class NumberSet(object):
             txt += "\n"
         return txt
 
-
 # Range of code points that are covered by Unicode
 UnicodeInterval = Interval(0x0, 0x110000)
