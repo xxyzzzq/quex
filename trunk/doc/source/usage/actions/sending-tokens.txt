@@ -180,6 +180,39 @@ example is shown here:
     \U010455  => UC SHAVIAN_LETTER_MEASURE;
     \x23      => UC NUMBER_SIGN;
 
+.. warning::
+
+   The token is not initialized upon sending! In particular, this means, that
+   elements of the token which are not explicitly set during the sending are
+   left as they are. Tokens are considered as 'ships' that are constructed
+   before the analysis and destructed after the analyzis. They ship token
+   information from the lexer to the user (parser). But, the construction
+   process is not supposed to slow down the lexical analysis.
+   
+   When a token is 'sent' only the content that is explicitly set is changed,
+   old content remains as is.  If a token carries a ``.text`` and a ``.number``
+   member, but during sending only ``.text`` is set, then ``.number`` contains
+   the value which it has been assigned the last time ``.number`` has used.
+
+The token id accomplishes two functions: It identifies the detected lexeme as
+belonging to a certain category and it tells what content (object members) of
+the token are relevant for further analysis. There must be an understanding of
+what elements of a token may to be considered upon the reception of a token
+with a given token id. This information may be coded into the name of the token
+id, for example::
+
+        token {
+            N_NUMBER;   // Prefix 'N_' for 'token.number' being used.
+            T_VARIABLE; // Prefix 'T_' for 'token.text' being used.
+            T_KEYWORD;
+            S_MINUS;    // Prefix 'S_' for a signal where no member is used.
+            S_PLUS;
+        }
+
+Then, whenever a token id is used in the program text, it becomes obvious
+from the name what members may be safely accessed or what members need to 
+be assigned.
+
 Analyzis Continuation
 ---------------------
 
