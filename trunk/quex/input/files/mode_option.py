@@ -21,8 +21,7 @@ from   quex.engine.misc.file_in                            import error_msg, \
 from   quex.engine.generator.action_info                   import UserCodeFragment, \
                                                                   GeneratedCode
 from   quex.blackboard import E_SpecialPatterns, \
-                              mode_option_info_db, \
-                              CounterDB
+                              mode_option_info_db
 
 def parse(fh, new_mode):
     identifier = read_option_start(fh)

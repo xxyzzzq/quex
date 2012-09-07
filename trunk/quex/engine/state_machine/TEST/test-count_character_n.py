@@ -3,7 +3,24 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.input.regular_expression.engine        as core
+import quex.input.regular_expression.engine as     core
+import quex.input.files.counter_setup       as     counter_setup
+from   StringIO                             import StringIO
+
+spec_txt = """
+   [\x0A\x0b\x0c\x85\X2028\X2029\x0d] => newline 1;
+   [\t]                               => grid    4;
+>"""
+
+fh = StringIO(spec_txt)
+fh.name = "<string>"
+lcc_setup = counter_setup.parse(fh, IndentationSetupF=False)
+def adapt(db):
+    return dict((count, parameter.get()) for count, parameter in db.iteritems())
+
+counter_db = counter_setup.CounterDB(adapt(lcc_setup.space_db), 
+                                     adapt(lcc_setup.grid_db), 
+                                     adapt(lcc_setup.newline_db))
 
 if "--hwut-info" in sys.argv:
     print "Predetermined Character Count: Characters"
@@ -12,9 +29,11 @@ if "--hwut-info" in sys.argv:
 def test(TestString):
     print ("expr.  = " + TestString).replace("\n", "\\n").replace("\t", "\\t")
     pattern = core.do(TestString, {})
-    print "char-n = ", pattern.character_n
+    pattern.prepare_count_info(counter_db)
+    print "char-n = ", pattern.count_info()#.column_n_increment
 
 test('[0-9]+')
+sys.exit()
 test('"123"')
 test('"123"|"ABC"')
 test('"1234"|"ABC"')
