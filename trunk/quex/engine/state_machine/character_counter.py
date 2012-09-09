@@ -237,11 +237,11 @@ class Count(object):
         Count.grid_step_n_by_lexeme_length        = E_Count.VIRGIN
         Count.counter_db                          = CounterDB
 
-    def __init__(self, ColumnN, LineN, GridStepN, ColumnIndex):
+    def __init__(self, ColumnN, LineN, ColumnIndex):
         self.line_n_increment   = LineN
         self.column_n_increment = ColumnN
         self.column_index       = ColumnIndex
-        self.grid_step_n        = GridStepN
+        self.grid_step_n        = 0
 
     def clone(self):
         return Count(self.column_n_increment, self.line_n_increment, self.grid_step_n, self.column_index)
@@ -269,30 +269,20 @@ class Count(object):
             if character_set.is_superset(CharacterSet):
                 # 'CharacterSet' does not contain anything beyond 'character_set'
                 Count.propose_line_n_increment_by_lexeme_length(delta)
-                # Column and grid number cannot be determined by multiplication with 
-                # lexeme length.
                 Count.propose_column_n_increment_by_lexeme_length(E_Count.VOID)
                 Count.propose_grid_step_n_increment_by_lexeme_length(E_Count.VOID)
                 if isinstance(delta, (str, unicode)): self.line_n_increment  = E_Count.VOID
                 else:                                 self.line_n_increment += delta
                 self.column_n_increment   = E_Count.VOID
                 self.column_index         = 0
-                self.grid_step_n          = E_Count.VIRGIN
+                self.grid_step_n          = 0
                 return True  
 
             elif character_set.has_intersection(CharacterSet):
                 # Sometimes 'input' triggers on 'character_set', sometimes not.
                 # => Counts are no longer deterministic.
-                # Column and grid number cannot be determined by multiplication with 
-                # lexeme length.
-                Count.propose_column_n_increment_by_lexeme_length(E_Count.VOID)
-                Count.propose_grid_step_n_increment_by_lexeme_length(E_Count.VOID)
-
-                self.line_n_increment   = E_Count.VOID   
-                self.column_n_increment = E_Count.VOID  
-                self.grid_step_n        = E_Count.VOID  
-                self.column_index       = E_Count.VOID  
-                # Column and grid number cannot be determined by multiplication with lexeme length
+                self.voidify_column_n()
+                Count.propose_line_n_increment_by_lexeme_length(E_Count.VOID)
                 return False # Abort
 
         # (*) Grid
@@ -301,16 +291,11 @@ class Count(object):
                 # 'CharacterSet' does not contain anything beyond 'character_set'
                 Count.propose_grid_step_n_by_lexeme_length(grid_size)
                 if isinstance(grid_size, (str, unicode)): 
-                    Count.propose_column_n_increment_by_lexeme_length(E_Count.VOID)
-
-                    self.column_n_increment = E_Count.VOID
-                    self.column_index       = E_Count.VOID
-                    self.grid_step_n        = E_Count.VOID
-                    # Abort, if line_n_increment is also void.
-                    return self.line_n_increment is not E_Count.VOID 
+                    self.voidify_column_n()
+                    return self.line_n_increment is not E_Count.VOID # Abort, if all VOID
                 else:
-                    if self.grid_step_n != E_Count.VOID:
-                        self.grid_step_n += grid_size
+                    if self.grid_step_n_by_lexeme_length != E_Count.VOID:
+                        self.grid_step_n += 1
                     if self.column_index != E_Count.VOID:
                         Count.propose_column_n_increment_by_lexeme_length(delta)
 
@@ -327,10 +312,8 @@ class Count(object):
             elif character_set.has_intersection(CharacterSet):
                 # Sometimes 'input' triggers on 'character_set', sometimes not.
                 # => Counts are no longer deterministic.
-                self.column_index       = E_Count.VOID
-                self.column_n_increment = E_Count.VOID
-                self.grid_step_n        = E_Count.VOID
-                Count.propose_grid_step_n_by_lexeme_length(E_Count.VOID)
+                self.voidify_column_n()
+                return self.line_n_increment is not E_Count.VOID # Abort, if all VOID
 
         # (*) Column Numbering
         #     Still, 'self.column_n_increment != E_Count.VOID'. Otherwise, 'return' was triggered.
@@ -340,32 +323,31 @@ class Count(object):
                 Count.propose_column_n_increment_by_lexeme_length(delta)
                 Count.propose_grid_step_n_by_lexeme_length(E_Count.VOID)
                 if isinstance(delta, (str, unicode)): 
-                    self.column_n_increment = E_Count.VOID
-                    self.column_index       = E_Count.VOID
-                    Count.propose_grid_step_n_by_lexeme_length(E_Count.VOID)
-                    # Abort, if line_n_increment is also void.
-                    return self.line_n_increment is not E_Count.VOID 
+                    self.voidify_column_n()
+                    return self.line_n_increment is not E_Count.VOID # Abort, if all VOID
                 else:
-                    if self.column_index != E_Count.VOID:
-                        self.column_index       += delta
-                        self.column_n_increment += delta
-                        Count.propose_grid_step_n_by_lexeme_length(delta)
-                    else:
-                        self.column_n_increment = E_Count.VOID
-                        Count.propose_grid_step_n_by_lexeme_length(E_Count.VOID)
-
+                    if self.column_index != E_Count.VOID: self.column_index += delta
+                    self.column_n_increment += delta
                     return True
 
             elif character_set.has_intersection(CharacterSet):
-                Count.propose_grid_step_n_by_lexeme_length(E_Count.VOID)
-
                 # Sometimes 'input' triggers on 'character_set', sometimes not.
                 # => Counts are no longer deterministic.
-                self.column_n_increment = E_Count.VOID
-                self.column_index       = E_Count.VOID
-                self.grid_step_n        = E_Count.VOID
+                self.voidify_column_n()
+                return self.line_n_increment is not E_Count.VOID # Abort, if all VOID
 
         return True # Do not abort, yet
+
+    def voidify_column_n(self):
+        """Set all parameters related to column number counting to 'VOID'."""
+
+        Count.propose_column_n_increment_by_lexeme_length(E_Count.VOID)
+        Count.propose_grid_step_n_increment_by_lexeme_length(E_Count.VOID)
+
+        self.line_n_increment   = E_Count.VOID   
+        self.column_n_increment = E_Count.VOID  
+        self.grid_step_n        = E_Count.VOID  
+        self.column_index       = E_Count.VOID  
 
     @staticmethod
     def propose_column_n_increment_by_lexeme_length(DeltaLineN):
