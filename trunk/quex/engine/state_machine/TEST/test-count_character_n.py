@@ -27,10 +27,10 @@ if "--hwut-info" in sys.argv:
     sys.exit(0)
     
 def test(TestString):
-    print ("expr.  = " + TestString).replace("\n", "\\n").replace("\t", "\\t")
+    print ("expr. = " + TestString).replace("\n", "\\n").replace("\t", "\\t")
     pattern = core.do(TestString, {})
     pattern.prepare_count_info(counter_db)
-    print "char-n = ", pattern.count_info()#.column_n_increment
+    print "info   = ", pattern.count_info()#.column_n_increment
 
 test('[0-9]+')
 sys.exit()
