@@ -8,8 +8,8 @@ import quex.input.files.counter_setup       as     counter_setup
 from   StringIO                             import StringIO
 
 spec_txt = """
-   [\x0A\x0b\x0c\x85\X2028\X2029\x0d] => newline 1;
-   [\t]                               => grid    4;
+   [\\x0A\\x0b\\x0c\\x85\\X2028\\X2029\\x0d] => newline 1;
+   [\\t]                               => grid    4;
 >"""
 
 fh = StringIO(spec_txt)
@@ -24,16 +24,18 @@ counter_db = counter_setup.CounterDB(adapt(lcc_setup.space_db),
 
 if "--hwut-info" in sys.argv:
     print "Predetermined Character Count: Characters"
+    print "CHOICES: Normal, BeginOfLine;"
     sys.exit(0)
     
 def test(TestString):
+    if "BeginOfLine" in sys.argv:
+        TestString = "^%s" % TestString
     print ("expr. = " + TestString).replace("\n", "\\n").replace("\t", "\\t")
     pattern = core.do(TestString, {})
     pattern.prepare_count_info(counter_db)
-    print "info   = ", pattern.count_info()#.column_n_increment
+    print ("info  = {\n    %s\n}\n" % str(pattern.count_info()).replace("\n", "\n    "))
 
 test('[0-9]+')
-sys.exit()
 test('"123"')
 test('"123"|"ABC"')
 test('"1234"|"ABC"')

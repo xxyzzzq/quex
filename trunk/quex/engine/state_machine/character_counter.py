@@ -1,6 +1,48 @@
 # (C) 2012 Frank-Rene Schaefer
 from quex.engine.misc.tree_walker  import TreeWalker
 from quex.blackboard               import E_Count
+class UniqueValue(object):
+    """A simple class to hold a value that is:
+
+              -- VIRGIN, if it has not been assigned.
+              -- VOID, if it has been assigned with different values.
+              -- Some Value, if the assignment was always the same.
+    """
+    __slots__ = ('value')
+    def __init__(self, InitValue=E_Count.VIRGIN):
+        assert InitValue is not None
+        if isinstance(InitValue, UniqueValue): self.value = InitValue.value
+        else:                                  self.value = InitValue
+
+    def __ilshift__(self, Value):
+        """Use 'injection' to fulfill the task of virgin, void, coherent assignment."""
+        assert not isinstance(Value, UniqueValue) 
+        assert Value is not None
+        if   self.value == E_Count.VIRGIN: self.value = Value
+        elif self.value == E_Count.VOID:   pass
+        elif self.value != Value:          self.value = E_Count.VOID
+        else:                              pass # No change
+        return self
+
+    def __iadd__(self, Value):
+        assert not isinstance(Value, UniqueValue) 
+        if   self.value == E_Count.VIRGIN: self.value  = Value
+        elif self.value == E_Count.VOID:   pass
+        else:                              self.value += Value
+        return self
+
+    def __eq__(self, Other):
+        return self.value == Other
+
+    def __ne__(self, Other):
+        return self.value != Other
+
+    def voidify_if_deviant(self, A, B):
+        if A.value != B.value: self.value = E_Count.VOID
+
+    def __str__(self):
+        return str(self.value)
+
 
 def do(SM, CounterDB, BeginOfLineF=False):
     """LINE AND COLUMN NUMBER ANALYSIS ________________________________________
@@ -82,7 +124,7 @@ def do(SM, CounterDB, BeginOfLineF=False):
     """
     counter = CharacterCountTracer(SM)
     state   = SM.get_init_state()
-    count   = Count(0, 0, ColumnIndex = 0 if BeginOfLineF else E_Count.VOID)
+    count   = Count(0, 0, ColumnIndex = 0 if BeginOfLineF else E_Count.VOID, GridStepN = 0)
     # Next Node: [0] state index of target state
     #            [1] character set that triggers to it
     #            [2] count information
@@ -91,43 +133,18 @@ def do(SM, CounterDB, BeginOfLineF=False):
 
     Count.init(CounterDB)
     counter.do(initial)
+    result = counter.result
+    # If there was an acceptance state, the result cannot be None
+    assert result is not None
 
     # (*) Determine detailed count information
-    if counter.abort_f and Count.grid_step_n_by_lexeme_length == E_Count.VIRGIN:
+    if counter.abort_f and Count.grid_step_size_by_lexeme_length.value == E_Count.VIRGIN:
         # If the count procedure was aborted, possibly NOT all character
         # transitions have been investigated. So the value for 'grid' must
         # determined now, independently of the 'counter.do()'.
-        Count.grid_step_n_by_lexeme_length = _determine_grid_parameter(SM, CounterDB)
+        Count.grid_step_size_by_lexeme_length <<= _get_grid_step_size_by_lexeme_length(SM, CounterDB)
 
     return CountInfo(counter.result)
-
-def _determine_grid_parameter(SM, CounterDB):
-    """The CharacterCountTracer has been aborted (which is a good thing). Now,
-    the grid information has to be determined extra. As mentioned in the calling
-    function 'grid' can have the following three values:
-
-      N > 0,          if ONLY grid characters of size 'N' are involved.
-            
-      E_Count.VIRGIN, if no grid character is involved.
-
-      E_Count.VOID, if some grid characters are involved, but increase of 
-                    column_n_increment must be determined at run-time.
-    """
-    prototype = E_Count.VIRGIN
-    for state in SM.states.itervalues():
-        for character_set in state.transitions().get_map().itervalues():
-            for grid_size, grid_character_set in CounterDB.grid.iteritems():
-                x = grid_character_set.get_relation(character_set)
-                if character_set.is_superset(CharacterSet):
-                    # All characters of the transition are in 'grid_character_set'
-                    if   prototype == E_Count.VIRGIN: prototype = grid_size
-                    elif prototype != grid_size:      return E_Count.VOID
-                elif character_set.has_intersection(CharacterSet):
-                else:
-                    # Some characters are form 'grid_character_set' others not.
-                    return E_Count.VOID
-
-    return prototype
 
 class CharacterCountTracer(TreeWalker):
     """________________________________________________________________________
@@ -153,7 +170,7 @@ class CharacterCountTracer(TreeWalker):
     def __init__(self, SM):  
         self.sm       = SM
         self.depth    = 0
-        self.result   = Count(E_Count.VIRGIN, E_Count.VIRGIN)
+        self.result   = Count(E_Count.VIRGIN, E_Count.VIRGIN, E_Count.VIRGIN, E_Count.VIRGIN)
         self.known_db = {}  # state_index --> count
         TreeWalker.__init__(self)
 
@@ -170,34 +187,52 @@ class CharacterCountTracer(TreeWalker):
         state = self.sm.states[StateIndex]
         known = self.known_db.get(StateIndex)
         if known is not None:
-            if known.column_n_increment != count.column_n_increment: self.result.column_n_increment = E_Count.VOID
-            if known.line_n_increment   != count.line_n_increment:   self.result.line_n_increment   = E_Count.VOID
-
-            if self.result.line_n_increment == E_Count.VOID and self.result.column_n_increment == E_Count.VOID: 
-                self.abort_f = True
+            # Set elements to 'VOID' if the previous count deviates from current count.
+            # 'voidify' returns 'True' if all elements have been set to void.
+            if self.result.voidify_deviants(known, count): self.abort_f = True
 
             # Rest of paths starting from this state has been walked along before
             subsequent = None
         else:
-            known                     = Count(count.column_n_increment, count.line_n_increment)
+            known                     = count.clone()
             self.known_db[StateIndex] = known
 
             subsequent = [ (state_index, character_set, count.clone()) \
                            for state_index, character_set in state.transitions().get_map().iteritems() ]
 
         if state.is_acceptance():
-            if   self.result.column_n_increment == E_Count.VIRGIN:           self.result.column_n_increment = known.column_n_increment
-            elif self.result.column_n_increment != known.column_n_increment: self.result.column_n_increment = E_Count.VOID
-            if   self.result.line_n_increment == E_Count.VIRGIN:             self.result.line_n_increment = known.line_n_increment
-            elif self.result.line_n_increment != known.line_n_increment:     self.result.line_n_increment = E_Count.VOID
-
-            if self.result.line_n_increment == E_Count.VOID and self.result.column_n_increment == E_Count.VOID: 
-                self.abort_f = True
+            if self.result.voidify_deviants(self.result, known): self.abort_f = True
 
         return subsequent
 
     def on_finished(self, node):   
         pass
+
+def _get_grid_step_size_by_lexeme_length(SM, CounterDB):
+    """The CharacterCountTracer has been aborted (which is a good thing). Now,
+    the grid information has to be determined extra. As mentioned in the calling
+    function 'grid' can have the following three values:
+
+      N > 0,          if ONLY grid characters of size 'N' are involved.
+            
+      E_Count.VIRGIN, if no grid character is involved.
+
+      E_Count.VOID, if some grid characters are involved, but increase of 
+                    column_n_increment must be determined at run-time.
+    """
+    prototype = E_Count.VIRGIN
+    for state in SM.states.itervalues():
+        for character_set in state.transitions().get_map().itervalues():
+            for grid_size, grid_character_set in CounterDB.grid.iteritems():
+                if grid_character_set.is_superset(CharacterSet):
+                    # All characters of the transition are in 'grid_character_set'
+                    if   prototype == E_Count.VIRGIN: prototype = grid_size
+                    elif prototype != grid_size:      return E_Count.VOID
+                elif grid_character_set.has_intersection(CharacterSet):
+                    # Some characters are form 'grid_character_set' others not.
+                    return E_Count.VOID
+
+    return prototype
 
 class Count(object):
     """________________________________________________________________________
@@ -210,21 +245,22 @@ class Count(object):
 
     # (*) Increment per step:
     #
-    #     If the increment per step is the same 'C' for any character that appears 
-    #     in the pattern, then the length of the pattern can be computed at run-
-    #     time by a simple subtraction:
+    #     If the increment per step is the same 'C' for any character that
+    #     appears in the pattern, then the length of the pattern can be
+    #     computed at run- time by a simple subtraction:
     # 
     #               length = (LexemeEnd - LexemeBegin) * C
     #
-    #     provided that there is no newline in the pattern this is at the same 
+    #     provided that there is no newline in the pattern this is at the same
     #     time the column increment. Same holds for line number increments.
-    column_n_increment_by_lexeme_length = E_Count.VIRGIN
-    # Just for info, in Unicode there are the following candidates which may possibly
-    # have assigned a separate line number increment: Line Feed, 0x0A; Vertical Tab, 0x0B; 
-    # Form Feed, 0x0C; Carriage Return, 0x0D; Next Line, 0x85; Line Separator, 0x28; 
-    # Paragraph Separator, 0x2029; 
-    line_n_increment_by_lexeme_length   = E_Count.VIRGIN
-    grid_step_n_by_lexeme_length        = E_Count.VIRGIN
+    column_n_increment_by_lexeme_length = None
+
+    # Just for info, in Unicode there are the following candidates which may
+    # possibly have assigned a separate line number increment: Line Feed, 0x0A;
+    # Vertical Tab, 0x0B; Form Feed, 0x0C; Carriage Return, 0x0D; Next Line,
+    # 0x85; Line Separator, 0x28; Paragraph Separator, 0x2029; 
+    line_n_increment_by_lexeme_length   = None
+    grid_step_size_by_lexeme_length     = None
 
     # Line/Column count information
     counter_db                          = None
@@ -232,19 +268,19 @@ class Count(object):
     @staticmethod
     def init(CounterDB):
         """Initialize global objects in namespace 'Count'."""
-        Count.column_n_increment_by_lexeme_length = E_Count.VIRGIN
-        Count.line_n_increment_by_lexeme_length   = E_Count.VIRGIN
-        Count.grid_step_n_by_lexeme_length        = E_Count.VIRGIN
+        Count.column_n_increment_by_lexeme_length = UniqueValue()
+        Count.line_n_increment_by_lexeme_length   = UniqueValue()
+        Count.grid_step_size_by_lexeme_length     = UniqueValue()
         Count.counter_db                          = CounterDB
 
-    def __init__(self, ColumnN, LineN, ColumnIndex):
-        self.line_n_increment   = LineN
-        self.column_n_increment = ColumnN
-        self.column_index       = ColumnIndex
-        self.grid_step_n        = 0
+    def __init__(self, ColumnN, LineN, ColumnIndex, GridStepN=0):
+        self.line_n_increment   = UniqueValue(LineN)
+        self.column_n_increment = UniqueValue(ColumnN)
+        self.column_index       = UniqueValue(ColumnIndex)
+        self.grid_step_n        = UniqueValue(GridStepN)
 
     def clone(self):
-        return Count(self.column_n_increment, self.line_n_increment, self.grid_step_n, self.column_index)
+        return Count(self.column_n_increment, self.line_n_increment, self.column_index, self.grid_step_n)
 
     def compute(self, CharacterSet):
         """CharacterSet -- If a given input character lies in the CharacterSet,
@@ -268,44 +304,43 @@ class Count(object):
 
             if character_set.is_superset(CharacterSet):
                 # 'CharacterSet' does not contain anything beyond 'character_set'
-                Count.propose_line_n_increment_by_lexeme_length(delta)
-                Count.propose_column_n_increment_by_lexeme_length(E_Count.VOID)
-                Count.propose_grid_step_n_increment_by_lexeme_length(E_Count.VOID)
-                if isinstance(delta, (str, unicode)): self.line_n_increment  = E_Count.VOID
-                else:                                 self.line_n_increment += delta
-                self.column_n_increment   = E_Count.VOID
-                self.column_index         = 0
-                self.grid_step_n          = 0
-                return True  
+                Count.line_n_increment_by_lexeme_length         <<= delta
+                Count.column_n_increment_by_lexeme_length       <<= E_Count.VOID
+                Count.grid_step_size_increment_by_lexeme_length <<= E_Count.VOID
+                self.column_n_increment                         <<= E_Count.VOID
+                self.column_index                                 = UniqueValue(0)
+                self.grid_step_n                                  = UniqueValue(0)
+                if isinstance(delta, (str, unicode)): self.line_n_increment <<= E_Count.VOID
+                else:                                 self.line_n_increment  += delta
+                return self.line_n_increment != E_Count.VOID  
 
             elif character_set.has_intersection(CharacterSet):
                 # Sometimes 'input' triggers on 'character_set', sometimes not.
                 # => Counts are no longer deterministic.
+                Count.line_n_increment_by_lexeme_length <<= E_Count.VOID
                 self.voidify_column_n()
-                Count.propose_line_n_increment_by_lexeme_length(E_Count.VOID)
                 return False # Abort
 
         # (*) Grid
         for grid_size, character_set in Count.counter_db.grid.iteritems():
             if character_set.is_superset(CharacterSet):
                 # 'CharacterSet' does not contain anything beyond 'character_set'
-                Count.propose_grid_step_n_by_lexeme_length(grid_size)
+                Count.grid_step_size_by_lexeme_length <<= grid_size
                 if isinstance(grid_size, (str, unicode)): 
                     self.voidify_column_n()
-                    return self.line_n_increment is not E_Count.VOID # Abort, if all VOID
+                    return self.line_n_increment != E_Count.VOID # Abort, if all VOID
                 else:
-                    if self.grid_step_n_by_lexeme_length != E_Count.VOID:
+                    if self.grid_step_size_by_lexeme_length.value != E_Count.VOID:
                         self.grid_step_n += 1
                     if self.column_index != E_Count.VOID:
-                        Count.propose_column_n_increment_by_lexeme_length(delta)
+                        Count.column_n_increment_by_lexeme_length <<= delta
 
                         delta = grid_size - (self.column_index % grid_size)
                         self.column_index       += delta
                         self.column_n_increment += delta
                     else:
-                        Count.propose_column_n_increment_by_lexeme_length(E_Count.VOID)
-
-                        self.column_n_increment = E_Count.VOID
+                        Count.column_n_increment_by_lexeme_length <<= E_Count.VOID
+                        self.column_n_increment                   <<= E_Count.VOID
 
                     return True
 
@@ -313,18 +348,18 @@ class Count(object):
                 # Sometimes 'input' triggers on 'character_set', sometimes not.
                 # => Counts are no longer deterministic.
                 self.voidify_column_n()
-                return self.line_n_increment is not E_Count.VOID # Abort, if all VOID
+                return self.line_n_increment != E_Count.VOID # Abort, if all VOID
 
         # (*) Column Numbering
         #     Still, 'self.column_n_increment != E_Count.VOID'. Otherwise, 'return' was triggered.
         for delta, character_set in Count.counter_db.special.iteritems():
             if character_set.is_superset(CharacterSet):
                 # 'CharacterSet' does not contain anything beyond 'character_set'
-                Count.propose_column_n_increment_by_lexeme_length(delta)
-                Count.propose_grid_step_n_by_lexeme_length(E_Count.VOID)
+                Count.column_n_increment_by_lexeme_length <<= delta
+                Count.grid_step_size_by_lexeme_length     <<= E_Count.VOID
                 if isinstance(delta, (str, unicode)): 
                     self.voidify_column_n()
-                    return self.line_n_increment is not E_Count.VOID # Abort, if all VOID
+                    return self.line_n_increment != E_Count.VOID # Abort, if all VOID
                 else:
                     if self.column_index != E_Count.VOID: self.column_index += delta
                     self.column_n_increment += delta
@@ -334,137 +369,120 @@ class Count(object):
                 # Sometimes 'input' triggers on 'character_set', sometimes not.
                 # => Counts are no longer deterministic.
                 self.voidify_column_n()
-                return self.line_n_increment is not E_Count.VOID # Abort, if all VOID
+                return self.line_n_increment != E_Count.VOID # Abort, if all VOID
 
         return True # Do not abort, yet
 
     def voidify_column_n(self):
-        """Set all parameters related to column number counting to 'VOID'."""
-
-        Count.propose_column_n_increment_by_lexeme_length(E_Count.VOID)
-        Count.propose_grid_step_n_increment_by_lexeme_length(E_Count.VOID)
-
-        self.line_n_increment   = E_Count.VOID   
-        self.column_n_increment = E_Count.VOID  
-        self.grid_step_n        = E_Count.VOID  
-        self.column_index       = E_Count.VOID  
-
-    @staticmethod
-    def propose_column_n_increment_by_lexeme_length(DeltaLineN):
-        if Count.column_n_increment_by_lexeme_length == E_Count.VOID:   
-            return # Has been 'voided' before. 
-
-        elif Count.column_n_increment_by_lexeme_length == E_Count.VIRGIN: 
-            Count.column_n_increment_by_lexeme_length = DeltaLineN
-
-        elif Count.column_n_increment_by_lexeme_length != DeltaLineN:     
-            # If a different column_n_increment step appeared before, then things are void.
-            Count.column_n_increment_by_lexeme_length = E_Count.VOID
-
-        else:                                                   
-            return # .column_n_increment_by_lexeme_length remains '== 'DeltaLineN'
-
-    @staticmethod
-    def propose_grid_step_n_by_lexeme_length(GridSize):
-        if  Count.grid_step_n_by_lexeme_length == E_Count.VOID:   
-            return # Has been 'voided' before. 
-
-        elif Count.grid_step_n_by_lexeme_length == E_Count.VIRGIN: 
-            Count.grid_step_n_by_lexeme_length = GridSize
-
-        elif Count.grid_step_n_by_lexeme_length != GridSize:     
-            # If a different column_n_increment step appeared before, then things are void.
-            Count.grid_step_n_by_lexeme_length = E_Count.VOID
-
-        else:                                                   
-            return # .grid_step_n_by_lexeme_length remains '== GridSize'
-
-    @staticmethod
-    def propose_line_n_increment_by_lexeme_length(DeltaLineN):
-        if   Count.line_n_increment_by_lexeme_length == E_Count.VOID:
-            return # Has been 'voided' before.
+        """Set all parameters related to column number counting to 'VOID'.
+           
+           RETURNS: 'False' if line_n_increment is also VOID.
+                    'True'  if line_n_increment is not VOID and search can continue
         
-        elif Count.line_n_increment_by_lexeme_length == E_Count.VIRGIN: 
-            Count.line_n_increment_by_lexeme_length = DeltaLineN
+        """
 
-        elif Count.line_n_increment_by_lexeme_length != DeltaLineN:   
-            Count.line_n_increment_by_lexeme_length = E_Count.VOID
-        else:
-            return # .line_n_increment_by_lexeme_length remains '== DeltaLineN'
+        Count.column_n_increment_by_lexeme_length       <<= E_Count.VOID
+        Count.grid_step_size_increment_by_lexeme_length <<= E_Count.VOID
+
+        self.column_n_increment <<= E_Count.VOID  
+        self.grid_step_n        <<= E_Count.VOID  
+        self.column_index       <<= E_Count.VOID  
+
+
+    def voidify_deviants(self, Known, New):
+        """Compares elements of 'Know' with 'New' representing counts of 
+           different paths through the state machine. If counts differ
+           for different paths, they are 'VOID' and cannot be determined
+           beforehand.
+
+
+           RETURNS: 'True' if all counts are 'VOID', thus the investigation
+                           can be aborted.
+                    'False' else.
+        """
+        if   Known.line_n_increment   == E_Count.VIRGIN:         self.line_n_increment   = New.line_n_increment
+        elif Known.line_n_increment   != New.line_n_increment:   self.line_n_increment   = E_Count.VOID
+
+        if   Known.column_index       == E_Count.VIRGIN:         self.column_index       = New.column_index
+        elif Known.column_index       != New.column_index:       self.column_index       = E_Count.VOID
+
+        if   Known.column_n_increment == E_Count.VIRGIN:         self.column_n_increment = New.column_n_increment
+        elif Known.column_n_increment != New.column_n_increment: self.column_n_increment = E_Count.VOID
+
+        if   Known.grid_step_n        == E_Count.VIRGIN:         self.grid_step_n        = New.grid_step_n
+        elif Known.grid_step_n        != New.grid_step_n:        self.grid_step_n        = E_Count.VOID
+
+        return     self.column_index       == E_Count.VOID \
+               and self.column_n_increment == E_Count.VOID \
+               and self.grid_step_n        == E_Count.VOID \
+               and self.line_n_increment   == E_Count.VOID 
 
     def __str__(self):
         return "general: {\n"                                    \
                "    column_n_increment_by_lexeme_length = %s;\n" \
-               "    grid_step_n_by_lexeme_length          = %s;\n" \
+               "    grid_step_size_by_lexeme_length          = %s;\n" \
                "    line_n_increment_by_lexeme_length   = %s;\n" \
                "}\n"                                             \
                "column_index       = %s;\n"     \
                "column_n_increment = %s;\n"     \
                "line_n_increment   = %s;\n"     \
                % (Count.column_n_increment_by_lexeme_length,
-                  Count.grid_step_n_by_lexeme_length, 
+                  Count.grid_step_size_by_lexeme_length, 
                   Count.line_n_increment_by_lexeme_length, 
                   self.column_index,
                   self.column_n_increment, 
                   self.line_n_increment)
 
-
-class CountInfo(object):
-    __slots__ = ("line_n_increment", "column_n_increment", "column_index", 
-                 "grid_step_n_by_lexeme_length", 
-                 "line_n_increment_by_lexeme_length", 
-                 "column_n_increment_by_lexeme_length")
+class CountInfo(Count):
 
     def __init__(self, Result):
-        self.line_n_increment                    = Result.line_n_increment
-        self.column_n_increment                  = Result.column_n_increment
-        self.column_index                        = Result.column_index
-        self.grid_step_n_by_lexeme_length        = Count.grid_step_n_by_lexeme_length
-        self.column_n_increment_by_lexeme_length = Count.column_n_increment_by_lexeme_length
-        self.line_n_increment_by_lexeme_length   = Count.line_n_increment_by_lexeme_length
+        Count.__init__(self, 
+                       Result.column_n_increment, 
+                       Result.line_n_increment, 
+                       Result.column_index)
+        self.grid_step_n                         = Result.grid_step_n
+        self.column_n_increment_by_lexeme_length = Count.column_n_increment_by_lexeme_length.value
+        self.line_n_increment_by_lexeme_length   = Count.line_n_increment_by_lexeme_length.value
+        self.grid_step_size_by_lexeme_length     = Count.grid_step_size_by_lexeme_length.value     
 
-        if self.line_n_increment                    == E_Count.VIRGIN: self.line_n_increment   = 0
-        if self.column_n_increment                  == E_Count.VIRGIN: self.column_n_increment = 0
-        if self.grid                                == E_Count.VIRGIN: self.grid = 0
-        if self.column_n_increment_by_lexeme_length == E_Count.VIRGIN: self.column_n_increment_by_lexeme_length = 0
-        if self.column_n_increment_by_lexeme_length == E_Count.VIRGIN: self.column_n_increment_by_lexeme_length = 0
+        if self.line_n_increment   == E_Count.VIRGIN: self.line_n_increment   = 0
+        if self.column_n_increment == E_Count.VIRGIN: self.column_n_increment = 0
+        assert self.column_index != E_Count.VIRGIN
+        if self.grid_step_n        == E_Count.VIRGIN: self.grid_step_n        = 0
 
-        #if self.line_n_increment_by_lexeme_length == 0:
-        #    if isinstance(self.grid, (int, long)):
-        #        self.column_n_increment_by_lexeme_length = Count.grid_step_n_by_lexeme_length
-        #        self.grid                        = E_Count.NONE
-        #    else:
-        #        self.column_n_increment_by_lexeme_length = 0
+        if self.column_n_increment_by_lexeme_length == E_Count.VIRGIN:
+            self.column_n_increment_by_lexeme_length = 0
+        if self.line_n_increment_by_lexeme_length   == E_Count.VIRGIN:
+            self.line_n_increment_by_lexeme_length   = 0
+        if self.grid_step_size_by_lexeme_length     == E_Count.VIRGIN:
+            self.grid_step_size_by_lexeme_length     = 0
 
     def is_partly_determined(self):
         # Note, that 'grid' only tells about grid sizes being homogeneous.
-        if   self.line_n_increment_by_lexeme_length   != E_Count.VOID: return True
-        elif self.column_n_increment_by_lexeme_length != E_Count.VOID: return True
-        elif self.line_n_increment                    != E_Count.VOID: return True
+        if   self.line_n_increment                    != E_Count.VOID: return True
         elif self.column_n_increment                  != E_Count.VOID: return True
+        elif self.grid_step_n                         != E_Count.VOID: return True
+        elif self.line_n_increment_by_lexeme_length   != E_Count.VOID: return True
+        elif self.column_n_increment_by_lexeme_length != E_Count.VOID: return True
+        elif self.grid_step_size_by_lexeme_length     != E_Count.VOID: return True
         return False
-
-
-    def column_n_proportional_to_lexeme_length(self):
-        return     self.column_n_increment_by_lexeme_length != E_Count.VOID \
-               and self.column_n_increment                  == E_Count.VOID
-
-    def line_n_proportional_to_lexeme_length(self):
-        return     self.line_n_increment_by_lexeme_length != E_Count.VOID \
-               and self.line_n_increment                  == E_Count.VOID
 
     def __str__(self):
         return \
-               "column_n_increment_by_lexeme_length = %s;\n" \
-               "grid_step_n_by_lexeme_length        = %s;\n" \
-               "line_n_increment_by_lexeme_length   = %s;\n" \
+               "line_n_increment                    = %s;\n" \
                "column_index                        = %s;\n" \
                "column_n_increment                  = %s;\n" \
-               "line_n_increment                    = %s;\n" \
-               % (self.column_n_increment_by_lexeme_length,
-                  self.grid, 
-                  self.line_n_increment_by_lexeme_length, 
+               "grid_step_n                         = %s;\n" \
+               "line_n_increment_by_lexeme_length   = %s;\n" \
+               "column_n_increment_by_lexeme_length = %s;\n" \
+               "grid_step_size_by_lexeme_length     = %s;\n" \
+               % (
+                  self.line_n_increment,
                   self.column_index,
                   self.column_n_increment, 
-                  self.line_n_increment)
+                  self.grid_step_n,
+                  self.line_n_increment_by_lexeme_length, 
+                  self.column_n_increment_by_lexeme_length,
+                  self.grid_step_size_by_lexeme_length
+               )
 

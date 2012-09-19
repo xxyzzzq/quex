@@ -3,9 +3,15 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.engine.interval_handling          import NumberSet, Interval
-import quex.input.regular_expression.engine        as core
-from   quex.blackboard import CounterDB
+from   quex.engine.interval_handling        import NumberSet, Interval
+import quex.input.regular_expression.engine as     core
+import quex.input.files.counter_setup       as     counter_setup
+from   StringIO                             import StringIO
+
+spec_txt = """
+   [\\x0A\\x0b\\x0c\\x85\\X2028\\X2029\\x0d] => newline 1;
+   [\\t]                                     => grid    4;
+"""
 
 if "--hwut-info" in sys.argv:
     print "Predetermined Character Count: Characters of different horizontal sizes."
@@ -13,28 +19,37 @@ if "--hwut-info" in sys.argv:
     sys.exit(0)
 
 if "TwoSet" in sys.argv:
-    CounterDB.special = {
-            5:  NumberSet([Interval(ord('a'), ord('z') + 1),
-                           Interval(ord('A'), ord('Z') + 1)]),
-            7:  NumberSet(Interval(ord('0'), ord('9') + 1)),
-    }
+    spec_txt += "   [a-zA-Z] => space 5;\n"
+    spec_txt += "   [0-9]    => space 7;\n"
 elif "Same" in sys.argv:
-    CounterDB.special = {
-            66: NumberSet(Interval(0, 0xFF)),
-    }
+    spec_txt  = "   [\\x00-\\xFF] => space 66;\n"
 elif "Different" in sys.argv:
-    CounterDB.special = dict((x,NumberSet(Interval(x))) for x in xrange(0, 0x100))
+    spec     = [ "    \\x%02X => space %i;\n" % (i, i) for i in xrange(2, 0x100)]
+    spec_txt = "".join(spec)
 elif "Grid" in sys.argv:
-    CounterDB.grid = {
-            5: NumberSet([ Interval(ord(x)) for x in "2byBY" ])
-    }
+    spec_txt += "   [2byBY] => grid 5;\n"
 else:
     assert False
+
+print "#spec:", spec_txt
+spec_txt += ">"
     
+fh = StringIO(spec_txt)
+fh.name = "<string>"
+lcc_setup = counter_setup.parse(fh, IndentationSetupF=False)
+def adapt(db):
+    return dict((count, parameter.get()) for count, parameter in db.iteritems())
+
+counter_db = counter_setup.CounterDB(adapt(lcc_setup.space_db), 
+                                     adapt(lcc_setup.grid_db), 
+                                     adapt(lcc_setup.newline_db))
+
 def test(TestString):
-    print ("expr.  = " + TestString).replace("\n", "\\n").replace("\t", "\\t")
+    print ("expr. = " + TestString).replace("\n", "\\n").replace("\t", "\\t")
     pattern = core.do(TestString, {})
-    print "char-n = ", pattern.character_n
+    pattern.prepare_count_info(counter_db)
+    print ("info  = {\n    %s\n}\n" % str(pattern.count_info()).replace("\n", "\n    "))
+
 
 test('[0-9]+')
 test('"123"')

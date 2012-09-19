@@ -1,4 +1,4 @@
-<history date="Tue Sep 11 07:20:04 2012" element-n="574">
+<history date="Tue Sep 18 07:09:36 2012" element-n="583">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1284,5 +1284,20 @@
     </day>
     <day year="2012" month="05" day="03">
         <crc-error time="18:52:43" application="test-subset_checker.py" choice="FalseCases" database-crc="-650322783" real-crc="-2100744066"/>
+    </day>
+    <day year="2012" month="09" day="13">
+        <crc-error time="16:58:16" application="test-count_character_n.py" choice="" database-crc="-842723035" real-crc="-1473476753"/>
+        <crc-error time="17:03:24" application="test-count_character_n.py" choice="" database-crc="-1473476753" real-crc="-1018006953"/>
+        <crc-error time="17:24:30" application="test-count_character_n.py" choice="" database-crc="-1018006953" real-crc="273847577"/>
+        <crc-error time="17:31:37" application="test-count_character_n.py" choice="" database-crc="273847577" real-crc="416059585"/>
+    </day>
+    <day year="2012" month="09" day="15">
+        <crc-error time="06:11:04" application="test-count_character_n.py" choice="" database-crc="416059585" real-crc="-945479243"/>
+        <crc-error time="06:16:26" application="test-count_character_n.py" choice="" database-crc="-945479243" real-crc="-366943347"/>
+    </day>
+    <day year="2012" month="09" day="16">
+        <crc-error time="09:21:15" application="test-count_character_n-2.py" choice="Same" database-crc="-1162155918" real-crc="-904338297"/>
+        <crc-error time="09:46:42" application="test-count_character_n-2.py" choice="Same" database-crc="-904338297" real-crc="-1671520565"/>
+        <crc-error time="09:51:41" application="test-count_character_n-2.py" choice="TwoSet" database-crc="-2019536294" real-crc="-1660594165"/>
     </day>
 </history>
