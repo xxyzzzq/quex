@@ -1,4 +1,4 @@
-<history date="Tue Sep 18 07:09:36 2012" element-n="583">
+<history date="Wed Sep 19 07:57:06 2012" element-n="587">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1299,5 +1299,11 @@
         <crc-error time="09:21:15" application="test-count_character_n-2.py" choice="Same" database-crc="-1162155918" real-crc="-904338297"/>
         <crc-error time="09:46:42" application="test-count_character_n-2.py" choice="Same" database-crc="-904338297" real-crc="-1671520565"/>
         <crc-error time="09:51:41" application="test-count_character_n-2.py" choice="TwoSet" database-crc="-2019536294" real-crc="-1660594165"/>
+    </day>
+    <day year="2012" month="09" day="19">
+        <crc-error time="05:31:17" application="test-count_character_n-2.py" choice="Different" database-crc="473580784" real-crc="1336615404"/>
+        <crc-error time="05:35:55" application="test-count_character_n-2.py" choice="Different" database-crc="1336615404" real-crc="-2016051693"/>
+        <crc-error time="05:44:55" application="test-count_character_n-2.py" choice="Grid" database-crc="-1029860625" real-crc="-1907230382"/>
+        <crc-error time="05:57:05" application="test-count_character_n-2.py" choice="Grid" database-crc="-1907230382" real-crc="118571724"/>
     </day>
 </history>

@@ -31,7 +31,7 @@ elif "Grid" in sys.argv:
 else:
     assert False
 
-print "#spec:", spec_txt
+# print "#spec:", spec_txt
 spec_txt += ">"
     
 fh = StringIO(spec_txt)
