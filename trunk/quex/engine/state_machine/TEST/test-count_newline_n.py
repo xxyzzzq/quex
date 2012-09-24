@@ -3,19 +3,46 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.input.regular_expression.engine        as regex
+import quex.input.regular_expression.engine as     core
+import quex.input.files.counter_setup       as     counter_setup
+from   StringIO                             import StringIO
 
+spec_txt = """
+   [\\x0A\\x0b\\x0c\\x85\\X2028\\X2029\\x0d] => newline 1;
+   [\\t]                               => grid    4;
+>"""
+
+fh = StringIO(spec_txt)
+fh.name = "<string>"
+lcc_setup = counter_setup.parse(fh, IndentationSetupF=False)
+def adapt(db):
+    return dict((count, parameter.get()) for count, parameter in db.iteritems())
+
+counter_db = counter_setup.CounterDB(adapt(lcc_setup.space_db), 
+                                     adapt(lcc_setup.grid_db), 
+                                     adapt(lcc_setup.newline_db))
 if "--hwut-info" in sys.argv:
     print "Predetermined Character Count: Newlines"
     sys.exit(0)
     
-def test(TestString):
+def old_test(TestString):
     TestString = TestString.replace("\n", "\\n").replace("\t", "\\t")
     print "expression           = " + TestString
     pattern = regex.do(TestString, {})
     print "fixed newline number = ", pattern.newline_n
     print "fixed character number = ", pattern.character_n
 
+def test(TestString):
+    #if "BeginOfLine" in sys.argv:
+    #    TestString = "^%s" % TestString
+    TestString = TestString.replace("\n", "\\n").replace("\t", "\\t")
+    print ("expr. = " + TestString).replace("\n", "\\n").replace("\t", "\\t")
+    pattern = core.do(TestString, {})
+    pattern.prepare_count_info(counter_db)
+    print ("info  = {\n    %s\n}\n" % str(pattern.count_info()).replace("\n", "\n    "))
+
+test('[ \t\n]')
+sys.exit()
 test('[0-9]+')
 test('"1\n\n\n3"')
 test('"1\n\n\n3"|"A\n\n\nC"')

@@ -15,9 +15,10 @@ spec_txt = """
 
 if "--hwut-info" in sys.argv:
     print "Predetermined Character Count: Characters of different horizontal sizes."
-    print "CHOICES: Same, Different, TwoSet, Grid;"
+    print "CHOICES: Same, Different, TwoSet, Grid, Grid-BOL;"
     sys.exit(0)
 
+choice = sys.argv[1]
 if "TwoSet" in sys.argv:
     spec_txt += "   [a-zA-Z] => space 5;\n"
     spec_txt += "   [0-9]    => space 7;\n"
@@ -26,7 +27,7 @@ elif "Same" in sys.argv:
 elif "Different" in sys.argv:
     spec     = [ "    \\x%02X => space %i;\n" % (i, i) for i in xrange(2, 0x100)]
     spec_txt = "".join(spec)
-elif "Grid" in sys.argv:
+elif choice in ["Grid", "Grid-BOL"]:
     spec_txt += "   [2byBY] => grid 5;\n"
 else:
     assert False
@@ -44,54 +45,62 @@ counter_db = counter_setup.CounterDB(adapt(lcc_setup.space_db),
                                      adapt(lcc_setup.grid_db), 
                                      adapt(lcc_setup.newline_db))
 
+
 def test(TestString):
+    global choice
+    TestString = TestString.replace("\n", "\\n").replace("\t", "\\t")
+    if choice == "Grid-BOL": TestString = "^%s" % TestString
     print ("expr. = " + TestString).replace("\n", "\\n").replace("\t", "\\t")
     pattern = core.do(TestString, {})
     pattern.prepare_count_info(counter_db)
     print ("info  = {\n    %s\n}\n" % str(pattern.count_info()).replace("\n", "\n    "))
 
 
-test('[0-9]+')
-test('"123"')
-test('"123"|"ABC"')
-test('"1234"|"ABC"')
-test('"123"+')
-test('X"123"?')
-test('"123"?X')
-test('"123"*X')
-test('X"123"*')
 
-test('abc("123"+)')
-test('abc("123"?)')
-test('abc("123"*)')
+#test('"123"')
+#sys.exit()
+if choice not in ["Grid", "Grid-BOL"]:
+    test('[0-9]+')
+    test('"123"')
+    test('"123"|"ABC"')
+    test('"1234"|"ABC"')
+    test('"123"+')
+    test('X"123"?')
+    test('"123"?X')
+    test('"123"*X')
+    test('X"123"*')
 
-test('abc("123"+)xyz')
-test('abc("123"?)xyz')
-test('abc("123"*)xyz')
+    test('abc("123"+)')
+    test('abc("123"?)')
+    test('abc("123"*)')
 
-test('abc("123"|"ABC")xyz')
-test('abc("123"|"ABCD")xyz')
-test('abc("123"|"ABC")+xyz')
-test('abc("123"|"ABC")?xyz')
-test('abc("123"|"ABC")*xyz')
+    test('abc("123"+)xyz')
+    test('abc("123"?)xyz')
+    test('abc("123"*)xyz')
 
-test('"a"|"c"|"e"|"g"')
-test('X("a"|"x"?|"e"|"g")')
-test('"a"|"x"+|"e"|"g"')
-test('X("a"|"x"*|"e"|"g")')
+    test('abc("123"|"ABC")xyz')
+    test('abc("123"|"ABCD")xyz')
+    test('abc("123"|"ABC")+xyz')
+    test('abc("123"|"ABC")?xyz')
+    test('abc("123"|"ABC")*xyz')
 
-test('abc("123"|("ABC"|"XYZ"))"123"("AAA"|"BBB"|"CCC")xyz')
-test('abc("123"|("ABCD"|"XYZ"))"123"("AAA"|"BBB"|"CCC")xyz')
+    test('"a"|"c"|"e"|"g"')
+    test('X("a"|"x"?|"e"|"g")')
+    test('"a"|"x"+|"e"|"g"')
+    test('X("a"|"x"*|"e"|"g")')
 
-if "Grid" in sys.argv:
+    test('abc("123"|("ABC"|"XYZ"))"123"("AAA"|"BBB"|"CCC")xyz')
+    test('abc("123"|("ABCD"|"XYZ"))"123"("AAA"|"BBB"|"CCC")xyz')
+
+else:
     # Some special tests for 'Grid'
     # Recall:  { 5: NumberSet([ Interval(ord(x)) for x in "2byBY" ]) }
-    test('"xxxxx2"')
-    test('"xxxx2"')
-    test('"xxx2"')
-    test('"xx2"')
-    test('"x2"')
-    test('"2"')
+    test('xxxxx2')
+    test('xxxx2')
+    test('xxx2')
+    test('xx2')
+    test('x2')
+    test('2')
     test('xxxxx2|aaaaaaaaaa')
     test('xxxx2|aaaaa')
     test('xxx2|aaaaa')

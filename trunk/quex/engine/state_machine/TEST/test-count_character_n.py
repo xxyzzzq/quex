@@ -28,6 +28,7 @@ if "--hwut-info" in sys.argv:
     sys.exit(0)
     
 def test(TestString):
+    TestString = TestString.replace("\n", "\\n").replace("\t", "\\t")
     if "BeginOfLine" in sys.argv:
         TestString = "^%s" % TestString
     print ("expr. = " + TestString).replace("\n", "\\n").replace("\t", "\\t")

@@ -1,4 +1,4 @@
-<history date="Wed Sep 19 07:57:06 2012" element-n="587">
+<history date="Mon Sep 24 07:19:10 2012" element-n="598">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1305,5 +1305,24 @@
         <crc-error time="05:35:55" application="test-count_character_n-2.py" choice="Different" database-crc="1336615404" real-crc="-2016051693"/>
         <crc-error time="05:44:55" application="test-count_character_n-2.py" choice="Grid" database-crc="-1029860625" real-crc="-1907230382"/>
         <crc-error time="05:57:05" application="test-count_character_n-2.py" choice="Grid" database-crc="-1907230382" real-crc="118571724"/>
+    </day>
+    <day year="2012" month="09" day="20">
+        <crc-error time="04:40:22" application="test-count_character_n-2.py" choice="Grid" database-crc="118571724" real-crc="370762052"/>
+        <crc-error time="04:54:09" application="test-count_character_n-2.py" choice="Grid" database-crc="370762052" real-crc="-2082419416"/>
+    </day>
+    <day year="2012" month="09" day="21">
+        <crc-error time="05:09:45" application="test-count_character_n-2.py" choice="Grid" database-crc="-2082419416" real-crc="-558522765"/>
+        <crc-error time="20:21:54" application="test-count_character_n-2.py" choice="Grid" database-crc="-558522765" real-crc="-494619827"/>
+        <crc-error time="20:29:45" application="test-count_character_n-2.py" choice="Grid" database-crc="-494619827" real-crc="160574648"/>
+        <crc-error time="20:30:35" application="test-count_character_n-2.py" choice="Grid" database-crc="160574648" real-crc="925547640"/>
+    </day>
+    <day year="2012" month="09" day="22">
+        <crc-error time="08:10:40" application="test-count_character_n-2.py" choice="Different" database-crc="-2016051693" real-crc="-1725497664"/>
+    </day>
+    <day year="2012" month="09" day="23">
+        <crc-error time="06:49:57" application="test-count_character_n-2.py" choice="Grid" database-crc="-1412887561" real-crc="-2110944399"/>
+        <crc-error time="07:29:02" application="test-count_newline_n.py" choice="" database-crc="-133066012" real-crc="447550882"/>
+        <crc-error time="07:32:33" application="test-count_newline_n.py" choice="" database-crc="447550882" real-crc="138569219"/>
+        <crc-error time="09:38:48" application="test-count_newline_n.py" choice="" database-crc="138569219" real-crc="-1033820976"/>
     </day>
 </history>

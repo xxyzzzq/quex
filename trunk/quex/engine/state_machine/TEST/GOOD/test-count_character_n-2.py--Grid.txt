@@ -1,17 +1,4 @@
-expr. = [0-9]+
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = VOID;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = "123"
-char-n =  6
+expr. = xxxxx2
 info  = {
     line_n_increment                    = 0;
     column_index                        = VOID;
@@ -23,8 +10,7 @@ info  = {
     
 }
 
-expr. = "123"|"ABC"
-char-n =  6
+expr. = xxxx2
 info  = {
     line_n_increment                    = 0;
     column_index                        = VOID;
@@ -36,7 +22,7 @@ info  = {
     
 }
 
-expr. = "1234"|"ABC"
+expr. = xxx2
 info  = {
     line_n_increment                    = 0;
     column_index                        = VOID;
@@ -48,7 +34,7 @@ info  = {
     
 }
 
-expr. = "123"+
+expr. = xx2
 info  = {
     line_n_increment                    = 0;
     column_index                        = VOID;
@@ -60,7 +46,7 @@ info  = {
     
 }
 
-expr. = X"123"?
+expr. = x2
 info  = {
     line_n_increment                    = 0;
     column_index                        = VOID;
@@ -72,315 +58,7 @@ info  = {
     
 }
 
-expr. = "123"?X
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = "123"*X
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = X"123"*
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = abc("123"+)
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = abc("123"?)
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = abc("123"*)
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = abc("123"+)xyz
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = abc("123"?)xyz
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = abc("123"*)xyz
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = abc("123"|"ABC")xyz
-char-n =  16
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = abc("123"|"ABCD")xyz
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = abc("123"|"ABC")+xyz
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = abc("123"|"ABC")?xyz
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = abc("123"|"ABC")*xyz
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = "a"|"c"|"e"|"g"
-char-n =  1
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = 1;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = 1;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = X("a"|"x"?|"e"|"g")
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = 1;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = "a"|"x"+|"e"|"g"
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = 1;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = X("a"|"x"*|"e"|"g")
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = 1;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = abc("123"|("ABC"|"XYZ"))"123"("AAA"|"BBB"|"CCC")xyz
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = abc("123"|("ABCD"|"XYZ"))"123"("AAA"|"BBB"|"CCC")xyz
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = "xxxxx2"
-char-n =  10
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = "xxxx2"
-char-n =  5
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = "xxx2"
-char-n =  5
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = "xx2"
-char-n =  5
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = "x2"
-char-n =  5
-info  = {
-    line_n_increment                    = 0;
-    column_index                        = VOID;
-    column_n_increment                  = VOID;
-    grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = 0;
-    column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
-    
-}
-
-expr. = "2"
-char-n =  5
+expr. = 2
 info  = {
     line_n_increment                    = 0;
     column_index                        = VOID;
@@ -393,7 +71,6 @@ info  = {
 }
 
 expr. = xxxxx2|aaaaaaaaaa
-char-n =  10
 info  = {
     line_n_increment                    = 0;
     column_index                        = VOID;
@@ -406,7 +83,6 @@ info  = {
 }
 
 expr. = xxxx2|aaaaa
-char-n =  5
 info  = {
     line_n_increment                    = 0;
     column_index                        = VOID;
@@ -419,7 +95,6 @@ info  = {
 }
 
 expr. = xxx2|aaaaa
-char-n =  5
 info  = {
     line_n_increment                    = 0;
     column_index                        = VOID;
@@ -432,7 +107,6 @@ info  = {
 }
 
 expr. = xx2|aaaaa
-char-n =  5
 info  = {
     line_n_increment                    = 0;
     column_index                        = VOID;
@@ -445,7 +119,6 @@ info  = {
 }
 
 expr. = x2|aaaaa
-char-n =  5
 info  = {
     line_n_increment                    = 0;
     column_index                        = VOID;
@@ -458,12 +131,11 @@ info  = {
 }
 
 expr. = 2|aaaaa
-char-n =  5
 info  = {
     line_n_increment                    = 0;
     column_index                        = VOID;
     column_n_increment                  = VOID;
-    grid_step_n                         = 0;
+    grid_step_n                         = VOID;
     line_n_increment_by_lexeme_length   = 0;
     column_n_increment_by_lexeme_length = VOID;
     grid_step_size_by_lexeme_length     = VOID;
@@ -543,12 +215,11 @@ info  = {
 }
 
 expr. = xxxxx2|22
-char-n =  10
 info  = {
     line_n_increment                    = 0;
     column_index                        = VOID;
     column_n_increment                  = VOID;
-    grid_step_n                         = 0;
+    grid_step_n                         = VOID;
     line_n_increment_by_lexeme_length   = 0;
     column_n_increment_by_lexeme_length = VOID;
     grid_step_size_by_lexeme_length     = VOID;
@@ -556,7 +227,6 @@ info  = {
 }
 
 expr. = xxxxx2
-char-n =  10
 info  = {
     line_n_increment                    = 0;
     column_index                        = VOID;
@@ -569,7 +239,6 @@ info  = {
 }
 
 expr. = x2x2
-char-n =  10
 info  = {
     line_n_increment                    = 0;
     column_index                        = VOID;
