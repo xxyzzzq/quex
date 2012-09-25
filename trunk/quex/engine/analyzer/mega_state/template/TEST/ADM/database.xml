@@ -1,4 +1,4 @@
-<test-database execution-time-sec="2.32" date="Tue Sep 25 06:15:02 2012">
+<test-database execution-time-sec="2.32" date="Tue Sep 25 23:21:03 2012">
     <last-used-diff-display-program name=""/>
     <test title="Combine Simple" time-sum-sec="0.29"> 
         <application file-name="combine-simple.py" info-request-time="1339217688L" vanished="False"/>

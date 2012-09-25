@@ -1,4 +1,4 @@
-<test-database execution-time-sec="154.69" date="Tue Sep 25 06:10:10 2012">
+<test-database execution-time-sec="154.35" date="Tue Sep 25 23:20:07 2012">
     <last-used-diff-display-program name=""/>
     <test title="Makefile Differences to C++ Version" time-sum-sec="0.21"> 
         <application file-name="makefile-diff.sh" info-request-time="1333226549L" vanished="False"/>
@@ -56,11 +56,11 @@
                <choice name="BPC=wchar_t" result="OK" time_sec="1.89" crc="766281751"/>
             </choice-list>
         </test>
-        <test title="Byte Order Mark (BOM) Cutting" time-sum-sec="6.79"> 
+        <test title="Byte Order Mark (BOM) Cutting" time-sum-sec="6.73"> 
             <application file-name="003-bom.sh" info-request-time="1318614211L" vanished="False"/>
             <choice-list number="3" same_result="False">
-               <choice name="Without" result="FAIL" time_sec="3.10" crc="1853132003"/>
-               <choice name="UTF8-BOM" result="FAIL" time_sec="1.91" crc="-478996158"/>
+               <choice name="Without" result="FAIL" time_sec="3.03" crc="1853132003"/>
+               <choice name="UTF8-BOM" result="FAIL" time_sec="1.92" crc="-478996158"/>
                <choice name="UTF16BE-BOM" result="OK" time_sec="1.78" crc="591404884"/>
             </choice-list>
         </test>
@@ -85,13 +85,13 @@
         </test>
     </group>
     <group name="demo/005">
-        <test title="Including Files" time-sum-sec="7.35"> 
+        <test title="Including Files" time-sum-sec="7.07"> 
             <application file-name="005.sh" info-request-time="1318614211L" vanished="False"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="FAIL" time_sec="1.94" crc="256352848"/>
+               <choice name="1" result="FAIL" time_sec="1.76" crc="256352848"/>
                <choice name="1_NDEBUG" result="FAIL" time_sec="1.77" crc="256352848"/>
-               <choice name="2" result="FAIL" time_sec="1.82" crc="-364815969"/>
-               <choice name="2_NDEBUG" result="FAIL" time_sec="1.82" crc="-364815969"/>
+               <choice name="2" result="FAIL" time_sec="1.76" crc="-364815969"/>
+               <choice name="2_NDEBUG" result="FAIL" time_sec="1.78" crc="-364815969"/>
             </choice-list>
         </test>
     </group>
@@ -129,7 +129,7 @@
                <choice name="" result="OK" time_sec="2.62" crc="-1782734641"/>
             </choice-list>
         </test>
-        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="7.26"> 
+        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="7.25"> 
             <application file-name="009.sh" info-request-time="1335929383L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="lexer" result="OK" time_sec="3.50" crc="-839532690"/>
@@ -138,7 +138,7 @@
         </test>
     </group>
     <group name="demo/010">
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="52.29"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="52.30"> 
             <application file-name="010.sh" info-request-time="1335823715L" vanished="False"/>
             <choice-list number="9" same_result="False">
                <choice name="copy" result="OK" time_sec="2.15" crc="595815643"/>

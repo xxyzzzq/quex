@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.73" date="Tue Sep 25 06:14:19 2012">
+<test-database execution-time-sec="0.73" date="Tue Sep 25 23:20:52 2012">
     <last-used-diff-display-program name=""/>
     <test title="Customized on_skip_range_open event." make-dependent="True" time-sum-sec="0.05"> 
         <application file-name="on_skip_range_open-customized.sh" info-request-time="1344644127L" vanished="False"/>

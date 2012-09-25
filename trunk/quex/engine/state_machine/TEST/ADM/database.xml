@@ -1,4 +1,4 @@
-<test-database execution-time-sec="17.02" date="Tue Sep 25 06:15:13 2012">
+<test-database execution-time-sec="17.00" date="Tue Sep 25 23:21:13 2012">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Superset/Subset Determination" time-sum-sec="1.40"> 
         <application file-name="test-subset_checker.py" info-request-time="1336071109L" vanished="True"/>
@@ -252,7 +252,7 @@
         <test title="NFA to DFA (subset construction) II" time-sum-sec="0.08"> 
             <application file-name="test-StateMachine-trace-origin-create-DFA-2.py" info-request-time="1320093351L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.08" crc="-876481985"/>
+               <choice name="" result="OK" time_sec="0.08" crc="-876481985"/>
             </choice-list>
         </test>
     </group>
@@ -326,10 +326,10 @@
                <choice name="4.4" result="OK" time_sec="0.08" crc="-590376011"/>
             </choice-list>
         </test>
-        <test title="Larger Number Sets" time-sum-sec="0.10"> 
+        <test title="Larger Number Sets" time-sum-sec="0.07"> 
             <application file-name="test-utf8_state_split-do-2.py" info-request-time="1320012485L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.10" crc="-1541079576"/>
+               <choice name="" result="OK" time_sec="0.07" crc="-1541079576"/>
             </choice-list>
         </test>
     </group>

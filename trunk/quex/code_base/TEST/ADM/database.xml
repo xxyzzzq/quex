@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.09" date="Tue Sep 25 06:14:54 2012">
+<test-database execution-time-sec="0.09" date="Tue Sep 25 23:20:56 2012">
     <last-used-diff-display-program name=""/>
     <group name="BOM Snap">
         <test title="ifstream" make-dependent="True" time-sum-sec="0.00"> 

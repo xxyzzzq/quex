@@ -22,7 +22,7 @@ class Pattern(object):
         #     The original core state machine represents the core pattern without
         #     the post context in UNICODE(!) not the possibly transformed character
         #     encoding. This state machine is required later for character counting.
-        self.__original_core_sm = core_sm.clone()
+        self.__original_core_sm = None # See below
 
         # (*) [Optional] Transformation according to Codec Information
         #
@@ -41,6 +41,11 @@ class Pattern(object):
             if sm is not None: core_sm = sm
             sm = transformation.try_this(post_context, fh)
             if sm is not None: post_context = sm
+
+            self.__original_core_sm = core_sm.clone()
+        else:
+            # Non cloning required.
+            self.__original_core_sm = core_sm
 
         # (*) Setup the whole pattern
         self.__sm = core_sm

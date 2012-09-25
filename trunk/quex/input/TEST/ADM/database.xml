@@ -1,9 +1,9 @@
-<test-database execution-time-sec="15.36" date="Tue Sep 25 06:15:14 2012">
+<test-database execution-time-sec="15.38" date="Tue Sep 25 23:21:14 2012">
     <last-used-diff-display-program name=""/>
     <test title="Parse Indentation Setup" time-sum-sec="0.47"> 
         <application file-name="indentation_setup.py" info-request-time="1344155406L" vanished="False"/>
         <choice-list number="5" same_result="False">
-           <choice name="basic" result="FAIL" time_sec="0.08" crc="1692897443"/>
+           <choice name="basic" result="FAIL" time_sec="0.09" crc="1692897443"/>
            <choice name="twice" result="OK" time_sec="0.10" crc="-233475326"/>
            <choice name="intersection" result="OK" time_sec="0.11" crc="395610589"/>
            <choice name="intersection-2" result="OK" time_sec="0.10" crc="373692848"/>
@@ -21,10 +21,10 @@
            <choice name="m_multi_turkish" result="OK" time_sec="0.17" crc="447292331"/>
         </choice-list>
     </test>
-    <test title="Parse Counter Setup" time-sum-sec="0.43"> 
+    <test title="Parse Counter Setup" time-sum-sec="0.44"> 
         <application file-name="counter_setup.py" info-request-time="1344158911L" vanished="False"/>
         <choice-list number="5" same_result="False">
-           <choice name="basic" result="FAIL" time_sec="0.09" crc="-2118276661"/>
+           <choice name="basic" result="FAIL" time_sec="0.10" crc="-2118276661"/>
            <choice name="twice" result="OK" time_sec="0.09" crc="-1440129109"/>
            <choice name="intersection" result="OK" time_sec="0.09" crc="715463526"/>
            <choice name="intersection-2" result="OK" time_sec="0.08" crc="-819264226"/>
@@ -108,10 +108,10 @@
                <choice name="Error-2" result="OK" time_sec="0.08" crc="2076320285"/>
             </choice-list>
         </test>
-        <test title="Distinct Members" time-sum-sec="0.42"> 
+        <test title="Distinct Members" time-sum-sec="0.43"> 
             <application file-name="token_type-2.py" info-request-time="1318614195L" vanished="False"/>
             <choice-list number="6" same_result="False">
-               <choice name="None" result="FAIL" time_sec="0.05" crc="775994298"/>
+               <choice name="None" result="FAIL" time_sec="0.06" crc="775994298"/>
                <choice name="One" result="OK" time_sec="0.07" crc="844282235"/>
                <choice name="Some" result="OK" time_sec="0.09" crc="-218909109"/>
                <choice name="Forbidden" result="OK" time_sec="0.08" crc="227999755"/>

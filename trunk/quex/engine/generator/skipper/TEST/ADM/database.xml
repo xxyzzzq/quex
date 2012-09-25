@@ -1,4 +1,4 @@
-<test-database execution-time-sec="66.98" date="Tue Sep 25 06:15:12 2012">
+<test-database execution-time-sec="66.98" date="Tue Sep 25 23:21:13 2012">
     <last-used-diff-display-program name=""/>
     <group name="Skip-Characters">
         <test title="Large Buffer" time-sum-sec="9.07"> 

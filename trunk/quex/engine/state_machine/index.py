@@ -1,4 +1,5 @@
 # special states:
+from quex.engine.misc.file_in import print_callstack
 
 def clear():
     global __internal_state_index_counter
@@ -22,6 +23,7 @@ def get():
     """Returns a unique state index."""
     global __internal_state_index_counter
     __internal_state_index_counter += long(1)
+    # print_callstack()
     return __internal_state_index_counter
 
 __map_combination_to_index = {}

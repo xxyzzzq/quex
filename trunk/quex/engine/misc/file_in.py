@@ -769,3 +769,17 @@ def __check_codec(fh, FileName):
                   "File '%s' is not ASCII or UTF8 encoded. Or, it contains encoding errors." % FileName)
     fh.seek(start_pos)
     return fh
+
+def print_callstack():
+    try:
+        i = 2
+        name_list = []
+        while 1 + 1 == 2:
+            x = sys._getframe(i).f_code
+            name_list.append([x.co_filename, x.co_firstlineno, x.co_name])
+            i += 1
+    except:
+        pass
+    name_list.reverse()
+    for i, x in enumerate(name_list):
+        print "%s%s:%s(...)" % (" " * (i*4), os.path.basename(x[0]), x[2]) 
