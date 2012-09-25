@@ -250,6 +250,18 @@ info  = {
     
 }
 
+expr. = ^x2x
+info  = {
+    line_n_increment                    = 0;
+    column_index                        = 6;
+    column_n_increment                  = 6;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 0;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = VOID;
+    
+}
+
 ##The result of the following should be '10' for both paths--meaning
 ##it could be computed beforehand, before run time.
 ##However, it is 'VOID' which is safe, but not optimal. This is a

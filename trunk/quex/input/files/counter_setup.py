@@ -221,9 +221,16 @@ class LineColumnCounterSetup(Base):
     def seal(self, DefaultSpaceSpec, FH):
         Base.seal(self)
 
+        def extract(db):
+            result = []
+            for x in db.itervalues():
+                result.extend(x.get().get_intervals(PromiseToTreatWellF=True))
+            return result
+
         default_newline = ord('\n')
         if len(self.newline_db) == 0:
-            default_newline = NumberSet(ord('\n'))
+            default_newline  = NumberSet(ord('\n'))
+            newline_char_set = default_newline.clone() # In case, it is going to be defined elsewhere
             # default_newline = NumberSet([Interval(0x0A), # Line Feed 
             #                  Interval(0x0B),            # Vertical Tab 
             #                  Interval(0x0C),            # Form Feed 
@@ -232,15 +239,15 @@ class LineColumnCounterSetup(Base):
             #                  Interval(0x2028),          # Line Separator 
             #                  Interval(0x2029)])         # Paragraph Separator 
             # self.specify_newline("[\x0A\x0B\x0C\x85\X2028\X2029]", 
-            self.specify_newline("[\\n]", default_newline, 1, self.fh)
+
+            # Collect all characters mentioned in 'space_db' and 'grid_db'
+            all_char_set     = NumberSet(extract(self.space_db) + extract(self.grid_db))
+            newline_char_set.subtract(all_char_set)
+            if not newline_char_set.is_empty():
+                self.specify_newline("[\\n]", newline_char_set, 1, self.fh)
 
         if DefaultSpaceSpec is not None:
             # Collect all characters mentioned in 'space_db', 'grid_db', 'newline_db'
-            def extract(db):
-                result = []
-                for x in db.itervalues():
-                    result.extend(x.get().get_intervals(PromiseToTreatWellF=True))
-                return result
             all_char_set = NumberSet(  extract(self.space_db) 
                                      + extract(self.grid_db) 
                                      + extract(self.newline_db))

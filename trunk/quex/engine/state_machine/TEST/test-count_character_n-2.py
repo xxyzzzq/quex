@@ -57,7 +57,7 @@ def test(TestString):
 
 
 
-#test('"123"')
+#test('[0-9]+')
 #sys.exit()
 if choice not in ["Grid", "Grid-BOL"]:
     test('[0-9]+')
@@ -116,6 +116,7 @@ else:
     test('xxxxx2|22')
     test('xxxxx2')
     test('x2x2')
+    test('x2x')
     print "##The result of the following should be '10' for both paths--meaning"
     print "##it could be computed beforehand, before run time."
     print "##However, it is 'VOID' which is safe, but not optimal. This is a"

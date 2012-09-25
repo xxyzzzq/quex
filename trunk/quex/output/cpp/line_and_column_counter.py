@@ -1,5 +1,6 @@
 # (C) 2012 Frank-Rene Schaefer
-from quex.blackboard import E_Count
+from quex.blackboard import E_Count, \
+                            setup as Setup
 
 def do(ThePattern, EOF_ActionF):
     """Prepare additional actions which are required for line and column
@@ -27,60 +28,44 @@ def do(ThePattern, EOF_ActionF):
            + "    __quex_debug_counter();\n"
 
 def __do(ThePattern, EOF_ActionF):
+    LanguageDB = Setup.language_db
+
+    txt = "__QUEX_COUNTER_SHIFT_VALUES(self.counter);\n" \
 
     if EOF_ActionF:
-        return "__QUEX_COUNTER_SHIFT_VALUES(self.counter);\n" 
+        return txt
 
     if ThePattern is None:
         # 'on_failure' ... count any appearing character
-        return "QUEX_NAME(Counter_count)(&self.counter, LexemeBegin, LexemeEnd);\n"
+        txt += "QUEX_NAME(Counter_count)(&self.counter, LexemeBegin, LexemeEnd);\n"
+        return txt
         ## return "QUEX_NAME(Counter_count_with_grid)(&self.counter, LexemeBegin, LexemeEnd);\n"
 
     counter = ThePattern.count_info()
 
-    if not counter.is_partly_determined():
+    # (*) If one parameter is 'VOID' than use the general counter to count.
+    if    counter.line_n_increment_by_lexeme_length   == E_Count.VOID \
+       or counter.column_n_increment_by_lexeme_length == E_Count.VOID \
+       or counter.grid_step_size_by_lexeme_length     == E_Count.VOID:
         return "QUEX_NAME(Counter_count)(&self.counter, LexemeBegin, LexemeEnd);\n"
 
-    # (*) Column Number Increment Considerations
-    if counter.grid != E_Count.VOID:
-        assert counter.column_n_increment                  == E_Count.VOID
-        assert counter.column_n_increment_by_lexeme_length == E_Count.VOID
-        if counter.grid == 1: arg = None
-        else:                 arg = counter.grid
-        core_txt = LanguageDB.GRID_STEP("self.counter._column_number_at_end", 
-                                        counter.grid_width, arg)
-        column_txt = "__QUEX_IF_COUNT_COLUMNS(%s);\n" % core_txt
+    if counter.line_n_increment != E_Count.VOID and counter.line_n_increment_by_lexeme_length != 0:
+        if counter.line_n_increment == 1: arg = "LexemeL"
+        else:                             arg = "LexemeL * %i" % counter.line_n_increment
+        txt += "__QUEX_IF_COUNT_LINES_ADD(%s);\n" % arg
 
-    elif counter.column_n_increment != E_Count.VOID:
-        column_txt = "__QUEX_IF_COUNT_COLUMNS_ADD(%s);\n" % counter.column_n_increment
+    if counter.column_index != E_Count.VOID:
+        txt += "__QUEX_IF_COUNT_COLUMNS_SET(%i);\n" % (counter.column_index + 1)
 
-    elif counter.column_n_increment_by_lexeme_length != E_Count.VOID:
-        x = counter.column_n_increment_by_lexeme_length
-        if x == 1: arg = "LexemeL"
-        else:      arg = "LexemeL * %i" % x
-        column_txt = "__QUEX_IF_COUNT_COLUMNS_ADD(%s);\n" % arg
+    elif counter.column_n_increment != E_Count.VOID and counter.column_n_increment_by_lexeme_length != 0:
+        if counter.column_n_increment == 1: arg = "LexemeL"
+        else:                               arg = "LexemeL * %i" % counter.column_n_increment
+        txt += "__QUEX_IF_COUNT_COLUMNS_ADD(%s);\n" % arg
 
-    else:
-        column_txt = None
+    elif counter.grid_step_n != E_Count.VOID and counter.grid_step_size_by_lexeme_length != 0:
+        txt += LanguageDB.GRID_STEP("self.counter._column_number_at_end", "size_t",
+                                    counter.grid_step_size_by_lexeme_length, 
+                                    counter.grid_step_n)
 
-
-    # (*) Line Number Increment Considerations
-    if   counter.line_n_increment != E_Count.VOID:
-        if counter.line_n_increment == 0:
-            line_txt = ""
-        else:
-            line_txt = "__QUEX_IF_COUNT_LINES_ADD(%s);\n" % counter.line_n_increment
-
-    elif counter.line_n_increment_by_lexeme_length:
-        x = counter.line_n_increment_by_lexeme_length
-        if x == 1: arg = "LexemeL"
-        else:      arg = "LexemeL * %i" % x
-        line_txt = "__QUEX_IF_COUNT_LINES_ADD(%s);\n" % arg
-
-    else:
-        line_txt = None
-
-    return "__QUEX_COUNTER_SHIFT_VALUES(self.counter);\n" \
-           + line_txt \
-           + column_txt
+    return txt
 

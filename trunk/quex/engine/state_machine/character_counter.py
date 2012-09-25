@@ -1,6 +1,7 @@
 # (C) 2012 Frank-Rene Schaefer
-from quex.engine.misc.tree_walker  import TreeWalker
-from quex.blackboard               import E_Count
+from quex.engine.misc.tree_walker import TreeWalker
+from quex.blackboard              import E_Count
+
 class UniqueValue(object):
     """A simple class to hold a value that is:
 
@@ -14,11 +15,15 @@ class UniqueValue(object):
         if isinstance(InitValue, UniqueValue): self.value = InitValue.value
         else:                                  self.value = InitValue
 
+    def clone(self):
+        return UniqueValue(self.value)
+
     def __ilshift__(self, Value):
         """Use 'injection' to fulfill the task of virgin, void, coherent assignment."""
         assert not isinstance(Value, UniqueValue) 
         assert Value is not None
         if   self.value == E_Count.VIRGIN: self.value = Value
+        elif Value      == E_Count.NONE:   self.value = E_Count.NONE
         elif self.value == E_Count.VOID:   pass
         elif self.value != Value:          self.value = E_Count.VOID
         else:                              pass # No change
@@ -28,6 +33,7 @@ class UniqueValue(object):
         assert not isinstance(Value, UniqueValue) 
         if   self.value == E_Count.VIRGIN: self.value  = Value
         elif self.value == E_Count.VOID:   pass
+        elif self.value == E_Count.NONE:   pass
         else:                              self.value += Value
         return self
 
@@ -43,6 +49,12 @@ class UniqueValue(object):
     def __str__(self):
         return str(self.value)
 
+    def is_number(self):
+        if self.value == E_Count.VIRGIN or self.value == E_Count.VOID: 
+            return False
+        if isinstance(self.value, (str, unicode)):
+            return False
+        return True
 
 def do(SM, CounterDB, BeginOfLineF=False):
     """LINE AND COLUMN NUMBER ANALYSIS ________________________________________
@@ -124,7 +136,7 @@ def do(SM, CounterDB, BeginOfLineF=False):
     """
     counter = CharacterCountTracer(SM)
     state   = SM.get_init_state()
-    count   = Count(0, 0, ColumnIndex = 0 if BeginOfLineF else E_Count.VOID, GridStepN = 0)
+    count   = Count(0, 0, ColumnIndex = 0 if BeginOfLineF else E_Count.VOID, GridStepN = E_Count.VIRGIN)
     # Next Node: [0] state index of target state
     #            [1] character set that triggers to it
     #            [2] count information
@@ -179,8 +191,6 @@ class CharacterCountTracer(TreeWalker):
         StateIndex, CharacterSet, count = Info
 
         if not count.compute(CharacterSet):
-            self.result.line_n_increment   = E_Count.VOID
-            self.result.column_n_increment = E_Count.VOID
             self.abort_f = True
             return None
 
@@ -201,7 +211,7 @@ class CharacterCountTracer(TreeWalker):
                            for state_index, character_set in state.transitions().get_map().iteritems() ]
 
         if state.is_acceptance():
-            if self.result.voidify_deviants(self.result, known): self.abort_f = True
+            if not self.result.register_result(known): self.abort_f = True
 
         return subsequent
 
@@ -224,11 +234,11 @@ def _get_grid_step_size_by_lexeme_length(SM, CounterDB):
     for state in SM.states.itervalues():
         for character_set in state.transitions().get_map().itervalues():
             for grid_size, grid_character_set in CounterDB.grid.iteritems():
-                if grid_character_set.is_superset(CharacterSet):
+                if grid_character_set.is_superset(character_set):
                     # All characters of the transition are in 'grid_character_set'
                     if   prototype == E_Count.VIRGIN: prototype = grid_size
                     elif prototype != grid_size:      return E_Count.VOID
-                elif grid_character_set.has_intersection(CharacterSet):
+                elif grid_character_set.has_intersection(character_set):
                     # Some characters are form 'grid_character_set' others not.
                     return E_Count.VOID
 
@@ -298,18 +308,17 @@ class Count(object):
                  column numbering cannot be determined deterministically from 
                  the state machine.  
         """
-
         # (*) Line Numbering 
         for delta, character_set in Count.counter_db.newline.iteritems():
 
             if character_set.is_superset(CharacterSet):
                 # 'CharacterSet' does not contain anything beyond 'character_set'
-                Count.line_n_increment_by_lexeme_length         <<= delta
-                Count.column_n_increment_by_lexeme_length       <<= E_Count.VOID
-                Count.grid_step_size_increment_by_lexeme_length <<= E_Count.VOID
-                self.column_n_increment                         <<= E_Count.VOID
-                self.column_index                                 = UniqueValue(0)
-                self.grid_step_n                                  = UniqueValue(0)
+                Count.line_n_increment_by_lexeme_length   <<= delta
+                Count.column_n_increment_by_lexeme_length <<= 0
+                Count.grid_step_size_by_lexeme_length     <<= 0
+                self.column_n_increment                   <<= 0
+                self.column_index                         = UniqueValue(E_Count.VIRGIN)
+                self.grid_step_n                          = UniqueValue(E_Count.VIRGIN)
                 if isinstance(delta, (str, unicode)): self.line_n_increment <<= E_Count.VOID
                 else:                                 self.line_n_increment  += delta
                 return self.line_n_increment != E_Count.VOID  
@@ -317,27 +326,26 @@ class Count(object):
             elif character_set.has_intersection(CharacterSet):
                 # Sometimes 'input' triggers on 'character_set', sometimes not.
                 # => Counts are no longer deterministic.
+                self.line_n_increment                   <<= E_Count.VOID
                 Count.line_n_increment_by_lexeme_length <<= E_Count.VOID
-                self.voidify_column_n()
-                return False # Abort
+                return self.voidify_column_n() # Abort if all void
 
         # (*) Grid
         for grid_size, character_set in Count.counter_db.grid.iteritems():
             if character_set.is_superset(CharacterSet):
                 # 'CharacterSet' does not contain anything beyond 'character_set'
-                Count.grid_step_size_by_lexeme_length <<= grid_size
+                Count.line_n_increment_by_lexeme_length <<= 0
+                Count.grid_step_size_by_lexeme_length   <<= grid_size
                 if isinstance(grid_size, (str, unicode)): 
-                    self.voidify_column_n()
-                    return self.line_n_increment != E_Count.VOID # Abort, if all VOID
+                    return self.voidify_column_n()  # Abort if all void
                 else:
-                    if self.grid_step_size_by_lexeme_length.value != E_Count.VOID:
-                        self.grid_step_n += 1
-                    if self.column_index != E_Count.VOID:
-                        Count.column_n_increment_by_lexeme_length <<= delta
+                    self.grid_step_n += 1 # Remains VOID, if it is already
+                    if self.column_index.is_number():
+                        delta = grid_size - (self.column_index.value % grid_size)
 
-                        delta = grid_size - (self.column_index % grid_size)
-                        self.column_index       += delta
-                        self.column_n_increment += delta
+                        Count.column_n_increment_by_lexeme_length <<= delta
+                        self.column_index                          += delta
+                        self.column_n_increment                    += delta
                     else:
                         Count.column_n_increment_by_lexeme_length <<= E_Count.VOID
                         self.column_n_increment                   <<= E_Count.VOID
@@ -347,47 +355,68 @@ class Count(object):
             elif character_set.has_intersection(CharacterSet):
                 # Sometimes 'input' triggers on 'character_set', sometimes not.
                 # => Counts are no longer deterministic.
-                self.voidify_column_n()
-                return self.line_n_increment != E_Count.VOID # Abort, if all VOID
+                Count.line_n_increment_by_lexeme_length <<= E_Count.VOID
+                return self.voidify_column_n() # Abort if all void
 
         # (*) Column Numbering
         #     Still, 'self.column_n_increment != E_Count.VOID'. Otherwise, 'return' was triggered.
         for delta, character_set in Count.counter_db.special.iteritems():
             if character_set.is_superset(CharacterSet):
                 # 'CharacterSet' does not contain anything beyond 'character_set'
+                Count.line_n_increment_by_lexeme_length   <<= 0
                 Count.column_n_increment_by_lexeme_length <<= delta
-                Count.grid_step_size_by_lexeme_length     <<= E_Count.VOID
+                Count.grid_step_size_by_lexeme_length     <<= 0
+                # Assign 'NONE' which prevents increment to it. 
+                # (Assinging '0' would not prevent increment.)
+                self.grid_step_n <<= E_Count.NONE
+
                 if isinstance(delta, (str, unicode)): 
-                    self.voidify_column_n()
-                    return self.line_n_increment != E_Count.VOID # Abort, if all VOID
+                    return self.voidify_column_n() # Abort if all void
                 else:
-                    if self.column_index != E_Count.VOID: self.column_index += delta
+                    self.column_index       += delta
                     self.column_n_increment += delta
                     return True
 
             elif character_set.has_intersection(CharacterSet):
                 # Sometimes 'input' triggers on 'character_set', sometimes not.
                 # => Counts are no longer deterministic.
-                self.voidify_column_n()
-                return self.line_n_increment != E_Count.VOID # Abort, if all VOID
+                Count.line_n_increment_by_lexeme_length <<= 0
+                Count.grid_step_size_by_lexeme_length   <<= 0
+                return self.voidify_column_n() # Abort if all void
 
         return True # Do not abort, yet
 
     def voidify_column_n(self):
         """Set all parameters related to column number counting to 'VOID'.
            
-           RETURNS: 'False' if line_n_increment is also VOID.
-                    'True'  if line_n_increment is not VOID and search can continue
-        
+           RETURNS: 'True'  if line_n_increment is not VOID and search can continue.
+                    'False' if line_n_increment is also VOID.
         """
 
-        Count.column_n_increment_by_lexeme_length       <<= E_Count.VOID
-        Count.grid_step_size_increment_by_lexeme_length <<= E_Count.VOID
+        Count.column_n_increment_by_lexeme_length <<= E_Count.VOID
 
         self.column_n_increment <<= E_Count.VOID  
-        self.grid_step_n        <<= E_Count.VOID  
         self.column_index       <<= E_Count.VOID  
 
+        return self.line_n_increment != E_Count.VOID # Abort, if all VOID
+
+    def register_result(self, Result):
+        """Register the counted numbers for one path to an acceptance state.
+        If any parameter has not yet been set before, set it. The call to
+        'voidify_deviants()' ensures that parameters which have different
+        counts for different paths are set to VOID.
+
+        RETURNS: False, if analysis should be aborted, because all has
+                        been detected as being VOID.
+                 True, if analysis may continue, since it may still be
+                       possible that one or the other value remains.
+        """
+        if self.line_n_increment   == E_Count.VIRGIN: self.line_n_increment   = Result.line_n_increment.clone()
+        if self.column_index       == E_Count.VIRGIN: self.column_index       = Result.column_index.clone()
+        if self.column_n_increment == E_Count.VIRGIN: self.column_n_increment = Result.column_n_increment.clone()
+        if self.grid_step_n        == E_Count.VIRGIN: self.grid_step_n        = Result.grid_step_n.clone()
+
+        return not self.voidify_deviants(self, Result)
 
     def voidify_deviants(self, Known, New):
         """Compares elements of 'Know' with 'New' representing counts of 
@@ -395,27 +424,22 @@ class Count(object):
            for different paths, they are 'VOID' and cannot be determined
            beforehand.
 
-
            RETURNS: 'True' if all counts are 'VOID', thus the investigation
                            can be aborted.
                     'False' else.
         """
-        if   Known.line_n_increment   == E_Count.VIRGIN:         self.line_n_increment   = New.line_n_increment
-        elif Known.line_n_increment   != New.line_n_increment:   self.line_n_increment   = E_Count.VOID
-
-        if   Known.column_index       == E_Count.VIRGIN:         self.column_index       = New.column_index
-        elif Known.column_index       != New.column_index:       self.column_index       = E_Count.VOID
-
-        if   Known.column_n_increment == E_Count.VIRGIN:         self.column_n_increment = New.column_n_increment
-        elif Known.column_n_increment != New.column_n_increment: self.column_n_increment = E_Count.VOID
-
-        if   Known.grid_step_n        == E_Count.VIRGIN:         self.grid_step_n        = New.grid_step_n
-        elif Known.grid_step_n        != New.grid_step_n:        self.grid_step_n        = E_Count.VOID
+        if Known.line_n_increment   != New.line_n_increment:   self.line_n_increment   <<= E_Count.VOID
+        if Known.column_index       != New.column_index:       self.column_index       <<= E_Count.VOID
+        if Known.column_n_increment != New.column_n_increment: self.column_n_increment <<= E_Count.VOID
+        if Known.grid_step_n        != New.grid_step_n:        self.grid_step_n        <<= E_Count.VOID
 
         return     self.column_index       == E_Count.VOID \
                and self.column_n_increment == E_Count.VOID \
                and self.grid_step_n        == E_Count.VOID \
                and self.line_n_increment   == E_Count.VOID 
+               #and Count.line_n_increment_by_lexeme_length   == E_Count.VOID \
+               #and Count.column_n_increment_by_lexeme_length == E_Count.VOID \
+               #and Count.grid_step_size_by_lexeme_length     == E_Count.VOID 
 
     def __str__(self):
         return "general: {\n"                                    \
@@ -433,29 +457,22 @@ class Count(object):
                   self.column_n_increment, 
                   self.line_n_increment)
 
-class CountInfo(Count):
+class CountInfo:
 
     def __init__(self, Result):
-        Count.__init__(self, 
-                       Result.column_n_increment, 
-                       Result.line_n_increment, 
-                       Result.column_index)
-        self.grid_step_n                         = Result.grid_step_n
-        self.column_n_increment_by_lexeme_length = Count.column_n_increment_by_lexeme_length.value
-        self.line_n_increment_by_lexeme_length   = Count.line_n_increment_by_lexeme_length.value
-        self.grid_step_size_by_lexeme_length     = Count.grid_step_size_by_lexeme_length.value     
+        self.column_n_increment                  = CountInfo.get_real(Result.column_n_increment)
+        self.line_n_increment                    = CountInfo.get_real(Result.line_n_increment)
+        self.column_index                        = CountInfo.get_real(Result.column_index)
+        self.grid_step_n                         = CountInfo.get_real(Result.grid_step_n)
+        self.column_n_increment_by_lexeme_length = CountInfo.get_real(Count.column_n_increment_by_lexeme_length)
+        self.line_n_increment_by_lexeme_length   = CountInfo.get_real(Count.line_n_increment_by_lexeme_length)
+        self.grid_step_size_by_lexeme_length     = CountInfo.get_real(Count.grid_step_size_by_lexeme_length)
 
-        if self.line_n_increment   == E_Count.VIRGIN: self.line_n_increment   = 0
-        if self.column_n_increment == E_Count.VIRGIN: self.column_n_increment = 0
-        assert self.column_index != E_Count.VIRGIN
-        if self.grid_step_n        == E_Count.VIRGIN: self.grid_step_n        = 0
-
-        if self.column_n_increment_by_lexeme_length == E_Count.VIRGIN:
-            self.column_n_increment_by_lexeme_length = 0
-        if self.line_n_increment_by_lexeme_length   == E_Count.VIRGIN:
-            self.line_n_increment_by_lexeme_length   = 0
-        if self.grid_step_size_by_lexeme_length     == E_Count.VIRGIN:
-            self.grid_step_size_by_lexeme_length     = 0
+    @staticmethod
+    def get_real(Object):
+        if   Object.value == E_Count.VIRGIN: return 0
+        elif Object.value == E_Count.NONE:   return 0
+        return Object.value
 
     def is_partly_determined(self):
         # Note, that 'grid' only tells about grid sizes being homogeneous.
