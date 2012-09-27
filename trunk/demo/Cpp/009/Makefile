@@ -43,11 +43,11 @@ stdinlexer: stdinlexer.cpp tiny_lexer_st.cpp
 tiny_lexer_st.cpp:   hello.qx $(QUEX_CORE)
 	quex -i hello.qx --engine tiny_lexer_st \
 		 --token-memory-management-by-user   \
-		 --token-policy single
+		 --token-policy single --debug-exception
 		 # CERTAINLY NOT: "--bet wchar_t" 
 		 
 $(SOURCES): simple.qx $(QUEX_CORE)
-	quex -i simple.qx --engine tiny_lexer --token-policy single
+	quex -i simple.qx --engine tiny_lexer --token-policy single --debug-exception
 
 # -- wchar_t application
 wlexer: wlexer.o tiny_wlexer.o 

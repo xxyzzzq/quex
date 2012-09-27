@@ -24,48 +24,80 @@ def do(ThePattern, EOF_ActionF):
     object must be set to something not 'None'. If it is 'None', this means
     that the 'prepare_count_info()' function has not been called for it.  
     """
-    return __do(ThePattern, EOF_ActionF) \
+    return  "__QUEX_COUNTER_SHIFT_VALUES(self.counter);\n" \
+           + __do(ThePattern, EOF_ActionF)                 \
            + "    __quex_debug_counter();\n"
 
 def __do(ThePattern, EOF_ActionF):
     LanguageDB = Setup.language_db
 
-    txt = "__QUEX_COUNTER_SHIFT_VALUES(self.counter);\n" \
+    txt = ""
 
     if EOF_ActionF:
         return txt
 
     if ThePattern is None:
         # 'on_failure' ... count any appearing character
-        txt += "QUEX_NAME(Counter_count)(&self.counter, LexemeBegin, LexemeEnd);\n"
-        return txt
+        return "QUEX_NAME(Counter_count)(&self.counter, LexemeBegin, LexemeEnd);\n"
         ## return "QUEX_NAME(Counter_count_with_grid)(&self.counter, LexemeBegin, LexemeEnd);\n"
 
     counter = ThePattern.count_info()
 
     # (*) If one parameter is 'VOID' than use the general counter to count.
-    if    counter.line_n_increment_by_lexeme_length   == E_Count.VOID \
-       or counter.column_n_increment_by_lexeme_length == E_Count.VOID \
-       or counter.grid_step_size_by_lexeme_length     == E_Count.VOID:
+    if    counter.line_n_increment_by_lexeme_length        == E_Count.VOID \
+       or (    counter.column_n_increment_by_lexeme_length == E_Count.VOID \
+           and counter.grid_step_size_by_lexeme_length     == E_Count.VOID):
         return "QUEX_NAME(Counter_count)(&self.counter, LexemeBegin, LexemeEnd);\n"
 
-    if counter.line_n_increment != E_Count.VOID and counter.line_n_increment_by_lexeme_length != 0:
-        if counter.line_n_increment == 1: arg = "LexemeL"
-        else:                             arg = "LexemeL * %i" % counter.line_n_increment
-        txt += "__QUEX_IF_COUNT_LINES_ADD(%s);\n" % arg
+    # (*) Line Number Count
+    line_txt = None
 
+    def get_increment(Increment, IncrementByLexemeLength, HelpStr):
+
+        if IncrementByLexemeLength == 0:
+            line_txt  = ""
+        elif Increment == 0:
+            line_txt = ""
+        else:
+            if Increment != E_Count.VOID:
+                arg = "%i" % Increment
+            else:
+
+                if IncrementByLexemeLength == 1: 
+                    arg = "LexemeL"
+                else:
+                    arg = "LexemeL * %i" % IncrementByLexemeLength
+            line_txt = "__QUEX_IF_COUNT_%s_ADD(%s);\n" % (HelpStr, arg)
+
+    # Following assert results from entry check against 'VOID'
+    assert counter.line_n_increment_by_lexeme_length != E_Count.VOID
+    line_txt = get_increment(counter.line_n_increment, 
+                             counter.line_n_increment_by_lexeme_length, 
+                             "LINES")
+
+    # (*) Column Number Count
+    column_txt = None
     if counter.column_index != E_Count.VOID:
-        txt += "__QUEX_IF_COUNT_COLUMNS_SET(%i);\n" % (counter.column_index + 1)
+        column_txt = "__QUEX_IF_COUNT_COLUMNS_SET(%i);\n" % (counter.column_index + 1)
 
-    elif counter.column_n_increment != E_Count.VOID and counter.column_n_increment_by_lexeme_length != 0:
-        if counter.column_n_increment == 1: arg = "LexemeL"
-        else:                               arg = "LexemeL * %i" % counter.column_n_increment
-        txt += "__QUEX_IF_COUNT_COLUMNS_ADD(%s);\n" % arg
+    if  counter.column_n_increment_by_lexeme_length != E_Count.VOID:
+        column_txt = get_increment(counter.column_n_increment, 
+                                   counter.column_n_increment_by_lexeme_length, 
+                                   "COLUMNS")
 
-    elif counter.grid_step_n != E_Count.VOID and counter.grid_step_size_by_lexeme_length != 0:
-        txt += LanguageDB.GRID_STEP("self.counter._column_number_at_end", "size_t",
-                                    counter.grid_step_size_by_lexeme_length, 
-                                    counter.grid_step_n)
+    else:
+        # Following assert results from entry check against 'VOID'
+        assert counter.grid_step_size_by_lexeme_length != E_Count.VOID
 
-    return txt
+        if counter.grid_step_n == E_Count.VOID: grid_step_n = "LexemeL"
+        else:                                   grid_step_n = counter.grid_step_n
+
+        column_txt = LanguageDB.GRID_STEP("self.counter._column_number_at_end", "size_t",
+                                          counter.grid_step_size_by_lexeme_length, 
+                                          grid_step_n)
+
+    if line_txt is None or column_txt is None:
+        return "QUEX_NAME(Counter_count)(&self.counter, LexemeBegin, LexemeEnd);\n"
+
+    return line_txt + column_txt
 

@@ -347,7 +347,7 @@ class LanguageDB_Cpp(dict):
             cut_str = "%s &= ~ ((%s)0x%X);\n" \
                       % (VariableName, TypeName, mask)
         else:
-            cut_str = "%s -= (%s %% %s);" \
+            cut_str = "%s -= (%s %% (%s));" \
                       % (VariableName, VariableName, grid_with_str)
 
         if StepN != 1: add_str = "%s += %s * %s;" % (VariableName, grid_with_str, StepN)
