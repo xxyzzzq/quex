@@ -1,4 +1,4 @@
-<history date="Tue Sep 25 23:21:14 2012" element-n="361">
+<history date="Thu Sep 27 23:22:55 2012" element-n="364">
     <day year="2008" month="02" day="10">
         <history-init time="09:58:16"/>
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:18:27"/>
@@ -995,5 +995,10 @@
     <day year="2012" month="08" day="05">
         <crc-error time="08:59:33" application="counter_setup.py" choice="intersection" database-crc="1639327576" real-crc="0"/>
         <crc-error time="09:05:41" application="counter_setup.py" choice="intersection" database-crc="0" real-crc="715463526"/>
+    </day>
+    <day year="2012" month="09" day="27">
+        <crc-error time="21:21:41" application="indentation_setup.py" choice="basic" database-crc="1692897443" real-crc="-1200417786"/>
+        <crc-error time="21:22:02" application="indentation_setup.py" choice="non-numeric" database-crc="1078883658" real-crc="-1942671049"/>
+        <crc-error time="21:22:17" application="token_type-1.py" choice="None" database-crc="1321924226" real-crc="865997258"/>
     </day>
 </history>

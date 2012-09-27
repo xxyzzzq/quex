@@ -44,7 +44,6 @@ def test(Text):
 
 if "basic" in sys.argv:
 
-    test(">")
     test("[\\v\\a]")
     test("[\\v\\a] >")
     test("[\\v\\a] => grid")
@@ -58,6 +57,7 @@ if "basic" in sys.argv:
     test("[\\v\\a] => bad;>")
     test("[\\v\\a] => space;\n[\\t] => grid 10;")
     test("[\\v\\a] => space;\n[\\t] => grid 10;>")
+    test(">")
 
 elif "twice" in sys.argv:
     test("[\\v\\a] => space 10;\n[\\t] => space 10;>")

@@ -4,4 +4,4 @@ IN:
 
 OUT:
 
-string:1:error: End of file reached while parsing token_type 'distinct' subsection.
+string:1:error: End of file reached while parsing 'distinct' section.

@@ -23,7 +23,7 @@ Suppressor:
 
 (2) |[\v\a] => grid variable kongo;>|
 
-test_string:1:error: Missing ';' after indentation 'grid' specification.
+test_string:1:error: Missing ';' after 'grid' specification.
 Exception!
 
 (3) |[\v\a] => space variable2;>|
@@ -51,7 +51,7 @@ Suppressor:
 
 (4) |[\v\a] => space variable 2;>|
 
-test_string:1:error: Missing ';' after indentation 'space' specification.
+test_string:1:error: Missing ';' after 'space' specification.
 Exception!
 
 (5) |\default => space variable;>|
