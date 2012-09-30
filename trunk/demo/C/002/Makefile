@@ -25,7 +25,6 @@ CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)                             \
 	 -Wall -Wconversion -pedantic                    \
 	 $(CCFLAG_ASSERTS)                               \
-	 -DINDENTATION_STACK_SIZE=64                     \
 	 -DQUEX_SETTING_TOKEN_QUEUE_SIZE=10              \
 	 -DQUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER=4      
 	 # -DQUEX_OPTION_ASSERTS_DISABLED

@@ -49,6 +49,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         __QUEX_ASSERT_COUNTER_CONSISTENCY(me); \
     }
 
+#if 0
     QUEX_INLINE void    
     QUEX_NAME(Counter_count_newlines)(QUEX_NAME(Counter)*        me, 
                                       const QUEX_TYPE_CHARACTER* LexemeBegin, 
@@ -64,6 +65,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         }
         __QUEX_ASSERT_COUNTER_CONSISTENCY(me); \
     }
+#endif
 
     QUEX_INLINE void 
     QUEX_NAME(Counter_print_this)(QUEX_NAME(Counter)* me)

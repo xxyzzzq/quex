@@ -74,17 +74,18 @@ def do(Data):
     return code
 
 prolog_txt = """
+    /* Character Set Skipper: $$DELIMITER_COMMENT$$ */
+
     QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
     __quex_assert(QUEX_NAME(Buffer_content_size)(&me->buffer) >= 1);
 
-    /* Character Set Skipper: $$DELIMITER_COMMENT$$ */
     __QUEX_IF_COUNT_COLUMNS(reference_p = me->buffer._input_p);
 
     goto _ENTRY_$$ADDRESS$$;
 
-$$UPON_RELOAD_DONE_LABEL$$: /* Upon 'reload done' */
+$$UPON_RELOAD_DONE_LABEL$$:       /* Upon 'reload done' */
     __QUEX_IF_COUNT_COLUMNS(reference_p = me->buffer._input_p + 1);
-$$LABEL$$: /* Skipper state's loop entry */      
+$$LABEL$$:       /* Skipper state's loop entry */      
     $$INPUT_P_INCREMENT$$
 _ENTRY_$$ADDRESS$$: /* First entry into skipper state */
 $$INPUT_GET$$$$LC_COUNT_IN_LOOP$$

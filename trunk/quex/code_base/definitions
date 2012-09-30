@@ -117,58 +117,15 @@
            __QUEX_IF_COUNT_LINES((ME)._line_number_at_begin     = (ME)._line_number_at_end);   \
            __QUEX_IF_COUNT_COLUMNS((ME)._column_number_at_begin = (ME)._column_number_at_end); 
 
-#   define __QUEX_COUNT_END_OF_STREAM_EVENT(ME) \
-           __QUEX_COUNTER_SHIFT_VALUES(ME);     \
-           __quex_debug_counter()
-
-/*
- * __QUEX_COUNT_NEWLINE_X_COLUMN_S_GRID_X() 
- * __QUEX_COUNT_NEWLINE_0_COLUMN_0_GRID_0() 
- * __QUEX_COUNT_NEWLINE_0_COLUMN_S_GRID_X() 
- * __QUEX_COUNT_NEWLINE_0_COLUMN_N_GRID_X() 
- * __QUEX_COUNT_NEWLINE_N_COLUMN_S_GRID_X() 
- * __QUEX_COUNT_NEWLINE_N_COLUMN_N_GRID_X() 
- * __QUEX_COUNT_NEWLINE_N_COLUMN_X_GRID_0_H() 
- *    '-- newline number pre-determined and column number not? what a strange 
- *        pattern. Use general  __QUEX_COUNT_NEWLINE_X_COLUMN_X_GRID_X
- * __QUEX_COUNT_NEWLINE_N_COLUMN_X_GRID_0(Y) 
- *    '-- newline number pre-determined and column number not? what a strange 
- *        pattern. Use general  __QUEX_COUNT_NEWLINE_X_COLUMN_X_GRID_X
- * __QUEX_COUNT_NEWLINE_X_COLUMN_0_GRID_X() 
- *    '-- nonsense; if there can be a grid, then the column increment must
- *        be there.
-*/
-#   define __QUEX_COUNT_VOID(ME) \
-           __QUEX_COUNTER_SHIFT_VALUES(ME);                                                    \
-           QUEX_NAME(Counter_count)(&(ME), self.buffer._lexeme_start_p, self.buffer._input_p); \
-           __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter); \
+#   define __QUEX_COUNT_VOID(ME, LexemeBegin, LexemeEnd)     \
+           __QUEX_COUNTER_SHIFT_VALUES(ME);                  \
+           QUEX_NAME(Counter_count)(&(ME), LexemeBegin, LexemeEnd); \
+           __QUEX_ASSERT_COUNTER_CONSISTENCY(&(ME)); \
            __quex_debug_counter()
     
-#   define __QUEX_COUNT_NEWLINE_N_FIXED_COLUMN_N_ZERO(ME, NEWLINE_N) \
-           __QUEX_COUNTER_SHIFT_VALUES(ME);                                \
-           __QUEX_IF_COUNT_LINES((ME)._line_number_at_end += (NEWLINE_N)); \
-           __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);                         \
-           __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter); \
-           __quex_debug_counter()
-    
-#   define __QUEX_COUNT_NEWLINE_N_FIXED_COLUMN_N_VOID(ME, NEWLINE_N)  \
-           __QUEX_COUNTER_SHIFT_VALUES(ME);                           \
-           __QUEX_IF_COUNT_COLUMNS_ADD(NEWLINE_N);                    \
-           QUEX_NAME(Counter_count_to_newline_backwards)(&(ME), self.buffer._lexeme_start_p, self.buffer._input_p); \
-           __quex_debug_counter()
-    
-#   define __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(ME, COLUMN_N) \
-           __QUEX_COUNTER_SHIFT_VALUES(ME);                         \
-           __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += (COLUMN_N)); \
-           __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter); \
-           __quex_debug_counter()
 #else
-#   define __QUEX_COUNTER_SHIFT_VALUES(ME) 
-#   define __QUEX_COUNT_END_OF_STREAM_EVENT(ME) 
-#   define __QUEX_COUNT_VOID(ME) 
-#   define __QUEX_COUNT_NEWLINE_N_FIXED_COLUMN_N_ZERO(ME, NEWLINE_N) 
-#   define __QUEX_COUNT_NEWLINE_N_FIXED_COLUMN_N_VOID(ME, NEWLINE_N)
-#   define __QUEX_COUNT_NEWLINE_N_ZERO_COLUMN_N_FIXED(ME, COLUMN_N)
+#   define __QUEX_COUNTER_SHIFT_VALUES(ME)                /* empty */
+#   define __QUEX_COUNT_VOID(ME, LexemeBegin, LexemeEnd)  /* empty */
 #endif
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)

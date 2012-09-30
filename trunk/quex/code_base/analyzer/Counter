@@ -49,9 +49,11 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void  QUEX_NAME(Counter_count)(QUEX_NAME(Counter)*                   me, 
                                                          const QUEX_TYPE_CHARACTER*  Lexeme, 
                                                          const QUEX_TYPE_CHARACTER*  LexemeEnd);
+#if 0
     QUEX_INLINE void  QUEX_NAME(Counter_count_newlines)(QUEX_NAME(Counter)*        me,
                                                         const QUEX_TYPE_CHARACTER* Lexeme,
                                                         const QUEX_TYPE_CHARACTER* LexemeEnd);
+#endif
 
 
     QUEX_INLINE void  QUEX_NAME(Counter_print_this)(QUEX_NAME(Counter)* me);

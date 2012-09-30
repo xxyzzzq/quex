@@ -24,21 +24,21 @@ def do(ThePattern, EOF_ActionF):
     object must be set to something not 'None'. If it is 'None', this means
     that the 'prepare_count_info()' function has not been called for it.  
     """
-    return  "__QUEX_COUNTER_SHIFT_VALUES(self.counter);\n" \
-           + __do(ThePattern, EOF_ActionF)                 \
-           + "    __quex_debug_counter();\n"
+    def frame(Txt):
+        if len(Txt) != 0:
+            Txt = "    " + Txt[:-1].replace("\n", "\n    ") + Txt[-1]
+        return  "    __QUEX_COUNTER_SHIFT_VALUES(self.counter);\n" \
+               + Txt                                           \
+               + "   __quex_debug_counter();\n"
 
-def __do(ThePattern, EOF_ActionF):
     LanguageDB = Setup.language_db
 
-    txt = ""
-
     if EOF_ActionF:
-        return txt
+        return frame("")
 
     if ThePattern is None:
         # 'on_failure' ... count any appearing character
-        return "QUEX_NAME(Counter_count)(&self.counter, LexemeBegin, LexemeEnd);\n"
+        return "__QUEX_COUNT_VOID(self.counter, LexemeBegin, LexemeEnd);"
         ## return "QUEX_NAME(Counter_count_with_grid)(&self.counter, LexemeBegin, LexemeEnd);\n"
 
     counter = ThePattern.count_info()
@@ -47,7 +47,7 @@ def __do(ThePattern, EOF_ActionF):
     if    counter.line_n_increment_by_lexeme_length        == E_Count.VOID \
        or (    counter.column_n_increment_by_lexeme_length == E_Count.VOID \
            and counter.grid_step_size_by_lexeme_length     == E_Count.VOID):
-        return "QUEX_NAME(Counter_count)(&self.counter, LexemeBegin, LexemeEnd);\n"
+        return "__QUEX_COUNT_VOID(self.counter, LexemeBegin, LexemeEnd);"
 
     # (*) Line Number Count
     line_txt = None
@@ -97,7 +97,7 @@ def __do(ThePattern, EOF_ActionF):
                                           grid_step_n)
 
     if line_txt is None or column_txt is None:
-        return "QUEX_NAME(Counter_count)(&self.counter, LexemeBegin, LexemeEnd);\n"
+        return "__QUEX_COUNT_VOID(self.counter, LexemeBegin, LexemeEnd);"
 
-    return line_txt + column_txt
+    return frame(line_txt + column_txt)
 

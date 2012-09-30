@@ -19,14 +19,12 @@
 ---
 > tiny_lexer_st.c: hello.qx $(QUEX_CORE)
 > 		 --language C                        \
-< 	quex -i simple.qx --engine tiny_lexer --token-policy single
+< 		 --token-policy single 
 ---
-> 	quex -i simple.qx --engine tiny_lexer \
 > 		 --language C                     \
-> 		 # CERTAINLY NOT: "--bet wchar_t" 
-< 	quex -i simple.qx --engine tiny_wlexer --bet wchar_t --token-policy single
+< 		 --bet wchar_t \
+< 		 --token-policy single
 ---
-> 	quex -i simple.qx --engine tiny_wlexer \
 > 		 --language C                      \
 > 	  	 --bet wchar_t 
 < # -- The general way to get .o from .cpp

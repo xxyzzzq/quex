@@ -1,7 +1,6 @@
 < COMPILER = g++ -ggdb 
 ---
 > COMPILER = gcc # -ggdb 
-> 	 -DINDENTATION_STACK_SIZE=64                     \
 < Easy%.o: Easy%.cpp 
 ---
 > Easy%.o: Easy%.c
@@ -12,7 +11,7 @@
 ---
 > %.E: %.c
 < EasyLexer EasyLexer.cpp: simple.qx $(QUEX_CORE)
-< 	quex -i simple.qx --engine EasyLexer 
+< 	quex -i simple.qx --engine EasyLexer
 < 
 < EasyLexer_bad_space EasyLexer_bad_space.cpp: simple.qx $(QUEX_CORE)
 < 	quex -i simple_bad_space.qx --engine EasyLexer_bad_space  

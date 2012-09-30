@@ -84,10 +84,12 @@ def __parse_skip_option(fh, new_mode):
     if trigger_set.is_empty():
         error_msg("Empty trigger set for skipper." % identifier, fh)
 
-    # TriggerSet skipping is implemented the following way: As soon as one element of the 
-    # trigger set appears, the state machine enters the 'trigger set skipper section'.
-    # Enter the skipper as if the opener pattern was a normal pattern and the 'skipper' is the action.
-    # NOTE: The correspondent CodeFragment for skipping is created in 'implement_skippers(...)'
+    # NOTE: On the Implementation of Character Set Skipping
+    #
+    # The character set skipper is implemented as a simple loop until a
+    # not-to-be-skipped character arrives. This skipper is executed in a
+    # terminal, i.e. as a result of a character from the to-be-skipped set has
+    # been detected.
     pattern_sm = StateMachine()
     pattern_sm.add_transition(pattern_sm.init_state_index, trigger_set, AcceptanceF=True)
 
