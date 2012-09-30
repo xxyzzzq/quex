@@ -1,4 +1,4 @@
-<test-database execution-time-sec="4.11" date="Sat Sep 29 13:17:30 2012">
+<test-database execution-time-sec="4.11" date="Sun Sep 30 21:40:58 2012">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Superset/Subset Determination" time-sum-sec="1.57"> 
         <application file-name="test-subset_checker.py" info-request-time="1336108333L" vanished="False"/>

@@ -6,6 +6,7 @@ from   quex.input.files.counter_setup                  import LineColumnCounterS
 import quex.input.files.consistency_check              as     consistency_check
 import quex.engine.state_machine.check.identity        as     identity_checker
 import quex.engine.generator.state.indentation_counter as     indentation_counter
+from   quex.engine.generator.languages.address         import get_label
 from   quex.engine.generator.action_info               import CodeFragment, \
                                                               UserCodeFragment, \
                                                               GeneratedCode, \

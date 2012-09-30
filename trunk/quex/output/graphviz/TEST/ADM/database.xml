@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.40" date="Sat Sep 29 13:17:31 2012">
+<test-database execution-time-sec="0.40" date="Sun Sep 30 21:40:59 2012">
     <last-used-diff-display-program name=""/>
     <group name="Plot">
         <test title="Core state machine." time-sum-sec="0.13"> 

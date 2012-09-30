@@ -1,4 +1,4 @@
-<test-database execution-time-sec="9.33" date="Sat Sep 29 13:17:20 2012">
+<test-database execution-time-sec="9.33" date="Sun Sep 30 21:40:46 2012">
     <last-used-diff-display-program name=""/>
     <test title="Single Pattern Checks" time-sum-sec="1.05"> 
         <application file-name="single-pattern.py" info-request-time="1333341320L" vanished="False"/>

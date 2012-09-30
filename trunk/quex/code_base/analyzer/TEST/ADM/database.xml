@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.33" date="Sat Sep 29 13:17:19 2012">
+<test-database execution-time-sec="0.33" date="Sun Sep 30 21:40:46 2012">
     <last-used-diff-display-program name=""/>
     <test title="Statistics Module" make-dependent="True" time-sum-sec="0.02"> 
         <application file-name="statistics.exe" info-request-time="1348902261L" vanished="False"/>

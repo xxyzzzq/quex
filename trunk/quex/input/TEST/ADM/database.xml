@@ -1,4 +1,4 @@
-<test-database execution-time-sec="14.57" date="Sat Sep 29 13:17:30 2012">
+<test-database execution-time-sec="14.56" date="Sun Sep 30 21:40:58 2012">
     <last-used-diff-display-program name=""/>
     <test title="Parse Indentation Setup" time-sum-sec="0.41"> 
         <application file-name="indentation_setup.py" info-request-time="1348780876L" vanished="False"/>
@@ -21,10 +21,10 @@
            <choice name="m_multi_turkish" result="OK" time_sec="0.14" crc="447292331"/>
         </choice-list>
     </test>
-    <test title="Parse Counter Setup" time-sum-sec="0.40"> 
+    <test title="Parse Counter Setup" time-sum-sec="0.39"> 
         <application file-name="counter_setup.py" info-request-time="1344158911L" vanished="False"/>
         <choice-list number="5" same_result="False">
-           <choice name="basic" result="FAIL" time_sec="0.09" crc="-2118276661"/>
+           <choice name="basic" result="FAIL" time_sec="0.08" crc="-2118276661"/>
            <choice name="twice" result="OK" time_sec="0.08" crc="-1440129109"/>
            <choice name="intersection" result="OK" time_sec="0.07" crc="715463526"/>
            <choice name="intersection-2" result="OK" time_sec="0.08" crc="-819264226"/>

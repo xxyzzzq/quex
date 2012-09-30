@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.72" date="Sat Sep 29 13:17:30 2012">
+<test-database execution-time-sec="0.72" date="Sun Sep 30 21:40:58 2012">
     <last-used-diff-display-program name=""/>
     <group name="DFA">
         <test title="Hopcroft optimization (minimize state set) II" time-sum-sec="0.24"> 
@@ -24,16 +24,16 @@
         </test>
     </group>
     <group name="NFA">
-        <test title="Conversion to DFA - Special Case" time-sum-sec="0.08"> 
-            <application file-name="test-nfa-to-dfa-special.py" info-request-time="1336109449L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.08" crc="1159177584"/>
-            </choice-list>
-        </test>
         <test title="Conversion to DFA (subset construction)" time-sum-sec="0.08"> 
             <application file-name="test-nfa-to-dfa.py" info-request-time="1336109448L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.08" crc="1794649778"/>
+            </choice-list>
+        </test>
+        <test title="Conversion to DFA - Special Case" time-sum-sec="0.08"> 
+            <application file-name="test-nfa-to-dfa-special.py" info-request-time="1336109449L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.08" crc="1159177584"/>
             </choice-list>
         </test>
     </group>
