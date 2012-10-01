@@ -228,6 +228,7 @@ def __get_bisection(txt, TriggerMap):
 
     txt.append(0)
     txt.append(LanguageDB.END_IF())
+    txt.append("\n")
 
 def __get_comparison_sequence(txt, TriggerMap):
     global LanguageDB

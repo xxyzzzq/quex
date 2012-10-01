@@ -50,6 +50,14 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
 #if 0
+#   if ! defined(__QUEX_COUNTER_RULES_NEWLINE)
+#   define __QUEX_COUNTER_RULES_NEWLINE(counter, iterator) \
+           if( *iterator == (QUEX_TYPE_CHARACTER)'\n' ) {  \
+               (counter)._line_number_at_end += 1;         \
+               (counter)._column_number_at_end = 0;        \
+           }
+#   endif
+
     QUEX_INLINE void    
     QUEX_NAME(Counter_count_newlines)(QUEX_NAME(Counter)*        me, 
                                       const QUEX_TYPE_CHARACTER* LexemeBegin, 
