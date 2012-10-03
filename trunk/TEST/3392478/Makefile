@@ -5,11 +5,11 @@ test: Simple.o lexer.o
 	gcc -o $@ $^ -ggdb
 
 %.o: %.c
-	gcc -c -o $@ -I$(QUEX_PATH) -I. $<                 \
+	gcc -c -ggdb -o $@ -I$(QUEX_PATH) -I. $<                 \
 		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
 
 %.o: ../%.c
-	gcc -c -o $@ -I$(QUEX_PATH) -I. $<                 \
+	gcc -c -ggdb -o $@ -I$(QUEX_PATH) -I. $<                 \
 		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 		-DPRINT_LINE_COLUMN_NUMBER                     \
 		-DPRINT_TOKEN                  

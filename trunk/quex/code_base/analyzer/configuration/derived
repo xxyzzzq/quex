@@ -189,32 +189,61 @@
 #if ! defined(__QUEX_COUNTER_RULES)
     /* NOTE: 'x - x % 4' == 'x with the last two bits deleted'
      *                   == 'x & (~3)'                          */
-#   define __QUEX_COUNTER_RULES(counter, iterator) \
-           switch( (int)(*iterator) ) {                                                   \
-           case (int)'\t':  (counter)._column_number_at_end &= (~(size_t)0x3) + 4; break; \
-           case (int)'\n':  (counter)._line_number_at_end   += 1;                         \
-                            (counter)._column_number_at_end  = 1;                  break; \
-           default:         (counter)._column_number_at_end += 1;                  break; \
-           }                                                                              \
-           ++(iterator);
+#   if QUEX_SETTING_CHAR_CODEC == utf8
+#       define __QUEX_COUNTER_RULES(counter, iterator)                    \
+               switch( (int)(*iterator) ) {                               \
+               case (int)(QUEX_TYPE_CHARACTER)'\t':                       \
+                   (counter)._column_number_at_end &= (~(size_t)0x3) + 4; \
+                   ++(iterator);                                          \
+                   break;                                                 \
+               case (int)(QUEX_TYPE_CHARACTER)'\n':                       \
+                   (counter)._line_number_at_end   += 1;                  \
+                   (counter)._column_number_at_end  = 1;                  \
+                   ++(iterator);                                          \
+                   break;                                                 \
+               default:                                                   \
+                   if     ( (*iterator & 0x80) == 0 ) { iterator += 1; } /* 1byte character */ \
+                   /* NOT ( (*iterator & 0x40) == 0 ) { iterator += 2; }    2byte character */ \
+                   else if( (*iterator & 0x20) == 0 ) { iterator += 2; } /* 3byte character */ \
+                   else if( (*iterator & 0x10) == 0 ) { iterator += 3; } /* 3byte character */ \
+                   else if( (*iterator & 0x08) == 0 ) { iterator += 4; } /* 4byte character */ \
+                   else                               { iterator += 1; } /* 4byte character */ \
+                   (counter)._column_number_at_end += 1;                  \
+                   break;                                                 \
+               }
+#   elif QUEX_SETTING_CHAR_CODEC == utf16
+#       define __QUEX_COUNTER_RULES(counter, iterator) \
+               switch( (int)(QUEX_TYPE_CHARACTER)(*iterator) ) {         \
+               case (int)(QUEX_TYPE_CHARACTER)'\t':                      \
+                   (counter)._column_number_at_end &= (~(size_t)0x3) + 4;\
+                   ++(iterator);                            \
+                   break;                                   \
+               case (int)(QUEX_TYPE_CHARACTER)'\n':         \
+                   (counter)._line_number_at_end  += 1;     \
+                   (counter)._column_number_at_end  = 1;    \
+                   ++(iterator);                            \
+                   break;                                   \
+               default:                                     \
+                   if     ( *iterator < 0xD800 )  { iterator += 1; } /* 1 chunk character */  \
+                   else if( *iterator > 0xDBFF )  { iterator += 1; } /* 1 chunk character */  \
+                   else                           { iterator += 2; } /* 2 chunk character */  \
+                   (counter)._column_number_at_end += 1;    \
+                   break;                                   \
+               }
+#   else
+#       define __QUEX_COUNTER_RULES(counter, iterator) \
+               switch( (int)(*iterator) ) {                                      \
+               case (int)(QUEX_TYPE_CHARACTER)'\t':    \
+                   (counter)._column_number_at_end &= (~(size_t)0x3) + 4; break; \
+               case (int)(QUEX_TYPE_CHARACTER)'\n':    \
+                   (counter)._line_number_at_end   += 1;                         \
+                   (counter)._column_number_at_end  = 1;                  break; \
+               default:                                \
+                   (counter)._column_number_at_end += 1;                  break; \
+               }                                                                 \
+               ++(iterator);
+#   endif
 
-#   define __QUEX_COUNTER_RULES(counter, iterator) \
-           switch( (int)(*iterator) ) {                                            \
-           case (int)'\t':  (counter)._column_number_at_end &= (~(size_t)0x3) + 4; \
-                            ++(iterator);                                          \
-                            break;                                                 \
-           case (int)'\n':  (counter)._line_number_at_end   += 1;                  \
-                            (counter)._column_number_at_end  = 1;                  \
-                            ++(iterator);                                          \
-                            break;                                                 \
-           default:                                                                \
-               if     ( *iterator & 0x80 == 0 ) { iterator += 1; } /* 1byte character */ \
-               else if( *iterator & 0x40 == 0 ) { iterator += 2; } /* 2byte character */ \
-               else if( *iterator & 0x20 == 0 ) { iterator += 3; } /* 3byte character */ \
-               else if( *iterator & 0x10 == 0 ) { iterator += 4; } /* 4byte character */ \
-               (counter)._column_number_at_end += 1;                               \
-               break;                                                              \
-           }
 #endif
 
 /* Special Case MinGW: At the time of this writing (2009y09m23d) it does 

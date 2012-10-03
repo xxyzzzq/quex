@@ -8,7 +8,7 @@ ABSTRACT:
 
     Due to the fact that utf16 conversion has only two possible byte sequence
     lengths, 2 and 4 bytes, the state split process is significantly easier
-    than the utf8 stae split.
+    than the utf8 state split.
 
     The principle idea remains: A single transition from state A to state B is
     translated (sometimes) into an intermediate state transition to reflect
@@ -129,6 +129,7 @@ def split_contigous_intervals_for_surrogates(Begin, End):
        an interval [front, end_of_domain) is split up and front is set to end of domain.
        This procedure repeats until front and End lie in the same domain.
     """
+    global ForbiddenRange
     assert Begin >= 0x10000
     assert End   <= 0x110000
 
@@ -145,12 +146,12 @@ def split_contigous_intervals_for_surrogates(Begin, End):
     #     surrogate iterates over [0xDC00, 0xDFFF]
     # (3) interval from begin of last surrogate border to End
     result = []
-    end    = utf16_to_unicode([front_seq[0], 0xDFFF]) + 1
+    end    = utf16_to_unicode([front_seq[0], ForbiddenRange.end - 1]) + 1
     # The following **must** hold according to entry condition about front and back sequence
     assert End > end
     result.append(Interval(Begin, end))
     if front_seq[0] + 1 != back_seq[0]: 
-        mid_end = utf16_to_unicode([back_seq[0] - 1, 0xDFFF]) + 1
+        mid_end = utf16_to_unicode([back_seq[0] - 1, ForbiddenRange.end - 1]) + 1
         result.append(Interval(end, mid_end)) 
         end = mid_end
     result.append(Interval(end, End)) 
