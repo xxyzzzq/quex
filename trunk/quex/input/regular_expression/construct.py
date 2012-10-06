@@ -77,9 +77,54 @@ class Pattern(object):
                                                      self.__pre_context_trivial_begin_of_line_f)
             # Original core state machine is no longer required.
             self.__original_core_sm = None # Shall trigger a deletion
+
+        if     AllowStateMachineTrafoF \
+           and Setup.buffer_codec_transformation_info is not None:
+            chunk_n_per_char = -1
+            def get_chunk_n_per_character():
+                if chunk_n_per_char != -1:
+                    return chunk_n_per_char
+                chunk_n_per_char = transformation.homogeneous_chunk_n_per_character(self.__original_core_sm)
+                return chunk_n_per_char
+
+            # If the internal engine is not running on Unicode, considerations
+            # may be made about the byte number per character (e.g. UTF8).
+            if    x.column_n_increment != E_Count.VOID \
+               or x.column_index       != E_Count.VOID:
+               # No problem in this case; increment does not depend on the lexeme length.
+               pass
+            elif    x.column_n_increment_by_lexeme_length != E_Count.VOID \
+                 or x.grid_step_size_by_lexeme_length     != E_Count.VOID:
+                # In this case, the column number increment is a function of
+                # the lexeme length. This is only valid if all characters in the
+                # pattern actually have the same number of 'chunks' (e.g. bytes in UTF8).
+                chunk_n_per_char = get_chunk_n_per_character()
+                if chunk_n_per_char is None:
+                    # One cannot conclude from the number of bytes of a lexeme to 
+                    # the number of columns to be incremented.
+                    x.column_n_increment_by_lexeme_length = E_Count.VOID
+                    x.grid_step_size_by_lexeme_length     = E_Count.VOID
+                else:
+                    if x.column_n_increment_by_lexeme_length  != E_Count.VOID:
+                        x.column_n_increment_by_lexeme_length /= chunk_n_per_char
+                    elif x.grid_step_size_by_lexeme_length    != E_Count.VOID:
+                        x.grid_step_size_by_lexeme_length     /= chunk_n_per_char
+
+           if x.line_n_increment != E_Count.VOID:
+               # No problem in this case; increment does not depend on the lexeme length.
+               pass
+           elif x.line_n_increment_by_lexeme_length != E_Count.VOID:
+               chunk_n_per_char = get_chunk_n_per_character()
+               if chunk_n_per_char is None:
+                   x.line_n_increment_by_lexeme_length  = E_Count.VOID
+               elif x.line_n_increment_by_lexeme_length != E_Count.VOID:
+                   x.line_n_increment_by_lexeme_length  /= chunk_n_per_char
+
+
+
         return self.__count_info
 
-    def count_info(self):                               return self.__count_info
+    def count_info(self):                          return self.__count_info
     @property
     def sm(self):                                  return self.__sm
     @property
