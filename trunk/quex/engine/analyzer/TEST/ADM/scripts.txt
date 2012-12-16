@@ -1,3 +1,0 @@
-python *.py
---not help.py
-

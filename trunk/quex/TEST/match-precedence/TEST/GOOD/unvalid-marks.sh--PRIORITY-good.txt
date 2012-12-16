@@ -1,4 +1,0 @@
-data/PRIORITY-good.qx:4:warning: Detected implicit token identifier definitions. Proposal:
-data/PRIORITY-good.qx:4:warning:    token {
-data/PRIORITY-good.qx:4:warning:      THING;
-data/PRIORITY-good.qx:4:warning:    }

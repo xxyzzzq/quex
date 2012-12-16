@@ -1,2 +1,0 @@
-command line: File extension scheme 'foo' is not provided for language 'C'.
-command line: Available schemes are: ''.

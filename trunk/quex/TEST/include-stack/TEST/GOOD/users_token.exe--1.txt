@@ -1,6 +1,0 @@
-[START]
-    >> Memento 
-        example/1.txt:1: include 'example/empty.txt'.
-    << Memento 
-2: (1)<TERMINATION>	''
-[END]

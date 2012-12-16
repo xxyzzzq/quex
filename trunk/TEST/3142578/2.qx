@@ -1,2 +1,0 @@
-token { C; }
-mode X { A => QUEX_TKN_TERMINATION; B => QUEX_TKN_UNINITIALIZED; C => QUEX_TKN_C; }

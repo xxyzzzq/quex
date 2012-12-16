@@ -1,3 +1,0 @@
-mode DERIVED {
-on_exit { foo(); }
-}

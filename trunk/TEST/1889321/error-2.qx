@@ -1,9 +1,0 @@
-token {
-A;
-}
-mode A {
-"a" { foo('\"'); }
-"\"" { }
-}
-mode B {
-}

@@ -1,6 +1,0 @@
-Check whether the begin of line support flag is set propperly.
-
-(1) A grammar with a begin of line pre-condition.
-#define    __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-(2) A grammar without a begin of line pre-condition.
-/* #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION */

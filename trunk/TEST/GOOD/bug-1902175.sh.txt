@@ -1,2 +1,0 @@
-error.qx:2:error: Regular expression parsing:
-error.qx:2:error: Backslashed 'k' is unknown to quex.

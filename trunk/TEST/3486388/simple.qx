@@ -1,2 +1,0 @@
-token { x; }
-mode X { x => QUEX_TKN_x; }

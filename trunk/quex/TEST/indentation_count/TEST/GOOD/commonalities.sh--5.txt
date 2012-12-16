@@ -1,3 +1,0 @@
-## commonalities of the suppressor are no longer forbidden.
-src/error-5.qx:11:error: The newline pattern '(\r\n)|(\n)' matches on some common lexemes as
-src/error-5.qx:8:error: suppressor pattern '\n'.

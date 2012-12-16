@@ -1,6 +1,0 @@
-(*) data base ranking chain A > B > C > D > E > F, unrelated = 10
-    NOTE: False means 'no assumption' according to ranking db.
-    A > F ?    True
-    A < F ?    False
-    A < 10 ?   False
-    10 < A ?   False

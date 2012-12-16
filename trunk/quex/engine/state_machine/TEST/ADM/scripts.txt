@@ -1,7 +1,0 @@
-*.py
---not NOT-YET-SUPPORTED-test-count_character_n_since_newline.py 
---not OUTDATED-*.py 
---not __init__.py 
---not test_state_machines.py 
---not debug.py
-

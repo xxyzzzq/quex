@@ -1,2 +1,0 @@
-command line: Quex requires ASCII or UTF8 input character format.
-command line: File 'utf16-with-bom.qx' contains Non-UTF8 Byte Order Mark.

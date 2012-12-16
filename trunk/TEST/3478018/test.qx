@@ -1,5 +1,0 @@
-token {
-DUMMY;
-}
-start = ONE;
-mode ONE{ a { printf("hello\n"); } mode TWO { ; }

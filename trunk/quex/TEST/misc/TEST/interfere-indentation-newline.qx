@@ -1,2 +1,0 @@
-token { EMPTY; }
-mode X : <indentation: [x] => newline; > { "x" => QUEX_TKN_EMPTY; }

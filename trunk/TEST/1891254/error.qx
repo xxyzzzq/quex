@@ -1,7 +1,0 @@
-define {
-QUESTION ?
-}
-mode X { 
-    {QUESTION}  => QUEX_TKN_A();
-
-}

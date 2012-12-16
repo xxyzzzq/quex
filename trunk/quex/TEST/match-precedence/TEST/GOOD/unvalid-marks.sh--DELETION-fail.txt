@@ -1,3 +1,0 @@
-data/DELETION-fail.qx:25:error: Pattern 'p' was marked for DELETION but does not
-data/DELETION-fail.qx:25:error: exist in any base mode of mode 'Z'.
-command line: Abort.

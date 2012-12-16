@@ -1,5 +1,0 @@
-This directory will contain the executable link to 'quex-exe.py'
-once the program is installed (Linux, FreeBSD, MacOS, other Unixes). 
-Please, do not delete this directory.
-
-<fschaef 07y7m18d>

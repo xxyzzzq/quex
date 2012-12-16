@@ -1,9 +1,0 @@
----[core.py]---
-##simple:        1076650048
-##not_so_simple: 1076650080
-##class X:       1076650080
----[test.py]---
-##simple:        1076650080
-##test:          1076650048
-##not_so_simple: 1076409240
-##test:          1076650048

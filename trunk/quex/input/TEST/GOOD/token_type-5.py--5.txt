@@ -1,7 +1,0 @@
------------------------------
-IN:
-    [ {name = deutschland::ispringen::;}]
-
-OUT:
-
-string:1:error: Missing identifier in token_type name specification.

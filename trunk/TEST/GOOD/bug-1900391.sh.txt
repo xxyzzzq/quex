@@ -1,2 +1,0 @@
-command line: Regular expression parsing:
-command line: Missing set expression list after 'intersection' operation.

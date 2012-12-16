@@ -1,7 +1,0 @@
-token {
-  DUMMY;
-  TERMINATION;
-}
-mode ONE{
-  <<EOF>>    => UUU_TKN_TERMINATION;
-}

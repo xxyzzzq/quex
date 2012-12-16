@@ -1,2 +1,0 @@
-token_type-member-name.qx:10:error: No member:   'xilophon' in token type description.
-token_type-member-name.qx:10:error: Did you mean 'xylophon'?

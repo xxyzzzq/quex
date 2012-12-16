@@ -1,3 +1,0 @@
-token_type-token.qx:2:error: Subsection 'token' not allowed in token_type section.
-token_type-token.qx:2:error: Acceptable: name, file_name, standard, distinct, union, inheritable, noid, body, header, 
-token_type-token.qx:2:error: constructor, take_text, footer, copy, repetition_set, repetition_get, destructor.

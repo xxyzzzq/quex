@@ -1,1 +1,0 @@
-token { A; } mode X { x => QUEX_TKN_A; }

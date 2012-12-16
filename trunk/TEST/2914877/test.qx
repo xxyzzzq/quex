@@ -1,6 +1,0 @@
-token {
-    HALLO;
-}
-mode SHOW {
-    [\U100000-\U10FFFF]  => QUEX_TKN_HALLO;
-}

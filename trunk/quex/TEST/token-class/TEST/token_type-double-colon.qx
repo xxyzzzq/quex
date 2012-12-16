@@ -1,8 +1,0 @@
-token_type {
-    distinct {
-        std::string  text;
-    }
-    take_text {
-        /* Some */
-    }
-}

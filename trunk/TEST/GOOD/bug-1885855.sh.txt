@@ -1,4 +1,0 @@
-error.qx:6:warning: Detected implicit token identifier definitions. Proposal:
-error.qx:6:warning:    token {
-error.qx:6:warning:      WS;
-error.qx:6:warning:    }

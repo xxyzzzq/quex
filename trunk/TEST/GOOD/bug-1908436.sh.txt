@@ -1,2 +1,0 @@
-error.qx:6:warning: Pattern has been defined twice.
-error.qx:4:error: First defined here.

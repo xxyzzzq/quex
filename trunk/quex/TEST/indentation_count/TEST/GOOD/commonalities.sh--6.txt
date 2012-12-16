@@ -1,2 +1,0 @@
-src/error-6.qx:8:error: No space or grid defined for indentation counting. Default
-src/error-6.qx:8:error: values ' ' and '\t' could not be used since they are specified as 'bad'.

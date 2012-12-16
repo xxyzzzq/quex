@@ -1,3 +1,0 @@
-Gain Matrix
-State0  State1 Gain
-Best matching pair:  None

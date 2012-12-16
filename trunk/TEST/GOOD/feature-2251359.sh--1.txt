@@ -1,1 +1,0 @@
-error-1.qx:5:error: Missing closing ' for definition of character code by character.

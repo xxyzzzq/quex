@@ -1,1 +1,0 @@
-error.qx:2:error: missing ':' or '{' after mode 'MODE'

@@ -1,34 +1,0 @@
-## In this test we try to avoid issues with some 'weird' cases that
-## produced duplicate state labels. The the compiler warnings such as
-## 
-##   Case3.c:154: error: duplicate label ‘STATE_39’
-##   Case3.c:151: error: previous definition of ‘STATE_39’ was here
-##
-## would appear. If they do not, then everything is fine.
-,------------------------------------------------------------------------------------
-| [START]
-(1, 1)  	FAILURE ''
-(1, 2)  	FAILURE '
-'
-(2, 1)  	FAILURE ';'
-(2, 2)  	FAILURE ' '
-(2, 3)  	FAILURE 'm'
-(2, 4)  	FAILURE 'a'
-(2, 5)  	FAILURE 't'
-(2, 6)  	FAILURE 'c'
-(2, 7)  	FAILURE 'h'
-(2, 8)  	FAILURE '.'
-(2, 9)  	FAILURE 'a'
-(2, 10)  	FAILURE 's'
-(2, 11)  	FAILURE 'm'
-(2, 12)  	FAILURE ' '
-(2, 13)  	FAILURE ''
-(2, 14)  	FAILURE '
-'
-(3, 1)  	FAILURE ';'
-(3, 2)  	FAILURE ''
-(3, 3)  	FAILURE '
-'
-(4, 1)  	<TERMINATION> ''
-| [END] number of token = 20
-`------------------------------------------------------------------------------------
