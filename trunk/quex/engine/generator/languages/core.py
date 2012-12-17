@@ -366,15 +366,26 @@ class LanguageDB_Cpp(dict):
     def MULTIPLY_WITH(self, FactorStr, NameOrValue):
         if isinstance(NameOrValue, (str, unicode)):
             return "%s * %s" % (FactorStr, self.VALUE_STRING(NameOrValue))
-        elif NameOrValue == 0:
+
+        x = NameOrValue
+
+        if x == 0:
             return "0"
-        elif NameOrValue == 1:
+        elif x == 1:
             return FactorStr
-        log2 = self._get_log2_if_power_of_2(NameOrValue)
-        if log2 is not None:
-            return "%s >> %i" % (FactorStr, int(log2))
+        elif x < 1:
+            x    = int(round(1.0 / x))
+            log2 = self._get_log2_if_power_of_2(x)
+            if log2 is not None:
+                return "%s >> %i" % (FactorStr, int(log2))
+            else:
+                return "%s / %s" % (FactorStr, self.VALUE_STRING(x))
         else:
-            return "%s * %s" % (FactorStr, self.VALUE_STRING(NameOrValue))
+            log2 = self._get_log2_if_power_of_2(x)
+            if log2 is not None:
+                return "%s << %i" % (FactorStr, int(log2))
+            else:
+                return "%s * %s" % (FactorStr, self.VALUE_STRING(x))
 
     def VALUE_STRING(self, NameOrValue):
         if isinstance(NameOrValue, (str, unicode)):

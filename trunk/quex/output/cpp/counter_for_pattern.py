@@ -105,10 +105,8 @@ def get(ThePattern, EOF_ActionF):
             return ""
         elif Increment != E_Count.VOID:
             arg = "%i" % Increment
-        elif IncrementByLexemeLength == 1: 
-            arg = "LexemeL"
         else:
-            arg = "LexemeL * %i" % IncrementByLexemeLength
+            arg = LanguageDB.MULTIPLY_WITH("LexemeL", IncrementByLexemeLength)
 
         return [1, "__QUEX_IF_COUNT_SHIFT_VALUES();\n",
                 1, "__QUEX_IF_COUNT_%s_ADD(%s);\n" % (HelpStr, arg)]

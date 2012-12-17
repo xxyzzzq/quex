@@ -16,11 +16,11 @@ node [shape = doublecircle];
 node [shape = circle];
 0 -> 2 [label ="[00F1] "];
 2 -> 3 [label ="[0082] "];
-3 -> 7 [label ="[0082] "];
-3 -> 6 [label ="[0083] "];
-3 -> 8 [label ="[0084] "];
-6 -> 1 [label ="[0080, 00BF] "];
-7 -> 1 [label ="[00AE, 00BF] "];
-8 -> 1 [label ="[0080, 00A0] "];
+3 -> 4 [label ="[0082] "];
+3 -> 5 [label ="[0083] "];
+3 -> 6 [label ="[0084] "];
+4 -> 1 [label ="[00AE, 00BF] "];
+5 -> 1 [label ="[0080, 00BF] "];
+6 -> 1 [label ="[0080, 00A0] "];
 }
 
