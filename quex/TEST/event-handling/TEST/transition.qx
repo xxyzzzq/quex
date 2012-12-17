@@ -1,0 +1,53 @@
+token { 
+    GOTO;
+    GOSUB_TO_MODE;
+    RETURN_TO_MODE;
+    IGNORED;
+}
+
+start = ONE;
+
+mode ONE : <skip: [ \t\n]> 
+{
+    on_entry { fprintf(stderr, "Enter: from %s\n", FromMode->name); }
+    on_exit  { fprintf(stderr, "Exit:  to   %s\n", ToMode->name); }
+    return   => GOUP(TK_RETURN_TO_MODE(Lexeme));
+
+    2      => GOTO(TWO,    TK_GOTO(Lexeme));
+    3      => GOTO(THREE,  TK_GOTO(Lexeme));
+    sub2   => GOSUB(TWO,   TK_GOSUB_TO_MODE(Lexeme));
+    sub3   => GOSUB(THREE, TK_GOSUB_TO_MODE(Lexeme));
+    .      => TK_IGNORED(Lexeme);
+
+    <<EOF>> => TK_TERMINATION(LexemeNull);
+}
+
+mode TWO : <skip: [ \t\n]> 
+{
+    on_entry { fprintf(stderr, "Enter: from %s\n", FromMode->name); }
+    on_exit  { fprintf(stderr, "Exit:  to   %s\n", ToMode->name); }
+    return   => GOUP(TK_RETURN_TO_MODE(Lexeme));
+
+    1      => GOTO(ONE,    TK_GOTO(Lexeme));
+    3      => GOTO(THREE,  TK_GOTO(Lexeme));
+    sub1   => GOSUB(ONE,   TK_GOSUB_TO_MODE(Lexeme));
+    sub3   => GOSUB(THREE, TK_GOSUB_TO_MODE(Lexeme));
+    .      => TK_IGNORED(Lexeme); 
+
+    <<EOF>> => TK_TERMINATION(LexemeNull);
+}
+
+mode THREE : <skip: [ \t\n]> 
+{
+    on_entry { fprintf(stderr, "Enter: from %s\n", FromMode->name); }
+    on_exit  { fprintf(stderr, "Exit:  to   %s\n", ToMode->name); }
+    return   => GOUP(TK_RETURN_TO_MODE(Lexeme));
+
+    1      => GOTO(ONE,    TK_GOTO(Lexeme));
+    2      => GOTO(TWO,    TK_GOTO(Lexeme));
+    sub1   => GOSUB(ONE,   TK_GOSUB_TO_MODE(Lexeme));
+    sub3   => GOSUB(THREE, TK_GOSUB_TO_MODE(Lexeme));
+    .      => TK_IGNORED(Lexeme); 
+
+    <<EOF>> => TK_TERMINATION(LexemeNull);
+}

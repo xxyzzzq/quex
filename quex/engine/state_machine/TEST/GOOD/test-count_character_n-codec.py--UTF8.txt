@@ -1,0 +1,216 @@
+expr. = [\U000004-\U00007F]+
+info  = {
+    line_n_increment                    = 0;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 0;
+    column_n_increment_by_lexeme_length = 1.0;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = [\U000004-\U0007FF]+
+info  = {
+    line_n_increment                    = 0;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 0;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = VOID;
+    
+}
+
+expr. = [\U000004-\U00FFFF]+
+info  = {
+    line_n_increment                    = 0;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 0;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = VOID;
+    
+}
+
+expr. = [\U000004-\U1FFFFF]+
+info  = {
+    line_n_increment                    = 0;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 0;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = VOID;
+    
+}
+
+expr. = [\U000080-\U0007FF]+
+info  = {
+    line_n_increment                    = 0;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 0;
+    column_n_increment_by_lexeme_length = 0.5;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = [\U000080-\U00FFFF]+
+info  = {
+    line_n_increment                    = 0;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 0;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = VOID;
+    
+}
+
+expr. = [\U000080-\U1FFFFF]+
+info  = {
+    line_n_increment                    = 0;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 0;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = VOID;
+    
+}
+
+expr. = [\U000800-\U00FFFF]+
+info  = {
+    line_n_increment                    = 0;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 0;
+    column_n_increment_by_lexeme_length = 0.333333333333;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = [\U000800-\U1FFFFF]+
+info  = {
+    line_n_increment                    = 0;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 0;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = VOID;
+    
+}
+
+expr. = [\U010000-\U1FFFFF]+
+info  = {
+    line_n_increment                    = 0;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 0;
+    column_n_increment_by_lexeme_length = 0.25;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = [ا-ي]+
+info  = {
+    line_n_increment                    = 0;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 0;
+    column_n_increment_by_lexeme_length = 0.5;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = [ا-ي]{66}
+info  = {
+    line_n_increment                    = 0;
+    column_index                        = VOID;
+    column_n_increment                  = 66;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 0;
+    column_n_increment_by_lexeme_length = 1;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = [a-zا-ي]+
+info  = {
+    line_n_increment                    = 0;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 0;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = VOID;
+    
+}
+
+expr. = [a-zا-ي]{66}
+info  = {
+    line_n_increment                    = 0;
+    column_index                        = VOID;
+    column_n_increment                  = 66;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 0;
+    column_n_increment_by_lexeme_length = 1;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = [\U011234-\U015678]+
+info  = {
+    line_n_increment                    = 0;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 0;
+    column_n_increment_by_lexeme_length = 0.25;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = [\U011234-\U015678]{66}
+info  = {
+    line_n_increment                    = 0;
+    column_index                        = VOID;
+    column_n_increment                  = 66;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 0;
+    column_n_increment_by_lexeme_length = 1;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = [a-z\U011234-\U015678]+
+info  = {
+    line_n_increment                    = 0;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 0;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = VOID;
+    
+}
+
+expr. = [a-z\U011234-\U015678]{66}
+info  = {
+    line_n_increment                    = 0;
+    column_index                        = VOID;
+    column_n_increment                  = 66;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 0;
+    column_n_increment_by_lexeme_length = 1;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+

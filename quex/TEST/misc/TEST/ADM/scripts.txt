@@ -1,0 +1,5 @@
+bash debug_show.sh
+bash comment.sh
+bash commonality.sh
+bash debug_show.sh
+bash outrun.sh

@@ -1,0 +1,114 @@
+(1) |>|
+
+Spaces:
+      1 by [-oo, '\b'], ['\v', oo]
+Grids:
+      4 by '\t'
+Newlines:
+      1 by '\n'
+
+
+(2) |[\v\a]|
+
+test_string:1:error: Missing '=>' after character set definition.
+Exception!
+
+(3) |[\v\a] >|
+
+test_string:1:error: Missing '=>' after character set definition.
+Exception!
+
+(4) |[\v\a] => grid|
+
+test_string:1:error: End of file reached while parsing 'counter' section.
+
+(5) |[\v\a] => trid|
+
+test_string:1:error: Unrecognized indentation specifier 'trid'.
+test_string:1:error: Did you mean 'grid'?
+Exception!
+
+(6) |[\v\a] => grid>|
+
+test_string:1:error: Missing integer or variable name after keyword 'grid'.
+Exception!
+
+(7) |[\v\a] => grid 4;>|
+
+Spaces:
+      1 by [-oo, \6], ['\b', '\t'], ['\f', oo]
+Grids:
+      4 by '\a', '\v'
+Newlines:
+      1 by '\n'
+
+
+(8) |[\v\a] => space;>|
+
+Spaces:
+      1 by [-oo, '\t'], ['\v', oo]
+Grids:
+Newlines:
+      1 by '\n'
+
+
+(9) |[\v\a] => space 0rXVI;>|
+
+Spaces:
+      1 by [-oo, \6], ['\b', '\t'], ['\f', oo]
+     16 by '\a', '\v'
+Grids:
+Newlines:
+      1 by '\n'
+
+
+(10) |[\v\a] => newline;>|
+
+Spaces:
+      1 by [-oo, \6], '\b', '\n', ['\f', oo]
+Grids:
+      4 by '\t'
+Newlines:
+      1 by '\a', '\v'
+
+
+(11)
+::
+[\v\a] => space;
+[\t] => grid 10;
+::
+
+test_string:2:error: End of file reached while parsing 'counter' section.
+
+(12)
+::
+[\v\a] => space;
+[\t] => grid 10;>
+::
+
+Spaces:
+      1 by [-oo, '\b'], ['\v', oo]
+Grids:
+     10 by '\t'
+Newlines:
+      1 by '\n'
+
+
+(13) |[\n]    => space;>|
+
+Spaces:
+      1 by [-oo, oo]
+Grids:
+Newlines:
+
+
+(14) |x        => newline; [\n]    => space 2;>|
+
+Spaces:
+      1 by [-oo, '\t'], ['\v', 'w'], ['y', oo]
+      2 by '\n'
+Grids:
+Newlines:
+      1 by 'x'
+
+

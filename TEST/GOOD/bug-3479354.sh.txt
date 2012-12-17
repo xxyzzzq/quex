@@ -1,0 +1,66 @@
+test.qx:6:warning: Detected implicit token identifier definitions. Proposal:
+test.qx:6:warning:    token {
+test.qx:6:warning:      WORLD;
+test.qx:6:warning:    }
+    /* BEGIN: STATE MACHINE
+     * init-state = 151L
+     * 00151 (144, 79)
+     *      == ['a', 'z'] ==> 00152
+     *     
+     * 00152 (144, 80)
+     *      == ['0', '9'] ==> 00153
+     *     
+     * 00153 (144, 81, A)
+     *     
+     * END: STATE MACHINE
+    /* BEGIN: STATE MACHINE
+     * init-state = 165L
+     * 00165 (145, 57)
+     *      == 'w' ==> 00166
+     *     
+     * 00166 (145, 58)
+     *      == 'o' ==> 00167
+     *     
+     * 00167 (145, 59)
+     *      == 'r' ==> 00168
+     *     
+     * 00168 (145, 60)
+     *      == 'l' ==> 00169
+     *     
+     * 00169 (145, 61)
+     *      == 'd' ==> 00170
+     *     
+     * 00170 (145, 62, A)
+     *     
+     * END: STATE MACHINE
+    /* BEGIN: STATE MACHINE
+     * init-state = 183L
+     * 00183 (146, 124)
+     *      == 'A' ==> 00184
+     *     
+     * 00184 (146, 125)
+     *      == 'c' ==> 00185
+     *     
+     * 00185 (146, 126)
+     *      == 'b' ==> 00186
+     *     
+     * 00186 (146, 127)
+     *      == 'a' ==> 00187
+     *     
+     * 00187 (146, 128)
+     *      == 'Z' ==> 00188
+     *     
+     * 00188 (146, 129, A)
+     *     
+     * END: STATE MACHINE
+    /* BEGIN: STATE MACHINE
+     * init-state = 198L
+     * 00198 (147, 141)
+     *      == 'h' ==> 00199
+     *     
+     * 00199 (147, 142)
+     *      == 'i' ==> 00200
+     *     
+     * 00200 (147, 143, A)
+     *     
+     * END: STATE MACHINE

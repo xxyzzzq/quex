@@ -1,0 +1,6 @@
+error-2.qx:6:error: Number format '0X' is not supported by quex.
+error-2.qx:6:error: Use prefix '0x' for hexadecimal numbers.
+error-2.qx:6:error:            '0o' for octal numbers.
+error-2.qx:6:error:            '0b' for binary numbers.
+error-2.qx:6:error:            '0r' for roman numbers.
+error-2.qx:6:error:            and no prefix for decimal numbers.

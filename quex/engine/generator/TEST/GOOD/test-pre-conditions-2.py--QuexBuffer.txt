@@ -1,0 +1,22 @@
+(*) test string: 
+'x  xxxxx aberxxx x'
+(*) result:
+                 X+  'x'
+         WHITESPACE  '  '
+  WHITESPACE / X+ /  'xxxxx'
+         WHITESPACE  ' '
+        IDENITIFIER  'aber'
+        ABER / X+ /  'xxx'
+         WHITESPACE  ' '
+  WHITESPACE / X+ /  'x'
+  ''
+(*) Lexical Analyser Patterns:
+        "aber"/"x"+/ --> ABER / X+ /
+              [a-u]+ --> IDENITIFIER
+        [ \t]+/"x"+/ --> WHITESPACE / X+ /
+                "x"+ --> X+
+            [ \t\n]+ --> WHITESPACE
+## (1) code generation
+## (2) compiling generated engine code and test
+## (3) running the test
+## (4) cleaning up

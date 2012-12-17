@@ -1,0 +1,20 @@
+quex -i error-0.qx -o Simple
+error-0.qx:11:warning: Detected implicit token identifier definitions. Proposal:
+error-0.qx:11:warning:    token {
+error-0.qx:11:warning:      WORD_POST_COND;
+error-0.qx:12:warning:      QUOTE_S_PRE_COND;
+error-0.qx:13:warning:      WORD;
+error-0.qx:14:warning:      OTHER;
+error-0.qx:15:warning:      NEWLINE;
+error-0.qx:15:warning:    }
+		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
+----------------------------------
+dog's 'silly' 
+----------------------------------
+WORD_POST_COND 'dog' 
+QUOTE_S_PRE_COND ''s' 
+OTHER ''' 
+WORD 'silly' 
+OTHER ''' 
+NEWLINE '
+' 
