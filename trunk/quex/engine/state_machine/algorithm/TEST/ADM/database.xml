@@ -1,0 +1,40 @@
+<test-database execution-time-sec="0.62" date="Mon Dec 17 01:12:23 2012">
+    <last-used-diff-display-program name=""/>
+    <group name="DFA">
+        <test title="Hopcroft optimization (minimize state set) II" time-sum-sec="0.22"> 
+            <application file-name="test-hopcroft-minimization-2.py" info-request-time="1336109422L" vanished="False"/>
+            <choice-list number="2" same_result="True">
+               <choice name="NEW" result="OK" time_sec="0.11" crc="-2137376588"/>
+               <choice name="ADAPT" result="OK" time_sec="0.11" crc="-2137376588"/>
+            </choice-list>
+        </test>
+        <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.14"> 
+            <application file-name="test-hopcroft-minimization.py" info-request-time="1336109422L" vanished="False"/>
+            <choice-list number="2" same_result="True">
+               <choice name="NEW" result="OK" time_sec="0.07" crc="320921215"/>
+               <choice name="ADAPT" result="OK" time_sec="0.07" crc="320921215"/>
+            </choice-list>
+        </test>
+        <test title="Hopcroft optimization III (state machine combination)" time-sum-sec="0.12"> 
+            <application file-name="test-hopcroft-minimization-3.py" info-request-time="1336109422L" vanished="False"/>
+            <choice-list number="2" same_result="False">
+               <choice name="NEW" result="OK" time_sec="0.06" crc="-323018526"/>
+               <choice name="ADAPT" result="OK" time_sec="0.06" crc="-323018526"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="NFA">
+        <test title="Conversion to DFA - Special Case" time-sum-sec="0.08"> 
+            <application file-name="test-nfa-to-dfa-special.py" info-request-time="1336109449L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.08" crc="1159177584"/>
+            </choice-list>
+        </test>
+        <test title="Conversion to DFA (subset construction)" time-sum-sec="0.06"> 
+            <application file-name="test-nfa-to-dfa.py" info-request-time="1336109448L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.06" crc="1794649778"/>
+            </choice-list>
+        </test>
+    </group>
+</test-database>

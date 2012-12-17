@@ -1,0 +1,42 @@
+(1)
+::
+[\v\a] => space 10;
+[\t] => space 10; \default => space 66;>
+::
+
+Spaces:
+     10 by '\a', '\t', '\v'
+     66 by [-oo, \6], '\b', ['\f', oo]
+Grids:
+Newlines:
+      1 by '\n'
+
+
+(2)
+::
+[\v\a] => grid 10;
+[\t] => grid 10; \default => space 66;>
+::
+
+Spaces:
+     66 by [-oo, \6], '\b', ['\f', oo]
+Grids:
+     10 by '\a', '\t', '\v'
+Newlines:
+      1 by '\n'
+
+
+(3)
+::
+[\v\a] => newline;
+[\t] => newline; \default => space 66;>
+::
+
+Spaces:
+      1 by ' '
+     66 by [-oo, \6], '\b', '\n', ['\f', \31], ['!', oo]
+Grids:
+Newlines:
+      1 by '\a', '\t', '\v'
+
+

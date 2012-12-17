@@ -1,0 +1,15 @@
+(1)
+command line: No initial mode defined via 'start' while more than one applicable mode exists.
+command line: Use for example 'start = BASE;' in the quex source file to define an initial mode.
+
+(2)
+command line: No initial mode defined via 'start' while more than one applicable mode exists.
+command line: Use for example 'start = A;' in the quex source file to define an initial mode.
+
+(3)
+error-3.qx:1:error: Mode 'DERIVED' was defined without the option <inheritable: only>.
+error-3.qx:1:error: However, it contains no matches--only event handlers. Without pattern
+error-3.qx:1:error: matches it cannot act as a pattern detecting state machine, and thus
+error-3.qx:1:error: cannot be an independent lexical analyzer mode. Define the option
+error-3.qx:1:error: <inheritable: only>.
+

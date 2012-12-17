@@ -1,0 +1,4 @@
+start = X;
+token { EMPTY; }
+mode X : <skip: [ ]> { " " => QUEX_TKN_EMPTY; }
+mode Y : <skip: [ ]> { [ ]+ => QUEX_TKN_EMPTY; }

@@ -1,0 +1,2 @@
+test-skip-trigger-set-2.py
+--not tmp*.exe

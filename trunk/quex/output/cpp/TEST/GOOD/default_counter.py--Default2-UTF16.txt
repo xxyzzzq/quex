@@ -1,0 +1,194 @@
+#spec 
+       [\x0A\x0b\x0c\x85\X2028\X2029]      => newline 1;
+       [\x0d]                                   => newline 0;
+       [\t]                                     => grid    4;
+       [\X0600-\X06FF]                         => space   3;
+       [\U010000-\U10FFFF]                     => space   2;
+    
+#ifdef __QUEX_OPTION_COUNTER
+void
+QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* LexemeBegin, const QUEX_TYPE_CHARACTER* LexemeEnd)
+{
+#   define self (*me)
+    const QUEX_TYPE_CHARACTER* iterator    = (const QUEX_TYPE_CHARACTER*)0;
+    QUEX_TYPE_CHARACTER        input       = (QUEX_TYPE_CHARACTER)0;
+
+    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+
+    for(iterator=LexemeBegin; iterator < LexemeEnd; ) {
+        input = *iterator;
+        __quex_debug("Init State\n");
+        __quex_debug_state(55);
+        if( input < 0x600 ) {
+            if( input < 0xD ) {
+                switch( input ) {
+                    case 0x0: 
+                    case 0x1: 
+                    case 0x2: 
+                    case 0x3: 
+                    case 0x4: 
+                    case 0x5: 
+                    case 0x6: 
+                    case 0x7: 
+                    case 0x8: goto _61;
+                    case 0x9: goto _56;
+                    case 0xA: 
+                    case 0xB: 
+                    case 0xC: goto _59;
+
+                }
+            } else {
+                if( input == 0xD ) {
+                    goto _62;
+                } else if( input < 0x85 ) {
+                    goto _61;
+                } else if( input == 0x85 ) {
+                    goto _59;
+                } else {
+                    goto _61;
+                }
+            }
+        } else {
+            if( input < 0xD800 ) {
+                if( input < 0x700 ) {
+                    goto _60;
+                } else if( input < 0x2028 ) {
+                    goto _61;
+                } else if( input < 0x202A ) {
+                    goto _59;
+                } else {
+                    goto _61;
+                }
+            } else {
+                if( input < 0xDC00 ) {
+                    goto _57;
+                } else if( input < 0xE000 ) {
+
+                } else if( input < 0x10000 ) {
+                    goto _61;
+                } else {
+
+                }
+            }
+        }
+        __quex_debug_drop_out(55);
+        
+        goto _66; /* TERMINAL_FAILURE */
+
+        __quex_assert_no_passage();
+_64: /* (64 from 57) */
+
+        ++iterator;
+        __quex_debug_state(64);
+        __quex_debug_drop_out(64);
+        goto TERMINAL_15;
+
+        __quex_assert_no_passage();
+_56: /* (56 from 55) */
+
+        ++iterator;
+        __quex_debug_state(56);
+        __quex_debug_drop_out(56);
+        goto TERMINAL_11;
+
+        __quex_assert_no_passage();
+_57: /* (57 from 55) */
+
+        ++iterator;
+        input = *iterator;
+        __quex_debug_state(57);
+        if( input >= 0xE000 ) {
+
+        } else if( input >= 0xDC00 ) {
+            goto _64;
+        } else {
+
+        }
+        __quex_debug_drop_out(57);
+        
+        goto _66; /* TERMINAL_FAILURE */
+
+        __quex_assert_no_passage();
+_59: /* (59 from 55) */
+
+        ++iterator;
+        __quex_debug_state(59);
+        __quex_debug_drop_out(59);
+        goto TERMINAL_14;
+
+        __quex_assert_no_passage();
+_60: /* (60 from 55) */
+
+        ++iterator;
+        __quex_debug_state(60);
+        __quex_debug_drop_out(60);
+        goto TERMINAL_12;
+
+        __quex_assert_no_passage();
+_61: /* (61 from 55) */
+
+        ++iterator;
+        __quex_debug_state(61);
+        __quex_debug_drop_out(61);
+        goto TERMINAL_13;
+
+        __quex_assert_no_passage();
+_62: /* (62 from 55) */
+
+        ++iterator;
+        __quex_debug_state(62);
+        __quex_debug_drop_out(62);
+        goto TERMINAL_10;
+TERMINAL_10:
+        __quex_debug("* terminal 10:   \n");
+        __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
+
+        continue;
+
+TERMINAL_11:
+        __quex_debug("* terminal 11:   \n");
+                __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end &= ~ ((size_t)0x3));
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 4);
+
+        continue;
+
+TERMINAL_12:
+        __quex_debug("* terminal 12:   \n");
+        __QUEX_IF_COUNT_COLUMNS_ADD((size_t)3);
+
+        continue;
+
+TERMINAL_13:
+        __quex_debug("* terminal 13:   \n");
+        __QUEX_IF_COUNT_COLUMNS_ADD((size_t)1);
+
+        continue;
+
+TERMINAL_14:
+        __quex_debug("* terminal 14:   \n");
+        __QUEX_IF_COUNT_LINES_ADD((size_t)1);
+        __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
+
+        continue;
+
+TERMINAL_15:
+        __quex_debug("* terminal 15:   \n");
+        __QUEX_IF_COUNT_COLUMNS_ADD((size_t)2);
+
+        continue;
+
+_66: /* TERMINAL: FAILURE */
+        QUEX_ERROR_EXIT("State machine failed.");
+    }
+    __quex_assert(iterator == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */
+#   undef self
+}
+#endif /* __QUEX_OPTION_COUNTER */
+_____________________________________________________________________________
+file:     './data/example.utf16le';
+char_size: 2;
+byte_n:    809;
+column_n:  1298;
+line_n:    6;
+## gcc -I. -ggdb ./data/check.c ./data/test.c  -D__QUEX_OPTION_COUNTER -DDEF_COUNTER_FUNCTION='QUEX_NAME(TEST_MODE_counter)'  -DDEF_FILE_NAME='"./data/example.utf16le"'  -DDEF_CHARACTER_TYPE=uint16_t  -o test

@@ -1,0 +1,527 @@
+<history date="Mon Dec 17 01:12:22 2012" element-n="175">
+    <day year="2008" month="12" day="11">
+        <history-init time="22:12:09"/>
+    </day>
+    <day year="2008" month="12" day="12">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="04:59:28"/>
+    </day>
+    <day year="2008" month="12" day="16">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:38:06"/>
+    </day>
+    <day year="2008" month="12" day="17">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="10:53:47"/>
+    </day>
+    <day year="2008" month="12" day="18">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="05:54:57"/>
+    </day>
+    <day year="2008" month="12" day="19">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="10:12:06"/>
+    </day>
+    <day year="2008" month="12" day="20">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="15:27:44"/>
+    </day>
+    <day year="2008" month="12" day="21">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="01:58:18"/>
+    </day>
+    <day year="2008" month="12" day="22">
+        <test-runs-today n="5" ok-n="5" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:26:30"/>
+    </day>
+    <day year="2008" month="12" day="24">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="08:39:50"/>
+    </day>
+    <day year="2009" month="01" day="01">
+        <test-runs-today n="4" ok-n="4" fail-n="0" else-n="0" last-run="oll korrekt" last-time="17:19:10"/>
+    </day>
+    <day year="2009" month="01" day="17">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="09:00:51"/>
+    </day>
+    <day year="2009" month="02" day="03">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="09:00:41"/>
+    </day>
+    <day year="2009" month="02" day="06">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="18:39:14"/>
+    </day>
+    <day year="2009" month="02" day="10">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:25:36"/>
+    </day>
+    <day year="2009" month="02" day="11">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="06:31:30"/>
+    </day>
+    <day year="2009" month="02" day="13">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="14:05:19"/>
+    </day>
+    <day year="2009" month="02" day="15">
+        <test-runs-today n="4" ok-n="4" fail-n="0" else-n="0" last-run="oll korrekt" last-time="18:12:27"/>
+    </day>
+    <day year="2009" month="02" day="19">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="06:14:50"/>
+    </day>
+    <day year="2009" month="02" day="21">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="17:40:57"/>
+    </day>
+    <day year="2009" month="02" day="23">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:43:38"/>
+    </day>
+    <day year="2009" month="02" day="26">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:13:37"/>
+    </day>
+    <day year="2009" month="02" day="27">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:12:11"/>
+    </day>
+    <day year="2009" month="02" day="28">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="07:42:46"/>
+    </day>
+    <day year="2009" month="03" day="01">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:59:51"/>
+    </day>
+    <day year="2009" month="03" day="04">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="06:41:15"/>
+    </day>
+    <day year="2009" month="03" day="14">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="06:45:57"/>
+    </day>
+    <day year="2009" month="03" day="15">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="13:15:58"/>
+    </day>
+    <day year="2009" month="03" day="16">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="07:11:05"/>
+    </day>
+    <day year="2009" month="03" day="17">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="05:34:25"/>
+    </day>
+    <day year="2009" month="03" day="20">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="06:45:44"/>
+    </day>
+    <day year="2009" month="03" day="23">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="10:36:17"/>
+    </day>
+    <day year="2009" month="03" day="24">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:31:23"/>
+    </day>
+    <day year="2009" month="03" day="25">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:18:15"/>
+    </day>
+    <day year="2009" month="03" day="27">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:19:05"/>
+    </day>
+    <day year="2009" month="03" day="29">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="05:50:54"/>
+    </day>
+    <day year="2009" month="04" day="09">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:42:46"/>
+    </day>
+    <day year="2009" month="04" day="10">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="07:05:41"/>
+    </day>
+    <day year="2009" month="04" day="14">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="05:55:46"/>
+    </day>
+    <day year="2009" month="04" day="19">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="10:40:11"/>
+    </day>
+    <day year="2009" month="04" day="23">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="05:54:50"/>
+    </day>
+    <day year="2009" month="04" day="25">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="06:32:58"/>
+    </day>
+    <day year="2009" month="05" day="08">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:23:01"/>
+    </day>
+    <day year="2009" month="05" day="09">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="03:53:11"/>
+    </day>
+    <day year="2009" month="05" day="11">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:37:46"/>
+    </day>
+    <day year="2009" month="05" day="14">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="19:28:08"/>
+    </day>
+    <day year="2009" month="05" day="16">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:08:38"/>
+    </day>
+    <day year="2009" month="05" day="18">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="19:35:58"/>
+    </day>
+    <day year="2009" month="05" day="20">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="07:38:31"/>
+    </day>
+    <day year="2009" month="05" day="22">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="19:31:12"/>
+    </day>
+    <day year="2009" month="05" day="23">
+        <test-runs-today n="5" ok-n="5" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:01:51"/>
+    </day>
+    <day year="2009" month="05" day="27">
+        <test-runs-today n="4" ok-n="4" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:30:13"/>
+    </day>
+    <day year="2009" month="05" day="28">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="10:10:50"/>
+    </day>
+    <day year="2009" month="05" day="30">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="19:08:59"/>
+    </day>
+    <day year="2009" month="06" day="01">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="01:09:50"/>
+    </day>
+    <day year="2009" month="06" day="05">
+        <test-runs-today n="5" ok-n="5" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:33:35"/>
+    </day>
+    <day year="2009" month="06" day="10">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="18:57:16"/>
+    </day>
+    <day year="2009" month="06" day="16">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:11:34"/>
+    </day>
+    <day year="2009" month="06" day="17">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="19:15:06"/>
+    </day>
+    <day year="2009" month="06" day="18">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:29:24"/>
+    </day>
+    <day year="2009" month="06" day="22">
+        <test-runs-today n="5" ok-n="5" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:44:38"/>
+    </day>
+    <day year="2009" month="06" day="27">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:04:59"/>
+    </day>
+    <day year="2009" month="07" day="02">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:02:33"/>
+    </day>
+    <day year="2009" month="07" day="04">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:33:09"/>
+    </day>
+    <day year="2009" month="07" day="05">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:00:26"/>
+    </day>
+    <day year="2009" month="07" day="06">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:20:24"/>
+    </day>
+    <day year="2009" month="07" day="09">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:37:29"/>
+    </day>
+    <day year="2009" month="07" day="10">
+        <test-runs-today n="4" ok-n="4" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:22:39"/>
+    </day>
+    <day year="2009" month="07" day="14">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:19:39"/>
+    </day>
+    <day year="2009" month="07" day="15">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="13:02:49"/>
+    </day>
+    <day year="2009" month="07" day="16">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:58:14"/>
+    </day>
+    <day year="2009" month="07" day="18">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:54:54"/>
+    </day>
+    <day year="2009" month="07" day="21">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:08:14"/>
+    </day>
+    <day year="2009" month="07" day="22">
+        <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="oll korrekt" last-time="20:33:58"/>
+    </day>
+    <day year="2009" month="07" day="23">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:16:48"/>
+    </day>
+    <day year="2009" month="07" day="26">
+        <test-runs-today n="4" ok-n="4" fail-n="0" else-n="0" last-run="oll korrekt" last-time="07:10:06"/>
+    </day>
+    <day year="2009" month="07" day="27">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:09:20"/>
+    </day>
+    <day year="2009" month="07" day="28">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:17:28"/>
+    </day>
+    <day year="2009" month="07" day="30">
+        <test-runs-today n="6" ok-n="6" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:31:34"/>
+    </day>
+    <day year="2009" month="08" day="01">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="10:46:11"/>
+    </day>
+    <day year="2009" month="08" day="02">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="10:11:11"/>
+    </day>
+    <day year="2009" month="08" day="03">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="09:52:39"/>
+    </day>
+    <day year="2009" month="08" day="05">
+        <test-runs-today n="6" ok-n="6" fail-n="0" else-n="0" last-run="oll korrekt" last-time="13:09:58"/>
+    </day>
+    <day year="2009" month="08" day="06">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="00:49:09"/>
+    </day>
+    <day year="2009" month="08" day="07">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:05:39"/>
+    </day>
+    <day year="2009" month="08" day="08">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="19:47:19"/>
+    </day>
+    <day year="2009" month="08" day="09">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="19:08:14"/>
+    </day>
+    <day year="2009" month="08" day="12">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="13:43:01"/>
+    </day>
+    <day year="2009" month="08" day="13">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="08:23:51"/>
+    </day>
+    <day year="2009" month="08" day="14">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="07:24:17"/>
+    </day>
+    <day year="2009" month="08" day="18">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:30:11"/>
+    </day>
+    <day year="2009" month="08" day="20">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:56:48"/>
+    </day>
+    <day year="2009" month="08" day="22">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="05:33:20"/>
+    </day>
+    <day year="2009" month="08" day="23">
+        <test-runs-today n="4" ok-n="4" fail-n="0" else-n="0" last-run="oll korrekt" last-time="07:52:39"/>
+    </day>
+    <day year="2009" month="08" day="24">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:21:43"/>
+    </day>
+    <day year="2009" month="08" day="25">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="12:42:30"/>
+    </day>
+    <day year="2009" month="08" day="26">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:03:06"/>
+    </day>
+    <day year="2009" month="08" day="29">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:51:00"/>
+    </day>
+    <day year="2009" month="08" day="30">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:59:09"/>
+    </day>
+    <day year="2009" month="08" day="31">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:51:01"/>
+    </day>
+    <day year="2009" month="09" day="02">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:18:18"/>
+    </day>
+    <day year="2009" month="09" day="03">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:07:06"/>
+    </day>
+    <day year="2009" month="09" day="05">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="05:11:08"/>
+    </day>
+    <day year="2009" month="09" day="13">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="13:35:13"/>
+    </day>
+    <day year="2009" month="09" day="16">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:01:48"/>
+    </day>
+    <day year="2009" month="09" day="17">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:06:00"/>
+    </day>
+    <day year="2009" month="09" day="19">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="00:55:20"/>
+    </day>
+    <day year="2009" month="09" day="21">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:13:16"/>
+    </day>
+    <day year="2009" month="09" day="22">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="19:56:19"/>
+    </day>
+    <day year="2009" month="09" day="23">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:18:28"/>
+    </day>
+    <day year="2009" month="09" day="24">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:00:08"/>
+    </day>
+    <day year="2009" month="09" day="30">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:02:36"/>
+    </day>
+    <day year="2009" month="10" day="01">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:27:16"/>
+    </day>
+    <day year="2009" month="10" day="05">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:32:58"/>
+    </day>
+    <day year="2009" month="10" day="06">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:48:51"/>
+    </day>
+    <day year="2009" month="10" day="13">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:56:05"/>
+    </day>
+    <day year="2009" month="10" day="15">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:11:07"/>
+    </day>
+    <day year="2009" month="10" day="16">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:41:00"/>
+    </day>
+    <day year="2009" month="10" day="17">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:55:33"/>
+    </day>
+    <day year="2009" month="10" day="21">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:21:35"/>
+    </day>
+    <day year="2009" month="10" day="25">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:00:08"/>
+    </day>
+    <day year="2009" month="11" day="12">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="07:04:01"/>
+    </day>
+    <day year="2009" month="11" day="28">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="17:18:25"/>
+    </day>
+    <day year="2009" month="12" day="02">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="22:24:06"/>
+    </day>
+    <day year="2009" month="12" day="03">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="08:32:38"/>
+    </day>
+    <day year="2009" month="12" day="05">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="14:20:08"/>
+    </day>
+    <day year="2009" month="12" day="06">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:33:55"/>
+    </day>
+    <day year="2009" month="12" day="11">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:01:50"/>
+    </day>
+    <day year="2009" month="12" day="12">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="01:26:14"/>
+    </day>
+    <day year="2009" month="12" day="13">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:45:15"/>
+    </day>
+    <day year="2009" month="12" day="14">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:08:50"/>
+    </day>
+    <day year="2009" month="12" day="20">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:04:19"/>
+    </day>
+    <day year="2009" month="12" day="22">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="13:13:55"/>
+    </day>
+    <day year="2009" month="12" day="23">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:34:10"/>
+    </day>
+    <day year="2009" month="12" day="24">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="08:53:39"/>
+    </day>
+    <day year="2009" month="12" day="25">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:24:38"/>
+    </day>
+    <day year="2009" month="12" day="26">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:43:23"/>
+    </day>
+    <day year="2009" month="12" day="27">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="00:42:19"/>
+    </day>
+    <day year="2009" month="12" day="31">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="13:52:39"/>
+    </day>
+    <day year="2010" month="01" day="01">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="00:11:10"/>
+    </day>
+    <day year="2010" month="01" day="02">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="13:45:47"/>
+    </day>
+    <day year="2010" month="01" day="03">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:06:34"/>
+    </day>
+    <day year="2010" month="01" day="04">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:55:13"/>
+    </day>
+    <day year="2010" month="01" day="09">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="05:36:57"/>
+    </day>
+    <day year="2010" month="01" day="10">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="01:08:36"/>
+    </day>
+    <day year="2010" month="01" day="11">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:10:16"/>
+    </day>
+    <day year="2010" month="01" day="12">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:17:11"/>
+    </day>
+    <day year="2010" month="01" day="14">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="12:37:37"/>
+    </day>
+    <day year="2010" month="01" day="15">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="17:59:56"/>
+    </day>
+    <day year="2010" month="01" day="16">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:44:13"/>
+    </day>
+    <day year="2010" month="01" day="17">
+        <test-runs-today n="4" ok-n="4" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:44:49"/>
+    </day>
+    <day year="2010" month="01" day="19">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="13:21:04"/>
+    </day>
+    <day year="2010" month="01" day="21">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="12:48:39"/>
+    </day>
+    <day year="2010" month="01" day="22">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:49:15"/>
+    </day>
+    <day year="2010" month="01" day="23">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:57:56"/>
+    </day>
+    <day year="2010" month="01" day="24">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="13:37:01"/>
+    </day>
+    <day year="2010" month="01" day="26">
+        <test-runs-today n="5" ok-n="5" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:29:18"/>
+    </day>
+    <day year="2010" month="01" day="29">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="01:29:24"/>
+    </day>
+    <day year="2010" month="01" day="30">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:24:18"/>
+    </day>
+    <day year="2010" month="01" day="31">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:40:52"/>
+    </day>
+    <day year="2010" month="02" day="01">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:34:03"/>
+    </day>
+    <day year="2010" month="02" day="02">
+        <test-runs-today n="5" ok-n="5" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:07:06"/>
+    </day>
+    <day year="2010" month="02" day="03">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:42:12"/>
+    </day>
+    <day year="2010" month="02" day="04">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:31:42"/>
+    </day>
+    <day year="2010" month="02" day="05">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="06:34:55"/>
+    </day>
+    <day year="2010" month="02" day="07">
+        <test-runs-today n="4" ok-n="4" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:09:49"/>
+    </day>
+    <day year="2010" month="02" day="08">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:10:43"/>
+    </day>
+    <day year="2010" month="02" day="09">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="07:13:34"/>
+    </day>
+    <day year="2010" month="02" day="10">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:23:06"/>
+    </day>
+    <day year="2010" month="02" day="11">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="06:41:40"/>
+    </day>
+    <day year="2010" month="02" day="13">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:40:29"/>
+    </day>
+    <day year="2010" month="02" day="14">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:48:58"/>
+    </day>
+    <day year="2010" month="02" day="15">
+        <test-runs-today n="9" ok-n="9" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:00:04"/>
+    </day>
+    <day year="2010" month="02" day="19">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:12:00"/>
+    </day>
+    <day year="2010" month="03" day="02">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:35:53"/>
+    </day>
+</history>

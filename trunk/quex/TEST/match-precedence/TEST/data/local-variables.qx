@@ -1,0 +1,17 @@
+token {
+    A;
+    B;
+}
+
+start = A;
+
+mode A :
+<skip: [ \t\n]>
+{ 
+    a => QUEX_TKN_A;
+}
+
+mode B : A
+{ 
+    b => QUEX_TKN_B;
+}

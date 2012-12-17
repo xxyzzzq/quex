@@ -1,0 +1,105 @@
+## (*) compiling generated engine code and test
+g++ -Wall   ./tmp.cpp -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.cpp.exe -ggdb  ##
+
+## IGNORED: ./tmp.cpp: In function ‘uint32_t TestAnalyzer_Mr_UnitTest_analyzer_function(quex::TestAnalyzer*)’:
+## IGNORED: ./tmp.cpp:146: warning: label ‘STATE_0’ defined but not used
+## IGNORED: ./tmp.cpp: At global scope:
+## IGNORED: ./tmp.cpp:32: warning: ‘quex::Token_DumpedTokenIdObject’ defined but not used
+## (*) running the test
+(*) test string: 
+'abc*/XYZ'
+(*) result:
+next letter: <X>
+end
+  ''
+
+## (*) compiling generated engine code and test
+g++ -Wall   ./tmp.cpp -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.cpp.exe -ggdb  ##
+
+## IGNORED: ./tmp.cpp: In function ‘uint32_t TestAnalyzer_Mr_UnitTest_analyzer_function(quex::TestAnalyzer*)’:
+## IGNORED: ./tmp.cpp:146: warning: label ‘STATE_1’ defined but not used
+## IGNORED: ./tmp.cpp: At global scope:
+## IGNORED: ./tmp.cpp:32: warning: ‘quex::Token_DumpedTokenIdObject’ defined but not used
+## (*) running the test
+(*) test string: 
+'abc/*1*/XYZ*/xyz'
+(*) result:
+next letter: <x>
+end
+  ''
+
+## (*) compiling generated engine code and test
+g++ -Wall   ./tmp.cpp -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.cpp.exe -ggdb  ##
+
+## IGNORED: ./tmp.cpp: In function ‘uint32_t TestAnalyzer_Mr_UnitTest_analyzer_function(quex::TestAnalyzer*)’:
+## IGNORED: ./tmp.cpp:146: warning: label ‘STATE_2’ defined but not used
+## IGNORED: ./tmp.cpp: At global scope:
+## IGNORED: ./tmp.cpp:32: warning: ‘quex::Token_DumpedTokenIdObject’ defined but not used
+## (*) running the test
+(*) test string: 
+'abc/*1/*2*/ABC*/DEF*/HIJ'
+(*) result:
+next letter: <H>
+end
+  ''
+
+## (*) compiling generated engine code and test
+g++ -Wall   ./tmp.cpp -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.cpp.exe -ggdb  ##
+
+## IGNORED: ./tmp.cpp: In function ‘uint32_t TestAnalyzer_Mr_UnitTest_analyzer_function(quex::TestAnalyzer*)’:
+## IGNORED: ./tmp.cpp:146: warning: label ‘STATE_3’ defined but not used
+## IGNORED: ./tmp.cpp: At global scope:
+## IGNORED: ./tmp.cpp:32: warning: ‘quex::Token_DumpedTokenIdObject’ defined but not used
+## (*) running the test
+(*) test string: 
+'abc/**/*/xyz'
+(*) result:
+next letter: <x>
+end
+  ''
+
+## (*) compiling generated engine code and test
+g++ -Wall   ./tmp.cpp -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.cpp.exe -ggdb  ##
+
+## IGNORED: ./tmp.cpp: In function ‘uint32_t TestAnalyzer_Mr_UnitTest_analyzer_function(quex::TestAnalyzer*)’:
+## IGNORED: ./tmp.cpp:146: warning: label ‘STATE_4’ defined but not used
+## IGNORED: ./tmp.cpp: At global scope:
+## IGNORED: ./tmp.cpp:32: warning: ‘quex::Token_DumpedTokenIdObject’ defined but not used
+## (*) running the test
+(*) test string: 
+'abc/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/**/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/xyz'
+(*) result:
+next letter: <x>
+end
+  ''
+
+## (*) compiling generated engine code and test
+g++ -Wall   ./tmp.cpp -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.cpp.exe -ggdb  ##
+
+## IGNORED: ./tmp.cpp: In function ‘uint32_t TestAnalyzer_Mr_UnitTest_analyzer_function(quex::TestAnalyzer*)’:
+## IGNORED: ./tmp.cpp:146: warning: label ‘STATE_5’ defined but not used
+## IGNORED: ./tmp.cpp: At global scope:
+## IGNORED: ./tmp.cpp:32: warning: ‘quex::Token_DumpedTokenIdObject’ defined but not used
+## (*) running the test
+(*) test string: 
+'abc(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((()))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))xyz'
+(*) result:
+next letter: <x>
+end
+  ''
+
+## (*) compiling generated engine code and test
+g++ -Wall   ./tmp.cpp -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.cpp.exe -ggdb  ##
+
+## IGNORED: ./tmp.cpp: In function ‘uint32_t TestAnalyzer_Mr_UnitTest_analyzer_function(quex::TestAnalyzer*)’:
+## IGNORED: ./tmp.cpp:146: warning: label ‘STATE_6’ defined but not used
+## IGNORED: ./tmp.cpp: At global scope:
+## IGNORED: ./tmp.cpp:32: warning: ‘quex::Token_DumpedTokenIdObject’ defined but not used
+## (*) running the test
+(*) test string: 
+'abc/**//**//**//**//**//**//**//**/*/xyz'
+(*) result:
+next letter: <x>
+end
+  ''
+

@@ -1,0 +1,39 @@
+(Straight)---------------------------------------
+
+StateA: [10L]
+  [INTERVAL]   [TARGET/STATE [10]]
+  [-oo, 9]     MST:(1)
+  [10, oo]     MST:(2)
+StateB: [20L]
+  [INTERVAL]   [TARGET/STATE [20]]
+  [-oo, 9]     MST:(1)
+  [10, oo]     MST:(2)
+
+Result
+  [INTERVAL]   [TARGET/STATE [10, 20]]
+  [-oo, 9]     MST:(1)
+  [10, oo]     MST:(2)
+BorderN        = 1
+Target Schemes = 
+
+
+
+(Vice Versa)-------------------------------------
+
+StateA: [20L]
+  [INTERVAL]   [TARGET/STATE [20]]
+  [-oo, 9]     MST:(1)
+  [10, oo]     MST:(2)
+StateB: [10L]
+  [INTERVAL]   [TARGET/STATE [10]]
+  [-oo, 9]     MST:(1)
+  [10, oo]     MST:(2)
+
+Result
+  [INTERVAL]   [TARGET/STATE [20, 10]]
+  [-oo, 9]     MST:(1)
+  [10, oo]     MST:(2)
+BorderN        = 1
+Target Schemes = 
+
+

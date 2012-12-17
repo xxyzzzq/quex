@@ -1,0 +1,11 @@
+// -*- C++ -*- vim: set syntax=cpp:
+start = PREPROCESSOR;
+
+mode PREPROCESSOR 
+{
+    a        {}
+	"\n"     {}
+	"\\\n"   {}
+	"\\\r\n" {}
+
+}
