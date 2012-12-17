@@ -15,9 +15,9 @@ AFTER Reset:
    _byte_order_reversion_active_f = true;
    Accumulator = ''
    Counter:
-   _line_number_at_begin = 0;
+   _line_number_at_begin = 1;
    _line_number_at_end   = 1;
-   _column_number_at_begin = 0;
+   _column_number_at_begin = 1;
    _column_number_at_end   = 1;
    Mode Stack (0/8) = []
    ByteOrderInversion = true;

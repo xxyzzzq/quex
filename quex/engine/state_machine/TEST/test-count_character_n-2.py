@@ -123,3 +123,4 @@ else:
     print "##consequence of handling the 'knot probem' where the number of paths"
     print "##increases exponentially. Benefit of optimal solution low and seldom."
     test('xxxxx2|x2x2')
+

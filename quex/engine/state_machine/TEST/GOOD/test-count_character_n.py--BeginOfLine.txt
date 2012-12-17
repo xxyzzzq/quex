@@ -310,3 +310,15 @@ info  = {
     
 }
 
+expr. = ^[: intersection([\X900-\X970], \P{ID_Start}) :]([: intersection([\X900-\X970], \P{ID_Continue}) :]*)
+info  = {
+    line_n_increment                    = 0;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 0;
+    column_n_increment_by_lexeme_length = 1;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+

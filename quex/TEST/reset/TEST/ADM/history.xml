@@ -1,4 +1,4 @@
-<history date="Mon Dec 17 01:12:22 2012" element-n="152">
+<history date="Mon Dec 17 23:54:37 2012" element-n="173">
     <day year="2009" month="08" day="10">
         <history-init time="00:26:39"/>
         <crc-error time="00:28:59" application="simple-lexer" choice="1" database-crc="-1773350601" real-crc="759753114"/>
@@ -338,5 +338,28 @@
     </day>
     <day year="2010" month="03" day="03">
         <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="06:14:32"/>
+    </day>
+    <day year="2012" month="12" day="17">
+        <crc-error time="21:01:10" application="lexer-x" choice="0" database-crc="1646779103" real-crc="285620241"/>
+        <crc-error time="21:01:12" application="lexer-x" choice="1" database-crc="1646779103" real-crc="285620241"/>
+        <crc-error time="21:01:12" application="lexer-x" choice="2" database-crc="1646779103" real-crc="285620241"/>
+        <crc-error time="21:01:12" application="lexer-x" choice="3" database-crc="1646779103" real-crc="285620241"/>
+        <crc-error time="21:01:12" application="lexer-x" choice="20" database-crc="1646779103" real-crc="285620241"/>
+        <crc-error time="21:01:12" application="lexer-x" choice="30" database-crc="1646779103" real-crc="285620241"/>
+        <crc-error time="21:01:12" application="lexer-x" choice="50" database-crc="1646779103" real-crc="285620241"/>
+        <crc-error time="21:01:12" application="lexer-x" choice="134" database-crc="1646779103" real-crc="285620241"/>
+        <crc-error time="21:01:12" application="lexer-x" choice="135" database-crc="1646779103" real-crc="285620241"/>
+        <crc-error time="21:01:12" application="lexer-x" choice="136" database-crc="1646779103" real-crc="285620241"/>
+        <crc-error time="21:01:12" application="lexer-x" choice="1000" database-crc="1646779103" real-crc="285620241"/>
+        <crc-error time="22:45:10" application="codec-lexer" choice="1" database-crc="17735322" real-crc="319410180"/>
+        <crc-error time="22:45:10" application="codec-lexer" choice="2" database-crc="17735322" real-crc="319410180"/>
+        <crc-error time="22:45:10" application="codec-lexer" choice="3" database-crc="17735322" real-crc="319410180"/>
+        <crc-error time="22:45:10" application="codec-lexer" choice="1000" database-crc="17735322" real-crc="319410180"/>
+        <crc-error time="22:45:10" application="codec-lexer" choice="20" database-crc="17735322" real-crc="319410180"/>
+        <crc-error time="22:45:10" application="codec-lexer" choice="30" database-crc="17735322" real-crc="319410180"/>
+        <crc-error time="22:45:10" application="codec-lexer" choice="50" database-crc="17735322" real-crc="319410180"/>
+        <crc-error time="22:45:10" application="codec-lexer" choice="134" database-crc="17735322" real-crc="319410180"/>
+        <crc-error time="22:45:10" application="codec-lexer" choice="135" database-crc="17735322" real-crc="319410180"/>
+        <crc-error time="22:45:10" application="codec-lexer" choice="136" database-crc="17735322" real-crc="319410180"/>
     </day>
 </history>

@@ -25,6 +25,9 @@ typedef struct {
 #define __QUEX_IF_COUNT_COLUMNS(X)     X
 #define __QUEX_IF_COUNT_COLUMNS_SET(X) (me->counter._column_number_at_end = X)
 #define __QUEX_IF_COUNT_COLUMNS_ADD(X) (me->counter._column_number_at_end += X)
+#define __QUEX_IF_COUNT_SHIFT_VALUES() \
+        me->counter._line_number_at_begin = me->counter._line_number_at_end;    \
+        me->counter._column_number_at_begin = me->counter._column_number_at_end;
 
 #define QUEX_OPTION_COLUMN_NUMBER_COUNTING
 #define QUEX_OPTION_LINE_NUMBER_COUNTING

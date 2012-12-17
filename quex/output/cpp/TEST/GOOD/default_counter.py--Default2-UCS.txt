@@ -12,8 +12,7 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* 
 #   define self (*me)
     const QUEX_TYPE_CHARACTER* iterator    = (const QUEX_TYPE_CHARACTER*)0;
 
-    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+    __QUEX_IF_COUNT_SHIFT_VALUES();
 
     for(iterator=LexemeBegin; iterator < LexemeEnd; ) {
         if( (*iterator) < 0x86 ) {

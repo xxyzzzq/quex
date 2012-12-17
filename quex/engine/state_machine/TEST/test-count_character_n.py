@@ -68,6 +68,8 @@ test('X("a"|"x"*|"e"|"g")')
 test('abc("123"|("ABC"|"XYZ"))"123"("AAA"|"BBB"|"CCC")xyz')
 test('abc("123"|("ABCD"|"XYZ"))"123"("AAA"|"BBB"|"CCC")xyz')
 
+test('[: intersection([\X900-\X970], \P{ID_Start}) :]([: intersection([\X900-\X970], \P{ID_Continue}) :]*)')
+
 # quex version >= 0.49.1: only treat core pattern; no pre and post-conditions
 if False:
     test('"123"/"Z"')
