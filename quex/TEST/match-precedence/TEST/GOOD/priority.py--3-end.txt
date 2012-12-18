@@ -1,0 +1,31 @@
+#---------------------------------------------------------------------------
+mode X { A {} B {} C {} C PRIORITY-MARK; }
+
+Mode: 'X'
+(0) A 
+(1) B 
+(2) C 
+#---------------------------------------------------------------------------
+mode X { A {} B {}      C PRIORITY-MARK; C {} }
+
+<string>:1:warning: PRIORITY mark does not have any effect.
+Mode: 'X'
+(0) A 
+(1) B 
+(2) C 
+#---------------------------------------------------------------------------
+mode X { A {}           C PRIORITY-MARK; B {} C {} }
+
+<string>:1:warning: PRIORITY mark does not have any effect.
+Mode: 'X'
+(0) A 
+(1) B 
+(2) C 
+#---------------------------------------------------------------------------
+mode X {                C PRIORITY-MARK; A {} B {} C {} }
+
+<string>:1:warning: PRIORITY mark does not have any effect.
+Mode: 'X'
+(0) A 
+(1) B 
+(2) C 
