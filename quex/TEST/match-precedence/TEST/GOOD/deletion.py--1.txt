@@ -1,0 +1,5 @@
+<string>:1:error: Mode 'X' was defined without the option <inheritable: only>.
+<string>:1:error: However, it contains no matches--only event handlers. Without pattern
+<string>:1:error: matches it cannot act as a pattern detecting state machine, and thus
+<string>:1:error: cannot be an independent lexical analyzer mode. Define the option
+<string>:1:error: <inheritable: only>.
