@@ -1,45 +1,45 @@
-<test-database execution-time-sec="7.95" date="Tue Dec 18 22:50:40 2012">
+<test-database execution-time-sec="10.03" date="Wed Dec 19 08:14:11 2012">
     <last-used-diff-display-program name=""/>
-    <test title="Checking DELETE marks internally." time-sum-sec="0.00"> 
-        <application file-name="priority.py" info-request-time="1355866732L" vanished="False"/>
+    <test title="Checking PRIORITY-MARK internally." time-sum-sec="1.91"> 
+        <application file-name="priority.py" info-request-time="1355900754L" vanished="False"/>
         <choice-list number="16" same_result="False">
-           <choice name="3-begin" result="OK" time_sec="0.00" crc="902086883"/>
-           <choice name="3-mid" result="OK" time_sec="0.00" crc="1963408160"/>
-           <choice name="3-end" result="OK" time_sec="0.00" crc="-917374734"/>
-           <choice name="2-begin" result="NONE" time_sec="0.00" crc="None"/>
-           <choice name="2-end" result="NONE" time_sec="0.00" crc="None"/>
-           <choice name="1" result="NONE" time_sec="0.00" crc="None"/>
-           <choice name="Nonsense" result="NONE" time_sec="0.00" crc="None"/>
-           <choice name="derived-3-begin" result="NONE" time_sec="0.00" crc="None"/>
-           <choice name="derived-3-mid" result="NONE" time_sec="0.00" crc="None"/>
-           <choice name="derived-3-end" result="NONE" time_sec="0.00" crc="None"/>
-           <choice name="derived-2-begin" result="NONE" time_sec="0.00" crc="None"/>
-           <choice name="derived-2-end" result="NONE" time_sec="0.00" crc="None"/>
-           <choice name="derived-1" result="NONE" time_sec="0.00" crc="None"/>
-           <choice name="derived-Nonsense" result="NONE" time_sec="0.00" crc="None"/>
-           <choice name="before" result="NONE" time_sec="0.00" crc="None"/>
-           <choice name="derived-before" result="NONE" time_sec="0.00" crc="None"/>
+           <choice name="3-begin" result="FAIL" time_sec="0.12" crc="-2044103555"/>
+           <choice name="3-mid" result="FAIL" time_sec="0.12" crc="1815967720"/>
+           <choice name="3-end" result="FAIL" time_sec="0.13" crc="-1940069814"/>
+           <choice name="2-begin" result="OK" time_sec="0.10" crc="-1353599303"/>
+           <choice name="2-end" result="OK" time_sec="0.10" crc="1162447742"/>
+           <choice name="1" result="OK" time_sec="0.09" crc="1863452997"/>
+           <choice name="Nonsense" result="NO GOOD FILE" time_sec="0.11" crc="0"/>
+           <choice name="derived-3-begin" result="NO GOOD FILE" time_sec="0.15" crc="0"/>
+           <choice name="derived-3-mid" result="NO GOOD FILE" time_sec="0.14" crc="0"/>
+           <choice name="derived-3-end" result="NO GOOD FILE" time_sec="0.14" crc="0"/>
+           <choice name="derived-2-begin" result="NO GOOD FILE" time_sec="0.10" crc="0"/>
+           <choice name="derived-2-end" result="NO GOOD FILE" time_sec="0.14" crc="0"/>
+           <choice name="derived-1" result="OK" time_sec="0.12" crc="314788855"/>
+           <choice name="derived-Nonsense" result="NO GOOD FILE" time_sec="0.15" crc="0"/>
+           <choice name="before" result="NO GOOD FILE" time_sec="0.09" crc="0"/>
+           <choice name="derived-before" result="NO GOOD FILE" time_sec="0.11" crc="0"/>
         </choice-list>
     </test>
-    <test title="Checking DELETE marks internally." time-sum-sec="1.40"> 
-        <application file-name="deletion.py" info-request-time="1355815089L" vanished="False"/>
+    <test title="Checking DELETE marks internally." time-sum-sec="1.57"> 
+        <application file-name="deletion.py" info-request-time="1355900432L" vanished="False"/>
         <choice-list number="16" same_result="False">
-           <choice name="3-begin" result="OK" time_sec="0.09" crc="55522614"/>
-           <choice name="3-mid" result="OK" time_sec="0.09" crc="-394752459"/>
-           <choice name="3-end" result="OK" time_sec="0.09" crc="-373627902"/>
-           <choice name="2-begin" result="OK" time_sec="0.10" crc="875029910"/>
-           <choice name="2-end" result="OK" time_sec="0.09" crc="912350159"/>
-           <choice name="1" result="OK" time_sec="0.09" crc="713290491"/>
-           <choice name="Nonsense" result="OK" time_sec="0.10" crc="-168880171"/>
-           <choice name="derived-3-begin" result="OK" time_sec="0.09" crc="783914365"/>
-           <choice name="derived-3-mid" result="OK" time_sec="0.11" crc="-839900449"/>
-           <choice name="derived-3-end" result="OK" time_sec="0.10" crc="-378375191"/>
-           <choice name="derived-2-begin" result="OK" time_sec="0.09" crc="-70213968"/>
-           <choice name="derived-2-end" result="OK" time_sec="0.09" crc="1212461939"/>
-           <choice name="derived-1" result="OK" time_sec="0.09" crc="-377187287"/>
-           <choice name="derived-Nonsense" result="OK" time_sec="0.00" crc="-225961593"/>
-           <choice name="before" result="OK" time_sec="0.09" crc="-1968735009"/>
-           <choice name="derived-before" result="OK" time_sec="0.09" crc="1954970176"/>
+           <choice name="3-begin" result="OK" time_sec="0.10" crc="1817317143"/>
+           <choice name="3-mid" result="OK" time_sec="0.09" crc="-128919765"/>
+           <choice name="3-end" result="OK" time_sec="0.09" crc="852389561"/>
+           <choice name="2-begin" result="OK" time_sec="0.09" crc="1648925108"/>
+           <choice name="2-end" result="OK" time_sec="0.09" crc="-426093245"/>
+           <choice name="1" result="OK" time_sec="0.10" crc="713290491"/>
+           <choice name="Nonsense" result="OK" time_sec="0.10" crc="-1578640120"/>
+           <choice name="derived-3-begin" result="OK" time_sec="0.10" crc="2060219818"/>
+           <choice name="derived-3-mid" result="FAIL" time_sec="0.10" crc="-551907056"/>
+           <choice name="derived-3-end" result="FAIL" time_sec="0.10" crc="-406782856"/>
+           <choice name="derived-2-begin" result="OK" time_sec="0.11" crc="555365454"/>
+           <choice name="derived-2-end" result="FAIL" time_sec="0.10" crc="518913701"/>
+           <choice name="derived-1" result="OK" time_sec="0.09" crc="-671669000"/>
+           <choice name="derived-Nonsense" result="OK" time_sec="0.11" crc="96770731"/>
+           <choice name="before" result="OK" time_sec="0.09" crc="924503932"/>
+           <choice name="derived-before" result="OK" time_sec="0.11" crc="-1060646122"/>
         </choice-list>
     </test>
     <test title="PRIORITY-MARK or DELETION on not existing pattern." time-sum-sec="0.99"> 

@@ -28,20 +28,6 @@ def do(ModeDB):
 
     mode_name_list            = map(lambda mode:        mode.name, ModeDB.values())
     mode_name_list.sort()
-    applicable_mode_name_list = map(lambda mode:        mode.name, 
-                                    filter(lambda mode: mode.options["inheritable"] != "only",
-                                           ModeDB.values()))
-    applicable_mode_name_list.sort()
-
-    # (*) Is there a mode that is applicable?
-    #     That is: is there a more that is not only inheritable?
-    if len(applicable_mode_name_list) == 0:
-        error_msg("There is no mode that can be applied---all existing modes are 'inheritable only'.\n" + \
-                  "modes are = " + repr(mode_name_list)[1:-1],
-                  Prefix="consistency check")
-
-    # (*) Start mode specified?
-    __start_mode(applicable_mode_name_list, mode_name_list)
 
     # (*) Modes that are inherited must allow to be inherited
     for mode in ModeDB.values():
@@ -49,6 +35,20 @@ def do(ModeDB):
             if base_mode.options["inheritable"] == "no":
                 error_msg("mode '%s' inherits mode '%s' which is not inheritable." % \
                           (mode.name, base_mode.name), mode.filename, mode.line_n)
+
+    # (*) Empty modes which are not inheritable only?
+    for mode in ModeDB.values():
+        if not mode.has_event_handler() and len(mode.get_pattern_action_pair_list()) == 0:
+            if mode.options["inheritable"] != "only":
+                mode.options["inheritable"] = "only"
+                error_msg("Mode without pattern and event handlers needs to be 'inheritable only'.\n" + \
+                          "<inheritable: only> has been added automatically.", mode.filename, mode.line_n,  DontExitF=True)
+
+    # Applicable modes can only be determined after possible addition of "inheritable: only"
+    applicable_mode_name_list = __get_applicable_mode_list(ModeDB)
+
+    # (*) Start mode specified?
+    __start_mode(applicable_mode_name_list, mode_name_list)
 
     # (*) A mode that is instantiable (to be implemented) needs finally contain matches!
     for mode in ModeDB.values():
@@ -288,4 +288,17 @@ def __entry_exit_transitions(mode, mode_name_list):
             error_msg("mode '%s' has no exit to mode '%s'\n" % (mode_name, mode.name) + \
                       "or any of its base modes.",
                       that_mode.filename, that_mode.line_n)
-            
+           
+def __get_applicable_mode_list(ModeDB):
+    result= map(lambda mode:        mode.name, 
+                filter(lambda mode: mode.options["inheritable"] != "only", 
+                       ModeDB.itervalues()))
+    result.sort()
+
+    # (*) Is there a mode that is applicable?
+    #     That is: is there a more that is not only inheritable?
+    if len(result) == 0:
+        error_msg("There is no mode that can be applied---all existing modes are 'inheritable only'.\n" + \
+                  "modes are = " + repr(ModeDB.keys())[1:-1],
+                  Prefix="consistency check")
+    return result

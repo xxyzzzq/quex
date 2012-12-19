@@ -1,8 +1,8 @@
 <string>:1:warning: DELETION mark does not have any effect.
 Mode: 'Y'
-(0) A 
-(1) B 
-(2) C 
+(0) A {a}
+(1) B {b}
+(2) C {c}
 Mode: 'X'
-(0) A 
-(1) B 
+(0) A {a}
+(1) B {b}

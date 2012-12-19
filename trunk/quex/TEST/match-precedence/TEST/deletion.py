@@ -15,45 +15,45 @@ if "--hwut-info" in sys.argv:
 
 derived = None
 if   "3-begin" in sys.argv:
-    base = "X { A {} B {} C {} A DELETION; }"
+    base = "X { A {a} B {b} C {c} A DELETION; }"
 elif "3-mid" in sys.argv:
-    base = "X { A {} B {} C {} B DELETION; }"
+    base = "X { A {a} B {b} C {c} B DELETION; }"
 elif "3-end" in sys.argv:
-    base = "X { A {} B {} C {} C DELETION; }"
+    base = "X { A {a} B {b} C {c} C DELETION; }"
 elif "2-begin" in sys.argv:
-    base = "X { A {} B {} A DELETION; }"
+    base = "X { A {a} B {b} A DELETION; }"
 elif "2-end" in sys.argv:
-    base = "X { A {} B {} B DELETION; }"
+    base = "X { A {a} B {b} B DELETION; }"
 elif "1" in sys.argv:
-    base = "X { A {} A DELETION; }"
+    base = "X { A {a} A DELETION; }"
 elif "Nonsense" in sys.argv:
-    base = "X { A {} Nonsense DELETION; }"
+    base = "X { A {a} Nonsense DELETION; }"
 elif   "derived-3-begin" in sys.argv:
-    base    = "X { A {} B {} C {} }"
+    base    = "X { A {a} B {b} C {c} }"
     derived = "Y : X { A DELETION; }"
 elif "derived-3-mid" in sys.argv:
-    base    = "X { A {} B {} C {} }"
+    base    = "X { A {a} B {b} C {c} }"
     derived = "Y : X { B DELETION; }"
 elif "derived-3-end" in sys.argv:
-    base    = "X { A {} B {} C {} }"
+    base    = "X { A {a} B {b} C {c} }"
     derived = "Y : X { C DELETION; }"
 elif "derived-2-begin" in sys.argv:
-    base    = "X { A {} B {} }"
+    base    = "X { A {a} B {b} }"
     derived = "Y : X { A DELETION; }"
 elif "derived-2-end" in sys.argv:
-    base    = "X { A {} B {} }"
+    base    = "X { A {a} B {b} }"
     derived = "Y : X { B DELETION; }"
 elif "derived-1" in sys.argv:
-    base    = "X { A {} }"
+    base    = "X { A {a} }"
     derived = "Y : X { A DELETION; }"
 elif "derived-Nonsense" in sys.argv:
-    base    = "X { A {} }"
+    base    = "X { A {a} }"
     derived = "Y : X { Nonsense DELETION; }"
 if   "before" in sys.argv:
-    base = "X { A {} B {} C DELETION; C {} }"
+    base = "X { A {a} B {b} C DELETION; C {c} }"
 if   "derived-before" in sys.argv:
-    base = "X { A {} B {} C DELETION; }"
-    derived = "Y : X { C {} }"
+    base = "X { A {a} B {b} C DELETION; }"
+    derived = "Y : X { C {c} }"
 
 if derived is not None:
     test.do([base, derived], "DELETION")

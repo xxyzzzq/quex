@@ -93,7 +93,7 @@ def __post_process(fh, StartPosition, object, ReturnRE_StringF):
            or isinstance(object, StateMachine) \
            or isinstance(object, NumberSet)
 
-    if isinstance(fh, StringIO):
+    if False and isinstance(fh, StringIO):
         regular_expression = ""
     else:
         end_position = fh.tell()
