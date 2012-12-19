@@ -45,6 +45,7 @@ from   quex.blackboard import setup as Setup, \
 
 from   copy        import deepcopy
 from   collections import namedtuple
+from   operator    import itemgetter
 
 #-----------------------------------------------------------------------------------------
 # ModeDescription/Mode Objects:
@@ -55,8 +56,8 @@ from   collections import namedtuple
 # transition from description to real mode.
 #-----------------------------------------------------------------------------------------
 
-PatternRepriorization = namedtuple("PatternRepriorization", ("pattern", "new_pattern_index", "file_name", "line_n"))
-PatternDeletion       = namedtuple("PatternDeletion",       ("pattern", "file_name", "line_n"))
+PatternRepriorization = namedtuple("PatternRepriorization", ("pattern", "new_pattern_index", "file_name", "line_n", "mode_name"))
+PatternDeletion       = namedtuple("PatternDeletion",       ("pattern", "pattern_index", "file_name", "line_n", "mode_name"))
 
 class PatternPriority(object):
     """PatternPriority objects may need re-assignment so they cannot
@@ -130,13 +131,14 @@ class ModeDescription:
            by the current pattern index.
         """
         PatternIdx = ThePattern.sm.get_id() 
-        self.__repriorization_info_list.append(PatternRepriorization(ThePattern, PatternIdx, FileName, LineN))
+        self.__repriorization_info_list.append(PatternRepriorization(ThePattern, PatternIdx, FileName, LineN, self.name))
 
     def add_match_deletion(self, ThePattern, FileName, LineN):
         """If one of the base modes contains a pattern which is identical to this
            pattern, it has to be deleted.
         """
-        self.__deletion_info_list.append(PatternDeletion(ThePattern, FileName, LineN))
+        PatternIdx = ThePattern.sm.get_id() 
+        self.__deletion_info_list.append(PatternDeletion(ThePattern, PatternIdx, FileName, LineN, self.name))
 
     def add_option(self, Option, Value):
         """SANITY CHECK:
@@ -161,11 +163,6 @@ class ModeDescription:
 
     def get_deletion_info_list(self):
         return self.__deletion_info_list
-
-    def has_event_handler(self):
-        for fragment in self.events.values():
-            if not fragment.is_whitespace(): return True
-        return False
 
 class Mode:
     def __init__(self, Other):
@@ -225,14 +222,13 @@ class Mode:
         self.__history_deletion       = self.__perform_deletion(xpap_list) 
         self.__history_repriorization = self.__perform_repriorization(xpap_list) 
 
+        xpap_list.sort(key=itemgetter(0))
         for info in xpap_list:
             i = sm_index.get()
             info[1].pattern().sm.set_id(long(i))
 
         def clone_if_not_self(pap, SelfName):
-            if pap.mode_name != SelfName: 
-                return deepcopy(pap)
-            return pap
+            return deepcopy(pap)
 
         self.__pattern_action_pair_list = [ clone_if_not_self(x[1], self.name) for x in xpap_list ]
         self.__pattern_action_pair_list.sort(key=lambda pap: pap.pattern().sm.get_id())
@@ -278,6 +274,11 @@ class Mode:
     def has_code_fragment_list(self, EventName):
         assert self.__event_handler_db.has_key(EventName)
         return len(self.__event_handler_db[EventName]) != 0
+
+    def has_event_handler(self):
+        for entry in self.__event_handler_db.itervalues():
+            if len(entry) != 0: return True
+        return False
 
     def default_character_counter_required_f(self):
         """If there is one pattern where the character count cannot be
@@ -644,19 +645,19 @@ class Mode:
         def repriorize(Info, xpap_list, ModeName, MHI, history):
             done_f = False
             for xpap in xpap_list:
-                if xpap[0].mode_hierarchy_index > MHI: 
-                    continue
-                elif identity_checker.do(xpap[1].pattern(), Info.pattern):
+                if     xpap[0].mode_hierarchy_index <= MHI \
+                   and xpap[0].pattern_index        < Info.new_pattern_index \
+                   and identity_checker.do(xpap[1].pattern(), Info.pattern):
                     done_f = True
-                    xpap[0].mode_hierarchy_index = MHI
                     history.append([ModeName, 
                                     xpap[1].pattern_string(), 
                                     xpap[1].mode_name,
                                     xpap[1].pattern().sm.get_id(), 
                                     Info.new_pattern_index])
+                    xpap[0].mode_hierarchy_index = MHI
                     xpap[0].pattern_index        = Info.new_pattern_index
 
-            if not done_f:
+            if not done_f and Info.mode_name == ModeName:
                 error_msg("PRIORITY mark does not have any effect.", 
                           Info.file_name, Info.line_n, DontExitF=True)
 
@@ -674,6 +675,7 @@ class Mode:
             while i < size:
                 xpap = xpap_list[i]
                 if     xpap[0].mode_hierarchy_index <= MHI \
+                   and xpap[0].pattern_index < Info.pattern_index \
                    and superset_check.do(xpap[1].pattern(), Info.pattern):
                     done_f  = True
                     del xpap_list[i]
@@ -682,8 +684,7 @@ class Mode:
                 else:
                     i += 1
 
-
-            if not done_f:
+            if not done_f and Info.mode_name == ModeName:
                 error_msg("DELETION mark does not have any effect.", 
                           Info.file_name, Info.line_n, DontExitF=True)
 
@@ -844,13 +845,6 @@ def parse(fh):
     while __parse_element(new_mode, fh): 
         pass
 
-    # (*) check for modes w/o pattern definitions
-    if not new_mode.has_event_handler() and len(new_mode.get_pattern_action_pair_list()) == 0:
-        if new_mode.options["inheritable"] != "only":
-            new_mode.options["inheritable"] = "only"
-            error_msg("Mode without pattern and event handlers needs to be 'inheritable only'.\n" + \
-                      "<inheritable: only> has been added automatically.", fh,  DontExitF=True)
-
 def finalize():
     """After all modes have been defined, the mode descriptions can now
        be translated into 'real' modes.
@@ -868,7 +862,7 @@ def finalize():
             elif single is not None:
                 error_msg("No initial mode defined via 'start' while more than one applicable mode exists.\n" + \
                           "Use for example 'start = %s;' in the quex source file to define an initial mode." \
-                          % start_mode)
+                          % single.name)
             else:
                 single = mode
 

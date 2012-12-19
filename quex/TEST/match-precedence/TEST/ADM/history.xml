@@ -1,4 +1,4 @@
-<history date="Tue Dec 18 22:50:40 2012" element-n="126">
+<history date="Wed Dec 19 08:14:11 2012" element-n="144">
     <day year="2009" month="06" day="27">
         <history-init time="20:41:20"/>
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:04:27"/>
@@ -364,5 +364,25 @@
     </day>
     <day year="2012" month="12" day="18">
         <crc-error time="21:29:48" application="deletion.py" choice="1" database-crc="1414783905" real-crc="713290491"/>
+    </day>
+    <day year="2012" month="12" day="19">
+        <crc-error time="07:06:47" application="deletion.py" choice="3-begin" database-crc="55522614" real-crc="1817317143"/>
+        <crc-error time="07:07:24" application="deletion.py" choice="3-mid" database-crc="-394752459" real-crc="-128919765"/>
+        <crc-error time="07:07:36" application="deletion.py" choice="3-end" database-crc="-373627902" real-crc="852389561"/>
+        <crc-error time="07:07:46" application="deletion.py" choice="2-begin" database-crc="875029910" real-crc="1648925108"/>
+        <crc-error time="07:07:54" application="deletion.py" choice="2-end" database-crc="912350159" real-crc="-426093245"/>
+        <crc-error time="07:08:00" application="deletion.py" choice="Nonsense" database-crc="-168880171" real-crc="-1578640120"/>
+        <crc-error time="07:08:13" application="deletion.py" choice="derived-3-begin" database-crc="783914365" real-crc="2060219818"/>
+        <crc-error time="07:08:28" application="deletion.py" choice="derived-3-mid" database-crc="-839900449" real-crc="-551907056"/>
+        <crc-error time="07:08:42" application="deletion.py" choice="derived-3-end" database-crc="-378375191" real-crc="-406782856"/>
+        <crc-error time="07:09:11" application="deletion.py" choice="derived-2-begin" database-crc="-70213968" real-crc="555365454"/>
+        <crc-error time="07:09:20" application="deletion.py" choice="derived-2-end" database-crc="1212461939" real-crc="518913701"/>
+        <crc-error time="07:09:29" application="deletion.py" choice="derived-1" database-crc="-377187287" real-crc="-671669000"/>
+        <crc-error time="07:09:36" application="deletion.py" choice="derived-Nonsense" database-crc="-225961593" real-crc="96770731"/>
+        <crc-error time="07:09:48" application="deletion.py" choice="before" database-crc="-1968735009" real-crc="924503932"/>
+        <crc-error time="07:09:59" application="deletion.py" choice="derived-before" database-crc="1954970176" real-crc="-1060646122"/>
+        <crc-error time="07:12:33" application="priority.py" choice="3-begin" database-crc="902086883" real-crc="-2044103555"/>
+        <crc-error time="07:13:28" application="priority.py" choice="3-mid" database-crc="1963408160" real-crc="1815967720"/>
+        <crc-error time="07:14:10" application="priority.py" choice="3-end" database-crc="-917374734" real-crc="-1940069814"/>
     </day>
 </history>

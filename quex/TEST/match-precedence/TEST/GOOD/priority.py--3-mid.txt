@@ -2,29 +2,29 @@
 mode X { A {} B {} C {} B PRIORITY-MARK; }
 
 Mode: 'X'
-(0) A 
-(1) C 
-(2) B 
+(0) A {a}
+(1) C {c}
+(2) B {b}
 #---------------------------------------------------------------------------
 mode X { A {} B {}      B PRIORITY-MARK; C {} }
 
 Mode: 'X'
-(0) A 
-(1) B 
-(2) C 
+(0) A {a}
+(1) B {b}
+(2) C {c}
 #---------------------------------------------------------------------------
 mode X { A {}           B PRIORITY-MARK; B {} C {} }
 
 <string>:1:warning: PRIORITY mark does not have any effect.
 Mode: 'X'
-(0) A 
-(1) B 
-(2) C 
+(0) A {a}
+(1) B {b}
+(2) C {c}
 #---------------------------------------------------------------------------
 mode X {                B PRIORITY-MARK; A {} B {} C {} }
 
 <string>:1:warning: PRIORITY mark does not have any effect.
 Mode: 'X'
-(0) A 
-(1) B 
-(2) C 
+(0) A {a}
+(1) B {b}
+(2) C {c}

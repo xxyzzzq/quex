@@ -2,4 +2,4 @@
 <string>:1:warning: <inheritable: only> has been added automatically.
 Mode: 'Y'
 Mode: 'X'
-(0) A 
+(0) A {a}
