@@ -5,7 +5,6 @@ import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine                   as     regex
-from   quex.engine.generator.base                             import get_combined_state_machine
 import quex.engine.analyzer.core                              as     core
 import quex.engine.state_machine.algorithm.acceptance_pruning as     acceptance_pruning
 from   quex.blackboard                                        import E_InputActions
@@ -120,10 +119,8 @@ pattern_list = {
 }[choice]
 
 acceptance_pruning._deactivated_for_unit_test_f = True
-state_machine_list = map(lambda x: regex.do(x, {}).sm, pattern_list)
 
-sm = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
-sm = sm.normalized_clone()
+sm = help.prepare(pattern_list)
 
 # For DEBUG purposes: specify 'DRAW' on command line
 help.if_DRAW_in_sys_argv(sm)

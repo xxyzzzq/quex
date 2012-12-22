@@ -20,7 +20,7 @@ def do(TxtList, Op):
     blackboard.initial_mode = UserCodeFragment("X", "<string>", 0)
     mode.finalize()
 
-    for x in blackboard.mode_db.itervalues():
+    for x in sorted(blackboard.mode_db.itervalues(), key=lambda x: x.name):
         print "Mode: '%s'" % x.name
         pap_list = x.get_pattern_action_pair_list()
         pap_list.sort(key=lambda x: x.pattern().sm.get_id())

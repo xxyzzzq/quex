@@ -91,10 +91,7 @@ else:
 
 
 acceptance_pruning._deactivated_for_unit_test_f = True
-state_machine_list = map(lambda x: regex.do(x, {}).sm, pattern_list)
-
-sm  = get_combined_state_machine(state_machine_list, True)#False) # May be 'True' later.
-sm  = sm.normalized_clone()
+sm = help.prepare(pattern_list)
 
 # For DEBUG purposes: specify 'DRAW' on command line
 help.if_DRAW_in_sys_argv(sm)

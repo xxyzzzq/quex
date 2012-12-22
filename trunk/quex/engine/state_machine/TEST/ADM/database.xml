@@ -1,4 +1,4 @@
-<test-database execution-time-sec="17.60" date="Tue Dec 18 00:30:37 2012">
+<test-database execution-time-sec="17.55" date="Wed Dec 19 23:03:27 2012">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Superset/Subset Determination" time-sum-sec="1.40"> 
         <application file-name="test-subset_checker.py" info-request-time="1336071109L" vanished="True"/>
@@ -47,7 +47,7 @@
                <choice name="" result="OK" time_sec="0.06" crc="-1738167192"/>
             </choice-list>
         </test>
-        <test title="Get Trigger Map (intervals --&gt; target states)" time-sum-sec="0.50"> 
+        <test title="Get Trigger Map (intervals --&gt; target states)" time-sum-sec="0.49"> 
             <application file-name="test-get_trigger_map.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="8" same_result="False">
                <choice name="1" result="OK" time_sec="0.06" crc="-537668508"/>
@@ -124,10 +124,10 @@
                <choice name="UTF16" result="OK" time_sec="0.28" crc="-416803910"/>
             </choice-list>
         </test>
-        <test title="Newlines" time-sum-sec="0.77"> 
+        <test title="Newlines" time-sum-sec="0.67"> 
             <application file-name="test-count_newline_n.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.77" crc="-1753712398"/>
+               <choice name="" result="FAIL" time_sec="0.67" crc="-1753712398"/>
             </choice-list>
         </test>
         <test title="Characters" time-sum-sec="1.13"> 
@@ -161,16 +161,16 @@
                <choice name="" result="OK" time_sec="0.38" crc="-1686747106"/>
             </choice-list>
         </test>
-        <test title="Mounting" time-sum-sec="0.10"> 
+        <test title="Mounting" time-sum-sec="0.15"> 
             <application file-name="test-ambiguous_post_condition-mount_pseudo.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.10" crc="-1909008707"/>
+               <choice name="" result="FAIL" time_sec="0.15" crc="-1909008707"/>
             </choice-list>
         </test>
-        <test title="The Philosophical Cut" time-sum-sec="0.17"> 
+        <test title="The Philosophical Cut" time-sum-sec="0.18"> 
             <application file-name="test-ambiguous_post_condition-philosophical_cut.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.17" crc="-2030704293"/>
+               <choice name="" result="FAIL" time_sec="0.18" crc="-2030704293"/>
             </choice-list>
         </test>
     </group>
@@ -239,12 +239,6 @@
                <choice name="" result="OK" time_sec="0.07" crc="-1706023851"/>
             </choice-list>
         </test>
-        <test title="NFA to DFA (subset construction)" time-sum-sec="0.06"> 
-            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1355705371L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.06" crc="1084071896"/>
-            </choice-list>
-        </test>
         <test title="Cloning" time-sum-sec="0.06"> 
             <application file-name="test-StateMachine-trace-origin-clone.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="1" same_result="False">
@@ -255,6 +249,12 @@
             <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.06" crc="638605976"/>
+            </choice-list>
+        </test>
+        <test title="NFA to DFA (subset construction)" time-sum-sec="0.06"> 
+            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1355705371L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.06" crc="1084071896"/>
             </choice-list>
         </test>
         <test title="NFA to DFA (subset construction) II" time-sum-sec="0.07"> 
@@ -279,7 +279,7 @@
                <choice name="" result="OK" time_sec="3.21" crc="119936027"/>
             </choice-list>
         </test>
-        <test title="Contigous Word Sequence Ranges" time-sum-sec="0.32"> 
+        <test title="Contigous Word Sequence Ranges" time-sum-sec="0.33"> 
             <application file-name="test-utf16_interval_split.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="5" same_result="False">
                <choice name="1" result="OK" time_sec="0.06" crc="1196565311"/>
@@ -291,7 +291,7 @@
         </test>
     </group>
     <group name="UTF8 State Split">
-        <test title="Contigous Byte Sequence Ranges" time-sum-sec="0.40"> 
+        <test title="Contigous Byte Sequence Ranges" time-sum-sec="0.39"> 
             <application file-name="test-utf8_number_set_split.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="1" result="OK" time_sec="0.06" crc="1765966415"/>

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="2.34" date="Tue Dec 18 00:26:25 2012">
+<test-database execution-time-sec="2.34" date="Wed Dec 19 23:03:25 2012">
     <last-used-diff-display-program name=""/>
     <group name="Paths">
         <test title="select" time-sum-sec="1.07"> 

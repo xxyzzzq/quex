@@ -138,6 +138,7 @@ class DropOut(object):
     def __repr__(self):
         if len(self.__acceptance_checker) == 0 and len(self.__terminal_router) == 0:
             return "    <unreachable code>"
+
         info = self.trivialize()
         if info is not None:
             if len(info) == 2 and info[0] is None:
@@ -184,6 +185,10 @@ class DropOutIndifferent(DropOut):
 
     def finish(self, PositionRegisterMap):
         pass
+
+    def __repr__(self):
+        return "    goto CheckTerminated;"
+
 
 #class DropOutCharacterCounter(DropOut):
 #    def __init__(self, AcceptanceID):

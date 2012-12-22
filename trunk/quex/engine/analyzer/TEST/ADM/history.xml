@@ -1,4 +1,4 @@
-<history date="Tue Dec 18 00:26:22 2012" element-n="750">
+<history date="Sat Dec 22 11:10:10 2012" element-n="752">
     <day year="2011" month="04" day="29">
         <history-init time="04:18:51"/>
     </day>
@@ -904,5 +904,9 @@
         <crc-error time="08:35:03" application="transition_map_tools-fill_gaps.py" choice="2-diff" database-crc="1332062951" real-crc="-502064113"/>
         <crc-error time="08:35:03" application="transition_map_tools-fill_gaps.py" choice="3-same" database-crc="-1384348204" real-crc="-1278972709"/>
         <crc-error time="08:35:03" application="transition_map_tools-fill_gaps.py" choice="3-diff" database-crc="-1570142014" real-crc="1193266311"/>
+    </day>
+    <day year="2012" month="12" day="22">
+        <crc-error time="10:03:19" application="track_analysis-backwards.py" choice="0" database-crc="-164540051" real-crc="633816419"/>
+        <crc-error time="10:04:04" application="track_analysis-backwards.py" choice="1" database-crc="-1927787346" real-crc="1309685191"/>
     </day>
 </history>

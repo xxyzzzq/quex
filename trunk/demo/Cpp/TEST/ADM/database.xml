@@ -1,7 +1,7 @@
-<test-database execution-time-sec="250.88" date="Tue Dec 18 00:23:20 2012">
+<test-database execution-time-sec="256.95" date="Wed Dec 19 23:03:08 2012">
     <last-used-diff-display-program name=""/>
     <group name="demo/000">
-        <test title="Single Mode Example" time-sum-sec="7.09"> 
+        <test title="Single Mode Example" time-sum-sec="7.08"> 
             <application file-name="000.sh" info-request-time="1355705370L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="3.86" crc="-584949883"/>
@@ -87,11 +87,11 @@
         </test>
     </group>
     <group name="demo/007">
-        <test title="Miscellaneous Features" time-sum-sec="0.76"> 
+        <test title="Miscellaneous Features" time-sum-sec="7.09"> 
             <application file-name="007.sh" info-request-time="1355705370L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="0.39" crc="-920468037"/>
-               <choice name="DEBUG" result="FAIL" time_sec="0.37" crc="-920468037"/>
+               <choice name="NDEBUG" result="FAIL" time_sec="3.82" crc="-920468037"/>
+               <choice name="DEBUG" result="FAIL" time_sec="3.28" crc="-920468037"/>
             </choice-list>
         </test>
     </group>
@@ -111,7 +111,7 @@
                <choice name="" result="OK" time_sec="4.06" crc="-828377416"/>
             </choice-list>
         </test>
-        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="11.05"> 
+        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="11.04"> 
             <application file-name="009.sh" info-request-time="1355705370L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="lexer" result="OK" time_sec="5.50" crc="1910061155"/>
@@ -120,7 +120,7 @@
         </test>
     </group>
     <group name="demo/010">
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="81.59"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="81.58"> 
             <application file-name="010.sh" info-request-time="1355705370L" vanished="False"/>
             <choice-list number="9" same_result="False">
                <choice name="copy" result="OK" time_sec="4.41" crc="1030682096"/>
@@ -136,10 +136,10 @@
         </test>
     </group>
     <group name="demo/011">
-        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="13.13"> 
+        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="12.89"> 
             <application file-name="011.sh" info-request-time="1355705370L" vanished="False"/>
             <choice-list number="4" same_result="True">
-               <choice name="iso8859-7" result="FAIL" time_sec="3.52" crc="-1827787599"/>
+               <choice name="iso8859-7" result="FAIL" time_sec="3.28" crc="-1827787599"/>
                <choice name="utf8" result="OK" time_sec="3.32" crc="-1827787599"/>
                <choice name="utf16-be" result="OK" time_sec="2.95" crc="-1827787599"/>
                <choice name="utf16-le" result="OK" time_sec="3.34" crc="-1827787599"/>

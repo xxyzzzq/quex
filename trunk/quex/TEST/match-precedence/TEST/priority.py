@@ -10,7 +10,7 @@ if "--hwut-info" in sys.argv:
     print "Checking PRIORITY-MARK internally.;"
     print "CHOICES: 3-begin, 3-mid, 3-end, 2-begin, 2-end, 1, Nonsense," \
                    "derived-3-begin, derived-3-mid, derived-3-end, derived-2-begin, derived-2-end, derived-1, derived-Nonsense," \
-                   "before, derived-before;"
+                   "before, derived-before, derived-deeply;"
     sys.exit()
 
 def check(*TxtList):
@@ -66,7 +66,6 @@ elif "derived-3-end" in sys.argv:
     check("X { A {a} B {b} C {c} }", "Y : X { D {d} C PRIORITY-MARK; E {e} }")
 elif "derived-2-begin" in sys.argv:
     check("X { A {a} B {b} }", "Y : X {       A PRIORITY-MARK; }")
-    sys.exit()
     check("X { A {a} B {b} }", "Y : X { D {d} A PRIORITY-MARK; }")
     check("X { A {a} B {b} }", "Y : X {       A PRIORITY-MARK; D {d} }")
     check("X { A {a} B {b} }", "Y : X { D {d} A PRIORITY-MARK; E {e} }")
@@ -85,9 +84,15 @@ elif "derived-Nonsense" in sys.argv:
     check("X { A {a} }", "Y : X { D {d} Nonsense PRIORITY-MARK; }")
     check("X { A {a} }", "Y : X {       Nonsense PRIORITY-MARK; D {d} }")
     check("X { A {a} }", "Y : X { D {d} Nonsense PRIORITY-MARK; E {e} }")
-if   "before" in sys.argv:
+elif "derived-deeply" in sys.argv:
+    check("X0 { A0 {a0} }", 
+          "X1 : X0 { A1 {a1} }",
+          "X2 : X1 { A2 {a2} }",
+          "X3 : X2 { A3 {a3} }",
+          "X  : X3 { A0 PRIORITY-MARK; }")
+elif   "before" in sys.argv:
     check("X { A {a} B {b} C PRIORITY-MARK; C {c} }")
-if   "derived-before" in sys.argv:
+elif   "derived-before" in sys.argv:
     check("X { A {a} B {b} C PRIORITY-MARK; }", "Y : X { C {c} }")
 
 
