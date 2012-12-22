@@ -21,7 +21,7 @@ class GeneratorBase:
 
         # (*) create state (combined) state machines
         #     -- core state machine
-        self.sm             = get_combined_state_machine(self.state_machine_list)
+        self.sm                 = get_combined_state_machine(self.state_machine_list)
 
         #     -- pre conditions, combined into a single state machine
         if len(self.pre_context_sm_list) != 0:

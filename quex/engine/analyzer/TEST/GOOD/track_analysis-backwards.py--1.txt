@@ -1,8 +1,8 @@
 init-state = 0L
-00000 (9, 23), (22, 56)
+00000 (19, 49), (22, 56)
      == 'x' ==> 00001
     
-00001 (9, 24, A), (22, 57)
+00001 (19, 50, A), (22, 57)
      == 'x' ==> 00001
      == 'y' ==> 00002
     
@@ -13,18 +13,18 @@ State 0:
   .entry:
     .from NONE:
   .drop_out:
-    goto PreContextCheckTerminated;
+    goto CheckTerminated;
 
 State 1:
   .entry:
-    .from 0:     pre-context-fulfilled = 9;
-    .from 1:     pre-context-fulfilled = 9;
+    .from 0:     pre-context-fulfilled = 19;
+    .from 1:     pre-context-fulfilled = 19;
   .drop_out:
-    goto PreContextCheckTerminated;
+    goto CheckTerminated;
 
 State 2:
   .entry:
     .from 1:     pre-context-fulfilled = 22;
   .drop_out:
-    goto PreContextCheckTerminated;
+    goto CheckTerminated;
 

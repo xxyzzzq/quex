@@ -10,7 +10,7 @@ if "--hwut-info" in sys.argv:
     print "Checking DELETE marks internally.;"
     print "CHOICES: 3-begin, 3-mid, 3-end, 2-begin, 2-end, 1, Nonsense," \
                    "derived-3-begin, derived-3-mid, derived-3-end, derived-2-begin, derived-2-end, derived-1, derived-Nonsense," \
-                   "before, derived-before;"
+                   "before, derived-before, derived-deeply;"
     sys.exit()
 
 derived = None
@@ -49,11 +49,18 @@ elif "derived-1" in sys.argv:
 elif "derived-Nonsense" in sys.argv:
     base    = "X { A {a} }"
     derived = "Y : X { Nonsense DELETION; }"
-if   "before" in sys.argv:
-    base = "X { A {a} B {b} C DELETION; C {c} }"
-if   "derived-before" in sys.argv:
-    base = "X { A {a} B {b} C DELETION; }"
+elif "before" in sys.argv:
+    base    = "X { A {a} B {b} C DELETION; C {c} }"
+elif "derived-before" in sys.argv:
+    base    = "X { A {a} B {b} C DELETION; }"
     derived = "Y : X { C {c} }"
+elif "derived-deeply" in sys.argv:
+    test.do(["X0 { A0 {a0} }", 
+             "X1 : X0 { A1 {a1} }",
+             "X2 : X1 { A2 {a2} }",
+             "X3 : X2 { A3 {a3} }",
+             "X  : X3 { A0 DELETION; }"], "DELETION")
+    sys.exit(0)
 
 if derived is not None:
     test.do([base, derived], "DELETION")

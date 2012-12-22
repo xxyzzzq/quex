@@ -86,6 +86,7 @@ $INCLUDE_CONVERTER_DECLARATION
             QUEX_NAME(MemoryManager_Text_free)((QUEX_TYPE_CHARACTER*)self.text);
         }
         if( Begin != LexemeNull ) {
+            __quex_assert(End >= Begin);
             self.text = QUEX_NAME(MemoryManager_Text_allocate)(
                               sizeof(QUEX_TYPE_CHARACTER) * (size_t)(End - Begin + 1));
             __QUEX_STD_memcpy((void*)self.text, (void*)Begin, 

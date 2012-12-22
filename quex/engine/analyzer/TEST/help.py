@@ -1,8 +1,10 @@
-import quex.engine.analyzer.core      as core
-import quex.engine.analyzer.optimizer as optimizer
-from   quex.engine.analyzer.position_register_map import print_this
-import quex.engine.analyzer.engine_supply_factory      as     engine
-from   quex.blackboard                import E_InputActions, setup as Setup
+import quex.engine.analyzer.core                   as     core
+import quex.input.regular_expression.engine        as     regex
+import quex.engine.analyzer.optimizer              as     optimizer
+from   quex.engine.analyzer.position_register_map  import print_this
+import quex.engine.analyzer.engine_supply_factory  as     engine
+from   quex.engine.generator.base                  import get_combined_state_machine
+from   quex.blackboard                             import E_InputActions, setup as Setup
 
 import sys
 import os
@@ -22,6 +24,20 @@ def if_DRAW_in_sys_argv(sm):
     os.remove("tmp.dot")
     os.remove("tmp1.dot")
     sys.exit()
+
+def prepare(PatternStringList, GetPreContextSM_F=False):
+    pattern_list = map(lambda x: regex.do(x, {}), PatternStringList)
+    for pattern in pattern_list:
+        pattern.mount_pre_context_sm()
+        pattern.mount_bipd_sm()
+
+    if GetPreContextSM_F:
+        state_machine_list = [ pattern.pre_context_sm for pattern in pattern_list ]
+    else:
+        state_machine_list = [ pattern.sm for pattern in pattern_list ]
+
+    sm = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
+    return sm.normalized_clone()
 
 def test(SM, EngineType = engine.FORWARD, PrintPRM_F = False):
     

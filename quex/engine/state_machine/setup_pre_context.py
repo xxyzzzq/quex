@@ -46,11 +46,12 @@ def do(the_state_machine, pre_context_sm, BeginOfLinePreContextF):
         inverse_pre_context.mount_newline_to_acceptance_states(Setup.dos_carriage_return_newline_f, 
                                                                InverseF=True)
 
-    # (*) Clean up what has been done by inversion (and optionally 'BeginOfLinePreContextF')
-    inverse_pre_context = beautifier.do(inverse_pre_context)
-
     # (*) Once an acceptance state is reached no further analysis is necessary.
     acceptance_pruning.do(inverse_pre_context)
+
+    # (*) Clean up what has been done by inversion (and optionally 'BeginOfLinePreContextF')
+    #     AFTER acceptance_pruning (!)
+    inverse_pre_context = beautifier.do(inverse_pre_context)
 
     # (*) let the state machine refer to it 
     #     [Is this necessary? Is it not enough that the acceptance origins point to it? <fschaef>]

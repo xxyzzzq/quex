@@ -1,9 +1,9 @@
-<test-database execution-time-sec="3.37" date="Tue Dec 18 00:31:00 2012">
+<test-database execution-time-sec="3.60" date="Wed Dec 19 23:03:28 2012">
     <last-used-diff-display-program name=""/>
-    <test title="Anti-Patterns" time-sum-sec="0.08"> 
+    <test title="Anti-Patterns" time-sum-sec="0.13"> 
         <application file-name="anti-pattern.py" info-request-time="1355705371L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.08" crc="1260008968"/>
+           <choice name="" result="FAIL" time_sec="0.13" crc="1260008968"/>
         </choice-list>
     </test>
     <test title="Case Folding" time-sum-sec="0.18"> 
@@ -19,10 +19,10 @@
            <choice name="" result="OK" time_sec="0.09" crc="366811142"/>
         </choice-list>
     </test>
-    <test title="Transformations" time-sum-sec="0.09"> 
+    <test title="Transformations" time-sum-sec="0.12"> 
         <application file-name="test-transformation.py" info-request-time="1355705371L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.09" crc="-1369751584"/>
+           <choice name="" result="FAIL" time_sec="0.12" crc="-1369751584"/>
         </choice-list>
     </test>
     <group name="Backslashed Characters">
@@ -80,22 +80,16 @@
         </test>
     </group>
     <group name="Conditional Analysis">
-        <test title="pre- and post-conditions" time-sum-sec="0.09"> 
-            <application file-name="test-pre-and-post-condition.py" info-request-time="1355705371L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.09" crc="-2052311123"/>
-            </choice-list>
-        </test>
-        <test title="pre conditions" time-sum-sec="0.09"> 
+        <test title="pre conditions" time-sum-sec="0.12"> 
             <application file-name="test-pre-condition.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.09" crc="-401518183"/>
+               <choice name="" result="FAIL" time_sec="0.12" crc="-401518183"/>
             </choice-list>
         </test>
-        <test title="Begin of Line '^', End of Line '$'" time-sum-sec="0.10"> 
+        <test title="Begin of Line '^', End of Line '$'" time-sum-sec="0.11"> 
             <application file-name="test-bol-eol.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.10" crc="1056889847"/>
+               <choice name="" result="FAIL" time_sec="0.11" crc="1056889847"/>
             </choice-list>
         </test>
         <test title="post conditions" time-sum-sec="0.11"> 
@@ -104,10 +98,16 @@
                <choice name="" result="OK" time_sec="0.11" crc="-296474085"/>
             </choice-list>
         </test>
-        <test title="End of Line '$' (with DOS/Windows '\r\n')" time-sum-sec="0.08"> 
+        <test title="pre- and post-conditions" time-sum-sec="0.11"> 
+            <application file-name="test-pre-and-post-condition.py" info-request-time="1355705371L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="FAIL" time_sec="0.11" crc="-2052311123"/>
+            </choice-list>
+        </test>
+        <test title="End of Line '$' (with DOS/Windows '\r\n')" time-sum-sec="0.14"> 
             <application file-name="test-eol-carriage-return-newline.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.08" crc="-679971317"/>
+               <choice name="" result="FAIL" time_sec="0.14" crc="-679971317"/>
             </choice-list>
         </test>
     </group>

@@ -513,10 +513,11 @@ class LanguageDB_Cpp(dict):
 
     def POSITIONING(self, Positioning, Register):
         if   Positioning == E_TransitionN.VOID: 
-            return "me->buffer._input_p = position[%i];" % Register
+            return   "__quex_assert(position[%i] != 0x0);\n" % Register \
+                   + "me->buffer._input_p = position[%i];\n" % Register
         # "_input_p = lexeme_start_p + 1" is done by TERMINAL_FAILURE. 
         elif Positioning == E_TransitionN.LEXEME_START_PLUS_ONE: 
-            return "" 
+            return ""
         elif Positioning > 0:     
             return "me->buffer._input_p -= %i; " % Positioning
         elif Positioning == 0:    

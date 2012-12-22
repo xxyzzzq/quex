@@ -9,18 +9,10 @@ basic result of this process a map is generated with the following property:
 
 Based on the information in the AcceptInfo objects requirements on entry and
 drop_out behaviors of a state can be derived, as done by module 'core.py'.
-
--------------------------------------------------------------------------------
-
-   FURTHER INFO: 
-
-        class TrackAnalysis 
-        class PathTrace
-        class AcceptInfo
-
--------------------------------------------------------------------------------
-(C) 2010-2011 Frank-Rene Schaefer
+_______________________________________________________________________________
+(C) 2010-2013 Frank-Rene Schaefer
 ABSOLUTELY NO WARRANTY
+_______________________________________________________________________________
 """
 from   quex.blackboard              import E_AcceptanceIDs, E_PreContextIDs, E_TransitionN
 from   quex.engine.misc.tree_walker import TreeWalker
@@ -34,18 +26,15 @@ def do(SM):
 
                 map: state_index --> list of PathTrace objects.
 
-       This function walks down each possible path trough a given state
-       machine. During the process of walking down the paths it develops for
-       each state its list of PathTrace objects.
+    ___________________________________________________________________________
+    This function walks down each possible path trough a given state machine.
+    During the process of walking down the paths it develops for each state its
+    list of PathTrace objects.
        
-       The result of the process is presented by property 'map_state_to_trace'. 
-       It delivers for each state of the state machine a trace object that maps:
-
-                   state index --> list of PathTrace objects
-       
-       Another result of the walk is the 'dangerous_positioning_state_set' which
-       collects some positioning states that have to store the position for 
-       any successor state (knot analysis, see below).
+    Another result of the walk is the 'dangerous_positioning_state_set' which
+    collects some positioning states that have to store the position for any
+    successor state (knot analysis, see below).
+    ___________________________________________________________________________
     """
     def print_path(x):
         print x.state_index, " ",
@@ -123,6 +112,8 @@ def do(SM):
                         # store to restore that must added later on.
                         self.dangerous_positioning_state_set.update(accept_info.positioning_state_index \
                                                                     for accept_info in trace.acceptance_trace)
+                        self.dangerous_positioning_state_set.update(store_info.positioning_state_index \
+                                                                    for store_info in trace.storage_db.itervalues())
                         return None
 
             # (*) Mark the current state with its acceptance trace
@@ -145,8 +136,9 @@ def do(SM):
     class Doodle:
         def __init__(self, X):
             self.acceptance_trace = X.acceptance_trace
-    return dict( (key, [Doodle(x) for x in trace_list]) for key, trace_list in trace_finder.result.iteritems()), \
-           trace_finder.dangerous_positioning_state_set
+
+    result = dict( (key, [Doodle(x) for x in trace_list]) for key, trace_list in trace_finder.result.iteritems())
+    return result, trace_finder.dangerous_positioning_state_set
 
 class PathTrace(object):
     """ABSTRACT:
@@ -352,6 +344,10 @@ class PathTrace(object):
     @property
     def acceptance_trace(self):
         return self.__acceptance_trace
+
+    @property
+    def storage_db(self):
+        return self.__storage_db
 
     def get(self, PreContextID):
         """RETURNS: AcceptInfo object for a given PreContextID."""

@@ -112,10 +112,7 @@ else:
     assert False
 
 
-state_machine_list = map(lambda x: regex.do(x, {}).sm, pattern_list)
-
-sm  = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
-sm  = sm.normalized_clone()
+sm = help.prepare(pattern_list)
 
 # For DEBUG purposes: specify 'DRAW' on command line
 help.if_DRAW_in_sys_argv(sm)

@@ -1,5 +1,5 @@
 <string>:1:warning: Mode without pattern and event handlers needs to be 'inheritable only'.
 <string>:1:warning: <inheritable: only> has been added automatically.
-Mode: 'Y'
 Mode: 'X'
 (0) A {a}
+Mode: 'Y'

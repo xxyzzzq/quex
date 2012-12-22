@@ -94,6 +94,7 @@ $INCLUDE_CONVERTER_DECLARATION
 #       endif
 
         /* It cannot be assumed that the lexeme is zero terminated. */
+        __quex_assert(End >= Begin);
         self.text.assign(Begin, End-Begin);
 
 #       if 0

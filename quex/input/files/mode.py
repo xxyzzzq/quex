@@ -223,15 +223,14 @@ class Mode:
         self.__history_repriorization = self.__perform_repriorization(xpap_list) 
 
         xpap_list.sort(key=itemgetter(0))
-        for info in xpap_list:
+
+        # 'deepcopy' needs to be applied, even for patterns of 'self'.
+        # Other derived patterns may rely on the pattern id. 
+        self.__pattern_action_pair_list = [ deepcopy(x[1]) for x in xpap_list ]
+
+        for pap in self.__pattern_action_pair_list:
             i = sm_index.get()
-            info[1].pattern().sm.set_id(long(i))
-
-        def clone_if_not_self(pap, SelfName):
-            return deepcopy(pap)
-
-        self.__pattern_action_pair_list = [ clone_if_not_self(x[1], self.name) for x in xpap_list ]
-        self.__pattern_action_pair_list.sort(key=lambda pap: pap.pattern().sm.get_id())
+            pap.pattern().sm.set_id(long(i))
 
         # (*) Try to determine line and column counts
         for pap in self.__pattern_action_pair_list:
@@ -642,7 +641,7 @@ class Mode:
         return
 
     def __perform_repriorization(self, xpap_list):
-        def repriorize(Info, xpap_list, ModeName, MHI, history):
+        def repriorize(MHI, Info, xpap_list, ModeName, history):
             done_f = False
             for xpap in xpap_list:
                 if     xpap[0].mode_hierarchy_index <= MHI \
@@ -664,11 +663,11 @@ class Mode:
         history = []
         for mode_hierarchy_index, mode_descr in enumerate(self.__base_mode_sequence):
             for info in mode_descr.get_repriorization_info_list():
-                repriorize(info, xpap_list, self.name, mode_hierarchy_index, history)
+                repriorize(mode_hierarchy_index, info, xpap_list, self.name, history)
         return history
 
     def __perform_deletion(self, xpap_list):
-        def delete(Info, xpap_list, ModeName, MHI, history):
+        def delete(MHI, Info, xpap_list, ModeName, history):
             done_f = False
             size   = len(xpap_list)
             i      = 0
@@ -691,7 +690,7 @@ class Mode:
         history = []
         for mode_hierarchy_index, mode_descr in enumerate(self.__base_mode_sequence):
             for info in mode_descr.get_deletion_info_list():
-                delete(info, xpap_list, self.name, mode_hierarchy_index, history)
+                delete(mode_hierarchy_index, info, xpap_list, self.name, history)
         return history
 
     def __dummy_DELETED():

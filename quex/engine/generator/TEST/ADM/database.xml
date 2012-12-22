@@ -1,4 +1,4 @@
-<test-database execution-time-sec="175.59" date="Tue Dec 18 00:29:23 2012">
+<test-database execution-time-sec="175.58" date="Wed Dec 19 23:03:26 2012">
     <last-used-diff-display-program name=""/>
     <test title="Mode Changes" time-sum-sec="2.23"> 
         <application file-name="test-mode-changes.py" info-request-time="1355705371L" vanished="False"/>
@@ -8,7 +8,7 @@
            <choice name="ANSI-C-CG" result="OK" time_sec="0.66" crc="270103911"/>
         </choice-list>
     </test>
-    <test title="Indentation Counting" time-sum-sec="2.83"> 
+    <test title="Indentation Counting" time-sum-sec="2.84"> 
         <application file-name="test-indentation-counter.py" info-request-time="1355705371L" vanished="False"/>
         <choice-list number="3" same_result="False">
            <choice name="Uniform" result="OK" time_sec="0.95" crc="440903486"/>
@@ -17,7 +17,7 @@
         </choice-list>
     </test>
     <group name="Buffer Reload">
-        <test title="Backwards" time-sum-sec="10.98"> 
+        <test title="Backwards" time-sum-sec="10.97"> 
             <application file-name="test-backward_loading.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="13" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.59" crc="-1584767564"/>
@@ -35,7 +35,7 @@
                <choice name="ANSI-C-ASSERTS" result="OK" time_sec="0.59" crc="-1584767564"/>
             </choice-list>
         </test>
-        <test title="No Backward Reload -- Precondition at Border" time-sum-sec="12.14"> 
+        <test title="No Backward Reload -- Precondition at Border" time-sum-sec="12.13"> 
             <application file-name="test-no-backward-reloading.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="14" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.58" crc="-887225006"/>
@@ -75,7 +75,7 @@
         </test>
     </group>
     <group name="CONTINUE">
-        <test title="Reentry analysis without return from function" time-sum-sec="10.18"> 
+        <test title="Reentry analysis without return from function" time-sum-sec="10.17"> 
             <application file-name="test-continue-without-return.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="12" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.58" crc="-1324080938"/>
@@ -102,7 +102,7 @@
                <choice name="ANSI-C-CG" result="OK" time_sec="0.57" crc="1338437579"/>
             </choice-list>
         </test>
-        <test title="Part 2" time-sum-sec="10.16"> 
+        <test title="Part 2" time-sum-sec="10.17"> 
             <application file-name="test-post-conditions-2.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="12" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.69" crc="-1069020887"/>
@@ -194,7 +194,7 @@
         </test>
     </group>
     <group name="Pseudo Ambgiguous Post Condition">
-        <test title="Part II" time-sum-sec="8.96"> 
+        <test title="Part II" time-sum-sec="8.97"> 
             <application file-name="test-pseudo_ambiguous_post_conditions-2.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="10" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.60" crc="1614045300"/>
@@ -209,7 +209,7 @@
                <choice name="ANSI-C-PathTemplate" result="OK" time_sec="0.94" crc="1614045300"/>
             </choice-list>
         </test>
-        <test title="Part I" time-sum-sec="8.54"> 
+        <test title="Part I" time-sum-sec="8.53"> 
             <application file-name="test-pseudo_ambiguous_post_conditions.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="10" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.64" crc="1455270"/>
@@ -258,7 +258,7 @@
                <choice name="ANSI-C-PathTemplate" result="OK" time_sec="0.95" crc="90237132"/>
             </choice-list>
         </test>
-        <test title="Reload Init State" time-sum-sec="2.04"> 
+        <test title="Reload Init State" time-sum-sec="2.05"> 
             <application file-name="test-simple-3.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="3" same_result="True">
                <choice name="ANSI-C" result="OK" time_sec="0.60" crc="-1792493362"/>
@@ -266,7 +266,7 @@
                <choice name="ANSI-C-CG" result="OK" time_sec="0.56" crc="-1792493362"/>
             </choice-list>
         </test>
-        <test title="Begin of Line (BOL), End of Line (EOL)" time-sum-sec="10.83"> 
+        <test title="Begin of Line (BOL), End of Line (EOL)" time-sum-sec="10.85"> 
             <application file-name="test-bol-eol.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="12" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.72" crc="-1565444249"/>
@@ -283,7 +283,7 @@
                <choice name="ANSI-C-PathTemplate" result="OK" time_sec="0.96" crc="-1565444249"/>
             </choice-list>
         </test>
-        <test title="Maximum Length Match" time-sum-sec="14.73"> 
+        <test title="Maximum Length Match" time-sum-sec="14.72"> 
             <application file-name="test-simple-2.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="12" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.90" crc="-270685933"/>
@@ -308,7 +308,7 @@
                <choice name="ANSI-C-CG" result="OK" time_sec="0.55" crc="-759134064"/>
             </choice-list>
         </test>
-        <test title="Reload Init State" time-sum-sec="2.00"> 
+        <test title="Reload Init State" time-sum-sec="2.01"> 
             <application file-name="test-pre-conditions.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="3" same_result="True">
                <choice name="ANSI-C" result="OK" time_sec="0.57" crc="-524887799"/>
@@ -316,7 +316,7 @@
                <choice name="ANSI-C-CG" result="OK" time_sec="0.57" crc="-524887799"/>
             </choice-list>
         </test>
-        <test title="Reload Init State" time-sum-sec="1.40"> 
+        <test title="Reload Init State" time-sum-sec="1.39"> 
             <application file-name="test-simple-6.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="ANSI-C" result="OK" time_sec="0.56" crc="69468679"/>

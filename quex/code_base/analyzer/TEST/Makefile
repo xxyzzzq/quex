@@ -1,8 +1,7 @@
 # Get: QUEX_CORE dedendencies
 include $(QUEX_PATH)/quex/code_base/core.mkd
 
-PROGRAMS = counter-column_line.exe \
-		   counter-column_line-x.exe \
+PROGRAMS = \
 		   post-categorizer-enter.exe \
 		   post-categorizer-remove.exe \
 		   post-categorizer-remove-2.exe \

@@ -1,4 +1,4 @@
-<history date="Wed Dec 19 08:14:11 2012" element-n="144">
+<history date="Wed Dec 19 23:03:19 2012" element-n="162">
     <day year="2009" month="06" day="27">
         <history-init time="20:41:20"/>
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:04:27"/>
@@ -384,5 +384,23 @@
         <crc-error time="07:12:33" application="priority.py" choice="3-begin" database-crc="902086883" real-crc="-2044103555"/>
         <crc-error time="07:13:28" application="priority.py" choice="3-mid" database-crc="1963408160" real-crc="1815967720"/>
         <crc-error time="07:14:10" application="priority.py" choice="3-end" database-crc="-917374734" real-crc="-1940069814"/>
+        <crc-error time="21:28:42" application="priority.py" choice="3-mid" database-crc="1815967720" real-crc="-1609428040"/>
+        <crc-error time="21:29:08" application="priority.py" choice="3-end" database-crc="-1940069814" real-crc="2133324565"/>
+        <crc-error time="21:54:14" application="deletion.py" choice="derived-3-begin" database-crc="2060219818" real-crc="-1726121148"/>
+        <crc-error time="21:54:24" application="deletion.py" choice="derived-3-mid" database-crc="-551907056" real-crc="220177272"/>
+        <crc-error time="21:54:33" application="deletion.py" choice="derived-3-end" database-crc="-406782856" real-crc="-947840278"/>
+        <crc-error time="21:54:40" application="deletion.py" choice="derived-2-begin" database-crc="555365454" real-crc="-916642491"/>
+        <crc-error time="21:54:47" application="deletion.py" choice="derived-2-end" database-crc="518913701" real-crc="1301277106"/>
+        <crc-error time="21:54:56" application="deletion.py" choice="derived-1" database-crc="-671669000" real-crc="-546402800"/>
+        <crc-error time="21:55:06" application="deletion.py" choice="derived-Nonsense" database-crc="96770731" real-crc="-291449891"/>
+        <crc-error time="21:55:14" application="deletion.py" choice="derived-before" database-crc="-1060646122" real-crc="1292324771"/>
+        <crc-error time="21:55:51" application="priority.py" choice="derived-3-begin" database-crc="1078219212" real-crc="-1391136967"/>
+        <crc-error time="21:56:19" application="priority.py" choice="derived-3-mid" database-crc="-934479200" real-crc="103421587"/>
+        <crc-error time="21:56:47" application="priority.py" choice="derived-3-end" database-crc="-1780551452" real-crc="-2143075705"/>
+        <crc-error time="21:57:10" application="priority.py" choice="derived-2-begin" database-crc="1582789449" real-crc="-1264890210"/>
+        <crc-error time="21:57:35" application="priority.py" choice="derived-2-end" database-crc="-1554729727" real-crc="-1396025132"/>
+        <crc-error time="21:57:56" application="priority.py" choice="derived-1" database-crc="314788855" real-crc="1988148335"/>
+        <crc-error time="21:58:17" application="priority.py" choice="derived-Nonsense" database-crc="2114835749" real-crc="-2094086123"/>
+        <crc-error time="21:58:35" application="priority.py" choice="derived-before" database-crc="-1449996130" real-crc="609373227"/>
     </day>
 </history>

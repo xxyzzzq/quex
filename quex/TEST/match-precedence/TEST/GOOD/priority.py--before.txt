@@ -1,0 +1,8 @@
+#---------------------------------------------------------------------------
+mode X { A {a} B {b} C PRIORITY-MARK; C {c} }
+
+<string>:1:warning: PRIORITY mark does not have any effect.
+Mode: 'X'
+(0) A {a}
+(1) B {b}
+(2) C {c}

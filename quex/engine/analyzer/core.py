@@ -314,6 +314,12 @@ class Analyzer:
         ! if and only if there are at least two paths with differing           !
         ! acceptance patterns. Thus, it is sufficient to consider the restore  !
         ! of acceptance in the drop_out as a terminal condition.               !
+
+        EXCEPTION:
+
+        When a state is reached that is part of '__dangerous_positioning_state_set'
+        then it is not safe to assume that all sub-paths have been considered.
+        The acceptance must be stored immediately.
         """
         postponed_db = defaultdict(set)
         for acceptance_trace in self.__require_acceptance_storage_list:
@@ -336,7 +342,8 @@ class Analyzer:
                 entry           = self.__state_db[state_index].entry
                 path_trace_list = self.__trace_db[prev_state_index]
                 for path_trace in path_trace_list:
-                    entry.doors_accept(FromStateIndex=prev_state_index, PathTraceList=path_trace.acceptance_trace)
+                    entry.doors_accept(FromStateIndex = prev_state_index, 
+                                       PathTraceList  = path_trace.acceptance_trace)
             else:
                 # Postpone:
                 #
@@ -468,6 +475,7 @@ class Analyzer:
                 txt  = ".transition_n_since_positioning = %s\n" % repr(self.transition_n_since_positioning)
                 txt += ".positioning_state_index_set    = %s\n" % repr(self.positioning_state_index_set) 
                 txt += ".pre_context_id                 = %s\n" % repr(self.pre_context_id) 
+                # txt += ".path_since_positioning         = %s\n" % repr(self.path_list_since_positioning)
                 return txt
 
         positioning_info_by_pattern_id = {}
@@ -488,8 +496,8 @@ class Analyzer:
 
     def multi_path_acceptance_analysis(self, ThePathTraceList):
         """
-        This function draws conclusions on the input positioning behavior at
-        drop-out based on different paths through the same state.  Basis for
+        This function draws conclusions on the input acceptance behavior at
+        drop-out based on different paths through the same state. Basis for
         the analysis are the PathTrace objects of a state specified as
         'ThePathTraceList'.
 
