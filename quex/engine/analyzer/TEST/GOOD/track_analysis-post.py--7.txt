@@ -1,20 +1,20 @@
 init-state = 0L
-00000 (7, 15), (22, 53)
+00000 (1, 15), (2, 53)
      == 'a' ==> 00001
     
-00001 (7, 16), (22, 54)
+00001 (1, 16), (2, 54)
      == 'b' ==> 00002
     
-00002 (7, 17), (22, 55, S)
+00002 (1, 17), (2, 55, S)
      == 'c' ==> 00003
     
-00003 (7, 18, A), (22, 56)
+00003 (1, 18, A), (2, 56)
      == 'd' ==> 00004
     
-00004 (22, 57)
+00004 (2, 57)
      == 'e' ==> 00005
     
-00005 (22, 58, A, R)
+00005 (2, 58, A, R)
     
 
 State 0:
@@ -42,20 +42,20 @@ State 3:
   .entry:
     .from 2:
   .drop_out:
-     goto Pattern7;
+     goto Pattern1;
 
 
 State 4:
   .entry:
     .from 3:
   .drop_out:
-    pos -= 1;  goto Pattern7;
+    pos -= 1;  goto Pattern1;
 
 
 State 5:
   .entry:
     .from 4:
   .drop_out:
-    pos -= 3;  goto Pattern22;
+    pos -= 3;  goto Pattern2;
 
 

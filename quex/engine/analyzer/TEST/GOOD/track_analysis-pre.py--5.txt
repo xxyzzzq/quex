@@ -1,14 +1,14 @@
 init-state = 0L
-00000 (15, 30), (28, 58), (1, 2), (5, 10)
+00000 (3, 24), (4, 46), (1, 2), (2, 10)
      == 'a' ==> 00001
     
-00001 (1, 3, A), (5, 11, A, pre=8), (15, 31), (28, 59)
+00001 (1, 3, A), (2, 11, A, pre=1), (3, 25), (4, 47)
      == 'b' ==> 00002
     
-00002 (15, 32, A, pre=18), (28, 60)
+00002 (3, 26, A, pre=2), (4, 48)
      == 'c' ==> 00003
     
-00003 (28, 61, A, pre=31)
+00003 (4, 49, A, pre=3)
     
 
 State 0:
@@ -29,7 +29,7 @@ State 2:
   .entry:
     .from 1:
   .drop_out:
-    if PreContext_18:  goto Pattern15;
+    if PreContext_2:  goto Pattern3;
     pos -= 1;  goto Pattern1;
 
 
@@ -37,8 +37,8 @@ State 3:
   .entry:
     .from 2:
   .drop_out:
-    if PreContext_31:  goto Pattern28;
-    else if PreContext_18: pos -= 1;  goto Pattern15;
+    if PreContext_3:  goto Pattern4;
+    else if PreContext_2: pos -= 1;  goto Pattern3;
     pos -= 2;  goto Pattern1;
 
 
@@ -50,10 +50,10 @@ State 1:
 
 State 2:
         [      1]: NONE/set([1L])
-        [     15]: 18/set([2L])
+        [      3]: 2/set([2L])
 
 State 3:
         [      1]: NONE/set([1L])
-        [     15]: 18/set([2L])
-        [     28]: 31/set([3L])
+        [      3]: 2/set([2L])
+        [      4]: 3/set([3L])
 

@@ -1,22 +1,22 @@
 init-state = 0L
-00000 (4, 12), (12, 34), (37, 103)
+00000 (1, 12), (2, 34), (3, 103)
      == 'a' ==> 00001
      == 'b' ==> 00004
     
-00001 (4, 13, A), (37, 105)
+00001 (1, 13, A), (3, 105)
      == 'a' ==> 00001
      == 'd' ==> 00002
     
-00002 (37, 106)
+00002 (3, 106)
      == 'e' ==> 00003
     
-00003 (37, 107, A)
+00003 (3, 107, A)
     
-00004 (12, 35), (37, 104)
+00004 (2, 35), (3, 104)
      == 'b' ==> 00004
      == 'c' ==> 00005
     
-00005 (12, 36, A), (37, 108)
+00005 (2, 36, A), (3, 108)
      == 'd' ==> 00002
     
 
@@ -32,26 +32,26 @@ State 1:
     .from 0:
     .from 1:
   .drop_out:
-     goto Pattern4;
+     goto Pattern1;
 
 
 State 2:
   .entry:
-    .from 1: last_acceptance = Pattern4
-    .from 5: last_acceptance = Pattern12
+    .from 1: last_acceptance = Pattern1
+    .from 5: last_acceptance = Pattern2
   .drop_out:
     Checker:
         accept = last_acceptance
     Router:
-        case 12: pos -= 1;  goto Pattern12;
-        case 4: pos -= 1;  goto Pattern4;
+        case 1: pos -= 1;  goto Pattern1;
+        case 2: pos -= 1;  goto Pattern2;
 
 
 State 3:
   .entry:
     .from 2:
   .drop_out:
-     goto Pattern37;
+     goto Pattern3;
 
 
 State 4:
@@ -66,6 +66,6 @@ State 5:
   .entry:
     .from 4:
   .drop_out:
-     goto Pattern12;
+     goto Pattern2;
 
 
