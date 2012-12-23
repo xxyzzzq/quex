@@ -112,8 +112,8 @@ def do(SM):
                         # store to restore that must added later on.
                         self.dangerous_positioning_state_set.update(accept_info.positioning_state_index \
                                                                     for accept_info in trace.acceptance_trace)
-                        self.dangerous_positioning_state_set.update(store_info.positioning_state_index \
-                                                                    for store_info in trace.storage_db.itervalues())
+                        #self.dangerous_positioning_state_set.update(store_info.positioning_state_index \
+                        #                                            for store_info in trace.storage_db.itervalues())
                         return None
 
             # (*) Mark the current state with its acceptance trace
