@@ -1,20 +1,20 @@
 init-state = 0L
-00000 (3, 6), (15, 32), (30, 73), (32, 81)
+00000 (1, 6), (2, 32), (3, 73), (4, 81)
      == 'a' ==> 00001
     
-00001 (3, 7, A, pre=6), (15, 33, S), (30, 74, S), (32, 82, A)
+00001 (1, 7, A, pre=1), (2, 33, S), (3, 74, S), (4, 82, A)
      == 'b' ==> 00002
     
-00002 (15, 34), (30, 75)
+00002 (2, 34), (3, 75)
      == 'c' ==> 00003
     
-00003 (15, 35, A, R), (30, 76)
+00003 (2, 35, A, R), (3, 76)
      == 'd' ==> 00004
     
-00004 (30, 77)
+00004 (3, 77)
      == 'e' ==> 00005
     
-00005 (30, 78, A, R)
+00005 (3, 78, A, R)
     
 
 State 0:
@@ -28,36 +28,36 @@ State 1:
   .entry:
     .from 0:
   .drop_out:
-    if PreContext_6:  goto Pattern3;
-     goto Pattern32;
+    if PreContext_1:  goto Pattern1;
+     goto Pattern4;
 
 
 State 2:
   .entry:
     .from 1:
   .drop_out:
-    if PreContext_6: pos -= 1;  goto Pattern3;
-    pos -= 1;  goto Pattern32;
+    if PreContext_1: pos -= 1;  goto Pattern1;
+    pos -= 1;  goto Pattern4;
 
 
 State 3:
   .entry:
     .from 2:
   .drop_out:
-    pos -= 2;  goto Pattern15;
+    pos -= 2;  goto Pattern2;
 
 
 State 4:
   .entry:
     .from 3:
   .drop_out:
-    pos -= 3;  goto Pattern15;
+    pos -= 3;  goto Pattern2;
 
 
 State 5:
   .entry:
     .from 4:
   .drop_out:
-    pos -= 4;  goto Pattern30;
+    pos -= 4;  goto Pattern3;
 
 
