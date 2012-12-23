@@ -1,22 +1,22 @@
 init-state = 0L
-00000 (26, 70)
+00000 (1, 70)
      == 'a' ==> 00001
      == 'b' ==> 00004
     
-00001 (26, 72, S)
+00001 (1, 72, S)
      == 'a' ==> 00001
      == 'd' ==> 00002
     
-00002 (26, 73)
+00002 (1, 73)
      == 'd' ==> 00002
      == 'f' ==> 00003
     
-00003 (26, 74, A, R, pre=29)
+00003 (1, 74, A, R, pre=1)
     
-00004 (26, 71)
+00004 (1, 71)
      == 'c' ==> 00005
     
-00005 (26, 75, S)
+00005 (1, 75, S)
      == 'd' ==> 00002
     
 
@@ -37,9 +37,9 @@ State 1:
 
 State 2:
   .entry:
-    .from 1: if 'PreContext_29': position[PostContext_26]  = input_p;
+    .from 1: if 'PreContext_1': position[PostContext_1]  = input_p;
     .from 2:
-    .from 5: if 'PreContext_29': position[PostContext_26]  = input_p;
+    .from 5: if 'PreContext_1': position[PostContext_1]  = input_p;
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
@@ -48,7 +48,7 @@ State 3:
   .entry:
     .from 2:
   .drop_out:
-    if PreContext_29: pos = position[PostContext_26] ; goto Pattern26;
+    if PreContext_1: pos = position[PostContext_1] ; goto Pattern1;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
@@ -71,9 +71,9 @@ State 5:
 
 State 2:
   .entry:
-    .from 1: if 'PreContext_29': position[PostContext_0]  = input_p;
+    .from 1: if 'PreContext_1': position[PostContext_0]  = input_p;
     .from 2:
-    .from 5: if 'PreContext_29': position[PostContext_0]  = input_p;
+    .from 5: if 'PreContext_1': position[PostContext_0]  = input_p;
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
@@ -82,7 +82,7 @@ State 3:
   .entry:
     .from 2:
   .drop_out:
-    if PreContext_29: pos = position[PostContext_0] ; goto Pattern26;
+    if PreContext_1: pos = position[PostContext_0] ; goto Pattern1;
     pos = lexeme_start_p + 1;  goto Failure;
 
 

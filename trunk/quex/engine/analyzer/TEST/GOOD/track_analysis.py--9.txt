@@ -1,16 +1,16 @@
 init-state = 0L
-00000 (4, 8), (9, 23)
+00000 (1, 8), (2, 23)
      == ['a', 'h'], ['j', 'z'] ==> 00001
      == 'i' ==> 00002
     
-00001 (9, 24, A)
+00001 (2, 24, A)
      == ['a', 'z'] ==> 00001
     
-00002 (4, 9), (9, 24, A)
+00002 (1, 9), (2, 24, A)
      == ['a', 'e'], ['g', 'z'] ==> 00001
      == 'f' ==> 00003
     
-00003 (4, 10, A), (9, 24, A)
+00003 (1, 10, A), (2, 24, A)
      == ['a', 'z'] ==> 00001
     
 
@@ -23,25 +23,25 @@ State 0:
 
 State 1:
   .entry:
-        .from 0:
-        .from 1:
-        .from 2:
-        .from 3:
+    .from 0:
+    .from 1:
+    .from 2:
+    .from 3:
   .drop_out:
-     goto Pattern9;
+     goto Pattern2;
 
 
 State 2:
   .entry:
-        .from 0:
+    .from 0:
   .drop_out:
-     goto Pattern9;
+     goto Pattern2;
 
 
 State 3:
   .entry:
-        .from 2:
+    .from 2:
   .drop_out:
-     goto Pattern4;
+     goto Pattern1;
 
 

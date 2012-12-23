@@ -1,21 +1,21 @@
 init-state = 0L
-00000 (31, 85), (4, 12), (6, 17)
+00000 (3, 85), (1, 12), (2, 17)
      == 'a' ==> 00001
      == 'b' ==> 00004
     
-00001 (4, 13, A), (31, 87)
+00001 (1, 13, A), (3, 87)
      == 'a' ==> 00001
      == 'd' ==> 00002
     
-00002 (31, 88)
+00002 (3, 88)
      == 'e' ==> 00003
     
-00003 (31, 89, A)
+00003 (3, 89, A)
     
-00004 (6, 18, A), (31, 86)
+00004 (2, 18, A), (3, 86)
      == 'c' ==> 00005
     
-00005 (31, 90)
+00005 (3, 90)
      == 'c' ==> 00005
      == 'd' ==> 00002
     
@@ -32,33 +32,33 @@ State 1:
     .from 0:
     .from 1:
   .drop_out:
-     goto Pattern4;
+     goto Pattern1;
 
 
 State 2:
   .entry:
-    .from 1: last_acceptance = Pattern4
-    .from 5: last_acceptance = Pattern6
+    .from 1: last_acceptance = Pattern1
+    .from 5: last_acceptance = Pattern2
   .drop_out:
     Checker:
         accept = last_acceptance
     Router:
-        case 4: pos -= 1;  goto Pattern4;
-        case 6: pos = position[PostContext_6] ; goto Pattern6;
+        case 1: pos -= 1;  goto Pattern1;
+        case 2: pos = position[PostContext_6] ; goto Pattern2;
 
 
 State 3:
   .entry:
     .from 2:
   .drop_out:
-     goto Pattern31;
+     goto Pattern3;
 
 
 State 4:
   .entry:
     .from 0:
   .drop_out:
-     goto Pattern6;
+     goto Pattern2;
 
 
 State 5:
@@ -66,7 +66,7 @@ State 5:
     .from 4: position[PostContext_6]  = input_p;
     .from 5:
   .drop_out:
-    pos = position[PostContext_6] ; goto Pattern6;
+    pos = position[PostContext_6] ; goto Pattern2;
 
 
 
@@ -74,14 +74,14 @@ State 5:
 
 State 2:
   .entry:
-    .from 1: last_acceptance = Pattern4
-    .from 5: last_acceptance = Pattern6
+    .from 1: last_acceptance = Pattern1
+    .from 5: last_acceptance = Pattern2
   .drop_out:
     Checker:
         accept = last_acceptance
     Router:
-        case 4: pos -= 1;  goto Pattern4;
-        case 6: pos = position[PostContext_0] ; goto Pattern6;
+        case 1: pos -= 1;  goto Pattern1;
+        case 2: pos = position[PostContext_0] ; goto Pattern2;
 
 
 State 5:
@@ -89,6 +89,6 @@ State 5:
     .from 4: position[PostContext_0]  = input_p;
     .from 5:
   .drop_out:
-    pos = position[PostContext_0] ; goto Pattern6;
+    pos = position[PostContext_0] ; goto Pattern2;
 
 

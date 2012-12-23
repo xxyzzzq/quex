@@ -1,17 +1,17 @@
 init-state = 0L
-00000 (25, 67)
+00000 (1, 67)
      == 'a' ==> 00001
     
-00001 (25, 68, A)
+00001 (1, 68, A)
      == 'a' ==> 00002
      == 'b' ==> 00004
     
-00002 (25, 69)
+00002 (1, 69)
      == 'e' ==> 00003
     
-00003 (25, 71, A)
+00003 (1, 71, A)
     
-00004 (25, 70)
+00004 (1, 70)
      == 'c' ==> 00002
     
 
@@ -26,29 +26,29 @@ State 1:
   .entry:
     .from 0:
   .drop_out:
-     goto Pattern25;
+     goto Pattern1;
 
 
 State 2:
   .entry:
-    .from 1: position[PostContext_25]  = input_p;
+    .from 1: position[PostContext_1]  = input_p;
     .from 4:
   .drop_out:
-    pos = position[PostContext_25] ; goto Pattern25;
+    pos = position[PostContext_1] ; goto Pattern1;
 
 
 State 3:
   .entry:
     .from 2:
   .drop_out:
-     goto Pattern25;
+     goto Pattern1;
 
 
 State 4:
   .entry:
-    .from 1: position[PostContext_25]  = input_p;
+    .from 1: position[PostContext_1]  = input_p;
   .drop_out:
-    pos -= 1;  goto Pattern25;
+    pos -= 1;  goto Pattern1;
 
 
 
@@ -59,13 +59,13 @@ State 2:
     .from 1: position[PostContext_0]  = input_p;
     .from 4:
   .drop_out:
-    pos = position[PostContext_0] ; goto Pattern25;
+    pos = position[PostContext_0] ; goto Pattern1;
 
 
 State 4:
   .entry:
     .from 1: position[PostContext_0]  = input_p;
   .drop_out:
-    pos -= 1;  goto Pattern25;
+    pos -= 1;  goto Pattern1;
 
 
