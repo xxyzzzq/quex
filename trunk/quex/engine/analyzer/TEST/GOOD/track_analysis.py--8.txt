@@ -44,7 +44,7 @@ State 2:
         accept = last_acceptance
     Router:
         case 1: pos -= 1;  goto Pattern1;
-        case 2: pos = position[PostContext_6] ; goto Pattern2;
+        case 2: pos = position[PostContext_2] ; goto Pattern2;
 
 
 State 3:
@@ -63,10 +63,10 @@ State 4:
 
 State 5:
   .entry:
-    .from 4: position[PostContext_6]  = input_p;
+    .from 4: position[PostContext_2]  = input_p;
     .from 5:
   .drop_out:
-    pos = position[PostContext_6] ; goto Pattern2;
+    pos = position[PostContext_2] ; goto Pattern2;
 
 
 

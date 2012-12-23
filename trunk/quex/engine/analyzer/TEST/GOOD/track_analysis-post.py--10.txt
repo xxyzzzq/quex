@@ -41,7 +41,7 @@ State 1:
 
 State 2:
   .entry:
-    .from 1: position[PostContext_11]  = input_p;
+    .from 1: position[PostContext_1]  = input_p;
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
@@ -51,7 +51,7 @@ State 3:
     .from 2:
     .from 3:
   .drop_out:
-    pos = position[PostContext_11] ; goto Pattern1;
+    pos = position[PostContext_1] ; goto Pattern1;
 
 
 State 4:
@@ -62,7 +62,7 @@ State 4:
     Checker:
         accept = last_acceptance
     Router:
-        case 1: pos = position[PostContext_11] ; goto Pattern1;
+        case 1: pos = position[PostContext_1] ; goto Pattern1;
         case 2: pos -= 2;  goto Pattern2;
 
 
@@ -73,7 +73,7 @@ State 5:
     Checker:
         accept = last_acceptance
     Router:
-        case 1: pos = position[PostContext_11] ; goto Pattern1;
+        case 1: pos = position[PostContext_1] ; goto Pattern1;
         case 2: pos -= 3;  goto Pattern2;
 
 

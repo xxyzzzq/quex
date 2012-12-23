@@ -32,8 +32,8 @@ State 1:
 State 2:
   .entry:
     .from 1:
-        position[PostContext_11]  = input_p;
-        position[PostContext_23]  = input_p;
+        position[PostContext_1]  = input_p;
+        position[PostContext_2]  = input_p;
     .from 2:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
@@ -43,14 +43,14 @@ State 3:
   .entry:
     .from 2:
   .drop_out:
-    pos = position[PostContext_11] ; goto Pattern1;
+    pos = position[PostContext_1] ; goto Pattern1;
 
 
 State 4:
   .entry:
     .from 2:
   .drop_out:
-    pos = position[PostContext_23] ; goto Pattern2;
+    pos = position[PostContext_2] ; goto Pattern2;
 
 
 

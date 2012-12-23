@@ -39,10 +39,10 @@ State 1:
 
 State 2:
   .entry:
-    .from 1: position[PostContext_8]  = input_p;
+    .from 1: position[PostContext_1]  = input_p;
     .from 2:
   .drop_out:
-    pos = position[PostContext_8] ; goto Pattern1;
+    pos = position[PostContext_1] ; goto Pattern1;
 
 
 State 3:
@@ -53,8 +53,8 @@ State 3:
     Checker:
         accept = last_acceptance
     Router:
-        case 1: pos = position[PostContext_8] ; goto Pattern1;
-        case 2: pos = position[PostContext_17] ; goto Pattern2;
+        case 1: pos = position[PostContext_1] ; goto Pattern1;
+        case 2: pos = position[PostContext_2] ; goto Pattern2;
 
 
 State 4:
@@ -64,8 +64,8 @@ State 4:
     Checker:
         accept = last_acceptance
     Router:
-        case 1: pos = position[PostContext_8] ; goto Pattern1;
-        case 2: pos = position[PostContext_17] ; goto Pattern2;
+        case 1: pos = position[PostContext_1] ; goto Pattern1;
+        case 2: pos = position[PostContext_2] ; goto Pattern2;
 
 
 State 5:
@@ -77,10 +77,10 @@ State 5:
 
 State 6:
   .entry:
-    .from 1: position[PostContext_17]  = input_p;
+    .from 1: position[PostContext_2]  = input_p;
     .from 6:
   .drop_out:
-    pos = position[PostContext_17] ; goto Pattern2;
+    pos = position[PostContext_2] ; goto Pattern2;
 
 
 
