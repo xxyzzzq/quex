@@ -42,9 +42,9 @@ State 1:
 State 2:
   .entry:
     .from 1:
-        position[PostContext_18]  = input_p;
+        position[PostContext_2]  = input_p;
         position[PostContext_4]  = input_p;
-        if 'PreContext_1': position[PostContext_3]  = input_p;
+        if 'PreContext_1': position[PostContext_1]  = input_p;
   .drop_out:
     if PreContext_1: pos -= 1;  goto Pattern1;
     pos -= 1;  goto Pattern4;
@@ -55,15 +55,15 @@ State 3:
     .from 2:
     .from 3:
   .drop_out:
-    if PreContext_1: pos = position[PostContext_3] ; goto Pattern1;
-    pos = position[PostContext_35] ; goto Pattern4;
+    if PreContext_1: pos = position[PostContext_1] ; goto Pattern1;
+    pos = position[PostContext_4] ; goto Pattern4;
 
 
 State 4:
   .entry:
     .from 3:
   .drop_out:
-    pos = position[PostContext_18] ; goto Pattern2;
+    pos = position[PostContext_2] ; goto Pattern2;
 
 
 State 5:

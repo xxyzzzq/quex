@@ -1,24 +1,24 @@
 init-state = 0L
-00000 (48, 155)
+00000 (1, 155)
      == 'a' ==> 00001
     
-00001 (48, 156, A)
+00001 (1, 156, A)
      == 'b' ==> 00002
     
-00002 (48, 157)
+00002 (1, 157)
      == 'c' ==> 00002
      == 'd' ==> 00003
     
-00003 (48, 158)
+00003 (1, 158)
      == 'e' ==> 00004
     
-00004 (48, 159, A)
+00004 (1, 159, A)
      == 'f' ==> 00005
     
-00005 (48, 160)
+00005 (1, 160)
      == 'g' ==> 00006
     
-00006 (48, 161, A)
+00006 (1, 161, A)
     
 
 State 0:
@@ -32,65 +32,65 @@ State 1:
   .entry:
     .from 0:
   .drop_out:
-     goto Pattern48;
+     goto Pattern1;
 
 
 State 2:
   .entry:
-    .from 1: position[PostContext_48]  = input_p;
+    .from 1: position[PostContext_1]  = input_p;
     .from 2:
   .drop_out:
-    pos = position[PostContext_48] ; goto Pattern48;
+    pos = position[PostContext_1] ; goto Pattern1;
 
 
 State 3:
   .entry:
     .from 2:
   .drop_out:
-    pos = position[PostContext_48] ; goto Pattern48;
+    pos = position[PostContext_1] ; goto Pattern1;
 
 
 State 4:
   .entry:
     .from 3:
   .drop_out:
-     goto Pattern48;
+     goto Pattern1;
 
 
 State 5:
   .entry:
     .from 4:
   .drop_out:
-    pos -= 1;  goto Pattern48;
+    pos -= 1;  goto Pattern1;
 
 
 State 6:
   .entry:
     .from 5:
   .drop_out:
-     goto Pattern48;
+     goto Pattern1;
 
 
 State 0:
         [FAILURE]: NONE/set([0L])
 
 State 1:
-        [     48]: NONE/set([1L])
+        [      1]: NONE/set([1L])
 
 State 2:
-    (*) [     48]: NONE/set([1L])
+    (*) [      1]: NONE/set([1L])
 
 State 3:
-    (*) [     48]: NONE/set([1L])
+    (*) [      1]: NONE/set([1L])
 
 State 4:
-        [     48]: NONE/set([4L])
+        [      1]: NONE/set([4L])
 
 State 5:
-        [     48]: NONE/set([4L])
+        [      1]: NONE/set([4L])
 
 State 6:
-        [     48]: NONE/set([6L])
+        [      1]: NONE/set([6L])
 
 
 --- Optimized States ---
@@ -100,13 +100,13 @@ State 2:
     .from 1: position[PostContext_0]  = input_p;
     .from 2:
   .drop_out:
-    pos = position[PostContext_0] ; goto Pattern48;
+    pos = position[PostContext_0] ; goto Pattern1;
 
 
 State 3:
   .entry:
     .from 2:
   .drop_out:
-    pos = position[PostContext_0] ; goto Pattern48;
+    pos = position[PostContext_0] ; goto Pattern1;
 
 
