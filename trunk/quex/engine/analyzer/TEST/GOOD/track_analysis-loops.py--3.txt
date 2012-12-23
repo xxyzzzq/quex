@@ -1,24 +1,24 @@
 init-state = 0L
-00000 (50, 159), (104, 331)
+00000 (1, 159), (2, 331)
      == 'a' ==> 00001
     
-00001 (50, 160, A, pre=53), (104, 332, A, pre=107)
+00001 (1, 160, A, pre=1), (2, 332, A, pre=2)
      == 'b' ==> 00002
     
-00002 (50, 161), (104, 333)
+00002 (1, 161), (2, 333)
      == 'c' ==> 00002
      == 'd' ==> 00003
     
-00003 (50, 162), (104, 334)
+00003 (1, 162), (2, 334)
      == 'e' ==> 00004
     
-00004 (50, 163, A, pre=53), (104, 335, A, pre=107)
+00004 (1, 163, A, pre=1), (2, 335, A, pre=2)
      == 'f' ==> 00005
     
-00005 (50, 164), (104, 336)
+00005 (1, 164), (2, 336)
      == 'g' ==> 00006
     
-00006 (50, 165, A, pre=53), (104, 337, A, pre=107)
+00006 (1, 165, A, pre=1), (2, 337, A, pre=2)
     
 
 State 0:
@@ -32,56 +32,56 @@ State 1:
   .entry:
     .from 0:
   .drop_out:
-    if PreContext_53:  goto Pattern50;
-    else if PreContext_107:  goto Pattern104;
+    if PreContext_1:  goto Pattern1;
+    else if PreContext_2:  goto Pattern2;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 2:
   .entry:
     .from 1:
-        if 'PreContext_53': position[PostContext_50]  = input_p;
-        if 'PreContext_107': position[PostContext_104]  = input_p;
+        if 'PreContext_1': position[PostContext_1]  = input_p;
+        if 'PreContext_2': position[PostContext_2]  = input_p;
     .from 2:
   .drop_out:
-    if PreContext_53: pos = position[PostContext_50] ; goto Pattern50;
-    else if PreContext_107: pos = position[PostContext_104] ; goto Pattern104;
+    if PreContext_1: pos = position[PostContext_1] ; goto Pattern1;
+    else if PreContext_2: pos = position[PostContext_2] ; goto Pattern2;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 3:
   .entry:
-        .from 2:
+    .from 2:
   .drop_out:
-    if PreContext_53: pos = position[PostContext_50] ; goto Pattern50;
-    else if PreContext_107: pos = position[PostContext_104] ; goto Pattern104;
+    if PreContext_1: pos = position[PostContext_1] ; goto Pattern1;
+    else if PreContext_2: pos = position[PostContext_2] ; goto Pattern2;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 4:
   .entry:
-        .from 3:
+    .from 3:
   .drop_out:
-    if PreContext_53:  goto Pattern50;
-    else if PreContext_107:  goto Pattern104;
+    if PreContext_1:  goto Pattern1;
+    else if PreContext_2:  goto Pattern2;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 5:
   .entry:
-        .from 4:
+    .from 4:
   .drop_out:
-    if PreContext_53: pos -= 1;  goto Pattern50;
-    else if PreContext_107: pos -= 1;  goto Pattern104;
+    if PreContext_1: pos -= 1;  goto Pattern1;
+    else if PreContext_2: pos -= 1;  goto Pattern2;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 6:
   .entry:
-        .from 5:
+    .from 5:
   .drop_out:
-    if PreContext_53:  goto Pattern50;
-    else if PreContext_107:  goto Pattern104;
+    if PreContext_1:  goto Pattern1;
+    else if PreContext_2:  goto Pattern2;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
@@ -90,33 +90,33 @@ State 0:
 
 State 1:
         [FAILURE]: NONE/set([0L])
-        [     50]: 53/set([1L])
-        [    104]: 107/set([1L])
+        [      1]: 1/set([1L])
+        [      2]: 2/set([1L])
 
 State 2:
         [FAILURE]: NONE/set([0L])
-    (*) [     50]: 53/set([1L])
-    (*) [    104]: 107/set([1L])
+    (*) [      1]: 1/set([1L])
+    (*) [      2]: 2/set([1L])
 
 State 3:
         [FAILURE]: NONE/set([0L])
-    (*) [     50]: 53/set([1L])
-    (*) [    104]: 107/set([1L])
+    (*) [      1]: 1/set([1L])
+    (*) [      2]: 2/set([1L])
 
 State 4:
         [FAILURE]: NONE/set([0L])
-        [     50]: 53/set([4L])
-        [    104]: 107/set([4L])
+        [      1]: 1/set([4L])
+        [      2]: 2/set([4L])
 
 State 5:
         [FAILURE]: NONE/set([0L])
-        [     50]: 53/set([4L])
-        [    104]: 107/set([4L])
+        [      1]: 1/set([4L])
+        [      2]: 2/set([4L])
 
 State 6:
         [FAILURE]: NONE/set([0L])
-        [     50]: 53/set([6L])
-        [    104]: 107/set([6L])
+        [      1]: 1/set([6L])
+        [      2]: 2/set([6L])
 
 
 --- Optimized States ---
@@ -124,12 +124,12 @@ State 6:
 State 2:
   .entry:
     .from 1:
-        if 'PreContext_53': position[PostContext_0]  = input_p;
-        if 'PreContext_107': position[PostContext_0]  = input_p;
+        if 'PreContext_1': position[PostContext_0]  = input_p;
+        if 'PreContext_2': position[PostContext_0]  = input_p;
     .from 2:
   .drop_out:
-    if PreContext_53: pos = position[PostContext_0] ; goto Pattern50;
-    else if PreContext_107: pos = position[PostContext_0] ; goto Pattern104;
+    if PreContext_1: pos = position[PostContext_0] ; goto Pattern1;
+    else if PreContext_2: pos = position[PostContext_0] ; goto Pattern2;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
@@ -137,8 +137,8 @@ State 3:
   .entry:
     .from 2:
   .drop_out:
-    if PreContext_53: pos = position[PostContext_0] ; goto Pattern50;
-    else if PreContext_107: pos = position[PostContext_0] ; goto Pattern104;
+    if PreContext_1: pos = position[PostContext_0] ; goto Pattern1;
+    else if PreContext_2: pos = position[PostContext_0] ; goto Pattern2;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
