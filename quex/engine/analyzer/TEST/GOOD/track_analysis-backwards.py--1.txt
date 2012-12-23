@@ -1,12 +1,12 @@
 init-state = 0L
-00000 (19, 49), (22, 56)
+00000 (1, 49), (2, 56)
      == 'x' ==> 00001
     
-00001 (19, 50, A), (22, 57)
+00001 (1, 50, A), (2, 57)
      == 'x' ==> 00001
      == 'y' ==> 00002
     
-00002 (22, 58, A)
+00002 (2, 58, A)
     
 
 State 0:
@@ -17,14 +17,14 @@ State 0:
 
 State 1:
   .entry:
-    .from 0:     pre-context-fulfilled = 19;
-    .from 1:     pre-context-fulfilled = 19;
+    .from 0:     pre-context-fulfilled = 1;
+    .from 1:     pre-context-fulfilled = 1;
   .drop_out:
     goto CheckTerminated;
 
 State 2:
   .entry:
-    .from 1:     pre-context-fulfilled = 22;
+    .from 1:     pre-context-fulfilled = 2;
   .drop_out:
     goto CheckTerminated;
 

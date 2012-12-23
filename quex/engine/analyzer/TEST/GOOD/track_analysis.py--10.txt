@@ -31,7 +31,7 @@ State 1:
     .from 0: last_acceptance = Failure
     .from 4:
         last_acceptance = Pattern1
-        position[PostContext_10]  = input_p;
+        position[PostContext_1]  = input_p;
   .drop_out:
     Checker:
         accept = last_acceptance
@@ -45,13 +45,13 @@ State 2:
     .from 1:
     .from 5:
         last_acceptance = Pattern1
-        position[PostContext_10]  = input_p;
+        position[PostContext_1]  = input_p;
   .drop_out:
     Checker:
         accept = last_acceptance
     Router:
         case Failure: pos = lexeme_start_p + 1;  goto Failure;
-        case 1: pos = position[PostContext_10] ; goto Pattern1;
+        case 1: pos = position[PostContext_1] ; goto Pattern1;
 
 
 State 3:

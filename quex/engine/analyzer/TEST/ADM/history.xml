@@ -1,4 +1,4 @@
-<history date="Sun Dec 23 21:41:04 2012" element-n="835">
+<history date="Mon Dec 24 00:10:56 2012" element-n="872">
     <day year="2011" month="04" day="29">
         <history-init time="04:18:51"/>
     </day>
@@ -993,5 +993,42 @@
         <crc-error time="20:32:40" application="track_analysis-loops.py" choice="5" database-crc="-11816380" real-crc="-1428879630"/>
         <crc-error time="20:37:34" application="track_analysis-loops.py" choice="6" database-crc="948095510" real-crc="1772334581"/>
         <crc-error time="20:41:03" application="track_analysis-loops.py" choice="7" database-crc="1090253960" real-crc="1249580773"/>
+        <crc-error time="21:02:38" application="track_analysis-backwards.py" choice="0" database-crc="633816419" real-crc="893517858"/>
+        <crc-error time="21:03:08" application="track_analysis-backwards.py" choice="1" database-crc="1309685191" real-crc="-2045730616"/>
+        <crc-error time="21:07:52" application="test-position_register_map.py" choice="1" database-crc="1215437053" real-crc="-148206084"/>
+        <crc-error time="21:12:09" application="test-position_register_map.py" choice="3" database-crc="-467319041" real-crc="-249052695"/>
+        <crc-error time="21:13:20" application="test-position_register_map.py" choice="4" database-crc="137225370" real-crc="1690636404"/>
+        <crc-error time="21:21:47" application="test-position_register_map.py" choice="5" database-crc="1854568143" real-crc="871403195"/>
+        <crc-error time="21:22:38" application="test-position_register_map.py" choice="5" database-crc="871403195" real-crc="-2133288917"/>
+        <crc-error time="21:23:42" application="track_analysis.py" choice="8" database-crc="1821126832" real-crc="516915597"/>
+        <crc-error time="21:24:26" application="track_analysis.py" choice="10" database-crc="1451426155" real-crc="-1557957231"/>
+        <crc-error time="21:43:30" application="track_analysis-loops.py" choice="3" database-crc="-1115301798" real-crc="223058449"/>
+        <crc-error time="21:44:29" application="track_analysis-loops.py" choice="5" database-crc="-1428879630" real-crc="-727586296"/>
+        <crc-error time="21:45:26" application="track_analysis-loops.py" choice="6" database-crc="1772334581" real-crc="250363998"/>
+        <crc-error time="21:46:16" application="track_analysis-loops.py" choice="7" database-crc="1249580773" real-crc="-1081731694"/>
+        <crc-error time="21:46:46" application="track_analysis-post.py" choice="3" database-crc="1678142113" real-crc="589645492"/>
+        <crc-error time="21:47:46" application="track_analysis-post.py" choice="8" database-crc="931756750" real-crc="1832717270"/>
+        <crc-error time="21:48:25" application="track_analysis-post.py" choice="10" database-crc="-1387614062" real-crc="-1243460175"/>
+        <crc-error time="21:48:33" application="track_analysis-pre-post.py" choice="3" database-crc="868128496" real-crc="982207244"/>
+        <crc-error time="21:48:40" application="track_analysis-pre-post.py" choice="4" database-crc="1725454658" real-crc="1534971591"/>
+        <crc-error time="21:57:06" application="track_analysis-pre-post.py" choice="7" database-crc="-351472306" real-crc="-835738589"/>
+        <crc-error time="22:03:08" application="track_analysis-pre-post.py" choice="9" database-crc="247757401" real-crc="-1017109249"/>
+        <crc-error time="22:08:14" application="track_analysis-pre-post.py" choice="8" database-crc="-815693424" real-crc="-1424081719"/>
+        <crc-error time="22:18:49" application="track_analysis-loops.py" choice="1" database-crc="1142474651" real-crc="-145894659"/>
+        <crc-error time="22:20:16" application="track_analysis-loops.py" choice="5" database-crc="-727586296" real-crc="419133121"/>
+        <crc-error time="22:21:16" application="track_analysis-loops.py" choice="6" database-crc="250363998" real-crc="-1804421942"/>
+        <crc-error time="22:24:49" application="track_analysis-loops.py" choice="7" database-crc="-1081731694" real-crc="-250338031"/>
+        <crc-error time="22:26:41" application="track_analysis-pre-post.py" choice="7" database-crc="-835738589" real-crc="-1498517893"/>
+        <crc-error time="22:26:52" application="track_analysis-pre-post.py" choice="8" database-crc="-1424081719" real-crc="-1173470678"/>
+        <crc-error time="22:28:53" application="track_analysis-loops.py" choice="1" database-crc="-145894659" real-crc="229856210"/>
+        <crc-error time="22:29:46" application="track_analysis-loops.py" choice="5" database-crc="419133121" real-crc="2114923853"/>
+        <crc-error time="22:30:59" application="track_analysis-loops.py" choice="6" database-crc="-1804421942" real-crc="-570026398"/>
+        <crc-error time="22:33:07" application="track_analysis-loops.py" choice="7" database-crc="-250338031" real-crc="-269147582"/>
+        <crc-error time="23:09:48" application="track_analysis-pre-post.py" choice="7" database-crc="-1498517893" real-crc="220331975"/>
+        <crc-error time="23:10:08" application="track_analysis-loops.py" choice="1" database-crc="229856210" real-crc="-863811076"/>
+        <crc-error time="23:10:16" application="track_analysis-loops.py" choice="5" database-crc="2114923853" real-crc="278976713"/>
+        <crc-error time="23:10:23" application="track_analysis-loops.py" choice="6" database-crc="-570026398" real-crc="2040681159"/>
+        <crc-error time="23:10:30" application="track_analysis-loops.py" choice="7" database-crc="-269147582" real-crc="-901727231"/>
+        <crc-error time="23:10:37" application="track_analysis-pre-post.py" choice="7" database-crc="220331975" real-crc="1045118847"/>
     </day>
 </history>
