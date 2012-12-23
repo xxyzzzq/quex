@@ -8,7 +8,7 @@ from   quex.engine.state_machine.origin_list     import StateOriginList
 from   quex.blackboard                           import E_AcceptanceIDs, E_PreContextIDs, deprecated
 
 from   copy      import deepcopy
-from   operator  import attrgetter
+from   operator  import attrgetter, itemgetter
 from   itertools import ifilter, imap
 
 class State:
@@ -57,12 +57,13 @@ class State:
     def __merge(self, Other):
         self.origins().merge(Other.origins().get_list()) 
 
-    def clone(self, ReplacementDictionary=None, StateIndex=None):
+    def clone(self, ReplacementDictionary=None, StateIndex=None, PreContextReplacementDB=None, PatternIDReplacementDB=None):
         """Creates a copy of all transitions, but replaces any state index with the ones 
            determined in the ReplacementDictionary."""
         assert ReplacementDictionary is None or isinstance(ReplacementDictionary, dict)
         assert StateIndex is None            or isinstance(StateIndex, long)
-        result = State(AltOriginList = self.__origin_list.clone(),
+        result = State(AltOriginList = self.__origin_list.clone(PreContextReplacementDB=PreContextReplacementDB,
+                                                                PatternIDReplacementDB=PatternIDReplacementDB),
                        AltTM         = self.__transition_map.clone())
 
         # if replacement of indices is desired, than do it
@@ -187,7 +188,7 @@ class StateMachine(object):
         result.states[idx].set_acceptance(True)
         return result
 
-    def clone(self, ReplacementDB=None):
+    def clone(self, ReplacementDB=None, PreContextReplacementDB=None, PatternIDReplacementDB=None):
         """Clone state machine, i.e. create a new one with the same behavior,
         i.e. transitions, but with new unused state indices. This is used when
         state machines are to be created that combine the behavior of more
@@ -198,9 +199,28 @@ class StateMachine(object):
                  None          if cloning not possible due to external state references
 
         """
+        def assert_transitivity(db):
+            """Ids and their replacement remain in order, i.e. if x > y then db[x] > dv[y]."""
+            if db is None: return
+            prev_new = -1
+            for old, new in sorted(db.iteritems(), key=itemgetter(0)): # x[0] = old value
+                assert new > prev_new
+                prev_new = new
+
+        def assert_uniqueness(db):
+            if db is None: return
+            reference_set = set()
+            for value in db.itervalues():
+                assert value not in reference_set
+                reference_set.add(value)
+
+        assert_uniqueness(ReplacementDB)
+        assert_uniqueness(PreContextReplacementDB)
+        assert_uniqueness(PatternIDReplacementDB)
+        assert_transitivity(PatternIDReplacementDB)
+
         # (*) create the new state machine
         #     (this has to happen first, to get an init_state_index)
-
         if ReplacementDB is not None: 
             result      = StateMachine(InitStateIndex=ReplacementDB[self.init_state_index])
             replacement = ReplacementDB
@@ -217,13 +237,20 @@ class StateMachine(object):
 
         for state_idx in self.states.iterkeys():
             new_state_idx = replacement[state_idx]
-            result.states[new_state_idx] = self.states[state_idx].clone(replacement)
+            result.states[new_state_idx] = \
+                    self.states[state_idx].clone(replacement, 
+                                                 PreContextReplacementDB=PreContextReplacementDB,
+                                                 PatternIDReplacementDB=PatternIDReplacementDB)
         
         return result
 
-    def normalized_clone(self):
-        index_map, dummy, dummy = self.get_state_index_normalization()
-        return self.clone(index_map)
+    def normalized_clone(self, PreContextReplacementDB=None):
+        index_map, dummy, dummy         = self.get_state_index_normalization()
+        pre_context_map, pattern_id_map = self.get_pattern_and_pre_context_normalization()
+        
+        return self.clone(index_map, 
+                          PreContextReplacementDB=pre_context_map, 
+                          PatternIDReplacementDB=pattern_id_map)
 
     def get_id(self):
         assert isinstance(self.__id, long)
@@ -866,6 +893,34 @@ class StateMachine(object):
                 inverse_index_map[state_i] = state_i
 
         return index_map, inverse_index_map, index_sequence
+
+    def get_pattern_and_pre_context_normalization(self, PreContextID_Offset=None, PatternID_Offset=None):
+        pre_context_id_set = set()
+        pattern_id_set     = set()
+        def enter(collection, Value, TheEnum):
+            if Value not in TheEnum:
+                collection.add(Value)
+
+        for state in self.states.itervalues():
+            for origin in state.origins():
+                enter(pre_context_id_set, origin.pre_context_id(), E_PreContextIDs)
+                enter(pattern_id_set,     origin.pattern_id(),     E_AcceptanceIDs)
+
+        def get_map(id_set, Offset):
+            """The 'order' of the IDs must be maintained! In particular, a 
+            PatternID with higher precedence than another, must remain of 
+            higher precedence."""
+            result = {}
+            for x in sorted(id_set):
+                result[x] = long(len(result) + Offset)
+            return result
+
+        if PreContextID_Offset is None: PreContextID_Offset = 1 # Avoid ID = 0
+        if PatternID_Offset    is None: PatternID_Offset    = 1 # Avoid ID = 0
+        assert PreContextID_Offset > 0
+        assert PatternID_Offset    > 0
+        return get_map(pre_context_id_set, PreContextID_Offset), \
+               get_map(pattern_id_set, PatternID_Offset)
 
     def get_string(self, NormalizeF=False, Option="utf8"):
         assert Option in ["utf8", "hex"]

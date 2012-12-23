@@ -74,7 +74,7 @@ class StateCoreInfo(object):
         assert type(StoreInputPositionF) == bool
         assert type(RestoreInputPositionF) == bool
         assert PatternID    in E_AcceptanceIDs or (isinstance(PatternID, long)    and PatternID >= 0) 
-        assert PreContextID in E_PreContextIDs or (isinstance(PreContextID, long) and PreContextID >= 0)
+        assert PreContextID in E_PreContextIDs or (isinstance(PreContextID, long) and PreContextID >= 0), PreContextID
 
         if AcceptanceF: assert not StoreInputPositionF 
         else:           assert PreContextID == E_PreContextIDs.NONE
@@ -90,13 +90,20 @@ class StateCoreInfo(object):
         self.__input_position_restore_f = RestoreInputPositionF
         self.__pre_context_id           = PreContextID  
 
-    def clone(self, StateIndex=None):
+    def clone(self, StateIndex=None, PreContextReplacementDB=None, PatternIDReplacementDB=None):
         if StateIndex is not None: state_index = StateIndex
         else:                      state_index = self.state_index
-        return StateCoreInfo(self.__pattern_id, state_index, 
+
+        # Perform optional replacements
+        def produce(DB, Value, TheEnum):
+            if Value  not in TheEnum and DB is not None: return DB[Value]
+            else:                                        return Value
+
+        return StateCoreInfo(produce(PatternIDReplacementDB, self.__pattern_id, E_AcceptanceIDs), 
+                             state_index, 
                              self.__acceptance_f,
                              self.__input_position_store_f,
-                             self.__pre_context_id,
+                             produce(PreContextReplacementDB, self.__pre_context_id, E_PreContextIDs),
                              self.__input_position_restore_f)
 
     def merge(self, Other):

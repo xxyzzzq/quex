@@ -8,8 +8,8 @@ class StateOriginList(object):
         self.__list = []
         if List is not None: self.merge(List)
 
-    def clone(self):
-        return StateOriginList([x.clone() for x in self.__list])
+    def clone(self, PreContextReplacementDB=None, PatternIDReplacementDB=None):
+        return StateOriginList([x.clone(PreContextReplacementDB=PreContextReplacementDB, PatternIDReplacementDB=PatternIDReplacementDB) for x in self.__list])
 
     def get_list(self):
         return self.__list
