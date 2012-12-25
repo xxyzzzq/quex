@@ -130,7 +130,7 @@ class Analyzer:
         #     The PathTrace objects tell what to do at drop_out. From this, the
         #     required entry actions of states can be derived.
         self.__require_acceptance_storage_db = defaultdict(list)
-        self.__require_position_storage_list = []
+        self.__require_position_storage_db   = defaultdict(list)
         for state_index, trace_list in self.__trace_db.iteritems():
             self.__state_db[state_index].drop_out = self.configure_drop_out(state_index)
 
@@ -189,6 +189,39 @@ class Analyzer:
         # entered from any other state.
         return False
 
+    def has_successor(self, BeginStateIndex, WantedStateIndex):
+
+        class Walker(TreeWalker):
+            def __init__(self, ToDB, WantedStateIndex):
+                self.wanted_state_index = WantedStateIndex
+                self.to_db              = ToDB
+                self.path               = []
+                self.success_f          = True
+                TreeWalker.__init__(self)
+
+            def on_enter(self, Args):
+                state_index = Args
+                target_state_index_list = [ x for x in self.to_db[state_index] if x not in self.path ]
+                if len(target_state_index_list) == 0:
+                    return None
+
+                if self.wanted_state_index in target_state_index_list:
+                    self.success_f = True
+                    self.abort_f   = True
+                    return None
+
+                self.path.append(state_index)
+
+                return target_state_index_list
+
+            def on_finished(self, Args):
+                self.path.pop()
+
+        walker = Walker(self.__to_db, WantedStateIndex)
+        walker.do(BeginStateIndex)
+
+        ## print "#has_successor:", BeginStateIndex, WantedStateIndex, walker.success_f
+        return walker.success_f
 
     def last_acceptance_variable_required(self):
         """If one entry stores the last_acceptance, then the 
@@ -271,8 +304,11 @@ class Analyzer:
 
             if info.transition_n_since_positioning == E_TransitionN.VOID: 
                 # Request the storage of the position from related states.
-                self.__require_position_storage_list.append((StateIndex, pattern_id, info))
-            # Later on, a function will use the '__require_position_storage_list' to 
+                for path in info.path_list_since_positioning:
+                    position_storing_state_index = path[0]
+                    self.__require_position_storage_db[position_storing_state_index].append(
+                            (StateIndex, info.pre_context_id, pattern_id))
+            # Later on, a function will use the '__require_position_storage_db' to 
             # implement the position storage.
 
         result.trivialize()
@@ -287,7 +323,7 @@ class Analyzer:
            tasks are specified in the two members:
 
                  self.__require_acceptance_storage_db
-                 self.__require_position_storage_list
+                 self.__require_position_storage_db
 
            It is tried to postpone the storing as much as possible along the
            state paths from store to restore. Thus, some states may not have to
@@ -394,7 +430,6 @@ class Analyzer:
             if PreviousStateIndex is None: return
             entry = TheState.entry
             for acceptance_trace in TraceDB[PreviousStateIndex]:
-
                 entry.doors_accept(FromStateIndex = PreviousStateIndex, 
                                    PathTraceList  = acceptance_trace)
 
@@ -460,33 +495,21 @@ class Analyzer:
             else:
                 yield FollowStateIndex
 
-        for state_index, pattern_id, info in self.__require_position_storage_list:
-            # state_index  --> state that restores the input position
-            # pattern_id   --> pattern which is concerned
-            for path in info.path_list_since_positioning:
-                # Never store the input position in the state itself. The input position
-                # is reached after the entries have been passed.
-                from_state_index = path[0]
-                for to_state_index in get_positioning_state_iterable(from_state_index, path[1]):
-                    state = self.__state_db[to_state_index]
-                    # Never store the input position in the state itself. The input position
-                    # is reached after the entries have been passed.
-                    state.entry.doors_store(FromStateIndex   = from_state_index, 
-                                            PreContextID     = info.pre_context_id, 
-                                            PositionRegister = pattern_id, 
-                                            Offset           = 0)
-                # offset           = -1
-                # for state_index in islice(path, 1, None):
-                    # offset += 1
-                    # state = self.__state_db[state_index]
-                    # if not state.drop_out.restore_position_f(pattern_id): 
-                        # prev_state_index = state_index
-                        # continue
-                    # state.entry.doors_store(FromStateIndex   = prev_state_index, 
-                                            # PreContextID     = info.pre_context_id, 
-                                            # PositionRegister = pattern_id, 
-                                            # Offset           = offset)
-                    # break
+        for state_index, info_list in self.__require_position_storage_db.iteritems():
+            target_state_index_list = self.__to_db[state_index]
+            for end_state_index, pre_context_id, pattern_id in info_list:
+                # state_index      --> state that stores the input position
+                # end_state_index  --> state that stores the input position
+                # pre_context_id   --> pre_context which is concerned
+                # pattern_id       --> pattern which is concerned
+                for target_index in target_state_index_list:
+                    if not self.has_successor(target_index, end_state_index):
+                        continue
+                    entry = self.__state_db[target_index].entry
+                    entry.doors_store(FromStateIndex   = state_index, 
+                                      PreContextID     = pre_context_id, 
+                                      PositionRegister = pattern_id, 
+                                      Offset           = 0)
                 
     def __multi_path_positioning_analysis(self, ThePathTraceList):
         """

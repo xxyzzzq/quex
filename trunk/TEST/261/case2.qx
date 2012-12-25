@@ -1,0 +1,31 @@
+// -*- C++ -*-
+
+token {
+      FAILURE;
+      UNUSED;
+      USED;
+      NEWLINE;
+}
+
+define
+{
+    R1   "&ee;"
+    R2   "e;" 
+    L    {R1}|{R2}  
+}
+
+mode ONE_AND_ONLY :
+{
+    {R1}              => QUEX_TKN_USED(Lexeme);
+    
+    "\n"              => QUEX_TKN_NEWLINE(Lexeme);
+    //Longest string that can't be matched by L BUT immeadiately followed by L, which should treated normally. Makes "core dumped"... 
+    \A{{L}}/{L}       => QUEX_TKN_UNUSED(Lexeme);
+    on_failure        => QUEX_TKN_FAILURE(Lexeme);
+    on_end_of_stream  => QUEX_TKN_TERMINATION;
+}
+
+
+
+
+

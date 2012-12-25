@@ -1,4 +1,4 @@
-<test-database execution-time-sec="11.19" date="Mon Dec 24 00:25:35 2012">
+<test-database execution-time-sec="13.10" date="Tue Dec 25 23:45:39 2012">
     <last-used-diff-display-program name=""/>
     <test title="(*) Exceptions during 'import'" time-sum-sec="0.43"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1355705371L" vanished="False"/>
@@ -12,16 +12,16 @@
            <choice name="" result="FAIL" time_sec="0.04" crc="1951689648"/>
         </choice-list>
     </test>
-    <test title="&lt; #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$" time-sum-sec="0.01"> 
+    <test title="&lt; #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$" time-sum-sec="0.02"> 
         <application file-name="check-default-configuration.sh" info-request-time="1355705370L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.01" crc="1977758644"/>
+           <choice name="" result="OK" time_sec="0.02" crc="1977758644"/>
         </choice-list>
     </test>
-    <test title="Code Check with pyflakes" time-sum-sec="8.16"> 
+    <test title="Code Check with pyflakes" time-sum-sec="8.26"> 
         <application file-name="pyflakes-check.sh" info-request-time="1355705371L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="8.16" crc="176785168"/>
+           <choice name="" result="FAIL" time_sec="8.26" crc="176785168"/>
         </choice-list>
     </test>
     <test title="Propper undefinition of configuration parameters." time-sum-sec="0.05"> 
@@ -37,10 +37,10 @@
         </choice-list>
     </test>
     <group name="## file">
-        <test title="Include Guards for C/C++" time-sum-sec="2.37"> 
+        <test title="Include Guards for C/C++" time-sum-sec="4.18"> 
             <application file-name="include_guard.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="2" same_result="False">
-               <choice name="convention" result="OK" time_sec="2.08" crc="706574512"/>
+               <choice name="convention" result="OK" time_sec="3.88" crc="706574512"/>
                <choice name="undefinition" result="OK" time_sec="0.30" crc="1307575207"/>
             </choice-list>
         </test>
