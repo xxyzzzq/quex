@@ -21,15 +21,26 @@ from   itertools   import izip
 from   copy        import copy
 from   zlib        import crc32
 
-def do(SM):
+def do(SM, ToDB):
     """RETURNS: Acceptance trace database:
 
-                map: state_index --> list of PathTrace objects.
-
+                map: state_index --> list of AcceptInfo objects.
     ___________________________________________________________________________
     This function walks down each possible path trough a given state machine.
     During the process of walking down the paths it develops for each state its
     list of PathTrace objects.
+
+    ___________________________________________________________________________
+    IMPORTANT:
+
+    There is NO GUARANTEE that the pats from acceptance to 'state_index' or
+    the paths from input position storage to 'state_index' are complete! The 
+    calling algorithm must walk these paths on its own.
+
+    This is due to a danger of exponential complexity with certain setups. Any
+    path analysis is dropped as soon as a state is reached with an equivalent
+    history.
+    ___________________________________________________________________________
        
     Another result of the walk is the 'dangerous_positioning_state_set' which
     collects some positioning states that have to store the position for any
@@ -51,10 +62,11 @@ def do(SM):
                                that if a state appears again in the path, its trace
                                must be different or the recursion terminates.
         """
-        def __init__(self, state_machine):
+        def __init__(self, state_machine, ToDB):
             self.__depth    = 0
             self.sm         = state_machine
             self.empty_list = []
+            self.to_db      = ToDB
             self.result     = dict((i, []) for i in self.sm.states.iterkeys())
             self.dangerous_positioning_state_set = set()
             TreeWalker.__init__(self)
@@ -68,7 +80,7 @@ def do(SM):
             if self.__depth == 0: trace = PathTrace(self.sm.init_state_index)
             else:                 trace = PreviousTrace.next_step(StateIndex, State) 
 
-            trigger_map = self.sm.states[StateIndex].transitions().get_map()
+            target_index_list = self.to_db[StateIndex]
             # (*) Recursion Termination:
             #
             # If a state has been analyzed before with the same trace as result,  
@@ -94,7 +106,7 @@ def do(SM):
             # 
             existing_trace_list = self.result.get(StateIndex) 
             if len(existing_trace_list) != 0:
-                end_of_road_f = (len(trigger_map) == 0)
+                end_of_road_f = (len(target_index_list) == 0)
                 for pioneer in existing_trace_list:
                     if not trace.is_equivalent(pioneer, end_of_road_f): 
                         continue
@@ -123,91 +135,84 @@ def do(SM):
             self.__depth += 1
 
             # (*) Recurse to all (undone) target states. 
-            return [(trace, target_i) for target_i in trigger_map.iterkeys() ]
+            return [(trace, target_i) for target_i in target_index_list ]
 
         def on_finished(self, Args):
             # self.done_set.add(StateIndex)
             self.__depth -= 1
 
-    trace_finder = TraceFinder(SM)
+    trace_finder = TraceFinder(SM, ToDB)
     trace_finder.do((None, SM.init_state_index))
-    # Generate 'Doodle' objects that have only the acceptance trace member.
-    # This is to ensure that no other member is used from the PathTrace Object.
-    class Doodle:
-        def __init__(self, X):
-            self.acceptance_trace = X.acceptance_trace
 
-    result = dict( (key, [Doodle(x) for x in trace_list]) for key, trace_list in trace_finder.result.iteritems())
+    result = dict( (key, [x.acceptance_trace for x in trace_list]) for key, trace_list in trace_finder.result.iteritems())
     return result, trace_finder.dangerous_positioning_state_set
 
 class PathTrace(object):
-    """ABSTRACT:
-       
-       An object of this class documents the impact of actions that happen
-       along ONE specific path from the init state to a specific state. 
-       ------------------------------------------------------------------------
+    """
+    An object of this class documents the impact of actions that happen
+    along ONE specific path from the init state to a specific state. 
+    ___________________________________________________________________________
+    EXPLANATION:
 
-       EXPLANATION:
+    During a path from the init state to 'this state', the following things
+    may happen or may have happened:
 
-       During a path from the init state to 'this state', the following things
-       may happen or may have happened:
+         -- The input position has been stored in a position register
+            (for post context management or on accepting a pattern).
 
-            -- The input position has been stored in a position register
-               (for post context management or on accepting a pattern).
+         -- A pattern has been accepted. Acceptance may depend on a
+            pre-context being fulfilled.
 
-            -- A pattern has been accepted. Acceptance may depend on a
-               pre-context being fulfilled.
+    Storing the input position can be a costly operation. If the length of
+    the path from storing to restoring can be determined from the number of
+    transitions, then it actually does not have to be stored. Instead, it
+    can be obtained by 'input position -= transition number since
+    positioning.' In any case, the restoring of an input position is
+    triggered by an acceptance event.
 
-       Storing the input position can be a costly operation. If the length of
-       the path from storing to restoring can be determined from the number of
-       transitions, then it actually does not have to be stored. Instead, it
-       can be obtained by 'input position -= transition number since
-       positioning.' In any case, the restoring of an input position is
-       triggered by an acceptance event.
+    Acceptance of a pattern occurs, if one drops out of a state, i.e. there
+    are no further transitions possible. Later analysis will focus on these
+    acceptance events. They are stored in a sorted member '.acceptance_trace'.
 
-       Acceptance of a pattern occurs, if one drops out of a state, i.e. there
-       are no further transitions possible. Later analysis will focus on these
-       acceptance events. They are stored in a sorted member '.acceptance_trace'.
+    The sort order of the acceptance trace reflects the philosophy of
+    'longest match'. That, is that the last acceptance along a path has a
+    higher precedence than an even higher prioritized pattern before. 
+    Actually, all patterns without any pre-context remove any AcceptInfo
+    object that preceded along the path.
 
-       The sort order of the acceptance trace reflects the philosophy of
-       'longest match'. That, is that the last acceptance along a path has a
-       higher precedence than an even higher prioritized pattern before. 
-       Actually, all patterns without any pre-context remove any AcceptInfo
-       object that preceded along the path.
+    For further analysis, this class provides:
 
-       For further analysis, this class provides:
+         .acceptance_trace -- Sorted list of information about acceptances.
 
-            .acceptance_trace -- Sorted list of information about acceptances.
+    During the process of building path traces, the function
 
-       During the process of building path traces, the function
+         .next_step(...)
 
-            .next_step(...)
+    is called. It assumes that the current object represents the path trace
+    before 'this state'. Based on the given arguments to this function it 
+    modifies itself so that it represents the trace for 'this_state'.
 
-       is called. It assumes that the current object represents the path trace
-       before 'this state'. Based on the given arguments to this function it 
-       modifies itself so that it represents the trace for 'this_state'.
-
-       ------------------------------------------------------------------------
-
-       EXAMPLE:
+    ___________________________________________________________________________
+    EXAMPLE:
     
     
-           ( 0 )----->(( 1 ))----->( 2 )----->(( 3 ))----->( 4 ) ....
-                       8 wins                 pre 4 -> 5 wins                    
-                                              pre 3 -> 7 wins
+        ( 0 )----->(( 1 ))----->( 2 )----->(( 3 ))----->( 4 ) ....
+                    8 wins                 pre 4 -> 5 wins                    
+                                           pre 3 -> 7 wins
 
-       results in PathTrace objects for the states as follows:
+    results in PathTrace objects for the states as follows:
 
-           State 0: has no acceptance trace, only '(no pre-context, failure)'.
-           State 1: (pattern 8 wins, input position = current)
-           State 2: (pattern 8 wins, input position = current - 1)
-           State 3: (if pre context 4 fulfilled: 5 wins, input position = current)
-                    (if pre context 3 fulfilled: 7 wins, input position = current)
-                    (else,                       8 wins, input position = current - 2)
-           State 4: (if pre context 4 fulfilled: 5 wins, input position = current - 1)
-                    (if pre context 3 fulfilled: 7 wins, input position = current - 1)
-                    (else,                       8 wins, input position = current - 3)
-           ...
+        State 0: has no acceptance trace, only '(no pre-context, failure)'.
+        State 1: (pattern 8 wins, input position = current)
+        State 2: (pattern 8 wins, input position = current - 1)
+        State 3: (if pre context 4 fulfilled: 5 wins, input position = current)
+                 (if pre context 3 fulfilled: 7 wins, input position = current)
+                 (else,                       8 wins, input position = current - 2)
+        State 4: (if pre context 4 fulfilled: 5 wins, input position = current - 1)
+                 (if pre context 3 fulfilled: 7 wins, input position = current - 1)
+                 (else,                       8 wins, input position = current - 3)
+        ...
+    ___________________________________________________________________________
     """
     __slots__ = ("__acceptance_trace",  # List of AcceptInfo objects
                  "__storage_db",        # Map: pattern_id --> StoreInfo objects
@@ -252,13 +257,13 @@ class PathTrace(object):
 
     def next_step(self, StateIndex, State):
         """The present object of PathTrace represents the history of events 
-           along a path from the init state to the state BEFORE 'this state'.
+        along a path from the init state to the state BEFORE 'this state'.
 
-           Applying the events of 'this state' on the current history results
-           in a PathTrace object that represents the history of events until
-           'this state'.
+        Applying the events of 'this state' on the current history results
+        in a PathTrace object that represents the history of events until
+        'this state'.
 
-           RETURNS: Altered clone of the present object.
+        RETURNS: Altered clone of the present object.
         """
         # Some experimenting has shown that the number of unnecessary cloning,
         # i.e.  when there would be no change, is negligible. The fact that
@@ -456,35 +461,39 @@ class PathTrace(object):
         return "".join([repr(x) for x in self.__acceptance_trace]) + "".join([repr(x) for x in self.__storage_db.iteritems()])
 
 class StoreInfo(object):
-    """ABSTRACT:
+    """
+    Informs about a 'positioning action' that happened during the walk
+    along a specific path from init state to 'this state'. 
     
-       Informs about a 'positioning action' that happened during the walk
-       along a specific path from init state to 'this state'. 
-       
-       Used in function 'PathTrace.next_step()'.
-       ------------------------------------------------------------------------
-       
-       EXPLANATION:
+    Used in function 'PathTrace.next_step()'.
+    ___________________________________________________________________________
+    EXPLANATION:
 
-       A 'positioning action' is the storage of the current input position 
-       into a dedicated position register. Objects of class 'StoreInfo'
-       are stored in dictionaries where the key represents the pattern-id
-       is at the same time the identifier of the position storage register.
-       (Note, later the position register is remapped according to required
-        entries.)
+    A 'positioning action' is the storage of the current input position 
+    into a dedicated position register. Objects of class 'StoreInfo'
+    are stored in dictionaries where the key represents the pattern-id
+    is at the same time the identifier of the position storage register.
+    (Note, later the position register is remapped according to required
+     entries.)
 
-       'This state' means the state where the trace lead to. 
+    'This state' means the state where the trace lead to. 
 
-       The member '.path_since_positioning' gets one more state index appended
-       at each transition along a path. 
-       
-       If a loop is detected '.transition_n_since_positioning' returns
-       'E_TransitionN.VOID'.
+    The member '.path_since_positioning' gets one more state index appended
+    at each transition along a path. 
+    
+    If a loop is detected '.transition_n_since_positioning' returns
+    'E_TransitionN.VOID'.
 
-       The member '.positioning_state_index' is the state where the positioning
-       happend. If there is a loop along the path from '.positioning_state_index'
-       to 'this state, then the '.transition_n_since_positioning' is set to 
-       'E_TransitionN.VOID' (see comment above).
+    The member '.positioning_state_index' is the state where the positioning
+    happend. If there is a loop along the path from '.positioning_state_index'
+    to 'this state, then the '.transition_n_since_positioning' is set to 
+    'E_TransitionN.VOID' (see comment above).
+
+    ___________________________________________________________________________
+    .path_since_positioning  -- List of indices of states which have been
+                                passed from the storage of input position
+                                to this state.
+    ___________________________________________________________________________
     """
     __slots__ = ('path_since_positioning', '__transition_n_since_positioning', '__loop_f')
     def __init__(self, PathSincePositioning, TransitionNSincePositioning=None):
@@ -550,39 +559,35 @@ class StoreInfo(object):
         return "".join(txt)
 
 class AcceptInfo(StoreInfo):
-    """ABSTRACT: 
+    """
+    Information about the acceptance and input position storage behavior in 
+    a state which is a result of events that happened before on a specific path 
+    from the init state to 'this_state'.
+    ___________________________________________________________________________
+    EXPLANATION:
     
-       Information about the acceptance behavior in a state which is a result
-       of events that happened before on a specific path from the init state
-       to 'this_state'.
-       ------------------------------------------------------------------------
+    Acceptance of a pattern is something that occurs in case that the 
+    state machine can no further proceed on a given input (= philosophy
+    of 'longest match'), i.e. on 'drop-out'. 'AcceptInfo' objects tell 
+    about the acceptance of a particular pattern (given by '.pattern_id').
+    
+    .pattern_id              -- Identifies the pattern that is concerned.
+                             
+    .pre_context_id          -- if E_PreContextIDs.NONE, then '.pattern_id' is
+                                always accepted. If not, then the pre-context
+                                must be checked before the pattern can be 
+                                accepted.
+                             
+    .accepting_state_index   -- Index of the state that caused the acceptance 
+                                of the pattern somewhere before on the path.
+                                It may, as well be 'this state'.
+    
+    [from StoreInfo]
 
-       EXPLANATION:
-
-       Acceptance of a pattern is something that occurs in case that the 
-       state machine can no further proceed on a given input (= philosophy
-       of 'longest match'), i.e. on 'drop-out'. 'AcceptInfo' objects tell 
-       about the acceptance of a particular pattern (given by '.pattern_id').
-
-       .pattern_id     -- Identifies the pattern that is concerned.
-
-       .pre_context_id -- if E_PreContextIDs.NONE, then '.pattern_id' is
-                          always accepted. If not, then the pre-context
-                          must be checked before the pattern can be accepted.
-       
-       .accepting_state_index -- Index of the state that caused the acceptance 
-                                 of the pattern somewhere before on the path.
-                                 It may, as well be 'this state'.
-       
-       .transition_n_since_positioning -- Number of transitions since the storage
-                                          of the input position needed to be done. 
-                                          If it is E_TransitionN.VOID, then the 
-                                          number cannot be determined from the 
-                                          state machine (loop occurred).
-       
-       .positioning_state_index -- Identifies the state where the position needed
-                                   to be stored. For post-context patterns this is
-                                   different from the accepting state.
+    .path_since_positioning  -- List of indices of states which have been
+                                passed from the storage of input position
+                                to this state.
+    ___________________________________________________________________________
     """
     __slots__ = ("pre_context_id", 
                  "pattern_id", 

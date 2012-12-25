@@ -83,6 +83,13 @@ class TreeWalker:
        -- Leaf node detection can be done by the user when there are no sub 
           nodes to be returned by 'on_enter()'.
 
+       ________________________________________________________________________
+       HINT: 
+
+       print "# %s ..." % (self.depth * " ", ...)
+
+       provides nicely indented print-outs for debugging
+
        CYCLIC GRAPHS __________________________________________________________
        
        A cyclic graph can stall the algorithm below. To avoid entering loops an

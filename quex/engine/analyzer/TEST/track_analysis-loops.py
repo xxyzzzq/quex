@@ -44,7 +44,7 @@ elif "1" in sys.argv:
          "3/a/"                      
     ]
     #
-    # path: [0L, 1L, 2L, 3L, 4L, 5L, 2L, 3L, 6L, 7L, 2L, 3L, 6L, 7L, 2L]
+    # path: [0, 1, 2, 3, 4, 5, 2, 3, 6, 7, 2, 3, 6, 7, 2]
     #       Is the proof that we need to store input positions in 
     #       separate registers. Even if on the first glance the positions
     #       for what is stored in 4 and 6 is only two positions away.
