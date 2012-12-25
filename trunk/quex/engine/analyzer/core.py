@@ -37,6 +37,7 @@ from   quex.engine.analyzer.state.drop_out        import DropOut
 import quex.engine.analyzer.mega_state.analyzer   as     mega_state_analyzer
 import quex.engine.analyzer.position_register_map as     position_register_map
 import quex.engine.analyzer.engine_supply_factory as     engine
+from   quex.engine.misc.tree_walker               import TreeWalker
 from   quex.engine.state_machine.core             import StateMachine
 from   quex.blackboard  import setup as Setup
 from   quex.blackboard  import E_AcceptanceIDs, \
@@ -78,9 +79,6 @@ class Analyzer:
         self.__state_machine_id = SM.get_id()
         self.__engine_type      = EngineType
 
-        # (*) PathTrace database, Successor database
-        self.__trace_db, self.__dangerous_positioning_state_set = track_analysis.do(SM)
-
         # (*) From/To Databases
         #
         #     from_db:  state_index --> states from which it is entered.
@@ -95,39 +93,50 @@ class Analyzer:
         self.__from_db = from_db
         self.__to_db   = to_db
 
+        # (*) PathTrace database, Successor database
+        self.__trace_db, self.__dangerous_positioning_state_set = track_analysis.do(SM, self.__to_db)
+
         # (*) Prepare AnalyzerState Objects
-        self.__state_db = dict([(state_index, AnalyzerState(SM.states[state_index], state_index,
-                                                            state_index == SM.init_state_index, 
-                                                            EngineType, 
-                                                            from_db[state_index])) 
-                                 for state_index in self.__trace_db.iterkeys()])
+        self.__state_db = dict([
+                (state_index, AnalyzerState(SM.states[state_index], state_index,
+                                            state_index == SM.init_state_index, 
+                                            EngineType, from_db[state_index])) 
+                for state_index in self.__trace_db.iterkeys()])
 
         if not EngineType.requires_detailed_track_analysis():
             self.__position_register_map = None
             self.__position_info_db      = None
             return
 
+        # (*) Uniform AcceptanceDB
+        #
+        #         map: state_index --> acceptance pattern
+        #
+        #     If all paths to a state show the same acceptance pattern, than this
+        #     pattern is stored. Otherwise, the state index is related to None.
+        self.__uniform_acceptance_db = dict(
+                (state_index, self.__multi_path_acceptance_analysis(acceptance_trace_list))
+                for state_index, acceptance_trace_list in self.__trace_db.iteritems())
+
         # (*) Positioning info:
         #
         #     map:  (state_index) --> (pattern_id) --> positioning info
         #
-        self.__position_info_db = {}
-        for state_index, trace_list in self.__trace_db.iteritems():
-            self.__position_info_db[state_index] = self.multi_path_positioning_analysis(trace_list)
+        self.__position_info_db = dict(
+                (state_index, self.__multi_path_positioning_analysis(acceptance_trace_list))
+                for state_index, acceptance_trace_list in self.__trace_db.iteritems())
 
         # (*) Drop Out Behavior
         #     The PathTrace objects tell what to do at drop_out. From this, the
         #     required entry actions of states can be derived.
-        self.__require_acceptance_storage_list = []
-        self.__require_position_storage_list   = []
+        self.__require_acceptance_storage_db = defaultdict(list)
+        self.__require_position_storage_list = []
         for state_index, trace_list in self.__trace_db.iteritems():
-            state = self.__state_db[state_index]
-            # trace_list: PathTrace objects for each path that guides to state.
-            state.drop_out = self.configure_drop_out(state_index, trace_list)
+            self.__state_db[state_index].drop_out = self.configure_drop_out(state_index)
 
         # (*) Entry Behavior
         #     Implement the required entry actions.
-        self.configure_entries()
+        self.configure_entries(SM)
 
         if EngineType.requires_position_register_map():
             # (*) Position Register Map (Used in 'optimizer.py')
@@ -191,7 +200,7 @@ class Analyzer:
             if entry.has_accepter(): return True
         return False
 
-    def configure_drop_out(self, StateIndex, ThePathTraceList):
+    def configure_drop_out(self, StateIndex):
         """____________________________________________________________________
         Every analysis step ends with a 'drop-out'. At this moment it is
         decided what pattern has won. Also, the input position pointer must be
@@ -224,18 +233,16 @@ class Analyzer:
         are even any pre-context patterns).
         _______________________________________________________________________
         """
-        assert len(ThePathTraceList) != 0
         result = DropOut()
 
         # (*) Acceptance Checker
-        uniform_f = self.multi_path_acceptance_analysis(ThePathTraceList)
-        if uniform_f:
+        acceptance_pattern = self.__uniform_acceptance_db[StateIndex]
+        if acceptance_pattern is not None:
             # (i) Uniform Acceptance Pattern for all paths through the state.
             # 
             #     Use one trace as prototype. No related state needs to store
             #     acceptance at entry. 
-            prototype = ThePathTraceList[0]
-            for x in prototype.acceptance_trace:
+            for x in acceptance_pattern:
                 result.accept(x.pre_context_id, x.pattern_id)
                 # No further checks after unconditional acceptance necessary
                 if     x.pre_context_id == E_PreContextIDs.NONE \
@@ -252,9 +259,10 @@ class Analyzer:
             result.accept(E_PreContextIDs.NONE, E_AcceptanceIDs.VOID)
 
             # Dependency: Related states are required to store acceptance at state entry.
-            for trace in ThePathTraceList:
-                self.__require_acceptance_storage_list.extend(trace.acceptance_trace)
-            # Later on, a function will use the '__require_acceptance_storage_list' to 
+            for acceptance_trace_list in self.__trace_db[StateIndex]:
+                for x in acceptance_trace_list:
+                    self.__require_acceptance_storage_db[x.accepting_state_index].append(StateIndex)
+            # Later on, a function will use the '__require_acceptance_storage_db' to 
             # implement the acceptance storage.
 
         # (*) Terminal Router
@@ -270,7 +278,7 @@ class Analyzer:
         result.trivialize()
         return result
 
-    def configure_entries(self):
+    def configure_entries(self, SM):
         """DropOut objects may rely on acceptances and input positions being 
            stored. This storage happens at state entries.
            
@@ -278,17 +286,75 @@ class Analyzer:
            the input position and which ones have to store acceptances. These
            tasks are specified in the two members:
 
-                 self.__require_acceptance_storage_list
+                 self.__require_acceptance_storage_db
                  self.__require_position_storage_list
 
            It is tried to postpone the storing as much as possible along the
            state paths from store to restore. Thus, some states may not have to
            store, and thus the lexical analyzer becomes a little faster.
         """
-        self.implement_required_acceptance_storage()
+        self.implement_required_acceptance_storage(SM)
         self.implement_required_position_storage()
 
-    def implement_required_acceptance_storage(self):
+    def detect_on_paths(self, BeginStateIndex, EndStateIndex, break_condition, break_action):
+
+        class DetectorWalker(TreeWalker):
+            """Walks all paths from StateIndex0 to StateIndex1, but only until  
+            a condition is met. When the condition is met, an action is executed 
+            and the path is no longer followed.
+            ___________________________________________________________________
+            """
+            def __init__(self, EndStateIndex, StateDB, ToDB, TraceDB, BreakConditionFunc, ActionFunc):
+                self.end_state_index = EndStateIndex
+
+                self.state_db  = StateDB
+                self.to_db     = ToDB
+                self.trace_db  = TraceDB
+                self.done_set  = set()
+                self.condition = BreakConditionFunc
+                self.action    = ActionFunc
+                self.success_f = False
+                TreeWalker.__init__(self)
+
+            def on_enter(self, Args):
+                PrevStateIndex, StateIndex = Args
+
+                state = self.state_db[StateIndex]
+                # Never break-up on the first state (neglect PrevStateIndex is None)
+                if PrevStateIndex is not None and self.condition(state):
+                    self.action(PrevStateIndex, state, self.trace_db)
+                    self.done_set.add(StateIndex)
+                    self.success_f = True
+                    return None
+
+                if StateIndex in self.done_set:
+                    # Even, if the state was done, the entry from PrevStateIndex had
+                    # to be consdired. Only then, it can be considered 'done'.
+                    return None
+                else:
+                    # Since, we do a 'depth-first' search, nothing has to be undone.
+                    # If a state is registered as 'done', then all of its sub-paths 
+                    # can be considered as being treated.
+                    self.done_set.add(StateIndex)
+
+                if StateIndex == self.end_state_index:
+                    return None
+
+                return [(StateIndex, state_index) for state_index in self.to_db[StateIndex]]
+
+            def on_finished(self, Node):
+                pass
+
+        walker = DetectorWalker(EndStateIndex, 
+                                self.__state_db, self.__to_db, self.__trace_db,
+                                break_condition, break_action)
+        walker.do((None, BeginStateIndex))
+
+        # -- True  => that the condition was met and an action has been performed
+        # -- False => the condition was not met for any state.
+        return walker.success_f
+
+    def implement_required_acceptance_storage(self, SM):
         """
         Storing Acceptance / Postpone as much as possible.
         
@@ -300,7 +366,7 @@ class Analyzer:
         
           State V --- "acceptance = A" -->-.
                                             \
-                                              State Y ----->  State Z
+                                             State Y ----->  State Z
                                             /
           State W --- "acceptance = B" -->-'
         
@@ -321,47 +387,45 @@ class Analyzer:
         then it is not safe to assume that all sub-paths have been considered.
         The acceptance must be stored immediately.
         """
-        postponed_db = defaultdict(set)
-        for acceptance_trace in self.__require_acceptance_storage_list:
-            accepting_state_index  = acceptance_trace.accepting_state_index
-            path_since_positioning = acceptance_trace.path_since_positioning
-            pre_context_id         = acceptance_trace.pre_context_id
-            pattern_id             = acceptance_trace.pattern_id
+        def break_condition(TheState):
+            return TheState.drop_out.restore_acceptance_f
+        
+        def action(PreviousStateIndex, TheState, TraceDB):
+            if PreviousStateIndex is None: return
+            entry = TheState.entry
+            for acceptance_trace in TraceDB[PreviousStateIndex]:
 
-            # Find the first place on the path where the acceptance is restored
-            # - starting from the last accepting state.
-            begin_i = acceptance_trace.index_of_last_acceptance_on_path_since_positioning()
+                entry.doors_accept(FromStateIndex = PreviousStateIndex, 
+                                   PathTraceList  = acceptance_trace)
 
-            prev_state_index = None
-            for state_index in islice(path_since_positioning, begin_i, None):
-                if self.__state_db[state_index].drop_out.restore_acceptance_f: 
-                    break
-                prev_state_index = state_index
+        not_postponed_set = set()
+        for state_index, end_state_index_list in self.__require_acceptance_storage_db.iteritems():
+            for end_state_index in end_state_index_list:
 
-            if prev_state_index is not None:
-                entry           = self.__state_db[state_index].entry
-                path_trace_list = self.__trace_db[prev_state_index]
-                for path_trace in path_trace_list:
-                    entry.doors_accept(FromStateIndex = prev_state_index, 
-                                       PathTraceList  = path_trace.acceptance_trace)
-            else:
-                # Postpone:
-                #
-                # Here, storing Acceptance cannot be deferred to subsequent states, because
-                # the first state that restores acceptance is the acceptance state itself.
-                #
-                # (1) Restore only happens if there is non-uniform acceptance. See 
-                #     function 'configure_drop_out(...)'. 
-                # (2) Non-uniform acceptance only happens, if there are multiple paths
-                #     to the same state with different trailing acceptances.
-                # (3) If there was an absolute acceptance, then all previous trailing 
-                #     acceptance were deleted (longest match). This contradicts (2).
-                #
-                # (4) => Thus, there are only pre-contexted acceptances in such a state.
-                assert pre_context_id != E_PreContextIDs.NONE 
-                postponed_db[accepting_state_index].add((pre_context_id, pattern_id))
+                # Find the first place on the path where the acceptance is restored
+                # - starting from the last accepting state.
+                # begin_i = acceptance_trace.index_of_last_acceptance_on_path_since_positioning()
 
-        # Postponed: Collected acceptances to be stored in the acceptance states itself.
+                if not self.detect_on_paths(state_index, end_state_index, break_condition, action):
+                    ## print "#----------------------"
+                    ## print "# %s [%s]->[%s]" % (pattern_id, path_since_positioning[begin_i], path_since_positioning[-1])
+
+                    # Postpone:
+                    #
+                    # Here, storing Acceptance cannot be deferred to subsequent states, because
+                    # the first state that restores acceptance is the acceptance state itself.
+                    #
+                    # (1) Restore only happens if there is non-uniform acceptance. See 
+                    #     function 'configure_drop_out(...)'. 
+                    # (2) Non-uniform acceptance only happens, if there are multiple paths
+                    #     to the same state with different trailing acceptances.
+                    # (3) If there was an absolute acceptance, then all previous trailing 
+                    #     acceptance were deleted (longest match). This contradicts (2).
+                    #
+                    # (4) => Thus, there are only pre-contexted acceptances in such a state.
+                    not_postponed_set.add(state_index)
+
+        # Not Postponed: Collected acceptances to be stored in the acceptance states itself.
         #
         # It is possible that a deferred acceptance are already present in the doors. But, 
         # since they all come from trailing acceptances, we know that the acceptance of
@@ -369,10 +433,11 @@ class Analyzer:
         # preceed the already mentioned ones. Since they all trigger on lexemes of the
         # same length, the only precendence criteria is the pattern_id.
         # 
-        for state_index, info_set in postponed_db.iteritems():
+        for state_index in not_postponed_set:
             entry = self.__state_db[state_index].entry
-            for pre_context_id, pattern_id in sorted(list(info_set), key=itemgetter(1), reverse=True):
-                entry.doors_accepter_add_front(pre_context_id, pattern_id)
+            for origin in sorted(SM.states[state_index].origins(), key=lambda x: x.pattern_id(), reverse=True):
+                if not origin.is_acceptance(): continue
+                entry.doors_accepter_add_front(origin.pre_context_id(), origin.pattern_id())
 
     def implement_required_position_storage(self):
         """
@@ -388,12 +453,12 @@ class Analyzer:
         any state that has undetermined positioning restores the input position.
         Thus 'restore_position_f(register)' is enough to catch this case.
         """
-        def get_positioning_state_iterable(from_state_index, path):
+        def get_positioning_state_iterable(from_state_index, FollowStateIndex):
             if from_state_index in self.__dangerous_positioning_state_set:
                 for to_state_index in self.__to_db[from_state_index]:
                     yield to_state_index
             else:
-                yield path[1]
+                yield FollowStateIndex
 
         for state_index, pattern_id, info in self.__require_position_storage_list:
             # state_index  --> state that restores the input position
@@ -402,7 +467,7 @@ class Analyzer:
                 # Never store the input position in the state itself. The input position
                 # is reached after the entries have been passed.
                 from_state_index = path[0]
-                for to_state_index in get_positioning_state_iterable(from_state_index, path):
+                for to_state_index in get_positioning_state_iterable(from_state_index, path[1]):
                     state = self.__state_db[to_state_index]
                     # Never store the input position in the state itself. The input position
                     # is reached after the entries have been passed.
@@ -423,7 +488,7 @@ class Analyzer:
                                             # Offset           = offset)
                     # break
                 
-    def multi_path_positioning_analysis(self, ThePathTraceList):
+    def __multi_path_positioning_analysis(self, ThePathTraceList):
         """
         This function draws conclusions on the input positioning behavior at
         drop-out based on different paths through the same state.  Basis for
@@ -482,8 +547,8 @@ class Analyzer:
         # -- If the positioning differs for one element in the trace list, or 
         # -- one element has undetermined positioning, 
         # => then the acceptance relates to undetermined positioning.
-        for trace in ThePathTraceList:
-            for element in trace.acceptance_trace:
+        for acceptance_trace in ThePathTraceList:
+            for element in acceptance_trace:
                 assert element.pattern_id != E_AcceptanceIDs.VOID
 
                 prototype = positioning_info_by_pattern_id.get(element.pattern_id)
@@ -494,7 +559,7 @@ class Analyzer:
 
         return positioning_info_by_pattern_id
 
-    def multi_path_acceptance_analysis(self, ThePathTraceList):
+    def __multi_path_acceptance_analysis(self, ThePathTraceList):
         """
         This function draws conclusions on the input acceptance behavior at
         drop-out based on different paths through the same state. Basis for
@@ -511,20 +576,19 @@ class Analyzer:
         object reflects the precedence of acceptance. Thus, one can simply
         compare the acceptance trace objects of each PathTrace.
 
-        RETURNS: True  - uniform acceptance pattern.
-                 False - acceptance pattern is not uniform.
+        RETURNS: list of AcceptInfo() - uniform acceptance pattern.
+                 None                 - acceptance pattern is not uniform.
         """
-        prototype = ThePathTraceList[0].acceptance_trace
+        prototype = ThePathTraceList[0]
 
         # Check (1) and (2)
-        for path_trace in islice(ThePathTraceList, 1, None):
-            acceptance_trace = path_trace.acceptance_trace
-            if len(prototype) != len(acceptance_trace):    return False
+        for acceptance_trace in islice(ThePathTraceList, 1, None):
+            if len(prototype) != len(acceptance_trace):    return None
             for x, y in izip(prototype, acceptance_trace):
-                if   x.pre_context_id != y.pre_context_id: return False
-                elif x.pattern_id     != y.pattern_id:     return False
+                if   x.pre_context_id != y.pre_context_id: return None
+                elif x.pattern_id     != y.pattern_id:     return None
 
-        return True
+        return prototype
 
     def __iter__(self):
         for x in self.__state_db.values():
