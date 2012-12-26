@@ -215,9 +215,16 @@ class Interval(object):
     def get_string(self, Option="", Delimiter=", "):
         assert Option in ("hex", "dec", "utf8", "")
         assert self.end >= self.begin
-        if   Option == "hex":  __repr = lambda x: "%04X" % x
-        elif Option == "utf8": __repr = lambda x: utf8.unicode_to_pretty_utf8(x)
-        else:                  __repr = repr
+        if   Option == "hex":  
+            __repr = lambda x:     "-oo" if x == - sys.maxint   \
+                               else "oo" if x == sys.maxint - 1 \
+                               else "%04X" % x
+        elif Option == "utf8": 
+            __repr = lambda x: utf8.unicode_to_pretty_utf8(x)
+        else: 
+            __repr = lambda x:     "-oo" if x == - sys.maxint   \
+                               else "oo" if x == sys.maxint - 1 \
+                               else repr(x)
         
         if self.begin == self.end:       return "[]"
         elif self.end - self.begin == 1: return "[" + __repr(self.begin) + "]" 

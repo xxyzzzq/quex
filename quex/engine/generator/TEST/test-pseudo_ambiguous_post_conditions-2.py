@@ -5,7 +5,7 @@ choice = generator_test.hwut_input("Pseudo Ambgiguous Post Condition: Part II", 
                                    DeleteChoices=["Cpp-PathUniform", "Cpp-PathUniform-CG"])
 
 pattern_list = [
-    # -- pre-conditioned expressions need to preceed same (non-preoconditioned) expressions,
+    # -- pre-contexted expressions need to preceed same (non-preoconditioned) expressions,
     #    otherwise, the un-conditional expressions gain precedence and the un-conditional
     #    pattern is never matched.
     #

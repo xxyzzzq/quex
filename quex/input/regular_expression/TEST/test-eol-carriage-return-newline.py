@@ -21,12 +21,13 @@ def test_core(TestString):
 
     Setup.dos_carriage_return_newline_f = True
 
-    sm = core.do(TestString, {})
-    if sm is None: 
+    pattern = core.do(TestString, {})
+    pattern.mount_pre_context_sm()
+    if pattern is None: 
         print "pattern syntax error"
     else:
-        print "state machine\n", sm 
-        print "begin of line = ", sm.pre_context_trivial_begin_of_line_f
+        print "pattern\n", pattern 
+        print "begin of line = ", pattern.pre_context_trivial_begin_of_line_f
 
 test('[a-z]+')
 # test('[a-z]*')

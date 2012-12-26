@@ -1,6 +1,6 @@
 ___________________________________________________________________________
 expression    = "^[a-z]+$"
-state machine
+pattern
 init-state = 0L
 00000 ()
      == ['a', 'z'] ==> 00001
@@ -15,7 +15,7 @@ init-state = 0L
 begin of line =  True
 ___________________________________________________________________________
 expression    = "^[a-z]+/"
-state machine
+pattern
 init-state = 0L
 00000 ()
      == ['a', 'z'] ==> 00001
@@ -27,7 +27,7 @@ init-state = 0L
 begin of line =  True
 ___________________________________________________________________________
 expression    = "^[a-z]*$"
-state machine
+pattern
 init-state = 0L
 00000 (S)
      == '\n' ==> 00001
@@ -39,7 +39,7 @@ init-state = 0L
 begin of line =  True
 ___________________________________________________________________________
 expression    = "^[a-z]*/"
-state machine
+pattern
 init-state = 0L
 00000 (A, pre=bol)
      == ['a', 'z'] ==> 00000
@@ -48,7 +48,7 @@ init-state = 0L
 begin of line =  True
 ___________________________________________________________________________
 expression    = "^[a-z]?$"
-state machine
+pattern
 init-state = 0L
 00000 (S)
      == '\n' ==> 00001
@@ -63,7 +63,7 @@ init-state = 0L
 begin of line =  True
 ___________________________________________________________________________
 expression    = "^[a-z]?/"
-state machine
+pattern
 init-state = 0L
 00000 (A, pre=bol)
      == ['a', 'z'] ==> 00001
@@ -74,7 +74,7 @@ init-state = 0L
 begin of line =  True
 ___________________________________________________________________________
 expression    = "^[a-z]?/[a-z]/$"
-state machine
+pattern
 init-state = 0L
 00000 ()
      == ['a', 'z'] ==> 00001
@@ -84,7 +84,7 @@ init-state = 0L
     
 00002 (A, R, pre=38)
     
-pre-condition inverted = init-state = 0L
+pre-context = init-state = 0L
 00000 ()
      == '\n' ==> 00001
      == ['a', 'z'] ==> 00002
@@ -98,14 +98,14 @@ pre-condition inverted = init-state = 0L
 begin of line =  False
 ___________________________________________________________________________
 expression    = "^[a-z]?/[a-z]/"
-state machine
+pattern
 init-state = 0L
 00000 ()
      == ['a', 'z'] ==> 00001
     
 00001 (A, pre=45)
     
-pre-condition inverted = init-state = 0L
+pre-context = init-state = 0L
 00000 ()
      == '\n' ==> 00001
      == ['a', 'z'] ==> 00002

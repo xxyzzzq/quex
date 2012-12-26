@@ -1,4 +1,4 @@
-<history date="Tue Dec 25 23:52:23 2012" element-n="415">
+<history date="Wed Dec 26 10:39:15 2012" element-n="428">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:16"/>
         <crc-error time="09:57:16" application="test-pattern-matching.py" choice="" database-crc="1144357218" real-crc="1999050120"/>
@@ -1083,5 +1083,20 @@
     </day>
     <day year="2012" month="03" day="31">
         <crc-error time="07:33:50" application="test-string.py" choice="" database-crc="1314289117" real-crc="2044077155"/>
+    </day>
+    <day year="2012" month="12" day="26">
+        <crc-error time="07:03:24" application="anti-pattern.py" choice="" database-crc="1260008968" real-crc="-801265395"/>
+        <crc-error time="07:04:21" application="test-lonely-characters.py" choice="" database-crc="2023379676" real-crc="-899417507"/>
+        <crc-error time="07:06:22" application="test-pre-condition.py" choice="" database-crc="-401518183" real-crc="1039998230"/>
+        <crc-error time="07:06:34" application="test-pre-and-post-condition.py" choice="" database-crc="-2052311123" real-crc="154473630"/>
+        <crc-error time="07:11:47" application="test-bol-eol.py" choice="" database-crc="1056889847" real-crc="1608293114"/>
+        <crc-error time="07:23:30" application="test-pre-condition.py" choice="" database-crc="1039998230" real-crc="-27662666"/>
+        <crc-error time="07:23:46" application="test-pre-condition.py" choice="" database-crc="-27662666" real-crc="-233634778"/>
+        <crc-error time="07:24:51" application="test-pre-and-post-condition.py" choice="" database-crc="154473630" real-crc="443851142"/>
+        <crc-error time="07:26:31" application="test-pre-and-post-condition.py" choice="" database-crc="443851142" real-crc="616333662"/>
+        <crc-error time="07:27:33" application="test-set-expressions.py" choice="" database-crc="-303655243" real-crc="-1312741512"/>
+        <crc-error time="07:29:14" application="test-bol-eol.py" choice="" database-crc="1608293114" real-crc="-1541374686"/>
+        <crc-error time="07:51:10" application="test-eol-carriage-return-newline.py" choice="" database-crc="-679971317" real-crc="908194429"/>
+        <crc-error time="08:04:26" application="test-transformation.py" choice="" database-crc="-1369751584" real-crc="1717615120"/>
     </day>
 </history>

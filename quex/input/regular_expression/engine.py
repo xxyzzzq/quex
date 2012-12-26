@@ -115,8 +115,8 @@ def snap_conditional_expression(stream, PatternDict):
                                expression / expression                 = post conditioned expression
                                expression / expression /               = pre conditioned expression
                                expression / expression / expression    = pre and post conditioned expression
-       TODO: <- ($8592) for pre-conditions
-             -> ($8594) for post-conditions
+       TODO: <- ($8592) for pre-context
+             -> ($8594) for post-context
 
 
         RETURNS: pre_context, core_pattern, post_context
@@ -152,7 +152,7 @@ def snap_conditional_expression(stream, PatternDict):
         #     NOTE: setup_pre_context() marks the state origins!
         return pattern_0, pattern_1, None
     else:
-        # (4) expression with post and pre-condition
+        # (4) expression with post and pre-context
         return pattern_0, pattern_1, pattern_2
 
 def snap_expression(stream, PatternDict):
