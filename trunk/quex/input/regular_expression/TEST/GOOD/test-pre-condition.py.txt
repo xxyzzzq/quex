@@ -1,13 +1,13 @@
 -------------------------------------------------------------------
 expression    = ""a"/";"/"
-state machine
+pattern
 init-state = 0L
 00000 ()
      == ';' ==> 00001
     
 00001 (A, pre=6)
     
-pre-condition inverted = init-state = 0L
+pre-context = init-state = 0L
 00000 ()
      == 'a' ==> 00001
     
@@ -16,14 +16,14 @@ pre-condition inverted = init-state = 0L
 
 -------------------------------------------------------------------
 expression    = "(a|z)/c/"
-state machine
+pattern
 init-state = 0L
 00000 ()
      == 'c' ==> 00001
     
 00001 (A, pre=20)
     
-pre-condition inverted = init-state = 0L
+pre-context = init-state = 0L
 00000 ()
      == 'a', 'z' ==> 00001
     
@@ -32,7 +32,7 @@ pre-condition inverted = init-state = 0L
 
 -------------------------------------------------------------------
 expression    = ""aac"|"bad"/"z"|congo/"
-state machine
+pattern
 init-state = 0L
 00000 ()
      == 'c' ==> 00001
@@ -52,7 +52,7 @@ init-state = 0L
     
 00005 (A, pre=51)
     
-pre-condition inverted = init-state = 0L
+pre-context = init-state = 0L
 00000 ()
      == 'c' ==> 00001
      == 'd' ==> 00004

@@ -89,9 +89,8 @@ def __frame(Txt, CharacterSet, SkipperAdr, ReferenceP_F, RequireLabelSKIP_F):
     # (*) Compose
     code =  []
 
-    if RequireLabelSKIP_F:
-        code.append("__SKIP:\n")
-        code.append(1)
+    code.append("__SKIP:\n")
+    code.append(1)
 
     LanguageDB.COMMENT(code, "Character Set Skipper: %s" % CharacterSet.get_utf8_string()),
     code.append(1)

@@ -30,7 +30,6 @@ def do(the_state_machine, pre_context_sm, BeginOfLinePreContextF):
     # -- trivial pre-conditions should be added last, for simplicity
 
     #___________________________________________________________________________________________
-        
     if pre_context_sm is  None:
         if BeginOfLinePreContextF:
             # Mark all acceptance states with the 'trivial pre-context BeginOfLine' flag

@@ -541,8 +541,8 @@ def __terminal_states(StateMachineName, action_db, VariableDB, PreConditionIDLis
                       OnFailureAction, OnEndOfStreamAction, OnAfterMatchAction, 
                       Setup, 
                       SimpleF=False):
-    """NOTE: During backward-lexing, for a pre-condition, there is not need for terminal
-             states, since only the flag 'pre-condition fulfilled is raised.
+    """NOTE: During backward-lexing, for a pre-context, there is not need for terminal
+             states, since only the flag 'pre-context fulfilled is raised.
     """      
     LanguageDB = Setup.language_db
 

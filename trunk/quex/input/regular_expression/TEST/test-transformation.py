@@ -18,8 +18,12 @@ if "--hwut-info" in sys.argv:
 def test(TestString):
     print "-------------------------------------------------------------------"
     print "expression    = \"" + TestString + "\""
-    sm = core.do(TestString, {})
-    print "state machine\n", sm.get_string(NormalizeF=True, Option="hex") 
+    pattern = core.do(TestString, {})
+
+    pattern.transform(Setup.buffer_codec_transformation_info)
+    pattern.mount_pre_context_sm()
+    pattern.mount_bipd_sm()
+    print "pattern\n", pattern.get_string(NormalizeF=True, Option="hex") 
 
 test('µ/µ+/µ')
 test('[aµ]+/[aµ]')

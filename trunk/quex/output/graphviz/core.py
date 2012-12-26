@@ -16,7 +16,7 @@ class Generator(GeneratorBase):
         self.__do(self.sm, self.state_machine_name + ".dot", Option)
 
         if self.pre_context_sm is not None:
-            file_name = "%s-pre-condition.dot" % self.state_machine_name
+            file_name = "%s-pre-context.dot" % self.state_machine_name
             self.pre_context_file_name = file_name
             self.__do(self.pre_context_sm, file_name, Option)
 

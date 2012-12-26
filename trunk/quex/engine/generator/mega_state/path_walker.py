@@ -102,7 +102,7 @@ def framework(txt, PWState, TheAnalyzer):
     """
     LanguageDB = Setup.language_db
     input_do(txt, PWState, TheAnalyzer, ForceInputDereferencingF=True) 
-    LanguageDB.STATE_DEBUG_INFO(txt, PWState)
+    ## LanguageDB.STATE_DEBUG_INFO(txt, PWState) -- done in input_do
 
     # Three Versions of PathWalker Heads:
     if PWState.uniform_entry_command_list_along_all_paths is not None:

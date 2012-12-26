@@ -108,11 +108,14 @@ def get(ThePattern, EOF_ActionF):
         else:
             arg = LanguageDB.MULTIPLY_WITH("LexemeL", IncrementByLexemeLength)
 
-        return [1, "__QUEX_IF_COUNT_SHIFT_VALUES();\n",
-                1, "__QUEX_IF_COUNT_%s_ADD(%s);\n" % (HelpStr, arg)]
+        return [1, "__QUEX_IF_COUNT_%s_ADD(%s);\n" % (HelpStr, arg)]
+
+    # Column and line counts must be shifted (begin=end) even if only
+    # columns are counted. For example, even if only columns are modified
+    # the old line_number_at_begin must be adapted to the current.
+    txt = [1, "__QUEX_IF_COUNT_SHIFT_VALUES();\n"]
 
     # -- Line Number Count
-    txt = []
     txt.extend(get_increment(counter.line_n_increment, 
                              counter.line_n_increment_by_lexeme_length, 
                              "LINES"))
@@ -133,7 +136,6 @@ def get(ThePattern, EOF_ActionF):
         if counter.grid_step_n == E_Count.VOID: grid_step_n = "LexemeL"
         else:                                   grid_step_n = counter.grid_step_n
 
-        txt.extend([1, "__QUEX_IF_COUNT_SHIFT_VALUES();\n"])
         txt.extend(LanguageDB.GRID_STEP("self.counter._column_number_at_end", "size_t",
                                         counter.grid_step_size_by_lexeme_length, 
                                         grid_step_n, IfMacro="__QUEX_IF_COUNT_COLUMNS"))

@@ -8,7 +8,7 @@ import quex.engine.state_machine.setup_backward_input_position_detector  as setu
 import quex.engine.state_machine.transformation        as     transformation
 import quex.engine.state_machine.algorithm.beautifier  as beautifier
 #                                                         
-from   quex.blackboard           import setup       as Setup, deprecated
+from   quex.blackboard           import setup     as Setup, deprecated
 from   quex.engine.misc.file_in  import error_msg
 import sys
 
@@ -17,8 +17,9 @@ class Pattern(object):
                  "__post_context_f", 
                  "__bipd_sm_to_be_inverted",        "__bipd_sm", 
                  "__pre_context_sm_to_be_inverted", "__pre_context_sm", 
-                 "__pre_context_trivial_begin_of_line_f", 
-                 "__count_info")
+                 "__pre_context_begin_of_line_f", 
+                 "__count_info", 
+                 "__alarm_transformed_f")
     def __init__(self, CoreSM, PreContextSM=None, PostContextSM=None, 
                  BeginOfLineF=False, EndOfLineF=False, 
                  fh=-1):
@@ -61,11 +62,12 @@ class Pattern(object):
             self.__bipd_sm_to_be_inverted        = beautifier.do(self.__bipd_sm_to_be_inverted)
 
         # Detect the trivial pre-context
-        self.__pre_context_trivial_begin_of_line_f = BeginOfLineF
-        if self.__pre_context_sm_to_be_inverted is not None:
-            self.__pre_context_trivial_begin_of_line_f = False
+        self.__pre_context_begin_of_line_f = BeginOfLineF
         
         self.__count_info = None
+
+        # Ensure, that the pattern is never transformed twice
+        self.__alarm_transformed_f = False
 
         self.__validate(fh)
     
@@ -78,9 +80,12 @@ class Pattern(object):
         if self.__count_info is not None:
             return self.__count_info
 
+        # If the pre-context is 'trivial begin of line', then the column number
+        # starts counting at '1' and the column number may actually be set
+        # instead of being added.
         self.__count_info = character_counter.do(self.__sm, 
                                                  LineColumn_CounterDB, 
-                                                 self.__pre_context_trivial_begin_of_line_f, 
+                                                 self.pre_context_trivial_begin_of_line_f, 
                                                  CodecTrafoInfo)
         return self.__count_info
 
@@ -96,16 +101,19 @@ class Pattern(object):
     @property
     def bipd_sm(self):                             return self.__bipd_sm
     @property
-    def pre_context_trivial_begin_of_line_f(self): return self.__pre_context_trivial_begin_of_line_f
+    def pre_context_trivial_begin_of_line_f(self): 
+        if self.__pre_context_sm_to_be_inverted is not None:
+            return False
+        return self.__pre_context_begin_of_line_f
     @property
     def post_context_f(self):                      return self.__post_context_f
     def has_pre_or_post_context(self):
-        if   self.__pre_context_trivial_begin_of_line_f:        return True
+        if   self.__pre_context_begin_of_line_f:                return True
         elif self.__pre_context_sm_to_be_inverted is not None:  return True
         elif self.__post_context_f:                             return True
         return False
     def has_pre_context(self): 
-        return    self.__pre_context_trivial_begin_of_line_f \
+        return    self.__pre_context_begin_of_line_f \
                or self.__pre_context_sm_to_be_inverted is not None
 
     def set_sm(self, SM):                            self.__sm                            = SM
@@ -116,12 +124,12 @@ class Pattern(object):
 
     def mount_pre_context_sm(self):
         if    self.__pre_context_sm_to_be_inverted is None \
-          and self.__pre_context_trivial_begin_of_line_f == False:
+          and self.__pre_context_begin_of_line_f == False:
             return
 
         self.__pre_context_sm = setup_pre_context.do(self.__sm, 
                                                      self.__pre_context_sm_to_be_inverted, 
-                                                     self.__pre_context_trivial_begin_of_line_f)
+                                                     self.__pre_context_begin_of_line_f)
 
     def mount_bipd_sm(self):
         if self.__bipd_sm_to_be_inverted is None: 
@@ -147,6 +155,11 @@ class Pattern(object):
 
     def transform(self, TrafoInfo):
         """Transform state machine if necessary."""
+
+        # Make sure that a pattern is never transformed twice
+        assert self.__alarm_transformed_f == False
+        self.__alarm_transformed_f = True
+
         if TrafoInfo is None: 
             return
 
@@ -194,12 +207,20 @@ class Pattern(object):
 
         msg = self.__sm.get_string(NormalizeF, Option)
             
-        if self.__pre_context_sm_to_be_inverted is not None:
-            msg += "pre condition to be inverted = "
+        if   self.__pre_context_sm is not None:
+            msg += "pre-context = "
+            msg += self.__pre_context_sm.get_string(NormalizeF, Option)           
+
+        elif self.__pre_context_sm_to_be_inverted is not None:
+            msg += "pre-context to be inverted = "
             msg += self.__pre_context_sm_to_be_inverted.get_string(NormalizeF, Option)           
 
-        if self.__bipd_sm_to_be_inverted is not None:
-            msg += "post context backward input position detector to be inverted = "
+        if self.__bipd_sm is not None:
+            msg += "post-context backward input position detector = "
+            msg += self.__bipd_sm.get_string(NormalizeF, Option)           
+
+        elif self.__bipd_sm_to_be_inverted is not None:
+            msg += "post-context backward input position detector to be inverted = "
             msg += self.__bipd_sm_to_be_inverted.get_string(NormalizeF, Option)           
 
         return msg
@@ -262,7 +283,7 @@ def __detect_path_of_nothing_is_necessary(sm, Name, PostContextPresentF, fh):
         "pre context":
             "E.g., pattern 'x*/y/' means that zero or more 'x' are a pre-\n"             + \
             "condition for 'y'. If zero appearances of 'x' are enough, then obviously\n" + \
-            "there is no pre-condition for 'y'! Most likely the author intended 'x+/y/'.",
+            "there is no pre-context for 'y'! Most likely the author intended 'x+/y/'.",
 
         "post context":
             "A post context where nothing is necessary is superfluous.",

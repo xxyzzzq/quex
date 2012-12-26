@@ -1,6 +1,6 @@
 ___________________________________________________________________________
 expression    = "^[a-z]+$"
-state machine
+pattern
 init-state = 0L
 00000 ()
      == ['a', 'z'] ==> 00001
@@ -19,7 +19,7 @@ init-state = 0L
 begin of line =  True
 ___________________________________________________________________________
 expression    = "^[a-b]/[c-z]$"
-state machine
+pattern
 init-state = 0L
 00000 ()
      == ['a', 'b'] ==> 00001

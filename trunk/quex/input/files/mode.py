@@ -926,8 +926,7 @@ def __parse_element(new_mode, fh):
     """
     position = fh.tell()
     try:
-        description = "Pattern or event handler name.\n" + \
-                      "Missing closing '}' for end of mode"
+        description = "pattern or event handler" 
 
         skip_whitespace(fh)
         # NOTE: Do not use 'read_word' since we need to continue directly after
@@ -941,11 +940,11 @@ def __parse_element(new_mode, fh):
         if __parse_event(new_mode, fh, word): return True
 
         fh.seek(position)
-        description = "Start of mode element: regular expression"
+        description = "start of mode element: regular expression"
         pattern_str, pattern = regular_expression.parse(fh)
 
         position    = fh.tell()
-        description = "Start of mode element: code fragment for '%s'" % pattern_str
+        description = "start of mode element: code fragment for '%s'" % pattern_str
 
         __parse_action(new_mode, fh, pattern_str, pattern)
 

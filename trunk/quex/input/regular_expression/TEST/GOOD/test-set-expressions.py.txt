@@ -39,7 +39,7 @@ Check the range cut ...
 expression = "[^a]"
 result     = init-state = 0L
 00000 ()
-     == [-7FFFFFFF, 0060] [0062, 7FFFFFFE]  ==> 00001
+     == [-oo, 0060] [0062, oo]  ==> 00001
     
 00001 (A)
     
@@ -47,7 +47,7 @@ result     = init-state = 0L
 expression = "[:inverse([a]):]"
 result     = init-state = 2L
 00002 ()
-     == [-7FFFFFFF, 0060] [0062, 7FFFFFFE]  ==> 00003
+     == [-oo, 0060] [0062, oo]  ==> 00003
     
 00003 (A)
     

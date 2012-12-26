@@ -41,7 +41,7 @@ class GeneratorBase:
         # -- extract:
         #    -- state machines that are post-conditioned
         self.post_contexted_sm_id_list = []
-        #    -- state machines that are non-trivially pre-conditioned, 
+        #    -- state machines that are non-trivially pre-contexted, 
         #       i.e. they need a reverse state machine to be verified.
         self.pre_context_sm_id_list  = []
         self.pre_context_sm_list     = []
@@ -58,7 +58,7 @@ class GeneratorBase:
             # -- register action information under the state machine id, where it belongs.
             self.action_db[sm_id] = pap
 
-            # -- collect all pre-conditions and make one single state machine out of it
+            # -- collect all pre-contexts and make one single state machine out of it
             sm = pattern.pre_context_sm
             if sm is not None:
                 self.pre_context_sm_list.append(sm)
@@ -74,7 +74,7 @@ class GeneratorBase:
                 self.post_contexted_sm_id_list.append(sm_id)
 
             # [NOT IMPLEMENTED YET]    
-            # # -- collect information about trivial (char code) pre-conditions 
+            # # -- collect information about trivial (char code) pre-contexts 
             # # if len(sm.get_trivial_pre_context_character_codes()) != 0:
             # #    trivial_pre_context_dict[sm.get_id()] = sm.get_trivial_pre_context_character_codes()
 
@@ -94,7 +94,7 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
               are traced through the whole process.
               
        FilterDominatedOriginsF, if set to False, can disable the filtering
-              of dominated origins. This is important for pre-conditions, because,
+              of dominated origins. This is important for pre-contexts, because,
               all successful patterns need to be reported!            
                       
     """   

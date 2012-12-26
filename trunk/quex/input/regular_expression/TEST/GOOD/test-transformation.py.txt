@@ -1,6 +1,6 @@
 -------------------------------------------------------------------
 expression    = "µ/µ+/µ"
-state machine
+pattern
 init-state = 0L
 00000 ()
      == [00C2]  ==> 00001
@@ -17,7 +17,7 @@ init-state = 0L
 00004 (A, pre=27)
      == [00C2]  ==> 00003
     
-pre-condition inverted = init-state = 0L
+pre-context = init-state = 0L
 00000 ()
      == [00B5]  ==> 00001
     
@@ -26,7 +26,7 @@ pre-condition inverted = init-state = 0L
     
 00002 (A)
     
-post context backward input position detector inverted = init-state = 0L
+post-context backward input position detector = init-state = 0L
 00000 ()
      == [00B5]  ==> 00001
     
@@ -38,7 +38,7 @@ post context backward input position detector inverted = init-state = 0L
 
 -------------------------------------------------------------------
 expression    = "[aµ]+/[aµ]"
-state machine
+pattern
 init-state = 0L
 00000 ()
      == [0061]  ==> 00001
@@ -71,7 +71,7 @@ post context backward input position detector inverted = init-state = 0L
 
 -------------------------------------------------------------------
 expression    = "[^a]+/[^a]a"
-state machine
+pattern
 init-state = 0L
 00000 ()
      == [0000, 0060] [0062, 007F]  ==> 00001

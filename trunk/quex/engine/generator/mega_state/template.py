@@ -85,7 +85,7 @@ from   quex.blackboard import setup as Setup
 def framework(txt, TState, TheAnalyzer):
     input_do(txt, TState, TheAnalyzer) 
     LanguageDB = Setup.language_db
-    LanguageDB.STATE_DEBUG_INFO(txt, TState)
+    ## LanguageDB.STATE_DEBUG_INFO(txt, TState) -- Done in input_do
 
 def require_data(TState, TheAnalyzer):
     """Requires all variables which are necessary to implement the TemplateState.
