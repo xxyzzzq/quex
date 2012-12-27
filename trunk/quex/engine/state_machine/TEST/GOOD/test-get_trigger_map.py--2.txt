@@ -5,8 +5,8 @@
 
 ## Map: Trigger Intervals (sorted) --> Target Index
 
-    [-2147483647, 44] 	---> DROP_OUT
+    [-oo, 44] 	---> DROP_OUT
     [45] 	---> 1L
     [46] 	---> DROP_OUT
     [47] 	---> 1L
-    [48, 2147483646] 	---> DROP_OUT
+    [48, oo] 	---> DROP_OUT

@@ -11,71 +11,64 @@ from   quex.input.regular_expression.construct                import Pattern
 import quex.input.regular_expression.character_set_expression as charset_expression
 import quex.input.regular_expression.snap_character_string    as snap_character_string
 
-def parse(fh, AllowNothingIsFineF=False, AllowStateMachineTrafoF=True):
+def parse(Txt_or_File, AllowNothingIsFineF=False, AllowStateMachineTrafoF=True):
 
-    start_position = fh.tell()
+    sh, sh_ref, start_position = __prepare_text_or_file_stream(Txt_or_File)
+
+    start_position, pattern_str, pattern = __parse(sh)
+
+    return pattern_str, pattern
+
+def parse_character_string(Txt_or_File):
+
+    start_position, pattern_str, pattern = __parse(sh)
+
+    # Check whether it is a simple sequence.
+    character_sequence = pattern.sm.get_number_sequence()
+    if    pattern.has_pre_context() or pattern.has_post_context() \
+       or character_sequence is None:
+        fh.seek(start_position)
+        error_msg("Regular expression cannot be interpreted as plain character string.", fh)
+
+    return pattern_str, pattern, character_sequence
+
+def parse_character_set(Txt_or_File):
+    start_position, pattern_str, pattern = __parse(sh)
+
+    # Check whether it is a simple character set.
+    character_set = pattern.sm.get_number_set()
+    if    pattern.has_pre_context() or pattern.has_post_context() \
+       or character_set is None:
+        fh.seek(start_position)
+        error_msg("Regular expression cannot be interpreted as plain character set.", fh)
+
+    return pattern_str, pattern, character_set
+
+def __parse(Txt_or_File, AllowNothingIsFineF=False, AllowStateMachineTrafoF=True):
+
+    start_position = sh.tell()
     try:
         # (*) parse regular expression, build state machine
-        pattern = regex.do(fh, blackboard.shorthand_db, 
+        pattern = regex.do(sh, blackboard.shorthand_db, 
                            AllowNothingIsNecessaryF = AllowNothingIsFineF,
                            AllowStateMachineTrafoF  = AllowStateMachineTrafoF)
 
-
     except RegularExpressionException, x:
-        fh.seek(start_position)
-        error_msg("Regular expression parsing:\n" + x.message, fh)
+        sh.seek(start_position)
+        error_msg("Regular expression parsing:\n" + x.message, sh)
 
     except EndOfStreamException:
-        fh.seek(start_position)
-        error_eof("regular expression", fh)
+        sh.seek(start_position)
+        error_eof("regular expression", sh)
 
-    return __post_process(fh, start_position, pattern, ReturnRE_StringF=True)
+    end_position = fh.tell()
+    fh.seek(StartPosition)
+    pattern_str = fh.read(end_position - StartPosition)
+    if pattern_str == "":
+        pattern_str = fh.read(1)
+        fh.seek(-1, 1)
 
-def parse_character_string(Txt_or_File, PatternStringF=False):
-
-    sh, sh_ref, start_position = __prepare_text_or_file_stream(Txt_or_File)
-
-    try:
-        # -- parse regular expression, build state machine
-        state_machine = snap_character_string.do(sh)
-        state_machine = regex.__clean_and_validate(state_machine, AllowNothingIsNecessaryF=False, fh=sh)
-
-        if state_machine is None:
-            error_msg("No valid regular character string expression detected.", sh_ref)
-
-    except RegularExpressionException, x:
-        error_msg("Regular expression parsing:\n" + x.message, sh_ref)
-
-    except EndOfStreamException:
-        if sh_ref != -1: sh_ref.seek(start_position)
-        error_eof("character string", sh_ref)
-
-    return __post_process(sh, start_position, state_machine, PatternStringF)
-
-def parse_character_set(Txt_or_File, PatternStringF=False):
-
-    sh, sh_ref, start_position = __prepare_text_or_file_stream(Txt_or_File)
-
-    try:
-        # -- parse regular expression, build state machine
-        character_set = charset_expression.snap_set_expression(sh, blackboard.shorthand_db)
-
-        if character_set is None:
-            error_msg("No valid regular character set expression detected.", sh_ref)
-
-        # -- character set is not supposed to contain buffer limit code
-        # BUT: At his point, we do not know the codec, yet! We cannot cut
-        #      the buffer limit code or any other signalling character
-        #      before the transformation has been done.
-
-    except RegularExpressionException, x:
-        error_msg("Regular expression parsing:\n" + x.message, sh_ref)
-
-    except EndOfStreamException:
-        if sh_ref != -1: sh_ref.seek(start_position)
-        error_eof("character set expression", sh_ref)
-
-    return __post_process(sh, start_position, character_set, PatternStringF)
+    return start_position, pattern_str, pattern
 
 def __prepare_text_or_file_stream(Txt_or_File):
     if Txt_or_File.__class__ in [file, StringIO]:
@@ -87,14 +80,14 @@ def __prepare_text_or_file_stream(Txt_or_File):
 
     return sh, sh_ref, sh.tell()
 
-def __post_process(fh, StartPosition, object, ReturnRE_StringF):
-    assert    object is None                   \
-           or isinstance(object, Pattern) \
-           or isinstance(object, StateMachine) \
-           or isinstance(object, NumberSet)
+def __post_process(fh, StartPosition, Result, ReturnRE_StringF):
+    assert    Result is None                   \
+           or isinstance(Result, Pattern) \
+           or isinstance(Result, StateMachine) \
+           or isinstance(Result, NumberSet)
 
     if False and isinstance(fh, StringIO):
-        regular_expression = ""
+        regular_expression = "" # Earlier there was some doubt in StringIO ...
     else:
         end_position = fh.tell()
         fh.seek(StartPosition)
@@ -104,12 +97,12 @@ def __post_process(fh, StartPosition, object, ReturnRE_StringF):
             fh.seek(-1, 1)
 
     # (*) error in regular expression?
-    if object is None:
+    if Result is None:
         error_msg("No valid regular expression detected, found '%s'." % regular_expression, fh)
 
     # NOT: Do not transform here, since transformation might happen twice when patterns
     #      are defined and when they are replaced.
-    if ReturnRE_StringF: return regular_expression, object
-    else:                return object
+    if ReturnRE_StringF: return regular_expression, Result
+    else:                return Result
 
 

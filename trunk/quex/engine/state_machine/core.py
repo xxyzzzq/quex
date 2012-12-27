@@ -627,6 +627,45 @@ class StateMachine(object):
         # Walk with the sequence the state machine
         return dive(self.init_state_index, UserSequence)
 
+    def get_number_sequence(self):
+        """Returns a number sequence that represents the state machine.
+        If the state machine cannot be represented by a plain chain of 
+        number, then it returns 'None'.
+
+        Assumes: State machine is 'beautified'.
+        """
+        state  = self.get_init_state()
+        result = []
+        while 1 + 1 == 2:
+            target_map = state.transitions().get_map()
+            if   len(target_map) == 0:
+                return result
+            elif len(target_map) > 1:
+                return None
+
+            trigger_set = target_map.itervalues().next() 
+            number      = trigger_set.get_the_only_element()
+            if number is None:
+                return None
+            result.append(Number)
+
+    def get_number_set(self):
+        """Returns a number set that represents the state machine.
+        If the state machine cannot be represented by a plain NumberSet,
+        then it returns 'None'.
+
+        Assumes: State machine is 'beautified'.
+        """
+        if len(self.states) != 2:
+            return None
+
+        # There can be only one target state from the init state
+        target_map = self.get_init_state().transitions().get_map()
+        if len(target_map) != 1:
+            return None
+
+        return target_map.itervalues().next()
+
     def get_ending_character_set(self):
         """Returns the union of all characters that trigger to an acceptance
            state in the given state machine. This is to detect whether the

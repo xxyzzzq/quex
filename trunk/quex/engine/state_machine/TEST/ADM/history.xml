@@ -1,4 +1,4 @@
-<history date="Wed Dec 26 10:38:54 2012" element-n="620">
+<history date="Wed Dec 26 13:35:10 2012" element-n="631">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1358,5 +1358,18 @@
         <crc-error time="22:23:29" application="test-utf8_state_split.py" choice="4.4" database-crc="1785915379" real-crc="-184606508"/>
         <crc-error time="22:25:20" application="test-count_character_n.py" choice="Normal" database-crc="-1272534754" real-crc="1986366330"/>
         <crc-error time="22:25:33" application="test-count_character_n.py" choice="BeginOfLine" database-crc="-1770029078" real-crc="1838627259"/>
+    </day>
+    <day year="2012" month="12" day="26">
+        <crc-error time="10:27:35" application="test-get_trigger_map.py" choice="1" database-crc="-537668508" real-crc="-1210141180"/>
+        <crc-error time="10:27:48" application="test-get_trigger_map.py" choice="2" database-crc="505699906" real-crc="-1596272991"/>
+        <crc-error time="10:27:59" application="test-get_trigger_map.py" choice="3" database-crc="-1575462089" real-crc="-1382893625"/>
+        <crc-error time="10:28:10" application="test-get_trigger_map.py" choice="4" database-crc="-1207648438" real-crc="152282999"/>
+        <crc-error time="10:28:20" application="test-get_trigger_map.py" choice="5" database-crc="-913294462" real-crc="-673391264"/>
+        <crc-error time="10:28:30" application="test-get_trigger_map.py" choice="6" database-crc="1275227102" real-crc="-124664227"/>
+        <crc-error time="10:28:38" application="test-get_trigger_map.py" choice="7" database-crc="-1417916909" real-crc="-1063277476"/>
+        <crc-error time="10:28:45" application="test-get_trigger_map.py" choice="8" database-crc="752136033" real-crc="238239949"/>
+        <crc-error time="10:29:51" application="test-ambiguous_post_condition-mount_pseudo.py" choice="" database-crc="-1909008707" real-crc="-1156165497"/>
+        <crc-error time="10:30:04" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-2030704293" real-crc="-1703144975"/>
+        <crc-error time="10:30:20" application="test-StateMachine-clone.py" choice="" database-crc="-821346206" real-crc="1381182980"/>
     </day>
 </history>

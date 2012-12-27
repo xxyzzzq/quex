@@ -519,17 +519,21 @@ class Mode:
             return
 
         for i, range_skip_info in enumerate(ssetup_list):
-            opener_str, opener_sm, opener_sequence, closer_sequence = range_skip_info
+            opener_str, opener_pattern, opener_sequence, \
+            closer_str, closer_pattern, closer_sequence  = range_skip_info
+
             # Skipper code is to be generated later
-            action = GeneratedCode(skip_range.do,
-                                   FileName = "<TODO: filenname>", # fh.name, 
-                                   LineN    = -1) # get_current_line_info_number(fh))
+            action = GeneratedCode(SkipperFunction,
+                                   FileName = opener_pattern.file_name
+                                   LineN    = opener_pattern.line_n) # get_current_line_info_number(fh))
 
             action.data["opener_sequence"] = opener_sequence
+            action.data["opener_pattern"]  = opener_pattern
             action.data["closer_sequence"] = closer_sequence
+            action.data["closer_pattern"]  = closer_pattern
 
             xpap_list.append((PatternPriority(MHI, i), 
-                              PatternActionInfo(Pattern(opener_sm), action, opener_str, 
+                              PatternActionInfo(opener_pattern, action, opener_str, 
                                                 ModeName=self.name, Comment=Comment)))
 
     def __prepare_indentation_counter(self, xpap_list, MHI):
@@ -675,7 +679,7 @@ class Mode:
                 xpap = xpap_list[i]
                 if     xpap[0].mode_hierarchy_index <= MHI \
                    and xpap[0].pattern_index < Info.pattern_index \
-                   and superset_check.do(xpap[1].pattern(), Info.pattern):
+                   and superset_check.do(Info.pattern, xpap[1].pattern()):
                     done_f  = True
                     del xpap_list[i]
                     history.append([ModeName, xpap[1].pattern_string(), xpap[1].mode_name])

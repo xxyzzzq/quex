@@ -1,11 +1,9 @@
 #! /usr/bin/env python
 import sys
 import os
-sys.path.insert(0, os.environ["QUEX_PATH"])
+sys.path.insert(0, os.getcwd())
+from helper import *
 from quex.engine.interval_handling import NumberSet, Interval
-from quex.engine.generator.TEST.generator_test import create_character_set_skipper_code, \
-                           compile_and_run, \
-                           __Setup_init_language_database
 
 if "--hwut-info" in sys.argv:
     print "Skip-Characters: Large Buffer"

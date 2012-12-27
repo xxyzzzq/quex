@@ -59,7 +59,7 @@ example%.o: ../example.c  Easy%.c
 
 EasyLexer EasyLexer.c: simple.qx $(QUEX_CORE)
 	quex -i simple.qx --engine EasyLexer \
-		 --language C --debug-exception
+		 --language C
 
 EasyLexer_bad_space EasyLexer_bad_space.c: simple.qx $(QUEX_CORE)
 	quex -i simple_bad_space.qx --engine EasyLexer_bad_space \

@@ -13,7 +13,8 @@ from   quex.engine.misc.file_in  import error_msg
 import sys
 
 class Pattern(object):
-    __slots__ = ("__sm", 
+    __slots__ = ("file_name", "line_n", 
+                 "__sm", 
                  "__post_context_f", 
                  "__bipd_sm_to_be_inverted",        "__bipd_sm", 
                  "__pre_context_sm_to_be_inverted", "__pre_context_sm", 
@@ -27,6 +28,14 @@ class Pattern(object):
         assert type(EndOfLineF) == bool
         assert isinstance(CoreSM, StateMachine)
         assert PreContextSM is None or isinstance(CoreSM, StateMachine)
+
+        if fh != -1:
+            try:    self.file_name = fh.name
+            except: self.file_name = "<string>"
+            self.line_n = get_current_line_info_number(fh)
+        else:
+            self.file_name = "<string>"
+            self.line_n    = -1
 
         # (*) Setup the whole pattern
         self.__sm = CoreSM
