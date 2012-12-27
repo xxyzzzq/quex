@@ -197,9 +197,9 @@ def require_data(PWState, TheAnalyzer):
             #       used is reload during the FIRST state. The reload adapts the positions
             #       and acceptances are not changed. So, we can use the common entry
             #       to the first state as a reference here.
-            prev_state_index  = path[0][0]
+            prev_state_index = path[0].state_index
             result.append("        ")
-            for state_index in (x[0] for x in path[1:]):
+            for state_index in (x.state_index for x in path[1:]):
                 result.append("QUEX_LABEL(%i), " % LanguageDB.ADDRESS(state_index, prev_state_index))
                 prev_state_index = state_index
             result.append("/* Zero of Elegance */0x0,")

@@ -27,7 +27,7 @@ def parse(fh, new_mode):
     verify_word_in_list(identifier, mode_option_info_db.keys(),
                         "mode option", fh.name, get_current_line_info_number(fh))
 
-    if identifier == "skip":
+    if   identifier == "skip":
         value = __parse_skip_option(fh, new_mode)
 
     elif identifier in ["skip_range", "skip_nested_range"]:
@@ -64,13 +64,13 @@ def __parse_skip_option(fh, new_mode):
     whitespace skipper '[ \t\n]'. The skipper definition allows quex to
     implement a very effective way to skip these regions."""
 
-    pattern_str, trigger_set = regular_expression.parse_character_set(fh, PatternStringF=True)
+    pattern_str, pattern, trigger_set = regular_expression.parse_character_set(fh, PatternStringF=True)
+
     skip_whitespace(fh)
 
     if fh.read(1) != ">":
         error_msg("missing closing '>' for mode option '%s'." % identifier, fh)
-
-    if trigger_set.is_empty():
+    elif trigger_set.is_empty():
         error_msg("Empty trigger set for skipper." % identifier, fh)
 
     return trigger_set
@@ -80,28 +80,23 @@ def __parse_range_skipper_option(fh, identifier, new_mode):
     since it only effects the trigger. Not so the nested range skipper-see below.
     """
 
-    # -- opener
+    # Range state machines only accept 'strings' not state machines
     skip_whitespace(fh)
-    if identifier == "skip_nested_range":
-        # Nested range state machines only accept 'strings' not state machines
-        opener_str, opener_sequence = __parse_string(fh, "Opener pattern for 'skip_nested_range'")
-        opener_sm = StateMachine.from_sequence(opener_sequence)
-    else:
-        opener_str, opener_pattern = regular_expression.parse(fh)
-        opener_sm = opener_pattern.sm
-        # For 'range skipping' the opener sequence is not needed, only the opener state
-        # machine is webbed into the pattern matching state machine.
-        opener_sequence       = None
-
+    opener_str, opener_pattern, opener_sequence = regular_expression.parse_character_string(fh)
     skip_whitespace(fh)
+    closer_str, closer_pattern, closer_sequence = regular_expression.parse_character_string(fh)
 
     # -- closer
-    closer_str, closer_sequence = __parse_string(fh, "Closing pattern for 'skip_range' or 'skip_nested_range'")
     skip_whitespace(fh)
     if fh.read(1) != ">":
         error_msg("missing closing '>' for mode option '%s'" % identifier, fh)
+    elif len(opener_sequence) == 0:
+        error_msg("Empty sequence for opening delimiter.", fh)
+    elif len(closer_sequence) == 0:
+        error_msg("Empty sequence for closing delimiter.", fh)
 
-    return (opener_str, opener_sm, opener_sequence, closer_sequence)
+    return (opener_str, opener_pattern, opener_sequence, \
+            closer_str, closer_pattern, closer_sequence)
 
 def read_option_start(fh):
     skip_whitespace(fh)
@@ -141,20 +136,4 @@ def read_option_value(fh):
         value += letter
 
     return value.strip()
-
-def __parse_string(fh, Name):
-    pos = fh.tell()
-    if fh.read(1) != "\"":
-        pos = fh.tell()
-        msg = fh.read(5)
-        fh.seek(pos)
-        error_msg("%s can\n" % Name + 
-                  "only be a string and must start with a quote like \".\n" +
-                  "Found '%s'" % msg, fh)
-
-    sequence = snap_character_string.get_character_code_sequence(fh)
-    end_pos  = fh.tell()
-    fh.seek(pos)
-    msg      = fh.read(end_pos - pos)
-    return msg, sequence
 

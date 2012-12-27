@@ -10,7 +10,7 @@ if "--hwut-info" in sys.argv:
     print "Checking PRIORITY-MARK internally.;"
     print "CHOICES: 3-begin, 3-mid, 3-end, 2-begin, 2-end, 1, Nonsense," \
                    "derived-3-begin, derived-3-mid, derived-3-end, derived-2-begin, derived-2-end, derived-1, derived-Nonsense," \
-                   "before, derived-before, derived-deeply;"
+                   "before, derived-before, derived-deeply, superset, subset;"
     sys.exit()
 
 def check(*TxtList):
@@ -94,5 +94,10 @@ elif   "before" in sys.argv:
     check("X { A {a} B {b} C PRIORITY-MARK; C {c} }")
 elif   "derived-before" in sys.argv:
     check("X { A {a} B {b} C PRIORITY-MARK; }", "Y : X { C {c} }")
+elif "superset" in sys.argv:
+    check("X { A+ {a}        0 {b} [A-Za-z]+ PRIORITY-MARK; }")
+elif "subset" in sys.argv:
+    check("X { [A-Za-z]+ {a} 0 {b} A+        PRIORITY-MARK; }")
+
 
 

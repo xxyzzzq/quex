@@ -301,16 +301,16 @@ core pattern            = (.)+a
 post condition pattern  = (.)+
 post condition sm =  init-state = 0L
 00000 ()
-     == [\0, '\t'], ['\v', oo] ==> 00001
+     == [-oo, '\t'], ['\v', oo] ==> 00001
     
 00001 (A)
-     == [\0, '\t'], ['\v', oo] ==> 00001
+     == [-oo, '\t'], ['\v', oo] ==> 00001
     
 
 philosophical cut (in post condition) = 
 init-state = 0L
 00000 ()
-     == [\0, '\t'], ['\v', oo] ==> 00001
+     == [-oo, '\t'], ['\v', oo] ==> 00001
     
 00001 (A)
     

@@ -15,8 +15,8 @@ class Checker:
            RETURNS: 'True'  if so,
                     'False' if not.
         """
-        assert isinstance(SuperSM, StateMachine)
-        assert isinstance(CandidateSM, StateMachine)
+        assert isinstance(SuperSM, StateMachine),     SuperSM.__class__.__name__
+        assert isinstance(CandidateSM, StateMachine), CandidateSM.__class__.__name__
 
         self.sub   = CandidateSM
         self.super = SuperSM
@@ -143,7 +143,6 @@ def do(A, B):
     #
     #                 pre(B) is a superset of pre(A) 
     # 
-    #
     if B.pre_context_trivial_begin_of_line_f:
         if not A.pre_context_trivial_begin_of_line_f:
             # pre(A) can never be a subset of pre(B)
@@ -152,11 +151,16 @@ def do(A, B):
             # pre(A) = pre(B) which fulfills the condition
             return True
 
+    # IMPORTANT: The pre-contexts must be mounted at this point!
+    #            Call to '.mount_pre_context_sm()' must preceed this function.
+    assert A.pre_context_sm is not None
+    assert B.pre_context_sm is not None
+
     # NOW: B is a 'real' pre-context not only a 'begin-of-line'
     #
     # Decision about "pre(A) is subset of pre(B)" done by Checker
     if not A.pre_context_trivial_begin_of_line_f:
-        A_pre_sm = A.inverse_pre_context_sm
+        A_pre_sm = A.pre_context_sm
     else:
         # A contains only 'begin-of-line'. Note, however, that 
         # -- newline definition may include '\r\n' so inversion is 
@@ -166,7 +170,7 @@ def do(A, B):
         ##         machines. So this has also to be transformed.
         ## A_pre_sm = transformation.try_this(A_pre_sm, fh=-1)
 
-    return Checker(B.inverse_pre_context_sm, A_pre_sm).do()
+    return Checker(B.pre_context_sm, A_pre_sm).do()
 
 def do_list(SuperPattern_List, AllegedSubPattern):
     for super_sm in SuperPattern_List:

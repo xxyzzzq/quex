@@ -25,6 +25,8 @@ CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)                             \
 	 -Wall -Wconversion -pedantic                    \
 	 $(CCFLAG_ASSERTS)                               \
+     -DPRINT_TOKEN
+	 # -DPRINT_LINE_COLUMN_NUMBER 
      # -DQUEX_OPTION_ASSERTS_DISABLED
      # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
      # -DQUEX_OPTION_DEBUG_SHOW
@@ -50,8 +52,9 @@ example.o: ../example.cpp  EasyLexer.cpp
 EasyLexer.cpp: simple.qx $(QUEX_CORE)
 	quex -i                 simple.qx  \
 	     --engine           EasyLexer  \
-		 --token-id-offset     0x1000     \
-		 --post-categorizer
+		 --token-id-offset     0x1000  \
+		 --post-categorizer            \
+		 --comment-state-machine --comment-mode-patterns
 
 # (*) HELPERS __________________________________________________________________
 clean:	

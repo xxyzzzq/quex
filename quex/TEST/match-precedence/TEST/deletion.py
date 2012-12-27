@@ -10,7 +10,7 @@ if "--hwut-info" in sys.argv:
     print "Checking DELETE marks internally.;"
     print "CHOICES: 3-begin, 3-mid, 3-end, 2-begin, 2-end, 1, Nonsense," \
                    "derived-3-begin, derived-3-mid, derived-3-end, derived-2-begin, derived-2-end, derived-1, derived-Nonsense," \
-                   "before, derived-before, derived-deeply;"
+                   "before, derived-before, derived-deeply, superset, subset;"
     sys.exit()
 
 derived = None
@@ -61,6 +61,10 @@ elif "derived-deeply" in sys.argv:
              "X3 : X2 { A3 {a3} }",
              "X  : X3 { A0 DELETION; }"], "DELETION")
     sys.exit(0)
+elif "superset" in sys.argv:
+    base    = "X { A+ {a}        0 {b} [A-Za-z]+ DELETION; }"
+elif "subset" in sys.argv:
+    base    = "X { [A-Za-z]+ {a} 0 {b} A+        DELETION; }"
 
 if derived is not None:
     test.do([base, derived], "DELETION")

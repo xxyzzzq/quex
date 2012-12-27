@@ -164,18 +164,24 @@ to combine them into powerful patterns.
 .. describe:: \\A{P}
 
      Briefly worded, an anti-pattern of a pattern ``P`` matches all lexemes
-     which are caught by a match failure of ``P``. To be precise, let::
+     which are caught by a match failure of ``P``. 
 
-          s:  L0 --> L1
+     Let s(L) be a transformation which extracts out 'shortest' alternatives.
+     Let Lx be the set of *x* from L for which there is a second lexeme *y* in L
+     that starts with *x*. Then,::
 
-     be a transformation on a set of lexemes *L0*. For any lexeme in the
-     resulting set of lexemes *L1*, there are no two lexemes *x* and *y* 
-     so that *x* is the start sequence of *y*.
+                                 s(L) := L - Lx 
+     
+     As a result it is safe to assume that in s(L) there are no two lexemes
+     *x* and *y* so that *x* is the start of *y*. For example, the pattern 
+     '(ab)|(abc)' is matched by "ab" and "abc". The latter starts with the
+     former. The transformation s((ab)|(abc)) takes out the longest 
+     and matches therefore only "ab".
 
      Anti-Pattern
-        Let N be the set of all lexemes which are not matched by P. Then, the
+        Let Q be the set of all lexemes which are not matched by P. Then, the
         anti-pattern of P is the pattern which matches the set of lexemes
-        given by 's(N)'.
+        given by 's(Q)'.
 
      .. _fig-anti-pattern-0:
  

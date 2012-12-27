@@ -1,9 +1,8 @@
 #! /usr/bin/env python
 import sys
 import os
-sys.path.insert(0, os.environ["QUEX_PATH"])
-from   quex.engine.generator.TEST.generator_test import create_nested_range_skipper_code, \
-                             compile_and_run
+sys.path.insert(0, os.getcwd())
+from helper import *
 
 if "--hwut-info" in sys.argv:
     print "Skip-NestedRange: Delimiter Sizes 1 and 2;"

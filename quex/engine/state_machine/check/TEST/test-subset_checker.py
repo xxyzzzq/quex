@@ -16,7 +16,9 @@ def test(A, B):
         print ("super = " + SuperPattern).replace("\n", "\\n").replace("\t", "\\t")
         print ("sub   = " + SubPattern).replace("\n", "\\n").replace("\t", "\\t")
         super_p = regex.do(SuperPattern, {})
+        super_p.mount_pre_context_sm()
         sub_p   = regex.do(SubPattern, {})
+        sub_p.mount_pre_context_sm()
         # print "##super:", super_p
         # print "##sub:", sub_p
         print "claim = ", superset.do(super_p, sub_p)

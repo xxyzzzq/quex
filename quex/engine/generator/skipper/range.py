@@ -1,4 +1,5 @@
 import quex.engine.state_machine.index             as     sm_index
+import quex.engine.analyzer.engine_supply_factory  as     engine
 from   quex.engine.generator.skipper.common        import line_counter_in_loop, \
                                                           end_delimiter_is_subset_of_indentation_counter_newline, \
                                                           get_character_sequence, \
@@ -7,20 +8,24 @@ from   quex.engine.generator.skipper.common        import line_counter_in_loop, 
 from   quex.engine.generator.languages.address     import __nice, get_label
 from   quex.engine.generator.languages.variable_db import variable_db
 import quex.engine.state_machine.transformation    as     transformation
-from   quex.blackboard                             import setup as Setup
 from   quex.engine.misc.string_handling            import blue_print
+from   quex.engine.tools                           import r_enumerate
+import quex.output.cpp.counter_for_pattern         as     counter_for_pattern
+import quex.output.cpp.counter                     as     counter
 import quex.blackboard                             as     blackboard
+from   quex.blackboard                             import setup as Setup
 from   quex.blackboard                             import E_StateIndices
 from   copy                                        import copy
 
 def do(Data, Mode=None):
     ClosingSequence = Data["closer_sequence"]
+    ClosingPattern  = Data["closer_pattern"]
 
     assert Data.has_key("indentation_counter_terminal_id")
     
     indentation_counter_terminal_id = Data["indentation_counter_terminal_id"]
 
-    code_str = get_skipper(ClosingSequence, Mode, indentation_counter_terminal_id) 
+    code_str = get_skipper(ClosingSequence, ClosingPattern, Mode, indentation_counter_terminal_id) 
 
     return code_str
 
@@ -136,7 +141,72 @@ $$LC_COUNT_AFTER_RELOAD$$
     $$ON_SKIP_RANGE_OPEN$$
 """
 
-def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSkipRangeOpenStr=""):
+"""
+    while( 1 + 1 == 2 ) {
+        input = *(me->buffer._input_p);
+        /* Step through terminating delimiter. */
+        $$TERMINAL_SEQUENCE$$
+        }
+    }
+$$UPON_RELOAD_DONE_LABEL$$:
+            me->buffer._input_p = me->buffer.lexeme_start_p;
+"""
+
+def __terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePattern, UponReloadDoneAdr):
+    LanguageDB   = Setup.language_db
+
+    UnicodeEndSequencePattern.prepare_count_info(Mode.counter_db, Setup.buffer_codec_transformation_info)
+
+    # Trasform letter by letter.
+    sequence = []
+    for x in UnicodeSequence:
+        sequence.extend(transformation.do_character(x, Setup.buffer_codec_transformation_info))
+
+    txt = []
+    for i, x in enumerate(sequence):
+        txt.append(i)
+        txt.append(LanguageDB.IF_INPUT("==", "0x%X" % x, FirstF=True)) # Opening the 'if'
+        txt.append(i+1)
+        txt.append("%s\n" % LanguageDB.INPUT_P_INCREMENT())
+
+    run_time_counting_required_f, counter_txt = counter_for_pattern.get(UnicodeEndSequencePattern, EOF_ActionF=False)
+    assert not run_time_counting_required_f 
+
+    LanguageDB.INDENT(counter_txt, i+1)
+    txt.extend(counter_txt)
+    txt.append(i+1)
+    txt.append("break;\n")
+
+    for i, x in r_enumerate(sequence):
+        txt.append(i)
+        txt.append("%s"   % LanguageDB.IF_INPUT("==", "0x%X" % Setup.buffer_limit_code, FirstF=False)) # Check BLC
+        txt.append(i+1)
+        txt.append("%s\n" % LanguageDB.LEXEME_START_SET("me->buffer._input_p - %i" % i))
+        txt.append(i+1)
+        txt.append("%s\n" % LanguageDB.GOTO_RELOAD(UponReloadDoneAdr, True, engine.FORWARD))  # Reload
+        if i == 0: break
+        txt.append(i)
+        txt.append("%s"   % LanguageDB.ELSE)
+        txt.append(i+1)
+        txt.append("%s\n" % LanguageDB.INPUT_P_ADD(- i))
+        txt.append(i)
+        txt.append("%s\n" % LanguageDB.END_IF())
+
+    txt.append(i)
+    txt.append("%s\n" % LanguageDB.END_IF())
+    txt.append(i)
+    txt.append("%s\n" % LanguageDB.INPUT_P_INCREMENT())
+
+    column_counter_per_chunk, state_machine_f, tm = \
+            counter.get_transition_map(Mode.counter_db, None, None, "me->buffer._input_p")
+    dummy, character_count_txt = counter.get_core_step(tm, "me->buffer._input_p", state_machine_f)
+    txt.extend(character_count_txt)
+
+    print "##DEBUG:\n%s" % "".join(LanguageDB.GET_PLAIN_STRINGS(txt))
+    return txt
+
+
+def get_skipper(EndSequence, CloserPattern, Mode=None, IndentationCounterTerminalID=None, OnSkipRangeOpenStr=""):
     assert type(EndSequence) == list
     assert len(EndSequence) >= 1
     assert map(type, EndSequence) == [int] * len(EndSequence)
@@ -144,6 +214,8 @@ def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSki
     global template_str
 
     LanguageDB   = Setup.language_db
+
+    debug_txt = __terminal_delimiter_sequence(Mode, EndSequence, CloserPattern, 4711)
 
     # Name the $$SKIPPER$$
     skipper_index = sm_index.get()

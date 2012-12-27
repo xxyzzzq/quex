@@ -46,7 +46,7 @@ moritz_Lexer.cpp: moritz.qx
 boeck_Lexer.cpp:  boeck.qx
 	quex -i token.qx $< -o boeck::Lexer --codec utf8 \
 		 --token-id-prefix TKN_ --token-policy single   \
-		 --no-warning-on-no-token-queue --debug-exception
+		 --no-warning-on-no-token-queue
 
 clean:
 	rm -rf $(ENGINE)

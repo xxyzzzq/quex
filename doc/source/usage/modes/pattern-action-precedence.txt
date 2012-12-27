@@ -81,6 +81,13 @@ patterns have to high priority.
 
    Avoiding the ``PRIORITY-MARK`` by re-design.
 
+.. note::
+
+   The ``PRIORITY-MARK`` for a pattern ``P`` reprioritizes only patterns which
+   have *higher priority* than ``P`` and are *identical* to ``P``. Higher
+   priority means, that they were specified before ``P``. Identical means, that
+   they match exactly the same set of lexemes as ``P`` does.
+
 DELETION
 --------
 
@@ -113,3 +120,11 @@ above example the identifier pattern would indeed prevent any keyword pattern
 from matching. Any keyword matches also the identifier, but, since the identifier
 appears in the base mode it has preceedence. The use ``DELETION`` is a
 quick-fix, but a re-design by base mode splitting is the cleaner approach.
+
+.. note::
+
+   The ``DELETION`` for a pattern ``P`` deletes only patterns which
+   have a *higher priority* than ``P`` and are a *sub-pattern* to ``P``. 
+   A pattern ``Q`` is a sub-pattern of ``P``, if ``P`` matches all lexemes
+   which ``Q`` possibly can match. 
+

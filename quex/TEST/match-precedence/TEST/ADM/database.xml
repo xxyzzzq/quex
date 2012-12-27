@@ -1,8 +1,8 @@
-<test-database execution-time-sec="10.08" date="Wed Dec 26 10:32:54 2012">
+<test-database execution-time-sec="10.08" date="Wed Dec 26 13:35:05 2012">
     <last-used-diff-display-program name=""/>
-    <test title="Checking PRIORITY-MARK internally." time-sum-sec="2.02"> 
-        <application file-name="priority.py" info-request-time="1355953879L" vanished="False"/>
-        <choice-list number="17" same_result="False">
+    <test title="Checking PRIORITY-MARK internally." time-sum-sec="2.01"> 
+        <application file-name="priority.py" info-request-time="1356524803L" vanished="False"/>
+        <choice-list number="19" same_result="False">
            <choice name="3-begin" result="OK" time_sec="0.11" crc="-2044103555"/>
            <choice name="3-mid" result="OK" time_sec="0.11" crc="-1609428040"/>
            <choice name="3-end" result="OK" time_sec="0.11" crc="2133324565"/>
@@ -20,11 +20,13 @@
            <choice name="before" result="OK" time_sec="0.10" crc="279218550"/>
            <choice name="derived-before" result="OK" time_sec="0.10" crc="609373227"/>
            <choice name="derived-deeply" result="OK" time_sec="0.13" crc="-1549346331"/>
+           <choice name="superset" result="OK" time_sec="0.00" crc="2047830041"/>
+           <choice name="subset" result="OK" time_sec="0.00" crc="726249666"/>
         </choice-list>
     </test>
     <test title="Checking DELETE marks internally." time-sum-sec="1.66"> 
-        <application file-name="deletion.py" info-request-time="1355953994L" vanished="False"/>
-        <choice-list number="17" same_result="False">
+        <application file-name="deletion.py" info-request-time="1356524102L" vanished="False"/>
+        <choice-list number="19" same_result="False">
            <choice name="3-begin" result="OK" time_sec="0.11" crc="1817317143"/>
            <choice name="3-mid" result="OK" time_sec="0.10" crc="-128919765"/>
            <choice name="3-end" result="OK" time_sec="0.09" crc="852389561"/>
@@ -42,9 +44,11 @@
            <choice name="before" result="OK" time_sec="0.09" crc="924503932"/>
            <choice name="derived-before" result="OK" time_sec="0.10" crc="1292324771"/>
            <choice name="derived-deeply" result="OK" time_sec="0.12" crc="371695672"/>
+           <choice name="superset" result="OK" time_sec="0.00" crc="614610302"/>
+           <choice name="subset" result="OK" time_sec="0.00" crc="1033631323"/>
         </choice-list>
     </test>
-    <test title="PRIORITY-MARK or DELETION on not existing pattern." time-sum-sec="0.95"> 
+    <test title="PRIORITY-MARK or DELETION on not existing pattern." time-sum-sec="0.96"> 
         <application file-name="unvalid-marks.sh" info-request-time="1355705371L" vanished="False"/>
         <choice-list number="4" same_result="False">
            <choice name="PRIORITY-good" result="OK" time_sec="0.24" crc="-84057889"/>

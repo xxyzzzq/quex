@@ -12,6 +12,7 @@ buffer_size=1024
 quex -i $qx_file -o EasyLexer --language C --debug-exception
 
 gcc \
+ -ggdb \
  -I$QUEX_PATH -I.                                 \
  EasyLexer.c                                      \
  $QUEX_PATH/demo/C/example.c                      \
@@ -23,7 +24,7 @@ gcc \
 
 cat tmp.txt
 
-rm -f ./EasyLexer*
-rm -f ./lexer
+# rm -f ./EasyLexer*
+# rm -f ./lexer
 rm -f tmp.txt
 
