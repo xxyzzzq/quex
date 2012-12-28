@@ -4,6 +4,7 @@ import os
 sys.path.insert(0, os.getcwd())
 from helper import *
 from quex.engine.interval_handling import NumberSet, Interval
+from quex.engine.generator.TEST.generator_test   import __Setup_init_language_database
 
 if "--hwut-info" in sys.argv:
     print "Skip-Characters: Varrying Buffer Size"

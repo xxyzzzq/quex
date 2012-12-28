@@ -53,7 +53,6 @@ def get_newline_in_codec(TrafoInfo):
     tmp.transform(TrafoInfo)
     return tmp.get_the_only_element() # Returns 'None' if there is none
 
-
 def get_character_sequence(Sequence):
     txt         = ""
     comment_txt = ""
