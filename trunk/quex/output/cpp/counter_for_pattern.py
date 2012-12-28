@@ -24,7 +24,7 @@ from   itertools import islice
 from   copy      import deepcopy
 import sys
 
-def get(ThePattern, EOF_ActionF):
+def get(ThePattern, EOF_ActionF, ShiftF=True):
     """Line and column number actions for a pattern.
 
     Generates code to adapt line and column number counters when a pattern
@@ -75,13 +75,12 @@ def get(ThePattern, EOF_ActionF):
 
     # (*) Trivial Cases _______________________________________________________
     if EOF_ActionF:
-        txt = [1, "__QUEX_IF_COUNT_SHIFT_VALUES();\n" ]
-
-        return False, txt
+        if ShiftF: return False, ["__QUEX_IF_COUNT_SHIFT_VALUES();\n" ]
+        else:      return False, []
 
     if ThePattern is None:
         # 'on_failure' ... count any appearing character
-        return True, [1, "__QUEX_COUNT_VOID(&self, LexemeBegin, LexemeEnd);\n"]
+        return True, ["__QUEX_COUNT_VOID(&self, LexemeBegin, LexemeEnd);\n"]
 
     counter = ThePattern.count_info()
 
@@ -92,42 +91,45 @@ def get(ThePattern, EOF_ActionF):
     if         counter.line_n_increment_by_lexeme_length   == E_Count.VOID \
        or (    counter.column_n_increment_by_lexeme_length == E_Count.VOID \
            and counter.grid_step_size_by_lexeme_length     == E_Count.VOID):
-        return True, [1, "__QUEX_COUNT_VOID(&self, LexemeBegin, LexemeEnd);\n"]
+        return True, ["__QUEX_COUNT_VOID(&self, LexemeBegin, LexemeEnd);\n"]
 
     # (*) Determine Line and Column Number Count ______________________________
     #    
     #     Both, for line and column number considerations the same rules hold.
     #     Those rules are defined in 'get_increment()' as shown below.
     #
-    def get_increment(Increment, IncrementByLexemeLength, HelpStr):
+    def get_increment(txt, Increment, IncrementByLexemeLength, HelpStr):
+        if len(txt) != 0:
+            txt.append(0)
 
         if IncrementByLexemeLength == 0 or Increment == 0:
-            return ""
+            return 
         elif Increment != E_Count.VOID:
             arg = "%i" % Increment
         else:
             arg = LanguageDB.MULTIPLY_WITH("LexemeL", IncrementByLexemeLength)
 
-        return [1, "__QUEX_IF_COUNT_%s_ADD(%s);\n" % (HelpStr, arg)]
+        txt.append("__QUEX_IF_COUNT_%s_ADD(%s);\n" % (HelpStr, arg))
 
     # Column and line counts must be shifted (begin=end) even if only
     # columns are counted. For example, even if only columns are modified
     # the old line_number_at_begin must be adapted to the current.
-    txt = [1, "__QUEX_IF_COUNT_SHIFT_VALUES();\n"]
+    if ShiftF: txt = ["__QUEX_IF_COUNT_SHIFT_VALUES();\n" ]
+    else:      txt = []
 
     # -- Line Number Count
-    txt.extend(get_increment(counter.line_n_increment, 
-                             counter.line_n_increment_by_lexeme_length, 
-                             "LINES"))
+    get_increment(txt, counter.line_n_increment, 
+                  counter.line_n_increment_by_lexeme_length, 
+                  "LINES")
 
     # -- Column Number Count
     if  counter.column_index != E_Count.VOID:
-        txt.extend([1, "__QUEX_IF_COUNT_COLUMNS_SET(%i);\n" % (counter.column_index + 1)])
+        txt.append("__QUEX_IF_COUNT_COLUMNS_SET(%i);\n" % (counter.column_index + 1))
 
     elif counter.column_n_increment_by_lexeme_length != E_Count.VOID:
-        txt.extend(get_increment(counter.column_n_increment, 
-                                 counter.column_n_increment_by_lexeme_length, 
-                                 "COLUMNS"))
+        get_increment(txt, counter.column_n_increment, 
+                      counter.column_n_increment_by_lexeme_length, 
+                      "COLUMNS")
 
     else:
         # Following assert results from entry check against 'VOID'
@@ -136,6 +138,8 @@ def get(ThePattern, EOF_ActionF):
         if counter.grid_step_n == E_Count.VOID: grid_step_n = "LexemeL"
         else:                                   grid_step_n = counter.grid_step_n
 
+        if len(txt) != 0:
+            txt.append(0)
         txt.extend(LanguageDB.GRID_STEP("self.counter._column_number_at_end", "size_t",
                                         counter.grid_step_size_by_lexeme_length, 
                                         grid_step_n, IfMacro="__QUEX_IF_COUNT_COLUMNS"))

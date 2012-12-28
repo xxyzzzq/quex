@@ -275,6 +275,22 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str="", StrangeStr
         try:    os.remove(executable_name)
         except: pass
 
+def get_mode_object(SM_Name, EventDB={}):
+    class Something:
+        def __init__(self, EventDB):
+            self.__event_db = EventDB
+        def has_code_fragment_list(self, Name):
+            return self.__event_db.has_key(Name)
+        def get_code_fragment_list(self, Name):
+            return self.__event_db[Name]
+    mode            = Something(EventDB)
+    mode.name       = "%s_UnitTest" % SM_Name
+    mode.counter_db = CounterDB_construct_this(None)
+    mode.options    = {
+        "indentation": None,
+    }
+    return mode
+
 def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=False, ComputedGotoF=False):
     test_str = TestStr.replace("\"", "\\\"")
     test_str = test_str.replace("\n", "\\n\"\n\"")
@@ -327,14 +343,6 @@ def create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFall
     txt = txt.replace("$$__QUEX_OPTION_PLAIN_C$$", replace_str)
 
     return txt
-
-def get_mode_object(SM_Name):
-    class Something:
-        pass
-    mode            = Something()
-    mode.name       = "%s_UnitTest" % SM_Name
-    mode.counter_db = CounterDB_construct_this(None)
-    return mode
 
 def create_state_machine_function(PatternActionPairList, PatternDictionary, 
                                   BufferLimitCode, SecondModeF=False):
@@ -467,6 +475,14 @@ QUEX_TYPE_CHARACTER        QUEX_NAME(LexemeNullObject);
 static QUEX_TYPE_TOKEN_ID  QUEX_NAME_TOKEN(DumpedTokenIdObject) = (QUEX_TYPE_TOKEN_ID)0;
 QUEX_NAMESPACE_MAIN_CLOSE
 
+#ifndef RETURN
+#   if ! defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+       QUEX_TYPE_TOKEN_ID    __self_result_token_id;
+#      define RETURN    do { return __self_result_token_id; } while(0)
+#   else                
+#      define RETURN    return
+#   endif
+#endif
 
 static           __QUEX_TYPE_ANALYZER_RETURN_VALUE  QUEX_NAME(Mr_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZER*);
 /* NOT static */ __QUEX_TYPE_ANALYZER_RETURN_VALUE  QUEX_NAME(Mrs_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZER*);

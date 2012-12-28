@@ -330,7 +330,7 @@ def _transition_map_coder_do(TM):
     LanguageDB.code_generation_switch_cases_add_statement("break;")
     transition_map_coder.do(txt, tm, EngineType=engine.CHARACTER_COUNTER)
     LanguageDB.code_generation_switch_cases_add_statement(None)
-    txt.append(1)
+    txt.append(0)
     txt.append(LanguageDB.INPUT_P_INCREMENT())
     txt.append("\n")
 

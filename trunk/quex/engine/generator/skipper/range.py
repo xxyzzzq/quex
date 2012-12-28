@@ -162,6 +162,22 @@ def __terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePatte
     for x in UnicodeSequence:
         sequence.extend(transformation.do_character(x, Setup.buffer_codec_transformation_info))
 
+    EndSequenceChunkN = len(sequence)
+
+    # Column and line number count for closing delimiter
+    run_time_counting_required_f, counter_txt = \
+            counter_for_pattern.get(UnicodeEndSequencePattern, EOF_ActionF=False, ShiftF=False)
+    # The Closing Delimiter must be a string. As such it has a pre-determined size.
+    assert not run_time_counting_required_f 
+
+    # Column and line number count for 'normal' character.
+    column_counter_per_chunk, state_machine_f, tm = \
+            counter.get_transition_map(Mode.counter_db, None, None, "me->buffer._input_p", 
+                                       Trafo=Setup.buffer_codec_transformation_info)
+    dummy, character_count_txt = \
+            counter.get_core_step(tm, "me->buffer._input_p", state_machine_f)
+
+
     txt = []
     for i, x in enumerate(sequence):
         txt.append(i)
@@ -169,11 +185,15 @@ def __terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePatte
         txt.append(i+1)
         txt.append("%s\n" % LanguageDB.INPUT_P_INCREMENT())
 
-    run_time_counting_required_f, counter_txt = counter_for_pattern.get(UnicodeEndSequencePattern, EOF_ActionF=False)
-    assert not run_time_counting_required_f 
-
     LanguageDB.INDENT(counter_txt, i+1)
-    txt.extend(counter_txt)
+    if column_counter_per_chunk:
+        txt.append(i+1)
+        if column_counter_per_chunk == UnicodeEndSequencePattern.count_info().column_n_increment_by_lexeme_length:
+            LanguageDB.REFERENCE_P_COLUMN_ADD(txt, "me->buffer._input_p", column_counter_per_chunk) 
+        else:
+            LanguageDB.REFERENCE_P_COLUMN_ADD(txt, "(me->buffer._input_p - %i)" % EndSequenceChunkN, column_counter_per_chunk) 
+            txt.append(i+1)
+            txt.extend(counter_txt)
     txt.append(i+1)
     txt.append("break;\n")
 
@@ -194,12 +214,7 @@ def __terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePatte
 
     txt.append(i)
     txt.append("%s\n" % LanguageDB.END_IF())
-    txt.append(i)
-    txt.append("%s\n" % LanguageDB.INPUT_P_INCREMENT())
 
-    column_counter_per_chunk, state_machine_f, tm = \
-            counter.get_transition_map(Mode.counter_db, None, None, "me->buffer._input_p")
-    dummy, character_count_txt = counter.get_core_step(tm, "me->buffer._input_p", state_machine_f)
     txt.extend(character_count_txt)
 
     print "##DEBUG:\n%s" % "".join(LanguageDB.GET_PLAIN_STRINGS(txt))
@@ -215,7 +230,7 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, IndentationCounterTermina
 
     LanguageDB   = Setup.language_db
 
-    debug_txt = __terminal_delimiter_sequence(Mode, EndSequence, CloserPattern, 4711)
+    ## debug_txt = __terminal_delimiter_sequence(Mode, EndSequence, CloserPattern, 4711)
 
     # Name the $$SKIPPER$$
     skipper_index = sm_index.get()
