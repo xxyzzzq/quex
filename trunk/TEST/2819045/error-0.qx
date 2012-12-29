@@ -19,7 +19,7 @@ define {
 }
 
 mode standard :
-<skip: [ \t\r]>
+<skip: [ \t\r] >
 {
 <<EOF>>              => QUEX_TKN_TERMINATION;
 \n                   => QUEX_TKN_SENTBOUND;

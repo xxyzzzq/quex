@@ -9,7 +9,7 @@ mode X :
     [ ]       => space; 
     [\:]       => bad;
 >
-<skip: [ \t:]>
+<skip: [ \t:] >
 {
     on_indentation_bad { printf("Bad Char: '%c'\n", (char)BadCharacter); }
     [a-z]+  => QUEX_TKN_WORD(Lexeme);

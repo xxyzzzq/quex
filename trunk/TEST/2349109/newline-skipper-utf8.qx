@@ -1,7 +1,7 @@
 start = X;
 
 mode X :
-<skip: [ \n\t]> 
+<skip: [ \n\t] > 
 {
     ۱ => QUEX_TKN_1(Lexeme);
     ۲ => QUEX_TKN_2(Lexeme);

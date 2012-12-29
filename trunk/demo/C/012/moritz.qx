@@ -1,7 +1,7 @@
 start = NORMAL;
 
 mode NORMAL 
-: <skip: [ \n\t]>
+: <skip: [ \n\t] >
 { 
     on_end_of_stream         => MORITZ_TKN_TERMINATION(LexemeNull);
     Max                      => MORITZ_TKN_MY_BROTHER(Lexeme); 

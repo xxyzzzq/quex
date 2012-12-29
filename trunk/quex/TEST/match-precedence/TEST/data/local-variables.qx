@@ -6,7 +6,7 @@ token {
 start = A;
 
 mode A :
-<skip: [ \t\n]>
+<skip: [ \t\n] >
 { 
     a => QUEX_TKN_A;
 }

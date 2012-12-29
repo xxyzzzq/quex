@@ -91,7 +91,7 @@ mode VAR_LEXEMES :
 mode PROGRAM : OPERATORS, 
                VAR_LEXEMES, 
                EOF_AND_FAILURE
-<skip:       [ \r\n\t]>
+<skip:       [ \r\n\t] >
 <skip_range: "/*" "*/">
 <skip_range: "//" "\n">
 {
@@ -150,7 +150,7 @@ mode PROGRAM : OPERATORS,
 mode PREPROCESSOR : OPERATORS, 
                     VAR_LEXEMES, 
                     EOF_AND_FAILURE
-<skip:       [ \r\t]>
+<skip:       [ \r\t] >
 <skip_range: "/*" "*/">
 {
     defined          => TKN_PP_DEFINED();

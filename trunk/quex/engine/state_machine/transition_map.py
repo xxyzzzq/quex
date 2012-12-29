@@ -351,12 +351,14 @@ class TransitionMap:
            from 32 to 48 are transformed into 256 to 372. The function assumes
            that the entries are sorted with respect to SourceInterval_Begin.
 
-           RETURNS: True  transformation successful
-                    False transformation failed, number set possibly in inconsistent state!
+           RETURNS: True  transformation of all elements successful.
+                    False transformation was not possible for all elements.
         """
+        complete_f = True
         for number_set in self.__db.values():
-            if number_set.transform(TrafoInfo) == False: return False
-        return True
+            if not number_set.transform(TrafoInfo):
+                complete_f = False
+        return complete_f
             
     def has_one_of_triggers(self, CharacterCodeList):
         assert type(CharacterCodeList) == list

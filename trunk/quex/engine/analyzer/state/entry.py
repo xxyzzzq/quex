@@ -124,7 +124,7 @@ class Entry(object):
         Entry.tmp_transition_id.from_state_index = FromStateIndex
         self.__action_db[Entry.tmp_transition_id].command_list.accepter = accepter
 
-    def doors_accepter_add_front(self, PreContextID, PatternID):
+    def doors_accepter_add(self, PreContextID, PatternID):
         """Add an acceptance at the top of each accepter at every door. If there
            is no accepter in a door it is created.
         """
@@ -132,7 +132,8 @@ class Entry(object):
             # Catch the accepter, if there is already one, of not create one.
             if door.command_list.accepter is None: 
                 door.command_list.accepter = entry_action.Accepter()
-            door.command_list.accepter.insert_front(PreContextID, PatternID)
+            door.command_list.accepter.add(PreContextID, PatternID)
+            door.command_list.accepter.clean_up()
 
     def doors_store(self, FromStateIndex, PreContextID, PositionRegister, Offset):
         # Add 'store input position' to specific door. See 'entry_action.StoreInputPosition'

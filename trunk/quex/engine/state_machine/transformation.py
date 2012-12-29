@@ -15,25 +15,29 @@ def try_this(X, fh=None):
     """Transforms a given state machine from 'Unicode Driven' to another
        character encoding type.
     
-       RETURNS: Transformed state machine. It may be the same as it was 
-                before if there was no transformation actually.
+       RETURNS: 
+       [0] Transformation complete (True->yes, False->not all transformed)
+       [1] Transformed state machine. It may be the same as it was 
+           before if there was no transformation actually.
     """
-    if X is None: return X
+    if X is None: 
+        return True, X
 
     assert isinstance(X, StateMachine)
     assert X.is_DFA_compliant()
 
     TrafoInfo = Setup.buffer_codec_transformation_info
-    if TrafoInfo is None: return X
+    if TrafoInfo is None: 
+        return True, X
 
     if isinstance(TrafoInfo, (str, unicode)):
-        if   TrafoInfo == "utf8-state-split":  return __DFA(utf8_state_split.do(X))
-        elif TrafoInfo == "utf16-state-split": return __DFA(utf16_state_split.do(X))
+        if   TrafoInfo == "utf8-state-split":  return True, __DFA(utf8_state_split.do(X))
+        elif TrafoInfo == "utf16-state-split": return True, __DFA(utf16_state_split.do(X))
         else:                                  assert False
     
     # Pre-condition SM is transformed inside the member function
-    X.transform(TrafoInfo)
-    return __DFA(X)
+    complete_f = X.transform(TrafoInfo)
+    return complete_f, __DFA(X)
 
 def __DFA(SM):
     if   SM is None:            return None

@@ -8,13 +8,13 @@ mode X0 {
 }
 
 mode X1 :
-<skip: [x]>
+<skip: [x] >
 <indentation: x => newline; > {
      a     => T_A;
 }
 
 mode X2 :
-<skip: [\t]>
+<skip: [\t] >
 {
      \t+ => T_A;
 }
@@ -25,7 +25,7 @@ mode X3_base :
 }
 
 mode X3 : X3_base
-<skip: [ ]>
+<skip: [ ] >
 {
      a => T_A;
 }

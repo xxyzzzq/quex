@@ -211,8 +211,7 @@ def parse_pattern_name_definitions(fh):
         #  the state machines are transformed once, after they are expanded
         #  as patterns in a mode.)
         regular_expression_str, pattern = \
-                regular_expression.parse(fh, AllowNothingIsFineF = True, 
-                                         AllowStateMachineTrafoF = False) 
+                regular_expression.parse(fh, AllowNothingIsFineF = True) 
 
         if pattern.has_pre_or_post_context():
             error_msg("Pattern definition with pre- and/or post-context.\n" + \

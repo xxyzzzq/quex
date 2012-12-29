@@ -1,5 +1,5 @@
 from   quex.blackboard          import setup as Setup, \
-                                       E_StateIndices
+                                       E_StateIndices, E_PreContextIDs
 from   quex.engine.misc.file_in import error_msg
 
 from   collections              import defaultdict, namedtuple
@@ -306,8 +306,14 @@ class Accepter(Command):
     def add(self, PreContextID, PatternID):
         self.__list.append(AccepterElement(PreContextID, PatternID))
 
-    def insert_front(self, PreContextID, PatternID):
-        self.__list.insert(0, AccepterElement(PreContextID, PatternID))
+    def clean_up(self):
+        """Ensure that nothing follows and unconditional acceptance."""
+        self.__list.sort(key=attrgetter("pattern_id"))
+        for i, x in enumerate(self.__list):
+            if x.pre_context_id == E_PreContextIDs.NONE:
+                break
+        if i != len(self.__list) - 1:
+            del self.__list[i+1:]
 
     # Require 'type_id' and 'priority' for sorting of entry actions.
     @staticmethod

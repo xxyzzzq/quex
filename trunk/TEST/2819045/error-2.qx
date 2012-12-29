@@ -15,7 +15,7 @@ define {
 }
 
 mode standard :
-<skip: [ \t\r]>
+<skip: [ \t\r] >
 {
    a+a/a+$ => QUEX_TKN_WORD(Lexeme);
   {WORD}   => QUEX_TKN_WORD(Lexeme);

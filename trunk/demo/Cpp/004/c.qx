@@ -91,7 +91,7 @@ define {
 }
 
 mode PROGRAM :
-<skip:       [ \r\n\t]>
+<skip:       [ \r\n\t] >
 <skip_range: "/*" "*/">
 <skip_range: "//" "\n">
 {

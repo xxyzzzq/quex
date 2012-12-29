@@ -643,11 +643,12 @@ class StateMachine(object):
             elif len(target_map) > 1:
                 return None
 
-            trigger_set = target_map.itervalues().next() 
+            target_index, trigger_set = target_map.iteritems().next() 
             number      = trigger_set.get_the_only_element()
             if number is None:
                 return None
-            result.append(Number)
+            result.append(number)
+            state = self.states[target_index]
 
     def get_number_set(self):
         """Returns a number set that represents the state machine.
@@ -860,14 +861,16 @@ class StateMachine(object):
             state.origins().delete_dominated()
 
     def transform(self, TrafoInfo):
-        """RETURNS: True  transformation successful
-                    False transformation failed, number set possibly in inconsistent state!
+        """RETURNS: True  transformation for all states happend completely.
+                    False transformation may not have transformed all elements because
+                          the target codec does not cover them.
         """
+        complete_f = True
         for state in self.states.itervalues():
-            if state.transform(TrafoInfo) == False: return False
+            if not state.transform(TrafoInfo):
+                complete_f = False
 
-        # Do not transform any related state machine (pre-, papc-detector)
-        return True
+        return complete_f
 
     def __repr__(self):
         return self.get_string(NormalizeF=True)

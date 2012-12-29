@@ -42,7 +42,7 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* 
                             "May be, codec transformation file from unicode contains errors.");
             }
         }
-        ++iterator;
+    ++iterator;
     }
     __quex_assert(iterator == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */
 #   undef self

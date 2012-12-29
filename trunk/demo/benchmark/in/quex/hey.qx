@@ -5,7 +5,7 @@ token {
     X;
 }
 
-mode X : <skip: [ \t\r\n]> {
+mode X : <skip: [ \t\r\n] > {
     hey    => TKN_HEY;
     [a-z]+ => TKN_IDENTIFIER;
     !      => TKN_EXCLAMATION;

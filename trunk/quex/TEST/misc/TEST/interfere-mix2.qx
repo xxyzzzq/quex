@@ -1,5 +1,5 @@
 token { EMPTY; }
 mode X : 
 <skip_range: "x" "y" > 
-<skip: [xyz]> 
+<skip: [xyz] > 
 { "a" => QUEX_TKN_EMPTY; }

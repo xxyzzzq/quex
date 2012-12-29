@@ -1,17 +1,17 @@
-<test-database execution-time-sec="0.44" date="Wed Dec 26 13:35:07 2012">
+<test-database execution-time-sec="0.44" date="Sun Dec 30 00:14:52 2012">
     <last-used-diff-display-program name=""/>
-    <test title="Statistics Module" make-dependent="True" time-sum-sec="0.03"> 
+    <test title="Statistics Module" make-dependent="True" time-sum-sec="0.00"> 
         <application file-name="statistics.exe" info-request-time="1356305210L" vanished="False"/>
         <make-procedure success="True" time_sec="0.148178"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.03" crc="1432648595"/>
+           <choice name="" result="OK" time_sec="0.00" crc="1432648595"/>
         </choice-list>
     </test>
-    <test title="Accumulator" make-dependent="True" time-sum-sec="0.06"> 
+    <test title="Accumulator" make-dependent="True" time-sum-sec="0.08"> 
         <application file-name="accumulator.exe" info-request-time="1356305213L" vanished="False"/>
         <make-procedure success="True" time_sec="0.543531"/>
         <choice-list number="5" same_result="False">
-           <choice name="String" result="OK" time_sec="0.02" crc="1490722418"/>
+           <choice name="String" result="OK" time_sec="0.04" crc="1490722418"/>
            <choice name="Character" result="OK" time_sec="0.01" crc="-276754526"/>
            <choice name="N-Character" result="OK" time_sec="0.01" crc="-1120495017"/>
            <choice name="N-String" result="OK" time_sec="0.01" crc="932695689"/>
@@ -25,11 +25,11 @@
         </choice-list>
     </test>
     <group name="Post Categorizer">
-        <test title="Enter" make-dependent="True" time-sum-sec="0.09"> 
+        <test title="Enter" make-dependent="True" time-sum-sec="0.07"> 
             <application file-name="post-categorizer-find.exe" info-request-time="1356305209L" vanished="False"/>
             <make-procedure success="True" time_sec="0.851908"/>
             <choice-list number="7" same_result="True">
-               <choice name="0" result="OK" time_sec="0.03" crc="-978220029"/>
+               <choice name="0" result="OK" time_sec="0.01" crc="-978220029"/>
                <choice name="1" result="OK" time_sec="0.01" crc="-978220029"/>
                <choice name="2" result="OK" time_sec="0.01" crc="-978220029"/>
                <choice name="3" result="OK" time_sec="0.01" crc="-978220029"/>
@@ -78,7 +78,7 @@
                <choice name="Be" result="OK" time_sec="0.01" crc="1918139693"/>
             </choice-list>
         </test>
-        <test title="Enter" make-dependent="True" time-sum-sec="0.04"> 
+        <test title="Enter" make-dependent="True" time-sum-sec="0.07"> 
             <application file-name="post-categorizer-enter.exe" info-request-time="1356305212L" vanished="False"/>
             <make-procedure success="True" time_sec="0.867049"/>
             <choice-list number="7" same_result="False">
@@ -86,9 +86,9 @@
                <choice name="2" result="OK" time_sec="0.01" crc="-271066271"/>
                <choice name="3" result="OK" time_sec="0.01" crc="72151989"/>
                <choice name="4" result="OK" time_sec="0.01" crc="1918139693"/>
-               <choice name="0" result="OK" time_sec="0.00" crc="-530099081"/>
-               <choice name="5" result="OK" time_sec="0.00" crc="-1772219006"/>
-               <choice name="6" result="OK" time_sec="0.00" crc="-376401680"/>
+               <choice name="0" result="OK" time_sec="0.01" crc="-530099081"/>
+               <choice name="5" result="OK" time_sec="0.01" crc="-1772219006"/>
+               <choice name="6" result="OK" time_sec="0.01" crc="-376401680"/>
             </choice-list>
         </test>
     </group>

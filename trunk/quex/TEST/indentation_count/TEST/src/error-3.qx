@@ -9,7 +9,7 @@ mode X :
     [\t]      => grid 4; 
     [ ]       => space; 
 >
-<skip: [ \t\n]>
+<skip: [ \t\n] >
 {
     a => QUEX_TKN_A;
 }

@@ -1,3 +1,5 @@
+greek.qx:25:warning: Pattern contains elements not found in engine codec 'iso8859_7'.
+greek.qx:31:warning: Pattern contains elements not found in engine codec 'iso8859_7'.
 WORD 'Έκταση' 
 WORD 'Σύνολο' 
 NUMBER '131.957' 

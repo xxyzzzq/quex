@@ -20,7 +20,7 @@ token {
 }
 
 mode X :
-<skip: [ \t\n]>
+<skip: [ \t\n] >
 {
     {WORD}   => QUEX_TKN_WORD(Lexeme);
     {NUMBER} => QUEX_TKN_NUMBER(Lexeme);

@@ -160,9 +160,9 @@ class Interval(object):
                     return [ Interval(self.begin, Other.begin) ]
 
     def transform(self, TrafoInfo):
-        """RETURNS: b, list
+        """RETURNS: verdict, list
 
-           where 'b' indicates whether the interval has been completely
+           where 'verdict' indicates whether the interval has been completely
            transformed. 'list' is the resulting list of intervals.
         """
         transformed_n = 0
@@ -191,7 +191,6 @@ class Interval(object):
             i += 1
             if i == L: break
             source_begin, source_end, target_begin = TrafoInfo[i]
-
 
         verdict = transformed_n == (self.end - self.begin)
         return verdict, result

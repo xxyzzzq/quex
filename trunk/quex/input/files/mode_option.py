@@ -64,7 +64,7 @@ def __parse_skip_option(fh, new_mode):
     whitespace skipper '[ \t\n]'. The skipper definition allows quex to
     implement a very effective way to skip these regions."""
 
-    pattern_str, pattern, trigger_set = regular_expression.parse_character_set(fh, PatternStringF=True)
+    pattern_str, pattern, trigger_set = regular_expression.parse_character_set(fh, ">")
 
     skip_whitespace(fh)
 
@@ -82,9 +82,9 @@ def __parse_range_skipper_option(fh, identifier, new_mode):
 
     # Range state machines only accept 'strings' not state machines
     skip_whitespace(fh)
-    opener_str, opener_pattern, opener_sequence = regular_expression.parse_character_string(fh)
+    opener_str, opener_pattern, opener_sequence = regular_expression.parse_character_string(fh, ">")
     skip_whitespace(fh)
-    closer_str, closer_pattern, closer_sequence = regular_expression.parse_character_string(fh)
+    closer_str, closer_pattern, closer_sequence = regular_expression.parse_character_string(fh, ">")
 
     # -- closer
     skip_whitespace(fh)
