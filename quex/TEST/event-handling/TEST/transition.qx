@@ -7,7 +7,7 @@ token {
 
 start = ONE;
 
-mode ONE : <skip: [ \t\n]> 
+mode ONE : <skip: [ \t\n] > 
 {
     on_entry { fprintf(stderr, "Enter: from %s\n", FromMode->name); }
     on_exit  { fprintf(stderr, "Exit:  to   %s\n", ToMode->name); }
@@ -22,7 +22,7 @@ mode ONE : <skip: [ \t\n]>
     <<EOF>> => TK_TERMINATION(LexemeNull);
 }
 
-mode TWO : <skip: [ \t\n]> 
+mode TWO : <skip: [ \t\n] > 
 {
     on_entry { fprintf(stderr, "Enter: from %s\n", FromMode->name); }
     on_exit  { fprintf(stderr, "Exit:  to   %s\n", ToMode->name); }
@@ -37,7 +37,7 @@ mode TWO : <skip: [ \t\n]>
     <<EOF>> => TK_TERMINATION(LexemeNull);
 }
 
-mode THREE : <skip: [ \t\n]> 
+mode THREE : <skip: [ \t\n] > 
 {
     on_entry { fprintf(stderr, "Enter: from %s\n", FromMode->name); }
     on_exit  { fprintf(stderr, "Exit:  to   %s\n", ToMode->name); }

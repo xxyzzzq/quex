@@ -21,7 +21,7 @@ token {
 }
 
 mode ONE_AND_ONLY :
-<skip:       [ \r\n\t]>
+<skip:       [ \r\n\t] >
 <skip_range: "/*" "*/">
 {
     <<EOF>>       => QUEX_TKN_TERMINATION;

@@ -8,7 +8,7 @@ token {
 
 mode X :
 <indentation: >
-<skip: [ \t]>
+<skip: [ \t] >
 {
     on_indent { self_send(QUEX_TKN_NEWLINE);             self_send(QUEX_TKN_INDENT); }
     on_dedent { if( First ) self_send(QUEX_TKN_NEWLINE); self_send(QUEX_TKN_DEDENT); }

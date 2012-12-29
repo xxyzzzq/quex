@@ -4,7 +4,7 @@ token {
 }
 
 mode X :
-<skip: [ \t\n]>
+<skip: [ \t\n] >
 {
     [ΆΈΉΊΌΎ-Ϋ]+   => QUEX_TKN_WORD(Lexeme);
 }

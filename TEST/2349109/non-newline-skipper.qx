@@ -1,7 +1,7 @@
 start = X;
 
 mode X :
-<skip: [\-+]> 
+<skip: [\-+] > 
 {
     [ \n\t] {}
     1 => QUEX_TKN_1;

@@ -24,6 +24,7 @@ non-newline-skipper:
 	@quex -i token.qx non-newline-skipper.qx -o Simple --token-policy single --debug-exception
 	@g++ -I$(QUEX_PATH) -I./ Simple*.cpp ../lexer-simply.cpp -ggdb -o lexer \
 		-DPRINT_LINE_COLUMN \
+		-DPRINT_TOKEN \
 		-DQUEX_OPTION_LINE_NUMBER_COUNTING \
 		-DQUEX_OPTION_COLUMN_NUMBER_COUNTING \
 		-DQUEX_SETTING_BUFFER_SIZE=4

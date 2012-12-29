@@ -5,7 +5,7 @@ token {
 }
 
 mode BASE :
-<skip: [ \n\t]> 
+<skip: [ \n\t] > 
 {
     <<EOF>> => QUEX_TKN_TERMINATION(LexemeNull);
 }

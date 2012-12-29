@@ -8,7 +8,7 @@ token {
 }
 
 mode ONE_AND_ONLY :
-<skip: [ \n\t]>
+<skip: [ \n\t] >
 {
     <<EOF>>     {
 	    self_send1(QUEX_TKN_TERMINATION, LexemeNull);

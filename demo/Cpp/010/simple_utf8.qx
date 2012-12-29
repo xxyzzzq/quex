@@ -10,7 +10,7 @@ token {
 }
 
 mode ONE_AND_ONLY :
-<skip: [ \r\n\t]>
+<skip: [ \r\n\t] >
 {
     on_end_of_stream => QUEX_TKN_TERMINATION(LexemeNull);
     on_failure       => QUEX_TKN_FAIL(Lexeme);

@@ -70,7 +70,7 @@ class GeneratorBase:
                 self.bipd_sm_list.append(sm)
                 
             # -- collect all ids of post conditioned state machines
-            if pattern.post_context_f:
+            if pattern.has_post_context():
                 self.post_contexted_sm_id_list.append(sm_id)
 
             # [NOT IMPLEMENTED YET]    

@@ -56,16 +56,22 @@ import quex.engine.state_machine.repeat                  as repeat
 
 
 CONTROL_CHARACTERS = [ "+", "*", "\"", "/", "(", ")", "{", "}", "|", "[", "]", "$"] 
+SPECIAL_TERMINATOR = None
 
 def do(UTF8_String_or_Stream, PatternDict, 
-       AllowNothingIsNecessaryF = False,
-       AllowStateMachineTrafoF  = True): 
+       AllowNothingIsNecessaryF = False, SpecialTerminator=None):
+    global SPECIAL_TERMINATOR 
     assert type(AllowNothingIsNecessaryF) == bool
     assert type(PatternDict) == dict
 
+    # SPECIAL_TERMINATOR --> if string is not only to be terminated by ' '
+    SPECIAL_TERMINATOR = SpecialTerminator
+
     def __ensure_whitespace_follows(InitialPos, stream):
         tmp = stream.read(1)
-        if tmp == "" or tmp.isspace(): stream.seek(-1, 1); return
+        if tmp == "" or tmp.isspace() or tmp == SPECIAL_TERMINATOR:
+            stream.seek(-1, 1)
+            return
 
         end_position = stream.tell() - 1
         stream.seek(InitialPos)
@@ -105,8 +111,7 @@ def do(UTF8_String_or_Stream, PatternDict,
                            end_of_line_f   = end_of_line_f,
                            post_context    = post, 
                            fh              = stream,
-                           AllowNothingIsNecessaryF = AllowNothingIsNecessaryF,
-                           AllowStateMachineTrafoF  = AllowStateMachineTrafoF)
+                           AllowNothingIsNecessaryF = AllowNothingIsNecessaryF)
     
     return pattern
 
@@ -217,6 +222,8 @@ def snap_primary(stream, PatternDict):
                  non_control_character+               = lonely characters
                  primary repetition_cmd
     """
+    global SPECIAL_TERMINATOR 
+
     __debug_entry("primary", stream)    
     x = stream.read(1); lookahead = stream.read(1); 
     if x != "" and lookahead != "": stream.seek(-1, 1)
@@ -260,7 +267,7 @@ def snap_primary(stream, PatternDict):
             result = StateMachine()
             result.add_transition(result.init_state_index, trigger_set, AcceptanceF=True)
 
-    elif x not in CONTROL_CHARACTERS:
+    elif x not in CONTROL_CHARACTERS and x != SPECIAL_TERMINATOR:
         # NOTE: The '\' is not inside the control characters---for a reason.
         #       It is used to define for example character codes using '\x' etc.
         stream.seek(-1, 1)

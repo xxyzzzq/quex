@@ -423,44 +423,19 @@ class Analyzer:
         then it is not safe to assume that all sub-paths have been considered.
         The acceptance must be stored immediately.
         """
-        def break_condition(TheState):
-            return TheState.drop_out.restore_acceptance_f
-        
-        def action(PreviousStateIndex, TheState, TraceDB):
-            if PreviousStateIndex is None: return
-            entry = TheState.entry
-            for acceptance_trace in TraceDB[PreviousStateIndex]:
-                entry.doors_accept(FromStateIndex = PreviousStateIndex, 
-                                   PathTraceList  = acceptance_trace)
-
-        not_postponed_set = set()
-        for state_index, end_state_index_list in self.__require_acceptance_storage_db.iteritems():
-            for end_state_index in end_state_index_list:
-
-                # Find the first place on the path where the acceptance is restored
-                # - starting from the last accepting state.
-                # begin_i = acceptance_trace.index_of_last_acceptance_on_path_since_positioning()
-
-                if not self.detect_on_paths(state_index, end_state_index, break_condition, action):
-                    ## print "#----------------------"
-                    ## print "# %s [%s]->[%s]" % (pattern_id, path_since_positioning[begin_i], path_since_positioning[-1])
-
-                    # Postpone:
-                    #
-                    # Here, storing Acceptance cannot be deferred to subsequent states, because
-                    # the first state that restores acceptance is the acceptance state itself.
-                    #
-                    # (1) Restore only happens if there is non-uniform acceptance. See 
-                    #     function 'configure_drop_out(...)'. 
-                    # (2) Non-uniform acceptance only happens, if there are multiple paths
-                    #     to the same state with different trailing acceptances.
-                    # (3) If there was an absolute acceptance, then all previous trailing 
-                    #     acceptance were deleted (longest match). This contradicts (2).
-                    #
-                    # (4) => Thus, there are only pre-contexted acceptances in such a state.
-                    not_postponed_set.add(state_index)
-
         # Not Postponed: Collected acceptances to be stored in the acceptance states itself.
+        #
+        # Here, storing Acceptance cannot be deferred to subsequent states, because
+        # the first state that restores acceptance is the acceptance state itself.
+        #
+        # (1) Restore only happens if there is non-uniform acceptance. See 
+        #     function 'configure_drop_out(...)'. 
+        # (2) Non-uniform acceptance only happens, if there are multiple paths
+        #     to the same state with different trailing acceptances.
+        # (3) If there was an absolute acceptance, then all previous trailing 
+        #     acceptance were deleted (longest match). This contradicts (2).
+        #
+        # (4) => Thus, there are only pre-contexted acceptances in such a state.
         #
         # It is possible that a deferred acceptance are already present in the doors. But, 
         # since they all come from trailing acceptances, we know that the acceptance of
@@ -468,11 +443,17 @@ class Analyzer:
         # preceed the already mentioned ones. Since they all trigger on lexemes of the
         # same length, the only precendence criteria is the pattern_id.
         # 
-        for state_index in not_postponed_set:
+        for state_index in self.__require_acceptance_storage_db.iterkeys():
+            print "#state:", state_index
+            print "#patterns:", sorted(SM.states[state_index].origins(), key=lambda x: x.pattern_id())
             entry = self.__state_db[state_index].entry
-            for origin in sorted(SM.states[state_index].origins(), key=lambda x: x.pattern_id(), reverse=True):
+            for origin in sorted(SM.states[state_index].origins(), key=lambda x: x.pattern_id()):
                 if not origin.is_acceptance(): continue
-                entry.doors_accepter_add_front(origin.pre_context_id(), origin.pattern_id())
+                entry.doors_accepter_add(origin.pre_context_id(), origin.pattern_id())
+                if origin.pre_context_id() == E_PreContextIDs.NONE:
+                    # If there is an unconditional acceptance, it dominates all previous 
+                    # occurred acceptances (philosophy of longest match).
+                    break
 
     def implement_required_position_storage(self):
         """
@@ -488,13 +469,6 @@ class Analyzer:
         any state that has undetermined positioning restores the input position.
         Thus 'restore_position_f(register)' is enough to catch this case.
         """
-        def get_positioning_state_iterable(from_state_index, FollowStateIndex):
-            if from_state_index in self.__dangerous_positioning_state_set:
-                for to_state_index in self.__to_db[from_state_index]:
-                    yield to_state_index
-            else:
-                yield FollowStateIndex
-
         for state_index, info_list in self.__require_position_storage_db.iteritems():
             target_state_index_list = self.__to_db[state_index]
             for end_state_index, pre_context_id, pattern_id in info_list:
@@ -503,8 +477,6 @@ class Analyzer:
                 # pre_context_id   --> pre_context which is concerned
                 # pattern_id       --> pattern which is concerned
                 for target_index in target_state_index_list:
-                    if not self.has_successor(target_index, end_state_index):
-                        continue
                     entry = self.__state_db[target_index].entry
                     entry.doors_store(FromStateIndex   = state_index, 
                                       PreContextID     = pre_context_id, 

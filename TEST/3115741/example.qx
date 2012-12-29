@@ -4,7 +4,7 @@ token {
   A; B; C;
 }
 
-mode THE_MODE : <skip: [ \t\n]> {
+mode THE_MODE : <skip: [ \t\n] > {
   [:alnum:]+   { 
       self_send1(QUEX_TKN_A, Lexeme);
       QUEX_NAME(seek_backward)(&self, LexemeL - 1); 
@@ -15,7 +15,7 @@ mode THE_MODE : <skip: [ \t\n]> {
   }
 }
 
-mode SECOND_EXPERIMENT : <skip: [ \t\n]> {
+mode SECOND_EXPERIMENT : <skip: [ \t\n] > {
   [:alnum:]+   { 
       self_send1(QUEX_TKN_B, Lexeme);
       QUEX_NAME(undo)(&self); 
@@ -23,7 +23,7 @@ mode SECOND_EXPERIMENT : <skip: [ \t\n]> {
   }
 }
 
-mode THIRD_EXPERIMENT : <skip: [ \t\n]> {
+mode THIRD_EXPERIMENT : <skip: [ \t\n] > {
   [:alnum:]+   { 
       self_send1(QUEX_TKN_C, Lexeme);
       QUEX_NAME(seek)(&self, QUEX_NAME(tell)(&self) - LexemeL + 1); 

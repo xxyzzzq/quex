@@ -127,6 +127,7 @@ def __insert_actions(tm, ReferenceP_ExceptionSet, ColumnCountPerChunk, UponReloa
     for i, info in enumerate(tm):
         interval, action_list = info
         if   len(action_list) != 0 and action_list[-1] == OnExitCharacter:
+            del action_list[:]
             __add_on_exit_character(interval, action_list, 
                                     ReferenceP_ExceptionSet, ColumnCountPerChunk)
 
@@ -152,7 +153,6 @@ def __add_on_buffer_limit_code(TheInterval, txt, ReferenceP_ExceptionSet, Column
 def __add_on_exit_character(TheInterval, txt, ReferenceP_ExceptionSet, ColumnCountPerChunk):
     LanguageDB = Setup.language_db
 
-    del txt[-1]
     if         ReferenceP_ExceptionSet is not None \
        and not ReferenceP_ExceptionSet.has_intersection(TheInterval):
         LanguageDB.REFERENCE_P_COLUMN_ADD(txt, "me->buffer._input_p", ColumnCountPerChunk)

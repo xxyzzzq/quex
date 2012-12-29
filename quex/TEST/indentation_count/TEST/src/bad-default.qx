@@ -10,7 +10,7 @@ mode X :
     [ ]       => space; 
     [\:]       => bad;
 >
-<skip: [ \t]>
+<skip: [ \t] >
 {
     [a-z] => QUEX_TKN_A;
 }

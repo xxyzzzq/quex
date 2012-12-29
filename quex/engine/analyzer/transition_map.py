@@ -307,7 +307,6 @@ def cut(transition_map, CharacterSet):
                       for x_interval in diff.get_intervals(PromiseToTreatWellF=True))
     return result
 
-
 def get_target(transition_map, Character):
     # TODO: Bisectioning
     for interval, target in transition_map:

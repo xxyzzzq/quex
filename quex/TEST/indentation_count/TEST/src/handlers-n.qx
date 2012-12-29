@@ -10,7 +10,7 @@ repeated_token {
 
 mode X :
 <indentation: >
-<skip: [ \t]>
+<skip: [ \t] >
 {
     on_indent   { self_send(QUEX_TKN_NEWLINE); self_send(QUEX_TKN_INDENT); }
     on_n_dedent { self_send(QUEX_TKN_NEWLINE); self_send_n(ClosedN, QUEX_TKN_DEDENT); }

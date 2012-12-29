@@ -396,7 +396,7 @@ def _state_machine_coder_do(tm):
 
     # (Transformation according codec happens inside 'get_combined_state_machine()'
     sm = get_combined_state_machine(sm_list)
-    sm = transformation.try_this(sm, -1)
+    complete_f, sm = transformation.try_this(sm, -1)
     assert sm is not None
 
     # The generator only understands 'analyzers'. Get it!

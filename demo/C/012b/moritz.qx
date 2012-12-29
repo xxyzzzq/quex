@@ -2,7 +2,7 @@ start = NORMAL;
 
 
 mode NORMAL 
-: <skip: [ \n\t]>
+: <skip: [ \n\t] >
 { 
     on_end_of_stream         => TKN_TERMINATION(LexemeNull);
     Max                      => TKN_MY_BROTHER(Lexeme); 

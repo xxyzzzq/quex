@@ -52,7 +52,7 @@ token {
 start = MAIN;
 
 mode MAIN
-: <skip: [ \t\r\n]> 
+: <skip: [ \t\r\n] > 
 {
     <<EOF>> {
         size_t i = 0;
@@ -79,7 +79,7 @@ mode MAIN
 }
 
 mode FIND_INCLUDE_NAME 
-: <skip: [ \t\r\n]> 
+: <skip: [ \t\r\n] > 
 {
     ([_a-zA-Z]|("/"|"."|"'"))+  { 
         self_send1(QUEX_TKN_IDENTIFIER, Lexeme); 

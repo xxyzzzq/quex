@@ -9,7 +9,7 @@ mode A : B {
     [a-z]+ => T_A_IDENTIFIER(Lexeme);
 }
 
-mode B : <skip: [ \t]> { 
+mode B : <skip: [ \t] > { 
 
     word   => T_B_WORD(Lexeme);
 }

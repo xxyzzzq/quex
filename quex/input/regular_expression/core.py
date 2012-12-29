@@ -11,47 +11,32 @@ from   quex.input.regular_expression.construct                import Pattern
 import quex.input.regular_expression.character_set_expression as charset_expression
 import quex.input.regular_expression.snap_character_string    as snap_character_string
 
-def parse(Txt_or_File, AllowNothingIsFineF=False, AllowStateMachineTrafoF=True):
+def parse(Txt_or_File, AllowNothingIsFineF=False):
 
-    sh, sh_ref, start_position = __prepare_text_or_file_stream(Txt_or_File)
-
-    start_position, pattern_str, pattern = __parse(sh)
+    pattern_str, pattern, dummy = __parse(Txt_or_File, AllowNothingIsFineF=AllowNothingIsFineF)
 
     return pattern_str, pattern
 
-def parse_character_string(Txt_or_File):
+def parse_character_string(Txt_or_File, Terminator=None):
+    return __parse(Txt_or_File, StateMachine.get_number_sequence, "character string", Terminator)
 
-    start_position, pattern_str, pattern = __parse(sh)
+def parse_character_set(Txt_or_File, Terminator=None):
+    return __parse(Txt_or_File, StateMachine.get_number_set, "character set", Terminator)
 
-    # Check whether it is a simple sequence.
-    character_sequence = pattern.sm.get_number_sequence()
-    if    pattern.has_pre_context() or pattern.has_post_context() \
-       or character_sequence is None:
-        fh.seek(start_position)
-        error_msg("Regular expression cannot be interpreted as plain character string.", fh)
+def __parse(Txt_or_File, ExtractFunction=None, Name=None, Terminator=None, 
+            AllowNothingIsFineF=False):
 
-    return pattern_str, pattern, character_sequence
+    if Txt_or_File.__class__ in [file, StringIO]:
+        sh = Txt_or_File
+    else:
+        sh = StringIO(Txt_or_File)
 
-def parse_character_set(Txt_or_File):
-    start_position, pattern_str, pattern = __parse(sh)
-
-    # Check whether it is a simple character set.
-    character_set = pattern.sm.get_number_set()
-    if    pattern.has_pre_context() or pattern.has_post_context() \
-       or character_set is None:
-        fh.seek(start_position)
-        error_msg("Regular expression cannot be interpreted as plain character set.", fh)
-
-    return pattern_str, pattern, character_set
-
-def __parse(Txt_or_File, AllowNothingIsFineF=False, AllowStateMachineTrafoF=True):
-
+    # (*) Parse the pattern => A Pattern object
     start_position = sh.tell()
     try:
-        # (*) parse regular expression, build state machine
         pattern = regex.do(sh, blackboard.shorthand_db, 
                            AllowNothingIsNecessaryF = AllowNothingIsFineF,
-                           AllowStateMachineTrafoF  = AllowStateMachineTrafoF)
+                           SpecialTerminator        = Terminator)
 
     except RegularExpressionException, x:
         sh.seek(start_position)
@@ -61,48 +46,27 @@ def __parse(Txt_or_File, AllowNothingIsFineF=False, AllowStateMachineTrafoF=True
         sh.seek(start_position)
         error_eof("regular expression", sh)
 
-    end_position = fh.tell()
-    fh.seek(StartPosition)
-    pattern_str = fh.read(end_position - StartPosition)
+    # (*) Read the pattern string.
+    end_position = sh.tell()
+    sh.seek(start_position)
+    pattern_str = sh.read(end_position - start_position)
     if pattern_str == "":
-        pattern_str = fh.read(1)
-        fh.seek(-1, 1)
+        pattern_str = sh.read(1)
+        sh.seek(-1, 1)
 
-    return start_position, pattern_str, pattern
+    # (*) Extract the object as required 
+    if ExtractFunction is not None:
+        result = ExtractFunction(pattern.sm)
 
-def __prepare_text_or_file_stream(Txt_or_File):
-    if Txt_or_File.__class__ in [file, StringIO]:
-        sh       = Txt_or_File
-        sh_ref   = sh
+        if pattern.has_pre_or_post_context() or result is None:
+            sh.seek(start_position)
+            pattern_str = pattern_str.strip()
+            txt = "Regular expression '%s' cannot be interpreted as plain %s." % (pattern_str, Name) 
+            if len(pattern_str) != 0 and pattern_str[-1] == Terminator:
+                txt += "\nMissing delimiting whitespace ' ' between the regular expression and '%s'.\n" % Terminator
+            error_msg(txt, sh)
     else:
-        sh     = StringIO(Txt_or_File)
-        sh_ref = -1
+        result = None
 
-    return sh, sh_ref, sh.tell()
-
-def __post_process(fh, StartPosition, Result, ReturnRE_StringF):
-    assert    Result is None                   \
-           or isinstance(Result, Pattern) \
-           or isinstance(Result, StateMachine) \
-           or isinstance(Result, NumberSet)
-
-    if False and isinstance(fh, StringIO):
-        regular_expression = "" # Earlier there was some doubt in StringIO ...
-    else:
-        end_position = fh.tell()
-        fh.seek(StartPosition)
-        regular_expression = fh.read(end_position - StartPosition)
-        if regular_expression == "":
-            regular_expression = fh.read(1)
-            fh.seek(-1, 1)
-
-    # (*) error in regular expression?
-    if Result is None:
-        error_msg("No valid regular expression detected, found '%s'." % regular_expression, fh)
-
-    # NOT: Do not transform here, since transformation might happen twice when patterns
-    #      are defined and when they are replaced.
-    if ReturnRE_StringF: return regular_expression, Result
-    else:                return Result
-
+    return pattern_str, pattern, result
 

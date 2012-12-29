@@ -11,7 +11,7 @@ define {
 }
 
 mode SIMPLE : 
-<skip: [ \t\n]> 
+<skip: [ \t\n] > 
 {
     on_failure        => QUEX_TKN_ERROR(Lexeme);
     on_end_of_stream  => QUEX_TKN_TERMINATION(LexemeNull);

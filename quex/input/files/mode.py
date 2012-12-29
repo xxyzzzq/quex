@@ -239,7 +239,9 @@ class Mode:
 
         # (*) Transform anything into the buffer's codec
         for pap in self.__pattern_action_pair_list:
-            pap.pattern().transform(Setup.buffer_codec_transformation_info)
+            if not pap.pattern().transform(Setup.buffer_codec_transformation_info):
+                error_msg("Pattern contains elements not found in engine codec '%s'." % Setup.buffer_codec,
+                          pap.pattern().file_name, pap.pattern().line_n, DontExitF=True)
 
         # (*) Cut the signalling characters from any pattern or state machine
         for pap in self.__pattern_action_pair_list:
@@ -493,8 +495,8 @@ class Mode:
         xpap_list.extend(xpap(MHI, self.name, sm, goto_skip_action) for sm in sm_list[:-1])
 
         action = GeneratedCode(skip_character_set.do, 
-                               FileName = "<TODO: filename>", #fh.name, 
-                               LineN    = -1) #get_current_line_info_number(fh))
+                               FileName = "<TODO: filename>",  #fh.name, 
+                               LineN    = -1)                  #get_current_line_info_number(fh))
         action.data["character_set"]        = character_set
         action.data["require_label_SKIP_f"] = len(sm_list) != 1
 
@@ -524,7 +526,7 @@ class Mode:
 
             # Skipper code is to be generated later
             action = GeneratedCode(SkipperFunction,
-                                   FileName = opener_pattern.file_name
+                                   FileName = opener_pattern.file_name,
                                    LineN    = opener_pattern.line_n) # get_current_line_info_number(fh))
 
             action.data["opener_sequence"] = opener_sequence

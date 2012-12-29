@@ -31,7 +31,7 @@ mode BASE :
 
 
 mode DERIVED : BASE
-<skip:       [ \n\t]>
+<skip:       [ \n\t] >
 <skip_range: "/*" "*/">
 <skip_range: "//" "\n">
 {

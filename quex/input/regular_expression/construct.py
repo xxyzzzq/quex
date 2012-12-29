@@ -1,3 +1,4 @@
+from   quex.engine.misc.file_in                     import get_current_line_info_number
 from   quex.engine.interval_handling                import UnicodeInterval, Interval
 from   quex.engine.state_machine.core               import StateMachine
 from   quex.engine.state_machine.utf16_state_split  import ForbiddenRange
@@ -114,16 +115,15 @@ class Pattern(object):
         if self.__pre_context_sm_to_be_inverted is not None:
             return False
         return self.__pre_context_begin_of_line_f
-    @property
-    def post_context_f(self):                      return self.__post_context_f
-    def has_pre_or_post_context(self):
-        if   self.__pre_context_begin_of_line_f:                return True
-        elif self.__pre_context_sm_to_be_inverted is not None:  return True
-        elif self.__post_context_f:                             return True
-        return False
+
     def has_pre_context(self): 
         return    self.__pre_context_begin_of_line_f \
-               or self.__pre_context_sm_to_be_inverted is not None
+               or self.__pre_context_sm_to_be_inverted is not None \
+               or self.__pre_context_sm                is not None
+    def has_post_context(self):   
+        return self.__post_context_f
+    def has_pre_or_post_context(self):
+        return self.has_pre_context() or self.has_post_context()
 
     def set_sm(self, SM):                            self.__sm                            = SM
     def set_bipd_sm_to_be_inverted(self, SM):        self.__bipd_sm_to_be_inverted        = SM
@@ -169,19 +169,18 @@ class Pattern(object):
         assert self.__alarm_transformed_f == False
         self.__alarm_transformed_f = True
 
-        if TrafoInfo is None: 
-            return
+        # Transformation MUST be called before any pre-context or bipd
+        # is mounted.
+        assert self.__pre_context_sm is None
+        assert self.__bipd_sm        is None
 
-        def trafo(SM):
-            if SM is None: return SM
-            sm = transformation.try_this(SM, -1)
-            assert sm is not None
-            beautifier.do(sm)
-            return sm
+        c0, self.__sm                            = transformation.try_this(self.__sm)
+        c1, self.__pre_context_sm_to_be_inverted = transformation.try_this(self.__pre_context_sm_to_be_inverted)
+        c2, self.__bipd_sm_to_be_inverted        = transformation.try_this(self.__bipd_sm_to_be_inverted)
 
-        self.__sm                            = trafo(self.__sm)
-        self.__pre_context_sm_to_be_inverted = trafo(self.__pre_context_sm_to_be_inverted)
-        self.__bipd_sm_to_be_inverted        = trafo(self.__bipd_sm_to_be_inverted)
+        # Only if all transformation have been complete, then the transformation
+        # can be considered complete.
+        return c0 and c1 and c2
 
 
     def __validate(self, fh):
