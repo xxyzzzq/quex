@@ -12,7 +12,6 @@ from   quex.engine.misc.string_handling            import blue_print
 from   quex.engine.tools                           import r_enumerate
 import quex.output.cpp.counter_for_pattern         as     counter_for_pattern
 import quex.output.cpp.counter                     as     counter
-import quex.blackboard                             as     blackboard
 from   quex.blackboard                             import setup as Setup
 from   quex.blackboard                             import E_StateIndices
 from   copy                                        import copy
@@ -25,9 +24,7 @@ def do(Data, Mode=None):
     
     indentation_counter_terminal_id = Data["indentation_counter_terminal_id"]
 
-    code_str = get_skipper(ClosingSequence, ClosingPattern, Mode, indentation_counter_terminal_id) 
-
-    return code_str
+    return get_skipper(ClosingSequence, ClosingPattern, Mode, indentation_counter_terminal_id) 
 
 template_str = """
     $$DELIMITER_COMMENT$$
@@ -310,7 +307,8 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, IndentationCounterTermina
     variable_db.require_array("Skipper%i", Initial="{ %s }" % delimiter_str, ElementN=delimiter_length, Index=skipper_index)
     variable_db.require("Skipper%iL", "%i" % delimiter_length, Index=skipper_index)
     variable_db.require("text_end")
-    return code_str
+
+    return [ code_str ]
 
 def __lc_counting_replacements(code_str, EndSequence):
     """Line and Column Number Counting(Range Skipper):

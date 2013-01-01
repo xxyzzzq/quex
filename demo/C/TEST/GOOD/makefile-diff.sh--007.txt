@@ -13,4 +13,7 @@
 < EasyLexer.cpp: simple.qx $(QUEX_CORE)
 ---
 > EasyLexer.c: simple.qx $(QUEX_CORE)
-> 		 --language      C          \
+< 		 --comment-state-machine --comment-mode-patterns 
+---
+> 		 --comment-state-machine --comment-mode-patterns \
+> 		 --language         C

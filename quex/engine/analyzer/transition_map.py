@@ -2,8 +2,7 @@ from   quex.engine.interval_handling import Interval
 from   quex.blackboard import E_StateIndices
 import sys
 from   copy import deepcopy, copy
-from   itertools import imap, izip
-from   operator  import itemgetter
+from   itertools import izip
 
 def zipped_iterable(TransitionMapA, TransitionMapB):
     """Produces an iterable over two transition maps at once. The borders in the

@@ -28,17 +28,14 @@ Characters:
 
 ----------------------------------------------------------------------
 ARGS:  ['intersection(\\G{Nd}, \\P{Script=Runic})']
-Characters:
-<Result = Empty Character Set>
+command line:1:warning: Regular Expression: Character set expression results in empty set.
+command line:1:error: Empty pattern.
 
+command line:1:warning: Regular Expression: Character set expression results in empty set.
+command line:1:error: Empty pattern.
 
-Characters:
-<Result = Empty Character Set>
-
-
-Characters:
-
-
+command line:1:warning: Regular Expression: Character set expression results in empty set.
+command line:1:error: Empty pattern.
 
 ----------------------------------------------------------------------
 ARGS:  ['intersection(\\P{ID_Continue}, \\P{Script=Khmer})']

@@ -6,26 +6,19 @@ from   quex.engine.generator.state.transition.code  import TextTransitionCode
 import quex.engine.generator.state.transition.core  as     transition_map_coder
 import quex.engine.generator.state_machine_coder    as     state_machine_coder
 from   quex.engine.generator.base                   import get_combined_state_machine
-from   quex.engine.generator.languages.address      import get_plain_strings
-from   quex.engine.generator.action_info            import CodeFragment, \
-                                                           PatternActionInfo
+from   quex.engine.generator.action_info            import CodeFragment
 from   quex.engine.state_machine.core               import StateMachine
 import quex.engine.analyzer.core                    as     analyzer_generator
 import quex.engine.analyzer.transition_map          as     transition_map_tool
 import quex.engine.analyzer.engine_supply_factory   as     engine
 import quex.engine.state_machine.transformation     as     transformation
-from   quex.engine.utf8                             import unicode_to_utf8
-from   quex.engine.misc.string_handling             import blue_print
-from   quex.engine.interval_handling                import NumberSet, Interval
+from   quex.engine.interval_handling                import NumberSet
 
-from   quex.blackboard import E_Count, \
-                              setup as Setup, \
+from   quex.blackboard import setup as Setup, \
                               DefaultCounterFunctionDB
 
-from   itertools   import islice
 from   collections import defaultdict
 from   copy        import deepcopy
-import sys
 import re
 
 def get(counter_db, Name):
@@ -53,8 +46,6 @@ def get(counter_db, Name):
                                        'counter_db'.
     ---------------------------------------------------------------------------
     """
-    LanguageDB = Setup.language_db
-
     function_name = DefaultCounterFunctionDB.get_function_name(counter_db)
     if function_name is not None:
         return function_name, None # Implementation has been done before.
@@ -268,8 +259,6 @@ def get_state_machine_list(TM):
     RETURNS: [0] -- The 'action_db': state_machine_id --> count action
              [1] -- The list of state machines. 
     """
-    LanguageDB = Setup.language_db
-
     # Sort by actions.
     action_code_db = defaultdict(NumberSet)
     for character_set, action_list in TM:
@@ -355,7 +344,6 @@ def _trivialized_state_machine_coder_do(tm):
     """
     global __increment_actions_for_utf16
     global __increment_actions_for_utf8
-    LanguageDB = Setup.language_db
 
     # (*) Try to find easy and elegant special solutions 
     if   Setup.buffer_codec_transformation_info == "utf8-state-split":
@@ -485,7 +473,7 @@ def __frame(txt, FunctionName, StateMachineF, ColumnCountPerChunk):
                
     epilogue = []
     if False:
-        epilog.extend([2, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
+        epilogue.extend([2, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
 
     epilogue.append("    }\n")
     if ColumnCountPerChunk is not None:

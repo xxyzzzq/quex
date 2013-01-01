@@ -8,12 +8,12 @@ fi
 echo "--------------------------------------------------------------------"
 echo "quex --set-by-expression [^a] --intervals"
 echo
-quex --set-by-expression [^a] --intervals
+quex --set-by-expression '[^a]' --intervals
 
 echo "--------------------------------------------------------------------"
 echo "quex --set-by-expression [^a] --intervals --numeric"
 echo
-quex --set-by-expression [^a] --intervals --numeric
+quex --set-by-expression '[^a]' --intervals --numeric
 
 echo "--------------------------------------------------------------------"
 echo "quex --set-by-property Script=Greek --intervals"

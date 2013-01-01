@@ -25,7 +25,6 @@
 ################################################################################
 from quex.engine.generator.code_fragment_base import CodeFragment
 from quex.engine.misc.enum                    import Enum
-from quex.engine.interval_handling            import NumberSet, Interval
 from quex.input.setup                         import QuexSetup, SETUP_INFO
 from copy                                     import deepcopy
 

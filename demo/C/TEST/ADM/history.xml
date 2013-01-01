@@ -1,4 +1,4 @@
-<history date="Sun Dec 30 00:14:14 2012" element-n="133">
+<history date="Mon Dec 31 22:42:08 2012" element-n="138">
     <day year="2010" month="06" day="22">
         <history-init time="19:28:57"/>
     </day>
@@ -215,5 +215,14 @@
         <crc-error time="22:28:05" application="011.sh" choice="utf8" database-crc="-1827787599" real-crc="-2088644330"/>
         <crc-error time="22:28:08" application="011.sh" choice="utf16-be" database-crc="-1827787599" real-crc="-2088644330"/>
         <crc-error time="22:28:11" application="011.sh" choice="utf16-le" database-crc="-1827787599" real-crc="-2088644330"/>
+    </day>
+    <day year="2012" month="12" day="30">
+        <crc-error time="08:20:42" application="011.sh" choice="iso8859-7" database-crc="-2088644330" real-crc="1096578666"/>
+        <crc-error time="08:20:47" application="011.sh" choice="utf8" database-crc="-2088644330" real-crc="1096578666"/>
+        <crc-error time="08:20:49" application="011.sh" choice="utf16-be" database-crc="-2088644330" real-crc="1096578666"/>
+        <crc-error time="08:20:51" application="011.sh" choice="utf16-le" database-crc="-2088644330" real-crc="1096578666"/>
+    </day>
+    <day year="2012" month="12" day="31">
+        <crc-error time="21:41:22" application="makefile-diff.sh" choice="007" database-crc="2107947548" real-crc="-1232588069"/>
     </day>
 </history>

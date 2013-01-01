@@ -1,28 +1,9 @@
 """____________________________________________________________________________
-(C) 2012 Frank-Rene Schaefer
+(C) 2013 Frank-Rene Schaefer
 _______________________________________________________________________________
 """
-from   quex.engine.generator.state.transition.code  import TextTransitionCode
-import quex.engine.generator.state.transition.core  as     transition_map_coder
-import quex.engine.generator.state_machine_coder    as     state_machine_coder
-from   quex.engine.generator.base                   import get_combined_state_machine
-from   quex.engine.generator.languages.address      import get_plain_strings
-from   quex.engine.generator.action_info            import CodeFragment, \
-                                                           PatternActionInfo
-from   quex.engine.state_machine.core               import StateMachine
-import quex.engine.analyzer.core                    as     analyzer_generator
-import quex.engine.analyzer.transition_map          as     transition_map_tool
-import quex.engine.analyzer.engine_supply_factory   as     engine
-from   quex.engine.utf8                             import unicode_to_utf8
-from   quex.engine.misc.string_handling             import blue_print
-
 from   quex.blackboard import E_Count, \
-                              setup as Setup, \
-                              DefaultCounterFunctionDB
-
-from   itertools import islice
-from   copy      import deepcopy
-import sys
+                              setup as Setup
 
 def get(ThePattern, EOF_ActionF, ShiftF=True):
     """Line and column number actions for a pattern.
@@ -105,7 +86,7 @@ def get(ThePattern, EOF_ActionF, ShiftF=True):
         if IncrementByLexemeLength == 0 or Increment == 0:
             return 
         elif Increment != E_Count.VOID:
-            arg = "%i" % Increment
+            arg = LanguageDB.VALUE_STRING(Increment)
         else:
             arg = LanguageDB.MULTIPLY_WITH("LexemeL", IncrementByLexemeLength)
 

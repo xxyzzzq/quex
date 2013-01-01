@@ -1,9 +1,7 @@
-from   quex.engine.state_machine.core      import State
 from   quex.engine.analyzer.state.entry    import Entry
 from   quex.engine.analyzer.state.drop_out import DropOutIndifferent, \
                                                   DropOutBackwardInputPositionDetection
-from   quex.blackboard  import E_StateIndices, \
-                               E_InputActions
+from   quex.blackboard  import E_InputActions
 
 class Base:
     def is_FORWARD(self):                  return False

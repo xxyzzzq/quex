@@ -9,7 +9,7 @@ from   StringIO                             import StringIO
 
 spec_txt = """
    [\\x0A\\x0b\\x0c\\x85\\X2028\\X2029\\x0d] => newline 1;
-   [\\t]                               => grid    4;
+   [\\t]                                     => grid    4;
 >"""
 
 fh = StringIO(spec_txt)
@@ -25,13 +25,6 @@ if "--hwut-info" in sys.argv:
     print "Predetermined Character Count: Newlines"
     sys.exit(0)
     
-def old_test(TestString):
-    TestString = TestString.replace("\n", "\\n").replace("\t", "\\t")
-    print "expression           = " + TestString
-    pattern = regex.do(TestString, {})
-    print "fixed newline number = ", pattern.newline_n
-    print "fixed character number = ", pattern.character_n
-
 def test(TestString):
     global counter_db
 
@@ -42,9 +35,6 @@ def test(TestString):
     pattern = core.do(TestString, {})
     pattern.prepare_count_info(counter_db, None)
     print ("info  = {\n    %s\n}\n" % str(pattern.count_info()).replace("\n", "\n    "))
-
-#test('[ \t\n]')
-#sys.exit()
 
 test('[0-9]+')
 test('"1\n\n\n3"')

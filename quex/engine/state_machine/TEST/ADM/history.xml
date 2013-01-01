@@ -1,4 +1,4 @@
-<history date="Sun Dec 30 00:14:56 2012" element-n="631">
+<history date="Tue Jan  1 11:23:04 2013" element-n="634">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1371,5 +1371,10 @@
         <crc-error time="10:29:51" application="test-ambiguous_post_condition-mount_pseudo.py" choice="" database-crc="-1909008707" real-crc="-1156165497"/>
         <crc-error time="10:30:04" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-2030704293" real-crc="-1703144975"/>
         <crc-error time="10:30:20" application="test-StateMachine-clone.py" choice="" database-crc="-821346206" real-crc="1381182980"/>
+    </day>
+    <day year="2013" month="01" day="01">
+        <crc-error time="08:36:17" application="test-count_newline_n.py" choice="" database-crc="-1753712398" real-crc="-788989933"/>
+        <crc-error time="08:49:06" application="test-count_newline_n.py" choice="" database-crc="-788989933" real-crc="-494368563"/>
+        <crc-error time="10:22:49" application="test-count_newline_n.py" choice="" database-crc="-494368563" real-crc="-970502174"/>
     </day>
 </history>

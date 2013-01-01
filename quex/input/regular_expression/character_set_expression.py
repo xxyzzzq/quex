@@ -62,10 +62,10 @@ def do(stream, PatternDict):
     trigger_set = snap_set_expression(stream, PatternDict)
 
     if trigger_set is None: 
-        raise RegularExpressionException("Regular Expression: character_set_expression called for something\n" + \
-                                         "that does not start with '[:', '[' or '\\P'")
-    if trigger_set.is_empty():
-        raise RegularExpressionException("Regular Expression: Character set expression results in empty set.")
+        error_msg("Regular Expression: character_set_expression called for something\n" + \
+                  "that does not start with '[:', '[' or '\\P'", stream)
+    elif trigger_set.is_empty():
+        error_msg("Regular Expression: Character set expression results in empty set.", stream, DontExitF=True)
 
     # Create state machine that triggers with the trigger set to SUCCESS
     # NOTE: The default for the ELSE transition is FAIL.

@@ -1,15 +1,9 @@
 from StringIO import StringIO
-from   quex.blackboard import setup as Setup
-
 from   quex.engine.misc.file_in       import EndOfStreamException, error_msg, error_eof
 from   quex.exception                 import RegularExpressionException
-from   quex.engine.interval_handling  import NumberSet, Interval
 from   quex.engine.state_machine.core import StateMachine 
 import quex.blackboard                                        as blackboard
 import quex.input.regular_expression.engine                   as regex
-from   quex.input.regular_expression.construct                import Pattern
-import quex.input.regular_expression.character_set_expression as charset_expression
-import quex.input.regular_expression.snap_character_string    as snap_character_string
 
 def parse(Txt_or_File, AllowNothingIsFineF=False):
 

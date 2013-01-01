@@ -15,11 +15,14 @@ if "--hwut-info" in sys.argv:
 def test(simulated_argv):
     print "----------------------------------------------------------------------"
     print "ARGS: ", simulated_argv
-    query.do(["--set-by-expression"] + simulated_argv)
+    try:    query.do(["--set-by-expression"] + simulated_argv)
+    except: pass
     print
-    query.do(["--set-by-expression"] + simulated_argv + ["--numeric"])
+    try:    query.do(["--set-by-expression"] + simulated_argv + ["--numeric"])
+    except: pass
     print
-    query.do(["--set-by-expression"] + simulated_argv + ["--numeric" , "--intervals"])
+    try:    query.do(["--set-by-expression"] + simulated_argv + ["--numeric" , "--intervals"])
+    except: pass
     print
 
 test(["intersection(\P{ID_Start}, \P{Script=Runic})"])

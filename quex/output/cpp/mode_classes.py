@@ -115,16 +115,16 @@ def  get_implementation_of_mode_functions(mode, Modes):
     on_entry_str  = "#   ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
     on_entry_str += "    QUEX_NAME(%s).has_entry_from(FromMode);\n" % mode.name
     on_entry_str += "#   endif\n"
-    for code_info in mode.get_code_fragment_list("on_entry"):
-        on_entry_str += code_info.get_pure_code()
+    for fragment in mode.get_code_fragment_list("on_entry"):
+        on_entry_str += fragment.get_code_string()
         if on_entry_str[-1] == "\n": on_entry_str = on_entry_str[:-1]
 
     # (*) on exit
     on_exit_str  = "#   ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
     on_exit_str += "    QUEX_NAME(%s).has_exit_to(ToMode);\n" % mode.name
     on_exit_str += "#   endif\n"
-    for code_info in mode.get_code_fragment_list("on_exit"):
-        on_exit_str += code_info.get_pure_code()
+    for fragment in mode.get_code_fragment_list("on_exit"):
+        on_exit_str += fragment.get_code_string()
 
     # (*) on indentation
     on_indentation_str = get_on_indentation_handler(mode)

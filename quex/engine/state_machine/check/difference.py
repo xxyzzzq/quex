@@ -2,8 +2,6 @@ from quex.engine.misc.tree_walker    import TreeWalker
 import quex.engine.state_machine.index as     index
 from   quex.engine.state_machine.core  import StateMachine
 import quex.engine.state_machine.algorithm.beautifier  as beautifier
-from   quex.engine.interval_handling   import NumberSet
-from   copy import copy
 
 def do(A, B): 
     """Computes the 'difference' between two state machines. That is, 
@@ -46,9 +44,11 @@ class Processor(TreeWalker):
         a_trigger_map = a_state.transitions().get_map().iteritems()
 
         if a_state.is_acceptance():
-            self.result.delete_path(b_path)
+            self.result.delete_path(self.b_path)
 
         sub_node_list = []
+        b_trigger_map = None # to pass pyflykes -- not implemented code
+     
         for a_target, a_trigger_set in a_trigger_map:
             intersection_f = True
             for b_target, b_trigger_set in b_trigger_map:

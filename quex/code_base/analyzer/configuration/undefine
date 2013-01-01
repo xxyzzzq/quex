@@ -501,5 +501,21 @@
 #ifdef    QUEX_IF_IS_NEWLINE
 #   undef QUEX_IF_IS_NEWLINE
 #endif
+#ifdef    __QUEX_COUNTER_RULES
+#   undef __QUEX_COUNTER_RULES
+#endif
+#ifdef    __QUEX_COUNTER_SHIFT_COLUMNS
+#   undef __QUEX_COUNTER_SHIFT_COLUMNS
+#endif
+#ifdef    __QUEX_COUNTER_SHIFT_LINES
+#   undef __QUEX_COUNTER_SHIFT_LINES
+#endif
+#ifdef    __QUEX_IF_ASSERT
+#   undef __QUEX_IF_ASSERT
+#endif
+#ifdef    __QUEX_IF_COUNT_SHIFT_VALUES
+#   undef __QUEX_IF_COUNT_SHIFT_VALUES
+#endif
+
 
 

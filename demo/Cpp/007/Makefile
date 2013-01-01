@@ -50,11 +50,11 @@ example.o: ../example.cpp  EasyLexer.cpp
 	$(CC) -E $< -o $@ 
 
 EasyLexer.cpp: simple.qx $(QUEX_CORE)
-	quex -i                 simple.qx  \
-	     --engine           EasyLexer  \
-		 --token-id-offset     0x1000  \
-		 --post-categorizer            \
-		 --comment-state-machine --comment-mode-patterns
+	quex -i                 simple.qx \
+	     --engine           EasyLexer \
+		 --token-id-offset  0x1000    \
+		 --post-categorizer           \
+		 --comment-state-machine --comment-mode-patterns 
 
 # (*) HELPERS __________________________________________________________________
 clean:	

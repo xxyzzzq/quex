@@ -29,8 +29,9 @@ def test(Txt):
     print 
     print "OUT:"
     print 
+    parse_section(sh, descr, [])
     try:
-        parse_section(sh, descr, [])
+        pass
     except Exception, inst:
         print "Exception Caught: " + inst.__class__.__name__ 
         pass

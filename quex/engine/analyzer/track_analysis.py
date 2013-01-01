@@ -18,6 +18,7 @@ from   quex.blackboard              import E_AcceptanceIDs, E_PreContextIDs, E_T
 from   quex.engine.misc.tree_walker import TreeWalker
 
 from   itertools   import izip
+from   collections import defaultdict
 from   copy        import copy
 from   zlib        import crc32
 
@@ -63,24 +64,33 @@ def do(SM, ToDB):
                                must be different or the recursion terminates.
         """
         def __init__(self, state_machine, ToDB):
-            self.__depth    = 0
-            self.sm         = state_machine
-            self.empty_list = []
-            self.to_db      = ToDB
-            self.result     = dict((i, []) for i in self.sm.states.iterkeys())
+            self.sm           = state_machine
+            self.empty_list   = []
+            self.to_db        = ToDB
+            self.result       = dict((i, []) for i in self.sm.states.iterkeys())
             self.dangerous_positioning_state_set = set()
+            self.path         = []
+            # By default, each state is a 'on the path to itself'
+            # This facilitates the task of asking 'i is on the path to k' as
+            # 'i in path_element_db[k]'
+            self.path_element_db = defaultdict(set)
+            self.path_element_db.update((i,set([i])) for i in state_machine.states.iterkeys())
             TreeWalker.__init__(self)
 
         def on_enter(self, Args):
             PreviousTrace = Args[0]
             StateIndex    = Args[1]
+
             # (*) Update the information about the 'trace of acceptances'
             State = self.sm.states[StateIndex]
 
-            if self.__depth == 0: trace = PathTrace(self.sm.init_state_index)
-            else:                 trace = PreviousTrace.next_step(StateIndex, State) 
+            if len(self.path) == 0: trace = PathTrace(self.sm.init_state_index)
+            else:                   trace = PreviousTrace.next_step(StateIndex, State) 
 
             target_index_list = self.to_db[StateIndex]
+            for state_index in self.path:
+                self.path_element_db[StateIndex].update(self.path)
+
             # (*) Recursion Termination:
             #
             # If a state has been analyzed before with the same trace as result,  
@@ -122,30 +132,26 @@ def do(SM, ToDB):
                         # analysis of subsequent states on the path is therefore
                         # complete. Almost: There is now alternative paths from
                         # store to restore that must added later on.
-                        self.dangerous_positioning_state_set.update(accept_info.positioning_state_index \
-                                                                    for accept_info in trace.acceptance_trace)
-                        #self.dangerous_positioning_state_set.update(store_info.positioning_state_index \
-                        #                                            for store_info in trace.storage_db.itervalues())
                         return None
 
             # (*) Mark the current state with its acceptance trace
             self.result[StateIndex].append(trace)
 
             # (*) Add current state to path
-            self.__depth += 1
+            self.path.append(StateIndex)
 
             # (*) Recurse to all (undone) target states. 
             return [(trace, target_i) for target_i in target_index_list ]
 
         def on_finished(self, Args):
             # self.done_set.add(StateIndex)
-            self.__depth -= 1
+            self.path.pop()
 
     trace_finder = TraceFinder(SM, ToDB)
     trace_finder.do((None, SM.init_state_index))
 
     result = dict( (key, [x.acceptance_trace for x in trace_list]) for key, trace_list in trace_finder.result.iteritems())
-    return result, trace_finder.dangerous_positioning_state_set
+    return result, trace_finder.path_element_db
 
 class PathTrace(object):
     """

@@ -400,7 +400,16 @@ class Entry(object):
               which tells what transitions are implemented by a given door.
         """
         # (*) Categorize action lists
-        transition_action_list = [ transition_action.clone() for transition_action in self.__action_db.itervalues() ]
+
+        # NOTE: The transition from 'NONE' does not enter the door tree.
+        #       It appears only in the init state when the thread of 
+        #       control drops into the first state. The from 'NONE' door
+        #       is implemented referring to '.action_db_get_command_list(...)'.
+        transition_action_list = [ 
+            transition_action.clone() 
+            for transition_id, transition_action in self.__action_db.iteritems() 
+            if transition_id.from_state_index != E_StateIndices.NONE
+        ]
         door_db,       \
         transition_db, \
         self.__door_tree_root = entry_action.categorize_command_lists(self.__state_index, transition_action_list)

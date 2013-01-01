@@ -314,7 +314,7 @@ def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, I
                 error_msg("Ignore recursive inclusion of file '%s' in file '%s'.\n" % (included_file, file_name) \
                           + "Note, that quex does not handle C-Preprocessor instructions.", DontExitF=True)
             elif not os.access(included_file, os.F_OK): 
-                error_msg("Parsing token-id file: Cannot access file '%s'." % included_file, DontExitF=True)
+                error_msg("Parsing token-id file: Cannot access file '%s' from '%s'." % (included_file, file_name), DontExitF=True)
             else:
                 work_list.append(included_file)
 

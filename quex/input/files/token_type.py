@@ -114,24 +114,24 @@ class TokenTypeDescriptorCore:
         txt += "}\n"
 
         # constructor / copy / destructor
-        if self.constructor.get_pure_code() != "":
+        if not self.constructor.is_whitespace():
             txt += "constructor {\n"
-            txt += self.constructor.get_code()
+            txt += self.constructor.get_code_string()
             txt += "}"
         
-        if self.copy.get_pure_code() != "":
+        if not self.copy.is_whitespace():
             txt += "copy {\n"
-            txt += self.copy.get_code()
+            txt += self.copy.get_code_string()
             txt += "}"
 
-        if self.destructor.get_pure_code() != "":
+        if not self.destructor.is_whitespace():
             txt += "destructor {\n"
-            txt += self.destructor.get_code()
+            txt += self.destructor.get_code_string()
             txt += "}"
 
-        if self.body.get_pure_code() != "":
+        if not self.body.is_whitespace():
             txt += "body {\n"
-            txt += self.body.get_code()
+            txt += self.body.get_code_string()
             txt += "}"
 
         return txt
@@ -227,14 +227,13 @@ class TokenTypeDescriptor(TokenTypeDescriptorCore):
                "Available: " + repr(self.__member_db.keys())
         return self.__member_db[MemberName][1]
 
-
     def consistency_check(self):
         # If the 'accumulator' feature is active there *must* be a 'take_text' section
 
         if not Setup.token_class_take_text_check_f: return
 
         # Is 'take_text' section defined
-        if len(self.take_text.get_pure_code()) != 0: return
+        if not self.take_text.is_whitespace(): return
 
         error_msg(_warning_msg, 
                   self.file_name_of_token_type_definition,
@@ -523,8 +522,9 @@ def __validate_definition(TheCodeFragment, NameStr,
         if    TheCodeFragment.contains_string("string") \
            or TheCodeFragment.contains_string("vector") \
            or TheCodeFragment.contains_string("map"):
+            type_str = TheCodeFragment.get_pure_code()
             error_msg("Numeric type required.\n" + \
-                      "Example: <token_id: uint16_t>, Found: '%s'\n" % TypeStr, FileName, LineN)
+                      "Example: <token_id: uint16_t>, Found: '%s'\n" % type_str, FileName, LineN)
     else:
         if NameStr in TokenType_StandardMemberList:
             error_msg("Member '%s' only allowed in 'standard' section." % NameStr,
@@ -538,8 +538,7 @@ def __validate_definition(TheCodeFragment, NameStr,
                   candidate[1].filename, candidate[1].line_n)
 
 _warning_msg = \
-"""
-Section token_type does not contain a 'take_text' section. It would be
+"""Section token_type does not contain a 'take_text' section. It would be
 necessary if the analyzer uses the string accumulator. To disable this warning
 set the command line flag: --token-type-no-take_test-check or --ttnttc.
 """

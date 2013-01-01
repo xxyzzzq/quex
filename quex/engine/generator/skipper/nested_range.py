@@ -7,7 +7,6 @@ from   quex.blackboard                              import setup as Setup
 from   quex.engine.misc.string_handling             import blue_print
 from   quex.engine.generator.languages.address      import __nice, get_label
 from   quex.engine.generator.languages.variable_db  import variable_db
-import quex.blackboard                              as     blackboard
 from   quex.blackboard                              import E_StateIndices
 
 def do(Data, Mode):
@@ -19,14 +18,9 @@ def do(Data, Mode):
     
     indentation_counter_terminal_id = Data["indentation_counter_terminal_id"]
 
-    code_str = get_skipper(OpeningSequence, ClosingSequence, 
-                           Mode=Mode, 
-                           IndentationCounterTerminalID=indentation_counter_terminal_id) 
-
-    # Reload requires the state router; mark as 'used'
-    # get_label("$state-router", U=True)
-
-    return code_str
+    return get_skipper(OpeningSequence, ClosingSequence, 
+                       Mode=Mode, 
+                       IndentationCounterTerminalID=indentation_counter_terminal_id) 
 
 template_str = """
     Skipper$$SKIPPER_INDEX$$_Opener_it = (QUEX_TYPE_CHARACTER*)Skipper$$SKIPPER_INDEX$$_Opener;
@@ -196,6 +190,6 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
                    ["$$LC_COUNT_AFTER_RELOAD$$",                after_reload],
                ])
 
-    return code_str
+    return [ code_str ]
 
 

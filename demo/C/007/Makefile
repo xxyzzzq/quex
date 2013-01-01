@@ -50,11 +50,12 @@ example.o: ../example.c  EasyLexer.c
 	$(CC) -E $< -o $@ 
 
 EasyLexer.c: simple.qx $(QUEX_CORE)
-	quex -i              simple.qx  \
-	     --engine        EasyLexer  \
-		 --token-id-offset  0x1000     \
-		 --language      C          \
-		 --post-categorizer 
+	quex -i                 simple.qx \
+	     --engine           EasyLexer \
+		 --token-id-offset  0x1000    \
+		 --post-categorizer           \
+		 --comment-state-machine --comment-mode-patterns \
+		 --language         C
 
 # (*) HELPERS __________________________________________________________________
 clean:	

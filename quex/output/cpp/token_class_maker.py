@@ -67,14 +67,16 @@ def _do(Descr):
     virtual_destructor_str = ""
     if Descr.open_for_derivation_f: virtual_destructor_str = "virtual "
 
-    if Descr.copy.get_pure_code() == "":
+    if Descr.copy.is_whitespace():
         # Default copy operation: Plain Copy of token memory
         copy_str = "__QUEX_STD_memcpy((void*)__this, (void*)__That, sizeof(QUEX_TYPE_TOKEN));\n"
     else:
-        copy_str = Descr.copy.get_pure_code()
+        copy_str = Descr.copy.get_code_string()
 
-    take_text_str = Descr.take_text.get_pure_code()
-    if take_text_str == "": take_text_str = "return true;\n" 
+    if Descr.take_text.is_whitespace():
+        take_text_str = "return true;\n" 
+    else:
+        take_text_str = Descr.take_text.get_code_string()
 
     include_guard_extension_str = get_include_guard_extension(
                                         LanguageDB.NAMESPACE_REFERENCE(Descr.name_space) 
@@ -115,21 +117,21 @@ def _do(Descr):
             ])
     txt = blue_print(txt,
              [
-              ["$$BODY$$",                    Descr.body.get_pure_code()],
-              ["$$CONSTRUCTOR$$",             Descr.constructor.get_pure_code()],
+              ["$$BODY$$",                    Descr.body.get_code_string()],
+              ["$$CONSTRUCTOR$$",             Descr.constructor.get_code_string()],
               ["$$COPY$$",                    copy_str],
-              ["$$DESTRUCTOR$$",              Descr.destructor.get_pure_code()],
+              ["$$DESTRUCTOR$$",              Descr.destructor.get_code_string()],
               ["$$DISTINCT_MEMBERS$$",        get_distinct_members(Descr)],
-              ["$$FOOTER$$",                  Descr.footer.get_pure_code()],
+              ["$$FOOTER$$",                  Descr.footer.get_code_string()],
               ["$$FUNC_TAKE_TEXT$$",          take_text_str],
-              ["$$HEADER$$",                  Descr.header.get_pure_code()],
+              ["$$HEADER$$",                  Descr.header.get_code_string()],
               ["$$INCLUDE_GUARD_EXTENSION$$", include_guard_extension_str],
               ["$$NAMESPACE_CLOSE$$",         LanguageDB.NAMESPACE_CLOSE(Descr.name_space)],
               ["$$NAMESPACE_OPEN$$",          LanguageDB.NAMESPACE_OPEN(Descr.name_space)],
               ["$$QUICK_SETTERS$$",           get_quick_setters(Descr)],
               ["$$SETTERS_GETTERS$$",         get_setter_getter(Descr)],
-              ["$$TOKEN_REPETITION_N_GET$$",  Descr.repetition_get.get_pure_code()],
-              ["$$TOKEN_REPETITION_N_SET$$",  Descr.repetition_set.get_pure_code()],
+              ["$$TOKEN_REPETITION_N_GET$$",  Descr.repetition_get.get_code_string()],
+              ["$$TOKEN_REPETITION_N_SET$$",  Descr.repetition_set.get_code_string()],
               ["$$UNION_MEMBERS$$",           get_union_members(Descr)],
               ["$$VIRTUAL_DESTRUCTOR$$",      virtual_destructor_str],
               ["$$TOKEN_CLASS_NAME_SAFE$$",   Descr.class_name_safe],
@@ -147,17 +149,17 @@ def _do(Descr):
             ])
     txt_i = blue_print(txt_i, 
                        [
-                        ["$$CONSTRUCTOR$$",             Descr.constructor.get_pure_code()],
+                        ["$$CONSTRUCTOR$$",             Descr.constructor.get_code_string()],
                         ["$$COPY$$",                    copy_str],
-                        ["$$DESTRUCTOR$$",              Descr.destructor.get_pure_code()],
-                        ["$$FOOTER$$",                  Descr.footer.get_pure_code()],
+                        ["$$DESTRUCTOR$$",              Descr.destructor.get_code_string()],
+                        ["$$FOOTER$$",                  Descr.footer.get_code_string()],
                         ["$$FUNC_TAKE_TEXT$$",          take_text_str],
                         ["$$TOKEN_CLASS_HEADER$$",      Setup.get_file_reference(blackboard.token_type_definition.get_file_name())],
                         ["$$INCLUDE_GUARD_EXTENSION$$", include_guard_extension_str],
                         ["$$NAMESPACE_OPEN$$",          LanguageDB.NAMESPACE_OPEN(Descr.name_space)],
                         ["$$NAMESPACE_CLOSE$$",         LanguageDB.NAMESPACE_CLOSE(Descr.name_space)],
-                        ["$$TOKEN_REPETITION_N_GET$$",  Descr.repetition_get.get_pure_code()],
-                        ["$$TOKEN_REPETITION_N_SET$$",  Descr.repetition_set.get_pure_code()],
+                        ["$$TOKEN_REPETITION_N_GET$$",  Descr.repetition_get.get_code_string()],
+                        ["$$TOKEN_REPETITION_N_SET$$",  Descr.repetition_set.get_code_string()],
                         ["$$TOKEN_CLASS_NAME_SAFE$$",   Descr.class_name_safe],
                        ])
 
@@ -198,7 +200,7 @@ def get_union_members(Descr):
 def __member(TypeCode, MaxTypeNameL, VariableName, MaxVariableNameL, IndentationOffset=""):
     my_def  = IndentationOffset
     my_def += Setup.language_db["$class-member-def"](TypeCode.get_pure_code(), MaxTypeNameL, 
-                                              VariableName, MaxVariableNameL)
+                                                     VariableName, MaxVariableNameL)
     return TypeCode.adorn_with_source_reference(my_def, ReturnToSourceF=False)
 
 def get_setter_getter(Descr):

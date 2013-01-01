@@ -1,2 +1,2 @@
-interfere-mix2.qx:4:error: The skip pattern '[xyz]' matches on some common lexemes as
-interfere-mix2.qx:3:error: skip range pattern '"x"'.
+interfere-mix2.qx:3:error: The skip range pattern '"x"' matches on some common lexemes as
+interfere-mix2.qx:4:error: skip pattern '<skip>'.

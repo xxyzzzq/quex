@@ -39,10 +39,21 @@ class UniqueValue(object):
         return self
 
     def __eq__(self, Other):
-        return self.value == Other
+        if isinstance(Other, UniqueValue): other_value = Other.value
+        else:                              other_value = Other
+
+        if self.value == other_value: 
+            return True
+
+        # NONE == VIRGIN
+        if   (self.value == E_Count.NONE   and other_value == E_Count.VIRGIN) \
+          or (self.value == E_Count.VIRGIN and other_value == E_Count.NONE):
+            return True
+       
+        return False
 
     def __ne__(self, Other):
-        return self.value != Other
+        return not self.__eq__(Other)
 
     def voidify_if_deviant(self, A, B):
         if A.value != B.value: self.value = E_Count.VOID
@@ -321,16 +332,19 @@ class Count(object):
                 self.column_n_increment                   <<= 0
                 self.column_index                         = UniqueValue(E_Count.VIRGIN)
                 self.grid_step_n                          = UniqueValue(E_Count.VIRGIN)
-                if isinstance(delta, (str, unicode)): self.line_n_increment <<= E_Count.VOID
-                else:                                 self.line_n_increment  += delta
-                return self.line_n_increment != E_Count.VOID  
+                if isinstance(delta, (str, unicode)): 
+                    Count.line_n_increment_by_lexeme_length <<= E_Count.VOID
+                    self.line_n_increment                   <<= E_Count.VOID
+                else:
+                    self.line_n_increment  += delta
 
             elif character_set.has_intersection(CharacterSet):
                 # Sometimes 'input' triggers on 'character_set', sometimes not.
                 # => Counts are no longer deterministic.
-                self.line_n_increment                   <<= E_Count.VOID
                 Count.line_n_increment_by_lexeme_length <<= E_Count.VOID
-                return self.voidify_column_n() # Abort if all void
+                self.line_n_increment                   <<= E_Count.VOID
+
+            if self.all_void(): return False # Abort if all void
 
         # (*) Grid
         for grid_size, character_set in Count.counter_db.grid.iteritems():
@@ -339,7 +353,8 @@ class Count(object):
                 Count.line_n_increment_by_lexeme_length <<= 0
                 Count.grid_step_size_by_lexeme_length   <<= grid_size
                 if isinstance(grid_size, (str, unicode)): 
-                    return self.voidify_column_n()  # Abort if all void
+                    Count.grid_step_size_by_lexeme_length   <<= E_Count.VOID
+                    self.grid_step_n                        <<= E_Count.VOID
                 else:
                     self.grid_step_n += 1 # Remains VOID, if it is already
                     if self.column_index.is_number():
@@ -352,13 +367,13 @@ class Count(object):
                         Count.column_n_increment_by_lexeme_length <<= E_Count.VOID
                         self.column_n_increment                   <<= E_Count.VOID
 
-                    return True
-
             elif character_set.has_intersection(CharacterSet):
                 # Sometimes 'input' triggers on 'character_set', sometimes not.
                 # => Counts are no longer deterministic.
-                Count.line_n_increment_by_lexeme_length <<= E_Count.VOID
-                return self.voidify_column_n() # Abort if all void
+                Count.grid_step_size_by_lexeme_length   <<= E_Count.VOID
+                self.grid_step_n                        <<= E_Count.VOID
+
+            if self.all_void(): return False # Abort if all void
 
         # (*) Column Numbering
         #     Still, 'self.column_n_increment != E_Count.VOID'. Otherwise, 'return' was triggered.
@@ -373,20 +388,36 @@ class Count(object):
                 self.grid_step_n <<= E_Count.NONE
 
                 if isinstance(delta, (str, unicode)): 
-                    return self.voidify_column_n() # Abort if all void
+                    Count.column_n_increment_by_lexeme_length <<= E_Count.VOID
+                    self.column_index                         <<= E_Count.VOID
+                    self.column_n_increment                   <<= E_Count.VOID
                 else:
                     self.column_index       += delta
                     self.column_n_increment += delta
-                    return True
 
             elif character_set.has_intersection(CharacterSet):
                 # Sometimes 'input' triggers on 'character_set', sometimes not.
                 # => Counts are no longer deterministic.
-                Count.line_n_increment_by_lexeme_length <<= 0
-                Count.grid_step_size_by_lexeme_length   <<= 0
-                return self.voidify_column_n() # Abort if all void
+                Count.column_n_increment_by_lexeme_length <<= E_Count.VOID
+                self.column_index                         <<= E_Count.VOID
+                self.column_n_increment                   <<= E_Count.VOID
+
+            if self.all_void(): return False # Abort if all void
 
         return True # Do not abort, yet
+
+    def all_void(self):
+        """Determine whether all values are void. In that case the counting
+        may be aborted.
+        """
+        return \
+                   Count.column_n_increment_by_lexeme_length == E_Count.VOID \
+               and Count.line_n_increment_by_lexeme_length   == E_Count.VOID \
+               and Count.grid_step_size_by_lexeme_length     == E_Count.VOID \
+               and self.column_index                         == E_Count.VOID \
+               and self.column_n_increment                   == E_Count.VOID \
+               and self.line_n_increment                     == E_Count.VOID \
+               and self.grid_step_n                          == E_Count.VOID 
 
     def voidify_column_n(self):
         """Set all parameters related to column number counting to 'VOID'.
