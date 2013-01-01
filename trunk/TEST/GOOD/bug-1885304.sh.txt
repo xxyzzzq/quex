@@ -759,7 +759,7 @@ INIT_STATE_TRANSITION_BLOCK:
 
 goto _204; /* TERMINAL_FAILURE */
 
-_171: /* (171 from NONE) */
+_171:
 
 
     ++(me->buffer._input_p);

@@ -200,6 +200,10 @@ def parse_pattern_name_definitions(fh):
         skip_whitespace(fh)
         pattern_name = read_identifier(fh, OnMissingStr="Missing identifier for pattern definition.")
 
+        if blackboard.shorthand_db.has_key(pattern_name):
+            error_msg("Second definition of pattern '%s'.\n" % pattern_name + \
+                      "Pattern names must be unique.", fh)
+
         skip_whitespace(fh)
 
         if check(fh, "}"): 
