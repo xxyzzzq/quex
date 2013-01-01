@@ -54,17 +54,17 @@ undefined_list = get_undef_macro_list()
 # print undefined_list
 
 if "help" not in sys.argv:
-    for macro in defined_list:
+    for macro in sorted(set(defined_list)):
         if macro not in undefined_list:
             print "Macro %s defined but not undefined." % macro
 
-    for macro in undefined_list:
+    for macro in set(undefined_list):
         if macro not in defined_list:
             print "Macro %s undefined but not defined." % macro
     print "## Call this script with help get the definitions automatically for copy/paste"
 
 else:
-    for macro in defined_list:
+    for macro in sorted(set(defined_list)):
         if macro not in undefined_list:
             print "#ifdef    %s" % macro
             print "#   undef %s" % macro

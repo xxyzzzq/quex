@@ -7,17 +7,12 @@ import quex.engine.analyzer.engine_supply_factory   as     engine
 import quex.engine.generator.state.transition.core  as     transition_block
 from   quex.engine.generator.state.transition.code  import TransitionCode, \
                                                            TextTransitionCode
-from   quex.engine.generator.languages.variable_db  import Variable, variable_db
+from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.generator.languages.address      import get_label, \
                                                            get_address, \
                                                            address_set_subject_to_routing_add
-from   quex.engine.interval_handling                import Interval
 from   quex.engine.misc.string_handling             import blue_print
 import quex.output.cpp.action_preparation           as     action_preparation
-
-from   math     import log
-from   operator import attrgetter
-import sys
 
 def do(Data, Mode=None):
     """________________________________________________________________________

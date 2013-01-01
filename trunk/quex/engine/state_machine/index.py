@@ -1,6 +1,4 @@
 # special states:
-from quex.engine.tools import print_callstack
-
 def clear():
     global __internal_state_index_counter
     global __map_combination_to_index

@@ -1,24 +1,12 @@
-import quex.input.files.counter_setup                      as counter_setup
-from   quex.input.regular_expression.construct             import Pattern
-import quex.input.regular_expression.core                  as regular_expression
-import quex.input.regular_expression.snap_character_string as snap_character_string
-import quex.engine.state_machine.algorithm.hopcroft_minimization  as hopcroft
-import quex.engine.state_machine.algorithm.nfa_to_dfa             as nfa_to_dfa
-import quex.engine.state_machine.algorithm.beautifier             as beautifier
-import quex.engine.state_machine.sequentialize             as sequentialize
-import quex.engine.state_machine.repeat                    as repeat
-from   quex.engine.state_machine.core                      import StateMachine
-from   quex.engine.generator.languages.address             import get_label
-import quex.engine.generator.state.indentation_counter     as     indentation_counter
-from   quex.engine.misc.file_in                            import error_msg, \
-                                                                  get_current_line_info_number, \
-                                                                  skip_whitespace, \
-                                                                  read_identifier, \
-                                                                  verify_word_in_list
-from   quex.engine.generator.action_info                   import UserCodeFragment, \
-                                                                  GeneratedCode
-from   quex.blackboard import E_SpecialPatterns, \
-                              mode_option_info_db
+import quex.input.files.counter_setup     as counter_setup
+import quex.input.regular_expression.core as regular_expression
+from   quex.engine.misc.file_in           import error_msg, \
+                                                 get_current_line_info_number, \
+                                                 skip_whitespace, \
+                                                 read_identifier, \
+                                                 verify_word_in_list
+from   quex.engine.misc.file_in           import EndOfStreamException
+from   quex.blackboard import mode_option_info_db
 
 def parse(fh, new_mode):
     identifier = read_option_start(fh)
@@ -28,7 +16,7 @@ def parse(fh, new_mode):
                         "mode option", fh.name, get_current_line_info_number(fh))
 
     if   identifier == "skip":
-        value = __parse_skip_option(fh, new_mode)
+        value = __parse_skip_option(fh, new_mode, identifier)
 
     elif identifier in ["skip_range", "skip_nested_range"]:
         value = __parse_range_skipper_option(fh, identifier, new_mode)
@@ -58,7 +46,7 @@ def parse(fh, new_mode):
 
     return True
 
-def __parse_skip_option(fh, new_mode):
+def __parse_skip_option(fh, new_mode, identifier):
     """A skipper 'eats' characters at the beginning of a pattern that belong to
     a specified set of characters. A useful application is most probably the
     whitespace skipper '[ \t\n]'. The skipper definition allows quex to
@@ -73,7 +61,7 @@ def __parse_skip_option(fh, new_mode):
     elif trigger_set.is_empty():
         error_msg("Empty trigger set for skipper." % identifier, fh)
 
-    return trigger_set
+    return pattern, trigger_set
 
 def __parse_range_skipper_option(fh, identifier, new_mode):
     """A non-nesting skipper can contain a full fledged regular expression as opener,

@@ -46,7 +46,6 @@ from   quex.blackboard  import E_AcceptanceIDs, \
                                E_StateIndices
 
 from   collections      import defaultdict
-from   operator         import itemgetter
 from   itertools        import islice, imap, izip
 
 def do(SM, EngineType=engine.FORWARD):
@@ -94,7 +93,7 @@ class Analyzer:
         self.__to_db   = to_db
 
         # (*) PathTrace database, Successor database
-        self.__trace_db, self.__dangerous_positioning_state_set = track_analysis.do(SM, self.__to_db)
+        self.__trace_db, self.__path_element_db = track_analysis.do(SM, self.__to_db)
 
         # (*) Prepare AnalyzerState Objects
         self.__state_db = dict([
@@ -444,16 +443,13 @@ class Analyzer:
         # same length, the only precendence criteria is the pattern_id.
         # 
         for state_index in self.__require_acceptance_storage_db.iterkeys():
-            print "#state:", state_index
-            print "#patterns:", sorted(SM.states[state_index].origins(), key=lambda x: x.pattern_id())
             entry = self.__state_db[state_index].entry
-            for origin in sorted(SM.states[state_index].origins(), key=lambda x: x.pattern_id()):
-                if not origin.is_acceptance(): continue
-                entry.doors_accepter_add(origin.pre_context_id(), origin.pattern_id())
-                if origin.pre_context_id() == E_PreContextIDs.NONE:
-                    # If there is an unconditional acceptance, it dominates all previous 
-                    # occurred acceptances (philosophy of longest match).
-                    break
+            # Only the trace content that concerns the current state is filtered out.
+            # It should be the same for all traces through 'state_index'
+            prototype = self.__trace_db[state_index][0]
+            for x in reversed(prototype):
+                if x.accepting_state_index != state_index: continue
+                entry.doors_accepter_add(x.pre_context_id, x.pattern_id)
 
     def implement_required_position_storage(self):
         """
@@ -476,7 +472,10 @@ class Analyzer:
                 # end_state_index  --> state that stores the input position
                 # pre_context_id   --> pre_context which is concerned
                 # pattern_id       --> pattern which is concerned
-                for target_index in target_state_index_list:
+                # Only consider target states which guide to the 'end_state_index'.
+                index_iterable = (i for i in target_state_index_list 
+                                    if end_state_index in self.__path_element_db[i])
+                for target_index in index_iterable:
                     entry = self.__state_db[target_index].entry
                     entry.doors_store(FromStateIndex   = state_index, 
                                       PreContextID     = pre_context_id, 

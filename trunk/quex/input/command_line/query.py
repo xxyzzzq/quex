@@ -200,9 +200,9 @@ def __handle_set_by_property(cl):
         __display_set(character_set, cl)
 
 def __handle_set_by_expression(cl):
-    result = cl.follow("", "--set-by-expression")
-    if result != "":
-        dummy, dummy, character_set = regular_expression.parse_character_set("[:" + result + ":]")
+    pattern_str = cl.follow("", "--set-by-expression")
+    if pattern_str != "":
+        dummy, dummy, character_set = regular_expression.parse_character_set("[:" + pattern_str + ":]")
         __display_set(character_set, cl)
 
 def __display_set(CharSet, cl):

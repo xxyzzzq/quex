@@ -1,7 +1,6 @@
 from   quex.engine.misc.file_in                    import error_msg, verify_word_in_list
 import quex.blackboard                             as     blackboard
 from   quex.blackboard                             import setup as Setup, E_SpecialPatterns
-from   quex.engine.generator.action_info           import CodeFragment
 import quex.engine.state_machine.check.outrun      as     outrun_checker
 import quex.engine.state_machine.check.superset    as     superset_check
 import quex.engine.state_machine.check.same        as     same_check

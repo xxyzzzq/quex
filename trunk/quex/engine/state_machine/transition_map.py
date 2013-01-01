@@ -2,7 +2,6 @@
 
 from   quex.engine.interval_handling       import NumberSet, Interval
 import quex.engine.analyzer.transition_map as     transition_map_tool
-from   quex.engine.misc.file_in            import error_msg
 from   quex.engine.misc.enum               import Enum
 from   quex.blackboard                     import E_StateIndices
 

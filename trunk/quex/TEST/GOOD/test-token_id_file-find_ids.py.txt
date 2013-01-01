@@ -4,6 +4,7 @@ example.h:1: in_example
 example.h:1: in_example
 example-x.h:2: in_example_x
 ##-----------------------------------------------------------------
+command line: Parsing token-id file: Cannot access file 'not-found.h' from 'example-x-x.h'.
 example.h:1: in_example
 example-x-x.h:4: in_example_x_x
 example-x.h:2: in_example_x

@@ -16,7 +16,7 @@ include $(QUEX_PATH)/quex/code_base/core.mkd
 COMPILER   = g++ -ggdb -pedantic -Wconversion -Wall -W
 
 CC = $(COMPILER)        \
-	 -I./ -I$(QUEX_PATH)  -DQUEX_OPTION_DEBUG_SHOW
+	 -I./ -I$(QUEX_PATH)  # -DQUEX_OPTION_DEBUG_SHOW
      # -DQUEX_OPTION_ASSERTS_DISABLED
      # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
    

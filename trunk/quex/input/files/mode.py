@@ -25,7 +25,6 @@ import quex.engine.state_machine.algorithm.beautifier  as     beautifier
 from   quex.engine.misc.file_in                        import EndOfStreamException, \
                                                               check, \
                                                               check_or_die, \
-                                                              copy, \
                                                               error_msg, \
                                                               error_eof, \
                                                               get_current_line_info_number, \
@@ -34,12 +33,9 @@ from   quex.engine.misc.file_in                        import EndOfStreamExcepti
                                                               read_until_whitespace, \
                                                               skip_whitespace, \
                                                               verify_word_in_list
-from   quex.engine.interval_handling                   import NumberSet, \
-                                                              Interval
 import quex.blackboard as blackboard
 from   quex.blackboard import setup as Setup, \
                               E_SpecialPatterns, \
-                              E_StateIndices, \
                               event_handler_db, \
                               mode_option_info_db 
 
@@ -469,10 +465,15 @@ class Mode:
         if ssetup_list is None or len(ssetup_list) == 0:
             return
 
-        iterable      = ssetup_list.__iter__()
-        character_set = iterable.next()
-        for info in iterable:
-            character_set.unite_with(info.character_set)
+        iterable               = ssetup_list.__iter__()
+        pattern, character_set = iterable.next()
+        # Multiple skippers from different modes are combined into one pattern.
+        # This means, that we cannot say exactly where a 'skip' was defined 
+        # if it intersects with another pattern.
+        file_name = pattern.file_name
+        line_n    = pattern.line_n
+        for pattern, character_set in iterable:
+            character_set.unite_with(character_set)
 
         action_db = [
                 (character_set, []),
@@ -486,22 +487,21 @@ class Mode:
         # Skipper code is to be generated later, all but one skipper go
         # to a terminal that only counts according to the character which appeared.
         # The last implements the skipper.
-        def xpap(MHI, ModeName, SM, Action, PatternStr="<skipper>", Comment=None):
+        def xpap(MHI, ModeName, SM, Action, PatternStr="<skip: ... (check also base modes)>", Comment=None):
             return ((PatternPriority(MHI, SM.get_id()),    
                      PatternActionInfo(Pattern(SM), Action, PatternStr, 
                                        ModeName=ModeName, Comment=Comment)))
 
-        goto_skip_action = CodeFragment(["goto __SKIP;\n"])
+        goto_skip_action = UserCodeFragment("goto __SKIP;\n", FileName=file_name, LineN=line_n)
         xpap_list.extend(xpap(MHI, self.name, sm, goto_skip_action) for sm in sm_list[:-1])
 
-        action = GeneratedCode(skip_character_set.do, 
-                               FileName = "<TODO: filename>",  #fh.name, 
-                               LineN    = -1)                  #get_current_line_info_number(fh))
+        action = GeneratedCode(skip_character_set.do, FileName = file_name, LineN = line_n)
+
         action.data["character_set"]        = character_set
         action.data["require_label_SKIP_f"] = len(sm_list) != 1
 
         xpap_list.append(xpap(MHI, self.name, sm_list[-1], action, 
-                              PatternStr="<skipper-implementation>", 
+                              PatternStr="<skip>", 
                               Comment=E_SpecialPatterns.SKIP))
         return
 
@@ -698,130 +698,6 @@ class Mode:
             for info in mode_descr.get_deletion_info_list():
                 delete(mode_hierarchy_index, info, xpap_list, self.name, history)
         return history
-
-    def __dummy_DELETED():
-        def __ensure_pattern_indeces_follow_precedence(PatternActionPairList, RepriorizationInfoList, PrevMaxPatternIndex):
-            """When a derived mode is defined before its base mode, then its pattern ids
-               (according to the time they were created) are lower than those of the base
-               mode. This would imply that they have higher precedence, which is against
-               our matching rules. Here, pattern ids are adapted to be higher than a certain
-               minimum, and follow the same precedence sequence.
-            """
-            # Patterns of a 'lower precedence mode' **must** have higher pattern ids
-            # that patterns of a 'higher precedence mode'. This is to ensure that 
-            # base mode patterns precede derived mode patterns.
-            min_pattern_index = min(map(lambda pap: pap.pattern().sm.get_id(),
-                                        PatternActionPairList))
-            if min_pattern_index > PrevMaxPatternIndex:
-                return PatternActionPairList, RepriorizationInfoList
-
-            pattern_action_pair_list = deepcopy(PatternActionPairList)
-            repriorization_info_list = deepcopy(RepriorizationInfoList)
-
-            # Determine the offset for each pattern
-            offset = PrevMaxPatternIndex + 1 - min_pattern_index
-            assert offset >= 1
-
-            # Assign new pattern ids starting from MinPatternID
-            for pap in pattern_action_pair_list:
-                current_pattern_id = pap.pattern().sm.get_id()
-                pap.pattern().sm.set_id(current_pattern_id + offset)
-            
-            # The reprioritizations must also be adapted
-            for info in repriorization_info_list.items():
-                info[-1] += offset
-
-            return pattern_action_pair_list, repriorization_info_list 
-                                             
-        def __handle_deletion_and_repriorization(CurrentModeName, pattern_action_pair_list, 
-                                                 repriorization_info_list, deletion_info_list):
-            def __validate_marks(DB, DoneDB, CommentStr):
-                ok_f = True
-                for pattern, info in DB.items():
-                    if pattern.sm.get_id() in DoneDB: 
-                        continue
-                    ok_f = False
-                    error_msg("Pattern '%s' was marked %s but does not\n" % (pattern, CommentStr) + \
-                              "exist in any base mode of mode '%s'." % self.name,
-                              info[1], info[2], DontExitF=True, WarningF=False)
-                return ok_f
-
-            def __find_in_list(SomePattern, InfoList):
-                for info in InfoList:
-                    if identity_checker.do(SomePattern, info.pattern): return info
-                return None
-
-            # DELETION / PRIORITY-MARK 
-            deletion_done_db       = set()
-            repriorization_done_db = set()
-            i    = 0
-            size = len(pattern_action_pair_list)
-            while i < size:
-                pap     = pattern_action_pair_list[i]
-                pattern = pap.pattern()
-
-                found = __find_in_list(pattern, deletion_info_list)
-                if found is not None:
-                    # Delete pattern from the list of pattern action pairs
-                    del pattern_action_pair_list[i]
-                    size -= 1
-                    self.__history_deletion.append([CurrentModeName, pap.pattern, pap.mode_name])
-                    # Mark 'deletion applied'
-                    deletion_done_db.add(found.pattern.sm.get_id())
-                    continue
-
-                found = __find_in_list(pattern, repriorization_info_list)
-                if found is not None:
-                    # Adapt the pattern index, this automatically adapts the match precedence
-                    old_pattern_id = pattern.sm.get_id()
-                    new_pattern_id = found.new_pattern_index
-                    new_pap        = deepcopy(pap)
-                    new_pap.pattern().sm.set_id(new_pattern_id)
-                    pattern_action_pair_list[i] = new_pap
-                    self.__history_repriorization.append([CurrentModeName, pap.pattern, pap.mode_name,
-                                                          old_pattern_id, new_pattern_id]) 
-                    # Mark 'repriorization applied'
-                    repriorization_done_db.add(found.pattern.sm.get_id())
-                i += 1
-
-            # Ensure that all mentioned marks really had some effect.
-            __validate_marks(deletion_info_list,       deletion_done_db,       "for DELETION") 
-            __validate_marks(repriorization_info_list, repriorization_done_db, "with PRIORITY-MARK")
-            return
-
-        def __add_new_pattern_action_pair(pattern_action_pair_list, PatternActionPair):
-            # Shallow copy is enough! Later on, there might be actions that 
-            # generate source code, and then the source code takes the place of
-            # the action. For this to work, inherited actions must be de-antangled.
-            pattern_action_pair_list.append(copy(PatternActionPair))
-
-        # Iterate from the base to the top (include this mode's pattern)
-
-            repriorization_info_list = []
-            pattern_action_pair_list = mode_desc.get_pattern_action_pair_list()
-            if len(pattern_action_pair_list) != 0:
-                pattern_action_pair_list, repriorization_info_list = \
-                        __ensure_pattern_indeces_follow_precedence(mode_descr.get_pattern_action_pair_list(),
-                                                                   mode_descr.get_repriorization_info_list(),
-                                                                   prev_max_pattern_index)
-
-            # Delete/Repriorize patterns from more basic modes
-            __handle_deletion_and_repriorization(mode_descr.name, result, 
-                                                 repriorization_info_list, 
-                                                 mode_descr.get_deletion_info_list())
-
-            if len(pattern_action_pair_list) != 0:
-                # Add the new pattern action pairs
-                for pattern_action_pair in pattern_action_pair_list:
-                    __add_new_pattern_action_pair(result, pattern_action_pair)
-
-                # Determine the max pattern index at this level of inheritance
-                prev_max_pattern_index = max([prev_max_pattern_index] + \
-                                             map(lambda match: match.pattern().sm.get_id(),
-                                             pattern_action_pair_list))
-
-
-        return result
 
 def parse(fh):
     """This function parses a mode description and enters it into the 

@@ -2,9 +2,6 @@
 from   quex.engine.generator.state.core             import input_do
 from   quex.engine.generator.languages.address      import get_label
 from   quex.engine.generator.languages.variable_db  import variable_db
-
-from   quex.blackboard import setup as Setup
-
 """Template Compression _______________________________________________________
 
    Consider the file 'analyzer/mega_state/template/core.py' for a detailed 
@@ -84,7 +81,6 @@ from   quex.blackboard import setup as Setup
 
 def framework(txt, TState, TheAnalyzer):
     input_do(txt, TState, TheAnalyzer) 
-    LanguageDB = Setup.language_db
     ## LanguageDB.STATE_DEBUG_INFO(txt, TState) -- Done in input_do
 
 def require_data(TState, TheAnalyzer):

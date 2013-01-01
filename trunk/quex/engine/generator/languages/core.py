@@ -550,8 +550,6 @@ class LanguageDB_Cpp(dict):
             if type(Content) == list: txt.extend(Content)
             elif len(Content) != 0:   txt.append(Content)
 
-            Match_goto             = re.compile("\\bgoto\\b")
-            Match_QUEX_GOTO_RELOAD = re.compile("\\bQUEX_GOTO_RELOAD_")
             if      self.__code_generation_switch_cases_add_statement is not None \
                 and self.Match_goto.search(txt[-1]) is None                       \
                 and self.Match_QUEX_GOTO_RELOAD.search(txt[-1]) is None:

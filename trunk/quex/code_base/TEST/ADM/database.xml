@@ -1,18 +1,18 @@
-<test-database execution-time-sec="0.14" date="Sun Dec 30 00:14:52 2012">
+<test-database execution-time-sec="0.08" date="Mon Dec 31 22:17:38 2012">
     <last-used-diff-display-program name=""/>
     <group name="BOM Snap">
-        <test title="ifstream" make-dependent="True" time-sum-sec="0.02"> 
+        <test title="ifstream" make-dependent="True" time-sum-sec="0.00"> 
             <application file-name="bom-istream.exe" info-request-time="1356305207L" vanished="False"/>
             <make-procedure success="True" time_sec="0.599083"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.02" crc="-838016451"/>
+               <choice name="" result="OK" time_sec="0.00" crc="-838016451"/>
             </choice-list>
         </test>
-        <test title="FILE" make-dependent="True" time-sum-sec="0.04"> 
+        <test title="FILE" make-dependent="True" time-sum-sec="0.00"> 
             <application file-name="bom.exe" info-request-time="1356305208L" vanished="False"/>
             <make-procedure success="True" time_sec="0.153041"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.04" crc="-838016451"/>
+               <choice name="" result="OK" time_sec="0.00" crc="-838016451"/>
             </choice-list>
         </test>
     </group>

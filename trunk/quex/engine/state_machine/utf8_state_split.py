@@ -77,7 +77,6 @@ from   quex.engine.interval_handling        import Interval
 import quex.engine.state_machine            as     state_machine
 from   quex.engine.state_machine.core       import State
 import quex.engine.state_machine.algorithm.beautifier as beautifier
-from   quex.engine.tools import print_callstack
 
 utf8_border = [ 0x00000080, 0x00000800, 0x00010000, 0x00110000] 
 
@@ -170,16 +169,11 @@ def create_intermediate_states(sm, state_index, target_state_index, X):
                                                      trigger_set_sequence_db, seq_length, 
                                                      first_diff_byte_idx) 
 
-def unicode_interval_to_utf8_intervals(X):
-    front_list = unicode_to_utf8(X.begin)
-    back_list  = unicode_to_utf8(X.end - 1)
-    return map(lambda front, back: Interval(front, back + 1), front_list, back_list)
-        
 def split_interval_according_to_utf8_byte_sequence_length(X):
     """Split Unicode interval into intervals where all values
        have the same utf8-byte sequence length.
     """
-    if X.begin <  0:        X.begin = 0
+    if X.begin < 0:         X.begin = 0
     if X.end   > UTF8_MAX:  X.end   = UTF8_MAX + 1
 
     if X.size() == 0: return None

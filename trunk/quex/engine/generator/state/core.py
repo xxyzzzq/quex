@@ -1,7 +1,6 @@
 from   quex.engine.analyzer.core       import Analyzer
 from   quex.engine.analyzer.state.core import AnalyzerState, \
                                               get_input_action
-import quex.engine.analyzer.engine_supply_factory   as     engine
 import quex.engine.generator.state.transition.core  as transition_block
 import quex.engine.generator.state.entry            as entry
 import quex.engine.generator.state.drop_out         as drop_out
@@ -57,9 +56,10 @@ def entry_do(txt, TheState, TheAnalyzer):
     # the LABEL_INIT_STATE_TRANSITION_BLOCK from there.
     if TheAnalyzer.has_transition_to_init_state():
         txt.append(LanguageDB.LABEL_INIT_STATE_TRANSITION_BLOCK())
-    else:
-        # Simply nothing required, not even a label.
-        return
+
+    # The Init State: Implement the 'NONE' door. 
+    entry.do_entry_from_NONE(txt, TheState)
+
 
 def side_entry_do(txt, TheState, TheAnalyzer):
     """Generate side entry to the init state, IF NECESSARY. An init state does

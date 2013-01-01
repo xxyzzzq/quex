@@ -54,7 +54,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -66,7 +66,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -174,7 +174,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -186,7 +186,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -198,7 +198,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -210,7 +210,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -222,7 +222,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -234,7 +234,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -246,7 +246,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -258,7 +258,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -270,7 +270,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -282,7 +282,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -294,7 +294,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -306,7 +306,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -318,7 +318,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -330,7 +330,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -346,7 +346,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -354,11 +354,11 @@ expr. = a\n\n\nc("1\n\n\n3"|"A\n\n\nC")+x\n\n\nz
 info  = {
     line_n_increment                    = VOID;
     column_index                        = 1;
-    column_n_increment                  = 1;
+    column_n_increment                  = VOID;
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -366,11 +366,11 @@ expr. = a\n\n\nc("1\n\n\n3"|"A\n\n\nC")?x\n\n\nz
 info  = {
     line_n_increment                    = VOID;
     column_index                        = 1;
-    column_n_increment                  = 1;
+    column_n_increment                  = VOID;
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -382,7 +382,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -392,33 +392,33 @@ info  = {
     column_index                        = VOID;
     column_n_increment                  = 1;
     grid_step_n                         = 0;
-    line_n_increment_by_lexeme_length   = VOID;
+    line_n_increment_by_lexeme_length   = 0;
     column_n_increment_by_lexeme_length = 1;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
 expr. = "a"|"\n"|"e"|"g"
 info  = {
-    line_n_increment                    = 0;
+    line_n_increment                    = VOID;
     column_index                        = VOID;
     column_n_increment                  = VOID;
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
 expr. = X("a"|"\n"*|"e"|"g")
 info  = {
-    line_n_increment                    = 0;
+    line_n_increment                    = VOID;
     column_index                        = VOID;
     column_n_increment                  = VOID;
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -430,7 +430,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -442,7 +442,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -454,7 +454,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -466,7 +466,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -478,7 +478,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -490,7 +490,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 
@@ -502,7 +502,7 @@ info  = {
     grid_step_n                         = 0;
     line_n_increment_by_lexeme_length   = VOID;
     column_n_increment_by_lexeme_length = VOID;
-    grid_step_size_by_lexeme_length     = VOID;
+    grid_step_size_by_lexeme_length     = 0;
     
 }
 

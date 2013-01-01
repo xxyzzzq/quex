@@ -2,9 +2,6 @@ from   quex.engine.misc.file_in                        import error_msg
 from   quex.engine.generator.action_info               import PatternActionInfo
 import quex.engine.state_machine.parallelize           as parallelize
 import quex.engine.state_machine.algorithm.beautifier  as beautifier
-import quex.engine.state_machine.transformation     as transformation
-
-from   quex.blackboard import setup as Setup
 
 from   itertools import ifilter
 

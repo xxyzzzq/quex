@@ -1,16 +1,6 @@
 Use Case 1:
-##sm: 
-##sm: START ['START'] ['START']
-##1: PatternActionInfo
-##2: PatternActionInfo
 
 Use Case 2:
 error-2.qx:9:warning: Mode without pattern and event handlers needs to be 'inheritable only'.
 error-2.qx:9:warning: <inheritable: only> has been added automatically.
-##sm: 
-##sm: A ['A'] ['A', 'B']
-##1: PatternActionInfo
-##2: PatternActionInfo
-##1: PatternActionInfo
-##2: PatternActionInfo
 

@@ -152,8 +152,8 @@ class Pattern(object):
         pre- and bipd are mounted.
         """
         def my_error(Name, Pattern):
-            error("Pattern becomes empty after deleting signal character '%s'." % Name,
-                  Pattern.file_name, Pattern.line_n)
+            error_msg("Pattern becomes empty after deleting signal character '%s'." % Name,
+                      Pattern.file_name, Pattern.line_n)
 
         for character, name in CharacterList:
             for sm in [self.__sm, self.__pre_context_sm, self.__bipd_sm]:
@@ -254,9 +254,9 @@ def do(core_sm,
                       "Orphan state(s) = " + repr(sm.get_orphaned_state_index_list()), 
                       fh, DontExitF=True)
 
-    if pre_context is not None and pre_context.is_empty():   error_msg("Empty pre-context pattern.\n", fh)
-    if core_sm.is_empty():                                   error_msg("Empty pattern.\n", fh)
-    if post_context is not None and post_context.is_empty(): error_msg("Empty post-context pattern.\n", fh)
+    if pre_context is not None and pre_context.is_empty():   error_msg("Empty pre-context pattern.", fh)
+    if core_sm.is_empty():                                   error_msg("Empty pattern.", fh)
+    if post_context is not None and post_context.is_empty(): error_msg("Empty post-context pattern.", fh)
 
     # Detect the 'Nothing is Necessary' error in a pattern.
     # (*) 'Nothing is necessary' cannot be accepted. See the discussion in the 

@@ -36,19 +36,19 @@ UserCodeFragment_OpenLinePragma = {
    }
 
 class UserCodeFragment(CodeFragment):
-    def __init__(self, Code, Filename, LineN, LanguageDB=None):
+    def __init__(self, Code, FileName, LineN, LanguageDB=None):
         assert isinstance(Code, (str, unicode))
         assert isinstance(LanguageDB, dict) or LanguageDB is None
-        assert isinstance(Filename, (str, unicode))
+        assert isinstance(FileName, (str, unicode))
         assert isinstance(LineN, (int, long, float))
 
-        self.filename = Filename
+        self.filename = FileName
         self.line_n   = LineN
 
         CodeFragment.__init__(self, Code)
 
     def get_code(self, Mode=None):
-        return self.adorn_with_source_reference(self.get_pure_code())
+        return  [ self.adorn_with_source_reference(CodeFragment.get_code(self)) ]
 
     def adorn_with_source_reference(self, Code, ReturnToSourceF=True):
         if type(Code) == list:
@@ -65,38 +65,6 @@ class UserCodeFragment(CodeFragment):
             txt += get_return_to_source_reference()
         return txt
 
-def get_return_to_source_reference():
-    return "\n" + UserCodeFragment_OpenLinePragma["C"][0][0] + "\n"
-
-def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
-    if Language not in UserCodeFragment_OpenLinePragma.keys():
-        return
-
-    fh = open_file_or_die(filename)
-    norm_filename = Setup.get_file_reference(filename)
-
-    new_content = []
-    line_n      = 0
-    LinePragmaInfoList = UserCodeFragment_OpenLinePragma[Language]
-    for line in fh.readlines():
-        line_n += 1
-        if Language == "C":
-            for info in LinePragmaInfoList:
-                if line.find(info[0]) == -1: continue
-                line = info[1]
-                # Since by some definition, line number pragmas < 32768; let us avoid
-                # compiler warnings by setting line_n = min(line_n, 32768)
-                line = line.replace("NUMBER", repr(int(min(line_n + 1, 32767))))
-                # Even under Windows (tm), the '/' is accepted. Thus do not rely on 'normpath'
-                line = line.replace("FILENAME", norm_filename)
-                if len(line) == 0 or line[-1] != "\n":
-                    line = line + "\n"
-        new_content.append(line)
-
-    fh.close()
-
-    write_safely_and_close(filename, "".join(new_content))
-
 class GeneratedCode(UserCodeFragment):
     def __init__(self, GeneratorFunction, FileName=-1, LineN=None):
         self.function = GeneratorFunction
@@ -105,7 +73,9 @@ class GeneratedCode(UserCodeFragment):
 
     def get_code(self, Mode=None):
         assert Mode is not None
-        return self.function(self.data, Mode)
+        result = self.function(self.data, Mode)
+        assert isinstance(result, list) 
+        return result
 
 class PatternActionInfo:
     def __init__(self, ThePattern, Action, PatternStr="", IL = None, ModeName="", Comment=""):
@@ -122,16 +92,16 @@ class PatternActionInfo:
         self.mode_name     = ModeName
         self.comment       = Comment
 
+    @property
+    def line_n(self): return self.action().line_n
+    @property
+    def file_name(self): return self.action().filename
+
     def pattern(self):
         return self.__pattern
 
     def pattern_string(self):
         return self.__pattern_str
-
-    @property
-    def line_n(self): return self.action().line_n
-    @property
-    def file_name(self): return self.action().filename
 
     def action(self):
         return self.__action
@@ -158,14 +128,14 @@ class PatternActionInfo:
 
     def __repr__(self):         
         txt  = ""
-        txt += "self.mode_name      = " + repr(self.mode_name) + "\n"
-        txt += "self.pattern_string = " + repr(self.pattern_string()) + "\n"
-        txt += "self.pattern        = \n" + repr(self.pattern()).replace("\n", "\n      ")
-        txt += "self.action         = " + repr(self.action().get_code()) + "\n"
+        txt += "self.mode_name      = %s\n" + repr(self.mode_name)
+        txt += "self.pattern_string = %s\n" + repr(self.pattern_string())
+        txt += "self.pattern        = \n%s" + repr(self.pattern()).replace("\n", "\n      ")
+        txt += "self.action         = %s\n" % self.action().get_code_string()
         if self.action().__class__ == UserCodeFragment:
-            txt += "self.filename   = " + repr(self.action().filename) + "\n"
-            txt += "self.line_n     = " + repr(self.action().line_n) + "\n"
-        txt += "self.pattern_index  = " + repr(self.pattern().sm.get_id()) + "\n"
+            txt += "self.filename   = %s\n" + repr(self.action().filename) 
+            txt += "self.line_n     = %s\n" + repr(self.action().line_n) 
+        txt += "self.pattern_index  = %s\n" + repr(self.pattern().sm.get_id()) 
         return txt
 
 class LocalizedParameter:
@@ -216,4 +186,36 @@ class LocalizedParameter:
     @property
     def comment(self):
         return self.name
+
+def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
+    if Language not in UserCodeFragment_OpenLinePragma.keys():
+        return
+
+    fh = open_file_or_die(filename)
+    norm_filename = Setup.get_file_reference(filename)
+
+    new_content = []
+    line_n      = 0
+    LinePragmaInfoList = UserCodeFragment_OpenLinePragma[Language]
+    for line in fh.readlines():
+        line_n += 1
+        if Language == "C":
+            for info in LinePragmaInfoList:
+                if line.find(info[0]) == -1: continue
+                line = info[1]
+                # Since by some definition, line number pragmas < 32768; let us avoid
+                # compiler warnings by setting line_n = min(line_n, 32768)
+                line = line.replace("NUMBER", repr(int(min(line_n + 1, 32767))))
+                # Even under Windows (tm), the '/' is accepted. Thus do not rely on 'normpath'
+                line = line.replace("FILENAME", norm_filename)
+                if len(line) == 0 or line[-1] != "\n":
+                    line = line + "\n"
+        new_content.append(line)
+
+    fh.close()
+
+    write_safely_and_close(filename, "".join(new_content))
+
+def get_return_to_source_reference():
+    return "\n" + UserCodeFragment_OpenLinePragma["C"][0][0] + "\n"
 

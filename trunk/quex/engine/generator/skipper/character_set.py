@@ -1,20 +1,11 @@
 import quex.engine.state_machine.index              as     sm_index
-import quex.engine.analyzer.transition_map          as     transition_map_tools
 import quex.engine.analyzer.engine_supply_factory   as     engine
-from   quex.engine.analyzer.state.entry_action      import DoorID
-import quex.engine.generator.state.transition.core  as     transition_block
-from   quex.engine.generator.state.transition.code  import TextTransitionCode
 from   quex.engine.generator.languages.address      import get_label, \
-                                                           get_address, \
                                                            address_set_subject_to_routing_add
 from   quex.engine.generator.languages.variable_db  import variable_db
-from   quex.engine.generator.skipper.common         import line_column_counter_in_loop
 import quex.output.cpp.counter                      as     counter
-from   quex.blackboard                              import E_StateIndices, setup as Setup
-from   quex.engine.misc.string_handling             import blue_print
+from   quex.blackboard                              import setup as Setup
 from   quex.engine.interval_handling                import NumberSet, Interval
-
-import quex.engine.tools             as tools
 
 OnBufferLimitCode = "<<__dummy__OnBufferLimitCode__>>" 
 OnExitCharacter   = "<<__dummy__OnExitCharacter__>>" 
@@ -30,7 +21,6 @@ def do(Data, Mode):
 
     # tools.print_callstack()
 
-    LanguageDB   = Setup.language_db
     CharacterSet = Data["character_set"]
     assert CharacterSet.__class__.__name__ == "NumberSet"
     assert not CharacterSet.is_empty()

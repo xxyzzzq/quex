@@ -23,10 +23,7 @@ analyzer. This includes the following:
 """
 from   quex.engine.generator.action_info           import CodeFragment, \
                                                           PatternActionInfo
-from   quex.engine.generator.languages.variable_db import variable_db
-from   quex.engine.generator.languages.address     import get_plain_strings
-from   quex.blackboard                             import setup as Setup, \
-                                                          E_Count
+from   quex.blackboard                             import setup as Setup
 import quex.output.cpp.counter_for_pattern         as     counter_for_pattern
 
 import re
@@ -92,13 +89,14 @@ Match_Lexeme = re.compile("\\bLexeme\\b", re.UNICODE)
 def get_code(CodeFragmentList, Mode=None):
     global Match_Lexeme 
     global variable_db
+    LanguageDB = Setup.language_db
     IndentationBase = 1
 
-    code_str = ""
-    for code_info in CodeFragmentList:
-        result = code_info.get_code(Mode)
-        if type(result) == list: code_str += "".join(get_plain_strings(result))
-        else:                    code_str += result        
+    code_list = []
+    for fragment in CodeFragmentList:
+        code_list.extend(fragment.get_code(Mode))
+
+    code_str = "".join(LanguageDB.GET_PLAIN_STRINGS(code_list))
 
     # If 'Lexeme' occurs as an isolated word, then ensure the generation of 
     # a terminating zero. Note, that the occurence of 'LexemeBegin' does not

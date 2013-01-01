@@ -1,8 +1,8 @@
 from   quex.engine.analyzer.state.core                   import AnalyzerState
-import quex.engine.analyzer.engine_supply_factory      as     engine
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 
-from quex.blackboard import setup as Setup
+from quex.blackboard import setup as Setup, \
+                            E_StateIndices
 
 from operator import attrgetter
 
@@ -30,15 +30,17 @@ def do(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
     else:
         BIPD_ID = None
 
-    doit(txt, TheState, TheState.entry.door_tree_root, LastChildF=False, BIPD_ID=BIPD_ID)
+    do_node(txt, TheState, TheState.entry.door_tree_root, LastChildF=False, BIPD_ID=BIPD_ID)
 
     return True
 
-def doit(txt, TheState, Node, LastChildF=False, BIPD_ID=None):
+def do_node(txt, TheState, Node, LastChildF=False, BIPD_ID=None):
+    """Recursive function: '__dive' -- Marked, TODO: implement by TreeWalker.
+    """
     LanguageDB = Setup.language_db
     LastI      = len(Node.child_list) - 1
     for i, child in enumerate(sorted(Node.child_list, key=attrgetter("door_id"))):
-        doit(txt, TheState, child, LastChildF=(i==LastI), BIPD_ID=BIPD_ID)
+        do_node(txt, TheState, child, LastChildF=(i==LastI), BIPD_ID=BIPD_ID)
     
     # If the door can be a 'goto' target, the label needs to be defined.
     if TheState.init_state_f and BIPD_ID is not None:
@@ -72,6 +74,13 @@ def doit(txt, TheState, Node, LastChildF=False, BIPD_ID=None):
     txt.extend(action_txt)
     txt.extend("\n")
 
+def do_entry_from_NONE(txt, TheState):
+    LanguageDB = Setup.language_db
+    action = TheState.entry.action_db_get_command_list(TheState.index, E_StateIndices.NONE)
+    if action is None: 
+        return
+    txt.extend(LanguageDB.COMMAND(command) for command in action.command_list) 
+    
 def comment_door(txt, Node, TheEntry):
     LanguageDB = Setup.language_db
 

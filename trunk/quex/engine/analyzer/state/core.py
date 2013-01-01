@@ -1,5 +1,4 @@
 from   quex.engine.state_machine.core      import State
-from   quex.engine.analyzer.state.entry    import Entry
 from   quex.blackboard  import E_StateIndices, \
                                E_InputActions
 

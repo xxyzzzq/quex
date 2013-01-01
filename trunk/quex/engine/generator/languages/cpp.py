@@ -453,7 +453,7 @@ def __terminal_on_failure(LanguageDB, OnFailureAction, TerminalFailureDef, Simpl
         3,               "%s\n" % LanguageDB.INPUT_P_INCREMENT(),
         2,         "}\n",
         1,     "}\n",
-        1, "%s"       % "".join(OnFailureAction.action().get_code()), 
+        1, "%s"       % OnFailureAction.action().get_code_string(), 
         1, "goto %s;" % get_label("$re-start", U=True)
     ]
 
@@ -463,7 +463,7 @@ def __terminal_on_end_of_stream(LanguageDB, OnEndOfStreamAction, TerminalEndOfSt
     return \
        "\n\n/* TERMINAL: END_OF_STREAM */\n" \
      + "%s:\n" % TerminalEndOfStreamDef                     \
-     + "%s\n"  % ("".join(OnEndOfStreamAction.action().get_code())) \
+     + "%s\n"  % OnEndOfStreamAction.action().get_code_string() \
      + "    /* End of Stream causes a return from the lexical analyzer, so that no\n"     \
      + "     * tokens can be filled after the termination token.                    */\n" \
      + "    RETURN;\n"
@@ -482,7 +482,7 @@ def __return_preparation(OnAfterMatchAction, SimpleF):
     if SimpleF or OnAfterMatchAction is None:
         return "", ""
 
-    on_after_match_str = "".join(OnAfterMatchAction.action().get_code())
+    on_after_match_str = OnAfterMatchAction.action().get_code_string()
     return_preparation = blue_print(__return_preparation_str,
                                     [["$$ON_AFTER_MATCH$$",  on_after_match_str]])
 

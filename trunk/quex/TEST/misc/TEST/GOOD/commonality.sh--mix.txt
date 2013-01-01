@@ -1,2 +1,2 @@
 interfere-mix.qx:3:error: The indentation newline pattern '[x]' matches on some common lexemes as
-interfere-mix.qx:4:error: skip pattern '[xyz]'.
+interfere-mix.qx:4:error: skip pattern '<skip>'.
