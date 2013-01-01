@@ -1,9 +1,13 @@
-"""ABSTRACT:
+"""
+_______________________________________________________________________________
 
 This module produces an object of class Analyzer. It is a representation of an
 analyzer state machine (object of class StateMachine) that is suited for code
 generation. In particular, track analysis results in 'decorations' for states
 which help to implement efficient code.
+
+_______________________________________________________________________________
+EXPLANATION:
 
 Formally an Analyzer consists of a set of states that are related by their
 transitions. Each state is an object of class AnalyzerState and has the
@@ -25,9 +29,10 @@ The goal of track analysis is to reduce the run-time effort of the lexical
 analyzer. In particular, acceptance and input position storages may be spared
 depending on the constitution of the state machine.
 
--------------------------------------------------------------------------------
-(C) 2010-2011 Frank-Rene Schaefer
+_______________________________________________________________________________
+(C) 2010-2013 Frank-Rene Schaefer
 ABSOLUTELY NO WARRANTY
+_______________________________________________________________________________
 """
 
 import quex.engine.analyzer.track_analysis        as     track_analysis
@@ -474,7 +479,7 @@ class Analyzer:
                 # pattern_id       --> pattern which is concerned
                 # Only consider target states which guide to the 'end_state_index'.
                 index_iterable = (i for i in target_state_index_list 
-                                    if end_state_index in self.__path_element_db[i])
+                                    if i in self.__path_element_db[end_state_index])
                 for target_index in index_iterable:
                     entry = self.__state_db[target_index].entry
                     entry.doors_store(FromStateIndex   = state_index, 

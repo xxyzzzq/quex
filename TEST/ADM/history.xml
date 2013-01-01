@@ -1,4 +1,4 @@
-<history date="Mon Dec 31 22:35:59 2012" element-n="1028">
+<history date="Tue Jan  1 15:05:15 2013" element-n="1031">
     <day year="2008" month="02" day="10">
         <history-init time="09:50:03"/>
         <crc-error time="09:50:07" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="118547486"/>
@@ -1930,5 +1930,10 @@
     <day year="2012" month="12" day="31">
         <crc-error time="08:48:11" application="bug-1889321.sh" choice="" database-crc="-396174589" real-crc="-1229420355"/>
         <crc-error time="21:28:03" application="bug-2799244.sh" choice="error" database-crc="1053420069" real-crc="2137902672"/>
+    </day>
+    <day year="2013" month="01" day="01">
+        <crc-error time="12:44:48" application="bug-1889892.sh" choice="" database-crc="1414201526" real-crc="-2043955014"/>
+        <crc-error time="12:53:01" application="bug-1889892.sh" choice="" database-crc="-2043955014" real-crc="1591300097"/>
+        <crc-error time="14:04:41" application="bug-1885304.sh" choice="" database-crc="-184880043" real-crc="1287424209"/>
     </day>
 </history>

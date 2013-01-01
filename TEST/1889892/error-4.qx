@@ -1,8 +1,5 @@
 define {
 A \0
-A \x0
-A \X0
-A \U0
 }
 
-mode Hallo { }
+mode MINE { {A} {}}

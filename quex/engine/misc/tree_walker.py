@@ -134,7 +134,6 @@ class TreeWalker:
         self.work_stack = []
         while 1 + 1 == 2:
             frame.i += 1
-
             node          = frame.node_list[frame.i]
             sub_node_list = self.on_enter(node)
             if self.abort_f: return
@@ -146,10 +145,12 @@ class TreeWalker:
                 if sub_node_list is not None:                 # is node not totally refused?
                     self.on_finished(node)                    # no sub nodes
                 while frame.i == len(frame.node_list) - 1:    # last in row    
-                    if len(self.work_stack) == 0:    return
+                    if len(self.work_stack) == 0:    
+                        return
                     frame = self.work_stack.pop()
                     self.on_finished(frame.node_list[frame.i])
-                    if frame.i != len(frame.node_list) - 1: break
+                    if frame.i != len(frame.node_list) - 1: 
+                        break
     @property
     def depth(self):
         return len(self.work_stack)

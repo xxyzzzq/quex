@@ -58,7 +58,8 @@ command line:1:error: Missing character set for case fold in set expression.
 command line:1:error: The content in '\C{content}' should start with '[' or '[:'.
 -------------------------------------------------------------------
 expression    = "[:\C{[]}:]"
-Regular Expression: Character set expression results in empty set.
+command line:1:warning: Regular Expression: Character set expression results in empty set.
+command line:1:error: Empty pattern.
 -------------------------------------------------------------------
 expression    = "[:\C(d){[]}:]"
 command line:1:error: Letter 'd' not permitted as case fold option.

@@ -1,4 +1,5 @@
-"""ABSTRACT:
+"""
+________________________________________________________________________________
 
 This module analyses paths of a state machine. For each path through a state a
 PathTrace object is created. A PathTrace object tells something about the
@@ -7,14 +8,18 @@ basic result of this process a map is generated with the following property:
 
             map:    state index --> list of PathTrace objects.
 
+________________________________________________________________________________
+
 Based on the information in the AcceptInfo objects requirements on entry and
 drop_out behaviors of a state can be derived, as done by module 'core.py'.
-_______________________________________________________________________________
+________________________________________________________________________________
 (C) 2010-2013 Frank-Rene Schaefer
 ABSOLUTELY NO WARRANTY
-_______________________________________________________________________________
+________________________________________________________________________________
 """
-from   quex.blackboard              import E_AcceptanceIDs, E_PreContextIDs, E_TransitionN
+from   quex.blackboard              import E_AcceptanceIDs, \
+                                           E_PreContextIDs, \
+                                           E_TransitionN
 from   quex.engine.misc.tree_walker import TreeWalker
 
 from   itertools   import izip

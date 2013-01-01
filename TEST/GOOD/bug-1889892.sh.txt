@@ -13,7 +13,7 @@ error-3.qx:4:warning: <inheritable: only> has been added automatically.
 consistency check: There is no mode that can be applied---all existing modes are 'inheritable only'.
 consistency check: modes are = 'Hallo'
 (5)
-error-4.qx:2:warning: Pattern contained solely forbidden characters in a state transition.
-error-4.qx:2:warning: The resulting target state is deleted since no other state triggered to it.
-error-4.qx:2:error: Deletion of signal characters resulted in empty core pattern.
-error-4.qx:2:error: Consider changing the value of the buffer limit code or path delimiter.
+error-4.qx:5:error: Pattern becomes empty after deleting signal character 'Buffer Limit Code'.
+(6)
+error-5.qx:3:error: Second definition of pattern 'A'.
+error-5.qx:3:error: Pattern names must be unique.
