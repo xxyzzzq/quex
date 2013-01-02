@@ -1,17 +1,91 @@
 """
 ________________________________________________________________________________
+Path Analysis
 
-This module analyses paths of a state machine. For each path through a state a
-PathTrace object is created. A PathTrace object tells something about the
-acceptance behavior of a state in terms of a list of AcceptInfo objects.  As a
-basic result of this process a map is generated with the following property:
+For each state in the state machine (virtually) all paths are considered which
+guide through it. The analysis is concerned with acceptance and input position
+storage and restorage. A path corresponds to a possible sequence of state
+transition as consequence of a sequence of appearing characters.
 
-            map:    state index --> list of PathTrace objects.
+The main result is a map that tells what consequences a path has in a specific 
+state, i.e.:
 
+    trace_db:        state index --> consequences of paths
+
+As a by-product a 'path_element_db' is developed which tells for a given 
+state what states lie on the path to it, i.e.
+
+    path_element_db: state index --> indices of states which lie
+                                     on the path to that state.
+________________________________________________________________________________
+EXPLANATION:
+
+Each path is related to a list of 'AcceptCondition' objects. An
+AcceptCondition consists of the following main members:
+
+    .pattern_id              -- Pattern that can be accepted.
+    
+    .pre_context_id          -- PreContext required for acceptance.
+    
+    .accepting_state_index   -- State where the last acceptance of 'pattern_id' 
+                                appeared.
+    
+    .positioning_state_index -- State where the input position had to be 
+                                stored.
+
+    .transition_n_since_positioning -- ... self explanatory
+
+Different pattern_id-s may be involved in the same state, 
+
+  (i)  because the state may be reached through different paths or 
+
+  (ii) because the winning pattern may depend on what pre-context is 
+       fulfilled. 
+  
+The position storing state is involved when 
+
+  (i)  a post-context needs to reset the input pointer to the end of 
+       the core lexeme or 
+
+  (ii) an acceptance detected on a previous state is winning. In that
+       case the positioning state index is equal to the accepting
+       state index.
+
+The eventualities of a path is represented by a list of AcceptCondition 
+objects. It can be imagined as a list. The sorting order tells the precedence 
+of winners. The first pattern where the pre_context is fulfilled wins.
+
+     AcceptSequence: [ 
+          #                   pattern_id   pre_context_id   ...
+          AcceptCondition(34,          2,               ...)
+          AcceptCondition(12,          1,               ...)
+          AcceptCondition(67,          None,            ...)
+     ]
+
+Note, that length has preceedence over pattern_id. For this reason, greater
+pattern_id-s may have precedence of higher once--if it matches a longer
+lexeme.
+
+Since there are potentially mutiple paths to a state, there is a list of
+lists of AcceptCondition objects. Thus the mapping:
+
+    map:  state index --> consequences of paths
+
+is represented by 
+
+    map:  state index --> list(list(AcceptCondition)) 
 ________________________________________________________________________________
 
-Based on the information in the AcceptInfo objects requirements on entry and
-drop_out behaviors of a state can be derived, as done by module 'core.py'.
+Based on the information in the AcceptCondition objects requirements on 
+entry and drop_out behaviors of a state can be derived, as done by module 
+'core.py'.
+________________________________________________________________________________
+NOTE:
+
+It is possible, that not all paths are walked along. If a state is reached 
+though a different path but with the same consequence as another path through
+that state, then the further investigation of that path is aborted. All 
+possible informations have been gathered, no need to investigate further.
 ________________________________________________________________________________
 (C) 2010-2013 Frank-Rene Schaefer
 ABSOLUTELY NO WARRANTY
@@ -22,20 +96,184 @@ from   quex.blackboard              import E_AcceptanceIDs, \
                                            E_TransitionN
 from   quex.engine.misc.tree_walker import TreeWalker
 
-from   itertools   import izip
-from   collections import defaultdict
+from   itertools   import izip, islice
+from   collections import defaultdict, namedtuple
 from   copy        import copy
 from   zlib        import crc32
+
+
+#______________________________________________________________________________
+# Result of the analysis: For each state there is a list of AcceptSequences
+# each one representing a path through the state machine to that state. An 
+# AcceptSequences is a list of AcceptCondition objects.
+# 
+AcceptCondition = namedtuple("AcceptCondition", 
+                             ["pattern_id", 
+                              "pre_context_id", 
+                              "accepting_state_index", 
+                              "positioning_state_index",
+                              "transition_n_since_positioning"])
+
+class AcceptSequence:
+    def __init__(self, AcceptanceTrace):
+        self.__sequence = [
+           AcceptCondition(x.pattern_id, 
+                               x.pre_context_id, 
+                               x.accepting_state_index, 
+                               x.positioning_state_index, 
+                               x.transition_n_since_positioning)
+           for x in AcceptanceTrace
+        ]
+
+    def acceptance_behavior_equal(self, Other):
+        if len(self.__sequence) != len(Other.__sequence):    return None
+        for x, y in izip(self.__sequence, Other.__sequence):
+            if   x.pre_context_id != y.pre_context_id: return None
+            elif x.pattern_id     != y.pattern_id:     return None
+
+    def __iter__(self):
+        return self.__sequence.__iter__()
+
+class PathsInfo:
+
+    def __init__(self, TraceList):
+        self.__list = [ 
+            AcceptSequence(x.acceptance_trace) for x in TraceList 
+        ]
+
+        # (*) Uniform Acceptance Sequence
+        #
+        #         map: state_index --> acceptance pattern
+        #
+        #     If all paths to a state show the same acceptance pattern, than this
+        #     pattern is stored. Otherwise, the state index is related to None.
+        self.__uniform_acceptance_sequence = -1 # Undone
+
+        # (*) Positioning info:
+        #
+        #     map:  (state_index) --> (pattern_id) --> positioning info
+        #
+        self.__positioning_info = -1 # Undone
+
+    def uniform_acceptance_sequence(self):
+        """
+        This function draws conclusions on the input acceptance behavior at
+        drop-out based on different paths through the same state. Basis for
+        the analysis are the PathTrace objects of a state specified as
+        'ThePathTraceList'.
+
+        Acceptance Uniformity:
+
+            For any possible path to 'this' state the acceptance pattern is
+            the same. That is, it accepts exactly the same pattern under the
+            same pre contexts and in the same sequence of precedence.
+
+        The very nice thing is that the 'acceptance_trace' of a PathTrace
+        object reflects the precedence of acceptance. Thus, one can simply
+        compare the acceptance trace objects of each PathTrace.
+
+        RETURNS: list of AcceptInfo() - uniform acceptance pattern.
+                 None                 - acceptance pattern is not uniform.
+        """
+        if self.__uniform_acceptance_sequence == -1:
+            prototype = self.__list[0]
+
+            # Check (1) and (2)
+            for acceptance_trace in islice(self.__list, 1, None):
+                if acceptance_trace.acceptance_behavior_equal(prototype): 
+                    self.__uniform_acceptance_sequence = None
+                    break
+            else:
+                self.__uniform_acceptance_sequence = prototype
+
+        return self.__uniform_acceptance_sequence
+
+    def accepting_state_index_list(self):
+        result = []
+        for acceptance_sequence in self.__list:
+            result.extend(x.accepting_state_index for x in acceptance_sequence)
+        return result
+
+    def positioning_info(self):
+        if self.__positioning_info == -1: 
+            self.__positioning_info = self.multi_path_positioning_analysis()
+        return self.__positioning_info
+
+    def multi_path_positioning_analysis(self):
+        """
+        Conclusions on the input positioning behavior at drop-out based on
+        different paths through the same state.  Basis for the analysis are the
+        PathTrace objects of a state specified as 'ThePathTraceList'.
+
+        RETURNS: For a given state's PathTrace list a dictionary that maps:
+
+                            pattern_id --> PositioningInfo
+
+        --------------------------------------------------------------------
+        
+        There are the following alternatives for setting the input position:
+        
+           (1) 'lexeme_start_p + 1' in case of failure.
+
+           (2) 'input_p + offset' if the number of transitions between
+               any storing state and the current state is does not differ 
+               dependent on the path taken (and does not contain loops).
+        
+           (3) 'input_p = position_register[i]' if (1) and (2) are not
+               not the case.
+
+        The detection of loops has been accomplished during the construction
+        of the PathTrace objects for each state. This function focusses on
+        the possibility to have different paths to the same state with
+        different positioning behaviors.
+        """
+        class PositioningInfo(object):
+            __slots__ = ("transition_n_since_positioning", 
+                         "pre_context_id", 
+                         "positioning_state_index_set")
+            def __init__(self, PathTraceElement):
+                self.transition_n_since_positioning = PathTraceElement.transition_n_since_positioning
+                self.positioning_state_index_set    = set([ PathTraceElement.positioning_state_index ])
+                self.pre_context_id                 = PathTraceElement.pre_context_id
+
+            def add(self, PathTraceElement):
+                self.positioning_state_index_set.add(PathTraceElement.positioning_state_index)
+
+                if self.transition_n_since_positioning != PathTraceElement.transition_n_since_positioning:
+                    self.transition_n_since_positioning = E_TransitionN.VOID
+
+            def __repr__(self):
+                txt  = ".transition_n_since_positioning = %s\n" % repr(self.transition_n_since_positioning)
+                txt += ".positioning_state_index_set    = %s\n" % repr(self.positioning_state_index_set) 
+                txt += ".pre_context_id                 = %s\n" % repr(self.pre_context_id) 
+                return txt
+
+        positioning_info_by_pattern_id = {}
+        # -- If the positioning differs for one element in the trace list, or 
+        # -- one element has undetermined positioning, 
+        # => then the acceptance relates to undetermined positioning.
+        for acceptance_trace in self.__list:
+            for element in acceptance_trace:
+                assert element.pattern_id != E_AcceptanceIDs.VOID
+
+                prototype = positioning_info_by_pattern_id.get(element.pattern_id)
+                if prototype is None:
+                    positioning_info_by_pattern_id[element.pattern_id] = PositioningInfo(element)
+                else:
+                    prototype.add(element)
+
+        return positioning_info_by_pattern_id
+
 
 def do(SM, ToDB):
     """RETURNS: Acceptance trace database:
 
-                map: state_index --> list of AcceptInfo objects.
-    ___________________________________________________________________________
-    This function walks down each possible path trough a given state machine.
-    During the process of walking down the paths it develops for each state its
-    list of PathTrace objects.
+                map: state_index --> PathsInfo
 
+    ___________________________________________________________________________
+    This function walks down almost each possible path trough a given state
+    machine.  During the process of walking down the paths it develops for each
+    state its list of _Trace objects.
     ___________________________________________________________________________
     IMPORTANT:
 
@@ -47,11 +285,6 @@ def do(SM, ToDB):
     path analysis is dropped as soon as a state is reached with an equivalent
     history.
     ___________________________________________________________________________
-       
-    Another result of the walk is the 'dangerous_positioning_state_set' which
-    collects some positioning states that have to store the position for any
-    successor state (knot analysis, see below).
-    ___________________________________________________________________________
     """
     def print_path(x):
         print x.state_index, " ",
@@ -59,8 +292,8 @@ def do(SM, ToDB):
         else:                    print
 
     class TraceFinder(TreeWalker):
-        """Determines PathTrace objects for each state. The heart of this function is
-           the call to 'PathTrace.next_step()' which incrementally develops the 
+        """Determines _Trace objects for each state. The heart of this function is
+           the call to '_Trace.next_step()' which incrementally develops the 
            acceptance and position storage history of a path.
 
            Recursion Terminal: When state has no target state that has not yet been
@@ -69,17 +302,14 @@ def do(SM, ToDB):
                                must be different or the recursion terminates.
         """
         def __init__(self, state_machine, ToDB):
-            self.sm           = state_machine
-            self.empty_list   = []
-            self.to_db        = ToDB
-            self.result       = dict((i, []) for i in self.sm.states.iterkeys())
-            self.dangerous_positioning_state_set = set()
-            self.path         = []
-            # By default, each state is a 'on the path to itself'
-            # This facilitates the task of asking 'i is on the path to k' as
-            # 'i in path_element_db[k]'
-            self.path_element_db = defaultdict(set)
-            self.path_element_db.update((i,set([i])) for i in state_machine.states.iterkeys())
+            self.sm              = state_machine
+            self.empty_list      = []
+            self.to_db           = ToDB
+            self.result          = dict((i, []) for i in self.sm.states.iterkeys())
+            self.path            = []
+            # Each state is a 'on the path to itself', i.e. it holds
+            # 'i in path_element_db[i]'.
+            self.path_element_db = dict((i,set([i])) for i in self.sm.states.iterkeys())
             TreeWalker.__init__(self)
 
         def on_enter(self, Args):
@@ -89,7 +319,7 @@ def do(SM, ToDB):
             # (*) Update the information about the 'trace of acceptances'
             State = self.sm.states[StateIndex]
 
-            if len(self.path) == 0: trace = PathTrace(self.sm.init_state_index)
+            if len(self.path) == 0: trace = _Trace(self.sm.init_state_index)
             else:                   trace = PreviousTrace.next_step(StateIndex, State) 
 
             target_index_list = self.to_db[StateIndex]
@@ -155,10 +385,12 @@ def do(SM, ToDB):
     trace_finder = TraceFinder(SM, ToDB)
     trace_finder.do((None, SM.init_state_index))
 
-    result = dict( (key, [x.acceptance_trace for x in trace_list]) for key, trace_list in trace_finder.result.iteritems())
+    result = dict((key, PathsInfo(trace_list)) 
+                  for key, trace_list in trace_finder.result.iteritems())
     return result, trace_finder.path_element_db
 
-class PathTrace(object):
+
+class _Trace(object):
     """
     An object of this class documents the impact of actions that happen
     along ONE specific path from the init state to a specific state. 
@@ -188,7 +420,7 @@ class PathTrace(object):
     The sort order of the acceptance trace reflects the philosophy of
     'longest match'. That, is that the last acceptance along a path has a
     higher precedence than an even higher prioritized pattern before. 
-    Actually, all patterns without any pre-context remove any AcceptInfo
+    Actually, all patterns without any pre-context remove any _AcceptInfo
     object that preceded along the path.
 
     For further analysis, this class provides:
@@ -211,7 +443,7 @@ class PathTrace(object):
                     8 wins                 pre 4 -> 5 wins                    
                                            pre 3 -> 7 wins
 
-    results in PathTrace objects for the states as follows:
+    results in _Trace objects for the states as follows:
 
         State 0: has no acceptance trace, only '(no pre-context, failure)'.
         State 1: (pattern 8 wins, input position = current)
@@ -225,8 +457,8 @@ class PathTrace(object):
         ...
     ___________________________________________________________________________
     """
-    __slots__ = ("__acceptance_trace",  # List of AcceptInfo objects
-                 "__storage_db",        # Map: pattern_id --> StoreInfo objects
+    __slots__ = ("__acceptance_trace",  # List of _AcceptInfo objects
+                 "__storage_db",        # Map: pattern_id --> _StoreInfo objects
                  "__parent", 
                  "__state_index", 
                  "__equivalence_hash", 
@@ -239,7 +471,7 @@ class PathTrace(object):
             self.__acceptance_trace = [] 
         else:
             self.__acceptance_trace = [ 
-                  AcceptInfo(PreContextID         = E_PreContextIDs.NONE, 
+                  _AcceptInfo(PreContextID         = E_PreContextIDs.NONE, 
                              PatternID            = E_AcceptanceIDs.FAILURE, 
                              AcceptingStateIndex  = InitStateIndex, 
                              PathSincePositioning = [InitStateIndex], 
@@ -255,7 +487,7 @@ class PathTrace(object):
 
     def reproduce(self, StateIndex):
         """Reproduce: Clone + update for additional StateIndex in the path."""
-        result = PathTrace(HashF=False) # We compute 'hash' later.
+        result = _Trace(HashF=False) # We compute 'hash' later.
         result.__acceptance_trace = [ x.reproduce(StateIndex) for x in self.__acceptance_trace ]
         result.__storage_db       = dict(( (i, x.reproduce(StateIndex)) 
                                          for i, x in self.__storage_db.iteritems() 
@@ -267,11 +499,11 @@ class PathTrace(object):
         return result
 
     def next_step(self, StateIndex, State):
-        """The present object of PathTrace represents the history of events 
+        """The present object of _Trace represents the history of events 
         along a path from the init state to the state BEFORE 'this state'.
 
         Applying the events of 'this state' on the current history results
-        in a PathTrace object that represents the history of events until
+        in a _Trace object that represents the history of events until
         'this state'.
 
         RETURNS: Altered clone of the present object.
@@ -294,7 +526,7 @@ class PathTrace(object):
 
             # Store Input Position Information
             if origin.input_position_store_f():
-                result.__storage_db[origin.pattern_id()] = StoreInfo([StateIndex], 0)
+                result.__storage_db[origin.pattern_id()] = _StoreInfo([StateIndex], 0)
 
         assert len(result.__acceptance_trace) >= 1
         result.__compute_equivalence_hash()
@@ -331,7 +563,7 @@ class PathTrace(object):
             # From the above rule, it follows that there is only one entry per pattern_id.
             break
 
-        entry = AcceptInfo(Origin.pre_context_id(), pattern_id,
+        entry = _AcceptInfo(Origin.pre_context_id(), pattern_id,
                            AcceptingStateIndex         = StateIndex, 
                            PathSincePositioning        = path_since_positioning, 
                            TransitionNSincePositioning = transition_n_since_positioning) 
@@ -366,7 +598,7 @@ class PathTrace(object):
         return self.__storage_db
 
     def get(self, PreContextID):
-        """RETURNS: AcceptInfo object for a given PreContextID."""
+        """RETURNS: _AcceptInfo object for a given PreContextID."""
         for entry in self.__acceptance_trace:
             if entry.pre_context_id == PreContextID: return entry
         return None
@@ -394,9 +626,8 @@ class PathTrace(object):
             else:                                                  data.append(0x5D5D5D5D)
 
         for pattern_id, info in sorted(self.__storage_db.iteritems()):
-            if info.loop_f:                                             data.append(0x48484848)
-            elif isinstance(info.transition_n_since_positioning, long): data.append(info.transition_n_since_positioning)
-            else:                                                       data.append(0x4D4D4D4D)
+            if isinstance(info.transition_n_since_positioning, long): data.append(info.transition_n_since_positioning)
+            else:                                                     data.append(0x4D4D4D4D)
 
         self.__equivalence_hash = crc32(str(data))
         # HINT: -- One single acceptance on current state.
@@ -444,8 +675,7 @@ class PathTrace(object):
         if not EndOfRoadF:
             for x_pattern_id, x in self.__storage_db.iteritems():
                 y = Other.__storage_db.get(x_pattern_id)
-                if y is None: return False
-                if   x.loop_f                  != y.loop_f:                  return False
+                if   y is None:                                              return False
                 elif x.positioning_state_index != y.positioning_state_index: return False
 
         #print "## self.acceptance:", self.__acceptance_trace
@@ -471,17 +701,17 @@ class PathTrace(object):
     def __repr__(self):
         return "".join([repr(x) for x in self.__acceptance_trace]) + "".join([repr(x) for x in self.__storage_db.iteritems()])
 
-class StoreInfo(object):
+class _StoreInfo(object):
     """
     Informs about a 'positioning action' that happened during the walk
     along a specific path from init state to 'this state'. 
     
-    Used in function 'PathTrace.next_step()'.
+    Used in function '_Trace.next_step()'.
     ___________________________________________________________________________
     EXPLANATION:
 
     A 'positioning action' is the storage of the current input position 
-    into a dedicated position register. Objects of class 'StoreInfo'
+    into a dedicated position register. Objects of class '_StoreInfo'
     are stored in dictionaries where the key represents the pattern-id
     is at the same time the identifier of the position storage register.
     (Note, later the position register is remapped according to required
@@ -506,21 +736,15 @@ class StoreInfo(object):
                                 to this state.
     ___________________________________________________________________________
     """
-    __slots__ = ('path_since_positioning', '__transition_n_since_positioning', '__loop_f')
+    __slots__ = ('path_since_positioning', '__transition_n_since_positioning')
     def __init__(self, PathSincePositioning, TransitionNSincePositioning=None):
         self.path_since_positioning = PathSincePositioning
         if TransitionNSincePositioning is None:
             if len(PathSincePositioning) != len(set(PathSincePositioning)):
-                self.__loopf                          = True 
                 self.__transition_n_since_positioning = E_TransitionN.VOID
             else:
-                self.__loop_f                         = False
                 self.__transition_n_since_positioning = len(PathSincePositioning) - 1
         else:
-            if TransitionNSincePositioning == E_TransitionN.VOID:
-                self.__loop_f                         = True
-            else:
-                self.__loop_f                         = False
             self.__transition_n_since_positioning = TransitionNSincePositioning
 
     def reproduce(self, StateIndex):
@@ -529,7 +753,7 @@ class StoreInfo(object):
         transition_n_since_positioning = self.get_transition_n_since_positioning_update(StateIndex)
         path_since_positioning.append(StateIndex)
 
-        return StoreInfo(path_since_positioning, transition_n_since_positioning)
+        return _StoreInfo(path_since_positioning, transition_n_since_positioning)
 
     def get_transition_n_since_positioning_update(self, StateIndex):
         """RETURNS: Value of 'transition_n_since_positioning' when 'StateIndex'
@@ -544,13 +768,6 @@ class StoreInfo(object):
 
         else:
             return self.__transition_n_since_positioning
-
-    @property
-    def loop_f(self):                         
-        # NOT: return self.__transition_n_since_positioning == E_TransitionN.VOID
-        #      because the comparison is much slower, then returning simply a boolean.
-        # THIS FUNCTION MAY BE CALLED EXTENSIVELY!
-        return self.__loop_f
 
     @property
     def transition_n_since_positioning(self): 
@@ -569,7 +786,7 @@ class StoreInfo(object):
         txt.append("    .path_since_positioning         = %s\n" % repr(self.path_since_positioning))
         return "".join(txt)
 
-class AcceptInfo(StoreInfo):
+class _AcceptInfo(_StoreInfo):
     """
     Information about the acceptance and input position storage behavior in 
     a state which is a result of events that happened before on a specific path 
@@ -579,7 +796,7 @@ class AcceptInfo(StoreInfo):
     
     Acceptance of a pattern is something that occurs in case that the 
     state machine can no further proceed on a given input (= philosophy
-    of 'longest match'), i.e. on 'drop-out'. 'AcceptInfo' objects tell 
+    of 'longest match'), i.e. on 'drop-out'. '_AcceptInfo' objects tell 
     about the acceptance of a particular pattern (given by '.pattern_id').
     
     .pattern_id              -- Identifies the pattern that is concerned.
@@ -593,7 +810,7 @@ class AcceptInfo(StoreInfo):
                                 of the pattern somewhere before on the path.
                                 It may, as well be 'this state'.
     
-    [from StoreInfo]
+    [from _StoreInfo]
 
     .path_since_positioning  -- List of indices of states which have been
                                 passed from the storage of input position
@@ -616,14 +833,14 @@ class AcceptInfo(StoreInfo):
         else:
             transition_n_since_positioning = TransitionNSincePositioning
 
-        StoreInfo.__init__(self, PathSincePositioning, transition_n_since_positioning)
+        _StoreInfo.__init__(self, PathSincePositioning, transition_n_since_positioning)
 
     def reproduce(self, StateIndex):
         """Reproduce: Clone + update for additional StateIndex in the path."""
         path_since_positioning         = copy(self.path_since_positioning)
         transition_n_since_positioning = self.get_transition_n_since_positioning_update(StateIndex)
         path_since_positioning.append(StateIndex)
-        result = AcceptInfo(self.pre_context_id, 
+        result = _AcceptInfo(self.pre_context_id, 
                             self.pattern_id, 
                             self.accepting_state_index, 
                             path_since_positioning, 
@@ -656,7 +873,7 @@ class AcceptInfo(StoreInfo):
         txt.append("    .transition_n_since_positioning = %s\n" % repr(self.transition_n_since_positioning))
         txt.append("    .accepting_state_index          = %s\n" % repr(self.accepting_state_index))
         txt.append("    .positioning_state_index        = %s\n" % repr(self.positioning_state_index))
-        txt.append(StoreInfo.__repr__(self))
+        txt.append(_StoreInfo.__repr__(self))
         return "".join(txt)
 
 

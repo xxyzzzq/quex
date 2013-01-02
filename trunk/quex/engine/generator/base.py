@@ -102,7 +102,6 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
     def __check_on_orphan_states(Place, sm):
         orphan_state_list = sm.get_orphaned_state_index_list()
         if len(orphan_state_list) == 0: return
-        print "#sm:", sm
         error_msg("After '%s'" % Place + "\n" + \
                   "Orphaned state(s) detected in regular expression (optimization lack).\n" + \
                   "Please, log a defect at the projects website quex.sourceforge.net.\n"    + \

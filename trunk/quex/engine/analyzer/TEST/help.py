@@ -56,7 +56,7 @@ def test(SM, EngineType = engine.FORWARD, PrintPRM_F = False):
         print plain_txt
 
     if PrintPRM_F:
-        print_this(plain.position_info_db)
+        print_this(plain)
 
     diff_txt_db = {}
     optimized = optimizer.do(plain)
