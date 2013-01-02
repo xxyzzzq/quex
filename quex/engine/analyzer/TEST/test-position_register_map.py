@@ -86,7 +86,7 @@ help.if_DRAW_in_sys_argv(sm)
 analyzer = core.Analyzer(sm, engine.FORWARD)
 
 print "Positioning Info __________________________________"
-position_register_map.print_this(analyzer.position_info_db)
+position_register_map.print_this(analyzer)
 
 for post_context_id, array_index in sorted(analyzer.position_register_map.iteritems()):
     print "   %s: %i" % (repr(post_context_id), array_index)

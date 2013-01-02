@@ -1,5 +1,7 @@
 from quex.blackboard import E_TransitionN
+
 from collections import defaultdict
+from operator    import itemgetter
 
 def do(analyzer):
     """
@@ -110,8 +112,8 @@ def get_cannot_db(analyzer):
                 db[x_pattern_id].add(y_pattern_id)
                 db[y_pattern_id].add(x_pattern_id)
 
-    for state_index, position_info in analyzer.position_info_db.iteritems():
-        cannot_db_update(cannot_db, position_info)
+    for state_index, paths_info in analyzer.trace_db.iteritems():
+        cannot_db_update(cannot_db, paths_info.positioning_info())
 
     return cannot_db
 
@@ -177,9 +179,9 @@ def get_mapping(combinable_list):
 
     return result
 
-from operator import itemgetter
-def print_this(PositionInfoDB):
-    for state_index, position_info in sorted(PositionInfoDB.iteritems(),key=itemgetter(0)):
+def print_this(TheAnalyzer):
+    for state_index, paths_info in sorted(TheAnalyzer.trace_db.iteritems(),key=itemgetter(0)):
+        position_info = paths_info.positioning_info()
         print "State %i:" % state_index
         txt = ""
         for pattern_id, info in sorted(position_info.iteritems(),key=itemgetter(0)): 
