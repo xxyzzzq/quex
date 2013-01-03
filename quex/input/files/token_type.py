@@ -233,7 +233,7 @@ class TokenTypeDescriptor(TokenTypeDescriptorCore):
         if not Setup.token_class_take_text_check_f: return
 
         # Is 'take_text' section defined
-        if not self.take_text.is_whitespace(): return
+        if not self.take_text.is_empty(): return
 
         error_msg(_warning_msg, 
                   self.file_name_of_token_type_definition,

@@ -32,6 +32,9 @@ class CodeFragment:
             if string.find(TheString) != -1: return True
         return False
 
+    def is_empty(self):
+        return len(self.__code) == 0
+
     def is_whitespace(self):
         for elm in self.__code:
             if len(elm.strip()) != 0: return False
