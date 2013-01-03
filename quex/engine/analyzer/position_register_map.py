@@ -1,7 +1,7 @@
 from quex.blackboard import E_TransitionN
 
 from collections import defaultdict
-from operator    import itemgetter
+from operator    import itemgetter, attrgetter
 
 def do(analyzer):
     """
@@ -89,7 +89,7 @@ def get_cannot_db(analyzer):
     # it cannot be combined.
     cannot_db = defaultdict(set)
 
-    def cannot_db_update(db, PositionInfo):
+    def cannot_db_update(db, PositionInfoList):
         """According to the CONDITION mentioned in the entry, it determined 
            what post contexts cannot be combined for the given trace list.
            Note, that FAILURE never needs a position register. After FAILURE, 
@@ -97,20 +97,21 @@ def get_cannot_db(analyzer):
         """
         # FAILURE is excluded implicitly, since then 'transition_n_since_positioning'
         # is equal to 'LEXEME_START_PLUS_ONE' and not 'VOID'.
-        entry_list = [(pattern_id, x) for pattern_id, x in PositionInfo.iteritems() \
-                      if x.transition_n_since_positioning == E_TransitionN.VOID] 
+        entry_list = [
+             x for x in PositionInfoList \
+               if x.transition_n_since_positioning == E_TransitionN.VOID
+        ] 
 
         for i, x in enumerate(entry_list):
-            x_pattern_id, x_info = x
-            # Make sure, that any such register has at least one entry
-            if not db.has_key(x_pattern_id): db[x_pattern_id] = set()
-            for y_pattern_id, y_info in entry_list[i+1:]:
+            # Ensure, the database has at least one entry.
+            if not db.has_key(x.pattern_id): db[x.pattern_id] = set()
+            for y in entry_list[i+1:]:
                 # If the positioning state differs, and we need to restore here, 
                 # then the position register cannot be shared.
-                if x_info.positioning_state_index_set == y_info.positioning_state_index_set: continue
+                if x.positioning_state_index_set == y.positioning_state_index_set: continue
                 # Note, that in particular if x == y, it is left out of consideration
-                db[x_pattern_id].add(y_pattern_id)
-                db[y_pattern_id].add(x_pattern_id)
+                db[x.pattern_id].add(y.pattern_id)
+                db[y.pattern_id].add(x.pattern_id)
 
     for state_index, paths_info in analyzer.trace_db.iteritems():
         cannot_db_update(cannot_db, paths_info.positioning_info())
@@ -184,11 +185,11 @@ def print_this(TheAnalyzer):
         position_info = paths_info.positioning_info()
         print "State %i:" % state_index
         txt = ""
-        for pattern_id, info in sorted(position_info.iteritems(),key=itemgetter(0)): 
-            if info.transition_n_since_positioning == E_TransitionN.VOID:
+        for x in sorted(position_info, key=attrgetter("pattern_id")): 
+            if x.transition_n_since_positioning == E_TransitionN.VOID:
                 txt += "    (*) "
             else: 
                 txt += "        "
-            txt += "[%7s]: %s/%s\n" % (pattern_id, info.pre_context_id, info.positioning_state_index_set)
+            txt += "[%7s]: %s/%s\n" % (x.pattern_id, x.pre_context_id, x.positioning_state_index_set)
         print txt
 

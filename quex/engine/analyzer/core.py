@@ -100,23 +100,14 @@ class Analyzer:
 
         # (*) Prepare AnalyzerState Objects
         self.__state_db = dict([
-                (state_index, AnalyzerState(SM.states[state_index], state_index,
-                                            state_index == SM.init_state_index, 
-                                            EngineType, self.__from_db[state_index])) 
-                for state_index in self.__trace_db.iterkeys()])
+            (state_index, AnalyzerState(SM.states[state_index], state_index,
+                                        state_index == SM.init_state_index, 
+                                        EngineType, self.__from_db[state_index])) 
+            for state_index in self.__trace_db.iterkeys()])
 
         if not EngineType.requires_detailed_track_analysis():
             self.__position_register_map = None
-            self.__position_info_db      = None
             return
-
-        # (*) Positioning info:
-        #
-        #     map:  (state_index) --> (pattern_id) --> positioning info
-        #
-        self.__position_info_db = dict(
-                (state_index, paths_info.multi_path_positioning_analysis())
-                for state_index, paths_info in self.__trace_db.iteritems())
 
         # (*) Drop Out Behavior
         #     The PathTrace objects tell what to do at drop_out. From this, the
@@ -251,18 +242,21 @@ class Analyzer:
             # Dependency: Related states are required to store acceptance at state entry.
             for accepting_state_index in self.__trace_db[StateIndex].accepting_state_index_list():
                 self.__require_acceptance_storage_db[accepting_state_index].append(StateIndex)
+
             # Later, a function will use the '__require_acceptance_storage_db' to 
             # implement the acceptance storage.
 
         # (*) Terminal Router
-        for pattern_id, info in self.__trace_db[StateIndex].positioning_info().iteritems():
-            result.route_to_terminal(pattern_id, info.transition_n_since_positioning)
+        for x in self.__trace_db[StateIndex].positioning_info():
+            result.route_to_terminal(x.pattern_id, x.transition_n_since_positioning)
 
-            if info.transition_n_since_positioning == E_TransitionN.VOID: 
-                # Request the storage of the position from related states.
-                for state_index in info.positioning_state_index_set:
-                    self.__require_position_storage_db[state_index].append(
-                            (StateIndex, info.pre_context_id, pattern_id))
+            if x.transition_n_since_positioning != E_TransitionN.VOID: continue
+
+            # Request the storage of the position from related states.
+            for state_index in x.positioning_state_index_set:
+                self.__require_position_storage_db[state_index].append(
+                        (StateIndex, x.pre_context_id, x.pattern_id))
+
             # Later, a function will use the '__require_position_storage_db' to 
             # implement the position storage.
 
