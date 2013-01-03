@@ -1,4 +1,4 @@
-<history date="Tue Jan  1 15:10:39 2013" element-n="430">
+<history date="Thu Jan  3 11:04:30 2013" element-n="430">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:16"/>
         <crc-error time="09:57:16" application="test-pattern-matching.py" choice="" database-crc="1144357218" real-crc="1999050120"/>
