@@ -1,4 +1,4 @@
-<history date="Tue Jan  1 15:05:33 2013" element-n="53">
+<history date="Thu Jan  3 11:28:32 2013" element-n="53">
     <day year="2012" month="04" day="29">
         <history-init time="04:47:15"/>
         <crc-error time="19:51:20" application="test-skip-trigger-set.py" choice="ANSI-C-PlainMemory" database-crc="1490947051" real-crc="600307805"/>
