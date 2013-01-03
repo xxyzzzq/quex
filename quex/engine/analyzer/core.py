@@ -367,7 +367,7 @@ class Analyzer:
                 # Only consider target states which guide to the 'end_state_index'.
                 index_iterable = (i for i in target_state_index_list 
                                     if i in self.__path_element_db[end_state_index])
-                for target_index in index_iterable:
+                for target_index in index_iterable: # target_state_index_list: # index_iterable:
                     entry = self.__state_db[target_index].entry
                     entry.doors_store(FromStateIndex   = state_index, 
                                       PreContextID     = pre_context_id, 
