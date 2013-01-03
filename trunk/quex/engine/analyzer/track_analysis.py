@@ -135,7 +135,6 @@ class AcceptSequence:
         return self.__sequence.__iter__()
 
 class PathsInfo:
-
     def __init__(self, TraceList):
         self.__list = [ 
             AcceptSequence(x.acceptance_trace) for x in TraceList 
@@ -175,18 +174,18 @@ class PathsInfo:
         RETURNS: list of AcceptInfo() - uniform acceptance pattern.
                  None                 - acceptance pattern is not uniform.
         """
-        if self.__uniform_acceptance_sequence == -1:
-            prototype = self.__list[0]
+        if self.__uniform_acceptance_sequence != -1:
+            return self.__uniform_acceptance_sequence
 
-            # Check (1) and (2)
-            for acceptance_trace in islice(self.__list, 1, None):
-                if acceptance_trace.acceptance_behavior_equal(prototype): 
-                    self.__uniform_acceptance_sequence = None
-                    break
-            else:
-                self.__uniform_acceptance_sequence = prototype
+        prototype = self.__list[0]
 
-        return self.__uniform_acceptance_sequence
+        # Check (1) and (2)
+        for acceptance_trace in islice(self.__list, 1, None):
+            if acceptance_trace.acceptance_behavior_equal(prototype): 
+                self.__uniform_acceptance_sequence = None
+                break
+        else:
+            self.__uniform_acceptance_sequence = prototype
 
     def accepting_state_index_list(self):
         result = []
@@ -195,11 +194,6 @@ class PathsInfo:
         return result
 
     def positioning_info(self):
-        if self.__positioning_info == -1: 
-            self.__positioning_info = self.multi_path_positioning_analysis()
-        return self.__positioning_info
-
-    def multi_path_positioning_analysis(self):
         """
         Conclusions on the input positioning behavior at drop-out based on
         different paths through the same state.  Basis for the analysis are the
@@ -227,14 +221,18 @@ class PathsInfo:
         the possibility to have different paths to the same state with
         different positioning behaviors.
         """
+        if self.__positioning_info != -1: 
+            return self.__positioning_info
         class PositioningInfo(object):
-            __slots__ = ("transition_n_since_positioning", 
-                         "pre_context_id", 
+            __slots__ = ("pre_context_id", 
+                         "pattern_id",
+                         "transition_n_since_positioning", 
                          "positioning_state_index_set")
-            def __init__(self, PathTraceElement):
-                self.transition_n_since_positioning = PathTraceElement.transition_n_since_positioning
-                self.positioning_state_index_set    = set([ PathTraceElement.positioning_state_index ])
-                self.pre_context_id                 = PathTraceElement.pre_context_id
+            def __init__(self, TheAcceptCondition):
+                self.pre_context_id                 = TheAcceptCondition.pre_context_id
+                self.pattern_id                     = TheAcceptCondition.pattern_id
+                self.transition_n_since_positioning = TheAcceptCondition.transition_n_since_positioning
+                self.positioning_state_index_set    = set([ TheAcceptCondition.positioning_state_index ])
 
             def add(self, PathTraceElement):
                 self.positioning_state_index_set.add(PathTraceElement.positioning_state_index)
@@ -243,9 +241,10 @@ class PathsInfo:
                     self.transition_n_since_positioning = E_TransitionN.VOID
 
             def __repr__(self):
-                txt  = ".transition_n_since_positioning = %s\n" % repr(self.transition_n_since_positioning)
-                txt += ".positioning_state_index_set    = %s\n" % repr(self.positioning_state_index_set) 
+                txt  = ".pattern_id                     = %s\n" % repr(self.pattern_id) 
                 txt += ".pre_context_id                 = %s\n" % repr(self.pre_context_id) 
+                txt += ".transition_n_since_positioning = %s\n" % repr(self.transition_n_since_positioning)
+                txt += ".positioning_state_index_set    = %s\n" % repr(self.positioning_state_index_set) 
                 return txt
 
         positioning_info_by_pattern_id = {}
@@ -262,7 +261,7 @@ class PathsInfo:
                 else:
                     prototype.add(element)
 
-        return positioning_info_by_pattern_id
+        self.__positioning_info = positioning_info_by_pattern_id.values()
 
 
 def do(SM, ToDB):
