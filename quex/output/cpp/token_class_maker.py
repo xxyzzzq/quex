@@ -67,13 +67,13 @@ def _do(Descr):
     virtual_destructor_str = ""
     if Descr.open_for_derivation_f: virtual_destructor_str = "virtual "
 
-    if Descr.copy.is_whitespace():
+    if Descr.copy is None:
         # Default copy operation: Plain Copy of token memory
         copy_str = "__QUEX_STD_memcpy((void*)__this, (void*)__That, sizeof(QUEX_TYPE_TOKEN));\n"
     else:
         copy_str = Descr.copy.get_code_string()
 
-    if Descr.take_text.is_whitespace():
+    if Descr.take_text is None:
         take_text_str = "return true;\n" 
     else:
         take_text_str = Descr.take_text.get_code_string()

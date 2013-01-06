@@ -10,6 +10,7 @@ from   quex.blackboard                           import E_AcceptanceIDs, E_PreCo
 from   copy      import deepcopy
 from   operator  import attrgetter, itemgetter
 from   itertools import ifilter, imap
+from   collections import defaultdict
 
 class State:
     # Information about all transitions starting from a particular state. 
@@ -580,6 +581,19 @@ class StateMachine(object):
         # -- for uniqueness of state ids, clone the result
         return result.clone()    
         
+    def get_from_to_db(self):
+        """RETURNS:
+             [0] from_db:  state_index --> states from which it is entered.
+             [1] to_db:    state_index --> states which it enters
+        """
+        from_db = defaultdict(set)
+        to_db   = defaultdict(set)
+        for from_index, state in self.states.iteritems():
+            to_db[from_index] = set(state.transitions().get_map().iterkeys())
+            for to_index in state.transitions().get_map().iterkeys():
+                from_db[to_index].add(from_index)
+        return from_db, to_db
+
     def transform_to_anti_pattern(self):
         """Anti Pattern: 
                           -- drop-out                  => transition to acceptance state.

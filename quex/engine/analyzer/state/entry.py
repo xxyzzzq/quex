@@ -133,7 +133,8 @@ class Entry(object):
             if door.command_list.accepter is None: 
                 door.command_list.accepter = entry_action.Accepter()
             door.command_list.accepter.add(PreContextID, PatternID)
-            door.command_list.accepter.clean_up()
+            # NOT: door.command_list.accepter.clean_up()
+            #      The list might be deliberately ordered differently
 
     def doors_store(self, FromStateIndex, PreContextID, PositionRegister, Offset):
         # Add 'store input position' to specific door. See 'entry_action.StoreInputPosition'

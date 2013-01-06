@@ -1,18 +1,18 @@
-<test-database execution-time-sec="1.97" date="Thu Jan  3 11:24:35 2013">
+<test-database execution-time-sec="1.96" date="Fri Jan  4 17:00:37 2013">
     <last-used-diff-display-program name=""/>
-    <test title="Combine Simple" time-sum-sec="0.22"> 
+    <test title="Combine Simple" time-sum-sec="0.23"> 
         <application file-name="combine-simple.py" info-request-time="1355705371L" vanished="False"/>
         <choice-list number="3" same_result="False">
-           <choice name="plain" result="OK" time_sec="0.07" crc="951932943"/>
+           <choice name="plain" result="OK" time_sec="0.08" crc="951932943"/>
            <choice name="recursive" result="OK" time_sec="0.07" crc="342614412"/>
-           <choice name="distinguished" result="OK" time_sec="0.08" crc="1057638771"/>
+           <choice name="distinguished" result="OK" time_sec="0.07" crc="1057638771"/>
         </choice-list>
     </test>
-    <test title="Combination of Two Transition Maps" time-sum-sec="0.48"> 
+    <test title="Combination of Two Transition Maps" time-sum-sec="0.47"> 
         <application file-name="combine-maps.py" info-request-time="1355705371L" vanished="False"/>
         <choice-list number="6" same_result="False">
-           <choice name="1" result="OK" time_sec="0.13" crc="-826777286"/>
-           <choice name="2" result="OK" time_sec="0.08" crc="61145750"/>
+           <choice name="1" result="OK" time_sec="0.12" crc="-826777286"/>
+           <choice name="2" result="OK" time_sec="0.09" crc="61145750"/>
            <choice name="2b" result="OK" time_sec="0.07" crc="1335071788"/>
            <choice name="3" result="OK" time_sec="0.07" crc="1585829609"/>
            <choice name="4" result="OK" time_sec="0.07" crc="-51195079"/>
@@ -20,10 +20,10 @@
         </choice-list>
     </test>
     <group name="Transition Map Templates">
-        <test title="Target Idx Combination Metric" time-sum-sec="0.42"> 
+        <test title="Target Idx Combination Metric" time-sum-sec="0.41"> 
             <application file-name="metric.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="6" same_result="False">
-               <choice name="1" result="OK" time_sec="0.07" crc="340776046"/>
+               <choice name="1" result="OK" time_sec="0.08" crc="340776046"/>
                <choice name="2" result="OK" time_sec="0.07" crc="-2041708454"/>
                <choice name="2b" result="OK" time_sec="0.07" crc="1030623470"/>
                <choice name="3" result="OK" time_sec="0.07" crc="-2124408666"/>
@@ -31,7 +31,7 @@
                <choice name="recursive" result="OK" time_sec="0.07" crc="-616495450"/>
             </choice-list>
         </test>
-        <test title="Combine Combined Trigger Maps" time-sum-sec="0.50"> 
+        <test title="Combine Combined Trigger Maps" time-sum-sec="0.49"> 
             <application file-name="combine-maps-2.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="7" same_result="False">
                <choice name="1" result="OK" time_sec="0.07" crc="15509166"/>
@@ -40,17 +40,17 @@
                <choice name="recursive-2" result="OK" time_sec="0.07" crc="960512569"/>
                <choice name="recursive-3" result="OK" time_sec="0.07" crc="-1460710873"/>
                <choice name="recursive-b" result="OK" time_sec="0.07" crc="45826118"/>
-               <choice name="recursive-2b" result="OK" time_sec="0.08" crc="856963599"/>
+               <choice name="recursive-2b" result="OK" time_sec="0.07" crc="856963599"/>
             </choice-list>
         </test>
-        <test title="Get Best Matching Pair" time-sum-sec="0.35"> 
+        <test title="Get Best Matching Pair" time-sum-sec="0.36"> 
             <application file-name="best_matching_pair.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="5" same_result="False">
                <choice name="0" result="OK" time_sec="0.07" crc="488206684"/>
                <choice name="1" result="OK" time_sec="0.07" crc="-2131708322"/>
                <choice name="2" result="OK" time_sec="0.07" crc="228632361"/>
                <choice name="3" result="OK" time_sec="0.07" crc="1541910571"/>
-               <choice name="recursive" result="OK" time_sec="0.07" crc="-206740455"/>
+               <choice name="recursive" result="OK" time_sec="0.08" crc="-206740455"/>
             </choice-list>
         </test>
     </group>

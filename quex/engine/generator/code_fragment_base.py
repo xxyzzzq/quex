@@ -40,5 +40,10 @@ class CodeFragment:
             if len(elm.strip()) != 0: return False
         return True
 
-
-
+_Empty = None
+def CodeFragment_Empty():
+    global _Empty
+    if _Empty is None: 
+        _Empty = CodeFragment("")
+    return _Empty
+    

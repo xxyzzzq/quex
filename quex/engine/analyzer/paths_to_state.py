@@ -1,6 +1,8 @@
+from quex.blackboard import E_AcceptanceIDs, E_TransitionN
+
+from operator        import attrgetter
 from collections     import namedtuple
 from itertools       import islice, izip
-from quex.blackboard import E_AcceptanceIDs, E_TransitionN
 #______________________________________________________________________________
 # Result of the analysis: For each state there is a list of AcceptSequences
 # each one representing a path through the state machine to that state. An 
@@ -17,21 +19,36 @@ class AcceptSequence:
     def __init__(self, AcceptanceTrace):
         self.__sequence = [
            AcceptCondition(x.pattern_id, 
-                               x.pre_context_id, 
-                               x.accepting_state_index, 
-                               x.positioning_state_index, 
-                               x.transition_n_since_positioning)
+                           x.pre_context_id, 
+                           x.accepting_state_index, 
+                           x.positioning_state_index, 
+                           x.transition_n_since_positioning)
            for x in AcceptanceTrace
         ]
 
     def acceptance_behavior_equal(self, Other):
-        if len(self.__sequence) != len(Other.__sequence):    return None
+        if len(self.__sequence) != len(Other.__sequence):    
+            return False
         for x, y in izip(self.__sequence, Other.__sequence):
-            if   x.pre_context_id != y.pre_context_id: return None
-            elif x.pattern_id     != y.pattern_id:     return None
+            if   x.pre_context_id != y.pre_context_id: return False
+            elif x.pattern_id     != y.pattern_id:     return False
+        return True
 
     def __iter__(self):
         return self.__sequence.__iter__()
+
+    def get_string(self, Indent=0):
+        txt = [ " " * (Indent*4) + "p-id     pre-id   as-i     ps-i     tnsp\n"]
+        for x in self.__sequence:
+            #012345678012345678012345678012345678012345678
+            txt.append(" " * (Indent*4) + "%-9s%-9s%-9s%-9s%-9s\n" % ( \
+                        x.pattern_id, x.pre_context_id,
+                        x.accepting_state_index, x.positioning_state_index,
+                        x.transition_n_since_positioning))
+        return "".join(txt)
+
+    def __str__(self):
+        return self.get_string()
 
 class PositioningInfo(object):
     __slots__ = ("pre_context_id", 
@@ -44,10 +61,10 @@ class PositioningInfo(object):
         self.transition_n_since_positioning = TheAcceptCondition.transition_n_since_positioning
         self.positioning_state_index_set    = set([ TheAcceptCondition.positioning_state_index ])
 
-    def add(self, PathTraceElement):
-        self.positioning_state_index_set.add(PathTraceElement.positioning_state_index)
+    def add(self, TheAcceptCondition):
+        self.positioning_state_index_set.add(TheAcceptCondition.positioning_state_index)
 
-        if self.transition_n_since_positioning != PathTraceElement.transition_n_since_positioning:
+        if self.transition_n_since_positioning != TheAcceptCondition.transition_n_since_positioning:
             self.transition_n_since_positioning = E_TransitionN.VOID
 
     def __repr__(self):
@@ -69,13 +86,32 @@ class PathsToState:
         #
         #     If all paths to a state show the same acceptance pattern, than this
         #     pattern is stored. Otherwise, the state index is related to None.
-        self.__uniform_acceptance_sequence = -1 # Undone
+        self.__uniform_acceptance_sequence  = -1 # Undone
+
+        # (*) Acceptance Precedence Matrix
+        # 
+        #     A matrix that can tell for any two pattern ids A and B:
+        #
+        #         -- A has always precedence over B
+        #         -- B has always precedence over A
+        #         -- A and B never occur together in a path.
+        #
+        #     If there are any two patterns where none of the above 
+        #     conditions holds it is considered a 'acceptance precedence clash'.
+        self.__acceptance_precedence_matrix = -1 # Undone
+
+        # (*) Set of pattern ids occurring here
+        self.__pattern_id_list               = -1 # Undone
 
         # (*) Positioning info:
         #
         #     map:  (state_index) --> (pattern_id) --> positioning info
         #
-        self.__positioning_info            = -1 # Undone
+        self.__positioning_info             = -1 # Undone
+
+    def get_any_one(self):
+        assert len(self.__list) != 0
+        return self.__list[0]
 
     def uniform_acceptance_sequence(self):
         """
@@ -103,8 +139,8 @@ class PathsToState:
         prototype = self.__list[0]
 
         # Check (1) and (2)
-        for acceptance_trace in islice(self.__list, 1, None):
-            if acceptance_trace.acceptance_behavior_equal(prototype): 
+        for accept_sequence in islice(self.__list, 1, None):
+            if not accept_sequence.acceptance_behavior_equal(prototype): 
                 self.__uniform_acceptance_sequence = None
                 break
         else:
@@ -117,6 +153,60 @@ class PathsToState:
         for acceptance_sequence in self.__list:
             result.extend(x.accepting_state_index for x in acceptance_sequence)
         return result
+
+    def acceptance_precedence_clash(self):
+        # self.__acceptance_precedence_matrix_contruct() is None
+        # => there was a clash in the precedence matrix
+        return self.acceptance_precedence_matrix() is None
+
+    def acceptance_precedence_get(self, PatternID_A, PatternID_B):
+        """RETURNS:
+              1   => PatternID_A has always precedence over PatternID_B
+
+              0   => PatternID_A and PatternID_B have always same precedence,
+                     only possible of both are the same.
+
+             -1   => PatternID_B has always precedence over PatternID_A
+
+             None => PatternID_A and PatternID_A never occur together.
+        """
+        # This function should never be called, if there was a acceptance
+        # precedence clash.
+        assert not self.acceptance_precedence_clash()
+
+        matrix = self.acceptance_precedence_matrix()
+
+        if PatternID_A == PatternID_B:
+            return 0
+
+        if PatternID_A > PatternID_B:
+            return matrix[PatternID_A][PatternID_B]
+
+        result = matrix[PatternID_B][PatternID_A]
+        if result is None:
+            return None
+        return - result
+
+    def acceptance_precedence_matrix(self):
+        """IMPORTANT: The matrix contains only entries [x][y] for x < y.
+                      This means, that queries into the matrix need to be 
+                      sorted and inverted, if necessary. 
+
+           Consider: acceptance_precedence_get() !
+        """
+        if self.__acceptance_precedence_matrix == -1:
+            self.__acceptance_precedence_matrix = self.__acceptance_precedence_matrix_contruct()
+
+        return self.__acceptance_precedence_matrix
+
+    def pattern_id_list(self):
+        if self.__pattern_id_list == -1:
+            result = set()
+            for accept_sequence in self.__list:
+                result.update(x.pattern_id for x in accept_sequence)
+            result.sort(key=attrgetter("pattern_id"))
+            self.__pattern_id_list = result
+        return self.__pattern_id_list
 
     def positioning_info(self):
         """
@@ -153,16 +243,43 @@ class PathsToState:
         # -- If the positioning differs for one element in the trace list, or 
         # -- one element has undetermined positioning, 
         # => then the acceptance relates to undetermined positioning.
-        for acceptance_trace in self.__list:
-            for element in acceptance_trace:
-                assert element.pattern_id != E_AcceptanceIDs.VOID
+        for acceptance_sequence in self.__list:
+            for x in acceptance_sequence:
+                assert x.pattern_id != E_AcceptanceIDs.VOID
 
-                prototype = positioning_info_by_pattern_id.get(element.pattern_id)
+                prototype = positioning_info_by_pattern_id.get(x.pattern_id)
                 if prototype is None:
-                    positioning_info_by_pattern_id[element.pattern_id] = PositioningInfo(element)
+                    positioning_info_by_pattern_id[x.pattern_id] = PositioningInfo(x)
                 else:
-                    prototype.add(element)
+                    prototype.add(x)
 
         self.__positioning_info = positioning_info_by_pattern_id.values()
         return self.__positioning_info
+
+    def __acceptance_precedence_matrix_contruct(self):
+        def matrix_get(matrix, Xid, Yid):
+            a = matrix.get(Xid)
+            if len(a) == 0: return None
+            b = a.get(Yid)
+            if b is None: return None
+            return b
+
+        # pattern_id_list is sorted by pattern_id
+        pattern_id_list = self.pattern_id_list()
+        result = defaultdict(dict)
+        for i, x_pattern_id in enumerate(pattern_id_list):
+            for y_pattern_id in pattern_id_list[i+1:]:
+                for accept_sequence in self.__list:
+                    value          = accept_sequence.get_precedence(x_pattern_id, y_pattern_id)
+                    existing_value = matrix_get(result, x_pattern_id, y_pattern_id)
+                    if   existing_value is None:
+                        result[x_pattern_id][y_pattern_id] = value 
+                    elif existing_value != value:
+                        return None
+                    else:
+                        pass # nothing to be done
+        return result
+
+    def __iter__(self):
+        return self.__list.__iter__()
 
