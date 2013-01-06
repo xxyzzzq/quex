@@ -10,14 +10,10 @@ import quex.engine.state_machine.algorithm.acceptance_pruning as     acceptance_
 from   quex.blackboard                                        import E_InputActions
 import help
 
-if "--hwut-info" in sys.argv:
-    print "Single Pattern Checks;"
-    print "CHOICES: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10;"
-    sys.exit()
+choice_str = "CHOICES: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10;"
+choice     = sys.argv[1]
 
-choice = sys.argv[1]
-
-pattern_list = {
+pattern_db = {
     "0": [ 'a/bc',     ],      
     #  ┌────┐  a   ┌────┐  b   ┌────┐  c   ┌────┐
     #  │ 28 │ ───▶ │ 29 │ ───▶ │ 30 │ ───▶ │ 31 │
@@ -116,12 +112,18 @@ pattern_list = {
     #    │ 0 │ ───▶ │ 1 │ ───▶ │ 2 │
     #    └───┘      └───┘      └───┘A
     #____________________________________________________________________________________
-}[choice]
+}
 
-acceptance_pruning._deactivated_for_unit_test_f = True
+if __name__ == "__main__":
+    if "--hwut-info" in sys.argv:
+        print "Track Analysis: Single Pattern Checks;"
+        print choice_str
+        sys.exit()
 
-sm = help.prepare(pattern_list)
+    acceptance_pruning._deactivated_for_unit_test_f = True
 
-# For DEBUG purposes: specify 'DRAW' on command line
-help.if_DRAW_in_sys_argv(sm)
-help.test(sm)
+    sm = help.prepare(pattern_db[choice])
+
+    # For DEBUG purposes: specify 'DRAW' on command line
+    help.if_DRAW_in_sys_argv(sm)
+    help.test_track_analysis(sm)

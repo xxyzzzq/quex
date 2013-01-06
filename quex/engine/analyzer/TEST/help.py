@@ -1,6 +1,7 @@
 import quex.engine.analyzer.core                   as     core
 import quex.input.regular_expression.engine        as     regex
 import quex.engine.analyzer.optimizer              as     optimizer
+import quex.engine.analyzer.track_analysis         as     track_analysis
 from   quex.engine.analyzer.position_register_map  import print_this
 import quex.engine.analyzer.engine_supply_factory  as     engine
 from   quex.engine.generator.base                  import get_combined_state_machine
@@ -38,6 +39,19 @@ def prepare(PatternStringList, GetPreContextSM_F=False):
 
     sm = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
     return sm.normalized_clone()
+
+def test_track_analysis(SM, EngineType = engine.FORWARD, PrintPRM_F = False):
+    print SM.get_string(NormalizeF=True)
+    from_db, to_db = SM.get_from_to_db()
+
+    trace_db,       \
+    path_element_db = track_analysis.do(SM, to_db)
+
+    for state_index, paths_to_state in sorted(trace_db.iteritems(),key=itemgetter(0)):
+        print "#State %i" % state_index
+        for accept_sequence in paths_to_state:
+            print accept_sequence.get_string(Indent=1)
+        print
 
 def test(SM, EngineType = engine.FORWARD, PrintPRM_F = False):
     

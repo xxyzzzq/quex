@@ -1,4 +1,4 @@
-<history date="Thu Jan  3 11:24:31 2013" element-n="872">
+<history date="Mon Jan  7 00:16:23 2013" element-n="888">
     <day year="2011" month="04" day="29">
         <history-init time="04:18:51"/>
     </day>
@@ -1030,5 +1030,23 @@
         <crc-error time="23:10:23" application="track_analysis-loops.py" choice="6" database-crc="-570026398" real-crc="2040681159"/>
         <crc-error time="23:10:30" application="track_analysis-loops.py" choice="7" database-crc="-269147582" real-crc="-901727231"/>
         <crc-error time="23:10:37" application="track_analysis-pre-post.py" choice="7" database-crc="220331975" real-crc="1045118847"/>
+    </day>
+    <day year="2013" month="01" day="06">
+        <crc-error time="10:23:55" application="transition_map_tools-fill_gaps.py" choice="1" database-crc="-1197451473" real-crc="-631315072"/>
+        <crc-error time="10:23:55" application="transition_map_tools-fill_gaps.py" choice="2-same" database-crc="-1427533131" real-crc="67825762"/>
+        <crc-error time="10:23:55" application="transition_map_tools-fill_gaps.py" choice="2-diff" database-crc="161428602" real-crc="-502064113"/>
+        <crc-error time="10:23:55" application="transition_map_tools-fill_gaps.py" choice="3-same" database-crc="-730848451" real-crc="-1278972709"/>
+        <crc-error time="10:23:55" application="transition_map_tools-fill_gaps.py" choice="3-diff" database-crc="930611211" real-crc="1193266311"/>
+        <crc-error time="10:23:55" application="transition_map_tools.py" choice="Normal" database-crc="-1884611193" real-crc="-22334169"/>
+        <crc-error time="10:23:55" application="transition_map_tools.py" choice="Apart" database-crc="-1317545422" real-crc="442968172"/>
+        <crc-error time="10:23:55" application="transition_map_tools-zipped_iterable.py" choice="" database-crc="-1544618299" real-crc="833975462"/>
+        <crc-error time="11:24:00" application="transition_map_tools-fill_gaps.py" choice="1" database-crc="-1197451473" real-crc="-631315072"/>
+        <crc-error time="11:24:00" application="transition_map_tools-fill_gaps.py" choice="2-same" database-crc="-1427533131" real-crc="67825762"/>
+        <crc-error time="11:24:00" application="transition_map_tools-fill_gaps.py" choice="2-diff" database-crc="161428602" real-crc="-502064113"/>
+        <crc-error time="11:24:00" application="transition_map_tools-fill_gaps.py" choice="3-same" database-crc="-730848451" real-crc="-1278972709"/>
+        <crc-error time="11:24:00" application="transition_map_tools-fill_gaps.py" choice="3-diff" database-crc="930611211" real-crc="1193266311"/>
+        <crc-error time="11:24:01" application="transition_map_tools.py" choice="Normal" database-crc="-1884611193" real-crc="-22334169"/>
+        <crc-error time="11:24:01" application="transition_map_tools.py" choice="Apart" database-crc="-1317545422" real-crc="442968172"/>
+        <crc-error time="11:24:01" application="transition_map_tools-zipped_iterable.py" choice="" database-crc="-1544618299" real-crc="833975462"/>
     </day>
 </history>
