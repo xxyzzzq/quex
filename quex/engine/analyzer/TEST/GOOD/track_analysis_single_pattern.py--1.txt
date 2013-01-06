@@ -1,0 +1,34 @@
+init-state = 0L
+00000 (1, 29)
+     == 'a' ==> 00001
+    
+00001 (1, 30, S)
+     == 'a' ==> 00001
+     == 'b' ==> 00002
+    
+00002 (1, 31)
+     == 'c' ==> 00003
+    
+00003 (1, 32, A, R)
+    
+
+#State 0
+    p-id     pre-id   as-i     ps-i     tnsp
+    FAILURE  NONE     0        0        LEXEME_START_PLUS_ONE
+
+
+#State 1
+    p-id     pre-id   as-i     ps-i     tnsp
+    FAILURE  NONE     0        0        LEXEME_START_PLUS_ONE
+
+
+#State 2
+    p-id     pre-id   as-i     ps-i     tnsp
+    FAILURE  NONE     0        0        LEXEME_START_PLUS_ONE
+
+
+#State 3
+    p-id     pre-id   as-i     ps-i     tnsp
+    1        NONE     3        1        2        
+
+

@@ -1,0 +1,25 @@
+init-state = 0L
+00000 (2, 12), (1, 2)
+     == 'a' ==> 00001
+    
+00001 (1, 3, A), (2, 13)
+     == 'b' ==> 00002
+    
+00002 (2, 14, A)
+    
+
+#State 0
+    p-id     pre-id   as-i     ps-i     tnsp
+    FAILURE  NONE     0        0        LEXEME_START_PLUS_ONE
+
+
+#State 1
+    p-id     pre-id   as-i     ps-i     tnsp
+    1        NONE     1        1        0        
+
+
+#State 2
+    p-id     pre-id   as-i     ps-i     tnsp
+    2        NONE     2        2        0        
+
+
