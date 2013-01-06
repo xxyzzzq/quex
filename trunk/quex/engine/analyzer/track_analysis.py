@@ -97,8 +97,7 @@ from   quex.blackboard                     import E_AcceptanceIDs, \
 from   quex.engine.misc.tree_walker        import TreeWalker
 from   quex.engine.analyzer.paths_to_state import PathsToState
 
-from   itertools   import izip, islice
-from   collections import defaultdict, namedtuple
+from   itertools   import izip
 from   copy        import copy
 from   zlib        import crc32
 
@@ -188,6 +187,10 @@ def do(SM, ToDB):
             #      see bug-2257908.sh in $QUEX_PATH/TEST).
             # 
             existing_trace_list = self.result.get(StateIndex) 
+            #if StateIndex == 6:
+                #print "#StateIndex:", StateIndex
+                #print "#Trace:", trace
+                # print "#existing:", existing_trace_list
             if len(existing_trace_list) != 0:
                 end_of_road_f = (len(target_index_list) == 0)
                 for pioneer in existing_trace_list:
@@ -197,6 +200,7 @@ def do(SM, ToDB):
                         # Loop detected -- Continuation unecessary. 
                         # Nothing new happend since last passage.
                         # If trace was not equivalent, the loop would have to be stepped through again.
+                        #if StateIndex == 6: print "#has parent", pioneer
                         return None
                     else:
                         # Knot detected -- Continuation abbreviated.
@@ -205,6 +209,7 @@ def do(SM, ToDB):
                         # analysis of subsequent states on the path is therefore
                         # complete. Almost: There is now alternative paths from
                         # store to restore that must added later on.
+                        #if StateIndex == 6: print "#knot", pioneer
                         return None
 
             # (*) Mark the current state with its acceptance trace
@@ -226,7 +231,6 @@ def do(SM, ToDB):
     result = dict((key, PathsToState(trace_list)) 
                   for key, trace_list in trace_finder.result.iteritems())
     return result, trace_finder.path_element_db
-
 
 class _Trace(object):
     """
@@ -464,8 +468,9 @@ class _Trace(object):
             else:                                                  data.append(0x5D5D5D5D)
 
         for pattern_id, info in sorted(self.__storage_db.iteritems()):
-            if isinstance(info.transition_n_since_positioning, long): data.append(info.transition_n_since_positioning)
-            else:                                                     data.append(0x4D4D4D4D)
+            if info.loop_f:                                             data.append(0x48484848)
+            elif isinstance(info.transition_n_since_positioning, long): data.append(info.transition_n_since_positioning)
+            else:                                                       data.append(0x4D4D4D4D)
 
         self.__equivalence_hash = crc32(str(data))
         # HINT: -- One single acceptance on current state.
@@ -514,12 +519,15 @@ class _Trace(object):
             for x_pattern_id, x in self.__storage_db.iteritems():
                 y = Other.__storage_db.get(x_pattern_id)
                 if   y is None:                                              return False
+                elif x.loop_f                  != y.loop_f:                  return False
                 elif x.positioning_state_index != y.positioning_state_index: return False
 
         #print "## self.acceptance:", self.__acceptance_trace
         #print "## self.storage:", self.__storage_db
         #print "## Other.acceptance:", Other.__acceptance_trace
+        #print "## self.storage:", self.__storage_db
         #print "## Other.storage:", Other.__storage_db
+        #print "#TRUE", Other
         return True
 
     def __eq__(self, Other):
@@ -574,15 +582,21 @@ class _StoreInfo(object):
                                 to this state.
     ___________________________________________________________________________
     """
-    __slots__ = ('path_since_positioning', '__transition_n_since_positioning')
+    __slots__ = ('path_since_positioning', '__transition_n_since_positioning', '__loop_f')
     def __init__(self, PathSincePositioning, TransitionNSincePositioning=None):
         self.path_since_positioning = PathSincePositioning
         if TransitionNSincePositioning is None:
             if len(PathSincePositioning) != len(set(PathSincePositioning)):
+                self.__loopf                          = True 
                 self.__transition_n_since_positioning = E_TransitionN.VOID
             else:
+                self.__loop_f                         = False
                 self.__transition_n_since_positioning = len(PathSincePositioning) - 1
         else:
+            if TransitionNSincePositioning == E_TransitionN.VOID:
+                self.__loop_f                         = True
+            else:
+                self.__loop_f                         = False
             self.__transition_n_since_positioning = TransitionNSincePositioning
 
     def reproduce(self, StateIndex):
@@ -606,6 +620,13 @@ class _StoreInfo(object):
 
         else:
             return self.__transition_n_since_positioning
+
+    @property
+    def loop_f(self):                         
+        # NOT: return self.__transition_n_since_positioning == E_TransitionN.VOID
+        #      because the comparison is much slower, then returning simply a boolean.
+        # THIS FUNCTION MAY BE CALLED EXTENSIVELY!
+        return self.__loop_f
 
     @property
     def transition_n_since_positioning(self): 

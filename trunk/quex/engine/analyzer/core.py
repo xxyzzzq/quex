@@ -51,7 +51,8 @@ from   quex.blackboard  import E_AcceptanceIDs, \
                                E_StateIndices
 
 from   collections      import defaultdict
-from   itertools        import imap, izip
+from   itertools        import imap
+from   operator         import attrgetter
 
 def do(SM, EngineType=engine.FORWARD):
     # Generate Analyzer from StateMachine
@@ -87,12 +88,7 @@ class Analyzer:
         #     from_db:  state_index --> states from which it is entered.
         #     to_db:    state_index --> states which it enters
         #
-        self.__from_db = defaultdict(set)
-        self.__to_db   = defaultdict(set)
-        for from_index, state in SM.states.iteritems():
-            self.__to_db[from_index] = set(state.transitions().get_map().iterkeys())
-            for to_index in state.transitions().get_map().iterkeys():
-                self.__from_db[to_index].add(from_index)
+        self.__from_db, self.__to_db = SM.get_from_to_db()
 
         # (*) PathTrace database, Successor database
         self.__trace_db,       \
@@ -338,10 +334,30 @@ class Analyzer:
             entry     = self.__state_db[state_index].entry
             # Only the trace content that concerns the current state is filtered out.
             # It should be the same for all traces through 'state_index'
-            prototype = self.__trace_db[state_index][0]
-            for x in reversed(prototype):
-                if x.accepting_state_index != state_index: continue
+            prototype = self.__trace_db[state_index].get_any_one()
+            for x in sorted(prototype, key=attrgetter("pattern_id", "pre_context_id")):
+                if x.accepting_state_index != state_index: 
+                    continue
                 entry.doors_accepter_add(x.pre_context_id, x.pattern_id)
+
+    def acceptance_storage_post_pone_do(self, StateIndex, PatternId):
+
+        pass 
+
+    def acceptance_storage_post_pone_can_be_delegate(self, StateIndex, PatternId, MotherAcceptSequence):
+        """A state X can be carry a post-poned acceptance storage, if 
+        
+            (1) State 'X' does not rely on stored acceptances.
+        
+        and for all target states Y it holds one of the following:
+
+            (2) X == Y 
+            (3) X does not contain a acceptance precedence clash
+
+        If the acceptance pattern changes, 
+        """
+        pass
+            
 
     def implement_required_position_storage(self):
         """
@@ -368,6 +384,8 @@ class Analyzer:
                 index_iterable = (i for i in target_state_index_list 
                                     if i in self.__path_element_db[end_state_index])
                 for target_index in index_iterable: # target_state_index_list: # index_iterable:
+                    if target_index == state_index: # Position is stored upon entry in *other*
+                        continue                    # state--not the state itself. 
                     entry = self.__state_db[target_index].entry
                     entry.doors_store(FromStateIndex   = state_index, 
                                       PreContextID     = pre_context_id, 

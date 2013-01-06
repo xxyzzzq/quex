@@ -9,18 +9,22 @@ from   quex.engine.misc.file_in          import EndOfStreamException, \
                                                 read_namespaced_name, \
                                                 check, \
                                                 read_until_letter
-from   quex.engine.generator.action_info import UserCodeFragment, CodeFragment
+from   quex.engine.generator.action_info        import UserCodeFragment
+from   quex.engine.generator.code_fragment_base import CodeFragment, CodeFragment_Empty
 import quex.input.files.code_fragment    as code_fragment
 from   quex.blackboard                   import setup as Setup
 from   quex.input.setup                  import E_Files
 
 token_type_code_fragment_db = { 
-        "constructor": True, "destructor": True, 
-        "copy":        True, "body":       True, 
-        "header":      True, "footer":     True,
-        "take_text":   True,
-        "repetition_set":   True,
-        "repetition_get":   True,
+        "constructor":    CodeFragment_Empty(), 
+        "destructor":     CodeFragment_Empty(),
+        "copy":           None, 
+        "body":           CodeFragment_Empty(),
+        "header":         CodeFragment_Empty(),
+        "footer":         CodeFragment_Empty(),
+        "take_text":      None,
+        "repetition_set": CodeFragment_Empty(),
+        "repetition_get": CodeFragment_Empty(),
         }
 
 class TokenTypeDescriptorCore:
@@ -47,8 +51,8 @@ class TokenTypeDescriptorCore:
             self.distinct_db = {}
             self.union_db    = {}
 
-            for name in token_type_code_fragment_db.keys():
-                self.__dict__[name] = CodeFragment("")
+            for name, default_value in token_type_code_fragment_db.iteritems():
+                self.__dict__[name] = default_value
 
         else:
             self._file_name                = Core._file_name
@@ -119,7 +123,7 @@ class TokenTypeDescriptorCore:
             txt += self.constructor.get_code_string()
             txt += "}"
         
-        if not self.copy.is_whitespace():
+        if self.copy is not None:
             txt += "copy {\n"
             txt += self.copy.get_code_string()
             txt += "}"
@@ -233,7 +237,7 @@ class TokenTypeDescriptor(TokenTypeDescriptorCore):
         if not Setup.token_class_take_text_check_f: return
 
         # Is 'take_text' section defined
-        if not self.take_text.is_empty(): return
+        if self.take_text is not None: return
 
         error_msg(_warning_msg, 
                   self.file_name_of_token_type_definition,
@@ -540,11 +544,11 @@ def __validate_definition(TheCodeFragment, NameStr,
 _warning_msg = \
 """Section token_type does not contain a 'take_text' section. It would be
 necessary if the analyzer uses the string accumulator. To disable this warning
-set the command line flag: --token-type-no-take_test-check or --ttnttc.
-"""
+set the command line flag: --token-type-no-take_test-check or --ttnttc."""
 
 _warning_msg2 = \
-"""The 'Accumulator' feature is activated, which mandatorily
+"""
+The 'Accumulator' feature is activated, which mandatorily
 requires the 'take_text' section to be defined. Please, do one of
 the following:
 
@@ -554,5 +558,4 @@ the following:
 -- deactivate the accumulator feature using command line options:
    --no-string-accumulator or  --nsacc.
 
--- consult the documentatoin and specify a 'take_text' section.
-"""
+-- consult the documentatoin and specify a 'take_text' section."""
