@@ -196,8 +196,9 @@ function repository_update() {
     svn commit -m "Version Info / Prepare Release $1"
 
     # branch on sourceforge subversion
-    svn copy https://quex.svn.sourceforge.net/svnroot/quex/trunk \
-             https://quex.svn.sourceforge.net/svnroot/quex/tags/quex-$1 \
+    svn copy --username=fschaef \
+             svn+ssh://fschaef@svn.code.sf.net/p/quex/code/trunk \
+             svn+ssh://fschaef@svn.code.sf.net/p/quex/code/tags/quex-$1 \
              -m "Release $1"
 }
 
