@@ -1,25 +1,25 @@
-<test-database execution-time-sec="10.59" date="Fri Jan  4 16:58:32 2013">
+<test-database execution-time-sec="10.63" date="Mon Jan  7 23:24:38 2013">
     <last-used-diff-display-program name=""/>
-    <test title="Checking PRIORITY-MARK internally." time-sum-sec="2.26"> 
+    <test title="Checking PRIORITY-MARK internally." time-sum-sec="2.30"> 
         <application file-name="priority.py" info-request-time="1356524803L" vanished="False"/>
         <choice-list number="19" same_result="False">
            <choice name="3-begin" result="OK" time_sec="0.12" crc="-2044103555"/>
            <choice name="3-mid" result="OK" time_sec="0.12" crc="-1609428040"/>
            <choice name="3-end" result="OK" time_sec="0.12" crc="2133324565"/>
-           <choice name="2-begin" result="OK" time_sec="0.10" crc="-1353599303"/>
-           <choice name="2-end" result="OK" time_sec="0.11" crc="1162447742"/>
+           <choice name="2-begin" result="OK" time_sec="0.11" crc="-1353599303"/>
+           <choice name="2-end" result="OK" time_sec="0.12" crc="1162447742"/>
            <choice name="1" result="OK" time_sec="0.10" crc="1863452997"/>
            <choice name="Nonsense" result="OK" time_sec="0.11" crc="881773472"/>
            <choice name="derived-3-begin" result="OK" time_sec="0.14" crc="-1391136967"/>
-           <choice name="derived-3-mid" result="OK" time_sec="0.14" crc="103421587"/>
+           <choice name="derived-3-mid" result="OK" time_sec="0.15" crc="103421587"/>
            <choice name="derived-3-end" result="OK" time_sec="0.14" crc="-2143075705"/>
            <choice name="derived-2-begin" result="OK" time_sec="0.13" crc="-1264890210"/>
            <choice name="derived-2-end" result="OK" time_sec="0.13" crc="-1396025132"/>
            <choice name="derived-1" result="OK" time_sec="0.12" crc="1988148335"/>
            <choice name="derived-Nonsense" result="OK" time_sec="0.15" crc="-2094086123"/>
            <choice name="before" result="OK" time_sec="0.10" crc="279218550"/>
-           <choice name="derived-before" result="OK" time_sec="0.10" crc="609373227"/>
-           <choice name="derived-deeply" result="OK" time_sec="0.14" crc="-1549346331"/>
+           <choice name="derived-before" result="OK" time_sec="0.11" crc="609373227"/>
+           <choice name="derived-deeply" result="OK" time_sec="0.13" crc="-1549346331"/>
            <choice name="superset" result="OK" time_sec="0.10" crc="2047830041"/>
            <choice name="subset" result="OK" time_sec="0.10" crc="726249666"/>
         </choice-list>
@@ -27,20 +27,20 @@
     <test title="Checking DELETE marks internally." time-sum-sec="1.91"> 
         <application file-name="deletion.py" info-request-time="1356524102L" vanished="False"/>
         <choice-list number="19" same_result="False">
-           <choice name="3-begin" result="OK" time_sec="0.12" crc="1817317143"/>
+           <choice name="3-begin" result="OK" time_sec="0.10" crc="1817317143"/>
            <choice name="3-mid" result="OK" time_sec="0.09" crc="-128919765"/>
-           <choice name="3-end" result="OK" time_sec="0.09" crc="852389561"/>
-           <choice name="2-begin" result="OK" time_sec="0.09" crc="1648925108"/>
-           <choice name="2-end" result="OK" time_sec="0.11" crc="-426093245"/>
+           <choice name="3-end" result="OK" time_sec="0.10" crc="852389561"/>
+           <choice name="2-begin" result="OK" time_sec="0.10" crc="1648925108"/>
+           <choice name="2-end" result="OK" time_sec="0.10" crc="-426093245"/>
            <choice name="1" result="OK" time_sec="0.09" crc="713290491"/>
            <choice name="Nonsense" result="OK" time_sec="0.10" crc="-1578640120"/>
            <choice name="derived-3-begin" result="OK" time_sec="0.10" crc="-1726121148"/>
-           <choice name="derived-3-mid" result="OK" time_sec="0.10" crc="220177272"/>
-           <choice name="derived-3-end" result="OK" time_sec="0.12" crc="-947840278"/>
+           <choice name="derived-3-mid" result="OK" time_sec="0.11" crc="220177272"/>
+           <choice name="derived-3-end" result="OK" time_sec="0.11" crc="-947840278"/>
            <choice name="derived-2-begin" result="OK" time_sec="0.10" crc="-916642491"/>
-           <choice name="derived-2-end" result="OK" time_sec="0.09" crc="1301277106"/>
+           <choice name="derived-2-end" result="OK" time_sec="0.10" crc="1301277106"/>
            <choice name="derived-1" result="OK" time_sec="0.09" crc="-546402800"/>
-           <choice name="derived-Nonsense" result="OK" time_sec="0.10" crc="-291449891"/>
+           <choice name="derived-Nonsense" result="OK" time_sec="0.11" crc="-291449891"/>
            <choice name="before" result="OK" time_sec="0.10" crc="924503932"/>
            <choice name="derived-before" result="OK" time_sec="0.10" crc="1292324771"/>
            <choice name="derived-deeply" result="OK" time_sec="0.12" crc="371695672"/>
@@ -48,32 +48,32 @@
            <choice name="subset" result="OK" time_sec="0.10" crc="1033631323"/>
         </choice-list>
     </test>
-    <test title="PRIORITY-MARK or DELETION on not existing pattern." time-sum-sec="0.95"> 
+    <test title="PRIORITY-MARK or DELETION on not existing pattern." time-sum-sec="0.96"> 
         <application file-name="unvalid-marks.sh" info-request-time="1355705371L" vanished="False"/>
         <choice-list number="4" same_result="False">
            <choice name="PRIORITY-good" result="OK" time_sec="0.24" crc="-84057889"/>
            <choice name="PRIORITY-fail" result="OK" time_sec="0.24" crc="2007608689"/>
-           <choice name="DELETION-good" result="OK" time_sec="0.23" crc="-964384655"/>
+           <choice name="DELETION-good" result="OK" time_sec="0.24" crc="-964384655"/>
            <choice name="DELETION-fail" result="OK" time_sec="0.24" crc="-1786207579"/>
         </choice-list>
     </test>
-    <test title="Local variables." time-sum-sec="1.52"> 
+    <test title="Local variables." time-sum-sec="1.54"> 
         <application file-name="local-variables.sh" info-request-time="1355705371L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="1.52" crc="1827488403"/>
+           <choice name="" result="OK" time_sec="1.54" crc="1827488403"/>
         </choice-list>
     </test>
     <group name="Precedence">
-        <test title="Derived before Base" time-sum-sec="1.72"> 
+        <test title="Derived before Base" time-sum-sec="1.71"> 
             <application file-name="derived-before-base.sh" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="1.72" crc="1727262709"/>
+               <choice name="" result="OK" time_sec="1.71" crc="1727262709"/>
             </choice-list>
         </test>
-        <test title="Larger Inheritance Tree" time-sum-sec="2.22"> 
+        <test title="Larger Inheritance Tree" time-sum-sec="2.21"> 
             <application file-name="large-tree.sh" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="2.22" crc="-828763524"/>
+               <choice name="" result="OK" time_sec="2.21" crc="-828763524"/>
             </choice-list>
         </test>
     </group>
