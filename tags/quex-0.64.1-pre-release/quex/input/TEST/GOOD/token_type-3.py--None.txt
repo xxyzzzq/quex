@@ -1,0 +1,7 @@
+-----------------------------
+IN:
+    [  {]
+
+OUT:
+
+string:1:error: End of file reached while parsing 'union' section.

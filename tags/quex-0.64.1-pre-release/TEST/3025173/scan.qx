@@ -1,0 +1,19 @@
+token {
+   DOT;
+   FROM;
+   IDENTIFIER;
+   LETTER;
+   LITERAL;
+   NUMBER;
+   PARSE_ERROR;
+   SCHEMA;
+   SCHEMAS;
+   SELECT;
+   SEMI;
+   SHOW;
+   WHERE;
+}
+
+mode X {
+    [a-z] => BR_TKN_LETTER;
+}

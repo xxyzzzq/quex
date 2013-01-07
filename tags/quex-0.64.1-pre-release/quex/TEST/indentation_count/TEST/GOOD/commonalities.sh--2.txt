@@ -1,0 +1,4 @@
+## commonalities of the suppressor are no longer forbidden.
+src/error-2.qx:14:error: The indentation newline pattern '(\r\n)|\n' matches a superset of what is matched by
+src/error-2.qx:10:error: pattern '[\n]'.
+src/error-2.qx:10:error: The former has precedence and the latter can never match.

@@ -1,0 +1,3 @@
+## commonalities of the suppressor are no longer forbidden.
+src/error-3.qx:12:error: The pattern '<skip: ... (check also base modes)>' has higher priority and
+src/error-3.qx:8:error: matches a subset of indentation newline pattern '(\r\n)|\n'.
