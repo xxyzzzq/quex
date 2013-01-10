@@ -4,21 +4,21 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine         as regex
-import quex.engine.state_machine.check.intersection as intersection
+import quex.engine.state_machine.algebra.intersection as intersection
 import quex.engine.state_machine.check.identity     as identity
 
 if "--hwut-info" in sys.argv:
     print "Pattern Superset/Subset Determination"
-    print "CHOICES: Easy, FalseCases, GoodCases, FalseCasesII, GoodCasesII, Misc, Pre-Post-Conditions;"
+    print "CHOICES: Easy, FalseCases, GoodCases, FalseCasesII, GoodCasesII, Misc;"
     sys.exit(0)
     
 def test(A, B):
-    def __core(SuperPattern, SubPattern):
-        print ("A = " + SuperPattern).replace("\n", "\\n").replace("\t", "\\t")
-        print ("B = " + SubPattern).replace("\n", "\\n").replace("\t", "\\t")
-        super_p = regex.do(SuperPattern, {})
-        sub_p   = regex.do(SubPattern, {})
-        result  = intersection.do([super_p.sm, sub_p.sm])
+    def __core(A_str, B_str):
+        print ("A = " + A_str).replace("\n", "\\n").replace("\t", "\\t")
+        print ("B = " + B_str).replace("\n", "\\n").replace("\t", "\\t")
+        a_pattern = regex.do(A_str, {})
+        b_pattern = regex.do(B_str, {})
+        result    = intersection.do([a_pattern.sm, b_pattern.sm])
         print "intersection = ", result
         return result
     print "---------------------------"
@@ -71,8 +71,10 @@ elif "Misc" in sys.argv:
     test('"a"|"x"+|"e"|"g"', 'x{20}')
     test('X("a"|"x"*|"e"|"g")', 'X')
     test('X("a"|"x"*|"e"|"g")', 'Xx{20}')
-
     test('abc("123"|("ABC"|"XYZ")+)+"123"("AAA"|"BBB"|"CCC")?xyz', 'abc123ABC123AAAxyz')
+    test('((((((((p+)r)+i)+)n)+t)+e)+r)+',        'priprinter')
+    test('(printer|rinter|inter|nter|ter|er|r)+', 'printerter')
+    test('(printer|rinter|inter|nter|ter|er|r)+', '((((((((p+)r)+i)+)n)+t)+e)+r)+')
 
 elif "Pre-Post-Conditions":
     # with pre and post-conditions
