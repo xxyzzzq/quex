@@ -42,8 +42,8 @@ class Checker:
         elif b_state.is_acceptance():   return E_Commonality.B_IN_A  # path in B is a path in A
 
         # Follow the path of common trigger sets
-        for a_target, a_trigger_set in a_state.transitions().get_map().items():
-            for b_target, b_trigger_set in b_state.transitions().get_map().items():
+        for a_target, a_trigger_set in a_state.transitions().get_map().iteritems():
+            for b_target, b_trigger_set in b_state.transitions().get_map().iteritems():
                 if   a_trigger_set.has_intersection(b_trigger_set) == False: continue
 
                 if     a_target in self.a_visited_state_indices \

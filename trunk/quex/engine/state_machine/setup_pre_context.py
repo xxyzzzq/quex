@@ -2,6 +2,7 @@
 #     ABSOLUTELY NO WARRANTY
 import quex.engine.state_machine.algorithm.beautifier         as beautifier
 import quex.engine.state_machine.algorithm.acceptance_pruning as acceptance_pruning
+import quex.engine.state_machine.algebra.reverse         as reverse
 from   quex.blackboard                                        import E_PreContextIDs, setup as Setup
 
 def do(the_state_machine, pre_context_sm, BeginOfLinePreContextF):
@@ -38,7 +39,7 @@ def do(the_state_machine, pre_context_sm, BeginOfLinePreContextF):
         return None
 
     # (*) invert the state machine of the pre-condition 
-    inverse_pre_context = pre_context_sm.get_inverse()
+    inverse_pre_context = reverse.do(pre_context_sm)
         
     if BeginOfLinePreContextF:
         # Extend the existing pre-context with a preceeding 'begin-of-line'.

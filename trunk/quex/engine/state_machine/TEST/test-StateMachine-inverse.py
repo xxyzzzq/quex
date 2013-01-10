@@ -7,6 +7,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from quex.engine.state_machine.core import *
 import quex.engine.state_machine.parallelize 
 from quex.engine.state_machine.TEST.test_state_machines import *
+import quex.engine.state_machine.algebra.reverse         as reverse
 
 if "--hwut-info" in sys.argv:
     print "StateMachine Operations: Inverse"
@@ -15,7 +16,7 @@ if "--hwut-info" in sys.argv:
 def test(sm):
     print "-------------------------------------------------------------------------------"
     print "sm       = ",      sm
-    sm = sm.get_inverse()
+    sm = reverse.do(sm)
     print "inverse  = ", sm 
 
 test(sm0)

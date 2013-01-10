@@ -10,6 +10,7 @@ from   quex.engine.state_machine.TEST.test_state_machines import *
 import quex.engine.state_machine.algorithm.nfa_to_dfa as nfa_to_dfa
 import quex.engine.state_machine.algorithm.hopcroft_minimization as hopcroft
 import quex.engine.state_machine.algorithm.beautifier as beautifier
+import quex.engine.state_machine.algebra.reverse         as reverse
 
 if "--hwut-info" in sys.argv:
     print "Tracing origin: Inverse"
@@ -18,7 +19,7 @@ if "--hwut-info" in sys.argv:
 def invert_this(sm):
     print "-------------------------------------------------------------------------------"
     print "sm       = ", sm
-    tmp = sm.get_inverse()
+    tmp = reverse.do(sm)
     print "inverse  = ", tmp 
     return tmp
 
