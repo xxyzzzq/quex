@@ -6,8 +6,12 @@
     inverse(intersection(A, B)) == union(inverse(A), inverse(B))
     inverse(union(A, B))        == intersection(inverse(A), inverse(B))
 """
-import quex.engine.state_machine.index as     index
+import quex.engine.state_machine.index                as     index
+import quex.engine.state_machine.algorithm.beautifier as beautifier
 from   quex.engine.state_machine.core  import State
+from   quex.engine.interval_handling   import NumberSet, Interval
+from   copy import deepcopy
+import sys
 
 def do(SM):
     """RETURN: A state machines that matches anything which is 
@@ -23,18 +27,49 @@ def do(SM):
              is not applicable by itself. It would eat ANYTHING
              from a certain state on.
     """
-    result = SM.clone()
-    for state in result.get_acceptance_state_list():
-        state.set_acceptance(False)
+    result = deepcopy(SM) # Not clone
 
     accept_all_state_index = index.get()
-    result.states[accept_all_state_index] = State(AcceptanceF=True, 
-                                                  StateIndex=accept_all_state_index)
+    state = State(AcceptanceF=True)
+    state.add_transition(NumberSet(Interval(-sys.maxint, sys.maxint)), 
+                         accept_all_state_index)
+    result.states[accept_all_state_index] = state
 
-    for state in result.states.itervalues():
-        trigger_set = state.transitions().get_trigger_set_union()
+    def is_accept_all_state(sm, StateIndex):
+        state = sm.states[StateIndex]
+        if not state.is_acceptance():                return False
+        tm    = state.transitions().get_map()
+        if len(tm) != 1:                             return False
+        elif tm.iterkeys().next() != StateIndex:     return False
+        elif not tm.itervalues().next().is_all():    return False
+
+        # Target is an 'Accept-All' state. Delete the transition.
+        return True
+
+    for state_index, state in SM.states.iteritems():
+        # deepcopy --> use same state indices in SM and result
+        result_state = result.states[state_index]
+
+        # -- Every transition to 'Accept-All' state becomes a drop-out.
+        for target_index in (i for i in state.transitions().get_target_state_index_list()
+                               if is_accept_all_state(SM, i)):
+            result_state.transitions().delete_transitions_to_target(target_index)
+
+        # -- Every drop-out becomes a transition to 'Accept-All' state.
+        trigger_set         = state.transitions().get_trigger_set_union()
         inverse_trigger_set = trigger_set.inverse()
-        state.add_transition(inverse_trigger_set, accept_all_state_index)
+        if not inverse_trigger_set.is_empty():
+            result_state.add_transition(inverse_trigger_set, accept_all_state_index)
 
-    return result
+    # Every acceptance state becomes a non-acceptance state.
+    # Every non-acceptance state becomes an acceptance state.
+    for state_index, state in SM.states.iteritems():
+        if state.is_acceptance(): 
+            result.states[state_index].set_acceptance(False)
+        elif state_index != SM.init_state_index:
+            result.states[state_index].set_acceptance(True)
+
+    result.delete_orphaned_states()
+
+    return result.clone()
 

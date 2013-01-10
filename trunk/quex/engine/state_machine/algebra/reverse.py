@@ -8,6 +8,7 @@
        reverse(intersection(P, Q)) == intersection(reverse(P), reverse(Q))
 """
 from quex.engine.state_machine.core import StateMachine
+from quex.blackboard import E_PreContextIDs
 
 def do(SM):
     """Creates a state machine that matches the reverse of what 'SM' matches.
