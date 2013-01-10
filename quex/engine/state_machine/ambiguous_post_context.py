@@ -14,6 +14,7 @@
 
 import quex.engine.state_machine.sequentialize         as sequentialize
 import quex.engine.state_machine.algorithm.beautifier  as beautifier
+import quex.engine.state_machine.algebra.reverse       as reverse
 from   copy import deepcopy
 
 
@@ -82,10 +83,10 @@ def detect_backward(CoreStateMachine, PostConditionStateMachine):
     #   state.set_acceptance(False)
     # -- set the initial state as acceptance state
     # my_post_context_sm.get_init_state().set_acceptance(True)
-    my_core_sm = beautifier.do(CoreStateMachine.get_inverse())
+    my_core_sm = beautifier.do(reverse.do(CoreStateMachine))
 
     tmp = deepcopy(PostConditionStateMachine) # no deeepcopy needed here, I guess <fschaef 11y11m01d>
-    my_post_context_sm = beautifier.do(tmp.get_inverse())
+    my_post_context_sm = beautifier.do(reverse.do(tmp))
 
     return detect_forward(my_post_context_sm, my_core_sm)
 

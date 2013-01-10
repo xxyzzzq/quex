@@ -15,6 +15,7 @@ import quex.engine.state_machine.ambiguous_post_context as ambiguous_post_contex
 import quex.engine.state_machine.algorithm.nfa_to_dfa as nfa_to_dfa
 import quex.engine.state_machine.algorithm.hopcroft_minimization as hopcroft
 import quex.engine.state_machine.algorithm.beautifier as beautifier
+import quex.engine.state_machine.algebra.reverse         as reverse
 
 if "--hwut-info" in sys.argv:
     print "Pseudo Ambigous Post Condition: Mounting"
@@ -42,7 +43,7 @@ def test(RE_Core, RE_PostCondition):
     print "post condition pattern  =", RE_PostCondition
 
     backward_search_sm = ambiguous_post_context.mount(core_sm, post_context_sm)
-    backward_search_sm = beautifier.do(backward_search_sm.get_inverse())
+    backward_search_sm = beautifier.do(reverse.do(backward_search_sm))
     # .mount() does not transformation from NFA to DFA
     core_sm = beautifier.do(core_sm)
 

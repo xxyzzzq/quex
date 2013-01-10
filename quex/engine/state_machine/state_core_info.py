@@ -64,8 +64,7 @@ class StateCoreInfo(object):
                  "__input_position_store_f",
                  "__input_position_restore_f")
 
-    def __init__(self, PatternID, StateIndex, 
-                 AcceptanceF, 
+    def __init__(self, PatternID, StateIndex, AcceptanceF, 
                  StoreInputPositionF=False, 
                  PreContextID=E_PreContextIDs.NONE,
                  RestoreInputPositionF=False):

@@ -29,7 +29,11 @@ class State:
         """Contructor of a State, i.e. a aggregation of transitions.
         """
         if AltOriginList is None:
-            self.__origin_list    = StateOriginList([StateCoreInfo(StateMachineID, StateIndex, AcceptanceF=AcceptanceF)])
+            self.__origin_list    = StateOriginList([
+                                      StateCoreInfo(PatternID   = StateMachineID, 
+                                                    StateIndex  = StateIndex, 
+                                                    AcceptanceF = AcceptanceF)
+                                    ])
             self.__transition_map = TransitionMap()
         else:
             assert AltTM is not None
@@ -282,6 +286,11 @@ class StateMachine(object):
             if state_index not in unique and state_index != self.init_state_index: return True
         return False
 
+    def has_acceptance_states(self):
+        for state in self.states.itervalues():
+            if state.is_acceptance(): return True
+        return False
+
     def get_orphaned_state_index_list(self):
         """This function checks for states that are not targeted via any trigger
            by any other state. This indicates most likely a lack off efficiency 
@@ -532,55 +541,6 @@ class StateMachine(object):
     def get_acceptance_state_index_list(self):
         return [ index for index, state in self.states.iteritems() if state.is_acceptance() ]
 
-    def get_inverse(self):
-        """Creates an inverse representation of the state machine. Optionally,
-           the longer acceptance paths can be cut, in case that there are shorter
-           once. This is the contrary of a 'greedy' wildcard, i.e.
-                
-                ("hello"|"h") would be equivalent to "h" this is by pure
-                logic an redundant construct, since "h" causes acceptance", except
-                one goes for 'longest match'
-        
-           Also "h"*|"h" : HERE cut at first match because it ends after "h"    
-        """
-        result                               = StateMachine(InitStateIndex=self.init_state_index)
-        original_acceptance_state_index_list = self.get_acceptance_state_index_list()
-        assert len(original_acceptance_state_index_list) != 0
-           
-        # Ensure that each target state index has a state inside the state machine
-        for state_index in self.states.keys():
-            result.create_new_state(StateIdx=state_index)
-
-        for state_index, state in self.states.items():
-            for target_state_index, trigger_set in state.transitions().get_map().items():
-                result.states[target_state_index].add_transition(trigger_set.clone(), state_index)
-
-            for target_state_index in state.transitions().get_epsilon_target_state_index_list():
-                result.states[target_state_index].transitions().add_epsilon_target_state(state_index)
-
-        # -- copy all origins of the original state machine
-        # -- We need to cancel any acceptance, because the inverted engine now starts
-        #    from a combination of the acceptance states and ends at the initial state.
-        for state_index, state in self.states.items():
-            original_origin_list = [origin.clone() for origin in state.origins()]
-            for origin in original_origin_list:
-                origin.set_input_position_restore_f(False)
-                origin.set_pre_context_id(E_PreContextIDs.NONE)
-                origin.set_acceptance_f(False)
-            result.states[state_index].origins().set(original_origin_list) # deepcopy implicit
-
-        # -- only the ORIGINAL initial state becomes an acceptance state (end of inverse)
-        result.states[self.init_state_index].set_acceptance(True)
-
-        # -- setup an epsilon transition from an new init state to all previous 
-        #    acceptance states.
-        new_init_state_index = result.create_new_init_state() 
-        for state_index in original_acceptance_state_index_list:
-            result.add_epsilon_transition(new_init_state_index, state_index)        
-
-        # -- for uniqueness of state ids, clone the result
-        return result.clone()    
-        
     def get_from_to_db(self):
         """RETURNS:
              [0] from_db:  state_index --> states from which it is entered.
