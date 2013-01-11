@@ -297,11 +297,15 @@ class StateMachine(object):
            or an error in the algorithms.
         """
         targets = set([])
-        for state in self.states.values():
-            targets.update(state.transitions().get_target_state_index_list())
+        # Find targets which are different from 'target == self'
+        # (If a no state targets a state, but the state targets itself,
+        #  then it is still an orphan).
+        for state_index, state in self.states.iteritems():
+            targets.update(i for i in state.transitions().get_target_state_index_list()
+                             if  i != state_index)
 
         result = []
-        for state_index in self.states.keys():
+        for state_index in self.states.iterkeys():
             # The init state is never considered to be an 'orphan'
             if state_index not in targets and state_index != self.init_state_index: 
                 result.append(state_index)

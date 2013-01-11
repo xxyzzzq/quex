@@ -53,6 +53,7 @@ import quex.engine.state_machine.sequentialize           as sequentialize
 import quex.engine.state_machine.algorithm.beautifier    as beautifier
 import quex.engine.state_machine.parallelize             as parallelize
 import quex.engine.state_machine.repeat                  as repeat
+import quex.engine.state_machine.algebra.reverse         as reverse
 
 
 CONTROL_CHARACTERS = [ "+", "*", "\"", "/", "(", ")", "{", "}", "|", "[", "]", "$"] 
@@ -251,7 +252,8 @@ def snap_primary(stream, PatternDict):
             stream.read(1)
             result = snap_case_folded_pattern(stream, PatternDict)
         elif lookahead == "R":
-            result = get_expression_in_brackets(stream, PatternDict, "reverse operator", "R").get_inverse()
+            result = get_expression_in_brackets(stream, PatternDict, "reverse operator", "R")
+            result = reverse.do(result)
         elif lookahead == "A":
             result =  get_expression_in_brackets(stream, PatternDict, "anti-pattern operator", "A")
             result.transform_to_anti_pattern()
