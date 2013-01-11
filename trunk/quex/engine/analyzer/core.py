@@ -345,17 +345,6 @@ class Analyzer:
         pass 
 
     def acceptance_storage_post_pone_can_be_delegate(self, StateIndex, PatternId, MotherAcceptSequence):
-        """A state X can be carry a post-poned acceptance storage, if 
-        
-            (1) State 'X' does not rely on stored acceptances.
-        
-        and for all target states Y it holds one of the following:
-
-            (2) X == Y 
-            (3) X does not contain a acceptance precedence clash
-
-        If the acceptance pattern changes, 
-        """
         pass
             
 

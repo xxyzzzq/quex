@@ -14,6 +14,8 @@ extern "C" {
 #   include <quex/code_base/compatibility/win/msc_stdint.h>
 #elif defined(__BORLANDC__)
 #   include <quex/code_base/compatibility/win/borland_stdint.h>
+#elif defined(__sun) && defined(__sparc)
+#   include <inttypes.h>      /* Thanks to sbellon@users.sourceforge.net */ 
 #else
 #   include <stdint.h>
 #endif

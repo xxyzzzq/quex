@@ -21,9 +21,9 @@ to combine them into powerful patterns.
 
 .. describe:: . 
 
-      matches any character (byte) except newline and EOF. Note, that on systems
-      where newline is coded as ``0D,\,0A`` this matches also the ``0D`` character whenever 
-      a newline occurs (subject to possible change).
+      matches any character (byte) except newline and EOF. Note, that on
+      systems where newline is coded as ``0D,\,0A`` this matches also the
+      ``0D`` character whenever a newline occurs (subject to possible change).
 
 .. describe:: [xyz]
 
@@ -205,6 +205,12 @@ to combine them into powerful patterns.
      (section :ref:`sec-pre-and-post-conditions`) and to implement shortest 
      match behavior with a greedy match analyzer engine 
      (section :ref:`usage-context-free-pitfalls`).
+
+     .. note::
+
+        If it is necessary to ensure that only one character is matched in 
+        case of failure of all other patterns, then it is best to rely on the
+        '.' specifier--as explained above.
 
 .. describe:: \\0 
 

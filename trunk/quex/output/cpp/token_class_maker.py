@@ -402,6 +402,7 @@ QUEX_TYPE_ANALYZER_re         = re.compile("\\bQUEX_TYPE_ANALYZER\\b", re.UNICOD
 QUEX_TYPE_TOKEN_ID_re         = re.compile("\\bQUEX_TYPE_TOKEN_ID\\b", re.UNICODE)
 QUEX_LexemeNullDeclaration_re = re.compile("QUEX_NAME\\(LexemeNullObject\\)", re.UNICODE)
 QUEX_TYPE_CHARACTER_safe_re   = re.compile("\\$\\$quex_type_character\\$\\$", re.UNICODE)
+
 def clean_for_independence(txt):
     token_descr = blackboard.token_type_definition
 
@@ -414,8 +415,6 @@ def clean_for_independence(txt):
     global QUEX_LexemeNullDeclaration_re
     global QUEX_TYPE_CHARACTER_safe_re
     global QUEX_LEXEME_NULL_re
-
-    
 
     txt = QUEX_TYPE_CHARACTER_re.sub(Setup.buffer_element_type, txt)
     txt = QUEX_TYPE_ANALYZER_re.sub("void", txt)
@@ -507,7 +506,7 @@ QUEX_NAME_TOKEN_define_str = """
 #   if defined(__QUEX_OPTION_PLAIN_C)
 #      define QUEX_NAME_TOKEN(NAME)   $$TOKEN_CLASS_NAME_SAFE$$_ ## NAME
 #   else
-#      define QUEX_NAME_TOKEN(NAME)   $$TOKEN_CLASS$$_ ## NAME
+#      define QUEX_NAME_TOKEN(NAME)   $TOKEN_CLASS_ ## NAME
 #   endif
 #   define __QUEX_SIGNAL_DEFINED_QUEX_NAME_TOKEN_%s
 #endif

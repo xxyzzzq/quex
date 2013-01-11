@@ -1,4 +1,4 @@
-<test-database execution-time-sec="2.10" date="Thu Jan 10 21:29:35 2013">
+<test-database execution-time-sec="3.25" date="Fri Jan 11 23:34:04 2013">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Superset/Subset Determination" time-sum-sec="2.10"> 
         <application file-name="test-intersection.py" info-request-time="1357849709L" vanished="False"/>
@@ -9,6 +9,16 @@
            <choice name="FalseCasesII" result="OK" time_sec="0.23" crc="1104161658"/>
            <choice name="GoodCasesII" result="OK" time_sec="0.54" crc="-1230288529"/>
            <choice name="Misc" result="OK" time_sec="0.86" crc="1452230016"/>
+        </choice-list>
+    </test>
+    <test title="Inverse State Machines" time-sum-sec="1.15"> 
+        <application file-name="test-inverse.py" info-request-time="1357943615L" vanished="False"/>
+        <choice-list number="5" same_result="False">
+           <choice name="Misc" result="OK" time_sec="0.54" crc="-2109014089"/>
+           <choice name="Sequence" result="OK" time_sec="0.00" crc="-329460554"/>
+           <choice name="Branches" result="OK" time_sec="0.20" crc="-15779548"/>
+           <choice name="Loops" result="OK" time_sec="0.14" crc="815252964"/>
+           <choice name="BranchesLoops" result="OK" time_sec="0.27" crc="-1613048102"/>
         </choice-list>
     </test>
 </test-database>

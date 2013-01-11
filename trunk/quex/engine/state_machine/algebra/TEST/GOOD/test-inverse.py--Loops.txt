@@ -1,0 +1,121 @@
+_____________________________________________________________________
+A = A+
+inverse(A): init-state = 0L
+00000 ()
+     == [-oo, '@'], ['B', oo] ==> 00001
+     == 'A' ==> 00002
+    
+00001 (A)
+     == [-oo, oo] ==> 00001
+    
+00002 
+     == [-oo, '@'], ['B', oo] ==> 00001
+     == 'A' ==> 00002
+    
+
+
+union(A, inverse(A)):            All  = True
+intersection(A, inverse(A)):     None = True
+identity(A, inverse(inverse(A)): True
+_____________________________________________________________________
+A = A(B*)
+inverse(A): init-state = 0L
+00000 ()
+     == [-oo, '@'], ['B', oo] ==> 00001
+     == 'A' ==> 00002
+    
+00001 (A)
+     == [-oo, oo] ==> 00001
+    
+00002 
+     == [-oo, 'A'], ['C', oo] ==> 00001
+     == 'B' ==> 00002
+    
+
+
+union(A, inverse(A)):            All  = True
+intersection(A, inverse(A)):     None = True
+identity(A, inverse(inverse(A)): True
+_____________________________________________________________________
+A = A((BC)*)
+inverse(A): init-state = 0L
+00000 ()
+     == [-oo, '@'], ['B', oo] ==> 00001
+     == 'A' ==> 00002
+    
+00001 (A)
+     == [-oo, oo] ==> 00001
+    
+00002 
+     == [-oo, 'A'], ['C', oo] ==> 00001
+     == 'B' ==> 00003
+    
+00003 (A)
+     == [-oo, 'B'], ['D', oo] ==> 00001
+     == 'C' ==> 00002
+    
+
+
+union(A, inverse(A)):            All  = True
+intersection(A, inverse(A)):     None = True
+identity(A, inverse(inverse(A)): True
+_____________________________________________________________________
+A = ((A+)B+)C+
+inverse(A): init-state = 0L
+00000 ()
+     == [-oo, '@'], ['B', oo] ==> 00001
+     == 'A' ==> 00002
+    
+00001 (A)
+     == [-oo, oo] ==> 00001
+    
+00002 (A)
+     == [-oo, '@'], ['C', oo] ==> 00001
+     == 'A' ==> 00002
+     == 'B' ==> 00003
+    
+00003 (A)
+     == [-oo, 'A'], ['D', oo] ==> 00001
+     == 'B' ==> 00003
+     == 'C' ==> 00004
+    
+00004 
+     == [-oo, 'B'], ['D', oo] ==> 00001
+     == 'C' ==> 00004
+    
+
+
+union(A, inverse(A)):            All  = True
+intersection(A, inverse(A)):     None = True
+identity(A, inverse(inverse(A)): True
+_____________________________________________________________________
+A = (ABC|BC|C)+
+inverse(A): init-state = 0L
+00000 ()
+     == [-oo, '@'], ['D', oo] ==> 00001
+     == 'A' ==> 00002
+     == 'B' ==> 00003
+     == 'C' ==> 00004
+    
+00001 (A)
+     == [-oo, oo] ==> 00001
+    
+00002 (A)
+     == [-oo, 'A'], ['C', oo] ==> 00001
+     == 'B' ==> 00003
+    
+00003 (A)
+     == [-oo, 'B'], ['D', oo] ==> 00001
+     == 'C' ==> 00004
+    
+00004 
+     == [-oo, '@'], ['D', oo] ==> 00001
+     == 'A' ==> 00002
+     == 'B' ==> 00003
+     == 'C' ==> 00004
+    
+
+
+union(A, inverse(A)):            All  = True
+intersection(A, inverse(A)):     None = True
+identity(A, inverse(inverse(A)): True
