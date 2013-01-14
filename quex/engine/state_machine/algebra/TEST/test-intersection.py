@@ -8,8 +8,8 @@ import quex.engine.state_machine.algebra.intersection as intersection
 import quex.engine.state_machine.check.identity     as identity
 
 if "--hwut-info" in sys.argv:
-    print "Pattern Superset/Subset Determination"
-    print "CHOICES: Easy, FalseCases, GoodCases, FalseCasesII, GoodCasesII, Misc;"
+    print "Intersection"
+    print "CHOICES: 0, 1, 2, 3, 4, 5;"
     sys.exit(0)
     
 def test(A, B):
@@ -28,7 +28,7 @@ def test(A, B):
 
     print "identity: %s" % identity.do(x, y)
 
-if "Easy" in sys.argv:
+if "0" in sys.argv:
     test('[0-9]+', '[0-9]')
     test('123', '123(4?)')
     test('12', '1(2?)')
@@ -36,7 +36,7 @@ if "Easy" in sys.argv:
     test('"123"|"ABC"', '"123"')
     test('\\n', '(\\r\\n)|\\n')
 
-elif "FalseCases" in sys.argv:
+elif "1" in sys.argv:
     test('[a-n]', '[m-z]')
     test('"1234"|"ABC"', '"123"')
     test('"12"|"A"', '"1"')
@@ -44,19 +44,19 @@ elif "FalseCases" in sys.argv:
     test('"1BAC"|"1BBC"', '"1ABC"')
     test('alb|albertikus', 'albert')
 
-elif "GoodCases" in sys.argv:
+elif "2" in sys.argv:
     test('"123"+',  '"123"')
     test('X"123"?', 'X"123"')
     test('"123"?X', '"123"X')
     test('"123"*X', '"123"X')
     test('X"123"*', 'X"123"')
 
-elif "FalseCasesII" in sys.argv:
+elif "3" in sys.argv:
     test('abc("123"+)xyz',       'abcyz')
     test('abc("123"|"ABC")xyz',  'abc1B3xyz')
     test('abc("123"|"ABCD")xyz', 'abcABCxyc')
 
-elif "GoodCasesII" in sys.argv:
+elif "4" in sys.argv:
     test('abc("123"+)xyz', 'abc123123123123xyz')
     test('abc("123"?)xyz', 'abcxyz')
     test('abc("123"*)xyz', 'abcxyz')
@@ -65,7 +65,7 @@ elif "GoodCasesII" in sys.argv:
     test('abc("123"|"ABC")*xyz', 'abcxyz')
     test('abc("123"|"ABC")*xyz', 'abcABC123xyz')
 
-elif "Misc" in sys.argv:
+elif "5" in sys.argv:
     test('X("a"|"x"?|"e"|"g")', 'X')
     test('X("a"|"x"?|"e"|"g")', 'Xx')
     test('"a"|"x"+|"e"|"g"', 'x{20}')
@@ -76,13 +76,3 @@ elif "Misc" in sys.argv:
     test('(printer|rinter|inter|nter|ter|er|r)+', 'printerter')
     test('(printer|rinter|inter|nter|ter|er|r)+', '((((((((p+)r)+i)+)n)+t)+e)+r)+')
 
-elif "Pre-Post-Conditions":
-    # with pre and post-conditions
-    test('A/B',      'AB')
-    test('A/B/',     'B')
-    test('A/B(C?)/', 'A/B/')
-    print "##NOTE: Pre-Context 'A+' is equivalent to 'A'"
-    print "##NOTE: In both cases a single 'A' is enough."
-    test('A/B(C?)/', 'A+/B/')
-    test('B$',  'B')
-    test('^B',  'B')

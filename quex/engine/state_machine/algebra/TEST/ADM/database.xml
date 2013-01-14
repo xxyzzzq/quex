@@ -1,22 +1,28 @@
-<test-database execution-time-sec="3.25" date="Fri Jan 11 23:34:04 2013">
+<test-database execution-time-sec="4.25" date="Sun Jan 13 08:17:09 2013">
     <last-used-diff-display-program name=""/>
-    <test title="Pattern Superset/Subset Determination" time-sum-sec="2.10"> 
-        <application file-name="test-intersection.py" info-request-time="1357849709L" vanished="False"/>
-        <choice-list number="6" same_result="False">
-           <choice name="Easy" result="OK" time_sec="0.14" crc="440123606"/>
-           <choice name="FalseCases" result="OK" time_sec="0.19" crc="-1665346947"/>
-           <choice name="GoodCases" result="OK" time_sec="0.14" crc="-1865021134"/>
-           <choice name="FalseCasesII" result="OK" time_sec="0.23" crc="1104161658"/>
-           <choice name="GoodCasesII" result="OK" time_sec="0.54" crc="-1230288529"/>
-           <choice name="Misc" result="OK" time_sec="0.86" crc="1452230016"/>
+    <test title="Algebra on Inverse, Reverse, Union, Intersection, Difference" time-sum-sec="0.70"> 
+        <application file-name="test-algebraic-relations.py" info-request-time="1358060988L" vanished="False"/>
+        <choice-list number="1" same_result="False">
+           <choice name="" result="OK" time_sec="0.70" crc="1606565690"/>
         </choice-list>
     </test>
-    <test title="Inverse State Machines" time-sum-sec="1.15"> 
-        <application file-name="test-inverse.py" info-request-time="1357943615L" vanished="False"/>
+    <test title="Pattern Superset/Subset Determination" time-sum-sec="2.25"> 
+        <application file-name="test-intersection.py" info-request-time="1358061409L" vanished="False"/>
+        <choice-list number="6" same_result="False">
+           <choice name="0" result="OK" time_sec="0.16" crc="440123606"/>
+           <choice name="1" result="OK" time_sec="0.18" crc="-1665346947"/>
+           <choice name="2" result="OK" time_sec="0.16" crc="-1865021134"/>
+           <choice name="3" result="OK" time_sec="0.24" crc="1104161658"/>
+           <choice name="4" result="OK" time_sec="0.58" crc="-1230288529"/>
+           <choice name="5" result="OK" time_sec="0.92" crc="1452230016"/>
+        </choice-list>
+    </test>
+    <test title="Inverse State Machines" time-sum-sec="1.30"> 
+        <application file-name="test-inverse.py" info-request-time="1357985851L" vanished="False"/>
         <choice-list number="5" same_result="False">
-           <choice name="Misc" result="OK" time_sec="0.54" crc="-2109014089"/>
-           <choice name="Sequence" result="OK" time_sec="0.00" crc="-329460554"/>
-           <choice name="Branches" result="OK" time_sec="0.20" crc="-15779548"/>
+           <choice name="Misc" result="OK" time_sec="0.55" crc="-2109014089"/>
+           <choice name="Sequence" result="OK" time_sec="0.12" crc="-329460554"/>
+           <choice name="Branches" result="OK" time_sec="0.21" crc="-15779548"/>
            <choice name="Loops" result="OK" time_sec="0.14" crc="815252964"/>
            <choice name="BranchesLoops" result="OK" time_sec="0.27" crc="-1613048102"/>
         </choice-list>
