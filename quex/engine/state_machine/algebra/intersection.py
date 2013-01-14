@@ -3,12 +3,15 @@ from   quex.engine.state_machine.index                import map_state_combinati
 import quex.engine.state_machine.index                as     index
 import quex.engine.state_machine.algorithm.beautifier as     beautifier
 import quex.engine.state_machine.algebra.reverse      as     reverse
+import quex.engine.state_machine.check.special        as     special
 
 def do(SM_List):
     """Intersection: 
 
        Only match on patterns which are matched by all state machines
        in 'SM_List'.
+
+       (C) 2013 Frank-Rene Schäfer
        ________________________________________________________________________
 
        A lexeme which matches all patterns must reach an acceptance in each 
@@ -17,6 +20,8 @@ def do(SM_List):
           For each state machine; there is a path from the init 
           state to an acceptance state triggered along the by 
           the characters of the lexeme.
+
+       We cannot go forward, since we cannot omit a path upon non-fit.
 
        Now, consider the super-state consisting of all acceptance states
        of all state machines. There there must be a way backward from the 
@@ -37,6 +42,10 @@ def do(SM_List):
        path. The found state machine must be reversed at the end.
 
     """
+    for sm in SM_List:
+        if special.is_none(sm):         # If one state machine is '\None'
+            return special.get_none()   # then, the intersection is '\None'
+
     reverse_sm_list          = [ reverse.do(sm)                            for sm in SM_List ]
     state_id_set_list        = [ set(sm.states.iterkeys())                 for sm in reverse_sm_list ]
     acceptance_state_id_list = [ set(sm.get_acceptance_state_index_list()) for sm in reverse_sm_list ]

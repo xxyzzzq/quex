@@ -5,6 +5,8 @@
 
     inverse(intersection(A, B)) == union(inverse(A), inverse(B))
     inverse(union(A, B))        == intersection(inverse(A), inverse(B))
+
+    (C) 2013 Frank-Rene Schäfer
 """
 import quex.engine.state_machine.index                as     index
 import quex.engine.state_machine.algorithm.beautifier as beautifier
