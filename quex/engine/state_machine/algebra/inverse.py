@@ -6,7 +6,7 @@
     inverse(intersection(A, B)) == union(inverse(A), inverse(B))
     inverse(union(A, B))        == intersection(inverse(A), inverse(B))
 
-    (C) 2013 Frank-Rene Schäfer
+    (C) 2013 Frank-Rene Schaefer
 """
 import quex.engine.state_machine.index                as     index
 import quex.engine.state_machine.algorithm.beautifier as beautifier
@@ -71,7 +71,7 @@ def do(SM):
         elif state_index != SM.init_state_index:
             result.states[state_index].set_acceptance(True)
 
-    result.delete_orphaned_states()
+    result.clean_up()
 
     return result.clone()
 

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="4.25" date="Sun Jan 13 08:17:09 2013">
+<test-database execution-time-sec="4.32" date="Tue Jan 15 23:23:48 2013">
     <last-used-diff-display-program name=""/>
     <test title="Algebra on Inverse, Reverse, Union, Intersection, Difference" time-sum-sec="0.70"> 
         <application file-name="test-algebraic-relations.py" info-request-time="1358060988L" vanished="False"/>
@@ -6,7 +6,7 @@
            <choice name="" result="OK" time_sec="0.70" crc="1606565690"/>
         </choice-list>
     </test>
-    <test title="Pattern Superset/Subset Determination" time-sum-sec="2.25"> 
+    <test title="Pattern Superset/Subset Determination" time-sum-sec="2.24"> 
         <application file-name="test-intersection.py" info-request-time="1358061409L" vanished="False"/>
         <choice-list number="6" same_result="False">
            <choice name="0" result="OK" time_sec="0.16" crc="440123606"/>
@@ -17,7 +17,7 @@
            <choice name="5" result="OK" time_sec="0.92" crc="1452230016"/>
         </choice-list>
     </test>
-    <test title="Inverse State Machines" time-sum-sec="1.30"> 
+    <test title="Inverse State Machines" time-sum-sec="1.29"> 
         <application file-name="test-inverse.py" info-request-time="1357985851L" vanished="False"/>
         <choice-list number="5" same_result="False">
            <choice name="Misc" result="OK" time_sec="0.55" crc="-2109014089"/>
@@ -25,6 +25,17 @@
            <choice name="Branches" result="OK" time_sec="0.21" crc="-15779548"/>
            <choice name="Loops" result="OK" time_sec="0.14" crc="815252964"/>
            <choice name="BranchesLoops" result="OK" time_sec="0.27" crc="-1613048102"/>
+        </choice-list>
+    </test>
+    <test title="Cut" time-sum-sec="0.09"> 
+        <application file-name="test-cut.py" info-request-time="1358287344L" vanished="False"/>
+        <choice-list number="6" same_result="False">
+           <choice name="0" result="FAIL" time_sec="0.09" crc="-893123861"/>
+           <choice name="1" result="OK" time_sec="0.00" crc="-674914231"/>
+           <choice name="2" result="OK" time_sec="0.00" crc="1341022954"/>
+           <choice name="3" result="OK" time_sec="0.00" crc="1041698413"/>
+           <choice name="4" result="OK" time_sec="0.00" crc="845400488"/>
+           <choice name="5" result="NONE" time_sec="0.00" crc="None"/>
         </choice-list>
     </test>
 </test-database>

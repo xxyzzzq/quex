@@ -1,0 +1,102 @@
+---------------------------
+Original = [0-9]+
+Cutter   = [0-9]
+result =  init-state = 0L
+00000 ()
+    
+
+
+Original = [0-9]
+Cutter   = [0-9]+
+result =  init-state = 0L
+00000 ()
+    
+
+---------------------------
+Original = 123
+Cutter   = 123(4?)
+result =  init-state = 0L
+00000 ()
+    
+
+
+Original = 123(4?)
+Cutter   = 123
+result =  init-state = 0L
+00000 ()
+    
+
+---------------------------
+Original = 12
+Cutter   = 1(2?)
+result =  init-state = 0L
+00000 ()
+    
+
+
+Original = 1(2?)
+Cutter   = 12
+result =  init-state = 0L
+00000 ()
+     == '1' ==> 00001
+    
+00001 (A)
+    
+
+---------------------------
+Original = 1
+Cutter   = 1(2?)
+result =  init-state = 0L
+00000 ()
+    
+
+
+Original = 1(2?)
+Cutter   = 1
+result =  init-state = 0L
+00000 ()
+    
+
+---------------------------
+Original = "123"|"ABC"
+Cutter   = "123"
+result =  init-state = 0L
+00000 ()
+     == 'A' ==> 00001
+    
+00001 ()
+     == 'B' ==> 00002
+    
+00002 ()
+     == 'C' ==> 00003
+    
+00003 (A)
+    
+
+
+Original = "123"
+Cutter   = "123"|"ABC"
+result =  init-state = 0L
+00000 ()
+    
+
+---------------------------
+Original = \n
+Cutter   = (\r\n)|\n
+result =  init-state = 0L
+00000 ()
+    
+
+
+Original = (\r\n)|\n
+Cutter   = \n
+result =  init-state = 0L
+00000 ()
+     == '\r' ==> 00001
+    
+00001 ()
+     == '\n' ==> 00002
+    
+00002 (A)
+    
+

@@ -1,9 +1,13 @@
-<history date="Sun Jan 13 08:17:09 2013" element-n="5">
+<history date="Tue Jan 15 23:23:48 2013" element-n="7">
     <day year="2013" month="01" day="10">
         <history-init time="17:49:13"/>
         <crc-error time="18:15:31" application="test-intersection.py" choice="GoodCases" database-crc="1437481811" real-crc="-1865021134"/>
         <crc-error time="18:31:54" application="test-intersection.py" choice="Misc" database-crc="1493496514" real-crc="-465546396"/>
         <crc-error time="20:27:42" application="test-intersection.py" choice="Misc" database-crc="-465546396" real-crc="-600778506"/>
         <crc-error time="20:29:27" application="test-intersection.py" choice="Misc" database-crc="-600778506" real-crc="1452230016"/>
+    </day>
+    <day year="2013" month="01" day="15">
+        <crc-error time="21:16:48" application="test-cut.py" choice="1" database-crc="1638107857" real-crc="-1476797981"/>
+        <crc-error time="21:19:28" application="test-cut.py" choice="1" database-crc="-1476797981" real-crc="1030393153"/>
     </day>
 </history>
