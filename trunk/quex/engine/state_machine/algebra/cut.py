@@ -56,9 +56,7 @@ def do(SM_A, SM_B):
     cutter.do((SM_A.init_state_index, SM_B.init_state_index))
 
     # Delete orphaned and hopeless states in result
-    ## print "#result.before:", cutter.result
     cutter.result.clean_up()
-    ## print "#result.after:", cutter.result
 
     # Get propper state indices for result
     return beautifier.do(cutter.result)

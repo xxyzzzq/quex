@@ -178,6 +178,10 @@ class StateMachine(object):
         # Get a unique state machine id 
         self.set_id(state_machine_index.get_state_machine_id())
 
+    def clean_up(self):
+        self.delete_orphaned_states()
+        self.delete_hopeless_states() 
+
     @staticmethod
     def from_sequence(Sequence):
         """Sequence is a list of one of the following:
@@ -322,6 +326,38 @@ class StateMachine(object):
                 return
             for state_index in orphan_list:
                 del self.states[state_index]
+
+    def get_hopeless_state_index_list(self):
+        """Find states which have not further transitions except to may be, 
+        itself and which are non-accepting. If the state machine enters such
+        a state there is no hope that it could enter acceptance. The entrance
+        to such a state can be shortcut with a drop-out.
+        """
+        result = []
+        for state_index, state in self.states.iteritems():
+            # Never delete the init state
+            if state_index == self.init_state_index: continue
+            elif state.is_acceptance():              continue
+            target_index_set = set(state.transitions().get_target_state_index_list())
+            if len(target_index_set) == 0:
+                result.append(state_index)
+            elif    len(target_index_set) == 1 \
+                and target_index_set.__iter__().next() == state_index:
+                result.append(state_index)
+        return result
+
+    def delete_hopeless_states(self):
+        """Delete states that have no transition except to itself and 
+        which are not acceptance states.
+        """
+        while 1 + 1 == 2:
+            hopeless_list = self.get_hopeless_state_index_list()
+            if len(hopeless_list) == 0:
+                return
+            for i in hopeless_list:
+                del self.states[i]
+                for state in self.states.itervalues():
+                    state.transitions().delete_transitions_to_target(i)
 
     def delete_transtions_on_interval(self, TheInterval):
         """This function deletes any transition on 'Value' to another

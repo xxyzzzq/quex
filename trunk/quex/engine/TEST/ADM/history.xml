@@ -1,4 +1,4 @@
-<history date="Wed Jan  9 20:50:39 2013" element-n="324">
+<history date="Fri Jan 18 00:01:55 2013" element-n="326">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:15:09"/>
@@ -942,5 +942,11 @@
     </day>
     <day year="2012" month="12" day="26">
         <crc-error time="10:34:14" application="test-NumberSet-inverse.py" choice="2" database-crc="-1840078184" real-crc="-1623020661"/>
+    </day>
+    <day year="2013" month="01" day="15">
+        <crc-error time="21:34:16" application="test-NumberSet-intersection.py" choice="" database-crc="892506273" real-crc="-1359430138"/>
+    </day>
+    <day year="2013" month="01" day="17">
+        <crc-error time="23:01:55" application="test-algebraic-relations.py" choice="unary" database-crc="1963996064" real-crc="1792904643"/>
     </day>
 </history>

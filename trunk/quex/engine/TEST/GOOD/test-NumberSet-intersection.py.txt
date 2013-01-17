@@ -269,3 +269,9 @@
 #  B          = [[0], [1000]]
 #  intersection(A,B) = []
 #  intersection(B,A) = []
+#
+#Special Case 11
+#  A          = [[65]]
+#  B          = [[66]]
+#  intersection(A,B) = []
+#  intersection(B,A) = []

@@ -3,6 +3,7 @@
 ###############################################################################
 from   quex.engine.state_machine.core import StateMachine, State
 import quex.engine.state_machine.index as index
+import quex.engine.state_machine.check.special as special
 
 def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):
     """Connect state machines paralell.
@@ -26,8 +27,8 @@ def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):
     assert map(lambda x: x.__class__.__name__, StateMachineList) == ["StateMachine"] * len(StateMachineList)
               
     # filter out empty state machines from the consideration          
-    state_machine_list       = [ sm for sm in StateMachineList if not sm.is_empty() ]
-    empty_state_machine_list = [ sm for sm in StateMachineList if sm.is_empty() ]
+    state_machine_list       = [ sm for sm in StateMachineList if not (sm.is_empty() or special.is_none(sm))]
+    empty_state_machine_list = [ sm for sm in StateMachineList if     (sm.is_empty() or special.is_none(sm))]
 
     if len(state_machine_list) < 2:
         if len(state_machine_list) < 1: result = StateMachine()
