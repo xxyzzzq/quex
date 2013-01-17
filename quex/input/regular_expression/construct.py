@@ -159,7 +159,7 @@ class Pattern(object):
             for sm in [self.__sm, self.__pre_context_sm, self.__bipd_sm]:
                 if sm is None: continue
                 sm.delete_transtions_on_interval(Interval(character))
-                sm.delete_orphaned_states()
+                sm.clean_up()
                 if sm.is_empty(): 
                     my_error(name, self)
 

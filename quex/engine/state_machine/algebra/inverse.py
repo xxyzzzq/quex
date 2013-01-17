@@ -51,6 +51,8 @@ def do(SM):
     for state_index, state in SM.states.iteritems():
         # deepcopy --> use same state indices in SM and result
         result_state = result.states[state_index]
+        assert state.transitions().is_DFA_compliant(), \
+               "State machine must be transformed to DFA first: nfa_to_dfa.do()"
 
         # -- Every transition to 'Accept-All' state becomes a drop-out.
         for target_index in (i for i in state.transitions().get_target_state_index_list()

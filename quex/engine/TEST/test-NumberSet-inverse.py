@@ -8,7 +8,7 @@ from quex.engine.interval_handling import Interval, NumberSet
 
 if "--hwut-info" in sys.argv:
     print "NumberSet: Inverse"
-    print "CHOICES: 1, 2;"
+    print "CHOICES: 1, 2, serious;"
     sys.exit(0)
 
 
@@ -28,8 +28,35 @@ if "1" in sys.argv:
                     Interval(150,170), Interval(171,190),
                     Interval(200,230), Interval(231,240),
                     Interval(250,260), Interval(261,280)]))
-else:
+elif "2" in sys.argv:
     NSet = NumberSet(Interval(1, 0x10FFFE))
     print NSet.inverse()
 
+elif "serious" in sys.argv:
+    def test(X):
+        print "#_______________________________________________"
+        nset  = NumberSet([ Interval(x, y) for x, y in X])
+        clone = nset.clone()
+        print "#NumberSet:         %s" % nset
+        result = nset.clone()
+        result.invert()
+        print "#NumberSet.inverse: %s" % result
+        assert result.is_equal(nset.inverse())
+        assert result.intersection(nset).is_empty()
+        assert result.union(nset).is_all()
+
+    test([(0,               100)])
+    test([(0,               sys.maxint)])
+    test([(-sys.maxint,     0)])
+    test([(-sys.maxint,     sys.maxint)])
+
+    test([(0,         100), (500, 600)])
+    test([(0,         100), (500, sys.maxint)])
+    test([(-sys.maxint, 0), (500, 600)])
+    test([(-sys.maxint, 0), (500, sys.maxint)])
+
+    test([(0,         100), (100, 200), (500, 600)])
+    test([(0,         100), (100, 200), (500, sys.maxint)])
+    test([(-sys.maxint, 0), (100, 200), (500, 600)])
+    test([(-sys.maxint, 0), (100, 200), (500, sys.maxint)])
 

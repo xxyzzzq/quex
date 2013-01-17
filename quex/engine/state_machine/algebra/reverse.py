@@ -7,15 +7,21 @@
        reverse(union(P, Q))        == union(reverse(P), reverse(Q))
        reverse(intersection(P, Q)) == intersection(reverse(P), reverse(Q))
 """
-from quex.engine.state_machine.core import StateMachine
-from quex.blackboard import E_PreContextIDs
+from   quex.engine.state_machine.core import StateMachine
+import quex.engine.state_machine.check.special as special
+from   quex.blackboard import E_PreContextIDs
 
 def do(SM):
     """Creates a state machine that matches the reverse of what 'SM' matches.
     """
     result                               = StateMachine(InitStateIndex=SM.init_state_index)
     original_acceptance_state_index_list = SM.get_acceptance_state_index_list()
-    assert len(original_acceptance_state_index_list) != 0
+
+    if len(original_acceptance_state_index_list) == 0:
+        # If there is no acceptance state in a state machine, the state machine
+        # cannot match any pattern, it is equivalent to '\None'. The reverse
+        # of \None is \None.
+        return special.get_none()
        
     # Ensure that each target state index has a state inside the state machine
     for state_index in SM.states.keys():

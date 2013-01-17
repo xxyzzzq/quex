@@ -11,7 +11,7 @@ def do(SM_List):
        Only match on patterns which are matched by all state machines
        in 'SM_List'.
 
-       (C) 2013 Frank-Rene Schäfer
+       (C) 2013 Frank-Rene Schaefer
        ________________________________________________________________________
 
        A lexeme which matches all patterns must reach an acceptance in each 

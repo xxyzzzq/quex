@@ -20,7 +20,7 @@ import quex.engine.utf8 as utf8
 
 import sys
 from   copy import copy
-from   itertools import izip
+from   itertools import izip, islice
 
 from   quex.engine.tools import r_enumerate
 
@@ -707,60 +707,30 @@ class NumberSet(object):
             self.__intervals = []
             return 
 
-        self_begin = self.__intervals[0].begin
-        self_end   = self.__intervals[-1].end
-        Other_begin = Other_intervals[0].begin
-        Other_end   = Other_intervals[-1].end
-        if Other_end  < self_begin or Other_begin > self_end:   
-            self.__intervals = []
-            return
-
-        # For each interval to leave remain, it needs at least have an intersection
+        # For each interval to remain, it needs at least have an intersection
         # with one of the other intervals. If such an intersection is found the
         # interval of concern can be pruned appropriately.
-        L              = len(self.__intervals)
-        insertion_list = []
-        deletion_list  = []
-        i              = -1
-        begin_i        = -1
-        end_i          = L
+        Other_min_i = 0
+        result = []
         for x in self.__intervals:
-            i += 1
-            if x.end   <= Other_begin: continue
-            elif begin_i == -1:        begin_i = i; i -= begin_i; 
-            if x.begin >= Other_end:   end_i   = i; break
+            for i, y in enumerate(islice(Other_intervals, Other_min_i, None), Other_min_i):
+                if x.end    < y.begin: continue # not yet reached
+                Other_min_i = i
+                if x.begin >= y.end:   continue # overstepped 
 
-            replacement_list = []
-            for y in Other_intervals:
-                if   x.begin >= y.end:   continue
-                elif x.end   <= y.begin: break
-                # x.end > y.begin  (lacks condition: x.begin < y.end)
-                # y.end > x.begin  (lacks condition: y.begin < x.end)
-                if x.begin < y.end or y.begin < x.end:
-                    replacement_list.append([max(x.begin, y.begin), min(x.end, y.end)])
+                # Here:                    x.end   
+                #                |---------------------------->
+                #                          x.begin
+                #            <-------------------------|
+                #         
+                #         -------|---------------------|--------
+                #             y.begin                y.end
+                begin = max(x.begin, y.begin)
+                end   = min(x.end, y.end)
+                if begin != end: result.append(Interval(begin, end))
 
-            if len(replacement_list) != 0:
-                x.begin, x.end = replacement_list.pop(0)
-                insertion_list.append([i, replacement_list])
-            else:
-                deletion_list.append(i)
-
-        # -- delete the intervals that have no intersection
-        if begin_i != -1: del self.__intervals[:begin_i]
-        if end_i != L:    del self.__intervals[end_i:]
-        offset = 0
-        for i in deletion_list:
-            del self.__intervals[i - offset]
-            offset += 1
-
-        # -- insert new intervals
-        offset = 0
-        for i, replacement_list in insertion_list:
-            for begin, end in replacement_list:
-                i += 1
-                if i >= L: self.__intervals.append(Interval(begin, end))
-                else:      self.__intervals.insert(i, Interval(begin, end))
-            offset += i
+        self.__intervals = result
+        ## print "#result: self:", self
 
     def intersection(self, Other):
         assert Other.__class__ == Interval or Other.__class__ == NumberSet
@@ -870,18 +840,39 @@ class NumberSet(object):
         clone0.subtract(clone1)
         return clone0
 
+    def invert(self):
+        """Invert this number set."""
+        if len(self.__intervals) == 0:
+            self.__intervals = [ Interval(-sys.maxint, sys.maxint) ]
+            return
+
+        first = self.__intervals[0]
+        if first.begin != -sys.maxint:
+            prev = Interval(-sys.maxint, first.begin)
+            self.__intervals.insert(0, prev)
+            i    = 1
+        else:
+            i    = 0
+
+        prev = self.__intervals[i]
+        if i < len(self.__intervals) - 1:
+            for x in islice(self.__intervals, i+i, None):
+                prev.begin = prev.end
+                prev.end   = x.begin
+                prev       = x
+
+        last = self.__intervals[-1]
+        if last.end == sys.maxint:
+            del self.__intervals[-1]
+        else:
+            last.begin = last.end
+            last.end   = sys.maxint
+
     def inverse(self):
         """Intersection of inverse of all intervals."""
-        interval_list = []
-        begin = - sys.maxint
-        for interval in self.__intervals:
-            if interval.begin != - sys.maxint: 
-                interval_list.append(Interval(begin, interval.begin))
-            begin = interval.end
-        if begin != sys.maxint:
-            interval_list.append(Interval(begin, sys.maxint))
-
-        return NumberSet(interval_list, ArgumentIsYoursF=True)
+        result = self.clone()
+        result.invert()
+        return result
         
     def transform(self, TrafoInfo):
         """Transforms the given NumberSet from into a new NumberSet according 

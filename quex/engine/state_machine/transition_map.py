@@ -105,6 +105,13 @@ class TransitionMap:
         if TargetStateIdx in self.__epsilon_target_index_list:
             del self.__epsilon_target_index_list[self.__epsilon_target_index_list.index(TargetStateIdx)]
 
+    def delete_transitions_on_character_set(self, CharacterSet):
+
+        for trigger_set in self.__db.itervalues():
+            trigger_set.subtract(CharacterSet)
+
+        self.delete_transitions_on_empty_trigger_sets()
+
     def delete_transitions_on_character_list(self, CharacterCodeList):
 
         for trigger_set in self.__db.values():
