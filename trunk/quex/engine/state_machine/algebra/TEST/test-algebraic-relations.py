@@ -15,8 +15,11 @@ import quex.engine.state_machine.check.identity       as     identity
 import quex.engine.state_machine.check.superset       as     superset
 from   quex.engine.state_machine.check.special        import get_all, get_none
 
+from   itertools import islice
+
 if "--hwut-info" in sys.argv:
-    print "Algebra on Inverse, Reverse, Union, Intersection, Difference"
+    print "Algebraic Relations;"
+    print "CHOICES:  unary, binary;"
     sys.exit()
 
 def inv(A):     return inverse.do(A)
@@ -25,8 +28,14 @@ def uni(*A):    return union.do(list(A))
 def itsct(*A):  return intersection.do(list(A))
 def diff(A, B): return difference.do(A, B)
 
+def exec_print(ExprStr):
+    exec("sme = %s" % ExprStr)
+    print "%s: -->" % ExprStr
+    print beautifier.do(sme)
+
 protocol = []
 X        = None
+Y        = None
 All_sm   = get_all()
 None_sm  = get_none()
 
@@ -39,15 +48,18 @@ def equal(X_str, Y_str):
     result = identity.do(sm0, sm1)
     if result is False:
         print "X:", X
-        print "X_str", X_str
-        print "Y_str", Y_str
-        print sm0
-        print sm1
+        print "Y:", Y
+        exec_print("uni(X, Y)")
+        exec_print("inv(uni(X, Y))")
+        print "%s: -->\n%s" % (X_str, sm0)
+        print "%s: -->\n%s" % (Y_str, sm1)
         sys.exit()
     protocol.append((X_str, "==", Y_str, result))
 
 def unary(ExprStr):
     global X
+    global protocol
+    del protocol[:]
     X = regex.do(ExprStr, {}).sm
 
     equal("inv(inv(X))",           "X")
@@ -79,20 +91,24 @@ def unary(ExprStr):
     report(ExprStr)
     return
 
-def binary(X, Y):
+def binary(ExprStrX, ExprStrY):
+    global X
+    global Y
+    X = regex.do(ExprStrX, {}).sm
+    Y = regex.do(ExprStrY, {}).sm
 
-    report("uni(X, Y)",                            "uni(Y, X)")
-    report("reverse(uni(reverse(X), reverse(Y)))", "uni(X, Y)")
+    equal("uni(X, Y)",                  "uni(Y, X)")
+    equal("itsct(X, Y)",                "itsct(Y, X)")
 
-    report("itsct(X, Y)",                            "itsct(Y, X)")
-    report("reverse(itsct(reverse(X), reverse(Y)))", "itsct(X, Y)")
+    equal("rev(uni(rev(X), rev(Y)))",   "uni(X, Y)")
+    equal("rev(itsct(rev(X), rev(Y)))", "itsct(X, Y)")
 
-    report("inv(itsct(X, Y))", "uni(inv(X), inv(Y))")
-    report("inv(uni(X, Y))", "itsct(inv(X), inv(Y))")
+    equal("inv(itsct(X, Y))", "uni(inv(X), inv(Y))")
+    equal("inv(uni(X, Y))",   "itsct(inv(X), inv(Y))")
 
-    report("diff(X, Y)",           "itsct(X, inv(Y))")
-    report("itsct(diff(X, Y), X)", "None")
-    report("uni(diff(X, Y), Y)",   "uni(X, Y)")
+    equal("diff(X, Y)",           "itsct(X, inv(Y))")
+    equal("itsct(diff(X, Y), Y)", "None")
+    equal("uni(diff(X, Y), Y)",   "uni(X, Y)")
 
 def report(ExprStr):
     global protocol
@@ -111,9 +127,30 @@ def report(ExprStr):
             print "  %s" % txt
     print
 
-print
-unary("A")
-unary("AB")
-unary("ABC")
-unary("(((A+)B+)C+)|ABC|AB")
-unary("(((A+)B+)C+)")
+pattern_list = [
+    "A",
+    "AB",
+    "ABC",
+    "A((BC)|(DE))F",
+    "A((BC)|(DE))*F",
+    "A((BC)|(DE?))*F",
+    "(((A+)B+)C+)|ABC|AB",
+    "(((A+)B+)C+)",
+    "0(((A*)(B+C)*)((C+D)*)E+)*",
+    #"\Any*",
+    #"\None",
+]
+
+if "unary" in sys.argv:
+    for pattern_str in pattern_list:
+        unary(pattern_str)
+
+elif "binary" in sys.argv:
+    for i, str_0 in enumerate(pattern_list):
+        for str_1 in islice(pattern_list, i):
+            binary(str_0, str_1)
+
+    # If no assert triggers, then everything is OK
+    print "Oll Korrekt"
+
+
