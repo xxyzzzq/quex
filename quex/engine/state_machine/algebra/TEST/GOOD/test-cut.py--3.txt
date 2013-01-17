@@ -1,6 +1,11 @@
 ---------------------------
 Original = abc("123"+)xyz
 Cutter   = abcyz
+
+superset(Original, result):           True
+intersection(Cutter, result) == None: True
+union(Original, result) == Original:  True
+
 result =  init-state = 0L
 00000 ()
      == 'a' ==> 00001
@@ -36,6 +41,11 @@ result =  init-state = 0L
 
 Original = abcyz
 Cutter   = abc("123"+)xyz
+
+superset(Original, result):           True
+intersection(Cutter, result) == None: True
+union(Original, result) == Original:  True
+
 result =  init-state = 0L
 00000 ()
      == 'a' ==> 00001
@@ -58,6 +68,11 @@ result =  init-state = 0L
 ---------------------------
 Original = abc("123"|"ABC")xyz
 Cutter   = abc1B3xyz
+
+superset(Original, result):           True
+intersection(Cutter, result) == None: True
+union(Original, result) == Original:  True
+
 result =  init-state = 0L
 00000 ()
      == 'a' ==> 00001
@@ -99,6 +114,11 @@ result =  init-state = 0L
 
 Original = abc1B3xyz
 Cutter   = abc("123"|"ABC")xyz
+
+superset(Original, result):           True
+intersection(Cutter, result) == None: True
+union(Original, result) == Original:  True
+
 result =  init-state = 0L
 00000 ()
      == 'a' ==> 00001
@@ -133,6 +153,11 @@ result =  init-state = 0L
 ---------------------------
 Original = abc("123"|"ABCD")xyz
 Cutter   = abcABCxyc
+
+superset(Original, result):           True
+intersection(Cutter, result) == None: True
+union(Original, result) == Original:  True
+
 result =  init-state = 0L
 00000 ()
      == 'a' ==> 00001
@@ -177,6 +202,11 @@ result =  init-state = 0L
 
 Original = abcABCxyc
 Cutter   = abc("123"|"ABCD")xyz
+
+superset(Original, result):           True
+intersection(Cutter, result) == None: True
+union(Original, result) == Original:  True
+
 result =  init-state = 0L
 00000 ()
      == 'a' ==> 00001
