@@ -1,6 +1,6 @@
 _____________________________________________________________________
 A = (AB|XY)+
-inverse(A): init-state = 0L
+complement(A): init-state = 0L
 00000 ()
      == [-oo, '@'], ['B', 'W'], ['Y', oo] ==> 00001
      == 'A' ==> 00002
@@ -24,12 +24,12 @@ inverse(A): init-state = 0L
     
 
 
-union(A, inverse(A)):            All  = True
-intersection(A, inverse(A)):     None = True
-identity(A, inverse(inverse(A)): True
+union(A, complement(A)):            All  = True
+intersection(A, complement(A)):     None = True
+identity(A, complement(complement(A)): True
 _____________________________________________________________________
 A = (AB|XY)((DE|FG)*)
-inverse(A): init-state = 0L
+complement(A): init-state = 0L
 00000 ()
      == [-oo, '@'], ['B', 'W'], ['Y', oo] ==> 00001
      == 'A' ==> 00002
@@ -61,12 +61,12 @@ inverse(A): init-state = 0L
     
 
 
-union(A, inverse(A)):            All  = True
-intersection(A, inverse(A)):     None = True
-identity(A, inverse(inverse(A)): True
+union(A, complement(A)):            All  = True
+intersection(A, complement(A)):     None = True
+identity(A, complement(complement(A)): True
 _____________________________________________________________________
 A = (((AB|XY)+)(DE|FG)+)(HI|JK)+
-inverse(A): init-state = 0L
+complement(A): init-state = 0L
 00000 ()
      == [-oo, '@'], ['B', 'W'], ['Y', oo] ==> 00001
      == 'A' ==> 00002
@@ -120,12 +120,12 @@ inverse(A): init-state = 0L
     
 
 
-union(A, inverse(A)):            All  = True
-intersection(A, inverse(A)):     None = True
-identity(A, inverse(inverse(A)): True
+union(A, complement(A)):            All  = True
+intersection(A, complement(A)):     None = True
+identity(A, complement(complement(A)): True
 _____________________________________________________________________
 A = ((AB|XY)(DE|FG)(HI|JK)|(DE|FG)(HI|JK)|(HI|JK))+
-inverse(A): init-state = 0L
+complement(A): init-state = 0L
 00000 ()
      == [-oo, '@'], ['B', 'C'], 'E', 'G', 'I', ['K', 'W'], ['Y', oo] ==> 00001
      == 'A' ==> 00002
@@ -183,6 +183,6 @@ inverse(A): init-state = 0L
     
 
 
-union(A, inverse(A)):            All  = True
-intersection(A, inverse(A)):     None = True
-identity(A, inverse(inverse(A)): True
+union(A, complement(A)):            All  = True
+intersection(A, complement(A)):     None = True
+identity(A, complement(complement(A)): True

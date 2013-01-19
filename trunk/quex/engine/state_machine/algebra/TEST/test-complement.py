@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine      as regex
-import quex.engine.state_machine.algebra.inverse as inverse
+import quex.engine.state_machine.algebra.complement as complement
 import quex.engine.state_machine.algebra.intersection  as intersection
 import quex.engine.state_machine.algebra.union   as union
 from   quex.engine.state_machine.check.special   import is_all, is_none
@@ -19,13 +19,13 @@ def test(A_str):
     print "_____________________________________________________________________"
     print ("A = " + A_str).replace("\n", "\\n").replace("\t", "\\t")
     a_pattern = regex.do(A_str, {})
-    result_1st    = inverse.do(a_pattern.sm)
-    print "inverse(A):", result_1st
-    result_2nd    = inverse.do(result_1st)
+    result_1st    = complement.do(a_pattern.sm)
+    print "complement(A):", result_1st
+    result_2nd    = complement.do(result_1st)
     print
-    print "union(A, inverse(A)):            All  =", is_all(union.do([a_pattern.sm, result_1st]))
-    print "intersection(A, inverse(A)):     None =", is_none(intersection.do([a_pattern.sm, result_1st]))
-    print "identity(A, inverse(inverse(A)):", identity.do(a_pattern.sm, result_2nd)
+    print "union(A, complement(A)):            All  =", is_all(union.do([a_pattern.sm, result_1st]))
+    print "intersection(A, complement(A)):     None =", is_none(intersection.do([a_pattern.sm, result_1st]))
+    print "identity(A, complement(complement(A)):", identity.do(a_pattern.sm, result_2nd)
 
 if "Sequence" in sys.argv:
     test('[0-9]')

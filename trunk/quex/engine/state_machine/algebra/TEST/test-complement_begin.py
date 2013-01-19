@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine  as regex
-import quex.engine.state_machine.algebra.cut as cut
+import quex.engine.state_machine.algebra.complement_begin as complement_begin
 import quex.engine.state_machine.algebra.union as union
 import quex.engine.state_machine.algebra.intersection as intersection
 import quex.engine.state_machine.check.special as special
@@ -30,7 +30,7 @@ def test(A, B):
         cutter = regex.do(Cutter, {}).sm
         #print orig.get_string(NormalizeF=False)
         #print cutter.get_string(NormalizeF=False)
-        result = clean(cut.do(orig, cutter))
+        result = clean(complement_begin.do(orig, cutter))
         print
         if not special.is_none(result):
             print "superset(Original, result):           %s" % superset.do(orig, result)

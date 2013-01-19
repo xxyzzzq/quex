@@ -5,10 +5,13 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine           as regex
 import quex.engine.state_machine.algorithm.beautifier as beautifier
-import quex.engine.state_machine.algebra.inverse      as inverse
+import quex.engine.state_machine.algebra.complement   as complement
 import quex.engine.state_machine.algebra.reverse      as reverse
 import quex.engine.state_machine.algebra.intersection as intersection
 import quex.engine.state_machine.algebra.difference   as difference
+import quex.engine.state_machine.algebra.symmetric_difference   as symmetric_difference
+import quex.engine.state_machine.algebra.complement_begin   as complement_begin
+import quex.engine.state_machine.algebra.complement_end     as complement_end  
 import quex.engine.state_machine.algebra.union        as union
 from   quex.engine.state_machine.check.special        import is_all, is_none
 import quex.engine.state_machine.check.identity       as     identity
@@ -22,14 +25,17 @@ if "--hwut-info" in sys.argv:
     print "CHOICES:  unary, binary;"
     sys.exit()
 
-def inv(A):     return inverse.do(A)
+def inv(A):     return complement.do(A)
 def rev(A):     return reverse.do(A)
 def uni(*A):    return union.do(list(A))
 def itsct(*A):  return intersection.do(list(A))
 def diff(A, B): return difference.do(A, B)
+def symdiff(A, B):   return symmetric_difference.do([A, B])
+def not_begin(A, B): return complement_begin.do(A, B)
+def not_end(A, B):   return complement_end.do(A, B)
 
 def exec_print(ExprStr):
-    exec("sme = %s" % ExprStr)
+    exec("sme = %s" % ExprStr.replace("All", "All_sm").replace("None", "None_sm"))
     print "%s: -->" % ExprStr
     print beautifier.do(sme)
 
@@ -40,6 +46,8 @@ All_sm   = get_all()
 None_sm  = get_none()
 
 def equal(X_str, Y_str):
+    global X
+    global Y
     global report
     exec("sm0 = " + X_str.replace("All", "All_sm").replace("None", "None_sm"))
     exec("sm1 = " + Y_str.replace("All", "All_sm").replace("None", "None_sm"))
@@ -48,9 +56,8 @@ def equal(X_str, Y_str):
     result = identity.do(sm0, sm1)
     if result is False:
         print "X:", X
-        print "Y:", Y
-        exec_print("uni(X, Y)")
-        exec_print("inv(uni(X, Y))")
+        # print "Y:", Y
+        print "Error"
         print "%s: -->\n%s" % (X_str, sm0)
         print "%s: -->\n%s" % (Y_str, sm1)
         sys.exit()
@@ -61,6 +68,14 @@ def unary(ExprStr):
     global protocol
     del protocol[:]
     X = regex.do(ExprStr, {}).sm
+
+    equal("not_end(X, inv(X))", "None")
+    equal("not_end(inv(X), X)", "None")
+    equal("not_end(X, None)",   "X")
+    equal("not_end(None, X)",   "X")
+    equal("not_end(X, All)",    "None")
+    equal("not_end(All, X)",    "None")
+    sys.exit()
 
     equal("inv(inv(X))",           "X")
     equal("rev(rev(X))",           "X")
@@ -82,11 +97,25 @@ def unary(ExprStr):
     equal("itsct(All, X)",    "X")
 
     equal("diff(X, inv(X))", "X")
-    equal("diff(inv(X), X)", "inv(X) ")
+    equal("diff(inv(X), X)", "inv(X)")
     equal("diff(X, None)",   "X")
     equal("diff(None, X)",   "None")
     equal("diff(X, All)",    "None")
     equal("diff(All, X)",    "inv(X) ")
+
+    equal("symdiff(X, inv(X))", "All")
+    equal("symdiff(inv(X), X)", "All")
+    equal("symdiff(X, None)",   "X")
+    equal("symdiff(None, X)",   "X")
+    equal("symdiff(X, All)",    "inv(X)")
+    equal("symdiff(All, X)",    "inv(X)")
+
+    equal("not_begin(X, None)",   "X")
+    equal("not_begin(None, X)",   "None")
+    equal("not_begin(X, All)",    "None")
+
+    if False:
+        pass
 
     report(ExprStr)
     return
@@ -109,6 +138,15 @@ def binary(ExprStrX, ExprStrY):
     equal("diff(X, Y)",           "itsct(X, inv(Y))")
     equal("itsct(diff(X, Y), Y)", "None")
     equal("uni(diff(X, Y), Y)",   "uni(X, Y)")
+
+def derived_binary(ExprStrX, ExprStrY):
+    global X
+    global Y
+    X = regex.do(ExprStrX, {}).sm
+    Y = regex.do(ExprStrY, {}).sm
+
+    equal("symdiff(X, Y)", "symdiff(Y, X)")
+    equal("symdiff(X, Y)", "symdiff(Y, X)")
 
 def report(ExprStr):
     global protocol
