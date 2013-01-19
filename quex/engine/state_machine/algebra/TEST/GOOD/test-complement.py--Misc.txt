@@ -1,6 +1,6 @@
 _____________________________________________________________________
 A = ((((((((p+)r)+i)+)n)+t)+e)+r)+
-inverse(A): init-state = 0L
+complement(A): init-state = 0L
 00000 ()
      == [-oo, 'o'], ['q', oo] ==> 00001
      == 'p' ==> 00002
@@ -44,12 +44,12 @@ inverse(A): init-state = 0L
     
 
 
-union(A, inverse(A)):            All  = True
-intersection(A, inverse(A)):     None = True
-identity(A, inverse(inverse(A)): True
+union(A, complement(A)):            All  = True
+intersection(A, complement(A)):     None = True
+identity(A, complement(complement(A)): True
 _____________________________________________________________________
 A = (printer|rinter|inter|nter|ter|er|r)+
-inverse(A): init-state = 0L
+complement(A): init-state = 0L
 00000 ()
      == [-oo, 'd'], ['f', 'h'], ['j', 'm'], 'o', 'q', 's', ['u', oo] ==> 00001
      == 'e' ==> 00002
@@ -97,12 +97,12 @@ inverse(A): init-state = 0L
     
 
 
-union(A, inverse(A)):            All  = True
-intersection(A, inverse(A)):     None = True
-identity(A, inverse(inverse(A)): True
+union(A, complement(A)):            All  = True
+intersection(A, complement(A)):     None = True
+identity(A, complement(complement(A)): True
 _____________________________________________________________________
 A = (p?r?i?n?t?e?r|rinter|inter|nter|ter|er|r)+
-inverse(A): init-state = 0L
+complement(A): init-state = 0L
 00000 ()
      == [-oo, 'd'], ['f', 'h'], ['j', 'm'], 'o', 'q', 's', ['u', oo] ==> 00001
      == 'e' ==> 00002
@@ -156,12 +156,12 @@ inverse(A): init-state = 0L
     
 
 
-union(A, inverse(A)):            All  = True
-intersection(A, inverse(A)):     None = True
-identity(A, inverse(inverse(A)): True
+union(A, complement(A)):            All  = True
+intersection(A, complement(A)):     None = True
+identity(A, complement(complement(A)): True
 _____________________________________________________________________
 A = (((((((((p+)r)+i)+)p)+r)+i)+n)+|(priprin|riprin|iprin|prin|rin|in|n)+)x?
-inverse(A): init-state = 0L
+complement(A): init-state = 0L
 00000 ()
      == [-oo, 'h'], ['j', 'm'], 'o', 'q', ['s', oo] ==> 00001
      == 'i' ==> 00002
@@ -282,6 +282,6 @@ inverse(A): init-state = 0L
     
 
 
-union(A, inverse(A)):            All  = True
-intersection(A, inverse(A)):     None = True
-identity(A, inverse(inverse(A)): True
+union(A, complement(A)):            All  = True
+intersection(A, complement(A)):     None = True
+identity(A, complement(complement(A)): True

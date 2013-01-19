@@ -9,5 +9,6 @@ def do(SM_List):
     There is no reason, why another 'union' operation should be implemented
     in this case.
     """
-    return beautifier.do(parallelize.do(SM_List))
+    result = parallelize.do(SM_List)
+    return beautifier.do(result)
 

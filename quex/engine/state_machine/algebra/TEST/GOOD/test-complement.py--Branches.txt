@@ -1,6 +1,6 @@
 _____________________________________________________________________
 A = 12|AB
-inverse(A): init-state = 0L
+complement(A): init-state = 0L
 00000 ()
      == [-oo, '0'], ['2', '@'], ['B', oo] ==> 00001
      == '1' ==> 00002
@@ -22,12 +22,12 @@ inverse(A): init-state = 0L
     
 
 
-union(A, inverse(A)):            All  = True
-intersection(A, inverse(A)):     None = True
-identity(A, inverse(inverse(A)): True
+union(A, complement(A)):            All  = True
+intersection(A, complement(A)):     None = True
+identity(A, complement(complement(A)): True
 _____________________________________________________________________
 A = x(12|AB)
-inverse(A): init-state = 0L
+complement(A): init-state = 0L
 00000 ()
      == [-oo, 'w'], ['y', oo] ==> 00001
      == 'x' ==> 00002
@@ -53,12 +53,12 @@ inverse(A): init-state = 0L
     
 
 
-union(A, inverse(A)):            All  = True
-intersection(A, inverse(A)):     None = True
-identity(A, inverse(inverse(A)): True
+union(A, complement(A)):            All  = True
+intersection(A, complement(A)):     None = True
+identity(A, complement(complement(A)): True
 _____________________________________________________________________
 A = (12|AB)x
-inverse(A): init-state = 0L
+complement(A): init-state = 0L
 00000 ()
      == [-oo, '0'], ['2', '@'], ['B', oo] ==> 00001
      == '1' ==> 00002
@@ -84,12 +84,12 @@ inverse(A): init-state = 0L
     
 
 
-union(A, inverse(A)):            All  = True
-intersection(A, inverse(A)):     None = True
-identity(A, inverse(inverse(A)): True
+union(A, complement(A)):            All  = True
+intersection(A, complement(A)):     None = True
+identity(A, complement(complement(A)): True
 _____________________________________________________________________
 A = x(12|AB)x
-inverse(A): init-state = 0L
+complement(A): init-state = 0L
 00000 ()
      == [-oo, 'w'], ['y', oo] ==> 00001
      == 'x' ==> 00002
@@ -119,12 +119,12 @@ inverse(A): init-state = 0L
     
 
 
-union(A, inverse(A)):            All  = True
-intersection(A, inverse(A)):     None = True
-identity(A, inverse(inverse(A)): True
+union(A, complement(A)):            All  = True
+intersection(A, complement(A)):     None = True
+identity(A, complement(complement(A)): True
 _____________________________________________________________________
 A = x(1?2|A?B)x
-inverse(A): init-state = 0L
+complement(A): init-state = 0L
 00000 ()
      == [-oo, 'w'], ['y', oo] ==> 00001
      == 'x' ==> 00002
@@ -155,12 +155,12 @@ inverse(A): init-state = 0L
     
 
 
-union(A, inverse(A)):            All  = True
-intersection(A, inverse(A)):     None = True
-identity(A, inverse(inverse(A)): True
+union(A, complement(A)):            All  = True
+intersection(A, complement(A)):     None = True
+identity(A, complement(complement(A)): True
 _____________________________________________________________________
 A = x(1?2?|A?B?)x
-inverse(A): init-state = 0L
+complement(A): init-state = 0L
 00000 ()
      == [-oo, 'w'], ['y', oo] ==> 00001
      == 'x' ==> 00002
@@ -194,6 +194,6 @@ inverse(A): init-state = 0L
     
 
 
-union(A, inverse(A)):            All  = True
-intersection(A, inverse(A)):     None = True
-identity(A, inverse(inverse(A)): True
+union(A, complement(A)):            All  = True
+intersection(A, complement(A)):     None = True
+identity(A, complement(complement(A)): True

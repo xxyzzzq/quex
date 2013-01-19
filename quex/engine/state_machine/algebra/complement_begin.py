@@ -1,6 +1,6 @@
 import quex.engine.state_machine.algorithm.beautifier as     beautifier
 import quex.engine.state_machine.check.special        as     special
-import quex.engine.state_machine.algebra.inverse      as     inverse
+import quex.engine.state_machine.algebra.complement   as     complement
 import quex.engine.state_machine.index                as     index
 from   quex.engine.state_machine.core                 import State, StateMachine
 from   quex.engine.misc.tree_walker                   import TreeWalker
@@ -11,47 +11,36 @@ from   copy import deepcopy
 import sys
 
 def do(SM_A, SM_B):
-    """Cut:
+    """Complement Begin:
 
     Let SM_A match the set of lexemes LA and SM_B match the set of lexemes LB.
-    Then, the 'cut' operation 
+    Then, the complement begin operation 'NotBegin'
 
-                           SM_C = cut(SM_A, SM_B)
+                           SM_C = NotBegin(SM_A, SM_B)
 
     results in a state machine SM_C, matches all lexemes of LA except for those
     that start with a lexeme from LB.
 
-    NOTE: There is a symmetry relation to 'frame': 
-    
-          frame(A, B) == cut(A, tame(inverse((B)))
-
     EXAMPLE 1: 
 
-          cut([0-9]+, [0-9]) = \None
-
-    That is where '[0-9]+' required at least one character in [0-9], the 
-    cut version does not allow lexemes with one [0-9]. The result is a
-    repetition of at least two characters in [0-9].
+          NotBegin([0-9]+, [0-9]) = \None
 
     EXAMPLE 2: 
 
-          cut(1(2?), 12) = 1
+          NotBegin(1(2?), 12) = 1
 
     Because the lexeme "12" is not to be matched by the result. The lexeme
     "1", though, does not start with "12". Thus, it remains.
 
     EXAMPLE 2: 
 
-          cut([a-z]+, print) = all identifiers except 'print'
+          NotBegin([a-z]+, print) = all identifiers except 'print'
 
     (C) 2013 Frank-Rene Schaefer
     """
     cutter = WalkAlong(SM_A, SM_B)
     if SM_B.get_init_state().is_acceptance():
         return special.get_none()
-
-    ## print "#SM_A", SM_A.get_string(NormalizeF=False)
-    ## print "#SM_B", SM_B.get_string(NormalizeF=False)
 
     cutter.do((SM_A.init_state_index, SM_B.init_state_index))
 
@@ -78,7 +67,7 @@ class WalkAlong(TreeWalker):
 
     def on_enter(self, Args):
         # print "#self.path:", self.path
-        if Args in self.path: # self.check_for_redundant_loop(Args):
+        if Args in self.path: 
             return None
 
         a_state_index, b_state_index = Args
@@ -144,37 +133,4 @@ class WalkAlong(TreeWalker):
             state = self.get_state_core(a_state_index, b_state_index)
             self.result.states[state_index] = state
         return state
-
-    def check_for_redundant_loop(self, Args):
-        if Args not in self.path:
-            return False
-
-        # Find alst occurence of 'Args' in path
-        for i, info in r_enumerate(self.path):
-            if info == Args:
-                break
-        else:
-            return False
-        ## print "#i:", i, self.path[0:i]
-
-        # Find last but one occurence of 'Args' in path
-        for k, info in r_enumerate(self.path[0: i]):
-            if info == Args:
-                break
-        else:
-            return False
-        ## print "#k:", k, self.path[0:k]
-
-        # Index where 'Args' would occur: 'len(self.path)'
-        if i - k != len(self.path) - i:
-            return False
-
-        ## print "#elm:   ", Args
-        ## print "#path   ", self.path
-        ## print "#path I ", self.path[k:i]
-        ## print "#path II", self.path[i:]
-        return self.path[k:i] == self.path[i:]
-
-        assert False, "If Args in self.path; then there must be an index for 'Args' in self.path"
-
 
