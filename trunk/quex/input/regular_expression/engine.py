@@ -226,9 +226,8 @@ def snap_primary(stream, PatternDict):
     global SPECIAL_TERMINATOR 
 
     __debug_entry("primary", stream)    
-    x = stream.read(1); lookahead = stream.read(1); 
-    if x != "" and lookahead != "": stream.seek(-1, 1)
-    if x == "": return __debug_exit(None, stream)
+    x = stream.read(1)
+    if   x == "": return __debug_exit(None, stream)
 
     # -- 'primary' primary
     if   x == "\"": result = snap_character_string.do(stream)
@@ -248,17 +247,8 @@ def snap_primary(stream, PatternDict):
         raise RegularExpressionException("lonely operator '%s' without expression proceeding." % x) 
 
     elif x == "\\":
-        if lookahead == "C":
-            stream.read(1)
-            result = snap_case_folded_pattern(stream, PatternDict)
-        elif lookahead == "R":
-            result = get_expression_in_brackets(stream, PatternDict, "reverse operator", "R")
-            result = reverse.do(result)
-        elif lookahead == "A":
-            result =  get_expression_in_brackets(stream, PatternDict, "anti-pattern operator", "A")
-            result.transform_to_anti_pattern()
-        else:
-            stream.seek(-1, 1)
+        result = snap_command(stream, PatternDict)
+        if result is None:
             trigger_set = character_set_expression.snap_property_set(stream)
             if trigger_set is None:
                 stream.seek(1, 1)  # snap_property_set() leaves tream right before '\\'
@@ -289,6 +279,14 @@ def snap_primary(stream, PatternDict):
     if result_repeated is not None: result = result_repeated
     return __debug_exit(beautifier.do(result), stream)
     # return __debug_exit(result, stream)
+
+def snap_command(stream, PatternDict):
+    global CommandDB
+
+    for command_str, snap_function in CommandDB.iteritems():
+        if check(stream, command_str):
+            return snap_function(stream, PatternDict)
+    return None
     
 def snap_non_control_character(stream, PatternDict):
     __debug_entry("non-control characters", stream)
@@ -394,6 +392,7 @@ def snap_case_folded_pattern(sh, PatternDict, CharacterSetF=False):
     """
     return case_fold_expression.do(sh, PatternDict, snap_expression)
 
+
 def get_expression_in_brackets(stream, PatternDict, Name, TriggerChar):
     # Read over the trigger character 
     stream.read(1)
@@ -407,3 +406,78 @@ def get_expression_in_brackets(stream, PatternDict, Name, TriggerChar):
     else:
         error_msg("Missing closing '}' %s in \\%s{...}." % (Name, TriggerChar), stream)
     return pattern
+
+
+CommandDB = {
+    # Note, that there are backlashed elements that may appear also in strings.
+    # \a, \X, ... those are not treated here. They are treated in 
+    # 'snap_backslashed_character()'.
+    "A":         snap_anti_pattern,          # OK
+    "Any":       snap_any,
+    "C":         snap_case_folded_pattern,   # OK
+    "Co":        snap_complement,            # OK
+    "CutB":      snap_cut_back,              # OK
+    "CutF":      snap_cut_front,             # OK
+    "Diff":      snap_difference,            # 
+    "Intersect": snap_intersection,          # OK
+    "None":      snap_none,
+    "R":         snap_reverse,               # OK
+    "SymDiff":   snap_symmetric_difference,
+    "Tie":       snap_tie,                   # OK 'repeat'
+    "Union":     snap_union,                 # OK
+    "Untie":     snap_untie,                 # OK 'untie the repetition'
+}
+
+def snap_any(stream, PatternDict):
+    return special.get_any()
+
+def snap_none(stream, PatternDict):
+    return special.get_none()
+
+def snap_reverse(stream, PatternDict):
+    result = get_expression_in_brackets(stream, PatternDict, "reverse operator", "R")
+    return reverse.do(result)
+
+def snap_anti_pattern(stream, PatternDict):
+    result = get_expression_in_brackets(stream, PatternDict, "anti-pattern operator", "A")
+    result.transform_to_anti_pattern()
+    return result
+
+def snap_complement(stream, PatternDict):
+    result = get_expression_in_brackets(stream, PatternDict, "complement operator", "Co")
+    return complement.do(result)
+
+def snap_tie(stream, PatternDict):
+    result = get_expression_in_brackets(stream, PatternDict, "Tie operator", "Tie")
+    return tie.do(result)
+
+def snap_untie(stream, PatternDict):
+    result = get_expression_in_brackets(stream, PatternDict, "Untie operator", "Untie")
+    return tie.do(result)
+
+def snap_union(stream, PatternDict):
+    sm_list = get_expression_list_in_brackets(stream, PatternDict, "union operator", "Union")
+    return union.do(sm_list)
+
+def snap_intersection(stream, PatternDict):
+    sm_list = get_expression_list_in_brackets(stream, PatternDict, "intersection operator", "Intersection")
+    return intersection.do(sm_list)
+
+def snap_cut_front(stream, PatternDict):
+    sm_list = get_expression_list_in_brackets(stream, PatternDict, "union operator", "Union")
+
+    return cut_front.do(sm_list[0], union.do(sm_list[1:])
+
+def snap_cut_back(stream, PatternDict):
+    sm_list = get_expression_list_in_brackets(stream, PatternDict, "union operator", "Union")
+
+    return cut_front.do(sm_list[0], union.do(sm_list[1:])
+
+def snap_difference(stream, PatternDict):
+    sm_list = get_expression_list_in_brackets(stream, PatternDict, "intersection operator", "Intersection", RequiredN=2)
+    return difference.do(sm_list[0], sm_list[1])
+
+def snap_symmetric_difference(stream, PatternDict):
+    sm_list = get_expression_list_in_brackets(stream, PatternDict, "intersection operator", "Intersection", RequiredN=2)
+    return difference.do(sm_list)
+
