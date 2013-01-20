@@ -1,6 +1,8 @@
 import quex.engine.state_machine.algorithm.beautifier     as beautifier
+import quex.engine.state_machine.algebra.reverse          as reverse
 import quex.engine.state_machine.algebra.complement       as complement
 import quex.engine.state_machine.algebra.complement_begin as complement_begin
+import quex.engine.state_machine.algebra.intersection     as intersection
 
 def do(SM_A, SM_B):
     """Find a state machine that stops right before the state machine 'SM_B'.
@@ -33,7 +35,10 @@ def do(SM_A, SM_B):
                        
     (C) Frank-Rene Schaefer
     """
-    Ar        = complement.do(SM_A)
-    Br        = complement.do(SM_B)
+    Ar        = beautifier.do(reverse.do(SM_A))
+    print "#Ar", Ar
+    Br        = beautifier.do(reverse.do(SM_B))
+    print "#Br", Br
     cut_Ar_Br = complement_begin.do(Ar, Br)
-    return complement.do(cut_Ar_Br)
+    print "#cut_Ar_Br", cut_Ar_Br
+    return reverse.do(cut_Ar_Br)

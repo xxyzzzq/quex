@@ -60,21 +60,19 @@ def equal(X_str, Y_str):
         print "Error"
         print "%s: -->\n%s" % (X_str, sm0)
         print "%s: -->\n%s" % (Y_str, sm1)
-        sys.exit()
+        print "#---------------------------------------------------------"
     protocol.append((X_str, "==", Y_str, result))
 
 def unary(ExprStr):
     global X
+    global Y
     global protocol
     del protocol[:]
     X = regex.do(ExprStr, {}).sm
 
-    equal("not_end(X, inv(X))", "None")
-    equal("not_end(inv(X), X)", "None")
-    equal("not_end(X, None)",   "X")
-    equal("not_end(None, X)",   "X")
-    equal("not_end(X, All)",    "None")
-    equal("not_end(All, X)",    "None")
+    X = regex.do("[a-z]+", {}).sm
+    Y = regex.do("x", {}).sm
+    equal("not_end(X, Y)", "None")
     sys.exit()
 
     equal("inv(inv(X))",           "X")
@@ -115,6 +113,12 @@ def unary(ExprStr):
     equal("not_begin(X, All)",    "None")
 
     if False:
+        equal("not_end(X, inv(X))", "None")
+        equal("not_end(inv(X), X)", "None")
+        equal("not_end(X, None)",   "X")
+        equal("not_end(None, X)",   "X")
+        equal("not_end(X, All)",    "None")
+        equal("not_end(All, X)",    "None")
         pass
 
     report(ExprStr)
