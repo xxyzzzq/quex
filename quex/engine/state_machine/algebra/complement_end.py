@@ -36,9 +36,6 @@ def do(SM_A, SM_B):
     (C) Frank-Rene Schaefer
     """
     Ar        = beautifier.do(reverse.do(SM_A))
-    print "#Ar", Ar
     Br        = beautifier.do(reverse.do(SM_B))
-    print "#Br", Br
     cut_Ar_Br = complement_begin.do(Ar, Br)
-    print "#cut_Ar_Br", cut_Ar_Br
     return reverse.do(cut_Ar_Br)

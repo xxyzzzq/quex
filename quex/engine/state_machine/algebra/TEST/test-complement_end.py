@@ -3,17 +3,17 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.input.regular_expression.engine               as regex
-import quex.engine.state_machine.algebra.complement_begin as complement_begin
-import quex.engine.state_machine.algebra.union            as union
-import quex.engine.state_machine.algebra.intersection     as intersection
-import quex.engine.state_machine.check.special            as special
-import quex.engine.state_machine.check.identity           as identity
-import quex.engine.state_machine.check.superset           as superset
-import quex.engine.state_machine.algorithm.beautifier     as beautifier
+import quex.input.regular_expression.engine             as regex
+import quex.engine.state_machine.algebra.complement_end as complement_end
+import quex.engine.state_machine.algebra.union          as union
+import quex.engine.state_machine.algebra.intersection   as intersection
+import quex.engine.state_machine.check.special          as special
+import quex.engine.state_machine.check.identity         as identity
+import quex.engine.state_machine.check.superset         as superset
+import quex.engine.state_machine.algorithm.beautifier   as beautifier
 
 if "--hwut-info" in sys.argv:
-    print "Complement Begin: Cut patterns from P that begin with Q."
+    print "Complement End: Cut patterns from P that end with Q."
     print "CHOICES: 0, 1, 2, 3, 4, 5;"
     sys.exit(0)
 
@@ -30,7 +30,7 @@ def test(A, B):
         cutter = regex.do(Cutter, {}).sm
         #print orig.get_string(NormalizeF=False)
         #print cutter.get_string(NormalizeF=False)
-        result = clean(complement_begin.do(orig, cutter))
+        result = clean(complement_end.do(orig, cutter))
         print
         if not special.is_none(result):
             print "superset(Original, result):           %s" % superset.do(orig, result)
@@ -55,9 +55,9 @@ if "0" in sys.argv:
     test('[0-9]+',    '0')
     test('[0-9]+',    '01')
     test('[0-9]{2,}', '01')
-    test('123', '123(4?)')
-    test('12', '1(2?)')
-    test('1', '1(2?)')
+    test('123',       '123(4?)')
+    test('12',        '1(2?)')
+    test('1',         '1(2?)')
     test('"123"|"ABC"', '"123"')
     test('\\n', '(\\r\\n)|\\n')
 
@@ -77,25 +77,25 @@ elif "2" in sys.argv:
     test('X"123"*', 'X"123"')
 
 elif "3" in sys.argv:
-    test('abc("123"+)xyz',       'abcyz')
-    test('abc("123"|"ABC")xyz',  'abc1B3xyz')
-    test('abc("123"|"ABCD")xyz', 'abcABCxyc')
+    test('ab("12"+)yz',      'abz')
+    test('ab("12"|"AB")yz',  'ab1B3yz')
+    test('ab("12"|"ABD")yz', 'abAByc')
 
 elif "4" in sys.argv:
-    test('abc("123"+)xyz', 'abc123123123123xyz')
-    test('abc("123"?)xyz', 'abcxyz')
-    test('abc("123"*)xyz', 'abcxyz')
-    test('abc("123"|"ABC")?xyz', 'abcxyz')
-    test('abc("123"|"ABC")?xyz', 'abcABCxyz')
-    test('abc("123"|"ABC")*xyz', 'abcxyz')
-    test('abc("123"|"ABC")*xyz', 'abcABC123xyz')
+    test('ab("12"+)yz', 'ab1212yz')
+    test('ab("12"?)yz', 'abyz')
+    test('ab("12"*)yz', 'abyz')
+    test('ab("12"|"AB")?yz', 'abyz')
+    test('ab("12"|"AB")?yz', 'abAByz')
+    test('ab("12"|"AB")*yz', 'abyz')
+    test('ab("12"|"AB")*yz', 'abAB12yz')
 
 elif "5" in sys.argv:
     test('X("a"|"x"?|"e"|"g")', 'X')
     test('X("a"|"x"?|"e"|"g")', 'Xx')
-    test('"a"|"x"+|"e"|"g"',    'x{20}')
+    test('"a"|"x"+|"e"|"g"',    'x{5}')
     test('X("a"|"x"*|"e"|"g")', 'X')
-    test('X("a"|"x"*|"e"|"g")', 'Xx{20}')
+    test('X("a"|"x"*|"e"|"g")', 'Xx{5}')
     # test('abc("123"|("ABC"|"XYZ")+)+"123"("AAA"|"BBB"|"CCC")?xyz', 'abc123ABC123AAAxyz')
     test('ab("12"|("AB"|"XY")+)+"12"("AA"|"BB"|"CC")?yz', 'ab12AB12AAyz')
     test('(((a+)b)+c)+', 'abcbc')

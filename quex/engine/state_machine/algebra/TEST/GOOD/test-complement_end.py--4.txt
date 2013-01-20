@@ -1,0 +1,328 @@
+---------------------------
+Original = ab("12"+)yz
+Cutter   = ab1212yz
+
+superset(Original, result):           True
+intersection(Cutter, result) == None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+     == 'a' ==> 00001
+    
+00001 ()
+     == 'b' ==> 00002
+    
+00002 ()
+     == '1' ==> 00003
+    
+00003 ()
+     == '2' ==> 00004
+    
+00004 ()
+     == '1' ==> 00005
+     == 'y' ==> 00009
+    
+00005 ()
+     == '2' ==> 00006
+    
+00006 ()
+     == '1' ==> 00007
+    
+00007 ()
+     == '2' ==> 00008
+    
+00008 ()
+     == '1' ==> 00007
+     == 'y' ==> 00009
+    
+00009 ()
+     == 'z' ==> 00010
+    
+00010 (A)
+    
+
+
+Original = ab1212yz
+Cutter   = ab("12"+)yz
+
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+    
+
+---------------------------
+Original = ab("12"?)yz
+Cutter   = abyz
+
+superset(Original, result):           True
+intersection(Cutter, result) == None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+     == 'a' ==> 00001
+    
+00001 ()
+     == 'b' ==> 00002
+    
+00002 ()
+     == '1' ==> 00003
+    
+00003 ()
+     == '2' ==> 00004
+    
+00004 ()
+     == 'y' ==> 00005
+    
+00005 ()
+     == 'z' ==> 00006
+    
+00006 (A)
+    
+
+
+Original = abyz
+Cutter   = ab("12"?)yz
+
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+    
+
+---------------------------
+Original = ab("12"*)yz
+Cutter   = abyz
+
+superset(Original, result):           True
+intersection(Cutter, result) == None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+     == 'a' ==> 00001
+    
+00001 ()
+     == 'b' ==> 00002
+    
+00002 ()
+     == '1' ==> 00003
+    
+00003 ()
+     == '2' ==> 00004
+    
+00004 ()
+     == '1' ==> 00003
+     == 'y' ==> 00005
+    
+00005 ()
+     == 'z' ==> 00006
+    
+00006 (A)
+    
+
+
+Original = abyz
+Cutter   = ab("12"*)yz
+
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+    
+
+---------------------------
+Original = ab("12"|"AB")?yz
+Cutter   = abyz
+
+superset(Original, result):           True
+intersection(Cutter, result) == None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+     == 'a' ==> 00001
+    
+00001 ()
+     == 'b' ==> 00002
+    
+00002 ()
+     == '1' ==> 00003
+     == 'A' ==> 00007
+    
+00003 ()
+     == '2' ==> 00004
+    
+00004 ()
+     == 'y' ==> 00005
+    
+00005 ()
+     == 'z' ==> 00006
+    
+00006 (A)
+    
+00007 ()
+     == 'B' ==> 00004
+    
+
+
+Original = abyz
+Cutter   = ab("12"|"AB")?yz
+
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+    
+
+---------------------------
+Original = ab("12"|"AB")?yz
+Cutter   = abAByz
+
+superset(Original, result):           True
+intersection(Cutter, result) == None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+     == 'a' ==> 00001
+    
+00001 ()
+     == 'b' ==> 00002
+    
+00002 ()
+     == '1' ==> 00003
+     == 'y' ==> 00005
+    
+00003 ()
+     == '2' ==> 00004
+    
+00004 ()
+     == 'y' ==> 00005
+    
+00005 ()
+     == 'z' ==> 00006
+    
+00006 (A)
+    
+
+
+Original = abAByz
+Cutter   = ab("12"|"AB")?yz
+
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+    
+
+---------------------------
+Original = ab("12"|"AB")*yz
+Cutter   = abyz
+
+superset(Original, result):           True
+intersection(Cutter, result) == None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+     == 'a' ==> 00001
+    
+00001 ()
+     == 'b' ==> 00002
+    
+00002 ()
+     == '1' ==> 00003
+     == 'A' ==> 00005
+    
+00003 ()
+     == '2' ==> 00004
+    
+00004 ()
+     == '1' ==> 00003
+     == 'A' ==> 00005
+     == 'y' ==> 00006
+    
+00005 ()
+     == 'B' ==> 00004
+    
+00006 ()
+     == 'z' ==> 00007
+    
+00007 (A)
+    
+
+
+Original = abyz
+Cutter   = ab("12"|"AB")*yz
+
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+    
+
+---------------------------
+Original = ab("12"|"AB")*yz
+Cutter   = abAB12yz
+
+superset(Original, result):           True
+intersection(Cutter, result) == None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+     == 'a' ==> 00001
+    
+00001 ()
+     == 'b' ==> 00002
+    
+00002 ()
+     == '1' ==> 00003
+     == 'A' ==> 00008
+     == 'y' ==> 00006
+    
+00003 ()
+     == '2' ==> 00004
+    
+00004 ()
+     == '1' ==> 00003
+     == 'A' ==> 00005
+     == 'y' ==> 00006
+    
+00005 ()
+     == 'B' ==> 00004
+    
+00006 ()
+     == 'z' ==> 00007
+    
+00007 (A)
+    
+00008 ()
+     == 'B' ==> 00009
+    
+00009 ()
+     == '1' ==> 00010
+     == 'A' ==> 00005
+     == 'y' ==> 00006
+    
+00010 ()
+     == '2' ==> 00011
+    
+00011 ()
+     == '1' ==> 00003
+     == 'A' ==> 00005
+    
+
+
+Original = abAB12yz
+Cutter   = ab("12"|"AB")*yz
+
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+    
+

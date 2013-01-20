@@ -11,7 +11,7 @@ from   quex.engine.state_machine.check.special   import is_all, is_none
 import quex.engine.state_machine.check.identity  as identity
 
 if "--hwut-info" in sys.argv:
-    print "Inverse State Machines"
+    print "Complementary State Machines"
     print "CHOICES: Sequence, Branches, Loops, BranchesLoops, Misc;"
     sys.exit(0)
 

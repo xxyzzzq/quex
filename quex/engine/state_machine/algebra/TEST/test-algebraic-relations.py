@@ -70,11 +70,6 @@ def unary(ExprStr):
     del protocol[:]
     X = regex.do(ExprStr, {}).sm
 
-    X = regex.do("[a-z]+", {}).sm
-    Y = regex.do("x", {}).sm
-    equal("not_end(X, Y)", "None")
-    sys.exit()
-
     equal("inv(inv(X))",           "X")
     equal("rev(rev(X))",           "X")
     #equal("rev(inv(rev(inv(X))))", "X")
@@ -108,18 +103,13 @@ def unary(ExprStr):
     equal("symdiff(X, All)",    "inv(X)")
     equal("symdiff(All, X)",    "inv(X)")
 
-    equal("not_begin(X, None)",   "X")
-    equal("not_begin(None, X)",   "None")
-    equal("not_begin(X, All)",    "None")
+    equal("not_begin(X, None)", "X")
+    equal("not_begin(None, X)", "None")
+    equal("not_begin(X, All)",  "None")
 
-    if False:
-        equal("not_end(X, inv(X))", "None")
-        equal("not_end(inv(X), X)", "None")
-        equal("not_end(X, None)",   "X")
-        equal("not_end(None, X)",   "X")
-        equal("not_end(X, All)",    "None")
-        equal("not_end(All, X)",    "None")
-        pass
+    equal("not_end(X, None)",   "X")
+    equal("not_end(None, X)",   "None")
+    equal("not_end(X, All)",    "None")
 
     report(ExprStr)
     return
@@ -150,7 +140,17 @@ def derived_binary(ExprStrX, ExprStrY):
     Y = regex.do(ExprStrY, {}).sm
 
     equal("symdiff(X, Y)", "symdiff(Y, X)")
-    equal("symdiff(X, Y)", "symdiff(Y, X)")
+    equal("symdiff(X, Y)", "diff(uni(X,Y), itsct(X, Y))")
+
+    equal("itsct(Y, not_begin(X, Y))", "None")
+    equal("itsct(X, not_begin(Y, X))", "None")
+    equal("uni(X, not_begin(X, Y))",   "X")
+    equal("uni(Y, not_begin(Y, X))",   "Y")
+
+    equal("itsct(Y, not_end(X, Y))", "None")
+    equal("itsct(X, not_end(Y, X))", "None")
+    equal("uni(X, not_end(X, Y))",   "X")
+    equal("uni(Y, not_end(Y, X))",   "Y")
 
 def report(ExprStr):
     global protocol
