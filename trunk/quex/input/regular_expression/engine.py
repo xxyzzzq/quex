@@ -251,7 +251,6 @@ def snap_primary(stream, PatternDict):
         if result is None:
             trigger_set = character_set_expression.snap_property_set(stream)
             if trigger_set is None:
-                stream.seek(1, 1)  # snap_property_set() leaves tream right before '\\'
                 char_code = snap_backslashed_character.do(stream)
                 if char_code is None:
                     raise RegularExpressionException("Backslash followed by unrecognized character code.")
@@ -286,6 +285,7 @@ def snap_command(stream, PatternDict):
     for command_str, snap_function in CommandDB.iteritems():
         if check(stream, command_str):
             return snap_function(stream, PatternDict)
+
     return None
     
 def snap_non_control_character(stream, PatternDict):
@@ -408,26 +408,6 @@ def get_expression_in_brackets(stream, PatternDict, Name, TriggerChar):
     return pattern
 
 
-CommandDB = {
-    # Note, that there are backlashed elements that may appear also in strings.
-    # \a, \X, ... those are not treated here. They are treated in 
-    # 'snap_backslashed_character()'.
-    "A":         snap_anti_pattern,          # OK
-    "Any":       snap_any,
-    "C":         snap_case_folded_pattern,   # OK
-    "Co":        snap_complement,            # OK
-    "CutB":      snap_cut_back,              # OK
-    "CutF":      snap_cut_front,             # OK
-    "Diff":      snap_difference,            # 
-    "Intersect": snap_intersection,          # OK
-    "None":      snap_none,
-    "R":         snap_reverse,               # OK
-    "SymDiff":   snap_symmetric_difference,
-    "Tie":       snap_tie,                   # OK 'repeat'
-    "Union":     snap_union,                 # OK
-    "Untie":     snap_untie,                 # OK 'untie the repetition'
-}
-
 def snap_any(stream, PatternDict):
     return special.get_any()
 
@@ -463,15 +443,15 @@ def snap_intersection(stream, PatternDict):
     sm_list = get_expression_list_in_brackets(stream, PatternDict, "intersection operator", "Intersection")
     return intersection.do(sm_list)
 
-def snap_cut_front(stream, PatternDict):
+def snap_not_begin(stream, PatternDict):
     sm_list = get_expression_list_in_brackets(stream, PatternDict, "union operator", "Union")
 
-    return cut_front.do(sm_list[0], union.do(sm_list[1:])
+    return complement_begin.do(sm_list[0], union.do(sm_list[1:]))
 
-def snap_cut_back(stream, PatternDict):
+def snap_not_end(stream, PatternDict):
     sm_list = get_expression_list_in_brackets(stream, PatternDict, "union operator", "Union")
 
-    return cut_front.do(sm_list[0], union.do(sm_list[1:])
+    return complement_end.do(sm_list[0], union.do(sm_list[1:]))
 
 def snap_difference(stream, PatternDict):
     sm_list = get_expression_list_in_brackets(stream, PatternDict, "intersection operator", "Intersection", RequiredN=2)
@@ -480,4 +460,24 @@ def snap_difference(stream, PatternDict):
 def snap_symmetric_difference(stream, PatternDict):
     sm_list = get_expression_list_in_brackets(stream, PatternDict, "intersection operator", "Intersection", RequiredN=2)
     return difference.do(sm_list)
+
+CommandDB = {
+    # Note, that there are backlashed elements that may appear also in strings.
+    # \a, \X, ... those are not treated here. They are treated in 
+    # 'snap_backslashed_character()'.
+    "A":         snap_anti_pattern,          # OK
+    "Any":       snap_any,                   # OK
+    "C":         snap_case_folded_pattern,   # OK
+    "Diff":      snap_difference,            # OK
+    "Intersect": snap_intersection,          # OK
+    "None":      snap_none,                  # OK
+    "Not":       snap_complement,            # OK
+    "NotBegin":  snap_not_begin,             # OK
+    "NotEnd":    snap_not_end,               # OK
+    "R":         snap_reverse,               # OK
+    "SymDiff":   snap_symmetric_difference,  # OK
+    "Tie":       snap_tie,                   # OK 'repeat'
+    "Union":     snap_union,                 # OK
+    "Untie":     snap_untie,                 # OK 'untie the repetition'
+}
 

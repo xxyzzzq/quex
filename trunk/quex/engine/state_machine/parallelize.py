@@ -24,7 +24,8 @@ def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):
     """
     assert type(StateMachineList) == list
     assert len(StateMachineList) != 0
-    assert map(lambda x: x.__class__.__name__, StateMachineList) == ["StateMachine"] * len(StateMachineList)
+    for x in StateMachineList:
+        assert isinstance(x, StateMachine), x.__class__.__name__
               
     # filter out empty state machines from the consideration          
     state_machine_list       = [ sm for sm in StateMachineList if not (sm.is_empty() or special.is_none(sm))]
