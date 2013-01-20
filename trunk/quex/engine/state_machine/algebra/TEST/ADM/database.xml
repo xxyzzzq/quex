@@ -1,16 +1,5 @@
-<test-database execution-time-sec="19.23" date="Sat Jan 19 11:54:43 2013">
+<test-database execution-time-sec="19.22" date="Sun Jan 20 23:24:39 2013">
     <last-used-diff-display-program name=""/>
-    <test title="Cut" time-sum-sec="2.51"> 
-        <application file-name="test-complement_begin.py" info-request-time="1358591271L" vanished="False"/>
-        <choice-list number="6" same_result="False">
-           <choice name="0" result="OK" time_sec="0.17" crc="524545483"/>
-           <choice name="1" result="OK" time_sec="0.27" crc="2015253662"/>
-           <choice name="2" result="OK" time_sec="0.18" crc="-1367604962"/>
-           <choice name="3" result="OK" time_sec="0.37" crc="-2015255373"/>
-           <choice name="4" result="OK" time_sec="0.76" crc="856671848"/>
-           <choice name="5" result="OK" time_sec="0.75" crc="1559033400"/>
-        </choice-list>
-    </test>
     <test title="Algebraic Relations" time-sum-sec="9.26"> 
         <application file-name="test-algebraic-relations.py" info-request-time="1358592670L" vanished="False"/>
         <choice-list number="2" same_result="False">
@@ -39,7 +28,7 @@
            <choice name="5" result="OK" time_sec="0.81" crc="1559033400"/>
         </choice-list>
     </test>
-    <test title="Pattern Superset/Subset Determination" time-sum-sec="2.44"> 
+    <test title="Pattern Superset/Subset Determination" time-sum-sec="2.43"> 
         <application file-name="test-intersection.py" info-request-time="1358108455L" vanished="False"/>
         <choice-list number="6" same_result="False">
            <choice name="0" result="OK" time_sec="0.16" crc="440123606"/>
@@ -60,4 +49,30 @@
            <choice name="BranchesLoops" result="FAIL" time_sec="0.14" crc="-1613048102"/>
         </choice-list>
     </test>
+    <group name="Complement Begin">
+        <test title="Cut patterns from P that begin with Q." time-sum-sec="2.50"> 
+            <application file-name="test-complement_begin.py" info-request-time="1358667266L" vanished="False"/>
+            <choice-list number="6" same_result="False">
+               <choice name="0" result="OK" time_sec="0.17" crc="-1763215802"/>
+               <choice name="1" result="OK" time_sec="0.27" crc="2015253662"/>
+               <choice name="2" result="OK" time_sec="0.18" crc="-1367604962"/>
+               <choice name="3" result="OK" time_sec="0.37" crc="-2015255373"/>
+               <choice name="4" result="OK" time_sec="0.76" crc="856671848"/>
+               <choice name="5" result="OK" time_sec="0.75" crc="1559033400"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="Complement End">
+        <test title="Cut patterns from P that end with Q." time-sum-sec="0.00"> 
+            <application file-name="test-complement_end.py" info-request-time="1358719338L" vanished="False"/>
+            <choice-list number="6" same_result="False">
+               <choice name="0" result="OK" time_sec="0.00" crc="-1018463777"/>
+               <choice name="1" result="OK" time_sec="0.00" crc="175432071"/>
+               <choice name="2" result="OK" time_sec="0.00" crc="-1606437308"/>
+               <choice name="3" result="OK" time_sec="0.00" crc="595489109"/>
+               <choice name="4" result="NONE" time_sec="0.00" crc="1070628383"/>
+               <choice name="5" result="NONE" time_sec="0.00" crc="-907666158"/>
+            </choice-list>
+        </test>
+    </group>
 </test-database>

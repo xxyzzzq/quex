@@ -28,10 +28,12 @@ union(Original, result) == Original:  True
 
 result =  init-state = 0L
 00000 ()
+     == '0' ==> 00000
      == ['1', '9'] ==> 00001
     
 00001 (A)
-     == ['0', '9'] ==> 00001
+     == '0' ==> 00000
+     == ['1', '9'] ==> 00001
     
 
 
@@ -58,10 +60,13 @@ result =  init-state = 0L
      == ['1', '9'] ==> 00002
     
 00001 (A)
-     == '0', ['2', '9'] ==> 00002
+     == '0' ==> 00001
+     == '1' ==> 00000
+     == ['2', '9'] ==> 00002
     
 00002 (A)
-     == ['0', '9'] ==> 00002
+     == '0' ==> 00001
+     == ['1', '9'] ==> 00002
     
 
 
@@ -88,13 +93,22 @@ result =  init-state = 0L
      == ['1', '9'] ==> 00003
     
 00001 ()
-     == '0', ['2', '9'] ==> 00002
+     == '0' ==> 00002
+     == '1' ==> 00003
+     == ['2', '9'] ==> 00004
     
 00002 (A)
-     == ['0', '9'] ==> 00002
+     == '0' ==> 00002
+     == '1' ==> 00003
+     == ['2', '9'] ==> 00004
     
 00003 ()
-     == ['0', '9'] ==> 00002
+     == '0' ==> 00002
+     == ['1', '9'] ==> 00004
+    
+00004 (A)
+     == '0' ==> 00002
+     == ['1', '9'] ==> 00004
     
 
 
@@ -121,10 +135,24 @@ result =  init-state = 0L
 Original = 123(4?)
 Cutter   = 123
 
+superset(Original, result):           True
+intersection(Cutter, result) == None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
 00000 ()
+     == '1' ==> 00001
+    
+00001 ()
+     == '2' ==> 00002
+    
+00002 ()
+     == '3' ==> 00003
+    
+00003 ()
+     == '4' ==> 00004
+    
+00004 (A)
     
 
 ---------------------------
@@ -166,10 +194,18 @@ result =  init-state = 0L
 Original = 1(2?)
 Cutter   = 1
 
+superset(Original, result):           True
+intersection(Cutter, result) == None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
 00000 ()
+     == '1' ==> 00001
+    
+00001 ()
+     == '2' ==> 00002
+    
+00002 (A)
     
 
 ---------------------------
@@ -217,17 +253,9 @@ result =  init-state = 0L
 Original = (\r\n)|\n
 Cutter   = \n
 
-superset(Original, result):           True
-intersection(Cutter, result) == None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
 00000 ()
-     == '\r' ==> 00001
-    
-00001 ()
-     == '\n' ==> 00002
-    
-00002 (A)
     
 
