@@ -65,7 +65,9 @@ from   quex.engine.interval_handling  import Interval, NumberSet
 from   quex.engine.misc.file_in       import error_msg, \
                                              check, \
                                              check_whitespace, \
-                                             skip_whitespace
+                                             skip_whitespace, \
+                                             read_identifier, \
+                                             read_until_character
 import quex.engine.utf8               as utf8
 from   quex.blackboard                import setup as Setup
 from   quex.exception                 import RegularExpressionException
@@ -705,7 +707,7 @@ def snap_set_expression(stream, PatternDict):
 
     x = stream.read(2)
     if   x == "\\C":
-        return case_fold_expression.do(stream, PatternDict, NumberSetF=True)
+        return snap_case_folded_pattern(stream, PatternDict, NumberSetF=True)
 
     elif x == "[:":
         result = snap_set_term(stream, PatternDict)

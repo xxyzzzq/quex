@@ -18,7 +18,7 @@ def test(TestString, NumbersF=False):
     try:
         result = snap_character_set_expression(stream, {})
         if NumbersF == False:
-            print "result     = " + result.get_utf8_string() 
+            print "result     = " + result.get_number_set().get_utf8_string() 
         else:
             print "result     = " + repr(result) 
     except exception.RegularExpressionException, x:

@@ -20,7 +20,7 @@ lexer-icu: Simple.cpp
 	@rm  tmp.txt
 
 Simple.cpp: indigo.qx
-	@quex -i indigo.qx -o Simple -b 4 --iconv 
+	@quex -i indigo.qx -o Simple -b 4 --iconv --debug-exception
 
 
 clean:

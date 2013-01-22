@@ -9,6 +9,7 @@ expression = "[: intersection(\P{Script=Gujarati}, \G{Nd}) :]"
 result     = ['૦', '૯']
 
 expression = "[: intersection(\P{Script=Hebrew}, \G{Nd}) :]"
+command line:1:warning: Regular Expression: Character set expression results in empty set.
 result     = 
 
 expression = "[: intersection(\P{Script=Arabic}, \G{Nd}) :]"
