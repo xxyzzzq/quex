@@ -54,12 +54,12 @@ init-state = 0L
 
 -------------------------------------------------------------------
 expression    = "[:\C(st){}:]"
-command line:1:error: Missing character set for case fold in set expression.
-command line:1:error: The content in '\C{content}' should start with '[' or '[:'.
+command line:1:error: Exactly 1 pattern required between '{' and '}'
 -------------------------------------------------------------------
 expression    = "[:\C{[]}:]"
 command line:1:warning: Regular Expression: Character set expression results in empty set.
-command line:1:error: Empty pattern.
+command line:1:error: Expression in case fold does not result in character set.
+command line:1:error: The content in '\C{content}' may start with '[' or '[:'.
 -------------------------------------------------------------------
 expression    = "[:\C(d){[]}:]"
 command line:1:error: Letter 'd' not permitted as case fold option.

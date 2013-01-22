@@ -58,4 +58,4 @@ init-state = 0L
 
 -------------------------------------------------------------------
 expression    = "a\C(t){[a-hj-zﬀİ]/}a"
-command line:1:error: Missing '}' for case fold expression.
+command line:1:error: Pre- or post contexts are not allowed in case fold operator \C{...} expressions.
