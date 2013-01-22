@@ -7,6 +7,6 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i error.qx 
+quex -i error.qx --debug-exception
 rm Lexer*
 cd $tmp

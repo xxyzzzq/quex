@@ -9,7 +9,6 @@ from   quex.engine.state_machine.core             import StateMachine
 from   quex.engine.interval_handling              import NumberSet, Interval
 import quex.engine.state_machine.utf8_state_split as trafo
 from   quex.engine.state_machine.utf8_state_split import unicode_to_utf8
-import quex.input.regular_expression.character_set_expression as charset_expression
 from   quex.engine.generator.base                 import get_combined_state_machine
 
 if "--hwut-info" in sys.argv:

@@ -1,10 +1,10 @@
 QUEX_NAME(Y_analyzer_function)(QUEX_TYPE_ANALYZER* me) 
-    __quex_debug_path_walker_state(354, path_walker_354_path_base, path_iterator);
-    __quex_debug_template_state(358, state_key);
+    __quex_debug_template_state(368, state_key);
+    __quex_debug_path_walker_state(363, path_walker_363_path_base, path_iterator);
 QUEX_NAME(X_analyzer_function)(QUEX_TYPE_ANALYZER* me) 
-    __quex_debug_template_state(440, state_key);
-    __quex_debug_template_state(441, state_key);
-    __quex_debug_template_state(436, state_key);
-    __quex_debug_template_state(437, state_key);
-    __quex_debug_template_state(438, state_key);
+    __quex_debug_template_state(488, state_key);
+    __quex_debug_template_state(489, state_key);
+    __quex_debug_template_state(490, state_key);
+    __quex_debug_template_state(491, state_key);
+    __quex_debug_template_state(492, state_key);
 ## Compile: No output is good output
