@@ -27,34 +27,52 @@
 #  repetition_cmd: 'a repetition command such as +, *, {2}, {,2}, {2,5}'        
 #
 #########################################################################################       
-import sys
-from StringIO import StringIO
+import quex.engine.codec_db.core                              as codec_db
+from   quex.engine.state_machine.core                         import StateMachine
+import quex.engine.state_machine.algorithm.beautifier         as beautifier
+import quex.engine.state_machine.algebra.complement           as complement
+import quex.engine.state_machine.algebra.reverse              as reverse
+import quex.engine.state_machine.algebra.intersection         as intersection
+import quex.engine.state_machine.algebra.difference           as difference
+import quex.engine.state_machine.algebra.symmetric_difference as symmetric_difference
+import quex.engine.state_machine.algebra.complement_begin     as complement_begin
+import quex.engine.state_machine.algebra.complement_end       as complement_end  
+import quex.engine.state_machine.algebra.union                as union
+from   quex.engine.state_machine.check.special                import is_all, is_none
+import quex.engine.state_machine.check.identity               as     identity
+import quex.engine.state_machine.check.superset               as     superset
+from   quex.engine.state_machine.check.special                import get_all, get_none
 
-from quex.engine.misc.file_in       import error_msg, \
-                                           check 
-
-from quex.exception                 import RegularExpressionException
-from quex.engine.interval_handling  import Interval, NumberSet
-from quex.engine.state_machine.core import StateMachine
-from quex.input.regular_expression.auxiliary import __snap_until, \
-                                                    __debug_entry, \
-                                                    __debug_exit, \
-                                                    __debug_print, \
-                                                    snap_replacement
-
-from   quex.blackboard                              import setup as Setup
-import quex.engine.utf8                             as utf8
-import quex.input.regular_expression.character_set_expression   as character_set_expression
+import quex.input.regular_expression.traditional_character_set as traditional_character_set
+import quex.input.regular_expression.property                  as property
 import quex.input.regular_expression.snap_backslashed_character as snap_backslashed_character
 import quex.input.regular_expression.snap_character_string      as snap_character_string
-import quex.input.regular_expression.case_fold_expression       as case_fold_expression
 import quex.input.regular_expression.construct                  as construct
+from   quex.input.regular_expression.auxiliary                  import __snap_until, \
+                                                                       __debug_entry, \
+                                                                       __debug_exit, \
+                                                                       __debug_print, \
+                                                                       snap_replacement
+
 import quex.engine.state_machine.sequentialize           as sequentialize
 import quex.engine.state_machine.algorithm.beautifier    as beautifier
 import quex.engine.state_machine.parallelize             as parallelize
 import quex.engine.state_machine.repeat                  as repeat
 import quex.engine.state_machine.algebra.reverse         as reverse
+import quex.engine.unicode_db.case_fold_parser           as     ucs_case_fold
 
+from   quex.engine.interval_handling  import Interval, NumberSet
+from   quex.engine.misc.file_in       import error_msg, \
+                                             check, \
+                                             check_whitespace, \
+                                             skip_whitespace
+import quex.engine.utf8               as utf8
+from   quex.blackboard                import setup as Setup
+from   quex.exception                 import RegularExpressionException
+
+from   StringIO import StringIO
+import sys
+       
 
 CONTROL_CHARACTERS = [ "+", "*", "\"", "/", "(", ")", "{", "}", "|", "[", "]", "$"] 
 SPECIAL_TERMINATOR = None
@@ -187,7 +205,7 @@ def snap_expression(stream, PatternDict):
 
     result = parallelize.do([result, result_2], CloneF=True)   # CloneF = False (shold be!)
     return __debug_exit(beautifier.do(result), stream)
-        
+
 def snap_term(stream, PatternDict):
     """term:  primary
               primary term 
@@ -233,7 +251,7 @@ def snap_primary(stream, PatternDict):
     if   x == "\"": result = snap_character_string.do(stream)
     elif x == "[":  
         stream.seek(-1, 1); 
-        result = character_set_expression.do(stream, PatternDict)
+        result = snap_character_set_expression(stream, PatternDict)
     elif x == "{":  result = snap_replacement(stream, PatternDict)
     elif x == ".":  result = create_ALL_BUT_NEWLINE_state_machine()
     elif x == "(":  result = snap_bracketed_expression(stream, PatternDict)
@@ -249,8 +267,11 @@ def snap_primary(stream, PatternDict):
     elif x == "\\":
         result = snap_command(stream, PatternDict)
         if result is None:
-            trigger_set = character_set_expression.snap_property_set(stream)
+            stream.seek(-1, 1)
+            trigger_set = snap_property_set(stream)
             if trigger_set is None:
+                # snap the '\'
+                stream.read(1)
                 char_code = snap_backslashed_character.do(stream)
                 if char_code is None:
                     raise RegularExpressionException("Backslash followed by unrecognized character code.")
@@ -278,6 +299,97 @@ def snap_primary(stream, PatternDict):
     if result_repeated is not None: result = result_repeated
     return __debug_exit(beautifier.do(result), stream)
     # return __debug_exit(result, stream)
+
+def  snap_case_folded_pattern(sh, PatternDict, NumberSetF=False):
+    """Parse a case fold expression of the form \C(..){ R } or \C{ R }.
+       Assume that '\C' has been snapped already from the stream.
+
+       See function ucs_case_fold_parser.get_fold_set() for details
+       about case folding.
+
+       snap_expression is not None, then snap_expression is the function 
+                                to parse a RE and the caller
+                                expects a state machine.
+
+       snap_set_expression is not None, then snap_set_expression is the
+                                    function to parse a character 
+                                    set and caller expects a 
+                                    NumberSet object.
+    """
+    def __add_intermediate_states(sm, character_list, start_state_idx, target_state_idx):
+        next_idx = start_state_idx
+        for letter in character_list[:-1]:
+            next_idx = sm.add_transition(next_idx, letter)
+        sm.add_transition(next_idx, character_list[-1], target_state_idx)
+
+    def __add_case_fold(sm, Flags, trigger_set, start_state_idx, target_state_idx):
+        for interval in trigger_set.get_intervals(PromiseToTreatWellF=True):
+            for i in range(interval.begin, interval.end):
+                fold = ucs_case_fold.get_fold_set(i, Flags)
+                for x in fold:
+                    if type(x) == list:
+                        __add_intermediate_states(sm, x, start_state_idx, target_state_idx)
+                    else:
+                        trigger_set.add_interval(Interval(x, x+1))
+
+
+    pos = sh.tell()
+    skip_whitespace(sh)
+    # -- parse the optional options in '(' ')' brackets
+    if not check(sh, "("):
+        # By default 'single' and 'multi' character case folds are active
+        if NumberSetF is not None: flag_txt = "s"
+        else:                      flag_txt = "sm"
+    else:
+        flag_txt = read_until_character(sh, ")")
+
+        if flag_txt == "":
+            sh.seek(pos)
+            error_msg("Missing closing ')' in case fold expression.", sh)
+
+        flag_txt = flag_txt.replace(" ", "").replace("\t", "").replace("\n", "")
+
+        for letter in flag_txt:
+            if letter not in "smt":
+                sh.seek(pos)
+                error_msg("Letter '%s' not permitted as case fold option.\n" % letter + \
+                          "Options are:  's' for simple case fold.\n" + \
+                          "              'm' for multi character sequence case fold.\n" + \
+                          "              't' for special turkish case fold rules.", sh)
+
+            if snap_set_expression is not None and letter == "m":
+                sh.seek(pos)
+                error_msg("Option 'm' not permitted as case fold option in set expression.\n" + \
+                          "Set expressions cannot absorb multi character sequences.", sh)
+
+        skip_whitespace(sh)
+
+
+    result = snap_curly_bracketed_expression(sh, PatternDict, "case fold operator", "C")[0]
+    if NumberSetF:
+        trigger_set = result.get_number_set()
+        if trigger_set is None:
+            error_msg("Expression in case fold does not result in character set.\n" + 
+                      "The content in '\\C{content}' may start with '[' or '[:'.", sh)
+
+        # -- perform the case fold for Sets!
+        for interval in trigger_set.get_intervals(PromiseToTreatWellF=True):
+            for i in range(interval.begin, interval.end):
+                fold = ucs_case_fold.get_fold_set(i, flag_txt)
+                for x in fold:
+                    assert type(x) != list
+                    trigger_set.add_interval(Interval(x, x+1))
+
+        result = trigger_set
+
+    else:
+        # -- perform the case fold for State Machines!
+        for state_idx, state in result.states.items():
+            transitions = state.transitions()
+            for target_state_idx, trigger_set in transitions.get_map().items():
+                __add_case_fold(result, flag_txt, trigger_set, state_idx, target_state_idx)
+
+    return result
 
 def snap_command(stream, PatternDict):
     global CommandDB
@@ -383,31 +495,6 @@ def snap_bracketed_expression(stream, PatternDict):
                                          stream.read(length))
     return result
 
-def snap_case_folded_pattern(sh, PatternDict, CharacterSetF=False):
-    """Parse a case fold expression of the form \C(..){ R } or \C{ R }.
-       Assume that '\C' has been snapped already from the stream.
-
-       See function ucs_case_fold_parser.get_fold_set() for details
-       about case folding.
-    """
-    return case_fold_expression.do(sh, PatternDict, snap_expression)
-
-
-def get_expression_in_brackets(stream, PatternDict, Name, TriggerChar):
-    # Read over the trigger character 
-    stream.read(1)
-    if not check(stream, "{"):
-        error_msg("Missing opening '{' after %s %s." % (Name, TriggerChar), stream)
-    pattern = snap_expression(stream, PatternDict) 
-    if check(stream, "}"):
-        return pattern
-    elif check(stream, "/") or check(stream, "$"):
-        error_msg("Pre- or post contexts are not allowed in %s \\%s{...} expressions." % (Name, TriggerChar), stream)
-    else:
-        error_msg("Missing closing '}' %s in \\%s{...}." % (Name, TriggerChar), stream)
-    return pattern
-
-
 def snap_any(stream, PatternDict):
     return special.get_any()
 
@@ -415,69 +502,336 @@ def snap_none(stream, PatternDict):
     return special.get_none()
 
 def snap_reverse(stream, PatternDict):
-    result = get_expression_in_brackets(stream, PatternDict, "reverse operator", "R")
+    result = snap_curly_bracketed_expression(stream, PatternDict, "reverse operator", "R")[0]
     return reverse.do(result)
 
 def snap_anti_pattern(stream, PatternDict):
-    result = get_expression_in_brackets(stream, PatternDict, "anti-pattern operator", "A")
+    result = snap_curly_bracketed_expression(stream, PatternDict, "anti-pattern operator", "A")[0]
     result.transform_to_anti_pattern()
     return result
 
 def snap_complement(stream, PatternDict):
-    result = get_expression_in_brackets(stream, PatternDict, "complement operator", "Co")
-    return complement.do(result)
+    pattern_list = snap_curly_bracketed_expression(stream, PatternDict, "complement operator", "Co")
+    if len(pattern_list) == 1:
+        tmp = pattern_list[0]
+    else:
+        tmp = union.do(pattern_list)
+    return complement.do(tmp)
 
 def snap_tie(stream, PatternDict):
-    result = get_expression_in_brackets(stream, PatternDict, "Tie operator", "Tie")
+    result = snap_curly_bracketed_expression(stream, PatternDict, "Tie operator", "Tie")
     return tie.do(result)
 
 def snap_untie(stream, PatternDict):
-    result = get_expression_in_brackets(stream, PatternDict, "Untie operator", "Untie")
+    result = snap_curly_bracketed_expression(stream, PatternDict, "Untie operator", "Untie")
     return tie.do(result)
 
 def snap_union(stream, PatternDict):
-    sm_list = get_expression_list_in_brackets(stream, PatternDict, "union operator", "Union")
-    return union.do(sm_list)
+    pattern_list = snap_curly_bracketed_expression(stream, PatternDict, "union operator", "Union", 
+                                                   MinN=2, MaxN=sys.maxint)
+    return union.do(pattern_list)
 
 def snap_intersection(stream, PatternDict):
-    sm_list = get_expression_list_in_brackets(stream, PatternDict, "intersection operator", "Intersection")
-    return intersection.do(sm_list)
+    pattern_list = snap_curly_bracketed_expression(stream, PatternDict, "intersection operator", "Intersection", 
+                                                   MinN=2, MaxN=sys.maxint)
+    return intersection.do(pattern_list)
 
 def snap_not_begin(stream, PatternDict):
-    sm_list = get_expression_list_in_brackets(stream, PatternDict, "union operator", "Union")
-
-    return complement_begin.do(sm_list[0], union.do(sm_list[1:]))
+    sm_list = snap_curly_bracketed_expression(stream, PatternDict, "not-begin operator", "NotBegin", 
+                                              MinN=2, MaxN=sys.maxint)
+    if len(sm_list) == 2:
+        return complement_begin.do(sm_list[0], sm_list[1])
+    else:
+        return complement_begin.do(sm_list[0], union.do(sm_list[1:]))
 
 def snap_not_end(stream, PatternDict):
-    sm_list = get_expression_list_in_brackets(stream, PatternDict, "union operator", "Union")
-
-    return complement_end.do(sm_list[0], union.do(sm_list[1:]))
+    sm_list = snap_curly_bracketed_expression(stream, PatternDict, "not-end operator", "NotEnd", 
+                                              MinN=2, MaxN=sys.maxint)
+    if len(sm_list) == 2:
+        return complement_end.do(sm_list[0], sm_list[1])
+    else:
+        return complement_end.do(sm_list[0], union.do(sm_list[1:]))
 
 def snap_difference(stream, PatternDict):
-    sm_list = get_expression_list_in_brackets(stream, PatternDict, "intersection operator", "Intersection", RequiredN=2)
+    sm_list = snap_curly_bracketed_expression(stream, PatternDict, "difference operator", "Intersection",
+                                              MinN=2, MaxN=2)
     return difference.do(sm_list[0], sm_list[1])
 
 def snap_symmetric_difference(stream, PatternDict):
-    sm_list = get_expression_list_in_brackets(stream, PatternDict, "intersection operator", "Intersection", RequiredN=2)
-    return difference.do(sm_list)
+    sm_list = snap_curly_bracketed_expression(stream, PatternDict, "intersection operator", "Intersection", 
+                                              MinN=2, MaxN=2)
+    return symmetric_difference.do(sm_list)
+
+def snap_curly_bracketed_expression(stream, PatternDict, Name, TriggerChar, MinN=1, MaxN=1):
+    """Snaps a list of RE's in '{' and '}'. The separator between the patterns is 
+       whitespace. 'MinN' and 'MaxN' determine the number of expected patterns.
+       Set 'MaxN=sys.maxint' for an arbitrary number of patterns.
+
+
+
+       RETURNS: result = list of patterns. 
+
+                it holds: len(result) >= MinN  
+                          len(result) <= MaxN
+
+                if not, the function sys.exit()-s.
+       
+    """
+    assert MinN <= MaxN
+    assert MinN > 0
+
+    skip_whitespace(stream)
+
+    # Read over the trigger character 
+    if not check(stream, "{"):
+        error_msg("Missing opening '{' after %s %s." % (Name, TriggerChar), stream)
+
+    result = []
+    while 1 + 1 == 2:
+        pattern = snap_expression(stream, PatternDict) 
+        if pattern is not None:
+            result.append(pattern)
+
+        if check(stream, "}"):
+            break
+        elif check_whitespace(stream):
+            continue
+        elif check(stream, "/") or check(stream, "$"):
+            error_msg("Pre- or post contexts are not allowed in %s \\%s{...} expressions." % (Name, TriggerChar), stream)
+        else:
+            error_msg("Missing closing '}' %s in \\%s{...}." % (Name, TriggerChar), stream)
+
+    if MinN != MaxN:
+        if len(result) < MinN:
+            error_msg("At minimum %i pattern%s required between '{' and '}'" \
+                      % (MinN, "" if MinN == 1 else "s"), stream)
+        if len(result) > MaxN:
+            error_msg("At maximum %i pattern%s required between '{' and '}'" \
+                      % (MaxN, "" if MaxN == 1 else "s"), stream)
+    else:
+        if len(result) != MinN:
+            error_msg("Exactly %i pattern%s required between '{' and '}'" \
+                      % (MinN, "" if MinN == 1 else "s"), stream)
+
+    return result
 
 CommandDB = {
     # Note, that there are backlashed elements that may appear also in strings.
     # \a, \X, ... those are not treated here. They are treated in 
     # 'snap_backslashed_character()'.
-    "A":         snap_anti_pattern,          # OK
-    "Any":       snap_any,                   # OK
-    "C":         snap_case_folded_pattern,   # OK
-    "Diff":      snap_difference,            # OK
-    "Intersect": snap_intersection,          # OK
-    "None":      snap_none,                  # OK
-    "Not":       snap_complement,            # OK
-    "NotBegin":  snap_not_begin,             # OK
-    "NotEnd":    snap_not_end,               # OK
-    "R":         snap_reverse,               # OK
-    "SymDiff":   snap_symmetric_difference,  # OK
-    "Tie":       snap_tie,                   # OK 'repeat'
-    "Union":     snap_union,                 # OK
-    "Untie":     snap_untie,                 # OK 'untie the repetition'
+    "A":            snap_anti_pattern,          # OK
+    "Any":          snap_any,                   # OK
+    "C":            snap_case_folded_pattern,   # OK
+    "Diff":         snap_difference,            # OK
+    "Intersection": snap_intersection,          # OK
+    "None":         snap_none,                  # OK
+    "Not":          snap_complement,            # OK
+    "NotBegin":     snap_not_begin,             # OK
+    "NotEnd":       snap_not_end,               # OK
+    "R":            snap_reverse,               # OK
+    "SymDiff":      snap_symmetric_difference,  # OK
+    "Tie":          snap_tie,                   # OK 'repeat'
+    "Union":        snap_union,                 # OK
+    "Untie":        snap_untie,                 # OK 'untie the repetition'
 }
 
+special_character_set_db = {
+    # The closing ']' is to trigger the end of the traditional character set
+    "alnum":  "a-zA-Z0-9]",
+    "alpha":  "a-zA-Z]",
+    "blank":  " \\t]",
+    "cntrl":  "\\x00-\\x1F\\x7F]", 
+    "digit":  "0-9]",
+    "graph":  "\\x21-\\x7E]",
+    "lower":  "a-z]",
+    "print":  "\\x20-\\x7E]", 
+    "punct":  "!\"#$%&'()*+,-./:;?@[\\]_`{|}~\\\\]",
+    "space":  " \\t\\r\\n]",
+    "upper":  "A-Z]",
+    "xdigit": "a-fA-F0-9]",
+}
+
+def snap_character_set_expression(stream, PatternDict):
+    # GRAMMAR:
+    #
+    # set_expression: 
+    #                 [: set_term :]
+    #                 traditional character set
+    #                 \P '{' propperty string '}'
+    #                 '{' identifier '}'
+    #
+    # set_term:
+    #                 "alnum" 
+    #                 "alpha" 
+    #                 "blank" 
+    #                 "cntrl" 
+    #                 "digit" 
+    #                 "graph" 
+    #                 "lower" 
+    #                 "print" 
+    #                 "punct" 
+    #                 "space" 
+    #                 "upper" 
+    #                 "xdigit"
+    #                 "union"        '(' set_term [ ',' set_term ]+ ')'
+    #                 "intersection" '(' set_term [ ',' set_term ]+ ')'
+    #                 "difference"   '(' set_term [ ',' set_term ]+ ')'
+    #                 "inverse"      '(' set_term ')'
+    #                 set_expression
+    # 
+    trigger_set = snap_set_expression(stream, PatternDict)
+
+    if trigger_set is None: 
+        error_msg("Regular Expression: snap_character_set_expression called for something\n" + \
+                  "that does not start with '[:', '[' or '\\P'", stream)
+    elif trigger_set.is_empty():
+        error_msg("Regular Expression: Character set expression results in empty set.", stream, DontExitF=True)
+
+    # Create state machine that triggers with the trigger set to SUCCESS
+    # NOTE: The default for the ELSE transition is FAIL.
+    sm = StateMachine()
+    sm.add_transition(sm.init_state_index, trigger_set, AcceptanceF=True)
+
+    return __debug_exit(sm, stream)
+
+def snap_set_expression(stream, PatternDict):
+    assert     stream.__class__.__name__ == "StringIO" \
+            or stream.__class__.__name__ == "file"
+
+    __debug_entry("set_expression", stream)
+
+    result = snap_property_set(stream)
+    if result is not None: return result
+
+    x = stream.read(2)
+    if   x == "\\C":
+        return case_fold_expression.do(stream, PatternDict, NumberSetF=True)
+
+    elif x == "[:":
+        result = snap_set_term(stream, PatternDict)
+        skip_whitespace(stream)
+        x = stream.read(2)
+        if x != ":]":
+            raise RegularExpressionException("Missing closing ':]' for character set expression.\n" + \
+                                             "found: '%s'" % x)
+    elif x[0] == "[":
+        stream.seek(-1, 1)
+        result = traditional_character_set.do(stream)   
+
+    elif x[0] == "{":
+        stream.seek(-1, 1)
+        result = snap_replacement(stream, PatternDict, StateMachineF=False)   
+
+    else:
+        result = None
+
+    return __debug_exit(result, stream)
+
+def snap_property_set(stream):
+    position = stream.tell()
+    x = stream.read(2)
+    if   x == "\\P": 
+        stream.seek(position)
+        return property.do(stream)
+    elif x == "\\N": 
+        stream.seek(position)
+        return property.do_shortcut(stream, "N", "na") # UCS Property: Name
+    elif x == "\\G": 
+        stream.seek(position)
+        return property.do_shortcut(stream, "G", "gc") # UCS Property: General_Category
+    elif x == "\\E": 
+        skip_whitespace(stream)
+        if check(stream, "{") == False:
+            error_msg("Missing '{' after '\\E'.", stream)
+        encoding_name = __snap_until(stream, "}").strip()
+        return codec_db.get_supported_unicode_character_set(encoding_name, FH=stream)
+    else:
+        stream.seek(position)
+        return None
+
+def snap_set_term(stream, PatternDict):
+    global special_character_set_db
+
+    __debug_entry("set_term", stream)    
+
+    operation_list     = [ "union", "intersection", "difference", "inverse"]
+    character_set_list = special_character_set_db.keys()
+
+    skip_whitespace(stream)
+    position = stream.tell()
+
+    # if there is no following '(', then enter the 'snap_expression' block below
+    word = read_identifier(stream)
+
+    if word in operation_list: 
+        set_list = snap_set_list(stream, word, PatternDict)
+        # if an error occurs during set_list parsing, an exception is thrown about syntax error
+
+        L      = len(set_list)
+        result = set_list[0]
+
+        if word == "inverse":
+            # The inverse of multiple sets, is to be the inverse of the union of these sets.
+            if L > 1:
+                for character_set in set_list[1:]:
+                    result.unite_with(character_set)
+            return __debug_exit(result.inverse(), stream)
+
+        if L < 2:
+            raise RegularExpressionException("Regular Expression: A %s operation needs at least\n" % word + \
+                                             "two sets to operate on them.")
+            
+        if   word == "union":
+            for set in set_list[1:]:
+                result.unite_with(set)
+        elif word == "intersection":
+            for set in set_list[1:]:
+                result.intersect_with(set)
+        elif word == "difference":
+            for set in set_list[1:]:
+                result.subtract(set)
+
+    elif word in character_set_list:
+        reg_expr = special_character_set_db[word]
+        result   = traditional_character_set.do_string(reg_expr)
+
+    elif word != "":
+        verify_word_in_list(word, character_set_list + operation_list, 
+                            "Unknown keyword '%s'." % word, stream)
+    else:
+        stream.seek(position)
+        result = snap_set_expression(stream, PatternDict)
+
+    return __debug_exit(result, stream)
+
+def __snap_word(stream):
+    try:    the_word = read_until_letter(stream, ["("]) 
+    except: 
+        raise RegularExpressionException("Missing opening bracket.")
+    stream.seek(-1,1)
+    return the_word.strip()
+
+def snap_set_list(stream, set_operation_name, PatternDict):
+    __debug_entry("set_list", stream)
+
+    skip_whitespace(stream)
+    if stream.read(1) != "(": 
+        raise RegularExpressionException("Missing opening bracket '%s' operation." % set_operation_name)
+
+    set_list = []
+    while 1 + 1 == 2:
+        skip_whitespace(stream)
+        result = snap_set_term(stream, PatternDict)
+        if result is None: 
+            raise RegularExpressionException("Missing set expression list after '%s' operation." % set_operation_name)
+        set_list.append(result)
+        skip_whitespace(stream)
+        tmp = stream.read(1)
+        if tmp != ",": 
+            if tmp != ")":
+                stream.seek(-1, 1)
+                raise RegularExpressionException("Missing closing ')' after after '%s' operation." % set_operation_name)
+            return __debug_exit(set_list, stream)
+
+
+   

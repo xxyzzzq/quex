@@ -5,7 +5,7 @@ import StringIO
 
 sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.exception as exception
-import quex.input.regular_expression.character_set_expression as character_set_expression
+from   quex.input.regular_expression.engine import snap_character_set_expression
 
 if "--hwut-info" in sys.argv:
     print "Unicode properties: Set Operations"
@@ -16,7 +16,7 @@ def test(TestString, NumbersF=False):
     print "expression = \"" + TestString + "\""
     stream = StringIO.StringIO(TestString)
     try:
-        result = character_set_expression.snap_set_expression(stream, {})
+        result = snap_character_set_expression(stream, {})
         if NumbersF == False:
             print "result     = " + result.get_utf8_string() 
         else:

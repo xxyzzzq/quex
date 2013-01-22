@@ -21,7 +21,7 @@ init-state = 0L
 00000 ()
      == 'c' ==> 00001
     
-00001 (A, pre=20)
+00001 (A, pre=24)
     
 pre-context = init-state = 0L
 00000 ()
@@ -50,7 +50,7 @@ init-state = 0L
 00004 ()
      == 'o' ==> 00005
     
-00005 (A, pre=51)
+00005 (A, pre=63)
     
 pre-context = init-state = 0L
 00000 ()
