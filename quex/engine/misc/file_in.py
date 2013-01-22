@@ -658,6 +658,12 @@ def get_include_guard_extension(Filename):
     """Transforms the letters of a filename, so that they can appear in a C-macro."""
     return make_safe_identifier(Filename, NoCodeF=False)
 
+def check_whitespace(fh):
+    pos = fh.tell()
+    skip_whitespace(fh)
+    if pos == fh.tell(): return False
+    else:                return True
+
 def check(fh, Word):
     position = fh.tell()
     try:

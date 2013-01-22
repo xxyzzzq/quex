@@ -95,7 +95,7 @@ UTF8: simple_utf8.qx $(QUEX_CORE)
 		 --token-policy        single           \
 		 --language            C                \
 		 --buffer-element-type wchar_t          \
-		 --token-memory-management-by-user     
+		 --token-memory-management-by-user     --debug-exception
 
 # (*) HELPERS __________________________________________________________________
 clean:	
