@@ -12,6 +12,7 @@ import quex.engine.state_machine.algebra.difference   as difference
 import quex.engine.state_machine.algebra.symmetric_difference   as symmetric_difference
 import quex.engine.state_machine.algebra.complement_begin   as complement_begin
 import quex.engine.state_machine.algebra.complement_end     as complement_end  
+import quex.engine.state_machine.algebra.complement_end     as complement_in  
 import quex.engine.state_machine.algebra.union        as union
 from   quex.engine.state_machine.check.special        import is_all, is_none
 import quex.engine.state_machine.check.identity       as     identity
@@ -22,17 +23,18 @@ from   itertools import islice
 
 if "--hwut-info" in sys.argv:
     print "Algebraic Relations;"
-    print "CHOICES:  unary, binary;"
+    print "CHOICES:  unary, binary, derived_binary;"
     sys.exit()
 
-def inv(A):     return complement.do(A)
-def rev(A):     return reverse.do(A)
-def uni(*A):    return union.do(list(A))
-def itsct(*A):  return intersection.do(list(A))
-def diff(A, B): return difference.do(A, B)
+def inv(A):          return complement.do(A)
+def rev(A):          return reverse.do(A)
+def uni(*A):         return union.do(list(A))
+def itsct(*A):       return intersection.do(list(A))
+def diff(A, B):      return difference.do(A, B)
 def symdiff(A, B):   return symmetric_difference.do([A, B])
 def not_begin(A, B): return complement_begin.do(A, B)
 def not_end(A, B):   return complement_end.do(A, B)
+def not_in(A, B):    return complement_in.do(A, B)
 
 def exec_print(ExprStr):
     exec("sme = %s" % ExprStr.replace("All", "All_sm").replace("None", "None_sm"))
@@ -107,6 +109,10 @@ def unary(ExprStr):
     equal("not_begin(None, X)", "None")
     equal("not_begin(X, All)",  "None")
 
+    equal("not_in(X, None)", "X")
+    equal("not_in(None, X)", "None")
+    equal("not_in(X, All)",  "None")
+
     equal("not_end(X, None)",   "X")
     equal("not_end(None, X)",   "None")
     equal("not_end(X, All)",    "None")
@@ -147,9 +153,16 @@ def derived_binary(ExprStrX, ExprStrY):
     equal("uni(X, not_begin(X, Y))",   "X")
     equal("uni(Y, not_begin(Y, X))",   "Y")
 
+    equal("itsct(Y, not_in(X, Y))", "None")
+    equal("itsct(X, not_in(Y, X))", "None")
+    equal("uni(X, not_in(X, Y))",   "X")
+    equal("uni(Y, not_in(Y, X))",   "Y")
+
     equal("itsct(Y, not_end(X, Y))", "None")
     equal("itsct(X, not_end(Y, X))", "None")
     equal("uni(X, not_end(X, Y))",   "X")
+    equal("uni(Y, not_end(Y, X))",   "Y")
+
     equal("uni(Y, not_end(Y, X))",   "Y")
 
 def report(ExprStr):
@@ -191,6 +204,14 @@ elif "binary" in sys.argv:
     for i, str_0 in enumerate(pattern_list):
         for str_1 in islice(pattern_list, i):
             binary(str_0, str_1)
+
+    # If no assert triggers, then everything is OK
+    print "Oll Korrekt"
+
+elif "derived_binary" in sys.argv:
+    for i, str_0 in enumerate(pattern_list):
+        for str_1 in islice(pattern_list, i):
+            derived_binary(str_0, str_1)
 
     # If no assert triggers, then everything is OK
     print "Oll Korrekt"
