@@ -15,7 +15,6 @@ def get_all():
                               |            |
            (0)--- \Any --->(( 0 ))<--------'
     """
-
     result = StateMachine()
 
     i      = index.get()
@@ -26,6 +25,19 @@ def get_all():
     result.get_init_state().add_transition(NumberSet(Interval(-sys.maxint, sys.maxint)), i)
 
     return result
+
+def get_any():
+    """RETURNS:
+
+       A state machine that 'eats' any character, but only one. 
+
+           (0)--- \Any --->(( 0 ))
+    """
+    result = StateMachine()
+    result.add_transition(result.init_state_index, NumberSet(Interval(-sys.maxint, sys.maxint)), AcceptanceF=True)
+
+    return result
+
 
 def get_none():
     return StateMachine()

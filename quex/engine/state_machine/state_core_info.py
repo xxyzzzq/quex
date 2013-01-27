@@ -204,13 +204,13 @@ class StateCoreInfo(object):
         elif self.__input_position_restore_f:              return True
         return False
 
-    def get_string(self, StateMachineAndStateInfoF=True):
+    def get_string(self, StateMachineAndStateInfoF=True, OriginalStatesF=True):
         txt = ""
 
         if StateMachineAndStateInfoF:
             if self.__pattern_id != E_AcceptanceIDs.FAILURE:
                 txt += ", " + repr(self.__pattern_id).replace("L", "")
-            if self.state_index != -1L:
+            if OriginalStatesF and self.state_index != -1L:
                 txt += ", " + repr(self.state_index).replace("L", "")
 
         if self.__acceptance_f:        

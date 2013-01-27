@@ -1,4 +1,4 @@
-digraph state_machine_15 {
+digraph state_machine {
 rankdir=LR;
 size="8,5"
 node [shape = doublecircle]; 1; 3;

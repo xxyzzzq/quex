@@ -37,8 +37,9 @@ import quex.engine.state_machine.algebra.difference           as difference
 import quex.engine.state_machine.algebra.symmetric_difference as symmetric_difference
 import quex.engine.state_machine.algebra.complement_begin     as complement_begin
 import quex.engine.state_machine.algebra.complement_end       as complement_end  
+import quex.engine.state_machine.algebra.complement_in        as complement_in   
 import quex.engine.state_machine.algebra.union                as union
-from   quex.engine.state_machine.check.special                import is_all, is_none
+from   quex.engine.state_machine.check.special                import is_all, is_none, get_any, get_none
 import quex.engine.state_machine.check.identity               as     identity
 import quex.engine.state_machine.check.superset               as     superset
 from   quex.engine.state_machine.check.special                import get_all, get_none
@@ -299,6 +300,10 @@ def snap_primary(stream, PatternDict):
     # -- optional repetition command? 
     result_repeated = __snap_repetition_range(result, stream) 
     if result_repeated is not None: result = result_repeated
+
+    # There's something going wrong with pseudo-ambigous post context
+    # if we do not clean-up here. TODO: Investigate why?
+    # See tests in generator/TEST directory.
     return __debug_exit(beautifier.do(result), stream)
     # return __debug_exit(result, stream)
 
@@ -308,15 +313,6 @@ def  snap_case_folded_pattern(sh, PatternDict, NumberSetF=False):
 
        See function ucs_case_fold_parser.get_fold_set() for details
        about case folding.
-
-       snap_expression is not None, then snap_expression is the function 
-                                to parse a RE and the caller
-                                expects a state machine.
-
-       snap_set_expression is not None, then snap_set_expression is the
-                                    function to parse a character 
-                                    set and caller expects a 
-                                    NumberSet object.
     """
     def __add_intermediate_states(sm, character_list, start_state_idx, target_state_idx):
         next_idx = start_state_idx
@@ -340,8 +336,8 @@ def  snap_case_folded_pattern(sh, PatternDict, NumberSetF=False):
     # -- parse the optional options in '(' ')' brackets
     if not check(sh, "("):
         # By default 'single' and 'multi' character case folds are active
-        if NumberSetF is not None: flag_txt = "s"
-        else:                      flag_txt = "sm"
+        if NumberSetF: flag_txt = "s"
+        else:          flag_txt = "sm"
     else:
         flag_txt = read_until_character(sh, ")")
 
@@ -359,7 +355,7 @@ def  snap_case_folded_pattern(sh, PatternDict, NumberSetF=False):
                           "              'm' for multi character sequence case fold.\n" + \
                           "              't' for special turkish case fold rules.", sh)
 
-            if snap_set_expression is not None and letter == "m":
+            if NumberSetF and letter == "m":
                 sh.seek(pos)
                 error_msg("Option 'm' not permitted as case fold option in set expression.\n" + \
                           "Set expressions cannot absorb multi character sequences.", sh)
@@ -387,8 +383,7 @@ def  snap_case_folded_pattern(sh, PatternDict, NumberSetF=False):
     else:
         # -- perform the case fold for State Machines!
         for state_idx, state in result.states.items():
-            transitions = state.transitions()
-            for target_state_idx, trigger_set in transitions.get_map().items():
+            for target_state_idx, trigger_set in state.transitions().get_map().items():
                 __add_case_fold(result, flag_txt, trigger_set, state_idx, target_state_idx)
 
     return result
@@ -396,7 +391,7 @@ def  snap_case_folded_pattern(sh, PatternDict, NumberSetF=False):
 def snap_command(stream, PatternDict):
     global CommandDB
 
-    for command_str, snap_function in CommandDB.iteritems():
+    for command_str, snap_function in CommandDB:
         if check(stream, command_str):
             return snap_function(stream, PatternDict)
 
@@ -498,10 +493,10 @@ def snap_bracketed_expression(stream, PatternDict):
     return result
 
 def snap_any(stream, PatternDict):
-    return special.get_any()
+    return get_any()
 
 def snap_none(stream, PatternDict):
-    return special.get_none()
+    return get_none()
 
 def snap_reverse(stream, PatternDict):
     result = snap_curly_bracketed_expression(stream, PatternDict, "reverse operator", "R")[0]
@@ -537,6 +532,14 @@ def snap_intersection(stream, PatternDict):
     pattern_list = snap_curly_bracketed_expression(stream, PatternDict, "intersection operator", "Intersection", 
                                                    MinN=2, MaxN=sys.maxint)
     return intersection.do(pattern_list)
+
+def snap_not_in(stream, PatternDict):
+    sm_list = snap_curly_bracketed_expression(stream, PatternDict, "not-in operator", "NotIn", 
+                                              MinN=2, MaxN=sys.maxint)
+    if len(sm_list) == 2:
+        return complement_in.do(sm_list[0], sm_list[1])
+    else:
+        return complement_in.do(sm_list[0], union.do(sm_list[1:]))
 
 def snap_not_begin(stream, PatternDict):
     sm_list = snap_curly_bracketed_expression(stream, PatternDict, "not-begin operator", "NotBegin", 
@@ -617,25 +620,28 @@ def snap_curly_bracketed_expression(stream, PatternDict, Name, TriggerChar, MinN
 
     return result
 
-CommandDB = {
-    # Note, that there are backlashed elements that may appear also in strings.
-    # \a, \X, ... those are not treated here. They are treated in 
-    # 'snap_backslashed_character()'.
-    "A":            snap_anti_pattern,          # OK
-    "Any":          snap_any,                   # OK
-    "C":            snap_case_folded_pattern,   # OK
-    "Diff":         snap_difference,            # OK
-    "Intersection": snap_intersection,          # OK
-    "None":         snap_none,                  # OK
-    "Not":          snap_complement,            # OK
-    "NotBegin":     snap_not_begin,             # OK
-    "NotEnd":       snap_not_end,               # OK
-    "R":            snap_reverse,               # OK
-    "SymDiff":      snap_symmetric_difference,  # OK
-    "Tie":          snap_tie,                   # OK 'repeat'
-    "Union":        snap_union,                 # OK
-    "Untie":        snap_untie,                 # OK 'untie the repetition'
-}
+# MUST BE SORTED WITH LONGEST PATTERN FIRST!
+CommandDB = sorted([
+   # Note, that there are backlashed elements that may appear also in strings.
+   # \a, \X, ... those are not treated here. They are treated in 
+   # 'snap_backslashed_character()'.
+   ("A",            snap_anti_pattern),          # OK
+   ("Any",          snap_any),                   # OK
+   ("C",            snap_case_folded_pattern),   # OK
+   ("Diff",         snap_difference),            # OK
+   ("Intersection", snap_intersection),          # OK
+   ("None",         snap_none),                  # OK
+   ("Not",          snap_complement),            # OK
+   ("NotIn",        snap_not_in),                # OK
+   ("NotBegin",     snap_not_begin),             # OK
+   ("NotEnd",       snap_not_end),               # OK
+   ("R",            snap_reverse),               # OK
+   ("SymDiff",      snap_symmetric_difference),  # OK
+   ("Tie",          snap_tie),                   # OK 'repeat'
+   ("Union",        snap_union),                 # OK
+   ("Untie",        snap_untie),                 # OK 'untie the repetition'
+   # Sort by length (longest first), then sort by name
+], key=lambda x: (-len(x[0]), x[0]))
 
 special_character_set_db = {
     # The closing ']' is to trigger the end of the traditional character set

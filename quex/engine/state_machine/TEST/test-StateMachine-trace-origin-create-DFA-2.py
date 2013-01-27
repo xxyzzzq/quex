@@ -19,14 +19,14 @@ sm2 = regex.do('"PR"', {}).sm
 sm1.mark_state_origins()
 sm2.mark_state_origins()
 
-print "## sm1 = ", sm1
-print "## sm2 = ", sm2
+print "## sm1 = ", sm1.get_string(OriginalStatesF=False, NormalizeF=True)
+print "## sm2 = ", sm2.get_string(OriginalStatesF=False, NormalizeF=True)
 
 sm = parallelize.do([sm1, sm2])
 
-print "## parallelized:", sm.get_string(NormalizeF=True)
+print "## parallelized:", sm.get_string(NormalizeF=True, OriginalStatesF=False)
 # print "## parallelized:", sm.get_string(NormalizeF=False)
 
 dfa = nfa_to_dfa.do(sm)
-print dfa
+print dfa.get_string(OriginalStatesF=False, NormalizeF=True)
 

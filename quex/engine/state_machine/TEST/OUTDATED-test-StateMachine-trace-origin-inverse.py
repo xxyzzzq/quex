@@ -7,8 +7,6 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.engine.state_machine.core import *
 import quex.engine.state_machine.parallelize as parallelize 
 from   quex.engine.state_machine.TEST.test_state_machines import *
-import quex.engine.state_machine.algorithm.nfa_to_dfa as nfa_to_dfa
-import quex.engine.state_machine.algorithm.hopcroft_minimization as hopcroft
 import quex.engine.state_machine.algorithm.beautifier as beautifier
 import quex.engine.state_machine.algebra.reverse         as reverse
 

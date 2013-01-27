@@ -18,4 +18,8 @@ if "--hwut-info" in sys.argv:
 sm1 = regex.do("[ΆΈΉΊΌΎ-Ϋ]+", {}).sm
 sm2 = regex.do("[ \\t\\n]", {}).sm
 result = trafo.do(get_combined_state_machine([sm1, sm2]))
-print result.get_graphviz_string(NormalizeF=True, Option="hex")
+for line in result.get_graphviz_string(NormalizeF=True, Option="hex").split("\n"):
+    if line.find("digraph") != -1:
+        print "digraph state_machine {"
+    else:
+        print line

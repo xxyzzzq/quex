@@ -16,13 +16,22 @@ def test(TestString, NumbersF=False):
     print "expression = \"" + TestString + "\""
     stream = StringIO.StringIO(TestString)
     try:
+    # if True:
         result = snap_character_set_expression(stream, {})
+        result = result.get_number_set()
         if NumbersF == False:
-            print "result     = " + result.get_utf8_string() 
+            if result.__class__.__name__ == "StateMachine":
+                print "result     = " + result.get_string(NormalizeF=True) 
+            else:
+                print "result     = " + result.get_utf8_string() 
         else:
-            print "result     = " + repr(result) 
+            if result.__class__.__name__ == "StateMachine":
+                print "result     = " + result.get_string(NormalizeF=True) 
+            else:
+                print "result     = " + result.get_string()
     except exception.RegularExpressionException, x:
         print x.message
+
 
 test("[: alnum :]",         NumbersF=True)    
 test("[: [\\100-\\0] :]",   NumbersF=True)    
@@ -45,7 +54,7 @@ def test2(TestString):
     result = snap_character_set_expression(stream, {})
 
     print "expression = \"" + TestString + "\""
-    print "result     = " + result.get_string(Option="hex")
+    print "result     = " + result.get_string(Option="hex", NormalizeF=True)
 
 print 
 print "Check the range cut ..."

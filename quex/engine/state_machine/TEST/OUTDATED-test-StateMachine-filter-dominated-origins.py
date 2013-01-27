@@ -9,8 +9,6 @@ from quex.engine.state_machine.TEST.test_state_machines import *
 from quex.engine.state_machine.index import *
 import quex.engine.state_machine.parallelize as parallelize
 import quex.engine.state_machine.repeat as repeat
-import quex.engine.state_machine.algorithm.nfa_to_dfa as nfa_to_dfa
-import quex.engine.state_machine.algorithm.hopcroft_minimization as hopcroft
 import quex.engine.state_machine.algorithm.beautifier as beautifier
 
 if "--hwut-info" in sys.argv:

@@ -19,7 +19,7 @@ def test(TestString):
     print "-------------------------------------------------------------------"
     print "expression    = \"" + TestString + "\""
     try: 
-        sm = core.do(TestString, {})
+        sm = core.do(TestString, {}).sm
         print "state machine\n", sm 
 
     except RegularExpressionException, x:
