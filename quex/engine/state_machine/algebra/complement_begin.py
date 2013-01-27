@@ -51,18 +51,22 @@ def do(SM_A, SM_B):
     return beautifier.do(cutter.result)
 
 class WalkAlong(TreeWalker):
-    def __init__(self, SM_A, SM_B):
+    def __init__(self, SM_A, SM_B, StartingSM=None):
         self.original   = SM_A
         self.admissible = SM_B
 
 
-        self.result   = StateMachine(InitStateIndex = index.map_state_combination_to_index((SM_A.init_state_index, 
-                                                                                            SM_B.init_state_index)), 
-                                     InitState      = self.get_state_core(SM_A.init_state_index, 
-                                                                          SM_B.init_state_index))
-        self.state_db = {}
+        if StartingSM is None:
+            self.result = StateMachine(InitStateIndex = index.map_state_combination_to_index((SM_A.init_state_index, 
+                                                                                              SM_B.init_state_index)), 
+                                       InitState      = self.get_state_core(SM_A.init_state_index, 
+                                                                            SM_B.init_state_index))
+        else:
+            self.result = StartingSM
 
-        self.path     = []
+        self.state_db   = {}
+
+        self.path       = []
         TreeWalker.__init__(self)
 
     def on_enter(self, Args):
