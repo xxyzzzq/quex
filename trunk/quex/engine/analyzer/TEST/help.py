@@ -41,7 +41,7 @@ def prepare(PatternStringList, GetPreContextSM_F=False):
     return sm.normalized_clone()
 
 def test_track_analysis(SM, EngineType = engine.FORWARD, PrintPRM_F = False):
-    print SM.get_string(NormalizeF=True)
+    print SM.get_string(NormalizeF=True, OriginalStatesF=False)
     from_db, to_db = SM.get_from_to_db()
 
     trace_db,       \
@@ -55,7 +55,7 @@ def test_track_analysis(SM, EngineType = engine.FORWARD, PrintPRM_F = False):
 
 def test(SM, EngineType = engine.FORWARD, PrintPRM_F = False):
     
-    print SM.get_string(NormalizeF=True)
+    print SM.get_string(NormalizeF=True, OriginalStatesF=False)
 
     plain = core.Analyzer(SM, EngineType)
 

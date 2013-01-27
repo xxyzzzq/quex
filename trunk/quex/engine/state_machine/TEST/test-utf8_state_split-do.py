@@ -19,7 +19,7 @@ class X:
     def __init__(self, Name):
         sh = StringIO("[:\\P{Script=%s}:]" % Name)
         self.name = Name
-        self.charset = charset_expression.snap_set_expression(sh, {})
+        self.charset = regex.snap_set_expression(sh, {})
         self.sm = StateMachine()
         self.sm.add_transition(self.sm.init_state_index, self.charset, AcceptanceF=True)
         self.id = self.sm.get_id()

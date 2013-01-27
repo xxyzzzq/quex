@@ -22,7 +22,11 @@ pattern_action_pair_list = [ PatternActionInfo(sm, "Don't worry, be happy!") ]
 my_plotter = plotter.Generator(pattern_action_pair_list, "test-plot")
 
 my_plotter.do()
-print open("test-plot.dot").read() # .replace("#", "##")
+for line in open("test-plot.dot").readlines(): # .replace("#", "##")
+    if line.find("digraph") != -1:
+        print "digraph state_machine {"
+    else:
+        print "%s" % line,
 os.remove("test-plot.dot")
 
 

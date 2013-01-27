@@ -61,7 +61,7 @@ class Pattern(object):
         # All state machines must be DFAs
         assert self.__sm is not None
         if not self.__sm.is_DFA_compliant(): 
-            self.__sm                            = beautifier.do(self.__sm)
+            self.__sm                        = beautifier.do(self.__sm)
 
         if         self.__pre_context_sm_to_be_inverted is not None \
            and not self.__pre_context_sm_to_be_inverted.is_DFA_compliant(): 

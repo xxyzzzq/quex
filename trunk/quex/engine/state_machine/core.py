@@ -153,9 +153,9 @@ class State:
     def __repr__(self):
         return self.get_string()
 
-    def get_string(self, StateIndexMap=None, Option="utf8"):
+    def get_string(self, StateIndexMap=None, Option="utf8", OriginalStatesF=True):
         # if information about origins of the state is present, then print
-        msg = self.origins().get_string()
+        msg = self.origins().get_string(OriginalStatesF)
 
         # print out transitionts
         msg += self.transitions().get_string("    ", StateIndexMap, Option)
@@ -297,35 +297,31 @@ class StateMachine(object):
 
     def get_orphaned_state_index_list(self):
         """This function checks for states that are not targeted via any trigger
-           by any other state. This indicates most likely a lack off efficiency 
-           or an error in the algorithms.
+           by any other state. This may indicate a lack off efficiency or an 
+           error in the algorithms.
         """
-        targets = set([])
-        # Find targets which are different from 'target == self'
-        # (If a no state targets a state, but the state targets itself,
-        #  then it is still an orphan).
-        for state_index, state in self.states.iteritems():
-            targets.update(i for i in state.transitions().get_target_state_index_list()
-                             if  i != state_index)
+        work_set      = set([ self.init_state_index ])
+        connected_set = set()
+        while len(work_set) != 0:
+            state_index = work_set.pop()
+            state       = self.states[state_index]
+            connected_set.add(state_index)
 
-        result = []
-        for state_index in self.states.iterkeys():
-            # The init state is never considered to be an 'orphan'
-            if state_index not in targets and state_index != self.init_state_index: 
-                result.append(state_index)
+            work_set.update((i for i in state.transitions().get_target_state_index_list()
+                             if  i not in connected_set))
 
-        return result
+        # State indices in 'connected_set' have a connection to the init state.
+        # State indice not in 'connected_set' do not. => Those are the orphans.
+
+        return [ i for i in self.states.iterkeys() if i not in connected_set ]
 
     def delete_orphaned_states(self):
         """Remove all orphan states, that is all state which there is no
         transition to them.
         """
-        while 1 + 1 == 2:
-            orphan_list = self.get_orphaned_state_index_list()
-            if len(orphan_list) == 0:
-                return
-            for state_index in orphan_list:
-                del self.states[state_index]
+        for state_index in self.get_orphaned_state_index_list():
+            if state_index == self.init_state_index: continue
+            del self.states[state_index]
 
     def get_hopeless_state_index_list(self):
         """Find states which have not further transitions except to may be, 
@@ -333,31 +329,34 @@ class StateMachine(object):
         a state there is no hope that it could enter acceptance. The entrance
         to such a state can be shortcut with a drop-out.
         """
-        result = []
+        from_db = defaultdict(set)
         for state_index, state in self.states.iteritems():
-            # Never delete the init state
-            if state_index == self.init_state_index: continue
-            elif state.is_acceptance():              continue
-            target_index_set = set(state.transitions().get_target_state_index_list())
-            if len(target_index_set) == 0:
-                result.append(state_index)
-            elif    len(target_index_set) == 1 \
-                and target_index_set.__iter__().next() == state_index:
-                result.append(state_index)
-        return result
+            target_index_list = state.transitions().get_target_state_index_list()
+            for target_index in target_index_list:
+                from_db[target_index].add(state_index)
+
+        work_set     = set(self.get_acceptance_state_index_list())
+        reaching_set = set()  # set of states that reach acceptance states
+        while len(work_set) != 0:
+            state_index = work_set.pop()
+            state       = self.states[state_index]
+            reaching_set.add(state_index)
+
+            work_set.update((i for i in from_db[state_index] if  i not in reaching_set))
+
+        # State indices in 'reaching_set' have a connection to an acceptance state.
+        # State indice not in 'reaching_set' do not. => Those are the hopeless.
+        return [ i for i in self.states.iterkeys() if i not in reaching_set ]
 
     def delete_hopeless_states(self):
         """Delete states that have no transition except to itself and 
         which are not acceptance states.
         """
-        while 1 + 1 == 2:
-            hopeless_list = self.get_hopeless_state_index_list()
-            if len(hopeless_list) == 0:
-                return
-            for i in hopeless_list:
-                del self.states[i]
-                for state in self.states.itervalues():
-                    state.transitions().delete_transitions_to_target(i)
+        for i in self.get_hopeless_state_index_list():
+            for state in self.states.itervalues():
+                state.transitions().delete_transitions_to_target(i)
+            if i == self.init_state_index: continue
+            del self.states[i]
 
     def delete_transtions_on_interval(self, TheInterval):
         """This function deletes any transition on 'Value' to another
@@ -978,7 +977,7 @@ class StateMachine(object):
         return get_map(pre_context_id_set, PreContextID_Offset), \
                get_map(pattern_id_set, PatternID_Offset)
 
-    def get_string(self, NormalizeF=False, Option="utf8"):
+    def get_string(self, NormalizeF=False, Option="utf8", OriginalStatesF=True):
         assert Option in ["utf8", "hex"]
 
         # (*) normalize the state indices
@@ -989,7 +988,7 @@ class StateMachine(object):
         for state_i in index_sequence:
             printed_state_i = index_map[state_i]
             state           = self.states[state_i]
-            msg += "%05i" % printed_state_i + state.get_string(index_map, Option)
+            msg += "%05i" % printed_state_i + state.get_string(index_map, Option, OriginalStatesF)
 
         return msg
 

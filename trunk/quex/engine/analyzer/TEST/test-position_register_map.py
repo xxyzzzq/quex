@@ -78,7 +78,7 @@ else:
 sm = help.prepare(pattern_list)
 
 print "State Machine _____________________________________"
-print sm
+print sm.get_string(OriginalStatesF=False)
 
 # For DEBUG purposes: specify 'DRAW' on command line (in sys.argv)
 help.if_DRAW_in_sys_argv(sm)

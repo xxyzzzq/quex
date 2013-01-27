@@ -12,7 +12,7 @@ Setup.path_limit_code   = -1
 
 if "--hwut-info" in sys.argv:
     print "Operations;"
-    print "CHOICES: 0, 1, 2, 3;"
+    print "CHOICES: special, 0, 1, 2, 3;"
     sys.exit(0)
     
 def test(TestString):
@@ -27,7 +27,15 @@ def test(TestString):
     except:
         pass
 
-if   "0" in sys.argv:
+if "special" in sys.argv:
+    test("\\Any")
+    test("\\Any+")
+    test("x\\Any*")
+    test("\\Any*")
+    test("x\\None")
+    test("\\None")
+    sys.exit()
+elif   "0" in sys.argv:
     args = ""
 elif "1" in sys.argv:
     args = "[a-z]+"

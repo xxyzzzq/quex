@@ -200,13 +200,13 @@ class StateOriginList(object):
 
         self.__list = new_origin_list 
 
-    def get_string(self):
+    def get_string(self, OriginalStatesF=True):
         txt = "" 
         if len(self.__list) == 0: 
             return txt + "\n"
 
         # for origin in sorted(self.__list, key=attrgetter("state_machine_id")):
         for origin in self.__list:
-            txt += repr(origin) + ", "
+            txt += origin.get_string(OriginalStatesF=OriginalStatesF) + ", "
         txt = (txt[:-2] + "\n").replace("L","")     
         return txt

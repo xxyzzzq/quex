@@ -26,7 +26,12 @@ my_plotter = plotter.Generator(pattern_action_pair_list, "test-plot")
 my_plotter.do()
 
 # HWUT consideres '##' as comment
-print open(my_plotter.backward_detector_file_name[0]).read() # .replace("#", "##")
+for line in open(my_plotter.backward_detector_file_name[0]).readlines(): # .replace("#", "##")
+    if line.find("digraph") != -1:
+        print "digraph state_machine {"
+    else:
+        print "%s" % line,
+
 os.remove("test-plot.dot")
 os.remove(my_plotter.backward_detector_file_name[0])
 
