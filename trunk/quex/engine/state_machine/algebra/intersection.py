@@ -75,6 +75,7 @@ def do(SM_List):
     # Plain merge of all states of all state machines with an 
     # epsilon transition from the init state to all init states
     # of the reverse_sm
+    sm = StateMachine()
     for rsm in reverse_sm_list:
         sm.states.update(rsm.states)
         sm.add_epsilon_transition(sm.init_state_index, rsm.init_state_index) 
