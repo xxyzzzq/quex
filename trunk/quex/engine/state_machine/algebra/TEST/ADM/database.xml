@@ -1,4 +1,4 @@
-<test-database execution-time-sec="33.70" date="Sun Jan 27 21:29:08 2013">
+<test-database execution-time-sec="35.12" date="Mon Jan 28 08:20:42 2013">
     <last-used-diff-display-program name=""/>
     <test title="Algebraic Relations" time-sum-sec="20.09"> 
         <application file-name="test-algebraic-relations.py" info-request-time="1359297127L" vanished="False"/>
@@ -62,15 +62,15 @@
                <choice name="5" result="OK" time_sec="0.76" crc="1559033400"/>
             </choice-list>
         </test>
-        <test title="Cut patterns from P that contain Q." time-sum-sec="0.67"> 
-            <application file-name="test-complement_in.py" info-request-time="1359308743L" vanished="False"/>
+        <test title="Cut patterns from P that contain Q." time-sum-sec="2.09"> 
+            <application file-name="test-complement_in.py" info-request-time="1359357632L" vanished="False"/>
             <choice-list number="6" same_result="False">
-               <choice name="0" result="OK" time_sec="0.41" crc="1057279868"/>
-               <choice name="1" result="OK" time_sec="0.26" crc="1931409293"/>
-               <choice name="2" result="OK" time_sec="0.00" crc="-1871860285"/>
-               <choice name="3" result="OK" time_sec="0.00" crc="-273892795"/>
-               <choice name="4" result="OK" time_sec="0.00" crc="-1214520874"/>
-               <choice name="5" result="OK" time_sec="0.00" crc="1705816098"/>
+               <choice name="0" result="OK" time_sec="0.42" crc="1057279868"/>
+               <choice name="1" result="OK" time_sec="0.28" crc="1931409293"/>
+               <choice name="2" result="OK" time_sec="0.19" crc="-1871860285"/>
+               <choice name="3" result="OK" time_sec="0.22" crc="-273892795"/>
+               <choice name="4" result="OK" time_sec="0.42" crc="-1214520874"/>
+               <choice name="5" result="OK" time_sec="0.56" crc="1705816098"/>
             </choice-list>
         </test>
     </group>

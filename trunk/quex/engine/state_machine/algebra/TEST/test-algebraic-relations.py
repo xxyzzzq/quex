@@ -192,8 +192,8 @@ pattern_list = [
     "(((A+)B+)C+)|ABC|AB",
     "(((A+)B+)C+)",
     "0(((A*)(B+C)*)((C+D)*)E+)*",
-    #"\Any*",
-    #"\None",
+    # "\Any*",
+    # "\None",
 ]
 
 if "unary" in sys.argv:
