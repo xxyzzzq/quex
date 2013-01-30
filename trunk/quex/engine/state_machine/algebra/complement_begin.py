@@ -55,7 +55,6 @@ class WalkAlong(TreeWalker):
         self.original   = SM_A
         self.admissible = SM_B
 
-
         if StartingSM is None:
             self.result = StateMachine(InitStateIndex = index.map_state_combination_to_index((SM_A.init_state_index, 
                                                                                               SM_B.init_state_index)), 
@@ -67,6 +66,13 @@ class WalkAlong(TreeWalker):
         self.state_db   = {}
 
         self.path       = []
+
+        # Use 'operation_index' to get a unique index that allows to indicate
+        # that 'SM_B' is no longer involved. Also, it ensures that the
+        # generated state indices from (a_state_index, operation_index) are
+        # unique.
+        self.operation_index = index.get()
+
         TreeWalker.__init__(self)
 
     def on_enter(self, Args):
@@ -82,14 +88,7 @@ class WalkAlong(TreeWalker):
         sub_node_list = []
 
         a_tm = self.original.states[a_state_index].transitions().get_map()
-        if b_state_index == E_StateIndices.NONE:
-            # Everything 'A' does is admissible. 'B' is not involved.
-            for a_ti, a_trigger_set in a_tm.iteritems():
-                combi = (a_ti, E_StateIndices.NONE)
-                state.add_transition(a_trigger_set, index.map_state_combination_to_index(combi))
-                sub_node_list.append(combi)
-            ## print "#0-sub_node_list:", sub_node_list
-            return sub_node_list
+        assert b_state_index != self.operation_index
 
         b_tm = self.admissible.states[b_state_index].transitions().get_map()
         for a_ti, a_trigger_set in a_tm.iteritems():
@@ -102,9 +101,6 @@ class WalkAlong(TreeWalker):
                     continue                                     
 
                 intersection = a_trigger_set.intersection(b_trigger_set)
-                ## print "# a: %i -> %i: %s" % (a_state_index, a_ti, a_trigger_set)
-                ## print "# b: %i -> %i: %s" % (b_state_index, b_ti, b_trigger_set)
-                ## print "# intersection:", intersection
                 if intersection.is_empty(): 
                     continue
 
@@ -115,9 +111,9 @@ class WalkAlong(TreeWalker):
                 remainder.subtract(intersection)
 
             if not remainder.is_empty():
-                combi = (a_ti, E_StateIndices.NONE)
+                combi = (a_ti, self.operation_index)
                 state.add_transition(remainder, index.map_state_combination_to_index(combi))
-                sub_node_list.append(combi)
+                self.result.mount_cloned_subsequent_states(self.original, a_ti, self.operation_index)
 
         ## print "#1-sub_node_list:", sub_node_list
         return sub_node_list

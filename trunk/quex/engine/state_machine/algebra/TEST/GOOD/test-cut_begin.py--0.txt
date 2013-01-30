@@ -1,0 +1,89 @@
+---------------------------
+Original = otto_mueller
+Cutter   = otto
+#start free (128L, NONE)
+
+result =  init-state = 0L
+00000 ()
+     == '_' ==> 00001
+    
+00001 ()
+     == 'm' ==> 00002
+    
+00002 ()
+     == 'u' ==> 00003
+    
+00003 ()
+     == 'e' ==> 00004
+    
+00004 ()
+     == 'l' ==> 00005
+    
+00005 ()
+     == 'l' ==> 00006
+    
+00006 ()
+     == 'e' ==> 00007
+    
+00007 ()
+     == 'r' ==> 00008
+    
+00008 (A)
+    
+
+
+Original = otto
+Cutter   = otto_mueller
+
+result =  init-state = 0L
+00000 ()
+    
+
+---------------------------
+Original = otto
+Cutter   = otto
+
+result =  init-state = 0L
+00000 ()
+    
+
+
+Original = otto
+Cutter   = otto
+
+result =  init-state = 0L
+00000 ()
+    
+
+---------------------------
+Original = otto|fritz
+Cutter   = otto
+#start free (570L, NONE)
+
+result =  init-state = 0L
+00000 ()
+     == 'f' ==> 00001
+    
+00001 ()
+     == 'r' ==> 00002
+    
+00002 ()
+     == 'i' ==> 00003
+    
+00003 ()
+     == 't' ==> 00004
+    
+00004 ()
+     == 'z' ==> 00005
+    
+00005 (A)
+    
+
+
+Original = otto
+Cutter   = otto|fritz
+
+result =  init-state = 0L
+00000 ()
+    
+
