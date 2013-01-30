@@ -97,11 +97,11 @@ class TransitionMap:
         return TargetStateIdx
 
     def delete_transitions_to_target(self, TargetIdx):
-        if not self.__db.has_key(TargetIdx): return
-        del self.__db[TargetIdx]
+        if self.__db.has_key(TargetIdx):
+            del self.__db[TargetIdx]
+        self.delete_epsilon_target_state(TargetIdx)
 
     def delete_epsilon_target_state(self, TargetStateIdx):
-
         if TargetStateIdx in self.__epsilon_target_index_list:
             del self.__epsilon_target_index_list[self.__epsilon_target_index_list.index(TargetStateIdx)]
 
@@ -149,9 +149,8 @@ class TransitionMap:
         """Union of target states that can be reached either via epsilon transition
            or 'real' transition via character.
         """
-        result = self.__db.keys()
-        for index in self.__epsilon_target_index_list:
-            result.append(index)
+        result = set(self.__db.keys())
+        result.update(self.__epsilon_target_index_list)
         return list(result)
 
     def get_resulting_target_state_index(self, Trigger):

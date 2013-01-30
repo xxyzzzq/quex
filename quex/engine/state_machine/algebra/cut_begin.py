@@ -56,16 +56,17 @@ def do(SM_A, SM_B):
 
     (C) 2013 Frank-Rene Schaefer
     """
-    tmp = beautifier.do(repeat.do(SM_B, min_repetition_n=1))
-    cutter = WalkAlong(SM_A, tmp)
-    print "#SM_A:", SM_A.get_string(NormalizeF=False)
-    print "#SM_B:", tmp.get_string(NormalizeF=False)
-    cutter.do((SM_A.init_state_index, tmp.init_state_index, None))
+    #print "#SM_A", SM_A.get_string(NormalizeF=False)
+    #print "#SM_B", SM_B.get_string(NormalizeF=False)
+    cutter = WalkAlong(SM_A, SM_B)
+    cutter.do((SM_A.init_state_index, SM_B.init_state_index, None))
 
     # Delete orphaned and hopeless states in result
+    #print "#result:before:", cutter.result.get_string(NormalizeF=False)
     cutter.result.clean_up()
 
     # Get propper state indices for result
+    #print "#result:", cutter.result
     return beautifier.do(cutter.result)
 
 class WalkAlong(TreeWalker):
@@ -75,53 +76,64 @@ class WalkAlong(TreeWalker):
 
         init_state_index = index.map_state_combination_to_index((SM_A.init_state_index, 
                                                                  SM_B.init_state_index))
-        state            = self.get_state_core(SM_A.init_state_index, 
-                                               SM_B.init_state_index)
+        state            = self.get_state_core(SM_A.init_state_index)
         self.result      = StateMachine(InitStateIndex = init_state_index,
                                         InitState      = state)
         self.state_db    = {}
         self.path        = []
+
+        # Use 'operation_index' to get a unique index that allows to indicate
+        # that 'SM_B' is no longer involved. Also, it ensures that the
+        # generated state indices from (a_state_index, operation_index) are
+        # unique.
+        self.operation_index = index.get()
+
         TreeWalker.__init__(self)
 
     def on_enter(self, Args):
+        a_state_index, b_state_index, trigger_set = Args
+        assert b_state_index != self.operation_index
+
         if self.is_on_path(Args): 
             return None
 
-        a_state_index, b_state_index, trigger_set = Args
         self.path.append((a_state_index, b_state_index, trigger_set))
 
-        sub_node_list = []
 
         a_tm = self.original.states[a_state_index].transitions().get_map()
-        if b_state_index == E_StateIndices.NONE:
-            dummy, state = self.get_state(a_state_index, b_state_index)
+        if self.original.states[a_state_index].is_acceptance():
+            # SM_A has reached a terminal
+            if self.admissible.states[b_state_index].is_acceptance():
+                # SM_B cuts the path until the terminal. 
+                pass
+            else:
+                self.integrate_path_in_result()
 
-            # Everything 'A' does is admissible. 'B' is not involved.
-            for a_ti, a_trigger_set in a_tm.iteritems():
-                target_index = index.map_state_combination_to_index((a_ti, E_StateIndices.NONE))
-                state.add_transition(a_trigger_set, target_index)
-                sub_node_list.append((a_ti, E_StateIndices.NONE, None))
-            return sub_node_list
+        if len(a_tm) == 0:
+            return None # No further path to walk along
 
         b_tm = self.admissible.states[b_state_index].transitions().get_map()
+        #print "#loop:START", a_tm
+        sub_node_list = []
         for a_ti, a_trigger_set in a_tm.iteritems():
             remainder = a_trigger_set.clone()
+            #print "#a_trigger_set: %s" % a_trigger_set.get_utf8_string()
             for b_ti, b_trigger_set in b_tm.iteritems():
                 intersection = a_trigger_set.intersection(b_trigger_set)
                 if intersection.is_empty(): 
                     continue
 
+                #print "#intersection:", intersection.get_utf8_string()
                 sub_node_list.append((a_ti, b_ti, intersection))
                 remainder.subtract(intersection)
 
+            #print "#remainder: '%s'" % remainder.get_utf8_string()
             if not remainder.is_empty():
-                # If we quit 'B', then all transitions are not and the path can 
-                # be overtaken into the result.
-                self.integrate_path_in_result(a_ti, remainder)
-                sub_node_list.append((a_ti, E_StateIndices.NONE, None))
+                # SM_B is not involved --> b_ti = self.operation_index
+                self.path.append((a_ti, self.operation_index, remainder))
+                self.integrate_path_in_result()
+                self.result.mount_cloned_subsequent_states(self.original, a_ti, self.operation_index)
 
-
-        ## print "#1-sub_node_list:", sub_node_list
         return sub_node_list
 
     def on_finished(self, Node):
@@ -134,14 +146,14 @@ class WalkAlong(TreeWalker):
                 return True
         return False
 
-    def integrate_path_in_result(self, TargetIndexA, Remainder):
-        print "#integrate_path_in_result:", TargetIndexA, Remainder.get_utf8_string()
-        for x in self.path:
-            print "#", x
+    def integrate_path_in_result(self):
+        #print "#integrate_path_in_result:", TargetIndexA, Remainder.get_utf8_string()
+        #for x in self.path:
+        #    pass #print "#", x
 
         for k, info in r_enumerate(self.path):
             dummy, bi, dummy = info
-            if self.admissible.states[bi].is_acceptance():
+            if bi != self.operation_index and self.admissible.states[bi].is_acceptance():
                 first_remainder_k = k
                 break
         else:
@@ -150,19 +162,18 @@ class WalkAlong(TreeWalker):
         ai, bi, trigger_set = self.path[first_remainder_k]
         state_index, state  = self.get_state(ai, bi)
         if state_index != self.result.init_state_index:
-            print "#(%s, %s) %s -- epsilon --> %s" % (ai, bi, self.result.init_state_index, state_index)
+            #print "#(%s, %s) %s -- epsilon --> %s" % (ai, bi, self.result.init_state_index, state_index)
             self.result.get_init_state().transitions().add_epsilon_target_state(state_index)
 
         for ai, bi, trigger_set in islice(self.path, first_remainder_k+1, None):
             target_index, target_state = self.get_state(ai, bi)
+            #print "#new 1:", target_index
             state.add_transition(trigger_set, target_index)
-            print "# (%s, %s) -- %s --> %s" % (ai, bi, trigger_set.get_utf8_string(), target_index)
+            #print "# (%s, %s) -- %s --> %s" % (ai, bi, trigger_set.get_utf8_string(), target_index)
             state = target_state
-
-        target_index, target_state = self.get_state(ai, E_StateIndices.NONE)
-        state.add_transition(Remainder, target_index)
+        return
             
-    def get_state_core(self, AStateIndex, BStateIndex):
+    def get_state_core(self, AStateIndex):
         acceptance_f = self.original.states[AStateIndex].is_acceptance() 
         return State(AcceptanceF=acceptance_f)
 
@@ -170,8 +181,9 @@ class WalkAlong(TreeWalker):
         state_index = index.map_state_combination_to_index((a_state_index, b_state_index))
         state       = self.state_db.get(state_index)
         if state is None:
-            state = self.get_state_core(a_state_index, b_state_index)
+            state = self.get_state_core(a_state_index)
             self.result.states[state_index] = state
+            #print "#enter:", state_index
         return state_index, state
 
 
