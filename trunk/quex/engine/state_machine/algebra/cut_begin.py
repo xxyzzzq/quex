@@ -107,6 +107,7 @@ class WalkAlong(TreeWalker):
                 # SM_B cuts the path until the terminal. 
                 pass
             else:
+                #print "#A"
                 self.integrate_path_in_result()
 
         if len(a_tm) == 0:
@@ -129,10 +130,13 @@ class WalkAlong(TreeWalker):
 
             #print "#remainder: '%s'" % remainder.get_utf8_string()
             if not remainder.is_empty():
+                #print "#B"
                 # SM_B is not involved --> b_ti = self.operation_index
                 self.path.append((a_ti, self.operation_index, remainder))
                 self.integrate_path_in_result()
+                self.path.pop()
                 self.result.mount_cloned_subsequent_states(self.original, a_ti, self.operation_index)
+        #print "#loop:END", sub_node_list
 
         return sub_node_list
 
@@ -147,23 +151,29 @@ class WalkAlong(TreeWalker):
         return False
 
     def integrate_path_in_result(self):
-        #print "#integrate_path_in_result:", TargetIndexA, Remainder.get_utf8_string()
-        #for x in self.path:
-        #    pass #print "#", x
+        #print "#integrate_path_in_result:"
+        #for i, x in enumerate(self.path):
+            #print "# [%i] %s" % (i, x)
 
         for k, info in r_enumerate(self.path):
             dummy, bi, dummy = info
             if bi != self.operation_index and self.admissible.states[bi].is_acceptance():
-                first_remainder_k = k
+                first_remainder_k = k + 1 # (ai, bi) is cut; next state is good
                 break
         else:
-            first_remainder_k = 0
+            first_remainder_k = 1
 
+        if first_remainder_k == len(self.path):
+            # The last element of the path is an acceptance in SM_B, thus it is cut too.
+            return # Nothing left.
+
+        #print "#first_remainder_k:", first_remainder_k
         ai, bi, trigger_set = self.path[first_remainder_k]
+        #print "#ai, bi:", ai, bi
         state_index, state  = self.get_state(ai, bi)
         if state_index != self.result.init_state_index:
             #print "#(%s, %s) %s -- epsilon --> %s" % (ai, bi, self.result.init_state_index, state_index)
-            self.result.get_init_state().transitions().add_epsilon_target_state(state_index)
+            self.result.get_init_state().transitions().add_transition(trigger_set, state_index)
 
         for ai, bi, trigger_set in islice(self.path, first_remainder_k+1, None):
             target_index, target_state = self.get_state(ai, bi)

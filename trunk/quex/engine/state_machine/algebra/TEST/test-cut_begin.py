@@ -45,14 +45,20 @@ def test(A, B):
 
     print "---------------------------"
     __core(A, B)
-    # sys.exit()
+    #sys.exit()
     print
     __core(B, A)
+
+
+# test('[0-2]{2,}',    '01')
+# test('1*X', '1X')
 
 if "0" in sys.argv:
     test('otto_mueller', 'otto')
     test('otto',         'otto')
     test('otto|fritz',   'otto')
+    test('[01]{1,3}',    '0')
+    test('[01]{1,3}',    '0+')
     test('[01]+',        '0')
     test('[01]+',        '0+')
     test('1[01]*',       '10')
@@ -76,6 +82,7 @@ elif "2" in sys.argv:
     test('"123"+',  '"123"')
     test('X"123"?', 'X"123"')
     test('"123"?X', '"123"X')
+    test('1*X',     '1X')
     test('"123"*X', '"123"X')
     test('X"123"*', 'X"123"')
 
