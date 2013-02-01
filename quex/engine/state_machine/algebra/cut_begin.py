@@ -79,7 +79,6 @@ class WalkAlong(TreeWalker):
         state            = self.get_state_core(SM_A.init_state_index)
         self.result      = StateMachine(InitStateIndex = init_state_index,
                                         InitState      = state)
-        self.state_db    = {}
         self.path        = []
 
         # Use 'operation_index' to get a unique index that allows to indicate
@@ -91,6 +90,8 @@ class WalkAlong(TreeWalker):
         TreeWalker.__init__(self)
 
     def on_enter(self, Args):
+        #print "#path:", self.path
+        #print "#Args:", Args
         a_state_index, b_state_index, trigger_set = Args
         assert b_state_index != self.operation_index
 
@@ -133,9 +134,12 @@ class WalkAlong(TreeWalker):
                 #print "#B"
                 # SM_B is not involved --> b_ti = self.operation_index
                 self.path.append((a_ti, self.operation_index, remainder))
+                #print "#result0:", self.result.get_string(NormalizeF=False)
                 self.integrate_path_in_result()
                 self.path.pop()
+                #print "#result1:", self.result.get_string(NormalizeF=False)
                 self.result.mount_cloned_subsequent_states(self.original, a_ti, self.operation_index)
+                #print "#result2:", self.result.get_string(NormalizeF=False)
         #print "#loop:END", sub_node_list
 
         return sub_node_list
@@ -153,7 +157,8 @@ class WalkAlong(TreeWalker):
     def integrate_path_in_result(self):
         #print "#integrate_path_in_result:"
         #for i, x in enumerate(self.path):
-            #print "# [%i] %s" % (i, x)
+        #    try:    #print "# [%i] %s, %s, %s" % (i, x[0], x[1], x[2].get_string(Option="utf8"))
+        #    except: #print "# [%i] %s" % (i, x)
 
         for k, info in r_enumerate(self.path):
             dummy, bi, dummy = info
@@ -172,15 +177,19 @@ class WalkAlong(TreeWalker):
         #print "#ai, bi:", ai, bi
         state_index, state  = self.get_state(ai, bi)
         if state_index != self.result.init_state_index:
-            #print "#(%s, %s) %s -- epsilon --> %s" % (ai, bi, self.result.init_state_index, state_index)
+            ##print "#(%s, %s) %s -- epsilon --> %s" % (ai, bi, self.result.init_state_index, state_index)
             self.result.get_init_state().transitions().add_transition(trigger_set, state_index)
 
+        #print "#state.transitions():", state.transitions().get_map()
+        old_ti = state_index
         for ai, bi, trigger_set in islice(self.path, first_remainder_k+1, None):
             target_index, target_state = self.get_state(ai, bi)
-            #print "#new 1:", target_index
+            ##print "#new 1:", target_index
             state.add_transition(trigger_set, target_index)
-            #print "# (%s, %s) -- %s --> %s" % (ai, bi, trigger_set.get_utf8_string(), target_index)
+            #print "# %i -- %s --> %s" % (old_ti, trigger_set.get_utf8_string(), target_index)
             state = target_state
+            old_ti = target_index
+
         return
             
     def get_state_core(self, AStateIndex):
@@ -189,7 +198,7 @@ class WalkAlong(TreeWalker):
 
     def get_state(self, a_state_index, b_state_index):
         state_index = index.map_state_combination_to_index((a_state_index, b_state_index))
-        state       = self.state_db.get(state_index)
+        state       = self.result.states.get(state_index)
         if state is None:
             state = self.get_state_core(a_state_index)
             self.result.states[state_index] = state

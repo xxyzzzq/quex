@@ -1,4 +1,4 @@
-<test-database execution-time-sec="38.69" date="Thu Jan 31 21:12:15 2013">
+<test-database execution-time-sec="38.56" date="Sat Feb  2 00:25:13 2013">
     <last-used-diff-display-program name=""/>
     <test title="Complementary State Machines" time-sum-sec="1.68"> 
         <application file-name="test-complement.py" info-request-time="1358666200L" vanished="False"/>
@@ -94,15 +94,15 @@
         </test>
     </group>
     <group name="Cut Begin">
-        <test title="Cut P so that it does not start with Q." time-sum-sec="1.57"> 
-            <application file-name="test-cut_begin.py" info-request-time="1359662987L" vanished="False"/>
+        <test title="Cut P so that it does not start with Q." time-sum-sec="1.44"> 
+            <application file-name="test-cut_begin.py" info-request-time="1359759965L" vanished="False"/>
             <choice-list number="6" same_result="False">
-               <choice name="0" result="OK" time_sec="0.29" crc="916878987"/>
-               <choice name="1" result="OK" time_sec="0.21" crc="-1432263840"/>
-               <choice name="2" result="OK" time_sec="0.13" crc="-1202640219"/>
-               <choice name="3" result="NO GOOD FILE" time_sec="0.18" crc="2025056929"/>
-               <choice name="4" result="NO GOOD FILE" time_sec="0.30" crc="459326694"/>
-               <choice name="5" result="NO GOOD FILE" time_sec="0.45" crc="2064171527"/>
+               <choice name="0" result="OK" time_sec="0.32" crc="916878987"/>
+               <choice name="1" result="OK" time_sec="0.22" crc="-1432263840"/>
+               <choice name="2" result="OK" time_sec="0.16" crc="-1202640219"/>
+               <choice name="3" result="OK" time_sec="0.20" crc="498141463"/>
+               <choice name="4" result="OK" time_sec="0.00" crc="1784359733"/>
+               <choice name="5" result="NO GOOD FILE" time_sec="0.54" crc="2064171527"/>
             </choice-list>
         </test>
     </group>
