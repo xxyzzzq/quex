@@ -63,6 +63,7 @@ class WalkAlong(TreeWalker):
         else:
             self.result = StartingSM
 
+        # TODO: Think if 'state_db' cannot be replaced by 'result'
         self.state_db   = {}
 
         self.path       = []

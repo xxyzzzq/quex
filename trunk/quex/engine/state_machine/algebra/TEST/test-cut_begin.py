@@ -52,6 +52,8 @@ def test(A, B):
 
 # test('[0-2]{2,}',    '01')
 # test('1*X', '1X')
+#test('"12"+yz',          '1212')
+#test('"12"+yz',          '1212yz')
 
 if "0" in sys.argv:
     test('otto_mueller', 'otto')
@@ -88,10 +90,13 @@ elif "2" in sys.argv:
 
 elif "3" in sys.argv:
     test('ab("12"+)yz',      'abz')
+    test('a("12"|"AB")z',    'a1B3z')
     test('ab("12"|"AB")yz',  'ab1B3yz')
     test('ab("12"|"ABD")yz', 'abAByc')
 
 elif "4" in sys.argv:
+    test('"12"+yz',          '1212')
+    test('"12"+yz',          '1212yz')
     test('ab("12"+)yz',      'ab1212yz')
     test('ab("12"?)yz',      'abyz')
     test('ab("12"*)yz',      'abyz')
