@@ -1,4 +1,100 @@
 ---------------------------
+Original = "12"+yz
+Cutter   = 1212
+
+superset(Original, result):           True
+intersection(Cutter, result) == None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+     == '1' ==> 00001
+    
+00001 ()
+     == '2' ==> 00002
+    
+00002 ()
+     == 'y' ==> 00003
+    
+00003 ()
+     == 'z' ==> 00004
+    
+00004 (A)
+    
+
+
+Original = 1212
+Cutter   = "12"+yz
+
+superset(Original, result):           True
+intersection(Cutter, result) == None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+     == '1' ==> 00001
+    
+00001 ()
+     == '2' ==> 00002
+    
+00002 ()
+     == '1' ==> 00003
+    
+00003 ()
+     == '2' ==> 00004
+    
+00004 (A)
+    
+
+---------------------------
+Original = "12"+yz
+Cutter   = 1212yz
+
+superset(Original, result):           True
+intersection(Cutter, result) == None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+     == '1' ==> 00001
+    
+00001 ()
+     == '2' ==> 00002
+    
+00002 ()
+     == '1' ==> 00003
+     == 'y' ==> 00007
+    
+00003 ()
+     == '2' ==> 00004
+    
+00004 ()
+     == '1' ==> 00005
+    
+00005 ()
+     == '2' ==> 00006
+    
+00006 ()
+     == '1' ==> 00005
+     == 'y' ==> 00007
+    
+00007 ()
+     == 'z' ==> 00008
+    
+00008 (A)
+    
+
+
+Original = 1212yz
+Cutter   = "12"+yz
+
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+    
+
+---------------------------
 Original = abc("123"+)xyz
 Cutter   = abc123123123123xyz
 

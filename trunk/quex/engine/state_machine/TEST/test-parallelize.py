@@ -11,6 +11,19 @@ if "--hwut-info" in sys.argv:
     print "StateMachine Operations: Paralell"
     sys.exit(0)
 
+
+print "-------------------------------------------------------------------------------"
+tsm0 = trivial_sm('a')
+tsm1 = trivial_sm('b')
+tsm2 = trivial_sm('c')
+print "##tsm0:", tsm0
+print "##tsm1:", tsm1
+print "##tsm2:", tsm2
+
+sm = parallelize.do([tsm0, tsm1, tsm2])
+print "EXAMPLE 0:", sm
+
+print "-------------------------------------------------------------------------------"
 print "##sm0", sm0
 print "##sm1", sm1
 print "##sm2", sm2

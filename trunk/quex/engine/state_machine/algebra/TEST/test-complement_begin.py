@@ -51,15 +51,21 @@ def test(A, B):
 #test('"1BAC"|"1BBC"', '"1ABC"')
 
 if "0" in sys.argv:
-    test('[0-9]+',    '[0-9]')
-    test('[0-9]+',    '0')
-    test('[0-9]+',    '01')
-    test('[0-9]{2,}', '01')
-    test('123', '123(4?)')
-    test('12', '1(2?)')
-    test('1', '1(2?)')
-    test('"123"|"ABC"', '"123"')
-    test('\\n', '(\\r\\n)|\\n')
+    test('otto_mueller', 'otto')
+    test('otto',         'otto')
+    test('otto|fritz',   'otto')
+    test('[01]{1,3}',    '0')
+    test('[01]{1,3}',    '0+')
+    test('[0-9]+',       '[0-9]')
+    test('[0-9]+',       '0')
+    test('[0-9]+',       '01')
+    test('1[01]*',       '10+')
+    test('[0-9]{2,}',    '01')
+    test('123',          '123(4?)')
+    test('12',           '1(2?)')
+    test('1',            '1(2?)')
+    test('"123"|"ABC"',  '"123"')
+    test('\\n',          '(\\r\\n)|\\n')
 
 elif "1" in sys.argv:
     test('[a-n]', '[m-z]')
@@ -73,6 +79,7 @@ elif "2" in sys.argv:
     test('"123"+',  '"123"')
     test('X"123"?', 'X"123"')
     test('"123"?X', '"123"X')
+    test('1*X',     '1X')
     test('"123"*X', '"123"X')
     test('X"123"*', 'X"123"')
 
@@ -82,6 +89,8 @@ elif "3" in sys.argv:
     test('abc("123"|"ABCD")xyz', 'abcABCxyc')
 
 elif "4" in sys.argv:
+    test('"12"+yz',          '1212')
+    test('"12"+yz',          '1212yz')
     test('abc("123"+)xyz', 'abc123123123123xyz')
     test('abc("123"?)xyz', 'abcxyz')
     test('abc("123"*)xyz', 'abcxyz')
@@ -93,9 +102,9 @@ elif "4" in sys.argv:
 elif "5" in sys.argv:
     test('X("a"|"x"?|"e"|"g")', 'X')
     test('X("a"|"x"?|"e"|"g")', 'Xx')
-    test('"a"|"x"+|"e"|"g"',    'x{20}')
+    test('"a"|"x"+|"e"|"g"',    'x{5}')
     test('X("a"|"x"*|"e"|"g")', 'X')
-    test('X("a"|"x"*|"e"|"g")', 'Xx{20}')
+    test('X("a"|"x"*|"e"|"g")', 'Xx{5}')
     # test('abc("123"|("ABC"|"XYZ")+)+"123"("AAA"|"BBB"|"CCC")?xyz', 'abc123ABC123AAAxyz')
     test('ab("12"|("AB"|"XY")+)+"12"("AA"|"BB"|"CC")?yz', 'ab12AB12AAyz')
     test('(((a+)b)+c)+', 'abcbc')

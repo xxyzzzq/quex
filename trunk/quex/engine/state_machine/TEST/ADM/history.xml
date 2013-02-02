@@ -1,4 +1,4 @@
-<history date="Thu Jan 24 07:27:29 2013" element-n="638">
+<history date="Sat Feb  2 21:47:50 2013" element-n="647">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1384,5 +1384,16 @@
         <crc-error time="20:40:54" application="test-StateMachine-trace-origin-create-DFA-2.py" choice="" database-crc="-876481985" real-crc="1041528809"/>
         <crc-error time="20:42:28" application="test-utf8_state_split-do-2.py" choice="" database-crc="-2073375376" real-crc="15955860"/>
         <crc-error time="20:44:33" application="test-StateMachine-trace-origin-create-DFA-2.py" choice="" database-crc="1041528809" real-crc="1175288491"/>
+    </day>
+    <day year="2013" month="02" day="02">
+        <crc-error time="10:16:14" application="test-parallelize.py" choice="" database-crc="-2088071502" real-crc="-1510695061"/>
+        <crc-error time="10:22:51" application="test-parallelize.py" choice="" database-crc="-1510695061" real-crc="-2086261769"/>
+        <crc-error time="20:39:21" application="test-StateMachine-trace-origin-create-DFA-2.py" choice="" database-crc="1175288491" real-crc="-226167795"/>
+        <crc-error time="20:42:31" application="test-StateMachine-trace-origin-create-DFA-2.py" choice="" database-crc="-226167795" real-crc="-382724702"/>
+        <crc-error time="20:43:27" application="test-StateMachine-trace-origin-create-DFA-2.py" choice="" database-crc="-382724702" real-crc="1175288491"/>
+        <crc-error time="20:44:53" application="test-StateMachine-trace-origin-create-DFA-2.py" choice="" database-crc="1175288491" real-crc="-991539044"/>
+        <crc-error time="20:46:57" application="test-StateMachine-trace-origin-create-DFA-2.py" choice="" database-crc="-991539044" real-crc="-1828840684"/>
+        <crc-error time="20:47:08" application="test-StateMachine-get_graphviz_string.py" choice="1" database-crc="-44218059" real-crc="1856988389"/>
+        <crc-error time="20:47:08" application="test-parallelize.py" choice="" database-crc="-2086261769" real-crc="-1783416881"/>
     </day>
 </history>
