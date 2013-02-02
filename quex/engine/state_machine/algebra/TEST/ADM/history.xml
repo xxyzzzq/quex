@@ -1,4 +1,4 @@
-<history date="Sat Feb  2 00:25:13 2013" element-n="20">
+<history date="Sat Feb  2 09:21:00 2013" element-n="30">
     <day year="2013" month="01" day="10">
         <history-init time="17:49:13"/>
         <crc-error time="18:15:31" application="test-intersection.py" choice="GoodCases" database-crc="1437481811" real-crc="-1865021134"/>
@@ -28,5 +28,17 @@
         <crc-error time="08:31:24" application="test-complement_in.py" choice="0" database-crc="-1223238412" real-crc="599940312"/>
         <crc-error time="08:39:50" application="test-complement_in.py" choice="0" database-crc="599940312" real-crc="1057279868"/>
         <crc-error time="08:48:07" application="test-complement_in.py" choice="1" database-crc="2000170035" real-crc="1931409293"/>
+    </day>
+    <day year="2013" month="02" day="02">
+        <crc-error time="06:54:22" application="test-cut_begin.py" choice="5" database-crc="2064171527" real-crc="-459425627"/>
+        <crc-error time="07:39:28" application="test-cut_begin.py" choice="1" database-crc="-1432263840" real-crc="-1989997111"/>
+        <crc-error time="07:40:05" application="test-complement_begin.py" choice="0" database-crc="-1763215802" real-crc="-1500109119"/>
+        <crc-error time="07:40:06" application="test-complement_begin.py" choice="2" database-crc="-1367604962" real-crc="1095692780"/>
+        <crc-error time="07:40:07" application="test-complement_begin.py" choice="4" database-crc="856671848" real-crc="1093303991"/>
+        <crc-error time="07:40:08" application="test-complement_begin.py" choice="5" database-crc="1559033400" real-crc="-769609219"/>
+        <crc-error time="07:49:17" application="test-complement_begin.py" choice="0" database-crc="-1500109119" real-crc="-970334341"/>
+        <crc-error time="07:53:46" application="test-complement_begin.py" choice="4" database-crc="1093303991" real-crc="346515061"/>
+        <crc-error time="07:54:36" application="test-complement_begin.py" choice="0" database-crc="-970334341" real-crc="-1750052441"/>
+        <crc-error time="07:55:55" application="test-complement_begin.py" choice="0" database-crc="-1750052441" real-crc="1789440613"/>
     </day>
 </history>

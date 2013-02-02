@@ -5,6 +5,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine               as regex
 import quex.engine.state_machine.algebra.cut_begin        as cut_begin
+import quex.engine.state_machine.algebra.complement_begin as complement_begin
 import quex.engine.state_machine.algebra.union            as union
 import quex.engine.state_machine.algebra.intersection     as intersection
 import quex.engine.state_machine.check.special            as special
@@ -43,17 +44,15 @@ def test(A, B):
             print
         print "result = ", result.get_string(NormalizeF=True)
 
+        # NOT: complement_begin(cut_begin(P Q) Q) == cut_begin(P Q))
+        #      assert identity.do(complement_begin.do(result, cutter), result)
+
     print "---------------------------"
     __core(A, B)
     #sys.exit()
     print
     __core(B, A)
 
-
-# test('[0-2]{2,}',    '01')
-# test('1*X', '1X')
-#test('"12"+yz',          '1212')
-#test('"12"+yz',          '1212yz')
 
 if "0" in sys.argv:
     test('otto_mueller', 'otto')
@@ -78,7 +77,7 @@ elif "1" in sys.argv:
     test('"12"|"A"', '"1"')
     test('12', '1')
     test('"1BAC"|"1BBC"', '"1ABC"')
-    test('alb|albertikus', 'bert')
+    test('alb|albertikus', 'albert')
 
 elif "2" in sys.argv:
     test('"123"+',  '"123"')

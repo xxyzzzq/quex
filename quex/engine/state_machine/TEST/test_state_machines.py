@@ -71,6 +71,10 @@ si3_2 = sm3.add_transition(si3_1, ord('b'))
 si3_3 = sm3.add_transition(si3_2, ord('c'), AcceptanceF=True)
 
 
+def trivial_sm(Character):
+    result = StateMachine()
+    result.add_transition(result.init_state_index, ord(Character), AcceptanceF=True)
+    return result
 
 
 

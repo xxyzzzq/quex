@@ -894,8 +894,11 @@ class StateMachine(object):
             state_i = state_machine_index.map_state_combination_to_index((other_i, OperationIndex))
             done_set.add(state_i)
 
-            state                = State(AcceptanceF=other_state.is_acceptance())
-            self.states[state_i] = state
+            state = self.states.get(state_i)
+            if state is None:
+                state = State(AcceptanceF=other_state.is_acceptance())
+                self.states[state_i] = state
+
             for other_ti, other_trigger_set in other_state.transitions().get_map().iteritems():
                 target_i = state_machine_index.map_state_combination_to_index((other_ti, OperationIndex))
                 # The state 'target_i' either:
@@ -945,14 +948,24 @@ class StateMachine(object):
                 target_state_index_list = state.transitions().get_target_state_index_list()
 
             # sort by 'lowest trigger'
-            def cmp_by_trigger_set(A, B):
+            tm = state.transitions().get_map()
+            def comparison_key(A):
                 # In case of epsilon transitions, the 'other' dominates.
-                try:    trigger_set_to_A = state.transitions().get_map()[A]
-                except: return -1
-                try:    trigger_set_to_B = state.transitions().get_map()[B]
-                except: return 1
-                return cmp(trigger_set_to_A.minimum(), trigger_set_to_B.minimum())
-            target_state_index_list.sort(cmp_by_trigger_set)
+                trigger_set_to_A = tm.get(A)
+                if trigger_set_to_A is None:
+                    # Epsilon Transition
+                    trigger_set_min = -1
+                else:
+                    trigger_set_min = trigger_set_to_A.minimum()
+                target_tm       = self.states[A].transitions().get_map()
+                target_branch_n = len(target_tm)
+                if len(target_tm) != 0:
+                    target_tm_min = min(lambda x: x.minimum() for x in target_tm.itervalues())
+                else:
+                    target_tm_min = -1
+                return (trigger_set_min, target_branch_n, target_tm_min, A)
+
+            target_state_index_list.sort(key=comparison_key)
                                          
             for state_index in target_state_index_list:
                 if state_index in state_index_sequence: continue

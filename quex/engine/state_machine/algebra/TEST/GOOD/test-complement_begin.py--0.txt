@@ -1,4 +1,157 @@
 ---------------------------
+Original = otto_mueller
+Cutter   = otto
+
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+    
+
+
+Original = otto
+Cutter   = otto_mueller
+
+superset(Original, result):           True
+intersection(Cutter, result) == None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+     == 'o' ==> 00001
+    
+00001 ()
+     == 't' ==> 00002
+    
+00002 ()
+     == 't' ==> 00003
+    
+00003 ()
+     == 'o' ==> 00004
+    
+00004 (A)
+    
+
+---------------------------
+Original = otto
+Cutter   = otto
+
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+    
+
+
+Original = otto
+Cutter   = otto
+
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+    
+
+---------------------------
+Original = otto|fritz
+Cutter   = otto
+
+superset(Original, result):           True
+intersection(Cutter, result) == None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+     == 'f' ==> 00001
+    
+00001 ()
+     == 'r' ==> 00002
+    
+00002 ()
+     == 'i' ==> 00003
+    
+00003 ()
+     == 't' ==> 00004
+    
+00004 ()
+     == 'z' ==> 00005
+    
+00005 (A)
+    
+
+
+Original = otto
+Cutter   = otto|fritz
+
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+    
+
+---------------------------
+Original = [01]{1,3}
+Cutter   = 0
+
+superset(Original, result):           True
+intersection(Cutter, result) == None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+     == '1' ==> 00001
+    
+00001 (A)
+     == ['0', '1'] ==> 00002
+    
+00002 (A)
+     == ['0', '1'] ==> 00003
+    
+00003 (A)
+    
+
+
+Original = 0
+Cutter   = [01]{1,3}
+
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+    
+
+---------------------------
+Original = [01]{1,3}
+Cutter   = 0+
+
+superset(Original, result):           True
+intersection(Cutter, result) == None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+     == '1' ==> 00001
+    
+00001 (A)
+     == ['0', '1'] ==> 00002
+    
+00002 (A)
+     == ['0', '1'] ==> 00003
+    
+00003 (A)
+    
+
+
+Original = 0+
+Cutter   = [01]{1,3}
+
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+    
+
+---------------------------
 Original = [0-9]+
 Cutter   = [0-9]
 
@@ -67,6 +220,35 @@ result =  init-state = 0L
 
 Original = 01
 Cutter   = [0-9]+
+
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+    
+
+---------------------------
+Original = 1[01]*
+Cutter   = 10+
+
+superset(Original, result):           True
+intersection(Cutter, result) == None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+     == '1' ==> 00001
+    
+00001 (A)
+     == '1' ==> 00002
+    
+00002 (A)
+     == ['0', '1'] ==> 00002
+    
+
+
+Original = 10+
+Cutter   = 1[01]*
 
 union(Original, result) == Original:  True
 

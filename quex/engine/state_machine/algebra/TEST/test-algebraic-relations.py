@@ -13,6 +13,9 @@ import quex.engine.state_machine.algebra.symmetric_difference   as symmetric_dif
 import quex.engine.state_machine.algebra.complement_begin   as complement_begin
 import quex.engine.state_machine.algebra.complement_end     as complement_end  
 import quex.engine.state_machine.algebra.complement_end     as complement_in  
+import quex.engine.state_machine.algebra.cut_in             as module_cut_in     
+import quex.engine.state_machine.algebra.cut_end            as module_cut_end  
+import quex.engine.state_machine.algebra.cut_begin          as module_cut_begin  
 import quex.engine.state_machine.algebra.union        as union
 from   quex.engine.state_machine.check.special        import is_all, is_none
 import quex.engine.state_machine.check.identity       as     identity
@@ -35,6 +38,9 @@ def symdiff(A, B):   return symmetric_difference.do([A, B])
 def not_begin(A, B): return complement_begin.do(A, B)
 def not_end(A, B):   return complement_end.do(A, B)
 def not_in(A, B):    return complement_in.do(A, B)
+def cut_begin(A, B): return module_cut_begin.do(A, B)
+def cut_end(A, B):   return module_cut_end.do(A, B)
+def cut_in(A, B):    return module_cut_in.do(A, B)
 
 def exec_print(ExprStr):
     exec("sme = %s" % ExprStr.replace("All", "All_sm").replace("None", "None_sm"))
@@ -77,6 +83,7 @@ def unary(ExprStr):
     #equal("rev(inv(rev(inv(X))))", "X")
     #equal("inv(rev(inv(rev(X))))", "X")
 
+    equal("uni(X, X)",      "X")
     equal("uni(X, inv(X))", "All")
     equal("uni(inv(X), X)", "All")
     equal("uni(X, None)",   "X")
@@ -84,6 +91,7 @@ def unary(ExprStr):
     equal("uni(X, All)",    "All")
     equal("uni(All, X)",    "All")
 
+    equal("itsct(X, X)",      "X")
     equal("itsct(X, inv(X))", "None")
     equal("itsct(inv(X), X)", "None")
     equal("itsct(X, None)",   "None")
@@ -91,6 +99,7 @@ def unary(ExprStr):
     equal("itsct(X, All)",    "X")
     equal("itsct(All, X)",    "X")
 
+    equal("diff(X, X)",      "None")
     equal("diff(X, inv(X))", "X")
     equal("diff(inv(X), X)", "inv(X)")
     equal("diff(X, None)",   "X")
@@ -98,6 +107,7 @@ def unary(ExprStr):
     equal("diff(X, All)",    "None")
     equal("diff(All, X)",    "inv(X) ")
 
+    equal("symdiff(X, X)",      "None")
     equal("symdiff(X, inv(X))", "All")
     equal("symdiff(inv(X), X)", "All")
     equal("symdiff(X, None)",   "X")
@@ -105,17 +115,24 @@ def unary(ExprStr):
     equal("symdiff(X, All)",    "inv(X)")
     equal("symdiff(All, X)",    "inv(X)")
 
+    equal("not_begin(X, X)",    "None")
     equal("not_begin(X, None)", "X")
     equal("not_begin(None, X)", "None")
     equal("not_begin(X, All)",  "None")
 
+    equal("not_in(X, X)",    "None")
     equal("not_in(X, None)", "X")
     equal("not_in(None, X)", "None")
     equal("not_in(X, All)",  "None")
 
+    equal("not_end(X, X)",      "None")
     equal("not_end(X, None)",   "X")
     equal("not_end(None, X)",   "None")
     equal("not_end(X, All)",    "None")
+
+    equal("cut_begin(X, None)", "X")
+    equal("cut_begin(None, X)", "None")
+    equal("cut_begin(X, All)",  "None")
 
     report(ExprStr)
     return
@@ -163,7 +180,7 @@ def derived_binary(ExprStrX, ExprStrY):
     equal("uni(X, not_end(X, Y))",   "X")
     equal("uni(Y, not_end(Y, X))",   "Y")
 
-    equal("uni(Y, not_end(Y, X))",   "Y")
+    # equal("cut_begin(not_begin(X, Y), Y)", "not_begin(X, Y)")
 
 def report(ExprStr):
     global protocol
