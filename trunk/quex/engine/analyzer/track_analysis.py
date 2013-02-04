@@ -455,6 +455,17 @@ class _Trace(object):
            'is_equivalent()' which assumes that the '__equivalence_hash' has been
            computed.
         """
+        # New Faster Try: (Must be Double Checked!)
+        #        eq = hash(0x5a5a5a5a)
+        #        for x in self.__acceptance_trace:
+        #            eq ^= hash(x.pattern_id)
+        #            eq ^= hash(x.accepting_state_index)
+        #            eq ^= hash(x.positioning_state_index)
+        #            eq ^= hash(x.transition_n_since_positioning)
+        #
+        #        for pattern_id, info in sorted(self.__storage_db.iteritems()):
+        #            eq ^= hash(x.loop_f)
+        #            eq ^= hash(x.transition_n_since_positioning)
         data = []
         for x in self.__acceptance_trace:
             if isinstance(x.pattern_id, long):                     data.append(x.pattern_id)

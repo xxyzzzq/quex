@@ -1,9 +1,9 @@
+from   quex.engine.state_machine.core                 import State, StateMachine
+import quex.engine.state_machine.algebra.complement   as     complement
 import quex.engine.state_machine.algorithm.beautifier as     beautifier
 import quex.engine.state_machine.check.special        as     special
-import quex.engine.state_machine.algebra.complement   as     complement
-import quex.engine.state_machine.repeat               as     repeat
 import quex.engine.state_machine.index                as     index
-from   quex.engine.state_machine.core                 import State, StateMachine
+import quex.engine.state_machine.repeat               as     repeat
 from   quex.engine.misc.tree_walker                   import TreeWalker
 from   quex.engine.tools                              import r_enumerate
 from   quex.blackboard import E_StateIndices
@@ -70,15 +70,18 @@ def do(SM_A, SM_B):
     return beautifier.do(cutter.result)
 
 class WalkAlong(TreeWalker):
-    def __init__(self, SM_A, SM_B):
+    def __init__(self, SM_A, SM_B, result=None):
         self.original    = SM_A
         self.admissible  = SM_B
 
-        init_state_index = index.map_state_combination_to_index((SM_A.init_state_index, 
-                                                                 SM_B.init_state_index))
-        state            = self.get_state_core(SM_A.init_state_index)
-        self.result      = StateMachine(InitStateIndex = init_state_index,
-                                        InitState      = state)
+        if result is None:
+            init_state_index = index.map_state_combination_to_index((SM_A.init_state_index, 
+                                                                     SM_B.init_state_index))
+            state            = self.get_state_core(SM_A.init_state_index)
+            self.result      = StateMachine(InitStateIndex = init_state_index,
+                                            InitState      = state)
+        else:
+            self.result      = result
         self.path        = []
 
         # Use 'operation_index' to get a unique index that allows to indicate

@@ -1,7 +1,7 @@
 Last Acceptance / Post-Context-ID 'None'
 State Machine _____________________________________
 init-state = 0L
-00000 (2), (1)
+00000 (1), (2)
      == 'a' ==> 00001
      == 'b' ==> 00002
     

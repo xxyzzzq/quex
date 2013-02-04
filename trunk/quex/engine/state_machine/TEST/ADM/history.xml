@@ -1,4 +1,4 @@
-<history date="Sat Feb  2 21:47:50 2013" element-n="647">
+<history date="Tue Feb  5 00:18:24 2013" element-n="661">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1395,5 +1395,21 @@
         <crc-error time="20:46:57" application="test-StateMachine-trace-origin-create-DFA-2.py" choice="" database-crc="-991539044" real-crc="-1828840684"/>
         <crc-error time="20:47:08" application="test-StateMachine-get_graphviz_string.py" choice="1" database-crc="-44218059" real-crc="1856988389"/>
         <crc-error time="20:47:08" application="test-parallelize.py" choice="" database-crc="-2086261769" real-crc="-1783416881"/>
+    </day>
+    <day year="2013" month="02" day="04">
+        <crc-error time="17:45:23" application="test-parallelize.py" choice="" database-crc="-1783416881" real-crc="-1898468343"/>
+        <crc-error time="17:47:34" application="test-parallelize.py" choice="" database-crc="-1898468343" real-crc="-2111712139"/>
+        <crc-error time="17:48:08" application="test-parallelize.py" choice="" database-crc="-2111712139" real-crc="-1783416881"/>
+        <crc-error time="17:49:58" application="test-parallelize.py" choice="" database-crc="-1783416881" real-crc="-1154739484"/>
+        <crc-error time="17:51:54" application="test-parallelize.py" choice="" database-crc="-1154739484" real-crc="-778782171"/>
+        <crc-error time="17:57:56" application="test-parallelize.py" choice="" database-crc="-778782171" real-crc="-1764476306"/>
+        <crc-error time="18:00:20" application="test-parallelize.py" choice="" database-crc="-1764476306" real-crc="-1783416881"/>
+        <crc-error time="23:00:31" application="test-parallelize.py" choice="" database-crc="-1783416881" real-crc="1294619743"/>
+        <crc-error time="23:02:53" application="test-parallelize.py" choice="" database-crc="1294619743" real-crc="-1511288556"/>
+        <crc-error time="23:06:00" application="test-parallelize.py" choice="" database-crc="-1511288556" real-crc="537350084"/>
+        <crc-error time="23:07:27" application="test-parallelize.py" choice="" database-crc="537350084" real-crc="2040357915"/>
+        <crc-error time="23:08:34" application="test-parallelize.py" choice="" database-crc="2040357915" real-crc="587342337"/>
+        <crc-error time="23:16:28" application="test-parallelize-trace-origin.py" choice="" database-crc="-1706023851" real-crc="-1874151663"/>
+        <crc-error time="23:18:06" application="test-parallelize-trace-origin.py" choice="" database-crc="-1874151663" real-crc="241028585"/>
     </day>
 </history>
