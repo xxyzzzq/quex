@@ -29,16 +29,16 @@ State 0:
 
 State 1:
   .entry:
-    .from 0:
-    .from 1:
+    .from 0: last_acceptance = Pattern1
+    .from 1: last_acceptance = Pattern1
   .drop_out:
      goto Pattern1;
 
 
 State 2:
   .entry:
-    .from 1: last_acceptance = Pattern1
-    .from 5: last_acceptance = Pattern2
+    .from 1:
+    .from 5:
   .drop_out:
     Checker:
         accept = last_acceptance
@@ -56,7 +56,7 @@ State 3:
 
 State 4:
   .entry:
-    .from 0:
+    .from 0: last_acceptance = Pattern2
   .drop_out:
      goto Pattern2;
 
@@ -74,8 +74,8 @@ State 5:
 
 State 2:
   .entry:
-    .from 1: last_acceptance = Pattern1
-    .from 5: last_acceptance = Pattern2
+    .from 1:
+    .from 5:
   .drop_out:
     Checker:
         accept = last_acceptance
