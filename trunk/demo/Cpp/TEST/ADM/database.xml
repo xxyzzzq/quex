@@ -1,4 +1,4 @@
-<test-database execution-time-sec="259.69" date="Sat Feb  2 09:12:15 2013">
+<test-database execution-time-sec="259.68" date="Wed Feb  6 23:45:28 2013">
     <last-used-diff-display-program name=""/>
     <group name="demo/000">
         <test title="Single Mode Example" time-sum-sec="6.25"> 
@@ -38,7 +38,7 @@
                <choice name="BPC=wchar_t" result="OK" time_sec="3.58" crc="766281751"/>
             </choice-list>
         </test>
-        <test title="Byte Order Mark (BOM) Cutting" time-sum-sec="11.56"> 
+        <test title="Byte Order Mark (BOM) Cutting" time-sum-sec="11.57"> 
             <application file-name="003-bom.sh" info-request-time="1355705370L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="Without" result="OK" time_sec="4.63" crc="1853132003"/>
@@ -96,7 +96,7 @@
         </test>
     </group>
     <group name="demo/008">
-        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="8.00"> 
+        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="8.01"> 
             <application file-name="008.sh" info-request-time="1355705370L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="3.78" crc="-1669907923"/>
@@ -111,7 +111,7 @@
                <choice name="" result="OK" time_sec="4.54" crc="-828377416"/>
             </choice-list>
         </test>
-        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="10.67"> 
+        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="10.66"> 
             <application file-name="009.sh" info-request-time="1355705370L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="lexer" result="OK" time_sec="5.21" crc="1910061155"/>
@@ -120,7 +120,7 @@
         </test>
     </group>
     <group name="demo/010">
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="80.26"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="80.24"> 
             <application file-name="010.sh" info-request-time="1355705370L" vanished="False"/>
             <choice-list number="9" same_result="False">
                <choice name="copy" result="OK" time_sec="4.27" crc="1030682096"/>
@@ -156,7 +156,7 @@
         </test>
     </group>
     <group name="demo/012">
-        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="14.86"> 
+        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="14.87"> 
             <application file-name="012.sh" info-request-time="1355705370L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="8.65" crc="-62717966"/>

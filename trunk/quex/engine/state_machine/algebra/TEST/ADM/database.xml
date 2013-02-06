@@ -1,4 +1,4 @@
-<test-database execution-time-sec="38.74" date="Mon Feb  4 18:11:19 2013">
+<test-database execution-time-sec="38.74" date="Wed Feb  6 23:45:30 2013">
     <last-used-diff-display-program name=""/>
     <test title="Complementary State Machines" time-sum-sec="1.58"> 
         <application file-name="test-complement.py" info-request-time="1358666200L" vanished="False"/>
@@ -10,7 +10,7 @@
            <choice name="Misc" result="OK" time_sec="0.68" crc="1064577118"/>
         </choice-list>
     </test>
-    <test title="Algebraic Relations" time-sum-sec="19.78"> 
+    <test title="Algebraic Relations" time-sum-sec="19.77"> 
         <application file-name="test-algebraic-relations.py" info-request-time="1359789612L" vanished="False"/>
         <choice-list number="3" same_result="False">
            <choice name="unary" result="OK" time_sec="3.88" crc="-106769247"/>
@@ -35,7 +35,7 @@
            <choice name="" result="OK" time_sec="0.63" crc="1681411831"/>
         </choice-list>
     </test>
-    <test title="Pattern Superset/Subset Determination" time-sum-sec="2.49"> 
+    <test title="Pattern Superset/Subset Determination" time-sum-sec="2.48"> 
         <application file-name="test-intersection.py" info-request-time="1358108455L" vanished="False"/>
         <choice-list number="6" same_result="False">
            <choice name="0" result="OK" time_sec="0.17" crc="440123606"/>
@@ -81,7 +81,7 @@
         </test>
     </group>
     <group name="Complement End">
-        <test title="Cut patterns from P that end with Q." time-sum-sec="2.39"> 
+        <test title="Cut patterns from P that end with Q." time-sum-sec="2.40"> 
             <application file-name="test-complement_end.py" info-request-time="1358719338L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="0" result="OK" time_sec="0.28" crc="-1018463777"/>

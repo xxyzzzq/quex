@@ -1,23 +1,23 @@
-<test-database execution-time-sec="0.79" date="Sat Feb  2 09:13:07 2013">
+<test-database execution-time-sec="0.79" date="Wed Feb  6 23:45:28 2013">
     <last-used-diff-display-program name=""/>
     <test title="Customized on_skip_range_open event." make-dependent="True" time-sum-sec="0.05"> 
         <application file-name="on_skip_range_open-customized.sh" info-request-time="1358981918L" vanished="False"/>
-        <make-procedure success="True" time_sec="0.877732"/>
+        <make-procedure success="False" time_sec="0.877732"/>
         <choice-list number="1" same_result="False">
            <choice name="customized" result="OK" time_sec="0.05" crc="-1869838464"/>
         </choice-list>
     </test>
     <test title="Default on_skip_range_open event." make-dependent="True" time-sum-sec="0.04"> 
         <application file-name="on_skip_range_open.sh" info-request-time="1358981920L" vanished="False"/>
-        <make-procedure success="True" time_sec="0.839939"/>
+        <make-procedure success="False" time_sec="0.839939"/>
         <choice-list number="1" same_result="False">
            <choice name="default" result="OK" time_sec="0.04" crc="412955726"/>
         </choice-list>
     </test>
     <group name="Mode Transitions">
-        <test title="transition-x.qx" make-dependent="True" time-sum-sec="0.29"> 
+        <test title="transition-x.qx" make-dependent="True" time-sum-sec="0.28"> 
             <application file-name="transition-x.sh" info-request-time="1358981919L" vanished="False"/>
-            <make-procedure success="True" time_sec="1.158950"/>
+            <make-procedure success="False" time_sec="1.158950"/>
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="0.05" crc="140187343"/>
                <choice name="2" result="OK" time_sec="0.02" crc="1810777269"/>
@@ -27,7 +27,7 @@
         </test>
         <test title="transition.qx" make-dependent="True" time-sum-sec="0.42"> 
             <application file-name="transition.sh" info-request-time="1358981921L" vanished="False"/>
-            <make-procedure success="True" time_sec="1.140792"/>
+            <make-procedure success="False" time_sec="1.140792"/>
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="0.16" crc="140187343"/>
                <choice name="2" result="OK" time_sec="0.04" crc="1810777269"/>
