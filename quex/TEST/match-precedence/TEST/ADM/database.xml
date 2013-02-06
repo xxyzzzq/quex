@@ -1,6 +1,6 @@
-<test-database execution-time-sec="11.16" date="Sat Feb  2 09:13:29 2013">
+<test-database execution-time-sec="11.17" date="Wed Feb  6 23:45:28 2013">
     <last-used-diff-display-program name=""/>
-    <test title="Checking PRIORITY-MARK internally." time-sum-sec="2.40"> 
+    <test title="Checking PRIORITY-MARK internally." time-sum-sec="2.39"> 
         <application file-name="priority.py" info-request-time="1356524803L" vanished="False"/>
         <choice-list number="19" same_result="False">
            <choice name="3-begin" result="OK" time_sec="0.12" crc="-2044103555"/>
@@ -24,7 +24,7 @@
            <choice name="subset" result="OK" time_sec="0.10" crc="726249666"/>
         </choice-list>
     </test>
-    <test title="Checking DELETE marks internally." time-sum-sec="1.99"> 
+    <test title="Checking DELETE marks internally." time-sum-sec="2.00"> 
         <application file-name="deletion.py" info-request-time="1356524102L" vanished="False"/>
         <choice-list number="19" same_result="False">
            <choice name="3-begin" result="OK" time_sec="0.12" crc="1817317143"/>
