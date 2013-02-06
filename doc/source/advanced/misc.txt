@@ -23,6 +23,47 @@ The ``flush()`` function sends a token with the accumulated string and the speci
 token-id. Finally, the ``clear()`` function clears the accumulated string without
 sending any token.
 
+As mentioned in section :ref:`sec-token-stamping` token stamping is done
+every time a token id is set, or a token is sent. This might cause baffling
+results when using ``self_accumulator_flush()``. Consider for example
+
+.. code-block:: cpp
+
+   body { 
+       size_t line_n_before; 
+   }
+   mode X {
+       "/*" { self.line_n_before = self_line_number_at_end();
+              self << EAT_COMMENT; }
+   }
+   mode EAT_COMMENT {
+       "*/" { self_write_token_p()->set_line_n(self.line_n_before);
+              self_accumulator_flush(QUEX_TKN_COMMENT);
+              self << X;
+       }
+       ...
+   }
+
+Surprisingly, the token ``QUEX_TKN_COMMENT`` will be sent with the line
+number of the closing ``*/``. This is so, since the flush function sets
+the token id and the setting of the token id involves a token stamping
+with line and column numbers. However, consider the following
+
+.. code-block:: cpp
+
+   ...
+   mode EAT_COMMENT {
+       "*/" { self_line_number_at_begin_set(self.line_n_before);
+              self_accumulator_flush(QUEX_TKN_COMMENT);
+              self << X;
+       }
+       ...
+   }
+
+Here, the token stamping refers to the counter's line number which
+has been set to 'self.line_n_before'. As a result the token will carry
+the line number of the occurence of the opening ``/*``.
+
 .. warning:: If a dynamic length encoding is used (such as ``--codec utf8`` 
              or ``--codec utf16``), then one *must not* use the function
 

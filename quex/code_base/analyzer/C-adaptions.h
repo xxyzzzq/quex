@@ -29,11 +29,13 @@
 #   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
 #   undef  self_line_number            
 #   undef  self_line_number_at_begin 
+#   undef  self_line_number_at_begin_set
 #   undef  self_line_number_at_end   
 #   endif
 #   ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
 #   undef  self_column_number          
 #   undef  self_column_number_at_begin 
+#   undef  self_column_number_at_begin_set
 #   undef  self_column_number_at_end   
 #   endif
 #   ifdef QUEX_OPTION_INDENTATION_TRIGGER
@@ -77,14 +79,16 @@
 #define self_push_mode()                  QUEX_NAME(push_mode)(&self, (NewModeP))
 
 #ifdef      QUEX_OPTION_LINE_NUMBER_COUNTING
-#   define  self_line_number_at_begin()   (self.counter.base._line_number_at_begin)
-#   define  self_line_number_at_end()     (self.counter.base._line_number_at_end)
-#   define  self_line_number()            (self_line_number_at_begin())
+#   define  self_line_number_at_begin()      (self.counter._line_number_at_begin)
+#   define  self_line_number_at_begin_set(X) do { self.counter._line_number_at_begin = (X); } while(0)
+#   define  self_line_number_at_end()        (self.counter._line_number_at_end)
+#   define  self_line_number()               (self_line_number_at_begin())
 #endif
 #ifdef      QUEX_OPTION_COLUMN_NUMBER_COUNTING
-#   define  self_column_number_at_begin() (self.counter.base._column_number_at_begin)
-#   define  self_column_number_at_end()   (self.counter.base._column_number_at_end)
-#   define  self_column_number()          (self_column_number_at_begin())
+#   define  self_column_number_at_begin()      (self.counter._column_number_at_begin)
+#   define  self_column_number_at_begin_set(X) do { self.counter._column_number_at_begin = (X); } while(0)
+#   define  self_column_number_at_end()        (self.counter._column_number_at_end)
+#   define  self_column_number()               (self_column_number_at_begin())
 #endif
 #ifdef      QUEX_OPTION_INDENTATION_TRIGGER
 #   define  self_indentation()            (self.counter._indentation)

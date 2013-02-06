@@ -116,15 +116,33 @@ token can be accessed via the member functions
 
 .. cfunction:: size_t column_number()
 
-of each token object. The stamping happens inside the 'send()' functions.  If
-the stamping procedure needs to be enabled or disabled against the
-abovementioned default settings the macro
+of each token object. The stamping happens inside the 'send()' functions. More
+precisely, whenever a token id is set automatically, the token will be stamped
+automatically with line and column numbers of the beginning of the lexeme. There
+fore, if specific line or column numbers need to be stamped into a token 
+it makes sense to set them in the counter, before sending the token. Consider
+the following example:
+
+.. code-block:: cpp
+
+       self_column_number_at_begin_set(MyColumnN);
+       self_line_number_at_begin_set(MyLineN);
+
+       self_send(MY_TOKEN_ID);
+
+As a result of preparing the line and column number inside the counter, 
+the token stamping will refer to these values. Therefore, a token will
+be sent with the id ``MY_TOKEN_ID`` and the reported column and line
+numbers ``MyColumnN`` and ``MyLineN``.
+
+If the stamping procedure cannot provide the desired functionality it may 
+be disabled by defining the macro
 
 .. cmacro:: QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN_DISABLED
 
-may be used to adapt to disable stamping mechanism. If line or column numbering
-is disabled, also the stamping of the corresponding value is disabled. Further,
-no member in the tokens is reserved to carry that value.
+If line or column numbering is disabled, also the stamping of the corresponding
+value is disabled. Further, no member in the tokens is reserved to carry that
+value.
 
 .. _sec-counter-def:
 
