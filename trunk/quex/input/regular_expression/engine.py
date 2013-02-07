@@ -39,10 +39,7 @@ import quex.engine.state_machine.algebra.complement_begin     as complement_begi
 import quex.engine.state_machine.algebra.complement_end       as complement_end  
 import quex.engine.state_machine.algebra.complement_in        as complement_in   
 import quex.engine.state_machine.algebra.union                as union
-from   quex.engine.state_machine.check.special                import is_all, is_none, get_any, get_none
-import quex.engine.state_machine.check.identity               as     identity
-import quex.engine.state_machine.check.superset               as     superset
-from   quex.engine.state_machine.check.special                import get_all, get_none
+from   quex.engine.state_machine.check.special                import get_any, get_none
 
 import quex.input.regular_expression.traditional_character_set as traditional_character_set
 import quex.input.regular_expression.property                  as property
@@ -56,11 +53,9 @@ from   quex.input.regular_expression.auxiliary                  import __snap_un
                                                                        snap_replacement
 
 import quex.engine.state_machine.sequentialize           as sequentialize
-import quex.engine.state_machine.algorithm.beautifier    as beautifier
 import quex.engine.state_machine.parallelize             as parallelize
 import quex.engine.state_machine.repeat                  as repeat
-import quex.engine.state_machine.algebra.reverse         as reverse
-import quex.engine.unicode_db.case_fold_parser           as     ucs_case_fold
+import quex.engine.unicode_db.case_fold_parser           as ucs_case_fold
 
 from   quex.engine.interval_handling  import Interval, NumberSet
 from   quex.engine.misc.file_in       import error_msg, \
@@ -68,7 +63,9 @@ from   quex.engine.misc.file_in       import error_msg, \
                                              check_whitespace, \
                                              skip_whitespace, \
                                              read_identifier, \
-                                             read_until_character
+                                             read_until_character, \
+                                             verify_word_in_list, \
+                                             read_until_letter
 import quex.engine.utf8               as utf8
 from   quex.blackboard                import setup as Setup
 from   quex.exception                 import RegularExpressionException
@@ -516,12 +513,15 @@ def snap_complement(stream, PatternDict):
     return complement.do(tmp)
 
 def snap_tie(stream, PatternDict):
-    result = snap_curly_bracketed_expression(stream, PatternDict, "Tie operator", "Tie")
-    return tie.do(result)
+    assert False, "Not yet implemented"
+    #result = snap_curly_bracketed_expression(stream, PatternDict, "Tie operator", "Tie")
+    #return tie.do(result)
 
 def snap_untie(stream, PatternDict):
-    result = snap_curly_bracketed_expression(stream, PatternDict, "Untie operator", "Untie")
-    return tie.do(result)
+    assert False, "Not yet implemented"
+    # result = snap_curly_bracketed_expression(stream, PatternDict, "Tie operator", "Tie")
+    # result = snap_curly_bracketed_expression(stream, PatternDict, "Untie operator", "Untie")
+    # return tie.do(result)
 
 def snap_union(stream, PatternDict):
     pattern_list = snap_curly_bracketed_expression(stream, PatternDict, "union operator", "Union", 

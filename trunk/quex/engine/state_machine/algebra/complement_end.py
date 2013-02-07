@@ -1,8 +1,6 @@
 import quex.engine.state_machine.algorithm.beautifier     as beautifier
 import quex.engine.state_machine.algebra.reverse          as reverse
-import quex.engine.state_machine.algebra.complement       as complement
 import quex.engine.state_machine.algebra.complement_begin as complement_begin
-import quex.engine.state_machine.algebra.intersection     as intersection
 
 def do(SM_A, SM_B):
     """Find a state machine that stops right before the state machine 'SM_B'.

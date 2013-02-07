@@ -27,5 +27,5 @@ def test(TestString):
 
 test('µ/µ+/µ')
 test('[aµ]+/[aµ]')
-test('[^a]+/[^a]a')
+test('\Intersection{[^a] [\X0000-\U10FFFF]}+/\Intersection{[^a] [\X0000-\U10FFFF]}a')
 

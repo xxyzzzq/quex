@@ -1,16 +1,16 @@
-<test-database execution-time-sec="0.42" date="Wed Feb  6 23:45:30 2013">
+<test-database execution-time-sec="0.49" date="Thu Feb  7 21:53:22 2013">
     <last-used-diff-display-program name=""/>
     <group name="Plot">
-        <test title="Core state machine." time-sum-sec="0.10"> 
+        <test title="Core state machine." time-sum-sec="0.13"> 
             <application file-name="plot-core.py" info-request-time="1358973213L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.10" crc="-1273735805"/>
+               <choice name="" result="OK" time_sec="0.13" crc="-1273735805"/>
             </choice-list>
         </test>
-        <test title="Backward Detector (for pseudo-ambiguous post context)." time-sum-sec="0.19"> 
+        <test title="Backward Detector (for pseudo-ambiguous post context)." time-sum-sec="0.23"> 
             <application file-name="plot-papc.py" info-request-time="1358973151L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.19" crc="1475873564"/>
+               <choice name="" result="OK" time_sec="0.23" crc="1475873564"/>
             </choice-list>
         </test>
         <test title="Pre-Context." time-sum-sec="0.13"> 

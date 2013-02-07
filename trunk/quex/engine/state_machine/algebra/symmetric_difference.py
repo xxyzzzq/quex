@@ -1,5 +1,3 @@
-import quex.engine.state_machine.algorithm.beautifier as beautifier
-import quex.engine.state_machine.check.special        as special
 import quex.engine.state_machine.algebra.union        as union
 import quex.engine.state_machine.algebra.intersection as intersection
 import quex.engine.state_machine.algebra.difference   as difference

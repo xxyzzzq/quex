@@ -1,16 +1,10 @@
 from   quex.engine.state_machine.core                 import State, StateMachine
-import quex.engine.state_machine.algebra.complement   as     complement
 import quex.engine.state_machine.algorithm.beautifier as     beautifier
-import quex.engine.state_machine.check.special        as     special
 import quex.engine.state_machine.index                as     index
-import quex.engine.state_machine.repeat               as     repeat
 from   quex.engine.misc.tree_walker                   import TreeWalker
 from   quex.engine.tools                              import r_enumerate
-from   quex.blackboard import E_StateIndices
 
-from   copy      import deepcopy
 from   itertools import islice
-import sys
 
 def do(SM_A, SM_B):
     """Cut Begin:
@@ -184,14 +178,14 @@ class WalkAlong(TreeWalker):
             self.result.get_init_state().transitions().add_transition(trigger_set, state_index)
 
         #print "#state.transitions():", state.transitions().get_map()
-        old_ti = state_index
+        #old_ti = state_index
         for ai, bi, trigger_set in islice(self.path, first_remainder_k+1, None):
             target_index, target_state = self.get_state(ai, bi)
             ##print "#new 1:", target_index
             state.add_transition(trigger_set, target_index)
             #print "# %i -- %s --> %s" % (old_ti, trigger_set.get_utf8_string(), target_index)
             state = target_state
-            old_ti = target_index
+            #old_ti = target_index
 
         return
             

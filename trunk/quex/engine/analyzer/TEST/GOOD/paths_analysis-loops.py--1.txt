@@ -33,14 +33,14 @@ init-state = 0L
 
 State 0:
   .entry:
-    .from NONE:
+    .from NONE: last_acceptance = Failure
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 1:
   .entry:
-    .from 0:
+    .from 0: if      PreContext_4: last_acceptance = Pattern4
   .drop_out:
     if PreContext_4:  goto Pattern4;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -48,10 +48,7 @@ State 1:
 
 State 2:
   .entry:
-    .from 1:
-        if      PreContext_4: last_acceptance = Pattern4
-        else: last_acceptance = Failure
-        if 'PreContext_4': position[PostContext_4]  = input_p;
+    .from 1: if 'PreContext_4': position[PostContext_4]  = input_p;
     .from 5:
     .from 7:
   .drop_out:
@@ -212,14 +209,12 @@ State 9:
     (*) [      3]: 3/set([6L])
     (*) [      4]: 4/set([1L])
 
- Optimized States ---
+
+--- Optimized States ---
 
 State 2:
   .entry:
-    .from 1:
-        if      PreContext_4: last_acceptance = Pattern4
-        else: last_acceptance = Failure
-        if 'PreContext_4': position[PostContext_2]  = input_p;
+    .from 1: if 'PreContext_4': position[PostContext_2]  = input_p;
     .from 5:
     .from 7:
   .drop_out:

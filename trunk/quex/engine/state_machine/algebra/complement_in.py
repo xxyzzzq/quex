@@ -1,11 +1,8 @@
-from   quex.engine.state_machine.core                     import StateMachine,    State
-import quex.engine.state_machine.index                    as     index
 import quex.engine.state_machine.check.special            as     special
 import quex.engine.state_machine.algorithm.beautifier     as     beautifier
 import quex.engine.state_machine.sequentialize            as     sequentialize
 import quex.engine.state_machine.repeat                   as     repeat
 import quex.engine.state_machine.algebra.complement_begin as     complement_begin
-from   copy                                               import deepcopy
 
 def do(SM_A, SM_B):
     """\NotIn{P Q} = \NotBegin{P \Any*(Q+)}
