@@ -358,6 +358,7 @@ global_character_type_db = {
         "uint8_t":    [ "uint8_t",    "ASCII",         "ASCII",         1],
         "uint16_t":   [ "uint16_t",   "UCS-2LE",       "UCS-2BE",       2],
         "uint32_t":   [ "uint32_t",   "UCS-4LE",       "UCS-4BE",       4],
+        "byte":       [ "byte",       "ASCII",         "ASCII",         1],
         "u8":         [ "u8",         "ASCII",         "ASCII",         1],
         "u16":        [ "u16",        "UCS-2LE",       "UCS-2BE",       2],
         "u32":        [ "u32",        "UCS-4LE",       "UCS-4BE",       4],
