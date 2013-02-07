@@ -111,8 +111,8 @@ elif "5" in sys.argv:
     test('X("a"|"x"*|"e"|"g")', 'X')
     test('X("a"|"x"*|"e"|"g")', 'Xx{5}')
     # test('abc("123"|("ABC"|"XYZ")+)+"123"("AAA"|"BBB"|"CCC")?xyz', 'abc123ABC123AAAxyz')
-    test('ab("12"|("AB"|"XY")+)+"12"("AA"|"BB"|"CC")?yz', 'ab12AB12AAyz')
-    test('(((a+)b)+c)+', 'abcbc')
-    test('(pri|ri|i)+',  'priri')
-    test('(pri|ri|i)+',  '(((p+)r)+i)+')
+    #test('ab("12"|("AB"|"XY")+)+"12"("AA"|"BB"|"CC")?yz', 'ab12AB12AAyz')
+    #test('(((a+)b)+c)+', 'abcbc')
+    #test('(pri|ri|i)+',  'priri')
+    #test('(pri|ri|i)+',  '(((p+)r)+i)+')
 

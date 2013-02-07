@@ -1,14 +1,9 @@
 import quex.engine.state_machine.algorithm.beautifier as     beautifier
 import quex.engine.state_machine.check.special        as     special
-import quex.engine.state_machine.algebra.complement   as     complement
 import quex.engine.state_machine.index                as     index
 from   quex.engine.state_machine.core                 import State, StateMachine
 from   quex.engine.misc.tree_walker                   import TreeWalker
-from   quex.engine.tools                              import r_enumerate
-from   quex.blackboard import E_StateIndices
 
-from   copy import deepcopy
-import sys
 
 def do(SM_A, SM_B):
     """Complement Begin:

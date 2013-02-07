@@ -70,7 +70,7 @@ post-context backward input position detector = init-state = 0L
     
 
 -------------------------------------------------------------------
-expression    = "[^a]+/[^a]a"
+expression    = "\Intersection{[^a] [\X0000-\U10FFFF]}+/\Intersection{[^a] [\X0000-\U10FFFF]}a"
 pattern
 init-state = 0L
 00000 ()

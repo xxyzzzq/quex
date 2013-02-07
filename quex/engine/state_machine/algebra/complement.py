@@ -8,8 +8,7 @@
 
     (C) 2013 Frank-Rene Schaefer
 """
-import quex.engine.state_machine.index                as     index
-import quex.engine.state_machine.algorithm.beautifier as beautifier
+import quex.engine.state_machine.index as     index
 from   quex.engine.state_machine.core  import State
 from   quex.engine.interval_handling   import NumberSet, Interval
 from   copy import deepcopy

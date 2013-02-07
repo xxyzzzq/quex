@@ -1,6 +1,3 @@
-import quex.engine.state_machine.algorithm.beautifier as beautifier
-import quex.engine.state_machine.algebra.reverse      as reverse
-import quex.engine.state_machine.algebra.cut_begin    as cut_begin
 
 def do(SM_A, SM_B):
 

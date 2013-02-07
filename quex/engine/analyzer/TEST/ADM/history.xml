@@ -1,4 +1,4 @@
-<history date="Wed Feb  6 23:45:29 2013" element-n="1002">
+<history date="Thu Feb  7 21:47:14 2013" element-n="1007">
     <day year="2011" month="04" day="29">
         <history-init time="04:18:51"/>
     </day>
@@ -1166,5 +1166,12 @@
         <crc-error time="17:42:17" application="paths_analysis-single-pattern.py" choice="10" database-crc="-73921245" real-crc="-1729556701"/>
         <crc-error time="17:42:18" application="paths_analysis.py" choice="3" database-crc="-78236767" real-crc="-1408532620"/>
         <crc-error time="17:42:18" application="paths_analysis.py" choice="7" database-crc="-1524116103" real-crc="-1052461595"/>
+    </day>
+    <day year="2013" month="02" day="07">
+        <crc-error time="05:52:32" application="paths_analysis.py" choice="10" database-crc="-1678590717" real-crc="618061422"/>
+        <crc-error time="05:52:32" application="paths_analysis-loops.py" choice="1" database-crc="-1363711537" real-crc="2028490638"/>
+        <crc-error time="05:52:32" application="paths_analysis-loops.py" choice="5" database-crc="-420910563" real-crc="1256151309"/>
+        <crc-error time="05:52:32" application="paths_analysis-loops.py" choice="6" database-crc="1039330943" real-crc="-261232440"/>
+        <crc-error time="05:52:32" application="paths_analysis-loops.py" choice="7" database-crc="187844296" real-crc="-1001592918"/>
     </day>
 </history>
