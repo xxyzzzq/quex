@@ -166,6 +166,19 @@ def __perform_setup(command_line, argv):
                       % setup.buffer_element_size + 
                       "has been specified by '-b' or '--buffer-element-size'.")
 
+    type_info = global_character_type_db.get(setup.buffer_element_type)
+    if     type_info is not None and len(type_info) >= 4 \
+       and type_info[3] != -1 and setup.buffer_element_size != -1 \
+       and type_info[3] != setup.buffer_element_size:
+        error_msg("\nBuffer element type ('--bet' or '--buffer-element-type') was set to '%s'.\n" \
+                  % setup.buffer_element_type \
+                  + "It is well known to be of size %s[byte]. However, the buffer element size\n" \
+                  % type_info[3] \
+                  + "('-b' or '--buffer-element-type') was specified as '%s'.\n\n" \
+                  % setup.buffer_element_size \
+                  + "Quex can continue, but the result is questionable.\n", \
+                  DontExitF=True)
+
     setup.converter_f = False
     if setup.converter_iconv_f or setup.converter_icu_f:
         setup.converter_f = True
