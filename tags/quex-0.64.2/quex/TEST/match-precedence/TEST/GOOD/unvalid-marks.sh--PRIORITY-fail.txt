@@ -1,0 +1,6 @@
+data/PRIORITY-fail.qx:24:warning: PRIORITY mark does not have any effect.
+data/PRIORITY-fail.qx:26:warning: PRIORITY mark does not have any effect.
+data/PRIORITY-fail.qx:4:warning: Detected implicit token identifier definitions. Proposal:
+data/PRIORITY-fail.qx:4:warning:    token {
+data/PRIORITY-fail.qx:4:warning:      THING;
+data/PRIORITY-fail.qx:4:warning:    }

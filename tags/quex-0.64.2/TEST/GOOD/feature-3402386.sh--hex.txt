@@ -1,0 +1,35 @@
+test.qx:3:warning: Post context requires philosophical cut--handle with care!
+test.qx:3:warning: Proposal: Isolate pattern and ensure results are as expected!
+digraph state_machine_49 {
+rankdir=LR;
+size="8,5"
+node [shape = doublecircle]; 4;
+node [shape = circle];
+0 -> 1 [label ="[0032] "];
+1 -> 2 [label ="[0031] "];
+2 -> 3 [label ="[0030] "];
+3 -> 4 [label ="[007A] "];
+}
+digraph state_machine_53 {
+rankdir=LR;
+size="8,5"
+node [shape = doublecircle]; 7;
+node [shape = circle];
+0 -> 1 [label ="[0078] "];
+1 -> 2 [label ="[0079] "];
+2 -> 3 [label ="[007A] "];
+3 -> 4 [label ="[007A] "];
+4 -> 5 [label ="[0030] "];
+4 -> 4 [label ="[007A] "];
+5 -> 6 [label ="[0031] "];
+6 -> 7 [label ="[0032] "];
+}
+digraph state_machine_57 {
+rankdir=LR;
+size="8,5"
+node [shape = doublecircle]; 3;
+node [shape = circle];
+0 -> 1 [label ="[007A] "];
+1 -> 2 [label ="[0079] "];
+2 -> 3 [label ="[0078] "];
+}

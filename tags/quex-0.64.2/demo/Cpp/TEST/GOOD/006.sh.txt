@@ -1,0 +1,31 @@
+,-----------------------------------------------------------------
+| [START]
+(1, 1)  	HEY_P___HEY_ETC____ 'hey' 
+(1, 4)  	LETTER_____________ 'h' 
+(1, 5)  	LETTER_____________ 'e' 
+(1, 6)  	WHITESPACE '' 
+(2, 1)  	HEY_____HEY_HALLO_P 'hey' 
+(2, 4)  	HALLO______________ 'hallo' 
+(2, 9)  	HALLO______________ 'hallo' 
+(2, 14)  	WHITESPACE '' 
+(3, 1)  	HEY_P___HEY_ETC____ 'hey' 
+(3, 4)  	LETTER_____________ 'h' 
+(3, 5)  	LETTER_____________ 'e' 
+(3, 6)  	HALLO______________ 'hallo' 
+(3, 11)  	HALLO______________ 'hallo' 
+(3, 16)  	WHITESPACE '' 
+(4, 1)  	HEY_____HEY_HALLO_P 'hey' 
+(4, 4)  	HEY_____HEY_HALLO_P 'hey' 
+(4, 7)  	HALLO______________ 'hallo' 
+(4, 12)  	HALLO______________ 'hallo' 
+(4, 17)  	WHITESPACE '' 
+(5, 1)  	HEY_P___HEY________ 'heyheyhey' 
+(5, 10)  	HEY________________ 'hey' 
+(5, 13)  	WHITESPACE '' 
+(6, 1)  	LETTER_____________ 'x' 
+(6, 2)  	HEY________________ 'hey' 
+(6, 5)  	WHITESPACE '' 
+(7, 1)  	<TERMINATION> '' 
+| [END] number of token = 26
+`-----------------------------------------------------------------
+VALGRIND:   All heap blocks were freed -- no leaks are possible

@@ -1,0 +1,37 @@
+All store at the same state => use same register.
+State Machine _____________________________________
+init-state = 0L
+00000 (1), (2), (3), (4)
+     == 'c' ==> 00001
+    
+00001 (1, S), (2, S), (3, S), (4, S)
+     == 'a' ==> 00002
+    
+00002 (1), (2), (3), (4)
+     == 'a' ==> 00002
+     == 'z' ==> 00003
+    
+00003 (1, A, R, pre=1), (2, A, R, pre=2), (3, A, R, pre=3), (4, A, R, pre=4)
+    
+
+Positioning Info __________________________________
+State 0:
+        [FAILURE]: NONE/set([0L])
+
+State 1:
+        [FAILURE]: NONE/set([0L])
+
+State 2:
+        [FAILURE]: NONE/set([0L])
+
+State 3:
+        [FAILURE]: NONE/set([0L])
+    (*) [      1]: 1/set([1L])
+    (*) [      2]: 2/set([1L])
+    (*) [      3]: 3/set([1L])
+    (*) [      4]: 4/set([1L])
+
+   1L: 0
+   2L: 0
+   3L: 0
+   4L: 0

@@ -1,0 +1,22 @@
+(*) Full Error
+
+error.qx:2:warning: Section token_type does not contain a 'take_text' section. It would be
+error.qx:2:warning: necessary if the analyzer uses the string accumulator. To disable this warning
+error.qx:2:warning: set the command line flag: --token-type-no-take_test-check or --ttnttc.
+error.qx:2:warning: 
+error.qx:2:warning: The 'Accumulator' feature is activated, which mandatorily
+error.qx:2:warning: requires the 'take_text' section to be defined. Please, do one of
+error.qx:2:warning: the following:
+error.qx:2:warning: 
+error.qx:2:warning: -- Set the command line option: --token-type-no-stringless-check or 
+error.qx:2:warning:    --ttnsc.
+error.qx:2:warning: 
+error.qx:2:warning: -- deactivate the accumulator feature using command line options:
+error.qx:2:warning:    --no-string-accumulator or  --nsacc.
+error.qx:2:warning: 
+error.qx:2:warning: -- consult the documentatoin and specify a 'take_text' section.
+(*) No String Accumulator
+
+error.qx:2:warning: Section token_type does not contain a 'take_text' section. It would be
+error.qx:2:warning: necessary if the analyzer uses the string accumulator. To disable this warning
+error.qx:2:warning: set the command line flag: --token-type-no-take_test-check or --ttnttc.

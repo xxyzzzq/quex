@@ -1,0 +1,101 @@
+All Post-Contexts are Combinable
+State Machine _____________________________________
+init-state = 0L
+00000 (1), (2), (3), (4), (5)
+     == 'a' ==> 00001
+     == 'b' ==> 00002
+     == 'c' ==> 00005
+     == 'd' ==> 00008
+     == 'e' ==> 00011
+    
+00001 (1, A), (2)
+     == 'a' ==> 00001
+     == 'b' ==> 00002
+     == 'c' ==> 00003
+    
+00002 (2)
+     == ['a', 'b'] ==> 00002
+     == 'c' ==> 00003
+    
+00003 (2)
+     == 'd' ==> 00004
+    
+00004 (2, A)
+    
+00005 (3, S)
+     == 'y' ==> 00006
+    
+00006 (3)
+     == 'y' ==> 00006
+     == 'z' ==> 00007
+    
+00007 (3, A, R)
+    
+00008 (4, S)
+     == 'y' ==> 00009
+    
+00009 (4)
+     == 'y' ==> 00009
+     == 'z' ==> 00010
+    
+00010 (4, A, R)
+    
+00011 (5, S)
+     == 'y' ==> 00012
+    
+00012 (5)
+     == 'y' ==> 00012
+     == 'z' ==> 00013
+    
+00013 (5, A, R)
+    
+
+Positioning Info __________________________________
+State 0:
+        [FAILURE]: NONE/set([0L])
+
+State 1:
+        [      1]: NONE/set([1L])
+
+State 2:
+        [FAILURE]: NONE/set([0L])
+    (*) [      1]: NONE/set([1L])
+
+State 3:
+        [FAILURE]: NONE/set([0L])
+    (*) [      1]: NONE/set([1L])
+
+State 4:
+        [      2]: NONE/set([4L])
+
+State 5:
+        [FAILURE]: NONE/set([0L])
+
+State 6:
+        [FAILURE]: NONE/set([0L])
+
+State 7:
+    (*) [      3]: NONE/set([5L])
+
+State 8:
+        [FAILURE]: NONE/set([0L])
+
+State 9:
+        [FAILURE]: NONE/set([0L])
+
+State 10:
+    (*) [      4]: NONE/set([8L])
+
+State 11:
+        [FAILURE]: NONE/set([0L])
+
+State 12:
+        [FAILURE]: NONE/set([0L])
+
+State 13:
+    (*) [      5]: NONE/set([11L])
+
+   1L: 0
+   3L: 0
+   4L: 0
+   5L: 0

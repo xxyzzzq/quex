@@ -1,0 +1,127 @@
+Quex's algebra on regular expressions is expressed in terms of sets of lexemes.
+That is, a regular expression is associated with the set of lexemes which it
+matches. Any operation on a regular expression has its counterpart in the space
+of lexemes. For example, let the regular expressions P and Q be defined as below::
+
+       P    [0-9]{3}
+       Q    [a-b]{2}
+
+That is, P matches lexemes of the scheme::
+
+    "000", "001", "002", ... "999"
+
+and Q matches lexemes following the pattern::
+
+    "aa", "ab", "ac", ... "zz"
+
+Then, the union of P and Q must be a regular expression which matches the union
+of both, i.e.::
+
+    "000", "001", "002", ... "999", "aa", "ab", "ac", ... "zz"
+
+There are two special patterns: the '\None' and the '\Any+' pattern. The first
+does not match anything at all. The second matches absolutely anything that is
+at least one character long. Both are useless in pattern definitions, but they
+play important roles in the algebraic structure. The algebraic operations are
+devided into two categories:
+
+.. describe:: Unary Operations (short 'U').
+
+.. describe:: Binary Operations (short 'B').
+
+Unary operations take only one argument. Binary operations take at least two.
+Another categorization is
+
+.. describe:: Set Operations (short 'S').
+
+.. describe:: Lexeme Operations (short 'L').
+
+Set operations do not change or modify lexemes in the related lexeme sets. They
+can be considered in terms of additions or deletions of complete lexemes.
+Lexeme operations produce regular expressions that match new or modified
+lexemes. As indicated in the descriptions the letters 'U', 'B', 'S' and 'L'
+shall indicate the operator categories. Following are the regular expression
+operators.
+
+.. describe:: \R{ P } -- Reverse (UL)
+
+   Matches the reverse of what P matches.  For any lexeme Lp = { x0, x1, ...
+       xn } which matches P, there is a reverse lexeme Lrp = { xn, ...  x1, x0 }
+       which matches \R{ P }.
+
+.. describe:: \Not{ P } -- Complement (UL)
+
+   Matches anything that P does not match.  Any lexeme Lnp = { x0, x1, ...  xn }
+   which is not matched by P is matched by \Not{ P }.
+
+.. describe:: \Tie{ P } -- Build Loop (UL)
+
+   Matches an arbitrary number of concatinations of lexemes matching P, 
+   including none. 
+
+.. describe:: \Untie{ P } -- Loosen any loop (UL)
+
+.. describe:: \Sequence{ P Q } -- Sequentialize (BL)
+
+   Matches the concatination of P and Q. For any to lexemes Lp = { x0, x1, ... xn }
+   matched by P and Lq = { y1, y2, ... ym } matched by Q there is a lexeme
+   Lspq = { x1, x2, ... xn, y1, y2, ... ym } matched by \Sequence{ P Q }.
+
+.. describe:: \CutBegin{ P Q } -- Cut Beginning (BL)
+
+   Prune P in front, so that \CutBegin{ P Q } starts right after Q would match. 
+   Example:
+
+              \CutBegin{"otto_mueller" "otto"} --> "_mueller"
+
+.. describe:: \CutEnd{ P Q } -- Cut End (BL)
+
+   Prune P at back, so that \CutEnd{ P Q } ends right before Q would match. 
+   Example:
+
+              \CutBegin{"otto_mueller" "mueller"} --> "otto_"
+
+.. describe:: \Union{ P Q } -- Union (BS)
+
+   Matches all lexemes which are matched by P and all lexemes which are
+   matched by Q.
+
+.. describe:: \Intersection{ P Q } -- Intersection (BS)
+
+   Matches only those lexemes which are matched by both P and Q.
+
+.. describe:: \NotBegin{ P Q } -- Complement Begin (BS)
+
+   Matches those lexemes of P which do not start with lexemes that
+   match Q.
+
+.. describe:: \NotEnd{ P Q } -- Complement End (BS)
+
+   Matches those lexemes of P which do not end with lexemes that
+   match Q.
+
+.. describe:: \NotIn{ P Q } -- Complement End (BS)
+
+   Matches those lexemes of P which do not contain lexemes that
+   match Q.
+
+
+
+\CutBegin{P Q}
+
+... note:   \CutBegin{[0-9]+ 0} --> [0-9]+
+
+     cuts only the first occurence of 0, so all lexemes 
+     starting with '0' are cut, and connect the init state
+     directly to what comes after. After, there comes a transition
+     based on 0, so actually nothing is deleted. 
+
+     NOTE: R = \CutBegin{P Q}
+
+     Means, that all lexemes of P starting with Q are cut; but it does
+     not mean that R cannot start with Q.
+
+     to delete 0 from [0-9]+ it is necessary to write
+
+        \CutBegin{[0-9]+ 0+}
+
