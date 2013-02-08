@@ -7,7 +7,8 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i nonsense.qx --foreign-token-id-file include_me.h 2>&1
-
+quex -i nonsense.qx --foreign-token-id-file include_me.h 2>&1 -o EasyLexer
+ls EasyLexer* | sort
+rm EasyLexer*
 # cleansening
 cd $tmp

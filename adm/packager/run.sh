@@ -9,7 +9,7 @@
 ###########################################################################
 
 cd ~/prj/quex/trunk
-mkdir -f /tmp/quex-packages
+mkdir -p /tmp/quex-packages
 
 orig_directory=`pwd`
 directory=`basename $orig_directory`
