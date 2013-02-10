@@ -112,7 +112,7 @@ class ConverterWriter:
                     txt += __bracket(conversion_list[mid_index:], range_index)
                     txt += LanguageDB.END_IF() 
 
-            if txt[-1] == "\n": txt = txt[:-1]
+            if len(txt) != 0 and txt[-1] == "\n": txt = txt[:-1]
             return "    " + txt.replace("\n", "\n    ") + "\n"
 
         range_index = self.same_byte_format_range(conversion_table)

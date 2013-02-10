@@ -136,9 +136,10 @@ def parse_section(fh):
         elif word == "token_type":       
 
             if Setup.token_class_file != "":
-                error_msg("Token type definition inadmissible while specifying on the command line\n" + \
-                          "the file %s to contain a manually written token class." % repr(Setup.token_class_file),
-                          fh)
+                error_msg("Section 'token_type' is intended to generate a token class.\n" \
+                          + "However, the manually written token class file '%s'" \
+                          % repr(Setup.token_class_file) \
+                          + "has been specified on the command line.", fh)
        
             if blackboard.token_type_definition is None:
                 blackboard.token_type_definition = token_type.parse(fh)

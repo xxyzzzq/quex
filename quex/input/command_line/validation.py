@@ -1,7 +1,7 @@
 import os.path
 from   quex.DEFINITIONS              import QUEX_PATH
 import quex.input.command_line.query as query
-from   quex.input.setup              import SETUP_INFO, DEPRECATED, global_character_type_db, command_line_args_defined, command_line_args_string, command_line_args
+from   quex.input.setup              import SETUP_INFO, DEPRECATED, global_character_type_db, command_line_args_defined, command_line_args_string, command_line_args, SetupParTypes
 import quex.engine.codec_db.core     as codec_db
 from   quex.engine.misc.file_in      import is_identifier, \
                                             error_msg, \
@@ -31,7 +31,7 @@ def do(setup, command_line, argv):
         occurence_n = 0 
         for option in info[0]:
             occurence_n += argv.count(option)
-        if occurence_n > 1:
+        if occurence_n > 1 and info[1] != SetupParTypes.LIST:
             error_msg("Received more than one of the following options:\n" + \
                       "%s" % repr(info[0])[1:-1])
 

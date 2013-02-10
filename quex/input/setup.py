@@ -134,7 +134,6 @@ SETUP_INFO = {
     "compression_path_f":             [["--path-compression"],                 SetupParTypes.FLAG],
     "compression_path_uniform_f":     [["--path-compression-uniform"],         SetupParTypes.FLAG],
     "count_column_number_f":          [["--no-count-lines"],                   SetupParTypes.NEGATED_FLAG],
-    "message_on_extra_options_f":     [["--no-message-on-extra-options"],      SetupParTypes.NEGATED_FLAG],
     "count_line_number_f":            [["--no-count-columns"],                 SetupParTypes.NEGATED_FLAG],
     "character_display":              [["--character-display"],                "utf8"],
     "path_limit_code":                [["--path-termination"],                 0x1],
@@ -146,6 +145,7 @@ SETUP_INFO = {
     "converter_ucs_coding_name":      [["--converter-ucs-coding-name", "--cucn"], ""],
     "include_stack_support_f":        [["--no-include-stack", "--nois"],       SetupParTypes.NEGATED_FLAG],
     "input_mode_files":               [["-i", "--mode-files"],                 SetupParTypes.LIST],
+    "suppressed_notification_list":   [["--suppress", "-s"],                   SetupParTypes.LIST],
     "token_class_file":               [["--token-class-file"],                 ""],
     "token_class":                    [["--token-class", "--tc"],              "Token"],
     "token_class_only_f":             [["--token-class-only", "--tco"],        SetupParTypes.FLAG],
@@ -173,12 +173,7 @@ SETUP_INFO = {
     #
     "version_information":               [["--version", "-v"],                SetupParTypes.FLAG],
     "help":                              [["--help", "-h"],                   SetupParTypes.FLAG],
-    "warning_disabled_no_token_queue_f": [["--no-warning-on-no-token-queue"], SetupParTypes.FLAG],
     "warning_on_outrun_f":               [["--warning-on-outrun", "--woo"],   SetupParTypes.FLAG],
-    "error_on_dominated_pattern_f":      [["--no-error-on-dominated-pattern",      "--neodp"],   SetupParTypes.NEGATED_FLAG],
-    "error_on_special_pattern_same_f":   [["--no-error-on-special-pattern-same",   "--neosps"],  SetupParTypes.NEGATED_FLAG],
-    "error_on_special_pattern_outrun_f": [["--no-error-on-special-pattern-outrun", "--neospo"],  SetupParTypes.NEGATED_FLAG],
-    "error_on_special_pattern_subset_f": [["--no-error-on-special-pattern-subset", "--neospsu"], SetupParTypes.NEGATED_FLAG],
     # Parameters not set on the command line:
     "byte_order_is_that_of_current_system_f":    True,
     "analyzer_class_name":                       None,
@@ -224,17 +219,37 @@ SETUP_INFO = {
     "XX_input_lexer_class_friends":      [["--friend-class"],                   SetupParTypes.LIST], 
     "XX_token_class_name":               [["--token-class-name"],               ""],             
     "XX_token_class_stringless_check_f": [["--token-type-no-stringless-check",  "--ttnsc"], SetupParTypes.NEGATED_FLAG], 
-    "XX_token_id_counter_offset":        [["--token-offset"],                   "10000"],        
-    "XX_token_id_termination":           [["--token-id-termination"],           "0"],            
-    "XX_token_id_uninitialized":         [["--token-id-uninitialized"],         "1"],            
-    "XX_token_id_indentation_error":     [["--token-id-indentation-error"],     "2"],            
-    "XX_output_debug_f":                 [["--debug"],                          SetupParTypes.FLAG],
-    "XX_plot_graphic_format":            [["--plot"],                           ""],
+    "XX_token_id_counter_offset":        [["--token-offset"],                     "10000"],        
+    "XX_token_id_termination":           [["--token-id-termination"],             "0"],            
+    "XX_token_id_uninitialized":         [["--token-id-uninitialized"],           "1"],            
+    "XX_token_id_indentation_error":     [["--token-id-indentation-error"],       "2"],            
+    "XX_output_debug_f":                 [["--debug"],                            SetupParTypes.FLAG],
+    "XX_plot_graphic_format":            [["--plot"],                             ""],
     "XX_plot_character_display":         [["--plot-character-display", "--pcd"],  "utf8"],
-    "XX_plot_graphic_format_list_f":     [["--plot-format-list"],               SetupParTypes.FLAG],
+    "XX_plot_graphic_format_list_f":     [["--plot-format-list"],                 SetupParTypes.FLAG],
     "XX_compression_template_coef":      [["--template-compression-coefficient"], 1.0],
-    "XX_token_id_prefix":                [["--token-prefix"],                   "QUEX_TKN_"],
+    "XX_token_id_prefix":                [["--token-prefix"],                     "QUEX_TKN_"],
+    "XX_message_on_extra_options_f":     [["--no-message-on-extra-options"],      SetupParTypes.NEGATED_FLAG],
+    "XX_error_on_dominated_pattern_f":      [["--no-error-on-dominated-pattern",      "--neodp"],   SetupParTypes.NEGATED_FLAG],
+    "XX_error_on_special_pattern_same_f":   [["--no-error-on-special-pattern-same",   "--neosps"],  SetupParTypes.NEGATED_FLAG],
+    "XX_error_on_special_pattern_outrun_f": [["--no-error-on-special-pattern-outrun", "--neospo"],  SetupParTypes.NEGATED_FLAG],
+    "XX_error_on_special_pattern_subset_f": [["--no-error-on-special-pattern-subset", "--neospsu"], SetupParTypes.NEGATED_FLAG],
+    "XX_warning_disabled_no_token_queue_f": [["--no-warning-on-no-token-queue"], SetupParTypes.FLAG],
 }
+
+class NotificationDB:
+    # IMPORTANT: The notification ids are NOT supposed to changed between
+    #            different versions. Otherwise, updates of quex may cause
+    #            compatibility issues.
+    #
+    # Notification Name:            Notification ID:
+    token_id_ignored_files_report   = 0
+    message_on_extra_options        = 1
+    error_on_dominated_pattern      = 2
+    error_on_special_pattern_same   = 3
+    error_on_special_pattern_outrun = 4
+    error_on_special_pattern_subset = 5
+    warning_on_no_token_queue       = 6
 
 DEPRECATED = { 
   "XX_input_pattern_file": 
@@ -350,6 +365,24 @@ DEPRECATED = {
   "XX_token_id_prefix":
       ("Command line option '--token-prefix' has been renamed to '--token-id-prefix'\n"
        "for the sake of precision in expression.", "0.62.1"),
+  "XX_message_on_extra_options_f": 
+      ("Option '--no-message-on-extra-options' has been replaced with '--suppress %s'" 
+       % NotificationDB.message_on_extra_options, "0.64.3"),
+  "XX_error_on_dominated_pattern_f":
+      ("Option '--no-error-on-dominated-pattern' or '--neodp' has been replaced with '--suppsress %s'"
+       % NotificationDB.error_on_dominated_pattern, "0.64.3"),
+  "XX_error_on_special_pattern_same_f":   
+      ("Option '--no-error-on-special-pattern-same' or '--neosps' has been replaced with '--suppsress %s'"
+       % NotificationDB.error_on_special_pattern_same, "0.64.3"),
+  "XX_error_on_special_pattern_outrun_f": 
+      ("Option '--no-error-on-special-pattern-outrun' or '--neospo' has been replaced with '--suppsress %s'"
+       % NotificationDB.error_on_special_pattern_outrun, "0.64.3"),
+  "XX_error_on_special_pattern_subset_f": 
+      ("Option '--no-error-on-special-pattern-subset' or '--neospsu' has been replaced with '--suppsress %s'"
+       % NotificationDB.error_on_special_pattern_subset, "0.64.3"),
+  "XX_warning_disabled_no_token_queue_f": 
+      ("Option '--no-warning-on-no-token-queue' has been replaced with '--suppsress %s'"
+       % NotificationDB.warning_on_no_token_queue, "0.64.3"),
 }
  
 global_character_type_db = {
@@ -435,7 +468,6 @@ DOC = {
     "compression_path_uniform_f":     ("Activate path compression with constraint of uniformity.", ""),
     "count_column_number_f":          ("Activate column number counting.", ""),
     "count_line_number_f":            ("Activate line number counting.", ""),
-    "message_on_extra_options_f":     ("", ""),
     "character_display":              ("", ""),
     "path_limit_code":                ("", ""),
     "dos_carriage_return_newline_f":  ("", ""),
@@ -475,10 +507,6 @@ DOC = {
     "help":                              ("", ""),
     "warning_disabled_no_token_queue_f": ("", ""),
     "warning_on_outrun_f":               ("", ""),
-    "error_on_dominated_pattern_f":      ("", ""),
-    "error_on_special_pattern_same_f":   ("", ""),
-    "error_on_special_pattern_outrun_f": ("", ""),
-    "error_on_special_pattern_subset_f": ("", ""),
 }
 
 def command_line_arg_position(ParameterName):

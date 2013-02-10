@@ -593,7 +593,7 @@ def read_word_list(fh, EndMarkers, Verbose=False):
             else:       return word_list
         word_list.append(word)
 
-def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=True):
+def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=True, NoteF=False, SuppressCode=None):
     # fh        = filehandle [1] or filename [2]
     # LineN     = line_number of error
     # DontExitF = True then no exit from program
@@ -603,6 +603,7 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=Tr
     # count line numbers (this is a kind of 'dirty' solution for not
     # counting line numbers on the fly. it does not harm at all and
     # is much more direct to be programmed.)
+    if NoteF: DontExitF = True
 
     if fh == -1:
         if Prefix == "": prefix = "command line"
@@ -627,13 +628,19 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=Tr
             else:
                 line_n = -1
                 Filename = ""
-        if DontExitF and WarningF: 
+        if NoteF:
+            prefix = "%s:%i:note" % (Filename, line_n + 1)   
+        elif DontExitF and WarningF: 
             prefix = "%s:%i:warning" % (Filename, line_n + 1)   
         else:
             prefix = "%s:%i:error" % (Filename, line_n + 1)   
         
-    for line in split(ErrMsg, "\n"):
-        print prefix + ": %s" % line
+    if len(ErrMsg) != 0:
+        for line in split(ErrMsg, "\n"):
+            print prefix + ": %s" % line
+
+    if SuppressCode is not None:
+        print prefix + ": ('--suppress %s' to avoid this message)" % SuppressCode
 
     if not DontExitF: sys.exit(-1)  # Here, sys.exit(-1) is accepted
 
