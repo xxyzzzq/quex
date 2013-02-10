@@ -1,4 +1,5 @@
 from   quex.engine.misc.file_in                    import error_msg, verify_word_in_list
+from   quex.input.setup                            import NotificationDB
 import quex.blackboard                             as     blackboard
 from   quex.blackboard                             import setup as Setup, E_SpecialPatterns
 import quex.engine.state_machine.check.outrun      as     outrun_checker
@@ -25,7 +26,7 @@ def do(ModeDB):
     if len(ModeDB) == 0:
         error_msg("No single mode defined - bailing out", Prefix="consistency check")
 
-    mode_name_list            = map(lambda mode:        mode.name, ModeDB.values())
+    mode_name_list = [ mode.name for mode in ModeDB.itervalues() ]
     mode_name_list.sort()
 
     # (*) Modes that are inherited must allow to be inherited
@@ -75,30 +76,33 @@ def do(ModeDB):
              __outrun_investigation(mode)
 
     # (*) Special Patterns shall not match on same lexemes
-    if Setup.error_on_special_pattern_same_f:
+    if NotificationDB.error_on_special_pattern_same not in Setup.suppressed_notification_list:
         for mode in ModeDB.values():
             for pattern_action_pair in mode.get_pattern_action_pair_list():
                 if pattern_action_pair.comment not in E_SpecialPatterns: continue
-                __match_same_check(mode, pattern_action_pair)
+                __match_same_check(mode, pattern_action_pair, 
+                                   NotificationDB.error_on_special_pattern_same)
 
     # (*) Special Patterns (skip, indentation, etc.) 
     #     shall not be outrun by another pattern.
-    if Setup.error_on_special_pattern_outrun_f:
+    if NotificationDB.error_on_special_pattern_outrun not in Setup.suppressed_notification_list:
         for mode in ModeDB.values():
             for pattern_action_pair in mode.get_pattern_action_pair_list():
                 if pattern_action_pair.comment not in E_SpecialPatterns: continue
-                __outrun_check(mode, pattern_action_pair)
+                __outrun_check(mode, pattern_action_pair, 
+                               NotificationDB.error_on_special_pattern_outrun)
 
     # (*) Special Patterns shall not have common matches with patterns
     #     of higher precedence.
-    if Setup.error_on_special_pattern_subset_f:
+    if NotificationDB.error_on_special_pattern_subset not in Setup.suppressed_notification_list:
         for mode in ModeDB.values():
             for pattern_action_pair in mode.get_pattern_action_pair_list():
                 if pattern_action_pair.comment not in E_SpecialPatterns: continue
-                __subset_check(mode, pattern_action_pair)
+                __subset_check(mode, pattern_action_pair,
+                               NotificationDB.error_on_special_pattern_subset)
 
     # (*) Check for dominated patterns
-    if Setup.error_on_dominated_pattern_f:
+    if NotificationDB.error_on_dominated_pattern not in Setup.suppressed_notification_list:
         for mode in ModeDB.itervalues():
             for pattern_action_pair in mode.get_pattern_action_pair_list():
                 __dominated_pattern_check(mode, pattern_action_pair)
@@ -135,7 +139,7 @@ def __outrun_investigation(mode):
                 file_name, line_n = pap_i.get_action_location()
                 __error_message(pap_k, pap_i, ExitF=False, ThisComment="may outrun")
 
-def __outrun_check(mode, PAP):
+def __outrun_check(mode, PAP, ErrorCode):
     ReferenceSM = PAP.pattern().sm 
 
     for other_pap in mode.get_pattern_action_pair_list():
@@ -145,10 +149,11 @@ def __outrun_check(mode, PAP):
 
         if outrun_checker.do(ReferenceSM, sm):
             __error_message(other_pap, PAP, ExitF=True, 
-                            ThisComment="has lower priority but",
-                            ThatComment="may outrun")
+                            ThisComment  = "has lower priority but",
+                            ThatComment  = "may outrun",
+                            SuppressCode = ErrorCode)
                              
-def __subset_check(mode, PAP):
+def __subset_check(mode, PAP, ErrorCode):
     """Checks whether a higher prioritized pattern matches a common subset
        of the ReferenceSM. For special patterns of skipper, etc. this would
        be highly confusing.
@@ -162,10 +167,11 @@ def __subset_check(mode, PAP):
         elif not superset_check.do(ReferenceSM, sm): continue
 
         __error_message(other_pap, PAP, ExitF=True, 
-                        ThisComment="has higher priority and",
-                        ThatComment="matches a subset of")
+                        ThisComment  = "has higher priority and",
+                        ThatComment  = "matches a subset of",
+                        SuppressCode = ErrorCode)
 
-def __match_same_check(mode, PAP):
+def __match_same_check(mode, PAP, ErrorCode):
     """Special patterns shall never match on some common lexemes."""
     A = PAP.pattern().sm
     for other_pap in mode.get_pattern_action_pair_list():
@@ -177,9 +183,10 @@ def __match_same_check(mode, PAP):
         # A superset of B, or B superset of A => there are common matches.
         if same_check.do(A, B):
             __error_message(other_pap, PAP, 
-                            ThisComment="matches on some common lexemes as",
-                            ThatComment="", 
-                            ExitF=True)
+                            ThisComment  = "matches on some common lexemes as",
+                            ThatComment  = "",
+                            ExitF        = True,
+                            SuppressCode = ErrorCode)
 
 def __dominated_pattern_check(mode, PAP):
     pattern_id  = PAP.pattern().sm.get_id()
@@ -190,12 +197,13 @@ def __dominated_pattern_check(mode, PAP):
         if superset_check.do(other_pap.pattern(), PAP.pattern()):
             file_name, line_n = other_pap.get_action_location()
             __error_message(other_pap, PAP, 
-                            ThisComment = "matches a superset of what is matched by",
-                            EndComment  = "The former has precedence and the latter can never match.",
-                            ExitF       = True)
+                            ThisComment  = "matches a superset of what is matched by",
+                            EndComment   = "The former has precedence and the latter can never match.",
+                            ExitF        = True, 
+                            SuppressCode = ErrorCode)
 
-def __error_message(This, That, ThisComment, ThatComment="", EndComment="", ExitF=True):
-
+def __error_message(This, That, ThisComment, ThatComment="", EndComment="", ExitF=True, SuppressCode=None):
+    
     def get_name(PAP, AddSpaceF=True):
         if PAP.comment in E_SpecialPatterns: 
             result = repr(PAP.comment).replace("_", " ").lower()
@@ -215,13 +223,13 @@ def __error_message(This, That, ThisComment, ThatComment="", EndComment="", Exit
     FileName, LineN   = That.get_action_location()
     if len(ThatComment) != 0: Space = " "
     else:                     Space = ""
-    error_msg("%s%s%spattern '%s'." % (ThatComment, Space, get_name(That, AddSpaceF=True), That.pattern_string()), 
-              FileName, LineN,
-              DontExitF=not (len(EndComment) == 0 and ExitF), 
-              WarningF=not ExitF)
 
-    if len(EndComment) != 0:
-        error_msg(EndComment, FileName, LineN, DontExitF=not ExitF, WarningF=not ExitF)
+    msg = "%s%s%spattern '%s'." % (ThatComment, Space, get_name(That, AddSpaceF=True), That.pattern_string())
+    if len(EndComment) == 0:
+        error_msg(msg,        FileName, LineN, DontExitF=not ExitF, WarningF=not ExitF, SuppressCode=SuppressCode)
+    else:
+        error_msg(msg,        FileName, LineN, DontExitF=True,      WarningF=not ExitF)
+        error_msg(EndComment, FileName, LineN, DontExitF=not ExitF, WarningF=not ExitF, SuppressCode=SuppressCode)
 
 def __start_mode(applicable_mode_name_list, mode_name_list):
     """If more then one mode is defined, then that requires an explicit 

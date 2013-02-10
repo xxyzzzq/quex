@@ -58,20 +58,17 @@ def do():
 
     # (*) Implement the 'quex' core class from a template
     # -- do the coding of the class framework
-    configuration_header = configuration.do(mode_db) 
-
-    class_analyzer_header         = analyzer_class.do(mode_db)
-    class_analyzer_implementation = analyzer_class.do_implementation(mode_db)
-
-    mode_implementation  = mode_classes.do(mode_db)
+    configuration_header    = configuration.do(mode_db)
+    analyzer_header         = analyzer_class.do(mode_db)
+    analyzer_implementation = analyzer_class.do_implementation(mode_db) + "\n"
+    mode_implementation     = mode_classes.do(mode_db)
 
     # (*) implement the lexer mode-specific analyser functions
     function_analyzers_implementation = analyzer_functions_get(mode_db)
 
     # Implementation (Potential Inline Functions)
-    class_implemtation = class_analyzer_implementation + "\n" 
     if class_token_implementation is not None:
-         class_implemtation += class_token_implementation + "\n" 
+         analyzer_implementation += class_token_implementation + "\n" 
 
     # Engine (Source Code)
     engine_txt =   mode_implementation                    + "\n" \
@@ -80,8 +77,10 @@ def do():
 
     # (*) Write Files ___________________________________________________________________
     if codec_converter_helper_header is not None:
-        write_safely_and_close(Setup.output_buffer_codec_header,   codec_converter_helper_header) 
-        write_safely_and_close(Setup.output_buffer_codec_header_i, codec_converter_helper_implementation) 
+        write_safely_and_close(Setup.output_buffer_codec_header,   
+                               codec_converter_helper_header) 
+        write_safely_and_close(Setup.output_buffer_codec_header_i, 
+                               codec_converter_helper_implementation) 
 
     if token_id_header is not None:
         write_safely_and_close(Setup.output_token_id_file, token_id_header)
@@ -89,21 +88,22 @@ def do():
     write_safely_and_close(Setup.output_configuration_file, configuration_header)
 
     if Setup.language == "C":
-        engine_txt            += class_implemtation
+        engine_txt     += analyzer_implementation
     else:
-        class_analyzer_header = class_analyzer_header.replace("$$ADDITIONAL_HEADER_CONTENT$$", class_implemtation)
+        analyzer_header = analyzer_header.replace("$$ADDITIONAL_HEADER_CONTENT$$", 
+                                                  analyzer_implementation)
 
-    write_safely_and_close(Setup.output_header_file, class_analyzer_header)
+    write_safely_and_close(Setup.output_header_file, analyzer_header)
     write_safely_and_close(Setup.output_code_file,   engine_txt)
 
     if class_token_header is not None:
         write_safely_and_close(blackboard.token_type_definition.get_file_name(), 
                                class_token_header)
 
-    for file_name in [Setup.output_header_file, 
-                      Setup.output_code_file, 
-                      blackboard.token_type_definition.get_file_name()]:
-        UserCodeFragment_straighten_open_line_pragmas(file_name, "C")
+    UserCodeFragment_straighten_open_line_pragmas(Setup.output_header_file, "C")
+    UserCodeFragment_straighten_open_line_pragmas(Setup.output_code_file, "C")
+    if not blackboard.token_type_definition.manually_written():
+        UserCodeFragment_straighten_open_line_pragmas(blackboard.token_type_definition.get_file_name(), "C")
 
     if Setup.source_package_directory != "":
         source_package.do()

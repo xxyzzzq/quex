@@ -7,7 +7,11 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i nonsense.qx --foreign-token-id-file include_me.h 2>&1 -o EasyLexer
+
+quex -i nonsense.qx --foreign-token-id-file include_me.h 2>&1 -o EasyLexer --debug-exception
+
+echo
+echo Generated Files:
 ls EasyLexer* | sort
 rm EasyLexer*
 # cleansening

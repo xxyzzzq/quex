@@ -4,6 +4,7 @@ import os
 import re
 
 from   quex.engine.misc.file_in  import get_file_content_or_die, \
+                                        open_file_or_die, \
                                         delete_comment, \
                                         extract_identifiers_with_specific_prefix, \
                                         get_include_guard_extension, \
@@ -12,6 +13,8 @@ from   quex.engine.misc.file_in  import get_file_content_or_die, \
 import quex.blackboard                  as blackboard
 from   quex.blackboard                  import token_id_db
 from   quex.engine.misc.string_handling import blue_print
+from   quex.engine.misc.enum            import Enum
+from   quex.input.setup                 import NotificationDB
 from   quex.blackboard                  import setup as Setup
 
 def do(setup):
@@ -281,11 +284,27 @@ def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, I
        
        Nevertheless, it should work in the large majority of cases.
     """
+    ErrorType = Enum("NO_ACCESS", "RECURSIVE")
     include_re_obj = re.compile(IncludeRE)
 
+    def get_line_n_of_include(FileName, IncludedFileName):
+        fh = open_file_or_die(FileName, Mode="rb")
+        line_n = 0
+        for line in fh.readlines():
+            line_n += 1
+            if include_re_obj.search(line) is not None and line.find(IncludedFileName) != -1:
+                break
+        else:
+            assert False, "include of file '%s' not found in '%s'" % (IncludedFileName, FileName)
+
+        fh.close()
+        return line_n
+
     # validate(...) ensured, that the file exists.
-    work_list = [ os.path.normpath(ForeignTokenIdFile) ] 
-    done_list = []
+    work_list      = [ os.path.normpath(ForeignTokenIdFile) ] 
+    done_list      = []
+    not_found_list = []
+    recursive_list = []
     while len(work_list) != 0:
         file_name = work_list.pop()
         content   = __delete_comments(get_file_content_or_die(file_name, Mode="rb"), 
@@ -311,10 +330,33 @@ def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, I
         #     -- ensure that included files exist and are not included twice
         for included_file in include_file_set:
             if included_file in done_list:
-                error_msg("Ignore recursive inclusion of file '%s' in file '%s'.\n" % (included_file, file_name) \
-                          + "Note, that quex does not handle C-Preprocessor instructions.", DontExitF=True)
+                line_n = get_line_n_of_include(file_name, included_file)
+                recursive_list.append((file_name, line_n, included_file))
             elif not os.access(included_file, os.F_OK): 
-                error_msg("Parsing token-id file: Cannot access file '%s' from '%s'." % (included_file, file_name), DontExitF=True)
+                line_n = get_line_n_of_include(file_name, included_file)
+                not_found_list.append((file_name, line_n, included_file))
             else:
                 work_list.append(included_file)
 
+    ErrorN = NotificationDB.token_id_ignored_files_report
+    if ErrorN not in Setup.suppressed_notification_list:
+        if len(not_found_list) != 0:
+            not_found_list.sort()
+            error_msg("Files not found:", 
+                      not_found_list[0][0], LineN=not_found_list[0][1], 
+                      DontExitF=True)
+            for file_name, line_n, included_file in not_found_list:
+                error_msg("%s" % included_file, file_name, LineN=line_n, DontExitF=True)
+
+        if len(recursive_list) != 0:
+            recursive_list.sort()
+            error_msg("Files recursively included (ignored second inclusion):", 
+                      recursive_list[0][0], LineN=recursive_list[0][1], 
+                      DontExitF=True)
+            for file_name, line_n, included_file in recursive_list:
+                error_msg("%s" % included_file, file_name, LineN=line_n, DontExitF=True)
+
+        if len(not_found_list) != 0 or len(recursive_list) != 0:
+            # file_name and line_n will be taken from last iteration of last for loop.
+            error_msg("\nNote, that quex does not handle C-Preprocessor instructions.",
+                      file_name, LineN=line_n, DontExitF=True, SuppressCode=ErrorN)

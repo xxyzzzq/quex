@@ -13,7 +13,8 @@ from   quex.input.setup                   import SETUP_INFO,               \
                                                  global_character_type_db, \
                                                  command_line_args_defined, \
                                                  command_line_arg_position, \
-                                                 E_Files
+                                                 E_Files, \
+                                                 NotificationDB
 
 from   quex.output.cpp.token_id_maker     import parse_token_id_file
 
@@ -37,7 +38,6 @@ class ManualTokenClassSetup:
        as they are for compatibility.
     """
     def __init__(self, FileName, ClassName, NameSpace, ClassNameSafe, TokenIDType):
-        
         self.__file_name       = FileName
         self.class_name        = ClassName
         self.name_space        = NameSpace
@@ -56,6 +56,7 @@ class ManualTokenClassSetup:
 def do(argv):
     global setup
 
+    extra_location_list = []
     try:    
         idx = argv.index("--token-class-file")
         if idx + 1 < len(argv): idx += 1
@@ -64,14 +65,27 @@ def do(argv):
         idx = None 
 
     if idx is not None:
-        extra_argv = __extract_extra_options_from_file(argv[idx])
+        extra_argv, extra_location_list = __extract_extra_options_from_file(argv[idx])
         if extra_argv is not None: argv.extend(extra_argv)
 
     command_line = __interpret_command_line(argv)
+
     if command_line is None:
         return False
 
-    return __perform_setup(command_line, argv)
+    result = __perform_setup(command_line, argv)
+
+    if     NotificationDB.message_on_extra_options not in setup.suppressed_notification_list \
+       and len(extra_location_list) != 0:
+        error_msg("Command line arguments from inside files:", 
+                  extra_location_list[0][0], LineN=extra_location_list[0][1], NoteF=True)
+        for file_name, line_n, option in extra_location_list:
+            if len(option) < 2: option_str = option[0]
+            else:               option_str = reduce(lambda x, y: "%s %s" % (x.strip(), y.strip()), option)
+            error_msg("%s" % option_str, file_name, LineN=line_n, NoteF=True)
+        error_msg("", file_name, LineN=line_n, NoteF=True, SuppressCode=NotificationDB.message_on_extra_options)
+
+    return result
 
 def __perform_setup(command_line, argv):
     """RETURN:  True, if process needs to be started.
@@ -280,14 +294,22 @@ def make_numbers(setup):
     setup.buffer_limit_code             = __get_integer("buffer_limit_code")
     setup.path_limit_code               = __get_integer("path_limit_code")
 
-    setup.token_id_counter_offset    = __get_integer("token_id_counter_offset")
-    setup.token_queue_size           = __get_integer("token_queue_size")
-    setup.token_queue_safety_border  = __get_integer("token_queue_safety_border")
-    setup.buffer_element_size        = __get_integer("buffer_element_size")
+    setup.token_id_counter_offset       = __get_integer("token_id_counter_offset")
+    setup.token_queue_size              = __get_integer("token_queue_size")
+    setup.token_queue_safety_border     = __get_integer("token_queue_safety_border")
+    setup.buffer_element_size           = __get_integer("buffer_element_size")
+
+    setup.suppressed_notification_list  = __get_integer_list("suppressed_notification_list")
 
 def __get_integer(MemberName):
-    ValueStr = setup.__dict__[MemberName]
-    if type(ValueStr) == int: return ValueStr
+    return __get_integer_core(MemberName, setup.__dict__[MemberName])
+
+def __get_integer_list(MemberName):
+    return map(lambda x: __get_integer_core(MemberName, x), setup.__dict__[MemberName])
+
+def __get_integer_core(MemberName, ValueStr):
+    if type(ValueStr) == int: 
+        return ValueStr
     result = read_integer(StringIO(ValueStr))
     if result is None:
         option_name = repr(SETUP_INFO[MemberName][0])[1:-1]
@@ -452,9 +474,12 @@ def __extract_extra_options_from_file(FileName):
             break
 
     result = []
+    location_list = []
 
+    line_n = 0
     while 1 + 1 == 2:
-        line = fh.readline()
+        line_n += 1
+        line    = fh.readline()
         if line == "":
             fh.seek(pos)
             error_msg("Missing terminating '%s'." % MARKER, fh)
@@ -465,18 +490,13 @@ def __extract_extra_options_from_file(FileName):
         idx = line.find("-")
         if idx == -1: continue
         options = line[idx:].split()
+
+        location_list.append((FileName, line_n, options))
         result.extend(options)
 
     if len(result) == 0: return None
 
-    if setup.message_on_extra_options_f:
-        if len(result) < 2: arg_str = result[0]
-        else:               arg_str = reduce(lambda x, y: "%s %s" % (x.strip(), y.strip()), result)
-        print "## Command line options from file '%s'" % FileName
-        print "## %s" % arg_str
-        print "## (suppress this message with --no-message-on-extra-options)"
-
-    return result
+    return result, location_list
 
 def __interpret_command_line(argv):
     command_line = GetPot(argv)
@@ -484,7 +504,7 @@ def __interpret_command_line(argv):
     if command_line.search("--version", "-v"):
         print "Quex - Fast Universal Lexical Analyzer Generator"
         print "Version " + QUEX_VERSION
-        print "(C) 2005-2012 Frank-Rene Schaefer"
+        print "(C) 2005-2013 Frank-Rene Schaefer"
         print "ABSOLUTELY NO WARRANTY"
         return None
 
@@ -492,11 +512,13 @@ def __interpret_command_line(argv):
         print "Quex - Fast Universal Lexical Analyzer Generator"
         print "Please, consult the quex documentation for further help, or"
         print "visit http://quex.org"
-        print "(C) 2005-2012 Frank-Rene Schaefer"
+        print "(C) 2005-2013 Frank-Rene Schaefer"
         print "ABSOLUTELY NO WARRANTY"
         return None
 
+    command_line.disable_loop()
     for variable_name, info in SETUP_INFO.items():
+        command_line.reset_cursor()
         # Some parameters are not set on the command line. Their entry is not associated
         # with a description list.
         if type(info) != list: continue
@@ -508,19 +530,17 @@ def __interpret_command_line(argv):
             setup.__dict__[variable_name] = not command_line.search(info[0])        
 
         elif info[1] == SetupParTypes.LIST:
-            if not command_line.search(info[0]):
-                setup.__dict__[variable_name] = []
-            else:
+            setup.__dict__[variable_name] = []
+            entry = setup.__dict__.get(variable_name)
+            while 1 + 1 == 2:
+                if not command_line.search(info[0]):
+                    break
+
                 the_list = command_line.nominus_followers(info[0])
                 if len(the_list) == 0:
                     error_msg("Option %s\nnot followed by anything." % repr(info[0])[1:-1])
 
-                if setup.__dict__.has_key(variable_name):
-                    for element in the_list:
-                        if element not in setup.__dict__[variable_name]:
-                            setup.__dict__[variable_name].extend(the_list)        
-                else:
-                    setup.__dict__[variable_name] = list(set(the_list))
+                entry.extend(x for x in the_list if x not in entry)
 
         elif command_line.search(info[0]):
             if not command_line.search(info[0]):
@@ -530,4 +550,5 @@ def __interpret_command_line(argv):
                 if value == "--EMPTY--":
                     error_msg("Option %s\nnot followed by anything." % repr(info[0])[1:-1])
                 setup.__dict__[variable_name] = value
+
     return command_line

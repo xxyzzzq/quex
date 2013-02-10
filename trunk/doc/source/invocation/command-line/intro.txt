@@ -810,7 +810,16 @@ The following option influences the analysis process on the very lowest level.
    the 'N' best candidates in the search of an optimal solution. This 
    includes a certain risk of not finding the absolute optimum.
 
-
    DEFAULT = 1000
 
+Some warnings, notes, or error messages might not be interesting or even
+be disturbing for the user. For such cases, quex provides an interface to 
+avoid prints on the standard output.
+
+.. cmdoption:: --suppress, -s integer(s)
+
+    Any integer following this options stands for a message output to be
+    dismissed by quex.  Any note, warning, or error message which may be
+    suppressed notes the correspondent code for the '--suppress' command line
+    option.
 
