@@ -1,4 +1,5 @@
 
+from   quex.input.setup                                import NotificationDB
 import quex.input.regular_expression.core              as     regular_expression
 from   quex.input.regular_expression.construct         import Pattern           
 import quex.input.files.mode_option                    as     mode_option
@@ -946,16 +947,13 @@ def __validate_required_token_policy_queue(Name, fh, pos):
         return
     if Setup.token_policy == "queue":
         return
-    if NotificationDBSetup.warning_disabled_no_token_queue_f:
-        return
 
     pos_before = fh.tell()
     fh.seek(pos)
     error_msg("Using '%s' event handler, while the token queue is disabled.\n" % Name + \
               "Use '--token-policy queue', so then tokens can be sent safer\n" + \
-              "from inside this event handler. Disable this warning by command\n"
-              "line option '--no-warning-on-no-token-queue'.", fh, 
-              DontExitF=True, SuppressCode=Notification.warning_on_no_token_queue) 
+              "from inside this event handler.", fh,
+              DontExitF=True, SuppressCode=NotificationDB.warning_on_no_token_queue) 
     fh.seek(pos_before)
 
 

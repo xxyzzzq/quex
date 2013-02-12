@@ -12,11 +12,11 @@ main(int argc, char** argv)
 {        
     // we want to have error outputs in stdout, so that the unit test could see it.
     max::Lexer     max_lex("ucs4.txt", "UCS4");
-    Common::Token* max_token    = 0x0;
+    A::B::C::Token* max_token    = 0x0;
     moritz::Lexer  moritz_lex("ucs4.txt", "UCS4");
-    Common::Token* moritz_token = 0x0;
+    A::B::C::Token* moritz_token = 0x0;
     boeck::Lexer   boeck_lex("ucs4.txt", "UCS4");
-    Common::Token* boeck_token  = 0x0;
+    A::B::C::Token* boeck_token  = 0x0;
 
 
     // Each lexer reads one token, since the grammars are similar the lexeme 

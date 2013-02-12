@@ -9,7 +9,7 @@ else
 	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
 endif
 
-lexer: $(ENGINE:.c=.o) lexer.o Common-token.o
+lexer: $(ENGINE:.c=.o) lexer.o A_B_C-token.o
 	gcc $^ -ggdb -o  $@ -I$(QUEX_PATH) `icu-config --ldflags` 
 	 
 %.o: %.c $(ENGINE_SOURCES)
@@ -21,29 +21,29 @@ lexer: $(ENGINE:.c=.o) lexer.o Common-token.o
 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
 
 COMMON_TOKEN_OPTIONS = \
-	 --token-class-file Common-token.h \
-     --token-policy single --no-warning-on-no-token-queue
+	 --token-class-file A_B_C-token.h \
+     --token-policy single --suppress 6
 		 # --no-message-on-extra-options \
 
 %.E: %.c
 	gcc -E $< -o  $@ -I$(QUEX_PATH)
 	
-boeck_Lexer.c:  boeck.qx Common-token.c Common-token_ids.h
+boeck_Lexer.c:  boeck.qx A_B_C-token.c A_B_C-token_ids.h
 	quex -i $< -o boeck::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) --language C --debug-exception
 
-max_Lexer.c:    max.qx Common-token.c Common-token_ids.h
+max_Lexer.c:    max.qx A_B_C-token.c A_B_C-token_ids.h
 	quex -i $< -o max::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) --language C 
 
-moritz_Lexer.c: moritz.qx Common-token.c Common-token_ids.h
+moritz_Lexer.c: moritz.qx A_B_C-token.c A_B_C-token_ids.h
 	quex -i $< -o moritz::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) --language C 
 
-Common-token_ids.h \
-Common-token.c: 
+A_B_C-token_ids \
+A_B_C-token.c: 
 	quex -i token_ids.qx               \
 		 --icu -b 4                    \
 		 --token-id-prefix TKN_        \
-		 -o Common                     \
-		 --token-class Common::Token   \
+		 -o A::B::C                    \
+		 --token-class A::B::C::Token   \
 		 --token-class-only            --language C
 
 clean:
@@ -53,7 +53,7 @@ clean:
 	rm -rf $(ENGINE:.c=-token_ids.h)
 	rm -rf $(ENGINE:.c=-token.h)
 	rm -rf $(ENGINE:.c=-configuration.h)
-	rm -rf Common-token*
+	rm -rf A_B_C-token*
 	rm -rf lexer
 	rm -rf *.E
 	rm -rf lexer.o

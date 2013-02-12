@@ -988,7 +988,29 @@ Shared Token Classes
 
 With the command line option ``--token-class-only`` generates solely a token
 class. The token class, though, is designed to be shared between multiple
-lexical analyzers. To understand the necessity of this feature one has to know,
+lexical analyzers. A typical command line using this feature looks like
+this::
+
+.. code-block:: bash
+
+	quex --icu -b 4 \
+         -i token_ids.qx --token-id-prefix TKN_         \
+		 -o A::B::C      --token-class A::B::C::Token   \
+		 --token-class-only 
+		 
+The first three arguments ``--icu -b 4`` give some specifications of the lexer
+for which the token is to be used.  Here it is a converting lexer based on ICU
+using a 4 byte wide buffer element type.  The token class provides a pretty
+printer for token ids, so the token ids need to be defined.  Quex it let to
+know about them through the input file ``token_ids.qx``.  All lexers using this
+class must use the same token-id-prefix, given here as ``TKN_``.  The output
+files shall be named "A_B_C-token" and "A_B_C-token.cpp" which is determined by
+``-o A::B::C`` The token class named ``Token`` is located in the name space
+``A::B::C`` which is reflected by ``--token-class A::B::C::Token``.  Finally,
+quex is told to produce nothing but the token class by means of the command
+line argument ``--token-class--only``.
+
+To understand the necessity of this feature one has to know,
 that there are interdependencies between the lexical analyzer and the token
 class, as they are:
 

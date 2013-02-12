@@ -468,7 +468,7 @@ def __extract_extra_options_from_file(FileName):
     while 1 + 1 == 2:
         line = fh.readline()
         if line == "":
-            return None # Simply no starting marker has been found
+            return None, [] # Simply no starting marker has been found
         elif line.find(MARKER) != -1: 
             pos = fh.tell()
             break
@@ -494,7 +494,7 @@ def __extract_extra_options_from_file(FileName):
         location_list.append((FileName, line_n, options))
         result.extend(options)
 
-    if len(result) == 0: return None
+    if len(result) == 0: return None, location_list
 
     return result, location_list
 

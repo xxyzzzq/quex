@@ -100,13 +100,14 @@ def _do(Descr):
         extra_at_end_str   = QUEX_NAME_TOKEN_undef_str % include_guard_extension_str \
                              + extra_at_end_str
 
+    namespace_open, namespace_close = __namespace_brackets()
     helper_variable_replacements = [
               ["$INCLUDE_CONVERTER_DECLARATION",    converter_declaration_include],
               ["$INCLUDE_CONVERTER_IMPLEMENTATION", converter_implementation_include],
               ["$CONVERTER_STRING",                 converter_string],
               ["$CONVERTER_WSTRING",                converter_wstring],
-              ["$NAMESPACE_CLOSE",                  LanguageDB.NAMESPACE_CLOSE(Descr.name_space)],
-              ["$NAMESPACE_OPEN",                   LanguageDB.NAMESPACE_OPEN(Descr.name_space)],
+              ["$NAMESPACE_CLOSE",                  namespace_close],
+              ["$NAMESPACE_OPEN",                   namespace_open],
               ["$TOKEN_CLASS",                      token_class_name],
     ]
 
@@ -447,14 +448,17 @@ def common_lexeme_null_str():
         namespace_prefix = LanguageDB.NAMESPACE_REFERENCE(token_descr.name_space) 
         return "%sLexemeNullObject" % namespace_prefix
 
-
-def __namespace_brackets():
+def __namespace_brackets(DefineF=False):
     LanguageDB  = Setup.language_db
     token_descr = blackboard.token_type_definition
 
     if Setup.language.upper() == "C++":
-        return LanguageDB.NAMESPACE_OPEN(token_descr.name_space), \
-               LanguageDB.NAMESPACE_CLOSE(token_descr.name_space)
+        open_str  = LanguageDB.NAMESPACE_OPEN(token_descr.name_space).strip()
+        close_str = LanguageDB.NAMESPACE_CLOSE(token_descr.name_space).strip()
+        if DefineF:
+            open_str  = open_str.replace("\n", "\\\n")
+            close_str = close_str.replace("\n", "\\\n")
+        return open_str, close_str
     else:
         return "", ""
 
@@ -462,12 +466,9 @@ def lexeme_null_declaration():
     if Setup.token_class_only_f:
         namespace_open, namespace_close = __namespace_brackets()
         return "".join([
-                    namespace_open,
-                    "\n",
+                    "%s\n" % namespace_open,
                     "extern %s  %s;\n" % (Setup.buffer_element_type, common_lexeme_null_str()),
-                    "\n",
-                    namespace_close,
-                    "\n",
+                    "%s\n\n" % namespace_close,
                   ])
     else:
         # The following should hold in any both cases:
@@ -482,12 +483,9 @@ def lexeme_null_implementation():
 
     return "".join([
                 "#include \"%s\"\n" % Setup.get_file_reference(Setup.output_token_class_file),
-                namespace_open,
-                "\n",
+                "%s\n" % namespace_open,
                 "%s  %s = (%s)0;\n" % (Setup.buffer_element_type, common_lexeme_null_str(), Setup.buffer_element_type),
-                "\n",
-                namespace_close,
-                "\n",
+                "%s\n\n" % namespace_close,
               ])
 
 local_strlen_str = """
@@ -591,7 +589,7 @@ helper_definitions = """
 #include "%s"
 """
 def get_helper_definitions():
-    namespace_open, namespace_close = __namespace_brackets()
+    namespace_open, namespace_close = __namespace_brackets(DefineF=True)
     token_descr                     = blackboard.token_type_definition
     if Setup.token_id_foreign_definition_file != "":
         token_id_definition_file = Setup.token_id_foreign_definition_file

@@ -30,19 +30,19 @@ max_Lexer.c: max.qx
 	quex -i token.qx $< -o max::Lexer --iconv -b 4     \
 		 --token-id-prefix MAX_TKN_ --token-policy single \
 		 --language C                                  \
-		 --no-warning-on-no-token-queue                
+		 --suppress 6
 
 moritz_Lexer.c: moritz.qx
 	quex -i token.qx $< -o moritz::Lexer --iconv -b 2     \
 		 --token-id-prefix MORITZ_TKN_ --token-policy single \
 		 --language C                                     \
-		 --no-warning-on-no-token-queue                
+		 --suppress 6
 
 boeck_Lexer.c: boeck.qx
 	quex -i token.qx $< -o boeck::Lexer --codec utf8 \
 		 --token-id-prefix TKN_ --token-policy single   \
 		 --language C                                \
-		 --no-warning-on-no-token-queue
+		 --suppress 6 --debug-exception
 
 clean:
 	rm -rf boeck_Lexer*

@@ -36,17 +36,17 @@ lexer: $(OBJS)
 max_Lexer.cpp:    max.qx
 	quex -i token.qx $< -o max::Lexer --iconv -b 4     \
 		 --token-id-prefix MAX_TKN_ --token-policy single \
-		 --no-warning-on-no-token-queue
+		 --suppress 6
 
 moritz_Lexer.cpp: moritz.qx
 	quex -i token.qx $< -o moritz::Lexer --iconv -b 2     \
 		 --token-id-prefix MORITZ_TKN_ --token-policy single \
-		 --no-warning-on-no-token-queue
+		 --suppress 6
 
 boeck_Lexer.cpp:  boeck.qx
 	quex -i token.qx $< -o boeck::Lexer --codec utf8 \
 		 --token-id-prefix TKN_ --token-policy single   \
-		 --no-warning-on-no-token-queue
+		 --suppress 6
 
 clean:
 	rm -rf $(ENGINE)
