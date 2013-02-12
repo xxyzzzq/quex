@@ -1,4 +1,4 @@
-<test-database execution-time-sec="45.26" date="Tue Feb 12 07:57:42 2013">
+<test-database execution-time-sec="45.29" date="Tue Feb 12 23:59:15 2013">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
         <test title="Super Set" time-sum-sec="0.09"> 
@@ -52,7 +52,7 @@
                <choice name="" result="OK" time_sec="0.07" crc="-1359430138"/>
             </choice-list>
         </test>
-        <test title="Transform Codec cp037" time-sum-sec="0.18"> 
+        <test title="Transform Codec cp037" time-sum-sec="0.19"> 
             <application file-name="test-NumberSet-transform-cp037.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="1" result="OK" time_sec="0.07" crc="-1588085269"/>
@@ -66,14 +66,14 @@
                <choice name="" result="OK" time_sec="0.05" crc="973910203"/>
             </choice-list>
         </test>
-        <test title="Algebraic Relations" time-sum-sec="3.89"> 
+        <test title="Algebraic Relations" time-sum-sec="3.88"> 
             <application file-name="test-algebraic-relations.py" info-request-time="1358463685L" vanished="False"/>
             <choice-list number="2" same_result="False">
                <choice name="unary" result="OK" time_sec="0.13" crc="1792904643"/>
                <choice name="binary" result="OK" time_sec="3.75" crc="983993768"/>
             </choice-list>
         </test>
-        <test title="Cut" time-sum-sec="0.35"> 
+        <test title="Cut" time-sum-sec="0.36"> 
             <application file-name="test-NumberSet-cut.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="7" same_result="False">
                <choice name="empty" result="OK" time_sec="0.05" crc="-1392876461"/>
@@ -85,14 +85,14 @@
                <choice name="3b" result="OK" time_sec="0.05" crc="-1227968480"/>
             </choice-list>
         </test>
-        <test title="Cut Interval" time-sum-sec="0.11"> 
+        <test title="Cut Interval" time-sum-sec="0.12"> 
             <application file-name="test-Interval-cmp.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="2" same_result="False">
                <choice name="normal" result="OK" time_sec="0.06" crc="1145705751"/>
                <choice name="special" result="OK" time_sec="0.06" crc="517788893"/>
             </choice-list>
         </test>
-        <test title="Transform Large NumberSets / Transformations" time-sum-sec="7.33"> 
+        <test title="Transform Large NumberSets / Transformations" time-sum-sec="7.34"> 
             <application file-name="test-NumberSet-transform-x.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="7" same_result="False">
                <choice name="10" result="OK" time_sec="0.05" crc="1378888075"/>

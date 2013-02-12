@@ -25,6 +25,7 @@
 #   undef self_accumulator_add_character
 #   undef self_accumulator_clear
 #   undef self_accumulator_flush
+#   undef self_accumulator_is_empty
 /* Indentation/Counter _____________________________________________________*/
 #   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
 #   undef  self_line_number            
@@ -98,6 +99,7 @@
 #   define self_accumulator_add(Begin, End)      QUEX_NAME(Accumulator_add)(&self.accumulator, Begin, End)
 #   define self_accumulator_add_character(Char)  QUEX_NAME(Accumulator_add_character)(&self.accumulator, Char)
 #   define self_accumulator_clear()              QUEX_NAME(Accumulator_clear)(&self.accumulator)
+#   define self_accumulator_is_empty()           (self.accumulator.text.begin == self.accumulator.text.end)
 #   define self_accumulator_flush(TokenID)                                                \
     do {                                                                                  \
         /* All functions must ensure: there is one cell to store terminating zero. */     \

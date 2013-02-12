@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-from   quex.engine.misc.file_in import get_propperly_slash_based_file_name, error_msg
+import quex.engine.misc.file_in as     file_in
 from   quex.engine.misc.enum    import Enum
 from   quex.DEFINITIONS         import QUEX_PATH
 
@@ -27,6 +27,8 @@ class QuexSetup:
         self.buffer_codec_transformation_info = None
         self.compression_type_list = []
 
+        file_in.specify_setup_object(self)
+
     def get_character_value_limit(self):
         """RETURNS: Integer = supremum of possible character range, i.e.
                               one character behind the last possible.
@@ -39,10 +41,10 @@ class QuexSetup:
         try:
             return 256 ** self.buffer_element_size
         except:
-            error_msg("Error while trying to compute 256 to the 'buffer-element-size' (%s)\n"   \
-                      % self.get_character_value_limit_str()                                    + \
-                      "Adapt \"--buffer-element-size\" or \"--buffer-element-type\",\n"       + \
-                      "or specify '--buffer-element-size-irrelevant' to ignore the issue.")
+            file_in.error_msg("Error while trying to compute 256 to the 'buffer-element-size' (%s)\n"   \
+                              % self.get_character_value_limit_str()                                    + \
+                              "Adapt \"--buffer-element-size\" or \"--buffer-element-type\",\n"       + \
+                              "or specify '--buffer-element-size-irrelevant' to ignore the issue.")
 
     def get_character_value_limit_str(self):
         if self.buffer_element_size == 1: return "1 byte"
@@ -57,7 +59,7 @@ class QuexSetup:
                .  (current dir)          --> source-package-dir     
         """
         def clean(X):
-            return get_propperly_slash_based_file_name(X)
+            return file_in.get_propperly_slash_based_file_name(X)
 
         code_base_directory = self.language_db["$code_base"]
         # The starting backslash must be assumed for many things ...
@@ -369,19 +371,19 @@ DEPRECATED = {
       ("Option '--no-message-on-extra-options' has been replaced with '--suppress %s'" 
        % NotificationDB.message_on_extra_options, "0.64.3"),
   "XX_error_on_dominated_pattern_f":
-      ("Option '--no-error-on-dominated-pattern' or '--neodp' has been replaced with '--suppsress %s'"
+      ("Option '--no-error-on-dominated-pattern' or '--neodp' has been replaced with '--suppress %s'"
        % NotificationDB.error_on_dominated_pattern, "0.64.3"),
   "XX_error_on_special_pattern_same_f":   
-      ("Option '--no-error-on-special-pattern-same' or '--neosps' has been replaced with '--suppsress %s'"
+      ("Option '--no-error-on-special-pattern-same' or '--neosps' has been replaced with '--suppress %s'"
        % NotificationDB.error_on_special_pattern_same, "0.64.3"),
   "XX_error_on_special_pattern_outrun_f": 
-      ("Option '--no-error-on-special-pattern-outrun' or '--neospo' has been replaced with '--suppsress %s'"
+      ("Option '--no-error-on-special-pattern-outrun' or '--neospo' has been replaced with '--suppress %s'"
        % NotificationDB.error_on_special_pattern_outrun, "0.64.3"),
   "XX_error_on_special_pattern_subset_f": 
-      ("Option '--no-error-on-special-pattern-subset' or '--neospsu' has been replaced with '--suppsress %s'"
+      ("Option '--no-error-on-special-pattern-subset' or '--neospsu' has been replaced with '--suppress %s'"
        % NotificationDB.error_on_special_pattern_subset, "0.64.3"),
   "XX_warning_disabled_no_token_queue_f": 
-      ("Option '--no-warning-on-no-token-queue' has been replaced with '--suppsress %s'"
+      ("Option '--no-warning-on-no-token-queue' has been replaced with '--suppress %s'"
        % NotificationDB.warning_on_no_token_queue, "0.64.3"),
 }
  
@@ -513,15 +515,16 @@ def command_line_arg_position(ParameterName):
     arg_list = SETUP_INFO[ParameterName][0]
     min_position = 1e37
     for arg in arg_list:
-        if arg in sys.argv[1:]: 
-            position = sys.argv[1:].index(arg)
-            if position < min_position: min_position = position
+        if arg not in sys.argv[1:]: continue
+        position = sys.argv[1:].index(arg)
+        if position < min_position: min_position = position
     return min_position
 
 def command_line_args(ParameterName):
     return SETUP_INFO[ParameterName][0]
 
 def command_line_args_defined(cl, ParameterName):
+    cl.reset_cursor() # Necessary to capture all arguments
     return cl.search(command_line_args(ParameterName))
 
 def command_line_args_string(ParameterName):

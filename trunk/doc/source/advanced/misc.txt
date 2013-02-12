@@ -14,6 +14,7 @@ specific id TKN_STRING. The accumulator provides the following functions:
   void   self_accumulator_add_chararacter(const QUEX_TYPE_CHARACTER);
   void   self_accumulator_flush(const token::id_type TokenID);
   void   self_accumulator_clear();
+  void   self_accumulator_is_empty();
 
 The add-functions add a string or a character to the accumulated string.
 ``Begin`` must point to the first character of the string, and ``End`` must
@@ -21,7 +22,8 @@ point right after the last character of the string.  ``Lexeme`` can be passed
 as ``Begin``, and ``LexemeEnd`` can be passed as ``End``. 
 The ``flush()`` function sends a token with the accumulated string and the specified
 token-id. Finally, the ``clear()`` function clears the accumulated string without
-sending any token.
+sending any token. The ``is_empty()`` function returns ``true`` if and only if 
+the accumulator is empty.
 
 As mentioned in section :ref:`sec-token-stamping` token stamping is done
 every time a token id is set, or a token is sent. This might cause baffling

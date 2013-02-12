@@ -1,4 +1,4 @@
-<test-database execution-time-sec="145.73" date="Tue Feb 12 08:21:46 2013">
+<test-database execution-time-sec="155.25" date="Tue Feb 12 23:59:04 2013">
     <last-used-diff-display-program name=""/>
     <test title="Makefile Differences to C++ Version" time-sum-sec="0.16"> 
         <application file-name="makefile-diff.sh" info-request-time="1355705370L" vanished="False"/>
@@ -15,7 +15,7 @@
            <choice name="010" result="OK" time_sec="0.01" crc="70876815"/>
            <choice name="011" result="OK" time_sec="0.01" crc="-1628272168"/>
            <choice name="012" result="OK" time_sec="0.02" crc="-121149223"/>
-           <choice name="012b" result="FAIL" time_sec="0.01" crc="-1567293848"/>
+           <choice name="012b" result="OK" time_sec="0.01" crc="-894168725"/>
         </choice-list>
     </test>
     <group name="demo/000">
@@ -114,10 +114,10 @@
         </test>
     </group>
     <group name="demo/008">
-        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="4.14"> 
+        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="4.18"> 
             <application file-name="008.sh" info-request-time="1355705370L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="2.07" crc="-1665911539"/>
+               <choice name="NDEBUG" result="OK" time_sec="2.11" crc="-1665911539"/>
                <choice name="DEBUG" result="OK" time_sec="2.07" crc="-1665911539"/>
             </choice-list>
         </test>
@@ -174,20 +174,20 @@
         </test>
     </group>
     <group name="demo/012">
-        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="8.65"> 
+        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="8.58"> 
             <application file-name="012.sh" info-request-time="1355705370L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="5.30" crc="-62717966"/>
+               <choice name="NDEBUG" result="OK" time_sec="5.23" crc="-62717966"/>
                <choice name="DEBUG" result="OK" time_sec="3.35" crc="-62717966"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/012b">
-        <test title="Multiple Lexical Analyzers -- shared token" time-sum-sec="0.31"> 
+        <test title="Multiple Lexical Analyzers -- shared token" time-sum-sec="9.87"> 
             <application file-name="012b.sh" info-request-time="1355705370L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="0.14" crc="-62717966"/>
-               <choice name="DEBUG" result="FAIL" time_sec="0.17" crc="-62717966"/>
+               <choice name="NDEBUG" result="OK" time_sec="5.90" crc="-62717966"/>
+               <choice name="DEBUG" result="OK" time_sec="3.97" crc="-62717966"/>
             </choice-list>
         </test>
     </group>

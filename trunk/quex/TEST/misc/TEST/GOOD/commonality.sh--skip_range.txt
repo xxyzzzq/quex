@@ -1,2 +1,3 @@
 interfere-skip_range.qx:3:error: The pattern '"/***"' has lower priority but
 interfere-skip_range.qx:2:error: may outrun skip range pattern '"/*"'.
+interfere-skip_range.qx:2:error: ('--suppress 4' to avoid this message)

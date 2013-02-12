@@ -24,6 +24,11 @@ import sys
 import quex.engine.misc.similarity  as similarity
 #from   quex.blackboard              import setup as Setup
 
+__reference_to_setup = None
+def specify_setup_object(TheSetup):
+    global __reference_to_setup 
+    __reference_to_setup = TheSetup
+
 class EndOfStreamException(Exception):
     pass
 
@@ -604,8 +609,11 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=Tr
     # count line numbers (this is a kind of 'dirty' solution for not
     # counting line numbers on the fly. it does not harm at all and
     # is much more direct to be programmed.)
-    #if SuppressCode in Setup.suppressed_notification_list:
-    #    return
+    global __reference_to_setup
+    assert __reference_to_setup is not None
+
+    if SuppressCode in __reference_to_setup.suppressed_notification_list:
+        return
 
     if NoteF: DontExitF = True
 
