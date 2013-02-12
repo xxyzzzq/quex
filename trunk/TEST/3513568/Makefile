@@ -22,7 +22,7 @@ lexer: $(ENGINE:.c=.o) lexer.o Common-token.o
 
 COMMON_TOKEN_OPTIONS = \
 	 --token-class-file Common-token.h \
-     --token-policy single --no-warning-on-no-token-queue
+     --token-policy single --suppress 5
 		 # --no-message-on-extra-options \
 
 %.E: %.c

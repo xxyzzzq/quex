@@ -1,5 +1,10 @@
-command line: Ignore recursive inclusion of file 'include_me.h' in file 'include_me.h'.
-command line: Note, that quex does not handle C-Preprocessor instructions.
+include_me.h:2:warning: Files recursively included (ignored second inclusion):
+include_me.h:2:warning: include_me.h
+include_me.h:2:warning: 
+include_me.h:2:warning: Note, that quex does not handle C-Preprocessor instructions.
+include_me.h:2:warning: ('--suppress 0' to avoid this message)
+
+Generated Files:
 EasyLexer
 EasyLexer-configuration
 EasyLexer.cpp

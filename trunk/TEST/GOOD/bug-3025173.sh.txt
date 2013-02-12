@@ -5,8 +5,8 @@ scan-error.qx:5:error: Member assignments in brief token senders are inadmissibl
 scan-error.qx:5:error: with manually written token classes. User provided file 'token.h'.
 scan-error.qx:5:error: Found member assignment: 'text' = 'Lexeme'.
 (3) Provide a 'token_type' definition together with a manually written class.
-CppDefault.qx:1:error: Token type definition inadmissible while specifying on the command line
-CppDefault.qx:1:error: the file 'token.h' to contain a manually written token class.
+CppDefault.qx:1:error: Section 'token_type' is intended to generate a token class.
+CppDefault.qx:1:error: However, the manually written token class file ''token.h''has been specified on the command line.
 (4) Manually written token class without '--token-class' definition
 command line: The use of a manually written token class requires that the name of the class
 command line: is specified on the command line via the '--token-class' option.

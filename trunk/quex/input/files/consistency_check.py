@@ -105,7 +105,7 @@ def do(ModeDB):
     if NotificationDB.error_on_dominated_pattern not in Setup.suppressed_notification_list:
         for mode in ModeDB.itervalues():
             for pattern_action_pair in mode.get_pattern_action_pair_list():
-                __dominated_pattern_check(mode, pattern_action_pair)
+                __dominated_pattern_check(mode, pattern_action_pair, NotificationDB.error_on_dominated_pattern)
 
 def __indentation_setup_check(mode):
     indent_setup = mode.options["indentation"]
@@ -188,7 +188,7 @@ def __match_same_check(mode, PAP, ErrorCode):
                             ExitF        = True,
                             SuppressCode = ErrorCode)
 
-def __dominated_pattern_check(mode, PAP):
+def __dominated_pattern_check(mode, PAP, ErrorCode):
     pattern_id  = PAP.pattern().sm.get_id()
 
     for other_pap in mode.get_pattern_action_pair_list():
