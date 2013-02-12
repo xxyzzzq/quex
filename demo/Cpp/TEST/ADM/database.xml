@@ -1,4 +1,4 @@
-<test-database execution-time-sec="239.29" date="Tue Feb 12 08:22:11 2013">
+<test-database execution-time-sec="240.45" date="Tue Feb 12 23:59:04 2013">
     <last-used-diff-display-program name=""/>
     <group name="demo/000">
         <test title="Single Mode Example" time-sum-sec="5.86"> 
@@ -96,10 +96,10 @@
         </test>
     </group>
     <group name="demo/008">
-        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="7.33"> 
+        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="7.34"> 
             <application file-name="008.sh" info-request-time="1355705370L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="3.65" crc="-1669907923"/>
+               <choice name="NDEBUG" result="OK" time_sec="3.66" crc="-1669907923"/>
                <choice name="DEBUG" result="OK" time_sec="3.68" crc="-1669907923"/>
             </choice-list>
         </test>
@@ -156,19 +156,19 @@
         </test>
     </group>
     <group name="demo/012">
-        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="13.19"> 
+        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="14.28"> 
             <application file-name="012.sh" info-request-time="1355705370L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="7.49" crc="-62717966"/>
+               <choice name="NDEBUG" result="OK" time_sec="8.58" crc="-62717966"/>
                <choice name="DEBUG" result="OK" time_sec="5.70" crc="-62717966"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/012b">
-        <test title="Multiple Lexical Analyzers -- shared token" time-sum-sec="15.04"> 
+        <test title="Multiple Lexical Analyzers -- shared token" time-sum-sec="15.11"> 
             <application file-name="012b.sh" info-request-time="1355705370L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="8.36" crc="-62717966"/>
+               <choice name="NDEBUG" result="OK" time_sec="8.43" crc="-62717966"/>
                <choice name="DEBUG" result="OK" time_sec="6.68" crc="-62717966"/>
             </choice-list>
         </test>

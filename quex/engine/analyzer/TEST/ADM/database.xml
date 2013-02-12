@@ -1,6 +1,6 @@
-<test-database execution-time-sec="13.84" date="Tue Feb 12 07:57:56 2013">
+<test-database execution-time-sec="13.85" date="Tue Feb 12 23:59:16 2013">
     <last-used-diff-display-program name=""/>
-    <test title="Categorize Entry Door Actions" time-sum-sec="1.23"> 
+    <test title="Categorize Entry Door Actions" time-sum-sec="1.22"> 
         <application file-name="categorize_doors.py" info-request-time="1355705371L" vanished="False"/>
         <choice-list number="13" same_result="False">
            <choice name="1" result="OK" time_sec="0.13" crc="1835383755"/>
@@ -34,7 +34,7 @@
            <choice name="10" result="NO GOOD FILE" time_sec="0.09" crc="1511814662"/>
         </choice-list>
     </test>
-    <test title="Position Register vs. Post-Context and Last Acceptance" time-sum-sec="0.79"> 
+    <test title="Position Register vs. Post-Context and Last Acceptance" time-sum-sec="0.80"> 
         <application file-name="test-position_register_map.py" info-request-time="1358972681L" vanished="False"/>
         <choice-list number="6" same_result="False">
            <choice name="0" result="OK" time_sec="0.11" crc="1184066719"/>
@@ -62,7 +62,7 @@
                <choice name="10" result="FAIL" time_sec="0.08" crc="None"/>
             </choice-list>
         </test>
-        <test title="Single Pattern" time-sum-sec="1.00"> 
+        <test title="Single Pattern" time-sum-sec="0.99"> 
             <application file-name="paths_analysis-single-pattern.py" info-request-time="1357471558L" vanished="False"/>
             <choice-list number="11" same_result="False">
                <choice name="0" result="OK" time_sec="0.08" crc="354041082"/>
@@ -145,7 +145,7 @@
                <choice name="10" result="OK" time_sec="0.10" crc="2024188667"/>
             </choice-list>
         </test>
-        <test title="With Pre-Contexts" time-sum-sec="1.52"> 
+        <test title="With Pre-Contexts" time-sum-sec="1.54"> 
             <application file-name="paths_analysis-pre.py" info-request-time="1357467636L" vanished="False"/>
             <choice-list number="14" same_result="False">
                <choice name="0" result="OK" time_sec="0.08" crc="-1349506667"/>
@@ -164,7 +164,7 @@
                <choice name="13" result="OK" time_sec="0.10" crc="1577649598"/>
             </choice-list>
         </test>
-        <test title="Backwards - For Pre-Context" time-sum-sec="0.19"> 
+        <test title="Backwards - For Pre-Context" time-sum-sec="0.18"> 
             <application file-name="paths_analysis-backwards.py" info-request-time="1357467635L" vanished="False"/>
             <choice-list number="2" same_result="False">
                <choice name="0" result="OK" time_sec="0.09" crc="-631534800"/>
@@ -206,7 +206,7 @@
         </test>
     </group>
     <group name="Transition Map Tools">
-        <test title="set" time-sum-sec="0.27"> 
+        <test title="set" time-sum-sec="0.28"> 
             <application file-name="transition_map_tools.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="5" same_result="False">
                <choice name="Normal" result="OK" time_sec="0.06" crc="-22334169"/>

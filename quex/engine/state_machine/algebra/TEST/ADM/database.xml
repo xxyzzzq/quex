@@ -1,6 +1,6 @@
-<test-database execution-time-sec="38.29" date="Tue Feb 12 08:02:47 2013">
+<test-database execution-time-sec="38.28" date="Tue Feb 12 23:59:16 2013">
     <last-used-diff-display-program name=""/>
-    <test title="Complementary State Machines" time-sum-sec="1.56"> 
+    <test title="Complementary State Machines" time-sum-sec="1.57"> 
         <application file-name="test-complement.py" info-request-time="1360652444L" vanished="False"/>
         <choice-list number="5" same_result="False">
            <choice name="Sequence" result="OK" time_sec="0.14" crc="-2135734804"/>
@@ -68,7 +68,7 @@
                <choice name="5" result="OK" time_sec="0.57" crc="1705816098"/>
             </choice-list>
         </test>
-        <test title="Cut patterns from P that begin with Q." time-sum-sec="2.75"> 
+        <test title="Cut patterns from P that begin with Q." time-sum-sec="2.74"> 
             <application file-name="test-complement_begin.py" info-request-time="1359790064L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="0" result="OK" time_sec="0.44" crc="1789440613"/>

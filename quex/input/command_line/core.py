@@ -234,6 +234,7 @@ def __perform_setup(command_line, argv):
                         ("compression_path_uniform_f",     E_Compression.PATH_UNIFORM)]:
         if command_line_args_defined(command_line, name):
             compression_type_list.append((command_line_arg_position(name), ctype))
+
     compression_type_list.sort(key=itemgetter(0))
     setup.compression_type_list = map(lambda x: x[1], compression_type_list)
 
@@ -540,7 +541,9 @@ def __interpret_command_line(argv):
                 if len(the_list) == 0:
                     error_msg("Option %s\nnot followed by anything." % repr(info[0])[1:-1])
 
-                entry.extend(x for x in the_list if x not in entry)
+                for x in the_list:
+                    if x not in entry: 
+                        entry.append(x)
 
         elif command_line.search(info[0]):
             if not command_line.search(info[0]):

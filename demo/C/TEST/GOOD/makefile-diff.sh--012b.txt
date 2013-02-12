@@ -27,7 +27,7 @@
 < 	quex -i $< -o boeck::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) 
 ---
 > boeck_Lexer.c:  boeck.qx A_B_C-token.c A_B_C-token_ids.h
-> 	quex -i $< -o boeck::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) --language C 
+> 	quex -i $< -o boeck::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) --language C
 < max_Lexer.cpp:    max.qx A_B_C-token.cpp A_B_C-token_ids
 < 	quex -i $< -o max::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) 
 ---

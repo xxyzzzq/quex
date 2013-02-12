@@ -1,4 +1,4 @@
-<test-database execution-time-sec="21.15" date="Tue Feb 12 07:55:20 2013">
+<test-database execution-time-sec="22.81" date="Tue Feb 12 23:59:14 2013">
     <last-used-diff-display-program name=""/>
     <test title="(*) Exceptions during 'import'" time-sum-sec="0.47"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1355705371L" vanished="False"/>
@@ -18,10 +18,10 @@
            <choice name="" result="OK" time_sec="0.05" crc="1977758644"/>
         </choice-list>
     </test>
-    <test title="Code Check with pyflakes" time-sum-sec="8.70"> 
+    <test title="Code Check with pyflakes" time-sum-sec="10.34"> 
         <application file-name="pyflakes-check.sh" info-request-time="1355705371L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="8.70" crc="176785168"/>
+           <choice name="" result="FAIL" time_sec="10.34" crc="176785168"/>
         </choice-list>
     </test>
     <test title="Propper undefinition of configuration parameters." time-sum-sec="0.08"> 
@@ -46,10 +46,10 @@
         </test>
     </group>
     <group name="User defined token id file">
-        <test title="__parse_token_id_file" time-sum-sec="0.05"> 
+        <test title="__parse_token_id_file" time-sum-sec="0.07"> 
             <application file-name="test-token_id_file-find_ids.py" info-request-time="1355705370L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.05" crc="927224285"/>
+               <choice name="" result="FAIL" time_sec="0.07" crc="927224285"/>
             </choice-list>
         </test>
     </group>

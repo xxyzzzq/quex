@@ -22,14 +22,14 @@ lexer: $(ENGINE:.c=.o) lexer.o A_B_C-token.o
 
 COMMON_TOKEN_OPTIONS = \
 	 --token-class-file A_B_C-token.h \
-     --token-policy single --suppress 6
+     --token-policy single --suppress 0 1 6
 		 # --no-message-on-extra-options \
 
 %.E: %.c
 	gcc -E $< -o  $@ -I$(QUEX_PATH)
 	
 boeck_Lexer.c:  boeck.qx A_B_C-token.c A_B_C-token_ids.h
-	quex -i $< -o boeck::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) --language C --debug-exception
+	quex -i $< -o boeck::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) --language C
 
 max_Lexer.c:    max.qx A_B_C-token.c A_B_C-token_ids.h
 	quex -i $< -o max::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) --language C 
@@ -37,7 +37,7 @@ max_Lexer.c:    max.qx A_B_C-token.c A_B_C-token_ids.h
 moritz_Lexer.c: moritz.qx A_B_C-token.c A_B_C-token_ids.h
 	quex -i $< -o moritz::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) --language C 
 
-A_B_C-token_ids \
+A_B_C-token_ids.h \
 A_B_C-token.c: 
 	quex -i token_ids.qx               \
 		 --icu -b 4                    \
