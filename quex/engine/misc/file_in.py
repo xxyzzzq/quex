@@ -610,9 +610,9 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=Tr
     # counting line numbers on the fly. it does not harm at all and
     # is much more direct to be programmed.)
     global __reference_to_setup
-    assert __reference_to_setup is not None
 
-    if SuppressCode in __reference_to_setup.suppressed_notification_list:
+    if     __reference_to_setup is not None \
+       and SuppressCode in __reference_to_setup.suppressed_notification_list:
         return
 
     if NoteF: DontExitF = True

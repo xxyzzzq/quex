@@ -1,4 +1,4 @@
-<history date="Tue Feb 12 23:59:14 2013" element-n="393">
+<history date="Wed Feb 13 22:08:08 2013" element-n="394">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:24"/>
         <test-runs-today n="3" ok-n="1" fail-n="2" else-n="0" last-run="oll korrekt" last-time="11:15:08"/>
@@ -1095,5 +1095,8 @@
     <day year="2013" month="01" day="01">
         <crc-error time="10:57:30" application="test-token_id_file-find_ids.py" choice="" database-crc="-1492277791" real-crc="-1696555679"/>
         <crc-error time="11:00:52" application="test-token_id_file-find_ids.py" choice="" database-crc="-1696555679" real-crc="927224285"/>
+    </day>
+    <day year="2013" month="02" day="13">
+        <crc-error time="21:05:52" application="test-token_id_file-find_ids.py" choice="" database-crc="927224285" real-crc="1461157101"/>
     </day>
 </history>

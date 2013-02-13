@@ -2699,7 +2699,8 @@ QUEX_ERROR_EXIT("\n    Match failure in mode 'ONE_AND_ONLY'.\n"
     "    No 'on_failure' section provided for this mode.\n"
     "    Proposal: Define 'on_failure' and analyze 'Lexeme'.\n");
 
-    }    goto __REENTRY_PREPARATION;
+    }
+    goto __REENTRY_PREPARATION_2;
 
 /* TERMINAL: END_OF_STREAM */
 _255:
@@ -2708,7 +2709,7 @@ __QUEX_IF_COUNT_SHIFT_VALUES();
 #   line 16 "dos_lf_2.qx"
     self_send(QUEX_TKN_TERMINATION);
     
-#   line 2214 "Simple.cpp"
+#   line 2215 "Simple.cpp"
 
     }
     /* End of Stream causes a return from the lexical analyzer, so that no
@@ -2717,8 +2718,11 @@ __QUEX_IF_COUNT_SHIFT_VALUES();
 
 __REENTRY_PREPARATION:
     /* (*) Common point for **restarting** lexical analysis.
-     *     at each time when CONTINUE is called at the end of a pattern. */
+     *     at each time when CONTINUE is called at the end of a pattern.     */
  
+
+    /* FAILURE needs not to run through 'on_after_match'. It enters here.    */
+__REENTRY_PREPARATION_2:
 
 #   undef Lexeme
 #   undef LexemeBegin
@@ -2757,8 +2761,8 @@ __REENTRY_PREPARATION:
      *                   return 0;
      *               }
      *
-     *  When the analyzer returns, the caller function has to watch if a mode change
-     *  occurred. If not it can call this function again.                               */
+     *  When the analyzer returns, the caller function has to watch if a mode 
+     *  change occurred. If not it can call this function again.             */
     if( me->DEBUG_analyzer_function_at_entry != me->current_analyzer_function ) 
 #   endif
     { 

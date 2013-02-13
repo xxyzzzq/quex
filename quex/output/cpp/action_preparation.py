@@ -106,7 +106,7 @@ def get_code(CodeFragmentList, Mode=None):
     return pretty_code(code_str, IndentationBase), require_terminating_zero_f
 
 def __prepare(Mode, CodeFragment_or_CodeFragments, ThePattern, 
-              Default_ActionF=False, EOF_ActionF=False, BeginOfLineSupportF=False,
+              Failure_ActionF=False, EOF_ActionF=False, BeginOfLineSupportF=False,
               require_terminating_zero_preparation_f=False):
     """-- If there are multiple handlers for a single event they are combined
     
@@ -117,13 +117,13 @@ def __prepare(Mode, CodeFragment_or_CodeFragments, ThePattern,
     """
     assert Mode.__class__.__name__  == "Mode"
     assert ThePattern      is None or ThePattern.__class__.__name__ == "Pattern" 
-    assert type(Default_ActionF)    == bool
+    assert type(Failure_ActionF)    == bool
     assert type(EOF_ActionF)        == bool
     # We assume that any state machine presented here has been propperly created
     # and thus contains some side information about newline number, character number etc.
 
     if type(CodeFragment_or_CodeFragments) == list:
-        assert Default_ActionF or EOF_ActionF, \
+        assert Failure_ActionF or EOF_ActionF, \
                "Action code formatting: Multiple Code Fragments can only be specified for default or\n" + \
                "end of stream action."
         CodeFragmentList = CodeFragment_or_CodeFragments
@@ -132,9 +132,12 @@ def __prepare(Mode, CodeFragment_or_CodeFragments, ThePattern,
 
     # (*) Code to be performed on every match -- before the related action
     on_match_code = ""
-    if Mode.has_code_fragment_list("on_match"):
-        on_match_code, rtzp_f = get_code(Mode.get_code_fragment_list("on_match"), Mode)
-        require_terminating_zero_preparation_f = require_terminating_zero_preparation_f or rtzp_f
+    if not Failure_ActionF:
+        # The 'on_failure' handles the cases that nothing matched. So, 'on_match' is 
+        # not to be applied here.
+        if Mode.has_code_fragment_list("on_match"):
+            on_match_code, rtzp_f = get_code(Mode.get_code_fragment_list("on_match"), Mode)
+            require_terminating_zero_preparation_f = require_terminating_zero_preparation_f or rtzp_f
 
     # (*) Code to count line and column numbers
     default_counter_required_f, \
@@ -204,7 +207,7 @@ def __prepare_on_failure_action(Mode, BeginOfLineSupportF, require_terminating_z
 
     # RETURNS: on_failure_action, db 
     result = __prepare(Mode, Mode.get_code_fragment_list("on_failure"), 
-                       None, Default_ActionF=True, 
+                       None, Failure_ActionF=True, 
                        BeginOfLineSupportF=BeginOfLineSupportF,
                        require_terminating_zero_preparation_f=require_terminating_zero_preparation_f) 
     return PatternActionInfo(None, result)

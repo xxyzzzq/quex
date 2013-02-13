@@ -306,8 +306,11 @@ __terminal_state_prolog  = """
 __reentry_preparation_str = """
 $$REENTRY_PREPARATION$$:
     /* (*) Common point for **restarting** lexical analysis.
-     *     at each time when CONTINUE is called at the end of a pattern. */
+     *     at each time when CONTINUE is called at the end of a pattern.     */
 $$ON_AFTER_MATCH$$ 
+
+    /* FAILURE needs not to run through 'on_after_match'. It enters here.    */
+$$REENTRY_PREPARATION_2$$:
 
 #   undef Lexeme
 #   undef LexemeBegin
@@ -333,8 +336,8 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
      *                   return 0;
      *               }
      *
-     *  When the analyzer returns, the caller function has to watch if a mode change
-     *  occurred. If not it can call this function again.                               */
+     *  When the analyzer returns, the caller function has to watch if a mode 
+     *  change occurred. If not it can call this function again.             */
 #   if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
        || defined(QUEX_OPTION_ASSERTS)
     if( me->DEBUG_analyzer_function_at_entry != me->current_analyzer_function ) 
@@ -453,8 +456,8 @@ def __terminal_on_failure(LanguageDB, OnFailureAction, TerminalFailureDef, Simpl
         3,               "%s\n" % LanguageDB.INPUT_P_INCREMENT(),
         2,         "}\n",
         1,     "}\n",
-        1, "%s"       % OnFailureAction.action().get_code_string(), 
-        1, "goto %s;" % get_label("$re-start", U=True)
+        1,     "%s\n"     % OnFailureAction.action().get_code_string(), 
+        1,     "goto %s;" % get_label("$re-start-2", U=True)
     ]
 
 def __terminal_on_end_of_stream(LanguageDB, OnEndOfStreamAction, TerminalEndOfStreamDef):
@@ -513,6 +516,7 @@ def __reentry_preparation(LanguageDB, VariableDB, PreConditionIDList, OnAfterMat
 
     return blue_print(__reentry_preparation_str, [
           ["$$REENTRY_PREPARATION$$",                    get_label("$re-start")],
+          ["$$REENTRY_PREPARATION_2$$",                  get_label("$re-start-2")],
           ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$",  unset_pre_context_flags_str],
           ["$$GOTO_START$$",                             get_label("$start", U=True)],
           ["$$ON_AFTER_MATCH$$",                         OnAfterMatchStr],

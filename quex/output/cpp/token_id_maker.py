@@ -13,7 +13,6 @@ from   quex.engine.misc.file_in  import get_file_content_or_die, \
 import quex.blackboard                  as blackboard
 from   quex.blackboard                  import token_id_db
 from   quex.engine.misc.string_handling import blue_print
-from   quex.engine.misc.enum            import Enum
 from   quex.input.setup                 import NotificationDB
 from   quex.blackboard                  import setup as Setup
 
@@ -284,7 +283,6 @@ def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, I
        
        Nevertheless, it should work in the large majority of cases.
     """
-    ErrorType = Enum("NO_ACCESS", "RECURSIVE")
     include_re_obj = re.compile(IncludeRE)
 
     def get_line_n_of_include(FileName, IncludedFileName):

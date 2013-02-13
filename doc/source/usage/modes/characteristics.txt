@@ -349,6 +349,11 @@ in the event handler definition. The list of event handlers is the following:
              in-depth analysis, or even bug reporting, the display of the mismatching
              lexeme may give a useful hint towards a lack in the specified pattern set.
 
+   .. note:: The ``on_match`` and ``on_after_match`` handlers are not executed
+             before and after the ``on_failure``. The reason is obvious, because 
+             ``on_failure`` is executed because nothing matched. If nothing matched 
+             then there is no event triggering ``on_match`` and ``on_after_match``.
+
    In a broader sense, 'on_failure' implements the 'anti-pattern' of all
    occurring patterns in a mode. That is it matches the shortest lexeme that
    cannot match any lexeme in the mode. It is ensured, that the input is

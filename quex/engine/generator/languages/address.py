@@ -22,6 +22,7 @@ class AddressDB:
             "__TERMINAL_ROUTER",
             "INIT_STATE_TRANSITION_BLOCK",
             "__REENTRY_PREPARATION", 
+            "__REENTRY_PREPARATION_2", 
             "__REENTRY",
         ])
 
@@ -76,6 +77,7 @@ __label_db = {
     "$reload-BACKWARD":       lambda StateIdx:    __address_db.get("__RELOAD_BACKWARD"),
     "$drop-out":              lambda StateIdx:    __address_db.get("STATE_%s_DROP_OUT" % __nice(StateIdx)),
     "$re-start":              lambda NoThing:     __address_db.get("__REENTRY_PREPARATION"),
+    "$re-start-2":            lambda NoThing:     __address_db.get("__REENTRY_PREPARATION_2"),
     "$start":                 lambda NoThing:     __address_db.get("__REENTRY"),
     "$skipper-reload":        lambda StateIdx:    __address_db.get("__SKIPPER_RELOAD_TERMINATED_%s" % __nice(StateIdx)),
     "$bipd-return":           lambda DetectorID:  __address_db.get("BIPD_%i_RETURN" % DetectorID),

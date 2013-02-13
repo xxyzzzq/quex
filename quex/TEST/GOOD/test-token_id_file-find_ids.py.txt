@@ -4,7 +4,11 @@ example.h:1: in_example
 example.h:1: in_example
 example-x.h:2: in_example_x
 ##-----------------------------------------------------------------
-command line: Parsing token-id file: Cannot access file 'not-found.h' from 'example-x-x.h'.
+example-x-x.h:8:warning: Files not found:
+example-x-x.h:8:warning: not-found.h
+example-x-x.h:8:warning: 
+example-x-x.h:8:warning: Note, that quex does not handle C-Preprocessor instructions.
+example-x-x.h:8:warning: ('--suppress 0' to avoid this message)
 example.h:1: in_example
 example-x-x.h:4: in_example_x_x
 example-x.h:2: in_example_x
