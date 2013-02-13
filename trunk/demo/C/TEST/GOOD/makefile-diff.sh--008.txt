@@ -13,10 +13,9 @@
 < %.o: %.cpp $(LEXER_SOURCES) $(PARSER_SOURCES)
 ---
 > %.o: %.c $(LEXER_SOURCES) $(PARSER_SOURCES)
-<           --foreign-token-id-file Calc_token-ids.h
+< 		  --suppress 0
 ---
->           --foreign-token-id-file Calc_token-ids.h                   \
-> 		  --language C         
+> 		  --suppress 0 --language C         
 < GENERATE_PARSER: Calc_parser.ypp
 ---
 > GENERATE_PARSER:  Calc_parser.y

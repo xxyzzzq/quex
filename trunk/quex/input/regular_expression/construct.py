@@ -183,7 +183,6 @@ class Pattern(object):
         # can be considered complete.
         return c0 and c1 and c2
 
-
     def __validate(self, fh):
         # (*) It is essential that state machines defined as patterns do not 
         #     have origins.
