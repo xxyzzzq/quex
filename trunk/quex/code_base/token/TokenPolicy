@@ -87,6 +87,12 @@
 #       define __QUEX_STAMP_COLUMN_NUMBER(TOKEN)  /* empty */
 #endif
 
+#if   ! defined(QUEX_ACTION_TOKEN_STAMP) 
+#       define  QUEX_ACTION_TOKEN_STAMP(TOKEN_P) \
+        __QUEX_STAMP_LINE_NUMBER(TOKEN_P)        \
+        __QUEX_STAMP_COLUMN_NUMBER(TOKEN_P) 
+#endif
+
 /* Setting a token value. 
  *  
  *  This may include the stamping of line and/or column numbers. The macros to
@@ -94,9 +100,8 @@
  *  definitions). The last element of the subsequent macro provides access to
  *  the current token. This access depends on whether the token policy 'users
  *  token' or a queue policy is used.                                           */
-#define __QUEX_CURRENT_TOKEN_ACCESS                        \
-        __QUEX_STAMP_LINE_NUMBER(__QUEX_CURRENT_TOKEN_P)   \
-        __QUEX_STAMP_COLUMN_NUMBER(__QUEX_CURRENT_TOKEN_P) \
+#define __QUEX_CURRENT_TOKEN_ACCESS                     \
+        QUEX_ACTION_TOKEN_STAMP(__QUEX_CURRENT_TOKEN_P) \
         (*__QUEX_CURRENT_TOKEN_P)
                                     
 #if  defined(QUEX_TOKEN_CONTAINS_NO_ID)
