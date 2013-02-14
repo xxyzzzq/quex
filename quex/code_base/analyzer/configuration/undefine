@@ -516,6 +516,10 @@
 #ifdef    __QUEX_IF_COUNT_SHIFT_VALUES
 #   undef __QUEX_IF_COUNT_SHIFT_VALUES
 #endif
+#ifdef    QUEX_ACTION_TOKEN_STAMP
+#   undef QUEX_ACTION_TOKEN_STAMP
+#endif
+
 
 
 

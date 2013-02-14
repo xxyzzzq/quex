@@ -144,6 +144,32 @@ If line or column numbering is disabled, also the stamping of the corresponding
 value is disabled. Further, no member in the tokens is reserved to carry that
 value.
 
+If a user customized token class is used, it may be necessary to stamp tokens
+with more information.  The macro ``QUEX_ACTION_TOKEN_STAMP`` may be defined
+to specify an action to be exectuded each time when a stamping is required. 
+For example, if more than one token is sent in a single pattern action, e.g.::
+
+    "Hello Universe" {
+            self_send(TKN_GREETING);
+            self_send2(TKN_SPEECH);
+    }
+
+If it is required to stamp tokens with begin and end line and column numbers, 
+then a stamping action may be defined as follows.
+
+.. code-block:: cpp
+
+    header {
+    #define QUEX_ACTION_TOKEN_STAMP(TOKEN_P)    \
+            TOKEN_P->set_begin_line_number(self.line_number_at_begin());       \
+            TOKEN_P->set_begin_column_number(self.column_number_at_begin()-1);
+            TOKEN_P->set_end_line_number(self.line_number_at_end());       \
+            TOKEN_P->set_end_column_number(self.column_number_at_end()-1);
+    }
+
+The stamping is defined in a ``header`` section, so that it preceeds the definition
+of the default token stamping action.
+
 .. _sec-counter-def:
 
 Customization
