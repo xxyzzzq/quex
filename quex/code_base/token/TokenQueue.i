@@ -213,7 +213,7 @@ QUEX_NAME(TokenQueueRemainder_save)(QUEX_NAME(TokenQueueRemainder)* me, QUEX_NAM
         }
 
         /* Step 2: copy plain chunk of memory                                   */
-        __QUEX_STD_memcpy(me->token_list, token_queue->read_iterator, sizeof(QUEX_TYPE_TOKEN) * me->size);
+        __QUEX_STD_memcpy((void*)me->token_list, (void*)token_queue->read_iterator, sizeof(QUEX_TYPE_TOKEN) * me->size);
 
         /* Step 3: Call cleaning placement new on objects which are subject to
          *         potential double deletion.                                   */
@@ -254,7 +254,7 @@ QUEX_NAME(TokenQueueRemainder_restore)(QUEX_NAME(TokenQueueRemainder)* me, QUEX_
             QUEX_NAME_TOKEN(destruct)(iterator);
         }
         /* Step 2: Plain copy of objects stored in the 'remainder store'             */
-        __QUEX_STD_memcpy(token_queue->begin, me->token_list, sizeof(QUEX_TYPE_TOKEN) * me->size);
+        __QUEX_STD_memcpy((void*)token_queue->begin, (void*)me->token_list, sizeof(QUEX_TYPE_TOKEN) * me->size);
 
         /* Step 3: De-Allocate the remainder objects                                 
          *         NO explicit destructor calls, since the referred objects are now
