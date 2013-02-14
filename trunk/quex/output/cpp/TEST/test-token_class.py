@@ -17,6 +17,7 @@ quex.blackboard.setup.language_db             = languages.db["C++"]
 
 class Something:
     def get_file_name(self): return "filename.file"
+    name_space = ""
 
 quex.blackboard.token_type_definition = Something()
 

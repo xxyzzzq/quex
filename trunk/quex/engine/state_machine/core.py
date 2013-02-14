@@ -11,6 +11,7 @@ from   copy      import deepcopy
 from   operator  import attrgetter, itemgetter
 from   itertools import ifilter, imap
 from   collections import defaultdict
+import sys
 
 class State:
     # Information about all transitions starting from a particular state. 
@@ -950,64 +951,56 @@ class StateMachine(object):
     def __repr__(self):
         return self.get_string(NormalizeF=True)
 
-    def __get_state_sequence_for_print_out(self):
-        state_index_sequence = [ self.init_state_index ]
+    def __get_state_sequence_for_normalization(self):
 
-        def __dive(state):
-            target_state_index_list = state.transitions().get_target_state_index_list()
+        result     = []
+        work_stack = [ self.init_state_index ]
+        done_set   = set()
+        while len(work_stack) != 0:
+            i = work_stack.pop(0)
+            if i in done_set: continue
 
-            # For linear state sequences we do not recurse,
-            # this is more stable in the recursion restricted python world.
-            while len(target_state_index_list) == 1:
-                state_index = target_state_index_list[0]
-                if state_index in state_index_sequence: break
-                state_index_sequence.append(state_index)
-                state = self.states[state_index]
-                target_state_index_list = state.transitions().get_target_state_index_list()
+            result.append(i)
+            done_set.add(i)
+            state = self.states[i]
 
+            # Decide which target state is to be considered next.
             # sort by 'lowest trigger'
-            tm = state.transitions().get_map()
-            def comparison_key(A):
-                # In case of epsilon transitions, the 'other' dominates.
+            def comparison_key(state_db, tm, A):
                 trigger_set_to_A = tm.get(A)
-                if trigger_set_to_A is None:
-                    # Epsilon Transition
-                    trigger_set_min = -1
-                else:
-                    trigger_set_min = trigger_set_to_A.minimum()
-                target_tm       = self.states[A].transitions().get_map()
+                assert trigger_set_to_A is not None
+                trigger_set_min = trigger_set_to_A.minimum()
+                target_tm       = state_db[A].transitions().get_map()
                 target_branch_n = len(target_tm)
-                if len(target_tm) != 0:
-                    target_tm_min = min(lambda x: x.minimum() for x in target_tm.itervalues())
-                else:
-                    target_tm_min = -1
+                if len(target_tm) == 0: target_tm_min = -sys.maxint
+                else:                   target_tm_min = min(map(lambda x: x.minimum(), target_tm.itervalues()))
                 return (trigger_set_min, target_branch_n, target_tm_min, A)
 
-            target_state_index_list.sort(key=comparison_key)
+            tm = state.transitions().get_map()
+            target_state_index_list = [ i for i in tm.iterkeys() if i not in done_set ]
+            target_state_index_list.sort(key=lambda x: comparison_key(self.states, tm, x))
+
+            work_stack.extend(target_state_index_list)
                                          
-            for state_index in target_state_index_list:
-                if state_index in state_index_sequence: continue
-                state_index_sequence.append(state_index)
-                __dive(self.states[state_index])
-
-        __dive(self.states[self.init_state_index])
-
-        # There might be 'sick' cases where there are not all states connected.
-        if len(self.states.keys()) != len(state_index_sequence):
-            state_index_sequence = self.states.keys()
+        # There might be 'orphans' which are not at all connected. Append them
+        # sorted by a simple rule: by state index.
+        if len(self.states) != len(result):
+            for i in sorted(self.states.iterkeys()):
+                if i in result: continue
+                result.append(i)
 
         # DEBUG: double check that the sequence is complete
-        x = self.states.keys(); x.sort()               # DEBUG
-        y = deepcopy(state_index_sequence); y.sort()   # DEBUG
-        assert x == y                                  # DEBUG
+        x = self.states.keys(); x.sort()  # DEBUG
+        y = deepcopy(result);   y.sort()  # DEBUG
+        assert x == y                     # DEBUG
 
-        return state_index_sequence
+        return result
 
     def get_state_index_normalization(self, NormalizeF=True):
         index_map         = {}
         inverse_index_map = {}
 
-        index_sequence = self.__get_state_sequence_for_print_out()
+        index_sequence = self.__get_state_sequence_for_normalization()
         if NormalizeF:
             counter = -1L
             for state_i in index_sequence:
