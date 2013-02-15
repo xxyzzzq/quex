@@ -957,7 +957,7 @@ class StateMachine(object):
         work_stack = [ self.init_state_index ]
         done_set   = set()
         while len(work_stack) != 0:
-            i = work_stack.pop(0)
+            i = work_stack.pop()
             if i in done_set: continue
 
             result.append(i)
@@ -978,7 +978,7 @@ class StateMachine(object):
 
             tm = state.transitions().get_map()
             target_state_index_list = [ i for i in tm.iterkeys() if i not in done_set ]
-            target_state_index_list.sort(key=lambda x: comparison_key(self.states, tm, x))
+            target_state_index_list.sort(key=lambda x: comparison_key(self.states, tm, x), reverse=True)
 
             work_stack.extend(target_state_index_list)
                                          

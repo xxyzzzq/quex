@@ -1,15 +1,15 @@
-<test-database execution-time-sec="5.22" date="Wed Feb 13 21:31:17 2013">
+<test-database execution-time-sec="4.97" date="Fri Feb 15 20:34:38 2013">
     <last-used-diff-display-program name=""/>
-    <test title="Pattern Superset/Subset Determination" time-sum-sec="1.69"> 
+    <test title="Pattern Superset/Subset Determination" time-sum-sec="1.59"> 
         <application file-name="test-subset_checker.py" info-request-time="1356519764L" vanished="False"/>
         <choice-list number="7" same_result="False">
-           <choice name="Easy" result="OK" time_sec="0.14" crc="-443130574"/>
+           <choice name="Easy" result="OK" time_sec="0.12" crc="-443130574"/>
            <choice name="FalseCases" result="OK" time_sec="0.17" crc="-2100744066"/>
-           <choice name="GoodCases" result="OK" time_sec="0.12" crc="1129454882"/>
-           <choice name="FalseCasesII" result="OK" time_sec="0.24" crc="1052189149"/>
-           <choice name="GoodCasesII" result="OK" time_sec="0.47" crc="-1943706133"/>
-           <choice name="Misc" result="OK" time_sec="0.42" crc="239663837"/>
-           <choice name="Pre-Post-Conditions" result="OK" time_sec="0.13" crc="-752691781"/>
+           <choice name="GoodCases" result="OK" time_sec="0.11" crc="1129454882"/>
+           <choice name="FalseCasesII" result="OK" time_sec="0.22" crc="1052189149"/>
+           <choice name="GoodCasesII" result="OK" time_sec="0.46" crc="-1943706133"/>
+           <choice name="Misc" result="OK" time_sec="0.40" crc="239663837"/>
+           <choice name="Pre-Post-Conditions" result="OK" time_sec="0.11" crc="-752691781"/>
         </choice-list>
     </test>
     <test title="Commonality Checker" time-sum-sec="1.32"> 
@@ -18,19 +18,19 @@
            <choice name="" result="OK" time_sec="1.32" crc="293006875"/>
         </choice-list>
     </test>
-    <test title="Commonality Checker" time-sum-sec="1.21"> 
+    <test title="Commonality Checker" time-sum-sec="1.17"> 
         <application file-name="test-commonality.py" info-request-time="1355705371L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="1.21" crc="360428126"/>
+           <choice name="" result="OK" time_sec="1.17" crc="360428126"/>
         </choice-list>
     </test>
-    <test title="Pattern Identity Determination" time-sum-sec="1.00"> 
+    <test title="Pattern Identity Determination" time-sum-sec="0.89"> 
         <application file-name="test-identity_checker.py" info-request-time="1356518154L" vanished="False"/>
         <choice-list number="4" same_result="False">
-           <choice name="True" result="OK" time_sec="0.52" crc="-390242573"/>
-           <choice name="False" result="OK" time_sec="0.24" crc="554533910"/>
-           <choice name="Pre-Post-Contexts-True" result="OK" time_sec="0.13" crc="-138569557"/>
-           <choice name="Pre-Post-Contexts-False" result="OK" time_sec="0.11" crc="38876760"/>
+           <choice name="True" result="OK" time_sec="0.47" crc="-390242573"/>
+           <choice name="False" result="OK" time_sec="0.22" crc="554533910"/>
+           <choice name="Pre-Post-Contexts-True" result="OK" time_sec="0.10" crc="-138569557"/>
+           <choice name="Pre-Post-Contexts-False" result="OK" time_sec="0.10" crc="38876760"/>
         </choice-list>
     </test>
 </test-database>
