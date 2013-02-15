@@ -158,6 +158,8 @@ event_handler_db = {
     "on_indentation_bad":        "On bad character in indentation.",
     "on_indentation":            "General Indentation Handler.",
     "on_match":                  "On each match (before pattern action).",
+#   TODO        "on_token_stamp":            "On event of token stamping.",
+#   instead of: QUEX_ACTION_TOKEN_STAMP 
     "on_after_match":            "On each match (after pattern action).",
     "on_failure":                "In case that no pattern matches.",
     "on_skip_range_open":        "On missing skip range delimiter.",

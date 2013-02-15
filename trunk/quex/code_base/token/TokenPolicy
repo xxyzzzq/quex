@@ -87,10 +87,10 @@
 #       define __QUEX_STAMP_COLUMN_NUMBER(TOKEN)  /* empty */
 #endif
 
-#if   ! defined(QUEX_ACTION_TOKEN_STAMP) 
-#       define  QUEX_ACTION_TOKEN_STAMP(TOKEN_P) \
-        __QUEX_STAMP_LINE_NUMBER(TOKEN_P)        \
-        __QUEX_STAMP_COLUMN_NUMBER(TOKEN_P) 
+#if ! defined(QUEX_ACTION_TOKEN_STAMP) 
+#     define  QUEX_ACTION_TOKEN_STAMP(TOKEN_P)   \
+              __QUEX_STAMP_LINE_NUMBER(TOKEN_P)  \
+              __QUEX_STAMP_COLUMN_NUMBER(TOKEN_P) 
 #endif
 
 /* Setting a token value. 
@@ -100,16 +100,16 @@
  *  definitions). The last element of the subsequent macro provides access to
  *  the current token. This access depends on whether the token policy 'users
  *  token' or a queue policy is used.                                           */
-#define __QUEX_CURRENT_TOKEN_ACCESS                     \
-        QUEX_ACTION_TOKEN_STAMP(__QUEX_CURRENT_TOKEN_P) \
-        (*__QUEX_CURRENT_TOKEN_P)
                                     
 #if  defined(QUEX_TOKEN_CONTAINS_NO_ID)
 #   define __QUEX_TOKEN_POLICY_SET_ID(ID) \
-           std::abort()/* empty */
+           QUEX_ERROR_EXIT("TokenID can only be set in token objects with token ids.");
 #else
-#   define __QUEX_TOKEN_POLICY_SET_ID(ID) \
-           do { __QUEX_CURRENT_TOKEN_ACCESS._id = (ID);  } while(0)
+#   define __QUEX_TOKEN_POLICY_SET_ID(ID)                       \
+           do {                                                 \
+               QUEX_ACTION_TOKEN_STAMP(__QUEX_CURRENT_TOKEN_P); \
+               (__QUEX_CURRENT_TOKEN_P)->_id = (ID);            \
+           } while(0)
 #endif
 
 #ifdef     QUEX_OPTION_TOKEN_POLICY_QUEUE
