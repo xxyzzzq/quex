@@ -1,0 +1,48 @@
+---------------------------
+Pattern0 = [A-MP-RT-Z][a-z]*
+Pattern1 = [A-MO-RT-Z][a-z]*
+claim =  False
+
+Pattern0 = [A-MO-RT-Z][a-z]*
+Pattern1 = [A-MP-RT-Z][a-z]*
+claim =  False
+---------------------------
+Pattern0 = [abd-fh-z][a-y]*
+Pattern1 = [abd-fh-z][a-z]*
+claim =  False
+
+Pattern0 = [abd-fh-z][a-z]*
+Pattern1 = [abd-fh-z][a-y]*
+claim =  False
+---------------------------
+Pattern0 = 12(A(B?)C|DEF)+
+Pattern1 = 12(DE(F?)|A(B?)C)+
+claim =  False
+
+Pattern0 = 12(DE(F?)|A(B?)C)+
+Pattern1 = 12(A(B?)C|DEF)+
+claim =  False
+---------------------------
+Pattern0 = "123"+
+Pattern1 = "123"
+claim =  False
+
+Pattern0 = "123"
+Pattern1 = "123"+
+claim =  False
+---------------------------
+Pattern0 = "123"*X
+Pattern1 = "123"X
+claim =  False
+
+Pattern0 = "123"X
+Pattern1 = "123"*X
+claim =  False
+---------------------------
+Pattern0 = 12((A?|D|E))+34
+Pattern1 = 12((A?|E)(A|D))+34
+claim =  False
+
+Pattern0 = 12((A?|E)(A|D))+34
+Pattern1 = 12((A?|D|E))+34
+claim =  False

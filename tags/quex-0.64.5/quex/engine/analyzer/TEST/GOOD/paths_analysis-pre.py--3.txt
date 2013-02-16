@@ -1,0 +1,57 @@
+init-state = 0L
+00000 (1), (2)
+     == 'a' ==> 00001
+    
+00001 (1), (2, A, pre=1)
+     == 'b' ==> 00002
+    
+00002 (1)
+     == 'c' ==> 00003
+    
+00003 (1, A)
+    
+
+State 0:
+  .entry:
+    .from NONE:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 1:
+  .entry:
+    .from 0:
+  .drop_out:
+    if PreContext_1:  goto Pattern2;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 2:
+  .entry:
+    .from 1:
+  .drop_out:
+    if PreContext_1: pos -= 1;  goto Pattern2;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 3:
+  .entry:
+    .from 2:
+  .drop_out:
+     goto Pattern1;
+
+
+State 0:
+        [FAILURE]: NONE/set([0L])
+
+State 1:
+        [FAILURE]: NONE/set([0L])
+        [      2]: 1/set([1L])
+
+State 2:
+        [FAILURE]: NONE/set([0L])
+        [      2]: 1/set([1L])
+
+State 3:
+        [      1]: NONE/set([3L])
+

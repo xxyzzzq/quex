@@ -1,0 +1,7 @@
+(1) Call Quex: 'No output is good output'
+(2) Check wether generated files are present
+Lexer.c
+Lexer-configuration.h
+Lexer.h
+Lexer-token.h
+Lexer-token_ids.h

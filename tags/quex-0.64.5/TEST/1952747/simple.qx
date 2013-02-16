@@ -1,0 +1,4 @@
+mode ONE { 
+    "aber hallo" => QUEX_TKN_SOMETHING;
+    <<EOF>> { user_specified_tkn_termination_handler(); } 
+}

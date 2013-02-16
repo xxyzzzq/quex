@@ -1,0 +1,41 @@
+Last Acceptance / Post-Context-ID 'None'
+State Machine _____________________________________
+init-state = 0L
+00000 (1), (2)
+     == 'a' ==> 00001
+     == 'b' ==> 00002
+    
+00001 (1, A), (2)
+     == 'a' ==> 00001
+     == 'b' ==> 00002
+     == 'c' ==> 00003
+    
+00002 (2)
+     == ['a', 'b'] ==> 00002
+     == 'c' ==> 00003
+    
+00003 (2)
+     == 'd' ==> 00004
+    
+00004 (2, A)
+    
+
+Positioning Info __________________________________
+State 0:
+        [FAILURE]: NONE/set([0L])
+
+State 1:
+        [      1]: NONE/set([1L])
+
+State 2:
+        [FAILURE]: NONE/set([0L])
+    (*) [      1]: NONE/set([1L])
+
+State 3:
+        [FAILURE]: NONE/set([0L])
+    (*) [      1]: NONE/set([1L])
+
+State 4:
+        [      2]: NONE/set([4L])
+
+   1L: 0

@@ -1,0 +1,92 @@
+---------------------------
+Original = "123"+
+Cutter   = "123"
+
+result =  init-state = 0L
+00000 ()
+    
+
+
+Original = "123"
+Cutter   = "123"+
+
+result =  init-state = 0L
+00000 ()
+    
+
+---------------------------
+Original = X"123"?
+Cutter   = X"123"
+
+result =  init-state = 0L
+00000 ()
+     == 'X' ==> 00001
+    
+00001 (A)
+    
+
+
+Original = X"123"
+Cutter   = X"123"?
+
+result =  init-state = 0L
+00000 ()
+    
+
+---------------------------
+Original = "123"?X
+Cutter   = "123"X
+
+result =  init-state = 0L
+00000 ()
+     == 'X' ==> 00001
+    
+00001 (A)
+    
+
+
+Original = "123"X
+Cutter   = "123"?X
+
+result =  init-state = 0L
+00000 ()
+    
+
+---------------------------
+Original = "123"*X
+Cutter   = "123"X
+
+result =  init-state = 0L
+00000 ()
+     == 'X' ==> 00001
+    
+00001 (A)
+    
+
+
+Original = "123"X
+Cutter   = "123"*X
+
+result =  init-state = 0L
+00000 ()
+    
+
+---------------------------
+Original = X"123"*
+Cutter   = X"123"
+
+result =  init-state = 0L
+00000 ()
+     == 'X' ==> 00001
+    
+00001 (A)
+    
+
+
+Original = X"123"
+Cutter   = X"123"*
+
+result =  init-state = 0L
+00000 ()
+    
+
