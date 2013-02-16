@@ -2,12 +2,13 @@
 bug=3495127
 if [[ $1 == "--hwut-info" ]]; then
     echo "clemwang: $bug Event Handler on_after_match"
+    echo "CHOICES: single, queue;"
     exit
 fi
 
 tmp=`pwd`
 cd $bug/ 
-make >& tmp.txt
+make TOKEN_POLICY=$1 >& tmp.txt
 cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ '
 ./a.out example.dat 
 

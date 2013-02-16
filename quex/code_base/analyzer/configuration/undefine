@@ -519,7 +519,9 @@
 #ifdef    QUEX_ACTION_TOKEN_STAMP
 #   undef QUEX_ACTION_TOKEN_STAMP
 #endif
-
+#ifdef    __QUEX_PURE_RETURN
+#   undef __QUEX_PURE_RETURN   
+#endif
 
 
 

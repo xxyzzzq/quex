@@ -50,6 +50,12 @@
 #   undef QUEX_OPTION_LINE_NUMBER_COUNTING
 #endif
 
+#if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+#   define __QUEX_PURE_RETURN   do { return; } while(0)
+#else
+#   define __QUEX_PURE_RETURN   do { return __self_result_token_id; } while(0)
+#endif
+
 #if  ! defined (QUEX_SETTING_BUFFER_MIN_FALLBACK_N)
 #   if ! defined (QUEX_SETTING_BUFFER_SIZE) 
 #      error "QUEX_SETTING_BUFFER_SIZE not defined at this place."

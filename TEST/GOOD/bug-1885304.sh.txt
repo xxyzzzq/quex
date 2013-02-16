@@ -627,21 +627,16 @@ __QUEX_IF_COUNT_COLUMNS_ADD((size_t)((iterator - reference_p)));
 #   undef RETURN
 #endif
 
-#if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-#   define RETURN   return
-#else
-#   define RETURN   do { return __self_result_token_id; } while(0)
-#endif
 #include <quex/code_base/temporary_macros_on>
 
 __QUEX_TYPE_ANALYZER_RETURN_VALUE  
 QUEX_NAME(ONE_AND_ONLY_analyzer_function)(QUEX_TYPE_ANALYZER* me) 
 {
-    /* NOTE: Different modes correspond to different analyzer functions. The analyzer  
-             functions are all located inside the main class as static functions. That  
-             means, they are something like 'globals'. They receive a pointer to the   
-             lexical analyzer, since static member do not have access to the 'this' pointer.
-     */
+    /* NOTE: Different modes correspond to different analyzer functions. The 
+     *       analyzer functions are all located inside the main class as static
+     *       functions. That means, they are something like 'globals'. They 
+     *       receive a pointer to the lexical analyzer, since static members do
+     *       not have access to the 'this' pointer.                          */
 #   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
     register QUEX_TYPE_TOKEN_ID __self_result_token_id 
            = (QUEX_TYPE_TOKEN_ID)__QUEX_SETTING_TOKEN_ID_UNINITIALIZED;
@@ -2545,7 +2540,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(6);
     self_send(QUEX_TKN_STRUCT);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2051 "Simple.cpp"
+#   line 2047 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2559,7 +2554,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(3);
     self_send(QUEX_TKN_TYPE_INT);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2065 "Simple.cpp"
+#   line 2061 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2573,7 +2568,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(6);
     self_send(QUEX_TKN_TYPE_DOUBLE);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2079 "Simple.cpp"
+#   line 2075 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2587,7 +2582,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(4);
     self_send(QUEX_TKN_SEND);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2093 "Simple.cpp"
+#   line 2089 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2601,7 +2596,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(6);
     self_send(QUEX_TKN_EXPECT);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2107 "Simple.cpp"
+#   line 2103 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2615,7 +2610,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(1);
     self_send(QUEX_TKN_SEMICOLON);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2121 "Simple.cpp"
+#   line 2117 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2629,7 +2624,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(1);
     self_send(QUEX_TKN_BRACKET_OPEN);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2135 "Simple.cpp"
+#   line 2131 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2643,7 +2638,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(1);
     self_send(QUEX_TKN_BRACKET_CLOSE);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2149 "Simple.cpp"
+#   line 2145 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2659,7 +2654,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(LexemeL);
     self_send(QUEX_TKN_NUMBER);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2165 "Simple.cpp"
+#   line 2161 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2673,7 +2668,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(LexemeL);
 #   line 28 "dos_lf_2.qx"
         self_send1(QUEX_TKN_IDENTIFIER, Lexeme); RETURN;
     
-#   line 2179 "Simple.cpp"
+#   line 2175 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2709,7 +2704,7 @@ __QUEX_IF_COUNT_SHIFT_VALUES();
 #   line 16 "dos_lf_2.qx"
     self_send(QUEX_TKN_TERMINATION);
     
-#   line 2215 "Simple.cpp"
+#   line 2211 "Simple.cpp"
 
     }
     /* End of Stream causes a return from the lexical analyzer, so that no
@@ -2732,12 +2727,15 @@ __REENTRY_PREPARATION_2:
 
 #   ifndef __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
 #   ifdef  QUEX_OPTION_TOKEN_POLICY_QUEUE
-    if( QUEX_NAME(TokenQueue_is_full)(&self._token_queue) ) RETURN;
+    if( QUEX_NAME(TokenQueue_is_full)(&self._token_queue) ) {
+        return;
+    }
 #   else
-    if( self_token_get_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) RETURN;
+    if( self_token_get_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) {
+        return __self_result_token_id;
+    }
 #   endif
 #   endif
-    
 
 
     /* Post context positions do not have to be reset or initialized. If a state
@@ -2767,7 +2765,7 @@ __REENTRY_PREPARATION_2:
 #   endif
     { 
         self_token_set_id(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
-        RETURN;
+        __QUEX_PURE_RETURN;
 #       elif defined(QUEX_OPTION_ASSERTS)
         QUEX_ERROR_EXIT("Mode change without immediate return from the lexical analyzer.");
 #       endif

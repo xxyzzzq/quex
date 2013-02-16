@@ -1,5 +1,10 @@
 (1) Generate 'OK-Sources' and Compile
-check
+0
+1
+2
+3
+4
+5
 (2) Mix member assignments with manually written token class.
 scan-error.qx:5:error: Member assignments in brief token senders are inadmissible
 scan-error.qx:5:error: with manually written token classes. User provided file 'token.h'.
