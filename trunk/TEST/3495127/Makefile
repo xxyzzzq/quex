@@ -8,14 +8,15 @@ all: Simple.c
 		-DPRINT_TOKEN                                  \
 	    -DQUEX_OPTION_SEND_AFTER_TERMINATION_ADMISSIBLE 
 
-# -DQUEX_OPTION_DEBUG_SHOW 
+		#-DQUEX_OPTION_DEBUG_SHOW  \
 # -D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV 
 
+Simple.E: Simple.c
+	gcc -E -I./ -I$(QUEX_PATH) Simple.c -o Simple.E
 
-Simple.c: test.qx
+Simple.c: $(TOKEN_POLICY).qx
 	@echo "Call to quex"
-	quex -i $< -o Simple --language C --debug-exception
-
+	quex -i $(TOKEN_POLICY).qx -o Simple --language C --debug-exception --token-policy $(TOKEN_POLICY) ##
 
 clean:
 	rm -rf Simple*

@@ -897,9 +897,11 @@ def __parse_event(new_mode, fh, word):
     __validate_required_token_policy_queue(word, fh, pos)
 
     continue_f = True
-    if word == "on_end_of_stream":
-        # When a termination token is sent, no other token shall follow. 
-        # => Enforce return from the analyzer! Do not allow CONTINUE!
+    if word == "on_end_of_stream" or word == "on_failure":
+        # -- When a termination token is sent, no other token shall follow. 
+        #    => Enforce return from the analyzer! Do not allow CONTINUE!
+        # -- When an 'on_failure' is received allow immediate action of the
+        #    receiver => Do not allow CONTINUE!
         continue_f = False
 
     new_mode.events[word] = code_fragment.parse(fh, "%s::%s event handler" % (new_mode.name, word),

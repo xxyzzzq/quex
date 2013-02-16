@@ -87,7 +87,7 @@ def __parse_brief_token_sender(fh, ContinueF):
                 code = __create_token_sender_by_token_name(fh, identifier)
                 check_or_die(fh, ";")
 
-        if code != "": 
+        if len(code) != 0: 
             if ContinueF: code += "QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();\n"
             return UserCodeFragment(code, fh.name, line_n, LanguageDB)
         else:

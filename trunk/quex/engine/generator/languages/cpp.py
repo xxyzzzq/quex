@@ -33,19 +33,23 @@ __header_definitions_txt = """
 """
 
 __return_with_on_after_match = """
-#   define RETURN   goto __RETURN_REPARATION;
+#define RETURN    goto __ON_AFTER_MATCH_THEN_RETURN;
 """
 __return_without_on_after_match = """
-#if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-#   define RETURN   return
-#else
-#   define RETURN   do { return __self_result_token_id; } while(0)
-#endif
+#define RETURN    __QUEX_PURE_RETURN;
 """
 
 def __header_definitions(LanguageDB, OnAfterMatchStr):
+    global __return_without_on_after_match
+    global __return_with_on_after_match
+    assert len(__return_with_on_after_match) > 10
+    assert len(__return_without_on_after_match) > 10
 
     txt = __header_definitions_txt
+    #txt += "/MARK/ %i '%s'\n" % (len(__return_with_on_after_match),    map(ord, __return_with_on_after_match))
+    #txt += "/MARK/ '%s'\n" % __return_with_on_after_match
+    #txt += "/MARK/ %i '%s'\n" % (len(__return_without_on_after_match), map(ord, __return_without_on_after_match))
+    #txt += "/MARK/ '%s'\n" % __return_without_on_after_match
     txt = txt.replace("$$GOTO_START_PREPARATION$$", get_label("$re-start", U=True))
 
     if OnAfterMatchStr is not None: txt += __return_with_on_after_match
@@ -152,11 +156,11 @@ __function_signature = """
 __QUEX_TYPE_ANALYZER_RETURN_VALUE  
 QUEX_NAME($$STATE_MACHINE_NAME$$_analyzer_function)(QUEX_TYPE_ANALYZER* me) 
 {
-    /* NOTE: Different modes correspond to different analyzer functions. The analyzer  
-             functions are all located inside the main class as static functions. That  
-             means, they are something like 'globals'. They receive a pointer to the   
-             lexical analyzer, since static member do not have access to the 'this' pointer.
-     */
+    /* NOTE: Different modes correspond to different analyzer functions. The 
+     *       analyzer functions are all located inside the main class as static
+     *       functions. That means, they are something like 'globals'. They 
+     *       receive a pointer to the lexical analyzer, since static members do
+     *       not have access to the 'this' pointer.                          */
 #   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
     register QUEX_TYPE_TOKEN_ID __self_result_token_id 
            = (QUEX_TYPE_TOKEN_ID)__QUEX_SETTING_TOKEN_ID_UNINITIALIZED;
@@ -320,12 +324,15 @@ $$REENTRY_PREPARATION_2$$:
 
 #   ifndef __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
 #   ifdef  QUEX_OPTION_TOKEN_POLICY_QUEUE
-    if( QUEX_NAME(TokenQueue_is_full)(&self._token_queue) ) RETURN;
+    if( QUEX_NAME(TokenQueue_is_full)(&self._token_queue) ) {
+        return;
+    }
 #   else
-    if( self_token_get_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) RETURN;
+    if( self_token_get_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) {
+        return __self_result_token_id;
+    }
 #   endif
 #   endif
-    $$RESET_LAST_ACCEPTANCE$$
 $$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
 $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
     /*  If a mode change happened, then the function must first return and
@@ -345,7 +352,7 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
     { 
 #       if defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE)
         self_token_set_id(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
-        RETURN;
+        __QUEX_PURE_RETURN;
 #       elif defined(QUEX_OPTION_ASSERTS)
         QUEX_ERROR_EXIT("Mode change without immediate return from the lexical analyzer.");
 #       endif
@@ -471,8 +478,8 @@ def __terminal_on_end_of_stream(LanguageDB, OnEndOfStreamAction, TerminalEndOfSt
      + "     * tokens can be filled after the termination token.                    */\n" \
      + "    RETURN;\n"
 
-__return_preparation_str = """
-__RETURN_REPARATION:
+__on_after_match_then_return_str = """
+__ON_AFTER_MATCH_THEN_RETURN:
 $$ON_AFTER_MATCH$$
 #   if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
     return;
@@ -481,15 +488,15 @@ $$ON_AFTER_MATCH$$
 #   endif
 """
 
-def __return_preparation(OnAfterMatchAction, SimpleF):
+def __on_after_match_then_return(OnAfterMatchAction, SimpleF):
     if SimpleF or OnAfterMatchAction is None:
         return "", ""
 
     on_after_match_str = OnAfterMatchAction.action().get_code_string()
-    return_preparation = blue_print(__return_preparation_str,
+    return_preparation = blue_print(__on_after_match_then_return_str,
                                     [["$$ON_AFTER_MATCH$$",  on_after_match_str]])
 
-    txt = ["__RETURN_REPARATION:\n" ]
+    txt = ["__ON_AFTER_MATCH_THEN_RETURN:\n" ]
     txt.append(on_after_match_str)
     txt.append("#   if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)\n" \
                "    return;\n"                                    \
@@ -510,17 +517,12 @@ def __reentry_preparation(LanguageDB, VariableDB, PreConditionIDList, OnAfterMat
         for pre_context_id in PreConditionIDList
     ])
 
-    reset_last_acceptance_str = ""
-    if VariableDB.has_key("last_acceptance"):
-        reset_last_acceptance_str = "last_acceptance = $$TERMINAL_FAILURE-REF$$; /* TERMINAL: FAILURE */"
-
     return blue_print(__reentry_preparation_str, [
           ["$$REENTRY_PREPARATION$$",                    get_label("$re-start")],
           ["$$REENTRY_PREPARATION_2$$",                  get_label("$re-start-2")],
           ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$",  unset_pre_context_flags_str],
           ["$$GOTO_START$$",                             get_label("$start", U=True)],
           ["$$ON_AFTER_MATCH$$",                         OnAfterMatchStr],
-          ["$$RESET_LAST_ACCEPTANCE$$",                  reset_last_acceptance_str],
           ["$$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$", comment_on_post_context_position_init_str],
           ["$$TERMINAL_FAILURE-REF$$",                   TerminalFailureRef],
     ])
@@ -567,8 +569,8 @@ def __terminal_states(StateMachineName, action_db, VariableDB, PreConditionIDLis
                                                               terminal_end_of_stream_def)
     on_failure_str              = __terminal_on_failure(LanguageDB, OnFailureAction, 
                                                         terminal_failure_def, SimpleF)
-    return_preparation_str, \
-    on_after_match_str          = __return_preparation(OnAfterMatchAction, SimpleF)
+    on_after_match_then_return_str, \
+    on_after_match_str          = __on_after_match_then_return(OnAfterMatchAction, SimpleF)
 
     lexeme_macro_definition_str = __lexeme_macro_definitions(LanguageDB, Setup, SimpleF)
 
@@ -585,7 +587,7 @@ def __terminal_states(StateMachineName, action_db, VariableDB, PreConditionIDLis
     txt.extend(pattern_terminals_code)
     txt.extend(on_failure_str)
     txt.extend(on_end_of_stream_str)
-    txt.append(return_preparation_str)
+    txt.append(on_after_match_then_return_str)
     txt.append(reentry_preparation_str)
 
     return txt

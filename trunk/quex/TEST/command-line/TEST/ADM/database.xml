@@ -1,9 +1,9 @@
-<test-database execution-time-sec="1.09" date="Fri Feb 15 20:34:30 2013">
+<test-database execution-time-sec="1.10" date="Sat Feb 16 12:22:04 2013">
     <last-used-diff-display-program name=""/>
-    <test title="Disable several error messages." time-sum-sec="0.25"> 
+    <test title="Disable several error messages." time-sum-sec="0.26"> 
         <application file-name="no-error-flags.sh" info-request-time="1360709760L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.25" crc="764573507"/>
+           <choice name="" result="OK" time_sec="0.26" crc="764573507"/>
         </choice-list>
     </test>
     <test title="Detect lower prio-patterns outrun higher-prio patterns" time-sum-sec="0.84"> 

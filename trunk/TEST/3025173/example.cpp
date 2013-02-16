@@ -1,4 +1,5 @@
 #include "br_scan"
+#include "iostream"
 
 int 
 main(int argc, char** argv) 
@@ -8,7 +9,8 @@ main(int argc, char** argv)
 
     do {
         qlex.receive(&token_p);
-    } while( 1 + 1 == 2 );
+        std::cout << token_p->number_ << std::endl;
+    } while( token_p->type_id() != BR_TKN_TERMINATION);
 
     return 0;
 }

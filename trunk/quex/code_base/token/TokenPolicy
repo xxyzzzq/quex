@@ -87,6 +87,9 @@
 #       define __QUEX_STAMP_COLUMN_NUMBER(TOKEN)  /* empty */
 #endif
 
+/* We do not define QUEX_ACTION_TOKEN_STAMP in 'configuration/derived' since
+ * the derived configuration is included before the user's header.  The user's
+ * header requires the configuration parameters.                             */
 #if ! defined(QUEX_ACTION_TOKEN_STAMP) 
 #     define  QUEX_ACTION_TOKEN_STAMP(TOKEN_P)   \
               __QUEX_STAMP_LINE_NUMBER(TOKEN_P)  \

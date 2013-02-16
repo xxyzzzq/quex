@@ -34,17 +34,17 @@ automaton, i.e. regular expression, which matches the union of both, i.e.::
 
 The fundamental operations are available in quex via the commands:
 
-.. describe \Union{X0 X1 ... Xn}
+.. describe:: \Union{X0 X1 ... Xn}
 
    Produces a finite state automaton that matches the union of the 
    what is matched by the regular expressions ``X0``, ``X1``, ... ``Xn``.
 
-.. describe \Intersection{X0 X1 ... Xn}
+.. describe:: \Intersection{X0 X1 ... Xn}
 
    Produces a finite state automaton that matches the union of the 
    what is matched by the regular expressions ``X0``, ``X1``, ... ``Xn``.
 
-.. describe \Not{X}
+.. describe:: \Not{X}
 
    Produces a finite state automaton that matches the complementary set
    of lexemes of what is matched by the regular expressions ``X``.

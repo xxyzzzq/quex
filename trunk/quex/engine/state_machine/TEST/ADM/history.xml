@@ -1,4 +1,4 @@
-<history date="Fri Feb 15 20:34:37 2013" element-n="668">
+<history date="Sat Feb 16 11:51:31 2013" element-n="673">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1422,5 +1422,12 @@
         <crc-error time="07:00:51" application="test-parallelize.py" choice="" database-crc="1779326272" real-crc="-789285293"/>
         <crc-error time="07:01:42" application="test-parallelize-trace-origin.py" choice="" database-crc="409673241" real-crc="-77063234"/>
         <crc-error time="07:13:08" application="test-parallelize.py" choice="" database-crc="-789285293" real-crc="509771390"/>
+    </day>
+    <day year="2013" month="02" day="16">
+        <crc-error time="10:28:09" application="test-ambiguous_post_condition-mount_pseudo.py" choice="" database-crc="1777324502" real-crc="-1156165497"/>
+        <crc-error time="10:38:18" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="1291063345" real-crc="806896144"/>
+        <crc-error time="10:49:00" application="test-parallelize.py" choice="" database-crc="509771390" real-crc="669808573"/>
+        <crc-error time="10:49:22" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="806896144" real-crc="-1703144975"/>
+        <crc-error time="10:51:19" application="test-parallelize.py" choice="" database-crc="669808573" real-crc="594417375"/>
     </day>
 </history>
