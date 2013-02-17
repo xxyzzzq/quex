@@ -441,7 +441,8 @@ def __setup_token_id_prefix(setup):
     setup.token_id_prefix_name_space, \
     dummy                           = \
          read_namespaced_name(setup.token_id_prefix, 
-                              "token prefix (options --token-id-prefix)")
+                              "token prefix (options --token-id-prefix)", 
+                              AllowEmptyF=True)
 
     if len(setup.token_id_prefix_name_space) != 0 and setup.language.upper() == "C":
          error_msg("Token id prefix cannot contain a namespaces if '--language' is set to 'C'.")

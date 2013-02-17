@@ -12,6 +12,7 @@ Contents:
    intro/intro.txt
    basics/intro.txt
    usage/intro.txt
+   algebra/intro.txt
    character-encoding/intro.txt
    buffer-access/intro.txt
    advanced/intro.txt
