@@ -94,7 +94,7 @@ def do(setup, command_line, argv):
                   "Set appropriate values with --token-queue-size and --token-queue-safety-border.")
 
     # Check that names are valid identifiers
-    __check_identifier(setup, "token_id_prefix_plain",    "Token prefix")
+    __check_identifier(setup, "token_id_prefix_plain", "Token prefix")
     __check_identifier(setup, "analyzer_class_name", "Engine name")
     if setup.analyzer_derived_class_name != "": 
         __check_identifier(setup, "analyzer_derived_class_name", "Derived class name")
@@ -191,9 +191,11 @@ def __check_identifier(setup, Candidate, Name):
     value = setup.__dict__[Candidate]
     if is_identifier(value): return
 
-    CommandLineOption = SETUP_INFO[Candidate][0]
+    CommandLineOption = ""
+    if type(SETUP_INFO) == list:
+        CommandLineOption = " (%s)" % str(SETUP_INFO[Candidate][0])[-1:1]
 
-    error_msg("%s must be a valid identifier (%s).\n" % (Name, repr(CommandLineOption)[1:-1]) + \
+    error_msg("%s must be a valid identifier%s.\n" % (Name, CommandLineOption) + \
               "Received: '%s'" % value)
 
 def __get_supported_command_line_option_description(NormalModeOptions):

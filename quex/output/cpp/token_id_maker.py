@@ -293,13 +293,14 @@ def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, I
             if include_re_obj.search(line) is not None and line.find(IncludedFileName) != -1:
                 break
         else:
-            assert False, "include of file '%s' not found in '%s'" % (IncludedFileName, FileName)
+            # Included file must appear in including file, but tolerate for safety.
+            pass
 
         fh.close()
         return line_n
 
     # validate(...) ensured, that the file exists.
-    work_list      = [ os.path.normpath(ForeignTokenIdFile) ] 
+    work_list      = [ ForeignTokenIdFile ] 
     done_list      = []
     not_found_list = []
     recursive_list = []
@@ -323,14 +324,15 @@ def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, I
         # (*) find "#include" statements
         #
         #     'set' ensures that each entry is unique
-        include_file_set = set(os.path.normpath(file) for file in include_re_obj.findall(content))
+        include_file_set = set(include_re_obj.findall(content))
 
         #     -- ensure that included files exist and are not included twice
         for included_file in include_file_set:
+            normed_included_file = os.path.normpath(included_file)
             if included_file in done_list:
                 line_n = get_line_n_of_include(file_name, included_file)
                 recursive_list.append((file_name, line_n, included_file))
-            elif not os.access(included_file, os.F_OK): 
+            elif not os.access(normed_included_file, os.F_OK): 
                 line_n = get_line_n_of_include(file_name, included_file)
                 not_found_list.append((file_name, line_n, included_file))
             else:

@@ -18,8 +18,6 @@ from   quex.engine.utf8                  import __read_one_utf8_code_from_stream
 from   quex.engine.generator.action_info import UserCodeFragment 
 import quex.input.regular_expression.snap_backslashed_character as snap_backslashed_character
 
-
-
 def parse(fh, CodeFragmentName, 
           ErrorOnFailureF=True, AllowBriefTokenSenderF=True, ContinueF=True):
     """RETURNS: An object of class UserCodeFragment containing

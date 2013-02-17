@@ -183,16 +183,14 @@ def read_namespaced_name(FileHandle_or_String, Meaning, AllowEmptyF=False):
         pass
 
     # Error Check
-    if name_list[-1] == "": # Empty, or last name missing?
-        if AllowEmptyF: 
-            return "", [], ""
-        else:
+    if len(name_list[-1]) == 0: # Empty, or last name missing?
+        if not AllowEmptyF: 
             if string_f: fh = -1
             error_msg("Missing identifier in %s name specification." % Meaning, fh)
 
     if string_f: 
         trailing_chars = fh.read()
-        if trailing_chars != "":
+        if len(trailing_chars) != 0:
             error_msg("Trailing characters '%s' in '%s'\nfor %s name specification." % \
                       (trailing_chars, FileHandle_or_String, Meaning))
 
