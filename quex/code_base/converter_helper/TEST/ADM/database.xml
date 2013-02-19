@@ -1,37 +1,37 @@
-<test-database execution-time-sec="1.75" date="Sun Feb 17 08:29:49 2013">
+<test-database execution-time-sec="1.75" date="Sun Feb 17 21:01:57 2013">
     <last-used-diff-display-program name=""/>
-    <test title="utf8 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.07"> 
+    <test title="utf8 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.04"> 
         <application file-name="from-utf8" info-request-time="1361021763L" vanished="False"/>
         <make-procedure success="True" time_sec="0.921617"/>
         <choice-list number="3" same_result="False">
-           <choice name="Source_Empty" result="OK" time_sec="0.04" crc="-975538654"/>
+           <choice name="Source_Empty" result="OK" time_sec="0.02" crc="-975538654"/>
            <choice name="Source_TestFile" result="OK" time_sec="0.01" crc="294941333"/>
-           <choice name="Drain_ToSmall" result="OK" time_sec="0.02" crc="834269970"/>
+           <choice name="Drain_ToSmall" result="OK" time_sec="0.01" crc="834269970"/>
         </choice-list>
     </test>
-    <test title="utf32 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.09"> 
+    <test title="utf16 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.06"> 
+        <application file-name="from-utf16" info-request-time="1361021764L" vanished="False"/>
+        <make-procedure success="True" time_sec="0.948652"/>
+        <choice-list number="3" same_result="False">
+           <choice name="Source_Empty" result="OK" time_sec="0.05" crc="-434085329"/>
+           <choice name="Source_TestFile" result="OK" time_sec="0.01" crc="38892956"/>
+           <choice name="Drain_ToSmall" result="OK" time_sec="0.01" crc="-765338234"/>
+        </choice-list>
+    </test>
+    <test title="Test of complete character set on base converters (utf8, utf16, utf32)" make-dependent="True" time-sum-sec="1.58"> 
+        <application file-name="characters" info-request-time="1361021764L" vanished="False"/>
+        <make-procedure success="True" time_sec="0.411005"/>
+        <choice-list number="1" same_result="False">
+           <choice name="" result="OK" time_sec="1.58" crc="705934895"/>
+        </choice-list>
+    </test>
+    <test title="utf32 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.06"> 
         <application file-name="from-utf32" info-request-time="1361021765L" vanished="False"/>
         <make-procedure success="True" time_sec="0.902898"/>
         <choice-list number="3" same_result="False">
            <choice name="Source_Empty" result="OK" time_sec="0.05" crc="490986972"/>
-           <choice name="Source_TestFile" result="OK" time_sec="0.03" crc="1201958385"/>
+           <choice name="Source_TestFile" result="OK" time_sec="0.01" crc="1201958385"/>
            <choice name="Drain_ToSmall" result="OK" time_sec="0.01" crc="1140718619"/>
-        </choice-list>
-    </test>
-    <test title="Test of complete character set on base converters (utf8, utf16, utf32)" make-dependent="True" time-sum-sec="1.46"> 
-        <application file-name="characters" info-request-time="1361021764L" vanished="False"/>
-        <make-procedure success="True" time_sec="0.411005"/>
-        <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="1.46" crc="705934895"/>
-        </choice-list>
-    </test>
-    <test title="utf16 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.13"> 
-        <application file-name="from-utf16" info-request-time="1361021764L" vanished="False"/>
-        <make-procedure success="True" time_sec="0.948652"/>
-        <choice-list number="3" same_result="False">
-           <choice name="Source_Empty" result="OK" time_sec="0.06" crc="-434085329"/>
-           <choice name="Source_TestFile" result="OK" time_sec="0.06" crc="38892956"/>
-           <choice name="Drain_ToSmall" result="OK" time_sec="0.01" crc="-765338234"/>
         </choice-list>
     </test>
 </test-database>

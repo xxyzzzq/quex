@@ -31,6 +31,7 @@ from   quex.DEFINITIONS import QUEX_VERSION
 
 from   StringIO import StringIO
 from   operator import itemgetter
+import re
 
 class ManualTokenClassSetup:
     """Class to mimik as 'real' TokenTypeDescriptor as defined in 
@@ -211,20 +212,22 @@ def __perform_setup(command_line, argv):
             else:                                   index = 2
             setup.converter_ucs_coding_name = global_character_type_db[setup.buffer_element_type][index]
 
-    if setup.token_id_foreign_definition_file != "": 
+    if len(setup.token_id_foreign_definition_file) != 0: 
+        if len(setup.token_id_foreign_definition_file) > 3: 
+            error_msg("Option '--foreign-token-id-file' received > 3 followers.\n"
+                      "Found: %s" % str(setup.token_id_foreign_definition_file)[1:-1])
+        if len(setup.token_id_foreign_definition_file) > 1:
+            setup.token_id_foreign_definition_file_region_begin_re = \
+                    __compile_regular_expression(setup.token_id_foreign_definition_file[1], "token id region begin")
+        if len(setup.token_id_foreign_definition_file) > 2:
+            setup.token_id_foreign_definition_file_region_end_re = \
+                    __compile_regular_expression(setup.token_id_foreign_definition_file[2], "token id region end")
+        setup.token_id_foreign_definition_file = \
+                setup.token_id_foreign_definition_file[0]
+
         CommentDelimiterList = [["//", "\n"], ["/*", "*/"]]
-        # Regular expression to find '#include <something>' and extract the 'something'
-        # in a 'group'. Note that '(' ')' cause the storage of parts of the match.
-        IncludeRE            = "#[ \t]*include[ \t]*[\"<]([^\">]+)[\">]"
-        #
         parse_token_id_file(setup.token_id_foreign_definition_file, 
-                            setup.token_id_prefix, 
-                            CommentDelimiterList, IncludeRE)
-        if setup.token_id_prefix_plain != setup.token_id_prefix:
-            # The 'plain' name space less token indices are also supported
-            parse_token_id_file(setup.token_id_foreign_definition_file, 
-                                setup.token_id_prefix_plain, 
-                                CommentDelimiterList, IncludeRE)
+                            CommentDelimiterList)
 
     # (*) Compression Types
     compression_type_list = []
@@ -556,3 +559,14 @@ def __interpret_command_line(argv):
                 setup.__dict__[variable_name] = value
 
     return command_line
+
+def __compile_regular_expression(Str, Name):
+    tmp = Str.replace("*", "\\*")
+    tmp = tmp.replace("?", "\\?")
+    tmp = tmp.replace("{", "\\{")
+    tmp = tmp.replace("}", "\\}")
+    try:
+        return re.compile(tmp)
+    except:
+        error_msg("Invalid %s: %s" % (Name, Str))
+

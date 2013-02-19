@@ -1,8 +1,4 @@
 #! /usr/bin/env python
-import time
-import os
-import re
-
 from   quex.engine.misc.file_in  import get_file_content_or_die, \
                                         open_file_or_die, \
                                         delete_comment, \
@@ -13,8 +9,15 @@ from   quex.engine.misc.file_in  import get_file_content_or_die, \
 import quex.blackboard                  as blackboard
 from   quex.blackboard                  import token_id_db
 from   quex.engine.misc.string_handling import blue_print
-from   quex.input.setup                 import NotificationDB
+from   quex.input.setup                 import NotificationDB, \
+                                               global_character_type_db
 from   quex.blackboard                  import setup as Setup
+from   quex.engine.tools                import print_callstack
+from   itertools import chain
+import time
+import os
+import re
+
 
 def do(setup):
     """Creates a file of token-ids from a given set of names.
@@ -225,7 +228,8 @@ def __is_token_id_occupied(TokenID):
     return TokenID in map(lambda x: x.number, token_id_db.values())
 
 def __propose_implicit_token_definitions():
-    if len(blackboard.token_id_implicit_list) == 0: return
+    if len(blackboard.token_id_implicit_list) == 0: 
+        return
 
     file_name = blackboard.token_id_implicit_list[0][1]
     line_n    = blackboard.token_id_implicit_list[0][2]
@@ -272,7 +276,7 @@ def __delete_comments(Content, CommentDelimiterList):
         content = delete_comment(content, opener, closer, LeaveNewlineDelimiter=True)
     return content
 
-def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, IncludeRE):
+def parse_token_id_file(ForeignTokenIdFile, CommentDelimiterList):
     """This function somehow interprets the user defined token id file--if there is
        one. It does this in order to find the names of defined token ids. It does
        some basic interpretation and include file following, but: **it is in no
@@ -283,6 +287,10 @@ def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, I
        
        Nevertheless, it should work in the large majority of cases.
     """
+    # Regular expression to find '#include <something>' and extract the 'something'
+    # in a 'group'. Note that '(' ')' cause the storage of parts of the match.
+    IncludeRE = "#[ \t]*include[ \t]*[\"<]([^\">]+)[\">]"
+
     include_re_obj = re.compile(IncludeRE)
 
     def get_line_n_of_include(FileName, IncludedFileName):
@@ -308,18 +316,33 @@ def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, I
         file_name = work_list.pop()
         content   = __delete_comments(get_file_content_or_die(file_name, Mode="rb"), 
                                       CommentDelimiterList)
-        done_list.append(file_name)
+        done_list.append(os.path.normpath(file_name))
 
         # (*) Search for TokenID definitions 
         #
-        token_id_finding_list = extract_identifiers_with_specific_prefix(content, TokenPrefix)
-        for token_name, line_n in token_id_finding_list:
-            prefix_less_token_name = token_name[len(TokenPrefix):]
+        # -- cut the region of concern
+        begin_i = 0
+        end_i   = len(content)
+        if Setup.token_id_foreign_definition_file_region_begin_re is not None:
+            match = Setup.token_id_foreign_definition_file_region_begin_re.search(content)
+            if match is not None:
+                begin_i = match.end()
+
+        if Setup.token_id_foreign_definition_file_region_end_re is not None:
+            match = Setup.token_id_foreign_definition_file_region_end_re.search(content, pos=begin_i)
+            if match is not None:
+                end_i = match.start()
+        content = content[begin_i:end_i]
+
+        token_id_finding_list = __extract_token_ids(content)
+        for token_name in token_id_finding_list:
             # NOTE: The line number might be wrong, because of the comment deletion
+            line_n = 0
             # NOTE: The actual token value is not important, since the token's numeric
             #       identifier is defined in the user's header. We do not care.
+            prefix_less_token_name = cut_token_id_prefix(token_name)
             token_id_db[prefix_less_token_name] = \
-                    TokenInfo(prefix_less_token_name, None, None, file_name, line_n) 
+                        TokenInfo(prefix_less_token_name, None, None, file_name, line_n) 
         
         # (*) find "#include" statements
         #
@@ -335,7 +358,7 @@ def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, I
             elif not os.access(normed_included_file, os.F_OK): 
                 line_n = get_line_n_of_include(file_name, included_file)
                 not_found_list.append((file_name, line_n, included_file))
-            else:
+            elif normed_included_file not in done_list:
                 work_list.append(included_file)
 
     ErrorN = NotificationDB.token_id_ignored_files_report
@@ -360,3 +383,31 @@ def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, I
             # file_name and line_n will be taken from last iteration of last for loop.
             error_msg("\nNote, that quex does not handle C-Preprocessor instructions.",
                       file_name, LineN=line_n, DontExitF=True, SuppressCode=ErrorN)
+
+def __extract_token_ids(PlainContent):
+    """PlainContent     -- File content without comments.
+    """
+    DefineRE         = "#[ \t]*define[ \t]+([^ \t]+)[ \t]+[^ \t]+"
+    AssignRE         = "([^ \t]+)[ \t]*=[ \t]*[^ \t]+"
+    define_re_obj    = re.compile(DefineRE)
+    assign_re_obj    = re.compile(AssignRE)
+
+    result = []
+    for name in chain(define_re_obj.findall(PlainContent), assign_re_obj.findall(PlainContent)):
+        # Either there is no plain token prefix, or it matches well.
+        if    len(Setup.token_id_prefix_plain) == 0 \
+           or name.find(Setup.token_id_prefix_plain) == 0 \
+           or name.find(Setup.token_id_prefix) == 0:
+            result.append(name)
+    return result
+
+def cut_token_id_prefix(TokenName, FH_Error=False):
+    if TokenName.find(Setup.token_id_prefix) == 0:
+        return TokenName[len(Setup.token_id_prefix):]
+    elif TokenName.find(Setup.token_id_prefix_plain) == 0:
+        return TokenName[len(Setup.token_id_prefix_plain):]
+    elif not FH_Error:
+        return TokenName
+    else:
+        error_msg("Token identifier does not begin with token prefix '%s'\n" % Setup.token_id_prefix + \
+                  "found: '%s'" % TokenName, FH_Error)

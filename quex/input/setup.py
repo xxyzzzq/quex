@@ -152,7 +152,7 @@ SETUP_INFO = {
     "token_class":                    [["--token-class", "--tc"],              "Token"],
     "token_class_only_f":             [["--token-class-only", "--tco"],        SetupParTypes.FLAG],
     "token_class_take_text_check_f":  [["--token-type-no-take_text-check",     "--ttnttc"], SetupParTypes.NEGATED_FLAG], 
-    "token_id_foreign_definition_file":  [["--foreign-token-id-file"],         ""],  
+    "token_id_foreign_definition_file":  [["--foreign-token-id-file"],         SetupParTypes.LIST],  
     "token_id_counter_offset":        [["--token-id-offset"],                "10000"],
     "token_id_type":                  [["--token-id-type"],                  "uint32_t"],
     "token_id_prefix":                [["--token-id-prefix"],                "QUEX_TKN_"],
@@ -188,6 +188,8 @@ SETUP_INFO = {
     "token_class_name_safe":                     None,
     "token_id_prefix_name_space":                None,
     "token_id_prefix_plain":                     None,   # i.e. without the namespace specified.
+    "token_id_foreign_definition_file_region_begin_re":  None,
+    "token_id_foreign_definition_file_region_end_re":    None,
     "output_buffer_codec_header_file":           None,
     "output_header_file":                        None,
     "output_configuration_file":                 None,

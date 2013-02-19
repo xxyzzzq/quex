@@ -19,6 +19,7 @@
 ################################################################################
 import sys
 import os
+
 import quex.exception_checker as exception_checker
 
 if sys.version_info[0] >= 3: 
