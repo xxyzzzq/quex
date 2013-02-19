@@ -95,6 +95,7 @@ def is_identifier(identifier, TolerantF=False):
     if identifier == "": return False
 
     if TolerantF:
+        # Do not require 'identifier start'
         if not is_identifier_continue(identifier[0]): return False
     else:
         if not is_identifier_start(identifier[0]): return False

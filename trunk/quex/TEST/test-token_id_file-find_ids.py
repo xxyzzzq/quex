@@ -13,14 +13,10 @@ if "--hwut-info" in sys.argv:
     sys.exit(0)
 
 CommentDelimiterList = [["//", "\n"], ["/*", "*/"]]
-# Regular expression to find '#include <something>' and extract the 'something'
-# in a 'group'. Note that '(' ')' cause the storage of parts of the match.
-IncludeRE            = "#[ \t]*include[ \t]*[\"<]([^\">]+)[\">]"
-
 def test(TokenIDFile, TokenPrefix):
     print "##-----------------------------------------------------------------"
     token_id_db.clear()
-    parse_token_id_file(TokenIDFile, TokenPrefix, CommentDelimiterList, IncludeRE)
+    parse_token_id_file(TokenIDFile, TokenPrefix, CommentDelimiterList)
     for key, token_info in token_id_db.items():
         print "%s:%i: %s" % (token_info.file_name, token_info.line_n, key)
 

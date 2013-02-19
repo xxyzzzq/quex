@@ -10,7 +10,7 @@ from   quex.engine.misc.file_in          import EndOfStreamException, \
                                                 skip_whitespace, \
                                                 verify_word_in_list
 import quex.blackboard                   as     blackboard
-from   quex.output.cpp.token_id_maker    import TokenInfo
+from   quex.output.cpp.token_id_maker    import TokenInfo, cut_token_id_prefix
 from   quex.blackboard                   import setup as Setup
 from   quex.blackboard                   import QuexSetup
 from   quex.engine.unicode_db.parser     import ucs_property_db
@@ -187,9 +187,7 @@ def __parse_function_argument_list(fh, ReferenceName):
         error_eof("token", fh)
 
 def __parse_token_id_specification_by_character_code(fh):
-    ## pos = fh.tell(); print "##input:", fh.read(3); fh.seek(pos)
     character_code = read_character_code(fh)
-    ## print "##cc:", character_code
     if character_code == -1: return -1
     check_or_die(fh, ";")
     return character_code
@@ -202,21 +200,10 @@ def __create_token_sender_by_character_code(fh, CharacterCode):
             TokenInfo(prefix_less_token_name, CharacterCode, None, fh.name, get_current_line_info_number(fh)) 
     return "self_send(%s);\n" % token_id_str
 
-def cut_token_prefix_or_die(fh, TokenName):
-    global Setup
-    if TokenName.find(Setup.token_id_prefix) == 0: 
-        return TokenName[len(Setup.token_id_prefix):]
-
-    if TokenName.find(Setup.token_id_prefix_plain) == 0:
-        return TokenName[len(Setup.token_id_prefix_plain):]
-
-    error_msg("Token identifier does not begin with token prefix '%s'\n" % Setup.token_id_prefix + \
-              "found: '%s'" % TokenName, fh)
-
 def token_id_db_verify_or_enter_token_id(fh, TokenName):
     global Setup
 
-    prefix_less_TokenName = cut_token_prefix_or_die(fh, TokenName)
+    prefix_less_TokenName = cut_token_id_prefix(TokenName, fh)
 
     # Occasionally add token id automatically to database
     if not blackboard.token_id_db.has_key(prefix_less_TokenName):

@@ -221,9 +221,9 @@ following command line options can be used.
          
          DEFAULT = <empty>
         
-.. cmdoption:: `--derived-class-file` filename
+.. cmdoption:: `--derived-class-file` file-name
         
-        ``filename`` = If specified, the name of the file where the derived class is
+        ``file-name`` = If specified, the name of the file where the derived class is
         defined.  This option only makes sense in the context of optioin
         --derived-class`. 
         
@@ -305,19 +305,44 @@ in the ``token { ... }`` section, e.g.::
 
 A file with token ids can be provided by the option
 
-.. cmdoption:: --foreign-token-id-file filename
+.. cmdoption:: --foreign-token-id-file file-name [[begin-str] end-string]
         
-        ``filename`` = Name of the file that contains an alternative definition
+        ``file-name`` = Name of the file that contains an alternative definition
         of the numerical values for the token-ids (see also section
         <<sec-formal-macro>>). 
+        
+        Note, that Quex does not reflect actual program code. It extracts the
+        token ids by heuristics. The optional second and third arguments allow
+        to restrict the region in the file to search for token ids. For example
+
+        .. code-block:: bash
+          
+           > quex ... --foreign-token-id-file my_token_ids.hpp yytokentype   '};' \
+                      --token-prefix          Example::BisonicParser::token::
+
+        reads only the token ids from the enum in the code fragment
+
+        .. code-block:: cpp
+
+            namespace Example {
+                namespace BisonicParser  {
+                    ...
+                    struct token
+                    {
+                        enum yytokentype {
+                            INTEGER = 258
+                            STRING  = 259
+                            ...
+                        };
+                    ...
         
         DEFAULT = <empty>
 
 The following options support the definition of a independently customized token class:
 
-.. cmdoption:: `--token-class-file` filename
+.. cmdoption:: `--token-class-file` file-name
         
-        ``filename`` = Name of file that contains the definition of the
+        ``file-name`` = Name of file that contains the definition of the
         token class. Note, that the setting provided here is possibly 
         overwritten if the ``token_type`` section defines a file name
         explicity (see :ref:`sec-customized-token-class`).
@@ -532,10 +557,10 @@ options:
         That means, the option ``--buffer-element-size-irrelevant`` is set 
         automatically.
 
-.. cmdoption:: --codec-file  filename.dat
+.. cmdoption:: --codec-file  file-name.dat
 
         By means of this option a freely customized codec can be defined. The
-        follower ``filename.dat`` determines at the same time the file where
+        follower ``file-name.dat`` determines at the same time the file where
         the codec mapping is described and the codec's name. The codec's name
         is the directory-stripped and extension-less part of the given
         follower.  Each line of such a file must consist of three numbers, that
@@ -561,7 +586,7 @@ options:
         Note, that this option is only to be used, if quex does not support the codec
         directly. The options ``--codec-info`` and ``--codec-for-language`` help to
         find out whether Quex directly supports a specific codec. If a ``--codec-file``
-        is required, it is advisable to use ``--codec-file-info  filename.dat`` to
+        is required, it is advisable to use ``--codec-file-info  file-name.dat`` to
         see if the mapping is in fact as desired.
 
 

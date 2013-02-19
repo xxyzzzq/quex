@@ -1,4 +1,3 @@
-import os.path
 from   quex.DEFINITIONS              import QUEX_PATH
 import quex.input.command_line.query as query
 from   quex.input.setup              import SETUP_INFO, DEPRECATED, global_character_type_db, command_line_args_defined, command_line_args_string, command_line_args, SetupParTypes
@@ -7,6 +6,7 @@ from   quex.engine.misc.file_in      import is_identifier, \
                                             error_msg, \
                                             verify_word_in_list, \
                                             error_msg_file_not_found
+import os.path
 
 def do(setup, command_line, argv):
     """Does a consistency check for setup and the command line.
@@ -94,14 +94,15 @@ def do(setup, command_line, argv):
                   "Set appropriate values with --token-queue-size and --token-queue-safety-border.")
 
     # Check that names are valid identifiers
-    __check_identifier(setup, "token_id_prefix_plain", "Token prefix")
+    if len(setup.token_id_prefix_plain) != 0:
+        __check_identifier(setup, "token_id_prefix_plain", "Token prefix")
     __check_identifier(setup, "analyzer_class_name", "Engine name")
     if setup.analyzer_derived_class_name != "": 
         __check_identifier(setup, "analyzer_derived_class_name", "Derived class name")
     
     __check_file_name(setup, "token_class_file",            "file containing token class definition")
     __check_file_name(setup, "analyzer_derived_class_file", "file containing user derived lexer class")
-    __check_file_name(setup, "token_id_foreign_definition_file", "file containing user token ids")
+    __check_file_name(setup, "token_id_foreign_definition_file", "file containing user token ids", 0)
     __check_file_name(setup, "input_mode_files", "quex source file")
 
     # Check that not more than one converter is specified
@@ -207,11 +208,16 @@ def __get_supported_command_line_option_description(NormalModeOptions):
     txt += query.get_supported_command_line_option_description()
     return txt
 
-def __check_file_name(setup, Candidate, Name):
+def __check_file_name(setup, Candidate, Name, Index=None):
     value             = setup.__dict__[Candidate]
     CommandLineOption = command_line_args(Candidate)
 
-    if value == "": return
+
+    if len(value) == 0: return
+
+    if Index is not None:
+        if type(value) != list or len(value) <= Index: value = ""
+        else:                                          value = value[Index]
 
     if type(value) == list:
         for name in value:

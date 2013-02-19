@@ -6,7 +6,7 @@ def r_enumerate(x):
     """Reverse enumeration."""
     return izip(reversed(xrange(len(x))), reversed(x))
 
-def print_callstack():
+def print_callstack(BaseNameF=False):
     try:
         i = 2
         name_list = []
@@ -19,4 +19,6 @@ def print_callstack():
 
     L = len(name_list)
     for i, x in r_enumerate(name_list):
-        print "%s%s:%s(...)" % (" " * ((L-i)*4), os.path.basename(x[0]), x[2]) 
+        if BaseNameF: name = os.path.basename(x[0])
+        else:         name = x[0]
+        print "%s%s:%s:%s(...)" % (" " * ((L-i)*4), name, x[1], x[2]) 
