@@ -1,0 +1,168 @@
+[START]
+    >> Memento 
+        example/20.txt:1: include 'example/19.txt'.
+        >> Memento 
+            example/19.txt:1: include 'example/18.txt'.
+            >> Memento 
+                example/18.txt:1: include 'example/17.txt'.
+                >> Memento 
+                    example/17.txt:1: include 'example/16.txt'.
+                    >> Memento 
+                        example/16.txt:1: include 'example/15.txt'.
+                        >> Memento 
+                            example/15.txt:1: include 'example/14.txt'.
+                            >> Memento 
+                                example/14.txt:1: include 'example/13.txt'.
+                                >> Memento 
+                                    example/13.txt:1: include 'example/12.txt'.
+                                    >> Memento 
+                                        example/12.txt:1: include 'example/11.txt'.
+                                        >> Memento 
+                                            example/11.txt:1: include 'example/10.txt'.
+                                            >> Memento 
+                                                example/10.txt:1: include 'example/9.txt'.
+                                                >> Memento 
+                                                    example/9.txt:1: include 'example/8.txt'.
+                                                    >> Memento 
+                                                        example/8.txt:1: include 'example/7.txt'.
+                                                        >> Memento 
+                                                            example/7.txt:1: include 'example/6.txt'.
+                                                            >> Memento 
+                                                                example/6.txt:1: include 'example/5.txt'.
+                                                                >> Memento 
+                                                                    example/5.txt:1: include 'example/4.txt'.
+                                                                    >> Memento 
+                                                                        example/4.txt:1: include 'example/3.txt'.
+                                                                        >> Memento 
+                                                                            example/3.txt:1: include 'example/2.txt'.
+                                                                            >> Memento 
+                                                                                example/2.txt:1: include 'example/1.txt'.
+                                                                                >> Memento 
+                                                                                    example/1.txt:1: include 'example/empty.txt'.
+                                                                                << Memento 
+                                                                            << Memento 
+                                                                            >> Memento 
+                                                                                example/2.txt:2: include 'example/empty.txt'.
+                                                                            << Memento 
+                                                                        << Memento 
+                                                                        >> Memento 
+                                                                            example/3.txt:2: include 'example/1.txt'.
+                                                                            >> Memento 
+                                                                                example/1.txt:1: include 'example/empty.txt'.
+                                                                            << Memento 
+                                                                        << Memento 
+                                                                        >> Memento 
+                                                                            example/3.txt:3: include 'example/2.txt'.
+                                                                            >> Memento 
+                                                                                example/2.txt:1: include 'example/1.txt'.
+                                                                                >> Memento 
+                                                                                    example/1.txt:1: include 'example/empty.txt'.
+                                                                                << Memento 
+                                                                            << Memento 
+                                                                            >> Memento 
+                                                                                example/2.txt:2: include 'example/empty.txt'.
+                                                                            << Memento 
+                                                                        << Memento 
+                                                                        >> Memento 
+                                                                            example/3.txt:4: include 'example/empty.txt'.
+                                                                        << Memento 
+                                                                    << Memento 
+                                                                    >> Memento 
+                                                                        example/4.txt:2: include 'example/empty.txt'.
+                                                                    << Memento 
+                                                                    >> Memento 
+                                                                        example/4.txt:3: include 'example/2.txt'.
+                                                                        >> Memento 
+                                                                            example/2.txt:1: include 'example/1.txt'.
+                                                                            >> Memento 
+                                                                                example/1.txt:1: include 'example/empty.txt'.
+                                                                            << Memento 
+                                                                        << Memento 
+                                                                        >> Memento 
+                                                                            example/2.txt:2: include 'example/empty.txt'.
+                                                                        << Memento 
+                                                                    << Memento 
+                                                                    >> Memento 
+                                                                        example/4.txt:4: include 'example/empty.txt'.
+                                                                    << Memento 
+                                                                    >> Memento 
+                                                                        example/4.txt:5: include 'example/1.txt'.
+                                                                        >> Memento 
+                                                                            example/1.txt:1: include 'example/empty.txt'.
+                                                                        << Memento 
+                                                                    << Memento 
+                                                                    >> Memento 
+                                                                        example/4.txt:6: include 'example/empty.txt'.
+                                                                    << Memento 
+                                                                    >> Memento 
+                                                                        example/4.txt:7: include 'example/2.txt'.
+                                                                        >> Memento 
+                                                                            example/2.txt:1: include 'example/1.txt'.
+                                                                            >> Memento 
+                                                                                example/1.txt:1: include 'example/empty.txt'.
+                                                                            << Memento 
+                                                                        << Memento 
+                                                                        >> Memento 
+                                                                            example/2.txt:2: include 'example/empty.txt'.
+                                                                        << Memento 
+                                                                    << Memento 
+                                                                    >> Memento 
+                                                                        example/4.txt:8: include 'example/empty.txt'.
+                                                                    << Memento 
+                                                                    >> Memento 
+                                                                        example/4.txt:9: include 'example/3.txt'.
+                                                                        >> Memento 
+                                                                            example/3.txt:1: include 'example/2.txt'.
+                                                                            >> Memento 
+                                                                                example/2.txt:1: include 'example/1.txt'.
+                                                                                >> Memento 
+                                                                                    example/1.txt:1: include 'example/empty.txt'.
+                                                                                << Memento 
+                                                                            << Memento 
+                                                                            >> Memento 
+                                                                                example/2.txt:2: include 'example/empty.txt'.
+                                                                            << Memento 
+                                                                        << Memento 
+                                                                        >> Memento 
+                                                                            example/3.txt:2: include 'example/1.txt'.
+                                                                            >> Memento 
+                                                                                example/1.txt:1: include 'example/empty.txt'.
+                                                                            << Memento 
+                                                                        << Memento 
+                                                                        >> Memento 
+                                                                            example/3.txt:3: include 'example/2.txt'.
+                                                                            >> Memento 
+                                                                                example/2.txt:1: include 'example/1.txt'.
+                                                                                >> Memento 
+                                                                                    example/1.txt:1: include 'example/empty.txt'.
+                                                                                << Memento 
+                                                                            << Memento 
+                                                                            >> Memento 
+                                                                                example/2.txt:2: include 'example/empty.txt'.
+                                                                            << Memento 
+                                                                        << Memento 
+                                                                        >> Memento 
+                                                                            example/3.txt:4: include 'example/empty.txt'.
+                                                                        << Memento 
+                                                                    << Memento 
+                                                                    >> Memento 
+                                                                        example/4.txt:10: include 'example/empty.txt'.
+                                                                    << Memento 
+                                                                << Memento 
+                                                            << Memento 
+                                                        << Memento 
+                                                    << Memento 
+                                                << Memento 
+                                            << Memento 
+                                        << Memento 
+                                    << Memento 
+                                << Memento 
+                            << Memento 
+                        << Memento 
+                    << Memento 
+                << Memento 
+            << Memento 
+        << Memento 
+    << Memento 
+2: (1)<TERMINATION>	''
+[END]

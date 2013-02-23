@@ -1,0 +1,153 @@
+The Accumulator
+---------------
+
+The accumulator is a member of the lexical analyzer that allows stock strings
+to communicate between pattern-actions[#f1]_. In the practical example in section
+[sec-practical-intro] the string contained in string delimiter marks was
+accumulated until the on_exit handler was activated, i.e. the` STRING_READER`
+mode is left. Inside the handler, the string is flushed into a token with a
+specific id TKN_STRING. The accumulator provides the following functions:
+
+.. code-block:: cpp
+
+  void   self_accumulator_add(const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End);
+  void   self_accumulator_add_chararacter(const QUEX_TYPE_CHARACTER);
+  void   self_accumulator_flush(const token::id_type TokenID);
+  void   self_accumulator_clear();
+  void   self_accumulator_is_empty();
+
+The add-functions add a string or a character to the accumulated string.
+``Begin`` must point to the first character of the string, and ``End`` must
+point right after the last character of the string.  ``Lexeme`` can be passed
+as ``Begin``, and ``LexemeEnd`` can be passed as ``End``. 
+The ``flush()`` function sends a token with the accumulated string and the specified
+token-id. Finally, the ``clear()`` function clears the accumulated string without
+sending any token. The ``is_empty()`` function returns ``true`` if and only if 
+the accumulator is empty.
+
+As mentioned in section :ref:`sec-token-stamping` token stamping is done
+every time a token id is set, or a token is sent. This might cause baffling
+results when using ``self_accumulator_flush()``. Consider for example
+
+.. code-block:: cpp
+
+   body { 
+       size_t line_n_before; 
+   }
+   mode X {
+       "/*" { self.line_n_before = self_line_number_at_end();
+              self << EAT_COMMENT; }
+   }
+   mode EAT_COMMENT {
+       "*/" { self_write_token_p()->set_line_n(self.line_n_before);
+              self_accumulator_flush(QUEX_TKN_COMMENT);
+              self << X;
+       }
+       ...
+   }
+
+Surprisingly, the token ``QUEX_TKN_COMMENT`` will be sent with the line
+number of the closing ``*/``. This is so, since the flush function sets
+the token id and the setting of the token id involves a token stamping
+with line and column numbers. However, consider the following
+
+.. code-block:: cpp
+
+   ...
+   mode EAT_COMMENT {
+       "*/" { self_line_number_at_begin_set(self.line_n_before);
+              self_accumulator_flush(QUEX_TKN_COMMENT);
+              self << X;
+       }
+       ...
+   }
+
+Here, the token stamping refers to the counter's line number which
+has been set to 'self.line_n_before'. As a result the token will carry
+the line number of the occurence of the opening ``/*``.
+
+.. warning:: If a dynamic length encoding is used (such as ``--codec utf8`` 
+             or ``--codec utf16``), then one *must not* use the function
+
+   .. code-block:: cpp
+
+      void   self_accumulator_add_chararacter(const QUEX_TYPE_CHARACTER);
+
+   Even if one really wants to add only a single character.
+   since it expects a fixed size character object. Instead, please use
+
+   .. code-block:: cpp
+
+      void   self_accumulator_add(const QUEX_TYPE_CHARACTER* Begin, 
+                                  const QUEX_TYPE_CHARACTER* End);
+
+   even if the added element is only one letter.
+
+
+
+The Post Categorizer
+--------------------
+
+A quex generated analyzer may contain an entity to do post-categorization. The post-
+categorizer is activated via the command line option::
+
+        --post-categorizer
+
+This feature allows the categorization of a lexeme after it has matched a
+pattern. It performs the mapping::
+
+                 lexeme ---> token identifier
+
+This comes handy if the meaning of lexemes change at run time of the
+analysis. For example, an interpreter may allow function names, operator names
+and keywords to be defined during analysis and requires from the lexical
+analyzer to return a token ``FUNCTION_NAME``, ``OPERATOR_XY``, or ``KEYWORD``
+when such a lexeme occurs.  However assume that those names may follow the same
+pattern as identifiers, so one needs to post-categorize the pattern. The caller 
+of the analyzer may somewhere enter the meaning of a lexeme into the post-
+categorizer using the function ``enter(...)`` where the first argument is the
+name of the lexeme and the second argument is the token id that is to be sent
+as soon as the lexeme matches.
+
+.. code-block:: cpp
+
+   ...
+   my_lexer.post_categorizer.enter(Name, QUEX_TKN_FUNCTION_NAME);
+   ...
+   if( strcmp(setup.language, "german") == 0 ) {
+       my_lexer.post_categorizer.enter("und",   QUEX_TKN_OPERATOR_AND);
+       my_lexer.post_categorizer.enter("oder",  QUEX_TKN_OPERATOR_OR);
+       my_lexer.post_categorizer.enter("nicht", QUEX_TKN_OPERATOR_NOT);
+   }
+   ...
+   my_lexer.post_categorizer.enter(Name, QUEX_TKN_FUNCTION_NAME);
+   ...
+
+The following is a quex code fragment that uses the post categorizer relying
+on the function ``get_token_id(...)``
+
+.. code-block:: cpp
+
+   mode POST_CAT {
+       ...
+       [a-z]+ {
+           QUEX_TYPE_TOKEN_ID* token_id = self.post_categorizer.get_token_id(Lexeme);
+           if( token_id != QUEX_TKN_UNINITIALIZED ) {
+               self_send1(QUEX_TKN_IDENTIFIER, Lexeme);
+           }
+           else {
+               self_send1(token_id, Lexeme);
+           }
+       }
+       ...
+   }
+
+It sends the ``IDENTIFIER`` token as long as the post-categorization on default.
+This is determined by a return vale being ``QUEX_TKN_UNINITIALIZED``.
+If the post-categorizer has found an entry that fits, the appropriate token-id
+is send.
+
+.. rubric:: Footnotes
+
+.. [#f1] The accumulator can be deactivated by calling quex with ``--no-string-accumulator``
+         or ``--nsacc``.

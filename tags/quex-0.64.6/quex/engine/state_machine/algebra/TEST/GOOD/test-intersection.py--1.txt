@@ -1,0 +1,96 @@
+---------------------------
+A = [a-n]
+B = [m-z]
+intersection =  init-state = 0L
+00000 ()
+     == ['m', 'n'] ==> 00001
+    
+00001 (A)
+    
+
+
+A = [m-z]
+B = [a-n]
+intersection =  init-state = 0L
+00000 ()
+     == ['m', 'n'] ==> 00001
+    
+00001 (A)
+    
+
+identity: True
+---------------------------
+A = "1234"|"ABC"
+B = "123"
+intersection =  init-state = 0L
+00000 ()
+    
+
+
+A = "123"
+B = "1234"|"ABC"
+intersection =  init-state = 0L
+00000 ()
+    
+
+identity: True
+---------------------------
+A = "12"|"A"
+B = "1"
+intersection =  init-state = 0L
+00000 ()
+    
+
+
+A = "1"
+B = "12"|"A"
+intersection =  init-state = 0L
+00000 ()
+    
+
+identity: True
+---------------------------
+A = 12
+B = 1
+intersection =  init-state = 0L
+00000 ()
+    
+
+
+A = 1
+B = 12
+intersection =  init-state = 0L
+00000 ()
+    
+
+identity: True
+---------------------------
+A = "1BAC"|"1BBC"
+B = "1ABC"
+intersection =  init-state = 0L
+00000 ()
+    
+
+
+A = "1ABC"
+B = "1BAC"|"1BBC"
+intersection =  init-state = 0L
+00000 ()
+    
+
+identity: True
+---------------------------
+A = alb|albertikus
+B = albert
+intersection =  init-state = 0L
+00000 ()
+    
+
+
+A = albert
+B = alb|albertikus
+intersection =  init-state = 0L
+00000 ()
+    
+
+identity: True

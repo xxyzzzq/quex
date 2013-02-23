@@ -1,0 +1,3 @@
+interfere-mix.qx:3:error: The indentation newline pattern '[x]' matches on some common lexemes as
+interfere-mix.qx:4:error: skip pattern '<skip>'.
+interfere-mix.qx:4:error: ('--suppress 3' to avoid this message)

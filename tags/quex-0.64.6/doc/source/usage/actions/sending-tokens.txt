@@ -1,0 +1,285 @@
+.. _sec:usage-sending-tokens:
+
+Sending Tokens
+===============
+
+The operator to send a token together with its token-id is ``=>``. It has
+already appeared in some examples in preceeding sections. The meaning of
+a code fragment like
+
+.. code-block:: cpp
+
+   mode MINE {
+     ...
+         "while"  => QUEX_TKN_KEYWORD_WHILE;
+     ...
+   }
+
+is straight forward: When the pattern ``while`` matches, then return the
+token-id ``QUEX_TKN_KEYWORD_WHILE``. Note, that quex takes the fuss of the
+user's shoulders to define numerical values for the tokens. Technically, in the
+generated code the token constructor is called and the token-id is set to the
+specified value. Now, the token constructor may allow other arguments. Those
+additional arguments may be specified in brackets, such as
+
+.. code-block:: cpp
+
+   mode MINE {
+     ...
+         // More general, and required when generating 'C' code:
+         [0-9]+  => QUEX_TKN_KEYWORD_NUMBER(number=atoi(Lexeme), text=4711);
+         [a-z]+  => QUEX_TKN_KEYWORD_WORD(text=Lexeme);
+     ...
+   }
+
+The list of arguments contains assigments such as ``number = atoi(Lexeme)``.
+The assigned attributes are the members of the token class which are set. In
+the above example the lexeme's numerical interpretation is assigned to the
+member variable 'number' inside the token, and the Lexeme itself is assigned
+directly to the text member variable. More than one of those assignments may
+occur. 
+
+.. _fig-lexeme-variables:
+
+.. figure:: ../../figures/lexeme-variables.*
+
+   Lexeme description variables.
+
+Figure :ref:`Lexeme variables <fig-lexeme-variables>` shows the variables [#f1]_
+which are available to access the matched lexeme. In detail they are:
+
+.. data:: Lexeme
+
+   A pointer to the first character of the matched lexeme. The lexeme itself is
+   temporarily zero-terminated for during the pattern action. This happens *only*
+   if quex detects the identifier ``Lexeme`` inside the code fragment.
+   
+   .. note:: If the lexeme is to be referred to longer outside the action or event 
+             handler, then the length or the end pointer has to be stored along with 
+             the lexeme. This is not necessary if the default token class is used 
+             because it copies the string into a ``string`` object.
+           
+.. data:: LexemeBegin
+
+   This is identical to ``Lexeme``, except that no terminating zero is guaranteed.
+
+.. data:: LexemeEnd
+
+   A pointer to the first character after the lexeme which matches the current pattern.
+
+   .. warning::  If the the identifier ``Lexeme`` is not specified inside a code
+                 fragment, then quex does not necessarily set the terminating zero.
+                 Alternatively the terminating zero may be set manually, i.e.
+                
+                    .. code-block:: cpp 
+                   
+                       *LexemeEnd = (QUEX_TYPE_CHARACTER)0;
+
+                 or one might rely on the borders ``LexemeBegin`` and
+                 ``LexemeEnd``, or on ``LexemeBegin`` and ``LexemeL`` for
+                 further processing. Note, that despite its being well
+                 established common practise, the terminating zero approach is
+                 almost never the fastest and most efficient approach for
+                 string handling!  Quex respects the tradition but leaves the
+                 door open for intelligent other solutions.
+
+.. data:: LexemeL
+
+   The length of the lexeme.
+
+.. data:: LexemeNull
+
+   This is a pseudo-lexeme of length zero. It is useful in cases where 
+   it is required to set some string inside a token[#f2]_.
+
+Earlier, it was said that the argument list of brief token senders can only
+contain named token members. For the sake of simplicity, though, two shorthands
+are allowed that do not require named attribute assignments:
+
+    .. cfunction::  QUEX_TKN_XYZ(Lexeme)
+
+       If there is only one single unnamed parameter it must either be
+       ``Lexeme`` or ``LexemeNull``. No other identifier is allowed. This
+       shorthand triggers a call to the token's 'take_text' function:
+
+       .. code-block:: cpp
+        
+          QUEX_NAME_TOKEN(take_text)(..., LexemeBegin, LexemeEnd);
+
+       which sets text content inside a token object. If ``LexemeNull``
+       is specified it designates the begin and end of the text to
+       be passed the the take_text function. Example:
+
+       .. code-block:: cpp
+
+          [a-z]+  => QUEX_TKN_IDENTIFIER(Lexeme);         // CORRECT!
+
+       is admissible, but not
+
+       .. code-block:: cpp
+
+          "."[a-z]+  => QUEX_TKN_IDENTIFIER(Lexeme + 1);  // WRONG!
+
+       because the name of the argument is neither ``Lexeme`` nor ``LexemeNull``.
+       
+
+    .. cfunction:: QUEX_TKN_XYZ(Begin, End)
+
+       This special call requires ``Begin`` and ``End`` to be pointers 
+       to ``QUEX_TYPE_CHARACTER``. Their name does not play a role. The
+       shorthand triggers a call to 
+
+       .. code-block:: cpp
+        
+          QUEX_NAME_TOKEN(take_text)(..., Begin, End);
+
+       Example:
+
+       .. code-block:: cpp
+
+          "'"[a-z]+"'"  => QUEX_TKN_QUOTED_IDENTIFIER(LexemeBegin + 1, LexemeEnd - 1);
+
+Instead of relying on a named constant definition for a token-id, quex can
+directly use character codes as token-ids. This comes handy when used
+in conjunction with the parser generators like bison or yacc. The syntax
+is simply the character written in single quotes. Quex uses UTF-8 as input
+coding for the source files. Characters with codes beyond ASCII ranges can 
+be specified in the same manner, if your editor is setup in UTF-8 mode. The
+following shows an example:
+
+.. code-block:: cpp
+
+    "="          => '=';
+    "+"          => '+';
+    "-"          => '-';
+    ε            => 'ε';
+    ∞|infinity   => '∞';
+
+As the last line points out, this type of token-id specification is not
+restricted to patterns of length one--they can be any other pattern.  The
+character code of the token-id can also be specified numerically. Numeric
+specifications of token ids can be done in decimal (without any prefix), 
+hexadecimal with a '0x' prefix, octal with a '0o' prefix, or binary with a '0b'
+prefix. This is shown in the following example:
+
+.. code-block:: cpp
+
+    Z      => 27;
+    honey  => 0x1000;             // decimal: 4069
+    butter => 0o456;              // decimal: 302 hex: 12E
+    bread  => 0b1000011010100101; // decimal: 34469 hex: 86A5
+
+Finally, the token-id can be specified via the name of a character from the
+unicode character by using 'UC' plus whitespace as a prefix. The unicode
+character name must have the spaces inside replaced with underscores. An
+example is shown here:
+
+.. code-block:: cpp
+
+    X         => UC LATIN_CAPITAL_LETTER_X;
+    \U010455  => UC SHAVIAN_LETTER_MEASURE;
+    \x23      => UC NUMBER_SIGN;
+
+.. warning::
+
+   The token is not initialized upon sending! In particular, this means, that
+   elements of the token which are not explicitly set during the sending are
+   left as they are. Tokens are considered as 'ships' that are constructed
+   before the analysis and destructed after the analyzis. They ship token
+   information from the lexer to the user (parser). But, the construction
+   process is not supposed to slow down the lexical analysis.
+   
+   When a token is 'sent' only the content that is explicitly set is changed,
+   old content remains as is.  If a token carries a ``.text`` and a ``.number``
+   member, but during sending only ``.text`` is set, then ``.number`` contains
+   the value which it has been assigned the last time ``.number`` has used.
+
+The token id accomplishes two functions: It identifies the detected lexeme as
+belonging to a certain category and it tells what content (object members) of
+the token are relevant for further analysis. There must be an understanding of
+what elements of a token may to be considered upon the reception of a token
+with a given token id. This information may be coded into the name of the token
+id, for example::
+
+        token {
+            N_NUMBER;   // Prefix 'N_' for 'token.number' being used.
+            T_VARIABLE; // Prefix 'T_' for 'token.text' being used.
+            T_KEYWORD;
+            S_MINUS;    // Prefix 'S_' for a signal where no member is used.
+            S_PLUS;
+        }
+
+Then, whenever a token id is used in the program text, it becomes obvious
+from the name what members may be safely accessed or what members need to 
+be assigned.
+
+Analyzis Continuation
+---------------------
+
+If the token policy ``users_token`` is applied the analyzer returns after each
+sending of a token. When the token policy ``queue`` is used the analyzer
+continues its analyzis until it hits the safety border in the queue. An
+exception to this is the reaction to the end of file event, i.e.
+``on_end_of_stream`` or ``<<EOF>>``. By default, the analyzer returns. This is
+to prevent sending tokens after the ``TERMINATION`` token.  Without an action
+defined for 'end of stream' or 'failure', the analyzer returns a
+``TERMINATION`` token, by default.
+
+.. note::
+
+   When using the token policies ``queue`` while the asserts are active, the
+   engine **might** throw an exception if the user tries to send a token after
+   a ``TERMINATION`` token.  There is a scenario where it cannot detect it: if a
+   ``TERMINATION`` is sent, then the queue is cleared, and then new tokens are
+   sent. Then the engine has no reference to the last sent token. At the moment
+   of token sending it cannot tell whether the last token was a ``TERMINATION``
+   token or not.
+   
+   There are no worries when including other files. The include stack handler
+   re-initializes the token queues as soon as the engine returns from
+   an included file.
+
+   The behavior is there to help the user, not to bother him. It is to 
+   prevent subtle errors where the token queue contains tokens beyond the
+   terminating token that signified the end of a file.
+
+
+Preparing a Token Object
+------------------------
+
+Sometimes, it might be necessary to perform some more complicated operations
+on a token object, before it can be sent. In this case, on must refer to the
+current token pointer. This can be achieved by accessing the current token
+directly using the 'write token pointer' as in
+
+   .. code-block:: cpp
+
+        (many)+[letters] {
+            self_write_token_p()->number = 4711;
+            self_send(QUEX_TKN_SOMETHING);
+        }
+
+This approach is safe to work with token policy queue and single. Actions that
+are applied on every token, may be accomplished in the ``on_match`` handler which
+is executed before the pattern action, e.g. when using a customized token class
+that stores end values of the column counters, then
+
+   .. code-block:: cpp
+      
+       on_match {
+            self_write_token_p()->my_end_column_n = self.column_number_at_end();
+       }
+
+does the job of 'stamping' the value in each and every token that is going to
+be sent.
+    
+
+.. rubric:: Footnotes
+
+.. [#f1] They are actually defined as C-preprocessor macros and they are only
+         active arround the generated code segments. If they are not used, no
+         computation time is consumed.
+
+.. [#f2] For performance reasons, the token objects are not initialized before
+         content is written to to them. Thus, if only the token-id is written
+         to them the rest of the content inherited from previous usage.
