@@ -12,6 +12,7 @@ from   quex.engine.misc.file_in          import EndOfStreamException, \
 import quex.blackboard                   as     blackboard
 from   quex.output.cpp.token_id_maker    import TokenInfo, cut_token_id_prefix
 from   quex.blackboard                   import setup as Setup
+from   quex.input.setup                  import NotificationDB
 from   quex.blackboard                   import QuexSetup
 from   quex.engine.unicode_db.parser     import ucs_property_db
 from   quex.engine.utf8                  import __read_one_utf8_code_from_stream
@@ -209,14 +210,19 @@ def token_id_db_verify_or_enter_token_id(fh, TokenName):
     if not blackboard.token_id_db.has_key(prefix_less_TokenName):
         # DO NOT ENFORCE THE TOKEN ID TO BE DEFINED, BECAUSE WHEN THE TOKEN ID
         # IS DEFINED IN C-CODE, THE IDENTIFICATION IS NOT 100% SAFE.
-        msg = "Token id '%s' defined implicitly." % TokenName
         if TokenName in blackboard.token_id_db.keys():
-            msg += "\nNOTE: '%s' has been defined in a token { ... } section!" % \
+            msg  = "Token id '%s' defined implicitly.\n" % TokenName
+            msg += "'%s' has been defined in a token { ... } section!\n" % \
                    (Setup.token_id_prefix + TokenName)
-            msg += "\nNote, that tokens in the token { ... } section are automatically prefixed."
-            error_msg(msg, fh, DontExitF=True)
+            msg += "Token ids in the token { ... } section are automatically prefixed."
+            error_msg(msg, fh, DontExitF=True, 
+                      SuppressCode=NotificationDB.warning_usage_of_undefined_token_id_name)
         else:
-            blackboard.token_id_implicit_list.append([prefix_less_TokenName, fh.name, get_current_line_info_number(fh)])
+            # Warning is posted later when all implicit tokens have been
+            # collected. See "token_id_maker.__propose_implicit_token_definitions()"
+            blackboard.token_id_implicit_list.append([prefix_less_TokenName, 
+                                                      fh.name, 
+                                                      get_current_line_info_number(fh)])
 
         # Enter the implicit token id definition in the database
         blackboard.token_id_db[prefix_less_TokenName] = \

@@ -7,7 +7,7 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i simple.qx -o Simple --token-id-offset 111
+quex -i simple.qx -o Simple --token-id-offset 111 --debug-exception
 grep QUEX_TKN Simple-token_ids
 
 # cleansening

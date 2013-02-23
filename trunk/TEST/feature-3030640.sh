@@ -10,7 +10,7 @@ tmp=`pwd`
 cd $bug/ 
 
 if [[ $1 == "PlainC" ]]; then
-    quex -i simple.qx --language C
+    quex -i simple.qx --language C --debug-exception
 elif [[ $1 == "ErrorC" ]]; then
     quex -i simple.qx --language C --fes foo
 elif [[ $1 == "PlainCpp" ]]; then
@@ -18,7 +18,7 @@ elif [[ $1 == "PlainCpp" ]]; then
 elif [[ $1 == "ErrorCpp" ]]; then
     quex -i simple.qx --fes foo
 else
-    quex -i simple.qx --fes $1
+    quex -i simple.qx --fes $1 --debug-exception
 fi
 
 # Display the generated files

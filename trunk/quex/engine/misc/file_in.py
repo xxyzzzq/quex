@@ -610,6 +610,11 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=Tr
     # is much more direct to be programmed.)
     global __reference_to_setup
 
+    PlainMessageF = (fh is None and LineN is None)
+    #if not PlainMessageF:
+    #    if LineN is None:
+    #        LineN = 0
+
     if     __reference_to_setup is not None \
        and SuppressCode in __reference_to_setup.suppressed_notification_list:
         return
@@ -639,7 +644,9 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=Tr
             else:
                 line_n = -1
                 Filename = ""
-        if NoteF:
+        if PlainMessageF:
+            prefix = "message"
+        elif NoteF:
             prefix = "%s:%i:note" % (Filename, line_n + 1)   
         elif DontExitF and WarningF: 
             prefix = "%s:%i:warning" % (Filename, line_n + 1)   
@@ -699,10 +706,15 @@ def check_letter_from_list(fh, LetterList):
     fh.seek(position)
     return False
 
-def verify_word_in_list(Word, WordList, Comment, FH=-1, LineN=None, ExitF=True):
+def verify_word_in_list(Word, WordList, Comment, FH=-1, LineN=None, ExitF=True, SuppressCode=None):
     """FH, and LineN work exactly the same as for error_msg(...)"""
+    if     __reference_to_setup is not None \
+       and SuppressCode in __reference_to_setup.suppressed_notification_list:
+        return
+
     if len(WordList) == 0:
-        error_msg(Comment + "\n'%s' is not addmissible here." % Word, FH, LineN, DontExitF=False)
+        error_msg(Comment + "\n'%s' is not addmissible here." % Word, FH, LineN, DontExitF=False, 
+                  SuppressCode=SuppressCode)
         return
 
     position_known_f = False
@@ -730,7 +742,8 @@ def verify_word_in_list(Word, WordList, Comment, FH=-1, LineN=None, ExitF=True):
             length += L
 
         if txt != "": txt = txt[:-2] + "."
-        error_msg(Comment + "\n" + txt, FH, LineN, DontExitF=False)
+        error_msg(Comment + "\n" + txt, FH, LineN, DontExitF=False,
+                  SuppressCode=SuppressCode)
 
     else:
         similar_word = word_list[similar_index]
@@ -739,10 +752,12 @@ def verify_word_in_list(Word, WordList, Comment, FH=-1, LineN=None, ExitF=True):
             error_msg("Did you mean '%s'?" % similar_word,
                       WordList[similar_index].filename, 
                       WordList[similar_index].line_n, 
-                      DontExitF=not ExitF)
+                      DontExitF=not ExitF, 
+                      SuppressCode=SuppressCode)
         else:
             error_msg(Comment + "\n" + "Did you mean '%s'?" % similar_word,
-                      FH, LineN, DontExitF=not ExitF)
+                      FH, LineN, DontExitF=not ExitF, 
+                      SuppressCode=SuppressCode)
 
     return False
 

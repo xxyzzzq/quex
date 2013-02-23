@@ -11,13 +11,13 @@ endif
 # (*) SETUP ____________________________________________________________________
 
 # -- FILES PRODUCED BY QUEX
-LEXER_NAME	   = Calc_lexer# NOTE: a whitespace after this name creates chaos!
+LEXER_NAME		= Calc_lexer# NOTE: a whitespace after this name creates chaos!
 LEXER_SOURCES  = $(LEXER_NAME).cpp         
 
 TOKEN_FILE     = Calc_token-ids
 PARSER_NAME	   = Calc_parser
-PARSER_SOURCES = $(PARSER_NAME).tab.cpp	
-			     
+PARSER_SOURCES = $(PARSER_NAME).tab.cpp	 Calc_parser.tab.hpp
+
 # -- OUTPUT
 APPLICATION    = lexer
 
@@ -51,7 +51,7 @@ $(LEXER_SOURCES):  GENERATE_LEXER
 
 $(PARSER_SOURCES): GENERATE_PARSER
 
-GENERATE_LEXER: Calc_lexer.qx 
+GENERATE_LEXER: Calc_lexer.qx Calc_parser.tab.hpp
 	quex -i $< --engine $(LEXER_NAME) --token-id-prefix TKN_ \
           --foreign-token-id-file Calc_token-ids.h \
 		  --suppress 0

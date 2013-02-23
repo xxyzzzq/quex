@@ -1,9 +1,9 @@
 < LEXER_SOURCES  = $(LEXER_NAME).cpp         
 ---
 > LEXER_SOURCES	= $(LEXER_NAME).c         
-< PARSER_SOURCES = $(PARSER_NAME).tab.cpp	
+< PARSER_SOURCES = $(PARSER_NAME).tab.cpp	 Calc_parser.tab.hpp
 ---
-> PARSER_SOURCES = $(PARSER_NAME).tab.c
+> PARSER_SOURCES = $(PARSER_NAME).tab.c Calc_parser.tab.h
 < COMPILER = g++ -ggdb -Wall
 ---
 > COMPILER = gcc -ggdb -Wall
@@ -13,6 +13,9 @@
 < %.o: %.cpp $(LEXER_SOURCES) $(PARSER_SOURCES)
 ---
 > %.o: %.c $(LEXER_SOURCES) $(PARSER_SOURCES)
+< GENERATE_LEXER: Calc_lexer.qx Calc_parser.tab.hpp
+---
+> GENERATE_LEXER: Calc_lexer.qx Calc_parser.tab.h
 < 		  --suppress 0
 ---
 > 		  --suppress 0 --language C         

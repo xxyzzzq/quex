@@ -591,10 +591,11 @@ helper_definitions = """
 def get_helper_definitions():
     namespace_open, namespace_close = __namespace_brackets(DefineF=True)
     token_descr                     = blackboard.token_type_definition
-    if Setup.token_id_foreign_definition_file != "":
+    if len(Setup.token_id_foreign_definition_file) != 0:
         token_id_definition_file = Setup.token_id_foreign_definition_file
     else:
         token_id_definition_file = Setup.output_token_id_file
+
     return helper_definitions \
            % (token_descr.class_name, \
               namespace_open,         \

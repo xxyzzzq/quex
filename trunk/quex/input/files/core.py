@@ -36,13 +36,17 @@ import quex.input.files.token_type         as token_type
 import quex.input.files.code_fragment      as code_fragment
 import quex.input.regular_expression.core  as regular_expression
 from   quex.blackboard                     import setup as Setup
+from   quex.input.setup                    import NotificationDB
 from   quex.engine.generator.action_info   import UserCodeFragment
 
 def do(file_list):
     if len(file_list) == 0 and not Setup.token_class_only_f: 
         error_msg("No input files.")
 
-    prepare_default_standard_token_ids()
+    # If a foreign token-id file was presented even the standard token ids
+    # must be defined there.
+    if len(Setup.token_id_foreign_definition_file) == 0:
+        prepare_default_standard_token_ids()
 
     for file in file_list:
         fh = open_file_or_die(file, CodecCheckF=True)
@@ -122,7 +126,8 @@ def parse_section(fh):
                 verify_word_in_list(token_name[len(Setup.token_id_prefix):],
                                     blackboard.token_id_db.keys(),
                                     "Token ID '%s' not yet defined." % token_name,
-                                    fh, ExitF=False)
+                                    fh, ExitF=False, 
+                                    SuppressCode=NotificationDB.warning_repeated_token_not_yet_defined)
             return
             
         elif word == "define":
@@ -130,6 +135,12 @@ def parse_section(fh):
             return
 
         elif word == "token":       
+            if len(Setup.token_id_foreign_definition_file) != 0:
+                error_msg("Token id file '%s' has been specified.\n" \
+                          % Setup.token_id_foreign_definition_file \
+                          + "All token ids must be specified there. Section 'token'\n" \
+                          + "is not allowed.", fh)
+
             parse_token_id_definitions(fh)
             return
 
@@ -229,17 +240,23 @@ def parse_pattern_name_definitions(fh):
                                             regular_expression_str)
 
 def parse_token_id_definitions(fh, NamesOnlyF=False):
+    """NamesOnlyF == True: Allow only definition of names, no numeric values 
+                           may be assigned to it.
+
+       'NamesOnlyF' indicates that data is not written to the global 
+       'token_id_db'. Then only a list of names is returned.
+    """
     # NOTE: Catching of EOF happens in caller: parse_section(...)
     #
-    token_prefix       = Setup.token_id_prefix
-    token_prefix_plain = Setup.token_id_prefix_plain # i.e. without name space included
+    prefix       = Setup.token_id_prefix
+    prefix_plain = Setup.token_id_prefix_plain # i.e. without name space included
 
-    if NamesOnlyF: db = {}
-    else:          db = blackboard.token_id_db
+    if NamesOnlyF: 
+        result = set()
 
     skip_whitespace(fh)
     if not check(fh, "{"):
-        error_msg("missing opening '{' for after 'token' section identifier.\n", fh)
+        error_msg("Missing opening '{' for after 'token' section identifier.", fh)
 
     while check(fh, "}") == False:
         skip_whitespace(fh)
@@ -247,24 +264,28 @@ def parse_token_id_definitions(fh, NamesOnlyF=False):
         candidate = read_identifier(fh, TolerantF=True, OnMissingStr="Missing valid token identifier.")
 
         # -- check the name, if it starts with the token prefix paste a warning
-        if candidate.find(token_prefix) == 0:
-            error_msg("Token identifier '%s' starts with token prefix '%s'.\n" % (candidate, token_prefix) + \
-                      "Token prefix is mounted automatically. This token id appears in the source\n" + \
-                      "code as '%s%s'." % (token_prefix, candidate), \
-                      fh, DontExitF=True)
-        elif candidate.find(token_prefix_plain) == 0:
-            error_msg("Token identifier '%s' starts with token prefix '%s'.\n" % (candidate, token_prefix) + \
-                      "Token prefix is mounted automatically. This token id appears in the source\n" + \
-                      "code as '%s%s'." % (token_prefix, candidate), \
-                      fh, DontExitF=True)
+        suspicious_prefix = None
+        if len(prefix) != 0 and candidate.find(prefix) == 0:       
+            suspicious_prefix = prefix
+        elif len(prefix_plain) != 0 and candidate.find(prefix_plain) == 0: 
+            suspicious_prefix = prefix_plain
+
+        if suspicious_prefix is not None:
+            error_msg("Token identifier '%s' starts with token prefix '%s'.\n" \
+                      % (candidate, suspicious_prefix) \
+                      + "Token prefix is mounted automatically. This token id appears in the source\n" \
+                      + "code as '%s%s'." \
+                      % (prefix, candidate), \
+                      fh, DontExitF=True,
+                      SuppressCode=NotificationDB.warning_token_id_prefix_appears_in_token_id_name)
 
         skip_whitespace(fh)
 
         if NamesOnlyF:
-            db[token_prefix + candidate] = True
+            result.add(prefix + candidate)
             if check(fh, ";") == False:
-                error_msg("Missing ';' after definition of token identifier '%s'.\n" % candidate + \
-                          "This is mandatory since Quex version 0.50.1.", fh)
+                error_msg("Missing ';' after token identifier '%s'.\n" \
+                          % candidate, fh)
             continue
 
         # Parse a possible numeric value after '='
@@ -276,15 +297,16 @@ def parse_token_id_definitions(fh, NamesOnlyF=False):
                 error_msg("Missing number after '=' for token identifier '%s'." % candidate, fh)
 
         if check(fh, ";") == False:
-            error_msg("Missing ';' after definition of token identifier '%s'.\n" % candidate + \
-                      "This is mandatory since Quex version 0.50.1.", fh)
+            error_msg("Missing ';' after token identifier '%s'." % candidate, fh)
 
-        db[candidate] = TokenInfo(candidate, numeric_value, Filename=fh.name, LineN=get_current_line_info_number(fh))
+        if not NamesOnlyF:
+            blackboard.token_id_db[candidate] = \
+                 TokenInfo(candidate, numeric_value, Filename=fh.name, LineN=get_current_line_info_number(fh))
 
     if NamesOnlyF:
-        result = db.keys()
-        result.sort()
-        return result
+        return sorted(list(result))
+    else:
+        return # Changes are applied to 'blackboard.token_id_db'
 
 def parse_default_token_definition():
     sub_fh = open_file_or_die(os.environ["QUEX_PATH"] 

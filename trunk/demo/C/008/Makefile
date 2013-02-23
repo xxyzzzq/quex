@@ -16,7 +16,7 @@ LEXER_SOURCES	= $(LEXER_NAME).c
 
 TOKEN_FILE     = Calc_token-ids
 PARSER_NAME	   = Calc_parser
-PARSER_SOURCES = $(PARSER_NAME).tab.c
+PARSER_SOURCES = $(PARSER_NAME).tab.c Calc_parser.tab.h
 
 # -- OUTPUT
 APPLICATION    = lexer
@@ -51,7 +51,7 @@ $(LEXER_SOURCES):  GENERATE_LEXER
 
 $(PARSER_SOURCES): GENERATE_PARSER
 
-GENERATE_LEXER: Calc_lexer.qx 
+GENERATE_LEXER: Calc_lexer.qx Calc_parser.tab.h
 	quex -i $< --engine $(LEXER_NAME) --token-id-prefix TKN_ \
           --foreign-token-id-file Calc_token-ids.h                   \
 		  --suppress 0 --language C         

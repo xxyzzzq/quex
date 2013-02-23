@@ -1,9 +1,11 @@
 qx/token-id.qx:6:warning: Token identifier 'QUEX_TKN_GREEK_IDENTIFIER' starts with token prefix 'QUEX_TKN_'.
 qx/token-id.qx:6:warning: Token prefix is mounted automatically. This token id appears in the source
 qx/token-id.qx:6:warning: code as 'QUEX_TKN_QUEX_TKN_GREEK_IDENTIFIER'.
+qx/token-id.qx:6:warning: ('--suppress 9' to avoid this message)
 qx/token-id.qx:11:warning: Token id 'QUEX_TKN_GREEK_IDENTIFIER' defined implicitly.
-qx/token-id.qx:11:warning: NOTE: 'QUEX_TKN_QUEX_TKN_GREEK_IDENTIFIER' has been defined in a token { ... } section!
-qx/token-id.qx:11:warning: Note, that tokens in the token { ... } section are automatically prefixed.
+qx/token-id.qx:11:warning: 'QUEX_TKN_QUEX_TKN_GREEK_IDENTIFIER' has been defined in a token { ... } section!
+qx/token-id.qx:11:warning: Token ids in the token { ... } section are automatically prefixed.
+qx/token-id.qx:11:warning: ('--suppress 7' to avoid this message)
 qx/token-id.qx:14:warning: Detected implicit token identifier definitions. Proposal:
 qx/token-id.qx:14:warning:    token {
 qx/token-id.qx:14:warning:      OK;

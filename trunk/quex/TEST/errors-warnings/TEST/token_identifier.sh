@@ -4,5 +4,5 @@ if [[ $1 == "--hwut-info" ]]; then
     exit
 fi
 
-quex -i qx/token-id.qx -o Simple # --debug-exception
+quex -i qx/token-id.qx -o Simple #--debug-exception
 rm -f Simple*

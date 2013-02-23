@@ -2944,8 +2944,7 @@ QUEX_NAMESPACE_TOKEN_CLOSE
 
 /* The token class definition file can only be included after 
  * the definition on TERMINATION and UNINITIALIZED.          
- * (fschaef 12y03m24d: "I do not rememember why I wrote this.
- *  Just leave it there until I am clear if it can be deleted.")   */
+ * (fschaef 12y03m24d: "I do not rememember why I wrote this.")    */
 #include "Simple-token"
 
 

@@ -2,142 +2,128 @@
 from   quex.engine.misc.file_in  import get_file_content_or_die, \
                                         open_file_or_die, \
                                         delete_comment, \
-                                        extract_identifiers_with_specific_prefix, \
                                         get_include_guard_extension, \
                                         error_msg
 
-import quex.blackboard                  as blackboard
-from   quex.blackboard                  import token_id_db
+import quex.blackboard                  as     blackboard
+from   quex.blackboard                  import token_id_db, get_used_token_id_set, token_id_foreign_set
 from   quex.engine.misc.string_handling import blue_print
-from   quex.input.setup                 import NotificationDB, \
-                                               global_character_type_db
+from   quex.input.setup                 import NotificationDB
 from   quex.blackboard                  import setup as Setup
-from   quex.engine.tools                import print_callstack
 from   itertools import chain
+from   collections import defaultdict
 import time
 import os
 import re
+from   copy import copy
+from   operator import attrgetter
+
+standard_token_id_list = ["TERMINATION", "UNINITIALIZED", "INDENT", "NODENT", "DEDENT"]
+
+def space(L, Name):
+    return " " * (L - len(Name))
 
 
-def do(setup):
+def do(setup, ModeDB):
     """Creates a file of token-ids from a given set of names.
        Creates also a function:
 
        const string& $$token$$::map_id_to_name().
     """
     global file_str
-    LanguageDB = Setup.language_db
+    # At this point, assume that the token type has been generated.
+    assert blackboard.token_type_definition is not None
 
-    __propose_implicit_token_definitions()
-
-    for standard_token_id in standard_token_id_list:
-        assert token_id_db.has_key(standard_token_id)
-
-    assert blackboard.token_type_definition is not None, \
-           "Token type has not been defined yet, see $QUEX_PATH/quex/core.py how to\n" + \
-           "handle this."
-
-    # (*) Token ID File ________________________________________________________________
-    #
-    #     The token id file can either be specified as database of
-    #     token-id names, or as a file that directly assigns the token-ids
-    #     to variables. If the flag '--user-token-id-file' is defined, then
-    #     then the token-id file is provided by the user. Otherwise, the
-    #     token id file is created by the token-id maker.
-    #
-    #     The token id maker considers the file passed by the option '-t'
-    #     as the database file and creates a C++ file with the output filestem
-    #     plus the suffix "--token-ids". Note, that the token id file is a
-    #     header file.
-    #
-    if len(token_id_db.keys()) == len(standard_token_id_list):
-        token_id_str = "%sTERMINATION and %sUNINITIALIZED" % \
-                       (setup.token_id_prefix_plain, setup.token_id_prefix_plain) 
-        # TERMINATION + UNINITIALIZED = 2 token ids. If they are the only ones nothing can be done.
-        error_msg("Only token ids %s are defined.\n" % token_id_str + \
-                  "Quex refuses to proceed. Please, use the 'token { ... }' section to\n" + \
-                  "specify at least one other token id.")
-
-    #______________________________________________________________________________________
-    L = max(map(lambda name: len(name), token_id_db.keys()))
-    def space(Name):
-        return " " * (L - len(Name))
-
-    # -- define values for the token ids
-    def define_this(txt, token):
-        if setup.language == "C":
-            txt.append("#define %s%s %s((QUEX_TYPE_TOKEN_ID)%i)\n" \
-                       % (setup.token_id_prefix_plain, token.name, space(token.name), token.number))
-        else:
-            txt.append("const QUEX_TYPE_TOKEN_ID %s%s%s = ((QUEX_TYPE_TOKEN_ID)%i);\n" \
-                       % (setup.token_id_prefix_plain, token.name, space(token.name), token.number))
-
-    if setup.token_id_foreign_definition_file != "":
-        token_id_txt = ["#include \"%s\"\n" % Setup.get_file_reference(setup.token_id_foreign_definition_file)]
-
+    __warn_implicit_token_definitions()
+    if len(Setup.token_id_foreign_definition_file) == 0:
+        __autogenerate_token_id_numbers()
+        __warn_on_double_definition()
+        # If a mandatory token id is missing, this means that Quex did not
+        # properly do implicit token definitions. Program error-abort.
+        __error_on_mandatory_token_id_missing(ModeDB, AssertF=True)
     else:
-        if setup.language == "C": 
-            prolog = ""
-            epilog = ""
-        else:
-            prolog = LanguageDB.NAMESPACE_OPEN(setup.token_id_prefix_name_space)
-            epilog = LanguageDB.NAMESPACE_CLOSE(setup.token_id_prefix_name_space)
+        __error_on_mandatory_token_id_missing(ModeDB)
 
-        token_id_txt = [prolog]
+    __error_on_no_specific_token_ids()
 
-        # Assign values to tokens with no numeric identifier
-        # NOTE: This has not to happen if token's are defined by the user's provided file.
-        i = setup.token_id_counter_offset
-        # Take the 'dummy_name' only to have the list sorted by name. The key 'dummy_name' 
-        # may contain '--' to indicate a unicode value, so do not use it as name.
-        for dummy_name, token in sorted(token_id_db.items()):
-            if token.number is None: 
-                while __is_token_id_occupied(i):
-                    i += 1
-                token.number = i; 
+    if len(Setup.token_id_foreign_definition_file) != 0:
+        token_id_txt = ["#include \"%s\"\n" % Setup.get_file_reference(Setup.token_id_foreign_definition_file)]
+    else:
+        token_id_txt = __get_token_id_definition_txt()
 
-            define_this(token_id_txt, token)
-
-        # Double check that no token id appears twice
-        # Again, this can only happen, if quex itself produced the numeric values for the token
-        token_list = token_id_db.values()
-        for i, x in enumerate(token_list):
-            for y in token_list[i+1:]:
-                if x.number != y.number: continue
-                error_msg("Token id '%s'" % x.name, x.file_name, x.line_n, DontExitF=True)
-                error_msg("and token id '%s' have same numeric value '%s'." \
-                          % (y.name, x.number), y.file_name, y.line_n, DontExitF=True)
-                          
-        token_id_txt.append(epilog)
+    include_guard_ext = get_include_guard_extension(Setup.analyzer_name_safe.upper()     \
+                                                    + "__"                               \
+                                                    + Setup.token_class_name_safe.upper())
 
     content = blue_print(file_str,
                          [["$$TOKEN_ID_DEFINITIONS$$",        "".join(token_id_txt)],
                           ["$$DATE$$",                        time.asctime()],
                           ["$$TOKEN_CLASS_DEFINITION_FILE$$", Setup.get_file_reference(blackboard.token_type_definition.get_file_name())],
-                          ["$$TOKEN_PREFIX$$",                setup.token_id_prefix], 
-                          ["$$INCLUDE_GUARD_EXT$$",           get_include_guard_extension(         \
-                                                                  Setup.analyzer_name_safe.upper() \
-                                                                + "__"                             \
-                                                                + Setup.token_class_name_safe.upper())], 
+                          ["$$TOKEN_PREFIX$$",                Setup.token_id_prefix], 
+                          ["$$INCLUDE_GUARD_EXT$$",           include_guard_ext], 
                          ])
 
     return content
 
-standard_token_id_list = ["TERMINATION", "UNINITIALIZED", "INDENT", "NODENT", "DEDENT"]
+def __autogenerate_token_id_numbers():
+    # Automatically assign numeric token id to token id name
+    for dummy, token in sorted(token_id_db.iteritems()):
+        if token.number is not None: continue
+        token.number = get_free_token_id()
+
+def __get_token_id_definition_txt():
+    LanguageDB = Setup.language_db
+    assert len(Setup.token_id_foreign_definition_file) == 0
+
+    def define_this(txt, token, L):
+        assert token.number is not None
+        if Setup.language == "C":
+            txt.append("#define %s%s %s((QUEX_TYPE_TOKEN_ID)%i)\n" \
+                       % (Setup.token_id_prefix_plain, token.name, space(L, token.name), token.number))
+        else:
+            txt.append("const QUEX_TYPE_TOKEN_ID %s%s%s = ((QUEX_TYPE_TOKEN_ID)%i);\n" \
+                       % (Setup.token_id_prefix_plain, token.name, space(L, token.name), token.number))
+
+    if Setup.language == "C": 
+        prolog = ""
+        epilog = ""
+    else:
+        prolog = LanguageDB.NAMESPACE_OPEN(Setup.token_id_prefix_name_space)
+        epilog = LanguageDB.NAMESPACE_CLOSE(Setup.token_id_prefix_name_space)
+
+    # Considering 'items' allows to sort by name. The name is the 'key' in 
+    # the dictionary 'token_id_db'.
+    L      = max(map(len, token_id_db.iterkeys()))
+    result = [prolog]
+    for dummy, token in sorted(token_id_db.iteritems()):
+        define_this(result, token, L)
+    result.append(epilog)
+
+    return result
+
+def get_free_token_id():
+    used_token_id_set = get_used_token_id_set()
+    candidate = Setup.token_id_counter_offset
+    while candidate in used_token_id_set:
+        candidate += 1
+    return candidate
 
 def prepare_default_standard_token_ids():
+    """Prepare the standard token ids automatically. This shall only happen if
+    the token ids are not taken from outside, i.e. from a token id file.
+
+    The token ids given here are possibly overwritten later through a 'token'
+    section.
+    """
     global standard_token_id_list
+    assert len(Setup.token_id_foreign_definition_file) == 0
 
-    token_id_db["TERMINATION"]   = TokenInfo("TERMINATION",   ID=0)
-    token_id_db["UNINITIALIZED"] = TokenInfo("UNINITIALIZED", ID=1)
-    # Indentation Tokens
-    token_id_db["INDENT"]        = TokenInfo("INDENT",        ID=2)
-    token_id_db["DEDENT"]        = TokenInfo("DEDENT",        ID=3)
-    token_id_db["NODENT"]        = TokenInfo("NODENT",        ID=4)
-
-    # Assert that every standard token id is in the database
-    for name in standard_token_id_list:
-        assert token_id_db.has_key(name)
+    # 'TERMINATION' is often expected to be zero. The user may still overwrite
+    # it, if required differently.
+    token_id_db["TERMINATION"] = TokenInfo("TERMINATION", ID=0)
+    for name in sorted(standard_token_id_list):
+        if name == "TERMINATION": continue 
+        token_id_db[name] = TokenInfo(name, ID=get_free_token_id())
 
 class TokenInfo:
     def __init__(self, Name, ID, TypeName=None, Filename="", LineN=-1):
@@ -172,8 +158,7 @@ file_str = \
 
 /* The token class definition file can only be included after 
  * the definition on TERMINATION and UNINITIALIZED.          
- * (fschaef 12y03m24d: "I do not rememember why I wrote this.
- *  Just leave it there until I am clear if it can be deleted.")   */
+ * (fschaef 12y03m24d: "I do not rememember why I wrote this.")    */
 #include "$$TOKEN_CLASS_DEFINITION_FILE$$"
 
 $$TOKEN_ID_DEFINITIONS$$
@@ -227,24 +212,97 @@ QUEX_NAMESPACE_TOKEN_CLOSE
 def __is_token_id_occupied(TokenID):
     return TokenID in map(lambda x: x.number, token_id_db.values())
 
-def __propose_implicit_token_definitions():
+def __warn_on_double_definition():
+    """Double check that no token id appears twice. Again, this can only happen,
+    if quex itself produced the numeric values for the token.
+
+    If the token ids come from outside, Quex does not know the numeric value. It 
+    cannot warn about double definitions.
+    """
+    assert len(Setup.token_id_foreign_definition_file) == 0
+
+    clash_db = defaultdict(list)
+
+    token_list = token_id_db.values()
+    for i, x in enumerate(token_list):
+        for y in token_list[i+1:]:
+            if x.number != y.number: continue
+            clash_db[x.number].append(x)
+            clash_db[x.number].append(y)
+
+    def find_meaningful_location(TokenList):
+        for token in TokenList:
+            if len(token.file_name) != 0:
+                return token.file_name, token.line_n
+        return None, None
+    
+    if len(clash_db) != 0:
+        item_list = clash_db.items()
+        item_list.sort()
+        file_name, line_n = find_meaningful_location(item_list[0][1])
+        error_msg("Following token ids have the same numeric value assigned:", 
+                  file_name, line_n, DontExitF=True)
+        for x, token_id_list in item_list:
+            file_name, line_n = find_meaningful_location(token_id_list)
+            token_ids_sorted = sorted(list(set(token_id_list)), key=attrgetter("name")) # Ensure uniqueness
+            error_msg("  %s: %s" % (x, "".join(["%s, " % t.name for t in token_ids_sorted])), 
+                      file_name, line_n, DontExitF=True)
+                      
+def __warn_implicit_token_definitions():
+    """Output a message on token_ids which have been generated automatically.
+    That means, that the user may have made a typo.
+    """
     if len(blackboard.token_id_implicit_list) == 0: 
         return
 
     file_name = blackboard.token_id_implicit_list[0][1]
     line_n    = blackboard.token_id_implicit_list[0][2]
-    error_msg("Detected implicit token identifier definitions. Proposal:\n"
-              "   token {" , file_name, line_n, 
-              DontExitF=True, WarningF=True)
+    msg = "Detected implicit token identifier definitions."
+    if len(Setup.token_id_foreign_definition_file) == 0:
+        msg += " Proposal:\n"
+        msg += "   token {"
+        error_msg(msg, file_name, line_n, DontExitF=True, WarningF=True)
+        for token_name, file_name, line_n in blackboard.token_id_implicit_list:
+            error_msg("     %s;" % token_name, file_name, line_n, DontExitF=True, WarningF=True)
+        error_msg("   }", file_name, line_n, DontExitF=True, WarningF=True)
+    else:
+        error_msg(msg, file_name, line_n, DontExitF=True, WarningF=True)
+        for token_name, file_name, line_n in blackboard.token_id_implicit_list:
+            error_msg("     %s;" % (Setup.token_id_prefix + token_name), 
+                      file_name, line_n, DontExitF=True, WarningF=True)
+        error_msg("Above token ids must be defined in '%s'" % Setup.token_id_foreign_definition_file,
+                  file_name, line_n, DontExitF=True, WarningF=True)
 
-    for token_name, file_name, line_n in blackboard.token_id_implicit_list:
-        error_msg("     %s;" % token_name, file_name, line_n, DontExitF=True, WarningF=True)
-    error_msg("   }", file_name, line_n, DontExitF=True, WarningF=True)
+def __error_on_no_specific_token_ids():
+    all_token_id_set = set(token_id_db.iterkeys())
+    all_token_id_set.difference_update(standard_token_id_list)
+    if len(all_token_id_set) != 0:
+        return
+
+    token_id_str = []
+    for name in sorted(token_id_db.iterkeys()):
+        token_id_str.append("    %s%s\n" % (Setup.token_id_prefix, name))
+
+    error_msg("No token id beyond the standard token ids are defined. Found:\n" \
+              + "".join(token_id_str) \
+              + "Refused to proceed.") 
+
+def __error_on_mandatory_token_id_missing(ModeDB, AssertF=False):
+    def check(AssertF, TokenID_Name):
+        if AssertF:
+            assert TokenID_Name in token_id_db
+        elif TokenID_Name not in token_id_db:
+            error_msg("Definition of token id '%s' is mandatory!" % (Setup.token_id_prefix + TokenID_Name))
+
+    check(AssertF, "TERMINATION")
+    check(AssertF, "UNINITIALIZED")
+    if blackboard.requires_indentation_count(ModeDB):
+        check(AssertF, "INDENT")
+        check(AssertF, "DEDENT")
+        check(AssertF, "NODENT")
 
 def do_map_id_to_name_function():
     L = max(map(lambda name: len(name), token_id_db.keys()))
-    def space(Name):
-        return " " * (L - len(Name))
 
     # -- define the function for token names
     switch_cases = []
@@ -258,12 +316,12 @@ def do_map_id_to_name_function():
             switch_cases.append("   case 0x%06X: return token_id_str_%s;\n" % \
                                 (token.number, token.name))
             token_names.append("   static const char  token_id_str_%s[]%s = \"%s\";\n" % \
-                               (token.name, space(token.name), token.name))
+                               (token.name, space(L, token.name), token.name))
         else:
             switch_cases.append("   case %s%s:%s return token_id_str_%s;\n" % \
-                                (Setup.token_id_prefix, token_name, space(token_name), token_name))
+                                (Setup.token_id_prefix, token_name, space(L, token_name), token_name))
             token_names.append("   static const char  token_id_str_%s[]%s = \"%s\";\n" % \
-                               (token_name, space(token_name), token_name))
+                               (token_name, space(L, token_name), token_name))
 
     return blue_print(func_str,
                       [["$$TOKEN_ID_CASES$$", "".join(switch_cases)],
@@ -312,6 +370,7 @@ def parse_token_id_file(ForeignTokenIdFile, CommentDelimiterList):
     done_list      = []
     not_found_list = []
     recursive_list = []
+    found_db       = {}
     while len(work_list) != 0:
         file_name = work_list.pop()
         content   = __delete_comments(get_file_content_or_die(file_name, Mode="rb"), 
@@ -319,8 +378,6 @@ def parse_token_id_file(ForeignTokenIdFile, CommentDelimiterList):
         done_list.append(os.path.normpath(file_name))
 
         # (*) Search for TokenID definitions 
-        #
-        # -- cut the region of concern
         begin_i = 0
         end_i   = len(content)
         if Setup.token_id_foreign_definition_file_region_begin_re is not None:
@@ -334,8 +391,12 @@ def parse_token_id_file(ForeignTokenIdFile, CommentDelimiterList):
                 end_i = match.start()
         content = content[begin_i:end_i]
 
-        token_id_finding_list = __extract_token_ids(content)
-        for token_name in token_id_finding_list:
+        token_id_list = __extract_token_ids(content, file_name)
+        if len(token_id_list) != 0:
+            found_db[file_name] = copy(token_id_list)
+
+        token_id_foreign_set.update(token_id_list)
+        for token_name in token_id_list:
             # NOTE: The line number might be wrong, because of the comment deletion
             line_n = 0
             # NOTE: The actual token value is not important, since the token's numeric
@@ -345,7 +406,6 @@ def parse_token_id_file(ForeignTokenIdFile, CommentDelimiterList):
                         TokenInfo(prefix_less_token_name, None, None, file_name, line_n) 
         
         # (*) find "#include" statements
-        #
         #     'set' ensures that each entry is unique
         include_file_set = set(include_re_obj.findall(content))
 
@@ -361,6 +421,23 @@ def parse_token_id_file(ForeignTokenIdFile, CommentDelimiterList):
             elif normed_included_file not in done_list:
                 work_list.append(included_file)
 
+    if Setup.token_id_foreign_definition_file_show_f:
+        if len(found_db) == 0:
+            print "note: No token ids with prefix '%s' found in" % Setup.token_id_prefix
+            print "note: '%s' or included files." % Setup.token_id_foreign_definition_file
+        else:
+            txt = [] 
+            for file_name, result in found_db.iteritems():
+                result = set(result)
+                L = max(map(len, result))
+                txt.append("note: Token ids found in file '%s' {\n" % file_name)
+                for name in sorted(result):
+                    shorty = cut_token_id_prefix(name)
+                    fully  = Setup.token_id_prefix + shorty
+                    txt.append("note:     %s %s=> '%s'\n" % (fully, space(L, name), shorty))
+                txt.append("note: }\n")
+            print "".join(txt)
+            
     ErrorN = NotificationDB.token_id_ignored_files_report
     if ErrorN not in Setup.suppressed_notification_list:
         if len(not_found_list) != 0:
@@ -384,21 +461,33 @@ def parse_token_id_file(ForeignTokenIdFile, CommentDelimiterList):
             error_msg("\nNote, that quex does not handle C-Preprocessor instructions.",
                       file_name, LineN=line_n, DontExitF=True, SuppressCode=ErrorN)
 
-def __extract_token_ids(PlainContent):
+def __extract_token_ids(PlainContent, FileName):
     """PlainContent     -- File content without comments.
     """
-    DefineRE         = "#[ \t]*define[ \t]+([^ \t]+)[ \t]+[^ \t]+"
-    AssignRE         = "([^ \t]+)[ \t]*=[ \t]*[^ \t]+"
-    define_re_obj    = re.compile(DefineRE)
-    assign_re_obj    = re.compile(AssignRE)
+    DefineRE      = "#[ \t]*define[ \t]+([^ \t\n\r]+)[ \t]+[^ \t\n]+"
+    AssignRE      = "([^ \t]+)[ \t]*=[ \t]*[^ \t]+"
+    EnumRE        = "enum[^{]*{([^}]*)}"
+    EnumConst     = "([^=, \n\t]+)"
+    define_re_obj = re.compile(DefineRE)
+    assign_re_obj = re.compile(AssignRE)
+    enum_re_obj   = re.compile(EnumRE)
+    const_re_obj  = re.compile(EnumConst)
+
+    def check_and_append(found_list, Name):
+        if    len(Setup.token_id_prefix_plain) == 0 \
+           or Name.find(Setup.token_id_prefix_plain) == 0 \
+           or Name.find(Setup.token_id_prefix) == 0:
+            found_list.append(Name)
 
     result = []
     for name in chain(define_re_obj.findall(PlainContent), assign_re_obj.findall(PlainContent)):
         # Either there is no plain token prefix, or it matches well.
-        if    len(Setup.token_id_prefix_plain) == 0 \
-           or name.find(Setup.token_id_prefix_plain) == 0 \
-           or name.find(Setup.token_id_prefix) == 0:
-            result.append(name)
+        check_and_append(result, name)
+
+    for enum_txt in enum_re_obj.findall(PlainContent):
+        for name in const_re_obj.findall(enum_txt):
+            check_and_append(result, name.strip())
+
     return result
 
 def cut_token_id_prefix(TokenName, FH_Error=False):

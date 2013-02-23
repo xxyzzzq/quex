@@ -1,5 +1,26 @@
 token.h token_ids.h nonsense.qx derived.h codec.dat
 
+note: Token ids found in file 'token_ids.h' {
+note:     TKN_ADVERB____    => 'ADVERB____'
+note:     TKN_ARTICLE___    => 'ARTICLE___'
+note:     TKN_DEDENT        => 'DEDENT'
+note:     TKN_FILL_WORD_    => 'FILL_WORD_'
+note:     TKN_INDENT        => 'INDENT'
+note:     TKN_MARK______    => 'MARK______'
+note:     TKN_ME________    => 'ME________'
+note:     TKN_MY_BROTHER    => 'MY_BROTHER'
+note:     TKN_NEGATION__    => 'NEGATION__'
+note:     TKN_NODENT        => 'NODENT'
+note:     TKN_OK            => 'OK'
+note:     TKN_PREDICATE_    => 'PREDICATE_'
+note:     TKN_SCALLYWAG_    => 'SCALLYWAG_'
+note:     TKN_SUBJECT___    => 'SUBJECT___'
+note:     TKN_TERMINATION   => 'TERMINATION'
+note:     TKN_UKNOWN____    => 'UKNOWN____'
+note:     TKN_UNINITIALIZED => 'UNINITIALIZED'
+note:     TKN_VERB______    => 'VERB______'
+note: }
+
 
 
 Generated Files:

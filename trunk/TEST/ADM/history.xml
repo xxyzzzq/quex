@@ -1,4 +1,4 @@
-<history date="Sun Feb 17 20:53:19 2013" element-n="1040">
+<history date="Sun Feb 24 00:09:33 2013" element-n="1050">
     <day year="2008" month="02" day="10">
         <history-init time="09:50:03"/>
         <crc-error time="09:50:07" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="118547486"/>
@@ -1956,5 +1956,17 @@
         <crc-error time="00:27:47" application="bug-1885304.sh" choice="" database-crc="-2144291464" real-crc="-1632536244"/>
         <crc-error time="09:20:41" application="feature-3495127.sh" choice="single" database-crc="-405295070" real-crc="973232293"/>
         <crc-error time="11:19:35" application="bug-3025173.sh" choice="" database-crc="-1517251101" real-crc="-2004538963"/>
+    </day>
+    <day year="2013" month="02" day="23">
+        <crc-error time="07:10:45" application="patch-16.sh" choice="" database-crc="630194245" real-crc="-1391494120"/>
+        <crc-error time="10:11:21" application="bug-257.sh" choice="" database-crc="-1993612415" real-crc="1430197242"/>
+        <crc-error time="12:58:28" application="bug-265.sh" choice="" database-crc="-61172027" real-crc="1385375605"/>
+        <crc-error time="12:58:35" application="feature-2219383.sh" choice="" database-crc="1520609401" real-crc="-1249497131"/>
+        <crc-error time="12:58:35" application="feature-2251359.sh" choice="good" database-crc="1728033802" real-crc="-1442849409"/>
+        <crc-error time="15:51:14" application="feature-3038088.sh" choice="" database-crc="-1431435961" real-crc="525122305"/>
+        <crc-error time="15:51:16" application="bug-1889086.sh" choice="" database-crc="28291017" real-crc="981827707"/>
+        <crc-error time="15:52:04" application="bug-1885304.sh" choice="" database-crc="-749069805" real-crc="-957235791"/>
+        <crc-error time="15:52:24" application="bug-2799244.sh" choice="good-2" database-crc="1528585866" real-crc="-2034787810"/>
+        <crc-error time="20:36:31" application="feature-2251359.sh" choice="good" database-crc="-1442849409" real-crc="-631936717"/>
     </day>
 </history>

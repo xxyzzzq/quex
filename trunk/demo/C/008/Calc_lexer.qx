@@ -1,8 +1,10 @@
 // This file has to be encoded in UTF-8
+/* With foreign token ids, the 'token' section is not allowed: 
 token {
 	DUMMY;
     NUM;
 }
+*/
 
 start = ONE_AND_ONLY;
 
