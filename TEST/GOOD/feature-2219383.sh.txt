@@ -1,4 +1,10 @@
-simple.qx:3:warning: Detected implicit token identifier definitions. Proposal:
-simple.qx:3:warning:    token {
-simple.qx:3:warning:      2;
-simple.qx:3:warning:    }
+note: Token ids found in file 'Calc_token-ids.h' {
+note:     TKN_DUMMY         => 'DUMMY'
+note:     TKN_TERMINATION   => 'TERMINATION'
+note:     TKN_UNINITIALIZED => 'UNINITIALIZED'
+note: }
+
+simple.qx:2:warning: Detected implicit token identifier definitions.
+simple.qx:2:warning:      TKN_1;
+simple.qx:3:warning:      TKN_2;
+simple.qx:3:warning: Above token ids must be defined in 'Calc_token-ids.h'

@@ -8,7 +8,7 @@ fi
 tmp=`pwd`
 cd $bug/ 
 
-quex -i nonsense.qx --foreign-token-id-file include_me.h 2>&1 -o EasyLexer --debug-exception
+quex -i nonsense.qx --foreign-token-id-file include_me.h 2>&1 -o EasyLexer --foreign-token-id-file-show --debug-exception
 
 echo
 echo Generated Files:

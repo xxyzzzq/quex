@@ -239,7 +239,15 @@ shorthand_db = {}
 #              where they are defined. See token_ide_maker, class TokenInfo.
 #-----------------------------------------------------------------------------------------
 token_id_db = {}
+def get_used_token_id_set():
+    return [ token.number for token in token_id_db.itervalues() if token.number is not None ]
 
+#-----------------------------------------------------------------------------------------
+# token_id_foreign_set: Set of token ids which came from an external token id file.
+#                       All tokens which are not defined in an external token id file
+#                       are defined by quex.
+#-----------------------------------------------------------------------------------------
+token_id_foreign_set = set()
 
 #-----------------------------------------------------------------------------------------
 # token_id_implicit_list: Keep track of all token identifiers that ware defined 

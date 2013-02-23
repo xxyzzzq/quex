@@ -320,23 +320,14 @@ A file with token ids can be provided by the option
            > quex ... --foreign-token-id-file my_token_ids.hpp yytokentype   '};' \
                       --token-prefix          Example::BisonicParser::token::
 
-        reads only the token ids from the enum in the code fragment
+        reads only the token ids from the enum in the code fragment ``yytokentype``.
 
-        .. code-block:: cpp
-
-            namespace Example {
-                namespace BisonicParser  {
-                    ...
-                    struct token
-                    {
-                        enum yytokentype {
-                            INTEGER = 258
-                            STRING  = 259
-                            ...
-                        };
-                    ...
-        
         DEFAULT = <empty>
+
+.. cmdoption:: ``--foreign-token-id-file-show``
+
+       If this option is specified, then Quex prints out the token ids which have
+       been found in a foreign token id file.
 
 The following options support the definition of a independently customized token class:
 

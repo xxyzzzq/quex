@@ -153,6 +153,7 @@ SETUP_INFO = {
     "token_class_only_f":             [["--token-class-only", "--tco"],        SetupParTypes.FLAG],
     "token_class_take_text_check_f":  [["--token-type-no-take_text-check",     "--ttnttc"], SetupParTypes.NEGATED_FLAG], 
     "token_id_foreign_definition_file":  [["--foreign-token-id-file"],         SetupParTypes.LIST],  
+    "token_id_foreign_definition_file_show_f": [["--foreign-token-id-file-show"], SetupParTypes.FLAG],
     "token_id_counter_offset":        [["--token-id-offset"],                "10000"],
     "token_id_type":                  [["--token-id-type"],                  "uint32_t"],
     "token_id_prefix":                [["--token-id-prefix"],                "QUEX_TKN_"],
@@ -254,6 +255,9 @@ class NotificationDB:
     error_on_special_pattern_outrun = 4
     error_on_special_pattern_subset = 5
     warning_on_no_token_queue       = 6
+    warning_usage_of_undefined_token_id_name = 7
+    warning_repeated_token_not_yet_defined   = 8
+    warning_token_id_prefix_appears_in_token_id_name = 9
 
 DEPRECATED = { 
   "XX_input_pattern_file": 

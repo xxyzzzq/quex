@@ -1,5 +1,5 @@
 token {
-    UNINITIALIZED     = 111;
+    UNINITIALIZED = 111;
     A;
     B;
     C = 115;

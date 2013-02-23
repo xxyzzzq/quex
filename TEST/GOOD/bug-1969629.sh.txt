@@ -1,3 +1,7 @@
-command line: Only token ids QUEX_TKN_TERMINATION and QUEX_TKN_UNINITIALIZED are defined.
-command line: Quex refuses to proceed. Please, use the 'token { ... }' section to
-command line: specify at least one other token id.
+command line: No token id beyond the standard token ids are defined. Found:
+command line:     QUEX_TKN_DEDENT
+command line:     QUEX_TKN_INDENT
+command line:     QUEX_TKN_NODENT
+command line:     QUEX_TKN_TERMINATION
+command line:     QUEX_TKN_UNINITIALIZED
+command line: Refused to proceed.

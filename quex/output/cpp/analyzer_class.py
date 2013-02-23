@@ -53,7 +53,7 @@ def do(ModeDB):
             Setup.language_db.NAMESPACE_REFERENCE(Setup.analyzer_name_space) 
             + "__" + Setup.analyzer_class_name)
 
-    if Setup.token_id_foreign_definition_file != "":
+    if len(Setup.token_id_foreign_definition_file) != 0:
         token_id_definition_file = Setup.token_id_foreign_definition_file
     else:
         token_id_definition_file = Setup.output_token_id_file

@@ -1,3 +1,9 @@
+note: Token ids found in file 'include_me.h' {
+note:     QUEX_TKN_A             => 'A'
+note:     QUEX_TKN_TERMINATION   => 'TERMINATION'
+note:     QUEX_TKN_UNINITIALIZED => 'UNINITIALIZED'
+note: }
+
 include_me.h:2:warning: Files recursively included (ignored second inclusion):
 include_me.h:2:warning: include_me.h
 include_me.h:2:warning: 

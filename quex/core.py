@@ -40,7 +40,7 @@ def do():
         token_id_header                        = None
         function_map_id_to_name_implementation = ""
     else:
-        token_id_header                        = token_id_maker.do(Setup) 
+        token_id_header                        = token_id_maker.do(Setup, mode_db) 
         function_map_id_to_name_implementation = token_id_maker.do_map_id_to_name_function()
 
     # (*) [Optional] Make a customized token class
