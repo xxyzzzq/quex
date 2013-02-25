@@ -333,7 +333,7 @@ class Count(object):
                 Count.grid_step_size_by_lexeme_length     <<= 0
                 self.column_n_increment                   <<= 0
                 self.column_index                         = 0 # UniqueValue(E_Count.VIRGIN)
-                self.grid_step_n                          = 0 # UniqueValue(E_Count.VIRGIN)
+                self.grid_step_n                          = UniqueValue(E_Count.VIRGIN)
                 if isinstance(delta, (str, unicode)): 
                     Count.line_n_increment_by_lexeme_length <<= E_Count.VOID
                     self.line_n_increment                   <<= E_Count.VOID
