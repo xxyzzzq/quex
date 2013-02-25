@@ -15,6 +15,7 @@ import sys
 
 class Pattern(object):
     __slots__ = ("file_name", "line_n", 
+                 "__core_sm", 
                  "__sm", 
                  "__post_context_f", 
                  "__bipd_sm_to_be_inverted",        "__bipd_sm", 
@@ -39,7 +40,11 @@ class Pattern(object):
             self.line_n    = -1
 
         # (*) Setup the whole pattern
-        self.__sm = CoreSM
+        if PostContextSM is None:
+            self.__core_sm = CoreSM # Nothing will be mounted to it. prepare_count_info() OK.
+        else:
+            self.__core_sm = CoreSM.clone()
+        self.__sm      = CoreSM
 
         # -- [optional] post contexts
         self.__post_context_f = (PostContextSM is not None)
@@ -93,7 +98,7 @@ class Pattern(object):
         # If the pre-context is 'trivial begin of line', then the column number
         # starts counting at '1' and the column number may actually be set
         # instead of being added.
-        self.__count_info = character_counter.do(self.__sm, 
+        self.__count_info = character_counter.do(self.__core_sm, 
                                                  LineColumn_CounterDB, 
                                                  self.pre_context_trivial_begin_of_line_f, 
                                                  CodecTrafoInfo)
@@ -106,8 +111,6 @@ class Pattern(object):
     def pre_context_sm_to_be_inverted(self):       return self.__pre_context_sm
     @property
     def pre_context_sm(self):                      return self.__pre_context_sm
-    @property
-    def bipd_sm_to_be_inverted(self):              return self.__bipd_sm_to_be_inverted
     @property
     def bipd_sm(self):                             return self.__bipd_sm
     @property
@@ -124,12 +127,6 @@ class Pattern(object):
         return self.__post_context_f
     def has_pre_or_post_context(self):
         return self.has_pre_context() or self.has_post_context()
-
-    def set_sm(self, SM):                            self.__sm                            = SM
-    def set_bipd_sm_to_be_inverted(self, SM):        self.__bipd_sm_to_be_inverted        = SM
-    def set_bipd_sm(self, SM):                       self.__bipd_sm                       = SM
-    def set_pre_context_sm_to_be_inverted(self, SM): self.__pre_context_sm_to_be_inverted = SM
-    def set_pre_context_sm(self, SM):                self.__pre_context_sm                = SM
 
     def mount_pre_context_sm(self):
         if    self.__pre_context_sm_to_be_inverted is None \
@@ -165,7 +162,6 @@ class Pattern(object):
 
     def transform(self, TrafoInfo):
         """Transform state machine if necessary."""
-
         # Make sure that a pattern is never transformed twice
         assert self.__alarm_transformed_f == False
         self.__alarm_transformed_f = True

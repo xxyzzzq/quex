@@ -205,6 +205,18 @@ class StateOriginList(object):
         if len(self.__list) == 0: 
             return txt + "\n"
 
+        for origin in self.__list:
+            if   origin.is_acceptance():                          break
+            elif origin.pre_context_id() != E_PreContextIDs.NONE: break
+            elif origin.input_position_store_f():                 break
+            elif origin.input_position_restore_f():               break
+        else:
+            # All origins are 'harmless'. Sort by pattern_id for the 'camera'.
+            for origin in sorted(self.__list, key=lambda x: x.pattern_id()):
+                txt += origin.get_string(OriginalStatesF=OriginalStatesF) + ", "
+            txt = (txt[:-2] + "\n").replace("L","")     
+            return txt
+
         # for origin in sorted(self.__list, key=attrgetter("state_machine_id")):
         for origin in self.__list:
             txt += origin.get_string(OriginalStatesF=OriginalStatesF) + ", "
