@@ -80,7 +80,6 @@ class StateCoreInfo(object):
                
         # NOT: PatternID != E_AcceptanceIDs.FAILURE => AcceptanceF == False
         #      State core info objects are also used for non-acceptance states of patterns
-
         self.__pattern_id = PatternID
         self.state_index  = StateIndex
 

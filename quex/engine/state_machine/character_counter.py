@@ -146,6 +146,8 @@ def do(SM, CounterDB, BeginOfLineF=False, CodecTrafoInfo=None):
 
     ___________________________________________________________________________
     """
+    #print "SM:", SM
+
     counter = CharacterCountTracer(SM)
     state   = SM.get_init_state()
     count   = Count(0, 0, ColumnIndex = 0 if BeginOfLineF else E_Count.VOID, GridStepN = E_Count.VIRGIN)
@@ -330,8 +332,8 @@ class Count(object):
                 Count.column_n_increment_by_lexeme_length <<= 0
                 Count.grid_step_size_by_lexeme_length     <<= 0
                 self.column_n_increment                   <<= 0
-                self.column_index                         = UniqueValue(E_Count.VIRGIN)
-                self.grid_step_n                          = UniqueValue(E_Count.VIRGIN)
+                self.column_index                         = 0 # UniqueValue(E_Count.VIRGIN)
+                self.grid_step_n                          = 0 # UniqueValue(E_Count.VIRGIN)
                 if isinstance(delta, (str, unicode)): 
                     Count.line_n_increment_by_lexeme_length <<= E_Count.VOID
                     self.line_n_increment                   <<= E_Count.VOID
@@ -497,18 +499,21 @@ class CountInfo:
     def __init__(self, Result, CodecTrafoInfo, SM):
         self.column_n_increment                  = CountInfo.get_real(Result.column_n_increment)
         self.line_n_increment                    = CountInfo.get_real(Result.line_n_increment)
-        self.column_index                        = CountInfo.get_real(Result.column_index)
+        self.column_index                        = CountInfo.get_real(Result.column_index, 
+                                                                      ValueOfVirginity=E_Count.VOID)
         self.grid_step_n                         = CountInfo.get_real(Result.grid_step_n)
         self.column_n_increment_by_lexeme_length = CountInfo.get_real(Count.column_n_increment_by_lexeme_length)
         self.line_n_increment_by_lexeme_length   = CountInfo.get_real(Count.line_n_increment_by_lexeme_length)
         self.grid_step_size_by_lexeme_length     = CountInfo.get_real(Count.grid_step_size_by_lexeme_length)
 
+        #print "#Result:", Result
+        #print "#CountInfo:", self
         if CodecTrafoInfo in ["utf8-state-split", "utf16-state-split"]: 
             self._consider_variable_character_sizes(SM, CodecTrafoInfo)
 
     @staticmethod
-    def get_real(Object):
-        if   Object.value == E_Count.VIRGIN: return 0
+    def get_real(Object, ValueOfVirginity=0):
+        if   Object.value == E_Count.VIRGIN: return ValueOfVirginity
         elif Object.value == E_Count.NONE:   return 0
         return Object.value
 
