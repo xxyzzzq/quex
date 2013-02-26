@@ -22,6 +22,7 @@ def test_core(TestString):
     Setup.dos_carriage_return_newline_f = True
 
     pattern = core.do(TestString, {})
+    pattern.mount_post_context_sm()
     pattern.mount_pre_context_sm()
     if pattern is None: 
         print "pattern syntax error"

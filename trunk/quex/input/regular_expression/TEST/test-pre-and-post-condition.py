@@ -16,6 +16,7 @@ def test(TestString):
     print "-------------------------------------------------------------------"
     print "expression    = \"" + TestString + "\""
     pattern = core.do(TestString, {})
+    pattern.mount_post_context_sm()
     pattern.mount_pre_context_sm()
     print "pattern\n", pattern 
 

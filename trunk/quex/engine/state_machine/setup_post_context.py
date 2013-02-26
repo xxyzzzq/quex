@@ -6,7 +6,17 @@ import quex.engine.state_machine.ambiguous_post_context as     ambiguous_post_co
 from   quex.blackboard                                  import E_PreContextIDs, setup as Setup
 
 
-def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
+def do(the_state_machine, post_context_sm, EndOfLinePostContextF, FileName, LineN):
+    pattern_id = the_state_machine.get_id()
+    result, bipd_sm = _do(the_state_machine, post_context_sm, EndOfLinePostContextF, FileName, LineN)
+
+    # Make sure that the resulting state machine has the same state machine index
+    # as 'the_state_machine'. This is important, since otherwise the precedence get
+    # confused.
+    result.set_id(pattern_id)
+    return result, bipd_sm
+
+def _do(the_state_machine, post_context_sm, EndOfLinePostContextF, FileName, LineN):
     """Appends a post context to the given state machine and changes 
        state infos as required. 
 
@@ -44,6 +54,9 @@ def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
        X stopped, even though Ym is required to state acceptance.    
        
     """
+    if post_context_sm is None and EndOfLinePostContextF == False:
+        return the_state_machine, None
+
     # State machines with no states are senseless here. 
     assert not the_state_machine.is_empty(), \
            "empty state machine can have no post context."
@@ -54,14 +67,14 @@ def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
     # but not configured out of multiple patterns. Thus there should be no origins.
     assert the_state_machine.has_origins() == False
     assert post_context_sm is None or not post_context_sm.has_origins()
+
     for state in the_state_machine.get_acceptance_state_list():
         for origin in state.origins(): 
             assert origin.pre_context_id() == E_PreContextIDs.NONE, \
                    "Post Contexts MUST be mounted BEFORE pre-contexts."
 
     if post_context_sm is None:
-        if not EndOfLinePostContextF:
-            return the_state_machine, None
+        assert EndOfLinePostContextF
         # Generate a new post context that just contains the 'newline'
         post_context_sm = StateMachine(AcceptanceF=True)
         post_context_sm.mount_newline_to_acceptance_states(Setup.dos_carriage_return_newline_f)
@@ -73,7 +86,7 @@ def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
     # A post context with an initial state that is acceptance is not really a
     # 'context' since it accepts anything. The state machine remains un-post context.
     if post_context_sm.get_init_state().is_acceptance():
-        error_msg("Post context accepts anything---replaced by no post context.", fh, 
+        error_msg("Post context accepts anything--replaced by no post context.", fh=FileName, LineN=LineN, 
                   DontExitF=True)
         return the_state_machine, None
     
@@ -89,7 +102,7 @@ def do(the_state_machine, post_context_sm, EndOfLinePostContextF, fh=-1):
             # -- for post contexts that are forward and backward ambiguous
             #    a philosophical cut is necessary.
             error_msg("Post context requires philosophical cut--handle with care!\n"
-                      "Proposal: Isolate pattern and ensure results are as expected!", fh, 
+                      "Proposal: Isolate pattern and ensure results are as expected!", fh=FileName, LineN=LineN, 
                       DontExitF=True)
             post_context_sm = ambiguous_post_context.philosophical_cut(the_state_machine, post_context_sm)
         

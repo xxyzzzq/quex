@@ -60,7 +60,6 @@ def entry_do(txt, TheState, TheAnalyzer):
     # The Init State: Implement the 'NONE' door. 
     entry.do_entry_from_NONE(txt, TheState)
 
-
 def side_entry_do(txt, TheState, TheAnalyzer):
     """Generate side entry to the init state, IF NECESSARY. An init state does
     not increment the input pointer at its first entry (when the function is

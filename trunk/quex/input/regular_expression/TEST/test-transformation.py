@@ -21,8 +21,8 @@ def test(TestString):
     pattern = core.do(TestString, {})
 
     pattern.transform(Setup.buffer_codec_transformation_info)
+    pattern.mount_post_context_sm()
     pattern.mount_pre_context_sm()
-    pattern.mount_bipd_sm()
     print "pattern\n", pattern.get_string(NormalizeF=True, Option="hex") 
 
 test('µ/µ+/µ')

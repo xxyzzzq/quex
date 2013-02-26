@@ -15,12 +15,13 @@ import sys
 
 class Pattern(object):
     __slots__ = ("file_name", "line_n", 
-                 "__core_sm", 
                  "__sm", 
                  "__post_context_f", 
+                 "__post_context_sm",
                  "__bipd_sm_to_be_inverted",        "__bipd_sm", 
                  "__pre_context_sm_to_be_inverted", "__pre_context_sm", 
                  "__pre_context_begin_of_line_f", 
+                 "__post_context_end_of_line_f", 
                  "__count_info", 
                  "__alarm_transformed_f")
     def __init__(self, CoreSM, PreContextSM=None, PostContextSM=None, 
@@ -40,11 +41,10 @@ class Pattern(object):
             self.line_n    = -1
 
         # (*) Setup the whole pattern
-        if PostContextSM is None:
-            self.__core_sm = CoreSM # Nothing will be mounted to it. prepare_count_info() OK.
-        else:
-            self.__core_sm = CoreSM.clone()
-        self.__sm      = CoreSM
+        self.__sm                         = CoreSM
+        self.__post_context_sm            = PostContextSM
+        self.__post_context_end_of_line_f = EndOfLineF
+        assert self.__sm is not None
 
         # -- [optional] post contexts
         self.__post_context_f = (PostContextSM is not None)
@@ -53,8 +53,7 @@ class Pattern(object):
         #    state machine. This can only be done after the (optional) codec
         #    transformation. Thus, a non-inverted version of the state machine
         #    is maintained until the transformation is done.
-        self.__sm,     \
-        self.__bipd_sm_to_be_inverted = setup_post_context.do(self.__sm, PostContextSM, EndOfLineF, fh=fh) 
+        self.__bipd_sm_to_be_inverted = None
         self.__bipd_sm                = None
 
         # -- [optional] pre contexts
@@ -64,17 +63,12 @@ class Pattern(object):
         self.__pre_context_sm                = None
 
         # All state machines must be DFAs
-        assert self.__sm is not None
         if not self.__sm.is_DFA_compliant(): 
-            self.__sm                        = beautifier.do(self.__sm)
+            self.__sm  = beautifier.do(self.__sm)
 
         if         self.__pre_context_sm_to_be_inverted is not None \
            and not self.__pre_context_sm_to_be_inverted.is_DFA_compliant(): 
             self.__pre_context_sm_to_be_inverted = beautifier.do(self.__pre_context_sm_to_be_inverted)
-
-        if         self.__bipd_sm_to_be_inverted is not None \
-           and not self.__bipd_sm_to_be_inverted.is_DFA_compliant(): 
-            self.__bipd_sm_to_be_inverted        = beautifier.do(self.__bipd_sm_to_be_inverted)
 
         # Detect the trivial pre-context
         self.__pre_context_begin_of_line_f = BeginOfLineF
@@ -98,7 +92,7 @@ class Pattern(object):
         # If the pre-context is 'trivial begin of line', then the column number
         # starts counting at '1' and the column number may actually be set
         # instead of being added.
-        self.__count_info = character_counter.do(self.__core_sm, 
+        self.__count_info = character_counter.do(self.__sm, 
                                                  LineColumn_CounterDB, 
                                                  self.pre_context_trivial_begin_of_line_f, 
                                                  CodecTrafoInfo)
@@ -137,9 +131,20 @@ class Pattern(object):
                                                      self.__pre_context_sm_to_be_inverted, 
                                                      self.__pre_context_begin_of_line_f)
 
-    def mount_bipd_sm(self):
+    def mount_post_context_sm(self):
+        self.__sm,     \
+        self.__bipd_sm_to_be_inverted = setup_post_context.do(self.__sm, 
+                                                              self.__post_context_sm, 
+                                                              self.__post_context_end_of_line_f, 
+                                                              self.file_name, self.line_n) 
+
         if self.__bipd_sm_to_be_inverted is None: 
             return
+
+        if         self.__bipd_sm_to_be_inverted is not None \
+           and not self.__bipd_sm_to_be_inverted.is_DFA_compliant(): 
+            self.__bipd_sm_to_be_inverted        = beautifier.do(self.__bipd_sm_to_be_inverted)
+
 
         self.__bipd_sm = setup_backward_input_position_detector.do(self.__sm, 
                                                                    self.__bipd_sm_to_be_inverted) 
@@ -153,7 +158,7 @@ class Pattern(object):
                       Pattern.file_name, Pattern.line_n)
 
         for character, name in CharacterList:
-            for sm in [self.__sm, self.__pre_context_sm, self.__bipd_sm]:
+            for sm in [self.__sm, self.__pre_context_sm, self.__post_context_sm]:
                 if sm is None: continue
                 sm.delete_transtions_on_interval(Interval(character))
                 sm.clean_up()
@@ -173,7 +178,7 @@ class Pattern(object):
 
         c0, self.__sm                            = transformation.try_this(self.__sm)
         c1, self.__pre_context_sm_to_be_inverted = transformation.try_this(self.__pre_context_sm_to_be_inverted)
-        c2, self.__bipd_sm_to_be_inverted        = transformation.try_this(self.__bipd_sm_to_be_inverted)
+        c2, self.__post_context_sm               = transformation.try_this(self.__post_context_sm)
 
         # Only if all transformation have been complete, then the transformation
         # can be considered complete.

@@ -15,7 +15,7 @@ if "--hwut-info" in sys.argv:
 def test(sm, post_sm):    
     print "EXPRESSION = ", sm
     print "POST CONDITION = ", post_sm
-    return_sm = setup_post_context.do(sm, post_sm, False)
+    return_sm = setup_post_context.do(sm, post_sm, False, -1, -1)
     print "APPENDED = ", sm
     sm = nfa_to_dfa.do(sm)
     print "DFA = ", sm
