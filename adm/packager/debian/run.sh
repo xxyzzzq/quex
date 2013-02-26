@@ -69,6 +69,6 @@ sudo chown root:root -R $package_dir/opt
 sudo dpkg-deb -b $package_dir
 
 #Copy the resulting package
-sudo mv /tmp/*.deb /tmp/quex-packages/
+sudo chmod 777 /tmp/*.deb 
 
 exit 0
