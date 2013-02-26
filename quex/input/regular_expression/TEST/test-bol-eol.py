@@ -25,6 +25,7 @@ def test_core(TestString):
     print "___________________________________________________________________________"
     print "expression    = \"" + TestString + "\""
     pattern = core.do(TestString, {}, AllowNothingIsNecessaryF=True)
+    pattern.mount_post_context_sm()
     pattern.mount_pre_context_sm()
     if pattern is None: 
         print "pattern syntax error"

@@ -18,7 +18,7 @@ if "--hwut-info" in sys.argv:
 
 sm = regex.do("a(((b+ee(fe)*)+(b+cd)?)|(b+cd))/bbb(cb)*(eebc)?de", {})
 pap = PatternActionInfo(sm, "Don't worry, be happy!")
-pap.pattern().mount_bipd_sm()
+pap.pattern().mount_post_context_sm()
 pattern_action_pair_list = [ pap ]
 
 my_plotter = plotter.Generator(pattern_action_pair_list, "test-plot")

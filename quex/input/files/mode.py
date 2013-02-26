@@ -246,8 +246,8 @@ class Mode:
 
         # (*) Pre-contexts and BIPD can only be mounted, after the transformation.
         for pap in self.__pattern_action_pair_list:
+            pap.pattern().mount_post_context_sm()
             pap.pattern().mount_pre_context_sm()
-            pap.pattern().mount_bipd_sm()
 
         # (*) Default counter required?
         self.__default_character_counter_required_f = False

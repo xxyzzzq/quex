@@ -1,6 +1,6 @@
 test.qx:3:warning: Post context requires philosophical cut--handle with care!
 test.qx:3:warning: Proposal: Isolate pattern and ensure results are as expected!
-digraph state_machine_50 {
+digraph state_machine_46 {
 rankdir=LR;
 size="8,5"
 node [shape = doublecircle]; 4;
@@ -10,7 +10,7 @@ node [shape = circle];
 2 -> 3 [label ="'0'"];
 3 -> 4 [label ="'z'"];
 }
-digraph state_machine_54 {
+digraph state_machine_53 {
 rankdir=LR;
 size="8,5"
 node [shape = doublecircle]; 7;
@@ -24,7 +24,7 @@ node [shape = circle];
 5 -> 6 [label ="'1'"];
 6 -> 7 [label ="'2'"];
 }
-digraph state_machine_58 {
+digraph state_machine_57 {
 rankdir=LR;
 size="8,5"
 node [shape = doublecircle]; 3;

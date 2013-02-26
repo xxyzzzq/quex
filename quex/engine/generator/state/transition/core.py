@@ -329,8 +329,7 @@ def __separate_buffer_limit_code_transition(TransitionMap, EngineType):
     # limit code in the transition map to trigger reload. If not it would 
     # be an error.
     assert not EngineType.requires_buffer_limit_code_for_reload(), \
-           "Transition map does not contain trigger on buffer limit code. However,\n" \
-           "the engine %s type requires it.\%s" % (EngineType.__class__.__name__, TransitionMap)
+            "Wrong Engine Type: %s -- missing Buffer Limit Code\n%s" % (EngineType.__class__.__name__, str(TransitionMap))
     return
 
 def __get_transition(txt, TriggerMapEntry, IndentF=False):

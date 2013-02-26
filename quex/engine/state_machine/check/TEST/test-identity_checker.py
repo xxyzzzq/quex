@@ -16,8 +16,10 @@ def test(A, B):
         print ("Pattern0 = " + Pattern0).replace("\n", "\\n").replace("\t", "\\t")
         print ("Pattern1 = " + Pattern1).replace("\n", "\\n").replace("\t", "\\t")
         p0 = regex.do(Pattern0, {})
+        p0.mount_post_context_sm()
         p0.mount_pre_context_sm()
         p1 = regex.do(Pattern1, {})
+        p1.mount_post_context_sm()
         p1.mount_pre_context_sm()
         print "claim = ", identity_checker.do(p0, p1)
     print "---------------------------"

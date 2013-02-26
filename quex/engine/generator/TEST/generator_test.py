@@ -395,8 +395,8 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
         (Setup.path_limit_code,   "Path Limit Code")
     ]
     for pap in PatternActionPairList:
+        pap.pattern().mount_post_context_sm()
         pap.pattern().mount_pre_context_sm()
-        pap.pattern().mount_bipd_sm()
         pap.pattern().cut_character_list(character_list)
 
     generator = cpp_generator.Generator(Mode                   = mode,

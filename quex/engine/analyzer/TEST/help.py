@@ -29,8 +29,8 @@ def if_DRAW_in_sys_argv(sm):
 def prepare(PatternStringList, GetPreContextSM_F=False):
     pattern_list = map(lambda x: regex.do(x, {}), PatternStringList)
     for pattern in pattern_list:
+        pattern.mount_post_context_sm()
         pattern.mount_pre_context_sm()
-        pattern.mount_bipd_sm()
 
     if GetPreContextSM_F:
         state_machine_list = [ pattern.pre_context_sm for pattern in pattern_list ]
