@@ -1,6 +1,6 @@
-<test-database execution-time-sec="14.36" date="Tue Feb 26 22:29:50 2013">
+<test-database execution-time-sec="14.33" date="Tue Feb 26 23:12:03 2013">
     <last-used-diff-display-program name=""/>
-    <test title="Checking PRIORITY-MARK internally." time-sum-sec="2.98"> 
+    <test title="Checking PRIORITY-MARK internally." time-sum-sec="2.95"> 
         <application file-name="priority.py" info-request-time="1356524803L" vanished="False"/>
         <choice-list number="19" same_result="False">
            <choice name="3-begin" result="OK" time_sec="0.18" crc="-2044103555"/>
@@ -24,7 +24,7 @@
            <choice name="subset" result="OK" time_sec="0.12" crc="726249666"/>
         </choice-list>
     </test>
-    <test title="Checking DELETE marks internally." time-sum-sec="2.56"> 
+    <test title="Checking DELETE marks internally." time-sum-sec="2.55"> 
         <application file-name="deletion.py" info-request-time="1356524102L" vanished="False"/>
         <choice-list number="19" same_result="False">
            <choice name="3-begin" result="OK" time_sec="0.12" crc="1817317143"/>
@@ -48,7 +48,7 @@
            <choice name="subset" result="OK" time_sec="0.14" crc="1033631323"/>
         </choice-list>
     </test>
-    <test title="PRIORITY-MARK or DELETION on not existing pattern." time-sum-sec="1.29"> 
+    <test title="PRIORITY-MARK or DELETION on not existing pattern." time-sum-sec="1.30"> 
         <application file-name="unvalid-marks.sh" info-request-time="1355705371L" vanished="False"/>
         <choice-list number="4" same_result="False">
            <choice name="PRIORITY-good" result="OK" time_sec="0.35" crc="-84057889"/>
