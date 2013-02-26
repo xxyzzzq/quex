@@ -1,7 +1,7 @@
-<test-database execution-time-sec="86.25" date="Tue Feb 26 22:38:00 2013">
+<test-database execution-time-sec="86.26" date="Tue Feb 26 23:12:06 2013">
     <last-used-diff-display-program name=""/>
     <group name="Skip-Characters">
-        <test title="Large Buffer" time-sum-sec="9.15"> 
+        <test title="Large Buffer" time-sum-sec="9.16"> 
             <application file-name="test-skip.py" info-request-time="1356692426L" vanished="False"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="1.74" crc="600307805"/>
@@ -34,7 +34,7 @@
         </test>
     </group>
     <group name="Skip-Range">
-        <test title="DelimiterLength=2, Large Buffer" time-sum-sec="9.03"> 
+        <test title="DelimiterLength=2, Large Buffer" time-sum-sec="9.04"> 
             <application file-name="test-skip_range.py" info-request-time="1356692234L" vanished="False"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="1.69" crc="-1090631127"/>
@@ -61,7 +61,7 @@
                <choice name="5" result="OK" time_sec="2.56" crc="890859637"/>
             </choice-list>
         </test>
-        <test title="Varrying DelimiterLength, Large Buffer" time-sum-sec="10.57"> 
+        <test title="Varrying DelimiterLength, Large Buffer" time-sum-sec="10.56"> 
             <application file-name="test-skip_range-2.py" info-request-time="1356692242L" vanished="False"/>
             <choice-list number="4" same_result="True">
                <choice name="DL=1" result="OK" time_sec="2.65" crc="2098906281"/>

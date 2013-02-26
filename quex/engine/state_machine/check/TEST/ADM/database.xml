@@ -1,6 +1,6 @@
-<test-database execution-time-sec="6.26" date="Tue Feb 26 22:39:12 2013">
+<test-database execution-time-sec="6.27" date="Tue Feb 26 23:12:06 2013">
     <last-used-diff-display-program name=""/>
-    <test title="Pattern Superset/Subset Determination" time-sum-sec="2.03"> 
+    <test title="Pattern Superset/Subset Determination" time-sum-sec="2.04"> 
         <application file-name="test-subset_checker.py" info-request-time="1361830790L" vanished="False"/>
         <choice-list number="7" same_result="False">
            <choice name="Easy" result="OK" time_sec="0.18" crc="-443130574"/>

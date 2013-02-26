@@ -1,4 +1,4 @@
-<test-database execution-time-sec="59.97" date="Tue Feb 26 22:32:52 2013">
+<test-database execution-time-sec="59.96" date="Tue Feb 26 23:12:05 2013">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
         <test title="Super Set" time-sum-sec="0.14"> 
@@ -38,7 +38,7 @@
                <choice name="is_superset" result="OK" time_sec="0.50" crc="1624740239"/>
             </choice-list>
         </test>
-        <test title="Transform" time-sum-sec="0.21"> 
+        <test title="Transform" time-sum-sec="0.22"> 
             <application file-name="test-NumberSet-transform.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="1" result="OK" time_sec="0.07" crc="856175348"/>
@@ -73,7 +73,7 @@
                <choice name="binary" result="OK" time_sec="5.18" crc="983993768"/>
             </choice-list>
         </test>
-        <test title="Cut" time-sum-sec="0.54"> 
+        <test title="Cut" time-sum-sec="0.52"> 
             <application file-name="test-NumberSet-cut.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="7" same_result="False">
                <choice name="empty" result="OK" time_sec="0.11" crc="-1392876461"/>
@@ -85,14 +85,14 @@
                <choice name="3b" result="OK" time_sec="0.06" crc="-1227968480"/>
             </choice-list>
         </test>
-        <test title="Cut Interval" time-sum-sec="0.11"> 
+        <test title="Cut Interval" time-sum-sec="0.12"> 
             <application file-name="test-Interval-cmp.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="2" same_result="False">
                <choice name="normal" result="OK" time_sec="0.07" crc="1145705751"/>
                <choice name="special" result="OK" time_sec="0.05" crc="517788893"/>
             </choice-list>
         </test>
-        <test title="Transform Large NumberSets / Transformations" time-sum-sec="9.42"> 
+        <test title="Transform Large NumberSets / Transformations" time-sum-sec="9.41"> 
             <application file-name="test-NumberSet-transform-x.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="7" same_result="False">
                <choice name="10" result="OK" time_sec="0.06" crc="1378888075"/>
