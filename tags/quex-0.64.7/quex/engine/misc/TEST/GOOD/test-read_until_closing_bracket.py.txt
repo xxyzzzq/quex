@@ -1,0 +1,34 @@
+##-----------------------------------------------------------------------
+ This is a simple test }
+##
+ This is a simple test [[END]]
+##
+##-----------------------------------------------------------------------
+ This is a { simple } test }
+##
+ This is a { simple } test [[END]]
+##
+##-----------------------------------------------------------------------
+ This is a REM } after newline
+         { simple } test }
+##
+ This is a REM } after newline
+         { simple } test [[END]]
+##
+##-----------------------------------------------------------------------
+ This is a REM very funny}
+         { simple } test }
+##
+ This is a REM very funny}
+         { simple } test [[END]]
+##
+##-----------------------------------------------------------------------
+ This is a /* {very}}}}} funny} */ { simple } test }
+##
+ This is a /* {very}}}}} funny} */ { simple } test [[END]]
+##
+##-----------------------------------------------------------------------
+ This is a " simple \" " test}
+##
+ This is a " simple \" " test[[END]]
+##

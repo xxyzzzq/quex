@@ -1,0 +1,2 @@
+        void                      set_line_number(const QUEX_TYPE_TOKEN_LINE_N Value) { _line_n = Value; }
+        void                      set_column_number(const QUEX_TYPE_TOKEN_COLUMN_N Value) { _column_n = Value; }

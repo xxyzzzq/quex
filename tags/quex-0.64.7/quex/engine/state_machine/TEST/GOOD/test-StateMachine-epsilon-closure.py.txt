@@ -1,0 +1,41 @@
+## state machine =  init-state = 0L
+00000 ()
+     == 'a' ==> 00001
+    
+00001 ()
+     == 'b' ==> 00002
+     == 'd' ==> 00003
+    
+00002 ()
+     == 'c' ==> 00003
+    
+00003 ()
+     == 'e' ==> 00004
+    
+00004 (A)
+     ==<epsilon>==> 00005
+00005 ()
+     ==<epsilon>==> 00006, 00011
+00006 ()
+     == 'a' ==> 00007
+    
+00007 ()
+     == 'b' ==> 00008
+     == 'd' ==> 00009
+    
+00008 ()
+     == 'c' ==> 00009
+    
+00009 ()
+     == 'e' ==> 00010
+    
+00010 
+     ==<epsilon>==> 00006, 00011
+00011 (A)
+    
+
+## compute epsilon closures of all states:
+state =  35 epsilon-closure =  [31L, 35L, 36L]
+state =  29 epsilon-closure =  [29L, 30L, 31L, 36L]
+state =  30 epsilon-closure =  [30L, 31L, 36L]
+## normal epsilon closures =  [25L, 26L, 27L, 28L, 31L, 32L, 33L, 34L, 36L]

@@ -1,0 +1,4 @@
+error.qx:4:error: The pattern '"a"' matches a superset of what is matched by
+error.qx:7:error: pattern '"a"'.
+error.qx:7:error: The former has precedence and the latter can never match.
+error.qx:7:error: ('--suppress 2' to avoid this message)

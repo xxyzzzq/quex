@@ -1,0 +1,64 @@
+##-----------------------------------------------------------------
+note: Token ids found in file 'data/example.h' {
+note:     TKN_in_example => 'in_example'
+note: }
+
+##-----------------------------------------------------------------
+note: Token ids found in file 'data/example.h' {
+note:     TKN_in_example => 'in_example'
+note: }
+note: Token ids found in file 'data/example-x.h' {
+note:     TKN_in_example_x => 'in_example_x'
+note: }
+
+##-----------------------------------------------------------------
+note: Token ids found in file 'data/example.h' {
+note:     TKN_in_example => 'in_example'
+note: }
+note: Token ids found in file 'data/example-x.h' {
+note:     TKN_in_example_x => 'in_example_x'
+note: }
+note: Token ids found in file 'data/example-x-x.h' {
+note:     TKN_in_example_x_x => 'in_example_x_x'
+note: }
+
+data/example-x-x.h:8:warning: Files not found:
+data/example-x-x.h:8:warning: data/not-found.h
+data/example-x-x.h:8:warning: 
+data/example-x-x.h:8:warning: Note, that quex does not handle C-Preprocessor instructions.
+data/example-x-x.h:8:warning: ('--suppress 0' to avoid this message)
+##-----------------------------------------------------------------
+note: Token ids found in file 'data/example-2.h' {
+note:     token::0               => '0'
+note:     token::258             => '258'
+note:     token::NOT_CONSIDERED0 => 'NOT_CONSIDERED0'
+note:     token::NOT_CONSIDERED1 => 'NOT_CONSIDERED1'
+note:     token::NOT_CONSIDERED2 => 'NOT_CONSIDERED2'
+note:     token::NOT_CONSIDERED3 => 'NOT_CONSIDERED3'
+note:     token::NOT_CONSIDERED4 => 'NOT_CONSIDERED4'
+note:     token::TK_INTEGER      => 'TK_INTEGER'
+note:     token::YYDEBUG         => 'YYDEBUG'
+note:     token::YYERROR_VERBOSE => 'YYERROR_VERBOSE'
+note:     token::YYTOKEN_TABLE   => 'YYTOKEN_TABLE'
+note: }
+
+##-----------------------------------------------------------------
+note: Token ids found in file 'data/example-2.h' {
+note:     token::TK_INTEGER => 'INTEGER'
+note: }
+
+##-----------------------------------------------------------------
+note: Token ids found in file 'data/example-2.h' {
+note:     ::0               => '0'
+note:     ::258             => '258'
+note:     ::NOT_CONSIDERED0 => 'NOT_CONSIDERED0'
+note:     ::NOT_CONSIDERED1 => 'NOT_CONSIDERED1'
+note:     ::NOT_CONSIDERED2 => 'NOT_CONSIDERED2'
+note:     ::NOT_CONSIDERED3 => 'NOT_CONSIDERED3'
+note:     ::NOT_CONSIDERED4 => 'NOT_CONSIDERED4'
+note:     ::TK_INTEGER      => 'TK_INTEGER'
+note:     ::YYDEBUG         => 'YYDEBUG'
+note:     ::YYERROR_VERBOSE => 'YYERROR_VERBOSE'
+note:     ::YYTOKEN_TABLE   => 'YYTOKEN_TABLE'
+note: }
+

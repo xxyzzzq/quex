@@ -1,0 +1,71 @@
+init-state = 0L
+00000 (1), (2), (3)
+     == 'a' ==> 00001
+     == 'b' ==> 00004
+    
+00001 (1, A), (3)
+     == 'a' ==> 00001
+     == 'd' ==> 00002
+    
+00002 (3)
+     == 'e' ==> 00003
+    
+00003 (3, A)
+    
+00004 (2), (3)
+     == 'b' ==> 00004
+     == 'c' ==> 00005
+    
+00005 (2, A), (3)
+     == 'd' ==> 00002
+    
+
+State 0:
+  .entry:
+    .from NONE:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 1:
+  .entry:
+    .from 0: last_acceptance = Pattern1
+    .from 1: last_acceptance = Pattern1
+  .drop_out:
+     goto Pattern1;
+
+
+State 2:
+  .entry:
+    .from 1:
+    .from 5:
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case 1: pos -= 1;  goto Pattern1;
+        case 2: pos -= 1;  goto Pattern2;
+
+
+State 3:
+  .entry:
+    .from 2:
+  .drop_out:
+     goto Pattern3;
+
+
+State 4:
+  .entry:
+    .from 0:
+    .from 4:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 5:
+  .entry:
+    .from 4: last_acceptance = Pattern2
+  .drop_out:
+     goto Pattern2;
+
+

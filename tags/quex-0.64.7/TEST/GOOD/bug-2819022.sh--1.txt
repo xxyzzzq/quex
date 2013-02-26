@@ -1,0 +1,14 @@
+quex -i error-1.qx -o Simple
+error-1.qx:5:warning: Detected implicit token identifier definitions. Proposal:
+error-1.qx:5:warning:    token {
+error-1.qx:5:warning:      QUOTE_S_PRE_COND;
+error-1.qx:6:warning:      WORD;
+error-1.qx:7:warning:      OTHER;
+error-1.qx:7:warning:    }
+		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
+----------------------------------
+asillya
+----------------------------------
+OTHER 'a' 
+WORD 'silly' 
+OTHER 'a' 

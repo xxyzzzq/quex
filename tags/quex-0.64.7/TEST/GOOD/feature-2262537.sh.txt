@@ -1,0 +1,5 @@
+Error Case:\n
+error.qx:12:error: The core pattern contains in a 'nothing is necessary' path in the state machine.
+error.qx:12:error: This means, that without reading a character the analyzer drops into
+error.qx:12:error: an acceptance state. The analyzer would then stall.
+Good Case:\n

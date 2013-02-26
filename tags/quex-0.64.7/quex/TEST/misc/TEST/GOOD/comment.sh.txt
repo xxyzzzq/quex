@@ -1,0 +1,33 @@
+<             /* ['\v', oo] */
+< 
+>             
+< /* '\n' */
+< /* '\t' */
+<             /* [\0, '\b'] */
+< 
+>             
+<     /* BEGIN: STATE MACHINE
+<      * init-state = 10L
+<      * 00010 (4, 2)
+<      *      == 'a' ==> 00011
+<      *     
+<      * 00011 (4, 3, A)
+<      *     
+<      * END: STATE MACHINE
+<      */
+<         case 0x0: QUEX_GOTO_RELOAD_FORWARD(10, 12);/* \0 */
+< 
+<         case 0x61: goto _11;/* 'a' */
+< 
+>         case 0x0: QUEX_GOTO_RELOAD_FORWARD(10, 12);
+>         case 0x61: goto _11;
+<     /* BEGIN: MODE PATTERNS
+<      * 
+<      * MODE: X
+<      * 
+<      *     PATTERN-ACTION PAIRS:
+<      *       (  4) X: a
+<      * 
+<      * 
+<      * END: MODE PATTERNS
+<      */

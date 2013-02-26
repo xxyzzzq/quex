@@ -1,0 +1,22 @@
+Involved states in First = 1L
+Involved states in Second = 2L
+=> when First triggers to 1L and Second to 2L, then both
+   are recursive and no distinction needs to be made.
+BUT: HERE STATE ENTRIES ARE NOT UNIFORM --> NO RECURSION DETECTION
+
+(Straight)---------------------------------------
+
+|         |                            |    1, 2;
+|                                      |    2;
+
+BorderN    = 1
+TargetComb = (1, 2)
+
+(Vice Versa)-------------------------------------
+
+|                                      |    2;
+|         |                            |    1, 2;
+
+BorderN    = 1
+TargetComb = (2, 1)
+

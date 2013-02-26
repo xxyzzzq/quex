@@ -1,0 +1,40 @@
+#---------------------------------------------------------------------------
+mode X { A {a} }
+mode Y : X {       Nonsense PRIORITY-MARK; }
+
+<string>:1:warning: PRIORITY mark does not have any effect.
+Mode: 'X'
+(0) A {a}
+Mode: 'Y'
+(0) A {a}
+#---------------------------------------------------------------------------
+mode X { A {a} }
+mode Y : X { D {d} Nonsense PRIORITY-MARK; }
+
+<string>:1:warning: PRIORITY mark does not have any effect.
+Mode: 'X'
+(0) A {a}
+Mode: 'Y'
+(0) A {a}
+(1) D {d}
+#---------------------------------------------------------------------------
+mode X { A {a} }
+mode Y : X {       Nonsense PRIORITY-MARK; D {d} }
+
+<string>:1:warning: PRIORITY mark does not have any effect.
+Mode: 'X'
+(0) A {a}
+Mode: 'Y'
+(0) A {a}
+(1) D {d}
+#---------------------------------------------------------------------------
+mode X { A {a} }
+mode Y : X { D {d} Nonsense PRIORITY-MARK; E {e} }
+
+<string>:1:warning: PRIORITY mark does not have any effect.
+Mode: 'X'
+(0) A {a}
+Mode: 'Y'
+(0) A {a}
+(1) D {d}
+(2) E {e}

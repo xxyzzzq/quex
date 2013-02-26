@@ -1,0 +1,53 @@
+(Straight)---------------------------------------
+
+StateA: [10L]
+  [INTERVAL]   [TARGET/STATE [10]]
+  [-oo, 9]     MST:(1)
+  [10, oo]     MST:(2)
+StateB: [20L]
+  [INTERVAL]   [TARGET/STATE [20]]
+  [-oo, 4]     MST:(2)
+  [5, 19]      MST:(3)
+  [20, 24]     MST:(4)
+  [25, 34]     MST:(5)
+  [35, oo]     MST:(1)
+
+Result
+  [INTERVAL]   [TARGET/STATE [10, 20]]
+  [-oo, 4]     MST:scheme((1, 2))
+  [5, 9]       MST:scheme((1, 3))
+  [10, 19]     MST:scheme((2, 3))
+  [20, 24]     MST:scheme((2, 4))
+  [25, 34]     MST:scheme((2, 5))
+  [35, oo]     MST:scheme((2, 1))
+BorderN        = 5
+Target Schemes = (1, 2), (1, 3), (2, 1), (2, 3), (2, 4), (2, 5)
+
+
+
+(Vice Versa)-------------------------------------
+
+StateA: [20L]
+  [INTERVAL]   [TARGET/STATE [20]]
+  [-oo, 4]     MST:(2)
+  [5, 19]      MST:(3)
+  [20, 24]     MST:(4)
+  [25, 34]     MST:(5)
+  [35, oo]     MST:(1)
+StateB: [10L]
+  [INTERVAL]   [TARGET/STATE [10]]
+  [-oo, 9]     MST:(1)
+  [10, oo]     MST:(2)
+
+Result
+  [INTERVAL]   [TARGET/STATE [20, 10]]
+  [-oo, 4]     MST:scheme((2, 1))
+  [5, 9]       MST:scheme((3, 1))
+  [10, 19]     MST:scheme((3, 2))
+  [20, 24]     MST:scheme((4, 2))
+  [25, 34]     MST:scheme((5, 2))
+  [35, oo]     MST:scheme((1, 2))
+BorderN        = 5
+Target Schemes = (1, 2), (2, 1), (3, 1), (3, 2), (4, 2), (5, 2)
+
+

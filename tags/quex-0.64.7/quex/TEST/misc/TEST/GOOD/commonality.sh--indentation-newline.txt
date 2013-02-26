@@ -1,0 +1,4 @@
+interfere-indentation-newline.qx:2:error: The indentation newline pattern '[x]' matches a superset of what is matched by
+interfere-indentation-newline.qx:3:error: pattern '"x"'.
+interfere-indentation-newline.qx:3:error: The former has precedence and the latter can never match.
+interfere-indentation-newline.qx:3:error: ('--suppress 2' to avoid this message)

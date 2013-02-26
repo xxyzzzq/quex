@@ -1,0 +1,529 @@
+<history date="Tue Feb 26 22:39:39 2013" element-n="221">
+    <day year="2009" month="04" day="25">
+        <history-init time="06:37:01"/>
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="06:37:01"/>
+    </day>
+    <day year="2009" month="04" day="27">
+        <test-runs-today n="4" ok-n="3" fail-n="1" else-n="0" last-run="oll korrekt" last-time="05:35:08"/>
+    </day>
+    <day year="2009" month="04" day="28">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="03:56:02"/>
+    </day>
+    <day year="2009" month="05" day="08">
+        <test-runs-today n="4" ok-n="2" fail-n="2" else-n="0" last-run="oll korrekt" last-time="22:26:59"/>
+    </day>
+    <day year="2009" month="05" day="09">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="03:56:49"/>
+    </day>
+    <day year="2009" month="05" day="12">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="09:04:29"/>
+    </day>
+    <day year="2009" month="05" day="14">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="19:31:50"/>
+    </day>
+    <day year="2009" month="05" day="16">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:12:21"/>
+    </day>
+    <day year="2009" month="05" day="18">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="19:39:23"/>
+    </day>
+    <day year="2009" month="05" day="20">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="07:42:07"/>
+    </day>
+    <day year="2009" month="05" day="22">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="19:35:25"/>
+    </day>
+    <day year="2009" month="05" day="23">
+        <test-runs-today n="5" ok-n="5" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:05:38"/>
+    </day>
+    <day year="2009" month="05" day="27">
+        <test-runs-today n="3" ok-n="2" fail-n="1" else-n="0" last-run="oll korrekt" last-time="23:54:31"/>
+    </day>
+    <day year="2009" month="05" day="28">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="10:15:00"/>
+    </day>
+    <day year="2009" month="05" day="30">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="19:12:26"/>
+    </day>
+    <day year="2009" month="06" day="01">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="01:13:20"/>
+    </day>
+    <day year="2009" month="06" day="05">
+        <test-runs-today n="6" ok-n="3" fail-n="3" else-n="0" last-run="oll korrekt" last-time="22:37:13"/>
+    </day>
+    <day year="2009" month="06" day="10">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="19:04:11"/>
+    </day>
+    <day year="2009" month="06" day="13">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="20:40:30"/>
+    </day>
+    <day year="2009" month="06" day="14">
+        <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="oll korrekt" last-time="11:38:08"/>
+    </day>
+    <day year="2009" month="06" day="16">
+        <test-runs-today n="9" ok-n="7" fail-n="2" else-n="0" last-run="oll korrekt" last-time="21:17:28"/>
+    </day>
+    <day year="2009" month="06" day="17">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="19:18:49"/>
+    </day>
+    <day year="2009" month="06" day="18">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="22:36:00"/>
+    </day>
+    <day year="2009" month="06" day="20">
+        <crc-error time="10:23:42" application="test-converter-x.py" choice="2" database-crc="-603542148" real-crc="-837076251"/>
+        <crc-error time="10:23:47" application="test-converter-x.py" choice="1" database-crc="-395531614" real-crc="282607372"/>
+        <test-runs-today n="4" ok-n="2" fail-n="2" else-n="0" last-run="oll korrekt" last-time="10:23:49"/>
+    </day>
+    <day year="2009" month="06" day="22">
+        <test-runs-today n="5" ok-n="5" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:48:45"/>
+    </day>
+    <day year="2009" month="06" day="27">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:11:37"/>
+    </day>
+    <day year="2009" month="07" day="02">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:09:19"/>
+    </day>
+    <day year="2009" month="07" day="04">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:40:00"/>
+    </day>
+    <day year="2009" month="07" day="05">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:07:13"/>
+    </day>
+    <day year="2009" month="07" day="06">
+        <test-runs-today n="13" ok-n="5" fail-n="8" else-n="0" last-run="oll korrekt" last-time="23:27:16"/>
+    </day>
+    <day year="2009" month="07" day="09">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:42:36"/>
+    </day>
+    <day year="2009" month="07" day="10">
+        <test-runs-today n="4" ok-n="4" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:29:02"/>
+    </day>
+    <day year="2009" month="07" day="15">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="13:09:01"/>
+    </day>
+    <day year="2009" month="07" day="16">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:04:12"/>
+    </day>
+    <day year="2009" month="07" day="18">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:12:13"/>
+    </day>
+    <day year="2009" month="07" day="19">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="00:00:29"/>
+    </day>
+    <day year="2009" month="07" day="21">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:14:29"/>
+    </day>
+    <day year="2009" month="07" day="22">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:39:17"/>
+    </day>
+    <day year="2009" month="07" day="23">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:22:01"/>
+    </day>
+    <day year="2009" month="07" day="26">
+        <test-runs-today n="4" ok-n="4" fail-n="0" else-n="0" last-run="oll korrekt" last-time="07:15:02"/>
+    </day>
+    <day year="2009" month="07" day="27">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:14:38"/>
+    </day>
+    <day year="2009" month="07" day="28">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:22:30"/>
+    </day>
+    <day year="2009" month="07" day="30">
+        <test-runs-today n="4" ok-n="4" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:36:38"/>
+    </day>
+    <day year="2009" month="08" day="01">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="10:53:28"/>
+    </day>
+    <day year="2009" month="08" day="02">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="10:18:23"/>
+    </day>
+    <day year="2009" month="08" day="03">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="09:58:33"/>
+    </day>
+    <day year="2009" month="08" day="07">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="21:12:00"/>
+    </day>
+    <day year="2009" month="08" day="08">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="19:53:28"/>
+    </day>
+    <day year="2009" month="08" day="12">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="19:17:18"/>
+    </day>
+    <day year="2009" month="08" day="13">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="08:28:40"/>
+    </day>
+    <day year="2009" month="08" day="14">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="07:30:09"/>
+    </day>
+    <day year="2009" month="08" day="18">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:36:36"/>
+    </day>
+    <day year="2009" month="08" day="20">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:03:01"/>
+    </day>
+    <day year="2009" month="08" day="22">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="05:39:40"/>
+    </day>
+    <day year="2009" month="08" day="23">
+        <test-runs-today n="4" ok-n="4" fail-n="0" else-n="0" last-run="oll korrekt" last-time="10:39:26"/>
+    </day>
+    <day year="2009" month="08" day="24">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="10:40:00"/>
+    </day>
+    <day year="2009" month="08" day="25">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="12:48:31"/>
+    </day>
+    <day year="2009" month="08" day="26">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:09:26"/>
+    </day>
+    <day year="2009" month="08" day="29">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:54:08"/>
+    </day>
+    <day year="2009" month="08" day="30">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:03:03"/>
+    </day>
+    <day year="2009" month="08" day="31">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:54:31"/>
+    </day>
+    <day year="2009" month="09" day="02">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:21:50"/>
+    </day>
+    <day year="2009" month="09" day="03">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:10:25"/>
+    </day>
+    <day year="2009" month="09" day="05">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="05:14:26"/>
+    </day>
+    <day year="2009" month="09" day="13">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="13:41:29"/>
+    </day>
+    <day year="2009" month="09" day="16">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:04:04"/>
+    </day>
+    <day year="2009" month="09" day="17">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="21:09:25"/>
+    </day>
+    <day year="2009" month="09" day="19">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="01:01:36"/>
+    </day>
+    <day year="2009" month="09" day="21">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:17:13"/>
+    </day>
+    <day year="2009" month="09" day="23">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:22:16"/>
+    </day>
+    <day year="2009" month="09" day="24">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:03:48"/>
+    </day>
+    <day year="2009" month="10" day="01">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="21:29:30"/>
+    </day>
+    <day year="2009" month="10" day="05">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="20:35:43"/>
+    </day>
+    <day year="2009" month="10" day="06">
+        <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="20:51:55"/>
+    </day>
+    <day year="2009" month="10" day="13">
+        <crc-error time="20:59:28" application="test-token_class.py" choice="" database-crc="-630375377" real-crc="2048563492"/>
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="20:59:29"/>
+    </day>
+    <day year="2009" month="10" day="14">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="19:19:12"/>
+    </day>
+    <day year="2009" month="10" day="15">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="21:13:40"/>
+    </day>
+    <day year="2009" month="10" day="16">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="23:43:57"/>
+    </day>
+    <day year="2009" month="10" day="17">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:58:32"/>
+    </day>
+    <day year="2009" month="10" day="21">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="20:25:09"/>
+    </day>
+    <day year="2009" month="10" day="25">
+        <crc-error time="21:06:08" application="test-token_class.py" choice="" database-crc="-439138668" real-crc="984364813"/>
+        <test-runs-today n="3" ok-n="2" fail-n="1" else-n="0" last-run="oll korrekt" last-time="22:03:38"/>
+    </day>
+    <day year="2009" month="11" day="12">
+        <crc-error time="07:06:36" application="test-token_class.py" choice="" database-crc="984364813" real-crc="-830566412"/>
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="07:06:38"/>
+    </day>
+    <day year="2009" month="11" day="28">
+        <crc-error time="17:21:58" application="test-token_class.py" choice="" database-crc="-830566412" real-crc="-1682707121"/>
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="17:22:00"/>
+    </day>
+    <day year="2009" month="11" day="29">
+        <crc-error time="09:34:31" application="test-token_class.py" choice="" database-crc="-1682707121" real-crc="-2090700002"/>
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="09:35:06"/>
+    </day>
+    <day year="2009" month="12" day="03">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="08:36:02"/>
+    </day>
+    <day year="2009" month="12" day="05">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="14:22:51"/>
+    </day>
+    <day year="2009" month="12" day="06">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:37:21"/>
+    </day>
+    <day year="2009" month="12" day="11">
+        <crc-error time="22:42:55" application="test-token_class.py" choice="" database-crc="-2090700002" real-crc="-1188865445"/>
+        <test-runs-today n="3" ok-n="2" fail-n="1" else-n="0" last-run="oll korrekt" last-time="23:05:25"/>
+    </day>
+    <day year="2009" month="12" day="12">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="01:30:38"/>
+    </day>
+    <day year="2009" month="12" day="13">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:48:26"/>
+    </day>
+    <day year="2009" month="12" day="14">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:11:47"/>
+    </day>
+    <day year="2009" month="12" day="20">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:07:48"/>
+    </day>
+    <day year="2009" month="12" day="22">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="13:17:33"/>
+    </day>
+    <day year="2009" month="12" day="23">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:37:29"/>
+    </day>
+    <day year="2009" month="12" day="24">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="08:57:15"/>
+    </day>
+    <day year="2009" month="12" day="25">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:28:08"/>
+    </day>
+    <day year="2009" month="12" day="26">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:47:12"/>
+    </day>
+    <day year="2009" month="12" day="27">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="00:45:47"/>
+    </day>
+    <day year="2009" month="12" day="31">
+        <test-runs-today n="5" ok-n="1" fail-n="4" else-n="0" last-run="oll korrekt" last-time="23:20:27"/>
+    </day>
+    <day year="2010" month="01" day="01">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="00:14:39"/>
+    </day>
+    <day year="2010" month="01" day="02">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="13:48:17"/>
+    </day>
+    <day year="2010" month="01" day="03">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="22:10:05"/>
+    </day>
+    <day year="2010" month="01" day="04">
+        <test-runs-today n="3" ok-n="1" fail-n="2" else-n="0" last-run="oll korrekt" last-time="21:58:37"/>
+    </day>
+    <day year="2010" month="01" day="09">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="05:40:27"/>
+    </day>
+    <day year="2010" month="01" day="10">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="01:12:04"/>
+    </day>
+    <day year="2010" month="01" day="11">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:13:49"/>
+    </day>
+    <day year="2010" month="01" day="12">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:19:49"/>
+    </day>
+    <day year="2010" month="01" day="14">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="12:41:06"/>
+    </day>
+    <day year="2010" month="01" day="15">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="18:03:25"/>
+    </day>
+    <day year="2010" month="01" day="16">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:48:42"/>
+    </day>
+    <day year="2010" month="01" day="17">
+        <test-runs-today n="4" ok-n="3" fail-n="1" else-n="0" last-run="failure" last-time="21:48:12"/>
+    </day>
+    <day year="2010" month="01" day="19">
+        <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="13:23:36"/>
+    </day>
+    <day year="2010" month="01" day="21">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="12:52:10"/>
+    </day>
+    <day year="2010" month="01" day="22">
+        <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="oll korrekt" last-time="11:58:53"/>
+    </day>
+    <day year="2010" month="01" day="23">
+        <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="oll korrekt" last-time="22:01:14"/>
+    </day>
+    <day year="2010" month="01" day="26">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:33:06"/>
+    </day>
+    <day year="2010" month="01" day="29">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="01:32:37"/>
+    </day>
+    <day year="2010" month="01" day="30">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:27:42"/>
+    </day>
+    <day year="2010" month="01" day="31">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:44:17"/>
+    </day>
+    <day year="2010" month="02" day="01">
+        <test-runs-today n="3" ok-n="1" fail-n="2" else-n="0" last-run="oll korrekt" last-time="21:39:33"/>
+    </day>
+    <day year="2010" month="02" day="02">
+        <test-runs-today n="4" ok-n="4" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:10:17"/>
+    </day>
+    <day year="2010" month="02" day="03">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:44:49"/>
+    </day>
+    <day year="2010" month="02" day="04">
+        <crc-error time="05:51:55" application="test-token_class.py" choice="" database-crc="147990737" real-crc="-69061857"/>
+        <crc-error time="22:34:52" application="test-token_class.py" choice="" database-crc="-69061857" real-crc="-109313848"/>
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:34:54"/>
+    </day>
+    <day year="2010" month="02" day="05">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="06:38:14"/>
+    </day>
+    <day year="2010" month="02" day="07">
+        <test-runs-today n="4" ok-n="3" fail-n="1" else-n="0" last-run="failure" last-time="22:13:09"/>
+        <crc-error time="22:19:07" application="test-token_class.py" choice="" database-crc="-109313848" real-crc="344698645"/>
+    </day>
+    <day year="2010" month="02" day="08">
+        <crc-error time="22:13:07" application="test-token_class.py" choice="" database-crc="344698645" real-crc="1669038187"/>
+        <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="failure" last-time="22:13:08"/>
+    </day>
+    <day year="2010" month="02" day="10">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="23:26:30"/>
+    </day>
+    <day year="2010" month="02" day="11">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="06:44:55"/>
+    </day>
+    <day year="2010" month="02" day="13">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="11:44:03"/>
+    </day>
+    <day year="2010" month="02" day="14">
+        <crc-error time="20:30:42" application="test-token_class.py" choice="" database-crc="1669038187" real-crc="1164165882"/>
+        <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="oll korrekt" last-time="20:30:43"/>
+    </day>
+    <day year="2010" month="02" day="15">
+        <test-runs-today n="8" ok-n="8" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:02:34"/>
+    </day>
+    <day year="2010" month="02" day="19">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:15:16"/>
+    </day>
+    <day year="2010" month="03" day="02">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="21:38:29"/>
+    </day>
+    <day year="2010" month="06" day="26">
+        <crc-error time="05:26:02" application="test-token_class.py" choice="" database-crc="964207907" real-crc="401064764"/>
+    </day>
+    <day year="2010" month="07" day="01">
+        <crc-error time="20:35:27" application="test-token_class.py" choice="" database-crc="401064764" real-crc="281822600"/>
+    </day>
+    <day year="2010" month="07" day="12">
+        <crc-error time="06:32:22" application="test-token_class.py" choice="" database-crc="281822600" real-crc="558813571"/>
+    </day>
+    <day year="2010" month="11" day="03">
+        <crc-error time="08:16:11" application="test-token_class.py" choice="" database-crc="558813571" real-crc="-355463670"/>
+    </day>
+    <day year="2010" month="11" day="19">
+        <crc-error time="09:04:00" application="test-converter-x.py" choice="1" database-crc="-705738934" real-crc="816612133"/>
+        <crc-error time="09:04:00" application="test-converter-x.py" choice="2" database-crc="-837076251" real-crc="248418612"/>
+    </day>
+    <day year="2011" month="10" day="11">
+        <crc-error time="06:15:49" application="test-converter-x.py" choice="2" database-crc="248418612" real-crc="1067358446"/>
+        <crc-error time="06:20:08" application="test-converter-C.py" choice="cp1256" database-crc="-800287742" real-crc="1051252697"/>
+        <crc-error time="06:20:59" application="test-converter-x.py" choice="3" database-crc="-1279708581" real-crc="-1013101497"/>
+    </day>
+    <day year="2012" month="03" day="14">
+        <crc-error time="06:51:27" application="test-token_class.py" choice="" database-crc="-462729158" real-crc="-1371265432"/>
+    </day>
+    <day year="2012" month="03" day="19">
+        <crc-error time="06:20:32" application="test-token_class.py" choice="" database-crc="-624044688" real-crc="-1371265432"/>
+        <crc-error time="06:21:03" application="test-token_class.py" choice="" database-crc="-1371265432" real-crc="-624044688"/>
+    </day>
+    <day year="2012" month="03" day="24">
+        <crc-error time="05:54:43" application="test-token_class.py" choice="" database-crc="-624044688" real-crc="36159785"/>
+    </day>
+    <day year="2012" month="03" day="25">
+        <crc-error time="03:48:23" application="test-token_class.py" choice="" database-crc="36159785" real-crc="-1255991229"/>
+    </day>
+    <day year="2012" month="03" day="28">
+        <crc-error time="06:10:55" application="test-token_class.py" choice="" database-crc="-1255991229" real-crc="313694271"/>
+    </day>
+    <day year="2012" month="03" day="31">
+        <crc-error time="20:38:44" application="test-token_class.py" choice="" database-crc="313694271" real-crc="639376278"/>
+    </day>
+    <day year="2012" month="04" day="01">
+        <crc-error time="05:22:19" application="test-token_class.py" choice="" database-crc="639376278" real-crc="-1622329096"/>
+    </day>
+    <day year="2012" month="10" day="21">
+        <crc-error time="08:56:00" application="default_counter.py" choice="Default2" database-crc="-639787527" real-crc="-1799411670"/>
+        <crc-error time="08:56:23" application="default_counter.py" choice="Wild" database-crc="20717241" real-crc="600831826"/>
+    </day>
+    <day year="2012" month="11" day="07">
+        <crc-error time="07:08:09" application="default_counter.py" choice="Default-UCS" database-crc="1663018037" real-crc="1879525966"/>
+    </day>
+    <day year="2012" month="11" day="10">
+        <crc-error time="07:45:24" application="default_counter.py" choice="Default2-UCS" database-crc="-1892132367" real-crc="-1972275283"/>
+        <crc-error time="07:46:09" application="default_counter.py" choice="Wild-UCS" database-crc="514076143" real-crc="1010664045"/>
+        <crc-error time="07:47:35" application="default_counter.py" choice="Default2-UTF8" database-crc="-1607502756" real-crc="-697896830"/>
+        <crc-error time="07:48:02" application="default_counter.py" choice="Wild-UTF8" database-crc="1546472127" real-crc="339980655"/>
+        <crc-error time="07:48:20" application="default_counter.py" choice="Default2-UTF16" database-crc="-1681232482" real-crc="-108037189"/>
+        <crc-error time="07:49:12" application="default_counter.py" choice="Wild-UTF16" database-crc="2003441184" real-crc="-294893973"/>
+        <crc-error time="07:49:39" application="default_counter.py" choice="Default-cp037" database-crc="1974190070" real-crc="-151632568"/>
+        <crc-error time="07:50:17" application="default_counter.py" choice="Default2-cp037" database-crc="-1742828652" real-crc="1493224356"/>
+        <crc-error time="07:50:28" application="default_counter.py" choice="Wild-cp037" database-crc="-939901476" real-crc="874275521"/>
+        <crc-error time="07:50:54" application="default_counter.py" choice="Wild-UCS" database-crc="1010664045" real-crc="-1038707359"/>
+        <crc-error time="07:51:12" application="default_counter.py" choice="Wild-UTF8" database-crc="339980655" real-crc="-1043117970"/>
+        <crc-error time="07:51:21" application="default_counter.py" choice="Wild-UTF16" database-crc="-294893973" real-crc="1694274517"/>
+        <crc-error time="07:51:44" application="default_counter.py" choice="Wild-UTF8" database-crc="-1043117970" real-crc="-1121479461"/>
+        <crc-error time="07:51:52" application="default_counter.py" choice="Wild-UTF16" database-crc="1694274517" real-crc="168492608"/>
+        <crc-error time="09:55:02" application="default_counter.py" choice="Default2-cp037" database-crc="1493224356" real-crc="1607141711"/>
+        <crc-error time="13:19:46" application="default_counter.py" choice="Default-UCS" database-crc="1879525966" real-crc="-170061475"/>
+        <crc-error time="13:19:53" application="default_counter.py" choice="Default2-UCS" database-crc="-1972275283" real-crc="1445319108"/>
+        <crc-error time="13:19:58" application="default_counter.py" choice="Wild-UCS" database-crc="-1038707359" real-crc="649962790"/>
+        <crc-error time="13:20:03" application="default_counter.py" choice="Default-UTF8" database-crc="-495721039" real-crc="427630048"/>
+        <crc-error time="13:20:09" application="default_counter.py" choice="Default2-UTF8" database-crc="-697896830" real-crc="-512188421"/>
+        <crc-error time="13:20:14" application="default_counter.py" choice="Wild-UTF8" database-crc="-1121479461" real-crc="250265528"/>
+        <crc-error time="13:20:20" application="default_counter.py" choice="Default-UTF16" database-crc="-523434019" real-crc="-774374379"/>
+        <crc-error time="13:20:25" application="default_counter.py" choice="Default2-UTF16" database-crc="-108037189" real-crc="651324346"/>
+        <crc-error time="13:20:31" application="default_counter.py" choice="Wild-UTF16" database-crc="168492608" real-crc="-516364844"/>
+        <crc-error time="13:20:36" application="default_counter.py" choice="Default-cp037" database-crc="-151632568" real-crc="2029686058"/>
+        <crc-error time="13:20:42" application="default_counter.py" choice="Default2-cp037" database-crc="1607141711" real-crc="617296391"/>
+        <crc-error time="13:20:47" application="default_counter.py" choice="Wild-cp037" database-crc="874275521" real-crc="1177055568"/>
+    </day>
+    <day year="2012" month="11" day="18">
+        <crc-error time="23:38:32" application="default_counter.py" choice="Default-UCS" database-crc="-170061475" real-crc="-696115100"/>
+        <crc-error time="23:45:26" application="default_counter.py" choice="Default2-UCS" database-crc="1445319108" real-crc="526979741"/>
+        <crc-error time="23:45:27" application="default_counter.py" choice="Wild-UCS" database-crc="649962790" real-crc="265084867"/>
+        <crc-error time="23:45:27" application="default_counter.py" choice="Default-UTF8" database-crc="427630048" real-crc="-1452703951"/>
+        <crc-error time="23:45:27" application="default_counter.py" choice="Default2-UTF8" database-crc="-146710549" real-crc="1162271682"/>
+        <crc-error time="23:45:27" application="default_counter.py" choice="Wild-UTF8" database-crc="250265528" real-crc="286978345"/>
+    </day>
+    <day year="2012" month="11" day="24">
+        <crc-error time="05:31:09" application="default_counter.py" choice="Default-cp037" database-crc="-960132690" real-crc="-151655063"/>
+        <crc-error time="10:49:22" application="default_counter.py" choice="Default2-UCS" database-crc="526979741" real-crc="1869451445"/>
+        <crc-error time="10:49:22" application="default_counter.py" choice="Default-UTF8" database-crc="-1452703951" real-crc="-1372346036"/>
+        <crc-error time="10:49:23" application="default_counter.py" choice="Default2-UTF8" database-crc="1162271682" real-crc="2031193966"/>
+        <crc-error time="10:51:39" application="default_counter.py" choice="Default-UTF16" database-crc="795659698" real-crc="657301487"/>
+        <crc-error time="10:51:39" application="default_counter.py" choice="Default2-UTF16" database-crc="1837121225" real-crc="734619405"/>
+        <crc-error time="10:51:39" application="default_counter.py" choice="Default-cp037" database-crc="-151655063" real-crc="341753208"/>
+    </day>
+    <day year="2012" month="11" day="28">
+        <crc-error time="01:28:17" application="default_counter.py" choice="Default-UCS" database-crc="1288599237" real-crc="426360421"/>
+        <crc-error time="01:29:07" application="default_counter.py" choice="Default-UTF8" database-crc="-1372346036" real-crc="-1276603320"/>
+    </day>
+    <day year="2012" month="12" day="17">
+        <crc-error time="21:09:42" application="default_counter.py" choice="Default-UCS" database-crc="-782022276" real-crc="1365238260"/>
+        <crc-error time="21:09:46" application="default_counter.py" choice="Default2-UCS" database-crc="-1979826419" real-crc="-2027139692"/>
+        <crc-error time="21:09:51" application="default_counter.py" choice="Wild-UCS" database-crc="-1717033423" real-crc="11751499"/>
+        <crc-error time="21:09:56" application="default_counter.py" choice="Default-UTF8" database-crc="1579180336" real-crc="-798167653"/>
+        <crc-error time="21:10:01" application="default_counter.py" choice="Default2-UTF8" database-crc="345998329" real-crc="-1839203578"/>
+        <crc-error time="21:10:07" application="default_counter.py" choice="Wild-UTF8" database-crc="446992735" real-crc="-1055353971"/>
+        <crc-error time="21:10:11" application="default_counter.py" choice="Default-UTF16" database-crc="1655769231" real-crc="-1810958965"/>
+        <crc-error time="21:10:16" application="default_counter.py" choice="Default2-UTF16" database-crc="1196610177" real-crc="2053753480"/>
+        <crc-error time="21:10:20" application="default_counter.py" choice="Wild-UTF16" database-crc="201611114" real-crc="-2093126926"/>
+        <crc-error time="21:10:24" application="default_counter.py" choice="Default-cp037" database-crc="2102454067" real-crc="1009010082"/>
+        <crc-error time="21:10:29" application="default_counter.py" choice="Default2-cp037" database-crc="-2022684343" real-crc="-1673566392"/>
+        <crc-error time="21:10:33" application="default_counter.py" choice="Wild-cp037" database-crc="-1740681174" real-crc="-1073689164"/>
+    </day>
+</history>

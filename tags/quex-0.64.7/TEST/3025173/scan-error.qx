@@ -1,0 +1,6 @@
+/* token {
+    LETTER;
+} */
+mode X {
+    [a-z] => BR_TKN_LETTER(text=Lexeme);
+}

@@ -1,0 +1,2 @@
+error.qx:4:error: Start mode 'MODE' is inheritable only and cannot be instantiated.
+error.qx:4:error: Acceptable: ANOTHER_MODE.

@@ -1,0 +1,104 @@
+,------------------------------------------------------------------------------------
+| [START]
+before: Lexeme: a; LexemeBegin: a; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+       at begin: line_n = 1; column_n = 1;
+       at end:   line_n = 1; column_n = 2;
+after:  Lexeme: a; LexemeBegin: a; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+       at begin: line_n = 1; column_n = 1;
+       at end:   line_n = 1; column_n = 2;
+before: Lexeme: a; LexemeBegin: a; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+       at begin: line_n = 1; column_n = 2;
+       at end:   line_n = 1; column_n = 3;
+after:  Lexeme: a; LexemeBegin: a; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+       at begin: line_n = 1; column_n = 2;
+       at end:   line_n = 1; column_n = 3;
+before: Lexeme: abb; LexemeBegin: abb; LexemeEnd - LexemeBegin: 3; LexemeL: 3
+       at begin: line_n = 1; column_n = 3;
+       at end:   line_n = 1; column_n = 6;
+after:  Lexeme: abb; LexemeBegin: abb; LexemeEnd - LexemeBegin: 3; LexemeL: 3
+       at begin: line_n = 1; column_n = 3;
+       at end:   line_n = 1; column_n = 6;
+before: Lexeme: baa; LexemeBegin: baa; LexemeEnd - LexemeBegin: 3; LexemeL: 3
+       at begin: line_n = 1; column_n = 6;
+       at end:   line_n = 1; column_n = 9;
+after:  Lexeme: baa; LexemeBegin: baa; LexemeEnd - LexemeBegin: 3; LexemeL: 3
+       at begin: line_n = 1; column_n = 6;
+       at end:   line_n = 1; column_n = 9;
+before: Lexeme: abb; LexemeBegin: abb; LexemeEnd - LexemeBegin: 3; LexemeL: 3
+       at begin: line_n = 1; column_n = 9;
+       at end:   line_n = 1; column_n = 12;
+after:  Lexeme: abb; LexemeBegin: abb; LexemeEnd - LexemeBegin: 3; LexemeL: 3
+       at begin: line_n = 1; column_n = 9;
+       at end:   line_n = 1; column_n = 12;
+before: Lexeme: ba; LexemeBegin: ba; LexemeEnd - LexemeBegin: 2; LexemeL: 2
+       at begin: line_n = 1; column_n = 12;
+       at end:   line_n = 1; column_n = 14;
+after:  Lexeme: ba; LexemeBegin: ba; LexemeEnd - LexemeBegin: 2; LexemeL: 2
+       at begin: line_n = 1; column_n = 12;
+       at end:   line_n = 1; column_n = 14;
+before: Lexeme: ab; LexemeBegin: ab; LexemeEnd - LexemeBegin: 2; LexemeL: 2
+       at begin: line_n = 1; column_n = 14;
+       at end:   line_n = 1; column_n = 16;
+after:  Lexeme: ab; LexemeBegin: ab; LexemeEnd - LexemeBegin: 2; LexemeL: 2
+       at begin: line_n = 1; column_n = 14;
+       at end:   line_n = 1; column_n = 16;
+before: Lexeme: b; LexemeBegin: b; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+       at begin: line_n = 1; column_n = 16;
+       at end:   line_n = 1; column_n = 17;
+after:  Lexeme: b; LexemeBegin: b; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+       at begin: line_n = 1; column_n = 16;
+       at end:   line_n = 1; column_n = 17;
+before: Lexeme: a; LexemeBegin: a; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+       at begin: line_n = 1; column_n = 17;
+       at end:   line_n = 1; column_n = 18;
+after:  Lexeme: a; LexemeBegin: a; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+       at begin: line_n = 1; column_n = 17;
+       at end:   line_n = 1; column_n = 18;
+before: Lexeme: b; LexemeBegin: b; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+       at begin: line_n = 1; column_n = 18;
+       at end:   line_n = 1; column_n = 19;
+after:  Lexeme: b; LexemeBegin: b; LexemeEnd - LexemeBegin: 1; LexemeL: 1
+       at begin: line_n = 1; column_n = 18;
+       at end:   line_n = 1; column_n = 19;
+before: Lexeme: ; LexemeBegin: ; LexemeEnd - LexemeBegin: 0; LexemeL: 0
+       at begin: line_n = 2; column_n = 1;
+       at end:   line_n = 2; column_n = 1;
+after:  Lexeme: ; LexemeBegin: ; LexemeEnd - LexemeBegin: 0; LexemeL: 0
+       at begin: line_n = 2; column_n = 1;
+       at end:   line_n = 2; column_n = 1;
+(1, 1)  	ON_MATCH______: 0
+(1, 1)  	ELSE__________: a
+(1, 1)  	ON_AFTER_MATCH: 1
+(1, 2)  	ON_MATCH______: 1
+(1, 2)  	ELSE__________: a
+(1, 2)  	ON_AFTER_MATCH: 2
+(1, 3)  	ON_MATCH______: 2
+(1, 3)  	ABPLUS________: abb
+(1, 3)  	ON_AFTER_MATCH: 3
+(1, 6)  	ON_MATCH______: 3
+(1, 6)  	BAPLUS________: baa
+(1, 6)  	ON_AFTER_MATCH: 4
+(1, 9)  	ON_MATCH______: 4
+(1, 9)  	ABPLUS________: abb
+(1, 9)  	ON_AFTER_MATCH: 5
+(1, 12)  	ON_MATCH______: 5
+(1, 12)  	BAPLUS________: ba
+(1, 12)  	ON_AFTER_MATCH: 6
+(1, 14)  	ON_MATCH______: 6
+(1, 14)  	ABPLUS________: ab
+(1, 14)  	ON_AFTER_MATCH: 7
+(1, 16)  	ON_MATCH______: 7
+(1, 16)  	ELSE__________: b
+(1, 16)  	ON_AFTER_MATCH: 8
+(1, 17)  	ON_MATCH______: 8
+(1, 17)  	ELSE__________: a
+(1, 17)  	ON_AFTER_MATCH: 9
+(1, 18)  	ON_MATCH______: 9
+(1, 18)  	ELSE__________: b
+(1, 18)  	ON_AFTER_MATCH: 10
+(1, 19)  	ON_FAILURE____: 
+
+(2, 1)  	ON_MATCH______: 10
+(2, 1)  	<TERMINATION>: 
+| [END] number of token = 33
+`------------------------------------------------------------------------------------
