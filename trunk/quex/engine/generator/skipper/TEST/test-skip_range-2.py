@@ -7,7 +7,7 @@ from helper import *
 if "--hwut-info" in sys.argv:
     print "Skip-Range: Varrying DelimiterLength, Large Buffer"
     print "CHOICES: DL=1, DL=2, DL=3, DL=4;"
-    print "SAME;"
+    #print "SAME;"
     sys.exit(0)
 
 if len(sys.argv) < 2 or not (sys.argv[1] in ["DL=1", "DL=2", "DL=3", "DL=4"]): 
@@ -16,10 +16,10 @@ if len(sys.argv) < 2 or not (sys.argv[1] in ["DL=1", "DL=2", "DL=3", "DL=4"]):
 
 Language = "Cpp"
 DL = sys.argv[1]
-if   DL == "DL=1": SEP = "*"
-elif DL == "DL=2": SEP = "*/"
-elif DL == "DL=3": SEP = "*/*"
-elif DL == "DL=4": SEP = "*/*/"
+if   DL == "DL=1": SEP = "*"; BS=3
+elif DL == "DL=2": SEP = "*/"; BS=4
+elif DL == "DL=3": SEP = "*/*"; BS=5
+elif DL == "DL=4": SEP = "*/*/"; BS=6
 else:
     print "Delimiter length argument '%s' not acceptable, use --hwut-info" % DL
     sys.exit(0)
@@ -28,14 +28,14 @@ end_sequence = map(ord, SEP)
 
 TestStr  = "abcdefg" + SEP + "hijklmnop" + SEP + "qrstuvw" + SEP + "xyz" + SEP + "ok"
 
-compile_and_run(Language, create_range_skipper_code(Language, TestStr, end_sequence, CommentTestStrF=True))
+compile_and_run(Language, create_range_skipper_code(Language, TestStr, end_sequence, CommentTestStrF=True, QuexBufferSize=BS))
 
 TestStr  = SEP + "hijklmnop" + SEP + "qrstuvw" + SEP + "xyz" + SEP
 
-compile_and_run(Language, create_range_skipper_code(Language, TestStr, end_sequence, CommentTestStrF=True))
+compile_and_run(Language, create_range_skipper_code(Language, TestStr, end_sequence, CommentTestStrF=True, QuexBufferSize=BS))
 
 TestStr  = "a" + SEP + "h" + SEP + SEP + SEP
 
-compile_and_run(Language, create_range_skipper_code(Language, TestStr, end_sequence, CommentTestStrF=True))
+compile_and_run(Language, create_range_skipper_code(Language, TestStr, end_sequence, CommentTestStrF=True, QuexBufferSize=BS))
 
 
