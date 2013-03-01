@@ -6,7 +6,7 @@ from helper import *
 
 
 if "--hwut-info" in sys.argv:
-    print "Skip-Range: DelimiterLength=2, Large Buffer"
+    print "Skip-Range: DelimiterLength=2, BufferSize=5"
     print "CHOICES: ANSI-C-PlainMemory, ANSI-C, Cpp, Cpp_StrangeStream;"
     print "SAME;"
     sys.exit(0)
@@ -23,7 +23,7 @@ if Language.find("StrangeStream") != -1:
 
 def test(TestStr):
     end_sequence = map(ord, "*/")
-    code_str = create_range_skipper_code(Language, TestStr, end_sequence)
+    code_str = create_range_skipper_code(Language, TestStr, end_sequence, QuexBufferSize=5)
     compile_and_run(Language, code_str,
                     StrangeStream_str=StrangeStream_str)
 

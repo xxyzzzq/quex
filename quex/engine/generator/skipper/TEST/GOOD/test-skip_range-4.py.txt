@@ -4,9 +4,29 @@ g++  ./tmp.cpp -I./. -I$QUEX_PATH -o ./tmp.cpp.exe -ggdb  ##
 (*) test string: 
 'abcdefgo*o*/hijklmnopo*o*/qrstuvwo*o*/xyzo*o*/ab'##
 (*) result:
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 13;
 next letter: <h>
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 15;
 next letter: <q>
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 13;
 next letter: <x>
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 9;
 next letter: <a>
 end
   ''
