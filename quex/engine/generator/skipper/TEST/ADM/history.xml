@@ -1,4 +1,4 @@
-<history date="Sat Mar  2 08:49:25 2013" element-n="76">
+<history date="Sat Mar  2 09:06:06 2013" element-n="83">
     <day year="2012" month="04" day="29">
         <history-init time="04:47:15"/>
         <crc-error time="19:51:20" application="test-skip-trigger-set.py" choice="ANSI-C-PlainMemory" database-crc="1490947051" real-crc="600307805"/>
@@ -84,5 +84,12 @@
         <crc-error time="07:15:26" application="test-skip_range-2.py" choice="DL=3" database-crc="937304496" real-crc="1989046053"/>
         <crc-error time="07:15:27" application="test-skip_range-2.py" choice="DL=4" database-crc="459354139" real-crc="-2091391747"/>
         <crc-error time="07:23:50" application="test-skip_range-2.py" choice="DL=4" database-crc="-2091391747" real-crc="-1006103800"/>
+        <crc-error time="08:02:42" application="test-skip_nested_range.py" choice="ANSI-C" database-crc="-1325625254" real-crc="-1268142808"/>
+        <crc-error time="08:02:47" application="test-skip_nested_range.py" choice="Cpp" database-crc="-1325625254" real-crc="-1268142808"/>
+        <crc-error time="08:02:52" application="test-skip_nested_range.py" choice="Cpp_StrangeStream" database-crc="-1325625254" real-crc="-1268142808"/>
+        <crc-error time="08:05:32" application="test-skip_nested_range.py" choice="ANSI-C-PlainMemory" database-crc="-1268142808" real-crc="-607472181"/>
+        <crc-error time="08:05:35" application="test-skip_nested_range.py" choice="ANSI-C" database-crc="-1268142808" real-crc="-607472181"/>
+        <crc-error time="08:05:40" application="test-skip_nested_range.py" choice="Cpp" database-crc="-1268142808" real-crc="-607472181"/>
+        <crc-error time="08:05:46" application="test-skip_nested_range.py" choice="Cpp_StrangeStream" database-crc="-1268142808" real-crc="-607472181"/>
     </day>
 </history>
