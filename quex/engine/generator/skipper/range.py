@@ -16,7 +16,18 @@ from   quex.blackboard                             import setup as Setup
 from   quex.blackboard                             import E_StateIndices
 from   copy                                        import copy
 
+OnBufferLimitCode = "<<__dummy__OnBufferLimitCode__>>" 
+OnBackToLoopStart = "<<__dummy__OnBackToLoopStart__>>" 
+
 def do(Data, Mode=None):
+    """
+             .-----------<----------.
+             |                      |
+             +-<--. else            | else         
+             |    |                 |    
+        ---( 1 )--+--->------( 2 )--+-->------- ... ---> RESTART
+                 i == c[0]         i == c[1]
+    """
     ClosingSequence = Data["closer_sequence"]
     ClosingPattern  = Data["closer_pattern"]
 
@@ -217,7 +228,6 @@ def __terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePatte
     print "##DEBUG:\n%s" % "".join(LanguageDB.GET_PLAIN_STRINGS(txt))
     return txt
 
-
 def get_skipper(EndSequence, CloserPattern, Mode=None, IndentationCounterTerminalID=None, OnSkipRangeOpenStr=""):
     assert type(EndSequence) == list
     assert len(EndSequence) >= 1
@@ -406,4 +416,28 @@ def __lc_counting_replacements(code_str, EndSequence):
                       ]), \
            reference_p_required_f
 
+
+def core_loop():
+    blc_set                = NumberSet(Setup.buffer_limit_code)
+    first_exit_set         = NumberSet(TransformedClosingSequence[0])
+    complemtary_core_set   = first_exit_set.union(first_exit_set)
+    core_set               = complemtary_core_set.inverse()
+
+    #  Buffer Limit Code    --> Reload
+    #  First Exit Character --> Go to 'Closer Sequence Check'.
+    #  Else                 --> Loop
+    action_db.append((blc_set,                [OnBufferLimitCode]))
+    action_db.append((skip_set,               None))
+    action_db.append((complementary_skip_set, [OnBackToLoopStart]))
+
+def exit_sequence():
+    sequence = transformation.do_sequence(ClosingSequence)
+    counter  = counter.do_pattern(CloserPattern)
+
+    for x in sequence:
+        txt.append("if( ++input_p != 0x%02X ) goto __SKIP_RANGE;\n" % x)
+    txt.extend(counter.do_pattern(counter))
+    txt.append(goto_restart)
+
+    
 

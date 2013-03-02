@@ -600,10 +600,9 @@ cpp_reload_forward_str = """
     __quex_assert_no_passage();
 __RELOAD_FORWARD:
     __quex_debug1("__RELOAD_FORWARD");
-
     __quex_assert(*(me->buffer._input_p) == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( me->buffer._memory._end_of_file_p == 0x0 ) {
-        __quex_debug_reload_before();
+        __quex_debug_reload_before(); /* Leave macro here to report source position. */
         QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)position, PositionRegisterN);
         __quex_debug_reload_after();
         QUEX_GOTO_STATE(target_state_index);
@@ -618,7 +617,7 @@ __RELOAD_BACKWARD:
     __quex_debug1("__RELOAD_BACKWARD");
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( QUEX_NAME(Buffer_is_begin_of_file)(&me->buffer) == false ) {
-        __quex_debug_reload_before();
+        __quex_debug_reload_before(); /* Leave macro here to report source position. */
         QUEX_NAME(buffer_reload_backward)(&me->buffer);
         __quex_debug_reload_after();
         QUEX_GOTO_STATE(target_state_index);

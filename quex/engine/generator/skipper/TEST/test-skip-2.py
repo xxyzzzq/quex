@@ -28,16 +28,26 @@ trigger_set = NumberSet([Interval(ord('a'), ord('z') + 1),
 Language = "Cpp"
 __Setup_init_language_database(Language)
 
+trigger_set = NumberSet([Interval(ord('a'), ord('z') + 1), 
+                         Interval(ord('A'), ord('Z') + 1)])
 
-TestStr  = "abcdefg_HIJKLMNOP-qrstuvw'XYZ12ok3"
+def make(TriggerSet, BufferSize):
+    Language = "ANSI-C-from-file"
+    code = create_character_set_skipper_code(Language, "", TriggerSet, QuexBufferSize=BufferSize)
+    exe_name, tmp_file_name = compile(Language, code)
+    return exe_name, tmp_file_name
 
-compile_and_run(Language, create_character_set_skipper_code(Language, TestStr, trigger_set, QuexBufferSize=BS))
-TestStr  = "-hijklmnop_qrstuvw#xyz9"
+def core(Executable, BufferSize, TestStr):
+    fh = open("test.txt", "wb")
+    fh.write(TestStr)
+    fh.close()
+    run_this("./%s test.txt %i" % (Executable, BufferSize))
+    os.remove("test.txt")
 
-compile_and_run(Language, create_character_set_skipper_code(Language, TestStr, trigger_set, QuexBufferSize=BS))
+exe_name, tmp_file = make(trigger_set, BS)
 
-TestStr  = "aBcD8"
-
-compile_and_run(Language, create_character_set_skipper_code(Language, TestStr, trigger_set, QuexBufferSize=BS))
+core(exe_name, BS, "abcdefg_HIJKLMNOP-qrstuvw'XYZ12ok3")
+core(exe_name, BS, "-hijklmnop_qrstuvw#xyz9")
+core(exe_name, BS, "aBcD8")
 
 

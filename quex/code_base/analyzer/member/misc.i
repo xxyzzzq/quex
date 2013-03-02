@@ -164,8 +164,8 @@ QUEX_MEMBER(token_p)()
 
 #   if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
     QUEX_INLINE void
-    QUEX_MEMBER(token_queue_memory_switch)(QUEX_TYPE_TOKEN** memory, size_t* n)
-    { QUEX_NAME(token_queue_memory_switch)(this, memory, n); }
+    QUEX_MEMBER(token_queue_switch)(QUEX_TYPE_TOKEN** memory, size_t* n)
+    { QUEX_NAME(token_queue_switch)(this, memory, n); }
 #   endif
 
 #endif

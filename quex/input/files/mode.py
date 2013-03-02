@@ -235,6 +235,8 @@ class Mode:
                                              Setup.buffer_codec_transformation_info)
 
         # (*) Transform anything into the buffer's codec
+        #     Skippers: What is relevant to enter the skippers is transformed.
+        #               Related data (skip character set, ... ) is NOT transformed!
         for pap in self.__pattern_action_pair_list:
             if not pap.pattern().transform(Setup.buffer_codec_transformation_info):
                 error_msg("Pattern contains elements not found in engine codec '%s'." % Setup.buffer_codec,
