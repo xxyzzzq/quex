@@ -81,6 +81,12 @@ def do_character(Character, TrafoInfo, fh=-1):
     if TrafoInfo is None:
         return [ Character ]
     return do_set(NumberSet(Character), TrafoInfo, fh).get_intervals()
+
+def do_sequence(Sequence, TrafoInfo, fh):
+    result = []
+    for x in Sequence:
+        result.extend(do_character(x))
+    return result
         
 def homogeneous_chunk_n_per_character(SM, TrafoInfo):
     assert isinstance(TrafoInfo, (str, unicode))

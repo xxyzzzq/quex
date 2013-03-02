@@ -189,24 +189,24 @@
 #   define __quex_debug_template_drop_out(TemplateIdx, StateKey)            \
            __quex_debug_template_core(TemplateIdx, StateKey, "<DROP OUT>")           
 
-#   define __quex_debug_buffer_info()                                                        \
-           __quex_debug2("input position:  %i",                                              \
-                         (int)(me->buffer._input_p - me->buffer._memory._front + 1));        \
-           __quex_debug2("lexeme start:    %i",                                              \
-                         (int)(me->buffer._lexeme_start_p - me->buffer._memory._front + 1)); \
-           __quex_debug2("buffer size:     %i",                                              \
-                         (int)(me->buffer._memory._back - me->buffer._memory._front)); 
+#   define __quex_debug_buffer_info(B)                                         \
+           __quex_debug2("input position:  %i",                                \
+                         (int)((B)._input_p        - (B)._memory._front + 1)); \
+           __quex_debug2("lexeme start:    %i",                                \
+                         (int)((B)._lexeme_start_p - (B)._memory._front + 1)); \
+           __quex_debug2("buffer size:     %i",                                \
+                         (int)((B)._memory._back   - (B)._memory._front)); 
 
 #   define __quex_debug_reload_before()                              \
            __quex_debug1("reload ________________");                 \
            __quex_debug2("fallback bytes:  %i",                      \
                          (int)(QUEX_SETTING_BUFFER_MIN_FALLBACK_N)); \
            __quex_debug1("(before)\n");                              \
-           __quex_debug_buffer_info();
+           __quex_debug_buffer_info(me->buffer);
            
 #   define __quex_debug_reload_after()               \
            __quex_debug1("(after)");                 \
-           __quex_debug_buffer_info();               \
+           __quex_debug_buffer_info(me->buffer);     \
            __quex_debug1("reload terminated _____"); 
 
 #   define __quex_debug_counter()                        \

@@ -1,21 +1,21 @@
-<test-database execution-time-sec="46.20" date="Tue Feb 26 23:12:06 2013">
+<test-database execution-time-sec="44.84" date="Thu Feb 28 07:08:44 2013">
     <last-used-diff-display-program name=""/>
-    <test title="Complementary State Machines" time-sum-sec="1.84"> 
+    <test title="Complementary State Machines" time-sum-sec="2.01"> 
         <application file-name="test-complement.py" info-request-time="1360652444L" vanished="False"/>
         <choice-list number="5" same_result="False">
-           <choice name="Sequence" result="OK" time_sec="0.18" crc="-2135734804"/>
-           <choice name="Branches" result="OK" time_sec="0.29" crc="-804805492"/>
-           <choice name="Loops" result="OK" time_sec="0.21" crc="1592275402"/>
-           <choice name="BranchesLoops" result="OK" time_sec="0.39" crc="1294399129"/>
-           <choice name="Misc" result="OK" time_sec="0.77" crc="1064577118"/>
+           <choice name="Sequence" result="OK" time_sec="0.16" crc="-2135734804"/>
+           <choice name="Branches" result="OK" time_sec="0.34" crc="-804805492"/>
+           <choice name="Loops" result="OK" time_sec="0.24" crc="1592275402"/>
+           <choice name="BranchesLoops" result="OK" time_sec="0.44" crc="1294399129"/>
+           <choice name="Misc" result="OK" time_sec="0.83" crc="1064577118"/>
         </choice-list>
     </test>
-    <test title="Algebraic Relations" time-sum-sec="24.40"> 
+    <test title="Algebraic Relations" time-sum-sec="23.08"> 
         <application file-name="test-algebraic-relations.py" info-request-time="1359789612L" vanished="False"/>
         <choice-list number="3" same_result="False">
-           <choice name="unary" result="OK" time_sec="4.81" crc="-106769247"/>
-           <choice name="binary" result="OK" time_sec="8.94" crc="97191810"/>
-           <choice name="derived_binary" result="OK" time_sec="10.65" crc="97191810"/>
+           <choice name="unary" result="OK" time_sec="4.55" crc="-106769247"/>
+           <choice name="binary" result="OK" time_sec="9.33" crc="97191810"/>
+           <choice name="derived_binary" result="OK" time_sec="9.20" crc="97191810"/>
         </choice-list>
     </test>
     <test title="Cut" time-sum-sec="2.78"> 
@@ -29,21 +29,21 @@
            <choice name="5" result="OK" time_sec="0.81" crc="1559033400"/>
         </choice-list>
     </test>
-    <test title="Unique State Indices" time-sum-sec="0.87"> 
+    <test title="Unique State Indices" time-sum-sec="0.82"> 
         <application file-name="test-unique-state-indices.py" info-request-time="1359490988L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.87" crc="1681411831"/>
+           <choice name="" result="OK" time_sec="0.82" crc="1681411831"/>
         </choice-list>
     </test>
-    <test title="Pattern Superset/Subset Determination" time-sum-sec="3.01"> 
+    <test title="Pattern Superset/Subset Determination" time-sum-sec="2.98"> 
         <application file-name="test-intersection.py" info-request-time="1358108455L" vanished="False"/>
         <choice-list number="6" same_result="False">
-           <choice name="0" result="OK" time_sec="0.20" crc="440123606"/>
+           <choice name="0" result="OK" time_sec="0.22" crc="440123606"/>
            <choice name="1" result="OK" time_sec="0.22" crc="-1665346947"/>
-           <choice name="2" result="OK" time_sec="0.19" crc="-1865021134"/>
-           <choice name="3" result="OK" time_sec="0.28" crc="1104161658"/>
-           <choice name="4" result="OK" time_sec="0.71" crc="-1230288529"/>
-           <choice name="5" result="OK" time_sec="1.41" crc="1452230016"/>
+           <choice name="2" result="OK" time_sec="0.21" crc="-1865021134"/>
+           <choice name="3" result="OK" time_sec="0.27" crc="1104161658"/>
+           <choice name="4" result="OK" time_sec="0.75" crc="-1230288529"/>
+           <choice name="5" result="OK" time_sec="1.31" crc="1452230016"/>
         </choice-list>
     </test>
     <test title="Inverse State Machines" time-sum-sec="0.71"> 
@@ -57,65 +57,65 @@
         </choice-list>
     </test>
     <group name="Complement Begin">
-        <test title="Cut patterns from P that contain Q." time-sum-sec="2.26"> 
+        <test title="Cut patterns from P that contain Q." time-sum-sec="2.40"> 
             <application file-name="test-complement_in.py" info-request-time="1359357632L" vanished="False"/>
             <choice-list number="6" same_result="False">
-               <choice name="0" result="OK" time_sec="0.39" crc="1057279868"/>
+               <choice name="0" result="OK" time_sec="0.48" crc="1057279868"/>
                <choice name="1" result="OK" time_sec="0.32" crc="1931409293"/>
-               <choice name="2" result="OK" time_sec="0.22" crc="-1871860285"/>
-               <choice name="3" result="OK" time_sec="0.26" crc="-273892795"/>
-               <choice name="4" result="OK" time_sec="0.45" crc="-1214520874"/>
-               <choice name="5" result="OK" time_sec="0.62" crc="1705816098"/>
+               <choice name="2" result="OK" time_sec="0.20" crc="-1871860285"/>
+               <choice name="3" result="OK" time_sec="0.29" crc="-273892795"/>
+               <choice name="4" result="OK" time_sec="0.47" crc="-1214520874"/>
+               <choice name="5" result="OK" time_sec="0.64" crc="1705816098"/>
             </choice-list>
         </test>
-        <test title="Cut patterns from P that begin with Q." time-sum-sec="3.52"> 
+        <test title="Cut patterns from P that begin with Q." time-sum-sec="3.68"> 
             <application file-name="test-complement_begin.py" info-request-time="1359790064L" vanished="False"/>
             <choice-list number="6" same_result="False">
-               <choice name="0" result="OK" time_sec="0.56" crc="1789440613"/>
-               <choice name="1" result="OK" time_sec="0.40" crc="2015253662"/>
-               <choice name="2" result="OK" time_sec="0.27" crc="1095692780"/>
-               <choice name="3" result="OK" time_sec="0.50" crc="-2015255373"/>
-               <choice name="4" result="OK" time_sec="1.12" crc="346515061"/>
-               <choice name="5" result="OK" time_sec="0.67" crc="-769609219"/>
+               <choice name="0" result="OK" time_sec="0.54" crc="1789440613"/>
+               <choice name="1" result="OK" time_sec="0.37" crc="2015253662"/>
+               <choice name="2" result="OK" time_sec="0.24" crc="1095692780"/>
+               <choice name="3" result="OK" time_sec="0.54" crc="-2015255373"/>
+               <choice name="4" result="OK" time_sec="1.15" crc="346515061"/>
+               <choice name="5" result="OK" time_sec="0.84" crc="-769609219"/>
             </choice-list>
         </test>
     </group>
     <group name="Complement End">
-        <test title="Cut patterns from P that end with Q." time-sum-sec="2.94"> 
+        <test title="Cut patterns from P that end with Q." time-sum-sec="2.73"> 
             <application file-name="test-complement_end.py" info-request-time="1358719338L" vanished="False"/>
             <choice-list number="6" same_result="False">
-               <choice name="0" result="OK" time_sec="0.30" crc="-1018463777"/>
-               <choice name="1" result="OK" time_sec="0.39" crc="175432071"/>
-               <choice name="2" result="OK" time_sec="0.27" crc="-1606437308"/>
-               <choice name="3" result="OK" time_sec="0.40" crc="595489109"/>
-               <choice name="4" result="OK" time_sec="0.68" crc="1070628383"/>
-               <choice name="5" result="OK" time_sec="0.90" crc="-907666158"/>
+               <choice name="0" result="OK" time_sec="0.36" crc="-1018463777"/>
+               <choice name="1" result="OK" time_sec="0.38" crc="175432071"/>
+               <choice name="2" result="OK" time_sec="0.28" crc="-1606437308"/>
+               <choice name="3" result="OK" time_sec="0.36" crc="595489109"/>
+               <choice name="4" result="OK" time_sec="0.58" crc="1070628383"/>
+               <choice name="5" result="OK" time_sec="0.77" crc="-907666158"/>
             </choice-list>
         </test>
     </group>
     <group name="Cut Begin">
-        <test title="Cut P so that it does not start with Q." time-sum-sec="1.62"> 
+        <test title="Cut P so that it does not start with Q." time-sum-sec="1.63"> 
             <application file-name="test-cut_begin.py" info-request-time="1360268386L" vanished="False"/>
             <choice-list number="6" same_result="False">
-               <choice name="0" result="OK" time_sec="0.31" crc="916878987"/>
+               <choice name="0" result="OK" time_sec="0.34" crc="916878987"/>
                <choice name="1" result="OK" time_sec="0.21" crc="-1989997111"/>
-               <choice name="2" result="OK" time_sec="0.18" crc="-1202640219"/>
+               <choice name="2" result="OK" time_sec="0.17" crc="-1202640219"/>
                <choice name="3" result="OK" time_sec="0.27" crc="498141463"/>
-               <choice name="4" result="OK" time_sec="0.38" crc="1784359733"/>
-               <choice name="5" result="OK" time_sec="0.27" crc="-459425627"/>
+               <choice name="4" result="OK" time_sec="0.39" crc="1784359733"/>
+               <choice name="5" result="OK" time_sec="0.25" crc="-459425627"/>
             </choice-list>
         </test>
     </group>
     <group name="Cut End">
-        <test title="Cut P so that it does not end with Q." time-sum-sec="2.25"> 
+        <test title="Cut P so that it does not end with Q." time-sum-sec="2.02"> 
             <application file-name="test-cut_end.py" info-request-time="1360268759L" vanished="False"/>
             <choice-list number="6" same_result="False">
-               <choice name="0" result="OK" time_sec="0.51" crc="257743258"/>
-               <choice name="1" result="OK" time_sec="0.33" crc="-271090747"/>
-               <choice name="2" result="OK" time_sec="0.24" crc="487309599"/>
-               <choice name="3" result="OK" time_sec="0.30" crc="-1516386351"/>
-               <choice name="4" result="OK" time_sec="0.59" crc="216016511"/>
-               <choice name="5" result="OK" time_sec="0.28" crc="2020845673"/>
+               <choice name="0" result="OK" time_sec="0.44" crc="257743258"/>
+               <choice name="1" result="OK" time_sec="0.29" crc="-271090747"/>
+               <choice name="2" result="OK" time_sec="0.20" crc="487309599"/>
+               <choice name="3" result="OK" time_sec="0.26" crc="-1516386351"/>
+               <choice name="4" result="OK" time_sec="0.54" crc="216016511"/>
+               <choice name="5" result="OK" time_sec="0.29" crc="2020845673"/>
             </choice-list>
         </test>
     </group>

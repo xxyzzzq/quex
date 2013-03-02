@@ -83,6 +83,7 @@ def __Setup_init_language_database(Language):
     try:
         Setup.language = { 
             "ANSI-C-PlainMemory": "C",
+            "ANSI-C-from-file":   "C",
             "ANSI-C":             "C",
             "ANSI-C-CG":          "C",
             "ANSI-C-PathTemplate": "C",
@@ -224,8 +225,20 @@ def run_this(Str):
         print "<<execution failed>>"
 
 def compile_and_run(Language, SourceCode, AssertsActionvation_str="", StrangeStream_str=""):
+    executable_name, filename_tmp = compile(Language, SourceCode, AssertsActionvation_str, 
+                                            StrangeStream_str)
+
+    print "## (*) running the test"
+    run_this("./%s" % executable_name)
+    if REMOVE_FILES:
+        try:    os.remove(filename_tmp)
+        except: pass
+        try:    os.remove(executable_name)
+        except: pass
+
+def compile(Language, SourceCode, AssertsActionvation_str="", StrangeStream_str=""):
     print "## (2) compiling generated engine code and test"    
-    if Language in ["ANSI-C", "ANSI-C-PlainMemory"]:
+    if Language.find("ANSI-C") != -1:
         extension = ".c"
         # The '-Wvariadic-macros' shall remind us that we do not want use variadic macroes.
         # Because, some compilers do not swallow them!
@@ -255,6 +268,7 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str="", StrangeStr
                   SHOW_TRANSITIONS_STR    + " " + \
                   SHOW_BUFFER_LOADS_STR
 
+
     # If computed gotos are involved, then make sure that the option is really active.
     # if compile_str.find("-DQUEX_OPTION_COMPUTED_GOTOS") != -1:
     #   run_this(compile_str + " -E") # -E --> expand macros
@@ -267,13 +281,7 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str="", StrangeStr
     run_this(compile_str)
     sys.stdout.flush()
 
-    print "## (*) running the test"
-    run_this("./%s" % executable_name)
-    if REMOVE_FILES:
-        try:    os.remove(filename_tmp)
-        except: pass
-        try:    os.remove(executable_name)
-        except: pass
+    return executable_name, filename_tmp
 
 def get_mode_object(SM_Name, EventDB={}):
     class Something:
@@ -339,7 +347,7 @@ def create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFall
 
 
     replace_str = "#define __QUEX_OPTION_PLAIN_C"
-    if Language not in ["ANSI-C", "ANSI-C-PlainMemory"]: replace_str = "/* %s */" % replace_str
+    if Language not in ["ANSI-C", "ANSI-C-PlainMemory", "ANSI-C-from-file"]: replace_str = "/* %s */" % replace_str
     txt = txt.replace("$$__QUEX_OPTION_PLAIN_C$$", replace_str)
 
     return txt
@@ -414,20 +422,6 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
             assert False
 
     return txt + "".join(code)
-
-def create_customized_analyzer_function(Language, TestStr, EngineSourceCode, 
-                                        QuexBufferSize, CommentTestStrF, ShowPositionF, 
-                                        EndStr, MarkerCharList,
-                                        LocalVariableDB, IndentationSupportF=False, 
-                                        TokenQueueF=False, ReloadF=False):
-
-    txt  = create_common_declarations(Language, QuexBufferSize, TestStr, 
-                                      IndentationSupportF=IndentationSupportF, 
-                                      TokenQueueF=TokenQueueF)
-    txt += my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, EngineSourceCode, EndStr, LocalVariableDB, ReloadF)
-    txt += create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF)
-
-    return txt
 
 def action(PatternName): 
     ##txt = 'fprintf(stderr, "%19s  \'%%s\'\\n", Lexeme);\n' % PatternName # DEBUG
@@ -527,114 +521,6 @@ run_test(const char* TestString, const char* Comment, QUEX_TYPE_ANALYZER* lexer)
 }
 """
 
-def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndStr, LocalVariableDB={},ReloadF=False):
-    LanguageDB = Setup.language_db
-    if ShowPositionF: show_position_str = "1"
-    else:             show_position_str = "0"
-
-    ml_txt = ""
-    if len(MarkerCharList) != 0:
-        for character in MarkerCharList:
-            ml_txt += "        if( input == %i ) break;\n" % character
-    else:
-        ml_txt += "    break;\n"
-
-    if type(SourceCode) == list:
-        SourceCode = "".join(address.get_plain_strings(SourceCode))
-
-    reload_str = ""
-    if ReloadF: 
-        txt = []
-        for x in LanguageDB.RELOAD():
-            txt.extend(x.code)
-        # Ensure that '__RELOAD_FORWARD' and '__RELOAD_BACKWARD' is referenced
-        routed_address_set = address.get_address_set_subject_to_routing()
-        routed_address_set.add(address.get_address("$terminal-EOF", U=True))
-        routed_state_info_list = state_router_generator.get_info(routed_address_set)
-        txt.extend(address.get_plain_strings([state_router_generator.do(routed_state_info_list)]))
-        txt.append("    goto __RELOAD_FORWARD;\n")
-        txt.append("    goto __RELOAD_BACKWARD;\n")
-        reload_str = "".join(txt)
-        variable_db.enter(LocalVariableDB, "target_state_else_index")
-        variable_db.enter(LocalVariableDB, "target_state_index")
-
-    return blue_print(customized_unit_test_function_txt,
-                      [("$$MARKER_LIST$$",            ml_txt),
-                       ("$$SHOW_POSITION$$",          show_position_str),
-                       ("$$LOCAL_VARIABLES$$",        "".join(LanguageDB.VARIABLE_DEFINITIONS(VariableDB(LocalVariableDB)))),
-                       ("$$MARK_LEXEME_START$$",      LanguageDB.LEXEME_START_SET()),
-                       ("$$SOURCE_CODE$$",            SourceCode),
-                       ("$$INPUT_P_DEREFERENCE$$",    LanguageDB.ASSIGN("input", LanguageDB.INPUT_P_DEREFERENCE())),
-                       ("$$TERMINAL_END_OF_STREAM$$", address.get_label("$terminal-EOF")),
-                       ("$$RELOAD$$",                 reload_str),
-                       ("$$END_STR$$",                EndStr)])
-
-
-customized_unit_test_function_txt = """
-bool
-show_next_character(QUEX_NAME(Buffer)* buffer) {
-
-    if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) == 0 ) {
-        buffer->_lexeme_start_p = buffer->_input_p;
-        if( QUEX_NAME(Buffer_is_end_of_file)(buffer) ) {
-            return false;
-        }
-        QUEX_NAME(buffer_reload_forward)(buffer, (QUEX_TYPE_CHARACTER_POSITION*)0x0, 0);
-        ++(buffer->_input_p);
-    }
-    if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) != 0 ) {
-#       if $$SHOW_POSITION$$
-        printf("next letter: <%c> position: %04X\\n", (char)(*(buffer->_input_p)),
-               (int)(buffer->_input_p - buffer->_memory._front));
-#       else
-        printf("next letter: <%c>\\n", (char)(*(buffer->_input_p)));
-#       endif
-    }
-    return true;
-}
-
-__QUEX_TYPE_ANALYZER_RETURN_VALUE 
-QUEX_NAME(Mr_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZER* me)
-{
-#   define  engine (me)
-#   define  self   (*me)
-    QUEX_TYPE_CHARACTER  input = 0x0;
-#   define  position          ((void*)0x0)
-#   define  PositionRegisterN 0
-$$LOCAL_VARIABLES$$
-
-ENTRY:
-    /* Skip irrelevant characters */
-    while(1 + 1 == 2) { 
-        $$INPUT_P_DEREFERENCE$$
-$$MARKER_LIST$$
-        if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) == 0 ) {
-            $$MARK_LEXEME_START$$
-            if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
-                goto $$TERMINAL_END_OF_STREAM$$;
-            }
-            QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)0x0, 0);
-        }
-        ++(me->buffer._input_p);
-    }
-/*________________________________________________________________________________________*/
-$$SOURCE_CODE$$
-/*________________________________________________________________________________________*/
-$$RELOAD$$
-
-__REENTRY:
-    /* Originally, the reentry preparation does not increment or do anything to _input_p
-     * Here, we use the chance to print the position where the skipper ended.
-     * If we are at the border and there is still stuff to load, then load it so we can
-     * see what the next character is coming in.                                          */
-    if( ! show_next_character(&me->buffer) ) goto $$TERMINAL_END_OF_STREAM$$; 
-    goto ENTRY;
-
-$$TERMINAL_END_OF_STREAM$$:
-$$END_STR$$
-#undef engine
-}
-"""
 
 test_program_db = { 
     "ANSI-C-PlainMemory": """
@@ -744,6 +630,34 @@ test_program_db = {
         QUEX_NAME(construct_basic)(&lexer_state, &strange_stream, 0x0,
                                     $$BUFFER_SIZE$$, 0x0, 0x0, /* No translation, no translation buffer */0x0, false);
         return run_test("$$TEST_STRING$$", "$$COMMENT$$", &lexer_state);
+    }\n""",
+
+    "ANSI-C-from-file": """
+    #include <stdio.h>
+    #include <stdlib.h>
+
+    int main(int argc, char** argv)
+    {
+        quex_TestAnalyzer lexer_state;
+        FILE*             fh          = fopen(argv[1], "rb");
+        size_t            buffer_size = atoi(argv[2]);
+        char              test_string[65536];
+
+#       if defined(QUEX_OPTION_COMPUTED_GOTOS)
+        $$COMPUTED_GOTOS$$
+#       else
+        $$NO_COMPUTED_GOTOS$$
+#       endif
+        (void)fread(test_string, 1, 65536, fh);
+        fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
+
+        QUEX_NAME(construct_basic)(&lexer_state, fh, 0x0,
+                                   buffer_size, 0x0, 0x0,
+                                   /* No translation, no translation buffer */0x0, false);
+        (void)run_test(test_string, "$$COMMENT$$", &lexer_state);
+
+        fclose(fh); 
+        return 0;
     }\n""",
 }
 

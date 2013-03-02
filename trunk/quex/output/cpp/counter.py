@@ -285,7 +285,7 @@ def get_column_number_per_chunk(counter_db, CharacterSet):
     If the special character handling column number increment always
     add the same value the return value is not None. Else, it is.
 
-    RETURNS: None -- If there is no distince column increment 
+    RETURNS: None -- If there is no distinct column increment 
              > =0 -- The increment of column number for every character
                      from CharacterSet.
     """
