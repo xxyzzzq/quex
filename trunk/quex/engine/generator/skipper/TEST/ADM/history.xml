@@ -1,4 +1,4 @@
-<history date="Fri Mar  1 07:32:47 2013" element-n="67">
+<history date="Sat Mar  2 08:24:00 2013" element-n="76">
     <day year="2012" month="04" day="29">
         <history-init time="04:47:15"/>
         <crc-error time="19:51:20" application="test-skip-trigger-set.py" choice="ANSI-C-PlainMemory" database-crc="1490947051" real-crc="600307805"/>
@@ -73,5 +73,16 @@
         <crc-error time="06:32:43" application="test-skip_range-2.py" choice="DL=2" database-crc="2098906281" real-crc="1309012673"/>
         <crc-error time="06:32:45" application="test-skip_range-2.py" choice="DL=3" database-crc="2098906281" real-crc="1309012673"/>
         <crc-error time="06:32:47" application="test-skip_range-2.py" choice="DL=4" database-crc="2098906281" real-crc="1309012673"/>
+        <crc-error time="16:46:03" application="test-skip_range-4.py" choice="2" database-crc="890859637" real-crc="-689238793"/>
+        <crc-error time="16:46:04" application="test-skip_range-4.py" choice="3" database-crc="890859637" real-crc="-689238793"/>
+        <crc-error time="16:46:04" application="test-skip_range-4.py" choice="4" database-crc="890859637" real-crc="-689238793"/>
+        <crc-error time="16:46:05" application="test-skip_range-4.py" choice="5" database-crc="890859637" real-crc="-689238793"/>
+    </day>
+    <day year="2013" month="03" day="02">
+        <crc-error time="07:10:59" application="test-skip_range-2.py" choice="DL=2" database-crc="857813052" real-crc="-1894220404"/>
+        <crc-error time="07:10:59" application="test-skip_range-2.py" choice="DL=3" database-crc="1557063768" real-crc="937304496"/>
+        <crc-error time="07:15:26" application="test-skip_range-2.py" choice="DL=3" database-crc="937304496" real-crc="1989046053"/>
+        <crc-error time="07:15:27" application="test-skip_range-2.py" choice="DL=4" database-crc="459354139" real-crc="-2091391747"/>
+        <crc-error time="07:23:50" application="test-skip_range-2.py" choice="DL=4" database-crc="-2091391747" real-crc="-1006103800"/>
     </day>
 </history>
