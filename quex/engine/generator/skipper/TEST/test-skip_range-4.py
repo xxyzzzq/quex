@@ -38,10 +38,13 @@ TestStr  = "abcdefg" + fragment + "hijklmnop" + fragment + "qrstuvw" + fragment 
 
 compile_and_run(Language, create_range_skipper_code(Language, TestStr, end_sequence, QuexBufferSize, CommentTestStrF=True))
 
+TestStr  = "abcdefg" + fragment + "hijklmnop" + fragment + "qrstuvw" + fragment + "xyz" + fragment + "ab"
 TestStr  = fragment + "hijklmnop" + fragment + "qrstuvw" + fragment + "xyz" + fragment
 
 compile_and_run(Language, create_range_skipper_code(Language, TestStr, end_sequence, QuexBufferSize, CommentTestStrF=True))
 
+TestStr  = "abcdefg" + fragment + "hijklmnop" + fragment + "qrstuvw" + fragment + "xyz" + fragment + "ab"
+TestStr  = fragment + "hijklmnop" + fragment + "qrstuvw" + fragment + "xyz" + fragment
 TestStr  = "a" + fragment + "h" 
 
 compile_and_run(Language, create_range_skipper_code(Language, TestStr, end_sequence, QuexBufferSize, CommentTestStrF=True))
