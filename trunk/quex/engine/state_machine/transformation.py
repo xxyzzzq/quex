@@ -88,9 +88,33 @@ def do_sequence(Sequence, TrafoInfo, fh):
         result.extend(do_character(x))
     return result
         
-def homogeneous_chunk_n_per_character(SM, TrafoInfo):
+def homogeneous_chunk_n_per_character(Thing, TrafoInfo):
     assert isinstance(TrafoInfo, (str, unicode))
-    if   TrafoInfo == "utf8-state-split":  return utf8_state_split.homogeneous_chunk_n_per_character(SM)
-    elif TrafoInfo == "utf16-state-split": return utf16_state_split.homogeneous_chunk_n_per_character(SM)
+
+    def _core(module, SM_or_CharacterSet):
+        """Consider a given state machine (pattern). If all characters involved in the 
+        state machine require the same number of chunks (2 bytes) to be represented 
+        this number is returned. Otherwise, 'None' is returned.
+
+        RETURNS:   N > 0  number of chunks (2 bytes) required to represent any character 
+                          in the given state machine.
+                   None   characters in the state machine require different numbers of
+                          chunks.
+        """
+        if isinstance(SM_or_CharacterSet, NumberSet):
+            return module.homogeneous_chunk_n_per_character(SM_or_CharacterSet)
+        else:
+            chunk_n = None
+            for state in SM_or_CharacterSet.states.itervalues():
+                for number_set in state.transitions().get_map().itervalues():
+                    candidate_chunk_n = module.homogeneous_chunk_n_per_character(number_set)
+                    if   candidate_chunk_n is None:    return None
+                    elif chunk_n is None:              chunk_n = candidate_chunk_n
+                    elif chunk_n != candidate_chunk_n: return None
+            return chunk_n
+
+    if   TrafoInfo == "utf8-state-split":  return _core(utf8_state_split, Thing)
+    elif TrafoInfo == "utf16-state-split": return _core(utf16_state_split, Thing)
     else:                                  assert False
+
 

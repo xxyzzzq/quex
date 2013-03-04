@@ -101,7 +101,7 @@ def get_core_step(TM, IteratorName, StateMachineF):
 
 def get_counter_map(counter_db, ConcernedActionSet=None, 
                     UndefinedCodePointAction=None, IteratorName=None, 
-                    Trafo=None): 
+                    Trafo=None, ColumnCountPerChunk=None): 
     """Provide a map which associates intervals with counting actions, i.e.
 
            map: 
@@ -114,6 +114,12 @@ def get_counter_map(counter_db, ConcernedActionSet=None,
     implement the count per character, or a single loop is enough.  If the
     length of the lexeme can be determined by the byte-number of the lexeme, a
     factor 'ColumnCountPerChunk' != None is returned.
+
+    If ColumnCountPerChunk is specified as argument, it is assumed that it is
+    correct.  It is conceivable that a state machine is required for walking
+    along the lexeme, and to DETECT the end; The end may be beyond the
+    character set of concern.
+
     ___________________________________________________________________________
     RETURNS: [0] counter map
              [1] not None --> ColumnCountPerChunk, where the specific opti-
@@ -180,28 +186,37 @@ def get_counter_map(counter_db, ConcernedActionSet=None,
         factory                  = None
         result                   = []
         state_machine_required_f = False
-        ua_tm                     = None
+        ua_tm                    = None
 
         @staticmethod
-        def init(TrafoInfo, ConcernedActionSet):
-            Builder.trafo_info       = TrafoInfo
+        def init(TrafoInfo, ConcernedActionSet, UndefinedCodePointAction, ColumnCountPerChunk):
+            # (*) Consider Transformation Information
+            #     --> is a state machine required to count?
+            Builder.trafo_info               = TrafoInfo
             Builder.state_machine_required_f = False
             if Builder.trafo_info is not None and Setup.variable_character_sizes_f():
                 # Block the transformation by setting Builder.trafo_info = None
-                Builder.trafo_info       = None
+                Builder.trafo_info               = None
                 Builder.state_machine_required_f = True
 
-            # Can column number increment be derived from number of 'chunks'?
-            if Builder.state_machine_required_f:
-                # With variable character sizes we can never, ever derive the 
-                # column number increment from the byte-length of a lexeme.
-                Builder.column_count_per_chunk = None
+            # (*) ColumnCountPerChunk? 
+            #     Is byte number of lexeme proportional to column number increment?
+            if ColumnCountPerChunk is not None:
+                Builder.column_count_per_chunk = ColumnCountPerChunk
             else:
-                Builder.column_count_per_chunk = get_column_number_per_chunk(counter_db, Builder.concerned_character_set)
+                if Builder.state_machine_required_f:
+                    # With variable character sizes we can never, ever derive the 
+                    # column number increment from the byte-length of a lexeme.
+                    Builder.column_count_per_chunk = None
+                else:
+                    Builder.column_count_per_chunk = get_column_number_per_chunk(counter_db, Builder.concerned_character_set)
 
-            # ua_tm --> user action map. A user may already relate some character
-            #           sets with some actions. Information about them is registered
-            #           in 'ua_tm'.
+            # (*) User Action Map.
+            #     User may have defined actions upon occurrence of characters.
+            #     Prepare for addition of user's actions to counter actions.
+            #
+            #     --> concerned_character_set, i.e. the set of characters 
+            #         which are of concern for the user.
             Builder.concerned_character_set = None
             if ConcernedActionSet is not None:
                 Builder.concerned_character_set = NumberSet()
@@ -213,6 +228,15 @@ def get_counter_map(counter_db, ConcernedActionSet=None,
                     Builder.concerned_character_set.unite_with(character_set)
                 Builder.ua_tm.sort()
                 transition_map_tool.fill_gaps(Builder.ua_tm, None)
+
+            # (*) Action on undefined character intervals.
+            if UndefinedCodePointAction is not None:
+                Builder.on_undefined_action = UndefinedCodePointAction
+            else:
+                Builder.on_undefined_action = \
+                            [   "QUEX_ERROR_EXIT(\"Unexpected character for codec '%s'.\\n\"\n" % Setup.buffer_codec, \
+                             0, "                \"May be, codec transformation file from unicode contains errors.\");"]
+
 
         @staticmethod
         def do(factory, CharacterSet, Value):
@@ -233,14 +257,7 @@ def get_counter_map(counter_db, ConcernedActionSet=None,
             Builder.result.extend((interval, entry) \
                    for interval in trigger_set.get_intervals(PromiseToTreatWellF=True))
 
-    Builder.init(Trafo, ConcernedActionSet)
-
-    if UndefinedCodePointAction is not None:
-        undefined_code_point_action = UndefinedCodePointAction
-    else:
-        undefined_code_point_action = \
-                    [   "QUEX_ERROR_EXIT(\"Unexpected character for codec '%s'.\\n\"\n" % Setup.buffer_codec, \
-                     0, "                \"May be, codec transformation file from unicode contains errors.\");"]
+    Builder.init(Trafo, ConcernedActionSet, UndefinedCodePointAction, ColumnCountPerChunk)
 
     # Build the 'transition map'
     for delta, character_set in counter_db.special.iteritems():
@@ -256,15 +273,15 @@ def get_counter_map(counter_db, ConcernedActionSet=None,
 
     transition_map_tool.sort(counter_map)
 
-    if Builder.concerned_character_set is not None:
-        # We need to fill the gaps, to use 'add_transition_actions()'
-        transition_map_tool.fill_gaps(counter_map, undefined_code_point_action)
-        counter_map = transition_map_tool.add_transition_actions(counter_map, Builder.ua_tm)
-
     # The gaps must be places where no characters from unicode are assigned.
     # The original regular expression described unicode. So, the transformation
     # must have done a complete transformation. GAPS must be undefined places.
-    transition_map_tool.fill_gaps(counter_map, undefined_code_point_action)
+    transition_map_tool.fill_gaps(counter_map, Builder.on_undefined_action)
+
+    if Builder.ua_tm is not None:
+        # We need to fill the gaps, to use 'add_transition_actions()'
+        counter_map = transition_map_tool.add_transition_actions(counter_map, Builder.ua_tm)
+
     transition_map_tool.assert_adjacency(counter_map)
     if Builder.concerned_character_set is not None:
         counter_map = transition_map_tool.cut(counter_map, Builder.concerned_character_set)
@@ -314,11 +331,16 @@ def get_column_number_per_chunk(counter_db, CharacterSet):
         if len(counter_db.special) == 1: return counter_db.special.iterkeys().next()
         else:                            return None
 
-    result = None
+    result     = None
+    number_set = None
     for delta, character_set in counter_db.special.iteritems():
         if character_set.has_intersection(CharacterSet):
-            if result is None: result = delta
+            if result is None: result = delta; number_set = character_set
             else:              return None
+
+    if Setup.variable_character_sizes_f():
+        result = transformation.homogeneous_chunk_n_per_character(number_set, Setup.buffer_codec_transformation_info)
+
 
     return result
 
@@ -403,8 +425,7 @@ def _state_machine_coder_do(tm):
 
     action_db, sm_list = get_state_machine_list(tm)
 
-    # (Transformation according codec happens inside 'get_combined_state_machine()'
-    sm = get_combined_state_machine(sm_list)
+    sm             = get_combined_state_machine(sm_list)
     complete_f, sm = transformation.try_this(sm, -1)
     assert sm is not None
 

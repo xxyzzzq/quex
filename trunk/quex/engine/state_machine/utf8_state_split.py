@@ -1,4 +1,3 @@
-# (C) 2009 Frank-Rene Schaefer
 """
 ABSTRACT:
 
@@ -66,6 +65,8 @@ PROCESS:
 
     (3) The interval sequences are plugged in between the state A and B
         of the state machine.
+
+(C) 2009 Frank-Rene Schaefer
 """
 import os
 import sys
@@ -73,7 +74,7 @@ from   copy import copy
 sys.path.append(os.environ["QUEX_PATH"])
 
 from   quex.engine.utf8                     import utf8_to_unicode, unicode_to_utf8, UTF8_MAX, UTF8_BORDERS
-from   quex.engine.interval_handling        import Interval
+from   quex.engine.interval_handling        import Interval, NumberSet
 import quex.engine.state_machine            as     state_machine
 from   quex.engine.state_machine.core       import State
 import quex.engine.state_machine.algorithm.beautifier as beautifier
@@ -126,31 +127,28 @@ def do_set(NSet):
         if interval.end > 0x80: return None
     return NSet
 
-def homogeneous_chunk_n_per_character(sm):
-    """Consider a given state machine (pattern). If all characters involved in the 
-    state machine require the same number of bytes to be represented this number
-    is returned. Otherwise, 'None' is returned.
+def homogeneous_chunk_n_per_character(CharacterSet):
+    """If all characters in a unicode character set state machine require the
+    same number of bytes to be represented this number is returned.  Otherwise,
+    'None' is returned.
 
     RETURNS:   N > 0  number of bytes required to represent any character in the 
                       given state machine.
                None   characters in the state machine require different numbers of
                       bytes.
     """
-    chunk_n = None
-    for state in sm.states.itervalues():
-        for number_set in state.transitions().get_map().itervalues():
-            interval_list = number_set.get_intervals(PromiseToTreatWellF=True)
-            front = interval_list[0].begin     # First element of number set
-            back  = interval_list[-1].end - 1  # Last element of number set
-            # Determine number of bytes required to represent the first and the 
-            # last character of the number set. The number of bytes per character
-            # increases monotonously, so only borders have to be considered.
-            front_chunk_n = len(unicode_to_utf8(front))
-            back_chunk_n  = len(unicode_to_utf8(back))
-            if   chunk_n is None:          chunk_n = front_chunk_n
-            elif chunk_n != front_chunk_n: return None
-            elif chunk_n != back_chunk_n:  return None
-    return chunk_n
+    assert isinstance(CharacterSet, NumberSet)
+
+    interval_list = CharacterSet.get_intervals(PromiseToTreatWellF=True)
+    front = interval_list[0].begin     # First element of number set
+    back  = interval_list[-1].end - 1  # Last element of number set
+    # Determine number of bytes required to represent the first and the 
+    # last character of the number set. The number of bytes per character
+    # increases monotonously, so only borders have to be considered.
+    front_chunk_n = len(unicode_to_utf8(front))
+    back_chunk_n  = len(unicode_to_utf8(back))
+    if front_chunk_n != back_chunk_n: return None
+    else:                             return front_chunk_n
 
 def create_intermediate_states(sm, state_index, target_state_index, X):
     db = split_interval_according_to_utf8_byte_sequence_length(X)
