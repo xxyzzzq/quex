@@ -481,15 +481,36 @@ class Mode:
         action_db = [
                 (character_set, []),
         ]
-        # The skipper is entered with the first character which appears that
-        # fits the set. Depending on the counter_db generate separate terminals
-        # in order to avoid a counting action at the beginning.
-        dummy, dummy, tm = counter.get_transition_map(self.counter_db, action_db, [], None, None)
+        # The column/line number count actions for the characters in the 
+        # character_set may differ. Thus, derive a separate set of characters
+        # for each same count action, i.e.
+        #
+        #          map:  count action --> subset of character_set
+        # 
+        # When the first character is matched, then its terminal 'TERMINAL_x*'
+        # is entered, i.e the count action for the first character is performed
+        # before the skipping starts. This will look like this:
+        #
+        #     TERMINAL_x0:
+        #                 count action '0';
+        #                 goto __SKIP;
+        #     TERMINAL_x1:
+        #                 count action '1';
+        #                 goto __SKIP;
+        #        ...
+
+        # An optional codec transformation is done later. The state machines
+        # are entered as pure Unicode state machines.
+        tm, dummy, dummy = counter.get_counter_map(self.counter_db, action_db, [], None, None)
+
+        # It is not necessary to store the count action along with the state
+        # machine.  This is done in "action_preparation.do()" for each
+        # terminal.
         dummy, sm_list   = counter.get_state_machine_list(tm)
 
-        # Skipper code is to be generated later, all but one skipper go
-        # to a terminal that only counts according to the character which appeared.
-        # The last implements the skipper.
+        # Skipper code is generated later, all but one skipper go to a terminal
+        # that only counts according to the character which appeared.  The last
+        # implements the skipper.
         def xpap(MHI, ModeName, SM, Action, PatternStr="<skip: ... (check also base modes)>", Comment=None):
             return ((PatternPriority(MHI, SM.get_id()),    
                      PatternActionInfo(Pattern(SM), Action, PatternStr, 

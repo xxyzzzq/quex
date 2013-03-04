@@ -36,15 +36,32 @@ def do(Data, Mode):
     assert not CharacterSet.is_empty()
     assert type(require_label_SKIP_f) == bool
 
-
-    column_count_per_chunk = counter.get_column_number_per_chunk(Mode.counter_db, CharacterSet)
-    reference_p_required_f = column_count_per_chunk is not None
-
     # The 'TransitionCode -> DoorID' has to be circumvented, because this state
     # is not officially part of the state machine.
     skipper_adr = sm_index.get()
     address_set_subject_to_routing_add(skipper_adr) # Mark as 'used'
     get_label("$state-router", U=True)              # 'reload' req. state router
+
+    # Implement the core loop _________________________________________________
+    #
+    core_txt, reference_p_required_f = __core(Mode, CharacterSet, skipper_adr)
+
+    # Build the skipper _______________________________________________________
+    #
+    if reference_p_required_f:
+        variable_db.require("reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
+
+    return __frame(core_txt, CharacterSet, reference_p_required_f, skipper_adr)
+
+def __core(Mode, CharacterSet, UponReloadDoneAdr):
+    """Buffer Limit Code --> Reload
+       Skip Character    --> Loop to Skipper State
+       Else              --> Exit Loop
+    """
+    # Determine 'column_count_per_chunk' before adding 'exit' and 'blc' 
+    # characters.
+    column_count_per_chunk = counter.get_column_number_per_chunk(Mode.counter_db, CharacterSet)
+    reference_p_required_f = column_count_per_chunk is not None
 
     # Possible reactions on a character _______________________________________
     #
@@ -63,18 +80,20 @@ def do(Data, Mode):
     action_db.append((skip_set,               None))
     action_db.append((complementary_skip_set, [OnExitCharacter]))
 
-    # Build the skipper _______________________________________________________
-    #
-    column_counter_per_chunk, state_machine_f, tm = \
-            counter.get_transition_map(Mode.counter_db, action_db, None, "me->buffer._input_p")
+    # Implement the core loop _________________________________________________
+    # 'column_count_per_chunk' is ignored, because it contains considerations
+    # of BLC and 'exit' character.
+    tm, dummy_column_counter_per_chunk, state_machine_f = \
+         counter.get_counter_map(Mode.counter_db, action_db, None, "me->buffer._input_p", 
+                                 Trafo=Setup.buffer_codec_transformation_info)
 
-    __insert_actions(tm,  reference_p_required_f, column_counter_per_chunk, skipper_adr)
+    __insert_actions(tm, column_count_per_chunk, UponReloadDoneAdr)
 
     dummy, txt = counter.get_core_step(tm, "me->buffer._input_p", state_machine_f)
 
-    return __frame(txt, CharacterSet, skipper_adr, reference_p_required_f, require_label_SKIP_f)
+    return txt, column_count_per_chunk
 
-def __frame(Txt, CharacterSet, SkipperAdr, ReferenceP_F, RequireLabelSKIP_F):
+def __frame(Txt, CharacterSet, ReferenceP_F, SkipperAdr):
     """Implement the skipper."""
     LanguageDB = Setup.language_db
     LanguageDB.INDENT(Txt)
@@ -104,12 +123,9 @@ def __frame(Txt, CharacterSet, SkipperAdr, ReferenceP_F, RequireLabelSKIP_F):
         1, "goto __SKIP;\n"
     ])
 
-    if ReferenceP_F:
-        variable_db.require("reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
-
     return code
 
-def __insert_actions(tm, ReferenceP_F, ColumnCountPerChunk, UponReloadDoneAdr):
+def __insert_actions(tm, ColumnCountPerChunk, UponReloadDoneAdr):
     global OnExitCharacter
     global OnBufferLimitCode
 
@@ -119,27 +135,25 @@ def __insert_actions(tm, ReferenceP_F, ColumnCountPerChunk, UponReloadDoneAdr):
         interval, action_list = info
         if   len(action_list) != 0 and action_list[-1] == OnExitCharacter:
             del action_list[:]
-            __add_on_exit_character(action_list, interval, ReferenceP_F, 
-                                    ColumnCountPerChunk)
+            __add_on_exit_character(action_list, interval, ColumnCountPerChunk)
 
         elif len(action_list) != 0 and action_list[-1] == OnBufferLimitCode:
             del action_list[-1]
-            __add_on_buffer_limit_code(action_list, interval, ReferenceP_F, 
+            __add_on_buffer_limit_code(action_list, interval, 
                                        ColumnCountPerChunk, UponReloadDoneAdr)
 
-def __add_on_exit_character(txt, TheInterval, ReferenceP_F, ColumnCountPerChunk):
+def __add_on_exit_character(txt, TheInterval, ColumnCountPerChunk):
     LanguageDB = Setup.language_db
 
-    if ReferenceP_F is not None:
+    if ColumnCountPerChunk is not None:
         LanguageDB.REFERENCE_P_COLUMN_ADD(txt, "me->buffer._input_p", ColumnCountPerChunk)
 
     txt.append("goto %s;" % get_label("$start", U=True))
 
-def __add_on_buffer_limit_code(txt, TheInterval, ReferenceP_F, ColumnCountPerChunk, 
-                               UponReloadDoneAdr):
+def __add_on_buffer_limit_code(txt, TheInterval, ColumnCountPerChunk, UponReloadDoneAdr):
     LanguageDB = Setup.language_db
 
-    if ReferenceP_F is not None:
+    if ColumnCountPerChunk is not None:
         LanguageDB.REFERENCE_P_COLUMN_ADD(txt, "me->buffer._input_p", ColumnCountPerChunk)
 
     txt.extend([

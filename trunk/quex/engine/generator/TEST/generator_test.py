@@ -639,8 +639,9 @@ test_program_db = {
     int main(int argc, char** argv)
     {
         quex_TestAnalyzer lexer_state;
-        FILE*             fh          = fopen(argv[1], "rb");
-        size_t            buffer_size = atoi(argv[2]);
+        FILE*             fh               = fopen(argv[1], "rb");
+        size_t            buffer_size      = atoi(argv[2]);
+        size_t            real_buffer_size = 0;
         char              test_string[65536];
 
 #       if defined(QUEX_OPTION_COMPUTED_GOTOS)
@@ -654,6 +655,14 @@ test_program_db = {
         QUEX_NAME(construct_basic)(&lexer_state, fh, 0x0,
                                    buffer_size, 0x0, 0x0,
                                    /* No translation, no translation buffer */0x0, false);
+        /* Double check, that buffer size has been set. */
+        real_buffer_size = lexer_state.buffer._memory._back - lexer_state.buffer._memory._front + 1;
+        printf("## buffer_size: { required: %i; real: %i; }\\n",
+               (int)(buffer_size), (int)real_buffer_size);
+        if( real_buffer_size != buffer_size )
+        {
+            abort();
+        }
         (void)run_test(test_string, "$$COMMENT$$", &lexer_state);
 
         fclose(fh); 
