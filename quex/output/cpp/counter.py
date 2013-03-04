@@ -62,9 +62,9 @@ Match_input = re.compile("\\binput\\b", re.UNICODE)
 def get_step(counter_db, ConcernedActionSet, UndefinedCodePointAction, IteratorName):
     global Match_input
 
-    column_counter_per_chunk, state_machine_f, tm = \
-            get_transition_map(counter_db, ConcernedActionSet, UndefinedCodePointAction, IteratorName, 
-                               Setup.buffer_codec_transformation_info)
+    tm, column_counter_per_chunk, state_machine_f = \
+            get_counter_map(counter_db, ConcernedActionSet, UndefinedCodePointAction, IteratorName, 
+                            Setup.buffer_codec_transformation_info)
 
     state_machine_f, txt = get_core_step(tm, IteratorName, state_machine_f)
 
@@ -99,10 +99,29 @@ def get_core_step(TM, IteratorName, StateMachineF):
 
     return StateMachineF, txt
 
-def get_transition_map(counter_db, ConcernedActionSet=None, 
-                       UndefinedCodePointAction=None, IteratorName=None, 
-                       Trafo=None): 
-    """Implement the core of a counter function by one single transition map.
+def get_counter_map(counter_db, ConcernedActionSet=None, 
+                    UndefinedCodePointAction=None, IteratorName=None, 
+                    Trafo=None): 
+    """Provide a map which associates intervals with counting actions, i.e.
+
+           map: 
+                    character interval --> count action
+
+    The mapping is provided in the form of a transition map, i.e.  a list of
+    sorted pairs of (interval, action).
+
+    This function also determines whether a state machine is required to
+    implement the count per character, or a single loop is enough.  If the
+    length of the lexeme can be determined by the byte-number of the lexeme, a
+    factor 'ColumnCountPerChunk' != None is returned.
+    ___________________________________________________________________________
+    RETURNS: [0] counter map
+             [1] not None --> ColumnCountPerChunk, where the specific opti-
+                              mazation with the 'reference_p' has been applied.
+                 None     --> No optimization with 'reference_p'.
+             [2] True     --> State machine implementation required
+                 False    --> Else.
+    ___________________________________________________________________________
 
        counter_db -- Database with counting information based on 
                      character sets in UNICODE.
@@ -124,7 +143,7 @@ def get_transition_map(counter_db, ConcernedActionSet=None,
     'UndefinedCodePointAction' is the action that shall happen if the 
     transition map hits an undefined point.
 
-    'AllowReferenceP_F' makes a special kind of optimization available.  In is
+    'AllowReferenceP_F' makes a special kind of optimization available.  It is
     applied in case that there is only one single value for column counts.
     Consider the figure below:
 
@@ -137,35 +156,63 @@ def get_transition_map(counter_db, ConcernedActionSet=None,
                   reference_p 
                   = iterator
 
-    The '*' stands for a 'grid' or a 'newline' character. If such a character
-    appears, the 'reference_p' is set to the current 'iterator'. As long as
-    no such character appears, the term to be added is proportional to
-    'iterator - reference_p'. The counter implementation profits from 
-    this. It does not increment the 'column_n' as long as only 'normal'
-    characters appear. It only adds the delta multiplied with a constant.
+    The '*' stands for a 'grid' or a 'newline' character.  If such a character
+    appears, the 'reference_p' is set to the current 'iterator'.  As long as no
+    such character appears, the term to be added is proportional to 'iterator -
+    reference_p'.  The counter implementation profits from this.  It does not
+    increment the 'column_n' as long as only 'normal' characters appear.  It
+    only adds the delta multiplied with a constant.
 
     The implementation of this mechanism is implemented by the functions
-    '__special()', '__grid()', and '__newline()'. It is controlled there
-    by argument 'ColumnCountPerChunk'. If it is not None, it happens to be the 
-    factor for the delta addition.
-    ___________________________________________________________________________
-    RETURNS: [0] not None --> ColumnCountPerChunk, where the specific opti-
-                              mazation with the 'reference_p' has been applied.
-                 None     --> No optimizatoin with 'reference_p'.
-
-             [1] transition map
+    '__special()', '__grid()', and '__newline()'.  It is controlled there by
+    argument 'ColumnCountPerChunk'.  If it is not None, it happens to be the
+    factor 'C' for the addition of 'C * (iterator - reference_p)'.
     ___________________________________________________________________________
     """
     # If ColumnCountPerChunk is None => no action depends on IteratorName. 
     # See '__special()', '__grid_step()', and '__line_n()'.
 
     class Builder:
-        trafo_info              = None
-        concerned_character_set = None
-        column_count_per_chunk  = None
-        iterator_name           = IteratorName
-        factory                 = None
-        result                  = []
+        trafo_info               = None
+        concerned_character_set  = None
+        column_count_per_chunk   = None
+        iterator_name            = IteratorName
+        factory                  = None
+        result                   = []
+        state_machine_required_f = False
+        ua_tm                     = None
+
+        @staticmethod
+        def init(TrafoInfo, ConcernedActionSet):
+            Builder.trafo_info       = TrafoInfo
+            Builder.state_machine_required_f = False
+            if Builder.trafo_info is not None and Setup.variable_character_sizes_f():
+                # Block the transformation by setting Builder.trafo_info = None
+                Builder.trafo_info       = None
+                Builder.state_machine_required_f = True
+
+            # Can column number increment be derived from number of 'chunks'?
+            if Builder.state_machine_required_f:
+                # With variable character sizes we can never, ever derive the 
+                # column number increment from the byte-length of a lexeme.
+                Builder.column_count_per_chunk = None
+            else:
+                Builder.column_count_per_chunk = get_column_number_per_chunk(counter_db, Builder.concerned_character_set)
+
+            # ua_tm --> user action map. A user may already relate some character
+            #           sets with some actions. Information about them is registered
+            #           in 'ua_tm'.
+            Builder.concerned_character_set = None
+            if ConcernedActionSet is not None:
+                Builder.concerned_character_set = NumberSet()
+                Builder.ua_tm = []
+                for character_set, action in ConcernedActionSet:
+                    if Builder.trafo_info is not None:
+                        character_set = character_set.transform(Builder.trafo_info)
+                    Builder.ua_tm.extend((interval, action) for interval in character_set.get_intervals(PromiseToTreatWellF=True))
+                    Builder.concerned_character_set.unite_with(character_set)
+                Builder.ua_tm.sort()
+                transition_map_tool.fill_gaps(Builder.ua_tm, None)
 
         @staticmethod
         def do(factory, CharacterSet, Value):
@@ -186,13 +233,7 @@ def get_transition_map(counter_db, ConcernedActionSet=None,
             Builder.result.extend((interval, entry) \
                    for interval in trigger_set.get_intervals(PromiseToTreatWellF=True))
 
-
-    Builder.trafo_info       = Trafo
-    state_machine_required_f = False
-    if Builder.trafo_info is not None and Setup.variable_character_sizes_f():
-        # Block the transformation by setting Builder.trafo_info = None
-        Builder.trafo_info       = None
-        state_machine_required_f = True
+    Builder.init(Trafo, ConcernedActionSet)
 
     if UndefinedCodePointAction is not None:
         undefined_code_point_action = UndefinedCodePointAction
@@ -200,26 +241,6 @@ def get_transition_map(counter_db, ConcernedActionSet=None,
         undefined_code_point_action = \
                     [   "QUEX_ERROR_EXIT(\"Unexpected character for codec '%s'.\\n\"\n" % Setup.buffer_codec, \
                      0, "                \"May be, codec transformation file from unicode contains errors.\");"]
-
-    Builder.concerned_character_set = None
-    if ConcernedActionSet is not None:
-        Builder.concerned_character_set = NumberSet()
-        c_tm = []
-        for character_set, action in ConcernedActionSet:
-            if Builder.trafo_info is not None:
-                character_set = character_set.transform(Builder.trafo_info)
-            c_tm.extend((interval, action) for interval in character_set.get_intervals(PromiseToTreatWellF=True))
-            Builder.concerned_character_set.unite_with(character_set)
-        c_tm.sort()
-        transition_map_tool.fill_gaps(c_tm, None)
-
-    # Can column number increment be derived from number of 'chunks'?
-    if state_machine_required_f:
-        # With variable character sizes we can never, ever derive the 
-        # column number increment from the byte-length of a lexeme.
-        Builder.column_count_per_chunk = None
-    else:
-        Builder.column_count_per_chunk = get_column_number_per_chunk(counter_db, Builder.concerned_character_set)
 
     # Build the 'transition map'
     for delta, character_set in counter_db.special.iteritems():
@@ -231,24 +252,24 @@ def get_transition_map(counter_db, ConcernedActionSet=None,
     for delta, character_set in counter_db.newline.iteritems():
         Builder.do(__line_n, character_set, delta)
 
-    tm = Builder.result
+    counter_map = Builder.result
 
-    transition_map_tool.sort(tm)
+    transition_map_tool.sort(counter_map)
 
     if Builder.concerned_character_set is not None:
         # We need to fill the gaps, to use 'add_transition_actions()'
-        transition_map_tool.fill_gaps(tm, undefined_code_point_action)
-        tm = transition_map_tool.add_transition_actions(tm, c_tm)
+        transition_map_tool.fill_gaps(counter_map, undefined_code_point_action)
+        counter_map = transition_map_tool.add_transition_actions(counter_map, Builder.ua_tm)
 
     # The gaps must be places where no characters from unicode are assigned.
     # The original regular expression described unicode. So, the transformation
     # must have done a complete transformation. GAPS must be undefined places.
-    transition_map_tool.fill_gaps(tm, undefined_code_point_action)
-    transition_map_tool.assert_adjacency(tm)
+    transition_map_tool.fill_gaps(counter_map, undefined_code_point_action)
+    transition_map_tool.assert_adjacency(counter_map)
     if Builder.concerned_character_set is not None:
-        tm = transition_map_tool.cut(tm, Builder.concerned_character_set)
+        counter_map = transition_map_tool.cut(counter_map, Builder.concerned_character_set)
 
-    return Builder.column_count_per_chunk, state_machine_required_f, tm
+    return counter_map, Builder.column_count_per_chunk, Builder.state_machine_required_f
 
 def get_state_machine_list(TM):
     """Returns a state machine list which implements the transition map given

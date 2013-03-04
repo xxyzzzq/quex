@@ -179,9 +179,9 @@ def __terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePatte
     assert not run_time_counting_required_f 
 
     # Column and line number count for 'normal' character.
-    column_counter_per_chunk, state_machine_f, tm = \
-            counter.get_transition_map(Mode.counter_db, None, None, "me->buffer._input_p", 
-                                       Trafo=Setup.buffer_codec_transformation_info)
+    tm, column_counter_per_chunk, state_machine_f = \
+            counter.get_counter_map(Mode.counter_db, None, None, "me->buffer._input_p", 
+                                    Trafo=Setup.buffer_codec_transformation_info)
     dummy, character_count_txt = \
             counter.get_core_step(tm, "me->buffer._input_p", state_machine_f)
 
@@ -417,11 +417,22 @@ def __lc_counting_replacements(code_str, EndSequence):
            reference_p_required_f
 
 
+def __core(Mode, ActionDB, ReferenceP_F, UponReloadDoneAdr):
+    tm = column_counter_per_chunk, state_machine_f = \
+         counter.get_counter_map(Mode.counter_db, ActionDB, None, "me->buffer._input_p",
+                                 Trafo=Setup.buffer_codec_transformation_info)
+
+    __insert_actions(tm, ReferenceP_F, column_counter_per_chunk, UponReloadDoneAdr)
+
+    dummy, txt = counter.get_core_step(tm, "me->buffer._input_p", state_machine_f)
+
+    return txt
+
 def core_loop():
-    blc_set                = NumberSet(Setup.buffer_limit_code)
-    first_exit_set         = NumberSet(TransformedClosingSequence[0])
-    complemtary_core_set   = first_exit_set.union(first_exit_set)
-    core_set               = complemtary_core_set.inverse()
+    blc_set              = NumberSet(Setup.buffer_limit_code)
+    first_exit_set       = NumberSet(TransformedClosingSequence[0])
+    complemtary_core_set = first_exit_set.union(first_exit_set)
+    core_set             = complemtary_core_set.inverse()
 
     #  Buffer Limit Code    --> Reload
     #  First Exit Character --> Go to 'Closer Sequence Check'.

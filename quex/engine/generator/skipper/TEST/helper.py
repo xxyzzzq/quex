@@ -10,7 +10,7 @@ from   quex.engine.generator.TEST.generator_test   import *
 from   quex.engine.generator.TEST.generator_test   import __Setup_init_language_database
 from   quex.engine.generator.code_fragment_base import CodeFragment
 
-def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferSize=1024):
+def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferSize=1024, InitialSkipF=True):
 
     end_str  = '    printf("end\\n");'
     end_str += '    return false;\n'
@@ -24,9 +24,10 @@ def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferS
     skipper_code = character_set_skipper.do(data, get_mode_object("CharacterSetSkipper"))
 
     marker_char_list = []
-    for interval in TriggerSet.get_intervals():
-        for char_code in range(interval.begin, interval.end):
-            marker_char_list.append(char_code)
+    if InitialSkipF:
+        for interval in TriggerSet.get_intervals():
+            for char_code in range(interval.begin, interval.end):
+                marker_char_list.append(char_code)
 
     return create_customized_analyzer_function(Language, TestStr, skipper_code,
                                                QuexBufferSize, CommentTestStrF=False, 
@@ -104,7 +105,8 @@ def create_customized_analyzer_function(Language, TestStr, EngineSourceCode,
 
     return txt
 
-def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndStr, LocalVariableDB={},ReloadF=False):
+def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndStr, 
+                                 LocalVariableDB={}, ReloadF=False):
     LanguageDB = Setup.language_db
     if ShowPositionF: show_position_str = "1"
     else:             show_position_str = "0"
