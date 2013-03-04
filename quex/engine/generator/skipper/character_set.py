@@ -61,6 +61,7 @@ def __core(Mode, CharacterSet, UponReloadDoneAdr):
     # Determine 'column_count_per_chunk' before adding 'exit' and 'blc' 
     # characters.
     column_count_per_chunk = counter.get_column_number_per_chunk(Mode.counter_db, CharacterSet)
+    print "#column_count_per_chunk:", column_count_per_chunk
     reference_p_required_f = column_count_per_chunk is not None
 
     # Possible reactions on a character _______________________________________
@@ -85,7 +86,8 @@ def __core(Mode, CharacterSet, UponReloadDoneAdr):
     # of BLC and 'exit' character.
     tm, dummy_column_counter_per_chunk, state_machine_f = \
          counter.get_counter_map(Mode.counter_db, action_db, None, "me->buffer._input_p", 
-                                 Trafo=Setup.buffer_codec_transformation_info)
+                                 Trafo=Setup.buffer_codec_transformation_info, 
+                                 ColumnCountPerChunk=column_count_per_chunk)
 
     __insert_actions(tm, column_count_per_chunk, UponReloadDoneAdr)
 

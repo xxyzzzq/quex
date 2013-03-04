@@ -1,13 +1,13 @@
-<test-database execution-time-sec="44.77" date="Sun Mar  3 07:45:33 2013">
+<test-database execution-time-sec="45.44" date="Mon Mar  4 18:18:46 2013">
     <last-used-diff-display-program name=""/>
     <group name="Skip-Characters">
-        <test title="Large Buffer" time-sum-sec="7.88"> 
+        <test title="Large Buffer" time-sum-sec="8.55"> 
             <application file-name="test-skip.py" info-request-time="1362036813L" vanished="False"/>
             <choice-list number="4" same_result="True">
-               <choice name="ANSI-C-PlainMemory" result="OK" time_sec="1.60" crc="982389702"/>
-               <choice name="ANSI-C" result="OK" time_sec="1.49" crc="982389702"/>
-               <choice name="Cpp" result="OK" time_sec="2.39" crc="982389702"/>
-               <choice name="Cpp_StrangeStream" result="OK" time_sec="2.40" crc="982389702"/>
+               <choice name="ANSI-C-PlainMemory" result="OK" time_sec="1.73" crc="982389702"/>
+               <choice name="ANSI-C" result="OK" time_sec="1.50" crc="982389702"/>
+               <choice name="Cpp" result="OK" time_sec="2.95" crc="982389702"/>
+               <choice name="Cpp_StrangeStream" result="OK" time_sec="2.36" crc="982389702"/>
             </choice-list>
         </test>
         <test title="Varrying Buffer Size" time-sum-sec="1.37"> 
