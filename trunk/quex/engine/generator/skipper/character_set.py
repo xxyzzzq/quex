@@ -6,6 +6,7 @@ from   quex.engine.generator.languages.variable_db  import variable_db
 import quex.output.cpp.counter                      as     counter
 from   quex.blackboard                              import setup as Setup
 from   quex.engine.interval_handling                import NumberSet, Interval
+import quex.engine.analyzer.transition_map          as     transition_map_tool
 
 OnBufferLimitCode = "<<__dummy__OnBufferLimitCode__>>" 
 OnExitCharacter   = "<<__dummy__OnExitCharacter__>>" 
@@ -61,39 +62,67 @@ def __core(Mode, CharacterSet, UponReloadDoneAdr):
     # Determine 'column_count_per_chunk' before adding 'exit' and 'blc' 
     # characters.
     column_count_per_chunk = counter.get_column_number_per_chunk(Mode.counter_db, CharacterSet)
-    print "#column_count_per_chunk:", column_count_per_chunk
     reference_p_required_f = column_count_per_chunk is not None
 
     # Possible reactions on a character _______________________________________
     #
-    action_db = []
-   
     blc_set                = NumberSet(Setup.buffer_limit_code)
     skip_set               = CharacterSet.clone()
     skip_set.subtract(blc_set)
-    complementary_skip_set = CharacterSet.inverse()
-    complementary_skip_set.subtract(blc_set)
+    exit_skip_set = CharacterSet.inverse()
+    exit_skip_set.subtract(blc_set)
 
     #  Buffer Limit Code --> Reload
     #  Skip Character    --> Loop to Skipper State
     #  Else              --> Exit Loop
-    action_db.append((blc_set,                [OnBufferLimitCode]))
-    action_db.append((skip_set,               None))
-    action_db.append((complementary_skip_set, [OnExitCharacter]))
 
     # Implement the core loop _________________________________________________
     # 'column_count_per_chunk' is ignored, because it contains considerations
     # of BLC and 'exit' character.
-    tm, dummy_column_counter_per_chunk, state_machine_f = \
-         counter.get_counter_map(Mode.counter_db, action_db, None, "me->buffer._input_p", 
-                                 Trafo=Setup.buffer_codec_transformation_info, 
-                                 ColumnCountPerChunk=column_count_per_chunk)
+    tm, column_count_per_chunk, state_machine_f = \
+         counter.get_counter_map(Mode.counter_db, 
+                                 IteratorName        = "me->buffer._input_p",
+                                 Trafo               = Setup.buffer_codec_transformation_info,
+                                 ColumnCountPerChunk = column_count_per_chunk)
 
-    __insert_actions(tm, column_count_per_chunk, UponReloadDoneAdr)
+    add_on_exit_actions(tm, exit_skip_set, column_count_per_chunk)
 
-    dummy, txt = counter.get_core_step(tm, "me->buffer._input_p", state_machine_f)
+    dummy, txt = counter.get_core_step(tm, "me->buffer._input_p", state_machine_f, 
+                                       BeforeGotoReloadAction = before_reload_actions(column_count_per_chunk))
 
     return txt, column_count_per_chunk
+
+def add_on_exit_actions(tm, ExitSkipSet, ColumnCountPerChunk):
+    LanguageDB = Setup.language_db
+    # Depending on whether the column number add can be computed from lexeme
+    # length, a '(iterator - reference_p) * C' must be done.
+    on_exit = []
+    if ColumnCountPerChunk is not None:
+        LanguageDB.REFERENCE_P_COLUMN_ADD(on_exit, "me->buffer._input_p", ColumnCountPerChunk)
+    on_exit.append("goto %s;" % get_label("$start", U=True))
+
+    # The exit action is performed upon the characters which are not to be 
+    # skipped. 
+    exit_tm = [
+        (interval, on_exit) 
+        for interval in ExitSkipSet.get_intervals(PromiseToTreatWellF=True)
+    ]
+
+    # Before the content of transition maps can be added, the gaps need to be 
+    # filled.
+    transition_map_tool.fill_gaps(tm, [])
+    transition_map_tool.fill_gaps(exit_tm, [])
+    transition_map_tool.add_transition_actions(tm, exit_tm)
+
+def before_reload_actions(ColumnCountPerChunk):
+    LanguageDB = Setup.language_db
+    result = []
+    if ColumnCountPerChunk is not None:
+        LanguageDB.REFERENCE_P_COLUMN_ADD(result, "me->buffer._input_p", ColumnCountPerChunk)
+
+    result.append("%s\n" % LanguageDB.LEXEME_START_SET())
+
+    return result
 
 def __frame(Txt, CharacterSet, ReferenceP_F, SkipperAdr):
     """Implement the skipper."""
@@ -126,42 +155,4 @@ def __frame(Txt, CharacterSet, ReferenceP_F, SkipperAdr):
     ])
 
     return code
-
-def __insert_actions(tm, ColumnCountPerChunk, UponReloadDoneAdr):
-    global OnExitCharacter
-    global OnBufferLimitCode
-
-    # Character Set where the reference pointer needs to be reset: 
-    # 'grid' and 'newline' characters.
-    for i, info in enumerate(tm):
-        interval, action_list = info
-        if   len(action_list) != 0 and action_list[-1] == OnExitCharacter:
-            del action_list[:]
-            __add_on_exit_character(action_list, interval, ColumnCountPerChunk)
-
-        elif len(action_list) != 0 and action_list[-1] == OnBufferLimitCode:
-            del action_list[-1]
-            __add_on_buffer_limit_code(action_list, interval, 
-                                       ColumnCountPerChunk, UponReloadDoneAdr)
-
-def __add_on_exit_character(txt, TheInterval, ColumnCountPerChunk):
-    LanguageDB = Setup.language_db
-
-    if ColumnCountPerChunk is not None:
-        LanguageDB.REFERENCE_P_COLUMN_ADD(txt, "me->buffer._input_p", ColumnCountPerChunk)
-
-    txt.append("goto %s;" % get_label("$start", U=True))
-
-def __add_on_buffer_limit_code(txt, TheInterval, ColumnCountPerChunk, UponReloadDoneAdr):
-    LanguageDB = Setup.language_db
-
-    if ColumnCountPerChunk is not None:
-        LanguageDB.REFERENCE_P_COLUMN_ADD(txt, "me->buffer._input_p", ColumnCountPerChunk)
-
-    txt.extend([
-        "%s\n" % LanguageDB.LEXEME_START_SET(),
-        # InitStateF=True causes transition to EndOfStream handler upon reload failure.
-        "%s\n" % LanguageDB.GOTO_RELOAD(UponReloadDoneAdr, True, engine.FORWARD)
-    ])
-
 

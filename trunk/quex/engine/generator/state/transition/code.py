@@ -10,6 +10,7 @@ def do(Target, StateIndex, InitStateF, EngineType, GotoReload_Str, TheAnalyzer=N
        generation much simpler. No information has to be passed down the 
        recursive call tree.
     """
+    assert False # Not to be used anymore!
     assert Target is not None
     assert Target != -1
 
@@ -17,7 +18,7 @@ def do(Target, StateIndex, InitStateF, EngineType, GotoReload_Str, TheAnalyzer=N
         return Target
     else:
         return TransitionCode(Target, StateIndex, InitStateF, EngineType, 
-                              GotoReload_Str,  TheAnalyzer)
+                              GotoReload_Str, TheAnalyzer)
 
 class TransitionCode:
     def __init__(self, Target, StateIndex, InitStateF, EngineType, 
@@ -85,7 +86,6 @@ class TransitionCode:
 
     def __eq__(self, Other):  assert False  # Must be implemented by derived class
     def __neq__(self, Other): assert False  # Must be implemented by derived class
-
 
 class TextTransitionCode(TransitionCode):
     def __init__(self, Code, DropOutF=False):

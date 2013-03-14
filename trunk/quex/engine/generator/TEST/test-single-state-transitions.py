@@ -116,11 +116,12 @@ function  = [
     "#define __quex_debug_state(X) /* empty */\n",
     "int transition(int input) {\n" 
 ]
-transition_block.do(function, 
-                    state.transitions().get_trigger_map(), 
-                    StateIndex=StateIndex,
-                    EngineType=engine.BACKWARD_INPUT_POSITION,
-                    GotoReload_Str="return -1;")
+tm = state.transitions().get_trigger_map()
+tm = transition_block.prepare_transition_map(tm, 
+                                             StateIndex     = StateIndex,
+                                             EngineType     = engine.BACKWARD_INPUT_POSITION,
+                                             GotoReload_Str = "return -1;")
+transition_block.do(function, tm)
 
 function.extend(states)
 function.append("\n}\n")

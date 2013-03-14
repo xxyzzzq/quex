@@ -300,10 +300,11 @@ def __get_transition_block(IndentationSetup, CounterAdr):
     transition_map_tools.fill_gaps(transition_map, E_StateIndices.DROP_OUT)
 
     txt = []
-    transition_block.do(txt, transition_map, 
-                        StateIndex     = CounterAdr, 
-                        EngineType     = engine.FORWARD,
-                        GotoReload_Str = "goto _RELOAD_%s;" % CounterAdr)
+    tm = transition_block.prepare_transition_map(transition_map, 
+                                                 StateIndex     = CounterAdr, 
+                                                 EngineType     = engine.FORWARD,
+                                                 GotoReload_Str = "goto _RELOAD_%s;" % CounterAdr)
+    transition_block.do(txt, tm) 
     txt.append("\n")
 
     return txt

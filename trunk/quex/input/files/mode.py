@@ -478,9 +478,6 @@ class Mode:
         for pattern, character_set in iterable:
             character_set.unite_with(character_set)
 
-        action_db = [
-                (character_set, []),
-        ]
         # The column/line number count actions for the characters in the 
         # character_set may differ. Thus, derive a separate set of characters
         # for each same count action, i.e.
@@ -501,12 +498,12 @@ class Mode:
 
         # An optional codec transformation is done later. The state machines
         # are entered as pure Unicode state machines.
-        tm, dummy, dummy = counter.get_counter_map(self.counter_db, action_db, [], None, None)
+        counter_dictionary = counter.get_counter_dictionary(self.counter_db, character_set)
 
         # It is not necessary to store the count action along with the state
         # machine.  This is done in "action_preparation.do()" for each
         # terminal.
-        dummy, sm_list   = counter.get_state_machine_list(tm)
+        sm_list = [ StateMachine.from_character_set(x) for x, action in counter_dictionary ]
 
         # Skipper code is generated later, all but one skipper go to a terminal
         # that only counts according to the character which appeared.  The last

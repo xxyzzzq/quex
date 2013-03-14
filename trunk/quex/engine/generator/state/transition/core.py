@@ -1,8 +1,8 @@
-import quex.engine.analyzer.transition_map              as transition_map_tools
-import quex.engine.analyzer.engine_supply_factory       as engine
-import quex.engine.generator.state.transition.code      as transition_code
+from   quex.engine.generator.state.transition.code      import TransitionCode
 import quex.engine.generator.state.transition.solution  as solution
 import quex.engine.generator.state.transition.bisection as bisection
+import quex.engine.analyzer.transition_map              as transition_map_tool
+import quex.engine.analyzer.engine_supply_factory       as engine
 from   quex.engine.interval_handling                    import Interval
 from   quex.blackboard                                  import E_StateIndices, \
                                                                setup as Setup
@@ -11,61 +11,97 @@ from   itertools import islice
 
 LanguageDB = None
 
-def do(txt, TransitionMap, 
-       StateIndex     = None,  
-       EngineType     = engine.FORWARD, 
-       InitStateF     = False, 
-       GotoReload_Str = None, 
-       TheAnalyzer    = None):
+def do(txt, TransitionMap):
+    global LanguageDB
+    LanguageDB = Setup.language_db
+
+    if len(TransitionMap) == 0:
+        return
+
+    # The range of possible characters may be restricted. It must be ensured,
+    # that the occurring characters only belong to the admissible range.
+    transition_map_tool.prune(TransitionMap, 0, Setup.get_character_value_limit())
+
+    # (*) Determine 'outstanding' characters. For example, if 'e' appears
+    #     exceptionally often, then it makes sense to check:
+    #
+    #     if( input == 'e' ) {
+    #         ...
+    #     } else {
+    #         /* Rest of transition map. */
+    #     }
+    #     (Currently, this is a 'no-operation'. It is planned to consider
+    #      statitistics about character occurencies into the generation of
+    #      the transition map.)
+    outstanding_list = solution.prune_outstanding(TransitionMap) 
+    if outstanding_list is not None: 
+        __get_outstanding(txt, outstanding_list)
+
+    # (*) Bisection until other solution is more suitable.
+    #     (This may include 'no bisectioning')
+    __bisection(txt, TransitionMap)
+
+    # (*) When there was an outstanding character, then the whole bisection was
+    #     implemented in an 'ELSE' block which must be closed.
+    if outstanding_list is not None: 
+        txt.append(LanguageDB.ENDIF)
+
+def prepare_transition_map(TransitionMap, 
+                           StateIndex             = None,
+                           EngineType             = engine.FORWARD,
+                           InitStateF             = False,
+                           GotoReload_Str         = None,
+                           TheAnalyzer            = None,
+                           BeforeGotoReloadAction = None):
     global LanguageDB
     assert isinstance(TransitionMap, list)
     assert isinstance(EngineType, engine.Base)
     assert isinstance(InitStateF, bool)
-    assert StateIndex        is None or isinstance(StateIndex, long)
-    assert GotoReload_Str    is None or isinstance(GotoReload_Str, (str, unicode))
+    assert StateIndex             is None or isinstance(StateIndex, long)
+    assert GotoReload_Str         is None or isinstance(GotoReload_Str, (str, unicode))
+    assert BeforeGotoReloadAction is None or isinstance(BeforeGotoReloadAction, list)
 
-    transition_map_tools.assert_adjacency(TransitionMap)
+    transition_map_tool.assert_adjacency(TransitionMap)
 
     # If a state has no transitions, no new input needs to be eaten => no reload.
     #
     # NOTE: The only case where the buffer reload is not required are empty states,
     #       AND states during backward input position detection!
-    if len(TransitionMap) == 0: return 
+    if len(TransitionMap) == 0: 
+        return TransitionMap
 
     LanguageDB = Setup.language_db
-
-    # The range of possible characters may be restricted. It must be ensured,
-    # that the occurring characters only belong to the admissible range.
-    solution.prune_range(TransitionMap)
 
     # The 'buffer-limit-code' always needs to be identified separately.
     # This helps to generate the reload procedure a little more elegantly.
     # (Backward input position detection does not reload. It only moves 
     #  inside the current lexeme, which must be inside the buffer.)
     if EngineType.requires_buffer_limit_code_for_reload():
-        __separate_buffer_limit_code_transition(TransitionMap, EngineType)
+        index = transition_map_tool.index(TransitionMap, Setup.buffer_limit_code)
+        assert index is not None
+        print "#TMtarget:", TransitionMap[index][1]
+        assert TransitionMap[index][1] == E_StateIndices.DROP_OUT
+        transition_map_tool.set(TransitionMap, Setup.buffer_limit_code, 
+                                 E_StateIndices.RELOAD_PROCEDURE)
+        if GotoReload_Str is not None:
+            goto_reload_str = GotoReload_Str
+        else:
+            goto_reload_str = LanguageDB.GOTO_RELOAD(StateIndex, InitStateF, EngineType)
+    else:
+        goto_reload_str = None
+
+    def construct(Target, StateIndex, InitStateF, EngineType, GotoReload_Str, TheAnalyzer):
+        if isinstance(Target, TransitionCode): 
+            return Target
+        else:
+            return TransitionCode(Target, StateIndex, InitStateF, EngineType, 
+                                  GotoReload_Str, TheAnalyzer)
 
     # All transition information related to intervals become proper objects of 
     # class TransitionCode.
-    transition_map = [ (entry[0], transition_code.do(entry[1], StateIndex, InitStateF, EngineType, 
-                                                     GotoReload_Str, TheAnalyzer)) 
-                       for entry in TransitionMap ]
-
-    # transition_map = SubTriggerMap(transition_map)
-    #__________________________________________________________________________
-
-    # (*) Determine 'outstanding' transitions and take them
-    #     out of the map.
-    outstanding = solution.prune_outstanding(transition_map) 
-    if outstanding is not None: __get_outstanding(txt, outstanding)
-
-    # (*) Bisection until other solution is more suitable.
-    #     (This may include 'no bisectioning')
-    __bisection(txt, transition_map)
-
-    # (*) When there was an outstanding character, then the whole bisection was
-    #     implemented in an 'ELSE' block which must be closed.
-    if outstanding is not None: txt.append(LanguageDB.ENDIF)
+    return [ (entry[0], construct(entry[1], StateIndex, InitStateF, EngineType, 
+                                            goto_reload_str, TheAnalyzer)) 
+             for entry in TransitionMap ]
 
 class SubTriggerMap(object):
     """A trigger map that 'points' into a subset of a trigger map.
@@ -280,57 +316,6 @@ def __get_comparison_sequence(txt, TriggerMap):
     txt.append(LanguageDB.END_IF(LastF=True))
     txt.append("\n")
     return True
-
-def __separate_buffer_limit_code_transition(TransitionMap, EngineType):
-    """This function ensures, that the buffer limit code is separated 
-       into a single value interval. Thus the transition map can 
-       transit immediate to the reload procedure.
-    """
-    BLC = Setup.buffer_limit_code
-    for i, entry in enumerate(TransitionMap):
-        interval, target_index = entry
-
-        if   target_index == E_StateIndices.RELOAD_PROCEDURE:   
-            assert interval.contains_only(Setup.buffer_limit_code) 
-            assert not EngineType.is_BACKWARD_INPUT_POSITION()
-            # Transition 'buffer limit code --> E_StateIndices.RELOAD_PROCEDURE' 
-            # has been setup already.
-            return
-
-        elif target_index is not E_StateIndices.DROP_OUT: 
-            continue
-
-        elif not interval.contains(Setup.buffer_limit_code): 
-            continue
-
-        # Found the interval that contains the buffer limit code.
-        # If the interval's size is alread 1, then there is nothing to be done
-        if interval.size() == 1: return
-
-        before_begin = interval.begin
-        before_end   = BLC
-        after_begin  = BLC + 1 
-        after_end    = interval.end
-
-        # Replace Entry with (max.) three intervals: before, buffer limit code, after
-        del TransitionMap[i]
-
-        if after_end > after_begin:
-            TransitionMap.insert(i, (Interval(after_begin, after_end), E_StateIndices.DROP_OUT))
-
-        # "Target == E_StateIndices.RELOAD_PROCEDURE" => Buffer Limit Code
-        TransitionMap.insert(i, (Interval(BLC, BLC + 1), E_StateIndices.RELOAD_PROCEDURE))
-
-        if before_end > before_begin and before_end > 0:
-            TransitionMap.insert(i, (Interval(before_begin, before_end), E_StateIndices.DROP_OUT))
-        return
-
-    # If an engine type may be subject to reload, there must be a buffer 
-    # limit code in the transition map to trigger reload. If not it would 
-    # be an error.
-    assert not EngineType.requires_buffer_limit_code_for_reload(), \
-            "Wrong Engine Type: %s -- missing Buffer Limit Code\n%s" % (EngineType.__class__.__name__, str(TransitionMap))
-    return
 
 def __get_transition(txt, TriggerMapEntry, IndentF=False):
     global LanguageDB

@@ -172,12 +172,6 @@ class LinearComparisonRegion(Region):
 
         return True
 
-
-
-
-
-
-
 def watch(TriggerMap):
     LinearComparison.init()
     BranchTable.init()

@@ -112,39 +112,6 @@ def get(TriggerMap,
     else:
         return E_Type.COMPARISON_SEQUENCE
 
-def prune_range(TriggerMap):
-    """Consider the 'useful range' starting from zero. Thus, the first 
-       interval to be considered is the first that intersects with 0.
-       Then 'begin' must become '0' instead of a negative value.
-    """
-    LowerLimit = 0
-    UpperLimit = Setup.get_character_value_limit()
-
-    # Iterate from 'low' to 'high'
-    for i, info in enumerate(TriggerMap):
-        interval, target = info
-        if interval.end <= LowerLimit: continue
-
-        # Found an interval that intersects with 'LowerLimit' line
-        interval.begin = LowerLimit
-        if i != 0: del TriggerMap[:i]
-        return
-
-    L = len(TriggerMap)
-    # Iterate from 'high' to 'low'
-    for i, info in r_enumerate(TriggerMap):
-        interval, target = info
-        if interval.begin > UpperLimit: continue
-
-        # Found an interval that intersects with 'UpperLimit' line
-        interval.end = UpperLimit 
-        if i != L-1: 
-            del TriggerMap[i+1:]
-        return
-
-    # The whole trigger map happens below 0. This is trash, no doubt!
-    assert False
-
 def prune_outstanding(TriggerMap):
     """Implements the remaining transitions as:
 
