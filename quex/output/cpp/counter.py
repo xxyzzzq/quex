@@ -2,9 +2,10 @@
 (C) 2012 Frank-Rene Schaefer
 _______________________________________________________________________________
 """
-from   quex.engine.generator.state.transition.code  import TextTransitionCode
-import quex.engine.generator.state.transition.core  as     transition_map_coder
+from   quex.engine.generator.state.transition.code  import TextTransitionCode, TransitionCode
+import quex.engine.generator.state.transition.core  as     transition_block
 import quex.engine.generator.state_machine_coder    as     state_machine_coder
+import quex.engine.generator.state.transition.solution  as solution
 from   quex.engine.generator.base                   import get_combined_state_machine
 from   quex.engine.generator.action_info            import CodeFragment
 from   quex.engine.state_machine.core               import StateMachine
@@ -12,13 +13,15 @@ import quex.engine.analyzer.core                    as     analyzer_generator
 import quex.engine.analyzer.transition_map          as     transition_map_tool
 import quex.engine.analyzer.engine_supply_factory   as     engine
 import quex.engine.state_machine.transformation     as     transformation
+import quex.engine.state_machine.index              as     index
 from   quex.engine.interval_handling                import NumberSet
 
 from   quex.blackboard import setup as Setup, \
-                              DefaultCounterFunctionDB
+                              DefaultCounterFunctionDB, \
+                              E_StateIndices
 
 from   collections import defaultdict
-from   copy        import deepcopy
+from   copy        import deepcopy, copy
 import re
 
 def get(counter_db, Name):
@@ -50,7 +53,7 @@ def get(counter_db, Name):
     if function_name is not None:
         return function_name, None # Implementation has been done before.
 
-    column_counter_per_chunk, state_machine_f, txt = get_step(counter_db, None, None, "iterator")
+    column_counter_per_chunk, state_machine_f, txt = get_step(counter_db, "iterator")
 
     function_name  = "QUEX_NAME(%s_counter)" % Name
     implementation = __frame(txt, function_name, state_machine_f, column_counter_per_chunk)
@@ -59,32 +62,41 @@ def get(counter_db, Name):
     return function_name, implementation
 
 Match_input = re.compile("\\binput\\b", re.UNICODE)
-def get_step(counter_db, ConcernedActionSet, UndefinedCodePointAction, IteratorName):
+def get_step(counter_db, IteratorName):
     global Match_input
 
     tm, column_counter_per_chunk, state_machine_f = \
-            get_counter_map(counter_db, ConcernedActionSet, UndefinedCodePointAction, IteratorName, 
+            get_counter_map(counter_db, IteratorName, 
                             Setup.buffer_codec_transformation_info)
 
     state_machine_f, txt = get_core_step(tm, IteratorName, state_machine_f)
 
     return column_counter_per_chunk, state_machine_f, txt
 
-def get_core_step(TM, IteratorName, StateMachineF):
+def get_core_step(TM, IteratorName, StateMachineF, BeforeGotoReloadAction=None):
     """Get a counter increment code for one single character.
+
+    BeforeGotoReloadAction = None, means that there is no reload involed.
+
        RETURNS:
            [0]  -- True, if state machine was implemented.
                 -- False, if not.
            [1]  -- source code implementing.
     """
+    # The range of possible characters may be restricted. It must be ensured,
+    # that the occurring characters only belong to the admissible range.
+    print "#tm 0:", TM
+    transition_map_tool.prune(TM, 0, Setup.get_character_value_limit())
+    print "#tm 1:", TM
+
     if StateMachineF:
-        txt = _trivialized_state_machine_coder_do(TM)
+        txt = _trivialized_state_machine_coder_do(TM, BeforeGotoReloadAction)
         if txt is not None:
             StateMachineF = False # We tricked around it; No state machine needed.
         else:
-            txt = _state_machine_coder_do(TM)
+            txt = _state_machine_coder_do(TM, BeforeGotoReloadAction)
     else:
-        txt = _transition_map_coder_do(TM)
+        txt = _transition_map_coder_do(TM, BeforeGotoReloadAction)
 
     def replacer(block, StateMachineF):
         if block.find("(me->buffer._input_p)") != -1: 
@@ -99,9 +111,53 @@ def get_core_step(TM, IteratorName, StateMachineF):
 
     return StateMachineF, txt
 
-def get_counter_map(counter_db, ConcernedActionSet=None, 
-                    UndefinedCodePointAction=None, IteratorName=None, 
-                    Trafo=None, ColumnCountPerChunk=None): 
+def get_counter_dictionary(counter_db, ConcernedCharacterSet):
+    """Returns a list of NumberSet objects where for each X of the list it holds:
+
+         (i)  X is subset of ConcernedCharacterSet
+               
+         (ii) It is related to a different counter action than Y,
+              for each other object Y in the list.
+
+       RETURNS: 
+
+                    list:    (character_set, count_action)
+    """
+    class Addition:
+        __slots__ = ("value")
+        def __init__(self, Value, Type):
+            self.value = Value
+            self.type  = Type
+
+    def prune(X, ConcernedCharacterSet):
+        if ConcernedCharacterSet is None:
+            return X
+        else:
+            return X.intersection(ConcernedCharacterSet)
+
+    result = []
+    for delta, character_set in counter_db.special.iteritems():
+        x = prune(character_set, ConcernedCharacterSet)
+        if x.is_empty(): continue
+        result.append((x, Addition(delta, "column_add")))
+
+    for grid_step_n, character_set in counter_db.grid.iteritems():
+        x = prune(character_set, ConcernedCharacterSet)
+        if x.is_empty(): continue
+        result.append((x, Addition(grid_step_n, "grid_step")))
+
+    for delta, character_set in counter_db.newline.iteritems():
+        x = prune(character_set, ConcernedCharacterSet)
+        if x.is_empty(): continue
+        result.append((x, Addition(delta, "line_add")))
+
+    return result
+
+def get_counter_map(counter_db, 
+                    IteratorName          = None,
+                    Trafo                 = None,
+                    ColumnCountPerChunk   = None,
+                    ConcernedCharacterSet = None):
     """Provide a map which associates intervals with counting actions, i.e.
 
            map: 
@@ -178,115 +234,42 @@ def get_counter_map(counter_db, ConcernedActionSet=None,
     # If ColumnCountPerChunk is None => no action depends on IteratorName. 
     # See '__special()', '__grid_step()', and '__line_n()'.
 
-    class Builder:
-        trafo_info               = None
-        concerned_character_set  = None
-        column_count_per_chunk   = None
-        iterator_name            = IteratorName
-        factory                  = None
-        result                   = []
-        state_machine_required_f = False
-        ua_tm                    = None
+    counter_dictionary = get_counter_dictionary(counter_db, ConcernedCharacterSet)
 
-        @staticmethod
-        def init(TrafoInfo, ConcernedActionSet, UndefinedCodePointAction, ColumnCountPerChunk):
-            # (*) Consider Transformation Information
-            #     --> is a state machine required to count?
-            Builder.trafo_info               = TrafoInfo
-            Builder.state_machine_required_f = False
-            if Builder.trafo_info is not None and Setup.variable_character_sizes_f():
-                # Block the transformation by setting Builder.trafo_info = None
-                Builder.trafo_info               = None
-                Builder.state_machine_required_f = True
+    state_machine_f    = Setup.variable_character_sizes_f()
+    
+    if ColumnCountPerChunk is not None:
+        # It *is* conceivable, that there is a subset of 'CharacterSet' which
+        # can be handled with a 'column_count_per_chunk' and for all other
+        # characters in 'CharacterSet' the user does something to make it fit
+        # (see character set skipper, for example).
+        column_count_per_chunk = ColumnCountPerChunk
+    else:
+        column_count_per_chunk = get_column_number_per_chunk(counter_db, 
+                                                             ConcernedCharacterSet)
 
-            # (*) ColumnCountPerChunk? 
-            #     Is byte number of lexeme proportional to column number increment?
-            if ColumnCountPerChunk is not None:
-                Builder.column_count_per_chunk = ColumnCountPerChunk
+    def extend(result, number_set, action):
+        interval_list = number_set.get_intervals(PromiseToTreatWellF=True)
+        result.extend((x, action) for x in interval_list)
+
+    cm = []
+    for number_set, action in counter_dictionary:
+        if action.type == "column_add":
+            if column_count_per_chunk is not None:
+                extend(cm, number_set, __special(action.value))
             else:
-                if Builder.state_machine_required_f:
-                    # With variable character sizes we can never, ever derive the 
-                    # column number increment from the byte-length of a lexeme.
-                    Builder.column_count_per_chunk = None
-                else:
-                    Builder.column_count_per_chunk = get_column_number_per_chunk(counter_db, Builder.concerned_character_set)
+                # Column counts are determined by '(iterator - reference) * C'
+                pass
 
-            # (*) User Action Map.
-            #     User may have defined actions upon occurrence of characters.
-            #     Prepare for addition of user's actions to counter actions.
-            #
-            #     --> concerned_character_set, i.e. the set of characters 
-            #         which are of concern for the user.
-            Builder.concerned_character_set = None
-            if ConcernedActionSet is not None:
-                Builder.concerned_character_set = NumberSet()
-                Builder.ua_tm = []
-                for character_set, action in ConcernedActionSet:
-                    if Builder.trafo_info is not None:
-                        character_set = character_set.transform(Builder.trafo_info)
-                    Builder.ua_tm.extend((interval, action) for interval in character_set.get_intervals(PromiseToTreatWellF=True))
-                    Builder.concerned_character_set.unite_with(character_set)
-                Builder.ua_tm.sort()
-                transition_map_tool.fill_gaps(Builder.ua_tm, None)
+        elif action.type == "grid_step":
+            extend(cm, number_set, __grid_step(action.value, column_count_per_chunk, IteratorName))
 
-            # (*) Action on undefined character intervals.
-            if UndefinedCodePointAction is not None:
-                Builder.on_undefined_action = UndefinedCodePointAction
-            else:
-                Builder.on_undefined_action = \
-                            [   "QUEX_ERROR_EXIT(\"Unexpected character for codec '%s'.\\n\"\n" % Setup.buffer_codec, \
-                             0, "                \"May be, codec transformation file from unicode contains errors.\");"]
+        elif action.type == "line_add":
+            extend(cm, number_set, __line_n(action.value, column_count_per_chunk, IteratorName))
 
+    transition_map_tool.sort(cm)
 
-        @staticmethod
-        def do(factory, CharacterSet, Value):
-            """Return a list with the intervals of CharacterSet, each interval shall
-            be listed together with the 'Entry'.
-            """
-            if Builder.concerned_character_set is None:
-                trigger_set = CharacterSet
-            else:
-                trigger_set = CharacterSet.intersection(Builder.concerned_character_set)
-                if trigger_set.is_empty(): return
-
-            if Builder.trafo_info is not None: 
-                trigger_set = trigger_set.clone()
-                trigger_set.transform(Builder.trafo_info)
-
-            entry = factory(Value, Builder.iterator_name, Builder.column_count_per_chunk)
-            Builder.result.extend((interval, entry) \
-                   for interval in trigger_set.get_intervals(PromiseToTreatWellF=True))
-
-    Builder.init(Trafo, ConcernedActionSet, UndefinedCodePointAction, ColumnCountPerChunk)
-
-    # Build the 'transition map'
-    for delta, character_set in counter_db.special.iteritems():
-        Builder.do(__special, character_set, delta)
-
-    for grid_step_n, character_set in counter_db.grid.iteritems():
-        Builder.do(__grid_step, character_set, grid_step_n)
-
-    for delta, character_set in counter_db.newline.iteritems():
-        Builder.do(__line_n, character_set, delta)
-
-    counter_map = Builder.result
-
-    transition_map_tool.sort(counter_map)
-
-    # The gaps must be places where no characters from unicode are assigned.
-    # The original regular expression described unicode. So, the transformation
-    # must have done a complete transformation. GAPS must be undefined places.
-    transition_map_tool.fill_gaps(counter_map, Builder.on_undefined_action)
-
-    if Builder.ua_tm is not None:
-        # We need to fill the gaps, to use 'add_transition_actions()'
-        counter_map = transition_map_tool.add_transition_actions(counter_map, Builder.ua_tm)
-
-    transition_map_tool.assert_adjacency(counter_map)
-    if Builder.concerned_character_set is not None:
-        counter_map = transition_map_tool.cut(counter_map, Builder.concerned_character_set)
-
-    return counter_map, Builder.column_count_per_chunk, Builder.state_machine_required_f
+    return cm, column_count_per_chunk, state_machine_f
 
 def get_state_machine_list(TM):
     """Returns a state machine list which implements the transition map given
@@ -324,24 +307,19 @@ def get_column_number_per_chunk(counter_db, CharacterSet):
     add the same value the return value is not None. Else, it is.
 
     RETURNS: None -- If there is no distinct column increment 
-             > =0 -- The increment of column number for every character
+             >= 0 -- The increment of column number for every character
                      from CharacterSet.
     """
-    if CharacterSet is None:
-        if len(counter_db.special) == 1: return counter_db.special.iterkeys().next()
-        else:                            return None
-
     result     = None
     number_set = None
     for delta, character_set in counter_db.special.iteritems():
-        if character_set.has_intersection(CharacterSet):
+        if CharacterSet is None or character_set.has_intersection(CharacterSet):
             if result is None: result = delta; number_set = character_set
             else:              return None
 
     if Setup.variable_character_sizes_f():
-        result = transformation.homogeneous_chunk_n_per_character(number_set, Setup.buffer_codec_transformation_info)
-
-
+        result = transformation.homogeneous_chunk_n_per_character(number_set, 
+                                                                  Setup.buffer_codec_transformation_info)
     return result
 
 def get_grid_and_line_number_character_set(counter_db):
@@ -353,22 +331,51 @@ def get_grid_and_line_number_character_set(counter_db):
         result.unite_with(character_set)
     return result
 
-def _transition_map_coder_do(TM):
-    
-    tm = [ (interval, TextTransitionCode(list(x))) for interval, x in TM ]
+def _transition_map_coder_do(TM, BeforeGotoReloadAction=None):
 
     LanguageDB = Setup.language_db
+
     txt = []
+    if BeforeGotoReloadAction is not None:
+        upon_reload_adr = index.get()
+        txt.append(LanguageDB.LABEL(StateIndex=upon_reload_adr))
+
+        engine_type = engine.FORWARD
+        #index = transition_map_tool.index(TransitionMap, Setup.buffer_limit_code)
+        #assert index is not None
+        #assert TransitionMap[index][1] == E_StateIndices.DROP_OUT
+        goto_reload_action = copy(BeforeGotoReloadAction)
+        goto_reload_action.append(LanguageDB.GOTO_RELOAD(upon_reload_adr, True, engine_type))
+        goto_reload_str    = "".join(goto_reload_action)
+        transition_map_tool.set(TM, Setup.buffer_limit_code, goto_reload_str)
+    else:
+        engine_type = engine.CHARACTER_COUNTER
+
+    def get_transition_code(X, ET):
+        if isinstance(X, (str, unicode)) or isinstance(X, list):
+            return TextTransitionCode(X)
+        else:
+            return TransitionCode(X, 
+                                  StateIndex     = None,
+                                  InitStateF     = True,
+                                  EngineType     = ET,
+                                  GotoReload_Str = goto_reload_str)
+
+    tm = [ 
+        (interval, get_transition_code(x, engine_type)) for interval, x in TM 
+    ]
+
     LanguageDB.code_generation_switch_cases_add_statement("break;")
-    transition_map_coder.do(txt, tm, EngineType=engine.CHARACTER_COUNTER)
+    transition_block.do(txt, tm)
     LanguageDB.code_generation_switch_cases_add_statement(None)
+
     txt.append(0)
     txt.append(LanguageDB.INPUT_P_INCREMENT())
     txt.append("\n")
 
     return txt
 
-def _trivialized_state_machine_coder_do(tm):
+def _trivialized_state_machine_coder_do(tm, BeforeGotoReloadAction=None):
     """This function tries to provide easy solutions for dynamic character
     length encodings, such as UTF8 or UTF16. 
     
@@ -383,10 +390,14 @@ def _trivialized_state_machine_coder_do(tm):
     'IncrementActionStr'.
 
     RETURNS: None -- if no easy solution could be provided.
-             text -- the implementation of the counter function.
+             text -- the implementation of the counter functionh.
     """
     global __increment_actions_for_utf16
     global __increment_actions_for_utf8
+   
+    # Currently, we do not handle the case 'Reload': refuse to work.
+    if BeforeGotoReloadAction is None:
+        return None
 
     # (*) Try to find easy and elegant special solutions 
     if   Setup.buffer_codec_transformation_info == "utf8-state-split":
@@ -411,13 +422,14 @@ def _trivialized_state_machine_coder_do(tm):
 
     # (*) The first interval may start at - sys.maxint
     if tm[0][0].begin < 0: tm[0][0].begin = 0
+
     # Later interval shall not!
     assert tm[0][0].end > 0
 
     # Code the transition map
     return _transition_map_coder_do(tm)
 
-def _state_machine_coder_do(tm):
+def _state_machine_coder_do(tm, BeforeGotoReloadAction=None):
     """Generates a state machine that represents the transition map 
     according to the codec given in 'Setup.buffer_codec_transformation_info'
     """
@@ -430,9 +442,12 @@ def _state_machine_coder_do(tm):
     assert sm is not None
 
     # The generator only understands 'analyzers'. Get it!
-    analyzer = analyzer_generator.do(sm, engine.CHARACTER_COUNTER)
+    if BeforeGotoReloadAction is not None: engine_type = engine.CHARACTER_COUNTER
+    else:                                  engine_type = engine.FORWARD
 
-    sm_txt = state_machine_coder.do(analyzer, ReplaceIndentF=False)
+    analyzer = analyzer_generator.do(sm, engine_type)
+
+    sm_txt   = state_machine_coder.do(analyzer, BeforeGotoReloadAction)
 
     # 'Terminals' are the counter actions
     terminal_txt = LanguageDB["$terminal-code"]("Counter",
@@ -448,14 +463,14 @@ def _state_machine_coder_do(tm):
     txt = sm_txt + terminal_txt
     return txt
 
-def __special(Delta, IteratorName, ColumnCountPerChunk):
+def __special(Delta):
     LanguageDB = Setup.language_db
-    if ColumnCountPerChunk is None and Delta != 0: 
+    if Delta != 0: 
         return ["__QUEX_IF_COUNT_COLUMNS_ADD((size_t)%s);\n" % LanguageDB.VALUE_STRING(Delta)]
     else:
         return []
 
-def __grid_step(GridStepN, IteratorName, ColumnCountPerChunk):
+def __grid_step(GridStepN, ColumnCountPerChunk, IteratorName):
     LanguageDB = Setup.language_db
     txt = []
     if ColumnCountPerChunk is not None:
@@ -472,7 +487,7 @@ def __grid_step(GridStepN, IteratorName, ColumnCountPerChunk):
 
     return txt
 
-def __line_n(Delta, IteratorName, ColumnCountPerChunk):
+def __line_n(Delta, ColumnCountPerChunk, IteratorName):
     LanguageDB = Setup.language_db
     txt = []
     # Maybe, we only want to set the column counter to '0'.

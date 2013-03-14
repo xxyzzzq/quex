@@ -9,7 +9,7 @@ from   quex.blackboard import E_StateIndices, \
 
 LanguageDB = None
 
-def do(code, TheState, TheAnalyzer):
+def do(code, TheState, TheAnalyzer, BeforeGotoReloadAction):
     global LanguageDB
     assert isinstance(TheState, AnalyzerState)
     assert isinstance(TheAnalyzer, Analyzer)
@@ -24,12 +24,13 @@ def do(code, TheState, TheAnalyzer):
     input_do(txt, TheState, TheAnalyzer)
 
     # (*) Transition Map ______________________________________________________
-    transition_block.do(txt, 
-                        TheState.transition_map, 
-                        TheState.index, 
-                        TheState.engine_type, 
-                        TheState.init_state_f, 
-                        TheAnalyzer=TheAnalyzer)
+    tm = transition_block.prepare_transition_map(TheState.transition_map, 
+                                                 TheState.index, 
+                                                 TheState.engine_type, 
+                                                 TheState.init_state_f, 
+                                                 TheAnalyzer            = TheAnalyzer,
+                                                 BeforeGotoReloadAction = BeforeGotoReloadAction)
+    transition_block.do(txt, tm)
 
     # (*) Drop Out ____________________________________________________________
     drop_out.do(txt, TheState, TheAnalyzer)

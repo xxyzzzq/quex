@@ -136,6 +136,7 @@ class Generator(GeneratorBase):
             txt.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
 
         analyzer = analyzer_generator.do(self.pre_context_sm, engine.BACKWARD_PRE_CONTEXT)
+        LanguageDB.REPLACE_INDENT(analyzer)
         msg      = state_machine_coder.do(analyzer)
         txt.extend(msg)
 
@@ -166,6 +167,7 @@ class Generator(GeneratorBase):
         # -- implement the state machine itself
         analyzer           = analyzer_generator.do(self.sm, engine.FORWARD)
         state_machine_code = state_machine_coder.do(analyzer)
+        LanguageDB.REPLACE_INDENT(state_machine_code)
         txt.extend(state_machine_code)
 
         # -- terminal states: execution of pattern actions  
@@ -217,6 +219,7 @@ class Generator(GeneratorBase):
 
         analyzer      = analyzer_generator.do(SM, engine.BACKWARD_INPUT_POSITION)
         function_body = state_machine_coder.do(analyzer)
+        LanguageDB.REPLACE_INDENT(function_body)
 
         txt.extend(function_body)
 

@@ -55,7 +55,7 @@ class Handler:
         if isinstance(self.state, PathWalkerState):
             txt.append("#   undef __QUEX_DEBUG_MAP_PATH_BASE_TO_PATH_ID\n")
 
-def do(txt, TheState, TheAnalyzer):
+def do(txt, TheState, TheAnalyzer, BeforeGotoReloadAction=None):
     specific = Handler(TheState)
 
     specific.debug_info_map_state_key_to_state_index(txt)
@@ -67,13 +67,9 @@ def do(txt, TheState, TheAnalyzer):
     specific.framework(txt, TheState, TheAnalyzer)
 
     # (*) Transition Map ______________________________________________________
-    prepare_transition_map(TheState, TheAnalyzer, specific.state_key_str)
-    transition_block.do(txt, 
-                        TheState.transition_map, 
-                        TheState.index, 
-                        TheAnalyzer.engine_type, 
-                        TheState.init_state_f, 
-                        TheAnalyzer = TheAnalyzer) 
+    tm = prepare_transition_map(TheState, TheAnalyzer, specific.state_key_str, 
+                                BeforeGotoReloadAction)
+    transition_block.do(txt, tm)
 
     # (*) Drop Out ____________________________________________________________
     drop_out_scheme_implementation(txt, TheState, TheAnalyzer, 
@@ -144,7 +140,7 @@ def drop_out_scheme_implementation(txt, TheState, TheAnalyzer, StateKeyString, D
     LanguageDB.INDENT(case_txt)
     txt.extend(case_txt)
 
-def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr):
+def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr, BeforeGotoReloadAction):
     """Generate targets in the transition map which the code generation can 
        handle. The transition map will consist of pairs of
     
@@ -172,14 +168,23 @@ def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr):
         # => Define an 'all drop out' trigger_map, and then later
         # => Adapt the trigger map, so that the 'buffer limit' is an 
         #    isolated single interval.
-        TheState.transition_map = [ (Interval(-sys.maxint, sys.maxint), MegaState_Target_DROP_OUT) ]
+        TheState.transition_map = [ 
+            (Interval(-sys.maxint, sys.maxint), MegaState_Target_DROP_OUT) 
+        ]
 
     for i, info in enumerate(TheState.transition_map):
-        interval, target = info
-        new_target = prepare_target(target, TheState, TheAnalyzer.state_db, StateKeyStr)
+        interval, target           = info
+        new_target                 = prepare_target(target, TheState, 
+                                                    TheAnalyzer.state_db, 
+                                                    StateKeyStr)
         TheState.transition_map[i] = (interval, new_target)
 
-    return
+    return transition_block.prepare_transition_map(TheState.transition_map, 
+                                                   TheState.index, 
+                                                   TheAnalyzer.engine_type, 
+                                                   TheState.init_state_f, 
+                                                   TheAnalyzer            = TheAnalyzer,
+                                                   BeforeGotoReloadAction = BeforeGotoReloadAction)
 
 def prepare_target(Target, TheState, StateDB, StateKeyStr):
     LanguageDB = Setup.language_db

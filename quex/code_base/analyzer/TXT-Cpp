@@ -146,14 +146,14 @@ public:
     QUEX_TYPE_CHARACTER*  buffer_lexeme_start_pointer_get();
     void                  buffer_input_pointer_set(QUEX_TYPE_CHARACTER*);
 
-    /* -- activate/deactivate byte order reversion (big-/little-endian)    */
+    /* -- activate/deactivate byte order reversion (big-/little-endian)      */
     bool                  byte_order_reversion();
     void                  byte_order_reversion_set(bool Value);
 
     /* NOTE: All calls to receive functions for 'queue' and 'single'
      *       are deliberately chosen to be incompatible! Thus, when 
      *       the user switches the token passing policy, he must re-
-     *       think his receive mechanism.                                  */
+     *       think his receive mechanism.                                    */
 #   if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
     /* (1) Token Queue 
      * 
@@ -162,7 +162,7 @@ public:
      *   provide a pointer that can be adapted by having him specify
      *   the second argument--not only a return value.
      *
-     *   Command line option:  --token-policy  queue                       */
+     *   Command line option:  --token-policy  queue                         */
     void                receive(QUEX_TYPE_TOKEN**);
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)  
     /* (2) Single Token
@@ -171,16 +171,17 @@ public:
      *   token id is returned. This enables a minimal setup were the
      *   analyzer may only return a token id and does not work on tokens. 
      *
-     *   Command line options: --token-policy  single                      */
+     *   Command line options: --token-policy  single                        */
     QUEX_TYPE_TOKEN_ID  receive();
 #   else
 #       error "This section should never be compiled."
 #   endif
 
-    // NOTE: A pointer to an object of the token queue/object is used in order to make
-    //       memory management more flexible. The token queue/token object is heavily
-    //       used and it should be possible to put it somewhere in memory with other
-    //       heavily used data so that the cache can take advantage of data locality.
+    /* A pointer to an object of the token queue/object is used in order to
+     * make memory management more flexible.  The token queue/token object is
+     * heavily used and it should be possible to put it somewhere in memory
+     * with other heavily used data so that the cache can take advantage of
+     * data locality.                                                        */
     QUEX_TYPE_TOKEN*     token_p();
 
 #   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE) 

@@ -200,6 +200,12 @@ class StateMachine(object):
         result.states[idx].set_acceptance(True)
         return result
 
+    @staticmethod
+    def from_character_set(CharacterSet):
+        result = StateMachine()
+        result.add_transition(result.init_state_index, CharacterSet, AcceptanceF=True)
+        return result
+
     def clone(self, ReplacementDB=None, PreContextReplacementDB=None, PatternIDReplacementDB=None):
         """Clone state machine, i.e. create a new one with the same behavior,
         i.e. transitions, but with new unused state indices. This is used when

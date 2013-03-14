@@ -79,9 +79,9 @@ class Analyzer:
         assert isinstance(SM, StateMachine)
 
         self.__acceptance_state_index_list = SM.get_acceptance_state_index_list()
-        self.__init_state_index = SM.init_state_index
-        self.__state_machine_id = SM.get_id()
-        self.__engine_type      = EngineType
+        self.__init_state_index     = SM.init_state_index
+        self.__state_machine_id     = SM.get_id()
+        self.__engine_type          = EngineType
 
         # (*) From/To Databases
         #
@@ -104,24 +104,24 @@ class Analyzer:
         if not EngineType.requires_detailed_track_analysis():
             self.__position_register_map = None
             return
-
-        # (*) Drop Out Behavior
-        #     The PathTrace objects tell what to do at drop_out. From this, the
-        #     required entry actions of states can be derived.
-        self.__require_acceptance_storage_db = defaultdict(list)
-        self.__require_position_storage_db   = defaultdict(list)
-        for state_index, trace_list in self.__trace_db.iteritems():
-            self.__state_db[state_index].drop_out = self.configure_drop_out(state_index)
-
-        # (*) Entry Behavior
-        #     Implement the required entry actions.
-        self.configure_entries(SM)
-
-        if EngineType.requires_position_register_map():
-            # (*) Position Register Map (Used in 'optimizer.py')
-            self.__position_register_map = position_register_map.do(self)
         else:
-            self.__position_register_map = None
+            # (*) Drop Out Behavior
+            #     The PathTrace objects tell what to do at drop_out. From this, the
+            #     required entry actions of states can be derived.
+            self.__require_acceptance_storage_db = defaultdict(list)
+            self.__require_position_storage_db   = defaultdict(list)
+            for state_index, trace_list in self.__trace_db.iteritems():
+                self.__state_db[state_index].drop_out = self.configure_drop_out(state_index)
+
+            # (*) Entry Behavior
+            #     Implement the required entry actions.
+            self.configure_entries(SM)
+
+            if EngineType.requires_position_register_map():
+                # (*) Position Register Map (Used in 'optimizer.py')
+                self.__position_register_map = position_register_map.do(self)
+            else:
+                self.__position_register_map = None
 
     @property
     def trace_db(self):                    return self.__trace_db
@@ -347,7 +347,6 @@ class Analyzer:
     def acceptance_storage_post_pone_can_be_delegate(self, StateIndex, PatternId, MotherAcceptSequence):
         pass
             
-
     def implement_required_position_storage(self):
         """
         Store Input Position / Postpone as much as possible.

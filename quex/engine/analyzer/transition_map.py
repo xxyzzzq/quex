@@ -1,5 +1,6 @@
 from   quex.engine.interval_handling import Interval
 from   quex.blackboard import E_StateIndices
+from   quex.engine.tools import r_enumerate
 import sys
 from   copy import deepcopy, copy
 from   itertools import izip
@@ -187,10 +188,14 @@ def assert_adjacency(transition_map, TotalRangeF=False, ChangeF=False):
     prev_target = info[1]
 
     for interval, target in iterable:
-        assert interval.begin == prev_end       # Intervals are adjacent!
-        assert interval.end   > interval.begin  # Interval size > 0! 
+        # Intervals are adjacent!
+        assert interval.begin == prev_end, \
+               "interval.begin: 0x%X != prev_end: 0x%X" % (interval.begin, prev_end)
+        # Interval size > 0! 
+        assert interval.end   > interval.begin, \
+               "interval.end: %x <= interval.begin: 0x%X" % (interval.end, interval.begin)
         if ChangeF:
-            assert target != prev_target
+            assert target != prev_target 
 
         prev_end    = interval.end
         prev_target = target
@@ -317,10 +322,11 @@ def sort(transition_map):
     transition_map.sort(key=lambda x: x[0].begin)
 
 def add_transition_actions(transition_map, TransitionActionMap):
-    """'TransitionActionMap' describes actions to be taken upon the 
-    occurence of a particular character. The actions are to be added
-    to the 'transition_map'.
+    """'TransitionActionMap' describes actions to be taken upon the occurence
+    of a particular character.  The actions are to be added to the
+    'transition_map'.  
     """
+
     def extend(Target, ActionList):
         result = copy(Target)
         if len(Target) != 0 and len(Target[-1]) != 0:
@@ -337,4 +343,53 @@ def add_transition_actions(transition_map, TransitionActionMap):
             result.append((Interval(begin, end), extend(target, action_list)))
     return result
 
+def prune(TriggerMap, Begin, End):
+    """Consider the 'useful range' starting from zero. Thus, the first 
+       interval to be considered is the first that intersects with 0.
+       Then 'begin' must become '0' instead of a negative value.
+    """
+    L = len(TriggerMap)
+
+    # Iterate from 'low' to 'high'
+    begin_i = None
+    for i, info in enumerate(TriggerMap):
+        interval, target = info
+        if interval.end <= Begin: continue
+
+        # Found an interval that intersects with 'Begin' line
+        if interval.begin < Begin:
+            interval.begin = Begin
+        begin_i = i
+        break
+
+    if begin_i is None: del TriggerMap[:] # No element is in range
+    elif begin_i != 0:  del TriggerMap[:begin_i]
+
+    # Iterate from 'high' to 'low'
+    end_i = None
+    for i, info in r_enumerate(TriggerMap):
+        interval, target = info
+        if interval.begin > End: continue
+
+        # Found an interval that intersects with 'End' line
+        if interval.end > End:
+            interval.end = End 
+
+        end_i = i
+        break
+
+    if   end_i is None: del TriggerMap[:] # No element in range
+    elif end_i != L-1:  del TriggerMap[end_i+1:]
+
+    # Delete all intervals which have become empty
+    i    = 0
+    size = len(TriggerMap)
+    while i < size:
+        if TriggerMap[i][0].begin == TriggerMap[i][0].end:
+            del TriggerMap[i]
+            size -= 1
+        else:
+            i += 1
+
+    return
 
