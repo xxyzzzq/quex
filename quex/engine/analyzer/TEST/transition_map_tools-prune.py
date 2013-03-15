@@ -11,7 +11,7 @@ from   itertools import islice
 
 if "--hwut-info" in sys.argv:
     print "Transition Map Tools: prune;"
-    print "CHOICES: 1, 2;"
+    print "CHOICES: 1, 2, 3;"
     sys.exit()
 
 B = 15
@@ -139,6 +139,12 @@ elif "2" in sys.argv:
     test((-sys.maxint, 5), (6, 11))
     test((0, 6),           (6, sys.maxint))
     test((0, 5),           (6, sys.maxint))
+
+elif "3" in sys.argv:
+    test((-1,0),   (0, 1), (1, 2))
+    test((-2,-1),  (0, 1), (1, 2))
+    test((-2,0),   (0, 1), (2, 3))
+    test((-2,-1),  (0, 1), (2, 3))
 
 sys.exit()
 
