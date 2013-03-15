@@ -11,7 +11,7 @@ from   itertools import islice
 
 if "--hwut-info" in sys.argv:
     print "Transition Map Tools: prune;"
-    print "CHOICES: 1;"
+    print "CHOICES: 1, 2;"
     sys.exit()
 
 B = 15
@@ -42,9 +42,6 @@ def get_borders(IntervalList):
     return border_list
 
 def iterate(TM, BorderList):
-    show_scale()
-    print "original:"
-    show_tm(TM)
     for i, begin in enumerate(BorderList):
         for end in islice(BorderList, i, None):
             show_pruner(begin, end)
@@ -77,22 +74,27 @@ def show_tm(TM):
     if len(TM) == 0:
         print " " * B + "                    < >"
         return
-    current_i  = 0
-    target     = None
-    x_iterable =   [-sys.maxint, -sys.maxint+1] \
-                 + range(-18, 19)               \
-                 + [sys.maxint-1, sys.maxint]
 
+    x_iterable = [-sys.maxint, -sys.maxint+1] \
+                 + range(-18, 19)             \
+                 + [sys.maxint-1, sys.maxint]
     L          = len(TM)
-    txt = [" " * (B+1)]
+    txt        = [" " * (B+1)]
+    target     = None
+    current_i  = 0
     for x in x_iterable:
-        if TM[current_i][0].begin == x: 
-            target = TM[current_i][1]
-        if TM[current_i][0].end == x: 
-            target     = None 
-            current_i += 1
-            if current_i == L:
-                break
+        while 1 + 1 == 2:
+            if TM[current_i][0].begin == x: 
+                target = TM[current_i][1]
+
+            if TM[current_i][0].end == x: 
+                target     = None 
+                current_i += 1
+                if current_i == L: break
+                continue
+            break
+        if current_i == L: break
+
         if target is None: txt.append(" ")
         else:              txt.append("%c" % chr(target))
 
@@ -116,22 +118,29 @@ def show_pruner(Begin, End):
 def test(*IntervalList):
     tm          = construct_tm(IntervalList)
     border_list = get_borders(IntervalList)
+
+    show_scale()
+    print "original:"
+    show_tm(tm)
     iterate(tm, border_list)
 
-if "1" in sys.argv:
+if   "1" in sys.argv:
     test((-5,6))
     test((-sys.maxint,0))
     test((0,1))
     test((0,sys.maxint))
     test((-sys.maxint,sys.maxint))
 
-sys.exit()
-number_set_list = [
-   [ (-sys.maxint, sys.maxint) ],
-   [ (-sys.maxint, 0) ],
-   [ (-sys.maxint, 0) ],
+elif "2" in sys.argv:
+    test((0, 6),           (6, 12))
+    test((0, 5),           (6, 11))
+    test((0, 4),           (8, 12))
+    test((-sys.maxint, 6), (6, 12))
+    test((-sys.maxint, 5), (6, 11))
+    test((0, 6),           (6, sys.maxint))
+    test((0, 5),           (6, sys.maxint))
 
-]
+sys.exit()
 
 def show(TM):
     txt = transition_map_tool.get_string(TM, Option="dec")
