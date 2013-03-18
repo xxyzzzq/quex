@@ -691,12 +691,6 @@ class NumberSet(object):
                 if x.begin < y.end or y.begin < x.end: return True
         return False
 
-    def has_only_this_element(self, Number):
-        if   len(self.__intervals) != 1:              return False
-        elif self.__intervals[0].begin != Number:     return False
-        elif self.__intervals[0].end   != Number + 1: return False
-        return True
-
     def intersect_with(self, Other):
         assert Other.__class__ == Interval or Other.__class__ == NumberSet
 

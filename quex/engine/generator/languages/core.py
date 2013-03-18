@@ -214,7 +214,6 @@ class LanguageDB_Cpp(dict):
             assert StateIndex != E_StateIndices.DROP_OUT
             assert StateIndex != E_StateIndices.RELOAD_PROCEDURE
             return {
-                E_StateIndices.INIT_STATE_TRANSITION_BLOCK: "INIT_STATE_TRANSITION_BLOCK",
                 E_StateIndices.END_OF_PRE_CONTEXT_CHECK:    "END_OF_PRE_CONTEXT_CHECK",
                 E_StateIndices.ANALYZER_REENTRY:            "__REENTRY",
             }[StateIndex]
@@ -245,9 +244,6 @@ class LanguageDB_Cpp(dict):
 
     def LABEL_DROP_OUT(self, StateIndex):
         return "_%s:" % self.ADDRESS_DROP_OUT(StateIndex)
-
-    def LABEL_INIT_STATE_TRANSITION_BLOCK(self):
-        return "%s:\n" % self.__label_name(E_StateIndices.INIT_STATE_TRANSITION_BLOCK, None)
 
     def LABEL_SHARED_ENTRY(self, TemplateIndex, EntryN=None):
         if EntryN is None: return "_%i_shared_entry:\n"    % TemplateIndex

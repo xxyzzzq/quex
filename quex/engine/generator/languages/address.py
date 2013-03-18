@@ -20,7 +20,6 @@ class AddressDB:
             "__RELOAD_BACKWARD", 
             "__STATE_ROUTER", 
             "__TERMINAL_ROUTER",
-            "INIT_STATE_TRANSITION_BLOCK",
             "__REENTRY_PREPARATION", 
             "__REENTRY_PREPARATION_2", 
             "__REENTRY",
@@ -82,7 +81,8 @@ __label_db = {
     "$skipper-reload":        lambda StateIdx:    __address_db.get("__SKIPPER_RELOAD_TERMINATED_%s" % __nice(StateIdx)),
     "$bipd-return":           lambda DetectorID:  __address_db.get("BIPD_%i_RETURN" % DetectorID),
     "$bipd-terminal":         lambda DetectorID:  __address_db.get("BIPD_%i_TERMINAL" % DetectorID),
-    "$init_state_fw_transition_block": lambda NoThing: "INIT_STATE_TRANSITION_BLOCK",
+    # There may be more than one ... in skipp for example ...
+    "$init_state_transition_block": lambda StateIndex:   __address_db.get("INIT_STATE_%i_TRANSITION_BLOCK" % StateIndex),
 }
 
 __referenced_label_set = set([])

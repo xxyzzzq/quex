@@ -14,7 +14,8 @@ import quex.engine.analyzer.transition_map          as     transition_map_tool
 import quex.engine.analyzer.engine_supply_factory   as     engine
 import quex.engine.state_machine.transformation     as     transformation
 import quex.engine.state_machine.index              as     index
-from   quex.engine.interval_handling                import NumberSet
+from   quex.engine.interval_handling                import NumberSet, Interval
+from   quex.engine.tools                            import print_callstack
 
 from   quex.blackboard import setup as Setup, \
                               DefaultCounterFunctionDB, \
@@ -61,9 +62,9 @@ def get(counter_db, Name):
 
     return function_name, implementation
 
-Match_input = re.compile("\\binput\\b", re.UNICODE)
+Match_input    = re.compile("\\binput\\b", re.UNICODE)
+Match_iterator = re.compile("\\iterator\\b", re.UNICODE)
 def get_step(counter_db, IteratorName):
-    global Match_input
 
     tm, column_counter_per_chunk, state_machine_f = \
             get_counter_map(counter_db, IteratorName, 
@@ -83,14 +84,18 @@ def get_core_step(TM, IteratorName, StateMachineF, BeforeGotoReloadAction=None):
                 -- False, if not.
            [1]  -- source code implementing.
     """
+    global Match_input
+    global Match_iterator
+
     # The range of possible characters may be restricted. It must be ensured,
     # that the occurring characters only belong to the admissible range.
-    print "#tm 0:", TM
     transition_map_tool.prune(TM, 0, Setup.get_character_value_limit())
-    print "#tm 1:", TM
 
     if StateMachineF:
+        print_callstack()
+        print "#BeforeGotoReloadAction:", BeforeGotoReloadAction
         txt = _trivialized_state_machine_coder_do(TM, BeforeGotoReloadAction)
+        print "#txt:", txt
         if txt is not None:
             StateMachineF = False # We tricked around it; No state machine needed.
         else:
@@ -101,8 +106,9 @@ def get_core_step(TM, IteratorName, StateMachineF, BeforeGotoReloadAction=None):
     def replacer(block, StateMachineF):
         if block.find("(me->buffer._input_p)") != -1: 
             block = block.replace("(me->buffer._input_p)", IteratorName)
-        if (not StateMachineF) and (Match_input.search(block) is not None): 
-            block = block.replace("input", "(*%s)" % IteratorName)
+        if not StateMachineF:
+            block = Match_input.sub("(*%s)" % IteratorName, block)
+            block = Match_iterator.sub("(%s)" % IteratorName, block)
         return block
 
     for i, elm in enumerate(txt):
@@ -271,7 +277,7 @@ def get_counter_map(counter_db,
 
     return cm, column_count_per_chunk, state_machine_f
 
-def get_state_machine_list(TM):
+def get_state_machine_list(TM, ReloadPossibleF=False):
     """Returns a state machine list which implements the transition map given
     in unicode. It is assumed that the codec is a variable
     character size codec. Each count action is associated with a separate
@@ -280,6 +286,8 @@ def get_state_machine_list(TM):
     RETURNS: [0] -- The 'action_db': state_machine_id --> count action
              [1] -- The list of state machines. 
     """
+    assert type(ReloadPossibleF) == bool
+
     # Sort by actions.
     action_code_db = defaultdict(NumberSet)
     for character_set, action_list in TM:
@@ -290,6 +298,9 @@ def get_state_machine_list(TM):
     action_db = {}
     for action, trigger_set in action_code_db.iteritems():
         sm = StateMachine()
+        if ReloadPossibleF and trigger_set.contains(Setup.buffer_limit_code):
+            trigger_set.subtract(Interval(Setup.buffer_limit_code, 
+                                          Setup.buffer_limit_code + 1))
         sm.add_transition(sm.init_state_index, trigger_set, AcceptanceF=True)
         sm_list.append(sm)
         action_db[sm.get_id()] = CodeFragment(list(action))
@@ -331,7 +342,7 @@ def get_grid_and_line_number_character_set(counter_db):
         result.unite_with(character_set)
     return result
 
-def _transition_map_coder_do(TM, BeforeGotoReloadAction=None):
+def _transition_map_coder_do(TM, BeforeGotoReloadAction):
 
     LanguageDB = Setup.language_db
 
@@ -375,7 +386,7 @@ def _transition_map_coder_do(TM, BeforeGotoReloadAction=None):
 
     return txt
 
-def _trivialized_state_machine_coder_do(tm, BeforeGotoReloadAction=None):
+def _trivialized_state_machine_coder_do(tm, BeforeGotoReloadAction):
     """This function tries to provide easy solutions for dynamic character
     length encodings, such as UTF8 or UTF16. 
     
@@ -396,7 +407,7 @@ def _trivialized_state_machine_coder_do(tm, BeforeGotoReloadAction=None):
     global __increment_actions_for_utf8
    
     # Currently, we do not handle the case 'Reload': refuse to work.
-    if BeforeGotoReloadAction is None:
+    if BeforeGotoReloadAction is not None:
         return None
 
     # (*) Try to find easy and elegant special solutions 
@@ -427,23 +438,26 @@ def _trivialized_state_machine_coder_do(tm, BeforeGotoReloadAction=None):
     assert tm[0][0].end > 0
 
     # Code the transition map
-    return _transition_map_coder_do(tm)
+    return _transition_map_coder_do(tm, BeforeGotoReloadAction=None)
 
-def _state_machine_coder_do(tm, BeforeGotoReloadAction=None):
+def _state_machine_coder_do(tm, BeforeGotoReloadAction):
     """Generates a state machine that represents the transition map 
     according to the codec given in 'Setup.buffer_codec_transformation_info'
     """
     LanguageDB = Setup.language_db
 
-    action_db, sm_list = get_state_machine_list(tm)
+    action_db, sm_list = get_state_machine_list(tm, BeforeGotoReloadAction is not None)
+
+    for i, sm in enumerate(sm_list):
+        print "#sm %i\n%s" % (i, sm)
 
     sm             = get_combined_state_machine(sm_list)
     complete_f, sm = transformation.try_this(sm, -1)
     assert sm is not None
 
     # The generator only understands 'analyzers'. Get it!
-    if BeforeGotoReloadAction is not None: engine_type = engine.CHARACTER_COUNTER
-    else:                                  engine_type = engine.FORWARD
+    if BeforeGotoReloadAction is None: engine_type = engine.CHARACTER_COUNTER
+    else:                              engine_type = engine.FORWARD
 
     analyzer = analyzer_generator.do(sm, engine_type)
 
