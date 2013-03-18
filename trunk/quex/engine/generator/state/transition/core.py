@@ -79,8 +79,8 @@ def prepare_transition_map(TransitionMap,
     if EngineType.requires_buffer_limit_code_for_reload():
         index = transition_map_tool.index(TransitionMap, Setup.buffer_limit_code)
         assert index is not None
-        print "#TMtarget:", TransitionMap[index][1]
-        assert TransitionMap[index][1] == E_StateIndices.DROP_OUT
+        assert TransitionMap[index][1] == E_StateIndices.DROP_OUT, \
+                "%s: %s != %s" % (TransitionMap[index][0].get_string(Option="hex"), TransitionMap[index][1], E_StateIndices.DROP_OUT)
         transition_map_tool.set(TransitionMap, Setup.buffer_limit_code, 
                                  E_StateIndices.RELOAD_PROCEDURE)
         if GotoReload_Str is not None:

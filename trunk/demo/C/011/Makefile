@@ -28,7 +28,7 @@ utf8-lexer: utf8-lexer.c
 		 --codec utf8        \
 		 --token-id-prefix TKN_ \
 		 --language C        \
-		 -o UTF8Lex 
+		 -o UTF8Lex --debug-exception
 	gcc -ggdb \
 		-Wall                   \
 		-I$(QUEX_PATH) -I.      \

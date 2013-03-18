@@ -4,6 +4,7 @@ from   quex.engine.analyzer.state.core import AnalyzerState, \
 import quex.engine.generator.state.transition.core  as transition_block
 import quex.engine.generator.state.entry            as entry
 import quex.engine.generator.state.drop_out         as drop_out
+from   quex.engine.generator.languages.address      import get_label, get_address
 from   quex.blackboard import E_StateIndices, \
                               setup as Setup
 
@@ -54,9 +55,10 @@ def entry_do(txt, TheState, TheAnalyzer):
     # Init state in forward direction: there is no increment of input_p
     # when first entered. If the state machine requires a side entry to the
     # init state, it is implemented in 'side_entry_do()' and it jumps to
-    # the LABEL_INIT_STATE_TRANSITION_BLOCK from there.
+    # the LABEL INIT STATE TRANSITION BLOCK from there.
     if TheAnalyzer.has_transition_to_init_state():
-        txt.append(LanguageDB.LABEL_INIT_STATE_TRANSITION_BLOCK())
+        txt.append("%s: /* INIT_STATE_TRANSITION_BLOCK */\n" \
+                   % get_label("$init_state_transition_block", TheState.index))
 
     # The Init State: Implement the 'NONE' door. 
     entry.do_entry_from_NONE(txt, TheState)
@@ -86,7 +88,7 @@ def side_entry_do(txt, TheState, TheAnalyzer):
     txt.extend([
         "\n", 
         1, "%s\n" % LanguageDB.INPUT_P_INCREMENT(),
-        1, "%s\n" % LanguageDB.GOTO(E_StateIndices.INIT_STATE_TRANSITION_BLOCK),
+        1, "%s\n" % LanguageDB.GOTO_ADDRESS(get_address("$init_state_transition_block", TheState.index))
     ])
     return txt
 

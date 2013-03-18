@@ -1,4 +1,4 @@
-from itertools       import izip
+from   itertools       import izip
 import sys
 import os
 

@@ -16,12 +16,6 @@ from   quex.blackboard                             import E_StateIndices, \
 
 def do(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
 
-    # (*) Initialize address handling
-    #     (Must happen before call to constructor of Generator, because 
-    #      constructor creates some addresses.)
-    init_address_handling()
-    variable_db.init()
-
     # (*) Skippers, Indentation Handlers, etc. are generated in the 
     #     frame of 'action_preparation'. In there, somewhere, a call to
     #     'get_code()' happens. During parsing a 'GeneratedCode' object
@@ -34,6 +28,19 @@ def do(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
                                                       IndentationSupportF, 
                                                       BeginOfLineSupportF)
 
+    # (*) Generate the counter first!
+    #     (It may implement a state machine with labels and addresses
+    #      which are not relevant for the main analyzer function.)
+    init_address_handling()
+    variable_db.init()
+    counter_txt = _counter(Mode)
+
+    # (*) Initialize address handling
+    #     (Must happen before call to constructor of Generator, because 
+    #      constructor creates some addresses.)
+    init_address_handling()
+    variable_db.init()
+
     generator = Generator(Mode                   = Mode, 
                           PatternActionPair_List = pattern_action_pair_list, 
                           Action_OnEndOfStream   = on_end_of_stream_action, 
@@ -41,7 +48,7 @@ def do(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
                           Action_OnAfterMatch    = on_after_match, 
                           ModeNameList           = ModeNameList)
 
-    return _counter(Mode) + _do(generator)
+    return counter_txt + _do(generator)
 
 def _do(generator):
     # (*) Initialize the label and variable trackers
@@ -75,7 +82,7 @@ def _do(generator):
 
 def _counter(Mode):
     if not Mode.default_character_counter_required_f():
-        return 
+        return ""
 
     default_character_counter_function_name,   \
     default_character_counter_function_code  = \
