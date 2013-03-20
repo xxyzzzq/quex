@@ -16,6 +16,12 @@ from   quex.blackboard                             import E_StateIndices, \
 
 def do(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
 
+    # (*) Initialize address handling
+    #     (Must happen before call to constructor of Generator, because 
+    #      constructor creates some addresses.)
+    init_address_handling()
+    variable_db.init()
+
     # (*) Skippers, Indentation Handlers, etc. are generated in the 
     #     frame of 'action_preparation'. In there, somewhere, a call to
     #     'get_code()' happens. During parsing a 'GeneratedCode' object
@@ -28,6 +34,14 @@ def do(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
                                                       IndentationSupportF, 
                                                       BeginOfLineSupportF)
 
+    generator = Generator(Mode                   = Mode, 
+                          PatternActionPair_List = pattern_action_pair_list, 
+                          Action_OnEndOfStream   = on_end_of_stream_action, 
+                          Action_OnFailure       = on_failure_action, 
+                          Action_OnAfterMatch    = on_after_match, 
+                          ModeNameList           = ModeNameList)
+    core_txt = _do(generator)
+
     # (*) Generate the counter first!
     #     (It may implement a state machine with labels and addresses
     #      which are not relevant for the main analyzer function.)
@@ -35,20 +49,7 @@ def do(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
     variable_db.init()
     counter_txt = _counter(Mode)
 
-    # (*) Initialize address handling
-    #     (Must happen before call to constructor of Generator, because 
-    #      constructor creates some addresses.)
-    init_address_handling()
-    variable_db.init()
-
-    generator = Generator(Mode                   = Mode, 
-                          PatternActionPair_List = pattern_action_pair_list, 
-                          Action_OnEndOfStream   = on_end_of_stream_action, 
-                          Action_OnFailure       = on_failure_action, 
-                          Action_OnAfterMatch    = on_after_match, 
-                          ModeNameList           = ModeNameList)
-
-    return counter_txt + _do(generator)
+    return counter_txt + core_txt
 
 def _do(generator):
     # (*) Initialize the label and variable trackers
@@ -214,6 +215,7 @@ class Generator(GeneratorBase):
         return result
 
     def __code_backward_input_position_detection_core(self, SM):
+        LanguageDB = Setup.language_db
         assert len(SM.get_orphaned_state_index_list()) == 0
         
         txt = []

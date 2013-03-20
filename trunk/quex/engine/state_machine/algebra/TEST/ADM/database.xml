@@ -1,4 +1,4 @@
-<test-database execution-time-sec="42.49" date="Tue Mar  5 07:05:19 2013">
+<test-database execution-time-sec="42.52" date="Mon Mar 18 18:16:17 2013">
     <last-used-diff-display-program name=""/>
     <test title="Complementary State Machines" time-sum-sec="1.55"> 
         <application file-name="test-complement.py" info-request-time="1360652444L" vanished="False"/>
@@ -35,7 +35,7 @@
            <choice name="" result="OK" time_sec="0.65" crc="1681411831"/>
         </choice-list>
     </test>
-    <test title="Pattern Superset/Subset Determination" time-sum-sec="2.63"> 
+    <test title="Pattern Superset/Subset Determination" time-sum-sec="2.64"> 
         <application file-name="test-intersection.py" info-request-time="1358108455L" vanished="False"/>
         <choice-list number="6" same_result="False">
            <choice name="0" result="OK" time_sec="0.16" crc="440123606"/>
@@ -68,7 +68,7 @@
                <choice name="5" result="OK" time_sec="0.59" crc="1705816098"/>
             </choice-list>
         </test>
-        <test title="Cut patterns from P that begin with Q." time-sum-sec="3.09"> 
+        <test title="Cut patterns from P that begin with Q." time-sum-sec="3.10"> 
             <application file-name="test-complement_begin.py" info-request-time="1359790064L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="0" result="OK" time_sec="0.43" crc="1789440613"/>
@@ -81,7 +81,7 @@
         </test>
     </group>
     <group name="Complement End">
-        <test title="Cut patterns from P that end with Q." time-sum-sec="2.67"> 
+        <test title="Cut patterns from P that end with Q." time-sum-sec="2.66"> 
             <application file-name="test-complement_end.py" info-request-time="1358719338L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="0" result="OK" time_sec="0.31" crc="-1018463777"/>
@@ -94,7 +94,7 @@
         </test>
     </group>
     <group name="Cut Begin">
-        <test title="Cut P so that it does not start with Q." time-sum-sec="1.46"> 
+        <test title="Cut P so that it does not start with Q." time-sum-sec="1.47"> 
             <application file-name="test-cut_begin.py" info-request-time="1360268386L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="0" result="OK" time_sec="0.32" crc="916878987"/>
@@ -107,7 +107,7 @@
         </test>
     </group>
     <group name="Cut End">
-        <test title="Cut P so that it does not end with Q." time-sum-sec="1.77"> 
+        <test title="Cut P so that it does not end with Q." time-sum-sec="1.78"> 
             <application file-name="test-cut_end.py" info-request-time="1360268759L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="0" result="OK" time_sec="0.38" crc="257743258"/>

@@ -321,15 +321,23 @@ def get_target(transition_map, Character):
 def sort(transition_map):
     transition_map.sort(key=lambda x: x[0].begin)
 
-def add_transition_actions(transition_map, TransitionActionMap):
+def fill_empty_actions(transition_map, TransitionActionMap):
+    return add_transition_actions(transition_map, TransitionActionMap, OnlyIfEmptyF=True)
+
+def add_transition_actions(transition_map, TransitionActionMap, OnlyIfEmptyF=False):
     """'TransitionActionMap' describes actions to be taken upon the occurence
     of a particular character.  The actions are to be added to the
     'transition_map'.  
     """
 
-    def extend(Target, ActionList):
+    def extend(Target, ActionList, OnlyIfEmptyF):
+        if len(Target) == 0:
+            return copy(ActionList)
+        elif OnlyIfEmptyF:
+            return copy(Target)
+
         result = copy(Target)
-        if len(Target) != 0 and len(Target[-1]) != 0:
+        if len(Target[-1]) != 0:
             plain_target = Target[-1][-1].rstrip()
             if len(plain_target) and plain_target[-1] == "\n": result.append(0)
         result.extend(ActionList)
@@ -340,7 +348,7 @@ def add_transition_actions(transition_map, TransitionActionMap):
         if action_list is None:
             result.append((Interval(begin, end), copy(target)))
         else:
-            result.append((Interval(begin, end), extend(target, action_list)))
+            result.append((Interval(begin, end), extend(target, action_list, OnlyIfEmptyF)))
     return result
 
 def prune(TriggerMap, Begin, End):

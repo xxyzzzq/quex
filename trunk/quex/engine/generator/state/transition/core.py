@@ -47,19 +47,17 @@ def do(txt, TransitionMap):
         txt.append(LanguageDB.ENDIF)
 
 def prepare_transition_map(TransitionMap, 
-                           StateIndex             = None,
-                           EngineType             = engine.FORWARD,
-                           InitStateF             = False,
-                           GotoReload_Str         = None,
-                           TheAnalyzer            = None,
-                           BeforeGotoReloadAction = None):
+                           StateIndex       = None,
+                           EngineType       = engine.FORWARD,
+                           InitStateF       = False,
+                           GotoReloadAction = None,
+                           TheAnalyzer      = None):
     global LanguageDB
     assert isinstance(TransitionMap, list)
     assert isinstance(EngineType, engine.Base)
     assert isinstance(InitStateF, bool)
-    assert StateIndex             is None or isinstance(StateIndex, long)
-    assert GotoReload_Str         is None or isinstance(GotoReload_Str, (str, unicode))
-    assert BeforeGotoReloadAction is None or isinstance(BeforeGotoReloadAction, list)
+    assert StateIndex       is None or isinstance(StateIndex, long)
+    assert GotoReloadAction is None or isinstance(GotoReloadAction, list)
 
     transition_map_tool.assert_adjacency(TransitionMap)
 
@@ -84,23 +82,23 @@ def prepare_transition_map(TransitionMap,
         transition_map_tool.set(TransitionMap, Setup.buffer_limit_code, 
                                  E_StateIndices.RELOAD_PROCEDURE)
         if GotoReload_Str is not None:
-            goto_reload_str = GotoReload_Str
+            goto_reload_action = GotoReloadAction
         else:
-            goto_reload_str = LanguageDB.GOTO_RELOAD(StateIndex, InitStateF, EngineType)
+            goto_reload_action = [ LanguageDB.GOTO_RELOAD(StateIndex, InitStateF, EngineType) ]
     else:
-        goto_reload_str = None
+        goto_reload_action = None
 
-    def construct(Target, StateIndex, InitStateF, EngineType, GotoReload_Str, TheAnalyzer):
+    def construct(Target, StateIndex, InitStateF, EngineType, GotoReload_Action, TheAnalyzer):
         if isinstance(Target, TransitionCode): 
             return Target
         else:
             return TransitionCode(Target, StateIndex, InitStateF, EngineType, 
-                                  GotoReload_Str, TheAnalyzer)
+                                  GotoReload_Action, TheAnalyzer)
 
     # All transition information related to intervals become proper objects of 
     # class TransitionCode.
     return [ (entry[0], construct(entry[1], StateIndex, InitStateF, EngineType, 
-                                            goto_reload_str, TheAnalyzer)) 
+                                  goto_reload_action, TheAnalyzer)) 
              for entry in TransitionMap ]
 
 class SubTriggerMap(object):
