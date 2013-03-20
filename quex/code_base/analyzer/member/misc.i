@@ -166,7 +166,6 @@ QUEX_MEMBER(token_p)()
     QUEX_INLINE void
     QUEX_MEMBER(token_queue_switch)(QUEX_TYPE_TOKEN** memory, size_t* n)
     { QUEX_NAME(token_queue_switch)(this, memory, n); }
-#   endif
 
     QUEX_INLINE void
     QUEX_MEMBER(token_queue_get)(QUEX_TYPE_TOKEN** begin, size_t* size)
@@ -175,6 +174,7 @@ QUEX_MEMBER(token_p)()
     QUEX_INLINE void
     QUEX_MEMBER(token_queue_set)(QUEX_TYPE_TOKEN* Begin, size_t Size)
     { QUEX_NAME(token_queue_set)(this, Begin, Size); }
+#   endif
 #endif
 
 QUEX_INLINE const char* 

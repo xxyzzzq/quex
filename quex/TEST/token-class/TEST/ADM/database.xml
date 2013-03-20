@@ -1,26 +1,26 @@
-<test-database execution-time-sec="0.53" date="Tue Mar  5 06:57:51 2013">
+<test-database execution-time-sec="0.50" date="Mon Mar 18 18:29:09 2013">
     <last-used-diff-display-program name=""/>
     <test title="With token policy 'queue'." make-dependent="True" time-sum-sec="0.01"> 
-        <application file-name="simple-queue.exe" info-request-time="1362463068L" vanished="False"/>
-        <make-procedure success="True" time_sec="2.059788"/>
+        <application file-name="simple-queue.exe" info-request-time="1363627746L" vanished="False"/>
+        <make-procedure success="True" time_sec="1.998966"/>
         <choice-list number="1" same_result="False">
            <choice name="" result="OK" time_sec="0.01" crc="1902503654"/>
         </choice-list>
     </test>
-    <test title="Miscellaneous Sample Runs" time-sum-sec="0.51"> 
+    <test title="Miscellaneous Sample Runs" time-sum-sec="0.49"> 
         <application file-name="misc.sh" info-request-time="1355705371L" vanished="False"/>
         <choice-list number="4" same_result="False">
-           <choice name="empty" result="OK" time_sec="0.12" crc="-1191820474"/>
-           <choice name="no-namespace" result="OK" time_sec="0.15" crc="-883994886"/>
-           <choice name="double-colon" result="OK" time_sec="0.13" crc="-223322448"/>
-           <choice name="token" result="OK" time_sec="0.12" crc="-26357094"/>
+           <choice name="empty" result="OK" time_sec="0.11" crc="-1191820474"/>
+           <choice name="no-namespace" result="OK" time_sec="0.14" crc="-883994886"/>
+           <choice name="double-colon" result="OK" time_sec="0.12" crc="-223322448"/>
+           <choice name="token" result="OK" time_sec="0.11" crc="-26357094"/>
         </choice-list>
     </test>
-    <test title="With token policy 'simple'." make-dependent="True" time-sum-sec="0.01"> 
-        <application file-name="simple.exe" info-request-time="1362463070L" vanished="False"/>
-        <make-procedure success="True" time_sec="1.919036"/>
+    <test title="With token policy 'simple'." make-dependent="True" time-sum-sec="0.00"> 
+        <application file-name="simple.exe" info-request-time="1363627748L" vanished="False"/>
+        <make-procedure success="True" time_sec="1.865096"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.01" crc="120585915"/>
+           <choice name="" result="OK" time_sec="0.00" crc="120585915"/>
         </choice-list>
     </test>
 </test-database>

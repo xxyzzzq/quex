@@ -74,7 +74,7 @@ def get_step(counter_db, IteratorName):
 
     return column_counter_per_chunk, state_machine_f, txt
 
-def get_core_step(TM, IteratorName, StateMachineF, BeforeGotoReloadAction=None):
+def get_core_step(TM, IteratorName, StateMachineF, BeforeGotoReloadAction=None, UponReloadDoneAdr=None):
     """Get a counter increment code for one single character.
 
     BeforeGotoReloadAction = None, means that there is no reload involed.
@@ -92,16 +92,13 @@ def get_core_step(TM, IteratorName, StateMachineF, BeforeGotoReloadAction=None):
     transition_map_tool.prune(TM, 0, Setup.get_character_value_limit())
 
     if StateMachineF:
-        print_callstack()
-        print "#BeforeGotoReloadAction:", BeforeGotoReloadAction
-        txt = _trivialized_state_machine_coder_do(TM, BeforeGotoReloadAction)
-        print "#txt:", txt
+        txt = _trivialized_state_machine_coder_do(TM, BeforeGotoReloadAction, UponReloadDoneAdr)
         if txt is not None:
             StateMachineF = False # We tricked around it; No state machine needed.
         else:
             txt = _state_machine_coder_do(TM, BeforeGotoReloadAction)
     else:
-        txt = _transition_map_coder_do(TM, BeforeGotoReloadAction)
+        txt = _transition_map_coder_do(TM, BeforeGotoReloadAction, UponReloadDoneAdr)
 
     def replacer(block, StateMachineF):
         if block.find("(me->buffer._input_p)") != -1: 
@@ -160,10 +157,11 @@ def get_counter_dictionary(counter_db, ConcernedCharacterSet):
     return result
 
 def get_counter_map(counter_db, 
-                    IteratorName          = None,
-                    Trafo                 = None,
-                    ColumnCountPerChunk   = None,
-                    ConcernedCharacterSet = None):
+                    IteratorName             = None,
+                    Trafo                    = None,
+                    ColumnCountPerChunk      = None,
+                    ConcernedCharacterSet    = None,
+                    DoNotResetReferenceP_Set = None):
     """Provide a map which associates intervals with counting actions, i.e.
 
            map: 
@@ -258,20 +256,36 @@ def get_counter_map(counter_db,
         interval_list = number_set.get_intervals(PromiseToTreatWellF=True)
         result.extend((x, action) for x in interval_list)
 
+    def handle_grid_and_newline(cm, number_set, action, column_count_per_chunk, IteratorName, ResetReferenceP_F):
+        if action.type == "grid_step":
+            extend(cm, number_set, __grid_step(action.value, column_count_per_chunk, IteratorName, 
+                                               ResetReferenceP_F=ResetReferenceP_F))
+
+        elif action.type == "line_add":
+            extend(cm, number_set, __line_n(action.value, column_count_per_chunk, IteratorName, 
+                                            ResetReferenceP_F=ResetReferenceP_F))
+
     cm = []
     for number_set, action in counter_dictionary:
         if action.type == "column_add":
-            if column_count_per_chunk is not None:
+            if column_count_per_chunk is None:
                 extend(cm, number_set, __special(action.value))
             else:
                 # Column counts are determined by '(iterator - reference) * C'
                 pass
+            continue
 
-        elif action.type == "grid_step":
-            extend(cm, number_set, __grid_step(action.value, column_count_per_chunk, IteratorName))
+        if DoNotResetReferenceP_Set is None or not DoNotResetReferenceP_Set.has_intersection(number_set):
+            handle_grid_and_newline(cm, number_set, action, column_count_per_chunk, IteratorName, 
+                                    ResetReferenceP_F=True)
+        else:
+            do_set   = number_set.difference(DoNotResetReferenceP_Set)
+            handle_grid_and_newline(cm, do_set, action, column_count_per_chunk, IteratorName, 
+                                    ResetReferenceP_F=True)
 
-        elif action.type == "line_add":
-            extend(cm, number_set, __line_n(action.value, column_count_per_chunk, IteratorName))
+            dont_set = number_set.intersection(DoNotResetReferenceP_Set)
+            handle_grid_and_newline(cm, dont_set, action, column_count_per_chunk, IteratorName, 
+                                    ResetReferenceP_F=False)
 
     transition_map_tool.sort(cm)
 
@@ -342,27 +356,26 @@ def get_grid_and_line_number_character_set(counter_db):
         result.unite_with(character_set)
     return result
 
-def _transition_map_coder_do(TM, BeforeGotoReloadAction):
+def _transition_map_coder_do(TM, BeforeGotoReloadAction, UponReloadDoneAdr):
 
     LanguageDB = Setup.language_db
 
     txt = []
     if BeforeGotoReloadAction is not None:
-        upon_reload_adr = index.get()
-        txt.append(LanguageDB.LABEL(StateIndex=upon_reload_adr))
-
+        assert isinstance(UponReloadDoneAdr, (int, long))
         engine_type = engine.FORWARD
         #index = transition_map_tool.index(TransitionMap, Setup.buffer_limit_code)
         #assert index is not None
         #assert TransitionMap[index][1] == E_StateIndices.DROP_OUT
         goto_reload_action = copy(BeforeGotoReloadAction)
-        goto_reload_action.append(LanguageDB.GOTO_RELOAD(upon_reload_adr, True, engine_type))
+        goto_reload_action.append(LanguageDB.GOTO_RELOAD(UponReloadDoneAdr, True, engine_type))
         goto_reload_str    = "".join(goto_reload_action)
         transition_map_tool.set(TM, Setup.buffer_limit_code, goto_reload_str)
     else:
-        engine_type = engine.CHARACTER_COUNTER
+        engine_type     = engine.CHARACTER_COUNTER
+        goto_reload_str = None
 
-    def get_transition_code(X, ET):
+    def get_transition_code(X, ET, GotoReload_Str):
         if isinstance(X, (str, unicode)) or isinstance(X, list):
             return TextTransitionCode(X)
         else:
@@ -370,10 +383,10 @@ def _transition_map_coder_do(TM, BeforeGotoReloadAction):
                                   StateIndex     = None,
                                   InitStateF     = True,
                                   EngineType     = ET,
-                                  GotoReload_Str = goto_reload_str)
+                                  GotoReload_Str = GotoReload_Str)
 
     tm = [ 
-        (interval, get_transition_code(x, engine_type)) for interval, x in TM 
+        (interval, get_transition_code(x, engine_type, goto_reload_str)) for interval, x in TM 
     ]
 
     LanguageDB.code_generation_switch_cases_add_statement("break;")
@@ -484,7 +497,7 @@ def __special(Delta):
     else:
         return []
 
-def __grid_step(GridStepN, ColumnCountPerChunk, IteratorName):
+def __grid_step(GridStepN, ColumnCountPerChunk, IteratorName, ResetReferenceP_F):
     LanguageDB = Setup.language_db
     txt = []
     if ColumnCountPerChunk is not None:
@@ -495,13 +508,13 @@ def __grid_step(GridStepN, ColumnCountPerChunk, IteratorName):
     txt.extend(LanguageDB.GRID_STEP("self.counter._column_number_at_end", "size_t",
                                     GridStepN, IfMacro="__QUEX_IF_COUNT_COLUMNS"))
 
-    if ColumnCountPerChunk is not None:
+    if ColumnCountPerChunk is not None and ResetReferenceP_F:
         txt.append(0)
         LanguageDB.REFERENCE_P_RESET(txt, IteratorName) 
 
     return txt
 
-def __line_n(Delta, ColumnCountPerChunk, IteratorName):
+def __line_n(Delta, ColumnCountPerChunk, IteratorName, ResetReferenceP_F):
     LanguageDB = Setup.language_db
     txt = []
     # Maybe, we only want to set the column counter to '0'.
@@ -511,7 +524,7 @@ def __line_n(Delta, ColumnCountPerChunk, IteratorName):
         txt.append(0)
     txt.append("__QUEX_IF_COUNT_COLUMNS_SET((size_t)1);\n")
 
-    if ColumnCountPerChunk is not None:
+    if ColumnCountPerChunk is not None and ResetReferenceP_F:
         txt.append(0)
         LanguageDB.REFERENCE_P_RESET(txt, IteratorName) 
 

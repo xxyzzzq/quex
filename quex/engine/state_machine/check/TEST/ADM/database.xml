@@ -1,4 +1,4 @@
-<test-database execution-time-sec="5.08" date="Tue Mar  5 07:05:25 2013">
+<test-database execution-time-sec="5.09" date="Mon Mar 18 18:16:17 2013">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Superset/Subset Determination" time-sum-sec="1.64"> 
         <application file-name="test-subset_checker.py" info-request-time="1361830790L" vanished="False"/>
@@ -24,7 +24,7 @@
            <choice name="" result="OK" time_sec="1.18" crc="360428126"/>
         </choice-list>
     </test>
-    <test title="Pattern Identity Determination" time-sum-sec="0.94"> 
+    <test title="Pattern Identity Determination" time-sum-sec="0.95"> 
         <application file-name="test-identity_checker.py" info-request-time="1361830762L" vanished="False"/>
         <choice-list number="4" same_result="False">
            <choice name="True" result="OK" time_sec="0.48" crc="-390242573"/>
