@@ -2,10 +2,10 @@ from   quex.blackboard                                   import setup as Setup, 
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.mega_state.core         import MegaState_Target_DROP_OUT
-from   quex.engine.generator.state.transition.code  import TextTransitionCode
+from   quex.engine.generator.state.transition.code  import TransitionCode, MegaStateTransitionCodeFactory
+import quex.engine.generator.state.transition.core  as transition_block
 import quex.engine.generator.state.drop_out         as drop_out_coder
 import quex.engine.generator.state.entry            as entry_coder
-import quex.engine.generator.state.transition.core  as transition_block
 import quex.engine.generator.mega_state.template    as template
 import quex.engine.generator.mega_state.path_walker as path_walker
 from   quex.engine.generator.languages.address      import get_label, get_address
@@ -144,7 +144,7 @@ def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr, BeforeGotoReloadA
     """Generate targets in the transition map which the code generation can 
        handle. The transition map will consist of pairs of
     
-                          (Interval, TextTransitionCode)
+                          (Interval, TransitionCode)
     
        objects. 
 
@@ -172,104 +172,20 @@ def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr, BeforeGotoReloadA
             (Interval(-sys.maxint, sys.maxint), MegaState_Target_DROP_OUT) 
         ]
 
-    for i, info in enumerate(TheState.transition_map):
-        interval, target           = info
-        new_target                 = prepare_target(target, TheState, 
-                                                    TheAnalyzer.state_db, 
-                                                    StateKeyStr)
-        TheState.transition_map[i] = (interval, new_target)
+    goto_reload_str = transition_block.prepare_reload(TheState.transition_map,
+                                                      TheState.index,
+                                                      EngineType             = TheAnalyzer.engine_type,
+                                                      InitStateF             = TheState.init_state_f,
+                                                      BeforeGotoReloadAction = BeforeGotoReloadAction)
 
-    return transition_block.prepare_transition_map(TheState.transition_map, 
-                                                   TheState.index, 
-                                                   TheAnalyzer.engine_type, 
-                                                   TheState.init_state_f, 
-                                                   TheAnalyzer            = TheAnalyzer,
-                                                   BeforeGotoReloadAction = BeforeGotoReloadAction)
+    MegaStateTransitionCodeFactory.init(TheState, TheAnalyzer.state_db, StateKeyStr, 
+                                        TheAnalyzer.engine_type, goto_reload_str)
 
-def prepare_target(Target, TheState, StateDB, StateKeyStr):
-    LanguageDB = Setup.language_db
+    return [ 
+        (entry[0], MegaStateTransitionCodeFactory.do(entry[1])) 
+        for entry in TheState.transition_map 
+    ]
 
-    if Target.drop_out_f:
-        code = LanguageDB.GOTO_DROP_OUT(TheState.index)
-        return E_StateIndices.DROP_OUT
 
-    elif Target.target_state_index is not None:
-        # NOTE: Not all transitions of from 'x' to 'Target.target_state_index' may
-        #       be relevant. For example, if the transition lies on a uniform path
-        #       which is implemented by the MegaState. The MegaState indicates
-        #       the irrelevance by deleting the transition_id. 
-        # HOWEVER: If no transition_id is found, then transition_map is erroneous!
-        for from_state_index in TheState.implemented_state_index_list():
-            target_entry     = StateDB[Target.target_state_index].entry
-            door_id          = target_entry.get_door_id(Target.target_state_index, from_state_index)
-            if door_id is not None: 
-                return TextTransitionCode([LanguageDB.GOTO_BY_DOOR_ID(door_id)])
-        else:
-            assert False, "TransitionID was not resolved in target state's entry."
-
-    elif Target.target_door_id is not None:
-        return TextTransitionCode([LanguageDB.GOTO_BY_DOOR_ID(Target.target_door_id)])
-
-    elif Target.scheme is not None:
-        label = "template_%i_target_%i[%s]" % (TheState.index, Target.scheme_id, StateKeyStr)
-        code  = LanguageDB.GOTO_BY_VARIABLE(label)
-        require_scheme_variable(Target.scheme_id, Target.scheme, TheState, StateDB)
-        return TextTransitionCode([code])
-
-    else:
-        assert False
-
-def require_scheme_variable(SchemeID, Scheme, TState, StateDB):
-    """Defines the transition targets for each involved state. Note, that recursion
-       is handled as part of the general case, where all involved states target 
-       a common door of the template state.
-    """
-    LanguageDB = Setup.language_db
-
-    def get_code(AdrList):
-        last_i = len(AdrList) - 1
-        txt = ["{ "]
-        for i, adr in enumerate(AdrList):
-            if i != last_i:
-                txt.append("%s, " % LanguageDB.LABEL_BY_ADDRESS(adr)) 
-            else:
-                txt.append("%s " % LanguageDB.LABEL_BY_ADDRESS(adr)) 
-        txt.append(" }")
-        return "".join(txt)
-
-    assert len(Scheme) == len(TState.implemented_state_index_list())
-    def address(Target, StateKey, TheState):
-        if Target == E_StateIndices.DROP_OUT:
-            # All drop outs end up at the end of the transition map, where
-            # it is routed via the state_key to the state's particular drop out.
-            return get_address("$drop-out", TState.index, U=True, R=True)
-
-        from_state_index = TheState.map_state_key_to_state_index(StateKey)
-        door_id          = StateDB[Target].entry.get_door_id(Target, 
-                                                             FromStateIndex=from_state_index)
-
-        if door_id is None:
-            # IMPORTANT NOTE: (This case is separated to make this comment)
-            #
-            # A MegaState's transition map may be partly covered by the
-            # MegaState's head.  This implies, that not all implemented
-            # states trigger to the state mentioned in the transition map.
-            # (A 'pseudo-common' .target_state_index may be split into a
-            # scheme, because the entering doors differ.) As a result the
-            # '.get_door_id()' may result in a totally legal 'None' for
-            # a particular 'state_key'.
-            # 
-            # Later: 'LABEL_BY_ADDRESS(None) --> "QUEX_GOTO_LABEL_VOID"
-            return None 
-        else:
-            return LanguageDB.ADDRESS_BY_DOOR_ID(door_id)
-
-    address_list = [ address(target_index, state_key, TState) \
-                     for state_key, target_index in enumerate(Scheme) ]
-
-    variable_db.require_array("template_%i_target_%i", 
-                              ElementN = len(TState.implemented_state_index_list()), 
-                              Initial  = get_code(address_list),
-                              Index    = (TState.index, SchemeID))
 
 

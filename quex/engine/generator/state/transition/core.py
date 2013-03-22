@@ -1,4 +1,4 @@
-from   quex.engine.generator.state.transition.code      import TransitionCode
+from   quex.engine.generator.state.transition.code      import TransitionCodeFactory
 import quex.engine.generator.state.transition.solution  as solution
 import quex.engine.generator.state.transition.bisection as bisection
 import quex.engine.analyzer.transition_map              as transition_map_tool
@@ -46,18 +46,52 @@ def do(txt, TransitionMap):
     if outstanding_list is not None: 
         txt.append(LanguageDB.ENDIF)
 
+def prepare_reload(TransitionMap,
+                   StateIndex             = None,
+                   EngineType             = engine.FORWARD,
+                   InitStateF             = False,
+                   GotoReload_Str         = None,
+                   BeforeGotoReloadAction = None):
+    """The 'buffer-limit-code' always needs to be identified separately.
+    This helps to generate the reload procedure a little more elegantly.
+    (Backward input position detection does not reload. It only moves 
+    inside the current lexeme, which must be inside the buffer.)
+    """
+    LanguageDB = Setup.language_db
+
+    if EngineType.requires_buffer_limit_code_for_reload():
+        index = transition_map_tool.index(TransitionMap, Setup.buffer_limit_code)
+        assert index is not None
+        #assert TransitionMap[index][1] == E_StateIndices.DROP_OUT, \
+        #        "%s: %s != %s" % (TransitionMap[index][0].get_string(Option="hex"), TransitionMap[index][1], E_StateIndices.DROP_OUT)
+        transition_map_tool.set(TransitionMap, Setup.buffer_limit_code, 
+                                 E_StateIndices.RELOAD_PROCEDURE)
+        goto_reload_action = []
+        if BeforeGotoReloadAction is not None:
+            goto_reload_action.extend(BeforeGotoReloadAction)
+
+        if GotoReload_Str is not None:
+            goto_reload_action.extend(GotoReload_Str)
+        else:
+            goto_reload_action.append(LanguageDB.GOTO_RELOAD(StateIndex, InitStateF, EngineType))
+    else:
+        goto_reload_action = None
+
+    if goto_reload_action is not None: return "".join(goto_reload_action)
+    else:                              return None
+
 def prepare_transition_map(TransitionMap, 
-                           StateIndex       = None,
-                           EngineType       = engine.FORWARD,
-                           InitStateF       = False,
-                           GotoReloadAction = None,
-                           TheAnalyzer      = None):
+                           StateIndex             = None,
+                           EngineType             = engine.FORWARD,
+                           InitStateF             = False,
+                           GotoReload_Str         = None,
+                           TheAnalyzer            = None,
+                           BeforeGotoReloadAction = None):
     global LanguageDB
     assert isinstance(TransitionMap, list)
     assert isinstance(EngineType, engine.Base)
     assert isinstance(InitStateF, bool)
     assert StateIndex       is None or isinstance(StateIndex, long)
-    assert GotoReloadAction is None or isinstance(GotoReloadAction, list)
 
     transition_map_tool.assert_adjacency(TransitionMap)
 
@@ -68,38 +102,20 @@ def prepare_transition_map(TransitionMap,
     if len(TransitionMap) == 0: 
         return TransitionMap
 
-    LanguageDB = Setup.language_db
+    goto_reload_str = prepare_reload(TransitionMap,
+                                     StateIndex,
+                                     EngineType             = EngineType,
+                                     InitStateF             = InitStateF,
+                                     GotoReload_Str         = GotoReload_Str,
+                                     BeforeGotoReloadAction = BeforeGotoReloadAction)
 
-    # The 'buffer-limit-code' always needs to be identified separately.
-    # This helps to generate the reload procedure a little more elegantly.
-    # (Backward input position detection does not reload. It only moves 
-    #  inside the current lexeme, which must be inside the buffer.)
-    if EngineType.requires_buffer_limit_code_for_reload():
-        index = transition_map_tool.index(TransitionMap, Setup.buffer_limit_code)
-        assert index is not None
-        assert TransitionMap[index][1] == E_StateIndices.DROP_OUT, \
-                "%s: %s != %s" % (TransitionMap[index][0].get_string(Option="hex"), TransitionMap[index][1], E_StateIndices.DROP_OUT)
-        transition_map_tool.set(TransitionMap, Setup.buffer_limit_code, 
-                                 E_StateIndices.RELOAD_PROCEDURE)
-        if GotoReload_Str is not None:
-            goto_reload_action = GotoReloadAction
-        else:
-            goto_reload_action = [ LanguageDB.GOTO_RELOAD(StateIndex, InitStateF, EngineType) ]
-    else:
-        goto_reload_action = None
+    TransitionCodeFactory.init(EngineType, 
+                               StateIndex    = StateIndex,
+                               InitStateF    = InitStateF,
+                               GotoReloadStr = goto_reload_str,
+                               TheAnalyzer   = TheAnalyzer)
 
-    def construct(Target, StateIndex, InitStateF, EngineType, GotoReload_Action, TheAnalyzer):
-        if isinstance(Target, TransitionCode): 
-            return Target
-        else:
-            return TransitionCode(Target, StateIndex, InitStateF, EngineType, 
-                                  GotoReload_Action, TheAnalyzer)
-
-    # All transition information related to intervals become proper objects of 
-    # class TransitionCode.
-    return [ (entry[0], construct(entry[1], StateIndex, InitStateF, EngineType, 
-                                  goto_reload_action, TheAnalyzer)) 
-             for entry in TransitionMap ]
+    return [ (entry[0], TransitionCodeFactory.do(entry[1])) for entry in TransitionMap ]
 
 class SubTriggerMap(object):
     """A trigger map that 'points' into a subset of a trigger map.

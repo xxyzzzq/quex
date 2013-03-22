@@ -1,4 +1,3 @@
-import quex.engine.state_machine.index              as     sm_index
 import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.generator.languages.address      import get_label, \
                                                            address_set_subject_to_routing_add
@@ -39,17 +38,18 @@ def do(Data, Mode):
 
     # The 'TransitionCode -> DoorID' has to be circumvented, because this state
     # is not officially part of the state machine.
-    upon_reload_done_adr = sm_index.get()
-    address_set_subject_to_routing_add(upon_reload_done_adr) # Mark as 'used'
     get_label("$state-router", U=True)                       # 'reload' req. state router
 
     # Implement the core loop _________________________________________________
     #
-    core_txt, reference_p_required_f, state_machine_f = __core(Mode, CharacterSet, upon_reload_done_adr)
+    loop_txt,               \
+    reference_p_required_f, \
+    state_machine_f,        \
+    upon_reload_done_adr    = __make_loop(Mode, CharacterSet)
 
     # Build the skipper _______________________________________________________
     #
-    result = __frame(core_txt, CharacterSet, reference_p_required_f, state_machine_f, 
+    result = __frame(loop_txt, CharacterSet, reference_p_required_f, state_machine_f, 
                      upon_reload_done_adr)
 
     # Require the 'reference_p' variable to be defined, if necessary __________
@@ -60,7 +60,7 @@ def do(Data, Mode):
     return result
 
 
-def __core(Mode, CharacterSet, UponReloadDoneAdr):
+def __make_loop(Mode, CharacterSet):
     """Buffer Limit Code --> Reload
        Skip Character    --> Loop to Skipper State
        Else              --> Exit Loop
@@ -94,11 +94,12 @@ def __core(Mode, CharacterSet, UponReloadDoneAdr):
 
     tm = add_on_exit_actions(tm, exit_skip_set, column_count_per_chunk)
 
-    dummy, txt = counter.get_core_step(tm, "me->buffer._input_p", state_machine_f, 
-                                       BeforeGotoReloadAction = before_reload_actions(column_count_per_chunk), 
-                                       UponReloadDoneAdr      = UponReloadDoneAdr) 
+    dummy,               \
+    txt,                 \
+    upon_reload_done_adr = counter.get_core_step(tm, "me->buffer._input_p", state_machine_f, 
+                                                 BeforeGotoReloadAction = before_reload_actions(column_count_per_chunk)) 
 
-    return txt, column_count_per_chunk, state_machine_f
+    return txt, column_count_per_chunk, state_machine_f, upon_reload_done_adr
 
 def add_on_exit_actions(tm, ExitSkipSet, ColumnCountPerChunk):
     """When a character appears which is not to be skipped, the loop must
@@ -163,6 +164,7 @@ def __frame(LoopTxt, CharacterSet, ReferenceP_F, StateMachineF, UponReloadDoneAd
     """Implement the skipper."""
     LanguageDB = Setup.language_db
 
+    # (*) Rules _______________________________________________________________
     if ReferenceP_F:
         reference_p_reset = [ 1 ]
         LanguageDB.REFERENCE_P_RESET(reference_p_reset, "me->buffer._input_p", AddOneF=False)
@@ -170,7 +172,8 @@ def __frame(LoopTxt, CharacterSet, ReferenceP_F, StateMachineF, UponReloadDoneAd
         reference_p_reset = []
 
     if not StateMachineF:
-        upon_reload_done = []
+        skipper_entry_label = "__SKIP:\n"
+        upon_reload_done    = []
         upon_reload_done.extend([
             1, "__quex_assert_no_passage();\n",
             "%s: /* After RELOAD */\n"   % LanguageDB.ADDRESS_LABEL(UponReloadDoneAdr), 
@@ -181,13 +184,18 @@ def __frame(LoopTxt, CharacterSet, ReferenceP_F, StateMachineF, UponReloadDoneAd
             1, "goto __SKIP;\n"
         ])
     else:
-        upon_reload_done = []
+        # State machine based counters cannot have a fixed 'column_count_per_chunk'.
+        # Thus, they do not need a reference pointer.
+        assert len(reference_p_reset) == 0
+        skipper_entry_label = ""
+        upon_reload_done    = []
 
     comment = [1]
     LanguageDB.COMMENT(comment, "Character Set Skipper: '%s'" % CharacterSet.get_utf8_string()),
     LanguageDB.INDENT(LoopTxt)
 
-    code = [ "__SKIP:\n" ]
+    # (*) Putting it all together _____________________________________________
+    code = [ skipper_entry_label ]
     code.extend(comment)
     code.extend([1, "QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);\n"])
     code.extend(reference_p_reset)
