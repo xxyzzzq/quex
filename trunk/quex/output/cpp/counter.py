@@ -2,10 +2,11 @@
 (C) 2012 Frank-Rene Schaefer
 _______________________________________________________________________________
 """
-from   quex.engine.generator.state.transition.code  import TextTransitionCode, TransitionCode
+from   quex.engine.generator.state.transition.code  import TransitionCodeFactory
 import quex.engine.generator.state.transition.core  as     transition_block
 import quex.engine.generator.state_machine_coder    as     state_machine_coder
 import quex.engine.generator.state.transition.solution  as solution
+from   quex.engine.generator.languages.address      import address_set_subject_to_routing_add
 from   quex.engine.generator.base                   import get_combined_state_machine
 from   quex.engine.generator.action_info            import CodeFragment
 from   quex.engine.state_machine.core               import StateMachine
@@ -70,11 +71,11 @@ def get_step(counter_db, IteratorName):
             get_counter_map(counter_db, IteratorName, 
                             Setup.buffer_codec_transformation_info)
 
-    state_machine_f, txt = get_core_step(tm, IteratorName, state_machine_f)
+    state_machine_f, txt, dummy = get_core_step(tm, IteratorName, state_machine_f)
 
     return column_counter_per_chunk, state_machine_f, txt
 
-def get_core_step(TM, IteratorName, StateMachineF, BeforeGotoReloadAction=None, UponReloadDoneAdr=None):
+def get_core_step(TM, IteratorName, StateMachineF, BeforeGotoReloadAction=None):
     """Get a counter increment code for one single character.
 
     BeforeGotoReloadAction = None, means that there is no reload involed.
@@ -92,13 +93,18 @@ def get_core_step(TM, IteratorName, StateMachineF, BeforeGotoReloadAction=None, 
     transition_map_tool.prune(TM, 0, Setup.get_character_value_limit())
 
     if StateMachineF:
-        txt = _trivialized_state_machine_coder_do(TM, BeforeGotoReloadAction, UponReloadDoneAdr)
+        upon_reload_done_adr = None
+
+        txt = _trivialized_state_machine_coder_do(TM, BeforeGotoReloadAction)
         if txt is not None:
             StateMachineF = False # We tricked around it; No state machine needed.
         else:
             txt = _state_machine_coder_do(TM, BeforeGotoReloadAction)
     else:
-        txt = _transition_map_coder_do(TM, BeforeGotoReloadAction, UponReloadDoneAdr)
+        upon_reload_done_adr = index.get()
+        address_set_subject_to_routing_add(upon_reload_done_adr) # Mark as 'used'
+
+        txt = _transition_map_coder_do(TM, BeforeGotoReloadAction, upon_reload_done_adr)
 
     def replacer(block, StateMachineF):
         if block.find("(me->buffer._input_p)") != -1: 
@@ -112,7 +118,7 @@ def get_core_step(TM, IteratorName, StateMachineF, BeforeGotoReloadAction=None, 
         if not isinstance(elm, (str, unicode)): continue
         txt[i] = replacer(elm, StateMachineF)
 
-    return StateMachineF, txt
+    return StateMachineF, txt, upon_reload_done_adr
 
 def get_counter_dictionary(counter_db, ConcernedCharacterSet):
     """Returns a list of NumberSet objects where for each X of the list it holds:
@@ -375,18 +381,14 @@ def _transition_map_coder_do(TM, BeforeGotoReloadAction, UponReloadDoneAdr):
         engine_type     = engine.CHARACTER_COUNTER
         goto_reload_str = None
 
-    def get_transition_code(X, ET, GotoReload_Str):
-        if isinstance(X, (str, unicode)) or isinstance(X, list):
-            return TextTransitionCode(X)
-        else:
-            return TransitionCode(X, 
-                                  StateIndex     = None,
-                                  InitStateF     = True,
-                                  EngineType     = ET,
-                                  GotoReload_Str = GotoReload_Str)
 
+    TransitionCodeFactory.init(engine_type, 
+                               StateIndex    = None,
+                               InitStateF    = True,
+                               GotoReloadStr = goto_reload_str,
+                               TheAnalyzer   = None)
     tm = [ 
-        (interval, get_transition_code(x, engine_type, goto_reload_str)) for interval, x in TM 
+        (interval, TransitionCodeFactory.do(x)) for interval, x in TM 
     ]
 
     LanguageDB.code_generation_switch_cases_add_statement("break;")
@@ -451,7 +453,7 @@ def _trivialized_state_machine_coder_do(tm, BeforeGotoReloadAction):
     assert tm[0][0].end > 0
 
     # Code the transition map
-    return _transition_map_coder_do(tm, BeforeGotoReloadAction=None)
+    return _transition_map_coder_do(tm, BeforeGotoReloadAction=None, UponReloadDoneAdr=None)
 
 def _state_machine_coder_do(tm, BeforeGotoReloadAction):
     """Generates a state machine that represents the transition map 
@@ -460,9 +462,6 @@ def _state_machine_coder_do(tm, BeforeGotoReloadAction):
     LanguageDB = Setup.language_db
 
     action_db, sm_list = get_state_machine_list(tm, BeforeGotoReloadAction is not None)
-
-    for i, sm in enumerate(sm_list):
-        print "#sm %i\n%s" % (i, sm)
 
     sm             = get_combined_state_machine(sm_list)
     complete_f, sm = transformation.try_this(sm, -1)

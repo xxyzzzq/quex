@@ -1,93 +1,121 @@
-import quex.engine.analyzer.engine_supply_factory      as     engine
+import quex.engine.analyzer.engine_supply_factory   as     engine
+from   quex.engine.analyzer.mega_state.core         import MegaState_Target
+from   quex.engine.generator.languages.variable_db  import variable_db
+from   quex.engine.generator.languages.address      import get_address
 from   quex.blackboard import E_StateIndices, \
                               setup as Setup
 
-def do(Target, StateIndex, InitStateF, EngineType, GotoReload_Str, TheAnalyzer=None):
-    """Generate a 'real' target action object based on a given Target that 
-       may be an identifier or actually a real object already.
+class TransitionCodeFactory:
+    @classmethod
+    def init(cls, EngineType, StateIndex, InitStateF, GotoReloadStr, TheAnalyzer=None, ImplementedStateIndexList=None):
+        assert StateIndex is None or isinstance(StateIndex, (int, long))
+        assert type(InitStateF) == bool
 
-       The approach of having 'code-ready' objects as targets makes code 
-       generation much simpler. No information has to be passed down the 
-       recursive call tree.
-    """
-    assert False # Not to be used anymore!
-    assert Target is not None
-    assert Target != -1
+        cls.state_index     = StateIndex
+        cls.init_state_f    = InitStateF
+        cls.goto_reload_str = GotoReloadStr
+        cls.engine_type     = EngineType
+        cls.analyzer        = TheAnalyzer
 
-    if isinstance(Target, TransitionCode): 
-        return Target
-    else:
-        return TransitionCode(Target, StateIndex, InitStateF, EngineType, 
-                              GotoReload_Str, TheAnalyzer)
-
-class TransitionCode:
-    def __init__(self, Target, StateIndex, InitStateF, EngineType, 
-                 GotoReload_Str, TheAnalyzer=None):
-        """The generation of transition code is postponed to the moment when
-           the code fragment is used. This happens in order to avoid the
-           generation of references to 'goto-labels' that are later not used.
-           Note, that in some cases, for example 'goto drop-out' can be avoided
-           by simply dropping out of an if-else clause or a switch statement.
-
-           if self.__code is None: postponed
-           else:                   not postponed
-        """
+    @classmethod
+    def do(cls, Target):
         LanguageDB = Setup.language_db
 
-        assert isinstance(EngineType, engine.Base)
-        assert type(InitStateF) == bool
-        assert StateIndex       is None or isinstance(StateIndex, long)
-        assert GotoReload_Str   is None or isinstance(GotoReload_Str, (str, unicode))
+        if isinstance(Target, TransitionCode): 
+            return Target
 
-        self.__target       = Target
-        self.__state_index  = StateIndex
-        self.__init_state_f = InitStateF
-        self.__engine_type  = EngineType
+        if isinstance(Target, (str, unicode)) or isinstance(Target, list):
+            drop_out_f = False
+            code       = Target
 
-        if   Target == E_StateIndices.RELOAD_PROCEDURE:
-            self.__drop_out_f = False
-            if GotoReload_Str is not None: self.__code = GotoReload_Str
-            else:                          self.__code = None # postponing
+        elif Target == E_StateIndices.RELOAD_PROCEDURE:
+            drop_out_f = False
+            if cls.goto_reload_str is not None: 
+                code = cls.goto_reload_str
+            else:                          
+                code = LanguageDB.GOTO_RELOAD(cls.state_index, 
+                                              cls.init_state_f,
+                                              cls.engine_type) 
 
         elif Target == E_StateIndices.DROP_OUT:
-            self.__code       = None # postponing
-            self.__drop_out_f = True
+            drop_out_f = True
+            code       = LanguageDB.GOTO_DROP_OUT(cls.state_index)
 
         elif isinstance(Target, long):
             # The transition to another target state cannot possibly be cut out!
             # => no postponed code generation
-            if TheAnalyzer is not None:
-                assert TheAnalyzer.state_db.has_key(Target)
-                if isinstance(StateIndex, (int, long)): assert TheAnalyzer.state_db.has_key(StateIndex)
-            self.__code       = LanguageDB.GOTO(Target, StateIndex)
-            self.__drop_out_f = False
+            if cls.analyzer is not None:
+                assert cls.analyzer.state_db.has_key(Target)
+                if isinstance(cls.state_index, (int, long)): 
+                    assert cls.analyzer.state_db.has_key(cls.state_index)
+            drop_out_f = False
+            code       = LanguageDB.GOTO(Target, cls.state_index)
 
-        else:
-            # This should only be reached by derived class constructors of 
-            # TemplateTransitionCode or PathTransitionCode. Then 'target = None'.
-            assert Target is None 
-
-    @property
-    def code(self):       
-        if self.__code is not None: return self.__code
-        LanguageDB = Setup.language_db
-
-        if   self.__target == E_StateIndices.RELOAD_PROCEDURE:
-            return LanguageDB.GOTO_RELOAD(self.__state_index, 
-                                          self.__init_state_f, 
-                                          self.__engine_type) 
-        elif self.__target == E_StateIndices.DROP_OUT:
-            return LanguageDB.GOTO_DROP_OUT(self.__state_index)
         else:
             assert False
 
-    @property
-    def drop_out_f(self): return self.__drop_out_f
+        return TransitionCode(code, DropOutF=drop_out_f)
 
-    def __eq__(self, Other):  assert False  # Must be implemented by derived class
-    def __neq__(self, Other): assert False  # Must be implemented by derived class
+class MegaStateTransitionCodeFactory:
+    @classmethod
+    def init(cls, TheState, StateDB, StateKeyStr, EngineType, GotoReloadStr):
+        cls.state                        = TheState
+        cls.implemented_state_index_list = TheState.implemented_state_index_list()
+        cls.state_db                     = StateDB
+        cls.state_key_str                = StateKeyStr
+        cls.engine_type                  = EngineType
+        cls.goto_reload_str              = GotoReloadStr
 
-class TextTransitionCode(TransitionCode):
+    @classmethod
+    def do(cls, Target):
+        isinstance(Target, MegaState_Target)
+        LanguageDB = Setup.language_db
+
+        if Target == E_StateIndices.RELOAD_PROCEDURE:
+            drop_out_f = False
+            if cls.goto_reload_str is not None: 
+                code = cls.goto_reload_str
+            else:                          
+                code = LanguageDB.GOTO_RELOAD(cls.state.index, 
+                                              cls.state.init_state_f,
+                                              cls.engine_type) 
+        elif Target.drop_out_f:
+            code       = LanguageDB.GOTO_DROP_OUT(cls.state.index)
+            drop_out_f = True
+
+        elif Target.target_state_index is not None:
+            # NOTE: Not all transitions of from 'x' to 'Target.target_state_index' may
+            #       be relevant. For example, if the transition lies on a uniform path
+            #       which is implemented by the MegaState. The MegaState indicates
+            #       the irrelevance by deleting the transition_id. 
+            # HOWEVER: If no transition_id is found, then transition_map is erroneous!
+            drop_out_f = False
+            for from_state_index in cls.implemented_state_index_list:
+                target_entry = cls.state_db[Target.target_state_index].entry
+                door_id      = target_entry.get_door_id(Target.target_state_index, from_state_index)
+                if door_id is None: continue
+                code = [LanguageDB.GOTO_BY_DOOR_ID(door_id)]
+                break
+            else:
+                assert False, "TransitionID was not resolved in target state's entry."
+
+        elif Target.target_door_id is not None:
+            drop_out_f = False
+            code       = [LanguageDB.GOTO_BY_DOOR_ID(Target.target_door_id)]
+
+        elif Target.scheme is not None:
+            label      = "template_%i_target_%i[%s]" % \
+                         (cls.state.index, Target.scheme_id, cls.state_key_str)
+            drop_out_f = False
+            code       = LanguageDB.GOTO_BY_VARIABLE(label)
+            require_scheme_variable(Target.scheme_id, Target.scheme, cls.state, cls.state_db)
+
+        else:
+            assert False
+
+        return TransitionCode(code, DropOutF=drop_out_f)
+
+class TransitionCode:
     def __init__(self, Code, DropOutF=False):
         if isinstance(Code, list):
             for elm in Code: 
@@ -106,8 +134,64 @@ class TextTransitionCode(TransitionCode):
     def drop_out_f(self): return self.__drop_out_f
 
     def __eq__(self, Other): 
-        if isinstance(Other, TextTransitionCode) == False: return False
+        if isinstance(Other, TransitionCode) == False: return False
         return self.__code == Other.__code and self.__drop_out_f == Other.__drop_out_f
 
     def __neq__(self, Other): 
         return not self.__eq__(self, Other)
+
+def require_scheme_variable(SchemeID, Scheme, TState, StateDB):
+    """Defines the transition targets for each involved state. Note, that recursion
+       is handled as part of the general case, where all involved states target 
+       a common door of the template state.
+    """
+    LanguageDB = Setup.language_db
+
+    def get_code(AdrList):
+        last_i = len(AdrList) - 1
+        txt = ["{ "]
+        for i, adr in enumerate(AdrList):
+            if i != last_i:
+                txt.append("%s, " % LanguageDB.LABEL_BY_ADDRESS(adr)) 
+            else:
+                txt.append("%s " % LanguageDB.LABEL_BY_ADDRESS(adr)) 
+        txt.append(" }")
+        return "".join(txt)
+
+    assert len(Scheme) == len(TState.implemented_state_index_list())
+
+    def address(Target, StateKey, TheState):
+        if Target == E_StateIndices.DROP_OUT:
+            # All drop outs end up at the end of the transition map, where
+            # it is routed via the state_key to the state's particular drop out.
+            return get_address("$drop-out", TState.index, U=True, R=True)
+
+        from_state_index = TheState.map_state_key_to_state_index(StateKey)
+        door_id          = StateDB[Target].entry.get_door_id(Target, 
+                                                             FromStateIndex=from_state_index)
+
+        if door_id is None:
+            # IMPORTANT NOTE: (This case is separated to make this comment)
+            #
+            # A MegaState's transition map may be partly covered by the
+            # MegaState's head.  This implies, that not all implemented
+            # states trigger to the state mentioned in the transition map.
+            # (A 'pseudo-common' .target_state_index may be split into a
+            # scheme, because the entering doors differ.) As a result the
+            # '.get_door_id()' may result in a totally legal 'None' for
+            # a particular 'state_key'.
+            # 
+            # Later: 'LABEL_BY_ADDRESS(None) --> "QUEX_GOTO_LABEL_VOID"
+            return None 
+        else:
+            return LanguageDB.ADDRESS_BY_DOOR_ID(door_id)
+
+    address_list = [ address(target_index, state_key, TState) \
+                     for state_key, target_index in enumerate(Scheme) ]
+
+    variable_db.require_array("template_%i_target_%i", 
+                              ElementN = len(TState.implemented_state_index_list()), 
+                              Initial  = get_code(address_list),
+                              Index    = (TState.index, SchemeID))
+
+

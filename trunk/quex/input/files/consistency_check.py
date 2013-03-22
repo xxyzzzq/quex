@@ -196,8 +196,6 @@ def __dominated_pattern_check(mode, PAP, ErrorCode):
             continue
         if superset_check.do(other_pap.pattern(), PAP.pattern()):
             file_name, line_n = other_pap.get_action_location()
-            print "#other:", other_pap.pattern().sm
-            print "#PAP:", PAP.pattern().sm
             __error_message(other_pap, PAP, 
                             ThisComment  = "matches a superset of what is matched by",
                             EndComment   = "The former has precedence and the latter can never match.",

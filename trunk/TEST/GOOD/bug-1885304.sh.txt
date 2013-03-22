@@ -152,14 +152,14 @@ public:
     QUEX_TYPE_CHARACTER*  buffer_lexeme_start_pointer_get();
     void                  buffer_input_pointer_set(QUEX_TYPE_CHARACTER*);
 
-    /* -- activate/deactivate byte order reversion (big-/little-endian)    */
+    /* -- activate/deactivate byte order reversion (big-/little-endian)      */
     bool                  byte_order_reversion();
     void                  byte_order_reversion_set(bool Value);
 
     /* NOTE: All calls to receive functions for 'queue' and 'single'
      *       are deliberately chosen to be incompatible! Thus, when 
      *       the user switches the token passing policy, he must re-
-     *       think his receive mechanism.                                  */
+     *       think his receive mechanism.                                    */
 #   if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
     /* (1) Token Queue 
      * 
@@ -168,7 +168,7 @@ public:
      *   provide a pointer that can be adapted by having him specify
      *   the second argument--not only a return value.
      *
-     *   Command line option:  --token-policy  queue                       */
+     *   Command line option:  --token-policy  queue                         */
     void                receive(QUEX_TYPE_TOKEN**);
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)  
     /* (2) Single Token
@@ -177,16 +177,17 @@ public:
      *   token id is returned. This enables a minimal setup were the
      *   analyzer may only return a token id and does not work on tokens. 
      *
-     *   Command line options: --token-policy  single                      */
+     *   Command line options: --token-policy  single                        */
     QUEX_TYPE_TOKEN_ID  receive();
 #   else
 #       error "This section should never be compiled."
 #   endif
 
-    // NOTE: A pointer to an object of the token queue/object is used in order to make
-    //       memory management more flexible. The token queue/token object is heavily
-    //       used and it should be possible to put it somewhere in memory with other
-    //       heavily used data so that the cache can take advantage of data locality.
+    /* A pointer to an object of the token queue/object is used in order to
+     * make memory management more flexible.  The token queue/token object is
+     * heavily used and it should be possible to put it somewhere in memory
+     * with other heavily used data so that the cache can take advantage of
+     * data locality.                                                        */
     QUEX_TYPE_TOKEN*     token_p();
 
 #   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE) 
@@ -590,23 +591,19 @@ QUEX_NAME(ONE_AND_ONLY_counter)(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTE
     __QUEX_IF_COUNT_SHIFT_VALUES();
 
     for(iterator=LexemeBegin; iterator < LexemeEnd; ) {
-        if( (*iterator) >= 0xB ) {
-            
-        } else if( (*iterator) == 0xA ) {
-            __QUEX_IF_COUNT_LINES_ADD((size_t)1);
-        __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
-        __QUEX_IF_COUNT_COLUMNS(reference_p = iterator + 1);
-
-        } else if( (*iterator) == 0x9 ) {
-                    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)((iterator - reference_p)));
+        switch( (*(iterator)) ) {
+            case 0x9:         __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(((iterator) - reference_p)));
         __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end &= ~ ((size_t)0x3));
         __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 4);
-        __QUEX_IF_COUNT_COLUMNS(reference_p = iterator + 1);
+        __QUEX_IF_COUNT_COLUMNS(reference_p = (iterator) + 1);
+            break;
+            case 0xA: __QUEX_IF_COUNT_LINES_ADD((size_t)1);
+        __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
+        __QUEX_IF_COUNT_COLUMNS(reference_p = (iterator) + 1);
+            break;
 
-        } else {
-            
         }
-    ++iterator;
+    ++(iterator);
     }
 __QUEX_IF_COUNT_COLUMNS_ADD((size_t)((iterator - reference_p)));
     __quex_assert(iterator == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */
@@ -672,12 +669,12 @@ QUEX_NAME(ONE_AND_ONLY_analyzer_function)(QUEX_TYPE_ANALYZER* me)
 __REENTRY:
     me->buffer._lexeme_start_p = me->buffer._input_p;
     QUEX_LEXEME_TERMINATING_ZERO_UNDO(&me->buffer);
-INIT_STATE_TRANSITION_BLOCK:
+_255: /* INIT_STATE_TRANSITION_BLOCK */
     input = *(me->buffer._input_p);
     __quex_debug("Init State\n");
     __quex_debug_state(224);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(224, 255);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(224, 256);
         case 0x9: 
         case 0xA: 
         case 0xD: 
@@ -752,13 +749,13 @@ INIT_STATE_TRANSITION_BLOCK:
     }
     __quex_debug_drop_out(224);
 
-goto _257; /* TERMINAL_FAILURE */
+goto _258; /* TERMINAL_FAILURE */
 
 _224:
 
 
     ++(me->buffer._input_p);
-    goto INIT_STATE_TRANSITION_BLOCK;
+    goto _255;
 
 
     __quex_assert_no_passage();
@@ -768,7 +765,7 @@ _230: /* (230 from 230) (230 from 229) (230 from 226) (230 from 224) (230 from 2
     input = *(me->buffer._input_p);
     __quex_debug_state(230);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(230, 258);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(230, 259);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -824,7 +821,7 @@ _230: /* (230 from 230) (230 from 229) (230 from 226) (230 from 224) (230 from 2
         case 0x7A: goto _230;
 
     }
-_258:
+_259:
     __quex_debug_drop_out(230);
 goto TERMINAL_127;
 
@@ -835,14 +832,14 @@ _234: /* (234 from 234) (234 from 224) */
     input = *(me->buffer._input_p);
     __quex_debug_state(234);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(234, 259);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(234, 260);
         case 0x9: 
         case 0xA: 
         case 0xD: 
         case 0x20: goto _234;
 
     }
-_259:
+_260:
     __quex_debug_drop_out(234);
 goto TERMINAL_117;
 
@@ -853,7 +850,7 @@ _228: /* (228 from 228) (228 from 224) */
     input = *(me->buffer._input_p);
     __quex_debug_state(228);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(228, 260);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(228, 261);
         case 0x30: 
         case 0x31: 
         case 0x32: 
@@ -866,7 +863,7 @@ _228: /* (228 from 228) (228 from 224) */
         case 0x39: goto _228;
 
     }
-_260:
+_261:
     __quex_debug_drop_out(228);
 goto TERMINAL_126;
 
@@ -877,7 +874,7 @@ _235: /* (235 from 232) */
     input = *(me->buffer._input_p);
     __quex_debug_state(235);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(235, 261);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(235, 262);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -933,7 +930,7 @@ _235: /* (235 from 232) */
         case 0x7A: goto _230;
 
     }
-_261:
+_262:
     __quex_debug_drop_out(235);
 goto TERMINAL_127;
 
@@ -944,7 +941,7 @@ _236: /* (236 from 235) */
     input = *(me->buffer._input_p);
     __quex_debug_state(236);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(236, 262);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(236, 263);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1000,7 +997,7 @@ _236: /* (236 from 235) */
         case 0x7A: goto _230;
 
     }
-_262:
+_263:
     __quex_debug_drop_out(236);
 goto TERMINAL_119;
 
@@ -1011,7 +1008,7 @@ _237: /* (237 from 231) */
     input = *(me->buffer._input_p);
     __quex_debug_state(237);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(237, 263);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(237, 264);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1067,7 +1064,7 @@ _237: /* (237 from 231) */
         case 0x7A: goto _230;
 
     }
-_263:
+_264:
     __quex_debug_drop_out(237);
 goto TERMINAL_127;
 
@@ -1078,7 +1075,7 @@ _238: /* (238 from 237) */
     input = *(me->buffer._input_p);
     __quex_debug_state(238);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(238, 264);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(238, 265);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1134,7 +1131,7 @@ _238: /* (238 from 237) */
         case 0x7A: goto _230;
 
     }
-_264:
+_265:
     __quex_debug_drop_out(238);
 goto TERMINAL_127;
 
@@ -1145,7 +1142,7 @@ _239: /* (239 from 238) */
     input = *(me->buffer._input_p);
     __quex_debug_state(239);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(239, 265);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(239, 266);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1201,7 +1198,7 @@ _239: /* (239 from 238) */
         case 0x7A: goto _230;
 
     }
-_265:
+_266:
     __quex_debug_drop_out(239);
 goto TERMINAL_127;
 
@@ -1212,7 +1209,7 @@ _240: /* (240 from 239) */
     input = *(me->buffer._input_p);
     __quex_debug_state(240);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(240, 266);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(240, 267);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1268,7 +1265,7 @@ _240: /* (240 from 239) */
         case 0x7A: goto _230;
 
     }
-_266:
+_267:
     __quex_debug_drop_out(240);
 goto TERMINAL_127;
 
@@ -1279,7 +1276,7 @@ _241: /* (241 from 240) */
     input = *(me->buffer._input_p);
     __quex_debug_state(241);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(241, 267);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(241, 268);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1335,7 +1332,7 @@ _241: /* (241 from 240) */
         case 0x7A: goto _230;
 
     }
-_267:
+_268:
     __quex_debug_drop_out(241);
 goto TERMINAL_120;
 
@@ -1346,7 +1343,7 @@ _242: /* (242 from 229) */
     input = *(me->buffer._input_p);
     __quex_debug_state(242);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(242, 268);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(242, 269);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1402,7 +1399,7 @@ _242: /* (242 from 229) */
         case 0x7A: goto _230;
 
     }
-_268:
+_269:
     __quex_debug_drop_out(242);
 goto TERMINAL_127;
 
@@ -1413,7 +1410,7 @@ _243: /* (243 from 242) */
     input = *(me->buffer._input_p);
     __quex_debug_state(243);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(243, 269);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(243, 270);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1469,7 +1466,7 @@ _243: /* (243 from 242) */
         case 0x7A: goto _230;
 
     }
-_269:
+_270:
     __quex_debug_drop_out(243);
 goto TERMINAL_127;
 
@@ -1480,7 +1477,7 @@ _244: /* (244 from 243) */
     input = *(me->buffer._input_p);
     __quex_debug_state(244);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(244, 270);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(244, 271);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1536,7 +1533,7 @@ _244: /* (244 from 243) */
         case 0x7A: goto _230;
 
     }
-_270:
+_271:
     __quex_debug_drop_out(244);
 goto TERMINAL_127;
 
@@ -1547,7 +1544,7 @@ _245: /* (245 from 244) */
     input = *(me->buffer._input_p);
     __quex_debug_state(245);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(245, 271);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(245, 272);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1603,7 +1600,7 @@ _245: /* (245 from 244) */
         case 0x7A: goto _230;
 
     }
-_271:
+_272:
     __quex_debug_drop_out(245);
 goto TERMINAL_127;
 
@@ -1614,7 +1611,7 @@ _246: /* (246 from 245) */
     input = *(me->buffer._input_p);
     __quex_debug_state(246);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(246, 272);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(246, 273);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1670,7 +1667,7 @@ _246: /* (246 from 245) */
         case 0x7A: goto _230;
 
     }
-_272:
+_273:
     __quex_debug_drop_out(246);
 goto TERMINAL_122;
 
@@ -1681,7 +1678,7 @@ _247: /* (247 from 226) */
     input = *(me->buffer._input_p);
     __quex_debug_state(247);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(247, 273);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(247, 274);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1737,7 +1734,7 @@ _247: /* (247 from 226) */
         case 0x7A: goto _230;
 
     }
-_273:
+_274:
     __quex_debug_drop_out(247);
 goto TERMINAL_127;
 
@@ -1748,7 +1745,7 @@ _248: /* (248 from 226) */
     input = *(me->buffer._input_p);
     __quex_debug_state(248);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(248, 274);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(248, 275);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1804,7 +1801,7 @@ _248: /* (248 from 226) */
         case 0x7A: goto _230;
 
     }
-_274:
+_275:
     __quex_debug_drop_out(248);
 goto TERMINAL_127;
 
@@ -1815,7 +1812,7 @@ _249: /* (249 from 248) */
     input = *(me->buffer._input_p);
     __quex_debug_state(249);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(249, 275);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(249, 276);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1871,7 +1868,7 @@ _249: /* (249 from 248) */
         case 0x7A: goto _230;
 
     }
-_275:
+_276:
     __quex_debug_drop_out(249);
 goto TERMINAL_127;
 
@@ -1882,7 +1879,7 @@ _250: /* (250 from 249) */
     input = *(me->buffer._input_p);
     __quex_debug_state(250);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(250, 276);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(250, 277);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1938,7 +1935,7 @@ _250: /* (250 from 249) */
         case 0x7A: goto _230;
 
     }
-_276:
+_277:
     __quex_debug_drop_out(250);
 goto TERMINAL_121;
 
@@ -1949,7 +1946,7 @@ _251: /* (251 from 247) */
     input = *(me->buffer._input_p);
     __quex_debug_state(251);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(251, 277);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(251, 278);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -2005,7 +2002,7 @@ _251: /* (251 from 247) */
         case 0x7A: goto _230;
 
     }
-_277:
+_278:
     __quex_debug_drop_out(251);
 goto TERMINAL_127;
 
@@ -2016,7 +2013,7 @@ _252: /* (252 from 251) */
     input = *(me->buffer._input_p);
     __quex_debug_state(252);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(252, 278);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(252, 279);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -2072,7 +2069,7 @@ _252: /* (252 from 251) */
         case 0x7A: goto _230;
 
     }
-_278:
+_279:
     __quex_debug_drop_out(252);
 goto TERMINAL_127;
 
@@ -2083,7 +2080,7 @@ _253: /* (253 from 252) */
     input = *(me->buffer._input_p);
     __quex_debug_state(253);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(253, 279);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(253, 280);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -2139,7 +2136,7 @@ _253: /* (253 from 252) */
         case 0x7A: goto _230;
 
     }
-_279:
+_280:
     __quex_debug_drop_out(253);
 goto TERMINAL_127;
 
@@ -2150,7 +2147,7 @@ _254: /* (254 from 253) */
     input = *(me->buffer._input_p);
     __quex_debug_state(254);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(254, 280);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(254, 281);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -2206,7 +2203,7 @@ _254: /* (254 from 253) */
         case 0x7A: goto _230;
 
     }
-_280:
+_281:
     __quex_debug_drop_out(254);
 goto TERMINAL_118;
 
@@ -2225,7 +2222,7 @@ _226: /* (226 from 224) */
     input = *(me->buffer._input_p);
     __quex_debug_state(226);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(226, 282);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(226, 283);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -2281,7 +2278,7 @@ _226: /* (226 from 224) */
         case 0x7A: goto _230;
 
     }
-_282:
+_283:
     __quex_debug_drop_out(226);
 goto TERMINAL_127;
 
@@ -2300,7 +2297,7 @@ _229: /* (229 from 224) */
     input = *(me->buffer._input_p);
     __quex_debug_state(229);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(229, 284);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(229, 285);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -2356,7 +2353,7 @@ _229: /* (229 from 224) */
         case 0x7A: goto _230;
 
     }
-_284:
+_285:
     __quex_debug_drop_out(229);
 goto TERMINAL_127;
 
@@ -2367,7 +2364,7 @@ _231: /* (231 from 224) */
     input = *(me->buffer._input_p);
     __quex_debug_state(231);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(231, 285);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(231, 286);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -2423,7 +2420,7 @@ _231: /* (231 from 224) */
         case 0x7A: goto _230;
 
     }
-_285:
+_286:
     __quex_debug_drop_out(231);
 goto TERMINAL_127;
 
@@ -2434,7 +2431,7 @@ _232: /* (232 from 224) */
     input = *(me->buffer._input_p);
     __quex_debug_state(232);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(232, 286);
+        case 0x0: QUEX_GOTO_RELOAD_FORWARD(232, 287);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -2490,7 +2487,7 @@ _232: /* (232 from 224) */
         case 0x7A: goto _230;
 
     }
-_286:
+_287:
     __quex_debug_drop_out(232);
 goto TERMINAL_127;
 
@@ -2540,7 +2537,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(6);
     self_send(QUEX_TKN_STRUCT);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2047 "Simple.cpp"
+#   line 2043 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2554,7 +2551,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(3);
     self_send(QUEX_TKN_TYPE_INT);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2061 "Simple.cpp"
+#   line 2057 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2568,7 +2565,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(6);
     self_send(QUEX_TKN_TYPE_DOUBLE);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2075 "Simple.cpp"
+#   line 2071 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2582,7 +2579,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(4);
     self_send(QUEX_TKN_SEND);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2089 "Simple.cpp"
+#   line 2085 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2596,7 +2593,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(6);
     self_send(QUEX_TKN_EXPECT);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2103 "Simple.cpp"
+#   line 2099 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2610,7 +2607,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(1);
     self_send(QUEX_TKN_SEMICOLON);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2117 "Simple.cpp"
+#   line 2113 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2624,7 +2621,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(1);
     self_send(QUEX_TKN_BRACKET_OPEN);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2131 "Simple.cpp"
+#   line 2127 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2638,7 +2635,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(1);
     self_send(QUEX_TKN_BRACKET_CLOSE);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2145 "Simple.cpp"
+#   line 2141 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2654,7 +2651,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(LexemeL);
     self_send(QUEX_TKN_NUMBER);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2161 "Simple.cpp"
+#   line 2157 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2668,13 +2665,13 @@ __QUEX_IF_COUNT_COLUMNS_ADD(LexemeL);
 #   line 28 "dos_lf_2.qx"
         self_send1(QUEX_TKN_IDENTIFIER, Lexeme); RETURN;
     
-#   line 2175 "Simple.cpp"
+#   line 2171 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
 
 
-_257: /* TERMINAL: FAILURE */
+_258: /* TERMINAL: FAILURE */
     if(QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
         /* Init state is going to detect 'input == buffer limit code', and
          * enter the reload procedure, which will decide about 'end of stream'. */
@@ -2698,13 +2695,13 @@ QUEX_ERROR_EXIT("\n    Match failure in mode 'ONE_AND_ONLY'.\n"
     goto __REENTRY_PREPARATION_2;
 
 /* TERMINAL: END_OF_STREAM */
-_255:
+_256:
 __QUEX_IF_COUNT_SHIFT_VALUES();
     {
 #   line 16 "dos_lf_2.qx"
     self_send(QUEX_TKN_TERMINATION);
     
-#   line 2211 "Simple.cpp"
+#   line 2207 "Simple.cpp"
 
     }
     /* End of Stream causes a return from the lexical analyzer, so that no
@@ -2776,10 +2773,9 @@ __REENTRY_PREPARATION_2:
     __quex_assert_no_passage();
 __RELOAD_FORWARD:
     __quex_debug1("__RELOAD_FORWARD");
-
     __quex_assert(*(me->buffer._input_p) == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( me->buffer._memory._end_of_file_p == 0x0 ) {
-        __quex_debug_reload_before();
+        __quex_debug_reload_before(); /* Leave macro here to report source position. */
         QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)position, PositionRegisterN);
         __quex_debug_reload_after();
         QUEX_GOTO_STATE(target_state_index);
@@ -2821,8 +2817,7 @@ __STATE_ROUTER:
         case 252: { goto _252; }
         case 253: { goto _253; }
         case 254: { goto _254; }
-        case 255: { goto _255; }
-        case 258: { goto _258; }
+        case 256: { goto _256; }
         case 259: { goto _259; }
         case 260: { goto _260; }
         case 261: { goto _261; }
@@ -2845,10 +2840,11 @@ __STATE_ROUTER:
         case 278: { goto _278; }
         case 279: { goto _279; }
         case 280: { goto _280; }
-        case 282: { goto _282; }
-        case 284: { goto _284; }
+        case 281: { goto _281; }
+        case 283: { goto _283; }
         case 285: { goto _285; }
         case 286: { goto _286; }
+        case 287: { goto _287; }
 
         default:
             __QUEX_STD_fprintf(stderr, "State router: index = %i\n", (int)target_state_index);

@@ -5,8 +5,7 @@ import quex.engine.state_machine.index              as     sm_index
 import quex.engine.analyzer.transition_map          as     transition_map_tools
 import quex.engine.analyzer.engine_supply_factory   as     engine
 import quex.engine.generator.state.transition.core  as     transition_block
-from   quex.engine.generator.state.transition.code  import TransitionCode, \
-                                                           TextTransitionCode
+from   quex.engine.generator.state.transition.code  import TransitionCode
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.generator.languages.address      import get_label, \
                                                            get_address, \
@@ -263,7 +262,7 @@ def __get_transition_block(IndentationSetup, CounterAdr):
     
     The transition code MUST circumvent the 'TransitionID --> DoorID' mapping.
     This is so, since the implemented state is not 'officially' part of the
-    analyzer state machine. The transition_map relies on 'TextTransitionCode'
+    analyzer state machine. The transition_map relies on 'TransitionCode'
     objects as target.
     """
     LanguageDB = Setup.language_db
@@ -279,7 +278,7 @@ def __get_transition_block(IndentationSetup, CounterAdr):
         # simply: current position - reference_p
         character_set  = IndentationSetup.space_db.values()[0]
         extend(transition_map, character_set, 
-               TextTransitionCode(LanguageDB.GOTO_ADDRESS(CounterAdr)))
+               TransitionCode(LanguageDB.GOTO_ADDRESS(CounterAdr)))
 
     else:
         transition_map = []

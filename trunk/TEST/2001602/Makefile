@@ -38,7 +38,7 @@ lex_icu:
 
 lex_codec: 
 	@echo "Call to quex"
-	@quex -i simple.qx -o $(X) --codec utf8 
+	@quex -i simple.qx -o $(X) --codec utf8 --debug-exception
 	@echo "Compiling"
 	g++ -I./ -I$(QUEX_PATH)              \
 		$(X).cpp                         \
