@@ -471,9 +471,10 @@ def _state_machine_coder_do(tm, BeforeGotoReloadAction):
     if BeforeGotoReloadAction is None: engine_type = engine.CHARACTER_COUNTER
     else:                              engine_type = engine.FORWARD
 
-    analyzer = analyzer_generator.do(sm, engine_type)
-
-    sm_txt   = state_machine_coder.do(analyzer, BeforeGotoReloadAction)
+    analyzer     = analyzer_generator.do(sm, engine_type)
+                 
+    sm_id_backup = LanguageDB.set_state_machine_identifier(index.get_state_machine_id())
+    sm_txt       = state_machine_coder.do(analyzer, BeforeGotoReloadAction)
 
     # 'Terminals' are the counter actions
     terminal_txt = LanguageDB["$terminal-code"]("Counter",
@@ -485,6 +486,8 @@ def _state_machine_coder_do(tm, BeforeGotoReloadAction):
                                                 OnAfterMatchAction=None, 
                                                 Setup=Setup, 
                                                 SimpleF=True) 
+
+    LanguageDB.set_state_machine_identifier(sm_id_backup)
 
     txt = sm_txt + terminal_txt
     return txt

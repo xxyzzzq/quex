@@ -50,7 +50,7 @@ def do(Data, Mode):
     # Build the skipper _______________________________________________________
     #
     result = __frame(loop_txt, CharacterSet, reference_p_required_f, state_machine_f, 
-                     upon_reload_done_adr)
+                     upon_reload_done_adr, require_label_SKIP_f)
 
     # Require the 'reference_p' variable to be defined, if necessary __________
     #
@@ -160,7 +160,7 @@ def before_reload_actions(ColumnCountPerChunk):
 
     return result
 
-def __frame(LoopTxt, CharacterSet, ReferenceP_F, StateMachineF, UponReloadDoneAdr):
+def __frame(LoopTxt, CharacterSet, ReferenceP_F, StateMachineF, UponReloadDoneAdr, SkipLabelRequiredF):
     """Implement the skipper."""
     LanguageDB = Setup.language_db
 
@@ -171,8 +171,12 @@ def __frame(LoopTxt, CharacterSet, ReferenceP_F, StateMachineF, UponReloadDoneAd
     else:
         reference_p_reset = []
 
-    if not StateMachineF:
+    if (not StateMachineF) or SkipLabelRequiredF:
         skipper_entry_label = "__SKIP:\n"
+    else:
+        skipper_entry_label = ""
+
+    if not StateMachineF:
         upon_reload_done    = []
         upon_reload_done.extend([
             1, "__quex_assert_no_passage();\n",
@@ -187,7 +191,6 @@ def __frame(LoopTxt, CharacterSet, ReferenceP_F, StateMachineF, UponReloadDoneAd
         # State machine based counters cannot have a fixed 'column_count_per_chunk'.
         # Thus, they do not need a reference pointer.
         assert len(reference_p_reset) == 0
-        skipper_entry_label = ""
         upon_reload_done    = []
 
     comment = [1]

@@ -93,14 +93,15 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* 
                 if( input < 0xDC00 ) {
                     goto _88;
                 } else if( input < 0xE000 ) {
-
+                    goto _96;
                 } else if( input < 0x10000 ) {
                     goto _87;
                 } else {
-
+                    goto _96;
                 }
             }
         }
+_96:
         __quex_debug_drop_out(84);
         
         goto _97; /* TERMINAL_FAILURE */
@@ -152,12 +153,13 @@ _88: /* (88 from 84) */
         input = *iterator;
         __quex_debug_state(88);
         if( input >= 0xE000 ) {
-
+            goto _103;
         } else if( input >= 0xDC00 ) {
             goto _87;
         } else {
-
+            goto _103;
         }
+_103:
         __quex_debug_drop_out(88);
         
         goto _97; /* TERMINAL_FAILURE */
@@ -169,10 +171,12 @@ _94: /* (94 from 84) */
         input = *iterator;
         __quex_debug_state(94);
         if( input < 0xDC02 ) {
-            switch( input ) {
-                case 0xDC00: goto _85;
-                case 0xDC01: goto _87;
-
+            if( input == 0xDC01 ) {
+                goto _87;
+            } else if( input == 0xDC00 ) {
+                goto _85;
+            } else {
+                goto _104;
             }
         } else {
             if( input == 0xDC02 ) {
@@ -182,9 +186,10 @@ _94: /* (94 from 84) */
             } else if( input < 0xE000 ) {
                 goto _87;
             } else {
-
+                goto _104;
             }
         }
+_104:
         __quex_debug_drop_out(94);
         
         goto _97; /* TERMINAL_FAILURE */

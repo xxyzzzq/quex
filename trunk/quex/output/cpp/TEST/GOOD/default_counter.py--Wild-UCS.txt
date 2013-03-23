@@ -8,8 +8,8 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* 
     __QUEX_IF_COUNT_SHIFT_VALUES();
 
     for(iterator=LexemeBegin; iterator < LexemeEnd; ) {
-        if( (*iterator) < 0x3F ) {
-            switch( (*iterator) ) {
+        if( (*(iterator)) < 0x3F ) {
+            switch( (*(iterator)) ) {
                 case 0x0: 
                 case 0x1: 
                 case 0x2: 
@@ -82,24 +82,24 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* 
 
             }
         } else {
-            if( (*iterator) < 0x12001 ) {
-                if( (*iterator) == 0x3F ) {
+            if( (*(iterator)) < 0x12001 ) {
+                if( (*(iterator)) == 0x3F ) {
                     __QUEX_IF_COUNT_COLUMNS_ADD((size_t)3);
 
-                } else if( (*iterator) < 0x12000 ) {
+                } else if( (*(iterator)) < 0x12000 ) {
                     __QUEX_IF_COUNT_COLUMNS_ADD((size_t)1);
 
                 } else {
                     
                 }
             } else {
-                if( (*iterator) == 0x12001 ) {
+                if( (*(iterator)) == 0x12001 ) {
                     __QUEX_IF_COUNT_COLUMNS_ADD((size_t)1);
 
-                } else if( (*iterator) == 0x12002 ) {
+                } else if( (*(iterator)) == 0x12002 ) {
                     __QUEX_IF_COUNT_COLUMNS_ADD((size_t)2);
 
-                } else if( (*iterator) == 0x12003 ) {
+                } else if( (*(iterator)) == 0x12003 ) {
                     __QUEX_IF_COUNT_COLUMNS_ADD((size_t)3);
 
                 } else {
@@ -108,7 +108,7 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* 
                 }
             }
         }
-        ++iterator;
+    ++(iterator);
     }
     __quex_assert(iterator == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */
 #   undef self
