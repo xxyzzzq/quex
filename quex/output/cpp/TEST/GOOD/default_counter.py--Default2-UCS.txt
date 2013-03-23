@@ -15,9 +15,9 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* 
     __QUEX_IF_COUNT_SHIFT_VALUES();
 
     for(iterator=LexemeBegin; iterator < LexemeEnd; ) {
-        if( (*iterator) < 0x86 ) {
-            if( (*iterator) < 0xD ) {
-                switch( (*iterator) ) {
+        if( (*(iterator)) < 0x86 ) {
+            if( (*(iterator)) < 0xD ) {
+                switch( (*(iterator)) ) {
                     case 0x0: 
                     case 0x1: 
                     case 0x2: 
@@ -39,10 +39,10 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* 
 
                 }
             } else {
-                if( (*iterator) == 0xD ) {
+                if( (*(iterator)) == 0xD ) {
                     __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
 
-                } else if( (*iterator) < 0x85 ) {
+                } else if( (*(iterator)) < 0x85 ) {
                     __QUEX_IF_COUNT_COLUMNS_ADD((size_t)1);
 
                 } else {
@@ -52,11 +52,11 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* 
                 }
             }
         } else {
-            if( (*iterator) < 0x2028 ) {
-                if( (*iterator) < 0x600 ) {
+            if( (*(iterator)) < 0x2028 ) {
+                if( (*(iterator)) < 0x600 ) {
                     __QUEX_IF_COUNT_COLUMNS_ADD((size_t)1);
 
-                } else if( (*iterator) < 0x700 ) {
+                } else if( (*(iterator)) < 0x700 ) {
                     __QUEX_IF_COUNT_COLUMNS_ADD((size_t)3);
 
                 } else {
@@ -64,14 +64,14 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* 
 
                 }
             } else {
-                if( (*iterator) < 0x202A ) {
+                if( (*(iterator)) < 0x202A ) {
                     __QUEX_IF_COUNT_LINES_ADD((size_t)1);
                 __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
 
-                } else if( (*iterator) < 0x10000 ) {
+                } else if( (*(iterator)) < 0x10000 ) {
                     __QUEX_IF_COUNT_COLUMNS_ADD((size_t)1);
 
-                } else if( (*iterator) < 0x110000 ) {
+                } else if( (*(iterator)) < 0x110000 ) {
                     __QUEX_IF_COUNT_COLUMNS_ADD((size_t)2);
 
                 } else {
@@ -80,7 +80,7 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* 
                 }
             }
         }
-        ++iterator;
+    ++(iterator);
     }
     __quex_assert(iterator == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */
 #   undef self

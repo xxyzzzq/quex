@@ -57,16 +57,20 @@ CppBase = {
 class LanguageDB_Cpp(dict):
     def __init__(self, DB):      
         self.update(DB)
-        self.__analyzer = None
+        self.__analyzer                                   = None
         self.__code_generation_switch_cases_add_statement = None
-        self.Match_goto             = re.compile("\\bgoto\\b")
-        self.Match_QUEX_GOTO_RELOAD = re.compile("\\bQUEX_GOTO_RELOAD_")
+        self.__state_machine_identifier                   = None
+        self.Match_goto                                   = re.compile("\\bgoto\\b")
+        self.Match_QUEX_GOTO_RELOAD                       = re.compile("\\bQUEX_GOTO_RELOAD_")
 
     def register_analyzer(self, TheAnalyzer):
         self.__analyzer = TheAnalyzer
 
     def code_generation_switch_cases_add_statement(self, Value):
         self.__code_generation_switch_cases_add_statement = Value
+
+    def set_state_machine_identifier(self, SM_Id):
+        self.__state_machine_identifier = SM_Id
 
     @property
     def analyzer(self):
@@ -209,6 +213,9 @@ class LanguageDB_Cpp(dict):
     def ADDRESS_DROP_OUT(self, StateIndex):
         return get_address("$drop-out", StateIndex)
 
+    def ADDRESS_ON_FAILURE(self, UsedF=False):
+        return get_address("$terminal-FAILURE", Arg=self.__state_machine_identifier, U=UsedF)
+
     def __label_name(self, StateIndex, FromStateIndex):
         if StateIndex in E_StateIndices:
             assert StateIndex != E_StateIndices.DROP_OUT
@@ -244,6 +251,9 @@ class LanguageDB_Cpp(dict):
 
     def LABEL_DROP_OUT(self, StateIndex):
         return "_%s:" % self.ADDRESS_DROP_OUT(StateIndex)
+
+    def LABEL_ON_FAILURE(self):
+        return "_%s:" % self.ADDRESS_ON_FAILURE()
 
     def LABEL_SHARED_ENTRY(self, TemplateIndex, EntryN=None):
         if EntryN is None: return "_%i_shared_entry:\n"    % TemplateIndex
@@ -319,7 +329,7 @@ class LanguageDB_Cpp(dict):
         if AcceptanceID == E_AcceptanceIDs.VOID: 
             return "QUEX_GOTO_TERMINAL(last_acceptance);"
         elif AcceptanceID == E_AcceptanceIDs.FAILURE:
-            return "goto _%i; /* TERMINAL_FAILURE */" % get_address("$terminal-FAILURE")
+            return "goto _%i; /* TERMINAL_FAILURE */" % self.ADDRESS_ON_FAILURE(UsedF=True)
         else:
             assert isinstance(AcceptanceID, (int, long))
             return "goto TERMINAL_%i;" % AcceptanceID
@@ -400,7 +410,6 @@ class LanguageDB_Cpp(dict):
             txt.append("__QUEX_IF_COUNT_COLUMNS(reference_p = %s + 1);\n" % IteratorName)
         else:
             txt.append("__QUEX_IF_COUNT_COLUMNS(reference_p = %s);\n" % IteratorName)
-
     
     def MODE_GOTO(self, Mode):
         return "QUEX_NAME(enter_mode)(&self, &%s);" % Mode

@@ -24,22 +24,19 @@ class TransitionCodeFactory:
         if isinstance(Target, TransitionCode): 
             return Target
 
-        if isinstance(Target, (str, unicode)) or isinstance(Target, list):
-            drop_out_f = False
-            code       = Target
+        elif isinstance(Target, (str, unicode)) or isinstance(Target, list):
+            return TransitionCode(Target)
 
         elif Target == E_StateIndices.RELOAD_PROCEDURE:
-            drop_out_f = False
             if cls.goto_reload_str is not None: 
-                code = cls.goto_reload_str
+                return TransitionCode(cls.goto_reload_str)
             else:                          
-                code = LanguageDB.GOTO_RELOAD(cls.state_index, 
-                                              cls.init_state_f,
-                                              cls.engine_type) 
+                return TransitionCode(LanguageDB.GOTO_RELOAD(cls.state_index, 
+                                                             cls.init_state_f,
+                                                             cls.engine_type))
 
         elif Target == E_StateIndices.DROP_OUT:
-            drop_out_f = True
-            code       = LanguageDB.GOTO_DROP_OUT(cls.state_index)
+            return TransitionCode_DropOut(cls.state_index)
 
         elif isinstance(Target, long):
             # The transition to another target state cannot possibly be cut out!
@@ -48,13 +45,10 @@ class TransitionCodeFactory:
                 assert cls.analyzer.state_db.has_key(Target)
                 if isinstance(cls.state_index, (int, long)): 
                     assert cls.analyzer.state_db.has_key(cls.state_index)
-            drop_out_f = False
-            code       = LanguageDB.GOTO(Target, cls.state_index)
+            return TransitionCode(LanguageDB.GOTO(Target, cls.state_index))
 
         else:
             assert False
-
-        return TransitionCode(code, DropOutF=drop_out_f)
 
 class MegaStateTransitionCodeFactory:
     @classmethod
@@ -68,20 +62,18 @@ class MegaStateTransitionCodeFactory:
 
     @classmethod
     def do(cls, Target):
-        isinstance(Target, MegaState_Target)
         LanguageDB = Setup.language_db
 
         if Target == E_StateIndices.RELOAD_PROCEDURE:
-            drop_out_f = False
             if cls.goto_reload_str is not None: 
-                code = cls.goto_reload_str
+                return TransitionCode(cls.goto_reload_str)
             else:                          
-                code = LanguageDB.GOTO_RELOAD(cls.state.index, 
-                                              cls.state.init_state_f,
-                                              cls.engine_type) 
-        elif Target.drop_out_f:
-            code       = LanguageDB.GOTO_DROP_OUT(cls.state.index)
-            drop_out_f = True
+                return TransitionCode(LanguageDB.GOTO_RELOAD(cls.state.index, 
+                                                             cls.state.init_state_f,
+                                                             cls.engine_type))
+        assert isinstance(Target, MegaState_Target)
+        if Target.drop_out_f:
+            return TransitionCode_DropOut(cls.state.index) 
 
         elif Target.target_state_index is not None:
             # NOTE: Not all transitions of from 'x' to 'Target.target_state_index' may
@@ -89,7 +81,6 @@ class MegaStateTransitionCodeFactory:
             #       which is implemented by the MegaState. The MegaState indicates
             #       the irrelevance by deleting the transition_id. 
             # HOWEVER: If no transition_id is found, then transition_map is erroneous!
-            drop_out_f = False
             for from_state_index in cls.implemented_state_index_list:
                 target_entry = cls.state_db[Target.target_state_index].entry
                 door_id      = target_entry.get_door_id(Target.target_state_index, from_state_index)
@@ -99,24 +90,22 @@ class MegaStateTransitionCodeFactory:
             else:
                 assert False, "TransitionID was not resolved in target state's entry."
 
+            return TransitionCode(code)
+
         elif Target.target_door_id is not None:
-            drop_out_f = False
-            code       = [LanguageDB.GOTO_BY_DOOR_ID(Target.target_door_id)]
+            return TransitionCode(LanguageDB.GOTO_BY_DOOR_ID(Target.target_door_id))
 
         elif Target.scheme is not None:
-            label      = "template_%i_target_%i[%s]" % \
-                         (cls.state.index, Target.scheme_id, cls.state_key_str)
-            drop_out_f = False
-            code       = LanguageDB.GOTO_BY_VARIABLE(label)
-            require_scheme_variable(Target.scheme_id, Target.scheme, cls.state, cls.state_db)
+            variable_name = require_scheme_variable(Target.scheme_id, Target.scheme, cls.state, cls.state_db)
+            return TransitionCode(LanguageDB.GOTO_BY_VARIABLE("%s[%s]" % (variable_name, cls.state_key_str)))
 
         else:
             assert False
 
-        return TransitionCode(code, DropOutF=drop_out_f)
-
 class TransitionCode:
-    def __init__(self, Code, DropOutF=False):
+    def __init__(self, Code, DropOutF=False, StateIndex=None):
+        assert DropOutF == False or StateIndex is not None
+
         if isinstance(Code, list):
             for elm in Code: 
                 assert isinstance(elm, (int, str, unicode))
@@ -125,20 +114,38 @@ class TransitionCode:
             assert isinstance(Code, (str, unicode))
             self.__code = [ Code ]
 
-        self.__drop_out_f = DropOutF
+    @property
+    def code(self):       return self._get_code()
 
     @property
-    def code(self):       return self.__code
+    def drop_out_f(self): return self._get_drop_out_f()
 
-    @property
-    def drop_out_f(self): return self.__drop_out_f
+    def _get_code(self):        
+        return self.__code
+
+    def _get_drop_out_f(self):  
+        return False
 
     def __eq__(self, Other): 
         if isinstance(Other, TransitionCode) == False: return False
-        return self.__code == Other.__code and self.__drop_out_f == Other.__drop_out_f
+        return self.__code == Other.__code 
 
     def __neq__(self, Other): 
         return not self.__eq__(self, Other)
+
+class TransitionCode_DropOut(TransitionCode):
+    def __init__(self, StateIndex=None):
+        self.__code        = None
+        self.__state_index = StateIndex
+
+    def _get_code(self):        
+        if self.__code is None: 
+            LanguageDB = Setup.language_db
+            self.__code = LanguageDB.GOTO_DROP_OUT(self.__state_index)
+        return self.__code
+
+    def _get_drop_out_f(self):  
+        return False
 
 def require_scheme_variable(SchemeID, Scheme, TState, StateDB):
     """Defines the transition targets for each involved state. Note, that recursion
@@ -146,6 +153,7 @@ def require_scheme_variable(SchemeID, Scheme, TState, StateDB):
        a common door of the template state.
     """
     LanguageDB = Setup.language_db
+    assert len(Scheme) == len(TState.implemented_state_index_list())
 
     def get_code(AdrList):
         last_i = len(AdrList) - 1
@@ -157,8 +165,6 @@ def require_scheme_variable(SchemeID, Scheme, TState, StateDB):
                 txt.append("%s " % LanguageDB.LABEL_BY_ADDRESS(adr)) 
         txt.append(" }")
         return "".join(txt)
-
-    assert len(Scheme) == len(TState.implemented_state_index_list())
 
     def address(Target, StateKey, TheState):
         if Target == E_StateIndices.DROP_OUT:
@@ -189,9 +195,9 @@ def require_scheme_variable(SchemeID, Scheme, TState, StateDB):
     address_list = [ address(target_index, state_key, TState) \
                      for state_key, target_index in enumerate(Scheme) ]
 
-    variable_db.require_array("template_%i_target_%i", 
-                              ElementN = len(TState.implemented_state_index_list()), 
-                              Initial  = get_code(address_list),
-                              Index    = (TState.index, SchemeID))
+    return variable_db.require_array("template_%i_target_%i", 
+                                     ElementN = len(TState.implemented_state_index_list()), 
+                                     Initial  = get_code(address_list),
+                                     Index    = (TState.index, SchemeID))
 
 

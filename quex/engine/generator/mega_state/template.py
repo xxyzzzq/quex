@@ -92,4 +92,3 @@ def require_data(TState, TheAnalyzer):
     variable_db.require("state_key")
     get_label("$state-router", U=True) # Ensure reference of state router
 
-

@@ -63,14 +63,15 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* 
                 if( input < 0xDC00 ) {
                     goto _77;
                 } else if( input < 0xE000 ) {
-
+                    goto _83;
                 } else if( input < 0x10000 ) {
                     goto _79;
                 } else {
-
+                    goto _83;
                 }
             }
         }
+_83:
         __quex_debug_drop_out(73);
         
         goto _84; /* TERMINAL_FAILURE */
@@ -114,12 +115,13 @@ _77: /* (77 from 73) */
         input = *iterator;
         __quex_debug_state(77);
         if( input >= 0xE000 ) {
-
+            goto _89;
         } else if( input >= 0xDC00 ) {
             goto _82;
         } else {
-
+            goto _89;
         }
+_89:
         __quex_debug_drop_out(77);
         
         goto _84; /* TERMINAL_FAILURE */

@@ -126,15 +126,20 @@ class VariableDB:
 
         self.__enter(Name, Type, None, Initial, condition, condition_negated_f, x[2])
 
+        return Name
+
     def require_array(self, Name, ElementN, Initial, Index=None, Condition_ComputedGoto=None):
         global candidate_db
+        IndexOrTuple = Index
 
         condition, condition_negated_f = self.__condition(Condition_ComputedGoto)
 
         # Name --> Type(0), InitialValue(1), PriorityF(2)
         x = candidate_db[Name]
 
-        if Index is not None: Name = Name % Index
+        if IndexOrTuple is not None: Name = Name % IndexOrTuple
         self.__enter(Name, x[0], ElementN, Initial, condition, condition_negated_f, x[2])
+
+        return Name
 
 variable_db = VariableDB()

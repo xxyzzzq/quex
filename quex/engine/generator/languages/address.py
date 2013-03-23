@@ -1,5 +1,5 @@
 import quex.engine.state_machine.index         as index
-#from   quex.engine.tools import print_callstack
+from   quex.engine.tools import print_callstack
 
 def __nice(SM_ID): 
     assert isinstance(SM_ID, (long, int))
@@ -68,7 +68,7 @@ __label_db = {
     "$terminal-direct":       lambda TerminalIdx: __address_db.get("TERMINAL_%s_DIRECT" % __nice(TerminalIdx)),
     "$terminal-general-bw":   lambda NoThing:     __address_db.get("TERMINAL_GENERAL_BACKWARD"),
     "$terminal-EOF":          lambda NoThing:     __address_db.get("TERMINAL_END_OF_STREAM"),
-    "$terminal-FAILURE":      lambda NoThing:     __address_db.get("TERMINAL_FAILURE"),
+    "$terminal-FAILURE":      lambda SM_Id:       __address_db.get("TERMINAL_FAILURE_%s" % SM_Id),
     #
     "$state-router":          lambda NoThing:     __address_db.get("__STATE_ROUTER"),
     #

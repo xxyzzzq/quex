@@ -557,8 +557,8 @@ def __terminal_states(StateMachineName, action_db, VariableDB, PreConditionIDLis
 
     terminal_end_of_stream_def = get_label("$terminal-EOF")
 
-    terminal_failure_ref       = "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")
-    terminal_failure_def       = get_label("$terminal-FAILURE")
+    terminal_failure_ref       = "QUEX_LABEL(%i)" % LanguageDB.ADDRESS_ON_FAILURE()
+    terminal_failure_def       = "_%s" % LanguageDB.ADDRESS_ON_FAILURE()
 
     # (*) Text Blocks _________________________________________________________
     pattern_terminals_code = []
