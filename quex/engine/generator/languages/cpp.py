@@ -546,7 +546,8 @@ def __terminal_router(TerminalFailureRef, TerminalFailureDef, SimpleF):
 def __terminal_states(StateMachineName, action_db, VariableDB, PreConditionIDList, 
                       OnFailureAction, OnEndOfStreamAction, OnAfterMatchAction, 
                       Setup, 
-                      SimpleF=False):
+                      SimpleF=False, 
+                      OnFailureActionImplementationF=True):
     """NOTE: During backward-lexing, for a pre-context, there is not need for terminal
              states, since only the flag 'pre-context fulfilled is raised.
     """      
@@ -567,8 +568,12 @@ def __terminal_states(StateMachineName, action_db, VariableDB, PreConditionIDLis
 
     on_end_of_stream_str        = __terminal_on_end_of_stream(LanguageDB, OnEndOfStreamAction, 
                                                               terminal_end_of_stream_def)
-    on_failure_str              = __terminal_on_failure(LanguageDB, OnFailureAction, 
+    if OnFailureActionImplementationF:
+        on_failure_str          = __terminal_on_failure(LanguageDB, OnFailureAction, 
                                                         terminal_failure_def, SimpleF)
+    else:
+        on_failure_str          = ""
+
     on_after_match_then_return_str, \
     on_after_match_str          = __on_after_match_then_return(OnAfterMatchAction, SimpleF)
 

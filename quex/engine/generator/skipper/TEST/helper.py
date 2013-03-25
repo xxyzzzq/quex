@@ -145,6 +145,7 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
                        ("$$SOURCE_CODE$$",            SourceCode),
                        ("$$INPUT_P_DEREFERENCE$$",    LanguageDB.ASSIGN("input", LanguageDB.INPUT_P_DEREFERENCE())),
                        ("$$TERMINAL_END_OF_STREAM$$", address.get_label("$terminal-EOF")),
+                       ("$$TERMINAL_FAILURE$$",       address.get_label("$terminal-FAILURE")),
                        ("$$RELOAD$$",                 reload_str),
                        ("$$END_STR$$",                EndStr)])
 
@@ -210,6 +211,7 @@ __REENTRY:
     if( ! show_next_character(&me->buffer) ) goto $$TERMINAL_END_OF_STREAM$$; 
     goto ENTRY;
 
+$$TERMINAL_FAILURE$$:
 $$TERMINAL_END_OF_STREAM$$:
 $$END_STR$$
 #undef engine
