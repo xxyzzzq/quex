@@ -145,7 +145,7 @@ class TransitionCode_DropOut(TransitionCode):
         return self.__code
 
     def _get_drop_out_f(self):  
-        return False
+        return True
 
 def require_scheme_variable(SchemeID, Scheme, TState, StateDB):
     """Defines the transition targets for each involved state. Note, that recursion

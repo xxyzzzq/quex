@@ -1,4 +1,4 @@
-<test-database execution-time-sec="191.25" date="Sat Mar 23 22:26:52 2013">
+<test-database execution-time-sec="190.15" date="Sun Mar 24 21:15:03 2013">
     <last-used-diff-display-program name=""/>
     <test title="Mode Changes" time-sum-sec="2.35"> 
         <application file-name="test-mode-changes.py" info-request-time="1355705371L" vanished="False"/>
@@ -8,8 +8,14 @@
            <choice name="ANSI-C-CG" result="OK" time_sec="0.70" crc="270103911"/>
         </choice-list>
     </test>
+    <test title="" time-sum-sec="0.04"> 
+        <application file-name="tmp.py" info-request-time="1364107097L" vanished="True"/>
+        <choice-list number="1" same_result="False">
+           <choice name="" result="NO GOOD FILE" time_sec="0.04" crc="0"/>
+        </choice-list>
+    </test>
     <test title="Indentation Counting" time-sum-sec="0.65"> 
-        <application file-name="test-indentation-counter.py" info-request-time="1355705371L" vanished="False"/>
+        <application file-name="test-indentation-counter.py" info-request-time="1355705371L" vanished="True"/>
         <choice-list number="3" same_result="False">
            <choice name="Uniform" result="FAIL" time_sec="0.22" crc="440903486"/>
            <choice name="NonUniform" result="FAIL" time_sec="0.20" crc="-509378232"/>
@@ -325,12 +331,12 @@
         </test>
     </group>
     <group name="Single State">
-        <test title="Transition Code Generation" time-sum-sec="4.72"> 
+        <test title="Transition Code Generation" time-sum-sec="3.58"> 
             <application file-name="test-single-state-transitions.py" info-request-time="1363155100L" vanished="False"/>
             <choice-list number="3" same_result="False">
-               <choice name="A" result="FAIL" time_sec="0.26" crc="-470930585"/>
-               <choice name="B" result="FAIL" time_sec="2.86" crc="747091293"/>
-               <choice name="C" result="FAIL" time_sec="1.60" crc="1749537508"/>
+               <choice name="A" result="OK" time_sec="0.16" crc="-470930585"/>
+               <choice name="B" result="OK" time_sec="2.30" crc="747091293"/>
+               <choice name="C" result="OK" time_sec="1.12" crc="1749537508"/>
             </choice-list>
         </test>
     </group>

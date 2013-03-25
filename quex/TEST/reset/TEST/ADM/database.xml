@@ -1,4 +1,4 @@
-<test-database execution-time-sec="2.20" date="Sat Mar 23 22:26:45 2013">
+<test-database execution-time-sec="2.17" date="Sun Mar 24 21:09:53 2013">
     <last-used-diff-display-program name=""/>
     <test title="Normal Reset" make-dependent="True" time-sum-sec="0.05"> 
         <application file-name="lexer-x" info-request-time="1364073524L" vanished="False"/>
@@ -18,21 +18,21 @@
         </choice-list>
     </test>
     <group name="Reset w/ QuexBufferFiller">
-        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="1.85"> 
+        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="1.82"> 
             <application file-name="codec-lexer" info-request-time="1364073520L" vanished="False"/>
             <make-procedure success="True" time_sec="2.087522"/>
             <choice-list number="11" same_result="True">
-               <choice name="0" result="FAIL" time_sec="0.15" crc="319410180"/>
-               <choice name="1" result="FAIL" time_sec="0.15" crc="319410180"/>
+               <choice name="0" result="FAIL" time_sec="0.16" crc="319410180"/>
+               <choice name="1" result="FAIL" time_sec="0.17" crc="319410180"/>
                <choice name="2" result="FAIL" time_sec="0.16" crc="319410180"/>
-               <choice name="3" result="FAIL" time_sec="0.16" crc="319410180"/>
+               <choice name="3" result="FAIL" time_sec="0.15" crc="319410180"/>
                <choice name="1000" result="FAIL" time_sec="0.15" crc="319410180"/>
-               <choice name="20" result="FAIL" time_sec="0.16" crc="319410180"/>
-               <choice name="30" result="FAIL" time_sec="0.17" crc="319410180"/>
+               <choice name="20" result="FAIL" time_sec="0.17" crc="319410180"/>
+               <choice name="30" result="FAIL" time_sec="0.16" crc="319410180"/>
                <choice name="50" result="FAIL" time_sec="0.18" crc="319410180"/>
                <choice name="134" result="FAIL" time_sec="0.18" crc="319410180"/>
-               <choice name="135" result="FAIL" time_sec="0.23" crc="319410180"/>
-               <choice name="136" result="FAIL" time_sec="0.17" crc="319410180"/>
+               <choice name="135" result="FAIL" time_sec="0.16" crc="319410180"/>
+               <choice name="136" result="FAIL" time_sec="0.18" crc="319410180"/>
             </choice-list>
         </test>
         <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.11"> 

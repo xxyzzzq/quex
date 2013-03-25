@@ -126,15 +126,15 @@ def get_address(Type, Arg=None, U=False, R=False):
        routing (i.e. "switch( index ) { case N: goto _address; ... "
     """
     global __label_db
-    result = __label_db[Type](Arg)
+    address = __label_db[Type](Arg)
 
-    assert type(result) in [int, long], \
-           "Label type '%s' is not suited for routing. Found %s" % (Type, result)
+    assert type(address) in (int, long), \
+           "Label type '%s' is not suited for routing. Found %s" % (Type, address)
     
-    if U: __referenced_label_set_add(get_label_of_address(result))
-    if R: __routed_address_set.add(result)
+    if U: __referenced_label_set_add(get_label_of_address(address))
+    if R: __routed_address_set.add(address)
 
-    return result
+    return address
 
 def get_label(LabelType, Arg=None, U=False, R=False):
     """U -- mark as 'used' if True
@@ -144,19 +144,19 @@ def get_label(LabelType, Arg=None, U=False, R=False):
     """
     global __label_db
     label_id = __label_db[LabelType](Arg)
-    if type(label_id) in [int, long]: result = get_label_of_address(label_id)
-    else:                             result = label_id
+    if type(label_id) in (int, long): label = get_label_of_address(label_id)
+    else:                             label = label_id
 
-    assert type(result) in [str, unicode]
+    assert type(label) in [str, unicode]
 
     if U: 
-        __referenced_label_set_add(result)
+        __referenced_label_set_add(label)
     if R: 
-        assert type(label_id) in [int, long], \
+        assert type(label_id) in (int, long), \
                "Only labels that expand to addresses can be routed."
         __routed_address_set.add(label_id)
 
-    return result
+    return label
 
 def get_label_of_address(Adr, U=False):
     """U -- mark as 'used' if True

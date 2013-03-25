@@ -1,4 +1,4 @@
-<test-database execution-time-sec="22.32" date="Sat Mar 23 22:26:52 2013">
+<test-database execution-time-sec="22.32" date="Sun Mar 24 21:10:40 2013">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Superset/Subset Determination" time-sum-sec="1.40"> 
         <application file-name="test-subset_checker.py" info-request-time="1336071109L" vanished="True"/>
@@ -239,6 +239,12 @@
                <choice name="" result="OK" time_sec="0.08" crc="-77063234"/>
             </choice-list>
         </test>
+        <test title="NFA to DFA (subset construction)" time-sum-sec="0.08"> 
+            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1355705371L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.08" crc="1084071896"/>
+            </choice-list>
+        </test>
         <test title="Cloning" time-sum-sec="0.08"> 
             <application file-name="test-StateMachine-trace-origin-clone.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="1" same_result="False">
@@ -249,12 +255,6 @@
             <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.07" crc="638605976"/>
-            </choice-list>
-        </test>
-        <test title="NFA to DFA (subset construction)" time-sum-sec="0.08"> 
-            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1355705371L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.08" crc="1084071896"/>
             </choice-list>
         </test>
         <test title="NFA to DFA (subset construction) II" time-sum-sec="0.09"> 

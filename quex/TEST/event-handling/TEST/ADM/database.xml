@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.31" date="Sat Mar 23 22:26:37 2013">
+<test-database execution-time-sec="0.33" date="Sun Mar 24 21:09:41 2013">
     <last-used-diff-display-program name=""/>
     <test title="Customized on_skip_range_open event." make-dependent="True" time-sum-sec="0.04"> 
         <application file-name="on_skip_range_open-customized.sh" info-request-time="1363627679L" vanished="False"/>
@@ -15,23 +15,23 @@
         </choice-list>
     </test>
     <group name="Mode Transitions">
-        <test title="transition-x.qx" make-dependent="True" time-sum-sec="0.13"> 
+        <test title="transition-x.qx" make-dependent="True" time-sum-sec="0.11"> 
             <application file-name="transition-x.sh" info-request-time="1363627680L" vanished="False"/>
             <make-procedure success="True" time_sec="1.033905"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="FAIL" time_sec="0.04" crc="140187343"/>
-               <choice name="2" result="FAIL" time_sec="0.03" crc="1810777269"/>
-               <choice name="3" result="FAIL" time_sec="0.03" crc="784591852"/>
+               <choice name="1" result="FAIL" time_sec="0.05" crc="140187343"/>
+               <choice name="2" result="FAIL" time_sec="0.02" crc="1810777269"/>
+               <choice name="3" result="FAIL" time_sec="0.02" crc="784591852"/>
                <choice name="error" result="FAIL" time_sec="0.02" crc="-1605736885"/>
             </choice-list>
         </test>
-        <test title="transition.qx" make-dependent="True" time-sum-sec="0.10"> 
+        <test title="transition.qx" make-dependent="True" time-sum-sec="0.14"> 
             <application file-name="transition.sh" info-request-time="1363627682L" vanished="False"/>
             <make-procedure success="True" time_sec="0.998951"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="FAIL" time_sec="0.04" crc="140187343"/>
+               <choice name="1" result="FAIL" time_sec="0.06" crc="140187343"/>
                <choice name="2" result="FAIL" time_sec="0.03" crc="1810777269"/>
-               <choice name="3" result="FAIL" time_sec="0.02" crc="784591852"/>
+               <choice name="3" result="FAIL" time_sec="0.04" crc="784591852"/>
                <choice name="error" result="FAIL" time_sec="0.02" crc="609096275"/>
             </choice-list>
         </test>
