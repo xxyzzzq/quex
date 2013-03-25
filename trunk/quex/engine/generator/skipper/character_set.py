@@ -90,6 +90,7 @@ def __make_loop(Mode, CharacterSet):
                                  IteratorName             = "me->buffer._input_p",
                                  Trafo                    = Setup.buffer_codec_transformation_info,
                                  ColumnCountPerChunk      = column_count_per_chunk,
+                                 ConcernedCharacterSet    = CharacterSet,
                                  DoNotResetReferenceP_Set = exit_skip_set)
 
     tm = add_on_exit_actions(tm, exit_skip_set, column_count_per_chunk)
