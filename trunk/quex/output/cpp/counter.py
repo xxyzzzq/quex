@@ -535,24 +535,34 @@ def __line_n(Delta, ColumnCountPerChunk, IteratorName, ResetReferenceP_F):
 def __frame(txt, FunctionName, StateMachineF, ColumnCountPerChunk):
     LanguageDB = Setup.language_db
 
-    prologue  =   "#ifdef __QUEX_OPTION_COUNTER\n" \
-                + "static void\n" \
-                + "%s(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* LexemeBegin, const QUEX_TYPE_CHARACTER* LexemeEnd)\n" \
-                  % FunctionName \
-                + "{\n" \
-                + "#   define self (*me)\n" \
-                + "    const QUEX_TYPE_CHARACTER* iterator    = (const QUEX_TYPE_CHARACTER*)0;\n" 
-    if StateMachineF:
-       prologue += "    QUEX_TYPE_CHARACTER        input       = (QUEX_TYPE_CHARACTER)0;\n" 
-    if ColumnCountPerChunk is not None:
-       prologue += "#   if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)\n"     
-       prologue += "    const QUEX_TYPE_CHARACTER* reference_p = LexemeBegin;\n" 
-       prologue += "#   endif\n"     
+    prologue  =   \
+          "#ifdef __QUEX_OPTION_COUNTER\n" \
+        + "static void\n" \
+        + "%s(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* LexemeBegin, const QUEX_TYPE_CHARACTER* LexemeEnd)\n" \
+          % FunctionName \
+        + "{\n" \
+        + "#   define self (*me)\n" \
+        + "    const QUEX_TYPE_CHARACTER* iterator    = (const QUEX_TYPE_CHARACTER*)0;\n" 
 
-    prologue +=   "\n" \
-                + "    __QUEX_IF_COUNT_SHIFT_VALUES();\n" \
-                + "\n" \
-                + "    for(iterator=LexemeBegin; iterator < LexemeEnd; ) {\n"
+    if StateMachineF:
+        input_def = "    QUEX_TYPE_CHARACTER        input       = (QUEX_TYPE_CHARACTER)0;\n" 
+    else:
+        input_def = ""
+
+    if ColumnCountPerChunk is not None:
+        reference_f_def = \
+             "#   if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)\n" \
+           + "    const QUEX_TYPE_CHARACTER* reference_p = LexemeBegin;\n" \
+           + "#   endif\n"     
+    else:
+        reference_p_def = ""
+
+
+    loop_start = \
+         "    __QUEX_IF_COUNT_SHIFT_VALUES();\n" \
+       + "\n" \
+       + "    __quex_assert(LexemeBegin <= LexemeEnd);\n" \
+       + "    for(iterator=LexemeBegin; iterator < LexemeEnd; ) {\n"
     
     LanguageDB.INDENT(txt)
     counter_block = txt
@@ -565,12 +575,18 @@ def __frame(txt, FunctionName, StateMachineF, ColumnCountPerChunk):
     if ColumnCountPerChunk is not None:
         LanguageDB.REFERENCE_P_COLUMN_ADD(epilogue, "iterator", ColumnCountPerChunk) 
 
-    epilogue.append(  "    __quex_assert(iterator == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */\n" \
-                    + "#   undef self\n" \
-                    + "}\n" \
-                    + "#endif /* __QUEX_OPTION_COUNTER */")
+    epilogue.append(
+         "    __quex_assert(iterator == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */\n" \
+       + "#   undef self\n" \
+       + "}\n" \
+       + "#endif /* __QUEX_OPTION_COUNTER */")
 
-    result = [ prologue ] 
+    result = [ 
+         prologue,
+         input_def,
+         reference_f_def,
+         loop_start
+    ] 
     result.extend(counter_block)
     result.extend(epilogue)
 

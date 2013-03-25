@@ -3,11 +3,14 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.engine.interval_handling                   import NumberSet, Interval
-from   generator_test                                  import compile_and_run, create_customized_analyzer_function, __Setup_init_language_database
+from   quex.engine.generator.TEST.generator_test import __Setup_init_language_database
+#from   generator_test                                  import compile_and_run, create_customized_analyzer_function, __Setup_init_language_database
+from   helper                                          import *
 from   quex.input.files.counter_setup                  import IndentationSetup
 import quex.engine.generator.skipper.indentation_counter as     indentation_counter
 from   quex.engine.generator.languages.address         import init_address_handling
 from   quex.engine.generator.languages.variable_db     import variable_db
+from   quex.engine.interval_handling             import NumberSet, Interval
 
 from   copy import deepcopy
 

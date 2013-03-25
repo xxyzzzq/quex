@@ -342,7 +342,8 @@ in the event handler definition. The list of event handlers is the following:
 .. data:: on_failure
 
    Event handler for the case that a character stream does not match any pattern 
-   in the mode. This is equivalent to the ``<<FAIL>>`` pattern.
+   in the mode. This is equivalent to the ``<<FAIL>>`` pattern as known in 
+   the 'lex' family of lexical analyzer generators.
 
    .. note:: The definition of an ``on_failure`` section can be of great help
              whenever the analyzer shows an unexpected behavior. Before doing any
@@ -353,6 +354,16 @@ in the event handler definition. The list of event handlers is the following:
              before and after the ``on_failure``. The reason is obvious, because 
              ``on_failure`` is executed because nothing matched. If nothing matched 
              then there is no event triggering ``on_match`` and ``on_after_match``.
+
+   .. note:: Quex does not allow the definition of patterns which accept nothing.
+             Actions, such as mode changes on the event of 'nothing has matched'
+             can be implemented by ``on_failure`` and ``undo()`` as
+
+             .. code-block:: cpp
+              
+                ...
+                on_failure { undo(); self << NEW_MODE; }
+                ...
 
    In a broader sense, 'on_failure' implements the 'anti-pattern' of all
    occurring patterns in a mode. That is it matches the shortest lexeme that

@@ -7,7 +7,7 @@ import quex.input.files.code_fragment                  as     code_fragment
 from   quex.input.files.counter_setup                  import CounterDB_construct_this
 import quex.input.files.consistency_check              as     consistency_check
 import quex.output.cpp.counter                         as     counter
-import quex.engine.generator.state.indentation_counter as     indentation_counter
+import quex.engine.generator.skipper.indentation_counter as     indentation_counter
 from   quex.engine.generator.languages.address         import get_label
 import quex.engine.generator.skipper.character_set     as     skip_character_set
 from   quex.engine.generator.action_info               import CodeFragment, \
