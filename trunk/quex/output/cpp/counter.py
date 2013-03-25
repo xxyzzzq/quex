@@ -473,7 +473,7 @@ def _state_machine_coder_do(tm, BeforeGotoReloadAction):
 
     analyzer     = analyzer_generator.do(sm, engine_type)
                  
-    sm_id_backup = LanguageDB.set_state_machine_identifier(index.get_state_machine_id())
+    #sm_id_backup = LanguageDB.set_state_machine_identifier(index.get_state_machine_id())
     sm_txt       = state_machine_coder.do(analyzer, BeforeGotoReloadAction)
 
     # 'Terminals' are the counter actions
@@ -485,9 +485,10 @@ def _state_machine_coder_do(tm, BeforeGotoReloadAction):
                                                 OnEndOfStreamAction=None, 
                                                 OnAfterMatchAction=None, 
                                                 Setup=Setup, 
-                                                SimpleF=True) 
+                                                SimpleF=True,
+                                                OnFailureActionImplementationF=False) 
 
-    LanguageDB.set_state_machine_identifier(sm_id_backup)
+    #LanguageDB.set_state_machine_identifier(sm_id_backup)
 
     txt = sm_txt + terminal_txt
     return txt
