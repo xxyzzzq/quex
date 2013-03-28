@@ -4,6 +4,7 @@ from   quex.engine.generator.languages.address import get_label, \
                                                       get_address, \
                                                       Address
 from   quex.engine.interval_handling           import NumberSet
+from   quex.blackboard import E_ActionIDs
 from   operator import itemgetter
 from   copy     import copy
 #
@@ -506,16 +507,19 @@ def __on_after_match_then_return(OnAfterMatchAction, SimpleF):
 
     return return_preparation, on_after_match_str
 
-def __reentry_preparation(LanguageDB, VariableDB, PreConditionIDList, OnAfterMatchStr, TerminalFailureRef, SimpleF):
+def __reentry_preparation(LanguageDB, PreConditionIDList, OnAfterMatchStr, TerminalFailureRef, SimpleF):
     """Reentry preperation (without returning from the function."""
     if SimpleF:
         return ""
 
     # (*) Unset all pre-context flags which may have possibly been set
-    unset_pre_context_flags_str = "".join([
-        "    " + LanguageDB.ASSIGN("pre_context_%s_fulfilled_f" % __nice(pre_context_id), 0)
-        for pre_context_id in PreConditionIDList
-    ])
+    if PreConditionIDList is None:
+        unset_pre_context_flags_str = ""
+    else:
+        unset_pre_context_flags_str = "".join([
+            "    " + LanguageDB.ASSIGN("pre_context_%s_fulfilled_f" % __nice(pre_context_id), 0)
+            for pre_context_id in PreConditionIDList
+        ])
 
     return blue_print(__reentry_preparation_str, [
           ["$$REENTRY_PREPARATION$$",                    get_label("$re-start")],
@@ -543,8 +547,7 @@ def __terminal_router(TerminalFailureRef, TerminalFailureDef, SimpleF):
           __terminal_router_epilog_str, 
     ])
 
-def __terminal_states(StateMachineName, action_db, VariableDB, PreConditionIDList, 
-                      OnFailureAction, OnEndOfStreamAction, OnAfterMatchAction, 
+def __terminal_states(StateMachineName, action_db, PreConditionIDList, 
                       Setup, 
                       SimpleF=False, 
                       OnFailureActionImplementationF=True):
@@ -562,26 +565,32 @@ def __terminal_states(StateMachineName, action_db, VariableDB, PreConditionIDLis
     terminal_failure_def       = "_%s" % LanguageDB.ADDRESS_ON_FAILURE()
 
     # (*) Text Blocks _________________________________________________________
-    pattern_terminals_code = []
+    pattern_terminals_code         = []
+    on_after_match_str             = ""
+    on_after_match_then_return_str = ""
+    on_end_of_stream_str           = ""
+    on_failure_str                 = ""
+
     for pattern_id, info in action_db.items():
-        pattern_terminals_code.extend(__pattern_terminal_code(pattern_id, info, SimpleF, Setup))
+        if pattern_id == E_ActionIDs.ON_END_OF_STREAM:
+            on_end_of_stream_str = __terminal_on_end_of_stream(LanguageDB, info, 
+                                                               terminal_end_of_stream_def)
 
-    on_end_of_stream_str        = __terminal_on_end_of_stream(LanguageDB, OnEndOfStreamAction, 
-                                                              terminal_end_of_stream_def)
-    if OnFailureActionImplementationF:
-        on_failure_str          = __terminal_on_failure(LanguageDB, OnFailureAction, 
-                                                        terminal_failure_def, SimpleF)
-    else:
-        on_failure_str          = ""
+        elif pattern_id == E_ActionIDs.ON_FAILURE and OnFailureActionImplementationF:
+            on_failure_str       = __terminal_on_failure(LanguageDB, info, 
+                                                         terminal_failure_def, SimpleF)
 
-    on_after_match_then_return_str, \
-    on_after_match_str          = __on_after_match_then_return(OnAfterMatchAction, SimpleF)
+        elif pattern_id == E_ActionIDs.ON_AFTER_MATCH:
+            on_after_match_then_return_str, \
+            on_after_match_str   = __on_after_match_then_return(info, SimpleF)
+
+        else:
+            pattern_terminals_code.extend(__pattern_terminal_code(pattern_id, info, SimpleF, Setup))
 
     lexeme_macro_definition_str = __lexeme_macro_definitions(LanguageDB, Setup, SimpleF)
 
 
-    reentry_preparation_str     = __reentry_preparation(LanguageDB, VariableDB, 
-                                                        PreConditionIDList, 
+    reentry_preparation_str     = __reentry_preparation(LanguageDB, PreConditionIDList, 
                                                         on_after_match_str, terminal_failure_ref, SimpleF)
 
     terminal_router             = __terminal_router(terminal_failure_ref, terminal_failure_def, SimpleF)

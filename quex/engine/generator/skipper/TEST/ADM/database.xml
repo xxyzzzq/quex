@@ -1,4 +1,4 @@
-<test-database execution-time-sec="44.45" date="Sun Mar 24 21:10:40 2013">
+<test-database execution-time-sec="44.44" date="Tue Mar 26 06:34:56 2013">
     <last-used-diff-display-program name=""/>
     <group name="Skip-Characters">
         <test title="Large Buffer" time-sum-sec="8.47"> 
@@ -10,7 +10,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="2.68" crc="1196821641"/>
             </choice-list>
         </test>
-        <test title="Varrying Buffer Size" time-sum-sec="3.55"> 
+        <test title="Varrying Buffer Size" time-sum-sec="3.54"> 
             <application file-name="test-skip-2.py" info-request-time="1363762375L" vanished="False"/>
             <choice-list number="6" same_result="True">
                <choice name="3" result="OK" time_sec="0.57" crc="99495488"/>

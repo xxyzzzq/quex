@@ -1,4 +1,4 @@
-<test-database execution-time-sec="291.82" date="Sun Mar 24 21:09:31 2013">
+<test-database execution-time-sec="272.27" date="Tue Mar 26 06:34:33 2013">
     <last-used-diff-display-program name=""/>
     <group name="demo/000">
         <test title="Single Mode Example" time-sum-sec="6.78"> 
@@ -136,13 +136,13 @@
         </test>
     </group>
     <group name="demo/011">
-        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="14.49"> 
+        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="5.89"> 
             <application file-name="011.sh" info-request-time="1356855534L" vanished="False"/>
             <choice-list number="4" same_result="True">
                <choice name="iso8859-7" result="OK" time_sec="3.53" crc="-1827787599"/>
-               <choice name="utf8" result="FAIL" time_sec="3.55" crc="-1827787599"/>
-               <choice name="utf16-be" result="FAIL" time_sec="3.85" crc="-1827787599"/>
-               <choice name="utf16-le" result="FAIL" time_sec="3.56" crc="-1827787599"/>
+               <choice name="utf8" result="FAIL" time_sec="0.85" crc="-1827787599"/>
+               <choice name="utf16-be" result="FAIL" time_sec="0.70" crc="-1827787599"/>
+               <choice name="utf16-le" result="FAIL" time_sec="0.81" crc="-1827787599"/>
             </choice-list>
         </test>
     </group>
@@ -156,11 +156,11 @@
         </test>
     </group>
     <group name="demo/012">
-        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="14.56"> 
+        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="3.61"> 
             <application file-name="012.sh" info-request-time="1355705370L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="8.40" crc="-62717966"/>
-               <choice name="DEBUG" result="FAIL" time_sec="6.16" crc="-62717966"/>
+               <choice name="NDEBUG" result="FAIL" time_sec="1.72" crc="-62717966"/>
+               <choice name="DEBUG" result="FAIL" time_sec="1.89" crc="-62717966"/>
             </choice-list>
         </test>
     </group>

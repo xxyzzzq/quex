@@ -92,6 +92,12 @@ E_SpecialPatterns = Enum("INDENTATION_NEWLINE",
                          "SKIP_NESTED_RANGE", 
                          "_DEBUG_PatternNames")
 
+E_ActionIDs = Enum("ON_FAILURE", 
+                   "ON_END_OF_STREAM", 
+                   "ON_MATCH", 
+                   "ON_AFTER_MATCH", 
+                   "_DEBUG_ActionIDs")
+
 #-----------------------------------------------------------------------------------------
 # mode_db: storing the mode information into a dictionary:
 #            key  = mode name

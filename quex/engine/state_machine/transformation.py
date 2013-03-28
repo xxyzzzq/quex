@@ -11,7 +11,7 @@ from   quex.blackboard                                 import setup as Setup
 
 sys.path.append(os.environ["QUEX_PATH"])
 
-def try_this(X, fh=None):
+def do_state_machine(X, TrafoInfo=None):
     """Transforms a given state machine from 'Unicode Driven' to another
        character encoding type.
     
@@ -26,7 +26,9 @@ def try_this(X, fh=None):
     assert isinstance(X, StateMachine)
     assert X.is_DFA_compliant()
 
-    TrafoInfo = Setup.buffer_codec_transformation_info
+    if TrafoInfo is None:
+        TrafoInfo = Setup.buffer_codec_transformation_info
+
     if TrafoInfo is None: 
         return True, X
 
@@ -87,6 +89,35 @@ def do_sequence(Sequence, TrafoInfo, fh):
     for x in Sequence:
         result.extend(do_character(x))
     return result
+
+def do_transition_map(TM, TrafoInfo=None):
+    """RETURNS: verdict, tm
+
+       verdict == True, if the transformation has been made without any 
+       complaints or missing characters. It is 'False' if not. 'tm' is 
+       the resulting transition map.
+    """
+    if TrafoInfo is None:
+        TrafoInfo = Setup.buffer_codec_transformation_info
+    if TrafoInfo is None:
+        return True, TM
+
+    assert not isinstance(TrafoInfo, (str, unicode)) or TrafoInfo.find("-state-split") == -1
+
+    total_verdict = True
+    result        = []
+    for interval, target in TM:
+        verdict, transformed = interval.transform(TrafoInfo)
+        if not verdict: total_verdict = False
+        result.extend((x, target) for x in transformed)
+
+    result.sort(key=lambda x: (x[0].begin, x[0].end))
+    prev_interval = result[0][0]
+    for interval, target in result[1:]:
+        assert interval.begin >= prev_interval.end
+
+    return total_verdict, result    
+
         
 def homogeneous_chunk_n_per_character(Thing, TrafoInfo):
     assert isinstance(TrafoInfo, (str, unicode))

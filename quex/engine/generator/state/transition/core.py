@@ -39,6 +39,7 @@ def do(txt, TransitionMap):
 
     # (*) Bisection until other solution is more suitable.
     #     (This may include 'no bisectioning')
+    # print "#TM:\n", transition_map_tool.get_string(TransitionMap, Option="hex")
     __bisection(txt, TransitionMap)
 
     # (*) When there was an outstanding character, then the whole bisection was

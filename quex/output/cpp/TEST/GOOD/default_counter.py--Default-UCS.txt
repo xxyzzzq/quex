@@ -7,9 +7,9 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* 
 #   if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
     const QUEX_TYPE_CHARACTER* reference_p = LexemeBegin;
 #   endif
-
     __QUEX_IF_COUNT_SHIFT_VALUES();
 
+    __quex_assert(LexemeBegin <= LexemeEnd);
     for(iterator=LexemeBegin; iterator < LexemeEnd; ) {
         switch( (*(iterator)) ) {
             case 0x9:         __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(((iterator) - reference_p)));

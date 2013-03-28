@@ -2,8 +2,10 @@ from   quex.engine.misc.file_in                        import error_msg
 from   quex.engine.generator.action_info               import PatternActionInfo
 import quex.engine.state_machine.parallelize           as parallelize
 import quex.engine.state_machine.algorithm.beautifier  as beautifier
+from   quex.blackboard import E_ActionIDs
 
 from   itertools import ifilter
+
 
 class GeneratorBase:
     def __init__(self, PatternActionPair_List, StateMachineName):
@@ -48,12 +50,20 @@ class GeneratorBase:
         # map: state machine id --> character code(s)
         for pap in PatternActionPair_List:
             pattern = pap.pattern()
-            sm      = pattern.sm
-            sm_id   = sm.get_id()
-            self.state_machine_list.append(sm)
+            if pattern in E_ActionIDs: 
+                action_id = pattern
+                # -- Register action of 'special action' such as 'ON_END_OF_STREAM', 'ON_FAILURE'
+                self.action_db[action_id] = pap
+                continue
+
+            sm    = pattern.sm
+            sm_id = sm.get_id()
 
             # -- register action information under the state machine id, where it belongs.
             self.action_db[sm_id] = pap
+
+            # -- collect all 'core' state machines
+            self.state_machine_list.append(sm)
 
             # -- collect all pre-contexts and make one single state machine out of it
             sm = pattern.pre_context_sm

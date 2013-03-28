@@ -176,9 +176,9 @@ class Pattern(object):
         assert self.__pre_context_sm is None
         assert self.__bipd_sm        is None
 
-        c0, self.__sm                            = transformation.try_this(self.__sm)
-        c1, self.__pre_context_sm_to_be_inverted = transformation.try_this(self.__pre_context_sm_to_be_inverted)
-        c2, self.__post_context_sm               = transformation.try_this(self.__post_context_sm)
+        c0, self.__sm                            = transformation.do_state_machine(self.__sm)
+        c1, self.__pre_context_sm_to_be_inverted = transformation.do_state_machine(self.__pre_context_sm_to_be_inverted)
+        c2, self.__post_context_sm               = transformation.do_state_machine(self.__post_context_sm)
 
         # Only if all transformation have been complete, then the transformation
         # can be considered complete.

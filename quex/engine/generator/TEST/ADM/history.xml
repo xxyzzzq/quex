@@ -1,4 +1,4 @@
-<history date="Sun Mar 24 21:15:03 2013" element-n="1284">
+<history date="Thu Mar 28 08:31:29 2013" element-n="1285">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
@@ -2094,5 +2094,8 @@
         <crc-error time="10:55:27" application="test-simple.py" choice="Cpp-Path-CG" database-crc="1819339337" real-crc="90237132"/>
         <crc-error time="10:55:28" application="test-simple.py" choice="Cpp-PathUniform-CG" database-crc="-2052212068" real-crc="90237132"/>
         <crc-error time="10:55:29" application="test-simple.py" choice="ANSI-C-PathTemplate" database-crc="-1893991136" real-crc="90237132"/>
+    </day>
+    <day year="2013" month="03" day="27">
+        <crc-error time="20:39:12" application="test-single-state-transitions.py" choice="A" database-crc="-48609165" real-crc="287456115"/>
     </day>
 </history>

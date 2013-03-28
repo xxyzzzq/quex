@@ -75,7 +75,7 @@ def get_step(counter_db, IteratorName):
 
     return column_counter_per_chunk, state_machine_f, txt
 
-def get_core_step(TM, IteratorName, StateMachineF, BeforeGotoReloadAction=None):
+def get_core_step(TM, IteratorName, StateMachineF, BeforeGotoReloadAction=None, OnFailureActionImplementationF=True):
     """Get a counter increment code for one single character.
 
     BeforeGotoReloadAction = None, means that there is no reload involed.
@@ -88,10 +88,6 @@ def get_core_step(TM, IteratorName, StateMachineF, BeforeGotoReloadAction=None):
     global Match_input
     global Match_iterator
 
-    # The range of possible characters may be restricted. It must be ensured,
-    # that the occurring characters only belong to the admissible range.
-    transition_map_tool.prune(TM, 0, Setup.get_character_value_limit())
-
     if StateMachineF:
         upon_reload_done_adr = None
 
@@ -99,13 +95,21 @@ def get_core_step(TM, IteratorName, StateMachineF, BeforeGotoReloadAction=None):
         if txt is not None:
             StateMachineF = False # We tricked around it; No state machine needed.
         else:
-            txt = _state_machine_coder_do(TM, BeforeGotoReloadAction)
+            action_db, sm  = get_state_machine_from_transition_map(TM, BeforeGotoReloadAction)
+            complete_f, sm = transformation.do_state_machine(sm)
+            txt            = _state_machine_coder_do(sm, action_db, BeforeGotoReloadAction, OnFailureActionImplementationF)
     else:
         upon_reload_done_adr = index.get()
         address_set_subject_to_routing_add(upon_reload_done_adr) # Mark as 'used'
 
-        txt = _transition_map_coder_do(TM, BeforeGotoReloadAction, upon_reload_done_adr)
+        complete_f, tm = transformation.do_transition_map(TM)
+        txt            = _transition_map_coder_do(tm, BeforeGotoReloadAction, upon_reload_done_adr)
 
+    return StateMachineF, \
+           replace_iterator_name(txt, IteratorName, StateMachineF), \
+           upon_reload_done_adr
+
+def replace_iterator_name(txt, IteratorName, StateMachineF):
     def replacer(block, StateMachineF):
         if block.find("(me->buffer._input_p)") != -1: 
             block = block.replace("(me->buffer._input_p)", IteratorName)
@@ -118,7 +122,7 @@ def get_core_step(TM, IteratorName, StateMachineF, BeforeGotoReloadAction=None):
         if not isinstance(elm, (str, unicode)): continue
         txt[i] = replacer(elm, StateMachineF)
 
-    return StateMachineF, txt, upon_reload_done_adr
+    return txt
 
 def get_counter_dictionary(counter_db, ConcernedCharacterSet):
     """Returns a list of NumberSet objects where for each X of the list it holds:
@@ -297,6 +301,11 @@ def get_counter_map(counter_db,
 
     return cm, column_count_per_chunk, state_machine_f
 
+def get_state_machine_from_transition_map(tm, BeforeGotoReloadAction):
+    action_db, sm_list = get_state_machine_list(tm, BeforeGotoReloadAction is not None)
+    sm                 = get_combined_state_machine(sm_list)
+    return action_db, sm
+
 def get_state_machine_list(TM, ReloadPossibleF=False):
     """Returns a state machine list which implements the transition map given
     in unicode. It is assumed that the codec is a variable
@@ -381,6 +390,9 @@ def _transition_map_coder_do(TM, BeforeGotoReloadAction, UponReloadDoneAdr):
         engine_type     = engine.CHARACTER_COUNTER
         goto_reload_str = None
 
+    # The range of possible characters may be restricted. It must be ensured,
+    # that the occurring characters only belong to the admissible range.
+    transition_map_tool.prune(tm, 0, Setup.get_character_value_limit())
 
     TransitionCodeFactory.init(engine_type, 
                                StateIndex    = None,
@@ -455,40 +467,31 @@ def _trivialized_state_machine_coder_do(tm, BeforeGotoReloadAction):
     # Code the transition map
     return _transition_map_coder_do(tm, BeforeGotoReloadAction=None, UponReloadDoneAdr=None)
 
-def _state_machine_coder_do(tm, BeforeGotoReloadAction):
+def _state_machine_coder_do(sm, action_db, BeforeGotoReloadAction, OnFailureActionImplementationF=True):
     """Generates a state machine that represents the transition map 
     according to the codec given in 'Setup.buffer_codec_transformation_info'
     """
-    LanguageDB = Setup.language_db
-
-    action_db, sm_list = get_state_machine_list(tm, BeforeGotoReloadAction is not None)
-
-    sm             = get_combined_state_machine(sm_list)
-    complete_f, sm = transformation.try_this(sm, -1)
     assert sm is not None
+
+    LanguageDB = Setup.language_db
 
     # The generator only understands 'analyzers'. Get it!
     if BeforeGotoReloadAction is None: engine_type = engine.CHARACTER_COUNTER
     else:                              engine_type = engine.FORWARD
 
     analyzer     = analyzer_generator.do(sm, engine_type)
-                 
-    #sm_id_backup = LanguageDB.set_state_machine_identifier(index.get_state_machine_id())
     sm_txt       = state_machine_coder.do(analyzer, BeforeGotoReloadAction)
 
     # 'Terminals' are the counter actions
     terminal_txt = LanguageDB["$terminal-code"]("Counter",
                                                 action_db, 
-                                                VariableDB={},
-                                                PreConditionIDList=[],
+                                                PreConditionIDList=None,
                                                 OnFailureAction=None, 
                                                 OnEndOfStreamAction=None, 
                                                 OnAfterMatchAction=None, 
                                                 Setup=Setup, 
                                                 SimpleF=True,
-                                                OnFailureActionImplementationF=False) 
-
-    #LanguageDB.set_state_machine_identifier(sm_id_backup)
+                                                OnFailureActionImplementationF=OnFailureActionImplementationF) 
 
     txt = sm_txt + terminal_txt
     return txt
@@ -533,7 +536,7 @@ def __line_n(Delta, ColumnCountPerChunk, IteratorName, ResetReferenceP_F):
 
     return txt
 
-def __frame(txt, FunctionName, StateMachineF, ColumnCountPerChunk):
+def __frame(CounterTxt, FunctionName, StateMachineF, ColumnCountPerChunk):
     LanguageDB = Setup.language_db
 
     prologue  =   \
@@ -551,7 +554,7 @@ def __frame(txt, FunctionName, StateMachineF, ColumnCountPerChunk):
         input_def = ""
 
     if ColumnCountPerChunk is not None:
-        reference_f_def = \
+        reference_p_def = \
              "#   if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)\n" \
            + "    const QUEX_TYPE_CHARACTER* reference_p = LexemeBegin;\n" \
            + "#   endif\n"     
@@ -565,8 +568,7 @@ def __frame(txt, FunctionName, StateMachineF, ColumnCountPerChunk):
        + "    __quex_assert(LexemeBegin <= LexemeEnd);\n" \
        + "    for(iterator=LexemeBegin; iterator < LexemeEnd; ) {\n"
     
-    LanguageDB.INDENT(txt)
-    counter_block = txt
+    LanguageDB.INDENT(CounterTxt)
                
     epilogue = []
     if False:
@@ -585,10 +587,10 @@ def __frame(txt, FunctionName, StateMachineF, ColumnCountPerChunk):
     result = [ 
          prologue,
          input_def,
-         reference_f_def,
+         reference_p_def,
          loop_start
     ] 
-    result.extend(counter_block)
+    result.extend(CounterTxt)
     result.extend(epilogue)
 
     return "".join(LanguageDB.GET_PLAIN_STRINGS(result))
