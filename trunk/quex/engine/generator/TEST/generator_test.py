@@ -411,9 +411,9 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     PatternActionPairList.append(PatternActionInfo(E_ActionIDs.ON_END_OF_STREAM, on_failure_action)) 
     PatternActionPairList.append(PatternActionInfo(E_ActionIDs.ON_AFTER_MATCH,   ""))
 
-    code = cpp_generator._do(Mode                   = mode,
-                             PatternActionPair_List = PatternActionPairList, 
-                             ModeNameList           = []) 
+    code = cpp_generator.do(FunctionName           = mode.name,
+                            PatternActionPair_List = PatternActionPairList, 
+                            ModeNameList           = []) 
 
     for i, elm in enumerate(code):
         if type(elm) != str: 
