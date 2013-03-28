@@ -165,7 +165,7 @@ def do(A, B):
         A_pre_sm = reverse.do(StateMachine.from_sequence("\n"))
         ## NOT: -- at this point in time we are dealing with transformed 
         ##         machines. So this has also to be transformed.
-        ## complete_f, A_pre_sm = transformation.try_this(A_pre_sm, fh=-1)
+        ## complete_f, A_pre_sm = transformation.do_state_machine(A_pre_sm)
 
     return Checker(B.pre_context_sm, A_pre_sm).do()
 

@@ -47,15 +47,11 @@ def do(Mode, IndentationSupportF, BeginOfLineSupportF):
     assert Mode.__class__.__name__ == "Mode"
 
     # -- 'on after match' action
-    on_after_match = None
-    require_terminating_zero_preparation_f = False
-    if Mode.has_code_fragment_list("on_after_match"):
-        on_after_match_str, \
-        require_terminating_zero_preparation_f = get_code(Mode.get_code_fragment_list("on_after_match"), Mode)
-        on_after_match                         = PatternActionInfo(None, CodeFragment(on_after_match_str))
+    on_after_match, \
+    require_terminating_zero_preparation_f = __prepare_on_after_match_action(Mode)
 
     # -- 'end of stream' action
-    end_of_stream_action = __prepare_end_of_stream_action(Mode, IndentationSupportF, BeginOfLineSupportF)
+    end_of_stream_action = __prepare_on_end_of_stream_action(Mode, IndentationSupportF, BeginOfLineSupportF)
 
     # -- 'on failure' action (on the event that nothing matched)
     on_failure_action    = __prepare_on_failure_action(Mode, BeginOfLineSupportF, require_terminating_zero_preparation_f)
@@ -79,11 +75,12 @@ def do(Mode, IndentationSupportF, BeginOfLineSupportF):
                                     require_terminating_zero_preparation_f=require_terminating_zero_preparation_f)
 
         pattern_info.set_action(prepared_action)
+
+    pattern_action_pair_list.append((E_ActionIDs.ON_END_OF_STREAM, end_of_stream_action))
+    pattern_action_pair_list.append((E_ActionIDs.ON_FAILURE,       on_failure_action))
+    pattern_action_pair_list.append(on_after_match)
     
-    return pattern_action_pair_list, \
-           end_of_stream_action, \
-           on_failure_action, \
-           on_after_match
+    return pattern_action_pair_list
 
 Match_Lexeme = re.compile("\\bLexeme\\b", re.UNICODE)
 def get_code(CodeFragmentList, Mode=None):
@@ -175,7 +172,16 @@ def __prepare(Mode, CodeFragment_or_CodeFragments, ThePattern,
 
     return CodeFragment(txt)
 
-def __prepare_end_of_stream_action(Mode, IndentationSupportF, BeginOfLineSupportF):
+def __prepare_on_after_match_action(Mode):
+    if not Mode.has_code_fragment_list("on_after_match"):
+        return None, False
+    on_after_match_str, \
+    require_terminating_zero_preparation_f = get_code(Mode.get_code_fragment_list("on_after_match"), Mode)
+    on_after_match                         = PatternActionInfo(E_ActionIDs.ON_AFTER_MATCH, 
+                                                               CodeFragment(on_after_match_str))
+    return on_after_match, require_terminating_zero_preparation_f
+
+def __prepare_on_end_of_stream_action(Mode, IndentationSupportF, BeginOfLineSupportF):
     if not Mode.has_code_fragment_list("on_end_of_stream"):
         # We cannot make any assumptions about the token class, i.e. whether
         # it can take a lexeme or not. Thus, no passing of lexeme here.
@@ -196,7 +202,8 @@ def __prepare_end_of_stream_action(Mode, IndentationSupportF, BeginOfLineSupport
     # RETURNS: end_of_stream_action, db 
     result = __prepare(Mode, Mode.get_code_fragment_list("on_end_of_stream"), 
                        None, EOF_ActionF=True, BeginOfLineSupportF=BeginOfLineSupportF)
-    return PatternActionInfo(None, result)
+
+    return PatternActionInfo(E_ActionIDs.ON_END_OF_STREAM, result)
 
 def __prepare_on_failure_action(Mode, BeginOfLineSupportF, require_terminating_zero_preparation_f):
     if not Mode.has_code_fragment_list("on_failure"):
@@ -210,7 +217,8 @@ def __prepare_on_failure_action(Mode, BeginOfLineSupportF, require_terminating_z
                        None, Failure_ActionF=True, 
                        BeginOfLineSupportF=BeginOfLineSupportF,
                        require_terminating_zero_preparation_f=require_terminating_zero_preparation_f) 
-    return PatternActionInfo(None, result)
+
+    return PatternActionInfo(E_ActionIDs.ON_FAILURE, result)
 
 def pretty_code(Code, Base):
     """-- Delete empty lines at the beginning

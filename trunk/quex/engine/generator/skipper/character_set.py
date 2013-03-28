@@ -98,7 +98,8 @@ def __make_loop(Mode, CharacterSet):
     dummy,               \
     txt,                 \
     upon_reload_done_adr = counter.get_core_step(tm, "me->buffer._input_p", state_machine_f, 
-                                                 BeforeGotoReloadAction = before_reload_actions(column_count_per_chunk)) 
+                                                 BeforeGotoReloadAction = before_reload_actions(column_count_per_chunk),
+                                                 OnFailureActionImplementationF=False) 
 
     return txt, column_count_per_chunk, state_machine_f, upon_reload_done_adr
 

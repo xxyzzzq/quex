@@ -4,7 +4,7 @@ from   quex.engine.misc.file_in import \
                                        get_current_line_info_number, \
                                        error_msg
 from   quex.engine.generator.code_fragment_base import CodeFragment
-from   quex.blackboard import setup as Setup
+from   quex.blackboard import setup as Setup, E_ActionIDs
 
 UserCodeFragment_OpenLinePragma = {
 #___________________________________________________________________________________
@@ -82,7 +82,8 @@ class PatternActionInfo:
         assert Action is None or \
                issubclass(Action.__class__, CodeFragment) or \
                type(Action) in [str, unicode]
-        assert (ThePattern.__class__.__name__ == "Pattern") or (ThePattern is None)
+        assert    ThePattern in E_ActionIDs \
+               or (ThePattern.__class__.__name__ == "Pattern") or (ThePattern is None)
 
         self.__pattern = ThePattern
         if type(Action) in [str, unicode]: self.__action = CodeFragment(Action)

@@ -12,6 +12,7 @@ import quex.engine.analyzer.core                   as     analyzer_generator
 import quex.output.cpp.action_preparation          as     action_preparation
 import quex.output.cpp.counter                     as     counter
 from   quex.blackboard                             import E_StateIndices, \
+                                                          E_ActionIDs, \
                                                           setup as Setup
 
 def do(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
@@ -27,33 +28,23 @@ def do(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
     #     'get_code()' happens. During parsing a 'GeneratedCode' object
     #     has been generated. When its 'get_code()' function is called,
     #     the skipper/indentation counter generation function is called.
-    pattern_action_pair_list, \
-    on_end_of_stream_action,  \
-    on_failure_action,        \
-    on_after_match            = action_preparation.do(Mode, 
-                                                      IndentationSupportF, 
-                                                      BeginOfLineSupportF)
+    pattern_action_pair_list = action_preparation.do(Mode, 
+                                                     IndentationSupportF, 
+                                                     BeginOfLineSupportF)
 
-    generator = Generator(Mode                   = Mode, 
-                          PatternActionPair_List = pattern_action_pair_list, 
-                          Action_OnEndOfStream   = on_end_of_stream_action, 
-                          Action_OnFailure       = on_failure_action, 
-                          Action_OnAfterMatch    = on_after_match, 
-                          ModeNameList           = ModeNameList)
-    core_txt = _do(generator)
+    core_txt   = _do(Mode, pattern_action_pair_list, ModeNameList)
 
     # (*) Generate the counter first!
     #     (It may implement a state machine with labels and addresses
     #      which are not relevant for the main analyzer function.)
-    init_address_handling()
-    variable_db.init()
     counter_txt = _counter(Mode)
 
     return counter_txt + core_txt
 
-def _do(generator):
-    # (*) Initialize the label and variable trackers
-    variable_db.require("input") 
+def _do(Mode, PatternActionPair_List, ModeNameList):
+    generator = Generator(Mode                   = Mode, 
+                          PatternActionPair_List = PatternActionPair_List, 
+                          ModeNameList           = ModeNameList)
 
     # (*) Pre Context State Machine
     #     (If present: All pre-context combined in single backward analyzer.)
@@ -82,6 +73,9 @@ def _do(generator):
     return "".join(result)
 
 def _counter(Mode):
+    init_address_handling()
+    variable_db.init()
+
     if not Mode.default_character_counter_required_f():
         return ""
 
@@ -110,17 +104,10 @@ def _counter(Mode):
 
 class Generator(GeneratorBase):
 
-    def __init__(self, Mode, PatternActionPair_List,
-                 Action_OnEndOfStream, Action_OnFailure, Action_OnAfterMatch, ModeNameList): 
-
+    def __init__(self, Mode, PatternActionPair_List, ModeNameList):
         # Ensure that the language database as been setup propperly
         assert isinstance(Setup.language_db, dict)
         assert len(Setup.language_db) != 0
-
-        # -- prepare the source code fragments for the generator
-        self.on_end_of_stream_action = Action_OnEndOfStream
-        self.on_failure_action       = Action_OnFailure
-        self.on_after_match          = Action_OnAfterMatch
 
         self.state_machine_name = Mode.name
         self.language_db        = Setup.language_db
@@ -133,106 +120,39 @@ class Generator(GeneratorBase):
 
         if len(self.pre_context_sm_list) == 0: return []
 
-        assert len(self.pre_context_sm.get_orphaned_state_index_list()) == 0
 
-        txt = []
-        if Setup.comment_state_machine_f:
-            LanguageDB.ML_COMMENT(txt, 
-                                  "BEGIN: PRE-CONTEXT STATE MACHINE\n"             + \
-                                  self.pre_context_sm.get_string(NormalizeF=False) + \
-                                  "END: PRE-CONTEXT STATE MACHINE") 
-            txt.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
-
-        analyzer = analyzer_generator.do(self.pre_context_sm, engine.BACKWARD_PRE_CONTEXT)
-        LanguageDB.REPLACE_INDENT(analyzer)
-        msg      = state_machine_coder.do(analyzer)
-        txt.extend(msg)
+        txt, dummy = code_state_machine(self.pre_context_sm, engine.BACKWARD_PRE_CONTEXT) 
 
         txt.append("\n%s" % LanguageDB.LABEL(E_StateIndices.END_OF_PRE_CONTEXT_CHECK))
         # -- set the input stream back to the real current position.
         #    during backward lexing the analyzer went backwards, so it needs to be reset.
         txt.append("    %s\n" % LanguageDB.INPUT_P_TO_LEXEME_START())
 
-        for sm_id in self.pre_context_sm_id_list:
-            variable_db.require("pre_context_%i_fulfilled_f", Index = sm_id)
-
         return txt
 
     def code_main_state_machine(self):
         assert len(self.sm.get_orphaned_state_index_list()) == 0
 
-        LanguageDB = self.language_db 
-        txt        = []
+        LanguageDB    = self.language_db 
+        txt, analyzer = code_state_machine(self.sm, engine.FORWARD, self.action_db, 
+                                           self.state_machine_name, 
+                                           self.pre_context_sm_id_list)
 
-        # -- [optional] comment state machine transitions 
-        if Setup.comment_state_machine_f:
-            LanguageDB.ML_COMMENT(txt, 
-                                  "BEGIN: STATE MACHINE\n"             + \
-                                  self.sm.get_string(NormalizeF=False) + \
-                                  "END: STATE MACHINE") 
-            txt.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
-
-        # -- implement the state machine itself
-        analyzer           = analyzer_generator.do(self.sm, engine.FORWARD)
-        state_machine_code = state_machine_coder.do(analyzer)
-        LanguageDB.REPLACE_INDENT(state_machine_code)
-        txt.extend(state_machine_code)
-
-        # -- terminal states: execution of pattern actions  
-        terminal_code = LanguageDB["$terminal-code"](self.state_machine_name,
-                                                     self.action_db, 
-                                                     variable_db,
-                                                     self.pre_context_sm_id_list,
-                                                     self.on_failure_action, 
-                                                     self.on_end_of_stream_action, 
-                                                     self.on_after_match, 
-                                                     Setup) 
-        
-        txt.extend(terminal_code)
-
-        N = len(set(analyzer.position_register_map.values()))
-        if len(analyzer.position_register_map) == 0:
-            variable_db.require("position",          Initial = "(void*)0x0", Type = "void*")
-            variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % N)
-        else:
-            variable_db.require_array("position", ElementN = N,
-                                      Initial  = "{ " + ("0, " * (N - 1) + "0") + "}")
-            variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % N)
-    
-        if analyzer.last_acceptance_variable_required():
-            variable_db.require("last_acceptance")
+        # Number of different entries in the position register map
+        self.__position_register_n                 = len(set(analyzer.position_register_map.itervalues()))
+        self.__last_acceptance_variable_required_f = analyzer.last_acceptance_variable_required()
 
         # -- reload definition (forward, backward, init state reload)
-        code = LanguageDB.RELOAD()
-        txt.extend(code)
+        txt.extend(LanguageDB.RELOAD())
 
         return txt
 
     def code_backward_input_position_detection(self):
         result = []
         for sm in self.bipd_sm_list:
-            result.extend(self.__code_backward_input_position_detection_core(sm))
+            txt, dummy = code_state_machine(sm, engine.BACKWARD_INPUT_POSITION) 
+            result.extend(txt)
         return result
-
-    def __code_backward_input_position_detection_core(self, SM):
-        LanguageDB = Setup.language_db
-        assert len(SM.get_orphaned_state_index_list()) == 0
-        
-        txt = []
-        if Setup.comment_state_machine_f: 
-            self.language_db.ML_COMMENT(txt, 
-                                         "BEGIN: BACKWARD DETECTOR STATE MACHINE\n" + \
-                                         SM.get_string(NormalizeF=False)            + \
-                                         "\nEND: BACKWARD DETECTOR STATE MACHINE")
-            txt.append("\n")
-
-        analyzer      = analyzer_generator.do(SM, engine.BACKWARD_INPUT_POSITION)
-        function_body = state_machine_coder.do(analyzer)
-        LanguageDB.REPLACE_INDENT(function_body)
-
-        txt.extend(function_body)
-
-        return txt
 
     def state_router(self):
         # (*) Determine required labels and variables
@@ -242,11 +162,33 @@ class Generator(GeneratorBase):
         return [ state_router_generator.do(routed_state_info_list) ]
 
     def variable_definitions(self):
+        # Variable to store the current input
+        variable_db.require("input") 
+
+        # Pre-Context Flags 
+        for sm_id in self.pre_context_sm_id_list:
+            variable_db.require("pre_context_%i_fulfilled_f", Index = sm_id)
+
+        # Position registers
+        if self.__position_register_n == 0:
+            variable_db.require("position",          Initial = "(void*)0x0", Type = "void*")
+            variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % self.__position_register_n)
+        else:
+            variable_db.require_array("position", ElementN = self.__position_register_n,
+                                      Initial  = "{ " + ("0, " * (self.__position_register_n - 1) + "0") + "}")
+            variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % self.__position_register_n)
+    
+        # Storage of 'last acceptance'
+        if self.__last_acceptance_variable_required_f:
+            variable_db.require("last_acceptance")
+
+        # Target state index
         variable_db.require("target_state_index", Condition_ComputedGoto=False) 
 
+        # Variables that tell where to go after reload success and reload failure
         if is_label_referenced("$reload-FORWARD") or is_label_referenced("$reload-BACKWARD"):
-            variable_db.require("target_state_else_index")
-            variable_db.require("target_state_index")
+            variable_db.require("target_state_else_index")  # upon reload failure
+            variable_db.require("target_state_index")       # upon reload success
 
         # Following function refers to the global 'variable_db'
         return self.language_db.VARIABLE_DEFINITIONS(variable_db)
@@ -265,7 +207,7 @@ class Generator(GeneratorBase):
                                                                function_body, 
                                                                self.mode_name_list) 
 
-        txt  = [ self.language_db["$header-definitions"](self.language_db, self.on_after_match) ]
+        txt  = [ self.language_db["$header-definitions"](self.language_db, self.action_db[E_ActionIDs.ON_AFTER_MATCH]) ]
         txt += get_plain_strings(analyzer_function)
 
         Generator.assert_txt(txt)
@@ -286,3 +228,33 @@ class Generator(GeneratorBase):
 def frame_this(Code):
     return Setup.language_db["$frame"](Code, Setup)
 
+
+def code_state_machine(sm, EngineType, ActionDB=None, StateMachineName=None, PreContextID_List=None): 
+    assert ActionDB is None or (PreContextID_List is not None and StateMachineName is not None)
+    assert len(sm.get_orphaned_state_index_list()) == 0
+
+    LanguageDB = Setup.language_db
+
+    txt = []
+    # -- [optional] comment state machine transitions 
+    if Setup.comment_state_machine_f:
+        LanguageDB.ML_COMMENT(txt, 
+                              "BEGIN: STATE MACHINE\n"             + \
+                              self.sm.get_string(NormalizeF=False) + \
+                              "END: STATE MACHINE") 
+        txt.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
+
+    # -- implement the state machine itself
+    analyzer           = analyzer_generator.do(sm, EngineType)
+    state_machine_code = state_machine_coder.do(analyzer)
+    LanguageDB.REPLACE_INDENT(state_machine_code)
+    txt.extend(state_machine_code)
+
+    if ActionDB is not None:
+        # -- terminal states: execution of pattern actions  
+        terminal_code = LanguageDB["$terminal-code"](StateMachineName, ActionDB, 
+                                                     PreContextID_List, Setup) 
+        
+        txt.extend(terminal_code)
+
+    return txt, analyzer

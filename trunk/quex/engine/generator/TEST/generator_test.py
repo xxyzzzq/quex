@@ -22,7 +22,7 @@ from   quex.engine.generator.languages.variable_db import VariableDB
 import quex.engine.generator.languages.variable_db as     variable_db
 import quex.input.regular_expression.engine        as     regex
 #
-from   quex.blackboard import setup as Setup
+from   quex.blackboard import setup as Setup, E_ActionIDs
 
 from   copy import deepcopy
 # Switch: Removal of source and executable file
@@ -407,14 +407,13 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
         pap.pattern().mount_pre_context_sm()
         pap.pattern().cut_character_list(character_list)
 
-    generator = cpp_generator.Generator(Mode                   = mode,
-                                        PatternActionPair_List = PatternActionPairList, 
-                                        Action_OnFailure       = PatternActionInfo(None, on_failure_action), 
-                                        Action_OnEndOfStream   = PatternActionInfo(None, on_failure_action), 
-                                        Action_OnAfterMatch    = PatternActionInfo(None, ""),
-                                        ModeNameList           = []) 
+    PatternActionPairList.append(PatternActionInfo(E_ActionIDs.ON_FAILURE,       on_failure_action))
+    PatternActionPairList.append(PatternActionInfo(E_ActionIDs.ON_END_OF_STREAM, on_failure_action)) 
+    PatternActionPairList.append(PatternActionInfo(E_ActionIDs.ON_AFTER_MATCH,   ""))
 
-    code = cpp_generator._do(generator)
+    code = cpp_generator._do(Mode                   = mode,
+                             PatternActionPair_List = PatternActionPairList, 
+                             ModeNameList           = []) 
 
     for i, elm in enumerate(code):
         if type(elm) != str: 

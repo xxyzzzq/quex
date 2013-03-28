@@ -4,9 +4,9 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* 
 {
 #   define self (*me)
     const QUEX_TYPE_CHARACTER* iterator    = (const QUEX_TYPE_CHARACTER*)0;
-
     __QUEX_IF_COUNT_SHIFT_VALUES();
 
+    __quex_assert(LexemeBegin <= LexemeEnd);
     for(iterator=LexemeBegin; iterator < LexemeEnd; ) {
         if( (*(iterator)) < 0x3F ) {
             switch( (*(iterator)) ) {

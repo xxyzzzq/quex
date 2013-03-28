@@ -35,14 +35,23 @@ address.init_address_handling()
 
 if "--hwut-info" in sys.argv:
     print "Single State: Transition Code Generation;"
-    print "CHOICES: A, B, C;"
+    print "CHOICES: A, B, C, A-UTF8, B-UTF8, C-UTF8;"
     sys.exit(0)
 
-state = State()
+choice, codec = {
+        "A": ("A", ""),
+        "B": ("B", ""),
+        "C": ("C", ""),
+        "A-UTF8": ("A", "UTF8"),
+        "B-UTF8": ("B", "UTF8"),
+        "C-UTF8": ("C", "UTF8"),
+}[sys.argv[1]]
+
+state      = State()
 StateIndex = 6666L
 
 target_state_index_list = []
-if "A" in sys.argv:
+if choice == "A":
     state.add_transition(NumberSet([Interval(10,20),    Interval(195,196)]),  1L)
     state.add_transition(NumberSet([Interval(51,70),    Interval(261,280)]),  2L)
     state.add_transition(NumberSet([Interval(90,100),   Interval(110,130)]),  3L)
@@ -55,7 +64,7 @@ if "A" in sys.argv:
     target_state_index_list = map(long, [1, 2, 3, 4, 5, 6, 7, 8])
     interval_end = 300
 
-elif "B" in sys.argv:
+elif choice == "B":
     interval_start = 0
     interval_end   = -1
     # initialize pseudo random generator: produces always the same numbers.
@@ -71,7 +80,7 @@ elif "B" in sys.argv:
         state.add_transition(Interval(interval_start, interval_end), target_state_index)
         interval_start = interval_end
 
-elif "C" in sys.argv:
+elif choice == "C":
     interval_start = 0
     interval_end   = -1
     # initialize pseudo random generator: produces always the same numbers.
@@ -128,39 +137,63 @@ function.append("\n}\n")
 
 main_txt = """
 
+/* From '.begin' the target map targets to '.target' until the next '.begin' is
+ * reached.                                                                  */
+typedef struct { int begin; int target; } entry_t;
+
 #include <stdio.h>
 int
 main(int argc, char** argv) {
-#   define      InputSize                $$N$$ 
-    const int   input[InputSize]       = { $$CHARS$$ };
-    const int   expectation[InputSize] = { $$EXPECT$$ };
-    const int*  InputEnd = (const int*)input + InputSize;
-    int         result = 0;
-    const int*  iterator = 0;
-    const int*  eiterator = 0;
-
-    for(iterator = input, eiterator = expectation; 
-        iterator != InputEnd; 
-        ++iterator, ++eiterator) {
-        result = transition(*iterator);
-        printf("%i %i %i\\n", *iterator, result, *eiterator);
-        if( result != *eiterator ) {
-            printf("ERROR");
-            break;
+    const entry_t db[]      = {
+$$ENTRY_LIST$$
+    };
+    const entry_t* db_last  = &db[sizeof(db)/sizeof(entry_t) - 1];
+    const entry_t* iterator = &db[0];
+    int            input    = -1;
+    int            output   = -1;
+    int            target   = -1;
+    
+    printf("No output is good output!\\n");
+    for(iterator=&db[0]; iterator != db_last; ) {
+        input  = iterator->begin;
+        target = iterator->target;
+        ++iterator;
+        for(; input != iterator->begin; ++input) {
+            output = transition(input);
+            if( output != target ) {
+                printf("input: 0x%06X; output: %i; expected: %i;   ERROR\\n",
+                       (int)input, (int)output, (int)target);
+                return 0;
+            }
         }
     }
+    printf("Intervals:  %i\\n", (int)(iterator - &db[0]));
+    printf("Characters: %i\\n", (int)input);
+    printf("Oll Korrekt\\n");
 }
 """
 
-# Prepare the main function
-input_list     = range(interval_end)
-input_array    = repr(input_list)[1:-1]
-expected_list  = [ state.transitions().get_resulting_target_state_index(number) for number in input_list ]
-expected_array = repr([ -1 if x is None else int(x) for x in expected_list])[1:-1]
+def get_target(X):
+    target = state.transitions().get_resulting_target_state_index(X)
+    if target is None: return -1
+    else:              return target
 
-main_txt = main_txt.replace("$$N$$", repr(len(input_list)))
-main_txt = main_txt.replace("$$CHARS$$", input_array)
-main_txt = main_txt.replace("$$EXPECT$$", expected_array)
+# Prepare the main function
+begin  = 0
+target = get_target(begin)
+entry_list = [ (begin, target) ]
+for x in range(interval_end):
+    new_target = get_target(x)
+    if new_target != target:
+        target = new_target
+        entry_list.append((x, target))
+entry_list.append((interval_end, -1))
+entry_list.append((0x1FFFF, -1))
+ 
+expected_array = [ "        { 0x%06X, %i },\n" % (begin, target) for begin, target in entry_list ]
+
+
+main_txt = main_txt.replace("$$ENTRY_LIST$$", "".join(expected_array))
 
 txt = function + [ main_txt ]
 Setup.language_db.REPLACE_INDENT(txt)
@@ -171,7 +204,7 @@ fh.close()
 os.system("gcc test.c -o test")
 os.system("./test")
 os.remove("./test")
-os.remove("./test.c")
+#os.remove("./test.c")
 
 
 
