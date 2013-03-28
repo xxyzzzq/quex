@@ -6,7 +6,6 @@ from   quex.blackboard import E_ActionIDs
 
 from   itertools import ifilter
 
-
 class GeneratorBase:
     def __init__(self, PatternActionPair_List, StateMachineName):
         assert type(PatternActionPair_List) == list
