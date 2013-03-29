@@ -547,7 +547,7 @@ def __terminal_router(TerminalFailureRef, TerminalFailureDef, SimpleF):
           __terminal_router_epilog_str, 
     ])
 
-def __terminal_states(StateMachineName, action_db, PreConditionIDList, 
+def __terminal_states(action_db, PreConditionIDList, 
                       Setup, 
                       SimpleF=False, 
                       OnFailureActionImplementationF=True):
