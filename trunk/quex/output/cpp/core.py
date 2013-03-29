@@ -32,7 +32,9 @@ def do_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
                                                      IndentationSupportF, 
                                                      BeginOfLineSupportF)
 
-    core_txt   = do(Mode.name, pattern_action_pair_list, ModeNameList)
+    core_txt   = do(pattern_action_pair_list, 
+                    FunctionPrefix = Mode.name, 
+                    ModeNameList   = ModeNameList)
 
     # (*) Generate the counter first!
     #     (It may implement a state machine with labels and addresses
@@ -41,10 +43,11 @@ def do_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
 
     return counter_txt + core_txt
 
-def do(FunctionName, PatternActionPair_List, ModeNameList):
-    generator = Generator(FunctionName           = FunctionName, 
-                          PatternActionPair_List = PatternActionPair_List, 
-                          ModeNameList           = ModeNameList)
+def do(PatternActionPair_List, FunctionPrefix=None, ModeNameList=None):
+    """FunctionPrefix != None => A whole function is generated.
+       else                   => Only a function body is produced.
+    """
+    generator = Generator(PatternActionPair_List) 
 
     # (*) Pre Context State Machine
     #     (If present: All pre-context combined in single backward analyzer.)
@@ -67,10 +70,20 @@ def do(FunctionName, PatternActionPair_List, ModeNameList):
     variable_definitions = generator.variable_definitions()
 
     # (*) Putting it all together
-    result               = generator.analyzer_function(pre_context, main, bipd, 
-                                                       state_router, 
-                                                       variable_definitions)
-    return "".join(result)
+    function_body = []
+    function_body.extend(pre_context)  # implementation of pre-contexts (if there are some)
+    function_body.extend(main)         # main pattern matcher
+    function_body.extend(bipd)         # (seldom != empty; only for pseudo-ambiguous post contexts)
+    function_body.extend(state_router) # route to state by index (only if no computed gotos)
+    if FunctionPrefix is not None:
+        result = Generator.code_function(generator.action_db, 
+                                         FunctionPrefix, 
+                                         function_body,
+                                         variable_definitions, 
+                                         ModeNameList)
+        return "".join(result)
+    else:
+        return function_body, variable_definitions
 
 def do_counter(Mode):
     init_address_handling()
@@ -104,11 +117,8 @@ def do_counter(Mode):
 
 class Generator(GeneratorBase):
 
-    def __init__(self, FunctionName, PatternActionPair_List, ModeNameList):
-        self.function_name  = FunctionName
-        self.mode_name_list = ModeNameList
-
-        GeneratorBase.__init__(self, PatternActionPair_List, self.function_name)
+    def __init__(self, PatternActionPair_List):
+        GeneratorBase.__init__(self, PatternActionPair_List)
 
     def code_pre_context_state_machine(self):
         LanguageDB = Setup.language_db
@@ -126,12 +136,10 @@ class Generator(GeneratorBase):
         return txt
 
     def code_main_state_machine(self):
-        assert len(self.sm.get_orphaned_state_index_list()) == 0
-
         LanguageDB    = Setup.language_db 
-        txt, analyzer = Generator.code_state_machine(self.sm, engine.FORWARD, self.action_db, 
-                                                     self.function_name, 
-                                                     self.pre_context_sm_id_list)
+        txt, analyzer = Generator.code_state_machine(self.sm, engine.FORWARD)
+
+        txt.extend(Generator.code_terminals(self.action_db, self.pre_context_sm_id_list))
 
         # Number of different entries in the position register map
         self.__position_register_n                 = len(set(analyzer.position_register_map.itervalues()))
@@ -188,23 +196,17 @@ class Generator(GeneratorBase):
         # Following function refers to the global 'variable_db'
         return Setup.language_db.VARIABLE_DEFINITIONS(variable_db)
 
-    def analyzer_function(self, PreContext, Main, BIPD, StateRouter, VariableDefs):
-        function_body = []
-        function_body.extend(PreContext)  # implementation of pre-contexts (if there are some)
-        function_body.extend(Main)        # main pattern matcher
-        function_body.extend(BIPD)        # (seldom != empty; only for pseudo-ambiguous post contexts)
-        function_body.extend(StateRouter) # route to state by index (only if no computed gotos)
-
-        # (*) Pack Pre-Context and Core State Machine into a single function
-        analyzer_function = Setup.language_db["$analyzer-func"](self.function_name, 
-                                                               Setup,
-                                                               VariableDefs, 
-                                                               function_body, 
-                                                               self.mode_name_list) 
+    @staticmethod
+    def code_function(ActionDB, FunctionPrefix, FunctionBody, VariableDefs, ModeNameList):
+        analyzer_function = Setup.language_db["$analyzer-func"](FunctionPrefix,
+                                                                Setup,
+                                                                VariableDefs, 
+                                                                FunctionBody, 
+                                                                ModeNameList) 
 
         txt  = [ 
             Setup.language_db["$header-definitions"](Setup.language_db, 
-                                                     self.action_db[E_ActionIDs.ON_AFTER_MATCH]) 
+                                                     ActionDB[E_ActionIDs.ON_AFTER_MATCH]) 
         ]
         txt.extend(get_plain_strings(analyzer_function))
 
@@ -213,8 +215,7 @@ class Generator(GeneratorBase):
         return txt
 
     @staticmethod
-    def code_state_machine(sm, EngineType, ActionDB=None, StateMachineName=None, PreContextID_List=None): 
-        assert ActionDB is None or (PreContextID_List is not None and StateMachineName is not None)
+    def code_state_machine(sm, EngineType): 
         assert len(sm.get_orphaned_state_index_list()) == 0
 
         LanguageDB = Setup.language_db
@@ -234,14 +235,15 @@ class Generator(GeneratorBase):
         LanguageDB.REPLACE_INDENT(state_machine_code)
         txt.extend(state_machine_code)
 
-        if ActionDB is not None:
-            # -- terminal states: execution of pattern actions  
-            terminal_code = LanguageDB["$terminal-code"](StateMachineName, ActionDB, 
-                                                         PreContextID_List, Setup) 
-            
-            txt.extend(terminal_code)
-
         return txt, analyzer
+
+    @staticmethod
+    def code_terminals(ActionDB, PreContextID_List=None):
+        """Implement the 'terminal', i.e. the actions which are performed
+        once pattern have matched.
+        """
+        LanguageDB = Setup.language_db
+        return LanguageDB["$terminal-code"](ActionDB, PreContextID_List, Setup) 
 
     @staticmethod
     def assert_txt(txt):

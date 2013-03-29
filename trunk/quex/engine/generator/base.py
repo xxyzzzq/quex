@@ -7,12 +7,12 @@ from   quex.blackboard import E_ActionIDs
 from   itertools import ifilter
 
 class GeneratorBase:
-    def __init__(self, PatternActionPair_List, StateMachineName):
+    def __init__(self, PatternActionPair_List):
         assert type(PatternActionPair_List) == list
         assert map(lambda elm: elm.__class__ == PatternActionInfo, PatternActionPair_List) \
                == [ True ] * len(PatternActionPair_List)
 
-        self.state_machine_name        = StateMachineName
+        # self.state_machine_name = StateMachineName
 
         # -- setup of state machine lists and id lists
         self.__extract_special_lists(PatternActionPair_List)
