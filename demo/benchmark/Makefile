@@ -115,7 +115,7 @@ out/quex_hey_scan.cpp: in/quex/hey.qx $(QUEX_CORE)
 		 --engine                 quex_scan      \
 		 --no-string-accumulator                 \
 		 --token-id-offset        3              \
-		 --token-id-prefix           TKN_           \
+		 --token-id-prefix        TKN_           \
 	     --token-policy           single         
 	mv out/quex_scan.cpp out/quex_hey_scan.cpp
 	# ./move_it.sh hey
@@ -124,7 +124,9 @@ out/flex_scan.c:  in/flex/c.lex
 	flex -o $@ $< 
 
 out/re2c_scan.c:  in/re2c/c-re2c.in
-	re2c -F -si $< | sed -e 's/\#line[^\n]*//g' > $@
+	# I was told that 'gcc version > 4.6' produces better code for 
+	# branch tables than 're2c'. Thus, the option '-si' has been taken out.
+	re2c -F $< | sed -e 's/\#line[^\n]*//g' > $@
 	
 # (*) HELPERS __________________________________________________________________
 clean:	
