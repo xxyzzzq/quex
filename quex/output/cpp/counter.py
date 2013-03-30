@@ -482,16 +482,23 @@ def _state_machine_coder_do(sm, action_db, BeforeGotoReloadAction, OnFailureActi
     analyzer     = analyzer_generator.do(sm, engine_type)
     sm_txt       = state_machine_coder.do(analyzer, BeforeGotoReloadAction)
 
+    if OnFailureActionImplementationF:
+        on_failure_txt = [     
+            "\n", 
+            1, "QUEX_ERROR_EXIT(\"State machine failed.\");\n" 
+        ]
+        action_db[E_ActionIDs.ON_FAILURE] = PatternActionInfo(E_ActionIDs.ON_FAILURE, CodeFragment(on_failure_txt))
+
+    assert E_ActionIDs.ON_AFTER_MATCH not in action_db
+    if OnFailureActionImplementationF == False:
+        assert E_ActionIDs.ON_FAILURE not in action_db
+
     # 'Terminals' are the counter actions
     terminal_txt = LanguageDB["$terminal-code"]("Counter",
                                                 action_db, 
                                                 PreConditionIDList=None,
-                                                OnFailureAction=None, 
-                                                OnEndOfStreamAction=None, 
-                                                OnAfterMatchAction=None, 
                                                 Setup=Setup, 
-                                                SimpleF=True,
-                                                OnFailureActionImplementationF=OnFailureActionImplementationF) 
+                                                SimpleF=True)
 
     txt = sm_txt + terminal_txt
     return txt

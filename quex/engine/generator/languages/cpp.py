@@ -362,10 +362,7 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
     goto $$GOTO_START$$;
 """
 
-def __lexeme_macro_definitions(LanguageDB, Setup, SimpleF):
-    if SimpleF:
-        return ""
-
+def __lexeme_macro_definitions(LanguageDB, Setup):
     lexeme_null_object_name = "QUEX_NAME(LexemeNullObject)"
     if Setup.external_lexeme_null_object != "":
         lexeme_null_object_name = Setup.external_lexeme_null_object
@@ -438,34 +435,14 @@ def __jump_to_backward_input_position_detector(BIPD_SM, Setup):
     bipd_str += "%s:\n" % LanguageDB.LABEL_NAME_BACKWARD_INPUT_POSITION_RETURN(bipd_id) 
     return bipd_str
 
-def __terminal_on_failure(LanguageDB, OnFailureAction, TerminalFailureDef, SimpleF):
-    if SimpleF:
-        return [     "\n", 
-                     "%s: /* TERMINAL: FAILURE */\n" % TerminalFailureDef,
-                  1, "QUEX_ERROR_EXIT(\"State machine failed.\");\n" 
-        ]
-
-
+def __terminal_on_failure(OnFailureAction, TerminalFailureDef):
     if OnFailureAction is None:
         return []
 
     return [
            "\n\n",
            "%s: /* TERMINAL: FAILURE */\n" % TerminalFailureDef,
-        1,     "if(QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {\n",
-        2,         "/* Init state is going to detect 'input == buffer limit code', and\n",
-        2,         " * enter the reload procedure, which will decide about 'end of stream'. */\n",
-        1,     "} else {\n",
-        2,         "/* In init state 'input = *input_p' and we need to increment\n",
-        2,         " * in order to avoid getting stalled. Else, input = *(input_p - 1),\n",
-        2,         " * so 'input_p' points already to the next character.                   */\n",
-        2,         "if( me->buffer._input_p == me->buffer._lexeme_start_p ) {\n",
-        3,               "/* Step over non-matching character */\n",
-        3,               "%s\n" % LanguageDB.INPUT_P_INCREMENT(),
-        2,         "}\n",
-        1,     "}\n",
-        1,     "%s\n"     % OnFailureAction.action().get_code_string(), 
-        1,     "goto %s;" % get_label("$re-start-2", U=True)
+        0, "%s\n" % OnFailureAction.action().get_code_string(), 
     ]
 
 def __terminal_on_end_of_stream(LanguageDB, OnEndOfStreamAction, TerminalEndOfStreamDef):
@@ -489,8 +466,8 @@ $$ON_AFTER_MATCH$$
 #   endif
 """
 
-def __on_after_match_then_return(OnAfterMatchAction, SimpleF):
-    if SimpleF or OnAfterMatchAction is None:
+def __on_after_match_then_return(OnAfterMatchAction):
+    if OnAfterMatchAction is None:
         return "", ""
 
     on_after_match_str = OnAfterMatchAction.action().get_code_string()
@@ -507,11 +484,8 @@ def __on_after_match_then_return(OnAfterMatchAction, SimpleF):
 
     return return_preparation, on_after_match_str
 
-def __reentry_preparation(LanguageDB, PreConditionIDList, OnAfterMatchStr, TerminalFailureRef, SimpleF):
+def __reentry_preparation(LanguageDB, PreConditionIDList, OnAfterMatchStr, TerminalFailureRef):
     """Reentry preperation (without returning from the function."""
-    if SimpleF:
-        return ""
-
     # (*) Unset all pre-context flags which may have possibly been set
     if PreConditionIDList is None:
         unset_pre_context_flags_str = ""
@@ -531,10 +505,7 @@ def __reentry_preparation(LanguageDB, PreConditionIDList, OnAfterMatchStr, Termi
           ["$$TERMINAL_FAILURE-REF$$",                   TerminalFailureRef],
     ])
 
-def __terminal_router(TerminalFailureRef, TerminalFailureDef, SimpleF):
-    if SimpleF:
-        return ""
-
+def __terminal_router(TerminalFailureRef, TerminalFailureDef):
     return Address("$terminal-router", None, [
           blue_print(__terminal_router_prolog_str,
           [
@@ -548,11 +519,10 @@ def __terminal_router(TerminalFailureRef, TerminalFailureDef, SimpleF):
     ])
 
 def __terminal_states(action_db, PreConditionIDList, 
-                      Setup, 
-                      SimpleF=False, 
-                      OnFailureActionImplementationF=True):
+                      Setup, SimpleF=False):
     """NOTE: During backward-lexing, for a pre-context, there is not need for terminal
              states, since only the flag 'pre-context fulfilled is raised.
+
     """      
     LanguageDB = Setup.language_db
 
@@ -576,24 +546,26 @@ def __terminal_states(action_db, PreConditionIDList,
             on_end_of_stream_str = __terminal_on_end_of_stream(LanguageDB, info, 
                                                                terminal_end_of_stream_def)
 
-        elif pattern_id == E_ActionIDs.ON_FAILURE and OnFailureActionImplementationF:
-            on_failure_str       = __terminal_on_failure(LanguageDB, info, 
-                                                         terminal_failure_def, SimpleF)
+        elif pattern_id == E_ActionIDs.ON_FAILURE:
+            on_failure_str       = __terminal_on_failure(info, terminal_failure_def)
 
         elif pattern_id == E_ActionIDs.ON_AFTER_MATCH:
             on_after_match_then_return_str, \
-            on_after_match_str   = __on_after_match_then_return(info, SimpleF)
+            on_after_match_str   = __on_after_match_then_return(info)
 
         else:
             pattern_terminals_code.extend(__pattern_terminal_code(pattern_id, info, SimpleF, Setup))
 
-    lexeme_macro_definition_str = __lexeme_macro_definitions(LanguageDB, Setup, SimpleF)
+    if SimpleF:
+        lexeme_macro_definition_str = ""
+        reentry_preparation_str     = ""
+        terminal_router             = ""
+    else:
+        lexeme_macro_definition_str = __lexeme_macro_definitions(LanguageDB, Setup)
 
-
-    reentry_preparation_str     = __reentry_preparation(LanguageDB, PreConditionIDList, 
-                                                        on_after_match_str, terminal_failure_ref, SimpleF)
-
-    terminal_router             = __terminal_router(terminal_failure_ref, terminal_failure_def, SimpleF)
+        reentry_preparation_str     = __reentry_preparation(LanguageDB, PreConditionIDList, 
+                                                            on_after_match_str, terminal_failure_ref)
+        terminal_router             = __terminal_router(terminal_failure_ref, terminal_failure_def)
 
     txt = []
     txt.append(terminal_router)

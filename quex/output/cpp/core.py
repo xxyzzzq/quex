@@ -32,9 +32,9 @@ def do_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
                                                      IndentationSupportF, 
                                                      BeginOfLineSupportF)
 
-    core_txt   = do(pattern_action_pair_list, 
-                    FunctionPrefix = Mode.name, 
-                    ModeNameList   = ModeNameList)
+    core_txt = do(pattern_action_pair_list, 
+                  FunctionPrefix = Mode.name, 
+                  ModeNameList   = ModeNameList)
 
     # (*) Generate the counter first!
     #     (It may implement a state machine with labels and addresses
@@ -43,9 +43,22 @@ def do_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
 
     return counter_txt + core_txt
 
-def do(PatternActionPair_List, FunctionPrefix=None, ModeNameList=None):
-    """FunctionPrefix != None => A whole function is generated.
-       else                   => Only a function body is produced.
+def do(PatternActionPair_List, FunctionPrefix, ModeNameList):
+    function_body, \
+    variable_definitions, \
+    action_db             = do_core(PatternActionPair_List)
+
+    result = Generator.code_function(action_db, 
+                                     FunctionPrefix, 
+                                     function_body,
+                                     variable_definitions, 
+                                     ModeNameList)
+    return "".join(result)
+
+def do_core(PatternActionPair_List):
+    """The initialization of addresses and variables is done outside 
+       this function, since other components may influence it for the
+       construction of a mode.
     """
     generator = Generator(PatternActionPair_List) 
 
@@ -75,15 +88,8 @@ def do(PatternActionPair_List, FunctionPrefix=None, ModeNameList=None):
     function_body.extend(main)         # main pattern matcher
     function_body.extend(bipd)         # (seldom != empty; only for pseudo-ambiguous post contexts)
     function_body.extend(state_router) # route to state by index (only if no computed gotos)
-    if FunctionPrefix is not None:
-        result = Generator.code_function(generator.action_db, 
-                                         FunctionPrefix, 
-                                         function_body,
-                                         variable_definitions, 
-                                         ModeNameList)
-        return "".join(result)
-    else:
-        return function_body, variable_definitions
+
+    return function_body, variable_definitions, generator.action_db
 
 def do_counter(Mode):
     init_address_handling()

@@ -20,6 +20,7 @@ from   quex.input.files.counter_setup          import CounterDB_construct_this
 # import quex.engine.generator.skipper.core          as skipper
 from   quex.engine.generator.languages.variable_db import VariableDB
 import quex.engine.generator.languages.variable_db as     variable_db
+from   quex.engine.generator.languages.address     import get_label
 import quex.input.regular_expression.engine        as     regex
 #
 from   quex.blackboard import setup as Setup, E_ActionIDs
@@ -354,7 +355,9 @@ def create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFall
 
 def create_state_machine_function(PatternActionPairList, PatternDictionary, 
                                   BufferLimitCode, SecondModeF=False):
-    on_failure_action = "return false;"
+    on_failure_action  = "return false;\n"
+    on_failure_action += "goto %s; /* Avoid unreferenced label. */" % get_label("$re-start-2", U=True)
+
 
     # -- produce some visible output about the setup
     print "(*) Lexical Analyser Patterns:"
@@ -417,7 +420,9 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
     for i, elm in enumerate(code):
         if type(elm) != str: 
-            print "##", repr(type(elm)), elm.__class__.__name__, elm, repr(elm.code)
+            if hasattr(elm, "code"): txt = elm.code
+            else:                    txt = repr(elm)
+            print "##", elm.__class__.__name__, txt
             assert False
 
     return txt + "".join(code)
