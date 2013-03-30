@@ -213,12 +213,29 @@ def __prepare_on_failure_action(Mode, BeginOfLineSupportF, require_terminating_z
         Mode.set_code_fragment_list("on_failure", CodeFragment(txt))
 
     # RETURNS: on_failure_action, db 
-    result = __prepare(Mode, Mode.get_code_fragment_list("on_failure"), 
-                       None, Failure_ActionF=True, 
-                       BeginOfLineSupportF=BeginOfLineSupportF,
-                       require_terminating_zero_preparation_f=require_terminating_zero_preparation_f) 
+    prepared_code = __prepare(Mode, Mode.get_code_fragment_list("on_failure"), 
+                              None, Failure_ActionF=True, 
+                              BeginOfLineSupportF=BeginOfLineSupportF,
+                              require_terminating_zero_preparation_f=require_terminating_zero_preparation_f) 
 
-    return PatternActionInfo(E_ActionIDs.ON_FAILURE, result)
+    txt = [
+        1,     "if(QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {\n",
+        2,         "/* Init state is going to detect 'input == buffer limit code', and\n",
+        2,         " * enter the reload procedure, which will decide about 'end of stream'. */\n",
+        1,     "} else {\n",
+        2,         "/* In init state 'input = *input_p' and we need to increment\n",
+        2,         " * in order to avoid getting stalled. Else, input = *(input_p - 1),\n",
+        2,         " * so 'input_p' points already to the next character.                   */\n",
+        2,         "if( me->buffer._input_p == me->buffer._lexeme_start_p ) {\n",
+        3,               "/* Step over non-matching character */\n",
+        3,               "%s\n" % LanguageDB.INPUT_P_INCREMENT(),
+        2,         "}\n",
+        1,     "}\n",
+        1,     "%s\n"     % prepared_code.get_code_string(), 
+        1,     "goto %s;" % get_label("$re-start-2", U=True)
+    ]
+
+    return PatternActionInfo(E_ActionIDs.ON_FAILURE, CodeFragment(txt))
 
 def pretty_code(Code, Base):
     """-- Delete empty lines at the beginning

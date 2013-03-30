@@ -31,7 +31,6 @@ class GetPot_variable:
     def take(self, str_value):
         self.value    = string.split(str_value)
         self.original = str_value
-        
 
 class GetPot:
     def __init__(self, Argv=None, Filename=None, SectionsEnabledF=True):
