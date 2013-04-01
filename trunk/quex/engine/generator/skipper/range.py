@@ -179,11 +179,12 @@ def __terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePatte
     assert not run_time_counting_required_f 
 
     # Column and line number count for 'normal' character.
-    tm, column_counter_per_chunk, state_machine_f = \
+    tm, column_counter_per_chunk = \
             counter.get_counter_map(Mode.counter_db, "me->buffer._input_p", 
                                     Trafo=Setup.buffer_codec_transformation_info)
+
     dummy, character_count_txt, dummy = \
-            counter.get_core_step(tm, "me->buffer._input_p", state_machine_f)
+            counter.get_core_step(tm, "me->buffer._input_p")
 
 
     txt = []
@@ -418,13 +419,13 @@ def __lc_counting_replacements(code_str, EndSequence):
 
 
 def __core(Mode, ActionDB, ReferenceP_F, UponReloadDoneAdr):
-    tm = column_counter_per_chunk, state_machine_f = \
+    tm, column_counter_per_chunk = \
          counter.get_counter_map(Mode.counter_db, "me->buffer._input_p",
                                  Trafo=Setup.buffer_codec_transformation_info)
 
     __insert_actions(tm, ReferenceP_F, column_counter_per_chunk, UponReloadDoneAdr)
 
-    dummy, txt, dummy = counter.get_core_step(tm, "me->buffer._input_p", state_machine_f)
+    dummy, txt, dummy = counter.get_core_step(tm, "me->buffer._input_p")
 
     return txt
 

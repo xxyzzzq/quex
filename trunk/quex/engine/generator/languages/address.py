@@ -115,7 +115,6 @@ def address_set_subject_to_routing_add(Address):
     This function gives them a back-door to register their addresses.
     """
     assert isinstance(Address, long)
-    #if Address == 0: print_callstack()
     __routed_address_set.add(Address)
 
 def get_address(Type, Arg=None, U=False, R=False):

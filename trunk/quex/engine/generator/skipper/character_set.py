@@ -59,7 +59,6 @@ def do(Data, Mode):
 
     return result
 
-
 def __make_loop(Mode, CharacterSet):
     """Buffer Limit Code --> Reload
        Skip Character    --> Loop to Skipper State
@@ -85,7 +84,7 @@ def __make_loop(Mode, CharacterSet):
     # Implement the core loop _________________________________________________
     # 'column_count_per_chunk' is ignored, because it contains considerations
     # of BLC and 'exit' character.
-    tm, column_count_per_chunk, state_machine_f = \
+    tm, column_count_per_chunk = \
          counter.get_counter_map(Mode.counter_db, 
                                  IteratorName             = "me->buffer._input_p",
                                  Trafo                    = Setup.buffer_codec_transformation_info,
@@ -95,11 +94,11 @@ def __make_loop(Mode, CharacterSet):
 
     tm = add_on_exit_actions(tm, exit_skip_set, column_count_per_chunk)
 
-    dummy,               \
+    state_machine_f,     \
     txt,                 \
-    upon_reload_done_adr = counter.get_core_step(tm, "me->buffer._input_p", state_machine_f, 
+    upon_reload_done_adr = counter.get_core_step(tm, "me->buffer._input_p", 
                                                  BeforeGotoReloadAction = before_reload_actions(column_count_per_chunk),
-                                                 OnFailureActionImplementationF=False) 
+                                                 OnFailureAction        = None) 
 
     return txt, column_count_per_chunk, state_machine_f, upon_reload_done_adr
 
