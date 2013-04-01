@@ -131,11 +131,14 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
         routed_address_set.add(address.get_address("$terminal-EOF", U=True))
         routed_state_info_list = state_router_generator.get_info(routed_address_set)
         txt.extend(address.get_plain_strings([state_router_generator.do(routed_state_info_list)]))
-        txt.append("    goto __RELOAD_FORWARD;\n")
-        txt.append("    goto __RELOAD_BACKWARD;\n")
+        txt.append("    goto __RELOAD_FORWARD;  /* Unit test: avoid unreferenced label. */\n")
+        txt.append("    goto __RELOAD_BACKWARD; /* Unit test: avoid unreferenced label. */\n")
         reload_str = "".join(txt)
         variable_db.enter(LocalVariableDB, "target_state_else_index")
         variable_db.enter(LocalVariableDB, "target_state_index")
+
+    reload_str += "    if( 0 ) goto %s;                /* Unit test: avoid unreferenced label. */\n" \
+                  % address.get_label("$terminal-FAILURE")
 
     return blue_print(customized_unit_test_function_txt,
                       [("$$MARKER_LIST$$",            ml_txt),
