@@ -15,7 +15,6 @@ import quex.output.cpp.analyzer_class           as analyzer_class
 import quex.output.cpp.configuration            as configuration 
 import quex.output.cpp.mode_classes             as mode_classes
 import quex.output.cpp.codec_converter_helper   as codec_converter_helper 
-
 import quex.output.graphviz.core                as grapviz_generator
 
 def do():
