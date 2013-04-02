@@ -96,9 +96,9 @@ def __make_loop(Mode, CharacterSet):
 
     state_machine_f,     \
     txt,                 \
-    upon_reload_done_adr = counter.get_core_step(tm, "me->buffer._input_p", 
-                                                 BeforeGotoReloadAction = before_reload_actions(column_count_per_chunk),
-                                                 OnFailureAction        = None) 
+    upon_reload_done_adr = CppGenerator.code_action_map(tm, IteratorName, 
+                                        BeforeGotoReloadAction = None, 
+                                        OnFailureAction        = on_failure_action)
 
     return txt, column_count_per_chunk, state_machine_f, upon_reload_done_adr
 

@@ -2,19 +2,14 @@
 (C) 2012 Frank-Rene Schaefer
 _______________________________________________________________________________
 """
-from   quex.engine.generator.state.transition.code  import TransitionCodeFactory
-import quex.engine.generator.state.transition.core  as     transition_block
 import quex.engine.generator.state_machine_coder    as     state_machine_coder
 import quex.engine.generator.state.transition.solution  as solution
-from   quex.engine.generator.languages.address      import address_set_subject_to_routing_add
-from   quex.engine.generator.base                   import get_combined_state_machine
+from   quex.engine.generator.base                   import get_combined_state_machine, \
+                                                           Generator as CppGenerator
 from   quex.engine.generator.action_info            import CodeFragment
 from   quex.engine.state_machine.core               import StateMachine
 import quex.engine.analyzer.core                    as     analyzer_generator
 import quex.engine.analyzer.transition_map          as     transition_map_tool
-import quex.engine.analyzer.engine_supply_factory   as     engine
-import quex.engine.state_machine.transformation     as     transformation
-import quex.engine.state_machine.index              as     index
 from   quex.engine.interval_handling                import NumberSet, Interval
 from   quex.engine.tools                            import print_callstack
 
@@ -24,7 +19,6 @@ from   quex.blackboard import setup as Setup, \
 
 from   collections import defaultdict
 from   copy        import deepcopy, copy
-import re
 
 def get(counter_db, Name):
     """Implement the default counter for a given Counter Database. 
@@ -55,74 +49,27 @@ def get(counter_db, Name):
     if function_name is not None:
         return function_name, None # Implementation has been done before.
 
-    column_counter_per_chunk, state_machine_f, txt = get_step(counter_db, "iterator")
+    IteratorName = "iterator"
+    tm, column_counter_per_chunk = get_counter_map(counter_db, IteratorName, 
+                                                   Setup.buffer_codec_transformation_info)
+
+    # TODO: The lexer shall never drop-out with exception.
+    on_failure_action = CodeFragment([     
+        "\n", 
+        1, "QUEX_ERROR_EXIT(\"State machine failed.\");\n" 
+    ])
+
+    state_machine_f, \
+    txt,             \
+    dummy            = CppGenerator.code_action_map(tm, IteratorName, 
+                                    BeforeGotoReloadAction = None, 
+                                    OnFailureAction        = on_failure_action)
 
     function_name  = "QUEX_NAME(%s_counter)" % Name
     implementation = __frame(txt, function_name, state_machine_f, column_counter_per_chunk)
     DefaultCounterFunctionDB.enter(counter_db, function_name)
 
     return function_name, implementation
-
-Match_input    = re.compile("\\binput\\b", re.UNICODE)
-Match_iterator = re.compile("\\iterator\\b", re.UNICODE)
-def get_step(counter_db, IteratorName):
-
-    tm, column_counter_per_chunk, state_machine_f = \
-            get_counter_map(counter_db, IteratorName, 
-                            Setup.buffer_codec_transformation_info)
-
-    state_machine_f, txt, dummy = get_core_step(tm, IteratorName, state_machine_f)
-
-    return column_counter_per_chunk, state_machine_f, txt
-
-def get_core_step(TM, IteratorName, StateMachineF, BeforeGotoReloadAction=None, OnFailureActionImplementationF=True):
-    """Get a counter increment code for one single character.
-
-    BeforeGotoReloadAction = None, means that there is no reload involed.
-
-       RETURNS:
-           [0]  -- True, if state machine was implemented.
-                -- False, if not.
-           [1]  -- source code implementing.
-    """
-    global Match_input
-    global Match_iterator
-
-    if StateMachineF:
-        upon_reload_done_adr = None
-
-        txt = _trivialized_state_machine_coder_do(TM, BeforeGotoReloadAction)
-        if txt is not None:
-            StateMachineF = False # We tricked around it; No state machine needed.
-        else:
-            action_db, sm  = get_state_machine_from_transition_map(TM, BeforeGotoReloadAction)
-            complete_f, sm = transformation.do_state_machine(sm)
-            txt            = _state_machine_coder_do(sm, action_db, BeforeGotoReloadAction, OnFailureActionImplementationF)
-    else:
-        upon_reload_done_adr = index.get()
-        address_set_subject_to_routing_add(upon_reload_done_adr) # Mark as 'used'
-
-        complete_f, tm = transformation.do_transition_map(TM)
-        txt            = _transition_map_coder_do(tm, BeforeGotoReloadAction, upon_reload_done_adr)
-
-    return StateMachineF, \
-           replace_iterator_name(txt, IteratorName, StateMachineF), \
-           upon_reload_done_adr
-
-def replace_iterator_name(txt, IteratorName, StateMachineF):
-    def replacer(block, StateMachineF):
-        if block.find("(me->buffer._input_p)") != -1: 
-            block = block.replace("(me->buffer._input_p)", IteratorName)
-        if not StateMachineF:
-            block = Match_input.sub("(*%s)" % IteratorName, block)
-            block = Match_iterator.sub("(%s)" % IteratorName, block)
-        return block
-
-    for i, elm in enumerate(txt):
-        if not isinstance(elm, (str, unicode)): continue
-        txt[i] = replacer(elm, StateMachineF)
-
-    return txt
 
 def get_counter_dictionary(counter_db, ConcernedCharacterSet):
     """Returns a list of NumberSet objects where for each X of the list it holds:
@@ -250,8 +197,6 @@ def get_counter_map(counter_db,
 
     counter_dictionary = get_counter_dictionary(counter_db, ConcernedCharacterSet)
 
-    state_machine_f    = Setup.variable_character_sizes_f()
-    
     if ColumnCountPerChunk is not None:
         # It *is* conceivable, that there is a subset of 'CharacterSet' which
         # can be handled with a 'column_count_per_chunk' and for all other
@@ -299,42 +244,7 @@ def get_counter_map(counter_db,
 
     transition_map_tool.sort(cm)
 
-    return cm, column_count_per_chunk, state_machine_f
-
-def get_state_machine_from_transition_map(tm, BeforeGotoReloadAction):
-    action_db, sm_list = get_state_machine_list(tm, BeforeGotoReloadAction is not None)
-    sm                 = get_combined_state_machine(sm_list)
-    return action_db, sm
-
-def get_state_machine_list(TM, ReloadPossibleF=False):
-    """Returns a state machine list which implements the transition map given
-    in unicode. It is assumed that the codec is a variable
-    character size codec. Each count action is associated with a separate
-    state machine in the list. The association is recorded in 'action_db'.
-
-    RETURNS: [0] -- The 'action_db': state_machine_id --> count action
-             [1] -- The list of state machines. 
-    """
-    assert type(ReloadPossibleF) == bool
-
-    # Sort by actions.
-    action_code_db = defaultdict(NumberSet)
-    for character_set, action_list in TM:
-        action_code_db[tuple(action_list)].unite_with(character_set)
-
-    # Make each action a terminal.
-    sm_list   = []
-    action_db = {}
-    for action, trigger_set in action_code_db.iteritems():
-        sm = StateMachine()
-        if ReloadPossibleF and trigger_set.contains(Setup.buffer_limit_code):
-            trigger_set.subtract(Interval(Setup.buffer_limit_code, 
-                                          Setup.buffer_limit_code + 1))
-        sm.add_transition(sm.init_state_index, trigger_set, AcceptanceF=True)
-        sm_list.append(sm)
-        action_db[sm.get_id()] = CodeFragment(list(action))
-
-    return action_db, sm_list
+    return cm, column_count_per_chunk
 
 def get_column_number_per_chunk(counter_db, CharacterSet):
     """Considers the counter database which tells what character causes
@@ -370,138 +280,6 @@ def get_grid_and_line_number_character_set(counter_db):
     for character_set in counter_db.newline.itervalues():
         result.unite_with(character_set)
     return result
-
-def _transition_map_coder_do(TM, BeforeGotoReloadAction, UponReloadDoneAdr):
-
-    LanguageDB = Setup.language_db
-
-    txt = []
-    if BeforeGotoReloadAction is not None:
-        assert isinstance(UponReloadDoneAdr, (int, long))
-        engine_type = engine.FORWARD
-        #index = transition_map_tool.index(TransitionMap, Setup.buffer_limit_code)
-        #assert index is not None
-        #assert TransitionMap[index][1] == E_StateIndices.DROP_OUT
-        goto_reload_action = copy(BeforeGotoReloadAction)
-        goto_reload_action.append(LanguageDB.GOTO_RELOAD(UponReloadDoneAdr, True, engine_type))
-        goto_reload_str    = "".join(goto_reload_action)
-        transition_map_tool.set(TM, Setup.buffer_limit_code, goto_reload_str)
-    else:
-        engine_type     = engine.CHARACTER_COUNTER
-        goto_reload_str = None
-
-    # The range of possible characters may be restricted. It must be ensured,
-    # that the occurring characters only belong to the admissible range.
-    transition_map_tool.prune(tm, 0, Setup.get_character_value_limit())
-
-    TransitionCodeFactory.init(engine_type, 
-                               StateIndex    = None,
-                               InitStateF    = True,
-                               GotoReloadStr = goto_reload_str,
-                               TheAnalyzer   = None)
-    tm = [ 
-        (interval, TransitionCodeFactory.do(x)) for interval, x in TM 
-    ]
-
-    LanguageDB.code_generation_switch_cases_add_statement("break;")
-    transition_block.do(txt, tm)
-    LanguageDB.code_generation_switch_cases_add_statement(None)
-
-    txt.append(0)
-    txt.append(LanguageDB.INPUT_P_INCREMENT())
-    txt.append("\n")
-
-    return txt
-
-def _trivialized_state_machine_coder_do(tm, BeforeGotoReloadAction):
-    """This function tries to provide easy solutions for dynamic character
-    length encodings, such as UTF8 or UTF16. 
-    
-    The simplification:
-
-    Check whether all critical checks from inside the 'counter_db' happen in
-    the range where there is only one chunk considered (UTF8->1byte at x <
-    0x800, UTF16->2byte at x < 0x10000). The range is identified by
-    'LowestRangeBorder'. Then implement a simple transition map for this range.
-    The remainder of the counter function only implements the input pointer
-    increments. They come from a template string given by
-    'IncrementActionStr'.
-
-    RETURNS: None -- if no easy solution could be provided.
-             text -- the implementation of the counter functionh.
-    """
-    global __increment_actions_for_utf16
-    global __increment_actions_for_utf8
-   
-    # Currently, we do not handle the case 'Reload': refuse to work.
-    if BeforeGotoReloadAction is not None:
-        return None
-
-    # (*) Try to find easy and elegant special solutions 
-    if   Setup.buffer_codec_transformation_info == "utf8-state-split":
-        LowestRangeBorder  = 0x80 
-        IncrementActionStr = __increment_actions_for_utf8
-    elif Setup.buffer_codec_transformation_info == "utf16-state-split":
-        LowestRangeBorder  = 0x10000 
-        IncrementActionStr = __increment_actions_for_utf16
-    else:
-        return None
-
-    # (*) If all but the last interval are exclusively below 0x80, then the 
-    #     'easy default utf*' can be applied. 
-
-    # 'last_but_one.end == last.begin', because all intervals are adjacent.
-    if tm[-1][0].begin >= LowestRangeBorder: return None
-
-    # The last interval lies beyond the border and has a common action
-    # Only add the additional increment instructions.
-    tm[-1] = (tm[-1][0], deepcopy(tm[-1][1]))
-    tm[-1][1].extend(IncrementActionStr)
-
-    # (*) The first interval may start at - sys.maxint
-    if tm[0][0].begin < 0: tm[0][0].begin = 0
-
-    # Later interval shall not!
-    assert tm[0][0].end > 0
-
-    # Code the transition map
-    return _transition_map_coder_do(tm, BeforeGotoReloadAction=None, UponReloadDoneAdr=None)
-
-def _state_machine_coder_do(sm, action_db, BeforeGotoReloadAction, OnFailureActionImplementationF=True):
-    """Generates a state machine that represents the transition map 
-    according to the codec given in 'Setup.buffer_codec_transformation_info'
-    """
-    assert sm is not None
-
-    LanguageDB = Setup.language_db
-
-    # The generator only understands 'analyzers'. Get it!
-    if BeforeGotoReloadAction is None: engine_type = engine.CHARACTER_COUNTER
-    else:                              engine_type = engine.FORWARD
-
-    analyzer     = analyzer_generator.do(sm, engine_type)
-    sm_txt       = state_machine_coder.do(analyzer, BeforeGotoReloadAction)
-
-    if OnFailureActionImplementationF:
-        on_failure_txt = [     
-            "\n", 
-            1, "QUEX_ERROR_EXIT(\"State machine failed.\");\n" 
-        ]
-        action_db[E_ActionIDs.ON_FAILURE] = PatternActionInfo(E_ActionIDs.ON_FAILURE, CodeFragment(on_failure_txt))
-
-    assert E_ActionIDs.ON_AFTER_MATCH not in action_db
-    if OnFailureActionImplementationF == False:
-        assert E_ActionIDs.ON_FAILURE not in action_db
-
-    # 'Terminals' are the counter actions
-    terminal_txt = LanguageDB["$terminal-code"]("Counter",
-                                                action_db, 
-                                                PreConditionIDList=None,
-                                                Setup=Setup, 
-                                                SimpleF=True)
-
-    txt = sm_txt + terminal_txt
-    return txt
 
 def __special(Delta):
     LanguageDB = Setup.language_db
@@ -602,22 +380,3 @@ def __frame(CounterTxt, FunctionName, StateMachineF, ColumnCountPerChunk):
 
     return "".join(LanguageDB.GET_PLAIN_STRINGS(result))
 
-__increment_actions_for_utf8 = [
-     1, "if     ( ((*iterator) & 0x80) == 0 ) { iterator += 1; } /* 1byte character */\n",
-     1, "/* NOT ( ((*iterator) & 0x40) == 0 ) { iterator += 2; }    2byte character */\n",
-     1, "else if( ((*iterator) & 0x20) == 0 ) { iterator += 2; } /* 2byte character */\n",
-     1, "else if( ((*iterator) & 0x10) == 0 ) { iterator += 3; } /* 3byte character */\n",
-     1, "else if( ((*iterator) & 0x08) == 0 ) { iterator += 4; } /* 4byte character */\n",
-     1, "else if( ((*iterator) & 0x04) == 0 ) { iterator += 5; } /* 5byte character */\n",
-     1, "else if( ((*iterator) & 0x02) == 0 ) { iterator += 6; } /* 6byte character */\n",
-     1, "else if( ((*iterator) & 0x01) == 0 ) { iterator += 7; } /* 7byte character */\n",
-     1, "else                                 { iterator += 1; } /* default 1       */\n",
-     1, "continue;\n"
-]
-    
-__increment_actions_for_utf16 = [
-     1, "if( *iterator >= 0xD800 && *iterator < 0xE000 ) {\n",
-     2, "iterator += 2; continue; /* 2chunk character */\n",
-     1, "}\n",
-]
-    
