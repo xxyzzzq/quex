@@ -267,7 +267,7 @@ class Generator(GeneratorBase):
             # (iterator - reference_p) * C'. Thus, there is no 'AfterReloadAction'.
             upon_reload_done_adr = None
 
-            txt = _trivialized_state_machine_coder_do(TM, BeforeReloadAction)
+            txt = Generator.code_action_state_machine_trivial(TM, BeforeReloadAction)
             if txt is not None:
                 StateMachineF = False # We tricked around it; No state machine needed.
             else:
@@ -279,7 +279,9 @@ class Generator(GeneratorBase):
             address_set_subject_to_routing_add(upon_reload_done_adr) # Mark as 'used'
 
             complete_f, tm = transformation.do_transition_map(TM)
-            txt            = _transition_map_coder_do(tm, BeforeReloadAction, upon_reload_done_adr)
+            txt            = Generator.code_action_map_plain(tm, 
+                                                             BeforeReloadAction, 
+                                                             upon_reload_done_adr)
 
         return StateMachineF, \
                replace_iterator_name(txt, IteratorName, StateMachineF), \
@@ -309,6 +311,97 @@ class Generator(GeneratorBase):
         # assert E_ActionIDs.ON_FAILURE     not in action_db
         # complete_f, sm = transformation.do_state_machine(sm)
         return generator.code_main_state_machine(engine_type, BeforeReloadAction)
+
+    @staticmethod
+    def code_action_state_machine_trivial(tm, BeforeReloadAction):
+        """This function tries to provide easy solutions for dynamic character
+        length encodings, such as UTF8 or UTF16. 
+        
+        The simplification:
+
+        Check whether all critical checks from inside the 'counter_db' happen in
+        the range where there is only one chunk considered (UTF8->1byte at x <
+        0x800, UTF16->2byte at x < 0x10000). The range is identified by
+        'LowestRangeBorder'. Then implement a simple transition map for this range.
+        The remainder of the counter function only implements the input pointer
+        increments. They come from a template string given by
+        'IncrementActionStr'.
+
+        RETURNS: None -- if no easy solution could be provided.
+                 text -- the implementation of the counter functionh.
+        """
+        global __increment_actions_for_utf16
+        global __increment_actions_for_utf8
+       
+        # Currently, we do not handle the case 'Reload': refuse to work.
+        if BeforeReloadAction is not None:
+            return None
+
+        # (*) Try to find easy and elegant special solutions 
+        if   Setup.buffer_codec_transformation_info == "utf8-state-split":
+            LowestRangeBorder  = 0x80 
+            IncrementActionStr = __increment_actions_for_utf8
+        elif Setup.buffer_codec_transformation_info == "utf16-state-split":
+            LowestRangeBorder  = 0x10000 
+            IncrementActionStr = __increment_actions_for_utf16
+        else:
+            return None
+
+        # (*) If all but the last interval are exclusively below 0x80, then the 
+        #     'easy default utf*' can be applied. 
+
+        # 'last_but_one.end == last.begin', because all intervals are adjacent.
+        if tm[-1][0].begin >= LowestRangeBorder: return None
+
+        # The last interval lies beyond the border and has a common action
+        # Only add the additional increment instructions.
+        tm[-1] = (tm[-1][0], deepcopy(tm[-1][1]))
+        tm[-1][1].extend(IncrementActionStr)
+
+        # (*) The first interval may start at - sys.maxint
+        if tm[0][0].begin < 0: tm[0][0].begin = 0
+
+        # Later interval shall not!
+        assert tm[0][0].end > 0
+
+        # Code the transition map
+        return Generator.code_action_map_plain(tm, 
+                                               BeforeReloadAction=None, 
+                                               UponReloadDoneAdr=None)
+
+    @staticmethod
+    def code_action_map_plain(TM, BeforeReloadAction=None, UponReloadDoneAdr=None):
+
+        LanguageDB = Setup.language_db
+
+        if BeforeReloadAction is None: engine_type = engine.CHARACTER_COUNTER
+        else:                          engine_type = engine.FORWARD
+
+        goto_reload_str = transition_block.prepare_reload(TM,
+                                           StateIndex         = UponReloadDoneAdr,
+                                           EngineType         = engine_type,
+                                           InitStateF         = True,
+                                           BeforeReloadAction = BeforeReloadAction)
+
+        # The range of possible characters may be restricted. It must be ensured,
+        # that the occurring characters only belong to the admissible range.
+        transition_map_tool.prune(TM, 0, Setup.get_character_value_limit())
+
+        TransitionCodeFactory.init(engine_type, 
+                                   StateIndex    = None,
+                                   InitStateF    = True,
+                                   GotoReloadStr = goto_reload_str,
+                                   TheAnalyzer   = None)
+        tm = [ 
+            (interval, TransitionCodeFactory.do(x)) for interval, x in TM 
+        ]
+
+        LanguageDB.code_generation_switch_cases_add_statement("break;")
+        txt = []
+        transition_block.do(txt, tm)
+        LanguageDB.code_generation_switch_cases_add_statement(None)
+
+        return txt
 
     @staticmethod
     def assert_txt(txt):
@@ -408,93 +501,6 @@ def get_pattern_action_pair_list_from_map(TM):
         pattern_action_pair_list.append(PatternActionInfo(pattern, action))
 
     return pattern_action_pair_list
-
-def _trivialized_state_machine_coder_do(tm, BeforeReloadAction):
-    """This function tries to provide easy solutions for dynamic character
-    length encodings, such as UTF8 or UTF16. 
-    
-    The simplification:
-
-    Check whether all critical checks from inside the 'counter_db' happen in
-    the range where there is only one chunk considered (UTF8->1byte at x <
-    0x800, UTF16->2byte at x < 0x10000). The range is identified by
-    'LowestRangeBorder'. Then implement a simple transition map for this range.
-    The remainder of the counter function only implements the input pointer
-    increments. They come from a template string given by
-    'IncrementActionStr'.
-
-    RETURNS: None -- if no easy solution could be provided.
-             text -- the implementation of the counter functionh.
-    """
-    global __increment_actions_for_utf16
-    global __increment_actions_for_utf8
-   
-    # Currently, we do not handle the case 'Reload': refuse to work.
-    if BeforeReloadAction is not None:
-        return None
-
-    # (*) Try to find easy and elegant special solutions 
-    if   Setup.buffer_codec_transformation_info == "utf8-state-split":
-        LowestRangeBorder  = 0x80 
-        IncrementActionStr = __increment_actions_for_utf8
-    elif Setup.buffer_codec_transformation_info == "utf16-state-split":
-        LowestRangeBorder  = 0x10000 
-        IncrementActionStr = __increment_actions_for_utf16
-    else:
-        return None
-
-    # (*) If all but the last interval are exclusively below 0x80, then the 
-    #     'easy default utf*' can be applied. 
-
-    # 'last_but_one.end == last.begin', because all intervals are adjacent.
-    if tm[-1][0].begin >= LowestRangeBorder: return None
-
-    # The last interval lies beyond the border and has a common action
-    # Only add the additional increment instructions.
-    tm[-1] = (tm[-1][0], deepcopy(tm[-1][1]))
-    tm[-1][1].extend(IncrementActionStr)
-
-    # (*) The first interval may start at - sys.maxint
-    if tm[0][0].begin < 0: tm[0][0].begin = 0
-
-    # Later interval shall not!
-    assert tm[0][0].end > 0
-
-    # Code the transition map
-    return _transition_map_coder_do(tm, BeforeReloadAction=None, UponReloadDoneAdr=None)
-
-def _transition_map_coder_do(TM, BeforeReloadAction, UponReloadDoneAdr):
-
-    LanguageDB = Setup.language_db
-
-    if BeforeReloadAction is None: engine_type = engine.CHARACTER_COUNTER
-    else:                          engine_type = engine.FORWARD
-
-    goto_reload_str = transition_block.prepare_reload(TM,
-                                       StateIndex         = UponReloadDoneAdr,
-                                       EngineType         = engine_type,
-                                       InitStateF         = True,
-                                       BeforeReloadAction = BeforeReloadAction)
-
-    # The range of possible characters may be restricted. It must be ensured,
-    # that the occurring characters only belong to the admissible range.
-    transition_map_tool.prune(TM, 0, Setup.get_character_value_limit())
-
-    TransitionCodeFactory.init(engine_type, 
-                               StateIndex    = None,
-                               InitStateF    = True,
-                               GotoReloadStr = goto_reload_str,
-                               TheAnalyzer   = None)
-    tm = [ 
-        (interval, TransitionCodeFactory.do(x)) for interval, x in TM 
-    ]
-
-    LanguageDB.code_generation_switch_cases_add_statement("break;")
-    txt = []
-    transition_block.do(txt, tm)
-    LanguageDB.code_generation_switch_cases_add_statement(None)
-
-    return txt
 
 def replace_iterator_name(txt, IteratorName, StateMachineF):
     def replacer(block, StateMachineF):

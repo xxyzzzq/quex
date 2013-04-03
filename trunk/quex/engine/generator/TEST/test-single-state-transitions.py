@@ -25,7 +25,9 @@ from   quex.engine.state_machine.core          import State, StateMachine
 import quex.engine.state_machine.index         as index
 from   quex.engine.analyzer.state.entry_action import DoorID
 import quex.engine.analyzer.engine_supply_factory  as     engine
+import quex.engine.analyzer.transition_map  as     transition_map_tool
 
+from   quex.engine.generator.base                  import Generator as CppGenerator
 import quex.engine.generator.languages.core        as languages
 import quex.engine.generator.languages.address     as address
 import quex.engine.generator.state.transition.core as transition_block
@@ -50,35 +52,44 @@ choice, codec = {
 state      = State()
 StateIndex = 6666L
 
-target_state_index_list = []
 if choice == "A":
-    state.add_transition(NumberSet([Interval(10,20),    Interval(195,196)]),  1L)
-    state.add_transition(NumberSet([Interval(51,70),    Interval(261,280)]),  2L)
-    state.add_transition(NumberSet([Interval(90,100),   Interval(110,130)]),  3L)
-    state.add_transition(NumberSet([Interval(150,151),  Interval(151,190)]),  4L)
-    state.add_transition(NumberSet([Interval(190,195),  Interval(21,30)]),    5L) 
-    state.add_transition(NumberSet([Interval(197, 198), Interval(198, 198)]), 6L)
-    state.add_transition(NumberSet([Interval(200,230),  Interval(231,240)]),  7L)
-    state.add_transition(NumberSet([Interval(250,260),  Interval(71,80), Interval(71,71)]),  8L)
-    
-    target_state_index_list = map(long, [1, 2, 3, 4, 5, 6, 7, 8])
+    tm0 = [
+        (Interval(10,20),    1L), 
+        (Interval(195,196),  1L),
+        (Interval(51,70),    2L), 
+        (Interval(261,280),  2L),
+        (Interval(90,100),   3L), 
+        (Interval(110,130),  3L),
+        (Interval(150,151),  4L), 
+        (Interval(151,190),  4L),
+        (Interval(190,195),  5L), 
+        (Interval(21,30),    5L),
+        (Interval(197, 198), 6L), 
+        (Interval(200,230),  7L), 
+        (Interval(231,240),  7L),
+        (Interval(250,260),  8L), 
+        (Interval(71,80),    8L), 
+    ]
+
     interval_end = 300
 
 elif choice == "B":
-    interval_start = 0
-    interval_end   = -1
     # initialize pseudo random generator: produces always the same numbers.
     random.seed(110270)   # must set the seed for randomness, otherwise system time
     #                     # is used which is no longer deterministic.
-    max_number = 300
-    for i in range(4000):
-        interval_size      = int(random.random() * 4) + 1
+    interval_start = 0
+    def make(start):
+        size               = int(random.random() * 4) + 1
         target_state_index = long(random.random() * 10)
-        target_state_index_list.append(target_state_index)
+        return (Interval(start, start + size), target_state_index)
 
-        interval_end = interval_start + interval_size
-        state.add_transition(Interval(interval_start, interval_end), target_state_index)
-        interval_start = interval_end
+    tm0 = []
+    for i in range(4000):
+        x = make(interval_start)
+        tm0.append(x)
+        interval_start = x[0].end
+
+    interval_end = interval_start
 
 elif choice == "C":
     interval_start = 0
@@ -86,37 +97,26 @@ elif choice == "C":
     # initialize pseudo random generator: produces always the same numbers.
     random.seed(110270)   # must set the seed for randomness, otherwise system time
     #                     # is used which is no longer deterministic.
-    target_state_index = long(0)
+
+    tm0 = []
     for i in range(1000):
         if random.random() > 0.75:
             interval_size      = int(random.random() * 3) + 1
             target_state_index = long(random.random() * 5)
-            target_state_index_list.append(target_state_index)
 
             interval_end = interval_start + interval_size
-            state.add_transition(Interval(interval_start, interval_end), target_state_index)
+            tm0.append((Interval(interval_start, interval_end), target_state_index))
             interval_start = interval_end
         else:
             target_state_index = long(random.random() * 5)
-            target_state_index_list.append(target_state_index)
 
             for dummy in xrange(0, int(random.random() * 5) + 2):
-                state.add_transition(Interval(interval_start, interval_start + 1), target_state_index)
+                tm0.append((Interval(interval_start, interval_start + 1), target_state_index))
                 interval_start += 1 + int(random.random() * 2)
 
-states = []
-for state_index in sorted(list(set(target_state_index_list))):
-    door_id = DoorID(state_index, None)
-    states.append("%s: return (int)%i;\n" % (address.get_label("$entry", door_id), state_index))
-    # increment the state index counter, so that the drop-out and reload labels 
-    # get an appropriate label.
-    index.get()
-index.get()
-index.get()
-reload   = "%s: return (int)-1;\n" % address.get_label("$reload", -1)
-states.insert(0, reload)
-drop_out = "%s: return (int)-1;\n" % address.get_label("$drop-out", -1)
-states.insert(0, drop_out)
+tm = [ (interval, ["return %i;\n" % i]) for interval, i in tm0 ]
+tm.sort(key=lambda x: x[0].begin)
+target_state_index_list = sorted(list(set(long(i) for interval, i in tm0)))
 
 # One for the 'terminal'
 __label_db["$entry"](DoorID(index.get(), None))
@@ -125,14 +125,23 @@ function  = [
     "#define __quex_debug_state(X) /* empty */\n",
     "int transition(int input) {\n" 
 ]
-tm = state.transitions().get_trigger_map()
-tm = transition_block.prepare_transition_map(tm, 
-                                             StateIndex     = StateIndex,
-                                             EngineType     = engine.BACKWARD_INPUT_POSITION,
-                                             GotoReload_Str = "return -1;")
-transition_block.do(function, tm)
 
-function.extend(states)
+# prev_end = -sys.maxint
+#for interval, target in tm:
+#    print "#it:", interval.begin, interval.end, target
+#    prev_end = interval.end
+
+transition_map_tool.fill_gaps(tm, ["return -1;"])
+
+tm_txt = CppGenerator.code_action_map_plain(tm)
+assert len(tm_txt) != 0
+
+function.extend(tm_txt)
+
+reload   = "%s: return (int)-1;\n" % address.get_label("$reload", -1)
+function.append(reload)
+drop_out = "%s: return (int)-1;\n" % address.get_label("$drop-out", -1)
+function.append(drop_out)
 function.append("\n}\n")
 
 main_txt = """
@@ -173,17 +182,14 @@ $$ENTRY_LIST$$
 }
 """
 
-def get_target(X):
-    target = state.transitions().get_resulting_target_state_index(X)
-    if target is None: return -1
-    else:              return target
-
 # Prepare the main function
 begin  = 0
-target = get_target(begin)
+target = transition_map_tool.get_target(tm0, begin)
+if target is None: target = -1
 entry_list = [ (begin, target) ]
 for x in range(interval_end):
-    new_target = get_target(x)
+    new_target = transition_map_tool.get_target(tm0, x)
+    if new_target is None: new_target = -1
     if new_target != target:
         target = new_target
         entry_list.append((x, target))
