@@ -109,37 +109,32 @@ elif choice == "C":
     interval_end = interval_begin
 
 tm0.sort(key=lambda x: x[0].begin)
-tm = [ (interval, ["return %i;\n" % i]) for interval, i in tm0 ]
 target_state_index_list = sorted(list(set(long(i) for interval, i in tm0)))
+tm = [ (interval, ["return %i;\n" % i]) for interval, i in tm0 ]
 
-# One for the 'terminal'
-__label_db["$entry"](DoorID(index.get(), None))
-
-function  = [ 
-    "#define __quex_debug_state(X) /* empty */\n",
-    "int transition(int input) {\n" 
-]
-
-#prev_end = -sys.maxint
-#for interval, target in tm0:
-#    print "#it:", interval.begin, interval.end, target
-#    prev_end = interval.end
 
 transition_map_tool.fill_gaps(tm, ["return -1;"])
 
-tm_txt = CppGenerator.code_action_map_plain(tm)
-assert len(tm_txt) != 0
 
-function.extend(tm_txt)
+def get_transition_function(tm):
+    tm_txt = CppGenerator.code_action_map_plain(tm)
+    assert len(tm_txt) != 0
 
-reload   = "%s: return (int)-1;\n" % address.get_label("$reload", -1)
-function.append(reload)
-drop_out = "%s: return (int)-1;\n" % address.get_label("$drop-out", -1)
-function.append(drop_out)
-function.append("\n}\n")
+    reload   = "%s: return (int)-1;\n" % address.get_label("$reload", -1)
+    drop_out = "%s: return (int)-1;\n" % address.get_label("$drop-out", -1)
 
-main_txt = """
+    function = [ 
+        "#define __quex_debug_state(X) /* empty */\n",
+        "int transition(int input) {\n" 
+    ]
+    function.extend(tm_txt)
+    function.append(reload)
+    function.append(drop_out)
+    function.append("\n}\n")
 
+    return function
+
+main_template = """
 /* From '.begin' the target map targets to '.target' until the next '.begin' is
  * reached.                                                                  */
 typedef struct { int begin; int target; } entry_t;
@@ -175,29 +170,31 @@ $$ENTRY_LIST$$
     printf("Oll Korrekt\\n");
 }
 """
+def get_main_function(tm0):
+    begin       = 0
+    prev_target = transition_map_tool.get_target(tm0, begin)
+    if prev_target is None: prev_target = -1
 
-# Prepare the main function
-begin       = 0
-prev_target = transition_map_tool.get_target(tm0, begin)
-if prev_target is None: prev_target = -1
+    entry_list  = [ (begin, prev_target) ]
+    for x in range(1, interval_end):
+        target = transition_map_tool.get_target(tm0, x)
+        if target is None: 
+            target = -1
+        if target != prev_target:
+            entry_list.append((x, target))
+            prev_target = target
 
-entry_list  = [ (begin, prev_target) ]
-for x in range(1, interval_end):
-    target = transition_map_tool.get_target(tm0, x)
-    if target is None: 
-        target = -1
-    if target != prev_target:
-        entry_list.append((x, target))
-        prev_target = target
+    entry_list.append((interval_end, -1))
+    entry_list.append((0x1FFFF, -1))
+     
+    expected_array = [ "        { 0x%06X, %i },\n" % (begin, target) for begin, target in entry_list ]
 
-entry_list.append((interval_end, -1))
-entry_list.append((0x1FFFF, -1))
- 
-expected_array = [ "        { 0x%06X, %i },\n" % (begin, target) for begin, target in entry_list ]
+    return main_template.replace("$$ENTRY_LIST$$", "".join(expected_array))
 
-main_txt = main_txt.replace("$$ENTRY_LIST$$", "".join(expected_array))
+function_txt = get_transition_function(tm)
+main_txt     = get_main_function(tm0)
 
-txt = function + [ main_txt ]
+txt = function_txt + [ main_txt ]
 Setup.language_db.REPLACE_INDENT(txt)
 
 fh = open("test.c", "wb")
