@@ -1,4 +1,4 @@
 No output is good output!
-Intervals:  3547
+Intervals:  13122
 Characters: 131071
 Oll Korrekt

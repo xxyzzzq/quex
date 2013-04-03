@@ -81,34 +81,12 @@ def get_string(transition_map, Option="utf8", IntervalF=True):
         txt.append("   %s%s %s\n" % (interval_str, " " * (L - len(interval_str)), target))
     return "".join(txt)
 
-def bisect_begin(transition_map, Value, lower=0):
-    """Find entry 'i' by bisectioning so that it holds:
-
-          -- transition_map[i][0].begin <= Value
-          -- transition_map[k][0].begin > Value for all k > i
-    """
-    upper = len(transition_map)
-    delta = upper - lower
-    while delta > 1:
-        i       = lower + delta / 2
-        current = transition_map[i][0].begin
-        if   current > Value: upper = i 
-        elif current < Value: lower = i
-        else:                 return i
-        delta   = upper - lower
-
-    return lower if transition_map[lower][0].begin == Value else -1
-
 def set(transition_map, Character, NewTarget):
-    # (bisectioning would certainly be more elegant ...)
-    for i, entry in enumerate(transition_map):
-        interval, target = entry
-        if interval.contains(Character):
-            break
-    else:
-        print "TM: {\n%s}" % get_string(transition_map, "dec")
-        print "Character:", Character
-        assert False
+    i = bisect(transition_map, Character)
+    if i is None:
+        transition_map.insert(0, (Interval(Character), NewTarget))
+        transition_map.sort(key=lambda x: x[0].begin)
+        return
 
     # Found the interval that contains the Character
     assert interval.size() > 0
@@ -312,12 +290,25 @@ def cut(transition_map, CharacterSet):
                       for x_interval in diff.get_intervals(PromiseToTreatWellF=True))
     return result
 
-def get_target(transition_map, Character):
-    # TODO: Bisectioning
-    for interval, target in transition_map:
-        if   interval.end   <  Character + 1: continue
-        elif interval.begin <= Character: return target
+def bisect(transition_map, Character):
+    lower = 0
+    upper = len(transition_map)
+    while upper - lower > 1:
+        i = (upper + lower) >> 1
+        if   transition_map[i][0].begin >  Character: upper = i
+        elif transition_map[i][0].end   <= Character: lower = i
+        else:                                         return i
+
+    if     Character >= transition_map[lower][0].begin \
+       and Character <  transition_map[lower][0].end:
+        return lower
+
     return None
+
+def get_target(transition_map, Character):
+    i = bisect(transition_map, Character)
+    if i is None: return None
+    else:         return transition_map[i][1]
 
 def sort(transition_map):
     transition_map.sort(key=lambda x: x[0].begin)
