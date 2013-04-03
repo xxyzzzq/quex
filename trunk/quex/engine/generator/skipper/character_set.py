@@ -1,4 +1,5 @@
 import quex.engine.analyzer.engine_supply_factory   as     engine
+from   quex.engine.generator.base                   import Generator as CppGenerator
 from   quex.engine.generator.languages.address      import get_label, \
                                                            address_set_subject_to_routing_add
 from   quex.engine.generator.languages.variable_db  import variable_db
@@ -64,6 +65,8 @@ def __make_loop(Mode, CharacterSet):
        Skip Character    --> Loop to Skipper State
        Else              --> Exit Loop
     """
+    LanguageDB = Setup.language_db
+
     # Determine 'column_count_per_chunk' before adding 'exit' and 'blc' 
     # characters.
     column_count_per_chunk = counter.get_column_number_per_chunk(Mode.counter_db, CharacterSet)
@@ -87,18 +90,23 @@ def __make_loop(Mode, CharacterSet):
     tm, column_count_per_chunk = \
          counter.get_counter_map(Mode.counter_db, 
                                  IteratorName             = "me->buffer._input_p",
-                                 Trafo                    = Setup.buffer_codec_transformation_info,
                                  ColumnCountPerChunk      = column_count_per_chunk,
                                  ConcernedCharacterSet    = CharacterSet,
                                  DoNotResetReferenceP_Set = exit_skip_set)
 
     tm = add_on_exit_actions(tm, exit_skip_set, column_count_per_chunk)
 
+    before_reload_action = get_before_reload_actions(column_count_per_chunk)
+
     state_machine_f,     \
     txt,                 \
-    upon_reload_done_adr = CppGenerator.code_action_map(tm, IteratorName, 
-                                        BeforeGotoReloadAction = None, 
-                                        OnFailureAction        = on_failure_action)
+    upon_reload_done_adr = CppGenerator.code_action_map(tm, 
+                                        IteratorName           = "me->buffer._input_p", 
+                                        BeforeReloadAction = before_reload_action, 
+                                        OnFailureAction        = None)
+
+    if not state_machine_f:
+        txt.extend([2, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
 
     return txt, column_count_per_chunk, state_machine_f, upon_reload_done_adr
 
@@ -151,7 +159,7 @@ def add_on_exit_actions(tm, ExitSkipSet, ColumnCountPerChunk):
 
     return transition_map_tool.add_transition_actions(tm, exit_tm)
 
-def before_reload_actions(ColumnCountPerChunk):
+def get_before_reload_actions(ColumnCountPerChunk):
     LanguageDB = Setup.language_db
     result = []
     if ColumnCountPerChunk is not None:
