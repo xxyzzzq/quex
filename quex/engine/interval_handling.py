@@ -223,7 +223,7 @@ class Interval(object):
         else: 
             __repr = lambda x:     "-oo" if x == - sys.maxint   \
                                else "oo" if x == sys.maxint - 1 \
-                               else repr(x)
+                               else "%s" % x
         
         if self.begin == self.end:       return "[]"
         elif self.end - self.begin == 1: return "[" + __repr(self.begin) + "]" 

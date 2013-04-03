@@ -266,12 +266,13 @@ def fill_gaps(transition_map, Target):
         interval = transition_map[i][0]
         target   = transition_map[i][1]
 
+
         ##print 
         ##print "#i:", i
         ##print "#tm:", transition_map
         ##print "#int,target:", interval, target
         ##print "#prev_end, prev_target:", prev_end, prev_target
-
+        assert interval.begin != interval.end
         assert interval.begin >= prev_end
 
         if prev_end == interval.begin: 
