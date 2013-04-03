@@ -10,7 +10,7 @@ from   quex.blackboard import E_StateIndices, \
 
 LanguageDB = None
 
-def do(code, TheState, TheAnalyzer, BeforeGotoReloadAction):
+def do(code, TheState, TheAnalyzer, BeforeReloadAction):
     global LanguageDB
     assert isinstance(TheState, AnalyzerState)
     assert isinstance(TheAnalyzer, Analyzer)
@@ -30,7 +30,7 @@ def do(code, TheState, TheAnalyzer, BeforeGotoReloadAction):
                                                  TheState.engine_type, 
                                                  TheState.init_state_f, 
                                                  TheAnalyzer            = TheAnalyzer,
-                                                 BeforeGotoReloadAction = BeforeGotoReloadAction)
+                                                 BeforeReloadAction = BeforeReloadAction)
     transition_block.do(txt, tm)
 
     # (*) Drop Out ____________________________________________________________

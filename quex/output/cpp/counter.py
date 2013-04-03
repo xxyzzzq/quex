@@ -50,8 +50,7 @@ def get(counter_db, Name):
         return function_name, None # Implementation has been done before.
 
     IteratorName = "iterator"
-    tm, column_counter_per_chunk = get_counter_map(counter_db, IteratorName, 
-                                                   Setup.buffer_codec_transformation_info)
+    tm, column_counter_per_chunk = get_counter_map(counter_db, IteratorName) 
 
     # TODO: The lexer shall never drop-out with exception.
     on_failure_action = CodeFragment([     
@@ -62,8 +61,7 @@ def get(counter_db, Name):
     state_machine_f, \
     txt,             \
     dummy            = CppGenerator.code_action_map(tm, IteratorName, 
-                                    BeforeGotoReloadAction = None, 
-                                    OnFailureAction        = on_failure_action)
+                                                    OnFailureAction = on_failure_action)
 
     function_name  = "QUEX_NAME(%s_counter)" % Name
     implementation = __frame(txt, function_name, state_machine_f, column_counter_per_chunk)
@@ -115,7 +113,6 @@ def get_counter_dictionary(counter_db, ConcernedCharacterSet):
 
 def get_counter_map(counter_db, 
                     IteratorName             = None,
-                    Trafo                    = None,
                     ColumnCountPerChunk      = None,
                     ConcernedCharacterSet    = None,
                     DoNotResetReferenceP_Set = None):
@@ -356,7 +353,7 @@ def __frame(CounterTxt, FunctionName, StateMachineF, ColumnCountPerChunk):
     LanguageDB.INDENT(CounterTxt)
                
     epilogue = []
-    if False:
+    if not StateMachineF:
         epilogue.extend([2, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
 
     epilogue.append("    }\n")

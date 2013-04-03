@@ -130,10 +130,10 @@ class Generator(GeneratorBase):
 
         return txt
 
-    def code_main_state_machine(self, EngineType=engine.FORWARD, BeforeGotoReloadAction=None):
+    def code_main_state_machine(self, EngineType=engine.FORWARD, BeforeReloadAction=None):
         LanguageDB       = Setup.language_db 
 
-        sm_txt, analyzer = Generator.code_state_machine(self.sm, EngineType, BeforeGotoReloadAction)
+        sm_txt, analyzer = Generator.code_state_machine(self.sm, EngineType, BeforeReloadAction)
         terminal_txt     = Generator.code_terminals(self.action_db, self.pre_context_sm_id_list)
 
         # -- reload definition (forward, backward, init state reload)
@@ -213,7 +213,7 @@ class Generator(GeneratorBase):
         return txt
 
     @staticmethod
-    def code_state_machine(sm, EngineType, BeforeGotoReloadAction=None): 
+    def code_state_machine(sm, EngineType, BeforeReloadAction=None): 
         assert len(sm.get_orphaned_state_index_list()) == 0
 
         LanguageDB = Setup.language_db
@@ -229,7 +229,7 @@ class Generator(GeneratorBase):
 
         # -- implement the state machine itself
         analyzer           = analyzer_generator.do(sm, EngineType)
-        state_machine_code = state_machine_coder.do(analyzer, BeforeGotoReloadAction)
+        state_machine_code = state_machine_coder.do(analyzer, BeforeReloadAction)
         LanguageDB.REPLACE_INDENT(state_machine_code)
 
         txt.extend(state_machine_code)
@@ -246,8 +246,8 @@ class Generator(GeneratorBase):
 
     @staticmethod
     def code_action_map(TM, IteratorName, 
-                        BeforeGotoReloadAction = None, 
-                        OnFailureAction        = None):
+                        BeforeReloadAction = None, 
+                        OnFailureAction    = None):
         """TM is an object in the form of a 'transition map'. That is, it maps
         from an interval to an action--in this case not necessarily a state 
         transition. It consists of a list of pairs:
@@ -263,32 +263,36 @@ class Generator(GeneratorBase):
         StateMachineF = Setup.variable_character_sizes_f()
 
         if StateMachineF:
+            # In case of variable character sizes, there can be no 'column_n +=
+            # (iterator - reference_p) * C'. Thus, there is no 'AfterReloadAction'.
             upon_reload_done_adr = None
 
-            txt = _trivialized_state_machine_coder_do(TM, BeforeGotoReloadAction)
+            txt = _trivialized_state_machine_coder_do(TM, BeforeReloadAction)
             if txt is not None:
                 StateMachineF = False # We tricked around it; No state machine needed.
             else:
-                txt = Generator.code_action_state_machine(TM, BeforeGotoReloadAction, OnFailureAction)
+                txt = Generator.code_action_state_machine(TM, 
+                                                          BeforeReloadAction, 
+                                                          OnFailureAction)
         else:
             upon_reload_done_adr = index.get()
             address_set_subject_to_routing_add(upon_reload_done_adr) # Mark as 'used'
 
             complete_f, tm = transformation.do_transition_map(TM)
-            txt            = _transition_map_coder_do(tm, BeforeGotoReloadAction, upon_reload_done_adr)
+            txt            = _transition_map_coder_do(tm, BeforeReloadAction, upon_reload_done_adr)
 
         return StateMachineF, \
                replace_iterator_name(txt, IteratorName, StateMachineF), \
                upon_reload_done_adr
 
     @staticmethod
-    def code_action_state_machine(TM, BeforeGotoReloadAction, OnFailureAction):
+    def code_action_state_machine(TM, BeforeReloadAction, OnFailureAction):
         """Generates a state machine that represents the transition map 
         according to the codec given in 'Setup.buffer_codec_transformation_info'
         """
         assert sm is not None
 
-        pap_list  = get_pattern_action_pair_list_from_map(tm, BeforeGotoReloadAction is not None)
+        pap_list = get_pattern_action_pair_list_from_map(tm, BeforeReloadAction is not None)
         for pap in pap_list:
             pap.transform(Setup.buffer_codec_transformation_info)
 
@@ -296,16 +300,15 @@ class Generator(GeneratorBase):
             pap_list.append(PatternActionInfo(E_ActionIDs.ON_FAILURE, 
                                               OnFailureAction))
 
-        if BeforeGotoReloadAction is None: engine_type = engine.CHARACTER_COUNTER
-        else:                              engine_type = engine.FORWARD
+        if BeforeReloadAction is None: engine_type = engine.CHARACTER_COUNTER
+        else:                          engine_type = engine.FORWARD
 
         generator = CppGenerator(pap_list) 
 
         # assert E_ActionIDs.ON_AFTER_MATCH not in action_db
         # assert E_ActionIDs.ON_FAILURE     not in action_db
         # complete_f, sm = transformation.do_state_machine(sm)
-
-        return generator.code_main_state_machine(engine_type, BeforeGotoReloadAction)
+        return generator.code_main_state_machine(engine_type, BeforeReloadAction)
 
     @staticmethod
     def assert_txt(txt):
@@ -406,7 +409,7 @@ def get_pattern_action_pair_list_from_map(TM):
 
     return pattern_action_pair_list
 
-def _trivialized_state_machine_coder_do(tm, BeforeGotoReloadAction):
+def _trivialized_state_machine_coder_do(tm, BeforeReloadAction):
     """This function tries to provide easy solutions for dynamic character
     length encodings, such as UTF8 or UTF16. 
     
@@ -427,7 +430,7 @@ def _trivialized_state_machine_coder_do(tm, BeforeGotoReloadAction):
     global __increment_actions_for_utf8
    
     # Currently, we do not handle the case 'Reload': refuse to work.
-    if BeforeGotoReloadAction is not None:
+    if BeforeReloadAction is not None:
         return None
 
     # (*) Try to find easy and elegant special solutions 
@@ -458,26 +461,20 @@ def _trivialized_state_machine_coder_do(tm, BeforeGotoReloadAction):
     assert tm[0][0].end > 0
 
     # Code the transition map
-    return _transition_map_coder_do(tm, BeforeGotoReloadAction=None, UponReloadDoneAdr=None)
+    return _transition_map_coder_do(tm, BeforeReloadAction=None, UponReloadDoneAdr=None)
 
-def _transition_map_coder_do(TM, BeforeGotoReloadAction, UponReloadDoneAdr):
+def _transition_map_coder_do(TM, BeforeReloadAction, UponReloadDoneAdr):
 
     LanguageDB = Setup.language_db
 
-    txt = []
-    if BeforeGotoReloadAction is not None:
-        assert isinstance(UponReloadDoneAdr, (int, long))
-        engine_type = engine.FORWARD
-        #index = transition_map_tool.index(TransitionMap, Setup.buffer_limit_code)
-        #assert index is not None
-        #assert TransitionMap[index][1] == E_StateIndices.DROP_OUT
-        goto_reload_action = copy(BeforeGotoReloadAction)
-        goto_reload_action.append(LanguageDB.GOTO_RELOAD(UponReloadDoneAdr, True, engine_type))
-        goto_reload_str    = "".join(goto_reload_action)
-        transition_map_tool.set(TM, Setup.buffer_limit_code, goto_reload_str)
-    else:
-        engine_type     = engine.CHARACTER_COUNTER
-        goto_reload_str = None
+    if BeforeReloadAction is None: engine_type = engine.CHARACTER_COUNTER
+    else:                          engine_type = engine.FORWARD
+
+    goto_reload_str = transition_block.prepare_reload(TM,
+                                       StateIndex         = UponReloadDoneAdr,
+                                       EngineType         = engine_type,
+                                       InitStateF         = True,
+                                       BeforeReloadAction = BeforeReloadAction)
 
     # The range of possible characters may be restricted. It must be ensured,
     # that the occurring characters only belong to the admissible range.
@@ -493,12 +490,9 @@ def _transition_map_coder_do(TM, BeforeGotoReloadAction, UponReloadDoneAdr):
     ]
 
     LanguageDB.code_generation_switch_cases_add_statement("break;")
+    txt = []
     transition_block.do(txt, tm)
     LanguageDB.code_generation_switch_cases_add_statement(None)
-
-    txt.append(0)
-    txt.append(LanguageDB.INPUT_P_INCREMENT())
-    txt.append("\n")
 
     return txt
 

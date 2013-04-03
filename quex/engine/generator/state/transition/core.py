@@ -52,7 +52,7 @@ def prepare_reload(TransitionMap,
                    EngineType             = engine.FORWARD,
                    InitStateF             = False,
                    GotoReload_Str         = None,
-                   BeforeGotoReloadAction = None):
+                   BeforeReloadAction = None):
     """The 'buffer-limit-code' always needs to be identified separately.
     This helps to generate the reload procedure a little more elegantly.
     (Backward input position detection does not reload. It only moves 
@@ -62,14 +62,14 @@ def prepare_reload(TransitionMap,
 
     if EngineType.requires_buffer_limit_code_for_reload():
         index = transition_map_tool.index(TransitionMap, Setup.buffer_limit_code)
-        assert index is not None
+        #assert index is not None
         #assert TransitionMap[index][1] == E_StateIndices.DROP_OUT, \
         #        "%s: %s != %s" % (TransitionMap[index][0].get_string(Option="hex"), TransitionMap[index][1], E_StateIndices.DROP_OUT)
         transition_map_tool.set(TransitionMap, Setup.buffer_limit_code, 
                                  E_StateIndices.RELOAD_PROCEDURE)
         goto_reload_action = []
-        if BeforeGotoReloadAction is not None:
-            goto_reload_action.extend(BeforeGotoReloadAction)
+        if BeforeReloadAction is not None:
+            goto_reload_action.extend(BeforeReloadAction)
 
         if GotoReload_Str is not None:
             goto_reload_action.extend(GotoReload_Str)
@@ -87,7 +87,7 @@ def prepare_transition_map(TransitionMap,
                            InitStateF             = False,
                            GotoReload_Str         = None,
                            TheAnalyzer            = None,
-                           BeforeGotoReloadAction = None):
+                           BeforeReloadAction = None):
     global LanguageDB
     assert isinstance(TransitionMap, list)
     assert isinstance(EngineType, engine.Base)
@@ -108,7 +108,7 @@ def prepare_transition_map(TransitionMap,
                                      EngineType             = EngineType,
                                      InitStateF             = InitStateF,
                                      GotoReload_Str         = GotoReload_Str,
-                                     BeforeGotoReloadAction = BeforeGotoReloadAction)
+                                     BeforeReloadAction = BeforeReloadAction)
 
     TransitionCodeFactory.init(EngineType, 
                                StateIndex    = StateIndex,

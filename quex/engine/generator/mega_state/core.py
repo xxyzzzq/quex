@@ -55,7 +55,7 @@ class Handler:
         if isinstance(self.state, PathWalkerState):
             txt.append("#   undef __QUEX_DEBUG_MAP_PATH_BASE_TO_PATH_ID\n")
 
-def do(txt, TheState, TheAnalyzer, BeforeGotoReloadAction=None):
+def do(txt, TheState, TheAnalyzer, BeforeReloadAction=None):
     specific = Handler(TheState)
 
     specific.debug_info_map_state_key_to_state_index(txt)
@@ -68,7 +68,7 @@ def do(txt, TheState, TheAnalyzer, BeforeGotoReloadAction=None):
 
     # (*) Transition Map ______________________________________________________
     tm = prepare_transition_map(TheState, TheAnalyzer, specific.state_key_str, 
-                                BeforeGotoReloadAction)
+                                BeforeReloadAction)
     transition_block.do(txt, tm)
 
     # (*) Drop Out ____________________________________________________________
@@ -140,7 +140,7 @@ def drop_out_scheme_implementation(txt, TheState, TheAnalyzer, StateKeyString, D
     LanguageDB.INDENT(case_txt)
     txt.extend(case_txt)
 
-def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr, BeforeGotoReloadAction):
+def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr, BeforeReloadAction):
     """Generate targets in the transition map which the code generation can 
        handle. The transition map will consist of pairs of
     
@@ -176,7 +176,7 @@ def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr, BeforeGotoReloadA
                                                       TheState.index,
                                                       EngineType             = TheAnalyzer.engine_type,
                                                       InitStateF             = TheState.init_state_f,
-                                                      BeforeGotoReloadAction = BeforeGotoReloadAction)
+                                                      BeforeReloadAction = BeforeReloadAction)
 
     MegaStateTransitionCodeFactory.init(TheState, TheAnalyzer.state_db, StateKeyStr, 
                                         TheAnalyzer.engine_type, goto_reload_str)

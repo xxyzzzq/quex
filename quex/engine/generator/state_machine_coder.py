@@ -5,7 +5,7 @@ from   quex.blackboard                                  import setup as Setup
 from   collections import defaultdict
 from   itertools   import imap
 
-def do(TheAnalyzer, BeforeGotoReloadAction=None):
+def do(TheAnalyzer, BeforeReloadAction=None):
     """Generate source code for a given state machine 'SM'.
     """
     LanguageDB = Setup.language_db
@@ -13,17 +13,17 @@ def do(TheAnalyzer, BeforeGotoReloadAction=None):
 
     # (*) Init State must be first!
     txt = []
-    state_coder.do(txt, TheAnalyzer.state_db[TheAnalyzer.init_state_index], TheAnalyzer, BeforeGotoReloadAction)
+    state_coder.do(txt, TheAnalyzer.state_db[TheAnalyzer.init_state_index], TheAnalyzer, BeforeReloadAction)
 
     # (*) Code the Mega States (implementing multiple states in one)
     for state in TheAnalyzer.mega_state_list:
-        mega_state_coder.do(txt, state, TheAnalyzer, BeforeGotoReloadAction)
+        mega_state_coder.do(txt, state, TheAnalyzer, BeforeReloadAction)
 
     # (*) All other (normal) states (sorted by their frequency of appearance)
     frequency_db = get_frequency_db(TheAnalyzer.state_db, TheAnalyzer.non_mega_state_index_set)
     for state in sorted(imap(lambda i: TheAnalyzer.state_db[i], TheAnalyzer.non_mega_state_index_set), 
                         key=lambda s: frequency_db[s.index], reverse=True):
-        state_coder.do(txt, state, TheAnalyzer, BeforeGotoReloadAction) 
+        state_coder.do(txt, state, TheAnalyzer, BeforeReloadAction) 
 
     return txt
 
