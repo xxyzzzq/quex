@@ -342,6 +342,21 @@ class NumberSet(object):
     def __clone_intervals(self):
         return [ Interval(x.begin, x.end) for x in self.__intervals ]
 
+    def __bisect(self, Value):
+        lower = 0
+        upper = len(self.__intervals)
+        while upper - lower > 1:
+            i = (upper + lower) >> 1
+            if   self.__intervals[i].begin >  Value: upper = i
+            elif self.__intervals[i].end   <= Value: lower = i
+            else:                                    return i
+
+        if     Value >= self.__intervals[lower].begin \
+           and Value <  self.__intervals[lower].end:
+            return lower
+
+        return None
+
     def clone(self):
         return NumberSet([Interval(x.begin, x.end) for x in self.__intervals], ArgumentIsYoursF=True)
 
@@ -497,13 +512,7 @@ class NumberSet(object):
         """True  => if Number in NumberSet
            False => else
         """
-        # Assume that intervals are sorted!
-        for interval in self.__intervals:
-            if   Number >= interval.end:  continue      # Not yet there ...
-            elif Number < interval.begin: return False  # We missed it: Number > last interval, Number < curr. interval
-            return True                                 # Got it: Number >= interval.begin, Number < interval.end
-        # Number > last interval
-        return False
+        return self.__bisect(Number) is not None
 
     def contains_only(self, Number):
         if   len(self.__intervals) != 1: return False

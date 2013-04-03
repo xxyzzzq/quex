@@ -1,4 +1,4 @@
-<test-database execution-time-sec="185.27" date="Wed Apr  3 21:58:01 2013">
+<test-database execution-time-sec="176.45" date="Thu Apr  4 00:18:38 2013">
     <last-used-diff-display-program name=""/>
     <test title="Mode Changes" time-sum-sec="2.15"> 
         <application file-name="test-mode-changes.py" info-request-time="1355705371L" vanished="False"/>
@@ -331,15 +331,15 @@
         </test>
     </group>
     <group name="Single State">
-        <test title="Transition Code Generation" time-sum-sec="16.06"> 
-            <application file-name="test-single-state-transitions.py" info-request-time="1365019059L" vanished="False"/>
+        <test title="Transition Code Generation" time-sum-sec="7.24"> 
+            <application file-name="test-single-state-transitions.py" info-request-time="1365027467L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="A" result="OK" time_sec="0.17" crc="287456115"/>
-               <choice name="B" result="OK" time_sec="4.68" crc="-1155622404"/>
-               <choice name="C" result="OK" time_sec="3.17" crc="2014183630"/>
-               <choice name="A-UTF8" result="NO GOOD FILE" time_sec="0.18" crc="287456115"/>
-               <choice name="B-UTF8" result="NO GOOD FILE" time_sec="4.67" crc="-1155622404"/>
-               <choice name="C-UTF8" result="NO GOOD FILE" time_sec="3.19" crc="2014183630"/>
+               <choice name="B" result="OK" time_sec="0.97" crc="-1155622404"/>
+               <choice name="C" result="FAIL" time_sec="2.46" crc="272244133"/>
+               <choice name="A-UTF8" result="NO GOOD FILE" time_sec="0.22" crc="287456115"/>
+               <choice name="B-UTF8" result="NO GOOD FILE" time_sec="0.95" crc="-1155622404"/>
+               <choice name="C-UTF8" result="NO GOOD FILE" time_sec="2.47" crc="2014183630"/>
             </choice-list>
         </test>
     </group>
