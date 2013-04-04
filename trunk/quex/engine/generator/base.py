@@ -11,12 +11,14 @@ from   quex.engine.generator.languages.address         import address_set_subjec
 import quex.engine.state_machine.parallelize           as     parallelize
 import quex.engine.state_machine.algorithm.beautifier  as     beautifier
 import quex.engine.state_machine.index                 as     index
+from   quex.engine.state_machine.core                  import StateMachine
 import quex.engine.state_machine.transformation        as     transformation
 import quex.engine.analyzer.transition_map             as     transition_map_tool
 from   quex.engine.generator.state.transition.code     import TransitionCodeFactory
 import quex.engine.generator.state.transition.core     as     transition_block
 import quex.engine.analyzer.engine_supply_factory      as     engine
 import quex.engine.analyzer.core                       as     analyzer_generator
+from   quex.engine.interval_handling                   import NumberSet
 from   quex.input.regular_expression.construct         import Pattern
 
 from   quex.blackboard import E_ActionIDs, \
@@ -26,6 +28,7 @@ from   quex.blackboard import E_ActionIDs, \
 from   itertools import ifilter
 import re
 from   copy import copy
+from   collections import defaultdict
 
 Match_input    = re.compile("\\binput\\b", re.UNICODE)
 Match_iterator = re.compile("\\iterator\\b", re.UNICODE)
@@ -130,17 +133,21 @@ class Generator(GeneratorBase):
 
         return txt
 
-    def code_main_state_machine(self, EngineType=engine.FORWARD, BeforeReloadAction=None):
+    def code_main_state_machine(self, EngineType=engine.FORWARD, BeforeReloadAction=None, SimpleF=False):
         LanguageDB       = Setup.language_db 
 
-        sm_txt, analyzer = Generator.code_state_machine(self.sm, EngineType, BeforeReloadAction)
-        terminal_txt     = Generator.code_terminals(self.action_db, self.pre_context_sm_id_list)
+        sm_txt, analyzer = Generator.code_state_machine(self.sm, 
+                                                        EngineType, 
+                                                        BeforeReloadAction)
+        terminal_txt     = Generator.code_terminals(self.action_db, 
+                                                    self.pre_context_sm_id_list, 
+                                                    SimpleF)
 
         # -- reload definition (forward, backward, init state reload)
-        if EngineType.requires_buffer_limit_code_for_reload():
+        if not SimpleF and EngineType.requires_buffer_limit_code_for_reload():
             reload_txt = LanguageDB.RELOAD()
         else:
-            reload_txt = ""
+            reload_txt = []
 
         # Number of different entries in the position register map
         self.__position_register_n                 = len(set(analyzer.position_register_map.itervalues()))
@@ -237,12 +244,12 @@ class Generator(GeneratorBase):
         return txt, analyzer
 
     @staticmethod
-    def code_terminals(ActionDB, PreContextID_List=None):
+    def code_terminals(ActionDB, PreContextID_List=None, SimpleF=False):
         """Implement the 'terminal', i.e. the actions which are performed
         once pattern have matched.
         """
         LanguageDB = Setup.language_db
-        return LanguageDB["$terminal-code"](ActionDB, PreContextID_List, Setup) 
+        return LanguageDB["$terminal-code"](ActionDB, PreContextID_List, Setup, SimpleF) 
 
     @staticmethod
     def code_action_map(TM, IteratorName, 
@@ -292,11 +299,11 @@ class Generator(GeneratorBase):
         """Generates a state machine that represents the transition map 
         according to the codec given in 'Setup.buffer_codec_transformation_info'
         """
-        assert sm is not None
+        assert TM is not None
 
-        pap_list = get_pattern_action_pair_list_from_map(tm, BeforeReloadAction is not None)
+        pap_list = get_pattern_action_pair_list_from_map(TM)
         for pap in pap_list:
-            pap.transform(Setup.buffer_codec_transformation_info)
+            pap.pattern().transform(Setup.buffer_codec_transformation_info)
 
         if OnFailureAction is not None:
             pap_list.append(PatternActionInfo(E_ActionIDs.ON_FAILURE, 
@@ -305,12 +312,12 @@ class Generator(GeneratorBase):
         if BeforeReloadAction is None: engine_type = engine.CHARACTER_COUNTER
         else:                          engine_type = engine.FORWARD
 
-        generator = CppGenerator(pap_list) 
+        generator = Generator(pap_list) 
 
         # assert E_ActionIDs.ON_AFTER_MATCH not in action_db
         # assert E_ActionIDs.ON_FAILURE     not in action_db
         # complete_f, sm = transformation.do_state_machine(sm)
-        return generator.code_main_state_machine(engine_type, BeforeReloadAction)
+        return generator.code_main_state_machine(engine_type, BeforeReloadAction, SimpleF=True)
 
     @staticmethod
     def code_action_state_machine_trivial(tm, BeforeReloadAction):
@@ -493,10 +500,14 @@ def get_pattern_action_pair_list_from_map(TM):
     # Sort by actions.
     action_code_db = defaultdict(NumberSet)
     for character_set, action_list in TM:
+        assert isinstance(action_list, list)
+        # Make 'action_list' a tuple so that it is hash-able
         action_code_db[tuple(action_list)].unite_with(character_set)
 
     pattern_action_pair_list = []
     for action, trigger_set in action_code_db.iteritems():
+        # Make 'action' a list again, so that it can be used as CodeFragment
+        action = list(action)
         pattern = Pattern(StateMachine.from_character_set(trigger_set))
         pattern_action_pair_list.append(PatternActionInfo(pattern, action))
 

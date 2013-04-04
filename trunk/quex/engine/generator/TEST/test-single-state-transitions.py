@@ -32,6 +32,7 @@ import quex.engine.generator.languages.core        as     languages
 import quex.engine.generator.languages.address     as     address
 import quex.engine.generator.state.transition.core as     transition_block
 
+LanguageDB = Setup.language_db
 
 address.init_address_handling()
 
@@ -116,23 +117,28 @@ tm = [ (interval, ["return %i;\n" % i]) for interval, i in tm0 ]
 transition_map_tool.fill_gaps(tm, ["return -1;"])
 
 
-def get_transition_function(tm):
-    tm_txt = CppGenerator.code_action_map_plain(tm)
-    assert len(tm_txt) != 0
+def get_transition_function(tm, Codec):
+    if codec != "UTF8":
+        tm_txt = CppGenerator.code_action_map_plain(tm)
+        assert len(tm_txt) != 0
+    else:
+        Setup.buffer_codec_transformation_info = "utf8-state-split"
+        tm_txt = CppGenerator.code_action_state_machine(tm, None, None)
+        tm_txt = LanguageDB.GET_PLAIN_STRINGS(tm_txt)
 
     reload   = "%s: return (int)-1;\n" % address.get_label("$reload", -1)
     drop_out = "%s: return (int)-1;\n" % address.get_label("$drop-out", -1)
 
-    function = [ 
+    txt = [ 
         "#define __quex_debug_state(X) /* empty */\n",
         "int transition(int input) {\n" 
     ]
-    function.extend(tm_txt)
-    function.append(reload)
-    function.append(drop_out)
-    function.append("\n}\n")
+    txt.extend(tm_txt)
+    txt.append(reload)
+    txt.append(drop_out)
+    txt.append("\n}\n")
 
-    return function
+    return txt
 
 main_template = """
 /* From '.begin' the target map targets to '.target' until the next '.begin' is
@@ -191,7 +197,7 @@ def get_main_function(tm0):
 
     return main_template.replace("$$ENTRY_LIST$$", "".join(expected_array))
 
-function_txt = get_transition_function(tm)
+function_txt = get_transition_function(tm, codec)
 main_txt     = get_main_function(tm0)
 
 txt = function_txt + [ main_txt ]

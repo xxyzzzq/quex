@@ -1,11 +1,12 @@
 class CodeFragment:
-    def __init__(self, Code=None, RequireTerminatingZeroF=False):
-        if   Code == None:                     self.__code = []
-        elif isinstance(Code, (str, unicode)): self.__code = [ Code ]
-        else:                                  self.__code = Code
+    def __init__(self, Code=None):
+        self.set_code(Code)
 
     def set_code(self, Code):
-        self.__code = Code
+        if   Code is None:                     self.__code = []
+        elif isinstance(Code, (str, unicode)): self.__code = [ Code ]
+        elif isinstance(Code, list):           self.__code = Code
+        else:                                  assert False
 
     def get_code(self, Mode=None):
         """Returns a list of strings and/or integers that are the 'core code'. 

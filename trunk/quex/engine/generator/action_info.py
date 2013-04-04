@@ -79,16 +79,15 @@ class GeneratedCode(UserCodeFragment):
 
 class PatternActionInfo:
     def __init__(self, ThePattern, Action, PatternStr="", IL = None, ModeName="", Comment=""):
-        assert Action is None or \
-               issubclass(Action.__class__, CodeFragment) or \
-               type(Action) in [str, unicode]
         assert    ThePattern in E_ActionIDs \
                or (ThePattern.__class__.__name__ == "Pattern") or (ThePattern is None)
 
-        self.__pattern = ThePattern
-        if type(Action) in [str, unicode]: self.__action = CodeFragment(Action)
-        else:                              self.__action = Action
+        if Action is None or issubclass(Action.__class__, CodeFragment):
+            self.__action = Action
+        else:
+            self.__action = CodeFragment(Action)
 
+        self.__pattern     = ThePattern
         self.__pattern_str = PatternStr
         self.mode_name     = ModeName
         self.comment       = Comment

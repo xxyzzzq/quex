@@ -88,6 +88,8 @@ def set(transition_map, Character, NewTarget):
         transition_map.sort(key=lambda x: x[0].begin)
         return
 
+    interval, target = transition_map[i]
+
     # Found the interval that contains the Character
     assert interval.size() > 0
     L = len(transition_map)
@@ -293,6 +295,9 @@ def cut(transition_map, CharacterSet):
 def bisect(transition_map, Character):
     lower = 0
     upper = len(transition_map)
+    if upper == 0:
+        return None
+
     while upper - lower > 1:
         i = (upper + lower) >> 1
         if   transition_map[i][0].begin >  Character: upper = i

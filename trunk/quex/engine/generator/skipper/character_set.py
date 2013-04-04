@@ -94,6 +94,9 @@ def __make_loop(Mode, CharacterSet):
                                  ConcernedCharacterSet    = CharacterSet,
                                  DoNotResetReferenceP_Set = exit_skip_set)
 
+    for interval, action_list in tm:
+        action_list.extend(["\n", 1, "continue;\n"])
+
     tm = add_on_exit_actions(tm, exit_skip_set, column_count_per_chunk)
 
     before_reload_action = get_before_reload_actions(column_count_per_chunk)
