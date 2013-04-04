@@ -8,6 +8,7 @@ from   quex.engine.generator.base                   import get_combined_state_ma
                                                            Generator as CppGenerator
 from   quex.engine.generator.action_info            import CodeFragment
 from   quex.engine.state_machine.core               import StateMachine
+import quex.engine.state_machine.transformation     as     transformation
 import quex.engine.analyzer.core                    as     analyzer_generator
 import quex.engine.analyzer.transition_map          as     transition_map_tool
 from   quex.engine.interval_handling                import NumberSet, Interval

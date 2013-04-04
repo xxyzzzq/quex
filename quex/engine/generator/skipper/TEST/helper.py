@@ -18,8 +18,8 @@ def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferS
     address.init_address_handling()
     variable_db.variable_db.init()
     data = { 
-        "character_set": TriggerSet, 
-        "require_label_SKIP_f": True, 
+        "character_set":        TriggerSet, 
+        "require_label_SKIP_f": False, 
     }
     skipper_code = character_set_skipper.do(data, get_mode_object("CharacterSetSkipper"))
 
@@ -119,7 +119,10 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
         ml_txt += "    break;\n"
 
     if type(SourceCode) == list:
-        SourceCode = "".join(address.get_plain_strings(SourceCode))
+        plain_code = LanguageDB.GET_PLAIN_STRINGS(SourceCode)
+        #if len(plain_code) >= 3304: 
+        #    print "#3304:", plain_code[3303:3305]
+        SourceCode = "".join(plain_code)
 
     reload_str = ""
     if ReloadF: 

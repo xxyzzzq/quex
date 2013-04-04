@@ -1,4 +1,4 @@
-<history date="Wed Apr  3 07:12:31 2013" element-n="103">
+<history date="Thu Apr  4 08:16:33 2013" element-n="109">
     <day year="2012" month="04" day="29">
         <history-init time="04:47:15"/>
         <crc-error time="19:51:20" application="test-skip-trigger-set.py" choice="ANSI-C-PlainMemory" database-crc="1490947051" real-crc="600307805"/>
@@ -113,5 +113,13 @@
         <crc-error time="06:19:13" application="test-skip_range-2.py" choice="DL=2" database-crc="-966335440" real-crc="-1894220404"/>
         <crc-error time="06:19:14" application="test-skip_range-2.py" choice="DL=3" database-crc="-1383611275" real-crc="1989046053"/>
         <crc-error time="06:19:15" application="test-skip_range-2.py" choice="DL=4" database-crc="-1702822860" real-crc="-1857281654"/>
+    </day>
+    <day year="2013" month="04" day="04">
+        <crc-error time="06:04:08" application="test-skip-utf8.py" choice="3" database-crc="1917446300" real-crc="1427658723"/>
+        <crc-error time="06:04:08" application="test-skip-utf8.py" choice="4" database-crc="59513818" real-crc="1427658723"/>
+        <crc-error time="06:04:09" application="test-skip-utf8.py" choice="5" database-crc="332261056" real-crc="1427658723"/>
+        <crc-error time="06:04:10" application="test-skip-utf8.py" choice="6" database-crc="588243438" real-crc="1427658723"/>
+        <crc-error time="06:04:10" application="test-skip-utf8.py" choice="7" database-crc="860757236" real-crc="1427658723"/>
+        <crc-error time="06:04:11" application="test-skip-utf8.py" choice="8" database-crc="-1065089182" real-crc="1427658723"/>
     </day>
 </history>

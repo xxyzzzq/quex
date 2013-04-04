@@ -413,8 +413,9 @@ def __pattern_terminal_code(PatternID, Info, SimpleF, Setup):
     elif isinstance(action_code, (str, unicode)): result.append(action_code)
     else:                                         assert False
 
-    if SimpleF: result.extend(["\n", 1, "continue;\n"])
-    else:       result.extend(["\n", 1, "goto %s;\n" % get_label("$re-start", U=True)])
+    if not SimpleF: 
+        result.extend(["\n", 1, "goto %s;\n" % get_label("$re-start", U=True)])
+        result.extend(["\n", 1, "continue;\n"])
     return result
 
 def __jump_to_backward_input_position_detector(BIPD_SM, Setup):
@@ -518,8 +519,7 @@ def __terminal_router(TerminalFailureRef, TerminalFailureDef):
           __terminal_router_epilog_str, 
     ])
 
-def __terminal_states(action_db, PreConditionIDList, 
-                      Setup, SimpleF=False):
+def __terminal_states(action_db, PreConditionIDList, Setup, SimpleF=False):
     """NOTE: During backward-lexing, for a pre-context, there is not need for terminal
              states, since only the flag 'pre-context fulfilled is raised.
 
