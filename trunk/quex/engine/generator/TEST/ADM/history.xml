@@ -1,4 +1,4 @@
-<history date="Thu Apr  4 00:53:20 2013" element-n="1286">
+<history date="Tue Apr  9 00:22:59 2013" element-n="1288">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
@@ -2100,5 +2100,11 @@
     </day>
     <day year="2013" month="04" day="03">
         <crc-error time="22:18:34" application="test-single-state-transitions.py" choice="C" database-crc="2014183630" real-crc="272244133"/>
+    </day>
+    <day year="2013" month="04" day="05">
+        <crc-error time="05:16:39" application="test-single-state-transitions.py" choice="C" database-crc="272244133" real-crc="-1508540529"/>
+    </day>
+    <day year="2013" month="04" day="07">
+        <crc-error time="16:18:16" application="test-single-state-transitions.py" choice="B" database-crc="-1155622404" real-crc="-210155245"/>
     </day>
 </history>

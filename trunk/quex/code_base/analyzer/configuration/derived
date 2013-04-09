@@ -316,7 +316,8 @@
 #define __QUEX_APPEND(X, Y)    ____QUEX_APPEND(X, Y)
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
-    /* Cannot go through '__QUEX_APPEND'. The '##' must produce a valid C/C++ token. */
+    /* Cannot/must not go through '__QUEX_APPEND'. QUEX_FUNCTION_PREFIX ends 
+     * with '::'. No '##' is required for concatination.                     */
 #   define QUEX_FUNCTION_DEF(NAME)                      NAME
 #   define QUEX_FUNCTION(NAME)                          QUEX_FUNCTION_PREFIX NAME
 
@@ -366,7 +367,7 @@
 #define QUEX_CONVERTER_CHAR(FROM, TO)      __QUEX_CONVERTER_CHAR(FROM, TO)
 #define QUEX_CONVERTER_STRING(FROM, TO)    __QUEX_CONVERTER_STRING(FROM, TO)
 
-/* The '--token-class-only' we need to restore overwritten macros. */
+/* If '--token-class-only' we need to restore overwritten macros. */
 #define __QUEX_CONVERTER_CHAR_DEF_BACKUP(FROM, TO)    QUEX_FUNCTION_DEF(FROM ## _to_ ## TO ## _character)
 #define __QUEX_CONVERTER_STRING_DEF_BACKUP(FROM, TO)  QUEX_FUNCTION_DEF(FROM ## _to_ ## TO)
 #define QUEX_CONVERTER_CHAR_DEF_BACKUP(FROM, TO)      __QUEX_CONVERTER_CHAR_DEF(FROM, TO)

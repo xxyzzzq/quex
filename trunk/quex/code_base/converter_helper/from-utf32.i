@@ -91,7 +91,7 @@ QUEX_CONVERTER_CHAR_DEF(utf32, utf8)(const uint32_t**  input_pp,
 
 QUEX_INLINE void
 QUEX_CONVERTER_CHAR_DEF(utf32, utf16)(const uint32_t**  input_pp, 
-                                    uint16_t**        output_pp)
+                                      uint16_t**        output_pp)
 {
     uint32_t   tmp = 0;
 
@@ -108,7 +108,7 @@ QUEX_CONVERTER_CHAR_DEF(utf32, utf16)(const uint32_t**  input_pp,
 
 QUEX_INLINE void
 QUEX_CONVERTER_CHAR_DEF(utf32, utf32)(const uint32_t**  input_pp, 
-                                    uint32_t**        output_pp)
+                                      uint32_t**        output_pp)
 {
     *((*output_pp)++) = (uint32_t)(*(*input_pp)++);
 }

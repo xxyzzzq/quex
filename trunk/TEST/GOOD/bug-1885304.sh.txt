@@ -587,9 +587,9 @@ QUEX_NAME(ONE_AND_ONLY_counter)(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTE
 #   if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
     const QUEX_TYPE_CHARACTER* reference_p = LexemeBegin;
 #   endif
-
     __QUEX_IF_COUNT_SHIFT_VALUES();
 
+    __quex_assert(LexemeBegin <= LexemeEnd);
     for(iterator=LexemeBegin; iterator < LexemeEnd; ) {
         switch( (*(iterator)) ) {
             case 0x9:         __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(((iterator) - reference_p)));
@@ -603,7 +603,7 @@ QUEX_NAME(ONE_AND_ONLY_counter)(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTE
             break;
 
         }
-    ++(iterator);
+            ++(iterator);
     }
 __QUEX_IF_COUNT_COLUMNS_ADD((size_t)((iterator - reference_p)));
     __quex_assert(iterator == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */
@@ -2694,6 +2694,7 @@ QUEX_ERROR_EXIT("\n    Match failure in mode 'ONE_AND_ONLY'.\n"
     }
     goto __REENTRY_PREPARATION_2;
 
+
 /* TERMINAL: END_OF_STREAM */
 _256:
 __QUEX_IF_COUNT_SHIFT_VALUES();
@@ -2701,7 +2702,7 @@ __QUEX_IF_COUNT_SHIFT_VALUES();
 #   line 16 "dos_lf_2.qx"
     self_send(QUEX_TKN_TERMINATION);
     
-#   line 2207 "Simple.cpp"
+#   line 2208 "Simple.cpp"
 
     }
     /* End of Stream causes a return from the lexical analyzer, so that no

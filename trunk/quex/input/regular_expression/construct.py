@@ -160,7 +160,7 @@ class Pattern(object):
         for character, name in CharacterList:
             for sm in [self.__sm, self.__pre_context_sm, self.__post_context_sm]:
                 if sm is None: continue
-                sm.delete_transtions_on_interval(Interval(character))
+                sm.delete_transitions_on_interval(Interval(character))
                 sm.clean_up()
                 if sm.is_empty(): 
                     my_error(name, self)

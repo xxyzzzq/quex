@@ -74,7 +74,8 @@ class TransitionMap:
         """Adds a transition according to trigger and target index.
            RETURNS: The target state index (may be created newly).
         """
-        assert type(TargetStateIdx) == long or TargetStateIdx is None
+        assert type(TargetStateIdx) == long \
+               or TargetStateIdx is None, "%s" % TargetStateIdx.__class__.__name__
         assert Trigger.__class__ in [int, long, list, Interval, NumberSet] or Trigger is None
 
         if Trigger is None: # This is a shorthand to trigger via the remaining triggers
@@ -264,6 +265,7 @@ class TransitionMap:
             
         trigger_map = []
         for target, character_set in self.__db.iteritems():
+            assert not character_set.is_empty()
             trigger_map.extend((interval, target) 
                                for interval in character_set.get_intervals())
 

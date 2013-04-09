@@ -373,20 +373,22 @@ class StateMachine(object):
             if i == self.init_state_index: continue
             del self.states[i]
 
-    def delete_transtions_on_interval(self, TheInterval):
+    def delete_transitions_on_interval(self, TheInterval):
         """This function deletes any transition on 'Value' to another
            state. The resulting orphaned states are deleted. The operation
            may leave orphaned states! The need to be deleted manually.
         """
         for state in self.states.itervalues():
+            # 'items()' not 'iteritems()' because 'delete_transitions_to_target()'
+            # may change the dictionaries content.
             for target_state_index, trigger_set in state.transitions().get_map().items():
-
                 if trigger_set.has_intersection(TheInterval):
                     trigger_set.cut_interval(TheInterval)
 
                 # If the operation resulted in cutting the path to the target state, then delete it.
                 if trigger_set.is_empty():
                     state.transitions().delete_transitions_to_target(target_state_index)
+
         return
 
     def get_epsilon_closure_db(self):

@@ -1,4 +1,4 @@
-from   itertools       import izip
+from   itertools       import izip, islice
 import sys
 import os
 
@@ -22,3 +22,9 @@ def print_callstack(BaseNameF=False):
         if BaseNameF: name = os.path.basename(x[0])
         else:         name = x[0]
         print "%s%s:%s:%s(...)" % (" " * ((L-i)*4), name, x[1], x[2]) 
+
+def pair_combinations(iterable):
+    other = tuple(iterable)
+    for i, x in enumerate(iterable):
+        for y in islice(other, i):
+            yield x, y

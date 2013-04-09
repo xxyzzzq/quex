@@ -15,24 +15,17 @@ import sys
 import os
 import random
 sys.path.insert(0, os.environ["QUEX_PATH"])
-from   quex.blackboard                             import setup as Setup
-import quex.engine.generator.languages.core        as     languages
-from   quex.engine.generator.languages.address     import __label_db
-Setup.language_db = languages.db["C"]              
                                                    
-from   quex.engine.interval_handling               import NumberSet, Interval
-from   quex.engine.state_machine.core              import State, StateMachine
-import quex.engine.state_machine.index             as     index
-from   quex.engine.analyzer.state.entry_action     import DoorID
-import quex.engine.analyzer.engine_supply_factory  as     engine
+from   quex.engine.interval_handling               import Interval
 import quex.engine.analyzer.transition_map         as     transition_map_tool
-
 from   quex.engine.generator.base                  import Generator as CppGenerator
 import quex.engine.generator.languages.core        as     languages
 import quex.engine.generator.languages.address     as     address
 import quex.engine.generator.state.transition.core as     transition_block
+from   quex.blackboard                             import setup as Setup
 
-LanguageDB = Setup.language_db
+Setup.language_db = languages.db["C"]              
+LanguageDB        = Setup.language_db
 
 address.init_address_handling()
 
@@ -109,42 +102,82 @@ elif choice == "C":
 
     interval_end = interval_begin
 
-tm0.sort(key=lambda x: x[0].begin)
-target_state_index_list = sorted(list(set(long(i) for interval, i in tm0)))
-tm = [ (interval, ["return %i;\n" % i]) for interval, i in tm0 ]
+def prepare(tm):
+    tm0.sort(key=lambda x: x[0].begin)
+    target_state_index_list = sorted(list(set(long(i) for interval, i in tm0)))
 
-
-transition_map_tool.fill_gaps(tm, ["return -1;"])
-
+    transition_map_tool.fill_gaps(tm0, -1)
+    return [ (interval, ["return %i;\n" % i]) for interval, i in tm0 ]
 
 def get_transition_function(tm, Codec):
     if codec != "UTF8":
         tm_txt = CppGenerator.code_action_map_plain(tm)
         assert len(tm_txt) != 0
+
+        header = \
+            "#define __quex_debug_state(X) /* empty */\n" \
+            "int transition(int input) {\n" 
+
+        transition_txt = \
+            "output = transition(input);"
+
+        variable_txt = \
+            "int32_t        input    = -1;\n" \
+            "int32_t        output   = -1;\n"
+
     else:
         Setup.buffer_codec_transformation_info = "utf8-state-split"
         tm_txt = CppGenerator.code_action_state_machine(tm, None, None)
+        tm_txt.append("%s return (int)-1;\n" % LanguageDB.LABEL_ON_FAILURE())
         tm_txt = LanguageDB.GET_PLAIN_STRINGS(tm_txt)
+        CppGenerator.replace_iterator_name(tm_txt, "input_p", StateMachineF=True)
+
+        header = \
+            "#define __QUEX_OPTION_PLAIN_C\n"                                    \
+            "#define QUEX_NAMESPACE_MAIN_OPEN\n"                                \
+            "#define QUEX_NAMESPACE_MAIN_CLOSE\n"                                \
+            "#define QUEX_CONVERTER_CHAR_DEFi(X, Y) convert_ ## X ## _to_ ## Y\n" \
+            "#define QUEX_CONVERTER_CHAR_DEF(X, Y)  QUEX_CONVERTER_CHAR_DEFi(X, Y)\n" \
+            "#define QUEX_CONVERTER_CHAR(X, Y)      QUEX_CONVERTER_CHAR_DEFi(X, Y)\n" \
+            "#define QUEX_CONVERTER_STRING_DEFi(X, Y) convertstring_ ## X ## _to_ ## Y\n" \
+            "#define QUEX_CONVERTER_STRING_DEF(X, Y)  QUEX_CONVERTER_STRING_DEFi(X, Y)\n" \
+            "#define QUEX_CONVERTER_STRING(X, Y)      QUEX_CONVERTER_STRING_DEFi(X, Y)\n" \
+            "#include <quex/code_base/converter_helper/from-utf32.i>\n"          \
+            "int transition(uint8_t* input_p) {\n"                               \
+            "    uint8_t input = (uint8_t)-1;\n"
+        
+        transition_txt = \
+            "utf32_p = &input;\n"                          \
+            "utf8_p  = &utf8_array[0];\n"                 \
+            "convert_utf32_to_utf8(&utf32_p, &utf8_p);\n" \
+            "output  = transition(&utf8_array[0]);"
+
+        variable_txt = \
+            "uint32_t        input         = 0;\n" \
+            "const uint32_t* utf32_p       = (void*)0;\n" \
+            "uint8_t         utf8_array[8] = {};\n" \
+            "uint8_t*        utf8_p        = (void*)0;\n" \
+            "int32_t         output        = -1;\n"
+
 
     reload   = "%s: return (int)-1;\n" % address.get_label("$reload", -1)
     drop_out = "%s: return (int)-1;\n" % address.get_label("$drop-out", -1)
 
-    txt = [ 
-        "#define __quex_debug_state(X) /* empty */\n",
-        "int transition(int input) {\n" 
-    ]
+    txt = []
+    txt.extend(header)
     txt.extend(tm_txt)
     txt.append(reload)
     txt.append(drop_out)
     txt.append("\n}\n")
 
-    return txt
+    return txt, transition_txt, variable_txt
 
 main_template = """
 /* From '.begin' the target map targets to '.target' until the next '.begin' is
  * reached.                                                                  */
 typedef struct { int begin; int target; } entry_t;
 
+#include <inttypes.h> 
 #include <stdio.h>
 int
 main(int argc, char** argv) {
@@ -153,8 +186,7 @@ $$ENTRY_LIST$$
     };
     const entry_t* db_last  = &db[sizeof(db)/sizeof(entry_t) - 1];
     const entry_t* iterator = &db[0];
-    int            input    = -1;
-    int            output   = -1;
+$$VARIABLES$$
     int            target   = -1;
     
     printf("No output is good output!\\n");
@@ -163,7 +195,7 @@ $$ENTRY_LIST$$
         target = iterator->target;
         ++iterator;
         for(; input != iterator->begin; ++input) {
-            output = transition(input);
+$$TRANSITION$$
             if( output != target ) {
                 printf("input: 0x%06X; output: %i; expected: %i;   ERROR\\n",
                        (int)input, (int)output, (int)target);
@@ -176,29 +208,25 @@ $$ENTRY_LIST$$
     printf("Oll Korrekt\\n");
 }
 """
-def get_main_function(tm0):
-    begin       = 0
-    prev_target = transition_map_tool.get_target(tm0, begin)
-    if prev_target is None: prev_target = -1
+def get_main_function(tm0, VariableTxt, TranstionTxt):
+    def indent(Txt, N):
+        return (" " * N) + (Txt.replace("\n", "\n" + (" " * N)))
 
-    entry_list  = [ (begin, prev_target) ]
-    for x in range(1, interval_end):
-        target = transition_map_tool.get_target(tm0, x)
-        if target is None: 
-            target = -1
-        if target != prev_target:
-            entry_list.append((x, target))
-            prev_target = target
-
-    entry_list.append((interval_end, -1))
+    entry_list = [ (0 if interval.begin < 0 else interval.begin, target) for interval, target in tm0 ]
+    entry_list.append((tm0[-1][0].begin, -1))
     entry_list.append((0x1FFFF, -1))
-     
     expected_array = [ "        { 0x%06X, %i },\n" % (begin, target) for begin, target in entry_list ]
 
-    return main_template.replace("$$ENTRY_LIST$$", "".join(expected_array))
+    txt = main_template.replace("$$ENTRY_LIST$$", "".join(expected_array))
+    txt = txt.replace("$$VARIABLES$$", indent(VariableTxt, 4))
+    txt = txt.replace("$$TRANSITION$$", indent(TranstionTxt, 12))
+    return txt
 
-function_txt = get_transition_function(tm, codec)
-main_txt     = get_main_function(tm0)
+tm           = prepare(tm0)
+function_txt, \
+transition_txt, \
+variable_txt = get_transition_function(tm, codec)
+main_txt     = get_main_function(tm0, variable_txt, transition_txt)
 
 txt = function_txt + [ main_txt ]
 Setup.language_db.REPLACE_INDENT(txt)
@@ -206,7 +234,7 @@ Setup.language_db.REPLACE_INDENT(txt)
 fh = open("test.c", "wb")
 fh.write("".join(txt))
 fh.close()
-os.system("gcc test.c -o test")
+os.system("gcc -I$QUEX_PATH test.c -o test")
 os.system("./test")
 os.remove("./test")
 #os.remove("./test.c")

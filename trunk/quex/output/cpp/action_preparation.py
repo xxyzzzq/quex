@@ -23,7 +23,8 @@ analyzer. This includes the following:
 """
 from   quex.engine.generator.action_info           import CodeFragment, \
                                                           PatternActionInfo
-from   quex.blackboard                             import setup as Setup
+from   quex.engine.generator.languages.address     import get_label
+from   quex.blackboard                             import setup as Setup, E_ActionIDs
 import quex.output.cpp.counter_for_pattern         as     counter_for_pattern
 
 import re
@@ -76,9 +77,9 @@ def do(Mode, IndentationSupportF, BeginOfLineSupportF):
 
         pattern_info.set_action(prepared_action)
 
-    pattern_action_pair_list.append((E_ActionIDs.ON_END_OF_STREAM, end_of_stream_action))
-    pattern_action_pair_list.append((E_ActionIDs.ON_FAILURE,       on_failure_action))
-    pattern_action_pair_list.append(on_after_match)
+    for action in (end_of_stream_action, on_failure_action, on_after_match):
+        if action is None: continue
+        pattern_action_pair_list.append(action)
     
     return pattern_action_pair_list
 

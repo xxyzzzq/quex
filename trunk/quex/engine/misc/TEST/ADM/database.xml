@@ -1,49 +1,49 @@
-<test-database execution-time-sec="0.62" date="Tue Mar 26 06:34:56 2013">
+<test-database execution-time-sec="0.92" date="Tue Apr  9 00:23:28 2013">
     <last-used-diff-display-program name=""/>
-    <test title="Enums -- Functionality Test" time-sum-sec="0.07"> 
+    <test title="Enums -- Functionality Test" time-sum-sec="0.05"> 
         <application file-name="enum.py" info-request-time="1355705371L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.07" crc="-1245922459"/>
+           <choice name="" result="OK" time_sec="0.05" crc="-1245922459"/>
         </choice-list>
     </test>
     <group name="File Input">
-        <test title="Function read_until_closing_bracket(...)" time-sum-sec="0.06"> 
+        <test title="Function read_until_closing_bracket(...)" time-sum-sec="0.10"> 
             <application file-name="test-read_until_closing_bracket.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.06" crc="1489533151"/>
+               <choice name="" result="OK" time_sec="0.10" crc="1489533151"/>
             </choice-list>
         </test>
-        <test title="Function delete_comment(...)" time-sum-sec="0.05"> 
+        <test title="Function delete_comment(...)" time-sum-sec="0.09"> 
             <application file-name="test-delete_comment.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.05" crc="1761513741"/>
+               <choice name="" result="OK" time_sec="0.09" crc="1761513741"/>
             </choice-list>
         </test>
-        <test title="Function extract_identifiers_with_specific_prefix(...)" time-sum-sec="0.05"> 
+        <test title="Function extract_identifiers_with_specific_prefix(...)" time-sum-sec="0.10"> 
             <application file-name="test-extract_identifiers_with_specific_prefix.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.05" crc="-957083127"/>
+               <choice name="" result="OK" time_sec="0.10" crc="-957083127"/>
             </choice-list>
         </test>
     </group>
     <group name="Integer conversion">
-        <test title="read_integer(...)" time-sum-sec="0.34"> 
+        <test title="read_integer(...)" time-sum-sec="0.50"> 
             <application file-name="test-read_integer.py" info-request-time="1360789237L" vanished="False"/>
             <choice-list number="6" same_result="False">
-               <choice name="hex" result="OK" time_sec="0.05" crc="952788026"/>
-               <choice name="octal" result="OK" time_sec="0.05" crc="1921488222"/>
-               <choice name="decimal" result="OK" time_sec="0.06" crc="-1709956949"/>
-               <choice name="binary" result="OK" time_sec="0.07" crc="245398371"/>
-               <choice name="roman" result="OK" time_sec="0.05" crc="832665557"/>
-               <choice name="misc" result="OK" time_sec="0.06" crc="731748549"/>
+               <choice name="hex" result="OK" time_sec="0.08" crc="952788026"/>
+               <choice name="octal" result="OK" time_sec="0.08" crc="1921488222"/>
+               <choice name="decimal" result="OK" time_sec="0.07" crc="-1709956949"/>
+               <choice name="binary" result="OK" time_sec="0.11" crc="245398371"/>
+               <choice name="roman" result="OK" time_sec="0.07" crc="832665557"/>
+               <choice name="misc" result="OK" time_sec="0.09" crc="731748549"/>
             </choice-list>
         </test>
     </group>
     <group name="String Handling">
-        <test title="Trim (replaced by string.strip(..))" time-sum-sec="0.05"> 
+        <test title="Trim (replaced by string.strip(..))" time-sum-sec="0.08"> 
             <application file-name="test-trim.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.05" crc="-964243626"/>
+               <choice name="" result="OK" time_sec="0.08" crc="-964243626"/>
             </choice-list>
         </test>
     </group>

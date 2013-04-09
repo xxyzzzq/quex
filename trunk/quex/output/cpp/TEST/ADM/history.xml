@@ -1,4 +1,4 @@
-<history date="Wed Mar 27 08:01:14 2013" element-n="221">
+<history date="Tue Apr  9 23:37:55 2013" element-n="223">
     <day year="2009" month="04" day="25">
         <history-init time="06:37:01"/>
         <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="06:37:01"/>
@@ -525,5 +525,9 @@
         <crc-error time="21:10:24" application="default_counter.py" choice="Default-cp037" database-crc="2102454067" real-crc="1009010082"/>
         <crc-error time="21:10:29" application="default_counter.py" choice="Default2-cp037" database-crc="-2022684343" real-crc="-1673566392"/>
         <crc-error time="21:10:33" application="default_counter.py" choice="Wild-cp037" database-crc="-1740681174" real-crc="-1073689164"/>
+    </day>
+    <day year="2013" month="04" day="09">
+        <crc-error time="21:27:42" application="default_counter.py" choice="Default2-UTF8" database-crc="-533895532" real-crc="-1084277976"/>
+        <crc-error time="21:36:21" application="default_counter.py" choice="Default-UTF16" database-crc="1036428768" real-crc="422323353"/>
     </day>
 </history>

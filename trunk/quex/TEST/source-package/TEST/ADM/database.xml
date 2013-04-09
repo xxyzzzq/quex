@@ -1,21 +1,21 @@
-<test-database execution-time-sec="30.81" date="Tue Mar 26 06:50:13 2013">
+<test-database execution-time-sec="55.83" date="Tue Apr  9 00:22:15 2013">
     <last-used-diff-display-program name=""/>
     <group name="Source Packager">
-        <test title="C++" time-sum-sec="11.41"> 
+        <test title="C++" time-sum-sec="24.22"> 
             <application file-name="test-cpp.sh" info-request-time="1355705370L" vanished="False"/>
             <choice-list number="12" same_result="True">
-               <choice name="plain" result="OK" time_sec="0.82" crc="1735895320"/>
-               <choice name="iconv" result="OK" time_sec="0.94" crc="1735895320"/>
-               <choice name="icu" result="OK" time_sec="1.01" crc="1735895320"/>
-               <choice name="codec" result="OK" time_sec="0.92" crc="1735895320"/>
-               <choice name="codec-utf8" result="OK" time_sec="0.95" crc="1735895320"/>
-               <choice name="codec-utf16" result="OK" time_sec="1.07" crc="1735895320"/>
-               <choice name="post-categorizer" result="OK" time_sec="1.26" crc="1735895320"/>
-               <choice name="no-string-accumulator" result="OK" time_sec="0.97" crc="1735895320"/>
-               <choice name="no-include-stack" result="OK" time_sec="0.97" crc="1735895320"/>
-               <choice name="no-counter" result="OK" time_sec="0.79" crc="1735895320"/>
-               <choice name="manual-token-class" result="OK" time_sec="0.74" crc="1735895320"/>
-               <choice name="customized-token-class" result="OK" time_sec="0.97" crc="1735895320"/>
+               <choice name="plain" result="OK" time_sec="1.74" crc="1735895320"/>
+               <choice name="iconv" result="OK" time_sec="2.26" crc="1735895320"/>
+               <choice name="icu" result="OK" time_sec="2.05" crc="1735895320"/>
+               <choice name="codec" result="OK" time_sec="1.69" crc="1735895320"/>
+               <choice name="codec-utf8" result="OK" time_sec="1.74" crc="1735895320"/>
+               <choice name="codec-utf16" result="OK" time_sec="1.56" crc="1735895320"/>
+               <choice name="post-categorizer" result="OK" time_sec="2.39" crc="1735895320"/>
+               <choice name="no-string-accumulator" result="OK" time_sec="2.15" crc="1735895320"/>
+               <choice name="no-include-stack" result="OK" time_sec="2.70" crc="1735895320"/>
+               <choice name="no-counter" result="OK" time_sec="2.17" crc="1735895320"/>
+               <choice name="manual-token-class" result="OK" time_sec="1.70" crc="1735895320"/>
+               <choice name="customized-token-class" result="OK" time_sec="2.07" crc="1735895320"/>
             </choice-list>
         </test>
         <test title="C++" time-sum-sec="9.27"> 
@@ -35,21 +35,21 @@
                <choice name="customized-token-class" result="NO GOOD FILE" time_sec="0.75" crc="1735895320"/>
             </choice-list>
         </test>
-        <test title="C" time-sum-sec="10.13"> 
+        <test title="C" time-sum-sec="22.34"> 
             <application file-name="test-c.sh" info-request-time="1355705370L" vanished="False"/>
             <choice-list number="12" same_result="True">
-               <choice name="plain" result="OK" time_sec="0.81" crc="-21726970"/>
-               <choice name="iconv" result="OK" time_sec="0.97" crc="-21726970"/>
-               <choice name="icu" result="OK" time_sec="1.10" crc="-21726970"/>
-               <choice name="codec" result="OK" time_sec="0.74" crc="-21726970"/>
-               <choice name="codec-utf8" result="OK" time_sec="0.84" crc="-21726970"/>
-               <choice name="codec-utf16" result="OK" time_sec="0.75" crc="-21726970"/>
-               <choice name="post-categorizer" result="OK" time_sec="0.98" crc="-21726970"/>
-               <choice name="no-string-accumulator" result="OK" time_sec="0.77" crc="-21726970"/>
-               <choice name="no-include-stack" result="OK" time_sec="0.98" crc="-21726970"/>
-               <choice name="no-counter" result="OK" time_sec="0.70" crc="-21726970"/>
-               <choice name="manual-token-class" result="OK" time_sec="0.68" crc="-21726970"/>
-               <choice name="customized-token-class" result="OK" time_sec="0.81" crc="-21726970"/>
+               <choice name="plain" result="OK" time_sec="1.67" crc="-21726970"/>
+               <choice name="iconv" result="OK" time_sec="2.28" crc="-21726970"/>
+               <choice name="icu" result="OK" time_sec="2.28" crc="-21726970"/>
+               <choice name="codec" result="OK" time_sec="1.74" crc="-21726970"/>
+               <choice name="codec-utf8" result="OK" time_sec="1.77" crc="-21726970"/>
+               <choice name="codec-utf16" result="OK" time_sec="1.87" crc="-21726970"/>
+               <choice name="post-categorizer" result="OK" time_sec="2.66" crc="-21726970"/>
+               <choice name="no-string-accumulator" result="OK" time_sec="1.63" crc="-21726970"/>
+               <choice name="no-include-stack" result="OK" time_sec="2.14" crc="-21726970"/>
+               <choice name="no-counter" result="OK" time_sec="1.54" crc="-21726970"/>
+               <choice name="manual-token-class" result="OK" time_sec="1.30" crc="-21726970"/>
+               <choice name="customized-token-class" result="OK" time_sec="1.46" crc="-21726970"/>
             </choice-list>
         </test>
     </group>

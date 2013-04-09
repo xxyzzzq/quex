@@ -47,46 +47,12 @@ def do(txt, TransitionMap):
     if outstanding_list is not None: 
         txt.append(LanguageDB.ENDIF)
 
-def prepare_reload(TransitionMap,
-                   StateIndex             = None,
-                   EngineType             = engine.FORWARD,
-                   InitStateF             = False,
-                   GotoReload_Str         = None,
-                   BeforeReloadAction = None):
-    """The 'buffer-limit-code' always needs to be identified separately.
-    This helps to generate the reload procedure a little more elegantly.
-    (Backward input position detection does not reload. It only moves 
-    inside the current lexeme, which must be inside the buffer.)
-    """
-    LanguageDB = Setup.language_db
-
-    if EngineType.requires_buffer_limit_code_for_reload():
-        index = transition_map_tool.index(TransitionMap, Setup.buffer_limit_code)
-        #assert index is not None
-        #assert TransitionMap[index][1] == E_StateIndices.DROP_OUT, \
-        #        "%s: %s != %s" % (TransitionMap[index][0].get_string(Option="hex"), TransitionMap[index][1], E_StateIndices.DROP_OUT)
-        transition_map_tool.set(TransitionMap, Setup.buffer_limit_code, 
-                                 E_StateIndices.RELOAD_PROCEDURE)
-        goto_reload_action = []
-        if BeforeReloadAction is not None:
-            goto_reload_action.extend(BeforeReloadAction)
-
-        if GotoReload_Str is not None:
-            goto_reload_action.extend(GotoReload_Str)
-        else:
-            goto_reload_action.append(LanguageDB.GOTO_RELOAD(StateIndex, InitStateF, EngineType))
-    else:
-        goto_reload_action = None
-
-    if goto_reload_action is not None: return "".join(goto_reload_action)
-    else:                              return None
-
 def prepare_transition_map(TransitionMap, 
-                           StateIndex             = None,
-                           EngineType             = engine.FORWARD,
-                           InitStateF             = False,
-                           GotoReload_Str         = None,
-                           TheAnalyzer            = None,
+                           StateIndex         = None,
+                           EngineType         = engine.FORWARD,
+                           InitStateF         = False,
+                           GotoReload_Str     = None,
+                           TheAnalyzer        = None,
                            BeforeReloadAction = None):
     global LanguageDB
     assert isinstance(TransitionMap, list)
@@ -103,11 +69,11 @@ def prepare_transition_map(TransitionMap,
     if len(TransitionMap) == 0: 
         return TransitionMap
 
-    goto_reload_str = prepare_reload(TransitionMap,
+    goto_reload_str = TransitionCodeFactory.prepare_reload_tansition(TransitionMap,
                                      StateIndex,
-                                     EngineType             = EngineType,
-                                     InitStateF             = InitStateF,
-                                     GotoReload_Str         = GotoReload_Str,
+                                     EngineType         = EngineType,
+                                     InitStateF         = InitStateF,
+                                     GotoReload_Str     = GotoReload_Str,
                                      BeforeReloadAction = BeforeReloadAction)
 
     TransitionCodeFactory.init(EngineType, 
