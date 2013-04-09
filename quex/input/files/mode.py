@@ -350,14 +350,18 @@ class Mode:
 
         if len(self.__pattern_action_pair_list) != 0:
             txt += "    PATTERN-ACTION PAIRS:\n"
-            self.__pattern_action_pair_list.sort(lambda x, y:
-                            cmp(x.pattern().sm.get_id(),
-                                y.pattern().sm.get_id()))
-            for pattern_action_pair in self.__pattern_action_pair_list:
-                txt += "      (%3i) %s: %s%s\n" % \
-                       (pattern_action_pair.pattern().sm.get_id(),
-                        pattern_action_pair.mode_name, " " * (L - len(self.name)), 
-                        pattern_action_pair.pattern_string())
+            def the_key(x):
+                if hasattr(x.pattern(), "sm"): return x.pattern().sm.get_id()
+                else:                          return x
+            self.__pattern_action_pair_list.sort(key=the_key)
+            for pap in self.__pattern_action_pair_list:
+                if hasattr(pap.pattern(), "sm"): 
+                    txt += "      (%3i) %s: %s%s\n" % \
+                           (pap.pattern().sm.get_id(),
+                            pap.mode_name, " " * (L - len(self.name)), 
+                            pap.pattern_string())
+                else:
+                    txt += "      %s\n" % pap.pattern()
             txt += "\n"
 
         return txt

@@ -128,14 +128,16 @@ class PatternActionInfo:
 
     def __repr__(self):         
         txt  = ""
-        txt += "self.mode_name      = %s\n" + repr(self.mode_name)
-        txt += "self.pattern_string = %s\n" + repr(self.pattern_string())
-        txt += "self.pattern        = \n%s" + repr(self.pattern()).replace("\n", "\n      ")
+        txt += "self.mode_name      = %s\n" % repr(self.mode_name)
+        if self.pattern() not in E_ActionIDs:
+            txt += "self.pattern_string = %s\n" % repr(self.pattern_string())
+        txt += "self.pattern        = %s\n" % repr(self.pattern()).replace("\n", "\n      ")
         txt += "self.action         = %s\n" % self.action().get_code_string()
         if self.action().__class__ == UserCodeFragment:
-            txt += "self.filename   = %s\n" + repr(self.action().filename) 
-            txt += "self.line_n     = %s\n" + repr(self.action().line_n) 
-        txt += "self.pattern_index  = %s\n" + repr(self.pattern().sm.get_id()) 
+            txt += "self.filename   = %s\n" % repr(self.action().filename) 
+            txt += "self.line_n     = %s\n" % repr(self.action().line_n) 
+        if self.pattern() not in E_ActionIDs:
+            txt += "self.pattern_index  = %s\n" % repr(self.pattern().sm.get_id()) 
         return txt
 
 class LocalizedParameter:

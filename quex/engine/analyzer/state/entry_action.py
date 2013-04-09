@@ -1,6 +1,7 @@
 from   quex.blackboard          import setup as Setup, \
                                        E_StateIndices, E_PreContextIDs
 from   quex.engine.misc.file_in import error_msg
+from   quex.engine.tools        import pair_combinations
 
 from   collections              import defaultdict, namedtuple
 from   operator                 import attrgetter, itemgetter
@@ -789,7 +790,9 @@ def get_best_common_command_list(TransitionActionList):
             count_db[command_list].update(ta_list)
             cost_db[command_list] = command_list.cost()
     
-    for x, y in combinations(cmdlist_db.iteritems(), 2):
+    # Prefer own 'pair_combinations' over python's 'itertools.combinations',
+    # because 'itertools.combinations' had trouble with some versions.
+    for x, y in pair_combinations(cmdlist_db.iteritems()):
         x_command_list, x_ta_list = x
         y_command_list, y_ta_list = y
         common_command_list = get_common_command_list(x_command_list, y_command_list)

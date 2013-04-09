@@ -33,7 +33,7 @@ else:     REMOVE_FILES = False
 
 # Switch: Verbose debug output: 
 #         'False' --> Verbose debug output
-if True:
+if True: # False: # True:
     SHOW_TRANSITIONS_STR  = ""
     SHOW_BUFFER_LOADS_STR = ""
 else:

@@ -51,7 +51,8 @@ def get(counter_db, Name):
         return function_name, None # Implementation has been done before.
 
     IteratorName = "iterator"
-    tm, column_counter_per_chunk = get_counter_map(counter_db, IteratorName) 
+    tm, column_counter_per_chunk = get_counter_map(counter_db, IteratorName, 
+                                                   ActionEpilog=["continue;\n"]) 
 
     # TODO: The lexer shall never drop-out with exception.
     on_failure_action = CodeFragment([     
@@ -116,7 +117,8 @@ def get_counter_map(counter_db,
                     IteratorName             = None,
                     ColumnCountPerChunk      = None,
                     ConcernedCharacterSet    = None,
-                    DoNotResetReferenceP_Set = None):
+                    DoNotResetReferenceP_Set = None, 
+                    ActionEpilog             = []):
     """Provide a map which associates intervals with counting actions, i.e.
 
            map: 
@@ -242,6 +244,14 @@ def get_counter_map(counter_db,
 
     transition_map_tool.sort(cm)
 
+    if False and Setup.variable_character_sizes_f():
+        done_set = set() # 'Actions' may occur on multiple intervals
+        for interval, action in cm:
+            if id(action) in done_set: continue
+            done_set.add(id(action))
+            action.append(0)
+            action.extend(ActionEpilog)
+
     return cm, column_count_per_chunk
 
 def get_column_number_per_chunk(counter_db, CharacterSet):
@@ -354,9 +364,6 @@ def __frame(CounterTxt, FunctionName, StateMachineF, ColumnCountPerChunk):
     LanguageDB.INDENT(CounterTxt)
                
     epilogue = []
-    if not StateMachineF:
-        epilogue.extend([2, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
-
     epilogue.append("    }\n")
     if ColumnCountPerChunk is not None:
         LanguageDB.REFERENCE_P_COLUMN_ADD(epilogue, "iterator", ColumnCountPerChunk) 

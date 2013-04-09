@@ -29,7 +29,7 @@
 
 QUEX_INLINE void
 QUEX_CONVERTER_CHAR_DEF(__QUEX_FROM, char)(const __QUEX_FROM_TYPE**  source_pp, 
-                                         char**                    drain_pp)  
+                                           char**                    drain_pp)  
 {
     switch( sizeof(char) )
     {

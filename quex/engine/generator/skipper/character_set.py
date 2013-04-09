@@ -4,12 +4,10 @@ from   quex.engine.generator.languages.address      import get_label, \
                                                            address_set_subject_to_routing_add
 from   quex.engine.generator.languages.variable_db  import variable_db
 import quex.output.cpp.counter                      as     counter
-from   quex.blackboard                              import setup as Setup
+from   quex.blackboard                              import setup as Setup, \
+                                                           E_StateIndices
 from   quex.engine.interval_handling                import NumberSet, Interval
 import quex.engine.analyzer.transition_map          as     transition_map_tool
-
-OnBufferLimitCode = "<<__dummy__OnBufferLimitCode__>>" 
-OnExitCharacter   = "<<__dummy__OnExitCharacter__>>" 
 
 def do(Data, Mode):
     """________________________________________________________________________
@@ -25,9 +23,6 @@ def do(Data, Mode):
                                             not in Set
     ___________________________________________________________________________
     """
-    global OnExitCharacter
-    global OnBufferLimitCode
-
     # tools.print_callstack()
 
     CharacterSet         = Data["character_set"]
@@ -74,8 +69,8 @@ def __make_loop(Mode, CharacterSet):
 
     # Possible reactions on a character _______________________________________
     #
-    blc_set                = NumberSet(Setup.buffer_limit_code)
-    skip_set               = CharacterSet.clone()
+    blc_set       = NumberSet(Setup.buffer_limit_code)
+    skip_set      = CharacterSet.clone()
     skip_set.subtract(blc_set)
     exit_skip_set = CharacterSet.inverse()
     exit_skip_set.subtract(blc_set)
@@ -93,23 +88,22 @@ def __make_loop(Mode, CharacterSet):
                                  ColumnCountPerChunk      = column_count_per_chunk,
                                  ConcernedCharacterSet    = CharacterSet,
                                  DoNotResetReferenceP_Set = exit_skip_set)
-
-    for interval, action_list in tm:
-        action_list.extend(["\n", 1, "continue;\n"])
+                                 ActionEpilog             = ["continue;\n"]) 
 
     tm = add_on_exit_actions(tm, exit_skip_set, column_count_per_chunk)
 
+    # Prepare reload procedure, ensure transition to 'drop-out'
+    transition_map_tool.set(tm, Setup.buffer_limit_code, E_StateIndices.DROP_OUT)
     before_reload_action = get_before_reload_actions(column_count_per_chunk)
 
+    # 'BeforeReloadAction not None' forces a transition to RELOAD_PROCEDURE upon
+    # buffer limit code.
     state_machine_f,     \
     txt,                 \
     upon_reload_done_adr = CppGenerator.code_action_map(tm, 
-                                        IteratorName           = "me->buffer._input_p", 
+                                        IteratorName       = "me->buffer._input_p", 
                                         BeforeReloadAction = before_reload_action, 
-                                        OnFailureAction        = None)
-
-    if not state_machine_f:
-        txt.extend([2, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
+                                        OnFailureAction    = None)
 
     return txt, column_count_per_chunk, state_machine_f, upon_reload_done_adr
 
@@ -157,8 +151,15 @@ def add_on_exit_actions(tm, ExitSkipSet, ColumnCountPerChunk):
         tm     = transition_map_tool.fill_empty_actions(tm, add_tm)
 
     # All characters of the 'ExitSkipSet' must trigger a loop quit.
-    exit_tm = get_transition_map(["goto %s;" % get_label("$start", U=True)], 
-                                 ExitSkipSet)
+    exit_action = []
+    if Setup.variable_character_sizes_f():
+        # Here, characters are made up of more than one 'chunk'. When the last
+        # character needs to be reset, its start position must be known. For 
+        # this the 'lexeme start pointer' is used.
+        exit_action.extend([1, "%s\n" % LanguageDB.INPUT_P_TO_LEXEME_START()])
+    exit_action.extend(["goto %s;" % get_label("$start", U=True)])
+
+    exit_tm = get_transition_map(exit_action, ExitSkipSet)
 
     return transition_map_tool.add_transition_actions(tm, exit_tm)
 
@@ -168,7 +169,11 @@ def get_before_reload_actions(ColumnCountPerChunk):
     if ColumnCountPerChunk is not None:
         LanguageDB.REFERENCE_P_COLUMN_ADD(result, "me->buffer._input_p", ColumnCountPerChunk)
 
-    result.append("%s\n" % LanguageDB.LEXEME_START_SET())
+    if not Setup.variable_character_sizes_f():
+        # If there are variable size characters, then the lexeme start
+        # pointer points to the begin of the current character. Thus, it
+        # cannot be reset.
+        result.append("%s\n" % LanguageDB.LEXEME_START_SET())
 
     return result
 
@@ -205,6 +210,15 @@ def __frame(LoopTxt, CharacterSet, ReferenceP_F, StateMachineF, UponReloadDoneAd
         assert len(reference_p_reset) == 0
         upon_reload_done    = []
 
+    if Setup.variable_character_sizes_f():
+        assert StateMachineF
+        # Here, characters are made up of more than one 'chunk'. When the last
+        # character needs to be reset, its start position must be known. For 
+        # this the 'lexeme start pointer' is used.
+        loop_epilog = [1, "%s\n" % LanguageDB.LEXEME_START_SET()]
+    else:
+        loop_epilog = []
+
     comment = [1]
     LanguageDB.COMMENT(comment, "Character Set Skipper: '%s'" % CharacterSet.get_utf8_string()),
     LanguageDB.INDENT(LoopTxt)
@@ -215,6 +229,7 @@ def __frame(LoopTxt, CharacterSet, ReferenceP_F, StateMachineF, UponReloadDoneAd
     code.extend([1, "QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);\n"])
     code.extend(reference_p_reset)
     code.extend([ 1, "while( 1 + 1 == 2 ) {\n" ])
+    code.extend(loop_epilog)
     code.extend(LoopTxt)
     code.extend([ 1, "}\n"])
     code.extend(upon_reload_done)

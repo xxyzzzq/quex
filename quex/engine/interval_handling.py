@@ -958,7 +958,7 @@ class NumberSet(object):
     def get_string(self, Option="", Delimiter=", "):
         txt = ""
         if len(self.__intervals) == 0:
-            return "<empty set>"
+            return "<empty NumberSet>"
         for interval in self.__intervals:
             txt += interval.get_string(Option, Delimiter) + " "
         return txt

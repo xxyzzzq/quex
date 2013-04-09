@@ -5,6 +5,7 @@ from   quex.engine.state_machine.core                  import StateMachine
 import quex.engine.state_machine.utf8_state_split      as utf8_state_split
 import quex.engine.state_machine.utf16_state_split     as utf16_state_split
 import quex.engine.state_machine.algorithm.beautifier  as beautifier
+import quex.engine.analyzer.transition_map             as     transition_map_tool
 from   quex.engine.misc.file_in                        import error_msg
 from   quex.engine.interval_handling                   import NumberSet
 from   quex.blackboard                                 import setup as Setup
@@ -111,14 +112,10 @@ def do_transition_map(TM, TrafoInfo=None):
         if not verdict: total_verdict = False
         result.extend((x, target) for x in transformed)
 
-    result.sort(key=lambda x: (x[0].begin, x[0].end))
-    prev_interval = result[0][0]
-    for interval, target in result[1:]:
-        assert interval.begin >= prev_interval.end
+    transition_map_tool.clean_up(result)
 
     return total_verdict, result    
 
-        
 def homogeneous_chunk_n_per_character(Thing, TrafoInfo):
     assert isinstance(TrafoInfo, (str, unicode))
 

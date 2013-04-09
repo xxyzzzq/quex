@@ -10,7 +10,7 @@ from   quex.engine.generator.TEST.generator_test   import *
 from   quex.engine.generator.TEST.generator_test   import __Setup_init_language_database
 from   quex.engine.generator.code_fragment_base import CodeFragment
 
-def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferSize=1024, InitialSkipF=True):
+def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferSize=1024, InitialSkipF=True, OnePassOnlyF=False):
 
     end_str  = '    printf("end\\n");'
     end_str += '    return false;\n'
@@ -34,7 +34,8 @@ def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferS
                                                ShowPositionF=False, EndStr=end_str,
                                                MarkerCharList=marker_char_list, 
                                                LocalVariableDB=deepcopy(variable_db.variable_db.get()), 
-                                               ReloadF=True)
+                                               ReloadF=True, 
+                                               OnePassOnlyF=OnePassOnlyF)
 
 def create_range_skipper_code(Language, TestStr, CloserSequence, QuexBufferSize=1024, 
                               CommentTestStrF=False, ShowPositionF=False):
@@ -95,18 +96,19 @@ def create_customized_analyzer_function(Language, TestStr, EngineSourceCode,
                                         QuexBufferSize, CommentTestStrF, ShowPositionF, 
                                         EndStr, MarkerCharList,
                                         LocalVariableDB, IndentationSupportF=False, 
-                                        TokenQueueF=False, ReloadF=False):
+                                        TokenQueueF=False, ReloadF=False, OnePassOnlyF=False):
 
     txt  = create_common_declarations(Language, QuexBufferSize, TestStr, 
                                       IndentationSupportF=IndentationSupportF, 
-                                      TokenQueueF=TokenQueueF)
-    txt += my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, EngineSourceCode, EndStr, LocalVariableDB, ReloadF)
+                                      TokenQueueF=TokenQueueF,  QuexBufferFallbackN=0)
+    txt += my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, EngineSourceCode, 
+                                        EndStr, LocalVariableDB, ReloadF, OnePassOnlyF)
     txt += create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF)
 
     return txt
 
 def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndStr, 
-                                 LocalVariableDB={}, ReloadF=False):
+                                 LocalVariableDB={}, ReloadF=False, OnePassOnlyF=True):
     LanguageDB = Setup.language_db
     if ShowPositionF: show_position_str = "1"
     else:             show_position_str = "0"
@@ -152,13 +154,14 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
                        ("$$INPUT_P_DEREFERENCE$$",    LanguageDB.ASSIGN("input", LanguageDB.INPUT_P_DEREFERENCE())),
                        ("$$TERMINAL_END_OF_STREAM$$", address.get_label("$terminal-EOF")),
                        ("$$TERMINAL_FAILURE$$",       address.get_label("$terminal-FAILURE")),
+                       ("$$ONE_PASS_ONLY$$",          "true" if OnePassOnlyF else "false"),
                        ("$$RELOAD$$",                 reload_str),
                        ("$$END_STR$$",                EndStr)])
 
 customized_unit_test_function_txt = """
 bool
-show_next_character(QUEX_NAME(Buffer)* buffer) {
-
+show_next_character(QUEX_NAME(Buffer)* buffer) 
+{
     if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) == 0 ) {
         buffer->_lexeme_start_p = buffer->_input_p;
         if( QUEX_NAME(Buffer_is_end_of_file)(buffer) ) {
@@ -168,11 +171,15 @@ show_next_character(QUEX_NAME(Buffer)* buffer) {
         ++(buffer->_input_p);
     }
     if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) != 0 ) {
+        if( ((*buffer->_input_p) & 0x80) == 0 ) 
+            printf("next letter: <%c>\\n", (int)(buffer->_input_p[0]));
+        else
+            printf("next letter: <0x%02X>\\n", (int)(buffer->_input_p[0]));
 #       if $$SHOW_POSITION$$
-        printf("next letter: <%c> position: %04X\\n", (char)(*(buffer->_input_p)),
+        printf(" position: %04X\\n", buffer->_input_p),
                (int)(buffer->_input_p - buffer->_memory._front));
 #       else
-        printf("next letter: <%c>\\n", (char)(*(buffer->_input_p)));
+        printf("\\n");
 #       endif
     }
     return true;
@@ -183,7 +190,7 @@ QUEX_NAME(Mr_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZER* me)
 {
 #   define  engine (me)
 #   define  self   (*me)
-    QUEX_TYPE_CHARACTER  input = 0x0;
+    QUEX_TYPE_CHARACTER   input = 0x0;
 #   define  position          ((void*)0x0)
 #   define  PositionRegisterN 0
 $$LOCAL_VARIABLES$$
@@ -214,7 +221,7 @@ __REENTRY:
      * If we are at the border and there is still stuff to load, then load it so we can
      * see what the next character is coming in.                                          */
     QUEX_NAME(Counter_print_this)(&self.counter);
-    if( ! show_next_character(&me->buffer) ) goto $$TERMINAL_END_OF_STREAM$$; 
+    if( ! show_next_character(&me->buffer) || $$ONE_PASS_ONLY$$ ) goto $$TERMINAL_END_OF_STREAM$$; 
     goto ENTRY;
 
 $$TERMINAL_FAILURE$$:

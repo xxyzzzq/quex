@@ -149,6 +149,32 @@ def set(transition_map, Character, NewTarget):
     assert_adjacency(transition_map, TotalRangeF=False)
     return
 
+def assert_continuity(transition_map, StrictF=True):
+    """StrictF => Assume that adjacent intervals have been combined. 
+
+       Tests that all intervals appear in a sorted manner.
+
+       NOTE: 'assert_adjacency' is stronger than 'assert_continuity'. 
+             It is not necessary to test for both. Rather decide what
+             level needs to be asserted.
+    """
+    if len(transition_map) == 0:
+        return 
+
+    iterable                   = transition_map.__iter__()
+    prev_interval, prev_target = iterable.next()
+    # No 'empty' intervals
+    assert prev_interval.end > prev_interval.begin
+
+    for interval, target in iterable:
+        assert interval.end > interval.begin        # No empty intervals
+        assert interval.begin >= prev_interval.end  # Intervals appear sorted, 
+        if interval.begin == prev_interval.end and StrictF:
+            # If the touch, require the target is different
+            assert target != prev_target
+        prev_interval = interval
+        prev_target   = target
+
 def assert_adjacency(transition_map, TotalRangeF=False, ChangeF=False):
     """Check that the trigger map consist of sorted adjacent intervals 
        This assumption is critical because it is assumed that for any isolated
@@ -168,6 +194,8 @@ def assert_adjacency(transition_map, TotalRangeF=False, ChangeF=False):
     prev_target = info[1]
 
     for interval, target in iterable:
+        assert interval.end > interval.begin        # No empty intervals
+
         # Intervals are adjacent!
         assert interval.begin == prev_end, \
                "interval.begin: 0x%X != prev_end: 0x%X" % (interval.begin, prev_end)
@@ -316,7 +344,28 @@ def get_target(transition_map, Character):
     else:         return transition_map[i][1]
 
 def sort(transition_map):
-    transition_map.sort(key=lambda x: x[0].begin)
+    transition_map.sort(key=lambda x: (x[0].begin, x[0].end))
+    # double check
+    prev_interval = transition_map[0][0]
+    for interval, target in transition_map[1:]:
+        assert interval.begin >= prev_interval.end
+
+def combine_adjacents(transition_map):
+    L = len(transition_map) 
+    if L == 0: return
+    prev_interval, prev_target = transition_map[L-1]
+    for i in reversed(xrange(L-1)):
+        interval, target = transition_map[i]
+        if interval.end == prev_interval.begin and prev_target == target:
+            interval.end = prev_interval.end
+            del transition_map[i+1]
+        else:
+            prev_target   = target
+        prev_interval = interval
+
+def clean_up(transition_map):
+    sort(transition_map)
+    combine_adjacents(transition_map)
 
 def fill_empty_actions(transition_map, TransitionActionMap):
     return add_transition_actions(transition_map, TransitionActionMap, OnlyIfEmptyF=True)
@@ -326,9 +375,10 @@ def add_transition_actions(transition_map, TransitionActionMap, OnlyIfEmptyF=Fal
     of a particular character.  The actions are to be added to the
     'transition_map'.  
     """
-
     def extend(Target, ActionList, OnlyIfEmptyF):
-        if len(Target) == 0:
+        if isinstance(Target, (int, long)) or Target in E_StateIndices:
+            return Target
+        elif len(Target) == 0:
             return copy(ActionList)
         elif OnlyIfEmptyF:
             return copy(Target)

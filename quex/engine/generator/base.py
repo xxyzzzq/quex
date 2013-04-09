@@ -18,7 +18,7 @@ from   quex.engine.generator.state.transition.code     import TransitionCodeFact
 import quex.engine.generator.state.transition.core     as     transition_block
 import quex.engine.analyzer.engine_supply_factory      as     engine
 import quex.engine.analyzer.core                       as     analyzer_generator
-from   quex.engine.interval_handling                   import NumberSet
+from   quex.engine.interval_handling                   import NumberSet, Interval
 from   quex.input.regular_expression.construct         import Pattern
 
 from   quex.blackboard import E_ActionIDs, \
@@ -27,7 +27,7 @@ from   quex.blackboard import E_ActionIDs, \
 
 from   itertools import ifilter
 import re
-from   copy import copy
+from   copy import copy, deepcopy
 from   collections import defaultdict
 
 Match_input    = re.compile("\\binput\\b", re.UNICODE)
@@ -36,8 +36,9 @@ Match_iterator = re.compile("\\iterator\\b", re.UNICODE)
 class GeneratorBase:
     def __init__(self, PatternActionPair_List):
         assert type(PatternActionPair_List) == list
-        assert map(lambda elm: elm.__class__ == PatternActionInfo, PatternActionPair_List) \
-               == [ True ] * len(PatternActionPair_List)
+        for x in PatternActionPair_List:
+            assert    isinstance(x, PatternActionInfo) \
+                   or x.pattern() in E_ActionIDs, repr(x)
 
         # self.state_machine_name = StateMachineName
 
@@ -211,7 +212,7 @@ class Generator(GeneratorBase):
 
         txt  = [ 
             Setup.language_db["$header-definitions"](Setup.language_db, 
-                                                     ActionDB[E_ActionIDs.ON_AFTER_MATCH]) 
+                                                     ActionDB.get(E_ActionIDs.ON_AFTER_MATCH)) 
         ]
         txt.extend(get_plain_strings(analyzer_function))
 
@@ -230,7 +231,7 @@ class Generator(GeneratorBase):
         if Setup.comment_state_machine_f:
             LanguageDB.ML_COMMENT(txt, 
                                   "BEGIN: STATE MACHINE\n"             + \
-                                  self.sm.get_string(NormalizeF=False) + \
+                                  sm.get_string(NormalizeF=False) + \
                                   "END: STATE MACHINE") 
             txt.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
 
@@ -266,6 +267,7 @@ class Generator(GeneratorBase):
         """
         global Match_input
         global Match_iterator
+        LanguageDB = Setup.language_db
 
         StateMachineF = Setup.variable_character_sizes_f()
 
@@ -289,9 +291,11 @@ class Generator(GeneratorBase):
             txt            = Generator.code_action_map_plain(tm, 
                                                              BeforeReloadAction, 
                                                              upon_reload_done_adr)
+            txt.extend([2, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
+
 
         return StateMachineF, \
-               replace_iterator_name(txt, IteratorName, StateMachineF), \
+               Generator.replace_iterator_name(txt, IteratorName, StateMachineF), \
                upon_reload_done_adr
 
     @staticmethod
@@ -309,10 +313,14 @@ class Generator(GeneratorBase):
             pap_list.append(PatternActionInfo(E_ActionIDs.ON_FAILURE, 
                                               OnFailureAction))
 
-        if BeforeReloadAction is None: engine_type = engine.CHARACTER_COUNTER
-        else:                          engine_type = engine.FORWARD
-
         generator = Generator(pap_list) 
+
+        if BeforeReloadAction is None: 
+            engine_type = engine.CHARACTER_COUNTER
+        else:                          
+            engine_type = engine.FORWARD
+            generator.sm.delete_transitions_on_interval(Interval(Setup.buffer_limit_code))
+            generator.sm.delete_orphaned_states()
 
         # assert E_ActionIDs.ON_AFTER_MATCH not in action_db
         # assert E_ActionIDs.ON_FAILURE     not in action_db
@@ -337,8 +345,9 @@ class Generator(GeneratorBase):
         RETURNS: None -- if no easy solution could be provided.
                  text -- the implementation of the counter functionh.
         """
-        global __increment_actions_for_utf16
-        global __increment_actions_for_utf8
+        global _increment_actions_for_utf16
+        global _increment_actions_for_utf8
+        LanguageDB = Setup.language_db
        
         # Currently, we do not handle the case 'Reload': refuse to work.
         if BeforeReloadAction is not None:
@@ -347,10 +356,10 @@ class Generator(GeneratorBase):
         # (*) Try to find easy and elegant special solutions 
         if   Setup.buffer_codec_transformation_info == "utf8-state-split":
             LowestRangeBorder  = 0x80 
-            IncrementActionStr = __increment_actions_for_utf8
+            IncrementActionStr = _increment_actions_for_utf8
         elif Setup.buffer_codec_transformation_info == "utf16-state-split":
             LowestRangeBorder  = 0x10000 
-            IncrementActionStr = __increment_actions_for_utf16
+            IncrementActionStr = _increment_actions_for_utf16
         else:
             return None
 
@@ -360,10 +369,18 @@ class Generator(GeneratorBase):
         # 'last_but_one.end == last.begin', because all intervals are adjacent.
         if tm[-1][0].begin >= LowestRangeBorder: return None
 
-        # The last interval lies beyond the border and has a common action
-        # Only add the additional increment instructions.
-        tm[-1] = (tm[-1][0], deepcopy(tm[-1][1]))
-        tm[-1][1].extend(IncrementActionStr)
+        # (*) Add increment actions to the actions
+        def add_increment(action, IncrementActionStr, LastF):
+            action = deepcopy(action)
+            if not LastF:
+                action.extend([2, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
+            else:
+                action.extend(IncrementActionStr)
+            return action
+
+        LastI = len(tm) - 1
+        tm = [ (x[0], add_increment(x[1], IncrementActionStr, LastF=(i==LastI))) 
+               for i, x in enumerate(tm) ]
 
         # (*) The first interval may start at - sys.maxint
         if tm[0][0].begin < 0: tm[0][0].begin = 0
@@ -381,18 +398,22 @@ class Generator(GeneratorBase):
 
         LanguageDB = Setup.language_db
 
-        if BeforeReloadAction is None: engine_type = engine.CHARACTER_COUNTER
-        else:                          engine_type = engine.FORWARD
-
-        goto_reload_str = transition_block.prepare_reload(TM,
-                                           StateIndex         = UponReloadDoneAdr,
-                                           EngineType         = engine_type,
-                                           InitStateF         = True,
-                                           BeforeReloadAction = BeforeReloadAction)
+        if BeforeReloadAction is None: 
+            engine_type = engine.CHARACTER_COUNTER
+        else:                          
+            engine_type = engine.FORWARD
+            transition_map_tool.set(TM, Setup.buffer_limit_code,
+                                    E_StateIndices.DROP_OUT)
 
         # The range of possible characters may be restricted. It must be ensured,
         # that the occurring characters only belong to the admissible range.
         transition_map_tool.prune(TM, 0, Setup.get_character_value_limit())
+
+        goto_reload_str = TransitionCodeFactory.prepare_reload_tansition(TM,
+                                           StateIndex         = UponReloadDoneAdr,
+                                           EngineType         = engine_type,
+                                           InitStateF         = True,
+                                           BeforeReloadAction = BeforeReloadAction)
 
         TransitionCodeFactory.init(engine_type, 
                                    StateIndex    = None,
@@ -407,6 +428,22 @@ class Generator(GeneratorBase):
         txt = []
         transition_block.do(txt, tm)
         LanguageDB.code_generation_switch_cases_add_statement(None)
+
+        return txt
+
+    @staticmethod
+    def replace_iterator_name(txt, IteratorName, StateMachineF):
+        def replacer(block, StateMachineF):
+            if block.find("(me->buffer._input_p)") != -1: 
+                block = block.replace("(me->buffer._input_p)", IteratorName)
+            if not StateMachineF:
+                block = Match_input.sub("(*%s)" % IteratorName, block)
+                block = Match_iterator.sub("(%s)" % IteratorName, block)
+            return block
+
+        for i, elm in enumerate(txt):
+            if not isinstance(elm, (str, unicode)): continue
+            txt[i] = replacer(elm, StateMachineF)
 
         return txt
 
@@ -500,6 +537,7 @@ def get_pattern_action_pair_list_from_map(TM):
     # Sort by actions.
     action_code_db = defaultdict(NumberSet)
     for character_set, action_list in TM:
+        if action_list == E_StateIndices.DROP_OUT: continue
         assert isinstance(action_list, list)
         # Make 'action_list' a tuple so that it is hash-able
         action_code_db[tuple(action_list)].unite_with(character_set)
@@ -513,22 +551,7 @@ def get_pattern_action_pair_list_from_map(TM):
 
     return pattern_action_pair_list
 
-def replace_iterator_name(txt, IteratorName, StateMachineF):
-    def replacer(block, StateMachineF):
-        if block.find("(me->buffer._input_p)") != -1: 
-            block = block.replace("(me->buffer._input_p)", IteratorName)
-        if not StateMachineF:
-            block = Match_input.sub("(*%s)" % IteratorName, block)
-            block = Match_iterator.sub("(%s)" % IteratorName, block)
-        return block
-
-    for i, elm in enumerate(txt):
-        if not isinstance(elm, (str, unicode)): continue
-        txt[i] = replacer(elm, StateMachineF)
-
-    return txt
-
-__increment_actions_for_utf8 = [
+_increment_actions_for_utf8 = [
      1, "if     ( ((*iterator) & 0x80) == 0 ) { iterator += 1; } /* 1byte character */\n",
      1, "/* NOT ( ((*iterator) & 0x40) == 0 ) { iterator += 2; }    2byte character */\n",
      1, "else if( ((*iterator) & 0x20) == 0 ) { iterator += 2; } /* 2byte character */\n",
@@ -538,12 +561,10 @@ __increment_actions_for_utf8 = [
      1, "else if( ((*iterator) & 0x02) == 0 ) { iterator += 6; } /* 6byte character */\n",
      1, "else if( ((*iterator) & 0x01) == 0 ) { iterator += 7; } /* 7byte character */\n",
      1, "else                                 { iterator += 1; } /* default 1       */\n",
-     1, "continue;\n"
 ]
     
-__increment_actions_for_utf16 = [
-     1, "if( *iterator >= 0xD800 && *iterator < 0xE000 ) {\n",
-     2, "iterator += 2; continue; /* 2chunk character */\n",
-     1, "}\n",
+_increment_actions_for_utf16 = [
+     1, "if( *iterator >= 0xD800 && *iterator < 0xE000 ) { iterator += 2; }\n",
+     1, "else                                            { iterator += 1; }\n", 
 ]
     

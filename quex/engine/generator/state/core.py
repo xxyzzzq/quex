@@ -31,6 +31,7 @@ def do(code, TheState, TheAnalyzer, BeforeReloadAction):
                                                  TheState.init_state_f, 
                                                  TheAnalyzer            = TheAnalyzer,
                                                  BeforeReloadAction = BeforeReloadAction)
+
     transition_block.do(txt, tm)
 
     # (*) Drop Out ____________________________________________________________

@@ -1,7 +1,9 @@
 import quex.engine.analyzer.engine_supply_factory   as     engine
-from   quex.engine.analyzer.mega_state.core         import MegaState_Target
+from   quex.engine.analyzer.mega_state.core         import MegaState_Target, \
+                                                           MegaState_Target_DROP_OUT
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.generator.languages.address      import get_address
+import quex.engine.analyzer.transition_map              as transition_map_tool
 from   quex.blackboard import E_StateIndices, \
                               setup as Setup
 
@@ -16,6 +18,58 @@ class TransitionCodeFactory:
         cls.goto_reload_str = GotoReloadStr
         cls.engine_type     = EngineType
         cls.analyzer        = TheAnalyzer
+
+
+    @classmethod
+    def prepare_reload_tansition(cls, TransitionMap,
+                                 StateIndex         = None,
+                                 EngineType         = engine.FORWARD,
+                                 InitStateF         = False,
+                                 GotoReload_Str     = None,
+                                 BeforeReloadAction = None):
+        """If the engine type requires a reload the following is done:
+
+           (1) It is made sure that the transition map transits:
+
+                    buffer limit code --> reload procedure.
+
+           (2) An action is determined for the reload itself.
+        """
+        LanguageDB = Setup.language_db
+
+        if not EngineType.requires_buffer_limit_code_for_reload():
+            return None
+
+        cls.prepare_transition_map_for_reload(TransitionMap)
+
+        return cls.prepare_reload_action(StateIndex, EngineType, InitStateF, BeforeReloadAction, GotoReload_Str)
+
+    @classmethod
+    def prepare_transition_map_for_reload(cls, TransitionMap):
+        # Insist that transitions to reload procedure have been prepared!
+        # There is no state transition to 'RELOAD_PROCEDURE', so transition on
+        # buffer limit code MUST trigger a 'DROP_OUT'.
+        blc_target = transition_map_tool.get_target(TransitionMap, Setup.buffer_limit_code) 
+        assert    blc_target == E_StateIndices.DROP_OUT \
+               or blc_target == MegaState_Target_DROP_OUT
+
+        # Signalize 'reload' upon buffer limit code.
+        transition_map_tool.set(TransitionMap, Setup.buffer_limit_code, 
+                                E_StateIndices.RELOAD_PROCEDURE)
+
+    @classmethod
+    def prepare_reload_action(cls, StateIndex, EngineType, InitStateF, BeforeReloadAction, GotoReload_Str):
+        LanguageDB = Setup.language_db
+        result = []
+        if BeforeReloadAction is not None:
+            result.extend(BeforeReloadAction)
+
+        if GotoReload_Str is not None:
+            result.extend(GotoReload_Str)
+        else:
+            result.append(LanguageDB.GOTO_RELOAD(StateIndex, InitStateF, EngineType))
+
+        return "".join(result)
 
     @classmethod
     def do(cls, Target):

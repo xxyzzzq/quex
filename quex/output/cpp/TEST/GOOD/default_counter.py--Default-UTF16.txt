@@ -10,23 +10,24 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* 
     for(iterator=LexemeBegin; iterator < LexemeEnd; ) {
         if( (*(iterator)) >= 0xB ) {
             __QUEX_IF_COUNT_COLUMNS_ADD((size_t)1);
-            if( *(iterator) >= 0xD800 && *(iterator) < 0xE000 ) {
-                (iterator) += 2; continue; /* 2chunk character */
-            }
+            if( *(iterator) >= 0xD800 && *(iterator) < 0xE000 ) { (iterator) += 2; }
+            else                                            { (iterator) += 1; }
 
         } else if( (*(iterator)) == 0xA ) {
             __QUEX_IF_COUNT_LINES_ADD((size_t)1);
         __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
+                ++(iterator);
 
         } else if( (*(iterator)) == 0x9 ) {
                     __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end &= ~ ((size_t)0x3));
         __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 4);
+                ++(iterator);
 
         } else {
             __QUEX_IF_COUNT_COLUMNS_ADD((size_t)1);
+                ++(iterator);
 
         }
-    ++(iterator);
     }
     __quex_assert(iterator == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */
 #   undef self

@@ -40,7 +40,7 @@ __return_without_on_after_match = """
 #define RETURN    __QUEX_PURE_RETURN;
 """
 
-def __header_definitions(LanguageDB, OnAfterMatchStr):
+def __header_definitions(LanguageDB, OnAfterMatch):
     global __return_without_on_after_match
     global __return_with_on_after_match
     assert len(__return_with_on_after_match) > 10
@@ -53,8 +53,8 @@ def __header_definitions(LanguageDB, OnAfterMatchStr):
     #txt += "/MARK/ '%s'\n" % __return_without_on_after_match
     txt = txt.replace("$$GOTO_START_PREPARATION$$", get_label("$re-start", U=True))
 
-    if OnAfterMatchStr is not None: txt += __return_with_on_after_match
-    else:                           txt += __return_without_on_after_match
+    if OnAfterMatch is not None: txt += __return_with_on_after_match
+    else:                        txt += __return_without_on_after_match
     return txt
 
 def _local_variable_definitions(VariableDB):
@@ -415,7 +415,6 @@ def __pattern_terminal_code(PatternID, Info, SimpleF, Setup):
 
     if not SimpleF: 
         result.extend(["\n", 1, "goto %s;\n" % get_label("$re-start", U=True)])
-        result.extend(["\n", 1, "continue;\n"])
     return result
 
 def __jump_to_backward_input_position_detector(BIPD_SM, Setup):
@@ -440,11 +439,14 @@ def __terminal_on_failure(OnFailureAction, TerminalFailureDef):
     if OnFailureAction is None:
         return []
 
-    return [
-           "\n\n",
-           "%s: /* TERMINAL: FAILURE */\n" % TerminalFailureDef,
-        0, "%s\n" % OnFailureAction.action().get_code_string(), 
+    txt = [
+       "\n\n",
+       "%s: /* TERMINAL: FAILURE */\n" % TerminalFailureDef,
+        0 
     ]
+    txt.extend(OnFailureAction.action().get_code())
+    txt.append("\n")
+    return txt
 
 def __terminal_on_end_of_stream(LanguageDB, OnEndOfStreamAction, TerminalEndOfStreamDef):
     if OnEndOfStreamAction is None:

@@ -24,7 +24,6 @@ def do_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
     pattern_action_pair_list = action_preparation.do(Mode, 
                                                      IndentationSupportF, 
                                                      BeginOfLineSupportF)
-
     core_txt = do(pattern_action_pair_list, 
                   FunctionPrefix = Mode.name, 
                   ModeNameList   = ModeNameList)

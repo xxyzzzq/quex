@@ -2,7 +2,9 @@ from   quex.blackboard                                   import setup as Setup, 
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.mega_state.core         import MegaState_Target_DROP_OUT
-from   quex.engine.generator.state.transition.code  import TransitionCode, MegaStateTransitionCodeFactory
+from   quex.engine.generator.state.transition.code  import TransitionCode, \
+                                                           TransitionCodeFactory, \
+                                                           MegaStateTransitionCodeFactory
 import quex.engine.generator.state.transition.core  as transition_block
 import quex.engine.generator.state.drop_out         as drop_out_coder
 import quex.engine.generator.state.entry            as entry_coder
@@ -172,11 +174,12 @@ def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr, BeforeReloadActio
             (Interval(-sys.maxint, sys.maxint), MegaState_Target_DROP_OUT) 
         ]
 
-    goto_reload_str = transition_block.prepare_reload(TheState.transition_map,
-                                                      TheState.index,
-                                                      EngineType             = TheAnalyzer.engine_type,
-                                                      InitStateF             = TheState.init_state_f,
-                                                      BeforeReloadAction = BeforeReloadAction)
+    goto_reload_str = TransitionCodeFactory.prepare_reload_tansition(
+                                 TransitionMap      = TheState.transition_map,
+                                 StateIndex         = TheState.index,
+                                 EngineType         = TheAnalyzer.engine_type,
+                                 InitStateF         = TheState.init_state_f,
+                                 BeforeReloadAction = BeforeReloadAction)
 
     MegaStateTransitionCodeFactory.init(TheState, TheAnalyzer.state_db, StateKeyStr, 
                                         TheAnalyzer.engine_type, goto_reload_str)
