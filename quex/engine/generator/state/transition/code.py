@@ -54,8 +54,8 @@ class TransitionCodeFactory:
                or blc_target == MegaState_Target_DROP_OUT
 
         # Signalize 'reload' upon buffer limit code.
-        transition_map_tool.set(TransitionMap, Setup.buffer_limit_code, 
-                                E_StateIndices.RELOAD_PROCEDURE)
+        transition_map_tool.set_target(TransitionMap, Setup.buffer_limit_code, 
+                                       E_StateIndices.RELOAD_PROCEDURE)
 
     @classmethod
     def prepare_reload_action(cls, StateIndex, EngineType, InitStateF, BeforeReloadAction, GotoReload_Str):

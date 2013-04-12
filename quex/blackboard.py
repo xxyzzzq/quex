@@ -98,6 +98,11 @@ E_ActionIDs = Enum("ON_FAILURE",
                    "ON_AFTER_MATCH", 
                    "_DEBUG_ActionIDs")
 
+E_MapImplementationType = Enum("TRIVIALIZED_STATE_MACHINE", 
+                               "STATE_MACHINE",
+                               "PLAIN_MAP", 
+                               "_DEBUG_MapImplementationType")
+
 #-----------------------------------------------------------------------------------------
 # mode_db: storing the mode information into a dictionary:
 #            key  = mode name

@@ -7,6 +7,7 @@ import quex.engine.generator.state.transition.solution  as solution
 from   quex.engine.generator.base                   import get_combined_state_machine, \
                                                            Generator as CppGenerator
 from   quex.engine.generator.action_info            import CodeFragment
+from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.state_machine.core               import StateMachine
 import quex.engine.state_machine.transformation     as     transformation
 import quex.engine.analyzer.core                    as     analyzer_generator
@@ -16,7 +17,8 @@ from   quex.engine.tools                            import print_callstack
 
 from   quex.blackboard import setup as Setup, \
                               DefaultCounterFunctionDB, \
-                              E_StateIndices
+                              E_StateIndices, \
+                              E_MapImplementationType
 
 from   collections import defaultdict
 from   copy        import deepcopy, copy
@@ -50,9 +52,14 @@ def get(counter_db, Name):
     if function_name is not None:
         return function_name, None # Implementation has been done before.
 
+    # For a counter, there is no 'reload' because the entire lexeme is 
+    # inside the buffer.
     IteratorName = "iterator"
-    tm, column_counter_per_chunk = get_counter_map(counter_db, IteratorName, 
-                                                   ActionEpilog=["continue;\n"]) 
+    tm,                       \
+    implementation_type,      \
+    entry_action,             \
+    dummy,                    \
+    dummy                     = get_counter_map(counter_db, IteratorName) 
 
     # TODO: The lexer shall never drop-out with exception.
     on_failure_action = CodeFragment([     
@@ -60,16 +67,103 @@ def get(counter_db, Name):
         1, "QUEX_ERROR_EXIT(\"State machine failed.\");\n" 
     ])
 
-    state_machine_f, \
-    txt,             \
-    dummy            = CppGenerator.code_action_map(tm, IteratorName, 
-                                                    OnFailureAction = on_failure_action)
+    implementation_type, \
+    txt,                 \
+    dummy                = CppGenerator.code_action_map(tm, IteratorName, 
+                                                        OnFailureAction = on_failure_action)
 
     function_name  = "QUEX_NAME(%s_counter)" % Name
-    implementation = __frame(txt, function_name, state_machine_f, column_counter_per_chunk)
+    implementation = __frame(txt, function_name, implementation_type, entry_action)
     DefaultCounterFunctionDB.enter(counter_db, function_name)
 
     return function_name, implementation
+
+class CountAction:
+    __slots__ = ("value")
+    def __init__(self, Value):
+        self.value = Value
+
+    @staticmethod
+    def get_epilog(ImplementationType):
+        LanguageDB = Setup.language_db
+        if ImplementationType != E_MapImplementationType.STATE_MACHINE:
+            return [2, "%s\n" % LanguageDB.INPUT_P_INCREMENT()]
+        return []
+
+class ExitAction(CountAction):
+    def __init__(self):
+        CountAction.__init__(self, -1)
+
+    @staticmethod
+    def get_txt(ColumnCountPerChunk, IteratorName):
+        LanguageDB = Setup.language_db
+        if ColumnCountPerChunk is not None:
+            result = []
+            LanguageDB.REFERENCE_P_COLUMN_ADD(result, IteratorName, ColumnCountPerChunk)
+        return result
+
+    @staticmethod
+    def get_epilog(ImplementationType):
+        LanguageDB = Setup.language_db
+        if ImplementationType == E_MapImplementationType.STATE_MACHINE:
+            # Here, characters are made up of more than one 'chunk'. When the last
+            # character needs to be reset, its start position must be known. For 
+            # this the 'lexeme start pointer' is used.
+            return [1, "%s\n" % LanguageDB.INPUT_P_TO_LEXEME_START()]
+        return []
+
+class ColumnAdd(CountAction):
+    def __init__(self, Value):
+        CountAction.__init__(self, Value)
+
+    def get_txt(self, ColumnCountPerChunk, IteratorName):
+        LanguageDB = Setup.language_db
+        if ColumnCountPerChunk is None and self.value != 0: 
+            return ["__QUEX_IF_COUNT_COLUMNS_ADD((size_t)%s);\n" % LanguageDB.VALUE_STRING(self.value)]
+        else:
+            return []
+
+class GridAdd(CountAction):
+    def __init__(self, Value):
+        CountAction.__init__(self, Value)
+
+    def get_txt(self, ColumnCountPerChunk, IteratorName):
+        LanguageDB = Setup.language_db
+        txt = []
+        if ColumnCountPerChunk is not None:
+            txt.append(0)
+            LanguageDB.REFERENCE_P_COLUMN_ADD(txt, IteratorName, ColumnCountPerChunk) 
+
+        txt.append(0)
+        txt.extend(LanguageDB.GRID_STEP("self.counter._column_number_at_end", "size_t",
+                                        self.value, IfMacro="__QUEX_IF_COUNT_COLUMNS"))
+
+        if ColumnCountPerChunk is not None:
+            txt.append(0)
+            LanguageDB.REFERENCE_P_RESET(txt, IteratorName) 
+
+        return txt
+
+
+class LineAdd(CountAction):
+    def __init__(self, Value):
+        CountAction.__init__(self, Value)
+
+    def get_txt(self, ColumnCountPerChunk, IteratorName):
+        LanguageDB = Setup.language_db
+        txt        = []
+        # Maybe, we only want to set the column counter to '0'.
+        # Such action is may be connected to unicode point '0x0D' carriage return.
+        if self.value != 0:
+            txt.append("__QUEX_IF_COUNT_LINES_ADD((size_t)%s);\n" % LanguageDB.VALUE_STRING(self.value))
+            txt.append(0)
+        txt.append("__QUEX_IF_COUNT_COLUMNS_SET((size_t)1);\n")
+
+        if ColumnCountPerChunk is not None:
+            txt.append(0)
+            LanguageDB.REFERENCE_P_RESET(txt, IteratorName) 
+
+        return txt
 
 def get_counter_dictionary(counter_db, ConcernedCharacterSet):
     """Returns a list of NumberSet objects where for each X of the list it holds:
@@ -83,42 +177,34 @@ def get_counter_dictionary(counter_db, ConcernedCharacterSet):
 
                     list:    (character_set, count_action)
     """
-    class Addition:
-        __slots__ = ("value")
-        def __init__(self, Value, Type):
-            self.value = Value
-            self.type  = Type
-
     def prune(X, ConcernedCharacterSet):
-        if ConcernedCharacterSet is None:
-            return X
-        else:
-            return X.intersection(ConcernedCharacterSet)
+        if ConcernedCharacterSet is None: return X
+        else:                             return X.intersection(ConcernedCharacterSet)
 
     result = []
     for delta, character_set in counter_db.special.iteritems():
         x = prune(character_set, ConcernedCharacterSet)
         if x.is_empty(): continue
-        result.append((x, Addition(delta, "column_add")))
+        result.append((x, ColumnAdd(delta)))
 
     for grid_step_n, character_set in counter_db.grid.iteritems():
         x = prune(character_set, ConcernedCharacterSet)
         if x.is_empty(): continue
-        result.append((x, Addition(grid_step_n, "grid_step")))
+        result.append((x, GridAdd(grid_step_n)))
 
     for delta, character_set in counter_db.newline.iteritems():
         x = prune(character_set, ConcernedCharacterSet)
         if x.is_empty(): continue
-        result.append((x, Addition(delta, "line_add")))
+        result.append((x, LineAdd(delta)))
 
     return result
 
 def get_counter_map(counter_db, 
-                    IteratorName             = None,
-                    ColumnCountPerChunk      = None,
-                    ConcernedCharacterSet    = None,
-                    DoNotResetReferenceP_Set = None, 
-                    ActionEpilog             = []):
+                    IteratorName          = None,
+                    ColumnCountPerChunk   = None,
+                    InsideCharacterSet    = None,
+                    ExitCharacterSet      = None, 
+                    ReloadF               = False):
     """Provide a map which associates intervals with counting actions, i.e.
 
            map: 
@@ -192,10 +278,15 @@ def get_counter_map(counter_db,
     factor 'C' for the addition of 'C * (iterator - reference_p)'.
     ___________________________________________________________________________
     """
+    assert type(ReloadF) == bool
+    assert ExitCharacterSet is None or isinstance(ExitCharacterSet, NumberSet)
+    assert not ExitCharacterSet.has_intersection(InsideCharacterSet)
+
+    LanguageDB = Setup.language_db
     # If ColumnCountPerChunk is None => no action depends on IteratorName. 
     # See '__special()', '__grid_step()', and '__line_n()'.
 
-    counter_dictionary = get_counter_dictionary(counter_db, ConcernedCharacterSet)
+    counter_dictionary = get_counter_dictionary(counter_db, InsideCharacterSet)
 
     if ColumnCountPerChunk is not None:
         # It *is* conceivable, that there is a subset of 'CharacterSet' which
@@ -205,54 +296,43 @@ def get_counter_map(counter_db,
         column_count_per_chunk = ColumnCountPerChunk
     else:
         column_count_per_chunk = get_column_number_per_chunk(counter_db, 
-                                                             ConcernedCharacterSet)
-
-    def extend(result, number_set, action):
-        interval_list = number_set.get_intervals(PromiseToTreatWellF=True)
-        result.extend((x, action) for x in interval_list)
-
-    def handle_grid_and_newline(cm, number_set, action, column_count_per_chunk, IteratorName, ResetReferenceP_F):
-        if action.type == "grid_step":
-            extend(cm, number_set, __grid_step(action.value, column_count_per_chunk, IteratorName, 
-                                               ResetReferenceP_F=ResetReferenceP_F))
-
-        elif action.type == "line_add":
-            extend(cm, number_set, __line_n(action.value, column_count_per_chunk, IteratorName, 
-                                            ResetReferenceP_F=ResetReferenceP_F))
+                                                             InsideCharacterSet)
 
     cm = []
     for number_set, action in counter_dictionary:
-        if action.type == "column_add":
-            if column_count_per_chunk is None:
-                extend(cm, number_set, __special(action.value))
-            else:
-                # Column counts are determined by '(iterator - reference) * C'
-                pass
-            continue
+        assert InsideCharacterSet.is_superset(number_set)
+        action_txt = action.get_txt(column_count_per_chunk, IteratorName)
+        cm.extend((x, action_txt) for x in number_set.get_intervals())
 
-        if DoNotResetReferenceP_Set is None or not DoNotResetReferenceP_Set.has_intersection(number_set):
-            handle_grid_and_newline(cm, number_set, action, column_count_per_chunk, IteratorName, 
-                                    ResetReferenceP_F=True)
-        else:
-            do_set   = number_set.difference(DoNotResetReferenceP_Set)
-            handle_grid_and_newline(cm, do_set, action, column_count_per_chunk, IteratorName, 
-                                    ResetReferenceP_F=True)
+    implementation_type = CppGenerator.determine_implementation_type(cm, ReloadF)
 
-            dont_set = number_set.intersection(DoNotResetReferenceP_Set)
-            handle_grid_and_newline(cm, dont_set, action, column_count_per_chunk, IteratorName, 
-                                    ResetReferenceP_F=False)
+    transition_map_tool.add_action_to_all(cm, CountAction.get_epilog(implementation_type))
 
-    transition_map_tool.sort(cm)
+    exit_action_txt = ExitAction.get_txt(column_count_per_chunk, IteratorName)
+    exit_action_txt.extend(ExitAction.get_epilog(implementation_type))
+    cm.extend((x, exit_action_txt) for x in ExitCharacterSet.get_intervals())
 
-    if False and Setup.variable_character_sizes_f():
-        done_set = set() # 'Actions' may occur on multiple intervals
-        for interval, action in cm:
-            if id(action) in done_set: continue
-            done_set.add(id(action))
-            action.append(0)
-            action.extend(ActionEpilog)
+    transition_map_tool.clean_up(cm)
 
-    return cm, column_count_per_chunk
+    # Upon reload, the reference pointer may have to be added. When the reload is
+    # done the reference pointer needs to be reset. 
+    if not ReloadF:
+        before_reload_action = None
+        after_reload_action  = None
+    else:
+        entry_action         = []
+        before_reload_action = []
+        after_reload_action  = [ 
+            1, "%s\n" % LanguageDB.INPUT_P_INCREMENT(),
+            1, 
+        ]
+        if ColumnCountPerChunk is not None:
+            LanguageDB.REFERENCE_P_COLUMN_ADD(before_reload_action, IteratorName, ColumnCountPerChunk)
+            LanguageDB.REFERENCE_P_RESET(entry_action, IteratorName, AddOneF=False)
+            LanguageDB.REFERENCE_P_RESET(after_reload_action, IteratorName, AddOneF=False)
+            variable_db.require("reference_p")
+
+    return cm, implementation_type, entry_action, before_reload_action, after_reload_action
 
 def get_column_number_per_chunk(counter_db, CharacterSet):
     """Considers the counter database which tells what character causes
@@ -289,47 +369,7 @@ def get_grid_and_line_number_character_set(counter_db):
         result.unite_with(character_set)
     return result
 
-def __special(Delta):
-    LanguageDB = Setup.language_db
-    if Delta != 0: 
-        return ["__QUEX_IF_COUNT_COLUMNS_ADD((size_t)%s);\n" % LanguageDB.VALUE_STRING(Delta)]
-    else:
-        return []
-
-def __grid_step(GridStepN, ColumnCountPerChunk, IteratorName, ResetReferenceP_F):
-    LanguageDB = Setup.language_db
-    txt = []
-    if ColumnCountPerChunk is not None:
-        txt.append(0)
-        LanguageDB.REFERENCE_P_COLUMN_ADD(txt, IteratorName, ColumnCountPerChunk) 
-
-    txt.append(0)
-    txt.extend(LanguageDB.GRID_STEP("self.counter._column_number_at_end", "size_t",
-                                    GridStepN, IfMacro="__QUEX_IF_COUNT_COLUMNS"))
-
-    if ColumnCountPerChunk is not None and ResetReferenceP_F:
-        txt.append(0)
-        LanguageDB.REFERENCE_P_RESET(txt, IteratorName) 
-
-    return txt
-
-def __line_n(Delta, ColumnCountPerChunk, IteratorName, ResetReferenceP_F):
-    LanguageDB = Setup.language_db
-    txt = []
-    # Maybe, we only want to set the column counter to '0'.
-    # Such action is may be connected to unicode point '0x0D' carriage return.
-    if Delta != 0:
-        txt.append("__QUEX_IF_COUNT_LINES_ADD((size_t)%s);\n" % LanguageDB.VALUE_STRING(Delta))
-        txt.append(0)
-    txt.append("__QUEX_IF_COUNT_COLUMNS_SET((size_t)1);\n")
-
-    if ColumnCountPerChunk is not None and ResetReferenceP_F:
-        txt.append(0)
-        LanguageDB.REFERENCE_P_RESET(txt, IteratorName) 
-
-    return txt
-
-def __frame(CounterTxt, FunctionName, StateMachineF, ColumnCountPerChunk):
+def __frame(CounterTxt, FunctionName, ImplementationType, EntryAction):
     LanguageDB = Setup.language_db
 
     prologue  =   \
@@ -341,18 +381,16 @@ def __frame(CounterTxt, FunctionName, StateMachineF, ColumnCountPerChunk):
         + "#   define self (*me)\n" \
         + "    const QUEX_TYPE_CHARACTER* iterator    = (const QUEX_TYPE_CHARACTER*)0;\n" 
 
-    if StateMachineF:
+    input_def = ""
+    if ImplementationType == E_MapImplementationType.STATE_MACHINE:
         input_def = "    QUEX_TYPE_CHARACTER        input       = (QUEX_TYPE_CHARACTER)0;\n" 
-    else:
-        input_def = ""
 
-    if ColumnCountPerChunk is not None:
+    reference_p_def = ""
+    if variable_db.has_key("reference_p"):
         reference_p_def = \
              "#   if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)\n" \
            + "    const QUEX_TYPE_CHARACTER* reference_p = LexemeBegin;\n" \
            + "#   endif\n"     
-    else:
-        reference_p_def = ""
 
 
     loop_start = \
@@ -365,8 +403,7 @@ def __frame(CounterTxt, FunctionName, StateMachineF, ColumnCountPerChunk):
                
     epilogue = []
     epilogue.append("    }\n")
-    if ColumnCountPerChunk is not None:
-        LanguageDB.REFERENCE_P_COLUMN_ADD(epilogue, "iterator", ColumnCountPerChunk) 
+    epilogue.extend(EntryAction)
 
     epilogue.append(
          "    __quex_assert(iterator == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */\n" \

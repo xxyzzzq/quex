@@ -81,7 +81,7 @@ def get_string(transition_map, Option="utf8", IntervalF=True):
         txt.append("   %s%s %s\n" % (interval_str, " " * (L - len(interval_str)), target))
     return "".join(txt)
 
-def set(transition_map, Character, NewTarget):
+def set_target(transition_map, Character, NewTarget):
     i = bisect(transition_map, Character)
     if i is None:
         transition_map.insert(0, (Interval(Character), NewTarget))
@@ -345,10 +345,12 @@ def get_target(transition_map, Character):
 
 def sort(transition_map):
     transition_map.sort(key=lambda x: (x[0].begin, x[0].end))
-    # double check
-    prev_interval = transition_map[0][0]
-    for interval, target in transition_map[1:]:
-        assert interval.begin >= prev_interval.end
+
+    # double check -- no overlapping!
+    if len(transition_map) != 0:
+        prev_interval = transition_map[0][0]
+        for interval, target in transition_map[1:]:
+            assert interval.begin >= prev_interval.end
 
 def combine_adjacents(transition_map):
     L = len(transition_map) 
@@ -369,6 +371,14 @@ def clean_up(transition_map):
 
 def fill_empty_actions(transition_map, TransitionActionMap):
     return add_transition_actions(transition_map, TransitionActionMap, OnlyIfEmptyF=True)
+
+def add_action_to_all(transition_map, Action):
+    assert isinstance(Action, list)
+    done_set = set()
+    for interval, action in transition_map:
+        if id(action) in done_set: continue
+        done_set.add(id(action))
+        action.extend(Action)
 
 def add_transition_actions(transition_map, TransitionActionMap, OnlyIfEmptyF=False):
     """'TransitionActionMap' describes actions to be taken upon the occurence
