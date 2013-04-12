@@ -23,6 +23,7 @@ from   quex.input.regular_expression.construct         import Pattern
 
 from   quex.blackboard import E_ActionIDs, \
                               E_StateIndices, \
+                              E_MapImplementationType, \
                               setup as Setup
 
 from   itertools import ifilter
@@ -255,7 +256,8 @@ class Generator(GeneratorBase):
     @staticmethod
     def code_action_map(TM, IteratorName, 
                         BeforeReloadAction = None, 
-                        OnFailureAction    = None):
+                        OnFailureAction    = None, 
+                        ImplementationType = None):
         """TM is an object in the form of a 'transition map'. That is, it maps
         from an interval to an action--in this case not necessarily a state 
         transition. It consists of a list of pairs:
@@ -269,21 +271,23 @@ class Generator(GeneratorBase):
         global Match_iterator
         LanguageDB = Setup.language_db
 
-        StateMachineF = Setup.variable_character_sizes_f()
+        if ImplementationType is None: 
+            reload_f = (BeforeReloadAction is not None)
+            ImplementationType = Generator.determine_implementation_type(TM, reload_f)
 
-        if StateMachineF:
+        if ImplementationType == E_MapImplementationType.TRIVIALIZED_STATE_MACHINE:
             # In case of variable character sizes, there can be no 'column_n +=
             # (iterator - reference_p) * C'. Thus, there is no 'AfterReloadAction'.
             upon_reload_done_adr = None
-
             txt = Generator.code_action_state_machine_trivial(TM, BeforeReloadAction)
-            if txt is not None:
-                StateMachineF = False # We tricked around it; No state machine needed.
-            else:
-                txt = Generator.code_action_state_machine(TM, 
-                                                          BeforeReloadAction, 
-                                                          OnFailureAction)
-        else:
+
+        elif ImplementationType == E_MapImplementationType.STATE_MACHINE:
+            upon_reload_done_adr = None
+            txt = Generator.code_action_state_machine(TM, 
+                                                      BeforeReloadAction, 
+                                                      OnFailureAction)
+
+        elif ImplementationType == E_MapImplementationType.PLAIN_MAP:
             upon_reload_done_adr = index.get()
             address_set_subject_to_routing_add(upon_reload_done_adr) # Mark as 'used'
 
@@ -291,12 +295,25 @@ class Generator(GeneratorBase):
             txt            = Generator.code_action_map_plain(tm, 
                                                              BeforeReloadAction, 
                                                              upon_reload_done_adr)
-            txt.extend([2, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
+
+        else:
+            assert False
 
 
-        return StateMachineF, \
-               Generator.replace_iterator_name(txt, IteratorName, StateMachineF), \
+        return ImplementationType, \
+               Generator.replace_iterator_name(txt, IteratorName, ImplementationType), \
                upon_reload_done_adr
+
+    @staticmethod
+    def determine_implementation_type(TM, ReloadF):
+        if Setup.variable_character_sizes_f():
+            if     not ReloadF \
+               and Generator.map_implementation_type_get_test_trivial_sm(TM):
+                return E_MapImplementationType.TRIVIALIZED_STATE_MACHINE
+            else:
+                return E_MapImplementationType.STATE_MACHINE
+        else:
+            return E_MapImplementationType.PLAIN_MAP
 
     @staticmethod
     def code_action_state_machine(TM, BeforeReloadAction, OnFailureAction):
@@ -342,6 +359,9 @@ class Generator(GeneratorBase):
         increments. They come from a template string given by
         'IncrementActionStr'.
 
+        NOTE: Currently, this is only implemented for 'counter'. Nothing where
+        reload is involved may use this function.
+
         RETURNS: None -- if no easy solution could be provided.
                  text -- the implementation of the counter functionh.
         """
@@ -350,8 +370,7 @@ class Generator(GeneratorBase):
         LanguageDB = Setup.language_db
        
         # Currently, we do not handle the case 'Reload': refuse to work.
-        if BeforeReloadAction is not None:
-            return None
+        assert BeforeReloadAction is None
 
         # (*) Try to find easy and elegant special solutions 
         if   Setup.buffer_codec_transformation_info == "utf8-state-split":
@@ -371,10 +390,8 @@ class Generator(GeneratorBase):
 
         # (*) Add increment actions to the actions
         def add_increment(action, IncrementActionStr, LastF):
-            action = deepcopy(action)
-            if not LastF:
-                action.extend([2, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
-            else:
+            if LastF:
+                action = deepcopy(action)
                 action.extend(IncrementActionStr)
             return action
 
@@ -402,8 +419,8 @@ class Generator(GeneratorBase):
             engine_type = engine.CHARACTER_COUNTER
         else:                          
             engine_type = engine.FORWARD
-            transition_map_tool.set(TM, Setup.buffer_limit_code,
-                                    E_StateIndices.DROP_OUT)
+            transition_map_tool.set_target(TM, Setup.buffer_limit_code,
+                                           E_StateIndices.DROP_OUT)
 
         # The range of possible characters may be restricted. It must be ensured,
         # that the occurring characters only belong to the admissible range.
@@ -432,7 +449,9 @@ class Generator(GeneratorBase):
         return txt
 
     @staticmethod
-    def replace_iterator_name(txt, IteratorName, StateMachineF):
+    def replace_iterator_name(txt, IteratorName, ImplementationType):
+        assert ImplementationType in E_MapImplementationType
+        StateMachineF = (ImplementationType == E_MapImplementationType.STATE_MACHINE)
         def replacer(block, StateMachineF):
             if block.find("(me->buffer._input_p)") != -1: 
                 block = block.replace("(me->buffer._input_p)", IteratorName)

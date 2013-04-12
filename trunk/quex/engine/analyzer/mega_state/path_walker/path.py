@@ -99,7 +99,7 @@ class CharacterPath(object):
 
         # Set the 'void' target to indicate wildcard.
         self.__wildcard_char    = StartCharacter
-        transition_map_tools.set(self.__transition_map, StartCharacter, E_StateIndices.VOID)
+        transition_map_tools.set_target(self.__transition_map, StartCharacter, E_StateIndices.VOID)
 
     def clone(self):
         result = CharacterPath(None, None, None)
@@ -302,7 +302,7 @@ class CharacterPath(object):
         assert self.__wildcard_char is not None
         assert transition_map_tools.get_target(self.__transition_map, self.__wildcard_char) == E_StateIndices.VOID
 
-        transition_map_tools.set(self.__transition_map, self.__wildcard_char, Target)
+        transition_map_tools.set_target(self.__transition_map, self.__wildcard_char, Target)
 
         self.__wildcard_char = None
         return 

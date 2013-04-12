@@ -20,7 +20,7 @@ def test(TM, Character, Target="<X>"):
     tm = deepcopy(TM)
     print "____________________________________________________________________"
     print "   len(TM) = %i; Insert at %i;" % (len(TM), Character)
-    transition_map_tools.set(tm, Character, Target)
+    transition_map_tools.set_target(tm, Character, Target)
     show(tm)
 
 if "Normal" in sys.argv:

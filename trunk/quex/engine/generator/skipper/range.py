@@ -180,7 +180,7 @@ def __terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePatte
 
     # Column and line number count for 'normal' character.
     tm, column_counter_per_chunk = \
-            counter.get_counter_map(Mode.counter_db, "me->buffer._input_p", 
+            counter.get_XXX_counter_map(Mode.counter_db, "me->buffer._input_p", 
                                     Trafo=Setup.buffer_codec_transformation_info)
 
     dummy, character_count_txt, dummy = \
@@ -420,7 +420,7 @@ def __lc_counting_replacements(code_str, EndSequence):
 
 def __core(Mode, ActionDB, ReferenceP_F, UponReloadDoneAdr):
     tm, column_counter_per_chunk = \
-         counter.get_counter_map(Mode.counter_db, "me->buffer._input_p",
+         counter.get_XXX_counter_map(Mode.counter_db, "me->buffer._input_p",
                                  Trafo=Setup.buffer_codec_transformation_info)
 
     __insert_actions(tm, ReferenceP_F, column_counter_per_chunk, UponReloadDoneAdr)

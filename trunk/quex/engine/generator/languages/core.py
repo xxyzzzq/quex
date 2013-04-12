@@ -401,9 +401,11 @@ class LanguageDB_Cpp(dict):
         else:
             return "%s" % NameOrValue
 
-    def REFERENCE_P_COLUMN_ADD(self, txt, IteratorName, ColumnCountPerChunk):
+    def REFERENCE_P_COLUMN_ADD(self, txt, IteratorName, ColumnCountPerChunk): # , SubtractOneF=False):
+        # if SubtractOneF: delta_str = "(%s - reference_p - 1)" % IteratorName
+        delta_str = "(%s - reference_p)" % IteratorName         
         txt.append("__QUEX_IF_COUNT_COLUMNS_ADD((size_t)(%s));\n" \
-                   % self.MULTIPLY_WITH("(%s - reference_p)" % IteratorName, ColumnCountPerChunk))
+                   % self.MULTIPLY_WITH(delta_str, ColumnCountPerChunk))
 
     def REFERENCE_P_RESET(self, txt, IteratorName, AddOneF=True):
         if AddOneF:
