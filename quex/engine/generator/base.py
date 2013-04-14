@@ -5,6 +5,7 @@ import quex.engine.generator.state_router              as     state_router_gener
 from   quex.engine.generator.languages.variable_db     import variable_db
 from   quex.engine.generator.languages.address         import address_set_subject_to_routing_add, \
                                                               get_address,                        \
+                                                              get_label_of_address,               \
                                                               get_plain_strings,                  \
                                                               get_address_set_subject_to_routing, \
                                                               is_label_referenced
@@ -135,27 +136,27 @@ class Generator(GeneratorBase):
 
         return txt
 
-    def code_main_state_machine(self, EngineType=engine.FORWARD, BeforeReloadAction=None, SimpleF=False):
-        LanguageDB       = Setup.language_db 
+    def code_main_state_machine(self):
+        LanguageDB    = Setup.language_db 
 
-        sm_txt, analyzer = Generator.code_state_machine(self.sm, 
-                                                        EngineType, 
-                                                        BeforeReloadAction)
-        terminal_txt     = Generator.code_terminals(self.action_db, 
-                                                    self.pre_context_sm_id_list, 
-                                                    SimpleF)
-
-        # -- reload definition (forward, backward, init state reload)
-        if not SimpleF and EngineType.requires_buffer_limit_code_for_reload():
-            reload_txt = LanguageDB.RELOAD()
-        else:
-            reload_txt = []
+        sm_txt,       \
+        terminal_txt, \
+        analyzer      = self.code_state_machine_core(engine.FORWARD, None, False)
 
         # Number of different entries in the position register map
         self.__position_register_n                 = len(set(analyzer.position_register_map.itervalues()))
         self.__last_acceptance_variable_required_f = analyzer.last_acceptance_variable_required()
 
-        return sm_txt + terminal_txt + reload_txt
+        return sm_txt + terminal_txt + LanguageDB.RELOAD()
+
+    def code_state_machine_core(self, EngineType, SimpleF):
+        sm_txt, analyzer = Generator.code_state_machine(self.sm, 
+                                                        EngineType)
+        terminal_txt     = Generator.code_terminals(self.action_db, 
+                                                    self.pre_context_sm_id_list, 
+                                                    SimpleF)
+        return sm_txt, terminal_txt, analyzer
+
 
     def code_backward_input_position_detection(self):
         result = []
@@ -256,6 +257,7 @@ class Generator(GeneratorBase):
     @staticmethod
     def code_action_map(TM, IteratorName, 
                         BeforeReloadAction = None, 
+                        AfterReloadAction  = None,
                         OnFailureAction    = None, 
                         ImplementationType = None):
         """TM is an object in the form of a 'transition map'. That is, it maps
@@ -275,34 +277,32 @@ class Generator(GeneratorBase):
             reload_f = (BeforeReloadAction is not None)
             ImplementationType = Generator.determine_implementation_type(TM, reload_f)
 
+        if     BeforeReloadAction is not None \
+           and ImplementationType != E_MapImplementationType.STATE_MACHINE:
+            # If there are variable size characters, then the lexeme start
+            # pointer points to the begin of the current character. Thus, it
+            # cannot be reset.
+            BeforeReloadAction.append("%s\n" % LanguageDB.LEXEME_START_SET())
+
+        # (*) Implement according to implementation type.
         if ImplementationType == E_MapImplementationType.TRIVIALIZED_STATE_MACHINE:
             # In case of variable character sizes, there can be no 'column_n +=
             # (iterator - reference_p) * C'. Thus, there is no 'AfterReloadAction'.
-            upon_reload_done_adr = None
-            txt = Generator.code_action_state_machine_trivial(TM, BeforeReloadAction)
+            txt = Generator.code_action_state_machine_trivial(TM, BeforeReloadAction, AfterReloadAction)
 
         elif ImplementationType == E_MapImplementationType.STATE_MACHINE:
-            upon_reload_done_adr = None
-            txt = Generator.code_action_state_machine(TM, 
-                                                      BeforeReloadAction, 
+            txt = Generator.code_action_state_machine(TM, BeforeReloadAction, AfterReloadAction,
                                                       OnFailureAction)
 
         elif ImplementationType == E_MapImplementationType.PLAIN_MAP:
-            upon_reload_done_adr = index.get()
-            address_set_subject_to_routing_add(upon_reload_done_adr) # Mark as 'used'
-
             complete_f, tm = transformation.do_transition_map(TM)
-            txt            = Generator.code_action_map_plain(tm, 
-                                                             BeforeReloadAction, 
-                                                             upon_reload_done_adr)
+            txt            = Generator.code_action_map_plain(tm, BeforeReloadAction, AfterReloadAction)
 
         else:
             assert False
 
-
         return ImplementationType, \
-               Generator.replace_iterator_name(txt, IteratorName, ImplementationType), \
-               upon_reload_done_adr
+               Generator.replace_iterator_name(txt, IteratorName, ImplementationType)
 
     @staticmethod
     def determine_implementation_type(TM, ReloadF):
@@ -316,11 +316,20 @@ class Generator(GeneratorBase):
             return E_MapImplementationType.PLAIN_MAP
 
     @staticmethod
-    def code_action_state_machine(TM, BeforeReloadAction, OnFailureAction):
+    def code_action_state_machine(TM, BeforeReloadAction, AfterReloadAction, OnFailureAction):
         """Generates a state machine that represents the transition map 
         according to the codec given in 'Setup.buffer_codec_transformation_info'
         """
+        LanguageDB = Setup.language_db
         assert TM is not None
+
+        # Here, characters are made up of more than one 'chunk'. When the last
+        # character needs to be reset, its start position must be known. For 
+        # this the 'lexeme start pointer' is used.
+        loop_epilog = [1, "%s\n" % LanguageDB.LEXEME_START_SET()]
+        exit_action = [1, "%s\n" % LanguageDB.INPUT_P_TO_LEXEME_START()]
+
+        transition_map_tool.replace_action_id(TM, E_ActionIDs.ON_EXIT, exit_action)
 
         pap_list = get_pattern_action_pair_list_from_map(TM)
         for pap in pap_list:
@@ -341,11 +350,17 @@ class Generator(GeneratorBase):
 
         # assert E_ActionIDs.ON_AFTER_MATCH not in action_db
         # assert E_ActionIDs.ON_FAILURE     not in action_db
-        # complete_f, sm = transformation.do_state_machine(sm)
-        return generator.code_main_state_machine(engine_type, BeforeReloadAction, SimpleF=True)
+
+        reload_label, reload_txt = Generator.get_reload_procedure(BeforeReloadAction, AfterReloadAction)
+        LanguageDB.code_generation_reload_label_set(reload_label)
+        sm_txt,       \
+        terminal_txt, \
+        dummy         = generator.code_state_machine_core(engine_type, SimpleF=True)
+        LanguageDB.code_generation_reload_label_set(None)
+        return loop_epilog + sm_txt + terminal_txt + reload_txt
 
     @staticmethod
-    def code_action_state_machine_trivial(tm, BeforeReloadAction):
+    def code_action_state_machine_trivial(tm, BeforeReloadAction, AfterReloadAction):
         """This function tries to provide easy solutions for dynamic character
         length encodings, such as UTF8 or UTF16. 
         
@@ -406,12 +421,12 @@ class Generator(GeneratorBase):
         assert tm[0][0].end > 0
 
         # Code the transition map
-        return Generator.code_action_map_plain(tm, 
-                                               BeforeReloadAction=None, 
-                                               UponReloadDoneAdr=None)
+        return Generator.code_action_map_plain(tm) # No reload possible (see entry assert) 
 
     @staticmethod
-    def code_action_map_plain(TM, BeforeReloadAction=None, UponReloadDoneAdr=None):
+    def code_action_map_plain(TM, BeforeReloadAction=None, AfterReloadAction=None):
+
+        transition_map_tool.replace_action_id(TM, E_ActionIDs.ON_EXIT, None)
 
         LanguageDB = Setup.language_db
 
@@ -426,27 +441,38 @@ class Generator(GeneratorBase):
         # that the occurring characters only belong to the admissible range.
         transition_map_tool.prune(TM, 0, Setup.get_character_value_limit())
 
+        upon_reload_done_adr = LanguageDB.ADDRESS(index.get(), 0)
+        reload_label, reload_txt = Generator.get_reload_procedure(BeforeReloadAction, AfterReloadAction)
+        LanguageDB.code_generation_reload_label_set(reload_label)
+        LanguageDB.code_generation_switch_cases_add_statement("break;")
+
         goto_reload_str = TransitionCodeFactory.prepare_reload_tansition(TM,
-                                           StateIndex         = UponReloadDoneAdr,
+                                           StateIndex         = upon_reload_done_adr,
                                            EngineType         = engine_type,
                                            InitStateF         = True,
-                                           BeforeReloadAction = BeforeReloadAction)
+                                           BeforeReloadAction = None)
 
         TransitionCodeFactory.init(engine_type, 
-                                   StateIndex    = None,
-                                   InitStateF    = True,
-                                   GotoReloadStr = goto_reload_str,
-                                   TheAnalyzer   = None)
+                                   StateIndex    = upon_reload_done_adr, InitStateF    = True,
+                                   GotoReloadStr = None,                 TheAnalyzer   = None)
         tm = [ 
             (interval, TransitionCodeFactory.do(x)) for interval, x in TM 
         ]
 
-        LanguageDB.code_generation_switch_cases_add_statement("break;")
-        txt = []
+        txt = [ "%s:\n" % LanguageDB.ADDRESS_LABEL(upon_reload_done_adr) ]
         transition_block.do(txt, tm)
         LanguageDB.code_generation_switch_cases_add_statement(None)
+        LanguageDB.code_generation_reload_label_set(None)
 
         return txt
+
+    @staticmethod
+    def get_reload_procedure(BeforeReloadAction, AfterReloadAction):
+        LanguageDB = Setup.language_db
+        reload_adr   = LanguageDB.ADDRESS(index.get(), 0)
+        reload_label = get_label_of_address(reload_adr)
+        return reload_label, \
+               LanguageDB.RELOAD_SPECIAL(reload_label, BeforeReloadAction, AfterReloadAction)
 
     @staticmethod
     def replace_iterator_name(txt, IteratorName, ImplementationType):

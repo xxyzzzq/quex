@@ -6,6 +6,7 @@ from   quex.engine.generator.languages.variable_db  import variable_db
 import quex.output.cpp.counter                      as     counter
 from   quex.blackboard                              import setup as Setup, \
                                                            E_StateIndices, \
+                                                           E_ActionIDs, \
                                                            E_MapImplementationType
 from   quex.engine.interval_handling                import NumberSet, Interval
 import quex.engine.analyzer.transition_map          as     transition_map_tool
@@ -37,14 +38,11 @@ def do(Data, Mode):
     #
     implementation_type, \
     entry_action,        \
-    loop_txt,            \
-    after_reload_adr,    \
-    after_reload_action  = __make_loop(Mode, CharacterSet)
+    loop_txt,            = __make_loop(Mode, CharacterSet)
 
     # Build the skipper _______________________________________________________
     #
-    result = __frame(loop_txt, CharacterSet, implementation_type, 
-                     entry_action, after_reload_adr, after_reload_action)
+    result = __frame(loop_txt, CharacterSet, implementation_type, entry_action)
 
     return result
 
@@ -87,11 +85,10 @@ def __make_loop(Mode, CharacterSet):
 
     tm = add_on_exit_actions(tm, exit_skip_set, implementation_type)
 
-    if implementation_type != E_MapImplementationType.STATE_MACHINE:
-        # If there are variable size characters, then the lexeme start
-        # pointer points to the begin of the current character. Thus, it
-        # cannot be reset.
-        before_reload_action.append("%s\n" % LanguageDB.LEXEME_START_SET())
+    after_reload_action.extend([
+        1, "goto __SKIP;\n"
+    ])
+
 
     # Prepare reload procedure, ensure transition to 'drop-out'
     transition_map_tool.set_target(tm, Setup.buffer_limit_code, 
@@ -100,13 +97,13 @@ def __make_loop(Mode, CharacterSet):
     # 'BeforeReloadAction not None' forces a transition to RELOAD_PROCEDURE upon
     # buffer limit code.
     implementation_type, \
-    loop_txt,            \
-    after_reload_adr     = CppGenerator.code_action_map(tm, 
+    loop_txt,            = CppGenerator.code_action_map(tm, 
                                         IteratorName       = "me->buffer._input_p", 
                                         BeforeReloadAction = before_reload_action, 
+                                        AfterReloadAction  = after_reload_action,
                                         OnFailureAction    = None)
 
-    return implementation_type, entry_action, loop_txt, after_reload_adr, after_reload_action
+    return implementation_type, entry_action, loop_txt
 
 def add_on_exit_actions(tm, ExitSkipSet, ImplementationType):
     """When a character appears which is not to be skipped, the loop must
@@ -118,20 +115,15 @@ def add_on_exit_actions(tm, ExitSkipSet, ImplementationType):
     (2) For those characters in 'ExitSkipSet' where there is no action
         yet, it may be necessary to append a "add(iterator-reference_p)".
 
-        This is only necessary, if the column number can be derived from
-        the lexeme length. 
+    This is only necessary, if the column number can be derived from the 
+    lexeme length. 
     """
     LanguageDB = Setup.language_db
 
-    exit_action = []
-    # All characters of the 'ExitSkipSet' must trigger a loop quit.
-    if ImplementationType == E_MapImplementationType.STATE_MACHINE:
-        # Here, characters are made up of more than one 'chunk'. When the last
-        # character needs to be reset, its start position must be known. For 
-        # this the 'lexeme start pointer' is used.
-        exit_action.extend([1, "%s\n" % LanguageDB.INPUT_P_TO_LEXEME_START()])
-
-    exit_action.extend(["goto %s;" % get_label("$start", U=True)])
+    exit_action = [ 
+        E_ActionIDs.ON_EXIT,
+        1, "goto %s;" % get_label("$start", U=True)
+    ]
 
     exit_tm = [
         (interval, exit_action) for interval in ExitSkipSet.get_intervals()
@@ -144,26 +136,9 @@ def add_on_exit_actions(tm, ExitSkipSet, ImplementationType):
 
     return transition_map_tool.add_transition_actions(tm, exit_tm)
 
-def __frame(LoopTxt, CharacterSet, ImplementationType, 
-            EntryAction, UponReloadDoneAdr, AfterReloadAction):
+def __frame(LoopTxt, CharacterSet, ImplementationType, EntryAction):
     """Implement the skipper."""
     LanguageDB = Setup.language_db
-
-    after_reload = [ 
-        1, "__quex_assert_no_passage();\n",
-        "%s: /* After RELOAD */\n"   % LanguageDB.ADDRESS_LABEL(UponReloadDoneAdr), 
-    ]
-    after_reload.extend(AfterReloadAction)
-    after_reload.extend([
-        1, "goto __SKIP;\n"
-    ])
-
-    loop_epilog = []
-    if ImplementationType == E_MapImplementationType.STATE_MACHINE:
-        # Here, characters are made up of more than one 'chunk'. When the last
-        # character needs to be reset, its start position must be known. For 
-        # this the 'lexeme start pointer' is used.
-        loop_epilog = [1, "%s\n" % LanguageDB.LEXEME_START_SET()]
 
     comment = [1]
     LanguageDB.COMMENT(comment, "Character Set Skipper: '%s'" % CharacterSet.get_utf8_string()),
@@ -175,10 +150,8 @@ def __frame(LoopTxt, CharacterSet, ImplementationType,
     code.extend([1, "QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);\n"])
     code.extend(EntryAction)
     code.extend([ 1, "while( 1 + 1 == 2 ) {\n" ])
-    code.extend(loop_epilog)
     code.extend(LoopTxt)
     code.extend([ 1, "}\n"])
-    code.extend(after_reload)
 
     return code
 
