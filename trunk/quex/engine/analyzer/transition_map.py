@@ -1,5 +1,5 @@
 from   quex.engine.interval_handling import Interval
-from   quex.blackboard import E_StateIndices
+from   quex.blackboard import E_StateIndices, E_ActionIDs
 from   quex.engine.tools import r_enumerate
 import sys
 from   copy import deepcopy, copy
@@ -80,6 +80,23 @@ def get_string(transition_map, Option="utf8", IntervalF=True):
         else:         interval_str = "[%s:%s)" % (get(interval.begin), get(interval.end))
         txt.append("   %s%s %s\n" % (interval_str, " " * (L - len(interval_str)), target))
     return "".join(txt)
+
+def replace_action_id(transition_map, ActionID, Action):
+    assert ActionID in E_ActionIDs
+    assert Action is None or type(Action) == list
+
+    for interval, action in transition_map:
+        try:    idx = action.index(ActionID)
+        except: continue
+
+        del action[idx]
+        
+        if Action is None: continue
+
+        for x in Action:
+            action.insert(idx, x)
+            idx += 1
+    return
 
 def set_target(transition_map, Character, NewTarget):
     i = bisect(transition_map, Character)

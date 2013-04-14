@@ -97,8 +97,8 @@ class ExitAction(CountAction):
     @staticmethod
     def get_txt(ColumnCountPerChunk, IteratorName):
         LanguageDB = Setup.language_db
+        result = []
         if ColumnCountPerChunk is not None:
-            result = []
             LanguageDB.REFERENCE_P_COLUMN_ADD(result, IteratorName, ColumnCountPerChunk)
         return result
 

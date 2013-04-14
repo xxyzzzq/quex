@@ -59,6 +59,7 @@ class LanguageDB_Cpp(dict):
         self.update(DB)
         self.__analyzer                                   = None
         self.__code_generation_switch_cases_add_statement = None
+        self.__reload_label                               = None
         self.__state_machine_identifier                   = None
         self.Match_goto                                   = re.compile("\\bgoto\\b")
         self.Match_QUEX_GOTO_RELOAD                       = re.compile("\\bQUEX_GOTO_RELOAD_")
@@ -67,7 +68,12 @@ class LanguageDB_Cpp(dict):
         self.__analyzer = TheAnalyzer
 
     def code_generation_switch_cases_add_statement(self, Value):
+        assert Value is None or self.__code_generation_switch_cases_add_statement is None
         self.__code_generation_switch_cases_add_statement = Value
+
+    def code_generation_reload_label_set(self, Value):
+        assert Value is None or self.__reload_label is None
+        self.__reload_label = Value
 
     def set_state_machine_identifier(self, SM_Id):
         self.__state_machine_identifier = SM_Id
@@ -310,9 +316,6 @@ class LanguageDB_Cpp(dict):
            Thus: The reload behavior can be determined based on **one** state index.
                  The related drop-out label can be determined here.
         """
-        direction = EngineType.direction_str() 
-        assert direction is not None, \
-               "There is no reload during BACKWARD_INPUT_POSITION detection."
 
         # 'DoorIndex == 0' is the entry into the state without any actions.
         on_success = get_address("$entry", entry_action.DoorID(StateIndex, DoorIndex=0), U=True)
@@ -322,8 +325,15 @@ class LanguageDB_Cpp(dict):
             on_fail = get_address("$drop-out", StateIndex, U=True, R=True) 
 
         get_label("$state-router", U=True)            # Mark as 'referenced'
-        get_label("$reload-%s" % direction, U=True)   # ...
-        return "QUEX_GOTO_RELOAD_%s(%s, %s);" % (direction, on_success, on_fail)
+
+        reload_label = self.__reload_label
+        if self.__reload_label is None:
+            direction = EngineType.direction_str() 
+            assert direction is not None, \
+                   "There is no reload during BACKWARD_INPUT_POSITION detection."
+            reload_label = get_label("$reload-%s" % direction, U=True)   # ...
+
+        return "QUEX_GOTO_RELOAD(%s, %s, %s);" % (self.__reload_label, on_success, on_fail)
 
     def GOTO_TERMINAL(self, AcceptanceID):
         if AcceptanceID == E_AcceptanceIDs.VOID: 
@@ -597,26 +607,56 @@ class LanguageDB_Cpp(dict):
         assert type(VariableDB) != dict
         return cpp._local_variable_definitions(VariableDB.get()) 
 
+    def RELOAD_SPECIAL(self, ReloadLabelName, BeforeReloadAction, AfterReloadAction):
+        assert isinstance(ReloadLabelName, (str, unicode))
+        assert type(BeforeReloadAction) == list
+        assert type(AfterReloadAction) == list
+
+        result = [ 
+           cpp_reload_forward_str[0],
+           "%s:\n" % ReloadLabelName,
+           cpp_reload_forward_str[1],
+        ]
+        result.extend(BeforeReloadAction)
+        result.append(cpp_reload_forward_str[2])
+        result.extend(AfterReloadAction)
+        result.append(cpp_reload_forward_str[3])
+
+        return result
+
     def RELOAD(self):
         txt = []
-        txt.append(Address("$reload-FORWARD", None,  cpp_reload_forward_str))
+        forward_str = "".join([
+            cpp_reload_backward_str[0],
+            "__RELOAD_FORWARD:\n",
+            cpp_reload_backward_str[1],
+            cpp_reload_backward_str[2],
+            cpp_reload_backward_str[3],
+        ])
+
+        txt.append(Address("$reload-FORWARD", None,  forward_str))
         txt.append(Address("$reload-BACKWARD", None, cpp_reload_backward_str))
         return txt
 
-cpp_reload_forward_str = """
+cpp_reload_forward_str = ["""
     __quex_assert_no_passage();
-__RELOAD_FORWARD:
+""",
+"""
     __quex_debug1("__RELOAD_FORWARD");
     __quex_assert(*(me->buffer._input_p) == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( me->buffer._memory._end_of_file_p == 0x0 ) {
+""",
+"""
         __quex_debug_reload_before(); /* Leave macro here to report source position. */
         QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)position, PositionRegisterN);
+""",
+"""
         __quex_debug_reload_after();
         QUEX_GOTO_STATE(target_state_index);
     }
     __quex_debug("reload impossible\\n");
     QUEX_GOTO_STATE(target_state_else_index);
-"""
+"""]
 
 cpp_reload_backward_str = """
     __quex_assert_no_passage();

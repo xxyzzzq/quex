@@ -103,12 +103,10 @@
                                                      goto __STATE_ROUTER;
 #endif
 
-#define    QUEX_GOTO_RELOAD_FORWARD(ON_SUCCESS, ON_FAIL)   target_state_index      = QUEX_LABEL(ON_SUCCESS); \
-                                                           target_state_else_index = QUEX_LABEL(ON_FAIL);    \
-                                                           goto __RELOAD_FORWARD;
-#define    QUEX_GOTO_RELOAD_BACKWARD(ON_SUCCESS, ON_FAIL)  target_state_index      = QUEX_LABEL(ON_SUCCESS); \
-                                                           target_state_else_index = QUEX_LABEL(ON_FAIL);    \
-                                                           goto __RELOAD_BACKWARD;
+#define    QUEX_GOTO_RELOAD(RELOAD_LABEL, ON_SUCCESS, ON_FAIL)  \
+              do { target_state_index      = QUEX_LABEL(ON_SUCCESS); \
+                   target_state_else_index = QUEX_LABEL(ON_FAIL);    \
+                   goto RELOAD_LABEL; } while (0)
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 #   define QUEX_ERROR_EXIT(Msg) \

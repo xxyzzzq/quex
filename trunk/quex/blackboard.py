@@ -94,6 +94,7 @@ E_SpecialPatterns = Enum("INDENTATION_NEWLINE",
 
 E_ActionIDs = Enum("ON_FAILURE", 
                    "ON_END_OF_STREAM", 
+                   "ON_EXIT",
                    "ON_MATCH", 
                    "ON_AFTER_MATCH", 
                    "_DEBUG_ActionIDs")
