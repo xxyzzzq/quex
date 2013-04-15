@@ -5,6 +5,7 @@ import quex.engine.generator.state_router              as     state_router_gener
 from   quex.engine.generator.languages.variable_db     import variable_db
 from   quex.engine.generator.languages.address         import address_set_subject_to_routing_add, \
                                                               get_address,                        \
+                                                              get_label,                          \
                                                               get_label_of_address,               \
                                                               get_plain_strings,                  \
                                                               get_address_set_subject_to_routing, \
@@ -351,11 +352,12 @@ class Generator(GeneratorBase):
         # assert E_ActionIDs.ON_AFTER_MATCH not in action_db
         # assert E_ActionIDs.ON_FAILURE     not in action_db
 
-        reload_label, reload_txt = Generator.get_reload_procedure(BeforeReloadAction, AfterReloadAction)
+        reload_label = Generator.generate_reload_label()
         LanguageDB.code_generation_reload_label_set(reload_label)
         sm_txt,       \
         terminal_txt, \
         dummy         = generator.code_state_machine_core(engine_type, SimpleF=True)
+        reload_txt    = LanguageDB.RELOAD_SPECIAL(BeforeReloadAction, AfterReloadAction)
         LanguageDB.code_generation_reload_label_set(None)
         return loop_epilog + sm_txt + terminal_txt + reload_txt
 
@@ -442,9 +444,12 @@ class Generator(GeneratorBase):
         transition_map_tool.prune(TM, 0, Setup.get_character_value_limit())
 
         upon_reload_done_adr = LanguageDB.ADDRESS(index.get(), 0)
-        reload_label, reload_txt = Generator.get_reload_procedure(BeforeReloadAction, AfterReloadAction)
+        reload_label = Generator.generate_reload_label()
         LanguageDB.code_generation_reload_label_set(reload_label)
+        LanguageDB.code_generation_on_reload_fail_adr_set(get_address("$terminal-EOF", U=True))
         LanguageDB.code_generation_switch_cases_add_statement("break;")
+
+        reload_txt = LanguageDB.RELOAD_SPECIAL(BeforeReloadAction, AfterReloadAction)
 
         goto_reload_str = TransitionCodeFactory.prepare_reload_tansition(TM,
                                            StateIndex         = upon_reload_done_adr,
@@ -463,16 +468,15 @@ class Generator(GeneratorBase):
         transition_block.do(txt, tm)
         LanguageDB.code_generation_switch_cases_add_statement(None)
         LanguageDB.code_generation_reload_label_set(None)
+        LanguageDB.code_generation_on_reload_fail_adr_set(None)
 
-        return txt
+        return txt + ["        continue;\n"] + reload_txt
 
     @staticmethod
-    def get_reload_procedure(BeforeReloadAction, AfterReloadAction):
+    def generate_reload_label():
         LanguageDB = Setup.language_db
         reload_adr   = LanguageDB.ADDRESS(index.get(), 0)
-        reload_label = get_label_of_address(reload_adr)
-        return reload_label, \
-               LanguageDB.RELOAD_SPECIAL(reload_label, BeforeReloadAction, AfterReloadAction)
+        return get_label_of_address(reload_adr, U=False) # Not subject to routing
 
     @staticmethod
     def replace_iterator_name(txt, IteratorName, ImplementationType):

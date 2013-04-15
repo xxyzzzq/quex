@@ -38,15 +38,15 @@ def do(Data, Mode):
     #
     implementation_type, \
     entry_action,        \
-    loop_txt,            = __make_loop(Mode, CharacterSet)
+    loop_txt,            = __make_loop(Mode.counter_db, CharacterSet)
 
     # Build the skipper _______________________________________________________
     #
-    result = __frame(loop_txt, CharacterSet, implementation_type, entry_action)
+    result = __frame(loop_txt, CharacterSet, implementation_type, entry_action, require_label_SKIP_f)
 
     return result
 
-def __make_loop(Mode, CharacterSet):
+def __make_loop(CounterDB, CharacterSet):
     """Buffer Limit Code --> Reload
        Skip Character    --> Loop to Skipper State
        Else              --> Exit Loop
@@ -55,7 +55,7 @@ def __make_loop(Mode, CharacterSet):
 
     # Determine 'column_count_per_chunk' before adding 'exit' and 'blc' 
     # characters.
-    column_count_per_chunk = counter.get_column_number_per_chunk(Mode.counter_db, 
+    column_count_per_chunk = counter.get_column_number_per_chunk(CounterDB,
                                                                  CharacterSet)
 
     # Possible reactions on a character _______________________________________
@@ -76,19 +76,17 @@ def __make_loop(Mode, CharacterSet):
     entry_action,           \
     before_reload_action,   \
     after_reload_action =   \
-         counter.get_counter_map(Mode.counter_db, 
+         counter.get_counter_map(CounterDB,
                                  IteratorName          = "me->buffer._input_p",
                                  ColumnCountPerChunk   = column_count_per_chunk,
                                  InsideCharacterSet    = CharacterSet,
                                  ExitCharacterSet      = exit_skip_set, 
                                  ReloadF               = True)
 
-    tm = add_on_exit_actions(tm, exit_skip_set, implementation_type)
-
-    after_reload_action.extend([
-        1, "goto __SKIP;\n"
-    ])
-
+    transition_map_tool.replace_action_id(tm, E_ActionIDs.ON_EXIT,
+                                          [ 1, "goto %s;" % get_label("$start", U=True) ])
+    transition_map_tool.replace_action_id(tm, E_ActionIDs.ON_GOOD_TRANSITION,
+                                          [ 1, "continue;" ])
 
     # Prepare reload procedure, ensure transition to 'drop-out'
     transition_map_tool.set_target(tm, Setup.buffer_limit_code, 
@@ -105,38 +103,7 @@ def __make_loop(Mode, CharacterSet):
 
     return implementation_type, entry_action, loop_txt
 
-def add_on_exit_actions(tm, ExitSkipSet, ImplementationType):
-    """When a character appears which is not to be skipped, the loop must
-    be quit. The loop exit is added to the given transition map 'tm' by 
-    this function. Two things need to be considered:
-
-    (1) Every character in 'ExitSkipSet' must cause an exit of the loop.
-
-    (2) For those characters in 'ExitSkipSet' where there is no action
-        yet, it may be necessary to append a "add(iterator-reference_p)".
-
-    This is only necessary, if the column number can be derived from the 
-    lexeme length. 
-    """
-    LanguageDB = Setup.language_db
-
-    exit_action = [ 
-        E_ActionIDs.ON_EXIT,
-        1, "goto %s;" % get_label("$start", U=True)
-    ]
-
-    exit_tm = [
-        (interval, exit_action) for interval in ExitSkipSet.get_intervals()
-    ]
-
-    # Before the content of transition maps can be added, the gaps need 
-    # to be filled.
-    transition_map_tool.fill_gaps(tm, [])
-    transition_map_tool.fill_gaps(exit_tm, [])
-
-    return transition_map_tool.add_transition_actions(tm, exit_tm)
-
-def __frame(LoopTxt, CharacterSet, ImplementationType, EntryAction):
+def __frame(LoopTxt, CharacterSet, ImplementationType, EntryAction, RequireSKIPLabel):
     """Implement the skipper."""
     LanguageDB = Setup.language_db
 
@@ -145,7 +112,9 @@ def __frame(LoopTxt, CharacterSet, ImplementationType, EntryAction):
     LanguageDB.INDENT(LoopTxt)
 
     # (*) Putting it all together _____________________________________________
-    code = [ "__SKIP:\n" ]
+    code = [ ]
+    if RequireSKIPLabel:
+        code.append("__SKIP:\n")
     code.extend(comment)
     code.extend([1, "QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);\n"])
     code.extend(EntryAction)

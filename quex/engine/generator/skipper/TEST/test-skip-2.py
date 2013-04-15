@@ -42,6 +42,7 @@ def core(Executable, BufferSize, TestStr):
     fh.write(TestStr)
     fh.close()
     run_this("./%s test.txt %i" % (Executable, BufferSize))
+    # sys.exit()
     os.remove("test.txt")
 
 exe_name, tmp_file = make(trigger_set, BS)
