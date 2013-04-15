@@ -18,6 +18,7 @@ from   quex.engine.tools                            import print_callstack
 from   quex.blackboard import setup as Setup, \
                               DefaultCounterFunctionDB, \
                               E_StateIndices, \
+                              E_ActionIDs, \
                               E_MapImplementationType
 
 from   collections import defaultdict
@@ -57,6 +58,7 @@ def get(counter_db, Name):
     IteratorName = "iterator"
     tm,                       \
     implementation_type,      \
+    loop_start_label,         \
     entry_action,             \
     dummy,                    \
     dummy                     = get_counter_map(counter_db, IteratorName) 
@@ -73,7 +75,7 @@ def get(counter_db, Name):
                                                         OnFailureAction = on_failure_action)
 
     function_name  = "QUEX_NAME(%s_counter)" % Name
-    implementation = __frame(txt, function_name, implementation_type, entry_action)
+    implementation = __frame(txt, function_name, implementation_type, loop_start_label, entry_action)
     DefaultCounterFunctionDB.enter(counter_db, function_name)
 
     return function_name, implementation
@@ -86,9 +88,11 @@ class CountAction:
     @staticmethod
     def get_epilog(ImplementationType):
         LanguageDB = Setup.language_db
+        result = []
         if ImplementationType != E_MapImplementationType.STATE_MACHINE:
-            return [2, "%s\n" % LanguageDB.INPUT_P_INCREMENT()]
-        return []
+            result.extend([2, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
+        result.append(E_ActionIDs.ON_GOOD_TRANSITION)
+        return result
 
 class ExitAction(CountAction):
     def __init__(self):
@@ -105,12 +109,14 @@ class ExitAction(CountAction):
     @staticmethod
     def get_epilog(ImplementationType):
         LanguageDB = Setup.language_db
+        result = []
         if ImplementationType == E_MapImplementationType.STATE_MACHINE:
             # Here, characters are made up of more than one 'chunk'. When the last
             # character needs to be reset, its start position must be known. For 
             # this the 'lexeme start pointer' is used.
-            return [1, "%s\n" % LanguageDB.INPUT_P_TO_LEXEME_START()]
-        return []
+            result.extend([1, "%s\n" % LanguageDB.INPUT_P_TO_LEXEME_START()])
+        result.append(E_ActionIDs.ON_EXIT)
+        return result
 
 class ColumnAdd(CountAction):
     def __init__(self, Value):
@@ -322,10 +328,10 @@ def get_counter_map(counter_db,
     else:
         entry_action         = []
         before_reload_action = []
-        after_reload_action  = [ 
-            1, "%s\n" % LanguageDB.INPUT_P_INCREMENT(),
-            1, 
-        ]
+        after_reload_action  = []
+        if implementation_type != E_MapImplementationType.STATE_MACHINE:
+            after_reload_action.extend([1, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
+
         if ColumnCountPerChunk is not None:
             LanguageDB.REFERENCE_P_COLUMN_ADD(before_reload_action, IteratorName, ColumnCountPerChunk)
             LanguageDB.REFERENCE_P_RESET(entry_action, IteratorName, AddOneF=False)

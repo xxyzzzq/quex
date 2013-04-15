@@ -59,7 +59,8 @@ class LanguageDB_Cpp(dict):
         self.update(DB)
         self.__analyzer                                   = None
         self.__code_generation_switch_cases_add_statement = None
-        self.__reload_label                               = None
+        self.__code_generation_reload_label               = None
+        self.__code_generation_on_reload_fail_adr         = None
         self.__state_machine_identifier                   = None
         self.Match_goto                                   = re.compile("\\bgoto\\b")
         self.Match_QUEX_GOTO_RELOAD                       = re.compile("\\bQUEX_GOTO_RELOAD_")
@@ -72,8 +73,12 @@ class LanguageDB_Cpp(dict):
         self.__code_generation_switch_cases_add_statement = Value
 
     def code_generation_reload_label_set(self, Value):
-        assert Value is None or self.__reload_label is None
-        self.__reload_label = Value
+        assert Value is None or self.__code_generation_reload_label is None
+        self.__code_generation_reload_label = Value
+
+    def code_generation_on_reload_fail_adr_set(self, Value):
+        assert Value is None or self.__code_generation_on_reload_fail_adr is None
+        self.__code_generation_on_reload_fail_adr = Value
 
     def set_state_machine_identifier(self, SM_Id):
         self.__state_machine_identifier = SM_Id
@@ -316,24 +321,26 @@ class LanguageDB_Cpp(dict):
            Thus: The reload behavior can be determined based on **one** state index.
                  The related drop-out label can be determined here.
         """
-
         # 'DoorIndex == 0' is the entry into the state without any actions.
         on_success = get_address("$entry", entry_action.DoorID(StateIndex, DoorIndex=0), U=True)
-        if InitStateIndexF and EngineType.is_FORWARD():
-            on_fail = get_address("$terminal-EOF", U=True) 
+        if self.__code_generation_on_reload_fail_adr is not None:
+            on_fail = self.__code_generation_on_reload_fail_adr
         else:
-            on_fail = get_address("$drop-out", StateIndex, U=True, R=True) 
+            if InitStateIndexF and EngineType.is_FORWARD():
+                on_fail = get_address("$terminal-EOF", U=True) 
+            else:
+                on_fail = get_address("$drop-out", StateIndex, U=True, R=True) 
 
         get_label("$state-router", U=True)            # Mark as 'referenced'
 
-        reload_label = self.__reload_label
-        if self.__reload_label is None:
+        reload_label = self.__code_generation_reload_label
+        if self.__code_generation_reload_label is None:
             direction = EngineType.direction_str() 
             assert direction is not None, \
                    "There is no reload during BACKWARD_INPUT_POSITION detection."
             reload_label = get_label("$reload-%s" % direction, U=True)   # ...
 
-        return "QUEX_GOTO_RELOAD(%s, %s, %s);" % (self.__reload_label, on_success, on_fail)
+        return "QUEX_GOTO_RELOAD(%s, %s, %s);" % (self.__code_generation_reload_label, on_success, on_fail)
 
     def GOTO_TERMINAL(self, AcceptanceID):
         if AcceptanceID == E_AcceptanceIDs.VOID: 
@@ -607,14 +614,14 @@ class LanguageDB_Cpp(dict):
         assert type(VariableDB) != dict
         return cpp._local_variable_definitions(VariableDB.get()) 
 
-    def RELOAD_SPECIAL(self, ReloadLabelName, BeforeReloadAction, AfterReloadAction):
-        assert isinstance(ReloadLabelName, (str, unicode))
+    def RELOAD_SPECIAL(self, BeforeReloadAction, AfterReloadAction):
+        assert self.__code_generation_reload_label is not None
         assert type(BeforeReloadAction) == list
         assert type(AfterReloadAction) == list
 
         result = [ 
            cpp_reload_forward_str[0],
-           "%s:\n" % ReloadLabelName,
+           "%s:\n" % self.__code_generation_reload_label,
            cpp_reload_forward_str[1],
         ]
         result.extend(BeforeReloadAction)
@@ -625,6 +632,7 @@ class LanguageDB_Cpp(dict):
         return result
 
     def RELOAD(self):
+        assert self.__code_generation_reload_label is None
         txt = []
         forward_str = "".join([
             cpp_reload_backward_str[0],
