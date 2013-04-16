@@ -323,6 +323,7 @@ class LanguageDB_Cpp(dict):
         """
         # 'DoorIndex == 0' is the entry into the state without any actions.
         on_success = get_address("$entry", entry_action.DoorID(StateIndex, DoorIndex=0), U=True)
+
         if self.__code_generation_on_reload_fail_adr is not None:
             on_fail = self.__code_generation_on_reload_fail_adr
         else:
@@ -336,11 +337,10 @@ class LanguageDB_Cpp(dict):
         reload_label = self.__code_generation_reload_label
         if self.__code_generation_reload_label is None:
             direction = EngineType.direction_str() 
-            assert direction is not None, \
-                   "There is no reload during BACKWARD_INPUT_POSITION detection."
-            reload_label = get_label("$reload-%s" % direction, U=True)   # ...
+            assert direction is not None
+            reload_label = get_label("$reload-%s" % direction, U=True)   
 
-        return "QUEX_GOTO_RELOAD(%s, %s, %s);" % (self.__code_generation_reload_label, on_success, on_fail)
+        return "QUEX_GOTO_RELOAD(%s, %s, %s);" % (reload_label, on_success, on_fail)
 
     def GOTO_TERMINAL(self, AcceptanceID):
         if AcceptanceID == E_AcceptanceIDs.VOID: 
@@ -633,17 +633,18 @@ class LanguageDB_Cpp(dict):
 
     def RELOAD(self):
         assert self.__code_generation_reload_label is None
-        txt = []
         forward_str = "".join([
-            cpp_reload_backward_str[0],
+            cpp_reload_forward_str[0],
             "__RELOAD_FORWARD:\n",
-            cpp_reload_backward_str[1],
-            cpp_reload_backward_str[2],
-            cpp_reload_backward_str[3],
+            cpp_reload_forward_str[1],
+            cpp_reload_forward_str[2],
+            cpp_reload_forward_str[3],
         ])
 
-        txt.append(Address("$reload-FORWARD", None,  forward_str))
-        txt.append(Address("$reload-BACKWARD", None, cpp_reload_backward_str))
+        txt = [
+            Address("$reload-FORWARD",  None, forward_str),
+            Address("$reload-BACKWARD", None, cpp_reload_backward_str)
+        ]
         return txt
 
 cpp_reload_forward_str = ["""

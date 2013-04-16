@@ -162,7 +162,7 @@ class TransitionCode:
 
         if isinstance(Code, list):
             for elm in Code: 
-                assert isinstance(elm, (int, str, unicode))
+                assert isinstance(elm, (int, str, unicode)), "%s" % elm
             self.__code = Code
         else:
             assert isinstance(Code, (str, unicode))

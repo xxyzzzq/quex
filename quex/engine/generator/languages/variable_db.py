@@ -142,4 +142,13 @@ class VariableDB:
 
         return Name
 
+    def __str__(self):
+        if len(self.__db) == 0:
+            return ""
+        L = max([len(x) for x in self.__db.iterkeys()])
+        txt = []
+        for name, info in self.__db.iteritems():
+            txt.append("%s%s %s" % (name, " " * (L - len(name)), str(info)))
+        return "".join(txt)
+
 variable_db = VariableDB()
