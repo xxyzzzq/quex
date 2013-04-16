@@ -58,24 +58,27 @@ def get(counter_db, Name):
     IteratorName = "iterator"
     tm,                       \
     implementation_type,      \
-    loop_start_label,         \
     entry_action,             \
     dummy,                    \
     dummy                     = get_counter_map(counter_db, IteratorName) 
 
     # TODO: The lexer shall never drop-out with exception.
-    on_failure_action = CodeFragment([     
+    on_failure_action = [     
         "\n", 
         1, "QUEX_ERROR_EXIT(\"State machine failed.\");\n" 
-    ])
+    ]
+
+    # 'ON_EXIT' should not occur here
+    transition_map_tool.replace_action_id(tm, E_ActionIDs.ON_EXIT, on_failure_action)
+    transition_map_tool.replace_action_id(tm, E_ActionIDs.ON_GOOD_TRANSITION,
+                                          [ 1, "continue;" ])
 
     implementation_type, \
-    txt,                 \
-    dummy                = CppGenerator.code_action_map(tm, IteratorName, 
+    txt                  = CppGenerator.code_action_map(tm, IteratorName, 
                                                         OnFailureAction = on_failure_action)
 
     function_name  = "QUEX_NAME(%s_counter)" % Name
-    implementation = __frame(txt, function_name, implementation_type, loop_start_label, entry_action)
+    implementation = __frame(txt, function_name, implementation_type, entry_action)
     DefaultCounterFunctionDB.enter(counter_db, function_name)
 
     return function_name, implementation
@@ -286,7 +289,7 @@ def get_counter_map(counter_db,
     """
     assert type(ReloadF) == bool
     assert ExitCharacterSet is None or isinstance(ExitCharacterSet, NumberSet)
-    assert not ExitCharacterSet.has_intersection(InsideCharacterSet)
+    assert ExitCharacterSet is None or not ExitCharacterSet.has_intersection(InsideCharacterSet)
 
     LanguageDB = Setup.language_db
     # If ColumnCountPerChunk is None => no action depends on IteratorName. 
@@ -306,7 +309,7 @@ def get_counter_map(counter_db,
 
     cm = []
     for number_set, action in counter_dictionary:
-        assert InsideCharacterSet.is_superset(number_set)
+        assert ExitCharacterSet is None or InsideCharacterSet.is_superset(number_set)
         action_txt = action.get_txt(column_count_per_chunk, IteratorName)
         cm.extend((x, action_txt) for x in number_set.get_intervals())
 
@@ -316,27 +319,30 @@ def get_counter_map(counter_db,
 
     exit_action_txt = ExitAction.get_txt(column_count_per_chunk, IteratorName)
     exit_action_txt.extend(ExitAction.get_epilog(implementation_type))
-    cm.extend((x, exit_action_txt) for x in ExitCharacterSet.get_intervals())
+    if ExitCharacterSet is not None:
+        cm.extend((x, exit_action_txt) for x in ExitCharacterSet.get_intervals())
 
     transition_map_tool.clean_up(cm)
 
     # Upon reload, the reference pointer may have to be added. When the reload is
     # done the reference pointer needs to be reset. 
+    entry_action         = []
     if not ReloadF:
         before_reload_action = None
         after_reload_action  = None
     else:
-        entry_action         = []
         before_reload_action = []
         after_reload_action  = []
         if implementation_type != E_MapImplementationType.STATE_MACHINE:
             after_reload_action.extend([1, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
 
-        if ColumnCountPerChunk is not None:
-            LanguageDB.REFERENCE_P_COLUMN_ADD(before_reload_action, IteratorName, ColumnCountPerChunk)
+        if column_count_per_chunk is not None:
+            LanguageDB.REFERENCE_P_COLUMN_ADD(before_reload_action, IteratorName, column_count_per_chunk)
             LanguageDB.REFERENCE_P_RESET(entry_action, IteratorName, AddOneF=False)
             LanguageDB.REFERENCE_P_RESET(after_reload_action, IteratorName, AddOneF=False)
-            variable_db.require("reference_p")
+
+    if column_count_per_chunk is not None:
+        variable_db.require("reference_p")
 
     return cm, implementation_type, entry_action, before_reload_action, after_reload_action
 

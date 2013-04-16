@@ -142,7 +142,7 @@ class Generator(GeneratorBase):
 
         sm_txt,       \
         terminal_txt, \
-        analyzer      = self.code_state_machine_core(engine.FORWARD, None, False)
+        analyzer      = self.code_state_machine_core(engine.FORWARD, False)
 
         # Number of different entries in the position register map
         self.__position_register_n                 = len(set(analyzer.position_register_map.itervalues()))
@@ -309,7 +309,7 @@ class Generator(GeneratorBase):
     def determine_implementation_type(TM, ReloadF):
         if Setup.variable_character_sizes_f():
             if     not ReloadF \
-               and Generator.map_implementation_type_get_test_trivial_sm(TM):
+               and Generator.state_machine_trivial_possible(TM):
                 return E_MapImplementationType.TRIVIALIZED_STATE_MACHINE
             else:
                 return E_MapImplementationType.STATE_MACHINE
@@ -357,9 +357,29 @@ class Generator(GeneratorBase):
         sm_txt,       \
         terminal_txt, \
         dummy         = generator.code_state_machine_core(engine_type, SimpleF=True)
-        reload_txt    = LanguageDB.RELOAD_SPECIAL(BeforeReloadAction, AfterReloadAction)
+        reload_txt = []
+        if BeforeReloadAction is not None:
+            reload_txt = LanguageDB.RELOAD_SPECIAL(BeforeReloadAction, AfterReloadAction)
         LanguageDB.code_generation_reload_label_set(None)
         return loop_epilog + sm_txt + terminal_txt + reload_txt
+
+    @staticmethod
+    def state_machine_trivial_possible(tm):
+        """Checks whether the 'trivial' implementation of the state machine 
+        for UTF8 or UTF16 is possible.
+        """
+        if   Setup.buffer_codec_transformation_info == "utf8-state-split":
+            LowestRangeBorder = 0x80 
+        elif Setup.buffer_codec_transformation_info == "utf16-state-split":
+            LowestRangeBorder = 0x10000 
+        else:
+            return False
+
+        # (*) If all but the last interval are exclusively below 0x80 or 0x10000, 
+        #     then the 'easy default utf*' can be applied. 
+        # 'last_but_one.end == last.begin', because all intervals are adjacent.
+        if tm[-1][0].begin >= LowestRangeBorder: 
+            return False
 
     @staticmethod
     def code_action_state_machine_trivial(tm, BeforeReloadAction, AfterReloadAction):
@@ -388,22 +408,15 @@ class Generator(GeneratorBase):
        
         # Currently, we do not handle the case 'Reload': refuse to work.
         assert BeforeReloadAction is None
+        assert Generation.state_machine_trivial_possible(tm)
 
         # (*) Try to find easy and elegant special solutions 
         if   Setup.buffer_codec_transformation_info == "utf8-state-split":
-            LowestRangeBorder  = 0x80 
             IncrementActionStr = _increment_actions_for_utf8
         elif Setup.buffer_codec_transformation_info == "utf16-state-split":
-            LowestRangeBorder  = 0x10000 
             IncrementActionStr = _increment_actions_for_utf16
         else:
-            return None
-
-        # (*) If all but the last interval are exclusively below 0x80, then the 
-        #     'easy default utf*' can be applied. 
-
-        # 'last_but_one.end == last.begin', because all intervals are adjacent.
-        if tm[-1][0].begin >= LowestRangeBorder: return None
+            assert False
 
         # (*) Add increment actions to the actions
         def add_increment(action, IncrementActionStr, LastF):
@@ -443,19 +456,17 @@ class Generator(GeneratorBase):
         # that the occurring characters only belong to the admissible range.
         transition_map_tool.prune(TM, 0, Setup.get_character_value_limit())
 
-        upon_reload_done_adr = LanguageDB.ADDRESS(index.get(), 0)
+        upon_reload_done_adr = LanguageDB.ADDRESS(index.get(), None)
         reload_label = Generator.generate_reload_label()
         LanguageDB.code_generation_reload_label_set(reload_label)
         LanguageDB.code_generation_on_reload_fail_adr_set(get_address("$terminal-EOF", U=True))
         LanguageDB.code_generation_switch_cases_add_statement("break;")
 
-        reload_txt = LanguageDB.RELOAD_SPECIAL(BeforeReloadAction, AfterReloadAction)
-
-        goto_reload_str = TransitionCodeFactory.prepare_reload_tansition(TM,
-                                           StateIndex         = upon_reload_done_adr,
-                                           EngineType         = engine_type,
-                                           InitStateF         = True,
-                                           BeforeReloadAction = None)
+        reload_txt = []
+        if BeforeReloadAction is not None:
+            assert engine_type.requires_buffer_limit_code_for_reload()
+            reload_txt = LanguageDB.RELOAD_SPECIAL(BeforeReloadAction, AfterReloadAction)
+            TransitionCodeFactory.prepare_transition_map_for_reload(TM)
 
         TransitionCodeFactory.init(engine_type, 
                                    StateIndex    = upon_reload_done_adr, InitStateF    = True,
@@ -464,7 +475,10 @@ class Generator(GeneratorBase):
             (interval, TransitionCodeFactory.do(x)) for interval, x in TM 
         ]
 
-        txt = [ "%s:\n" % LanguageDB.ADDRESS_LABEL(upon_reload_done_adr) ]
+        txt = []
+        if BeforeReloadAction is not None:
+            txt.append("%s:\n" % LanguageDB.ADDRESS_LABEL(upon_reload_done_adr))
+
         transition_block.do(txt, tm)
         LanguageDB.code_generation_switch_cases_add_statement(None)
         LanguageDB.code_generation_reload_label_set(None)
@@ -475,7 +489,7 @@ class Generator(GeneratorBase):
     @staticmethod
     def generate_reload_label():
         LanguageDB = Setup.language_db
-        reload_adr   = LanguageDB.ADDRESS(index.get(), 0)
+        reload_adr   = LanguageDB.ADDRESS(index.get(), None)
         return get_label_of_address(reload_adr, U=False) # Not subject to routing
 
     @staticmethod
