@@ -42,7 +42,7 @@ else:
 
 # Switch: Turn off some warnings
 #         'False' --> show (almost) all compiler warnings
-if False:
+if True:
     IGNORE_WARNING_F = True
 else:
     IGNORE_WARNING_F = False

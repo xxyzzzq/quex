@@ -46,6 +46,7 @@ candidate_db = {
 #
 # (*) Skipper etc.
 "reference_p":                    ["QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", False],
+"character_begin_p":              ["QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", False],
 "text_end":                       ["QUEX_TYPE_CHARACTER*",         "(QUEX_TYPE_CHARACTER*)0x0",         False],
 #     Character Set Skipper:
 "Skipper%i":                      ["const QUEX_TYPE_CHARACTER",    None,                                False],

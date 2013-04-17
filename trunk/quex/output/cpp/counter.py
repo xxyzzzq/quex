@@ -69,9 +69,9 @@ def get(counter_db, Name):
     ]
 
     # 'ON_EXIT' should not occur here
-    transition_map_tool.replace_action_id(tm, E_ActionIDs.ON_EXIT, on_failure_action)
-    transition_map_tool.replace_action_id(tm, E_ActionIDs.ON_GOOD_TRANSITION,
-                                          [ 1, "continue;" ])
+    assert not transition_map_tool.has_action_id(tm, E_ActionIDs.ON_EXIT)
+    transition_map_tool.insert_after_action_id(tm, E_ActionIDs.ON_GOOD_TRANSITION,
+                                               [ 1, "continue;" ])
 
     implementation_type, \
     txt                  = CppGenerator.code_action_map(tm, IteratorName, 
@@ -112,14 +112,7 @@ class ExitAction(CountAction):
     @staticmethod
     def get_epilog(ImplementationType):
         LanguageDB = Setup.language_db
-        result = []
-        if ImplementationType == E_MapImplementationType.STATE_MACHINE:
-            # Here, characters are made up of more than one 'chunk'. When the last
-            # character needs to be reset, its start position must be known. For 
-            # this the 'lexeme start pointer' is used.
-            result.extend([1, "%s\n" % LanguageDB.INPUT_P_TO_LEXEME_START()])
-        result.append(E_ActionIDs.ON_EXIT)
-        return result
+        return [E_ActionIDs.ON_EXIT]
 
 class ColumnAdd(CountAction):
     def __init__(self, Value):
@@ -326,7 +319,7 @@ def get_counter_map(counter_db,
 
     # Upon reload, the reference pointer may have to be added. When the reload is
     # done the reference pointer needs to be reset. 
-    entry_action         = []
+    entry_action = []
     if not ReloadF:
         before_reload_action = None
         after_reload_action  = None
@@ -387,15 +380,15 @@ def __frame(CounterTxt, FunctionName, ImplementationType, EntryAction):
     prologue  =   \
           "#ifdef __QUEX_OPTION_COUNTER\n" \
         + "static void\n" \
-        + "%s(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* LexemeBegin, const QUEX_TYPE_CHARACTER* LexemeEnd)\n" \
+        + "%s(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* LexemeBegin, QUEX_TYPE_CHARACTER* LexemeEnd)\n" \
           % FunctionName \
         + "{\n" \
         + "#   define self (*me)\n" \
-        + "    const QUEX_TYPE_CHARACTER* iterator    = (const QUEX_TYPE_CHARACTER*)0;\n" 
+        + "    QUEX_TYPE_CHARACTER* iterator    = (QUEX_TYPE_CHARACTER*)0;\n" 
 
     input_def = ""
     if ImplementationType == E_MapImplementationType.STATE_MACHINE:
-        input_def = "    QUEX_TYPE_CHARACTER        input       = (QUEX_TYPE_CHARACTER)0;\n" 
+        input_def = "    QUEX_TYPE_CHARACTER  input       = (QUEX_TYPE_CHARACTER)0;\n" 
 
     reference_p_def = ""
     if variable_db.has_key("reference_p"):
@@ -404,6 +397,12 @@ def __frame(CounterTxt, FunctionName, ImplementationType, EntryAction):
            + "    const QUEX_TYPE_CHARACTER* reference_p = LexemeBegin;\n" \
            + "#   endif\n"     
 
+
+    # There is no 'ExitCharacterSet' in a counter, since a counter works
+    # on a pattern which has already matched. It only ends at the LexemeEnd.
+    # No character can be half-part parsed. Thus, 'character_begin_p' shall
+    # not have been used at this point in time.
+    assert not variable_db.has_key("character_begin_p")
 
     loop_start = \
          "    __QUEX_IF_COUNT_SHIFT_VALUES();\n" \
