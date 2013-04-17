@@ -275,15 +275,8 @@ class Generator(GeneratorBase):
         LanguageDB = Setup.language_db
 
         if ImplementationType is None: 
-            reload_f = (BeforeReloadAction is not None)
+            reload_f           = (BeforeReloadAction is not None)
             ImplementationType = Generator.determine_implementation_type(TM, reload_f)
-
-        if     BeforeReloadAction is not None \
-           and ImplementationType != E_MapImplementationType.STATE_MACHINE:
-            # If there are variable size characters, then the lexeme start
-            # pointer points to the begin of the current character. Thus, it
-            # cannot be reset.
-            BeforeReloadAction.append("%s\n" % LanguageDB.LEXEME_START_SET())
 
         # (*) Implement according to implementation type.
         if ImplementationType == E_MapImplementationType.TRIVIALIZED_STATE_MACHINE:
@@ -327,10 +320,20 @@ class Generator(GeneratorBase):
         # Here, characters are made up of more than one 'chunk'. When the last
         # character needs to be reset, its start position must be known. For 
         # this the 'lexeme start pointer' is used.
-        loop_epilog = [1, "%s\n" % LanguageDB.LEXEME_START_SET()]
-        exit_action = [1, "%s\n" % LanguageDB.INPUT_P_TO_LEXEME_START()]
+        if      BeforeReloadAction is not None \
+            and transition_map_tool.has_action_id(TM, E_ActionIDs.ON_EXIT):
+            variable_db.require("character_begin_p")
 
-        transition_map_tool.replace_action_id(TM, E_ActionIDs.ON_EXIT, exit_action)
+            loop_epilog = [1, "%s\n" % LanguageDB.CHARACTER_BEGIN_P_SET()]
+            transition_map_tool.replace_action_id(TM, E_ActionIDs.ON_EXIT, 
+                                                  [1, "%s\n" % LanguageDB.INPUT_P_TO_CHARACTER_BEGIN_P()])
+            BeforeReloadAction.append("%s\n" % LanguageDB.LEXEME_START_TO_CHARACTER_BEGIN_P())
+            AfterReloadAction.append("%s\n" % LanguageDB.CHARACTER_BEGIN_P_TO_LEXEME_START_P())
+        else:
+            loop_epilog = []
+
+        # Now, we start with code generation. The signalizing ActionIDs must be deleted.
+        transition_map_tool.delete_action_ids(TM)
 
         pap_list = get_pattern_action_pair_list_from_map(TM)
         for pap in pap_list:
@@ -352,15 +355,19 @@ class Generator(GeneratorBase):
         # assert E_ActionIDs.ON_AFTER_MATCH not in action_db
         # assert E_ActionIDs.ON_FAILURE     not in action_db
 
-        reload_label = Generator.generate_reload_label()
-        LanguageDB.code_generation_reload_label_set(reload_label)
+        if BeforeReloadAction is not None:
+            reload_label = Generator.generate_reload_label()
+            LanguageDB.code_generation_reload_label_set(reload_label)
+
         sm_txt,       \
         terminal_txt, \
         dummy         = generator.code_state_machine_core(engine_type, SimpleF=True)
+
         reload_txt = []
         if BeforeReloadAction is not None:
             reload_txt = LanguageDB.RELOAD_SPECIAL(BeforeReloadAction, AfterReloadAction)
-        LanguageDB.code_generation_reload_label_set(None)
+            LanguageDB.code_generation_reload_label_set(None)
+
         return loop_epilog + sm_txt + terminal_txt + reload_txt
 
     @staticmethod
@@ -432,7 +439,7 @@ class Generator(GeneratorBase):
         # (*) The first interval may start at - sys.maxint
         if tm[0][0].begin < 0: tm[0][0].begin = 0
 
-        # Later interval shall not!
+        # Later interval shall not be less than 0!
         assert tm[0][0].end > 0
 
         # Code the transition map
@@ -440,8 +447,6 @@ class Generator(GeneratorBase):
 
     @staticmethod
     def code_action_map_plain(TM, BeforeReloadAction=None, AfterReloadAction=None):
-
-        transition_map_tool.replace_action_id(TM, E_ActionIDs.ON_EXIT, None)
 
         LanguageDB = Setup.language_db
 
@@ -451,38 +456,48 @@ class Generator(GeneratorBase):
             engine_type = engine.FORWARD
             transition_map_tool.set_target(TM, Setup.buffer_limit_code,
                                            E_StateIndices.DROP_OUT)
+            BeforeReloadAction.append("%s\n" % LanguageDB.LEXEME_START_SET())
+
+            #transition_map_tool.replace_action_id(TM, E_ActionIDs.ON_EXIT, 
+            #                                      [1, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
 
         # The range of possible characters may be restricted. It must be ensured,
         # that the occurring characters only belong to the admissible range.
         transition_map_tool.prune(TM, 0, Setup.get_character_value_limit())
 
-        upon_reload_done_adr = LanguageDB.ADDRESS(index.get(), None)
-        reload_label = Generator.generate_reload_label()
-        LanguageDB.code_generation_reload_label_set(reload_label)
-        LanguageDB.code_generation_on_reload_fail_adr_set(get_address("$terminal-EOF", U=True))
+        # Now, we start with code generation. The signalizing ActionIDs must be deleted.
+        transition_map_tool.delete_action_ids(TM)
+
+        txt = []
+        pseudo_state_index   = index.get()
+        if BeforeReloadAction is not None:
+            upon_reload_done_label = "%s:\n" % LanguageDB.ADDRESS_LABEL(LanguageDB.ADDRESS(pseudo_state_index, None))
+            reload_label           = Generator.generate_reload_label()
+            LanguageDB.code_generation_reload_label_set(reload_label)
+            LanguageDB.code_generation_on_reload_fail_adr_set(get_address("$terminal-EOF", U=True))
+
+            assert engine_type.requires_buffer_limit_code_for_reload()
+            TransitionCodeFactory.prepare_transition_map_for_reload(TM)
+
+            txt = [ upon_reload_done_label ]
+
+        TransitionCodeFactory.init(engine_type, 
+                                   StateIndex    = pseudo_state_index, InitStateF  = True,
+                                   GotoReloadStr = None,               TheAnalyzer = None)
+        tm = [ 
+            (interval, TransitionCodeFactory.do(x)) for interval, x in TM 
+        ]
+
         LanguageDB.code_generation_switch_cases_add_statement("break;")
+        transition_block.do(txt, tm)
+        LanguageDB.code_generation_switch_cases_add_statement(None)
 
         reload_txt = []
         if BeforeReloadAction is not None:
             assert engine_type.requires_buffer_limit_code_for_reload()
             reload_txt = LanguageDB.RELOAD_SPECIAL(BeforeReloadAction, AfterReloadAction)
-            TransitionCodeFactory.prepare_transition_map_for_reload(TM)
-
-        TransitionCodeFactory.init(engine_type, 
-                                   StateIndex    = upon_reload_done_adr, InitStateF    = True,
-                                   GotoReloadStr = None,                 TheAnalyzer   = None)
-        tm = [ 
-            (interval, TransitionCodeFactory.do(x)) for interval, x in TM 
-        ]
-
-        txt = []
-        if BeforeReloadAction is not None:
-            txt.append("%s:\n" % LanguageDB.ADDRESS_LABEL(upon_reload_done_adr))
-
-        transition_block.do(txt, tm)
-        LanguageDB.code_generation_switch_cases_add_statement(None)
-        LanguageDB.code_generation_reload_label_set(None)
-        LanguageDB.code_generation_on_reload_fail_adr_set(None)
+            LanguageDB.code_generation_reload_label_set(None)
+            LanguageDB.code_generation_on_reload_fail_adr_set(None)
 
         return txt + ["        continue;\n"] + reload_txt
 
@@ -497,8 +512,8 @@ class Generator(GeneratorBase):
         assert ImplementationType in E_MapImplementationType
         StateMachineF = (ImplementationType == E_MapImplementationType.STATE_MACHINE)
         def replacer(block, StateMachineF):
-            if block.find("(me->buffer._input_p)") != -1: 
-                block = block.replace("(me->buffer._input_p)", IteratorName)
+            if block.find("me->buffer._input_p") != -1: 
+                block = block.replace("me->buffer._input_p", "(%s)" % IteratorName)
             if not StateMachineF:
                 block = Match_input.sub("(*%s)" % IteratorName, block)
                 block = Match_iterator.sub("(%s)" % IteratorName, block)
@@ -509,6 +524,15 @@ class Generator(GeneratorBase):
             txt[i] = replacer(elm, StateMachineF)
 
         return txt
+
+    @staticmethod
+    def delete_action_ids(txt):
+        i = L - 1
+        while i >= 0:
+            if txt[i] in E_ActionIDs:
+                del txt[i]
+            i -= 1
+        return
 
     @staticmethod
     def assert_txt(txt):

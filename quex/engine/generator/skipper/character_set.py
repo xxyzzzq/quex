@@ -83,14 +83,10 @@ def __make_loop(CounterDB, CharacterSet):
                                  ExitCharacterSet      = exit_skip_set, 
                                  ReloadF               = True)
 
-    transition_map_tool.replace_action_id(tm, E_ActionIDs.ON_EXIT,
-                                          [ 1, "goto %s;" % get_label("$start", U=True) ])
-    transition_map_tool.replace_action_id(tm, E_ActionIDs.ON_GOOD_TRANSITION,
-                                          [ 1, "continue;" ])
-
-    # Prepare reload procedure, ensure transition to 'drop-out'
-    transition_map_tool.set_target(tm, Setup.buffer_limit_code, 
-                                   E_StateIndices.DROP_OUT)
+    transition_map_tool.insert_after_action_id(tm, E_ActionIDs.ON_EXIT,
+                                               [ 1, "goto %s;" % get_label("$start", U=True) ])
+    transition_map_tool.insert_after_action_id(tm, E_ActionIDs.ON_GOOD_TRANSITION,
+                                               [ 1, "continue;" ])
 
     # 'BeforeReloadAction not None' forces a transition to RELOAD_PROCEDURE upon
     # buffer limit code.

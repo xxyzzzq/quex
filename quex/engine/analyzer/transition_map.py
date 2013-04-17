@@ -81,6 +81,44 @@ def get_string(transition_map, Option="utf8", IntervalF=True):
         txt.append("   %s%s %s\n" % (interval_str, " " * (L - len(interval_str)), target))
     return "".join(txt)
 
+def has_action_id(transition_map, ActionID):
+    for interval, action in transition_map:
+        if type(action) == list and ActionID in action:
+            return True
+        elif action == ActionID:
+            return True
+    return False
+
+def delete_action_ids(transition_map):
+    for interval, action in transition_map:
+        if type(action) != list: continue
+        i = len(action) - 1
+        while i >= 0:
+            if action[i] in E_ActionIDs:
+                del action[i]
+            i -= 1
+    return
+
+def insert_after_action_id(transition_map, ActionID, Action):
+    assert ActionID in E_ActionIDs
+    assert Action is None or type(Action) == list
+
+    if Action is None:
+        return
+
+    done_set = set()
+    for interval, action in transition_map:
+        if id(action) in done_set: continue
+        done_set.add(id(action))
+
+        try:    idx = action.index(ActionID)
+        except: continue
+
+        for x in Action:
+            idx += 1
+            action.insert(idx, x)
+    return
+
 def replace_action_id(transition_map, ActionID, Action):
     assert ActionID in E_ActionIDs
     assert Action is None or type(Action) == list

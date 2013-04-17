@@ -113,12 +113,17 @@ class LanguageDB_Cpp(dict):
         else:                       return "me->buffer._lexeme_start_p = %s;" % PositionStorage
     def LEXEME_LENGTH(self):
         return "((size_t)(me->buffer._input_p - me->buffer._lexeme_start_p))"
+    def CHARACTER_BEGIN_P_SET(self):
+        return "character_begin_p = me->buffer._input_p;\n"
 
-    def INPUT_P(self):                 return "me->buffer._input_p"
-    def INPUT_P_INCREMENT(self):       return "++(me->buffer._input_p);"
-    def INPUT_P_DECREMENT(self):       return "--(me->buffer._input_p);"
-    def INPUT_P_ADD(self, Offset):     return "QUEX_NAME(Buffer_input_p_add_offset)(&me->buffer, %i);" % Offset
-    def INPUT_P_TO_LEXEME_START(self): return "me->buffer._input_p = me->buffer._lexeme_start_p;"
+    def INPUT_P(self):                             return "me->buffer._input_p"
+    def INPUT_P_INCREMENT(self):                   return "++(me->buffer._input_p);"
+    def INPUT_P_DECREMENT(self):                   return "--(me->buffer._input_p);"
+    def INPUT_P_ADD(self, Offset):                 return "QUEX_NAME(Buffer_input_p_add_offset)(&me->buffer, %i);" % Offset
+    def INPUT_P_TO_LEXEME_START(self):             return "me->buffer._input_p = me->buffer._lexeme_start_p;"
+    def INPUT_P_TO_CHARACTER_BEGIN_P(self):        return "me->buffer._input_p = character_begin_p;"
+    def LEXEME_START_TO_CHARACTER_BEGIN_P(self):   return "me->buffer._lexeme_start_p = character_begin_p;"
+    def CHARACTER_BEGIN_P_TO_LEXEME_START_P(self): return "character_begin_p = me->buffer._lexeme_start_p;"
     def INPUT_P_DEREFERENCE(self, Offset=0): 
         if Offset == 0: return "*(me->buffer._input_p)"
         else:           return "QUEX_NAME(Buffer_input_get_offset)(&me->buffer, %i)" % Offset
