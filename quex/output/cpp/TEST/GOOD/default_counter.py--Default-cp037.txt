@@ -1,33 +1,46 @@
 #ifdef __QUEX_OPTION_COUNTER
 void
-QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* LexemeBegin, const QUEX_TYPE_CHARACTER* LexemeEnd)
+QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* LexemeBegin, QUEX_TYPE_CHARACTER* LexemeEnd)
 {
 #   define self (*me)
-    const QUEX_TYPE_CHARACTER* iterator    = (const QUEX_TYPE_CHARACTER*)0;
+    QUEX_TYPE_CHARACTER* iterator    = LexemeBegin;
 #   if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
     const QUEX_TYPE_CHARACTER* reference_p = LexemeBegin;
 #   endif
+__QUEX_IF_COUNT_COLUMNS(reference_p = iterator);
     __QUEX_IF_COUNT_SHIFT_VALUES();
 
     __quex_assert(LexemeBegin <= LexemeEnd);
     for(iterator=LexemeBegin; iterator < LexemeEnd; ) {
-        switch( (*(iterator)) ) {
-            case 0x5:         __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(((iterator) - reference_p)));
+        if( (*(iterator)) >= 0x26 ) {
+                            ++(((iterator)));
+            continue;
+        } else if( (*(iterator)) == 0x25 ) {
+            __QUEX_IF_COUNT_LINES_ADD((size_t)1);
+        __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
+        __QUEX_IF_COUNT_COLUMNS(reference_p = (iterator) + 1);
+                ++(((iterator)));
+            continue;
+        } else if( (*(iterator)) >= 0x6 ) {
+                            ++(((iterator)));
+            continue;
+        } else if( (*(iterator)) == 0x5 ) {
+                    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(((iterator) - reference_p)));
         __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end &= ~ ((size_t)0x3));
         __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 4);
         __QUEX_IF_COUNT_COLUMNS(reference_p = (iterator) + 1);
-            break;
-            case 0x25: __QUEX_IF_COUNT_LINES_ADD((size_t)1);
-        __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
-        __QUEX_IF_COUNT_COLUMNS(reference_p = (iterator) + 1);
-            break;
-
+                ++(((iterator)));
+            continue;
+        } else {
+                            ++(((iterator)));
+            continue;
         }
-    ++(iterator);
+
     }
-__QUEX_IF_COUNT_COLUMNS_ADD((size_t)((iterator - reference_p)));
     __quex_assert(iterator == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */
-#   undef self
+__QUEX_IF_COUNT_COLUMNS_ADD((size_t)((iterator - reference_p)));
+   return;
+#  undef self
 }
 #endif /* __QUEX_OPTION_COUNTER */
 _____________________________________________________________________________
@@ -36,4 +49,4 @@ char_size: 1;
 byte_n:    256;
 column_n:  219;
 line_n:    1;
-## gcc -I. -ggdb ./data/check.c ./data/test.c  -D__QUEX_OPTION_COUNTER -DDEF_COUNTER_FUNCTION='QUEX_NAME(TEST_MODE_counter)'  -DDEF_FILE_NAME='"./data/example.cp037"'  -DDEF_CHARACTER_TYPE=uint8_t  -o test
+## gcc -Wall -I. -ggdb ./data/check.c ./data/test.c  -D__QUEX_OPTION_COUNTER -DDEF_COUNTER_FUNCTION='QUEX_NAME(TEST_MODE_counter)'  -DDEF_FILE_NAME='"./data/example.cp037"'  -DDEF_CHARACTER_TYPE=uint8_t  -o test

@@ -113,6 +113,11 @@ def do_transition_map(TM, TrafoInfo=None):
         result.extend((x, target) for x in transformed)
 
     transition_map_tool.clean_up(result)
+    # DO NOT:  "transition_map_tool.fill_gaps(result, [])!"
+    # BECAUSE: This adds an action which is not in the original transition map!
+    # EXAMPLE: A loop every action contains a '++p' and the loop ends on 
+    #          'p == End'. Then an additional empty action [] would mean that 
+    #          for some cases '++p' would not occur and the loop will be endless! 
 
     return total_verdict, result    
 

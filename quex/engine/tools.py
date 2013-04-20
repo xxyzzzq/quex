@@ -25,6 +25,6 @@ def print_callstack(BaseNameF=False):
 
 def pair_combinations(iterable):
     other = tuple(iterable)
-    for i, x in enumerate(iterable):
+    for i, x in enumerate(other):
         for y in islice(other, i):
             yield x, y

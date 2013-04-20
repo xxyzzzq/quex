@@ -9,7 +9,7 @@ from   quex.blackboard import E_StateIndices, \
 
 class TransitionCodeFactory:
     @classmethod
-    def init(cls, EngineType, StateIndex, InitStateF, GotoReloadStr, TheAnalyzer=None, ImplementedStateIndexList=None):
+    def init(cls, EngineType, StateIndex, InitStateF=False, GotoReloadStr=None, TheAnalyzer=None, ImplementedStateIndexList=None):
         assert StateIndex is None or isinstance(StateIndex, (int, long))
         assert type(InitStateF) == bool
 

@@ -580,33 +580,42 @@ QUEX_TYPE_CHARACTER  QUEX_LEXEME_NULL_IN_ITS_NAMESPACE = (QUEX_TYPE_CHARACTER)0;
 #endif
 #ifdef __QUEX_OPTION_COUNTER
 static void
-QUEX_NAME(ONE_AND_ONLY_counter)(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* LexemeBegin, const QUEX_TYPE_CHARACTER* LexemeEnd)
+QUEX_NAME(ONE_AND_ONLY_counter)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* LexemeBegin, QUEX_TYPE_CHARACTER* LexemeEnd)
 {
 #   define self (*me)
-    const QUEX_TYPE_CHARACTER* iterator    = (const QUEX_TYPE_CHARACTER*)0;
+    QUEX_TYPE_CHARACTER* iterator    = LexemeBegin;
 #   if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
     const QUEX_TYPE_CHARACTER* reference_p = LexemeBegin;
 #   endif
+__QUEX_IF_COUNT_COLUMNS(reference_p = iterator);
     __QUEX_IF_COUNT_SHIFT_VALUES();
 
     __quex_assert(LexemeBegin <= LexemeEnd);
     for(iterator=LexemeBegin; iterator < LexemeEnd; ) {
-        switch( (*(iterator)) ) {
-            case 0x9:         __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(((iterator) - reference_p)));
+        if( (*(iterator)) >= 0xB ) {
+                            ++(((iterator)));
+            continue;
+        } else if( (*(iterator)) == 0xA ) {
+            __QUEX_IF_COUNT_LINES_ADD((size_t)1);
+        __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
+        __QUEX_IF_COUNT_COLUMNS(reference_p = (iterator) + 1);
+                ++(((iterator)));
+            continue;
+        } else if( (*(iterator)) == 0x9 ) {
+                    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(((iterator) - reference_p)));
         __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end &= ~ ((size_t)0x3));
         __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 4);
         __QUEX_IF_COUNT_COLUMNS(reference_p = (iterator) + 1);
-            break;
-            case 0xA: __QUEX_IF_COUNT_LINES_ADD((size_t)1);
-        __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
-        __QUEX_IF_COUNT_COLUMNS(reference_p = (iterator) + 1);
-            break;
-
+                ++(((iterator)));
+            continue;
+        } else {
+                            ++(((iterator)));
+            continue;
         }
-            ++(iterator);
+        continue;
     }
-__QUEX_IF_COUNT_COLUMNS_ADD((size_t)((iterator - reference_p)));
     __quex_assert(iterator == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */
+__QUEX_IF_COUNT_COLUMNS_ADD((size_t)((iterator - reference_p)));
 #   undef self
 }
 #endif /* __QUEX_OPTION_COUNTER */
@@ -674,7 +683,7 @@ _255: /* INIT_STATE_TRANSITION_BLOCK */
     __quex_debug("Init State\n");
     __quex_debug_state(224);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(224, 256);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 224, 256);
         case 0x9: 
         case 0xA: 
         case 0xD: 
@@ -765,7 +774,7 @@ _230: /* (230 from 230) (230 from 229) (230 from 226) (230 from 224) (230 from 2
     input = *(me->buffer._input_p);
     __quex_debug_state(230);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(230, 259);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 230, 259);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -832,7 +841,7 @@ _234: /* (234 from 234) (234 from 224) */
     input = *(me->buffer._input_p);
     __quex_debug_state(234);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(234, 260);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 234, 260);
         case 0x9: 
         case 0xA: 
         case 0xD: 
@@ -850,7 +859,7 @@ _228: /* (228 from 228) (228 from 224) */
     input = *(me->buffer._input_p);
     __quex_debug_state(228);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(228, 261);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 228, 261);
         case 0x30: 
         case 0x31: 
         case 0x32: 
@@ -874,7 +883,7 @@ _235: /* (235 from 232) */
     input = *(me->buffer._input_p);
     __quex_debug_state(235);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(235, 262);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 235, 262);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -941,7 +950,7 @@ _236: /* (236 from 235) */
     input = *(me->buffer._input_p);
     __quex_debug_state(236);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(236, 263);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 236, 263);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1008,7 +1017,7 @@ _237: /* (237 from 231) */
     input = *(me->buffer._input_p);
     __quex_debug_state(237);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(237, 264);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 237, 264);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1075,7 +1084,7 @@ _238: /* (238 from 237) */
     input = *(me->buffer._input_p);
     __quex_debug_state(238);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(238, 265);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 238, 265);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1142,7 +1151,7 @@ _239: /* (239 from 238) */
     input = *(me->buffer._input_p);
     __quex_debug_state(239);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(239, 266);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 239, 266);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1209,7 +1218,7 @@ _240: /* (240 from 239) */
     input = *(me->buffer._input_p);
     __quex_debug_state(240);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(240, 267);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 240, 267);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1276,7 +1285,7 @@ _241: /* (241 from 240) */
     input = *(me->buffer._input_p);
     __quex_debug_state(241);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(241, 268);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 241, 268);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1343,7 +1352,7 @@ _242: /* (242 from 229) */
     input = *(me->buffer._input_p);
     __quex_debug_state(242);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(242, 269);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 242, 269);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1410,7 +1419,7 @@ _243: /* (243 from 242) */
     input = *(me->buffer._input_p);
     __quex_debug_state(243);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(243, 270);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 243, 270);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1477,7 +1486,7 @@ _244: /* (244 from 243) */
     input = *(me->buffer._input_p);
     __quex_debug_state(244);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(244, 271);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 244, 271);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1544,7 +1553,7 @@ _245: /* (245 from 244) */
     input = *(me->buffer._input_p);
     __quex_debug_state(245);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(245, 272);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 245, 272);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1611,7 +1620,7 @@ _246: /* (246 from 245) */
     input = *(me->buffer._input_p);
     __quex_debug_state(246);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(246, 273);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 246, 273);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1678,7 +1687,7 @@ _247: /* (247 from 226) */
     input = *(me->buffer._input_p);
     __quex_debug_state(247);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(247, 274);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 247, 274);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1745,7 +1754,7 @@ _248: /* (248 from 226) */
     input = *(me->buffer._input_p);
     __quex_debug_state(248);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(248, 275);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 248, 275);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1812,7 +1821,7 @@ _249: /* (249 from 248) */
     input = *(me->buffer._input_p);
     __quex_debug_state(249);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(249, 276);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 249, 276);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1879,7 +1888,7 @@ _250: /* (250 from 249) */
     input = *(me->buffer._input_p);
     __quex_debug_state(250);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(250, 277);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 250, 277);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -1946,7 +1955,7 @@ _251: /* (251 from 247) */
     input = *(me->buffer._input_p);
     __quex_debug_state(251);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(251, 278);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 251, 278);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -2013,7 +2022,7 @@ _252: /* (252 from 251) */
     input = *(me->buffer._input_p);
     __quex_debug_state(252);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(252, 279);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 252, 279);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -2080,7 +2089,7 @@ _253: /* (253 from 252) */
     input = *(me->buffer._input_p);
     __quex_debug_state(253);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(253, 280);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 253, 280);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -2147,7 +2156,7 @@ _254: /* (254 from 253) */
     input = *(me->buffer._input_p);
     __quex_debug_state(254);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(254, 281);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 254, 281);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -2222,7 +2231,7 @@ _226: /* (226 from 224) */
     input = *(me->buffer._input_p);
     __quex_debug_state(226);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(226, 283);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 226, 283);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -2297,7 +2306,7 @@ _229: /* (229 from 224) */
     input = *(me->buffer._input_p);
     __quex_debug_state(229);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(229, 285);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 229, 285);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -2364,7 +2373,7 @@ _231: /* (231 from 224) */
     input = *(me->buffer._input_p);
     __quex_debug_state(231);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(231, 286);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 231, 286);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -2431,7 +2440,7 @@ _232: /* (232 from 224) */
     input = *(me->buffer._input_p);
     __quex_debug_state(232);
     switch( input ) {
-        case 0x0: QUEX_GOTO_RELOAD_FORWARD(232, 287);
+        case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 232, 287);
         case 0x41: 
         case 0x42: 
         case 0x43: 
@@ -2537,7 +2546,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(6);
     self_send(QUEX_TKN_STRUCT);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2043 "Simple.cpp"
+#   line 2052 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2551,7 +2560,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(3);
     self_send(QUEX_TKN_TYPE_INT);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2057 "Simple.cpp"
+#   line 2066 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2565,7 +2574,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(6);
     self_send(QUEX_TKN_TYPE_DOUBLE);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2071 "Simple.cpp"
+#   line 2080 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2579,7 +2588,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(4);
     self_send(QUEX_TKN_SEND);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2085 "Simple.cpp"
+#   line 2094 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2593,7 +2602,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(6);
     self_send(QUEX_TKN_EXPECT);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2099 "Simple.cpp"
+#   line 2108 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2607,7 +2616,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(1);
     self_send(QUEX_TKN_SEMICOLON);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2113 "Simple.cpp"
+#   line 2122 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2621,7 +2630,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(1);
     self_send(QUEX_TKN_BRACKET_OPEN);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2127 "Simple.cpp"
+#   line 2136 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2635,7 +2644,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(1);
     self_send(QUEX_TKN_BRACKET_CLOSE);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2141 "Simple.cpp"
+#   line 2150 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2651,7 +2660,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(LexemeL);
     self_send(QUEX_TKN_NUMBER);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2157 "Simple.cpp"
+#   line 2166 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2665,7 +2674,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(LexemeL);
 #   line 28 "dos_lf_2.qx"
         self_send1(QUEX_TKN_IDENTIFIER, Lexeme); RETURN;
     
-#   line 2171 "Simple.cpp"
+#   line 2180 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2702,7 +2711,7 @@ __QUEX_IF_COUNT_SHIFT_VALUES();
 #   line 16 "dos_lf_2.qx"
     self_send(QUEX_TKN_TERMINATION);
     
-#   line 2208 "Simple.cpp"
+#   line 2217 "Simple.cpp"
 
     }
     /* End of Stream causes a return from the lexical analyzer, so that no
@@ -2773,11 +2782,14 @@ __REENTRY_PREPARATION_2:
 
     __quex_assert_no_passage();
 __RELOAD_FORWARD:
+
     __quex_debug1("__RELOAD_FORWARD");
     __quex_assert(*(me->buffer._input_p) == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( me->buffer._memory._end_of_file_p == 0x0 ) {
+
         __quex_debug_reload_before(); /* Leave macro here to report source position. */
         QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)position, PositionRegisterN);
+
         __quex_debug_reload_after();
         QUEX_GOTO_STATE(target_state_index);
     }

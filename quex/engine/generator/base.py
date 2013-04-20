@@ -16,6 +16,7 @@ import quex.engine.state_machine.index                 as     index
 from   quex.engine.state_machine.core                  import StateMachine
 import quex.engine.state_machine.transformation        as     transformation
 import quex.engine.analyzer.transition_map             as     transition_map_tool
+import quex.engine.analyzer.state.entry_action         as     entry_action
 from   quex.engine.generator.state.transition.code     import TransitionCodeFactory
 import quex.engine.generator.state.transition.core     as     transition_block
 import quex.engine.analyzer.engine_supply_factory      as     engine
@@ -273,6 +274,7 @@ class Generator(GeneratorBase):
         global Match_input
         global Match_iterator
         LanguageDB = Setup.language_db
+        #OnFailureAction = None
 
         if ImplementationType is None: 
             reload_f           = (BeforeReloadAction is not None)
@@ -282,15 +284,16 @@ class Generator(GeneratorBase):
         if ImplementationType == E_MapImplementationType.TRIVIALIZED_STATE_MACHINE:
             # In case of variable character sizes, there can be no 'column_n +=
             # (iterator - reference_p) * C'. Thus, there is no 'AfterReloadAction'.
+            # NOTE: code_action_state_machine_trivial() --> code_action_map_plain()
             txt = Generator.code_action_state_machine_trivial(TM, BeforeReloadAction, AfterReloadAction)
-
-        elif ImplementationType == E_MapImplementationType.STATE_MACHINE:
-            txt = Generator.code_action_state_machine(TM, BeforeReloadAction, AfterReloadAction,
-                                                      OnFailureAction)
 
         elif ImplementationType == E_MapImplementationType.PLAIN_MAP:
             complete_f, tm = transformation.do_transition_map(TM)
             txt            = Generator.code_action_map_plain(tm, BeforeReloadAction, AfterReloadAction)
+
+        elif ImplementationType == E_MapImplementationType.STATE_MACHINE:
+            txt = Generator.code_action_state_machine(TM, BeforeReloadAction, AfterReloadAction,
+                                                      OnFailureAction)
 
         else:
             assert False
@@ -352,9 +355,6 @@ class Generator(GeneratorBase):
             generator.sm.delete_transitions_on_interval(Interval(Setup.buffer_limit_code))
             generator.sm.delete_orphaned_states()
 
-        # assert E_ActionIDs.ON_AFTER_MATCH not in action_db
-        # assert E_ActionIDs.ON_FAILURE     not in action_db
-
         if BeforeReloadAction is not None:
             reload_label = Generator.generate_reload_label()
             LanguageDB.code_generation_reload_label_set(reload_label)
@@ -373,7 +373,16 @@ class Generator(GeneratorBase):
     @staticmethod
     def state_machine_trivial_possible(tm):
         """Checks whether the 'trivial' implementation of the state machine 
-        for UTF8 or UTF16 is possible.
+        for UTF8 or UTF16 is possible. 
+
+        IDEA: If all characters > LowestRangeBorder cause the same action.
+              then a trivial map can be implemented:
+
+              if( *iterator > LowestRangeBorder ) {
+                  Action
+                  Increment iterator according to incoming bytes
+              }
+              Transition map based on a single chunk '*iterator'.
         """
         if   Setup.buffer_codec_transformation_info == "utf8-state-split":
             LowestRangeBorder = 0x80 
@@ -382,11 +391,11 @@ class Generator(GeneratorBase):
         else:
             return False
 
-        # (*) If all but the last interval are exclusively below 0x80 or 0x10000, 
-        #     then the 'easy default utf*' can be applied. 
-        # 'last_but_one.end == last.begin', because all intervals are adjacent.
+
         if tm[-1][0].begin >= LowestRangeBorder: 
             return False
+
+        return True
 
     @staticmethod
     def code_action_state_machine_trivial(tm, BeforeReloadAction, AfterReloadAction):
@@ -415,7 +424,8 @@ class Generator(GeneratorBase):
        
         # Currently, we do not handle the case 'Reload': refuse to work.
         assert BeforeReloadAction is None
-        assert Generation.state_machine_trivial_possible(tm)
+        assert Generator.state_machine_trivial_possible(tm)
+        transition_map_tool.assert_continuity(tm) #, str([x[0] for x in tm])
 
         # (*) Try to find easy and elegant special solutions 
         if   Setup.buffer_codec_transformation_info == "utf8-state-split":
@@ -428,8 +438,14 @@ class Generator(GeneratorBase):
         # (*) Add increment actions to the actions
         def add_increment(action, IncrementActionStr, LastF):
             if LastF:
-                action = deepcopy(action)
-                action.extend(IncrementActionStr)
+                action = deepcopy(action) # disconnect from same action on other interval
+                assert E_ActionIDs.ON_GOOD_TRANSITION in action
+                idx = action.index(E_ActionIDs.ON_GOOD_TRANSITION)
+                # Delete 'ON_GOOD_TRANSITION' prevents 
+                # 'code_action_map_plain()' from adding '++iterator'.
+                del action[idx]
+                for x in reversed(IncrementActionStr):
+                    action.insert(idx, x)
             return action
 
         LastI = len(tm) - 1
@@ -454,6 +470,9 @@ class Generator(GeneratorBase):
             engine_type = engine.CHARACTER_COUNTER
         else:                          
             engine_type = engine.FORWARD
+            AfterReloadAction.insert(0, "%s\n" % LanguageDB.INPUT_P_INCREMENT())
+            AfterReloadAction.insert(0, 1)
+
             transition_map_tool.set_target(TM, Setup.buffer_limit_code,
                                            E_StateIndices.DROP_OUT)
             BeforeReloadAction.append("%s\n" % LanguageDB.LEXEME_START_SET())
@@ -461,6 +480,8 @@ class Generator(GeneratorBase):
             #transition_map_tool.replace_action_id(TM, E_ActionIDs.ON_EXIT, 
             #                                      [1, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
 
+        transition_map_tool.insert_after_action_id(TM, E_ActionIDs.ON_GOOD_TRANSITION,
+                                                   [2, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
         # The range of possible characters may be restricted. It must be ensured,
         # that the occurring characters only belong to the admissible range.
         transition_map_tool.prune(TM, 0, Setup.get_character_value_limit())
@@ -469,28 +490,29 @@ class Generator(GeneratorBase):
         transition_map_tool.delete_action_ids(TM)
 
         txt = []
-        pseudo_state_index   = index.get()
+        pseudo_state_index = LanguageDB.ADDRESS(index.get(), None)
         if BeforeReloadAction is not None:
-            upon_reload_done_label = "%s:\n" % LanguageDB.ADDRESS_LABEL(LanguageDB.ADDRESS(pseudo_state_index, None))
+            upon_reload_done_label = "%s:\n" % LanguageDB.ADDRESS_LABEL(pseudo_state_index)
             reload_label           = Generator.generate_reload_label()
             LanguageDB.code_generation_reload_label_set(reload_label)
             LanguageDB.code_generation_on_reload_fail_adr_set(get_address("$terminal-EOF", U=True))
 
             assert engine_type.requires_buffer_limit_code_for_reload()
-            TransitionCodeFactory.prepare_transition_map_for_reload(TM)
 
             txt = [ upon_reload_done_label ]
 
-        TransitionCodeFactory.init(engine_type, 
-                                   StateIndex    = pseudo_state_index, InitStateF  = True,
-                                   GotoReloadStr = None,               TheAnalyzer = None)
+        TransitionCodeFactory.init(engine_type, StateIndex = pseudo_state_index)
+
+        if BeforeReloadAction is not None:
+            TransitionCodeFactory.prepare_reload_tansition(TM, pseudo_state_index)
+
         tm = [ 
             (interval, TransitionCodeFactory.do(x)) for interval, x in TM 
         ]
 
-        LanguageDB.code_generation_switch_cases_add_statement("break;")
+        #LanguageDB.code_generation_switch_cases_add_statement("break;")
         transition_block.do(txt, tm)
-        LanguageDB.code_generation_switch_cases_add_statement(None)
+        #LanguageDB.code_generation_switch_cases_add_statement(None)
 
         reload_txt = []
         if BeforeReloadAction is not None:
@@ -499,7 +521,7 @@ class Generator(GeneratorBase):
             LanguageDB.code_generation_reload_label_set(None)
             LanguageDB.code_generation_on_reload_fail_adr_set(None)
 
-        return txt + ["        continue;\n"] + reload_txt
+        return txt + reload_txt
 
     @staticmethod
     def generate_reload_label():

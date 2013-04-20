@@ -28,4 +28,6 @@ main(int argc, char** argv)
            "line_n:    %i;\n", 
            (int)me.counter._column_number_at_end,
            (int)me.counter._line_number_at_end);
+
+    return 0;
 }

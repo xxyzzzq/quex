@@ -7,13 +7,13 @@ Character range: '-' requires character with 'lower code' to preceed
 found range '@-' which corresponds to 64-1 as unicode code points.
 
 expression = "[: [\x10-\x40] :]"
-result     = [16L, 64L] 
+result     = [16, 64] 
 
 expression = "[: [\X10-\X40] :]"
-result     = [16L, 64L] 
+result     = [16, 64] 
 
 expression = "[: [\U10-\U40] :]"
-result     = [16L, 64L] 
+result     = [16, 64] 
 
 expression = "[: difference([0-9], [1,3,5,7,9]) :]"
 result     = '0', '2', '4', '6', '8'

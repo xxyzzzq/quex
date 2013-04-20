@@ -8,6 +8,7 @@ from   quex.engine.generator.base                   import get_combined_state_ma
                                                            Generator as CppGenerator
 from   quex.engine.generator.action_info            import CodeFragment
 from   quex.engine.generator.languages.variable_db  import variable_db
+from   quex.engine.generator.languages.address      import get_label
 from   quex.engine.state_machine.core               import StateMachine
 import quex.engine.state_machine.transformation     as     transformation
 import quex.engine.analyzer.core                    as     analyzer_generator
@@ -35,53 +36,61 @@ def get(counter_db, Name):
 
     The implementation of the default counter is a direct function of the
     'counter_db', i.e. the database telling how characters influence the
-    line and column number counting. If there is already a default counter
-    for a counter_db that is equivalent, then it is not implemented a second 
-    time. Instead, a reference to the first implementation is communicated.
+    line and column number counting. 
+    
+    Multiple modes may have the same character counting behavior. If so, 
+    then there's only one counter implemented while others refer to it. 
 
     ---------------------------------------------------------------------------
     
-    RETURNS: function_name, string --> function name and the implementation 
-                                       of the function.
-             function_name, None   --> function name of a function which has
-                                       been implemented before, but serves
-                                       the same purpose of counting for 
-                                       'counter_db'.
+    RETURNS: function_name, string --> Function name and the implementation 
+                                       of the character counter.
+             function_name, None   --> The 'None' implementation indicates that
+                                       NO NEW counter is implemented. An 
+                                       appropriate counter can be accessed 
+                                       by the 'function name'.
     ---------------------------------------------------------------------------
     """
     function_name = DefaultCounterFunctionDB.get_function_name(counter_db)
     if function_name is not None:
         return function_name, None # Implementation has been done before.
 
+    implementation_type, \
+    loop_txt,            \
+    entry_action,        \
+    exit_action          = __make_loop(counter_db)
+
+    function_name  = "QUEX_NAME(%s_counter)" % Name
+    implementation = __frame(implementation_type, loop_txt, 
+                             function_name, entry_action, exit_action)
+
+    DefaultCounterFunctionDB.enter(counter_db, function_name)
+
+    return function_name, implementation
+
+def __make_loop(counter_db):
     # For a counter, there is no 'reload' because the entire lexeme is 
     # inside the buffer.
     IteratorName = "iterator"
-    tm,                       \
-    implementation_type,      \
-    entry_action,             \
-    dummy,                    \
-    dummy                     = get_counter_map(counter_db, IteratorName) 
+
+    tm,                  \
+    implementation_type, \
+    entry_action,        \
+    exit_action,         \
+    dummy,               \
+    dummy                = get_counter_map(counter_db, IteratorName) 
 
     # TODO: The lexer shall never drop-out with exception.
-    on_failure_action = [     
-        "\n", 
-        1, "QUEX_ERROR_EXIT(\"State machine failed.\");\n" 
-    ]
-
     # 'ON_EXIT' should not occur here
     assert not transition_map_tool.has_action_id(tm, E_ActionIDs.ON_EXIT)
     transition_map_tool.insert_after_action_id(tm, E_ActionIDs.ON_GOOD_TRANSITION,
                                                [ 1, "continue;" ])
+    transition_map_tool.assert_no_empty_action(tm)
 
     implementation_type, \
-    txt                  = CppGenerator.code_action_map(tm, IteratorName, 
-                                                        OnFailureAction = on_failure_action)
+    loop_txt             = CppGenerator.code_action_map(tm, IteratorName) 
 
-    function_name  = "QUEX_NAME(%s_counter)" % Name
-    implementation = __frame(txt, function_name, implementation_type, entry_action)
-    DefaultCounterFunctionDB.enter(counter_db, function_name)
-
-    return function_name, implementation
+    return implementation_type, loop_txt, entry_action, exit_action
 
 class CountAction:
     __slots__ = ("value")
@@ -92,8 +101,6 @@ class CountAction:
     def get_epilog(ImplementationType):
         LanguageDB = Setup.language_db
         result = []
-        if ImplementationType != E_MapImplementationType.STATE_MACHINE:
-            result.extend([2, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
         result.append(E_ActionIDs.ON_GOOD_TRANSITION)
         return result
 
@@ -145,7 +152,6 @@ class GridAdd(CountAction):
             LanguageDB.REFERENCE_P_RESET(txt, IteratorName) 
 
         return txt
-
 
 class LineAdd(CountAction):
     def __init__(self, Value):
@@ -320,24 +326,26 @@ def get_counter_map(counter_db,
     # Upon reload, the reference pointer may have to be added. When the reload is
     # done the reference pointer needs to be reset. 
     entry_action = []
+    exit_action  = []
     if not ReloadF:
         before_reload_action = None
         after_reload_action  = None
+        if column_count_per_chunk is not None:
+            LanguageDB.REFERENCE_P_COLUMN_ADD(exit_action, IteratorName, column_count_per_chunk)
+            LanguageDB.REFERENCE_P_RESET(entry_action, IteratorName, AddOneF=False)
     else:
         before_reload_action = []
         after_reload_action  = []
-        if implementation_type != E_MapImplementationType.STATE_MACHINE:
-            after_reload_action.extend([1, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
-
         if column_count_per_chunk is not None:
             LanguageDB.REFERENCE_P_COLUMN_ADD(before_reload_action, IteratorName, column_count_per_chunk)
+            LanguageDB.REFERENCE_P_COLUMN_ADD(exit_action, IteratorName, column_count_per_chunk)
             LanguageDB.REFERENCE_P_RESET(entry_action, IteratorName, AddOneF=False)
             LanguageDB.REFERENCE_P_RESET(after_reload_action, IteratorName, AddOneF=False)
 
     if column_count_per_chunk is not None:
         variable_db.require("reference_p")
 
-    return cm, implementation_type, entry_action, before_reload_action, after_reload_action
+    return cm, implementation_type, entry_action, exit_action, before_reload_action, after_reload_action
 
 def get_column_number_per_chunk(counter_db, CharacterSet):
     """Considers the counter database which tells what character causes
@@ -374,29 +382,34 @@ def get_grid_and_line_number_character_set(counter_db):
         result.unite_with(character_set)
     return result
 
-def __frame(CounterTxt, FunctionName, ImplementationType, EntryAction):
+def __frame(ImplementationType, CounterTxt, FunctionName, EntryAction, ExitAction):
     LanguageDB = Setup.language_db
 
-    prologue  =   \
+    prolog  = [  \
           "#ifdef __QUEX_OPTION_COUNTER\n" \
         + "static void\n" \
         + "%s(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* LexemeBegin, QUEX_TYPE_CHARACTER* LexemeEnd)\n" \
           % FunctionName \
         + "{\n" \
         + "#   define self (*me)\n" \
-        + "    QUEX_TYPE_CHARACTER* iterator    = (QUEX_TYPE_CHARACTER*)0;\n" 
+        + "    QUEX_TYPE_CHARACTER* iterator    = LexemeBegin;\n" 
+    ]
 
-    input_def = ""
     if ImplementationType == E_MapImplementationType.STATE_MACHINE:
-        input_def = "    QUEX_TYPE_CHARACTER  input       = (QUEX_TYPE_CHARACTER)0;\n" 
+        prolog.append("    QUEX_TYPE_CHARACTER  input       = (QUEX_TYPE_CHARACTER)0;\n")
+        on_failure_action = [     
+            "%s:\n" % get_label("$terminal-FAILURE"), 
+            1, "QUEX_ERROR_EXIT(\"State machine failed.\");\n" 
+        ]
+    else:
+        on_failure_action = []
 
-    reference_p_def = ""
+
     if variable_db.has_key("reference_p"):
-        reference_p_def = \
-             "#   if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)\n" \
-           + "    const QUEX_TYPE_CHARACTER* reference_p = LexemeBegin;\n" \
-           + "#   endif\n"     
-
+        prolog.append(
+             "#   if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)\n" 
+           + "    const QUEX_TYPE_CHARACTER* reference_p = LexemeBegin;\n" 
+           + "#   endif\n")
 
     # There is no 'ExitCharacterSet' in a counter, since a counter works
     # on a pattern which has already matched. It only ends at the LexemeEnd.
@@ -404,30 +417,28 @@ def __frame(CounterTxt, FunctionName, ImplementationType, EntryAction):
     # not have been used at this point in time.
     assert not variable_db.has_key("character_begin_p")
 
-    loop_start = \
+    prolog.extend(EntryAction)
+    prolog.append(
          "    __QUEX_IF_COUNT_SHIFT_VALUES();\n" \
        + "\n" \
        + "    __quex_assert(LexemeBegin <= LexemeEnd);\n" \
-       + "    for(iterator=LexemeBegin; iterator < LexemeEnd; ) {\n"
+       + "    for(iterator=LexemeBegin; iterator < LexemeEnd; ) {\n")
     
     LanguageDB.INDENT(CounterTxt)
                
     epilogue = []
-    epilogue.append("    }\n")
-    epilogue.extend(EntryAction)
-
+    epilogue.append("\n    }\n")
     epilogue.append(
-         "    __quex_assert(iterator == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */\n" \
-       + "#   undef self\n" \
-       + "}\n" \
-       + "#endif /* __QUEX_OPTION_COUNTER */")
-
-    result = [ 
-         prologue,
-         input_def,
-         reference_p_def,
-         loop_start
-    ] 
+        "    __quex_assert(iterator == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */\n")
+    epilogue.extend(ExitAction)
+    epilogue.append("   return;\n");
+    epilogue.extend(on_failure_action)
+    epilogue.append(
+         "#  undef self\n" 
+       + "}\n"
+       + "#endif /* __QUEX_OPTION_COUNTER */"
+    )
+    result = prolog
     result.extend(CounterTxt)
     result.extend(epilogue)
 

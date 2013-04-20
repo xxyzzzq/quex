@@ -22,7 +22,7 @@ from   quex.engine.generator.base                  import Generator as CppGenera
 import quex.engine.generator.languages.core        as     languages
 import quex.engine.generator.languages.address     as     address
 import quex.engine.generator.state.transition.core as     transition_block
-from   quex.blackboard                             import setup as Setup
+from   quex.blackboard                             import setup as Setup, E_MapImplementationType
 
 Setup.language_db = languages.db["C"]              
 LanguageDB        = Setup.language_db
@@ -127,10 +127,10 @@ def get_transition_function(tm, Codec):
 
     else:
         Setup.buffer_codec_transformation_info = "utf8-state-split"
-        tm_txt = CppGenerator.code_action_state_machine(tm, None, None)
+        tm_txt = CppGenerator.code_action_state_machine(tm, None, None, None)
         tm_txt.append("%s return (int)-1;\n" % LanguageDB.LABEL_ON_FAILURE())
         tm_txt = LanguageDB.GET_PLAIN_STRINGS(tm_txt)
-        CppGenerator.replace_iterator_name(tm_txt, "input_p", StateMachineF=True)
+        CppGenerator.replace_iterator_name(tm_txt, "input_p", E_MapImplementationType.STATE_MACHINE)
 
         header = \
             "#define __QUEX_OPTION_PLAIN_C\n"                                    \
