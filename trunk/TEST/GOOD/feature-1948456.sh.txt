@@ -23,8 +23,8 @@
      * MODE: ONE
      * 
      *     PATTERN-ACTION PAIRS:
-     *       ON_FAILURE
      *       ON_END_OF_STREAM
+     *       ON_FAILURE
      *       (311) ONE: abc
      *       (312) ONE: bcd
      *       (313) ONE: cde
@@ -38,8 +38,8 @@
      *       ONE
      * 
      *     PATTERN-ACTION PAIRS:
-     *       ON_FAILURE
      *       ON_END_OF_STREAM
+     *       ON_FAILURE
      *       (295) ONE: abc
      *       (296) ONE: bcd
      *       (297) ONE: cde
@@ -57,8 +57,8 @@
      *       ONE
      * 
      *     PATTERN-ACTION PAIRS:
-     *       ON_FAILURE
      *       ON_END_OF_STREAM
+     *       ON_FAILURE
      *       (304) ONE: abc
      *       (305) ONE: bcd
      *       (306) ONE: cde

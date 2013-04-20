@@ -38,11 +38,12 @@ def do(Data, Mode):
     #
     implementation_type, \
     entry_action,        \
-    loop_txt,            = __make_loop(Mode.counter_db, CharacterSet)
+    loop_txt             = __make_loop(Mode.counter_db, CharacterSet)
 
     # Build the skipper _______________________________________________________
     #
-    result = __frame(loop_txt, CharacterSet, implementation_type, entry_action, require_label_SKIP_f)
+    result = __frame(implementation_type, loop_txt, 
+                     CharacterSet, entry_action, require_label_SKIP_f)
 
     return result
 
@@ -74,14 +75,15 @@ def __make_loop(CounterDB, CharacterSet):
     tm,                     \
     implementation_type,    \
     entry_action,           \
+    exit_action,            \
     before_reload_action,   \
     after_reload_action =   \
          counter.get_counter_map(CounterDB,
-                                 IteratorName          = "me->buffer._input_p",
-                                 ColumnCountPerChunk   = column_count_per_chunk,
-                                 InsideCharacterSet    = CharacterSet,
-                                 ExitCharacterSet      = exit_skip_set, 
-                                 ReloadF               = True)
+                                 IteratorName        = "me->buffer._input_p",
+                                 ColumnCountPerChunk = column_count_per_chunk,
+                                 InsideCharacterSet  = CharacterSet,
+                                 ExitCharacterSet    = exit_skip_set, 
+                                 ReloadF             = True)
 
     transition_map_tool.insert_after_action_id(tm, E_ActionIDs.ON_EXIT,
                                                [ 1, "goto %s;" % get_label("$start", U=True) ])
@@ -91,27 +93,25 @@ def __make_loop(CounterDB, CharacterSet):
     # 'BeforeReloadAction not None' forces a transition to RELOAD_PROCEDURE upon
     # buffer limit code.
     implementation_type, \
-    loop_txt,            = CppGenerator.code_action_map(tm, 
+    loop_txt             = CppGenerator.code_action_map(tm, 
                                         IteratorName       = "me->buffer._input_p", 
                                         BeforeReloadAction = before_reload_action, 
                                         AfterReloadAction  = after_reload_action,
-                                        OnFailureAction    = None)
+                                        OnFailureAction    = None) # ["QUEX_ERROR_EXIT(\"Codec error\");"])
 
     return implementation_type, entry_action, loop_txt
 
-def __frame(LoopTxt, CharacterSet, ImplementationType, EntryAction, RequireSKIPLabel):
+def __frame(ImplementationType, LoopTxt, CharacterSet, EntryAction, RequireSKIPLabel):
     """Implement the skipper."""
     LanguageDB = Setup.language_db
 
-    comment = [1]
-    LanguageDB.COMMENT(comment, "Character Set Skipper: '%s'" % CharacterSet.get_utf8_string()),
     LanguageDB.INDENT(LoopTxt)
 
-    # (*) Putting it all together _____________________________________________
-    code = [ ]
+    code = []
     if RequireSKIPLabel:
         code.append("__SKIP:\n")
-    code.extend(comment)
+    code.append(1)
+    LanguageDB.COMMENT(code, "Character Set Skipper: '%s'" % CharacterSet.get_utf8_string()),
     code.extend([1, "QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);\n"])
     code.extend(EntryAction)
     code.extend([ 1, "while( 1 + 1 == 2 ) {\n" ])

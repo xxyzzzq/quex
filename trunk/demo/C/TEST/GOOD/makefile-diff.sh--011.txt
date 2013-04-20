@@ -7,7 +7,7 @@
 < 	g++ -c -ggdb -D__QUEX_TEST_OPTION_ISO8859_7 \
 ---
 > 		 -o ISO8859_7_Lex    \
-> 		 --language C 
+> 		 --language C
 > 	gcc -ggdb -D__QUEX_TEST_OPTION_ISO8859_7           \
 < 		-o iso8859-7-lexer.o
 < 

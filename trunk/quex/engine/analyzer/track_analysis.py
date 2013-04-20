@@ -187,10 +187,6 @@ def do(SM, ToDB):
             #      see bug-2257908.sh in $QUEX_PATH/TEST).
             # 
             existing_trace_list = self.result.get(StateIndex) 
-            #if StateIndex == 6:
-                #print "#StateIndex:", StateIndex
-                #print "#Trace:", trace
-                # print "#existing:", existing_trace_list
             if len(existing_trace_list) != 0:
                 end_of_road_f = (len(target_index_list) == 0)
                 for pioneer in existing_trace_list:

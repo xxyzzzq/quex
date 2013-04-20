@@ -1,9 +1,9 @@
 #ifdef __QUEX_OPTION_COUNTER
 void
-QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* LexemeBegin, const QUEX_TYPE_CHARACTER* LexemeEnd)
+QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* LexemeBegin, QUEX_TYPE_CHARACTER* LexemeEnd)
 {
 #   define self (*me)
-    const QUEX_TYPE_CHARACTER* iterator    = (const QUEX_TYPE_CHARACTER*)0;
+    QUEX_TYPE_CHARACTER* iterator    = LexemeBegin;
     __QUEX_IF_COUNT_SHIFT_VALUES();
 
     __quex_assert(LexemeBegin <= LexemeEnd);
@@ -19,25 +19,26 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* 
             else if( ((*(iterator)) & 0x02) == 0 ) { (iterator) += 6; } /* 6byte character */
             else if( ((*(iterator)) & 0x01) == 0 ) { (iterator) += 7; } /* 7byte character */
             else                                 { (iterator) += 1; } /* default 1       */
-
+            continue;
         } else if( (*(iterator)) == 0xA ) {
             __QUEX_IF_COUNT_LINES_ADD((size_t)1);
         __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
-                ++(iterator);
-
+                ++(((iterator)));
+            continue;
         } else if( (*(iterator)) == 0x9 ) {
                     __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end &= ~ ((size_t)0x3));
         __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 4);
-                ++(iterator);
-
+                ++(((iterator)));
+            continue;
         } else {
             __QUEX_IF_COUNT_COLUMNS_ADD((size_t)1);
-                ++(iterator);
-
+                ++(((iterator)));
+            continue;
         }
     }
     __quex_assert(iterator == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */
-#   undef self
+   return;
+#  undef self
 }
 #endif /* __QUEX_OPTION_COUNTER */
 _____________________________________________________________________________
@@ -46,4 +47,4 @@ char_size: 1;
 byte_n:    1605;
 column_n:  539;
 line_n:    1;
-## gcc -I. -ggdb ./data/check.c ./data/test.c  -D__QUEX_OPTION_COUNTER -DDEF_COUNTER_FUNCTION='QUEX_NAME(TEST_MODE_counter)'  -DDEF_FILE_NAME='"./data/example.utf8"'  -DDEF_CHARACTER_TYPE=uint8_t  -o test
+## gcc -Wall -I. -ggdb ./data/check.c ./data/test.c  -D__QUEX_OPTION_COUNTER -DDEF_COUNTER_FUNCTION='QUEX_NAME(TEST_MODE_counter)'  -DDEF_FILE_NAME='"./data/example.utf8"'  -DDEF_CHARACTER_TYPE=uint8_t  -o test

@@ -204,68 +204,6 @@ def set_target(transition_map, Character, NewTarget):
     assert_adjacency(transition_map, TotalRangeF=False)
     return
 
-def assert_continuity(transition_map, StrictF=True):
-    """StrictF => Assume that adjacent intervals have been combined. 
-
-       Tests that all intervals appear in a sorted manner.
-
-       NOTE: 'assert_adjacency' is stronger than 'assert_continuity'. 
-             It is not necessary to test for both. Rather decide what
-             level needs to be asserted.
-    """
-    if len(transition_map) == 0:
-        return 
-
-    iterable                   = transition_map.__iter__()
-    prev_interval, prev_target = iterable.next()
-    # No 'empty' intervals
-    assert prev_interval.end > prev_interval.begin
-
-    for interval, target in iterable:
-        assert interval.end > interval.begin        # No empty intervals
-        assert interval.begin >= prev_interval.end  # Intervals appear sorted, 
-        if interval.begin == prev_interval.end and StrictF:
-            # If the touch, require the target is different
-            assert target != prev_target
-        prev_interval = interval
-        prev_target   = target
-
-def assert_adjacency(transition_map, TotalRangeF=False, ChangeF=False):
-    """Check that the trigger map consist of sorted adjacent intervals 
-       This assumption is critical because it is assumed that for any isolated
-       interval the bordering intervals have bracketed the remaining cases!
-    """
-    if len(transition_map) == 0: 
-        assert not TotalRangeF
-        return
-
-    if TotalRangeF: 
-        assert transition_map[0][0].begin == -sys.maxint
-        assert transition_map[-1][0].end  == sys.maxint
-
-    iterable    = transition_map.__iter__()
-    info        = iterable.next()
-    prev_end    = info[0].end
-    prev_target = info[1]
-
-    for interval, target in iterable:
-        assert interval.end > interval.begin        # No empty intervals
-
-        # Intervals are adjacent!
-        assert interval.begin == prev_end, \
-               "interval.begin: 0x%X != prev_end: 0x%X" % (interval.begin, prev_end)
-        # Interval size > 0! 
-        assert interval.end   > interval.begin, \
-               "interval.end: %x <= interval.begin: 0x%X" % (interval.end, interval.begin)
-        if ChangeF:
-            assert target != prev_target 
-
-        prev_end    = interval.end
-        prev_target = target
-
-    # If we reach here, then everything is OK.
-    return
-
 def index(transition_map, Character):
     # TODO: Bisectioning
     for i, info in enumerate(transition_map):
@@ -421,6 +359,7 @@ def combine_adjacents(transition_map):
         prev_interval = interval
 
 def clean_up(transition_map):
+    """NOTE: 'clean_up' does not mean that there are no gaps!"""
     sort(transition_map)
     combine_adjacents(transition_map)
 
@@ -511,5 +450,72 @@ def prune(TriggerMap, Begin, End):
         else:
             i += 1
 
+    return
+
+def assert_no_empty_action(transition_map):
+    for interval, action in transition_map:
+        assert action is not None
+        assert not isinstance(action, list) or len(action) != 0
+
+def assert_continuity(transition_map, StrictF=True):
+    """StrictF => Assume that adjacent intervals have been combined. 
+
+       Tests that all intervals appear in a sorted manner.
+
+       NOTE: 'assert_adjacency' is stronger than 'assert_continuity'. 
+             It is not necessary to test for both. Rather decide what
+             level needs to be asserted.
+    """
+    if len(transition_map) == 0:
+        return 
+
+    iterable                   = transition_map.__iter__()
+    prev_interval, prev_target = iterable.next()
+    # No 'empty' intervals
+    assert prev_interval.end > prev_interval.begin
+
+    for interval, target in iterable:
+        assert interval.end > interval.begin        # No empty intervals
+        assert interval.begin >= prev_interval.end  # Intervals appear sorted, 
+        if interval.begin == prev_interval.end and StrictF:
+            # If the touch, require the target is different
+            assert target != prev_target
+        prev_interval = interval
+        prev_target   = target
+
+def assert_adjacency(transition_map, TotalRangeF=False, ChangeF=False):
+    """Check that the trigger map consist of sorted adjacent intervals 
+       This assumption is critical because it is assumed that for any isolated
+       interval the bordering intervals have bracketed the remaining cases!
+    """
+    if len(transition_map) == 0: 
+        assert not TotalRangeF
+        return
+
+    if TotalRangeF: 
+        assert transition_map[0][0].begin == -sys.maxint
+        assert transition_map[-1][0].end  == sys.maxint
+
+    iterable    = transition_map.__iter__()
+    info        = iterable.next()
+    prev_end    = info[0].end
+    prev_target = info[1]
+
+    for interval, target in iterable:
+        assert interval.end > interval.begin        # No empty intervals
+
+        # Intervals are adjacent!
+        assert interval.begin == prev_end, \
+               "interval.begin: 0x%X != prev_end: 0x%X" % (interval.begin, prev_end)
+        # Interval size > 0! 
+        assert interval.end   > interval.begin, \
+               "interval.end: %x <= interval.begin: 0x%X" % (interval.end, interval.begin)
+        if ChangeF:
+            assert target != prev_target 
+
+        prev_end    = interval.end
+        prev_target = target
+
+    # If we reach here, then everything is OK.
     return
 

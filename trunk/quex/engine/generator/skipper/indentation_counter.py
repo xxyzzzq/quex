@@ -122,7 +122,7 @@ _RELOAD_$$ADDRESS$$:
     /* The application might actually be interested in the indentation string.
      * => make sure it remains in the buffer upon reload.                    */
     $$LEXEME_START_SET_TO_REF$$
-    QUEX_GOTO_RELOAD_FORWARD($$ADDRESS$$, $$TERMINAL_EOF_ADR$$);
+    QUEX_GOTO_RELOAD(__RELOAD_FORWARD, $$ADDRESS$$, $$TERMINAL_EOF_ADR$$);
 
 $$BAD_CHARACTER_HANDLING$$
 """

@@ -543,7 +543,7 @@ def __terminal_states(action_db, PreConditionIDList, Setup, SimpleF=False):
     on_end_of_stream_str           = ""
     on_failure_str                 = ""
 
-    for pattern_id, info in action_db.items():
+    for pattern_id, info in sorted(action_db.items(), key=lambda x: x[0]):
         if pattern_id == E_ActionIDs.ON_END_OF_STREAM:
             on_end_of_stream_str = __terminal_on_end_of_stream(LanguageDB, info, 
                                                                terminal_end_of_stream_def)

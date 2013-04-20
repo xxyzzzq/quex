@@ -68,8 +68,6 @@ elif codec == "UTF16":
 else:                 
     Setup.buffer_codec_transformation_info = codec_db.get_codec_transformation_info(codec)
 
-Setup.buffer_codec = codec.lower()
-
 lcc_setup = None
 
 if   choice == "Default":
@@ -90,6 +88,15 @@ else:
     assert False, "Bad choice '%s'" % choice
     
 # (*) Construct the Counter Database __________________________________________
+Setup.buffer_codec = codec.lower()
+buffer_element_type, Setup.tbuffer_element_size = {
+        "UCS":   ("uint32_t", 4),
+        "UTF8":  ("uint8_t", 1),
+        "cp037": ("uint8_t", 1),
+        "UTF16": ("uint16_t", 2),
+}[codec]
+
+
 
 # If 'lcc_setup' is not given as an object, then create one from
 # the specification string.
@@ -124,19 +131,12 @@ file_extension = codec.lower()
 if codec == "UCS":   file_extension = "utf32le"
 if codec == "UTF16": file_extension = "utf16le"
 
-character_type = {
-        "UCS":   "uint32_t",
-        "UTF8":  "uint8_t",
-        "cp037": "uint8_t",
-        "UTF16": "uint16_t",
-}[codec]
-
 os.system("rm -f test")
-compile_str =   "gcc -I. -ggdb ./data/check.c ./data/test.c " \
+compile_str =   "gcc -Wall -I. -ggdb ./data/check.c ./data/test.c " \
               + " -D__QUEX_OPTION_COUNTER" \
               + " -DDEF_COUNTER_FUNCTION='%s' "             % counter_function_name \
               + " -DDEF_FILE_NAME='\"./data/example.%s\"' " % file_extension        \
-              + " -DDEF_CHARACTER_TYPE=%s "                 % character_type        \
+              + " -DDEF_CHARACTER_TYPE=%s "                 % buffer_element_type \
               + " -o test"
 
 print "## %s" % compile_str            

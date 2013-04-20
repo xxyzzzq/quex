@@ -1,33 +1,33 @@
-<test-database execution-time-sec="34.65" date="Sat Apr 13 00:35:53 2013">
+<test-database execution-time-sec="13.43" date="Sat Apr 20 05:50:27 2013">
     <last-used-diff-display-program name=""/>
-    <test title="(*) Exceptions during 'import'" time-sum-sec="0.52"> 
+    <test title="(*) Exceptions during 'import'" time-sum-sec="0.56"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1355705371L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.52" crc="1069820642"/>
+           <choice name="" result="OK" time_sec="0.56" crc="1069820642"/>
         </choice-list>
     </test>
-    <test title="The Lexeme macro does some safety checks when compiled with" time-sum-sec="0.08"> 
+    <test title="The Lexeme macro does some safety checks when compiled with" time-sum-sec="0.09"> 
         <application file-name="no-use-of-lexeme-macro.sh" info-request-time="1355705370L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.08" crc="-124142507"/>
+           <choice name="" result="FAIL" time_sec="0.09" crc="-124142507"/>
         </choice-list>
     </test>
-    <test title="&lt; #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$" time-sum-sec="0.03"> 
+    <test title="&lt; #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$" time-sum-sec="0.06"> 
         <application file-name="check-default-configuration.sh" info-request-time="1355705370L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.03" crc="1977758644"/>
+           <choice name="" result="OK" time_sec="0.06" crc="1977758644"/>
         </choice-list>
     </test>
-    <test title="Code Check with pyflakes" time-sum-sec="11.12"> 
+    <test title="Code Check with pyflakes" time-sum-sec="10.20"> 
         <application file-name="pyflakes-check.sh" info-request-time="1355705371L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="11.12" crc="176785168"/>
+           <choice name="" result="FAIL" time_sec="10.20" crc="176785168"/>
         </choice-list>
     </test>
-    <test title="Propper undefinition of configuration parameters." time-sum-sec="0.12"> 
+    <test title="Propper undefinition of configuration parameters." time-sum-sec="0.07"> 
         <application file-name="macro-check.py" info-request-time="1357037657L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.12" crc="-482184837"/>
+           <choice name="" result="OK" time_sec="0.07" crc="-482184837"/>
         </choice-list>
     </test>
     <test title="Prepare Pattern Information for Code Generation" time-sum-sec="0.08"> 
@@ -37,19 +37,19 @@
         </choice-list>
     </test>
     <group name="## file">
-        <test title="Include Guards for C/C++" time-sum-sec="22.58"> 
+        <test title="Include Guards for C/C++" time-sum-sec="2.14"> 
             <application file-name="include_guard.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="2" same_result="False">
-               <choice name="convention" result="OK" time_sec="22.24" crc="706574512"/>
-               <choice name="undefinition" result="OK" time_sec="0.33" crc="1307575207"/>
+               <choice name="convention" result="OK" time_sec="1.80" crc="706574512"/>
+               <choice name="undefinition" result="OK" time_sec="0.34" crc="1307575207"/>
             </choice-list>
         </test>
     </group>
     <group name="User defined token id file">
-        <test title="__parse_token_id_file" time-sum-sec="0.12"> 
+        <test title="__parse_token_id_file" time-sum-sec="0.23"> 
             <application file-name="test-token_id_file-find_ids.py" info-request-time="1361650041L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.12" crc="-865470313"/>
+               <choice name="" result="OK" time_sec="0.23" crc="-865470313"/>
             </choice-list>
         </test>
     </group>

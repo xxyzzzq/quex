@@ -17,6 +17,7 @@ typedef struct {
 #define __quex_debug_state(X)
 #define __quex_debug_drop_out(X)
 #define __quex_assert(X)   assert(X)
+#define __quex_assert_no_passage()    assert(0)
 #define QUEX_ERROR_EXIT(X) assert(0)
 #define QUEX_NAME(X)       quex_unit_test_ ## X
 
@@ -33,7 +34,7 @@ typedef struct {
 #define QUEX_OPTION_LINE_NUMBER_COUNTING
 
 void
-DEF_COUNTER_FUNCTION(QUEX_TYPE_ANALYZER*        me, 
-                     const QUEX_TYPE_CHARACTER* LexemeBegin, 
-                     const QUEX_TYPE_CHARACTER* LexemeEnd);
+DEF_COUNTER_FUNCTION(QUEX_TYPE_ANALYZER*  me, 
+                     QUEX_TYPE_CHARACTER* LexemeBegin, 
+                     QUEX_TYPE_CHARACTER* LexemeEnd);
 
