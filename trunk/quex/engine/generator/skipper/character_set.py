@@ -56,8 +56,7 @@ def __make_loop(CounterDB, CharacterSet):
 
     # Determine 'column_count_per_chunk' before adding 'exit' and 'blc' 
     # characters.
-    column_count_per_chunk = counter.get_column_number_per_chunk(CounterDB,
-                                                                 CharacterSet)
+    column_count_per_chunk = CounterDB.get_column_number_per_chunk(CharacterSet)
 
     # Possible reactions on a character _______________________________________
     #
@@ -96,8 +95,7 @@ def __make_loop(CounterDB, CharacterSet):
     loop_txt             = CppGenerator.code_action_map(tm, 
                                         IteratorName       = "me->buffer._input_p", 
                                         BeforeReloadAction = before_reload_action, 
-                                        AfterReloadAction  = after_reload_action,
-                                        OnFailureAction    = None) # ["QUEX_ERROR_EXIT(\"Codec error\");"])
+                                        AfterReloadAction  = after_reload_action)
 
     return implementation_type, entry_action, loop_txt
 

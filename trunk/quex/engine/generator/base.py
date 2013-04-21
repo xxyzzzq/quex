@@ -260,7 +260,6 @@ class Generator(GeneratorBase):
     def code_action_map(TM, IteratorName, 
                         BeforeReloadAction = None, 
                         AfterReloadAction  = None,
-                        OnFailureAction    = None, 
                         ImplementationType = None):
         """TM is an object in the form of a 'transition map'. That is, it maps
         from an interval to an action--in this case not necessarily a state 
@@ -270,11 +269,13 @@ class Generator(GeneratorBase):
 
         where the list is sorted by the interval's begin. Intervals shall not 
         interleave.
+
+        NOTE: In case of a state machine implementation, this task does NOT 
+              implement standard terminals such as FAILURE or END_OF_STREAM! 
         """
         global Match_input
         global Match_iterator
         LanguageDB = Setup.language_db
-        #OnFailureAction = None
 
         if ImplementationType is None: 
             reload_f           = (BeforeReloadAction is not None)
@@ -292,8 +293,7 @@ class Generator(GeneratorBase):
             txt            = Generator.code_action_map_plain(tm, BeforeReloadAction, AfterReloadAction)
 
         elif ImplementationType == E_MapImplementationType.STATE_MACHINE:
-            txt = Generator.code_action_state_machine(TM, BeforeReloadAction, AfterReloadAction,
-                                                      OnFailureAction)
+            txt = Generator.code_action_state_machine(TM, BeforeReloadAction, AfterReloadAction)
 
         else:
             assert False
@@ -313,7 +313,7 @@ class Generator(GeneratorBase):
             return E_MapImplementationType.PLAIN_MAP
 
     @staticmethod
-    def code_action_state_machine(TM, BeforeReloadAction, AfterReloadAction, OnFailureAction):
+    def code_action_state_machine(TM, BeforeReloadAction, AfterReloadAction):
         """Generates a state machine that represents the transition map 
         according to the codec given in 'Setup.buffer_codec_transformation_info'
         """
@@ -341,10 +341,6 @@ class Generator(GeneratorBase):
         pap_list = get_pattern_action_pair_list_from_map(TM)
         for pap in pap_list:
             pap.pattern().transform(Setup.buffer_codec_transformation_info)
-
-        if OnFailureAction is not None:
-            pap_list.append(PatternActionInfo(E_ActionIDs.ON_FAILURE, 
-                                              OnFailureAction))
 
         generator = Generator(pap_list) 
 

@@ -283,21 +283,6 @@ class LineColumnCounterSetup(Base):
         txt += Base._db_to_text("Newlines", self.newline_db)
         return txt
 
-CounterDB = namedtuple("CounterDB", ("special", "grid", "newline"))
-def CounterDB_construct_this(LCC_Setup):
-    if LCC_Setup is None:
-        LCC_Setup = LineColumnCounterSetup_Default()
-
-    # Construct a 'CounterDB' object that simply maps from counts to the 
-    # character set that is involved.
-    def adapt(db):
-        return dict((count, parameter.get()) for count, parameter in db.iteritems())
-    space_db   = adapt(LCC_Setup.space_db)
-    grid_db    = adapt(LCC_Setup.grid_db)
-    newline_db = adapt(LCC_Setup.newline_db)
-
-    return CounterDB(space_db, grid_db, newline_db)
-
 class IndentationSetup(Base):
     def __init__(self, fh=-1):
         Base.__init__(self, fh, "Indentation counter", ("space", "grid", "bad", "newline", "suppressor"))

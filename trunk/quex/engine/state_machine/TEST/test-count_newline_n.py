@@ -5,6 +5,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine as     core
 import quex.input.files.counter_setup       as     counter_setup
+from   quex.input.files.counter_db          import CounterDB
 from   StringIO                             import StringIO
 
 spec_txt = """
@@ -15,12 +16,8 @@ spec_txt = """
 fh = StringIO(spec_txt)
 fh.name = "<string>"
 lcc_setup = counter_setup.parse(fh, IndentationSetupF=False)
-def adapt(db):
-    return dict((count, parameter.get()) for count, parameter in db.iteritems())
 
-counter_db = counter_setup.CounterDB(adapt(lcc_setup.space_db), 
-                                     adapt(lcc_setup.grid_db), 
-                                     adapt(lcc_setup.newline_db))
+counter_db = CounterDB(lcc_setup)
 if "--hwut-info" in sys.argv:
     print "Predetermined Character Count: Newlines"
     sys.exit(0)

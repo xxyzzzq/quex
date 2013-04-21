@@ -6,6 +6,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.engine.interval_handling           import NumberSet, Interval
 import quex.input.regular_expression.engine    as     core
 import quex.input.files.counter_setup          as     counter_setup
+from   quex.input.files.counter_db             import CounterDB
 from   quex.input.files.counter_setup          import LineColumnCounterSetup_Default
 import quex.output.cpp.counter                 as     counter
 import quex.engine.generator.languages.core    as     languages
@@ -106,12 +107,7 @@ if lcc_setup is None:
     fh.name = "<string>"
     lcc_setup = counter_setup.parse(fh, IndentationSetupF=False)
 
-def adapt(db):
-    return dict((count, parameter.get()) for count, parameter in db.iteritems())
-
-counter_db = counter_setup.CounterDB(adapt(lcc_setup.space_db), 
-                                     adapt(lcc_setup.grid_db), 
-                                     adapt(lcc_setup.newline_db))
+counter_db = CounterDB(lcc_setup)
 
 # (*) Execute the Test ________________________________________________________
 
