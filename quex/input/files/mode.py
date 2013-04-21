@@ -4,7 +4,8 @@ import quex.input.regular_expression.core              as     regular_expression
 from   quex.input.regular_expression.construct         import Pattern           
 import quex.input.files.mode_option                    as     mode_option
 import quex.input.files.code_fragment                  as     code_fragment
-from   quex.input.files.counter_setup                  import CounterDB_construct_this
+from   quex.input.files.counter_db                     import CounterDB
+from   quex.input.files.counter_setup                  import LineColumnCounterSetup_Default
 import quex.input.files.consistency_check              as     consistency_check
 import quex.output.cpp.counter                         as     counter
 import quex.engine.generator.skipper.indentation_counter as     indentation_counter
@@ -463,8 +464,10 @@ class Mode:
            inside __get_unique_setup_option().
         """
         lcc_setup = self.__get_unique_setup_option("counter") # Line/Column Counter Setup
+        if lcc_setup is None:
+            lcc_setup = LineColumnCounterSetup_Default()
 
-        return CounterDB_construct_this(lcc_setup)
+        return CounterDB(lcc_setup)
 
     def __prepare_skip(self, xpap_list, MHI):
         ssetup_list = self.options.get("skip")
@@ -502,7 +505,7 @@ class Mode:
 
         # An optional codec transformation is done later. The state machines
         # are entered as pure Unicode state machines.
-        counter_dictionary = counter.get_counter_dictionary(self.counter_db, character_set)
+        counter_dictionary = self.counter_db.get_counter_dictionary(character_set)
 
         # It is not necessary to store the count action along with the state
         # machine.  This is done in "action_preparation.do()" for each

@@ -15,13 +15,14 @@ import quex.engine.generator.languages.address as     address
 import quex.engine.generator.state_router      as     state_router_generator
 from   quex.engine.generator.action_info       import PatternActionInfo, CodeFragment
 import quex.output.cpp.core                    as     cpp_generator
-from   quex.input.files.counter_setup          import CounterDB_construct_this
+from   quex.input.files.counter_db             import CounterDB
 
 # import quex.engine.generator.skipper.core          as skipper
 from   quex.engine.generator.languages.variable_db import VariableDB
 import quex.engine.generator.languages.variable_db as     variable_db
 from   quex.engine.generator.languages.address     import get_label
 import quex.input.regular_expression.engine        as     regex
+from   quex.input.files.counter_setup              import LineColumnCounterSetup_Default
 #
 from   quex.blackboard import setup as Setup, E_ActionIDs
 
@@ -294,7 +295,7 @@ def get_mode_object(SM_Name, EventDB={}):
             return self.__event_db[Name]
     mode            = Something(EventDB)
     mode.name       = "%s_UnitTest" % SM_Name
-    mode.counter_db = CounterDB_construct_this(None)
+    mode.counter_db = CounterDB(LineColumnCounterSetup_Default())
     mode.options    = {
         "indentation": None,
     }
