@@ -10,7 +10,6 @@ from   quex.engine.generator.action_info            import CodeFragment
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.generator.languages.address      import get_label
 from   quex.engine.state_machine.core               import StateMachine
-import quex.engine.state_machine.transformation     as     transformation
 import quex.engine.analyzer.core                    as     analyzer_generator
 import quex.engine.analyzer.transition_map          as     transition_map_tool
 from   quex.engine.interval_handling                import NumberSet, Interval
