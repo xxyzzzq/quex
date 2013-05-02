@@ -181,18 +181,81 @@ class CommandList:
         return txt
 
 class Command(object):
-    @staticmethod
-    def type_id():           assert False
-    def priority(self):      assert False
-    def clone(self):         assert False, "Derived class must implement 'clone()'"
-    def cost(self):          assert False, "Derived class must implement 'cost()'"
-    def __hash__(self):      assert False, "Derived class must implement '__hash__()'"
-    def __eq__(self, Other): assert False, "Derived class must implement '__eq__()'"
+    def __init__(self, Cost=None, ParamaterList=None, Hash=None):
+        assert ParamaterList is None or type(ParamaterList) == list
+        assert Hash is None          or isinstance(Hash, (int, long))
+        self._cost = Cost
+        self._hash = Hash
+        self._x    = ParamaterList
+
+    def clone(self):         
+        if   self._x is None:   return self.__class__()
+        elif len(self._x) == 1: return self.__class__(self._x[0])
+        elif len(self._x) == 2: return self.__class__(self._x[0], self._x[1])
+        elif len(self._x) == 3: return self.__class__(self._x[0], self._x[1], self._x[2])
+        else:                   assert False
+
+    def cost(self):          
+        assert self._cost is not None, \
+               "Derived class must implement .cost() function."
+        return self._cost
+
+    def __hash__(self):      
+        if self._hash is not None:
+            assert isinstance(self._hash, (int, long))
+            return self._hash
+        elif self._x is None:
+            assert self._hash is not None, \
+                   "Derived class must implement .__hash__() function."
+            assert isinstance(self._hash, (int, long))
+            return self._hash
+        else:
+            value = self._x[0]
+            if isinstance(value, (int, long)): return value
+            else:                              return -1
+
+    def __eq__(self, Other): 
+        if self.__class__ != Other.__class__:
+            return False
+        return self._x == Other._x
+
+class IncrementInputP(Command):
+    def __init__(self):  
+        Command.__init__(self, 1, Hash=0x4711)
+
 class BeforeIncrementInputP_Command(Command):
     """Base class for all commands which have to appear BEFORE
        the input pointer increment action.
     """
     pass
+
+class CountColumnN_ReferenceSet(BeforeIncrementInputP_Command):
+    def __init__(self):  
+        Command.__init__(self, 1, Hash=0x4712)
+
+class CountColumnN_ReferenceAdd(BeforeIncrementInputP_Command):
+    def __init__(self, ColumnNPerChunk):      
+        Command.__init__(self, 1, [ColumnNPerChunk])
+    @property
+    def column_n_per_chunk(self): return self._x[0]
+
+class CountColumnN_Add(Command):
+    def __init__(self, Offset):      
+        Command.__init__(self, 1, [Offset])
+    @property
+    def offset(self): return self._x[0]
+
+class CountColumnN_Grid(Command):
+    def __init__(self, GridWidth):      
+        Command.__init__(self, 1, [GridWidth])
+    @property
+    def grid_width(self): return self._x[0]
+
+class CountLineN_Add(Command):
+    def __init__(self, Offset):      
+        Command.__init__(self, 1, [Offset])
+    @property
+    def offset(self): return self._x[0]
 
 class StoreInputPosition(BeforeIncrementInputP_Command):
     """
@@ -217,37 +280,24 @@ class StoreInputPosition(BeforeIncrementInputP_Command):
        same position register. The actions which can be combined then can be 
        easily detected, if no pre-context is considered.
     """
-    __slots__ = ("pre_context_id", "position_register", "offset")
     def __init__(self, PreContextID, PositionRegister, Offset):
-        self.pre_context_id    = PreContextID
-        self.position_register = PositionRegister
-        self.offset            = Offset
+        Command.__init__(self, 1, [PreContextID, PositionRegister, Offset])
 
-    def clone(self):
-        return StoreInputPosition(self.pre_context_id, self.position_register, self.offset)
+    def GET_pre_context_id(self):       return self._x[0]
+    def SET_pre_context_id(self, X):    self._x[0] = X
+    pre_context_id = property(GET_pre_context_id, SET_pre_context_id)
+    def GET_position_register(self):    return self._x[1]
+    def SET_position_register(self, X): self._x[1] = X
+    position_register = property(GET_position_register, SET_position_register)
+    def GET_offset(self):               return self._x[2]
+    def SET_offset(self, X):            self._x[2] = X
+    offset = property(GET_offset, SET_offset)
 
-    # Require 'type_id' and 'priority' for sorting of entry actions.
-    @staticmethod
-    def type_id():      return 0
-    def priority(self): return - self.position_register
-
-    # Estimate the cost of the 'store input position':
-    # (Assume, we do not check for pre_context_id, see above)
-    # = 1 x Assignment
-    def cost(self):     return 1
-
-    # Require '__hash__' and '__eq__' to be element of a set.
     def __hash__(self):
-        if isinstance(self.position_register, (int, long)):
-            return self.position_register
-        else:
-            return -1
-
-    def __eq__(self, Other):
-        if not isinstance(Other, StoreInputPosition): return False
-        return     self.pre_context_id    == Other.pre_context_id \
-               and self.position_register == Other.position_register \
-               and self.offset            == Other.offset           
+        # 'Command.__hash__' takes '_x[0]' as hash value.
+        # position_register = _x[1]
+        if isinstance(self.position_register, (int, long)): return self.position_register
+        else:                                               return -1
 
     def __cmp__(self, Other):
         if   self.pre_context_id    > Other.pre_context_id:    return 1
@@ -273,24 +323,12 @@ class StoreInputPosition(BeforeIncrementInputP_Command):
                (self.pre_context_id, self.position_register, self.offset) 
 
 class PreConditionOK(Command):
-    __slots__ = ["__pre_context_id"]
     def __init__(self, PreContextID):
-        self.__pre_context_id = PreContextID
-    def clone(self):
-        return PreConditionOK(self.__pre_context_id)
+        Command.__init__(self, 1, [PreContextID])
     @property
-    def pre_context_id(self): 
-        return self.__pre_context_id
-    def cost(self):     
-        return 1
-    def __hash__(self):       
-        if isinstance(self.__pre_context_id, (int, long)): return self.__pre_context_id
-        else:                                              return -1
-    def __eq__(self, Other):  
-        if not isinstance(Other, PreConditionOK): return False
-        return self.__pre_context_id == Other.__pre_context_id
+    def pre_context_id(self): return self._x[0]
     def __repr__(self):       
-        return "    pre-context-fulfilled = %s;\n" % self.__pre_context_id
+        return "    pre-context-fulfilled = %s;\n" % self.pre_context_id
 
 # Accepter:
 # 
@@ -300,6 +338,7 @@ AccepterElement = namedtuple("AccepterElement", ("pre_context_id", "pattern_id")
 class Accepter(Command):
     __slots__ = ["__list"]
     def __init__(self, PathTraceList=None):
+        Command.__init__(self)
         if PathTraceList is None: 
             self.__list = []
         else:
@@ -321,11 +360,6 @@ class Accepter(Command):
                 break
         if i != len(self.__list) - 1:
             del self.__list[i+1:]
-
-    # Require 'type_id' and 'priority' for sorting of entry actions.
-    @staticmethod
-    def type_id():      return 1
-    def priority(self): return len(self.__list)
 
     # Estimate cost for the accepter:
     # pre-context check + assign acceptance + conditional jump: 3
@@ -361,67 +395,41 @@ class Accepter(Command):
                        for element in self.__list])
 
 class MegaState_Command(Command):
-    """This class exists for the sole sense to identify 'MegaState_Control' commands
+    """Base class for all commands related to MegaState control, 
        such as 'SetTemplateStateKey' and 'SetPathIterator'.
     """
     pass
 
 class SetTemplateStateKey(MegaState_Command):
     def __init__(self, StateKey):
-        self.__value = StateKey
-    def clone(self):
-        return SetTemplateStateKey(self.__value)
+        Command.__init__(self, 1, [StateKey])
     @property
-    def value(self): 
-        return self.__value
+    def value(self): return self._x[0]
     def set_value(self, Value): 
         assert isinstance(Value, (int, long))
-        self.__value = Value
-    def cost(self):     return 1 
-    def __hash__(self):       
-        if isinstance(self.__value, (int, long)): return self.__value
-        else:                                     return -1
-    def __eq__(self, Other):  
-        if not isinstance(Other, SetTemplateStateKey): return False
-        return self.__value == Other.__value
+        self._x[0] = Value
     def __repr__(self):       
-        return "    state_key = %s;\n" % self.__value
+        return "    state_key = %s;\n" % self.value
 
 class SetPathIterator(MegaState_Command):
     def __init__(self, Offset, PathWalkerID=-1, PathID=-1):
-        self.__offset         = Offset
-        self.__path_walker_id = PathWalkerID   # Let it be '-1' to be able to be hashed easily
-        self.__path_id        = PathID         #                   - " -
+        Command.__init__(self, 1, [Offset, PathWalkerID, PathID])
 
-    def clone(self):
-        return SetPathIterator(self.__offset, self.__path_walker_id, self.__path_id)
-
-    def cost(self):     return 1 
-
-    def set_path_walker_id(self, Value): 
-        self.__path_walker_id = Value
-
-    def set_path_id(self, Value):        
-        self.__path_id = Value
+    def set_path_walker_id(self, Value): self._x[1] = Value
+    def set_path_id(self, Value):        self._x[2] = Value
 
     @property
-    def path_walker_id(self): return self.__path_walker_id
+    def offset(self):         return self._x[0]
     @property
-    def path_id(self):        return self.__path_id
+    def path_walker_id(self): return self._x[1]
     @property
-    def offset(self):         return self.__offset
+    def path_id(self):        return self._x[2]
 
     def __hash__(self):       
-        return self.__path_walker_id ^ self.__path_id ^ self.__offset
-
-    def __eq__(self, Other):  
-        if not isinstance(Other, SetPathIterator): return False
-        return     self.__path_walker_id == Other.__path_walker_id \
-               and self.__path_id        == Other.__path_id        \
-               and self.__offset         == Other.__offset
+        return self.path_walker_id ^ self.path_id ^ self.offset
 
     def __repr__(self):       
-        return "    (pw=%s,pid=%s,off=%s)\n" % (self.__path_walker_id, self.__path_id, self.__offset)
+        return "    (pw=%s,pid=%s,off=%s)\n" % (self.path_walker_id, self.path_id, self.offset)
 
 class Door:
     """A 'Door' is a node in a door tree. A door tree is constructed from 
