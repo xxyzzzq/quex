@@ -79,13 +79,14 @@ class CommandList:
     def __init__(self, TheCommandList=None, TheAccepter=None):
         self.accepter = TheAccepter
         self.misc     = set()
-        if TheCommandList is not None:
-            for action in TheCommandList:
-                if isinstance(action, Accepter):
-                    assert self.accepter is None
-                    self.accepter = action
-                else:
-                    self.misc.add(action)
+        if TheCommandList is None:
+            return
+        for action in TheCommandList:
+            if isinstance(action, Accepter):
+                assert self.accepter is None
+                self.accepter = action
+            else:
+                self.misc.add(action)
 
     def difference_update(self, CommandList):
         if self.accepter == CommandList.accepter: self.accepter = None
@@ -156,11 +157,11 @@ class CommandList:
         return xor_sum
 
     def is_equivalent(self, Other):
-        """For 'equivalence' the commands 'MegaState_Control' are unimportant."""
+        """For 'equivalence' the commands 'MegaState_Command' are unimportant."""
         # Rely on '__eq__' of Accepter
         if not (self.accepter == Other.accepter): return False
-        self_misc_pure  = set(x for x in self.misc  if not isinstance(x, MegaState_Control))
-        Other_misc_pure = set(x for x in Other.misc if not isinstance(x, MegaState_Control))
+        self_misc_pure  = set(x for x in self.misc  if not isinstance(x, MegaState_Command))
+        Other_misc_pure = set(x for x in Other.misc if not isinstance(x, MegaState_Command))
         return self_misc_pure == Other_misc_pure
 
     def __eq__(self, Other):
@@ -354,14 +355,13 @@ class Accepter(Command):
         return "".join(["pre(%s) --> accept(%s)\n" % (element.pre_context_id, element.pattern_id) \
                        for element in self.__list])
 
-class MegaState_Control:
+class MegaState_Command(Command):
     """This class exists for the sole sense to identify 'MegaState_Control' commands
        such as 'SetTemplateStateKey' and 'SetPathIterator'.
     """
     pass
 
-class SetTemplateStateKey(Command, MegaState_Control):
-    __slots__ = ("__value")
+class SetTemplateStateKey(MegaState_Command):
     def __init__(self, StateKey):
         self.__value = StateKey
     def clone(self):
@@ -382,8 +382,7 @@ class SetTemplateStateKey(Command, MegaState_Control):
     def __repr__(self):       
         return "    state_key = %s;\n" % self.__value
 
-class SetPathIterator(Command, MegaState_Control):
-    __slots__ = ("__path_walker_id", "__path_id", "__offset")
+class SetPathIterator(MegaState_Command):
     def __init__(self, Offset, PathWalkerID=-1, PathID=-1):
         self.__offset         = Offset
         self.__path_walker_id = PathWalkerID   # Let it be '-1' to be able to be hashed easily
@@ -495,7 +494,7 @@ class Door:
               -- and all its childs are equivalent,
            then the node is equivalent to the other.
         """
-        # 'is_equivalent' does not care about 'MegaState_Control' commands
+        # 'is_equivalent' does not care about 'MegaState_Command' commands
         if not self.common_command_list.is_equivalent(Other.common_command_list): 
             return False
 
@@ -505,13 +504,13 @@ class Door:
             if not child.is_equivalent(other_child): return False
         return True
 
-    def has_commands_other_than_MegaState_Control(self):
+    def has_commands_other_than_MegaState_Command(self):
         # __dive --> here we have recursion
-        for found in (x for x in self.common_command_list if not isinstance(x, MegaState_Control)):
+        for found in (x for x in self.common_command_list if not isinstance(x, MegaState_Command)):
             return True
 
         for child in self.child_list:
-            if child.has_commands_other_than_MegaState_Control(): return True
+            if child.has_commands_other_than_MegaState_Command(): return True
 
         return False
 
@@ -792,6 +791,7 @@ def get_best_common_command_list(TransitionActionList):
     
     # Prefer own 'pair_combinations' over python's 'itertools.combinations',
     # because 'itertools.combinations' had trouble with some versions.
+    #for x, y in combinations(cmdlist_db.iteritems(), 2):
     for x, y in pair_combinations(cmdlist_db.iteritems()):
         x_command_list, x_ta_list = x
         y_command_list, y_ta_list = y

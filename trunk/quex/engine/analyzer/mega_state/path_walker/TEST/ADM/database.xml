@@ -1,4 +1,4 @@
-<test-database execution-time-sec="2.11" date="Sun Apr 21 08:12:25 2013">
+<test-database execution-time-sec="2.10" date="Sun Apr 28 08:47:56 2013">
     <last-used-diff-display-program name=""/>
     <group name="Paths">
         <test title="select" time-sum-sec="0.95"> 
@@ -25,16 +25,16 @@
             <choice-list number="6" same_result="False">
                <choice name="1" result="OK" time_sec="0.08" crc="-1358464012"/>
                <choice name="2" result="OK" time_sec="0.08" crc="225548120"/>
-               <choice name="3" result="OK" time_sec="0.08" crc="1562864869"/>
-               <choice name="4" result="OK" time_sec="0.09" crc="-1319881458"/>
+               <choice name="3" result="OK" time_sec="0.07" crc="1562864869"/>
+               <choice name="4" result="OK" time_sec="0.08" crc="-1319881458"/>
                <choice name="5" result="OK" time_sec="0.08" crc="-589057722"/>
                <choice name="6" result="OK" time_sec="0.08" crc="754868726"/>
             </choice-list>
         </test>
-        <test title="Plugging Wild Cards" time-sum-sec="0.32"> 
+        <test title="Plugging Wild Cards" time-sum-sec="0.31"> 
             <application file-name="find-3.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="OK" time_sec="0.09" crc="-63730863"/>
+               <choice name="1" result="OK" time_sec="0.08" crc="-63730863"/>
                <choice name="2" result="OK" time_sec="0.08" crc="1223793757"/>
                <choice name="3" result="OK" time_sec="0.08" crc="-1522421087"/>
                <choice name="4" result="OK" time_sec="0.08" crc="687699620"/>
