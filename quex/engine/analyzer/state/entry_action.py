@@ -188,8 +188,13 @@ class Command(object):
     def cost(self):          assert False, "Derived class must implement 'cost()'"
     def __hash__(self):      assert False, "Derived class must implement '__hash__()'"
     def __eq__(self, Other): assert False, "Derived class must implement '__eq__()'"
+class BeforeIncrementInputP_Command(Command):
+    """Base class for all commands which have to appear BEFORE
+       the input pointer increment action.
+    """
+    pass
 
-class StoreInputPosition(Command):
+class StoreInputPosition(BeforeIncrementInputP_Command):
     """
     StoreInputPosition: 
 
@@ -340,7 +345,7 @@ class Accepter(Command):
         return xor_sum
 
     def __eq__(self, Other):
-        if not isinstance(Other, Accepter):      return False
+        if not isinstance(Other, Accepter):             return False
         if len(self.__list) != len(Other.__list):       return False
         for x, y in zip(self.__list, Other.__list):
             if   x.pre_context_id != y.pre_context_id:  return False
