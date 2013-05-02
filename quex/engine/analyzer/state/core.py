@@ -98,7 +98,7 @@ class AnalyzerState(object):
         """
         # This function can only be called after a call to 'finish()'.
         assert self.entry.door_tree_root is not None
-        return self.entry.door_tree_root.has_commands_other_than_MegaState_Control()
+        return self.entry.door_tree_root.has_commands_other_than_MegaState_Command()
 
     def get_string(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
         return "".join(self.get_string_array(InputF, EntryF, TransitionMapF, DropOutF))
