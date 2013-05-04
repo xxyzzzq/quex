@@ -1,5 +1,5 @@
 from   quex.blackboard          import setup as Setup, \
-                                       E_StateIndices, E_PreContextIDs
+                                       E_StateIndices, E_PreContextIDs, E_TransitionSubIDs
 from   quex.engine.misc.file_in import error_msg
 from   quex.engine.tools        import pair_combinations
 
@@ -10,10 +10,10 @@ from   itertools                import combinations, islice, izip
 
 class TransitionAction(object):
     __slots__ = ("transition_id", "command_list")
-    def __init__(self, StateIndex, FromStateIndex, TheCommandList=None):
+    def __init__(self, StateIndex, FromStateIndex, TheCommandList=None, SubID=E_TransitionSubIDs.NONE):
         assert TheCommandList is None or isinstance(TheCommandList, CommandList)
 
-        self.transition_id = TransitionID(StateIndex, FromStateIndex)
+        self.transition_id = TransitionID(StateIndex, FromStateIndex, SubID)
         if TheCommandList is not None: self.command_list = TheCommandList
         else:                          self.command_list = CommandList()
  
@@ -39,14 +39,24 @@ class TransitionID(object):
        the state which is entered. Objects of this type can be used whenever
        a 'transition_id' is required with which an command_list is associated.
 
+        state_index      --> target of the transition
+        from_state_index --> origin of the transition
+        sub_id           --> if there are multiple transitions from 'from_state_index'
+                             to 'state_index' with DIFFERENT command lists, then 
+                             the transitions can be identified by a sub-id.
+                             
+
        Objects of this type are for example used in TemplateState objects.
     """
-    __slots__ = ("state_index", "from_state_index")
-    def __init__(self, StateIndex, FromStateIndex):
-        assert isinstance(StateIndex, (int, long)) or StateIndex in E_StateIndices
+    __slots__ = ("state_index", "from_state_index", "sub_id")
+    def __init__(self, StateIndex, FromStateIndex, SubID=E_TransitionSubIDs.NONE):
+        assert isinstance(StateIndex, (int, long))     or StateIndex     in E_StateIndices
         assert isinstance(FromStateIndex, (int, long)) or FromStateIndex in E_StateIndices
+        assert isinstance(SubID, (int, long))          or SubID          in E_TransitionSubIDs
         self.state_index      = StateIndex
         self.from_state_index = FromStateIndex
+        self.sub_id           = SubID
+
     def precedes(self, Other):
         """This function helps sorting transition ids. It is not considered
            critical in the sense that it changes WHAT is going on. So, 
@@ -58,6 +68,8 @@ class TransitionID(object):
         elif self.from_state_index > Other.from_state_index: return False
         elif self.state_index < Other.state_index:           return True
         elif self.state_index > Other.state_index:           return False
+        elif self.sub_id < Other.sub_id:                     return True
+        elif self.sub_id > Other.sub_id:                     return False
         else:                                                return True 
 
     def __hash__(self):
@@ -68,10 +80,12 @@ class TransitionID(object):
         if isinstance(self.state_index, (int, long)): 
             xor_sum ^= self.state_index + 1
         return xor_sum
+
     def __eq__(self, Other):
         if not isinstance(Other, TransitionID): return False
         return     self.from_state_index == Other.from_state_index \
-               and self.state_index      == Other.state_index
+               and self.state_index      == Other.state_index \
+               and self.sub_id           == Other.sub_id
     def __repr__(self):
         return "TransitionID(to=%s, from=%s)" % (self.state_index, self.from_state_index)
 
@@ -245,7 +259,7 @@ class CountColumnN_Add(Command):
     @property
     def offset(self): return self._x[0]
 
-class CountColumnN_Grid(Command):
+class CountColumnN_Grid(BeforeIncrementInputP_Command):
     def __init__(self, GridWidth):      
         Command.__init__(self, 1, [GridWidth])
     @property

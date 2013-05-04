@@ -1,5 +1,5 @@
 import quex.engine.analyzer.engine_supply_factory   as     engine
-from   quex.engine.generator.base                   import Generator as CppGenerator
+from   quex.engine.generator.base                   import LoopGenerator
 from   quex.engine.generator.languages.address      import get_label, \
                                                            address_set_subject_to_routing_add
 from   quex.engine.generator.languages.variable_db  import variable_db
@@ -23,6 +23,12 @@ def do(Data, Mode):
                    --------->( SKIPPER )--+----->------> RESTART
                               '-------'       input 
                                             not in Set
+
+    ___________________________________________________________________________
+    NOTE: The 'range skipper' takes care that it transits immediately to 
+    the indentation handler, if it ends on 'newline'. This is not necessary
+    here. Quex refuses to work on 'skip sets' when they match common lexemes
+    with the indentation handler.
     ___________________________________________________________________________
     """
     CharacterSet         = Data["character_set"]
@@ -37,8 +43,14 @@ def do(Data, Mode):
     # Implement the core loop _________________________________________________
     #
     implementation_type, \
+    loop_txt,            \
     entry_action,        \
-    loop_txt             = __make_loop(Mode.counter_db, CharacterSet)
+    exit_action          = LoopGenerator.do(Mode.counter_db, 
+                             IteratorName = "me->buffer._input_p",
+                             OnContinue   = [ 1, "continue;" ],
+                             OnExit       = [ 1, "goto %s;" % get_label("$start", U=True) ],
+                             CharacterSet = CharacterSet, 
+                             ReloadF      = True)
 
     # Build the skipper _______________________________________________________
     #
@@ -46,58 +58,6 @@ def do(Data, Mode):
                      CharacterSet, entry_action, require_label_SKIP_f)
 
     return result
-
-def __make_loop(CounterDB, CharacterSet):
-    """Buffer Limit Code --> Reload
-       Skip Character    --> Loop to Skipper State
-       Else              --> Exit Loop
-    """
-    LanguageDB = Setup.language_db
-
-    # Determine 'column_count_per_chunk' before adding 'exit' and 'blc' 
-    # characters.
-    column_count_per_chunk = CounterDB.get_column_number_per_chunk(CharacterSet)
-
-    # Possible reactions on a character _______________________________________
-    #
-    blc_set       = NumberSet(Setup.buffer_limit_code)
-    skip_set      = CharacterSet.clone()
-    skip_set.subtract(blc_set)
-    exit_skip_set = CharacterSet.inverse()
-    exit_skip_set.subtract(blc_set)
-
-    #  Buffer Limit Code --> Reload
-    #  Skip Character    --> Loop to Skipper State
-    #  Else              --> Exit Loop
-
-    # Implement the core loop _________________________________________________
-    tm,                     \
-    implementation_type,    \
-    entry_action,           \
-    exit_action,            \
-    before_reload_action,   \
-    after_reload_action =   \
-         counter.get_counter_map(CounterDB,
-                                 IteratorName        = "me->buffer._input_p",
-                                 ColumnCountPerChunk = column_count_per_chunk,
-                                 InsideCharacterSet  = CharacterSet,
-                                 ExitCharacterSet    = exit_skip_set, 
-                                 ReloadF             = True)
-
-    transition_map_tool.insert_after_action_id(tm, E_ActionIDs.ON_EXIT,
-                                               [ 1, "goto %s;" % get_label("$start", U=True) ])
-    transition_map_tool.insert_after_action_id(tm, E_ActionIDs.ON_GOOD_TRANSITION,
-                                               [ 1, "continue;" ])
-
-    # 'BeforeReloadAction not None' forces a transition to RELOAD_PROCEDURE upon
-    # buffer limit code.
-    implementation_type, \
-    loop_txt             = CppGenerator.code_action_map(tm, 
-                                        IteratorName       = "me->buffer._input_p", 
-                                        BeforeReloadAction = before_reload_action, 
-                                        AfterReloadAction  = after_reload_action)
-
-    return implementation_type, entry_action, loop_txt
 
 def __frame(ImplementationType, LoopTxt, CharacterSet, EntryAction, RequireSKIPLabel):
     """Implement the skipper."""

@@ -592,6 +592,16 @@ class CountInfo:
             elif self.line_n_increment_by_lexeme_length != E_Count.VOID:
                 self.line_n_increment_by_lexeme_length  = float(self.line_n_increment_by_lexeme_length) / chunk_n_per_char
 
+    def counting_required_f(self):
+        """Determine whether the line and column number increment needs to be
+        counted according to the content of a matching lexeme. If it is
+        constant or can be derived from the lexeme length, than it does not
+        need to be counted.  
+        """
+        return    (    self.line_n_increment_by_lexeme_length   == E_Count.VOID) \
+               or (    self.column_n_increment_by_lexeme_length == E_Count.VOID  \
+                   and self.grid_step_size_by_lexeme_length     == E_Count.VOID)
+
     def __str__(self):
         return \
                "line_n_increment                    = %s;\n" \

@@ -79,14 +79,14 @@ class Analyzer:
         assert isinstance(SM, StateMachine)
 
         self.__acceptance_state_index_list = SM.get_acceptance_state_index_list()
-        self.__init_state_index     = SM.init_state_index
-        self.__state_machine_id     = SM.get_id()
-        self.__engine_type          = EngineType
+        self.__init_state_index = SM.init_state_index
+        self.__state_machine_id = SM.get_id()
+        self.__engine_type      = EngineType
 
         # (*) From/To Databases
         #
-        #     from_db:  state_index --> states from which it is entered.
-        #     to_db:    state_index --> states which it enters
+        #     from_db:  state_index --> states reachable from state_index
+        #     to_db:    state_index --> states having a path to state_index
         #
         self.__from_db, self.__to_db = SM.get_from_to_db()
 
@@ -140,11 +140,11 @@ class Analyzer:
     def acceptance_state_index_list(self): return self.__acceptance_state_index_list
     @property
     def to_db(self):
-        """Map: state_index --> list of states that it enters."""
+        """Map: state_index --> list of states which can be reached starting from state_index."""
         return self.__to_db
     @property
     def from_db(self):
-        """Map: state_index --> list of states that enter it."""
+        """Map: state_index --> list of states which which lie on a path to state_index."""
         return self.__from_db
 
     def has_transition_to_init_state(self):

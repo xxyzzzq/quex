@@ -41,10 +41,12 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* Lexeme
                 __QUEX_IF_COUNT_COLUMNS_ADD((size_t)3);
                     ++(((iterator)));
                 continue;
-            } else {
+            } else if( (*(iterator)) < 0x100 ) {
                 __QUEX_IF_COUNT_COLUMNS_ADD((size_t)1);
                     ++(((iterator)));
                 continue;
+            } else {
+
             }
         }
 

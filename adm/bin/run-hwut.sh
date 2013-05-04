@@ -5,15 +5,16 @@
 
 function run_this {
     pwd
-    touch $1.tmp
     echo "start $2"
-    hwut  $2 >& /dev/null
+    hwut  $2 >& $1.tmp
     # sleep 10
     echo "end $2"
     rm    $1.tmp
 }
 
 echo
+rm -f A.tmp B.tmp. C.tmp D.tmp
+
 run_this A TEST/          &
 run_this B demo/Cpp/TEST/ &
 run_this C demo/C/TEST/   &
