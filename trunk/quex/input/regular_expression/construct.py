@@ -98,7 +98,14 @@ class Pattern(object):
                                                  CodecTrafoInfo)
         return self.__count_info
 
-    def count_info(self):                          return self.__count_info
+    def count_info(self):                          
+        """RETURN information for line and column number counting. 
+
+        The information needs to be prepared before the codec-specific transformation
+        -- relying on function 'prepare_count_info()'.
+        """
+        #assert self.__count_info is not None
+        return self.__count_info
     @property
     def sm(self):                                  return self.__sm
     @property

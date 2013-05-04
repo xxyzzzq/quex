@@ -85,10 +85,12 @@ def do_character(Character, TrafoInfo, fh=-1):
         return [ Character ]
     return do_set(NumberSet(Character), TrafoInfo, fh).get_intervals()
 
-def do_sequence(Sequence, TrafoInfo, fh):
+def do_sequence(Sequence, TrafoInfo=None, fh=-1):
+    if TrafoInfo is None:
+        TrafoInfo = Setup.buffer_codec_transformation_info
     result = []
     for x in Sequence:
-        result.extend(do_character(x))
+        result.extend(do_character(x, TrafoInfo, fh))
     return result
 
 def do_transition_map(TM, TrafoInfo=None):

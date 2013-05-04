@@ -1,6 +1,10 @@
-import quex.engine.state_machine.transformation     as     transformation
-from quex.blackboard import setup as Setup, \
-                            E_ActionIDs
+from   quex.engine.state_machine.transformation import homogeneous_chunk_n_per_character
+from   quex.engine.interval_handling            import NumberSet
+from   quex.engine.generator.base               import LoopGenerator
+import quex.engine.analyzer.transition_map      as     transition_map_tool
+from   quex.engine.generator.languages.variable_db  import variable_db
+from   quex.blackboard import setup as Setup, \
+                              E_ActionIDs
 
 class CounterDB:
     # 'CounterDB' maps from counts to the character set that is involved.
@@ -71,9 +75,142 @@ class CounterDB:
                 else:              return None
 
         if Setup.variable_character_sizes_f():
-            result = transformation.homogeneous_chunk_n_per_character(number_set, 
-                                                                      Setup.buffer_codec_transformation_info)
+            result = homogeneous_chunk_n_per_character(number_set, 
+                                                       Setup.buffer_codec_transformation_info)
         return result
+
+    def get_map(self, 
+                IteratorName       = None,
+                InsideCharacterSet = None,
+                ReloadF            = False):
+        """Provide a map which associates intervals with line/column counting 
+        actions as well as appropriate increments of the input pointer.
+
+           map: 
+                interval --> (count line/column, increment input_p)
+
+        The mapping is provided in the form of a transition map, i.e.  a list of
+        sorted pairs of (interval, action).
+
+        ARGUMENTS: 
+
+          IteratorName       -- name of the input pointer variable.
+
+          InsideCharacterSet -- Set of characters which are subject to counting.
+                                That is, all other characters are not considered
+                                to 'stop the show'.
+
+          ReloadF            -- If 'True' reload may occur during counting. 
+                                Else not.
+
+        RETURNS:
+
+           [0] Counter Map in UNICODE 
+               (not in Setup.buffer_codec_transformation_info)
+
+           [1] Implementation Type to be used 
+               (STATE_MACHINE, TRIVIALIZED_STATE_MACHINE, PLAIN_MAP).
+
+           [2], [3] Entry and exit action before counting and after counting ends.
+           
+           [4], [5] Before and after reload actions.
+
+        The counter map contains special actions:
+           
+           -- 'E_ActionIDs.ON_EXIT' indicating that as a consequence of this
+              action the counting loop needs to be exited.
+           -- 'E_ActionIDs.ON_GOOD_TRANSITION' indicating that this action
+              must result in staying inside the counting loop.
+
+        ___________________________________________________________________________
+        REFERENCE POINTER COUNTING
+
+        Using a reference pointer counting can be optimized. It is applied in
+        case that there is only one single value for column counts.  Consider
+        the figure below:
+
+              ---- memory address --->
+                                             later
+                                             iterator
+                                                 |
+              | | | | | | |*| | | | | | | | | | | | | | | | | | | | | |
+                           |
+                      reference_p 
+                      = iterator
+
+        The '*' stands for a 'grid' or a 'newline' character.  If such a character
+        appears, the 'reference_p' is set to the current 'iterator'.  As long as no
+        such character appears, the term to be added is proportional to 'iterator -
+        reference_p'.  The counter implementation profits from this.  It does not
+        increment the 'column_n' as long as only 'normal' characters appear.  It
+        only adds the delta multiplied with a constant.
+
+        The implementation of this mechanism is implemented by the functions
+        '__special()', '__grid()', and '__newline()'.  It is controlled there by
+        argument 'ColumnCountPerChunk'.  If it is not None, it happens to be the
+        factor 'C' for the addition of 'C * (iterator - reference_p)'.
+        ___________________________________________________________________________
+        """
+        assert type(ReloadF) == bool
+        assert InsideCharacterSet is None or isinstance(InsideCharacterSet, NumberSet)
+        LanguageDB = Setup.language_db
+
+        if InsideCharacterSet is not None:
+            if ReloadF:
+                blc_set    = NumberSet(Setup.buffer_limit_code)
+                inside_set = InsideCharacterSet.clone()
+                inside_set.subtract(blc_set)
+            else:
+                inside_set = CharacterSet
+            exit_set = inside_set.inverse()
+            exit_set.subtract(blc_set)
+        else:
+            inside_set = None # That is: All!
+            exit_set   = None # That is: Empty!
+
+        counter_dictionary     = self.get_counter_dictionary(inside_set)
+        column_count_per_chunk = self.get_column_number_per_chunk(inside_set)
+
+        cm = []
+        for number_set, action in counter_dictionary:
+            assert inside_set is None or inside_set.is_superset(number_set)
+            action_txt = action.get_txt(column_count_per_chunk, IteratorName)
+            cm.extend((x, action_txt) for x in number_set.get_intervals())
+
+        implementation_type = LoopGenerator.determine_implementation_type(cm, ReloadF)
+
+        transition_map_tool.add_action_to_all(cm, CountAction.get_epilog(implementation_type))
+
+        exit_action_txt = ExitAction.get_txt(column_count_per_chunk, IteratorName)
+        exit_action_txt.extend(ExitAction.get_epilog(implementation_type))
+        if exit_set is not None:
+            cm.extend((x, exit_action_txt) for x in exit_set.get_intervals())
+
+        transition_map_tool.clean_up(cm)
+
+        # Upon reload, the reference pointer may have to be added. When the reload is
+        # done the reference pointer needs to be reset. 
+        entry_action = []
+        exit_action  = []
+        if not ReloadF:
+            before_reload_action = None
+            after_reload_action  = None
+            if column_count_per_chunk is not None:
+                LanguageDB.REFERENCE_P_RESET(entry_action, IteratorName, AddOneF=False)
+                LanguageDB.REFERENCE_P_COLUMN_ADD(exit_action, IteratorName, column_count_per_chunk)
+        else:
+            before_reload_action = []
+            after_reload_action  = []
+            if column_count_per_chunk is not None:
+                LanguageDB.REFERENCE_P_RESET(entry_action, IteratorName, AddOneF=False)
+                LanguageDB.REFERENCE_P_COLUMN_ADD(exit_action, IteratorName, column_count_per_chunk)
+                LanguageDB.REFERENCE_P_COLUMN_ADD(before_reload_action, IteratorName, column_count_per_chunk)
+                LanguageDB.REFERENCE_P_RESET(after_reload_action, IteratorName, AddOneF=False)
+
+        if column_count_per_chunk is not None:
+            variable_db.require("reference_p")
+
+        return cm, implementation_type, entry_action, exit_action, before_reload_action, after_reload_action
 
 class CountAction:
     __slots__ = ("value")

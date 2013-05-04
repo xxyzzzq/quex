@@ -22,6 +22,46 @@ def do(Data, Mode):
                        Mode=Mode, 
                        IndentationCounterTerminalID=indentation_counter_terminal_id) 
 
+def new_skipper():
+    ClosingSequence = transform()
+    OpeningSequence = transform()
+    character_set   = NumberSet(ClosingSequence[0])
+    character_set.add(OpeningSequence[0])
+    character_set.invert()
+
+    txt = "/* Assert sizeof(buffer) >= len(ClosingSequence) + 2 */\n"
+
+    end_sequence_check_adr = index.get()
+    end_sequence_label     = get_label("$entry", end_sequence_check_adr, U=True) 
+
+    implementation_type, \
+    loop_txt,            \
+    entry_action,        \
+    exit_action          = LoopGenerator.do(Mode.counter_db, 
+                             IteratorName = "me->buffer._input_p",
+                             OnContinue   = [ 1, "continue;" ],
+                             OnExit       = [ 1, "goto %s;" % end_sequence_label ],
+                             CharacterSet = character_set, 
+                             ReloadF      = True)
+
+    end_sequence_txt = get_end_sequence(OpeningSequence, ClosingSequence)
+
+def new_end_sequence():
+    txt.append("%s:\n" % EndSequenceLabel)
+    txt.append("/* Reload if necessary */\n")
+    txt.append("/* If fail --> skipped until end of file. */\n")
+    txt.append(LanguageDB.CHARACTER_BEGIN_P_SET())
+
+    common_sequence = common(OpeningSequence, ClosingSequence)
+    for chunk in common_sequence:
+        pass # Code if(chunk)
+
+    # 'if i == OpeningSequence[i]' --> continue with opening sequence
+    for chunk in common_sequence:
+        pass # Code if(chunk)
+
+    # 'if i == ClosingSequence[i]' --> continue with closing sequence
+
 template_str = """
     Skipper$$SKIPPER_INDEX$$_Opener_it = (QUEX_TYPE_CHARACTER*)Skipper$$SKIPPER_INDEX$$_Opener;
     Skipper$$SKIPPER_INDEX$$_Closer_it = (QUEX_TYPE_CHARACTER*)Skipper$$SKIPPER_INDEX$$_Closer;

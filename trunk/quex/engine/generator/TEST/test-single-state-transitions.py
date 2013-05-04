@@ -18,7 +18,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
                                                    
 from   quex.engine.interval_handling               import Interval
 import quex.engine.analyzer.transition_map         as     transition_map_tool
-from   quex.engine.generator.base                  import Generator as CppGenerator
+from   quex.engine.generator.base                  import LoopGenerator
 import quex.engine.generator.languages.core        as     languages
 import quex.engine.generator.languages.address     as     address
 import quex.engine.generator.state.transition.core as     transition_block
@@ -111,7 +111,7 @@ def prepare(tm):
 
 def get_transition_function(tm, Codec):
     if codec != "UTF8":
-        tm_txt = CppGenerator.code_action_map_plain(tm)
+        tm_txt = LoopGenerator.code_action_map_plain(tm)
         assert len(tm_txt) != 0
 
         header = \
@@ -127,10 +127,10 @@ def get_transition_function(tm, Codec):
 
     else:
         Setup.buffer_codec_transformation_info = "utf8-state-split"
-        tm_txt = CppGenerator.code_action_state_machine(tm, None, None, None)
+        tm_txt = LoopGenerator.code_action_state_machine(tm, None, None)
         tm_txt.append("%s return (int)-1;\n" % LanguageDB.LABEL_ON_FAILURE())
         tm_txt = LanguageDB.GET_PLAIN_STRINGS(tm_txt)
-        CppGenerator.replace_iterator_name(tm_txt, "input_p", E_MapImplementationType.STATE_MACHINE)
+        LoopGenerator.replace_iterator_name(tm_txt, "input_p", E_MapImplementationType.STATE_MACHINE)
 
         header = \
             "#define __QUEX_OPTION_PLAIN_C\n"                                    \

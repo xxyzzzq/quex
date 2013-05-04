@@ -230,7 +230,7 @@ class Mode:
             i = sm_index.get()
             pap.pattern().sm.set_id(long(i))
 
-        # (*) Try to determine line and column counts
+        # (*) Try to determine line and column counts -- BEFORE Transformation!
         for pap in self.__pattern_action_pair_list:
             pap.pattern().prepare_count_info(self.__counter_db, 
                                              Setup.buffer_codec_transformation_info)

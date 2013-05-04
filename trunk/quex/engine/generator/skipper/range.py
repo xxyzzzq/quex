@@ -28,6 +28,7 @@ def do(Data, Mode=None):
         ---( 1 )--+--->------( 2 )--+-->------- ... ---> RESTART
                  i == c[0]         i == c[1]
     """
+
     ClosingSequence = Data["closer_sequence"]
     ClosingPattern  = Data["closer_pattern"]
 
@@ -36,6 +37,89 @@ def do(Data, Mode=None):
     indentation_counter_terminal_id = Data["indentation_counter_terminal_id"]
 
     return get_skipper(ClosingSequence, ClosingPattern, Mode, indentation_counter_terminal_id) 
+
+def new_skipper(counter_db, ClosingSequence):
+    closing_sequence    = transformation.do_sequence(ClosingSequence)
+    action_count_on_end = count_db.get_count_action_for_sequence(ClosingSequence)
+
+    # Prepare the 'main' loop
+    character_set = NumberSet(ClosingSequence[0])
+    character_set.invert()
+
+    txt = "/* Assert sizeof(buffer) >= len(ClosingSequence) + 2 */\n"
+
+    label_loop_entry      = get_label("$entry", index.get(), U=True) 
+    label_loop_entry      = get_label("$entry", index.get(), U=True) 
+    label_skip_range_open = get_label("$entry", index.get(), U=True) 
+
+    on_before_reload, on_after_reload = reload_fragments()
+
+    lg = LoopGenerator(counter_db,
+             IteratorName   = "me->buffer._input_p",
+             OnContinue     = [ 1, "continue;" ],
+             OnExit         = [ 1, "goto %s;" % end_sequence_label ],
+             CharacterSet   = character_set, 
+             ReloadF        = True,
+             OnBeforeReload = on_before_reload,
+             OnAfterReload  = on_after_reload)
+
+    lg.do()
+
+    end_sequence_txt = get_end_sequence(lg.reload_adr)
+
+    return __frame(lg.implementation_type, lg.loop_txt, lg.entry_action, lg.exit_action)
+
+def new_end_sequence(EndSequenceLabel, ClosingSequence):
+    txt.append("%s:\n" % EndSequenceLabel)
+
+    # Ensure that enough space is in the buffer to test for the delimiter sequence.
+    # An appropriate ASSERT/TEST should be implemented in the constructor of the analyzer!
+    # I.e. (__quex_assert(buffer_size >= closing delimiter length)).
+    ensure_sufficient_buffer_content(txt, len(ClosingSequence))
+
+    txt.append(LanguageDB.INPUT_P_TO_CHARACTER_BEGIN_P())
+    first_f = True
+    while chunk in ClosingSequence[:-1]:
+        txt.append(LanguageDB.IF_INPUT("!=", "0x%X" % chunk, First=first_f))
+        txt.append(LanguageDB.INPUT_P_TO_CHARACTER_BEGIN_P())
+        txt.extend([1, "continue;\n"])
+        txt.append(LanguageDB.END_IF())
+        first_f = False
+
+    txt.extend(ActionOnClosingDelimiter)
+
+    # Possibly continue to indentation counter
+    if necessary_to_indentation_counter:
+        txt.extend(goto_indentation_counter)
+
+    return txt
+
+def reload_fragments(txt):
+    """It must be safe to assume that there is no Buffer Limit Code from the
+    current input position until the ClosingSequence has been checked. For
+    this, it is checked whether there is enough space in the buffer. If 
+    not a reload is initiated. If it is not possible to reload enough bytes,
+    then the closing sequence cannot appear and an error may be communicated."""
+
+    #  -- 'buffer_reload_forward()' ensures that lexeme start remains 
+    #     inside the buffer. Here, the lexeme is unimportant. Set it to 
+    #     'input_p' to maximize the content to be loaded.    
+    #  -- 'buffer_reload_forward()' requires 'input_p' to stand on buffer 
+    #     border or 'end of file pointer'. When reloading to ensure enough 
+    #     content for the delimiter, then this may not be the case. Force 
+    #     it, and after reload recover 'input_p' from the lexeme start.  */
+    before_reload = [ 
+        LanguageDB.LEXEME_START_SET(),
+        LanguageDB.INPUT_P_TO_TEXT_END(),
+    ]
+    # Normally, after reload 'input_p' needs to be incremented. However,
+    # after recovering from lexeme start pointer, this is not necessary.*/
+    after_reload = [
+        LanguageDB.INPUT_P_TO_LEXEME_START(),
+    ]
+
+    return before_reload, after_reload
+
 
 template_str = """
     $$DELIMITER_COMMENT$$
@@ -245,10 +329,7 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, IndentationCounterTermina
 
     delimiter_str, delimiter_comment_str = get_character_sequence(EndSequence)
 
-    end_sequence_transformed = []
-    for x in EndSequence:
-        x_transformed = transformation.do_character(x, Setup.buffer_codec_transformation_info)
-        end_sequence_transformed.extend(x_transformed)
+    end_sequence_transformed = transformation.do_sequence(EndSequence)
 
     # Determine the $$DELIMITER$$
     delimiter_length = len(end_sequence_transformed)
