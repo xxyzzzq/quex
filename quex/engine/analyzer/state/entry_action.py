@@ -6,7 +6,7 @@ from   quex.engine.tools        import pair_combinations
 from   collections              import defaultdict, namedtuple
 from   operator                 import attrgetter, itemgetter
 from   copy                     import deepcopy, copy
-from   itertools                import combinations, islice, izip
+from   itertools                import islice, izip
 
 class TransitionAction(object):
     __slots__ = ("transition_id", "command_list")

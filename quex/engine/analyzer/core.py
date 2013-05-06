@@ -136,7 +136,6 @@ class Analyzer:
     @property
     def engine_type(self):                 return self.__engine_type
     @property
-    @property
     def acceptance_state_index_list(self): return self.__acceptance_state_index_list
     @property
     def to_db(self):

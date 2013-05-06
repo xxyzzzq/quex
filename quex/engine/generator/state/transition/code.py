@@ -22,11 +22,10 @@ class TransitionCodeFactory:
 
     @classmethod
     def prepare_reload_tansition(cls, TransitionMap,
-                                 StateIndex         = None,
-                                 EngineType         = engine.FORWARD,
-                                 InitStateF         = False,
-                                 GotoReload_Str     = None,
-                                 BeforeReloadAction = None):
+                                 StateIndex     = None,
+                                 EngineType     = engine.FORWARD,
+                                 InitStateF     = False,
+                                 GotoReload_Str = None):
         """If the engine type requires a reload the following is done:
 
            (1) It is made sure that the transition map transits:
@@ -35,14 +34,12 @@ class TransitionCodeFactory:
 
            (2) An action is determined for the reload itself.
         """
-        LanguageDB = Setup.language_db
-
         if not EngineType.requires_buffer_limit_code_for_reload():
             return None
 
         cls.prepare_transition_map_for_reload(TransitionMap)
 
-        return cls.prepare_reload_action(StateIndex, EngineType, InitStateF, BeforeReloadAction, GotoReload_Str)
+        return cls.prepare_reload_action(StateIndex, EngineType, InitStateF, GotoReload_Str)
 
     @classmethod
     def prepare_transition_map_for_reload(cls, TransitionMap):
@@ -58,11 +55,9 @@ class TransitionCodeFactory:
                                        E_StateIndices.RELOAD_PROCEDURE)
 
     @classmethod
-    def prepare_reload_action(cls, StateIndex, EngineType, InitStateF, BeforeReloadAction, GotoReload_Str):
+    def prepare_reload_action(cls, StateIndex, EngineType, InitStateF, GotoReload_Str):
         LanguageDB = Setup.language_db
         result = []
-        if BeforeReloadAction is not None:
-            result.extend(BeforeReloadAction)
 
         if GotoReload_Str is not None:
             result.extend(GotoReload_Str)

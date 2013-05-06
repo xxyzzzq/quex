@@ -1,8 +1,8 @@
-from   quex.blackboard                                   import setup as Setup, E_StateIndices
+from   quex.blackboard                                   import setup as Setup
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.mega_state.core         import MegaState_Target_DROP_OUT
-from   quex.engine.generator.state.transition.code  import TransitionCode, \
+from   quex.engine.generator.state.transition.code  import  \
                                                            TransitionCodeFactory, \
                                                            MegaStateTransitionCodeFactory
 import quex.engine.generator.state.transition.core  as transition_block
@@ -10,8 +10,7 @@ import quex.engine.generator.state.drop_out         as drop_out_coder
 import quex.engine.generator.state.entry            as entry_coder
 import quex.engine.generator.mega_state.template    as template
 import quex.engine.generator.mega_state.path_walker as path_walker
-from   quex.engine.generator.languages.address      import get_label, get_address
-from   quex.engine.generator.languages.variable_db  import variable_db
+from   quex.engine.generator.languages.address      import get_label
 from   quex.engine.interval_handling                import Interval
 import sys
 
@@ -57,7 +56,7 @@ class Handler:
         if isinstance(self.state, PathWalkerState):
             txt.append("#   undef __QUEX_DEBUG_MAP_PATH_BASE_TO_PATH_ID\n")
 
-def do(txt, TheState, TheAnalyzer, BeforeReloadAction=None):
+def do(txt, TheState, TheAnalyzer):
     specific = Handler(TheState)
 
     specific.debug_info_map_state_key_to_state_index(txt)
@@ -69,8 +68,7 @@ def do(txt, TheState, TheAnalyzer, BeforeReloadAction=None):
     specific.framework(txt, TheState, TheAnalyzer)
 
     # (*) Transition Map ______________________________________________________
-    tm = prepare_transition_map(TheState, TheAnalyzer, specific.state_key_str, 
-                                BeforeReloadAction)
+    tm = prepare_transition_map(TheState, TheAnalyzer, specific.state_key_str)
     transition_block.do(txt, tm)
 
     # (*) Drop Out ____________________________________________________________
@@ -142,7 +140,7 @@ def drop_out_scheme_implementation(txt, TheState, TheAnalyzer, StateKeyString, D
     LanguageDB.INDENT(case_txt)
     txt.extend(case_txt)
 
-def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr, BeforeReloadAction):
+def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr):
     """Generate targets in the transition map which the code generation can 
        handle. The transition map will consist of pairs of
     
@@ -175,11 +173,10 @@ def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr, BeforeReloadActio
         ]
 
     goto_reload_str = TransitionCodeFactory.prepare_reload_tansition(
-                                 TransitionMap      = TheState.transition_map,
-                                 StateIndex         = TheState.index,
-                                 EngineType         = TheAnalyzer.engine_type,
-                                 InitStateF         = TheState.init_state_f,
-                                 BeforeReloadAction = BeforeReloadAction)
+                                 TransitionMap = TheState.transition_map,
+                                 StateIndex    = TheState.index,
+                                 EngineType    = TheAnalyzer.engine_type,
+                                 InitStateF    = TheState.init_state_f)
 
     MegaStateTransitionCodeFactory.init(TheState, TheAnalyzer.state_db, StateKeyStr, 
                                         TheAnalyzer.engine_type, goto_reload_str)

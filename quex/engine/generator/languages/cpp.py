@@ -1,7 +1,6 @@
 from   quex.engine.misc.string_handling        import blue_print
 
 from   quex.engine.generator.languages.address import get_label, \
-                                                      get_address, \
                                                       Address
 from   quex.engine.interval_handling           import NumberSet
 from   quex.blackboard import E_ActionIDs

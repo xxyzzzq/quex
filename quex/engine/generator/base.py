@@ -3,9 +3,7 @@ from   quex.engine.generator.action_info               import PatternActionInfo
 import quex.engine.generator.state_machine_coder       as     state_machine_coder
 import quex.engine.generator.state_router              as     state_router_generator
 from   quex.engine.generator.languages.variable_db     import variable_db
-from   quex.engine.generator.languages.address         import address_set_subject_to_routing_add, \
-                                                              get_address,                        \
-                                                              get_label,                          \
+from   quex.engine.generator.languages.address         import get_address,                        \
                                                               get_label_of_address,               \
                                                               get_plain_strings,                  \
                                                               get_address_set_subject_to_routing, \
@@ -16,7 +14,6 @@ import quex.engine.state_machine.index                 as     index
 from   quex.engine.state_machine.core                  import StateMachine
 import quex.engine.state_machine.transformation        as     transformation
 import quex.engine.analyzer.transition_map             as     transition_map_tool
-import quex.engine.analyzer.state.entry_action         as     entry_action
 from   quex.engine.generator.state.transition.code     import TransitionCodeFactory
 import quex.engine.generator.state.transition.core     as     transition_block
 import quex.engine.analyzer.engine_supply_factory      as     engine
@@ -129,8 +126,7 @@ class Generator(GeneratorBase):
         return sm_txt + terminal_txt + LanguageDB.RELOAD()
 
     def code_state_machine_core(self, EngineType, SimpleF):
-        sm_txt, analyzer = Generator.code_state_machine(self.sm, 
-                                                        EngineType)
+        sm_txt, analyzer = Generator.code_state_machine(self.sm, EngineType)
         terminal_txt     = Generator.code_terminals(self.action_db, 
                                                     self.pre_context_sm_id_list, 
                                                     SimpleF)
@@ -201,7 +197,7 @@ class Generator(GeneratorBase):
         return txt
 
     @staticmethod
-    def code_state_machine(sm, EngineType, BeforeReloadAction=None): 
+    def code_state_machine(sm, EngineType): 
         assert len(sm.get_orphaned_state_index_list()) == 0
 
         LanguageDB = Setup.language_db
@@ -217,7 +213,7 @@ class Generator(GeneratorBase):
 
         # -- implement the state machine itself
         analyzer           = analyzer_generator.do(sm, EngineType)
-        state_machine_code = state_machine_coder.do(analyzer, BeforeReloadAction)
+        state_machine_code = state_machine_coder.do(analyzer)
         LanguageDB.REPLACE_INDENT(state_machine_code)
 
         txt.extend(state_machine_code)
@@ -255,7 +251,6 @@ class LoopGenerator(Generator):
         assert OnExit is None or isinstance(OnExit, list)
         assert isinstance(ReloadF, bool)
         assert CharacterSet is None or isinstance(CharacterSet, NumberSet)
-        LanguageDB = Setup.language_db
 
         # Implement the core loop _________________________________________________
         tm,                   \
@@ -284,14 +279,14 @@ class LoopGenerator(Generator):
         # buffer limit code.
         implementation_type, \
         loop_txt             = cls.code_action_map(tm, IteratorName, 
-                                                   before_reload_action, after_reload_action)
+                                                   before_reload_action, after_reload_action, OnContinue)
 
         #return implementation_type, entry_action, loop_txt
         return implementation_type, loop_txt, entry_action, exit_action
 
     @classmethod
     def code_action_map(cls, TM, IteratorName, 
-                        BeforeReloadAction=None, AfterReloadAction=None):
+                        BeforeReloadAction, AfterReloadAction, OnContinue):
         """TM is an object in the form of a 'transition map'. That is, it maps
         from an interval to an action--in this case not necessarily a state 
         transition. It consists of a list of pairs:
@@ -307,20 +302,25 @@ class LoopGenerator(Generator):
         global Match_input
         global Match_iterator
         LanguageDB = Setup.language_db
+        #transition_map_tool.assert_adjacency(TM) # EOF needs to be considered!
 
         reload_f           = (BeforeReloadAction is not None)
         ImplementationType = cls.determine_implementation_type(TM, reload_f)
 
         # (*) Implement according to implementation type.
-        if ImplementationType == E_MapImplementationType.TRIVIALIZED_STATE_MACHINE:
+        if ImplementationType == E_MapImplementationType.PLAIN_MAP:
+            complete_f, transformed_tm = transformation.do_transition_map(TM)
+            # This is only a work-around until 'on_codec_error' is implemented
+            on_codec_error = copy(OnContinue)
+            on_codec_error.insert(0, "%s\n" % LanguageDB.INPUT_P_INCREMENT())
+            transition_map_tool.fill_gaps(transformed_tm, on_codec_error)
+            txt = cls.code_action_map_plain(transformed_tm, BeforeReloadAction, AfterReloadAction)
+
+        elif ImplementationType == E_MapImplementationType.STATE_MACHINE_TRIVIAL:
             # In case of variable character sizes, there can be no 'column_n +=
             # (iterator - reference_p) * C'. Thus, there is no 'AfterReloadAction'.
             # NOTE: code_action_state_machine_trivial() --> code_action_map_plain()
             txt = cls.code_action_state_machine_trivial(TM, BeforeReloadAction, AfterReloadAction)
-
-        elif ImplementationType == E_MapImplementationType.PLAIN_MAP:
-            complete_f, transformed_tm = transformation.do_transition_map(TM)
-            txt = cls.code_action_map_plain(transformed_tm, BeforeReloadAction, AfterReloadAction)
 
         elif ImplementationType == E_MapImplementationType.STATE_MACHINE:
             txt = cls.code_action_state_machine(TM, BeforeReloadAction, AfterReloadAction)
@@ -336,7 +336,7 @@ class LoopGenerator(Generator):
         if Setup.variable_character_sizes_f():
             if     not ReloadF \
                and cls.state_machine_trivial_possible(TM):
-                return E_MapImplementationType.TRIVIALIZED_STATE_MACHINE
+                return E_MapImplementationType.STATE_MACHINE_TRIVIAL
             else:
                 return E_MapImplementationType.STATE_MACHINE
         else:
@@ -344,7 +344,7 @@ class LoopGenerator(Generator):
 
     @classmethod
     def code_action_map_plain(cls, TM, BeforeReloadAction=None, AfterReloadAction=None):
-        transition_map_tool.fill_gaps(TM, E_StateIndices.DROP_OUT)
+        transition_map_tool.assert_adjacency(TM)
 
         LanguageDB = Setup.language_db
 
@@ -363,6 +363,7 @@ class LoopGenerator(Generator):
 
         transition_map_tool.insert_after_action_id(TM, E_ActionIDs.ON_GOOD_TRANSITION,
                                                    [2, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
+
         # The range of possible characters may be restricted. It must be ensured,
         # that the occurring characters only belong to the admissible range.
         transition_map_tool.prune(TM, 0, Setup.get_character_value_limit())
@@ -514,7 +515,6 @@ class LoopGenerator(Generator):
         """
         global _increment_actions_for_utf16
         global _increment_actions_for_utf8
-        LanguageDB = Setup.language_db
        
         # Currently, we do not handle the case 'Reload': refuse to work.
         assert BeforeReloadAction is None
@@ -581,6 +581,7 @@ class LoopGenerator(Generator):
 
     @staticmethod
     def delete_action_ids(txt):
+        L = len(txt)
         i = L - 1
         while i >= 0:
             if txt[i] in E_ActionIDs:

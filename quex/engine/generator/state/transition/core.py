@@ -3,9 +3,7 @@ import quex.engine.generator.state.transition.solution  as solution
 import quex.engine.generator.state.transition.bisection as bisection
 import quex.engine.analyzer.transition_map              as transition_map_tool
 import quex.engine.analyzer.engine_supply_factory       as engine
-from   quex.engine.interval_handling                    import Interval
-from   quex.blackboard                                  import E_StateIndices, \
-                                                               setup as Setup
+from   quex.blackboard                                  import setup as Setup
 from   copy      import copy
 from   itertools import islice
 
@@ -52,8 +50,7 @@ def prepare_transition_map(TransitionMap,
                            EngineType         = engine.FORWARD,
                            InitStateF         = False,
                            GotoReload_Str     = None,
-                           TheAnalyzer        = None,
-                           BeforeReloadAction = None):
+                           TheAnalyzer        = None):
     global LanguageDB
     assert isinstance(TransitionMap, list)
     assert isinstance(EngineType, engine.Base)
@@ -71,10 +68,9 @@ def prepare_transition_map(TransitionMap,
 
     goto_reload_str = TransitionCodeFactory.prepare_reload_tansition(TransitionMap,
                                      StateIndex,
-                                     EngineType         = EngineType,
-                                     InitStateF         = InitStateF,
-                                     GotoReload_Str     = GotoReload_Str,
-                                     BeforeReloadAction = BeforeReloadAction)
+                                     EngineType     = EngineType,
+                                     InitStateF     = InitStateF,
+                                     GotoReload_Str = GotoReload_Str)
 
     TransitionCodeFactory.init(EngineType, 
                                StateIndex    = StateIndex,
@@ -82,7 +78,7 @@ def prepare_transition_map(TransitionMap,
                                GotoReloadStr = goto_reload_str,
                                TheAnalyzer   = TheAnalyzer)
 
-    return [ (entry[0], TransitionCodeFactory.do(entry[1])) for entry in TransitionMap ]
+    return [ (x[0], TransitionCodeFactory.do(x[1])) for x in TransitionMap ]
 
 class SubTriggerMap(object):
     """A trigger map that 'points' into a subset of a trigger map.

@@ -5,12 +5,11 @@ import quex.engine.generator.state.transition.core  as transition_block
 import quex.engine.generator.state.entry            as entry
 import quex.engine.generator.state.drop_out         as drop_out
 from   quex.engine.generator.languages.address      import get_label, get_address
-from   quex.blackboard import E_StateIndices, \
-                              setup as Setup
+from   quex.blackboard                              import setup as Setup
 
 LanguageDB = None
 
-def do(code, TheState, TheAnalyzer, BeforeReloadAction):
+def do(code, TheState, TheAnalyzer):
     global LanguageDB
     assert isinstance(TheState, AnalyzerState)
     assert isinstance(TheAnalyzer, Analyzer)
@@ -29,8 +28,7 @@ def do(code, TheState, TheAnalyzer, BeforeReloadAction):
                                                  TheState.index, 
                                                  TheState.engine_type, 
                                                  TheState.init_state_f, 
-                                                 TheAnalyzer            = TheAnalyzer,
-                                                 BeforeReloadAction = BeforeReloadAction)
+                                                 TheAnalyzer = TheAnalyzer)
 
     transition_block.do(txt, tm)
 

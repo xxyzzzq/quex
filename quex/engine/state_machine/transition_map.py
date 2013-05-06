@@ -14,7 +14,7 @@ E_Border = Enum("BEGIN", "END", "UNDEFINED")
 class TransitionMap:
     """Members:
 
-       __db:   map [target index] --> [trigger set that triggers to target]
+       __db:      map: target index --> NumberSet that triggers to target
 
        __epsilon_target_index_list: list of target states that are entered via epsilon 
                                     transition.

@@ -46,7 +46,8 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* Lexeme
                     ++(((iterator)));
                 continue;
             } else {
-
+                ++(((iterator)));
+                continue;
             }
         }
 

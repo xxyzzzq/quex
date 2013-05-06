@@ -29,7 +29,7 @@ class PathWalkerState(MegaState):
         #
         # transition_map:          interval --> MegaState_Target
         self.__original_transition_map = FirstPath.transition_map
-        self.transition_map = PathWalkerState.prepare_transition_map(self.__original_transition_map)
+        self.transition_map            = PathWalkerState.prepare_transition_map(self.__original_transition_map)
 
         self.__uniformity_required_f                 = (CompressionType == E_Compression.PATH_UNIFORM)
         self.__uniform_entry_command_list_along_path = FirstPath.get_uniform_entry_command_list_along_path()

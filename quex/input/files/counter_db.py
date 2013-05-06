@@ -109,7 +109,7 @@ class CounterDB:
                (not in Setup.buffer_codec_transformation_info)
 
            [1] Implementation Type to be used 
-               (STATE_MACHINE, TRIVIALIZED_STATE_MACHINE, PLAIN_MAP).
+               (STATE_MACHINE, STATE_MACHINE_TRIVIAL, PLAIN_MAP).
 
            [2], [3] Entry and exit action before counting and after counting ends.
            
@@ -161,7 +161,7 @@ class CounterDB:
                 inside_set = InsideCharacterSet.clone()
                 inside_set.subtract(blc_set)
             else:
-                inside_set = CharacterSet
+                inside_set = InsideCharacterSet
             exit_set = inside_set.inverse()
             exit_set.subtract(blc_set)
         else:
@@ -219,10 +219,7 @@ class CountAction:
 
     @staticmethod
     def get_epilog(ImplementationType):
-        LanguageDB = Setup.language_db
-        result = []
-        result.append(E_ActionIDs.ON_GOOD_TRANSITION)
-        return result
+        return [ E_ActionIDs.ON_GOOD_TRANSITION ]
 
 class ExitAction(CountAction):
     def __init__(self):
@@ -238,8 +235,7 @@ class ExitAction(CountAction):
 
     @staticmethod
     def get_epilog(ImplementationType):
-        LanguageDB = Setup.language_db
-        return [E_ActionIDs.ON_EXIT]
+        return [ E_ActionIDs.ON_EXIT ]
 
 class ColumnAdd(CountAction):
     def __init__(self, Value):
