@@ -612,11 +612,12 @@ __QUEX_IF_COUNT_COLUMNS(reference_p = iterator);
                             ++(((iterator)));
             continue;
         }
-        continue;
+
     }
     __quex_assert(iterator == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */
 __QUEX_IF_COUNT_COLUMNS_ADD((size_t)((iterator - reference_p)));
-#   undef self
+   return;
+#  undef self
 }
 #endif /* __QUEX_OPTION_COUNTER */
 #include <quex/code_base/analyzer/member/basic>
@@ -2546,7 +2547,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(6);
     self_send(QUEX_TKN_STRUCT);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2052 "Simple.cpp"
+#   line 2053 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2560,7 +2561,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(3);
     self_send(QUEX_TKN_TYPE_INT);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2066 "Simple.cpp"
+#   line 2067 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2574,7 +2575,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(6);
     self_send(QUEX_TKN_TYPE_DOUBLE);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2080 "Simple.cpp"
+#   line 2081 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2588,7 +2589,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(4);
     self_send(QUEX_TKN_SEND);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2094 "Simple.cpp"
+#   line 2095 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2602,7 +2603,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(6);
     self_send(QUEX_TKN_EXPECT);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2108 "Simple.cpp"
+#   line 2109 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2616,7 +2617,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(1);
     self_send(QUEX_TKN_SEMICOLON);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2122 "Simple.cpp"
+#   line 2123 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2630,7 +2631,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(1);
     self_send(QUEX_TKN_BRACKET_OPEN);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2136 "Simple.cpp"
+#   line 2137 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2644,7 +2645,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(1);
     self_send(QUEX_TKN_BRACKET_CLOSE);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2150 "Simple.cpp"
+#   line 2151 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2660,7 +2661,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(LexemeL);
     self_send(QUEX_TKN_NUMBER);
     QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     
-#   line 2166 "Simple.cpp"
+#   line 2167 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2674,7 +2675,7 @@ __QUEX_IF_COUNT_COLUMNS_ADD(LexemeL);
 #   line 28 "dos_lf_2.qx"
         self_send1(QUEX_TKN_IDENTIFIER, Lexeme); RETURN;
     
-#   line 2180 "Simple.cpp"
+#   line 2181 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2711,7 +2712,7 @@ __QUEX_IF_COUNT_SHIFT_VALUES();
 #   line 16 "dos_lf_2.qx"
     self_send(QUEX_TKN_TERMINATION);
     
-#   line 2217 "Simple.cpp"
+#   line 2218 "Simple.cpp"
 
     }
     /* End of Stream causes a return from the lexical analyzer, so that no

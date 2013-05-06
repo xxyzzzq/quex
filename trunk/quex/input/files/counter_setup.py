@@ -12,8 +12,6 @@ from   quex.engine.interval_handling      import NumberSet
 from   quex.engine.state_machine.core     import StateMachine
 import quex.input.regular_expression.core as     regular_expression
 
-from collections import namedtuple
-
 class Base:
     def __init__(self, fh, Name, IdentifierList):
         self.fh = fh

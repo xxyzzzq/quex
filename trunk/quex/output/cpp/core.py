@@ -1,12 +1,9 @@
-import quex.engine.analyzer.engine_supply_factory  as     engine
 from   quex.engine.generator.languages.variable_db import variable_db
 from   quex.engine.generator.languages.address     import init_address_handling              
 from   quex.engine.generator.base                  import Generator as CppGenerator
 import quex.output.cpp.action_preparation          as     action_preparation
 import quex.output.cpp.counter                     as     counter
-from   quex.blackboard                             import E_StateIndices, \
-                                                          E_ActionIDs, \
-                                                          setup as Setup
+from   quex.blackboard                             import setup as Setup
 
 def do_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
 

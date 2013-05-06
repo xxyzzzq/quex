@@ -2,28 +2,13 @@
 (C) 2012-2013 Frank-Rene Schaefer
 _______________________________________________________________________________
 """
-import quex.engine.generator.state_machine_coder    as     state_machine_coder
-import quex.engine.generator.state.transition.solution  as solution
-from   quex.engine.generator.base                   import get_combined_state_machine, \
-                                                           LoopGenerator
-from   quex.engine.generator.action_info            import CodeFragment
+from   quex.engine.generator.base                   import LoopGenerator
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.generator.languages.address      import get_label
-from   quex.engine.state_machine.core               import StateMachine
-import quex.engine.analyzer.core                    as     analyzer_generator
-import quex.engine.analyzer.transition_map          as     transition_map_tool
-from   quex.engine.interval_handling                import NumberSet, Interval
-from   quex.engine.tools                            import print_callstack
-from   quex.input.files.counter_db                  import CountAction, ExitAction
 
 from   quex.blackboard import setup as Setup, \
                               DefaultCounterFunctionDB, \
-                              E_StateIndices, \
-                              E_ActionIDs, \
                               E_MapImplementationType
-
-from   collections import defaultdict
-from   copy        import deepcopy, copy
 
 def get(counter_db, Name):
     """Implement the default counter for a given Counter Database. 

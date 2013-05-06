@@ -74,9 +74,7 @@ HEURISTIC: _____________________________________________________________
    (2) 
 """
 from   quex.engine.misc.enum import Enum
-from   quex.blackboard       import setup as Setup
 from   math                  import log
-from   quex.engine.tools import r_enumerate
 
 E_Type = Enum("SWITCH_CASE", "BISECTION", "COMPARISON_SEQUENCE", "TRANSITION")
 

@@ -1,15 +1,6 @@
-import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.generator.base                   import LoopGenerator
-from   quex.engine.generator.languages.address      import get_label, \
-                                                           address_set_subject_to_routing_add
-from   quex.engine.generator.languages.variable_db  import variable_db
-import quex.output.cpp.counter                      as     counter
-from   quex.blackboard                              import setup as Setup, \
-                                                           E_StateIndices, \
-                                                           E_ActionIDs, \
-                                                           E_MapImplementationType
-from   quex.engine.interval_handling                import NumberSet, Interval
-import quex.engine.analyzer.transition_map          as     transition_map_tool
+from   quex.engine.generator.languages.address      import get_label
+from   quex.blackboard                              import setup as Setup
 
 def do(Data, Mode):
     """________________________________________________________________________

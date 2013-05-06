@@ -95,15 +95,16 @@ E_SpecialPatterns = Enum("INDENTATION_NEWLINE",
                          "SKIP_NESTED_RANGE", 
                          "_DEBUG_PatternNames")
 
-E_ActionIDs = Enum("ON_FAILURE", 
-                   "ON_END_OF_STREAM", 
-                   "ON_EXIT",
-                   "ON_GOOD_TRANSITION",
-                   "ON_MATCH", 
-                   "ON_AFTER_MATCH", 
-                   "_DEBUG_ActionIDs")
+E_ActionIDs = Enum( # Keep them sorted alphabetically!
+               "ON_AFTER_MATCH",        
+               "ON_END_OF_STREAM", 
+               "ON_EXIT",
+               "ON_FAILURE", 
+               "ON_GOOD_TRANSITION",
+               "ON_MATCH", 
+               "_DEBUG_ActionIDs")
 
-E_MapImplementationType = Enum("TRIVIALIZED_STATE_MACHINE", 
+E_MapImplementationType = Enum("STATE_MACHINE_TRIVIAL", 
                                "STATE_MACHINE",
                                "PLAIN_MAP", 
                                "_DEBUG_MapImplementationType")
@@ -239,7 +240,7 @@ class PatternShorthand:
 
     def get_character_set(self):
         if len(self.__state_machine.states) != 2: return None
-        t = self.__state_machine.states[self.__state_machine.init_state_index].transitions()
+        t  = self.__state_machine.states[self.__state_machine.init_state_index].transitions()
         db = t.get_map()
         if len(db) != 1: return None
         return deepcopy(db[db.keys()[0]])

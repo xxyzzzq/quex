@@ -15,10 +15,13 @@ that referes to the Lexeme macros.
 <<QUEX_PATH>>/quex/input/files/code_fragment.py:LineN:                              "       is not directly dependent anymore on 'Lexeme'. This is particularly\n"
 <<QUEX_PATH>>/quex/input/files/code_fragment.py:LineN:                              "          \"%s(Lexeme+1, LexemeEnd-2)\"\n" % TokenName + 
 <<QUEX_PATH>>/quex/input/files/code_fragment.py:LineN:                              "          \"%s(Lexeme)\"\n" % TokenName + 
-<<QUEX_PATH>>/quex/output/cpp/counter.py:LineN:                + "%s(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* LexemeBegin, const QUEX_TYPE_CHARACTER* LexemeEnd)\n" \
-<<QUEX_PATH>>/quex/output/cpp/counter.py:LineN:       prologue += "    const QUEX_TYPE_CHARACTER* reference_p = LexemeBegin;\n" 
-<<QUEX_PATH>>/quex/output/cpp/counter.py:LineN:                + "    for(iterator=LexemeBegin; iterator < LexemeEnd; ) {\n"
-<<QUEX_PATH>>/quex/output/cpp/counter.py:LineN:    epilogue.append(  "    __quex_assert(iterator == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */\n" \
+<<QUEX_PATH>>/quex/output/cpp/counter.py:LineN:        + "%s(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* LexemeBegin, QUEX_TYPE_CHARACTER* LexemeEnd)\n" \
+<<QUEX_PATH>>/quex/output/cpp/counter.py:LineN:        + "    QUEX_TYPE_CHARACTER* iterator    = LexemeBegin;\n" 
+<<QUEX_PATH>>/quex/output/cpp/counter.py:LineN:           + "    const QUEX_TYPE_CHARACTER* reference_p = LexemeBegin;\n" 
+<<QUEX_PATH>>/quex/output/cpp/counter.py:LineN:    # on a pattern which has already matched. It only ends at the LexemeEnd.
+<<QUEX_PATH>>/quex/output/cpp/counter.py:LineN:       + "    __quex_assert(LexemeBegin <= LexemeEnd);\n" \
+<<QUEX_PATH>>/quex/output/cpp/counter.py:LineN:       + "    for(iterator=LexemeBegin; iterator < LexemeEnd; ) {\n")
+<<QUEX_PATH>>/quex/output/cpp/counter.py:LineN:        "    __quex_assert(iterator == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */\n")
 <<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:    # If 'Lexeme' occurs as an isolated word, then ensure the generation of 
 <<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:    # a terminating zero. Note, that the occurence of 'LexemeBegin' does not
 <<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:        txt += "                \"    Proposal: Define 'on_failure' and analyze 'Lexeme'.\\n\");\n"

@@ -7,7 +7,6 @@ import quex.input.files.code_fragment                  as     code_fragment
 from   quex.input.files.counter_db                     import CounterDB
 from   quex.input.files.counter_setup                  import LineColumnCounterSetup_Default
 import quex.input.files.consistency_check              as     consistency_check
-import quex.output.cpp.counter                         as     counter
 import quex.engine.generator.skipper.indentation_counter as     indentation_counter
 from   quex.engine.generator.languages.address         import get_label
 import quex.engine.generator.skipper.character_set     as     skip_character_set
@@ -38,6 +37,7 @@ from   quex.engine.misc.file_in                        import EndOfStreamExcepti
 import quex.blackboard as blackboard
 from   quex.blackboard import setup as Setup, \
                               E_SpecialPatterns, \
+                              E_ActionIDs, \
                               event_handler_db, \
                               mode_option_info_db 
 
@@ -352,8 +352,9 @@ class Mode:
         if len(self.__pattern_action_pair_list) != 0:
             txt += "    PATTERN-ACTION PAIRS:\n"
             def the_key(x):
-                if hasattr(x.pattern(), "sm"): return x.pattern().sm.get_id()
-                else:                          return x
+                if   x.pattern() in E_ActionIDs: return x
+                elif hasattr(x.pattern(), "sm"): return x.pattern().sm.get_id()
+                else:                            return x
             self.__pattern_action_pair_list.sort(key=the_key)
             for pap in self.__pattern_action_pair_list:
                 if hasattr(pap.pattern(), "sm"): 

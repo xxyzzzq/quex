@@ -1,5 +1,4 @@
 import quex.engine.state_machine.index         as index
-from   quex.engine.tools import print_callstack
 
 def __nice(SM_ID): 
     assert isinstance(SM_ID, (long, int))
