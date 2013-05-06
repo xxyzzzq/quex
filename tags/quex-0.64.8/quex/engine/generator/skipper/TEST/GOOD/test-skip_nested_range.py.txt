@@ -1,0 +1,119 @@
+## (2) compiling generated engine code and test
+gcc -ansi -Wvariadic-macros -Wall   ./tmp.c -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.c.exe  ##
+
+## IGNORED: ./tmp.c:34:1: warning: ‘quex_Token_DumpedTokenIdObject’ defined but not used [-Wunused-variable]
+## (*) running the test
+(*) test string: 
+'abc*/XYZ'
+(*) result:
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 6;
+next letter: <X>
+end
+  ''
+
+## (2) compiling generated engine code and test
+gcc -ansi -Wvariadic-macros -Wall   ./tmp.c -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.c.exe  ##
+
+## IGNORED: ./tmp.c:34:1: warning: ‘quex_Token_DumpedTokenIdObject’ defined but not used [-Wunused-variable]
+## (*) running the test
+(*) test string: 
+'abc/*1*/XYZ*/xyz'
+(*) result:
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 14;
+next letter: <x>
+end
+  ''
+
+## (2) compiling generated engine code and test
+gcc -ansi -Wvariadic-macros -Wall   ./tmp.c -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.c.exe  ##
+
+## IGNORED: ./tmp.c:34:1: warning: ‘quex_Token_DumpedTokenIdObject’ defined but not used [-Wunused-variable]
+## (*) running the test
+(*) test string: 
+'abc/*1/*2*/ABC*/DEF*/HIJ'
+(*) result:
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 22;
+next letter: <H>
+end
+  ''
+
+## (2) compiling generated engine code and test
+gcc -ansi -Wvariadic-macros -Wall   ./tmp.c -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.c.exe  ##
+
+## IGNORED: ./tmp.c:34:1: warning: ‘quex_Token_DumpedTokenIdObject’ defined but not used [-Wunused-variable]
+## (*) running the test
+(*) test string: 
+'abc/**/*/xyz'
+(*) result:
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 10;
+next letter: <x>
+end
+  ''
+
+## (2) compiling generated engine code and test
+gcc -ansi -Wvariadic-macros -Wall   ./tmp.c -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.c.exe  ##
+
+## IGNORED: ./tmp.c:34:1: warning: ‘quex_Token_DumpedTokenIdObject’ defined but not used [-Wunused-variable]
+## (*) running the test
+(*) test string: 
+'abc/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/**/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/xyz'
+(*) result:
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 474;
+next letter: <x>
+end
+  ''
+
+## (2) compiling generated engine code and test
+gcc -ansi -Wvariadic-macros -Wall   ./tmp.c -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.c.exe  ##
+
+## (2) compiling generated engine code and test
+gcc -ansi -Wvariadic-macros -Wall   ./tmp.c -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.c.exe  ##
+
+## IGNORED: ./tmp.c:34:1: warning: ‘quex_Token_DumpedTokenIdObject’ defined but not used [-Wunused-variable]
+## (*) running the test
+(*) test string: 
+'abc/**//**//**//**//**//**//**//**/*/xyz'
+(*) result:
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 38;
+next letter: <x>
+end
+  ''
+
+## IGNORED: ./tmp.c:34:1: warning: ‘quex_Token_DumpedTokenIdObject’ defined but not used [-Wunused-variable]
+## (*) running the test
+(*) test string: 
+'abc(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((()))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))xyz'
+(*) result:
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 217;
+next letter: <x>
+end
+  ''
+

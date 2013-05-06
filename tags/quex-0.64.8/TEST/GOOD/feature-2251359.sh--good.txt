@@ -1,0 +1,31 @@
+(*) Core Engine
+   static const char  token_id_str_UCS_0x00000C[]   = "UCS_0x00000C";
+   static const char  token_id_str_UCS_0x00001B[]   = "UCS_0x00001B";
+   static const char  token_id_str_UCS_0x000058[]   = "UCS_0x000058";
+   static const char  token_id_str_UCS_0x000061[]   = "UCS_0x000061";
+   static const char  token_id_str_UCS_0x00012E[]   = "UCS_0x00012E";
+   static const char  token_id_str_UCS_0x00062C[]   = "UCS_0x00062C";
+   static const char  token_id_str_UCS_0x001000[]   = "UCS_0x001000";
+   static const char  token_id_str_UCS_0x0086A5[]   = "UCS_0x0086A5";
+   case 0x00000C: return token_id_str_UCS_0x00000C;
+   case 0x00001B: return token_id_str_UCS_0x00001B;
+   case 0x000058: return token_id_str_UCS_0x000058;
+   case 0x000061: return token_id_str_UCS_0x000061;
+   case 0x00012E: return token_id_str_UCS_0x00012E;
+   case 0x00062C: return token_id_str_UCS_0x00062C;
+   case 0x001000: return token_id_str_UCS_0x001000;
+   case 0x0086A5: return token_id_str_UCS_0x0086A5;
+(*) Token IDs
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_UCS_0x00000C   = ((QUEX_TYPE_TOKEN_ID)12);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_UCS_0x00001B   = ((QUEX_TYPE_TOKEN_ID)27);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_UCS_0x000058   = ((QUEX_TYPE_TOKEN_ID)88);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_UCS_0x000061   = ((QUEX_TYPE_TOKEN_ID)97);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_UCS_0x00012E   = ((QUEX_TYPE_TOKEN_ID)302);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_UCS_0x00062C   = ((QUEX_TYPE_TOKEN_ID)1580);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_UCS_0x001000   = ((QUEX_TYPE_TOKEN_ID)4096);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_UCS_0x0086A5   = ((QUEX_TYPE_TOKEN_ID)34469);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_DEDENT         = ((QUEX_TYPE_TOKEN_ID)10000);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_INDENT         = ((QUEX_TYPE_TOKEN_ID)10001);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_NODENT         = ((QUEX_TYPE_TOKEN_ID)10002);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_TERMINATION    = ((QUEX_TYPE_TOKEN_ID)0);
+const QUEX_TYPE_TOKEN_ID QUEX_TKN_UNINITIALIZED  = ((QUEX_TYPE_TOKEN_ID)10003);

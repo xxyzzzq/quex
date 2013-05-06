@@ -1,0 +1,39 @@
+<             continue;/* ['\v', 'ÿ'] */
+< 
+>             continue;
+<             continue;/* '\n' */
+< 
+>             continue;
+<             continue;/* '\t' */
+< 
+>             continue;
+<             continue;/* [\0, '\b'] */
+< 
+>             continue;
+<     /* BEGIN: STATE MACHINE
+<      * init-state = 10L
+<      * 00010 (4, 2)
+<      *      == 'a' ==> 00011
+<      *     
+<      * 00011 (4, 3, A)
+<      *     
+<      * END: STATE MACHINE
+<      */
+<         case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 10, 13);/* \0 */
+< 
+<         case 0x61: goto _11;/* 'a' */
+< 
+>         case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 10, 13);
+>         case 0x61: goto _11;
+<     /* BEGIN: MODE PATTERNS
+<      * 
+<      * MODE: X
+<      * 
+<      *     PATTERN-ACTION PAIRS:
+<      *       ON_END_OF_STREAM
+<      *       ON_FAILURE
+<      *       (  4) X: a
+<      * 
+<      * 
+<      * END: MODE PATTERNS
+<      */

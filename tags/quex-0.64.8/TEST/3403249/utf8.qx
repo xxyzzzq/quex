@@ -1,0 +1,13 @@
+﻿token { 
+	IDENTIFIER; 
+	CH; 
+	NUMBER; 
+} 
+mode ONE_AND_ONLY 
+{ 
+	<<EOF>> => QUEX_TKN_TERMINATION; 
+	[ \t\r\n]+ { } 
+	"中文" => QUEX_TKN_CH; 
+	[0-9]+ => QUEX_TKN_NUMBER; 
+	[_a-zA-Z]+ => QUEX_TKN_IDENTIFIER; 
+}

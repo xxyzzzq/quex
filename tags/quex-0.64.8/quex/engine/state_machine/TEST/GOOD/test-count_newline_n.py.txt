@@ -1,0 +1,508 @@
+expr. = [0-9]+
+info  = {
+    line_n_increment                    = 0;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 0;
+    column_n_increment_by_lexeme_length = 1;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = "1\n\n\n3"
+info  = {
+    line_n_increment                    = 3;
+    column_index                        = 1;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = "1\n\n\n3"|"A\n\n\nC"
+info  = {
+    line_n_increment                    = 3;
+    column_index                        = 1;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = "1\n\n\n34"|"A\n\n\nC"
+info  = {
+    line_n_increment                    = 3;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = "1\n\n\n34"|"A\n\n\nC\n"
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = "1\n\n\n3\n"|"A\n\n\nC\n"
+info  = {
+    line_n_increment                    = 4;
+    column_index                        = 0;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = "1\n"("1\n"?)
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = 0;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = "1\n"
+info  = {
+    line_n_increment                    = 1;
+    column_index                        = 0;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = [ \t\n]
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = VOID;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = VOID;
+    
+}
+
+expr. = [ \t\n]+
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = VOID;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = VOID;
+    
+}
+
+expr. = "\n\n"
+info  = {
+    line_n_increment                    = 2;
+    column_index                        = 0;
+    column_n_increment                  = 0;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 1;
+    column_n_increment_by_lexeme_length = 0;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = (\n\n)+
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = 0;
+    column_n_increment                  = 0;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 1;
+    column_n_increment_by_lexeme_length = 0;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = (\n|\n)+
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = 0;
+    column_n_increment                  = 0;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 1;
+    column_n_increment_by_lexeme_length = 0;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = X(\n|\n)*
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = X(\n|\n)?
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = "1\n"+
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = X"1\n"*
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = X"1\n"?
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = "1\n\n\n3"+
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = X"1\n\n\n3"?
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = X"1\n\n\n3"*
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = a\n\n\nc("1\n\n\n3"+)
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = 1;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = a\n\n\nc("1\n\n\n3"?)
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = 1;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = a\n\n\nc("1\n\n\n3"*)
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = 1;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = a\n\n\nc("1\n\n\n3"+)x\n\n\nz
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = 1;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = a\n\n\nc("1\n\n\n3"?)x\n\n\nz
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = 1;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = a\n\n\nc("1\n\n\n3"*)x\n\n\nz
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = 1;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = a\n\n\nc("1\n\n\n3"|"A\n\n\nC")x\n\n\nz
+info  = {
+    line_n_increment                    = 9;
+    column_index                        = 1;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+## The current algorithm does not consider the refreshing nature of newline.
+## If a node is reached with two different column counts, then the colomn count
+## is considered 'void', even if a newline undoes the column count later and
+## all later counts end in acceptance with the same count.
+expr. = a\n\n\nc("1\n\n\n3"|"A\n\n\nC\n")x\n\n\nz
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = a\n\n\nc("1\n\n\n3"|"A\n\n\nC")+x\n\n\nz
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = 1;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = a\n\n\nc("1\n\n\n3"|"A\n\n\nC")?x\n\n\nz
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = 1;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = \na\n\n\nc\n("1\n\n\n3"|"A\n\nC\n")*\nx\n\n\nz\n
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = "a"|"c"|"e"|"g"
+info  = {
+    line_n_increment                    = 0;
+    column_index                        = VOID;
+    column_n_increment                  = 1;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = 0;
+    column_n_increment_by_lexeme_length = 1;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = "a"|"\n"|"e"|"g"
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = X("a"|"\n"*|"e"|"g")
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = "a\ne"|"\n\n"
+info  = {
+    line_n_increment                    = VOID;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = A\n\n\nC("12\n\n\n"|("A\n\n\nC"|"X\n\n\nZ"))"12\n\n\n"("\n\n\nAA"|"\n\n\nBB"|"CC\n\n\n")X\n\n\nZ
+info  = {
+    line_n_increment                    = 15;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = A\n\n\nC("12\n\n\n"|("A\n\n\nCD"|"X\n\n\nZ"))"12\n\n\n"("\n\n\nAA"|"\n\n\nBB"|"CC\n\n\n")X\n\n\nZ
+info  = {
+    line_n_increment                    = 15;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = "\n"{4}("a\n\ne"|"\n\n")
+info  = {
+    line_n_increment                    = 6;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = "\n123"
+info  = {
+    line_n_increment                    = 1;
+    column_index                        = 3;
+    column_n_increment                  = 3;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = "1\n23"|"A\nBC"
+info  = {
+    line_n_increment                    = 1;
+    column_index                        = 2;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+
+expr. = "1\n234"|"A\nBC"
+info  = {
+    line_n_increment                    = 1;
+    column_index                        = VOID;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+

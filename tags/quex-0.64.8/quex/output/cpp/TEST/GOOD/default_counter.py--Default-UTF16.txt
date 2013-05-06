@@ -1,0 +1,44 @@
+#ifdef __QUEX_OPTION_COUNTER
+void
+QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* LexemeBegin, QUEX_TYPE_CHARACTER* LexemeEnd)
+{
+#   define self (*me)
+    QUEX_TYPE_CHARACTER* iterator    = LexemeBegin;
+    __QUEX_IF_COUNT_SHIFT_VALUES();
+
+    __quex_assert(LexemeBegin <= LexemeEnd);
+    for(iterator=LexemeBegin; iterator < LexemeEnd; ) {
+        if( (*(iterator)) >= 0xB ) {
+            __QUEX_IF_COUNT_COLUMNS_ADD((size_t)1);
+            if( *(iterator) >= 0xD800 && *(iterator) < 0xE000 ) { (iterator) += 2; }
+            else                                            { (iterator) += 1; }
+            continue;
+        } else if( (*(iterator)) == 0xA ) {
+            __QUEX_IF_COUNT_LINES_ADD((size_t)1);
+        __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
+                ++(((iterator)));
+            continue;
+        } else if( (*(iterator)) == 0x9 ) {
+                    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end &= ~ ((size_t)0x3));
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 4);
+                ++(((iterator)));
+            continue;
+        } else {
+            __QUEX_IF_COUNT_COLUMNS_ADD((size_t)1);
+                ++(((iterator)));
+            continue;
+        }
+
+    }
+    __quex_assert(iterator == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */
+   return;
+#  undef self
+}
+#endif /* __QUEX_OPTION_COUNTER */
+_____________________________________________________________________________
+file:     './data/example.utf16le';
+char_size: 2;
+byte_n:    809;
+column_n:  539;
+line_n:    1;
+## gcc -Wall -I. -ggdb ./data/check.c ./data/test.c  -D__QUEX_OPTION_COUNTER -DDEF_COUNTER_FUNCTION='QUEX_NAME(TEST_MODE_counter)'  -DDEF_FILE_NAME='"./data/example.utf16le"'  -DDEF_CHARACTER_TYPE=uint16_t  -o test

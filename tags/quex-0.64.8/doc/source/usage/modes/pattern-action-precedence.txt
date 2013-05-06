@@ -1,0 +1,130 @@
+Precedence Modifications
+========================
+
+This section introduces indecent ways to violate the inheritance 
+mechanisms. There might be situations, though, were a propper 
+design of mode hierarchies is too labor-intensive. Then those
+features come handy--but they are to be used with care!
+
+
+PRIORITY-MARK
+-------------
+
+Section <<section>> explained that base mode patterns outrule derived 
+mode patterns.
+
+For cases of real urgency, a keyword allows to struck the ruleset of
+pattern-action dispatching: ``PRIORITY-MARK``. A pattern followed by this
+keyword is lifted into the current mode, thus having the priority according to
+the position in the current mode not of the base mode. This requires, of
+course, for the pattern to be defined before. For example:
+
+.. code-block:: cpp
+
+    mode BASE {
+      ...
+      [a-z]+ { ... /* identifier */ }
+      ...
+    }
+    mode DERIVED :
+         BASE
+    {
+      ...
+      {"print"} { ... /* keyword */ }
+      ...
+    }
+
+When the lexical analyser is in the ``DERIVED`` mode, then print is always
+recognized as an identifier and never as keyword. However, if the ``PRIORITY-MARK``
+is set as in the following code fragment,
+
+.. code-block:: cpp
+
+    mode BASE {
+      ...
+      [a-z]+    { ... /* identifier */ }
+      ...
+    }
+    mode DERIVED :
+         BASE
+    {
+      ...
+      {"print"} { ... /* keyword */ }
+      [a-z]+    PRIORITY-MARK;
+      ...
+    }
+
+then the ``[a-z]+`` pattern has a priority of a pattern in the mode my_derived
+*after* the pattern "print". The action related to the ``[a-z]+`` pattern, though,
+remains. An incoming print character stream is now always recognized as
+keyword. It cannot be overemphasized, that using priority marks allow
+derived modes to act against the concepts of the base modes. Thus a
+mode ``B`` may be derived from mode ``A``, i.e. is-a mode ``A``, but it behaves
+differently on the pattern that ``A`` handles! Priority marks are 
+indecent and a sign of a bad design!
+
+Priority marks can be avoided by splitting the base mode A into two modes
+``A_base`` and ``A1`` one containing desired patterns and the undesired
+patterns (see figure :ref:`Avoiding PRIORITY-MARK <fig-avoid-PRIORITY-MARK>`).
+The original mode can be achieved by derivation from ``A_base`` and ``A1``. The
+mode ``B`` can safely derive from ``A_base``, other modes derive from ``A`` as
+if nothing happend. This is the clean way to avoid that undesired base class
+patterns have to high priority.
+
+.. _fig-avoid-PRIORITY-MARK:
+
+.. figure:: ../../figures/avoid-PRIORITY-MARK-1.*
+
+   Solving conflicts with ``PRIORITY-MARK``.
+
+.. figure:: ../../figures/avoid-PRIORITY-MARK-2.*
+
+   Avoiding the ``PRIORITY-MARK`` by re-design.
+
+.. note::
+
+   The ``PRIORITY-MARK`` for a pattern ``P`` reprioritizes only patterns which
+   have *higher priority* than ``P`` and are *identical* to ``P``. Higher
+   priority means, that they were specified before ``P``. Identical means, that
+   they match exactly the same set of lexemes as ``P`` does.
+
+DELETION
+--------
+
+Another indecent way of modifying the precedence behavior is by deleting a
+pattern that occurs in a base mode. The indecency lies in the fact that ``B``
+claims to be derived from ``A``, i.e. handles the patterns of ``A``, but it 
+does not. As in the case for priority, the appropriate re-design consist
+of splitting the base class: one base class containing the pattern to be
+deleted and another one without the pattern. The following example shows
+how a keyword pattern is deleted from the list of pattern that are inherited
+
+.. code-block:: cpp
+
+   mode A {
+       ...
+       [a-zA-Z_]+[a-zA-Z0-9_]  => TKN_IDENTIFIER(Lexeme);
+       ...
+   }
+   mode B : A {
+       /* IDENTIFIER would outrule all keywords. */
+       [a-zA-Z_]+[a-zA-Z0-9_]  => DELETION; 
+
+       print                   => TKN_KW_PRINT; 
+       if                      => TKN_KW_IF; 
+       else                    => TKN_KW_ELSE; 
+   }
+
+On the first glance, the ``DELETION`` is an indispensable feature. In the
+above example the identifier pattern would indeed prevent any keyword pattern
+from matching. Any keyword matches also the identifier, but, since the identifier
+appears in the base mode it has preceedence. The use ``DELETION`` is a
+quick-fix, but a re-design by base mode splitting is the cleaner approach.
+
+.. note::
+
+   The ``DELETION`` for a pattern ``P`` deletes only patterns which
+   have a *higher priority* than ``P`` and are a *sub-pattern* to ``P``. 
+   A pattern ``Q`` is a sub-pattern of ``P``, if ``P`` matches all lexemes
+   which ``Q`` possibly can match. 
+
