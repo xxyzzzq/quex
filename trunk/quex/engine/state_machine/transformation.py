@@ -141,7 +141,7 @@ def homogeneous_chunk_n_per_character(Thing, TrafoInfo):
         else:
             chunk_n = None
             for state in SM_or_CharacterSet.states.itervalues():
-                for number_set in state.transitions().get_map().itervalues():
+                for number_set in state.target_map.get_map().itervalues():
                     candidate_chunk_n = module.homogeneous_chunk_n_per_character(number_set)
                     if   candidate_chunk_n is None:    return None
                     elif chunk_n is None:              chunk_n = candidate_chunk_n

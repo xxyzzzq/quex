@@ -40,7 +40,7 @@ class Checker:
         #     (For speed considerations, keep it in prepared, so it does not have to 
         #      be computed each time it is required.)
         super_trigger_set_union_db = dict(
-            (index, self.super.states[index].transitions().get_trigger_set_union())
+            (index, self.super.states[index].target_map.get_trigger_set_union())
             for index in SuperSM_StateIndexList
         )
 
@@ -57,7 +57,7 @@ class Checker:
         #     sm' has no correspondance. Thus, then the claim to be a super set state machine can
         #     be denied.
         #
-        for target_index, trigger_set in sub_state.transitions().get_map().iteritems():
+        for target_index, trigger_set in sub_state.target_map.get_map().iteritems():
             target_state = self.sub.states[target_index]
 
             # (*) Require that all shadowing states in the 'super sm' trigger to a valid
@@ -72,7 +72,7 @@ class Checker:
             # (*) Collect the states in the 'super set sm' that can be reached via the 'trigger_set'
             super_target_state_index_set = set()
             for super_state in super_state_list:
-                super_target_state_index_set.update(super_state.transitions().get_resulting_target_state_index_list(trigger_set))
+                super_target_state_index_set.update(super_state.target_map.get_resulting_target_state_index_list(trigger_set))
 
             # (*) The acceptance condition: 
             if target_state.is_acceptance():

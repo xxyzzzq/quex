@@ -504,13 +504,13 @@ def extract_trigger_set(fh, Keyword, Pattern):
         elif len(SM.states) != 2:
             bad_f = True
         # Init state MUST transit to second state. Second state MUST not have any transitions
-        elif len(init_state.transitions().get_target_state_index_list()) != 1:
+        elif len(init_state.target_map.get_target_state_index_list()) != 1:
             bad_f = True
         else:
             tmp = set(SM.states.keys())
             tmp.remove(SM.init_state_index)
             other_state_index = tmp.__iter__().next()
-            if len(SM.states[other_state_index].transitions().get_target_state_index_list()) != 0:
+            if len(SM.states[other_state_index].target_map.get_target_state_index_list()) != 0:
                 bad_f = True
 
         if bad_f:
@@ -519,7 +519,7 @@ def extract_trigger_set(fh, Keyword, Pattern):
 
     check_can_be_matched_by_single_character(Pattern.sm)
 
-    transition_map = Pattern.sm.get_init_state().transitions().get_map()
+    transition_map = Pattern.sm.get_init_state().target_map.get_map()
     assert len(transition_map) == 1
     return transition_map.values()[0]
 

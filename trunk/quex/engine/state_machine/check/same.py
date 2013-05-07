@@ -46,8 +46,8 @@ class SameDetector(TreeWalker):
 
         # Follow the path of common trigger sets
         sub_node_list = []
-        for a_target, a_trigger_set in A_State.transitions().get_map().iteritems():
-            for b_target, b_trigger_set in B_State.transitions().get_map().iteritems():
+        for a_target, a_trigger_set in A_State.target_map.get_map().iteritems():
+            for b_target, b_trigger_set in B_State.target_map.get_map().iteritems():
                 if not b_trigger_set.has_intersection(a_trigger_set): continue
                 # Some of the transition in 'A' is covered by a transition in 'B'.
                 sub_node_list.append( (a_target, b_target) )

@@ -92,8 +92,8 @@ class Step1_Walker(TreeWalker):
         # Follow the path of common trigger sets
         Low_State     = self.low.states[Low_StateIndex]
         sub_node_list = []
-        for a_target, a_trigger_set in High_State.transitions().get_map().iteritems():
-            for b_target, b_trigger_set in Low_State.transitions().get_map().iteritems():
+        for a_target, a_trigger_set in High_State.target_map.get_map().iteritems():
+            for b_target, b_trigger_set in Low_State.target_map.get_map().iteritems():
                 if b_trigger_set.has_intersection(a_trigger_set): 
                     # Some of the transition in 'High' is covered by a transition in 'Low'.
                     sub_node_list.append( (a_target, b_target) )
@@ -144,9 +144,9 @@ class Step2_Walker(TreeWalker):
             return None
 
         sub_node_list = []
-        for b_target, b_trigger_set in Low_State.transitions().get_map().iteritems():
+        for b_target, b_trigger_set in Low_State.target_map.get_map().iteritems():
             b_remaining_triggers = b_trigger_set.clone()
-            for a_target, a_trigger_set in High_State.transitions().get_map().iteritems():
+            for a_target, a_trigger_set in High_State.target_map.get_map().iteritems():
                 if b_trigger_set.has_intersection(a_trigger_set): 
                     # The transition in 'A' is covered by a transition in 'B'.
                     sub_node_list.append( (a_target, b_target) )

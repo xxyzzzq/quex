@@ -270,10 +270,8 @@ class LoopGenerator(Generator):
 
         if OnExit is None:
             assert not transition_map_tool.has_action_id(tm, E_ActionIDs.ON_EXIT)
-        transition_map_tool.insert_after_action_id(tm, E_ActionIDs.ON_EXIT,
-                                                   OnExit)
-        transition_map_tool.insert_after_action_id(tm, E_ActionIDs.ON_GOOD_TRANSITION,
-                                                   OnContinue)
+        tm.insert_after_action_id(E_ActionIDs.ON_EXIT,            OnExit)
+        tm.insert_after_action_id(E_ActionIDs.ON_GOOD_TRANSITION, OnContinue)
 
         # 'BeforeReloadAction not None' forces a transition to RELOAD_PROCEDURE upon
         # buffer limit code.
@@ -361,15 +359,15 @@ class LoopGenerator(Generator):
             #transition_map_tool.replace_action_id(TM, E_ActionIDs.ON_EXIT, 
             #                                      [1, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
 
-        transition_map_tool.insert_after_action_id(TM, E_ActionIDs.ON_GOOD_TRANSITION,
-                                                   [2, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
+        TM.insert_after_action_id(E_ActionIDs.ON_GOOD_TRANSITION,
+                                  [2, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
 
         # The range of possible characters may be restricted. It must be ensured,
         # that the occurring characters only belong to the admissible range.
         transition_map_tool.prune(TM, 0, Setup.get_character_value_limit())
 
         # Now, we start with code generation. The signalizing ActionIDs must be deleted.
-        transition_map_tool.delete_action_ids(TM)
+        TM.delete_action_ids()
 
         txt = []
         pseudo_state_index = LanguageDB.ADDRESS(index.get(), None)
@@ -421,7 +419,7 @@ class LoopGenerator(Generator):
             loop_epilog = []
 
         # Now, we start with code generation. The signalizing ActionIDs must be deleted.
-        transition_map_tool.delete_action_ids(TM)
+        TM.delete_action_ids()
 
         pap_list = get_pattern_action_pair_list_from_map(TM)
         for pap in pap_list:
@@ -578,16 +576,6 @@ class LoopGenerator(Generator):
             txt[i] = replacer(elm, StateMachineF)
 
         return txt
-
-    @staticmethod
-    def delete_action_ids(txt):
-        L = len(txt)
-        i = L - 1
-        while i >= 0:
-            if txt[i] in E_ActionIDs:
-                del txt[i]
-            i -= 1
-        return
 
 def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
     """Creates a DFA state machine that incorporates the paralell

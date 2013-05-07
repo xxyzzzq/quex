@@ -333,7 +333,7 @@ def __delete_forbidden_ranges(sm, fh):
 
     for state in sm.states.values():
 
-        for target_state_index, trigger_set in state.transitions().get_map().items():
+        for target_state_index, trigger_set in state.target_map.get_map().items():
 
             # Make sure, all transitions lie inside the unicode code range 
             interval_list = trigger_set.get_intervals(PromiseToTreatWellF=True)
@@ -359,5 +359,5 @@ def __delete_forbidden_ranges(sm, fh):
             
             # If the operation resulted in cutting the path to the target state, then delete it.
             if trigger_set.is_empty():
-                state.transitions().delete_transitions_to_target(target_state_index)
+                state.target_map.delete_transitions_to_target(target_state_index)
 

@@ -39,7 +39,7 @@ def do(SM):
     def is_accept_all_state(sm, StateIndex):
         state = sm.states[StateIndex]
         if not state.is_acceptance():                return False
-        tm    = state.transitions().get_map()
+        tm    = state.target_map.get_map()
         if len(tm) != 1:                             return False
         elif tm.iterkeys().next() != StateIndex:     return False
         elif not tm.itervalues().next().is_all():    return False
@@ -50,16 +50,16 @@ def do(SM):
     for state_index, state in SM.states.iteritems():
         # deepcopy --> use same state indices in SM and result
         result_state = result.states[state_index]
-        assert state.transitions().is_DFA_compliant(), \
+        assert state.target_map.is_DFA_compliant(), \
                "State machine must be transformed to DFA first: nfa_to_dfa.do()"
 
         # -- Every transition to 'Accept-All' state becomes a drop-out.
-        for target_index in (i for i in state.transitions().get_target_state_index_list()
+        for target_index in (i for i in state.target_map.get_target_state_index_list()
                                if is_accept_all_state(SM, i)):
-            result_state.transitions().delete_transitions_to_target(target_index)
+            result_state.target_map.delete_transitions_to_target(target_index)
 
         # -- Every drop-out becomes a transition to 'Accept-All' state.
-        trigger_set         = state.transitions().get_trigger_set_union()
+        trigger_set         = state.target_map.get_trigger_set_union()
         inverse_trigger_set = trigger_set.inverse()
         if not inverse_trigger_set.is_empty():
             result_state.add_transition(inverse_trigger_set, accept_all_state_index)

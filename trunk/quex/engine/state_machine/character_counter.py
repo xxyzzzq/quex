@@ -155,7 +155,7 @@ def do(SM, CounterDB, BeginOfLineF=False, CodecTrafoInfo=None):
     #            [1] character set that triggers to it
     #            [2] count information
     initial = [ (state_index, character_set, count.clone()) \
-                for state_index, character_set in state.transitions().get_map().iteritems() ]
+                for state_index, character_set in state.target_map.get_map().iteritems() ]
 
     Count.init(CounterDB)
     counter.do(initial)
@@ -224,7 +224,7 @@ class CharacterCountTracer(TreeWalker):
             self.known_db[StateIndex] = known
 
             subsequent = [ (state_index, character_set, count.clone()) \
-                           for state_index, character_set in state.transitions().get_map().iteritems() ]
+                           for state_index, character_set in state.target_map.get_map().iteritems() ]
 
         if state.is_acceptance():
             if not self.result.register_result(known): self.abort_f = True
@@ -248,7 +248,7 @@ def _get_grid_step_size_by_lexeme_length(SM, CounterDB):
     """
     prototype = E_Count.VIRGIN
     for state in SM.states.itervalues():
-        for character_set in state.transitions().get_map().itervalues():
+        for character_set in state.target_map.get_map().itervalues():
             for grid_size, grid_character_set in CounterDB.grid.iteritems():
                 if grid_character_set.is_superset(character_set):
                     # All characters of the transition are in 'grid_character_set'

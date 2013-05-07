@@ -53,11 +53,11 @@ class AnalyzerState(object):
         self.entry = EngineType.create_Entry(SM_State, StateIndex, FromStateIndexList)
 
         # (*) Transition
-        self.transition_map                    = SM_State.transitions().get_trigger_map()
-        self.__target_index_list               = SM_State.transitions().get_map().keys()
+        self.transition_map                    = SM_State.target_map.get_trigger_map()
+        self.__target_index_list               = SM_State.target_map.get_map().keys()
         # Currently, the following is only used for path compression. If the alternative
         # is implemented, then the following is no longer necessary.
-        self.map_target_index_to_character_set = SM_State.transitions().get_map()
+        self.map_target_index_to_character_set = SM_State.target_map.get_map()
 
         # (*) Drop Out
         self.drop_out     = EngineType.create_DropOut(SM_State)

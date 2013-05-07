@@ -1,9 +1,94 @@
 from   quex.engine.interval_handling import Interval
 from   quex.blackboard import E_StateIndices, E_ActionIDs
 from   quex.engine.tools import r_enumerate
-import sys
+from   quex.blackboard   import E_StateIndices
+
 from   copy import deepcopy, copy
 from   itertools import izip
+import sys
+
+class TransitionMap(list):
+    """________________________________________________________________________
+    A TransitionMap is a list of pairs:
+
+                [ [ interval_0, target_0],
+                  [ interval_1, target_1],
+                  ...
+                  [ interval_N, target_N] ]
+
+    where the intervals are sorted and non-overlapping. Drop-out intervals 
+    are best associated with a target == E_StateIndices.DROP_OUT.
+    ___________________________________________________________________________
+    """
+    @classmethod
+    def from_TargetMap(cls, TM):
+        result = cls()
+        for target, character_set in TM.get_map().iteritems():
+            assert not character_set.is_empty()
+            result.extend((interval.clone(), target) 
+                        for interval in character_set.get_intervals(PromiseToTreatWellF=True))
+        sort(result)
+        fill_gaps(result, E_StateIndices.DROP_OUT)
+        return result
+
+    @classmethod
+    def from_iterable(cls, Iterable):
+        result = cls()
+        result.extend((interval.clone(), deepcopy(target)) 
+                      for interval, target in Iterable)
+        return result
+
+    def clone(self):
+        return self.from_iterable(self)
+
+    def relate_to_door_ids(transition_map, TheAnalyzer, StateIndex):
+        """Creates a transition_map that triggers to DoorIDs instead of target states.
+        """
+        def adapt(Target):
+            if Target == E_StateIndices.DROP_OUT:
+                return Target
+            else:
+                result = TheAnalyzer.state_db[Target].entry.get_door_id(StateIndex=Target, FromStateIndex=StateIndex)
+                return result
+
+        return self.from_iterable((interval, adapt(target)) for interval, target in transition_map)
+
+    def get_target(self, Character):
+        return get_target(self, Character)
+
+    def set_target(self, OldTarget, NewTarget):
+        return set_target(self, OldTarget, NewTarget)
+
+    def delete_action_ids(self):
+        for interval, action in self:
+            if type(action) != list: continue
+            i = len(action) - 1
+            while i >= 0:
+                if action[i] in E_ActionIDs:
+                    del action[i]
+                i -= 1
+        return
+
+    def insert_after_action_id(self, ActionID, Action):
+        assert ActionID in E_ActionIDs
+        assert Action is None or type(Action) == list
+
+        if Action is None:
+            return
+
+        done_set = set()
+        for interval, action in self:
+            if id(action) in done_set: continue
+            done_set.add(id(action))
+
+            try:    idx = action.index(ActionID)
+            except: continue
+
+            for x in Action:
+                idx += 1
+                action.insert(idx, x)
+        return
+
 
 def zipped_iterable(TransitionMapA, TransitionMapB):
     """Produces an iterable over two transition maps at once. The borders in the
@@ -53,18 +138,6 @@ def zipped_iterable(TransitionMapA, TransitionMapB):
 def clone(transition_map):
     return [ (interval.clone(), deepcopy(target)) for interval, target in transition_map ]
 
-def relate_to_door_ids(transition_map, TheAnalyzer, StateIndex):
-    """Creates a transition_map that triggers to DoorIDs instead of target states.
-    """
-    def adapt(Target):
-        if Target == E_StateIndices.DROP_OUT:
-            return Target
-        else:
-            result = TheAnalyzer.state_db[Target].entry.get_door_id(StateIndex=Target, FromStateIndex=StateIndex)
-            return result
-
-    return [(interval, adapt(target)) for interval, target in transition_map]
-
 def get_string(transition_map, Option="utf8", IntervalF=True):
     assert Option in ("hex", "dec", "utf8")
     def get(X):
@@ -88,36 +161,6 @@ def has_action_id(transition_map, ActionID):
         elif action == ActionID:
             return True
     return False
-
-def delete_action_ids(transition_map):
-    for interval, action in transition_map:
-        if type(action) != list: continue
-        i = len(action) - 1
-        while i >= 0:
-            if action[i] in E_ActionIDs:
-                del action[i]
-            i -= 1
-    return
-
-def insert_after_action_id(transition_map, ActionID, Action):
-    assert ActionID in E_ActionIDs
-    assert Action is None or type(Action) == list
-
-    if Action is None:
-        return
-
-    done_set = set()
-    for interval, action in transition_map:
-        if id(action) in done_set: continue
-        done_set.add(id(action))
-
-        try:    idx = action.index(ActionID)
-        except: continue
-
-        for x in Action:
-            idx += 1
-            action.insert(idx, x)
-    return
 
 def replace_action_id(transition_map, ActionID, Action):
     assert ActionID in E_ActionIDs

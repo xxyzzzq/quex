@@ -14,11 +14,11 @@ if "--hwut-info" in sys.argv:
 def test(state):
     print "\n## Map: Target Index --> Trigger Set\n"
     # (*) compute the trigger map
-    for key, trigger_set in state.transitions().get_map().items():
+    for key, trigger_set in state.target_map.get_map().items():
         print "    %3i <--- %s" % (int(key), repr(trigger_set))
 
     print "\n## Map: Trigger Intervals (sorted) --> Target Index\n"
-    tm = state.transitions().get_trigger_map()
+    tm = state.target_map.get_trigger_map()
     # (*) print the trigger map entries
     prev_end = None
     for trigger_interval, target_index in tm:

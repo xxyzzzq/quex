@@ -35,9 +35,9 @@ class Checker:
         #      be computed each time it is required.)
         sm0_trigger_set_union_db = {} 
         for index in SM0_StateIndexList:
-            sm0_trigger_set_union_db[index] = self.sm0.states[index].transitions().get_trigger_set_union()
+            sm0_trigger_set_union_db[index] = self.sm0.states[index].target_map.get_trigger_set_union()
 
-        sm1_trigger_set_union = sm1_state.transitions().get_trigger_set_union()
+        sm1_trigger_set_union = sm1_state.target_map.get_trigger_set_union()
 
         # (*) Here comes the condition:
         #
@@ -53,13 +53,13 @@ class Checker:
 
         #     -- All 'mimiking sm0 states' must trigger on the given trigger_set to 
         #        a subsequent state of the same 'type' as the 'sm1 state'.
-        for target_index, trigger_set in sm1_state.transitions().get_map().items():
+        for target_index, trigger_set in sm1_state.target_map.get_map().items():
             target_state = self.sm1.states[target_index]
 
             # (*) Collect the states in the 'sm0' that can be reached via the 'trigger_set'
             sm0_target_state_index_list = []
             for sm0_state in sm0_state_list:
-                for index in sm0_state.transitions().get_resulting_target_state_index_list(trigger_set):
+                for index in sm0_state.target_map.get_resulting_target_state_index_list(trigger_set):
                     if index in sm0_target_state_index_list: continue
                     sm0_target_state_index_list.append(index)
 

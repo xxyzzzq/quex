@@ -32,9 +32,9 @@ def output_trigger_map(tm, BeforeF):
 
 def test(state):
     # (*) compute the trigger map
-    output_trigger_map(state.transitions().get_trigger_map(), BeforeF=True)
-    state.transitions().replace_drop_out_target_states_with_adjacent_targets()
-    output_trigger_map(state.transitions().get_trigger_map(), BeforeF=False)
+    output_trigger_map(state.target_map.get_trigger_map(), BeforeF=True)
+    state.target_map.replace_drop_out_target_states_with_adjacent_targets()
+    output_trigger_map(state.target_map.get_trigger_map(), BeforeF=False)
 
 
 # (*) create a couple of number sets and put them as triggers to four 

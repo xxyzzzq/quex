@@ -380,7 +380,7 @@ def  snap_case_folded_pattern(sh, PatternDict, NumberSetF=False):
     else:
         # -- perform the case fold for State Machines!
         for state_idx, state in result.states.items():
-            for target_state_idx, trigger_set in state.transitions().get_map().items():
+            for target_state_idx, trigger_set in state.target_map.get_map().items():
                 __add_case_fold(result, flag_txt, trigger_set, state_idx, target_state_idx)
 
     return result

@@ -28,11 +28,11 @@ def do(SM):
         result.create_new_state(StateIdx=state_index)
 
     for state_index, state in SM.states.items():
-        for target_state_index, trigger_set in state.transitions().get_map().items():
+        for target_state_index, trigger_set in state.target_map.get_map().items():
             result.states[target_state_index].add_transition(trigger_set.clone(), state_index)
 
-        for target_state_index in state.transitions().get_epsilon_target_state_index_list():
-            result.states[target_state_index].transitions().add_epsilon_target_state(state_index)
+        for target_state_index in state.target_map.get_epsilon_target_state_index_list():
+            result.states[target_state_index].target_map.add_epsilon_target_state(state_index)
 
     # -- copy all origins of the original state machine
     # -- We need to cancel any acceptance, because the inverted engine now starts

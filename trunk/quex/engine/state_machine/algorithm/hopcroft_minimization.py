@@ -77,10 +77,10 @@ class HopcroftMinization:
         #    from_map: target index --> from what states the target state is entered
         self.from_map = dict([(i, []) for i in self.sm.states.iterkeys()])
         for origin_index, state in self.sm.states.iteritems():
-            for target_index in state.transitions().get_map().iterkeys():
+            for target_index in state.target_map.get_map().iterkeys():
                 self.from_map[target_index].append(origin_index)
         #    to_map: state_index --> list of target states
-        self.to_map = dict([(i, self.sm.states[i].transitions().get_map()) for i in self.sm.states.keys()])
+        self.to_map = dict([(i, self.sm.states[i].target_map.get_map()) for i in self.sm.states.keys()])
 
         # (*) Initial split 
         #     --> initial state_set_list
@@ -508,7 +508,7 @@ def create_state_machine(SM, Result, Class_StateMachine, Class_State):
         representative = result.states[map_new_state_index[state_set_idx]]
 
         # The representative must have all transitions that the prototype has
-        for target_state_index, trigger_set in prototype.transitions().get_map().iteritems():
+        for target_state_index, trigger_set in prototype.target_map.get_map().iteritems():
             target_state_set_index = Result.map[target_state_index]
             target_index           = map_new_state_index[target_state_set_index]
             representative.add_transition(trigger_set, target_index)
@@ -545,7 +545,7 @@ def adapt_state_machine(sm, Result):
         del sm.states[state_idx]
 
     for state in sm.states.itervalues():
-        state.transitions().replace_target_indices(replacement_dict)
+        state.target_map.replace_target_indices(replacement_dict)
 
     return sm    
 

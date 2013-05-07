@@ -109,6 +109,8 @@ E_MapImplementationType = Enum("STATE_MACHINE_TRIVIAL",
                                "PLAIN_MAP", 
                                "_DEBUG_MapImplementationType")
 
+E_Border = Enum("BEGIN", "END", "UNDEFINED", "_DEBUG_Border")
+
 #-----------------------------------------------------------------------------------------
 # mode_db: storing the mode information into a dictionary:
 #            key  = mode name
@@ -240,7 +242,7 @@ class PatternShorthand:
 
     def get_character_set(self):
         if len(self.__state_machine.states) != 2: return None
-        t  = self.__state_machine.states[self.__state_machine.init_state_index].transitions()
+        t  = self.__state_machine.states[self.__state_machine.init_state_index].target_map
         db = t.get_map()
         if len(db) != 1: return None
         return deepcopy(db[db.keys()[0]])

@@ -83,10 +83,10 @@ class WalkAlong(TreeWalker):
 
         sub_node_list = []
 
-        a_tm = self.original.states[a_state_index].transitions().get_map()
+        a_tm = self.original.states[a_state_index].target_map.get_map()
         assert b_state_index != self.operation_index
 
-        b_tm = self.admissible.states[b_state_index].transitions().get_map()
+        b_tm = self.admissible.states[b_state_index].target_map.get_map()
         for a_ti, a_trigger_set in a_tm.iteritems():
             remainder = a_trigger_set.clone()
             for b_ti, b_trigger_set in b_tm.iteritems():

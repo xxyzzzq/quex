@@ -12,7 +12,7 @@ def do(sm):
     if _deactivated_for_unit_test_f: return
 
     for state in ifilter(lambda x: x.is_acceptance(), sm.states.itervalues()):
-        state.transitions().clear()
+        state.target_map.clear()
 
     orphan_list = sm.get_orphaned_state_index_list()
     while len(orphan_list) != 0:

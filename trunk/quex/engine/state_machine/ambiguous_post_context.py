@@ -96,8 +96,8 @@ def __dive_to_detect_iteration(SM0, sm0_state, SM1, sm1_state, VisitList=[]):
        The search starts at the states sm0_state and sm1_state.
     """
 
-    sm0_transition_list = sm0_state.transitions().get_map().items()
-    sm1_transition_list = sm1_state.transitions().get_map().items()
+    sm0_transition_list = sm0_state.target_map.get_map().items()
+    sm1_transition_list = sm1_state.target_map.get_map().items()
 
     # If there is no subsequent path in SM0 or SM1, 
     # then we are at a leaf of the tree search. No
@@ -233,8 +233,8 @@ def __dive_to_cut_iteration(SM0, sm0_state, SM1, sm1_state, SM1_Path):
        back to its initial state while the path is valid in SM0. This
        function serves the 'philosophical cut'.
     """
-    sm0_transition_list = sm0_state.transitions().get_map().items()
-    sm1_transition_list = sm1_state.transitions().get_map().items()
+    sm0_transition_list = sm0_state.target_map.get_map().items()
+    sm1_transition_list = sm1_state.target_map.get_map().items()
 
     # If there is no subsequent path in SM0 or SM1, then we are at a leaf of
     # the tree search. No path to acceptance in SM0 lies in SM1.
@@ -258,7 +258,7 @@ def __dive_to_cut_iteration(SM0, sm0_state, SM1, sm1_state, SM1_Path):
                 # is the door to iteration. This 'door' backwards needs to be locked!
                 # PREVIOUSLY: intersection = sm0_trigger_set.intersection(sm1_trigger_set)
                 sm1_trigger_set.subtract(sm0_trigger_set)  # PREVIOUSLY: subtract(intersection)
-                sm1_state.transitions().delete_transitions_on_empty_trigger_sets()
+                sm1_state.target_map.delete_transitions_on_empty_trigger_sets()
                 # (Where there is no door, there is no way to dive deeper ...)
 
             else:

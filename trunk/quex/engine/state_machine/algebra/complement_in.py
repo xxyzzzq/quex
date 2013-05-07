@@ -76,7 +76,7 @@ def do(SM_A, SM_B):
 #        new_state                      = State(AcceptanceF = state.is_acceptance())
 #        result.states[new_state_index] = new_state
 #
-#        tm = state.transitions().get_map()
+#        tm = state.target_map.get_map()
 #        for target_index, trigger_set in tm.iteritems():
 #            new_state.add_transition(trigger_set.clone(), get_new_index(replacement_db, target_index))
 #

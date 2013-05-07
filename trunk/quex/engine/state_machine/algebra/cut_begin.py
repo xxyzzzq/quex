@@ -98,7 +98,7 @@ class WalkAlong(TreeWalker):
         self.path.append((a_state_index, b_state_index, trigger_set))
 
 
-        a_tm = self.original.states[a_state_index].transitions().get_map()
+        a_tm = self.original.states[a_state_index].target_map.get_map()
         if self.original.states[a_state_index].is_acceptance():
             # SM_A has reached a terminal
             if self.admissible.states[b_state_index].is_acceptance():
@@ -111,7 +111,7 @@ class WalkAlong(TreeWalker):
         if len(a_tm) == 0:
             return None # No further path to walk along
 
-        b_tm = self.admissible.states[b_state_index].transitions().get_map()
+        b_tm = self.admissible.states[b_state_index].target_map.get_map()
         #print "#loop:START", a_tm
         sub_node_list = []
         for a_ti, a_trigger_set in a_tm.iteritems():
@@ -175,9 +175,9 @@ class WalkAlong(TreeWalker):
         state_index, state  = self.get_state(ai, bi)
         if state_index != self.result.init_state_index:
             ##print "#(%s, %s) %s -- epsilon --> %s" % (ai, bi, self.result.init_state_index, state_index)
-            self.result.get_init_state().transitions().add_transition(trigger_set, state_index)
+            self.result.get_init_state().target_map.add_transition(trigger_set, state_index)
 
-        #print "#state.transitions():", state.transitions().get_map()
+        #print "#state.target_map:", state.target_map.get_map()
         #old_ti = state_index
         for ai, bi, trigger_set in islice(self.path, first_remainder_k+1, None):
             target_index, target_state = self.get_state(ai, bi)

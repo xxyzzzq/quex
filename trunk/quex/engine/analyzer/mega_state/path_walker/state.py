@@ -51,8 +51,9 @@ class PathWalkerState(MegaState):
         def adapt(Target):
             if isinstance(Target, DoorID): return Target.state_index
             return Target
-        return [ (interval, MegaState_Target.create(adapt(target))) \
-                 for interval, target in TM ]
+        return TransitionMap.from_iterable(
+                (interval, MegaState_Target.create(adapt(target))) 
+                for interval, target in TM)
 
     def accept(self, Path, StateDB):
         """Accepts the given Path to be walked, if the remaining transition_maps

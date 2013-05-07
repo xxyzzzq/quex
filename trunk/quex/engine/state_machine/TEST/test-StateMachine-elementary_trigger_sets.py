@@ -34,7 +34,7 @@ sm.create_new_state(StateIdx=4)
 
 print "# in gnuplot: plot [0:70] \"tmp\" w l" 
 
-for key, trigger_set in sm.states[10].transitions().get_map().items():
+for key, trigger_set in sm.states[10].target_map.get_map().items():
     print trigger_set.gnuplot_string(key)
 
 # (*) compute the elementary trigger set

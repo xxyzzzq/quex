@@ -110,7 +110,7 @@ class CharacterPath(object):
         def adapt(Target):
             if hasattr(Target, "clone"): return Target.clone()
             else:                        return Target
-        result.__transition_map = [(interval.clone(), adapt(target)) for interval, target in self.__transition_map]
+        result.__transition_map = self.__transition_map.clone()
         result.__wildcard_char  = self.__wildcard_char
         return result
 
@@ -300,9 +300,9 @@ class CharacterPath(object):
     def plug_wildcard(self, Target):
         assert isinstance(Target, DoorID) or Target == E_StateIndices.DROP_OUT, repr(Target)
         assert self.__wildcard_char is not None
-        assert transition_map_tools.get_target(self.__transition_map, self.__wildcard_char) == E_StateIndices.VOID
+        assert self.__transition_map.get_target(self.__wildcard_char) == E_StateIndices.VOID
 
-        transition_map_tools.set_target(self.__transition_map, self.__wildcard_char, Target)
+        self.__transition_map.set_target(self.__wildcard_char, Target)
 
         self.__wildcard_char = None
         return 

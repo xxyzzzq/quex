@@ -2,10 +2,13 @@ from   quex.engine.misc.string_handling          import blue_print
 #
 from   quex.engine.interval_handling             import NumberSet, Interval
 import quex.engine.state_machine.index           as     state_machine_index
-from   quex.engine.state_machine.transition_map  import TransitionMap, E_Border
+from   quex.engine.state_machine.target_map      import TargetMap
 from   quex.engine.state_machine.state_core_info import StateCoreInfo
 from   quex.engine.state_machine.origin_list     import StateOriginList
-from   quex.blackboard                           import E_AcceptanceIDs, E_PreContextIDs, deprecated
+from   quex.blackboard                           import E_AcceptanceIDs, \
+                                                        E_PreContextIDs, \
+                                                        E_Border, \
+                                                        deprecated
 
 from   copy      import deepcopy
 from   operator  import attrgetter, itemgetter
@@ -24,7 +27,7 @@ class State:
     #
     # Objects of this class are to be used in class StateMachine, where a 
     # dictionary maps from a start state index to a State-object.
-    ## Little Slower: __slots__ = ('__core', '__origin_list', '__transition_map')
+    ## Little Slower: __slots__ = ('__core', '__origin_list', '__target_map')
     def __init__(self, AcceptanceF=False, StateMachineID=E_AcceptanceIDs.FAILURE, StateIndex=-1L, 
                  AltOriginList=None, AltTM=None):
         """Contructor of a State, i.e. a aggregation of transitions.
@@ -35,11 +38,11 @@ class State:
                                                     StateIndex  = StateIndex, 
                                                     AcceptanceF = AcceptanceF)
                                     ])
-            self.__transition_map = TransitionMap()
+            self.__target_map = TargetMap()
         else:
             assert AltTM is not None
             self.__origin_list    = AltOriginList
-            self.__transition_map = AltTM
+            self.__target_map = AltTM
 
     @staticmethod
     def new_merged_core_state(StateList, ClearF=False):
@@ -70,11 +73,11 @@ class State:
         assert StateIndex is None            or isinstance(StateIndex, long)
         result = State(AltOriginList = self.__origin_list.clone(PreContextReplacementDB=PreContextReplacementDB,
                                                                 PatternIDReplacementDB=PatternIDReplacementDB),
-                       AltTM         = self.__transition_map.clone())
+                       AltTM         = self.__target_map.clone())
 
         # if replacement of indices is desired, than do it
         if ReplacementDictionary is not None:
-            result.transitions().replace_target_indices(ReplacementDictionary)
+            result.target_map.replace_target_indices(ReplacementDictionary)
 
         return result
 
@@ -89,8 +92,9 @@ class State:
         assert isinstance(OriginList, StateOriginList)
         self.__origin_list = OriginList
 
-    def transitions(self):
-        return self.__transition_map
+    @property
+    def target_map(self):
+        return self.__target_map
 
     def is_acceptance(self):
         for origin in self.origins():
@@ -143,13 +147,13 @@ class State:
                            StoreInputPositionF, self.is_acceptance())
 
     def add_transition(self, Trigger, TargetStateIdx): 
-        self.__transition_map.add_transition(Trigger, TargetStateIdx)
+        self.__target_map.add_transition(Trigger, TargetStateIdx)
 
     def transform(self, TrafoInfo):
         """RETURNS: True  transformation successful
                     False transformation failed, number set possibly in inconsistent state!
         """
-        return self.__transition_map.transform(TrafoInfo)
+        return self.__target_map.transform(TrafoInfo)
     
     def __repr__(self):
         return self.get_string()
@@ -159,12 +163,12 @@ class State:
         msg = self.origins().get_string(OriginalStatesF)
 
         # print out transitionts
-        msg += self.transitions().get_string("    ", StateIndexMap, Option)
+        msg += self.target_map.get_string("    ", StateIndexMap, Option)
         return " " + msg
 
     def get_graphviz_string(self, OwnStateIdx, StateIndexMap, Option):
         assert Option in ["hex", "utf8"]
-        return self.transitions().get_graphviz_string(OwnStateIdx, StateIndexMap, Option)
+        return self.target_map.get_graphviz_string(OwnStateIdx, StateIndexMap, Option)
 
 class StateMachine(object):
     def __init__(self, InitStateIndex=None, AcceptanceF=False, InitState=None):
@@ -284,7 +288,7 @@ class StateMachine(object):
     def is_init_state_a_target_state(self):
         init_state_index = self.init_state_index
         for state in self.states.values():
-            target_state_index_list = state.transitions().get_target_state_index_list()
+            target_state_index_list = state.target_map.get_target_state_index_list()
             if init_state_index in target_state_index_list: return True
         return False
         
@@ -292,7 +296,7 @@ class StateMachine(object):
         """Detect whether there are states where there is no transition to them."""
         unique = set([])
         for state in self.states.values():
-            unique.update(state.transitions().get_target_state_index_list())
+            unique.update(state.target_map.get_target_state_index_list())
 
         for state_index in self.states.keys():
             # The init state is never considered to be an 'orphan'
@@ -317,7 +321,7 @@ class StateMachine(object):
             state       = self.states[state_index]
             connected_set.add(state_index)
 
-            work_set.update((i for i in state.transitions().get_target_state_index_list()
+            work_set.update((i for i in state.target_map.get_target_state_index_list()
                              if  i not in connected_set))
 
         # State indices in 'connected_set' have a connection to the init state.
@@ -344,7 +348,7 @@ class StateMachine(object):
         """
         from_db = defaultdict(set)
         for state_index, state in self.states.iteritems():
-            target_index_list = state.transitions().get_target_state_index_list()
+            target_index_list = state.target_map.get_target_state_index_list()
             for target_index in target_index_list:
                 from_db[target_index].add(state_index)
 
@@ -369,7 +373,7 @@ class StateMachine(object):
         """
         for i in self.get_hopeless_state_index_list():
             for state in self.states.itervalues():
-                state.transitions().delete_transitions_to_target(i)
+                state.target_map.delete_transitions_to_target(i)
             if i == self.init_state_index: continue
             del self.states[i]
 
@@ -381,13 +385,13 @@ class StateMachine(object):
         for state in self.states.itervalues():
             # 'items()' not 'iteritems()' because 'delete_transitions_to_target()'
             # may change the dictionaries content.
-            for target_state_index, trigger_set in state.transitions().get_map().items():
+            for target_state_index, trigger_set in state.target_map.get_map().items():
                 if trigger_set.has_intersection(TheInterval):
                     trigger_set.cut_interval(TheInterval)
 
                 # If the operation resulted in cutting the path to the target state, then delete it.
                 if trigger_set.is_empty():
-                    state.transitions().delete_transitions_to_target(target_state_index)
+                    state.target_map.delete_transitions_to_target(target_state_index)
 
         return
 
@@ -395,7 +399,7 @@ class StateMachine(object):
         db = {}
         for index, state in self.states.items():
             # Do the first 'level of recursion' without function call, to save time
-            index_list = state.transitions().get_epsilon_target_state_index_list()
+            index_list = state.target_map.get_epsilon_target_state_index_list()
 
             # Epsilon closure for current state
             ec = set([index]) 
@@ -423,7 +427,7 @@ class StateMachine(object):
         return result
 
     def __dive_for_epsilon_closure(self, state_index, result):
-        index_list = self.states[state_index].transitions().get_epsilon_target_state_index_list()
+        index_list = self.states[state_index].target_map.get_epsilon_target_state_index_list()
         for target_index in ifilter(lambda x: x not in result, index_list):
             result.add(target_index)
             self.__dive_for_epsilon_closure(target_index, result)
@@ -497,7 +501,7 @@ class StateMachine(object):
         ##    trigger_list = []
         ##    for state_index in StateIdxList:
         ##        state = self.states[state_index]
-        ##        for target_index, trigger_set in state.transitions().get_map().iteritems():
+        ##        for target_index, trigger_set in state.target_map.get_map().iteritems():
         ##            target_epsilon_closure = epsilon_closure_db[target_index] 
         ##            interval_list          = trigger_set.get_intervals(PromiseToTreatWellF=True)
         ##            trigger_list.extend([x, target_epsilon_closure] for x in interval_list])
@@ -513,8 +517,8 @@ class StateMachine(object):
         ##        if len(StateIdxList) == 1:
         ##           state_idx = list(StateIdxList)[0]
         ##            if len(epsilon_closure_db[state_idx]) == 1:
-        ##                if len(self.states[state_idx].transitions().get_map()) == 1:
-        ##                    target, trigger_set = self.states[state_idx].transitions().get_map().items()[0]
+        ##                if len(self.states[state_idx].target_map.get_map()) == 1:
+        ##                    target, trigger_set = self.states[state_idx].target_map.get_map().items()[0]
         ##                    proposal = { (target,): NumberSet(trigger_set) }
 
         # (*) Accumulate the transitions for all states in the state list.
@@ -522,7 +526,7 @@ class StateMachine(object):
         history = []
         for state_idx in StateIdxList:
             # -- trigger dictionary:  target_idx --> trigger set that triggers to target
-            line_up = self.states[state_idx].transitions().get_trigger_set_line_up() 
+            line_up = self.states[state_idx].target_map.get_trigger_set_line_up() 
             # NOTE: Duplicate entries in history are perfectly reasonable at this point,
             #       simply if two states trigger on the same character range to the same 
             #       target state. When ranges are opened/closed via the history items
@@ -605,8 +609,8 @@ class StateMachine(object):
         from_db = defaultdict(set)
         to_db   = defaultdict(set)
         for from_index, state in self.states.iteritems():
-            to_db[from_index] = set(state.transitions().get_map().iterkeys())
-            for to_index in state.transitions().get_map().iterkeys():
+            to_db[from_index] = set(state.target_map.get_map().iterkeys())
+            for to_index in state.target_map.get_map().iterkeys():
                 from_db[to_index].add(from_index)
         return from_db, to_db
 
@@ -622,14 +626,14 @@ class StateMachine(object):
             if state_index == acceptance_state_index: continue
 
             # Transform DropOuts --> Transition to Acceptance
-            drop_out_trigger_set = state.transitions().get_drop_out_trigger_set_union()
+            drop_out_trigger_set = state.target_map.get_drop_out_trigger_set_union()
             state.add_transition(drop_out_trigger_set, acceptance_state_index)
 
             # Transform Transitions to Acceptance --> DropOut
-            transition_map = state.transitions().get_map()
+            transition_map = state.target_map.get_map()
             for target_index in original_acceptance_state_index_list:
                 if transition_map.has_key(target_index):
-                    state.transitions().delete_transitions_to_target(target_index)
+                    state.target_map.delete_transitions_to_target(target_index)
 
         # All original target states are deleted
         for target_index in original_acceptance_state_index_list:
@@ -647,7 +651,7 @@ class StateMachine(object):
             if len(Sequence) == 0:
                 return self.states[StateIndex].is_acceptance()
 
-            idx_list = self.states[StateIndex].transitions().get_resulting_target_state_index_list(Sequence[0])
+            idx_list = self.states[StateIndex].target_map.get_resulting_target_state_index_list(Sequence[0])
             for candidate in idx_list:
                 # One follow-up state could match the sequence
                 if dive(candidate, Sequence[1:]): return True
@@ -667,7 +671,7 @@ class StateMachine(object):
         state  = self.get_init_state()
         result = []
         while 1 + 1 == 2:
-            target_map = state.transitions().get_map()
+            target_map = state.target_map.get_map()
             if   len(target_map) == 0:
                 return result
             elif len(target_map) > 1:
@@ -691,7 +695,7 @@ class StateMachine(object):
             return None
 
         # There can be only one target state from the init state
-        target_map = self.get_init_state().transitions().get_map()
+        target_map = self.get_init_state().target_map.get_map()
         if len(target_map) != 1:
             return None
 
@@ -705,8 +709,8 @@ class StateMachine(object):
         result = NumberSet()
         for end_state_index in self.get_acceptance_state_index_list():
             for state in self.states.values():
-                if state.transitions().has_target(end_state_index) == False: continue
-                result.unite_with(state.transitions().get_trigger_set_to_target(end_state_index))
+                if state.target_map.has_target(end_state_index) == False: continue
+                result.unite_with(state.target_map.get_trigger_set_to_target(end_state_index))
         return result
 
     def get_only_entry_to_state(self, TargetStateIndex):
@@ -715,7 +719,7 @@ class StateMachine(object):
         """
         result = None
         for state_index, state in self.states.items():
-            if state.transitions().has_target(TargetStateIndex):
+            if state.target_map.has_target(TargetStateIndex):
                 if result is None: result = state_index
                 else:              return None           # More than one state trigger to target
         return result
@@ -725,7 +729,7 @@ class StateMachine(object):
            then it is empty.
         """
         if len(self.states) != 1: return False
-        return self.states[self.init_state_index].transitions().is_empty()
+        return self.states[self.init_state_index].target_map.is_empty()
 
     def has_origins(self):
         for state in self.states.values():
@@ -734,7 +738,7 @@ class StateMachine(object):
 
     def is_DFA_compliant(self):
         for state in self.states.values():
-            if state.transitions().is_DFA_compliant() == False: 
+            if state.target_map.is_DFA_compliant() == False: 
                 return False
         return True
 
@@ -811,7 +815,7 @@ class StateMachine(object):
             self.states[TargetStateIdx] = State()
 
         # add the epsilon target state
-        self.states[StartStateIdx].transitions().add_epsilon_target_state(TargetStateIdx)     
+        self.states[StartStateIdx].target_map.add_epsilon_target_state(TargetStateIdx)     
         # optionally raise the state of the target to 'acceptance'
         if RaiseAcceptanceF: self.states[TargetStateIdx].set_acceptance(True)
 
@@ -827,7 +831,7 @@ class StateMachine(object):
             if not state.is_acceptance():    continue
             if state_idx == MountedStateIdx: continue
             # add the MountedStateIdx to the list of epsilon transition targets
-            state.transitions().add_epsilon_target_state(MountedStateIdx)
+            state.target_map.add_epsilon_target_state(MountedStateIdx)
             # if required (e.g. for sequentialization) cancel the acceptance status
             if CancelStartAcceptanceStateF: 
                 # If there was a condition to acceptance => Cancel it first
@@ -884,7 +888,7 @@ class StateMachine(object):
 
         assert self.states.has_key(self.init_state_index)
 
-        self.states[self.init_state_index].transitions().add_epsilon_target_state(TargetStateIdx)
+        self.states[self.init_state_index].target_map.add_epsilon_target_state(TargetStateIdx)
 
     def mount_cloned(self, OtherSM, OperationIndex, OtherStartIndex, OtherEndIndex):
         """Clone all states in 'OtherSM' which lie on the path from 'OtherStartIndex'
@@ -913,7 +917,7 @@ class StateMachine(object):
                 state = State(AcceptanceF=other_state.is_acceptance())
                 self.states[state_i] = state
 
-            for other_ti, other_trigger_set in other_state.transitions().get_map().iteritems():
+            for other_ti, other_trigger_set in other_state.target_map.get_map().iteritems():
                 target_i = state_machine_index.map_state_combination_to_index((other_ti, OperationIndex))
                 # The state 'target_i' either:
                 #   -- exists, because it is in the done_set, or
@@ -978,13 +982,13 @@ class StateMachine(object):
                 trigger_set_to_A = tm.get(A)
                 assert trigger_set_to_A is not None
                 trigger_set_min = trigger_set_to_A.minimum()
-                target_tm       = state_db[A].transitions().get_map()
+                target_tm       = state_db[A].target_map.get_map()
                 target_branch_n = len(target_tm)
                 if len(target_tm) == 0: target_tm_min = -sys.maxint
                 else:                   target_tm_min = min(map(lambda x: x.minimum(), target_tm.itervalues()))
                 return (trigger_set_min, target_branch_n, target_tm_min, A)
 
-            tm = state.transitions().get_map()
+            tm = state.target_map.get_map()
             target_state_index_list = [ i for i in tm.iterkeys() if i not in done_set ]
             target_state_index_list.sort(key=lambda x: comparison_key(self.states, tm, x), reverse=True)
 
@@ -1096,7 +1100,7 @@ class StateMachine(object):
         """
         target_state_index_list = self.states.keys()
         for index, state in self.states.items():
-            for target_state_index in state.transitions().get_target_state_index_list():
+            for target_state_index in state.target_map.get_target_state_index_list():
                 assert target_state_index in target_state_index_list, \
                        "state machine contains target state %s that is not contained in itself." \
                        % repr(target_state_index) + "\n" \

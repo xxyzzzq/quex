@@ -36,7 +36,7 @@ class X:
                 # Apply sequence to state machine
                 s_idx = result.init_state_index
                 for byte in utf8_seq:
-                    s_idx = result.states[s_idx].transitions().get_resulting_target_state_index(byte)
+                    s_idx = result.states[s_idx].target_map.get_resulting_target_state_index(byte)
 
                 # All acceptance flags must belong to the original state machine
                 for origin in result.states[s_idx].origins():
@@ -56,7 +56,7 @@ def check_negative(SM, ImpossibleIntervals):
             # Apply sequence to state machine
             s_idx = result.init_state_index
             for byte in utf8_seq:
-                s_idx = result.states[s_idx].transitions().get_resulting_target_state_index(byte)
+                s_idx = result.states[s_idx].target_map.get_resulting_target_state_index(byte)
                 if s_idx is None: break
             if s_idx is None: continue
 

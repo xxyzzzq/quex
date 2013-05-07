@@ -64,7 +64,7 @@ def is_all(SM):
     if   len(sm.states) != 2:                 return False
     init_state = sm.get_init_state()
     if   init_state.is_acceptance():          return False
-    tm = init_state.transitions().get_map()
+    tm = init_state.target_map.get_map()
     if   len(tm) != 1:                        return False
     target_index, trigger_set = tm.iteritems().next()
     if trigger_set.is_all() == False:         return False
@@ -75,7 +75,7 @@ def is_all(SM):
     #
     target_state = sm.states[target_index]
     if not target_state.is_acceptance():      return False
-    tm = target_state.transitions().get_map()
+    tm = target_state.target_map.get_map()
     if len(tm) != 1:                          return False
     
     target_index_2, trigger_set = tm.iteritems().next()
