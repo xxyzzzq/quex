@@ -6,6 +6,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.engine.interval_handling       import Interval
 import quex.engine.analyzer.transition_map as     transition_map_tools
+from   quex.engine.analyzer.transition_map import TransitionMap
 from   copy import deepcopy
 
 if "--hwut-info" in sys.argv:
@@ -13,8 +14,8 @@ if "--hwut-info" in sys.argv:
     sys.exit()
 
 def test(Name, TM_A, TM_B):
-    tm_a = [ (Interval(x[0], x[1]), x[2]) for x in TM_A ]
-    tm_b = [ (Interval(x[0], x[1]), x[2]) for x in TM_B ]
+    tm_a = TransitionMap.from_iterable((Interval(x[0], x[1]), x[2]) for x in TM_A)
+    tm_b = TransitionMap.from_iterable((Interval(x[0], x[1]), x[2]) for x in TM_B)
     print "____________________________________________________________________"
     print
     print "Transition Map A:"

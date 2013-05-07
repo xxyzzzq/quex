@@ -172,7 +172,7 @@ def __find(analyzer, StateIndex, CompressionType, AvailableStateIndexSet):
 
     State          = analyzer.state_db[StateIndex]
     target_map     = State.map_target_index_to_character_set
-    transition_map = transition_map_tools.relate_to_door_ids(State.transition_map, analyzer, State.index)
+    transition_map = State.transition_map.relate_to_door_ids(analyzer, State.index)
 
     for target_idx, trigger_set in target_map.iteritems():
         if   target_idx not in AvailableStateIndexSet: continue # State is not an option.
@@ -237,8 +237,7 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
             State  = Args[1]
 
             # list: (interval, target)  --> (interval, door_id)
-            transition_map = transition_map_tools.relate_to_door_ids(State.transition_map, 
-                                                                     self.analyzer, 
+            transition_map = State.transition_map.relate_to_door_ids(self.analyzer, 
                                                                      State.index)
             # BRANCH __________________________________________________________
             sub_list = []
@@ -334,7 +333,7 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
 
             return not done_f
 
-    tm_clone     = transition_map_tools.clone(FromTransitionMap)
+    tm_clone     = FromTransitionMap.clone()
     target_state = analyzer.state_db[TargetIndex]
     path         = CharacterPath(FromState, TransitionChar, tm_clone)
 

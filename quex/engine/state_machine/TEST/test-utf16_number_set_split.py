@@ -36,7 +36,7 @@ class X:
                 # Apply sequence to state machine
                 s_idx = result.init_state_index
                 for word in utf16_seq:
-                    s_idx = result.states[s_idx].transitions().get_resulting_target_state_index(word)
+                    s_idx = result.states[s_idx].target_map.get_resulting_target_state_index(word)
 
                 assert s_idx is not None, \
                        "No acceptance for %X in [%X,%X] --> %s" % \
@@ -60,7 +60,7 @@ def check_negative(SM, ImpossibleIntervals):
             # Apply sequence to state machine
             s_idx = result.init_state_index
             for word in utf16_seq:
-                s_idx = result.states[s_idx].transitions().get_resulting_target_state_index(word)
+                s_idx = result.states[s_idx].target_map.get_resulting_target_state_index(word)
                 if s_idx is None: break
             if s_idx is None: continue
 

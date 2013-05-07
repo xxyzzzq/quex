@@ -2,16 +2,14 @@
 
 from   quex.engine.interval_handling       import NumberSet, Interval
 import quex.engine.analyzer.transition_map as     transition_map_tool
+from   quex.engine.analyzer.transition_map import TransitionMap
 from   quex.engine.misc.enum               import Enum
-from   quex.blackboard                     import E_StateIndices
+from   quex.blackboard                     import E_StateIndices, E_Border
 
 import sys
 from   operator import attrgetter
 
-# definitions for 'history items':
-E_Border = Enum("BEGIN", "END", "UNDEFINED")
-
-class TransitionMap:
+class TargetMap:
     """Members:
 
        __db:      map: target index --> NumberSet that triggers to target
@@ -29,7 +27,7 @@ class TransitionMap:
         ## self.__DEBUG_trigger_map = None
 
     def clone(self):
-        return TransitionMap(DB = dict([(key, trigger_set.clone()) for key, trigger_set in self.__db.iteritems()]),
+        return TargetMap(DB = dict([(key, trigger_set.clone()) for key, trigger_set in self.__db.iteritems()]),
                              ETIL = list(self.__epsilon_target_index_list))
 
     def clear(self, TriggerMap=None):
@@ -232,46 +230,17 @@ class TransitionMap:
         return history      
 
     def get_trigger_map(self):
-        """NOTE: This is a 'new' implementation 10y01m14d.
-        
-                 The earlier implementation is available under release 0.47.1 on 
-                 the SVN server.
-        
-           Consider the set of possible characters as aligned on a 1 dimensional line.
-           This one-dimensional line is remiscent of a 'time line' so we call the change
-           of interval coverage 'history'.         
-
-           Returns a trigger map consisting of a list of pairs: (Interval, TargetIdx)
-
-                    [ [ interval_0, target_0],
-                      [ interval_1, target_1],
-                      ...
-                      [ interval_N, target_N] ]
-
-           The intervals are sorted and non-overlapping (use this function only for DFA).
-
-           A drop out on 'interval_i' is represented by 'target_i' is None.
-        """
         ## OPT: if self.__DEBUG_trigger_map is not None: return self.__DEBUG_trigger_map
         # At this point only DFAs shall be considered. Thus there cannot be any epsilon
         # target transitions.
         assert len(self.__epsilon_target_index_list) == 0, \
                "Trigger maps can only be computed on DFAs. Epsilon transition detected."
 
-        # NOTE: The response '[]' is a **signal** that there is only an epsilon
-        #       transition. The response as such would be incorrect. But the signal
-        #       'empty reply' needs to be treated by the caller.
-        if len(self.__db) == 0: return []
-            
-        trigger_map = []
-        for target, character_set in self.__db.iteritems():
-            assert not character_set.is_empty()
-            trigger_map.extend((interval, target) 
-                               for interval in character_set.get_intervals())
-
-        transition_map_tool.sort(trigger_map)
-        transition_map_tool.fill_gaps(trigger_map, E_StateIndices.DROP_OUT)
-        return trigger_map
+        # (?) NOTE: The response '[]' is a **signal** that there is only an epsilon
+        # (?)       transition. The response as such would be incorrect. But the signal
+        # (?)       'empty reply' needs to be treated by the caller.
+        # (? fschaef: I do not remember what I was thinking. 13y05m06d)
+        return TransitionMap.from_TargetMap(self)
 
     def get_trigger_set_to_target(self, TargetIdx):
         """Returns all triggers that lead to target 'TargetIdx'. If a trigger 'None' is returned
@@ -318,34 +287,6 @@ class TransitionMap:
         # replace target index in the list of epsilon transition targets.
         if Before in self.__epsilon_target_index_list:
             self.__epsilon_target_index_list[self.__epsilon_target_index_list.index(Before)] = After
-
-    def replace_drop_out_target_states_with_adjacent_targets(self):
-        # NOTE: The request does not invalidate anything, invalidate cache after that.
-
-        if len(self.__db) == 0:  # Nothing to be done, since there is nothing adjacent 
-            return               # to the 'drop out' trigger. There is only an epsilon transition.
-
-        trigger_map = self.get_trigger_map() 
-        assert len(trigger_map) >= 2
-
-        # Target of internval (-oo, X) must be 'drop out' since there are no unicode 
-        # code points below 0.
-        assert trigger_map[0][1] == E_StateIndices.DROP_OUT
-        assert trigger_map[0][0].begin == - sys.maxint
-
-        # The first interval mentioned after that must not point to 'drop out' since
-        # the trigger map must collect the same targets into one single interval.
-        assert trigger_map[1][1] != E_StateIndices.DROP_OUT
-
-        non_drop_out_target = trigger_map[1][1]
-        self.add_transition(trigger_map[0][0], non_drop_out_target)
-        
-        # NOTE: Here we know that len(trigger_map) >= 2
-        for trigger_set, target in trigger_map[2:]:
-
-            if target is E_StateIndices.DROP_OUT: target              = non_drop_out_target
-            else:                                     non_drop_out_target = target
-            self.add_transition(trigger_set, target)
 
     def transform(self, TrafoInfo):
         """Transforms all related NumberSets from Unicode to a given Target 

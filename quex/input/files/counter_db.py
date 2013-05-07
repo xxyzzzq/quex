@@ -2,6 +2,7 @@ from   quex.engine.state_machine.transformation import homogeneous_chunk_n_per_c
 from   quex.engine.interval_handling            import NumberSet
 from   quex.engine.generator.base               import LoopGenerator
 import quex.engine.analyzer.transition_map      as     transition_map_tool
+from   quex.engine.analyzer.transition_map      import TransitionMap
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.blackboard import setup as Setup, \
                               E_ActionIDs
@@ -171,7 +172,7 @@ class CounterDB:
         counter_dictionary     = self.get_counter_dictionary(inside_set)
         column_count_per_chunk = self.get_column_number_per_chunk(inside_set)
 
-        cm = []
+        cm = TransitionMap()
         for number_set, action in counter_dictionary:
             assert inside_set is None or inside_set.is_superset(number_set)
             action_txt = action.get_txt(column_count_per_chunk, IteratorName)

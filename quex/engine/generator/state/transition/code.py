@@ -42,17 +42,17 @@ class TransitionCodeFactory:
         return cls.prepare_reload_action(StateIndex, EngineType, InitStateF, GotoReload_Str)
 
     @classmethod
-    def prepare_transition_map_for_reload(cls, TransitionMap):
+    def prepare_transition_map_for_reload(cls, TM):
         # Insist that transitions to reload procedure have been prepared!
         # There is no state transition to 'RELOAD_PROCEDURE', so transition on
         # buffer limit code MUST trigger a 'DROP_OUT'.
-        blc_target = transition_map_tool.get_target(TransitionMap, Setup.buffer_limit_code) 
+        blc_target = TM.get_target(Setup.buffer_limit_code) 
         assert    blc_target == E_StateIndices.DROP_OUT \
                or blc_target == MegaState_Target_DROP_OUT
 
         # Signalize 'reload' upon buffer limit code.
-        transition_map_tool.set_target(TransitionMap, Setup.buffer_limit_code, 
-                                       E_StateIndices.RELOAD_PROCEDURE)
+        TM.set_target(Setup.buffer_limit_code, 
+                      E_StateIndices.RELOAD_PROCEDURE)
 
     @classmethod
     def prepare_reload_action(cls, StateIndex, EngineType, InitStateF, GotoReload_Str):

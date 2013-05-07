@@ -24,7 +24,7 @@ def test(the_state_machine, string_to_match):
     for letter_code in letter_code_list:   
         letter_n += 1   
         if letter_n % 5 == 0: sys.stdout.write("\n")
-        state_index = sm.states[state_index].transitions().get_resulting_target_state_index(letter_code) 
+        state_index = sm.states[state_index].target_map.get_resulting_target_state_index(letter_code) 
         sys.stdout.write("'%s' --> (%s), " % (utf8.map_unicode_to_utf8(letter_code), 
                                              repr(norm_db[state_index]).replace("L","")))
         if state_index == -1: break

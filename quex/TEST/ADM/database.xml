@@ -1,4 +1,4 @@
-<test-database execution-time-sec="10.13" date="Mon May  6 06:04:47 2013">
+<test-database execution-time-sec="10.18" date="Mon May  6 18:48:13 2013">
     <last-used-diff-display-program name=""/>
     <test title="(*) Exceptions during 'import'" time-sum-sec="0.43"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1355705371L" vanished="False"/>
@@ -6,10 +6,10 @@
            <choice name="" result="OK" time_sec="0.43" crc="1069820642"/>
         </choice-list>
     </test>
-    <test title="The Lexeme macro does some safety checks when compiled with" time-sum-sec="0.13"> 
+    <test title="The Lexeme macro does some safety checks when compiled with" time-sum-sec="0.04"> 
         <application file-name="no-use-of-lexeme-macro.sh" info-request-time="1355705370L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.13" crc="-708310410"/>
+           <choice name="" result="OK" time_sec="0.04" crc="-708310410"/>
         </choice-list>
     </test>
     <test title="&lt; #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$" time-sum-sec="0.01"> 
@@ -18,10 +18,10 @@
            <choice name="" result="OK" time_sec="0.01" crc="1977758644"/>
         </choice-list>
     </test>
-    <test title="Code Check with pyflakes" time-sum-sec="8.69"> 
+    <test title="Code Check with pyflakes" time-sum-sec="8.66"> 
         <application file-name="pyflakes-check.sh" info-request-time="1355705371L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="8.69" crc="176785168"/>
+           <choice name="" result="FAIL" time_sec="8.66" crc="176785168"/>
         </choice-list>
     </test>
     <test title="Propper undefinition of configuration parameters." time-sum-sec="0.05"> 
@@ -37,11 +37,11 @@
         </choice-list>
     </test>
     <group name="## file">
-        <test title="Include Guards for C/C++" time-sum-sec="0.62"> 
+        <test title="Include Guards for C/C++" time-sum-sec="0.81"> 
             <application file-name="include_guard.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="2" same_result="False">
-               <choice name="convention" result="OK" time_sec="0.31" crc="706574512"/>
-               <choice name="undefinition" result="OK" time_sec="0.31" crc="1307575207"/>
+               <choice name="convention" result="OK" time_sec="0.51" crc="706574512"/>
+               <choice name="undefinition" result="OK" time_sec="0.30" crc="1307575207"/>
             </choice-list>
         </test>
     </group>

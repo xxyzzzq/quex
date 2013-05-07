@@ -20,7 +20,7 @@ def setup_sm_state(StateIndex, TM):
     transition_map = defaultdict(NumberSet)
     for interval, target in TM:
         transition_map[target].unite_with(interval)
-    result.transitions().clear(transition_map)
+    result.target_map.clear(transition_map)
     return result
 
 def setup_AnalyzerStates(StatesDescription):

@@ -127,7 +127,7 @@ def __cpp_terminal_states(StateMachineName, sm, action_db, DefaultAction):
         txt += "    QUEX_STREAM_SEEK(last_acceptance_input_position);"
         txt += action_code + "\n"    
         txt += "    // if action code returns from the function, then the following is meaningless\n"
-        if sm.states[sm.init_state_index].transitions().is_empty() == False:
+        if sm.states[sm.init_state_index].target_map.is_empty() == False:
             txt += "    QUEX_STREAM_GET(input);"
         txt += "    goto QUEX_LABEL_%s_ENTRY_INITIAL_STATE;\n" %  StateMachineName
 

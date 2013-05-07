@@ -103,10 +103,10 @@ def do(sm):
     for state_index, state in state_list:
         # Get the 'transition_list', i.e. a list of pairs (TargetState, NumberSet)
         # which indicates what target state is reached via what number set.
-        transition_list = state.transitions().get_map().items()
+        transition_list = state.target_map.get_map().items()
         # Clear the state's transitions, now. This way it can absorb new
         # transitions to intermediate states.
-        state.transitions().clear()
+        state.target_map.clear()
         # Loop over all transitions
         for target_state_index, number_set in transition_list:
             # We take the intervals with 'PromiseToTreatWellF' even though they
