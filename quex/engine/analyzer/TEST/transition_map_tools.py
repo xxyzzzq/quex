@@ -6,6 +6,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.engine.interval_handling       import Interval
 import quex.engine.analyzer.transition_map as     transition_map_tools
+from   quex.engine.analyzer.transition_map import TransitionMap       
 from   copy import deepcopy
 
 if "--hwut-info" in sys.argv:
@@ -17,10 +18,10 @@ def show(TM):
     print transition_map_tools.get_string(TM, Option="dec")
 
 def test(TM, Character, Target="<X>"):
-    tm = deepcopy(TM)
+    tm = TransitionMap.from_iterable(TM)
     print "____________________________________________________________________"
     print "   len(TM) = %i; Insert at %i;" % (len(TM), Character)
-    transition_map_tools.set_target(tm, Character, Target)
+    tm.set_target(Character, Target)
     show(tm)
 
 if "Normal" in sys.argv:

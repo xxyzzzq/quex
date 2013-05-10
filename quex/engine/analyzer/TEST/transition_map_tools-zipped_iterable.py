@@ -10,7 +10,7 @@ from   quex.engine.analyzer.transition_map import TransitionMap
 from   copy import deepcopy
 
 if "--hwut-info" in sys.argv:
-    print "Transition Map Tools: zipped_iterable;"
+    print "Transition Map Tools: TransitionMap.izip;"
     sys.exit()
 
 def test(Name, TM_A, TM_B):
@@ -25,13 +25,13 @@ def test(Name, TM_A, TM_B):
     print transition_map_tools.get_string(tm_b, "dec", IntervalF=False),
     print
     print "Result:"
-    for begin, end, a, b in transition_map_tools.zipped_iterable(tm_a, tm_b):
+    for begin, end, a, b in TransitionMap.izip(tm_a, tm_b):
         x = "%i" % begin if begin != -sys.maxint else "-oo"
         y = "%i" % end   if end   != sys.maxint else "+oo"
         print "  [%3s:%3s)   %s  %s" % (x, y, a, b)
     print
     print "Result (switched):"
-    for begin, end, a, b in transition_map_tools.zipped_iterable(tm_b, tm_a):
+    for begin, end, a, b in TransitionMap.izip(tm_b, tm_a):
         x = "%i" % begin if begin != -sys.maxint else "-oo"
         y = "%i" % end   if end   != sys.maxint else "+oo"
         print "  [%3s:%3s)   %s  %s" % (x, y, a, b)
