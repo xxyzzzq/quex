@@ -5,7 +5,7 @@ import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.engine.interval_handling       import Interval
-import quex.engine.analyzer.transition_map as     transition_map_tools
+from   quex.engine.analyzer.transition_map import TransitionMap
 from   copy import deepcopy
 
 if "--hwut-info" in sys.argv:
@@ -15,18 +15,18 @@ if "--hwut-info" in sys.argv:
 
 
 def show(TM):
-    txt = transition_map_tools.get_string(TM, Option="dec")
+    txt = TM.get_string(Option="dec")
     txt = txt.replace("%s" % -sys.maxint, "-oo")
     txt = txt.replace("%s" % (sys.maxint-1), "oo")
     print txt
 
 def test(TM, Target="X"):
-    tm = [ (Interval(x[0], x[1]), y) for x, y in TM ]
+    tm = TransitionMap([ (Interval(x[0], x[1]), y) for x, y in TM ])
     print "____________________________________________________________________"
     print "BEFORE:"
     show(tm)
-    transition_map_tools.fill_gaps(tm, Target)
-    transition_map_tools.assert_adjacency(tm, ChangeF=True)
+    tm.fill_gaps(Target)
+    tm.assert_adjacency(ChangeF=True)
     print "AFTER:"
     show(tm)
 

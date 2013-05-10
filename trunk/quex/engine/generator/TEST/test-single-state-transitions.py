@@ -107,7 +107,7 @@ def prepare(tm):
     target_state_index_list = sorted(list(set(long(i) for interval, i in tm)))
 
     tm.fill_gaps(-1)
-    return TransitionMap.from_iterable((interval, ["return %i;\n" % i]) for interval, i in tm)
+    return TransitionMap.from_iterable(tm, lambda i: ["return %i;\n" % i])
 
 def get_transition_function(tm, Codec):
     if codec != "UTF8":

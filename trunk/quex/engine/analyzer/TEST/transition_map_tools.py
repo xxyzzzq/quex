@@ -15,7 +15,7 @@ if "--hwut-info" in sys.argv:
     sys.exit()
 
 def show(TM):
-    print transition_map_tools.get_string(TM, Option="dec")
+    print TM.get_string(Option="dec")
 
 def test(TM, Character, Target="<X>"):
     tm = TransitionMap.from_iterable(TM)

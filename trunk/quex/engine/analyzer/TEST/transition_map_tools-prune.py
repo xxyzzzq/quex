@@ -5,6 +5,7 @@ import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.engine.interval_handling       import Interval
+from   quex.engine.analyzer.transition_map import TransitionMap
 from   copy import deepcopy
 from   itertools import islice
 
@@ -18,10 +19,10 @@ B = 15
 def construct_tm(IntervalList):
     letter = ord('a')
 
-    return [ 
+    return TransitionMap.from_iterable([ 
        (Interval(x[0], x[1]), letter + i) 
        for i, x in enumerate(IntervalList) 
-    ]
+    ])
 
 def get_borders(IntervalList):
     def add(border_set, X):

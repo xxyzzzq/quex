@@ -16,7 +16,7 @@ if "--hwut-info" in sys.argv:
 
 
 def show(TM):
-    txt = transition_map_tools.get_string(TM, Option="dec")
+    txt = TM.get_string(Option="dec")
     txt = txt.replace("%s" % -sys.maxint, "-oo")
     txt = txt.replace("%s" % (sys.maxint-1), "oo")
     print txt
@@ -27,7 +27,7 @@ def test(TM, Target="X"):
     print "BEFORE:"
     show(tm)
     tm.combine_adjacents()
-    transition_map_tools.assert_continuity(tm, StrictF=True)
+    tm.assert_continuity(StrictF=True)
     print "AFTER:"
     show(tm)
 

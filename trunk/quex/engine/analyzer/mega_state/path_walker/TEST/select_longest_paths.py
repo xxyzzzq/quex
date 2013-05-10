@@ -9,6 +9,7 @@ from   quex.engine.interval_handling    import *
 import quex.engine.state_machine.core   as     core
 from   quex.engine.analyzer.state.core  import AnalyzerState
 from   quex.engine.analyzer.mega_state.path_walker.core   import select, CharacterPath     
+from   quex.engine.analyzer.transition_map                import TransitionMap              
 import quex.engine.analyzer.engine_supply_factory      as     engine
 
 if "--hwut-info" in sys.argv:
@@ -30,7 +31,7 @@ def get_path_list(PlainLists):
     result = []
     for sequence in PlainLists:
         path = CharacterPath(get_analyzer_state(dummy_sm, sequence[0]), dummy_char, 
-                             TransitionMap.from_iterable([(Interval(-sys.maxint, sys.maxint), "1")])
+                             TransitionMap.from_iterable([(Interval(-sys.maxint, sys.maxint), "1")]))
         for state_index in sequence[1:-1]:
             path.append_state(get_analyzer_state(dummy_sm, state_index), dummy_char)
 

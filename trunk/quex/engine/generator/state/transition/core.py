@@ -79,7 +79,7 @@ def prepare_transition_map(TM,
                                GotoReloadStr = goto_reload_str,
                                TheAnalyzer   = TheAnalyzer)
 
-    return TransitionMap.from_iterable((x[0], TransitionCodeFactory.do(x[1])) for x in TM)
+    return TransitionMap.from_iterable(TM, TransitionCodeFactory.do)
 
 class SubTriggerMap(object):
     """A trigger map that 'points' into a subset of a trigger map.

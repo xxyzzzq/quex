@@ -1,15 +1,15 @@
-<test-database execution-time-sec="2.03" date="Thu May  9 08:44:18 2013">
+<test-database execution-time-sec="1.23" date="Fri May 10 06:46:25 2013">
     <last-used-diff-display-program name=""/>
-    <test title="Disable several error messages." time-sum-sec="0.45"> 
+    <test title="Disable several error messages." time-sum-sec="0.28"> 
         <application file-name="no-error-flags.sh" info-request-time="1360709760L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.45" crc="764573507"/>
+           <choice name="" result="OK" time_sec="0.28" crc="764573507"/>
         </choice-list>
     </test>
-    <test title="Detect lower prio-patterns outrun higher-prio patterns" time-sum-sec="1.58"> 
+    <test title="Detect lower prio-patterns outrun higher-prio patterns" time-sum-sec="0.95"> 
         <application file-name="outrun.sh" info-request-time="1355705371L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="1.58" crc="-1164005888"/>
+           <choice name="" result="OK" time_sec="0.95" crc="-1164005888"/>
         </choice-list>
     </test>
 </test-database>
