@@ -6,6 +6,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.engine.interval_handling       import Interval
 import quex.engine.analyzer.transition_map as     transition_map_tools
+from   quex.engine.analyzer.transition_map import TransitionMap
 from   copy import deepcopy
 
 if "--hwut-info" in sys.argv:
@@ -21,11 +22,11 @@ def show(TM):
     print txt
 
 def test(TM, Target="X"):
-    tm = [ (Interval(x[0], x[1]), y) for x, y in TM ]
+    tm = TransitionMap.from_iterable([ (Interval(x[0], x[1]), y) for x, y in TM ])
     print "____________________________________________________________________"
     print "BEFORE:"
     show(tm)
-    transition_map_tools.combine_adjacents(tm)
+    tm.combine_adjacents()
     transition_map_tools.assert_continuity(tm, StrictF=True)
     print "AFTER:"
     show(tm)

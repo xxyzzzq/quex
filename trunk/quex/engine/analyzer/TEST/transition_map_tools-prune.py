@@ -5,7 +5,6 @@ import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.engine.interval_handling       import Interval
-import quex.engine.analyzer.transition_map as     transition_map_tool
 from   copy import deepcopy
 from   itertools import islice
 
@@ -46,7 +45,7 @@ def iterate(TM, BorderList):
         for end in islice(BorderList, i, None):
             show_pruner(begin, end)
             dummy = deepcopy(TM)
-            transition_map_tool.prune(dummy, begin, end)
+            dummy.prune(begin, end)
             show_tm(dummy)
 
 def stringey(Value):
@@ -149,7 +148,7 @@ elif "3" in sys.argv:
 sys.exit()
 
 def show(TM):
-    txt = transition_map_tool.get_string(TM, Option="dec")
+    txt = TM.get_string(Option="dec")
     txt = txt.replace("%s" % -sys.maxint, "-oo")
     txt = txt.replace("%s" % (sys.maxint-1), "oo")
     print txt
