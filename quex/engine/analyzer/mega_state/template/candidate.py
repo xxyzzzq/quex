@@ -4,7 +4,7 @@ from   quex.engine.analyzer.mega_state.core import MegaState_Target
 from   quex.engine.analyzer.state.drop_out  import DropOut, \
                                                    DropOutIndifferent, \
                                                    DropOutBackwardInputPositionDetection
-import quex.engine.analyzer.transition_map  as     transition_map_tools
+from   quex.engine.analyzer.transition_map  import TransitionMap       
 
 from   quex.blackboard import E_AcceptanceIDs, \
                               E_TransitionN, \
@@ -26,7 +26,6 @@ class TemplateStateCandidate(object):
     __slots__ = ("__gain", "__state_a", "__state_b")
 
     def __init__(self, StateA, StateB):
-
         entry_gain          = _compute_entry_gain(StateA.entry, StateB.entry)
         drop_out_gain       = _compute_drop_out_gain(StateA.drop_out, StateB.drop_out)
         transition_map_gain = _transition_map_gain(StateA, StateB)
@@ -175,7 +174,6 @@ def _transition_map_gain(StateA, StateB):
        maps into a signle one.
     
     """
-
     a_cost        = _transition_cost_single(StateA)
     b_cost        = _transition_cost_single(StateB)
     combined_cost = _transition_cost_combined(StateA, StateB)
@@ -195,14 +193,15 @@ def _transition_cost_single(State):
 def _transition_cost_combined(StateA, StateB):
     """Computes the storage consumption of a transition map.
     """
-    involved_state_n = len(StateA.implemented_state_index_list()) + len(StateB.implemented_state_index_list())
+    involved_state_n =  len(StateA.implemented_state_index_list()) \
+                      + len(StateB.implemented_state_index_list())
     TM_A = StateA.transition_map
     TM_B = StateB.transition_map
 
     # Count the number of unique schemes and the total interval number
     interval_n = 0
     scheme_set = set()
-    for begin, end, a_target, b_target in transition_map_tools.zipped_iterable(TM_A, TM_B):
+    for begin, end, a_target, b_target in TransitionMap.izip(TM_A, TM_B):
         interval_n += 1
         TargetFactory.update_scheme_set(a_target, b_target, scheme_set)
 

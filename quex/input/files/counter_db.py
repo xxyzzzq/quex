@@ -1,8 +1,7 @@
-from   quex.engine.state_machine.transformation import homogeneous_chunk_n_per_character
-from   quex.engine.interval_handling            import NumberSet
-from   quex.engine.generator.base               import LoopGenerator
-import quex.engine.analyzer.transition_map      as     transition_map_tool
-from   quex.engine.analyzer.transition_map      import TransitionMap
+from   quex.engine.state_machine.transformation     import homogeneous_chunk_n_per_character
+from   quex.engine.interval_handling                import NumberSet
+from   quex.engine.generator.base                   import LoopGenerator
+from   quex.engine.analyzer.transition_map          import TransitionMap
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.blackboard import setup as Setup, \
                               E_ActionIDs
@@ -180,14 +179,14 @@ class CounterDB:
 
         implementation_type = LoopGenerator.determine_implementation_type(cm, ReloadF)
 
-        transition_map_tool.add_action_to_all(cm, CountAction.get_epilog(implementation_type))
+        cm.add_action_to_all(CountAction.get_epilog(implementation_type))
 
         exit_action_txt = ExitAction.get_txt(column_count_per_chunk, IteratorName)
         exit_action_txt.extend(ExitAction.get_epilog(implementation_type))
         if exit_set is not None:
             cm.extend((x, exit_action_txt) for x in exit_set.get_intervals())
 
-        transition_map_tool.clean_up(cm)
+        cm.clean_up()
 
         # Upon reload, the reference pointer may have to be added. When the reload is
         # done the reference pointer needs to be reset. 

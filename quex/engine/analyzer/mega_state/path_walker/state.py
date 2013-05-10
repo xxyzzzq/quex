@@ -1,5 +1,5 @@
 # (C) 2010-2012 Frank-Rene Schaefer
-import quex.engine.analyzer.transition_map      as transition_map_tools
+from   quex.engine.analyzer.transition_map      import TransitionMap   
 from   quex.engine.analyzer.state.entry_action  import SetPathIterator, DoorID
 from   quex.engine.analyzer.mega_state.core     import MegaState, MegaState_Target
 from   quex.blackboard                          import E_Compression
@@ -65,7 +65,7 @@ class PathWalkerState(MegaState):
                           has been accepted.
         """
         # (1) Compare the transition maps.
-        if not transition_map_tools.is_equal(self.__original_transition_map, Path.transition_map): 
+        if not self.__original_transition_map.is_equal(Path.transition_map): 
             return False
 
         # (1b) If uniformity is required and not maintained, then refuse.

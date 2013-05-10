@@ -13,10 +13,10 @@ import quex.engine.state_machine.algorithm.beautifier  as     beautifier
 import quex.engine.state_machine.index                 as     index
 from   quex.engine.state_machine.core                  import StateMachine
 import quex.engine.state_machine.transformation        as     transformation
-import quex.engine.analyzer.transition_map             as     transition_map_tool
 from   quex.engine.generator.state.transition.code     import TransitionCodeFactory
 import quex.engine.generator.state.transition.core     as     transition_block
 import quex.engine.analyzer.engine_supply_factory      as     engine
+from   quex.engine.analyzer.transition_map             import TransitionMap
 import quex.engine.analyzer.core                       as     analyzer_generator
 from   quex.engine.interval_handling                   import NumberSet, Interval
 from   quex.input.regular_expression.construct         import Pattern
@@ -269,7 +269,7 @@ class LoopGenerator(Generator):
             if OnAfterReload is not None:  after_reload_action.extend(OnAfterReload)
 
         if OnExit is None:
-            assert not transition_map_tool.has_action_id(tm, E_ActionIDs.ON_EXIT)
+            assert not tm.has_action_id(E_ActionIDs.ON_EXIT)
         tm.insert_after_action_id(E_ActionIDs.ON_EXIT,            OnExit)
         tm.insert_after_action_id(E_ActionIDs.ON_GOOD_TRANSITION, OnContinue)
 
@@ -300,7 +300,7 @@ class LoopGenerator(Generator):
         global Match_input
         global Match_iterator
         LanguageDB = Setup.language_db
-        #transition_map_tool.assert_adjacency(TM) # EOF needs to be considered!
+        #TM.assert_adjacency() # EOF needs to be considered!
 
         reload_f           = (BeforeReloadAction is not None)
         ImplementationType = cls.determine_implementation_type(TM, reload_f)
@@ -311,7 +311,7 @@ class LoopGenerator(Generator):
             # This is only a work-around until 'on_codec_error' is implemented
             on_codec_error = copy(OnContinue)
             on_codec_error.insert(0, "%s\n" % LanguageDB.INPUT_P_INCREMENT())
-            transition_map_tool.fill_gaps(transformed_tm, on_codec_error)
+            transformed_tm.fill_gaps(on_codec_error)
             txt = cls.code_action_map_plain(transformed_tm, BeforeReloadAction, AfterReloadAction)
 
         elif ImplementationType == E_MapImplementationType.STATE_MACHINE_TRIVIAL:
@@ -342,7 +342,7 @@ class LoopGenerator(Generator):
 
     @classmethod
     def code_action_map_plain(cls, TM, BeforeReloadAction=None, AfterReloadAction=None):
-        transition_map_tool.assert_adjacency(TM)
+        TM.assert_adjacency()
 
         LanguageDB = Setup.language_db
 
@@ -353,18 +353,18 @@ class LoopGenerator(Generator):
             AfterReloadAction.insert(0, "%s\n" % LanguageDB.INPUT_P_INCREMENT())
             AfterReloadAction.insert(0, 1)
 
-            transition_map_tool.set_target(TM, Setup.buffer_limit_code, E_StateIndices.DROP_OUT)
+            TM.set_target(Setup.buffer_limit_code, E_StateIndices.DROP_OUT)
             BeforeReloadAction.append("%s\n" % LanguageDB.LEXEME_START_SET())
 
-            #transition_map_tool.replace_action_id(TM, E_ActionIDs.ON_EXIT, 
-            #                                      [1, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
+            #TM.replace_action_id(E_ActionIDs.ON_EXIT, 
+            #                     [1, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
 
         TM.insert_after_action_id(E_ActionIDs.ON_GOOD_TRANSITION,
                                   [2, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
 
         # The range of possible characters may be restricted. It must be ensured,
         # that the occurring characters only belong to the admissible range.
-        transition_map_tool.prune(TM, 0, Setup.get_character_value_limit())
+        TM.prune(0, Setup.get_character_value_limit())
 
         # Now, we start with code generation. The signalizing ActionIDs must be deleted.
         TM.delete_action_ids()
@@ -380,9 +380,9 @@ class LoopGenerator(Generator):
         if BeforeReloadAction is not None:
             TransitionCodeFactory.prepare_reload_tansition(TM, pseudo_state_index)
 
-        tm = [ 
+        tm = TransitionMap.from_iterable( 
             (interval, TransitionCodeFactory.do(x)) for interval, x in TM 
-        ]
+        )
 
         #LanguageDB.code_generation_switch_cases_add_statement("break;")
         transition_block.do(txt, tm)
@@ -407,12 +407,12 @@ class LoopGenerator(Generator):
         # character needs to be reset, its start position must be known. For 
         # this the 'lexeme start pointer' is used.
         if      BeforeReloadAction is not None \
-            and transition_map_tool.has_action_id(TM, E_ActionIDs.ON_EXIT):
+            and TM.has_action_id(E_ActionIDs.ON_EXIT):
             variable_db.require("character_begin_p")
 
             loop_epilog = [1, "%s\n" % LanguageDB.CHARACTER_BEGIN_P_SET()]
-            transition_map_tool.replace_action_id(TM, E_ActionIDs.ON_EXIT, 
-                                                  [1, "%s\n" % LanguageDB.INPUT_P_TO_CHARACTER_BEGIN_P()])
+            TM.replace_action_id(E_ActionIDs.ON_EXIT, 
+                                 [1, "%s\n" % LanguageDB.INPUT_P_TO_CHARACTER_BEGIN_P()])
             BeforeReloadAction.append("%s\n" % LanguageDB.LEXEME_START_TO_CHARACTER_BEGIN_P())
             AfterReloadAction.append("%s\n" % LanguageDB.CHARACTER_BEGIN_P_TO_LEXEME_START_P())
         else:
@@ -517,7 +517,7 @@ class LoopGenerator(Generator):
         # Currently, we do not handle the case 'Reload': refuse to work.
         assert BeforeReloadAction is None
         assert cls.state_machine_trivial_possible(tm)
-        transition_map_tool.assert_continuity(tm) #, str([x[0] for x in tm])
+        tm.assert_continuity() #, str([x[0] for x in tm])
 
         # (*) Try to find easy and elegant special solutions 
         if   Setup.buffer_codec_transformation_info == "utf8-state-split":
@@ -541,8 +541,10 @@ class LoopGenerator(Generator):
             return action
 
         LastI = len(tm) - 1
-        tm = [ (x[0], add_increment(x[1], IncrementActionStr, LastF=(i==LastI))) 
-               for i, x in enumerate(tm) ]
+        tm = TransitionMap.from_iterable(
+             (x[0], add_increment(x[1], IncrementActionStr, LastF=(i==LastI))) 
+             for i, x in enumerate(tm) 
+        )
 
         # (*) The first interval may start at - sys.maxint
         if tm[0][0].begin < 0: tm[0][0].begin = 0

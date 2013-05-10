@@ -4,7 +4,7 @@ from   quex.blackboard                            import E_AcceptanceIDs,  E_Sta
                                                          setup as Setup
 
 def do(txt, TheState, TheAnalyzer, DefineLabelF=True, MentionStateIndexF=True):
-    LanguageDB          = Setup.language_db
+    LanguageDB = Setup.language_db
 
     if DefineLabelF:
         txt.append(Address("$drop-out", TheState.index))

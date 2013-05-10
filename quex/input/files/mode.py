@@ -351,11 +351,13 @@ class Mode:
 
         if len(self.__pattern_action_pair_list) != 0:
             txt += "    PATTERN-ACTION PAIRS:\n"
-            def the_key(x):
-                if   x.pattern() in E_ActionIDs: return x
-                elif hasattr(x.pattern(), "sm"): return x.pattern().sm.get_id()
-                else:                            return x
-            self.__pattern_action_pair_list.sort(key=the_key)
+            def my_key(x):
+                if   x.pattern() in E_ActionIDs: return (0, str(x.pattern()))
+                elif hasattr(x.pattern(), "sm"): return (1, x.pattern().sm.get_id())
+                else:                            return (2, x)
+
+            self.__pattern_action_pair_list.sort(key=my_key)
+
             for pap in self.__pattern_action_pair_list:
                 if hasattr(pap.pattern(), "sm"): 
                     txt += "      (%3i) %s: %s%s\n" % \

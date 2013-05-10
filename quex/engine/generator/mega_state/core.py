@@ -2,6 +2,7 @@ from   quex.blackboard                                   import setup as Setup
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.mega_state.core         import MegaState_Target_DROP_OUT
+from   quex.engine.analyzer.transition_map          import TransitionMap
 from   quex.engine.generator.state.transition.code  import  \
                                                            TransitionCodeFactory, \
                                                            MegaStateTransitionCodeFactory
@@ -168,12 +169,12 @@ def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr):
         # => Define an 'all drop out' trigger_map, and then later
         # => Adapt the trigger map, so that the 'buffer limit' is an 
         #    isolated single interval.
-        TheState.transition_map = [ 
+        TheState.transition_map = TransitionMap.from_iterable( 
             (Interval(-sys.maxint, sys.maxint), MegaState_Target_DROP_OUT) 
-        ]
+        )
 
     goto_reload_str = TransitionCodeFactory.prepare_reload_tansition(
-                                 TransitionMap = TheState.transition_map,
+                                 TM            = TheState.transition_map,
                                  StateIndex    = TheState.index,
                                  EngineType    = TheAnalyzer.engine_type,
                                  InitStateF    = TheState.init_state_f)
@@ -181,10 +182,10 @@ def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr):
     MegaStateTransitionCodeFactory.init(TheState, TheAnalyzer.state_db, StateKeyStr, 
                                         TheAnalyzer.engine_type, goto_reload_str)
 
-    return [ 
+    return TransitionMap.from_iterable( 
         (entry[0], MegaStateTransitionCodeFactory.do(entry[1])) 
         for entry in TheState.transition_map 
-    ]
+    )
 
 
 

@@ -5,7 +5,7 @@ from   quex.engine.state_machine.core                  import StateMachine
 import quex.engine.state_machine.utf8_state_split      as utf8_state_split
 import quex.engine.state_machine.utf16_state_split     as utf16_state_split
 import quex.engine.state_machine.algorithm.beautifier  as beautifier
-import quex.engine.analyzer.transition_map             as     transition_map_tool
+from   quex.engine.analyzer.transition_map             import TransitionMap
 from   quex.engine.misc.file_in                        import error_msg
 from   quex.engine.interval_handling                   import NumberSet
 from   quex.blackboard                                 import setup as Setup
@@ -108,14 +108,14 @@ def do_transition_map(TM, TrafoInfo=None):
     assert not isinstance(TrafoInfo, (str, unicode)) or TrafoInfo.find("-state-split") == -1
 
     total_verdict = True
-    result        = []
+    result        = TransitionMap()
     for interval, target in TM:
         verdict, transformed = interval.transform(TrafoInfo)
         if not verdict: total_verdict = False
         result.extend((x, target) for x in transformed)
 
-    transition_map_tool.clean_up(result)
-    # DO NOT:  "transition_map_tool.fill_gaps(result, [])!"
+    result.clean_up()
+    # DO NOT:  "result.fill_gaps([])!"
     # BECAUSE: This adds an action which is not in the original transition map!
     # EXAMPLE: A loop every action contains a '++p' and the loop ends on 
     #          'p == End'. Then an additional empty action [] would mean that 
