@@ -2,8 +2,8 @@ from   quex.blackboard                              import setup as Setup, \
                                                            E_StateIndices
 import quex.blackboard                              as     blackboard
 import quex.engine.state_machine.index              as     sm_index
-import quex.engine.analyzer.transition_map          as     transition_map_tools
 import quex.engine.analyzer.engine_supply_factory   as     engine
+from   quex.engine.analyzer.transition_map          import TransitionMap
 import quex.engine.generator.state.transition.core  as     transition_block
 from   quex.engine.generator.state.transition.code  import TransitionCode
 from   quex.engine.generator.languages.variable_db  import variable_db
@@ -271,7 +271,7 @@ def __get_transition_block(IndentationSetup, CounterAdr):
         interval_list = character_set.get().get_intervals(PromiseToTreatWellF=True)
         transition_map.extend((interval, Target) for interval in interval_list)
 
-    transition_map = []
+    transition_map = TransitionMap()
     if IndentationSetup.homogeneous_spaces():
         # If the indentation consists only of spaces, than it is 'uniform' ...
         # Count indentation/column at end of run;
@@ -281,7 +281,6 @@ def __get_transition_block(IndentationSetup, CounterAdr):
                TransitionCode(LanguageDB.GOTO_ADDRESS(CounterAdr)))
 
     else:
-        transition_map = []
         # Add the space counters
         for count, character_set in IndentationSetup.space_db.items():
             extend(transition_map, character_set, Count_Space(count, CounterAdr))
@@ -295,8 +294,8 @@ def __get_transition_block(IndentationSetup, CounterAdr):
         extend(transition_map, IndentationSetup.bad_character_set, 
                Detect_Bad(CounterAdr))
 
-    transition_map_tools.sort(transition_map)
-    transition_map_tools.fill_gaps(transition_map, E_StateIndices.DROP_OUT)
+    transition_map.sort()
+    transition_map.fill_gaps(E_StateIndices.DROP_OUT)
 
     txt = []
     tm = transition_block.prepare_transition_map(transition_map, 

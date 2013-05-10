@@ -17,11 +17,11 @@ import random
 sys.path.insert(0, os.environ["QUEX_PATH"])
                                                    
 from   quex.engine.interval_handling               import Interval
-import quex.engine.analyzer.transition_map         as     transition_map_tool
 from   quex.engine.generator.base                  import LoopGenerator
 import quex.engine.generator.languages.core        as     languages
 import quex.engine.generator.languages.address     as     address
 import quex.engine.generator.state.transition.core as     transition_block
+from   quex.engine.analyzer.transition_map         import TransitionMap   
 from   quex.blackboard                             import setup as Setup, E_MapImplementationType
 
 Setup.language_db = languages.db["C"]              
@@ -48,7 +48,7 @@ random.seed(110270)   # must set the seed for randomness, otherwise system time
 #                     # is used which is no longer deterministic.
 
 if choice == "A":
-    tm0 = [
+    tm0 = TransitionMap.from_iterable([
         (Interval(10,20),    1L), 
         (Interval(195,196),  1L),
         (Interval(51,70),    2L), 
@@ -64,7 +64,7 @@ if choice == "A":
         (Interval(231,240),  7L),
         (Interval(250,260),  8L), 
         (Interval(71,80),    8L), 
-    ]
+    ])
 
     interval_end = 300
 
@@ -74,7 +74,7 @@ elif choice == "B":
         target_state_index = long(random.random() * 10)
         return (Interval(start, start + size), target_state_index)
 
-    tm0            = []
+    tm0            = TransitionMap()
     interval_begin = 0
     for i in range(4000):
         tm0.append(make(interval_begin))
@@ -89,7 +89,7 @@ elif choice == "C":
         target_state_index = long(random.random() * 5)
         return (Interval(start, start + size), target_state_index)
 
-    tm0            = []
+    tm0            = TransitionMap()
     interval_begin = 0
     for i in range(3000):
         if random.random() > 0.75:
@@ -103,11 +103,11 @@ elif choice == "C":
     interval_end = interval_begin
 
 def prepare(tm):
-    tm0.sort(key=lambda x: x[0].begin)
-    target_state_index_list = sorted(list(set(long(i) for interval, i in tm0)))
+    tm.sort()
+    target_state_index_list = sorted(list(set(long(i) for interval, i in tm)))
 
-    transition_map_tool.fill_gaps(tm0, -1)
-    return [ (interval, ["return %i;\n" % i]) for interval, i in tm0 ]
+    tm.fill_gaps(-1)
+    return TransitionMap.from_iterable((interval, ["return %i;\n" % i]) for interval, i in tm)
 
 def get_transition_function(tm, Codec):
     if codec != "UTF8":

@@ -21,7 +21,7 @@ class TransitionCodeFactory:
 
 
     @classmethod
-    def prepare_reload_tansition(cls, TransitionMap,
+    def prepare_reload_tansition(cls, TM,
                                  StateIndex     = None,
                                  EngineType     = engine.FORWARD,
                                  InitStateF     = False,
@@ -37,7 +37,7 @@ class TransitionCodeFactory:
         if not EngineType.requires_buffer_limit_code_for_reload():
             return None
 
-        cls.prepare_transition_map_for_reload(TransitionMap)
+        cls.prepare_transition_map_for_reload(TM)
 
         return cls.prepare_reload_action(StateIndex, EngineType, InitStateF, GotoReload_Str)
 

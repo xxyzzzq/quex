@@ -3,7 +3,7 @@ from   quex.engine.analyzer.mega_state.core         import MegaState, \
                                                            MegaState_Entry, \
                                                            MegaState_DropOut
 from   quex.engine.analyzer.mega_state.template.candidate  import TargetFactory
-import quex.engine.analyzer.transition_map          as     transition_map_tools
+from   quex.engine.analyzer.transition_map          import TransitionMap        
 from   quex.engine.analyzer.state.entry_action      import SetTemplateStateKey
 import quex.engine.state_machine.index              as     index
 from   quex.engine.interval_handling                       import Interval
@@ -238,14 +238,14 @@ def combine_maps(StateA, StateB):
     computation of target schemes. For this reason no dictionary
     {state_index->target} is used.
     """
-    transition_map_tools.assert_adjacency(StateA.transition_map, TotalRangeF=True)
-    transition_map_tools.assert_adjacency(StateB.transition_map, TotalRangeF=True)
+    StateA.transition_map.assert_adjacency(TotalRangeF=True)
+    StateB.transition_map.assert_adjacency(TotalRangeF=True)
 
     MegaState_Target.init() # Initialize the tracking of generated MegaState_Target-s
     factory = TargetFactory(StateA, StateB)
-    result  = []
-    for begin, end, a_target, b_target in transition_map_tools.zipped_iterable(StateA.transition_map, 
-                                                                               StateB.transition_map):
+    result  = TransitionMap()
+    for begin, end, a_target, b_target in TransitionMap.izip(StateA.transition_map, 
+                                                             StateB.transition_map):
         target = factory.get(a_target, b_target)
         result.append((Interval(begin, end), target))
 
@@ -255,5 +255,6 @@ def combine_maps(StateA, StateB):
     scheme_n = 0
     for x in (key for key in mega_state_target_db.iterkeys() if isinstance(key, tuple)):
         scheme_n += 1
+
     return result, scheme_n
 

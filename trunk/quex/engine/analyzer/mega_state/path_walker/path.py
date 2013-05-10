@@ -3,7 +3,7 @@ from   quex.engine.analyzer.state.entry_action import DoorID, \
                                                       SetPathIterator
 from   quex.engine.analyzer.mega_state.core    import MegaState_Entry, \
                                                       MegaState_DropOut
-import quex.engine.analyzer.transition_map     as     transition_map_tools
+from   quex.engine.analyzer.transition_map     import TransitionMap       
 import quex.engine.state_machine.index         as     index
 
 from   quex.blackboard import E_StateIndices
@@ -99,7 +99,7 @@ class CharacterPath(object):
 
         # Set the 'void' target to indicate wildcard.
         self.__wildcard_char    = StartCharacter
-        transition_map_tools.set_target(self.__transition_map, StartCharacter, E_StateIndices.VOID)
+        self.__transition_map.set_target(StartCharacter, E_StateIndices.VOID)
 
     def clone(self):
         result = CharacterPath(None, None, None)
@@ -231,7 +231,7 @@ class CharacterPath(object):
             return False
         return True
 
-    def match(self, TransitionMap, TargetDoorID, TriggerCharToTarget):
+    def match(self, TM, TargetDoorID, TriggerCharToTarget):
         """A single character transition 
 
                         TriggerCharToTarget --> DoorID
@@ -252,8 +252,7 @@ class CharacterPath(object):
                           TransitionMap could match.
         """
         wildcard_target = -1
-        for begin, end, a_target, b_target in transition_map_tools.zipped_iterable(self.__transition_map,
-                                                                                   TransitionMap):
+        for begin, end, a_target, b_target in TransitionMap.izip(self.__transition_map, TM):
             if a_target == b_target: continue    # There is no problem at all
 
             size = end - begin
@@ -294,7 +293,7 @@ class CharacterPath(object):
         # Ensure that there is no wildcard in the transition map
         if self.__wildcard_char is None: return
 
-        transition_map_tools.smoothen(self.__transition_map, self.__wildcard_char)
+        self.__transition_map.smoothen(self.__wildcard_char)
         self.__wildcard_char = None
 
     def plug_wildcard(self, Target):

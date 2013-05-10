@@ -66,6 +66,7 @@ from quex.engine.analyzer.state.drop_out     import DropOut, \
                                                     DropOutIndifferent, \
                                                     DropOutBackwardInputPositionDetection
 from quex.engine.analyzer.state.entry_action import DoorID
+from quex.engine.analyzer.transition_map     import TransitionMap
 from quex.blackboard                         import E_StateIndices
 
 from copy import copy
@@ -551,8 +552,10 @@ class PseudoMegaState(MegaState):
         Here, the recursive target is implemented as a 'scheme' in order to
         prevent that it may be treated as 'uniform' with other targets.
         """
-        return [ (interval, MegaState_Target.create(target)) \
-                 for interval, target in self.__state.transition_map]
+        return TransitionMap.from_iterable(
+                  (interval, MegaState_Target.create(target)) 
+                  for interval, target in self.__state.transition_map
+               )
 
     def state_index_sequence(self):
         return self.__state_index_sequence

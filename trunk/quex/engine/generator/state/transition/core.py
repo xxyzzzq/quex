@@ -1,24 +1,24 @@
 from   quex.engine.generator.state.transition.code      import TransitionCodeFactory
-import quex.engine.generator.state.transition.solution  as solution
-import quex.engine.generator.state.transition.bisection as bisection
-import quex.engine.analyzer.transition_map              as transition_map_tool
-import quex.engine.analyzer.engine_supply_factory       as engine
-from   quex.blackboard                                  import setup as Setup
+import quex.engine.generator.state.transition.solution  as     solution
+import quex.engine.generator.state.transition.bisection as     bisection
+import quex.engine.analyzer.engine_supply_factory       as     engine
+from   quex.engine.analyzer.transition_map              import TransitionMap
+from   quex.blackboard                                  import setup as Setup, E_StateIndices
 from   copy      import copy
 from   itertools import islice
 
 LanguageDB = None
 
-def do(txt, TransitionMap):
+def do(txt, TM):
     global LanguageDB
     LanguageDB = Setup.language_db
 
-    if len(TransitionMap) == 0:
+    if len(TM) == 0:
         return
 
     # The range of possible characters may be restricted. It must be ensured,
     # that the occurring characters only belong to the admissible range.
-    transition_map_tool.prune(TransitionMap, 0, Setup.get_character_value_limit())
+    TM.prune(0, Setup.get_character_value_limit())
 
     # (*) Determine 'outstanding' characters. For example, if 'e' appears
     #     exceptionally often, then it makes sense to check:
@@ -31,42 +31,43 @@ def do(txt, TransitionMap):
     #     (Currently, this is a 'no-operation'. It is planned to consider
     #      statitistics about character occurencies into the generation of
     #      the transition map.)
-    outstanding_list = solution.prune_outstanding(TransitionMap) 
+    outstanding_list = solution.prune_outstanding(TM) 
     if outstanding_list is not None: 
         __get_outstanding(txt, outstanding_list)
 
     # (*) Bisection until other solution is more suitable.
     #     (This may include 'no bisectioning')
-    # print "#TM:\n", transition_map_tool.get_string(TransitionMap, Option="hex")
-    __bisection(txt, TransitionMap)
+    # print "#TM:\n", TM.get_string(Option="hex")
+    __bisection(txt, TM)
 
     # (*) When there was an outstanding character, then the whole bisection was
     #     implemented in an 'ELSE' block which must be closed.
     if outstanding_list is not None: 
         txt.append(LanguageDB.ENDIF)
 
-def prepare_transition_map(TransitionMap, 
+def prepare_transition_map(TM, 
                            StateIndex         = None,
                            EngineType         = engine.FORWARD,
                            InitStateF         = False,
                            GotoReload_Str     = None,
                            TheAnalyzer        = None):
     global LanguageDB
-    assert isinstance(TransitionMap, list)
+    assert isinstance(TM, list)
     assert isinstance(EngineType, engine.Base)
     assert isinstance(InitStateF, bool)
     assert StateIndex       is None or isinstance(StateIndex, long)
-
-    transition_map_tool.assert_adjacency(TransitionMap)
 
     # If a state has no transitions, no new input needs to be eaten => no reload.
     #
     # NOTE: The only case where the buffer reload is not required are empty states,
     #       AND states during backward input position detection!
-    if len(TransitionMap) == 0: 
-        return TransitionMap
+    if len(TM) == 0: 
+        return TM
 
-    goto_reload_str = TransitionCodeFactory.prepare_reload_tansition(TransitionMap,
+    TM.assert_continuity()
+    TM.fill_gaps(E_StateIndices.DROP_OUT)
+
+    goto_reload_str = TransitionCodeFactory.prepare_reload_tansition(TM,
                                      StateIndex,
                                      EngineType     = EngineType,
                                      InitStateF     = InitStateF,
@@ -78,7 +79,7 @@ def prepare_transition_map(TransitionMap,
                                GotoReloadStr = goto_reload_str,
                                TheAnalyzer   = TheAnalyzer)
 
-    return [ (x[0], TransitionCodeFactory.do(x[1])) for x in TransitionMap ]
+    return TransitionMap.from_iterable((x[0], TransitionCodeFactory.do(x[1])) for x in TM)
 
 class SubTriggerMap(object):
     """A trigger map that 'points' into a subset of a trigger map.
@@ -112,9 +113,9 @@ class SubTriggerMap(object):
         middle_i = int((self.__end_i - self.__begin_i) / 2) + self.__begin_i
         return self.__trigger_map[middle_i].begin
 
-def debug(TransitionMap, Function):
+def debug(TM, Function):
     print "##--BEGIN %s" % Function
-    for entry in TransitionMap:
+    for entry in TM:
         print "##", entry[0]
     print "##--END %s" % Function
 

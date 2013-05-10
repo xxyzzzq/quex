@@ -5,7 +5,7 @@ from   quex.engine.analyzer.state.entry_action           import TransitionID, \
                                                                 TransitionAction
 import quex.engine.analyzer.transition_map               as     transition_map_tools
 from   quex.engine.misc.tree_walker                      import TreeWalker
-from   quex.blackboard                                   import E_Compression
+from   quex.blackboard                                   import E_Compression, E_StateIndices
 
 from   collections import defaultdict
 
