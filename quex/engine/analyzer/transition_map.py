@@ -96,15 +96,14 @@ class TransitionMap(list):
     def relate_to_door_ids(self, TheAnalyzer, StateIndex):
         """Creates a transition_map that triggers to DoorIDs instead of target states.
         """
-        def adapt(Target):
+        def relate(Target):
             if Target == E_StateIndices.DROP_OUT:
                 return Target
             else:
                 result = TheAnalyzer.state_db[Target].entry.get_door_id(StateIndex=Target, FromStateIndex=StateIndex)
                 return result
         
-        return self.__class__.from_iterable((interval, adapt(target)) 
-                                            for interval, target in self)
+        return self.__class__.from_iterable(self, relate)
 
     def get_target(self, Character):
         i = self.bisect(Character)

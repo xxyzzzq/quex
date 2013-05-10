@@ -182,11 +182,6 @@ def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr):
     MegaStateTransitionCodeFactory.init(TheState, TheAnalyzer.state_db, StateKeyStr, 
                                         TheAnalyzer.engine_type, goto_reload_str)
 
-    return TransitionMap.from_iterable( 
-        (entry[0], MegaStateTransitionCodeFactory.do(entry[1])) 
-        for entry in TheState.transition_map 
-    )
-
-
-
+    return TransitionMap.from_iterable(TheState.transition_map, 
+                                       MegaStateTransitionCodeFactory.do)
 

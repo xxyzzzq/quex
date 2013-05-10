@@ -19,10 +19,10 @@ def test(Name, TM_A, TM_B):
     print "____________________________________________________________________"
     print
     print "Transition Map A:"
-    print transition_map_tools.get_string(tm_a, "dec", IntervalF=False),
+    print tm_a.get_string("dec", IntervalF=False),
     print
     print "Transition Map B:"
-    print transition_map_tools.get_string(tm_b, "dec", IntervalF=False),
+    print tm_b.get_string("dec", IntervalF=False),
     print
     print "Result:"
     for begin, end, a, b in TransitionMap.izip(tm_a, tm_b):

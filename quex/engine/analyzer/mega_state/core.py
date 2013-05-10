@@ -552,10 +552,8 @@ class PseudoMegaState(MegaState):
         Here, the recursive target is implemented as a 'scheme' in order to
         prevent that it may be treated as 'uniform' with other targets.
         """
-        return TransitionMap.from_iterable(
-                  (interval, MegaState_Target.create(target)) 
-                  for interval, target in self.__state.transition_map
-               )
+        return TransitionMap.from_iterable(self.__state.transition_map, 
+                                           MegaState_Target.create)
 
     def state_index_sequence(self):
         return self.__state_index_sequence

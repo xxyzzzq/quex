@@ -380,9 +380,7 @@ class LoopGenerator(Generator):
         if BeforeReloadAction is not None:
             TransitionCodeFactory.prepare_reload_tansition(TM, pseudo_state_index)
 
-        tm = TransitionMap.from_iterable( 
-            (interval, TransitionCodeFactory.do(x)) for interval, x in TM 
-        )
+        tm = TransitionMap.from_iterable(TM, TransitionCodeFactory.do)
 
         #LanguageDB.code_generation_switch_cases_add_statement("break;")
         transition_block.do(txt, tm)

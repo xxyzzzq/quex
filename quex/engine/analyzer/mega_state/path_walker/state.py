@@ -48,12 +48,12 @@ class PathWalkerState(MegaState):
 
         This is the form that code generation requires for MegaState-s.
         """
-        def adapt(Target):
-            if isinstance(Target, DoorID): return Target.state_index
-            return Target
-        return TransitionMap.from_iterable(
-                (interval, MegaState_Target.create(adapt(target))) 
-                for interval, target in TM)
+        def factory(Target):
+            if isinstance(Target, DoorID): x = Target.state_index
+            else:                          x = Target
+            return MegaState_Target.create(x)
+
+        return TransitionMap.from_iterable(TM, factory)
 
     def accept(self, Path, StateDB):
         """Accepts the given Path to be walked, if the remaining transition_maps
