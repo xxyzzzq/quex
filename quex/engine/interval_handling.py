@@ -19,7 +19,7 @@
 import quex.engine.utf8 as utf8
 
 import sys
-from   copy import copy
+from   copy      import copy
 from   itertools import izip, islice
 
 from   quex.engine.tools import r_enumerate

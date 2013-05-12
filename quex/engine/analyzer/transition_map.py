@@ -42,6 +42,9 @@ class TransitionMap(list):
                       for interval, target in Iterable)
         return result
 
+    def clone(self):
+        return self.from_iterable(self)
+
     @staticmethod
     def izip(TransitionMapA, TransitionMapB):
         """Produces an iterable over two transition maps at once. The borders in the
@@ -90,9 +93,6 @@ class TransitionMap(list):
         yield prev_end, sys.maxint, TransitionMapA[-1][1], TransitionMapB[-1][1]
         return
 
-    def clone(self):
-        return self.from_iterable(self)
-
     def relate_to_door_ids(self, TheAnalyzer, StateIndex):
         """Creates a transition_map that triggers to DoorIDs instead of target states.
         """
@@ -105,162 +105,62 @@ class TransitionMap(list):
         
         return self.__class__.from_iterable(self, relate)
 
+    def is_equal(self, Other):
+        if len(self) != len(Other): return False
+        for x, y in izip(self, Other):
+            if   x[0] != y[0]: return False  # Interval
+            elif x[1] != y[1]: return False  # Target
+        return True
+
     def get_target(self, Character):
-        i = self.bisect(Character)
+        i = self._bisect(Character)
         if i is None: return None
         return self[i][1]
 
     def set_target(self, Character, NewTarget):
-        i = self.bisect(Character)
+        """Set the target in the transition map for a given 'Character'.
+        """
+        # Find the index of the interval which contains 'Character'
+        i = self._bisect(Character)
         if i is None:
             self.insert(0, (Interval(Character), NewTarget))
             self.sort()
             return
 
+        # Split the found interval, if necessary, so that the map
+        # contains 'Character' --> 'NewTarget'.
         interval, target = self[i]
-
-        # Found the interval that contains the Character
         assert interval.size() > 0
-        L = len(self)
 
-        # Check whether an adjacent interval has the same target, so that
-        # the new interval can directly be docked to it.
-        if target == NewTarget:
+        new_i = None
+
+        if target == NewTarget: 
             return # Nothing to be done
 
-        if interval.size() == 1:
-            if i > 0 and interval.begin == Character and self[i-1][1] == NewTarget:
-                # Interval before fits
-                if i < L-1 and interval.end == Character + 1 and self[i+1][1] == NewTarget:
-                    # Interval before and after fits
-                    self[i-1][0].end = self[i+1][0].end
-                    del self[i:i+2]
-                else:
-                    # Only interval before fits
-                    self[i-1][0].end = self[i][0].end
-                    del self[i]
+        elif interval.size() == 1:
+            self[i] = (interval, NewTarget)
+            new_i   = i
 
-            elif i < L-1 and interval.end == Character + 1 and self[i+1][1] == NewTarget:
-                # Only interval after fits, Interval before does not fit
-                self[i+1][0].begin = self[i][0].begin
-                del self[i]
-
-            else:
-                self[i] = (interval, NewTarget)
-
-            self.assert_continuity()
-            return
-
-        if i > 0 and interval.begin == Character and self[i-1][1] == NewTarget:
-            # Interval before fits, Interval after cannot fit, because size() > 1
-            self[i-1][0].end = Character + 1
-            self[i][0].begin = Character + 1
-
-        elif i < L-1 and interval.end == Character + 1 and self[i+1][1] == NewTarget:
-            # Interval after fits, Interval before cannot fit, because size() > 1
-            self[i+1][0].begin = Character 
-            self[i][0].end     = Character
-
-        elif interval.begin == Character:
-            self[i][0].begin = Character + 1
-            self.insert(i, (Interval(Character), NewTarget))
-
-        elif interval.end == Character + 1:
+        elif Character == interval.end - 1:
             self.insert(i+1, (Interval(Character), NewTarget))
-            self[i][0].end = Character
+            interval.end -= 1
+            new_i         = i + 1
+
+        elif Character == interval.begin:
+            self.insert(i, (Interval(Character), NewTarget))
+            interval.begin += 1
+            new_i           = i
 
         else:
-            # Character lies in the middle of a non-fitting interval
             self.insert(i+1, (Interval(Character), NewTarget))
             self.insert(i+2, (Interval(Character+1, interval.end), target))
-            self[i][0].end = Character 
+            interval.end = Character 
+            new_i        = i + 1
 
+        # Combine adjacent intervals which trigger to the same target.
+        self.combine_adjacents()
         self.assert_continuity()
         return
-
-    def has_action_id(self, ActionID):
-        for interval, action in self:
-            if type(action) == list and ActionID in action:
-                return True
-            elif action == ActionID:
-                return True
-        return False
-
-    def replace_action_id(self, ActionID, Action):
-        assert ActionID in E_ActionIDs
-        assert Action is None or type(Action) == list
-
-        for interval, action in self:
-            try:    idx = action.index(ActionID)
-            except: continue
-
-            del action[idx]
-            
-            if Action is None: continue
-
-            for x in Action:
-                action.insert(idx, x)
-                idx += 1
-        return
-
-    def delete_action_ids(self):
-        for interval, action in self:
-            if type(action) != list: continue
-            i = len(action) - 1
-            while i >= 0:
-                if action[i] in E_ActionIDs:
-                    del action[i]
-                i -= 1
-        return
-
-    def insert_after_action_id(self, ActionID, Action):
-        assert ActionID in E_ActionIDs
-        assert Action is None or type(Action) == list
-
-        if Action is None:
-            return
-
-        done_set = set()
-        for interval, action in self:
-            if id(action) in done_set: continue
-            done_set.add(id(action))
-
-            try:    idx = action.index(ActionID)
-            except: continue
-
-            for x in Action:
-                idx += 1
-                action.insert(idx, x)
-        return
-
-    def combine_adjacents(self):
-        L = len(self) 
-        if L == 0: return
-        prev_interval, prev_target = self[L-1]
-        for i in reversed(xrange(L-1)):
-            interval, target = self[i]
-            if interval.end == prev_interval.begin and prev_target == target:
-                interval.end = prev_interval.end
-                del self[i+1]
-            else:
-                prev_target   = target
-            prev_interval = interval
-
-    def sort(self):
-        list.sort(self, key=lambda x: (x[0].begin, x[0].end))
-
-        # double check -- no overlapping!
-        if len(self) != 0:
-            prev_interval = self[0][0]
-            for interval, target in self[1:]:
-                assert interval.begin >= prev_interval.end
-
-    def clean_up(self):
-        """NOTE: 'clean_up()' does not mean that there are no gaps! For that
-                 consider '.combine_adjacents()' or '.fill_gaps()'
-        """
-        self.sort()
-        self.combine_adjacents()
 
     def index(self, Character):
         """Searches for interval that contains 'Character' and returns
@@ -269,13 +169,60 @@ class TransitionMap(list):
            RETURNS: None      -- Character not found
                     index > 0 -- where interval 'self[i][0]' contains Character.
         """
-        return self.bisect(Character)
+        return self._bisect(Character)
+
+    def _bisect(self, Character):
+        lower = 0
+        upper = len(self)
+        if upper == 0:
+            return None
+
+        while upper - lower > 1:
+            i = (upper + lower) >> 1
+            if   self[i][0].begin >  Character: upper = i
+            elif self[i][0].end   <= Character: lower = i
+            else:                                         return i
+
+        if     Character >= self[lower][0].begin \
+           and Character <  self[lower][0].end:
+            return lower
+
+        return None
+
+    def combine_adjacents(self, Index=None):
+        """If two adjacent intervals have the same target, then combine both
+           into a single one. If 'Index' is specified only the neighbours of
+           self[i] are considered.
+        """
+        L = len(self) 
+        if L == 0: return
+
+        if Index is None:
+            range_iterable = reversed(xrange(L))
+        else:
+            assert Index > 0  and Index < L
+            range_iterable = []
+            if Index < L - 1: range_iterable.append(Index+1)
+            range_iterable.append(Index)
+            if Index > 0:     range_iterable.append(Index-1)
+            range_iterable = range_iterable.__iter__()
+
+        prev_interval, prev_target = self[range_iterable.next()]
+        for i in range_iterable:
+            interval, target = self[i]
+            if interval.end == prev_interval.begin and prev_target == target:
+                interval.end = prev_interval.end
+                del self[i+1]
+            else:
+                prev_target   = target
+            prev_interval = interval
 
     def smoothen(self, Character):
         """Replaces a single character transition by a transition of its adjacent 
-        intervals.
+           intervals.
         """
-        i = self.index(Character)
+        i = self._bisect(Character)
+        assert i is not None
         assert self[i][0].size() == 1
 
         L = len(self)
@@ -293,12 +240,21 @@ class TransitionMap(list):
         else:
             assert False
 
-    def is_equal(self, Other):
-        if len(self) != len(Other): return False
-        for x, y in izip(self, Other):
-            if   x[0] != y[0]: return False  # Interval
-            elif x[1] != y[1]: return False  # Target
-        return True
+    def sort(self):
+        list.sort(self, key=lambda x: (x[0].begin, x[0].end))
+
+        # double check -- no overlapping!
+        if len(self) != 0:
+            prev_interval = self[0][0]
+            for interval, target in self[1:]:
+                assert interval.begin >= prev_interval.end
+
+    def clean_up(self):
+        """NOTE: 'clean_up()' does not mean that there are no gaps! For that
+                 consider '.combine_adjacents()' or '.fill_gaps()'
+        """
+        self.sort()
+        self.combine_adjacents()
 
     def fill_gaps(self, Target):
         """Fill gaps in the transition map. 
@@ -364,75 +320,8 @@ class TransitionMap(list):
                 prev_end    = interval.begin
                 # NOT: i+=1, because need to check for combination with next interval.
 
-    def cut(self, CharacterSet):
-        result = []
-        for interval, target in self:
-            diff = CharacterSet.intersection(interval)
-            result.extend((x_interval, target) 
-                          for x_interval in diff.get_intervals(PromiseToTreatWellF=True))
-        return result
-
-    def bisect(self, Character):
-        lower = 0
-        upper = len(self)
-        if upper == 0:
-            return None
-
-        while upper - lower > 1:
-            i = (upper + lower) >> 1
-            if   self[i][0].begin >  Character: upper = i
-            elif self[i][0].end   <= Character: lower = i
-            else:                                         return i
-
-        if     Character >= self[lower][0].begin \
-           and Character <  self[lower][0].end:
-            return lower
-
-        return None
-
-    def fill_empty_actions(self, TransitionActionMap):
-        return self.add_transition_actions(TransitionActionMap, OnlyIfEmptyF=True)
-
-    def add_action_to_all(self, Action):
-        assert isinstance(Action, list)
-        done_set = set()
-        for interval, action in self:
-            if id(action) in done_set: continue
-            done_set.add(id(action))
-            action.extend(Action)
-
-    def add_transition_actions(self, TransitionActionMap, OnlyIfEmptyF=False):
-        """'TransitionActionMap' describes actions to be taken upon the occurence
-        of a particular character.  The actions are to be added to the
-        'self'.  
-        """
-        def extend(Target, ActionList, OnlyIfEmptyF):
-            if isinstance(Target, (int, long)) or Target in E_StateIndices:
-                return Target
-            elif len(Target) == 0:
-                return copy(ActionList)
-            elif OnlyIfEmptyF:
-                return copy(Target)
-
-            result = copy(Target)
-            if len(Target[-1]) != 0:
-                plain_target = Target[-1][-1].rstrip()
-                if len(plain_target) and plain_target[-1] == "\n": result.append(0)
-            result.extend(ActionList)
-            return result
-
-        result = []
-        for begin, end, target, action_list in TransitionMap.izip(self, TransitionActionMap):
-            if action_list is None:
-                result.append((Interval(begin, end), copy(target)))
-            else:
-                result.append((Interval(begin, end), extend(target, action_list, OnlyIfEmptyF)))
-        return result
-
     def prune(TriggerMap, Begin, End):
-        """Consider the 'useful range' starting from zero. Thus, the first 
-           interval to be considered is the first that intersects with 0.
-           Then 'begin' must become '0' instead of a negative value.
+        """Cut out any element in the trigger map which lies beyong [Begin:End)
         """
         L = len(TriggerMap)
 
@@ -448,8 +337,8 @@ class TransitionMap(list):
             begin_i = i
             break
 
-        if begin_i is None: del TriggerMap[:] # No element is in range
-        elif begin_i != 0:  del TriggerMap[:begin_i]
+        if   begin_i is None: del TriggerMap[:] # No element is in range
+        elif begin_i != 0:    del TriggerMap[:begin_i]
 
         # Iterate from 'high' to 'low'
         end_i = None
@@ -544,6 +433,100 @@ class TransitionMap(list):
             prev_target = target
 
         # If we reach here, then everything is OK.
+        return
+
+    def add_action_to_all(self, Action):
+        assert isinstance(Action, list)
+        done_set = set()
+        for interval, action in self:
+            if id(action) in done_set: continue
+            done_set.add(id(action))
+            action.extend(Action)
+
+    def add_transition_actions(self, TransitionActionMap, OnlyIfEmptyF=False):
+        """'TransitionActionMap' describes actions to be taken upon the occurence
+        of a particular character.  The actions are to be added to the
+        'self'.  
+        """
+        def extend(Target, ActionList, OnlyIfEmptyF):
+            if isinstance(Target, (int, long)) or Target in E_StateIndices:
+                return Target
+            elif len(Target) == 0:
+                return copy(ActionList)
+            elif OnlyIfEmptyF:
+                return copy(Target)
+
+            result = copy(Target)
+            if len(Target[-1]) != 0:
+                plain_target = Target[-1][-1].rstrip()
+                if len(plain_target) and plain_target[-1] == "\n": result.append(0)
+            result.extend(ActionList)
+            return result
+
+        result = []
+        for begin, end, target, action_list in TransitionMap.izip(self, TransitionActionMap):
+            if action_list is None:
+                result.append((Interval(begin, end), copy(target)))
+            else:
+                result.append((Interval(begin, end), extend(target, action_list, OnlyIfEmptyF)))
+        return result
+
+    def fill_empty_actions(self, TransitionActionMap):
+        return self.add_transition_actions(TransitionActionMap, OnlyIfEmptyF=True)
+
+    def has_action_id(self, ActionID):
+        for interval, action in self:
+            if type(action) == list and ActionID in action:
+                return True
+            elif action == ActionID:
+                return True
+        return False
+
+    def replace_action_id(self, ActionID, Action):
+        assert ActionID in E_ActionIDs
+        assert Action is None or type(Action) == list
+
+        for interval, action in self:
+            try:    idx = action.index(ActionID)
+            except: continue
+
+            del action[idx]
+            
+            if Action is None: continue
+
+            for x in Action:
+                action.insert(idx, x)
+                idx += 1
+        return
+
+    def delete_action_ids(self):
+        for interval, action in self:
+            if type(action) != list: continue
+            i = len(action) - 1
+            while i >= 0:
+                if action[i] in E_ActionIDs:
+                    del action[i]
+                i -= 1
+        return
+
+    def insert_after_action_id(self, ActionID, Action):
+        assert ActionID in E_ActionIDs
+        assert Action is None or type(Action) == list
+
+        if Action is None:
+            return
+
+        done_set = set()
+        for interval, action in self:
+            if id(action) in done_set: continue
+            done_set.add(id(action))
+
+            try:    idx = action.index(ActionID)
+            except: continue
+
+            for x in Action:
+                idx += 1
+                action.insert(idx, x)
         return
 
     def get_string(self, Option="utf8", IntervalF=True):
