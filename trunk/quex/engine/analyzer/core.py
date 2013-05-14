@@ -55,11 +55,8 @@ from   itertools        import imap
 from   operator         import attrgetter
 
 def do(SM, EngineType=engine.FORWARD):
-    # Generate Analyzer from StateMachine
-    analyzer = Analyzer(SM, EngineType)
 
-    # Optimize the Analyzer
-    analyzer = optimizer.do(analyzer)
+    analyzer = __do(SM, EngineType)
 
     # The language database requires the analyzer for labels etc.
     if Setup.language_db is not None:
@@ -69,6 +66,22 @@ def do(SM, EngineType=engine.FORWARD):
     mega_state_analyzer.do(analyzer)
 
     return analyzer
+
+def __do(SM, EngineType):
+    # Generate Analyzer from StateMachine
+    analyzer = Analyzer(SM, EngineType)
+
+    # Optimize the Analyzer
+    analyzer = optimizer.do(analyzer)
+
+    # Better configure the door tree AFTER position registers are replaced.
+    for state in analyzer.state_db.itervalues():
+        state.entry.door_tree_configure()
+    for state in analyzer.state_db.itervalues():
+        state.transition_map = state.transition_map.relate_to_door_ids(analyzer, state.index)
+
+    return analyzer
+
 
 class Analyzer:
     """A representation of a pattern analyzing StateMachine suitable for

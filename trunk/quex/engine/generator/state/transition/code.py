@@ -1,4 +1,5 @@
 import quex.engine.analyzer.engine_supply_factory   as     engine
+from   quex.engine.analyzer.state.entry_action      import DoorID
 from   quex.engine.analyzer.mega_state.core         import MegaState_Target, \
                                                            MegaState_Target_DROP_OUT
 from   quex.engine.generator.languages.variable_db  import variable_db
@@ -48,7 +49,8 @@ class TransitionCodeFactory:
         # buffer limit code MUST trigger a 'DROP_OUT'.
         blc_target = TM.get_target(Setup.buffer_limit_code) 
         assert    blc_target == E_StateIndices.DROP_OUT \
-               or blc_target == MegaState_Target_DROP_OUT
+               or blc_target == MegaState_Target_DROP_OUT \
+               or blc_target == E_StateIndices.RELOAD_PROCEDURE
 
         # Signalize 'reload' upon buffer limit code.
         TM.set_target(Setup.buffer_limit_code, 
@@ -87,14 +89,10 @@ class TransitionCodeFactory:
         elif Target == E_StateIndices.DROP_OUT:
             return TransitionCode_DropOut(cls.state_index)
 
-        elif isinstance(Target, long):
+        elif isinstance(Target, DoorID):
             # The transition to another target state cannot possibly be cut out!
             # => no postponed code generation
-            if cls.analyzer is not None:
-                assert cls.analyzer.state_db.has_key(Target)
-                if isinstance(cls.state_index, (int, long)): 
-                    assert cls.analyzer.state_db.has_key(cls.state_index)
-            return TransitionCode(LanguageDB.GOTO(Target, cls.state_index))
+            return TransitionCode(LanguageDB.GOTO_BY_DOOR_ID(Target))
 
         else:
             assert False

@@ -27,7 +27,7 @@ class PathWalkerState_Entry(MegaState_Entry):
 
     During analysis, only the '.action_db' is of interest. There the 
     'SetPathIterator' Command is added for each transition. After analysis
-    '.door_tree_configure()' may be called and those actions are combined
+    'door_tree_configure()' may be called and those actions are combined
     propperly.
     ___________________________________________________________________________
     """

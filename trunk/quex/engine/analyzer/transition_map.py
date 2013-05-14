@@ -105,6 +105,39 @@ class TransitionMap(list):
         
         return self.__class__.from_iterable(self, relate)
 
+    def re_relate_door_ids(self, TheAnalyzer, StateIndex):
+        """Transition maps have been configured to enter states through DoorID-s.
+        MegaState-s replace original states and old DoorID-s must be replaced by
+        new ones, those that enter MegaState-s.
+
+        It is assumed that MegaStates made their entry in the databases!
+        """
+        def relate(StateIndex, Target, StateDB):
+            if Target == E_StateIndices.DROP_OUT:
+                return None # Nothing to be done
+            # RETURN: None --> entry in transition map is left as is.
+            #         else --> new entry in transition is made with new DoorId.
+            return StateDB[Target.state_index].entry.door_id_update(Target)
+
+        self.__re_relate_core(TheAnalyzer, StateIndex, relate)
+
+    def re_relate_door_ids_in_MegaState_Targets(self, TheAnalyzer, StateIndex):
+        def relate(StateIndex, Target, StateDB):
+            the_mega_state = StateDB[StateIndex]
+            Target.door_id_update(the_mega_state, StateDB)
+            # RETURN: None --> Always, because the MegaState_Target has been adapted.
+            #                  No change in the transition map is necessary.
+            return None
+
+        self.__re_relate_core(TheAnalyzer, StateIndex, relate)
+
+    def __re_relate_core(self, TheAnalyzer, StateIndex, factory):
+        for i, info in enumerate(self):
+            interval, target = info
+            new_target = factory(StateIndex, target, TheAnalyzer.state_db)
+            if new_target is None: continue
+            self[i] = (interval, new_target)
+
     def is_equal(self, Other):
         if len(self) != len(Other): return False
         for x, y in izip(self, Other):
@@ -158,7 +191,7 @@ class TransitionMap(list):
             new_i        = i + 1
 
         # Combine adjacent intervals which trigger to the same target.
-        self.combine_adjacents()
+        self.combine_adjacents(new_i)
         self.assert_continuity()
         return
 
@@ -200,12 +233,11 @@ class TransitionMap(list):
         if Index is None:
             range_iterable = reversed(xrange(L))
         else:
-            assert Index > 0  and Index < L
-            range_iterable = []
-            if Index < L - 1: range_iterable.append(Index+1)
-            range_iterable.append(Index)
-            if Index > 0:     range_iterable.append(Index-1)
-            range_iterable = range_iterable.__iter__()
+            assert Index >= 0  and Index < L
+            range_iterable = (
+                    idx for idx in (Index + 1, Index, Index - 1)
+                        if idx >= 0 and idx < L
+            )
 
         prev_interval, prev_target = self[range_iterable.next()]
         for i in range_iterable:

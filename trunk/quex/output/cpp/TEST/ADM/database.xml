@@ -1,55 +1,55 @@
-<test-database execution-time-sec="5.61" date="Sun May 12 14:33:13 2013">
+<test-database execution-time-sec="5.92" date="Mon May 13 18:27:00 2013">
     <last-used-diff-display-program name=""/>
-    <test title="Token Class Template" time-sum-sec="0.08"> 
+    <test title="Token Class Template" time-sum-sec="0.14"> 
         <application file-name="test-token_class.py" info-request-time="1360795678L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.08" crc="-1622329096"/>
+           <choice name="" result="OK" time_sec="0.14" crc="-1622329096"/>
         </choice-list>
     </test>
     <group name="Character Counter">
-        <test title="Default Implementation" time-sum-sec="3.16"> 
+        <test title="Default Implementation" time-sum-sec="3.15"> 
             <application file-name="default_counter.py" info-request-time="1366520432L" vanished="False"/>
             <choice-list number="12" same_result="False">
-               <choice name="Default-UCS" result="OK" time_sec="0.22" crc="649799718"/>
-               <choice name="Default2-UCS" result="OK" time_sec="0.24" crc="-806431237"/>
+               <choice name="Default-UCS" result="OK" time_sec="0.35" crc="649799718"/>
+               <choice name="Default2-UCS" result="OK" time_sec="0.27" crc="-806431237"/>
                <choice name="Wild-UCS" result="OK" time_sec="0.26" crc="1311802321"/>
-               <choice name="Default-UTF8" result="OK" time_sec="0.24" crc="952987760"/>
-               <choice name="Default2-UTF8" result="OK" time_sec="0.35" crc="358813816"/>
-               <choice name="Wild-UTF8" result="OK" time_sec="0.33" crc="-708336786"/>
-               <choice name="Default-UTF16" result="OK" time_sec="0.26" crc="-160513910"/>
-               <choice name="Default2-UTF16" result="OK" time_sec="0.25" crc="350697028"/>
-               <choice name="Wild-UTF16" result="OK" time_sec="0.26" crc="-1168732417"/>
-               <choice name="Default-cp037" result="OK" time_sec="0.23" crc="1398986512"/>
-               <choice name="Default2-cp037" result="OK" time_sec="0.26" crc="392642609"/>
+               <choice name="Default-UTF8" result="OK" time_sec="0.27" crc="952987760"/>
+               <choice name="Default2-UTF8" result="FAIL" time_sec="0.31" crc="358813816"/>
+               <choice name="Wild-UTF8" result="FAIL" time_sec="0.28" crc="-708336786"/>
+               <choice name="Default-UTF16" result="OK" time_sec="0.25" crc="-160513910"/>
+               <choice name="Default2-UTF16" result="FAIL" time_sec="0.22" crc="350697028"/>
+               <choice name="Wild-UTF16" result="FAIL" time_sec="0.19" crc="-1168732417"/>
+               <choice name="Default-cp037" result="OK" time_sec="0.26" crc="1398986512"/>
+               <choice name="Default2-cp037" result="OK" time_sec="0.25" crc="392642609"/>
                <choice name="Wild-cp037" result="OK" time_sec="0.25" crc="-1009382429"/>
             </choice-list>
         </test>
     </group>
     <group name="Converter">
-        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="0.22"> 
+        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="0.24"> 
             <application file-name="test-converter-x.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="3" same_result="False">
-               <choice name="1" result="OK" time_sec="0.07" crc="816612133"/>
-               <choice name="2" result="OK" time_sec="0.08" crc="1067358446"/>
+               <choice name="1" result="OK" time_sec="0.10" crc="816612133"/>
+               <choice name="2" result="OK" time_sec="0.07" crc="1067358446"/>
                <choice name="3" result="OK" time_sec="0.07" crc="-1013101497"/>
             </choice-list>
         </test>
-        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="0.28"> 
-            <application file-name="test-converter.py" info-request-time="1355705371L" vanished="False"/>
-            <choice-list number="4" same_result="False">
-               <choice name="1" result="OK" time_sec="0.07" crc="700229258"/>
-               <choice name="2" result="OK" time_sec="0.07" crc="-1075785192"/>
-               <choice name="3" result="OK" time_sec="0.07" crc="-1324094235"/>
-               <choice name="4" result="OK" time_sec="0.07" crc="-489839902"/>
-            </choice-list>
-        </test>
-        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="1.88"> 
+        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="2.03"> 
             <application file-name="test-converter-C.py" info-request-time="1355705371L" vanished="False"/>
             <choice-list number="4" same_result="False">
-               <choice name="cp737" result="OK" time_sec="0.48" crc="1246986017"/>
-               <choice name="cp866" result="OK" time_sec="0.46" crc="822098519"/>
-               <choice name="cp1256" result="OK" time_sec="0.46" crc="1051252697"/>
-               <choice name="cp037" result="OK" time_sec="0.48" crc="1056223298"/>
+               <choice name="cp737" result="OK" time_sec="0.56" crc="1246986017"/>
+               <choice name="cp866" result="OK" time_sec="0.47" crc="822098519"/>
+               <choice name="cp1256" result="OK" time_sec="0.50" crc="1051252697"/>
+               <choice name="cp037" result="OK" time_sec="0.50" crc="1056223298"/>
+            </choice-list>
+        </test>
+        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="0.36"> 
+            <application file-name="test-converter.py" info-request-time="1355705371L" vanished="False"/>
+            <choice-list number="4" same_result="False">
+               <choice name="1" result="OK" time_sec="0.13" crc="700229258"/>
+               <choice name="2" result="OK" time_sec="0.07" crc="-1075785192"/>
+               <choice name="3" result="OK" time_sec="0.09" crc="-1324094235"/>
+               <choice name="4" result="OK" time_sec="0.07" crc="-489839902"/>
             </choice-list>
         </test>
     </group>

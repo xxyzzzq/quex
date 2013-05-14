@@ -211,6 +211,7 @@ class CandidateList(list):
                 if   not (state.drop_out == NewElect.drop_out):    continue
                 elif not (state.entry.is_uniform(NewElect.entry)): continue
 
+
             # Do not try to combine states that have proven to be 'bad_company'.
             if       state.index in NewElect.bad_company():                                   continue
             elif not NewElect.bad_company().isdisjoint(state.implemented_state_index_list()): continue
