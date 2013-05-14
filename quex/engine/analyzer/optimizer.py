@@ -41,7 +41,8 @@ def do(analyzer):
         #    (transition_id, EntryID(state.index, door_id)) \
         #    for transition_id, door_id in transition_id_to_door_id_db.iteritems()
         # )
-        state.entry.finish(analyzer.position_register_map)
+        state.entry.reconfigure_position_registers(analyzer.position_register_map)
+        state.entry.delete_nonsense_conditions()
         state.drop_out.finish(analyzer.position_register_map)
 
     return analyzer

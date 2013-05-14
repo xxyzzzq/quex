@@ -20,7 +20,7 @@ def do(TheAnalyzer):
 
     # The 'remainder' keeps track of states which have not yet been
     # absorbed into a MegaState.
-    remainder = set(TheAnalyzer.state_db.keys())
+    remainder = set(TheAnalyzer.state_db.iterkeys())
     remainder.remove(TheAnalyzer.init_state_index)
 
     for ctype in Setup.compression_type_list:
@@ -55,12 +55,20 @@ def do(TheAnalyzer):
     # Let the analyzer know about the MegaState-s and what states they left
     # unabsorbed. 
     TheAnalyzer.non_mega_state_index_set = remainder
+    TheAnalyzer.non_mega_state_index_set.add(TheAnalyzer.init_state_index)
     TheAnalyzer.mega_state_list          = mega_state_db.values()
-
-    for mega_state in TheAnalyzer.mega_state_list:
-        mega_state.finalize_transition_map(TheAnalyzer.state_db)
 
     # Only now: We enter the MegaState-s into the 'state_db'. If it was done before,
     # the MegaStates might try to absorb each other.
     TheAnalyzer.state_db.update(mega_state_db)
+
+    for mega_state in TheAnalyzer.mega_state_list:
+        mega_state.finalize_transition_map(TheAnalyzer.state_db)
+
+    for state in TheAnalyzer.state_db.itervalues():
+        if state.index in TheAnalyzer.non_mega_state_index_set: 
+            state.transition_map.re_relate_door_ids(TheAnalyzer, state.index)
+
+    for state in TheAnalyzer.mega_state_list:
+        state.transition_map.re_relate_door_ids_in_MegaState_Targets(TheAnalyzer, state.index)
 

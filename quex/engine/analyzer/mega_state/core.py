@@ -254,8 +254,7 @@ class MegaState_Target(object):
     NOTE: All 'DropOut' MegaState_Target are represented by the single object
           'MegaState_Target_DROP_OUT'. This saves memory.
     """
-    __slots__ = ('__drop_out_f', '__scheme', '__scheme_id', '__hash', '__target_state_index', '__door_id')
-
+    __slots__   = ('__drop_out_f', '__scheme', '__scheme_id', '__hash', '__target_state_index', '__door_id')
     __object_db = dict()
 
     @staticmethod
@@ -324,6 +323,29 @@ class MegaState_Target(object):
     @property
     def scheme_id(self):           return self.__scheme_id
 
+    def door_id_update(self, TheMegaState, StateDB):
+        if self.__target_state_index is not None: 
+            return 
+
+        elif self.__door_id is not None:
+            target_state = StateDB[self.__door_id.state_index]
+            new_door_id  = target_state.entry.door_id_update(self.__door_id)
+            if new_door_id is None: return
+            self.__door_id = new_door_id
+
+        elif self.__scheme is not None:
+            new_scheme = None
+            for i, door_id in enumerate(self.__scheme):
+                target_state = StateDB[self.__door_id.state_index]
+                new_door_id  = target_state.door_id_update(self.__door_id)
+                if new_door_id is None: continue
+                if new_scheme is None: new_scheme = list(self.__scheme)
+                new_scheme[i] = new_door_id
+
+            if new_scheme is None: return
+            self.__scheme = tuple(new_scheme)
+        return
+
     def finalize(self, TheMegaState, StateDB, scheme_db):
         """Once the whole state configuration and the states' entry doors are
         determined, the actual MegaState_Target object can be finalized.
@@ -363,7 +385,7 @@ class MegaState_Target(object):
             # scheme translates into a common transition to target DoorID.
             prototype = None
             for state_index in implemented_state_index_list:
-                state_key = TheMegaState.map_state_index_to_state_key(state_index)
+                state_key          = TheMegaState.map_state_index_to_state_key(state_index)
                 target_state_index = self.scheme[state_key]
 
                 if target_state_index != E_StateIndices.DROP_OUT:
@@ -382,8 +404,7 @@ class MegaState_Target(object):
                 assert prototype is not None
                 return MegaState_Target.create(prototype)
 
-        else:
-            assert self.target_state_index is not None
+        elif self.target_state_index is not None:
             # The common target state may be entered by different doors
             # depending on the 'from_state' which is currently implemented by
             # the MegaState. Then, a common 'target_state_index' translates into 
@@ -404,6 +425,8 @@ class MegaState_Target(object):
                 # All has been uniform => Stay with 'target_state_index'
                 assert prototype is not None
                 return # Nothing to be done
+        else:
+            pass
 
     def __repr__(self):
         if   self.drop_out_f:                     return "MegaState_Target:DropOut"
@@ -575,10 +598,25 @@ class AbsorbedState_Entry(Entry):
     AbsorbedState's Entry object.
     ___________________________________________________________________________
     """
-    def __init__(self, StateIndex, TransitionDB, DoorDB):
+    def __init__(self, StateIndex, TransitionDB, DoorDB, AbsorbedStatesTransitionDB):
         Entry.__init__(self, StateIndex, FromStateIndexList=[])
         self.set_transition_db(TransitionDB)
         self.set_door_db(DoorDB)
+        self.__old_transition_db = AbsorbedStatesTransitionDB
+
+    def door_id_update(self, DoorId):
+        """During MegaState analysis, doors are related to a different state. 
+        RETURNS: None          -- if DoorId has not been updated or is not present
+                 UpdatedDoorId -- else.
+        """
+        transition_id_list = self.__old_transition_db.get(DoorId)
+        if transition_id_list is None or len(transition_id_list) == 0: 
+            return None
+
+        new_door_id = self.door_db[transition_id_list[0]]
+        if new_door_id is None or new_door_id == DoorId: 
+            return None
+        return new_door_id
 
 class AbsorbedState(AnalyzerState):
     """________________________________________________________________________
@@ -600,7 +638,8 @@ class AbsorbedState(AnalyzerState):
 
         self.__entry     = AbsorbedState_Entry(AbsorbedAnalyzerState.index, 
                                                AbsorbingMegaState.entry.transition_db,
-                                               AbsorbingMegaState.entry.door_db)
+                                               AbsorbingMegaState.entry.door_db, 
+                                               AbsorbedAnalyzerState.entry.transition_db)
         self.absorbed_by = AbsorbingMegaState
         self.__state     = AbsorbedAnalyzerState
 

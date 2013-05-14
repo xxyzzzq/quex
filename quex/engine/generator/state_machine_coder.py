@@ -5,6 +5,8 @@ from   quex.blackboard                       import setup as Setup
 from   collections import defaultdict
 from   itertools   import imap
 
+from   copy        import copy
+
 def do(TheAnalyzer):
     """Generate source code for a given state machine 'SM'.
     """
@@ -20,8 +22,11 @@ def do(TheAnalyzer):
         mega_state_coder.do(txt, state, TheAnalyzer)
 
     # (*) All other (normal) states (sorted by their frequency of appearance)
-    frequency_db = get_frequency_db(TheAnalyzer.state_db, TheAnalyzer.non_mega_state_index_set)
-    for state in sorted(imap(lambda i: TheAnalyzer.state_db[i], TheAnalyzer.non_mega_state_index_set), 
+    frequency_db = get_frequency_db(TheAnalyzer.state_db, 
+                                    TheAnalyzer.non_mega_state_index_set)
+    remainder    = copy(TheAnalyzer.non_mega_state_index_set)
+    remainder.remove(TheAnalyzer.init_state_index)
+    for state in sorted(imap(lambda i: TheAnalyzer.state_db[i], remainder), 
                         key=lambda s: frequency_db[s.index], reverse=True):
         state_coder.do(txt, state, TheAnalyzer) 
 

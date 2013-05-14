@@ -30,7 +30,7 @@ class Entry(object):
     The actions associated with transitions may be equal or have many
     commonalities. In order to avoid multiple definitions of the same
     action, a 'door tree' is constructed. Now, transitions need to be
-    associated with doors into the entry. After '.door_tree_configure()'
+    associated with doors into the entry. After 'door_tree_configure()'
     has been called the two databases:
 
         .transition_db: DoorID --> list of TransitionID-s
@@ -77,7 +77,7 @@ class Entry(object):
 
     BRIEF REMARK: _________________________________________________________
 
-    Before '.door_tree_configure()' is called no assumptions about doors
+    Before 'door_tree_configure()' is called no assumptions about doors
     can be made. Then, only information about what transition causes what
     action can be provided.
     ___________________________________________________________________________
@@ -279,6 +279,9 @@ class Entry(object):
             if door.parent is None: return False
             door = door.parent
 
+    def door_id_update(self, DoorId):
+        return None # Normal States do not need to update door ids; only AbsorbedState-s.
+
     def has_accepter(self):
         for door in self.__action_db.itervalues():
             for action in door.command_list:
@@ -314,34 +317,16 @@ class Entry(object):
                     True  -- If there is an entry that depends on StateIndex in exclusion
                              of others.
         """
-        if   self.__uniform_doors_f:    return False
+        if   self.__uniform_doors_f:     return False
         elif len(self.__action_db) <= 1: return False
         return self.__action_db.has_key(StateIndex)
 
-    def finish(self, PositionRegisterMap):
-        """Once the whole state machine is analyzed and positioner and accepters
-           are set, the entry can be 'finished'. That means that some simplifications
-           may be accomplished:
-
-           -- The PositionRegisterMap shows how condition register indices must be 
-              replaced. This is a result from analysis about what registers can
-              actually be shared.
-
-           -- If a position for a post-context is stored in the unconditional
-              case, then all pre-contexted position storages of the same post-
-              context are superfluous.
-
-           -- If the entry into the state behaves the same for all 'from'
-              states then the entry is independent_of_source_state.
-        
-           -- Call to 'categorize_command_lists()' where action lists are grouped
-              and hierarchically ordered.
-
-           At state entry the positioning might differ dependent on the the
-           state from which it is entered. If the positioning is the same for
-           each source state, then the positioning can be unified.
-
-           A unified entry is coded as 'ALL' --> common positioning.
+    def reconfigure_position_registers(self, PositionRegisterMap):
+        """Originally, each pattern gets its own position register if it is
+        required to store/restore the input position. The 'PositionRegisterMap'
+        is a result of an analysis which tells whether some registers may
+        actually be shared. This function does the replacement of positioning
+        registers based on what is given in 'PositionRegisterMap'.
         """
         # (*) Adapt position registers (if necessary)
         if PositionRegisterMap is not None and len(PositionRegisterMap) != 0: 
@@ -359,10 +344,13 @@ class Entry(object):
                 if change_f:
                     # Adding one by one ensures that double entries are avoided
                     door.command_list.misc = set(x for x in door.command_list.misc)
+        return
 
-        # (*) If a door stores the input position in register unconditionally,
-        #     then all other conditions concerning the storage in that register
-        #     are nonessential.
+    def delete_nonsense_conditions(self):
+        """If a command list stores the input position in register unconditionally,
+        then all other conditions concerning the storage in that register are 
+        nonsensical.
+        """
         for door in self.__action_db.itervalues():
             for action in list(x for x in door.command_list \
                                if     isinstance(x, entry_action.StoreInputPosition) \
@@ -371,9 +359,7 @@ class Entry(object):
                               if isinstance(x, entry_action.StoreInputPosition)):
                     if x.position_register == action.position_register and x.pre_context_id != E_PreContextIDs.NONE:
                         door.command_list.misc.remove(x)
-
-        # (*) Configure the entry door tree
-        self.door_tree_configure() # May be this is not necessary here (?).
+        return
 
     def door_tree_configure(self):
         """Configure the 'door tree' (see module 'entry_action).

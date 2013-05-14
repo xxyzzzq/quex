@@ -172,7 +172,7 @@ def __find(analyzer, StateIndex, CompressionType, AvailableStateIndexSet):
 
     State          = analyzer.state_db[StateIndex]
     target_map     = State.map_target_index_to_character_set
-    transition_map = State.transition_map.relate_to_door_ids(analyzer, State.index)
+    transition_map = State.transition_map # .relate_to_door_ids(analyzer, State.index)
 
     for target_idx, trigger_set in target_map.iteritems():
         if   target_idx not in AvailableStateIndexSet: continue # State is not an option.
@@ -237,8 +237,8 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
             State  = Args[1]
 
             # list: (interval, target)  --> (interval, door_id)
-            transition_map = State.transition_map.relate_to_door_ids(self.analyzer, 
-                                                                     State.index)
+            transition_map = State.transition_map # .relate_to_door_ids(self.analyzer, State.index)
+
             # BRANCH __________________________________________________________
             sub_list = []
             for target_index, trigger_set in State.map_target_index_to_character_set.iteritems():
@@ -463,22 +463,28 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
     character paths and assigns them to PathWalkerState-s. The
     PathWalkerState-s can then immediately be used for code generation.  
     """
+
+    # Generate the path walkers.  One pathwalker may be able to walk along more
+    # than one path.  If a pathwalker accepts another path, no extra pathwalker
+    # needs to be created.
     path_walker_list = []
-    for candidate in CharacterPathList:
+    for path in CharacterPathList:
         for path_walker in path_walker_list:
             # Set-up the walk in an existing PathWalkerState
-            if path_walker.accept(candidate, TheAnalyzer.state_db): break
+            if path_walker.accept(path, TheAnalyzer.state_db): break
         else:
             # Create a new PathWalkerState
-            path_walker_list.append(PathWalkerState(candidate, TheAnalyzer, CompressionType))
+            path_walker_list.append(PathWalkerState(path, TheAnalyzer, CompressionType))
 
+    # 'absorbance_db': state_index --> PathWalkerState which implements it.
     absorbance_db = defaultdict(set)
     for path_walker in path_walker_list:
         absorbance_db.update((i, path_walker) for i in path_walker.implemented_state_index_list())
 
         if path_walker.uniform_entry_command_list_along_all_paths is not None:
             # Assign the uniform command list to the transition 'path_walker -> path_walker'
-            transition_action = TransitionAction(path_walker.index, path_walker.index, path_walker.uniform_entry_command_list_along_all_paths)
+            transition_action = TransitionAction(path_walker.index, path_walker.index, 
+                                                 path_walker.uniform_entry_command_list_along_all_paths)
             # Delete transitions on the path itself => No doors for them will be implemented.
             path_walker.delete_transitions_on_path() # LEAVE THIS! This is the way to 
             #                                        # indicate unimportant entry doors!

@@ -112,7 +112,7 @@ def test_combination(StateA, StateB, analyzer, StateA_Name="A", StateB_Name="B",
 
     print
     candidate = TemplateStateCandidate(StateA, StateB)
-    result = TemplateState(candidate)
+    result    = TemplateState(candidate)
     result.entry.door_tree_configure()
 
     if DrawF:

@@ -28,32 +28,19 @@ class PathWalkerState(MegaState):
         #     comparison. Thus, keep original transition map as reference.
         #
         # transition_map:          interval --> MegaState_Target
-        self.__original_transition_map = FirstPath.transition_map
-        self.transition_map            = PathWalkerState.prepare_transition_map(self.__original_transition_map)
+        self.__transition_map_to_door_ids           = FirstPath.transition_map
+        self.__transition_map_to_mega_state_targets =                          \
+                TransitionMap.from_iterable(self.__transition_map_to_door_ids, \
+                                            MegaState_Target.create)
 
         self.__uniformity_required_f                 = (CompressionType == E_Compression.PATH_UNIFORM)
         self.__uniform_entry_command_list_along_path = FirstPath.get_uniform_entry_command_list_along_path()
 
-        self.__state_index_sequence = None # Computed on demand
+        self.__state_index_sequence    = None # Computed on demand
 
-    @staticmethod
-    def prepare_transition_map(TM):
-        """Character Path objects contain transition maps of the form
-
-                list of (interval, DoorID)
-
-        which has now to be transformed into the form
-
-                list of (interval, MegaState_Target)
-
-        This is the form that code generation requires for MegaState-s.
-        """
-        def factory(Target):
-            if isinstance(Target, DoorID): x = Target.state_index
-            else:                          x = Target
-            return MegaState_Target.create(x)
-
-        return TransitionMap.from_iterable(TM, factory)
+    @property
+    def transition_map(self):
+        return self.__transition_map_to_mega_state_targets 
 
     def accept(self, Path, StateDB):
         """Accepts the given Path to be walked, if the remaining transition_maps
@@ -61,11 +48,11 @@ class PathWalkerState(MegaState):
         same drop_out and entry are accepted.
 
         RETURNS: False -- Path does not fit the PathWalkerState.
-                 True  -- Path can be walked by PathWalkerState and 
-                          has been accepted.
+                 True  -- Path can be walked by PathWalkerState and has been 
+                          accepted.
         """
         # (1) Compare the transition maps.
-        if not self.__original_transition_map.is_equal(Path.transition_map): 
+        if not self.__transition_map_to_door_ids.is_equal(Path.transition_map): 
             return False
 
         # (1b) If uniformity is required and not maintained, then refuse.
