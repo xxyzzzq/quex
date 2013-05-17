@@ -88,6 +88,21 @@ class MegaState_Entry(Entry):
     def __init__(self, MegaStateIndex):
         Entry.__init__(self, MegaStateIndex, FromStateIndexList=[])
 
+    def door_tree_configure(self)
+        door_db = self._door_tree_configure_core()
+
+        # Record relation between old and new DoorID
+        map_old_door_id_to_new_door_id = dict(
+            (self.action_db[transition_id].door_id, new_door_id)
+            for transition_id, new_door_id in door_db.iteritems()
+        )
+
+        # Set the new door id for each action
+        for transition_id, new_door_id in door_db.iteritems()
+            self.__action_db[transition_id].door_id = new_door_id
+
+        return map_old_door_id_to_new_door_id
+
 class MegaState(AnalyzerState):
     """________________________________________________________________________
     
@@ -221,7 +236,7 @@ class MegaState_Target(object):
 
     where MS is the MegaState that contains the transition map. The
     TransitionID can be translated into a DoorID by the target state's entry
-    database 'transition_db'.
+    database 'action_db[TransitionId].door_id'.
     
     TRACKING SCHEMES: _________________________________________________________
 
@@ -598,25 +613,26 @@ class AbsorbedState_Entry(Entry):
     AbsorbedState's Entry object.
     ___________________________________________________________________________
     """
-    def __init__(self, StateIndex, TransitionDB, DoorDB, AbsorbedStatesTransitionDB):
+    def __init__(self, StateIndex, ActionDB):
         Entry.__init__(self, StateIndex, FromStateIndexList=[])
-        self.set_transition_db(TransitionDB)
-        self.set_door_db(DoorDB)
-        self.__old_transition_db = AbsorbedStatesTransitionDB
+        self.__action_db = ActionDB
 
     def door_id_update(self, DoorId):
         """During MegaState analysis, doors are related to a different state. 
         RETURNS: None          -- if DoorId has not been updated or is not present
                  UpdatedDoorId -- else.
         """
+        #return self.__old_to_new_door_id_db[DoorId]
         transition_id_list = self.__old_transition_db.get(DoorId)
         if transition_id_list is None or len(transition_id_list) == 0: 
             return None
 
-        new_door_id = self.door_db[transition_id_list[0]]
-        if new_door_id is None or new_door_id == DoorId: 
-            return None
-        return new_door_id
+        for transition_id in transition_id_list:
+            new_door_id = self.door_db.get(transition_id)
+            if   new_door_id is None:   continue
+            elif new_door_id == DoorId: return None
+            else:                       return new_door_id
+        assert False
 
 class AbsorbedState(AnalyzerState):
     """________________________________________________________________________
@@ -637,9 +653,7 @@ class AbsorbedState(AnalyzerState):
         #----------------------------------------------------------------------
 
         self.__entry     = AbsorbedState_Entry(AbsorbedAnalyzerState.index, 
-                                               AbsorbingMegaState.entry.transition_db,
-                                               AbsorbingMegaState.entry.door_db, 
-                                               AbsorbedAnalyzerState.entry.transition_db)
+                                               AbsorbingMegaState.entry.action_db)
         self.absorbed_by = AbsorbingMegaState
         self.__state     = AbsorbedAnalyzerState
 

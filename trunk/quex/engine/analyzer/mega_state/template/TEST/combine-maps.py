@@ -22,9 +22,9 @@ def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L], DrawF=Fal
 
     if DrawF:
         print "DoorTree(A):"
-        print "    " + StateA.entry.door_tree_root.get_string(StateA.entry.transition_db).replace("\n", "\n    ")
+        print "    " + StateA.entry.door_tree_root.get_string(StateA.entry.action_db).replace("\n", "\n    ")
         print "DoorTree(B):"
-        print "    " + StateB.entry.door_tree_root.get_string(StateB.entry.transition_db).replace("\n", "\n    ")
+        print "    " + StateB.entry.door_tree_root.get_string(StateB.entry.action_db).replace("\n", "\n    ")
 
     print "(Straight)---------------------------------------"
     test_combination(StateA, StateB, analyzer, "A", "B", DrawF)

@@ -186,7 +186,7 @@ class Analyzer:
         if not self.__engine_type.is_FORWARD(): 
             return False
         for entry in imap(lambda x: x.entry, self.__state_db.itervalues()):
-            if entry.has_accepter(): return True
+            if entry.action_db.has_Accepter(): return True
         return False
 
     def configure_drop_out(self, StateIndex):
@@ -343,14 +343,14 @@ class Analyzer:
         # same length, the only precendence criteria is the pattern_id.
         # 
         for state_index in self.__require_acceptance_storage_db.iterkeys():
-            entry     = self.__state_db[state_index].entry
+            entry = self.__state_db[state_index].entry
             # Only the trace content that concerns the current state is filtered out.
             # It should be the same for all traces through 'state_index'
             prototype = self.__trace_db[state_index].get_any_one()
             for x in sorted(prototype, key=attrgetter("pattern_id", "pre_context_id")):
                 if x.accepting_state_index != state_index: 
                     continue
-                entry.doors_accepter_add(x.pre_context_id, x.pattern_id)
+                entry.action_db.add_Accepter(x.pre_context_id, x.pattern_id)
 
     def acceptance_storage_post_pone_do(self, StateIndex, PatternId):
 
@@ -387,10 +387,10 @@ class Analyzer:
                     if target_index == state_index: # Position is stored upon entry in *other*
                         continue                    # state--not the state itself. 
                     entry = self.__state_db[target_index].entry
-                    entry.doors_store(FromStateIndex   = state_index, 
-                                      PreContextID     = pre_context_id, 
-                                      PositionRegister = pattern_id, 
-                                      Offset           = 0)
+                    entry.action_db.add_StoreInputPosition(FromStateIndex   = state_index, 
+                                                           PreContextID     = pre_context_id, 
+                                                           PositionRegister = pattern_id, 
+                                                           Offset           = 0)
                 
     def __iter__(self):
         for x in self.__state_db.values():

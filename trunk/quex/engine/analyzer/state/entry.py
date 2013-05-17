@@ -2,8 +2,139 @@ import quex.engine.analyzer.state.entry_action as entry_action
 from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction, DoorID
 from   quex.blackboard import E_PreContextIDs,  \
                               E_AcceptanceIDs, E_PostContextIDs, \
-                              E_TransitionN, E_StateIndices
+                              E_TransitionN, E_StateIndices, E_TriggerIDs
 from   operator        import attrgetter
+
+tmp_transition_id = TransitionID(E_StateIndices.VOID, E_StateIndices.VOID)
+
+class EntryActionDB(dict):
+    def __init__(self, StateIndex, FromStateIndexList):
+        """Assume that 'Iterable' provides all TransitionID-s which may ever
+           appear in the action_db. If this is not the case, then a self[tid]
+           may fail somewhere down the lines.
+        """
+        iterable = (                                                         \
+              (TransitionID(StateIndex, i), TransitionAction(StateIndex, i)) \
+              for i in FromStateIndexList                                    \
+        )
+        dict.__init__(self, iterable)
+        self.__state_index = StateIndex
+
+    def add_Accepter(self, PreContextID, PatternID):
+        """Add an acceptance at the top of each accepter at every door. If there
+           is no accepter in a door it is created.
+        """
+        for transition_action in self.itervalues():
+            # Catch the accepter, if there is already one, of not create one.
+            if transition_action.command_list.accepter is None: 
+                transition_action.command_list.accepter = entry_action.Accepter()
+            transition_action.command_list.accepter.add(PreContextID, PatternID)
+            # NOT: transition_action.command_list.accepter.clean_up()
+            #      The list might be deliberately ordered differently
+
+    def add_specific_Accepter(self, FromStateIndex, PathTraceList):
+        """At entry via 'FromStateIndex' implement an acceptance pattern that 
+           is determined via 'PathTraceList'. This function is called upon the
+           detection of a state that restores acceptance. The previous state 
+           must be of uniform acceptance (does not restore). At the entry of 
+           this function we implement the acceptance pattern of the previous
+           state.
+        """
+        global tmp_transition_id
+        # Construct the Accepter from PathTraceList
+        accepter = entry_action.Accepter(PathTraceList)
+
+        tmp_transition_id.state_index      = self.__state_index
+        tmp_transition_id.from_state_index = FromStateIndex
+        tmp_transition_id.trigger_id       = E_TriggerIDs.NONE
+        self[tmp_transition_id].command_list.accepter = accepter
+
+    def has_Accepter(self):
+        for action in self.itervalues():
+            for cmd in action.command_list:
+                if isinstance(cmd, entry_action.Accepter): return True
+        return False
+
+    def add_StoreInputPosition(self, FromStateIndex, PreContextID, PositionRegister, Offset):
+        """Add 'store input position' to specific door. See 'entry_action.StoreInputPosition'
+           comment for the reason why we do not store pre-context-id.
+        """
+        global tmp_transition_id
+        entry = entry_action.StoreInputPosition(PreContextID, PositionRegister, Offset)
+        tmp_transition_id.state_index      = self.__state_index
+        tmp_transition_id.from_state_index = FromStateIndex
+        tmp_transition_id.trigger_id       = E_TriggerIDs.NONE
+        self[tmp_transition_id].command_list.misc.add(entry)
+
+    def get_action(self, StateIndex, FromStateIndex, TriggerId=E_TriggerIDs.NONE):
+        global tmp_transition_id
+        tmp_transition_id.state_index      = StateIndex
+        tmp_transition_id.from_state_index = FromStateIndex
+        tmp_transition_id.trigger_id       = TriggerId
+        return self.get(tmp_transition_id)
+
+    def delete(self, StateIndex, FromStateIndex, TriggerId=E_TriggerIDs.NONE):
+        global tmp_transition_id
+        tmp_transition_id.state_index      = StateIndex
+        tmp_transition_id.from_state_index = FromStateIndex
+        tmp_transition_id.trigger_id       = TriggerId
+        del self[tmp_transition_id]
+
+    def reconfigure_position_registers(self, PositionRegisterMap):
+        """Originally, each pattern gets its own position register if it is
+        required to store/restore the input position. The 'PositionRegisterMap'
+        is a result of an analysis which tells whether some registers may
+        actually be shared. This function does the replacement of positioning
+        registers based on what is given in 'PositionRegisterMap'.
+        """
+        if PositionRegisterMap is None or len(PositionRegisterMap) == 0: 
+            return
+
+        def store_input_position(iterable):
+            for cmd in iterable:
+                if isinstance(cmd, entry_action.StoreInputPosition):
+                    yield cmd
+
+        for action in self.itervalues():
+            if action.command_list.is_empty(): continue
+            change_f = False
+            for cmd in store_input_position(action.command_list.misc):
+                # Replace position register according to 'PositionRegisterMap'
+                cmd.position_register = PositionRegisterMap[cmd.position_register]
+                change_f = True
+            # If there was a replacement, ensure that each command appears only once
+            if change_f:
+                # Adding one by one ensures that double entries are avoided
+                action.command_list.misc = set(x for x in action.command_list.misc)
+        return
+
+    def delete_nonsense_conditions(self):
+        """If a command list stores the input position in register unconditionally,
+        then all other conditions concerning the storage in that register are 
+        nonsensical.
+        """
+        for action in self.itervalues():
+            for cmd in list(x for x in action.command_list \
+                            if     isinstance(x, entry_action.StoreInputPosition) \
+                               and x.pre_context_id == E_PreContextIDs.NONE):
+                for x in list(x for x in action.command_list.misc \
+                              if isinstance(x, entry_action.StoreInputPosition)):
+                    if x.position_register == cmd.position_register and x.pre_context_id != E_PreContextIDs.NONE:
+                        try:    action.command_list.misc.remove(x)
+                        except: pass
+        return
+
+    def has_transitions_to_door_id(self, DoorId):
+        for action in self.itervalues():
+            if action.door_id == DoorId:
+                return True
+        return False
+
+    def get_transition_id_list(self, DoorId):
+        return [ 
+           transition_id for transition_id, action in self.iteritems()
+                         if action.door_id == DoorId 
+        ]
 
 class Entry(object):
     """________________________________________________________________________
@@ -17,28 +148,24 @@ class Entry(object):
     be associated with a TransitionID-s, i.e. pairs of (state_index,
     from_state_index). This happens in the member '.action_db', i.e.
     
-       .action_db:    (state_index, from_state_index) --> actions
-
-    precisely in terms of classes:
-
        .action_db:    TransitionID --> TransitionAction
 
-    where a TransitionID stores a pair of (StateIndex, FromStateIndex) and
-    a TransitionAction stores a TransitionID along with a CommandList of
-    commands that are executed for the given transition.
+    where a TransitionID consists of: .from_state_index
+                                      .state_index
+                                      .trigger_id 
+ 
+    and a TransitionAction consists of: .transition_id
+                                        .command_list
+                                        
+    where '.command_list' are commands that are executed for the given
+    transition.
 
     The actions associated with transitions may be equal or have many
-    commonalities. In order to avoid multiple definitions of the same
-    action, a 'door tree' is constructed. Now, transitions need to be
-    associated with doors into the entry. After 'door_tree_configure()'
-    has been called the two databases:
-
-        .transition_db: DoorID --> list of TransitionID-s
-
-        .door_db:       TransitionID --> DoorID
-
-    inform about the relation between TransitionID-s and the DoorID-s
-    through which they enter.
+    commonalities.  In order to avoid multiple definitions of the same action,
+    a 'door tree' is constructed.  Now, transitions need to be associated with
+    doors into the entry. The corresponding door to an action is available
+    at 'action.door_id' after 'door_tree_configure()' has been
+    called.
 
     DOOR TREE ______________________________________________________________
 
@@ -61,19 +188,9 @@ class Entry(object):
         ... the transition map ...
 
     This configuration is done in function 'door_tree_configure()'. As a result
-    the following mappings are available:
-
-       transition_db:  DoorID --> list of TransitionID
-
-                       Tells for every door what transitions it implements.
-
-       door_db:        TransitionID --> DoorID
-
-                       Tells for every transition what door implements a given 
-                       transition.
-
-       door_tree_root: The hierarchically organized tree of doors as shown in
-                       the example above.
+    the command list in actions of 'self.action_db' contain a '.door_id' which
+    tells about what door needs to be entered so that the list of commands is
+    executed. 
 
     BRIEF REMARK: _________________________________________________________
 
@@ -82,88 +199,36 @@ class Entry(object):
     action can be provided.
     ___________________________________________________________________________
     """
-    __slots__ = ("__state_index", "__uniform_doors_f", "__action_db", "__door_db", "__transition_db", "__door_tree_root")
-    tmp_transition_id = TransitionID(E_StateIndices.VOID, E_StateIndices.VOID)
+    __slots__ = ("__state_index", "__uniform_doors_f", "__action_db", "__transition_db", "__door_tree_root")
 
     def __init__(self, StateIndex, FromStateIndexList, PreContextFulfilledID_List=None):
         # map:  (from_state_index) --> list of actions to be taken if state is entered 
         #                              'from_state_index' for a given pre-context.
         # if len(FromStateIndexList) == 0: FromStateIndexList = [ E_StateIndices.NONE ]
         self.__state_index = StateIndex
-        self.__action_db   = dict((TransitionID(StateIndex, i),     \
-                                   TransitionAction(StateIndex, i)) \
-                                   for i in FromStateIndexList)
+        self.__action_db   = EntryActionDB(StateIndex, FromStateIndexList)
 
         # Are the actions for all doors the same?
         self.__uniform_doors_f = None 
 
         # Function 'categorize_command_lists()' fills the following members
-        self.__door_db        = None # map: transition_id --> door_id
         self.__transition_db  = None # map: door_id       --> transition_id
         self.__door_tree_root = None # The root of the door tree.
 
         # Only for 'Backward Detecting Pre-Contexts'.
         if PreContextFulfilledID_List is not None:
             pre_context_ok_command_list = [ entry_action.PreConditionOK(pre_context_id) \
-                                           for pre_context_id in PreContextFulfilledID_List ]
-            for entry in self.__action_db.itervalues():
-                entry.command_list.misc.update(pre_context_ok_command_list)
-
-    def doors_accept(self, FromStateIndex, PathTraceList):
-        """At entry via 'FromStateIndex' implement an acceptance pattern that 
-           is determined via 'PathTraceList'. This function is called upon the
-           detection of a state that restores acceptance. The previous state 
-           must be of uniform acceptance (does not restore). At the entry of 
-           this function we implement the acceptance pattern of the previous
-           state.
-        """
-        # Construct the Accepter from PathTraceList
-        accepter = entry_action.Accepter(PathTraceList)
-
-        Entry.tmp_transition_id.state_index      = self.__state_index
-        Entry.tmp_transition_id.from_state_index = FromStateIndex
-        self.__action_db[Entry.tmp_transition_id].command_list.accepter = accepter
-
-    def doors_accepter_add(self, PreContextID, PatternID):
-        """Add an acceptance at the top of each accepter at every door. If there
-           is no accepter in a door it is created.
-        """
-        for door in self.__action_db.itervalues():
-            # Catch the accepter, if there is already one, of not create one.
-            if door.command_list.accepter is None: 
-                door.command_list.accepter = entry_action.Accepter()
-            door.command_list.accepter.add(PreContextID, PatternID)
-            # NOT: door.command_list.accepter.clean_up()
-            #      The list might be deliberately ordered differently
-
-    def doors_store(self, FromStateIndex, PreContextID, PositionRegister, Offset):
-        # Add 'store input position' to specific door. See 'entry_action.StoreInputPosition'
-        # comment for the reason why we do not store pre-context-id.
-        entry = entry_action.StoreInputPosition(PreContextID, PositionRegister, Offset)
-        Entry.tmp_transition_id.state_index      = self.__state_index
-        Entry.tmp_transition_id.from_state_index = FromStateIndex
-        self.__action_db[Entry.tmp_transition_id].command_list.misc.add(entry)
+                                            for pre_context_id in PreContextFulfilledID_List ]
+            for transition_action in self.__action_db.itervalues():
+                transition_action.command_list.misc.update(pre_context_ok_command_list)
 
     @property
-    def transition_db(self):
-        """Map:  door_id --> transition_id list
-           The door_db is determined by 'categorize_command_lists()'
-        """
-        assert self.__transition_db is not None
-        return self.__transition_db
+    def state_index(self): 
+        return self.__state_index
 
-    def set_transition_db(self, TransitionDB):
-        assert isinstance(TransitionDB, dict)
-
-        # Assert that we do not receive nonsense
-        if len(TransitionDB) != 0:
-            # DoorDB: door_id --> [ transition_id ] +
-            door_id, transition_id_list = TransitionDB.iteritems().next()
-            isinstance(transition_id_list, list)
-            if len(transition_id_list) != 0: isinstance(transition_id_list[0], TransitionID)
-            isinstance(door_id, DoorID)
-
-        self.__transition_db = TransitionDB
+    @property
+    def action_db(self):
+        return self.__action_db
 
     @property
     def door_tree_root(self): 
@@ -171,61 +236,20 @@ class Entry(object):
         assert self.__door_tree_root is not None
         return self.__door_tree_root
 
-    def set_door_tree_root(self, DoorTreeRoot):
-        self.__door_tree_root = DoorTreeRoot
-
-    @property
-    def action_db(self):
-        return self.__action_db
-
-    def action_db_get_command_list(self, StateIndex, FromStateIndex):
-        for transition_id, command_list in self.__action_db.iteritems():
-            if     transition_id.state_index      == StateIndex    \
-               and transition_id.from_state_index == FromStateIndex:
-                return command_list
-        return None
-
-    def action_db_delete_transition(self, StateIndex, FromStateIndex):
-        for transition_id, command_list in self.__action_db.iteritems():
-            if     transition_id.state_index      == StateIndex    \
-               and transition_id.from_state_index == FromStateIndex:
-                del self.__action_db[transition_id]
-                return
-        return
-
-    def set_action_db(self, ActionDB):
-        self.__action_db = ActionDB
-
-    @property
-    def door_db(self):
-        """Map:  transition_id --> door_id 
-           The door_db is determined by 'categorize_command_lists()'
-        """
-        assert self.__door_db is not None
-        return self.__door_db
-
-    def set_door_db(self, DoorDB):
-        assert isinstance(DoorDB, dict)
-
-        # Assert that we do not receive nonsense
-        if len(DoorDB) != 0:
-            # DoorDB: transition_id --> door_id
-            transition_id, door_id = DoorDB.iteritems().next()
-            isinstance(transition_id, TransitionID)
-            isinstance(door_id, DoorID)
-
-        self.__door_db = DoorDB
-
-    def get_door_id(self, StateIndex, FromStateIndex):
+    def get_door_id(self, StateIndex, FromStateIndex, TriggerId=E_TriggerIDs.NONE):
         """RETURN: DoorID of the door which implements the transition 
                           (FromStateIndex, StateIndex).
                    None,  if the transition is not implemented in this
                           state.
         """
-        Entry.tmp_transition_id.state_index      = StateIndex
-        Entry.tmp_transition_id.from_state_index = FromStateIndex
+        global tmp_transition_id
+        tmp_transition_id.state_index      = StateIndex
+        tmp_transition_id.from_state_index = FromStateIndex
+        tmp_transition_id.trigger_id       = TriggerId
         
-        return self.__door_db.get(Entry.tmp_transition_id)
+        action = self.__action_db.get(tmp_transition_id)
+        if action is None: return None
+        return action.door_id
 
     def get_door_id_by_command_list(self, TheCommandList):
         """Finds the DoorID of the door that implements TheCommandList.
@@ -236,57 +260,13 @@ class Entry(object):
         if TheCommandList.is_empty():
             return DoorID(self.__state_index, 0) # 'Door 0' is sure to not do anything!
 
-        for transition_id, action in self.action_db.iteritems():
+        for action in self.action_db.itervalues():
             if action.command_list == TheCommandList:
-                break
-        else:
-            return None
-
-        return self.door_db.get(transition_id) # Returns 'None' on missing transition_id
-
-    def door_find(self, DoorId):
-        """Find the Door object that belongs to DoorId"""
-        assert self.__door_tree_root is not None
-        assert isinstance(DoorId, DoorID)
-
-        def __dive(node):
-             if node.door_id == DoorId: return node
-             for child in node.child_list:
-                 result = __dive(child)
-                 if result is not None: return result
-             return None
-        return __dive(self.__door_tree_root)
-
-    def door_has_commands(self, StateIndex, FromStateIndex):
-        """Assume that 'door_tree_root' has been built alread."""
-
-        # (1) Find the door for 'StateIndex' from 'FromStateIndex'
-        Entry.tmp_transition_id.state_index      = StateIndex
-        Entry.tmp_transition_id.from_state_index = FromStateIndex
-        door_id = self.__door_db.get(Entry.tmp_transition_id)
-        # A transition that does not exist, does not have commands related to it.
-        if door_id is None: return False
-        door          = self.door_find(door_id)
-        assert door is not None
-
-        # (2) Go all the way back from the entry door to the 'over parent'.
-        #     If there is a node on the way with a non-empty command list, then
-        #     there are actions associated with the door; and vice versa.
-        while 1 + 1 == 2:
-            if not door.common_command_list.is_empty(): return True
-            # If we reach the 'over parent' without having any commands being
-            # detected, then there are no commands associated with the given door.
-            if door.parent is None: return False
-            door = door.parent
+                return action.door_id
+        return None
 
     def door_id_update(self, DoorId):
         return None # Normal States do not need to update door ids; only AbsorbedState-s.
-
-    def has_accepter(self):
-        for door in self.__action_db.itervalues():
-            for action in door.command_list:
-                if isinstance(action, entry_action.Accepter): return True
-        return False
 
     def __hash__(self):
         xor_sum = 0
@@ -309,59 +289,7 @@ class Entry(object):
     def uniform_doors_f(self): 
         return self.__uniform_doors_f
 
-    def has_special_door_from_state(self, StateIndex):
-        """Determines whether the state has a special entry from state 'StateIndex'.
-           RETURNS: False -- if entry is not at all source state dependent.
-                          -- if there is no single door for StateIndex to this entry.
-                          -- there is one or less door for the given StateIndex.
-                    True  -- If there is an entry that depends on StateIndex in exclusion
-                             of others.
-        """
-        if   self.__uniform_doors_f:     return False
-        elif len(self.__action_db) <= 1: return False
-        return self.__action_db.has_key(StateIndex)
-
-    def reconfigure_position_registers(self, PositionRegisterMap):
-        """Originally, each pattern gets its own position register if it is
-        required to store/restore the input position. The 'PositionRegisterMap'
-        is a result of an analysis which tells whether some registers may
-        actually be shared. This function does the replacement of positioning
-        registers based on what is given in 'PositionRegisterMap'.
-        """
-        # (*) Adapt position registers (if necessary)
-        if PositionRegisterMap is not None and len(PositionRegisterMap) != 0: 
-            # (*) Some post-contexts may use the same position register. Those have
-            #     been identified in PositionRegisterMap. Do the replacement.
-            for from_state_index, door in self.__action_db.items():
-                if door.command_list.is_empty(): continue
-                change_f = False
-                for action in door.command_list.misc:
-                    if isinstance(action, entry_action.StoreInputPosition):
-                        # Replace position register according to 'PositionRegisterMap'
-                        action.position_register = PositionRegisterMap[action.position_register]
-                        change_f = True
-                # If there was a replacement, ensure that each action appears only once
-                if change_f:
-                    # Adding one by one ensures that double entries are avoided
-                    door.command_list.misc = set(x for x in door.command_list.misc)
-        return
-
-    def delete_nonsense_conditions(self):
-        """If a command list stores the input position in register unconditionally,
-        then all other conditions concerning the storage in that register are 
-        nonsensical.
-        """
-        for door in self.__action_db.itervalues():
-            for action in list(x for x in door.command_list \
-                               if     isinstance(x, entry_action.StoreInputPosition) \
-                                  and x.pre_context_id == E_PreContextIDs.NONE):
-                for x in list(x for x in door.command_list.misc \
-                              if isinstance(x, entry_action.StoreInputPosition)):
-                    if x.position_register == action.position_register and x.pre_context_id != E_PreContextIDs.NONE:
-                        door.command_list.misc.remove(x)
-        return
-
-    def door_tree_configure(self):
+    def _door_tree_configure_core(self):
         """Configure the 'door tree' (see module 'entry_action).
 
            BEFORE: An 'action_db' maps 
@@ -375,35 +303,36 @@ class Entry(object):
            transition into the state. Now, the state can be entered via these
            doors.
            
-           AFTER: There are two more databases:
+           AFTER: Each command list in 'ActionDB' has the 'door_id' set, i.e.
 
-              (1)  door_db:       TransitionID --> DoorID
+              self.action_db[door_id].door_id = something.
 
-              which tells for a given transition (state, from_state) what the
-              door is into the door tree which has been configured.
-           
-              (2)  transition_db: DoorID ---> list of TransitionID-s
-
-              which tells what transitions are implemented by a given door.
         """
         # (*) Categorize action lists
 
         # NOTE: The transition from 'NONE' does not enter the door tree.
         #       It appears only in the init state when the thread of 
         #       control drops into the first state. The from 'NONE' door
-        #       is implemented referring to '.action_db_get_command_list(...)'.
+        #       is implemented referring to '.action_db.get_action(...)'.
         transition_action_list = [ 
             transition_action.clone() 
             for transition_id, transition_action in self.__action_db.iteritems() 
             if transition_id.from_state_index != E_StateIndices.NONE
         ]
-        door_db,       \
-        transition_db, \
-        self.__door_tree_root = entry_action.categorize_command_lists(self.__state_index, transition_action_list)
 
-        self.set_door_db(door_db)               # use set_door_db() 'assert' on content
-        self.set_transition_db(transition_db)   # use set_transition_db() 'assert' on content
+        door_db,       \
+        self.__door_tree_root = entry_action.categorize_command_lists(self.__state_index, transition_action_list)
         assert self.__door_tree_root is not None
+
+        return door_db
+
+    def door_tree_configure(self):
+        """This function may be overloaded, so that derived classes (e.g. MegaState_Entry)
+        can do other things with the information provided in 'door_db'.
+        """
+        door_db = self._door_tree_configure_core()
+        for transition_id, door_id in door_db.iteritems():
+            self.__action_db[transition_id].door_id = door_id
 
     def __repr__(self):
         def get_accepters(AccepterList):

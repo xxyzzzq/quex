@@ -31,19 +31,27 @@ S010 = StoreInputPosition(0, 1, 0) # 7
 S011 = StoreInputPosition(0, 1, 1) # 8
 S012 = StoreInputPosition(0, 1, 2) # 9
 
+def make_action_db(DoorDb):
+    result = {}
+    for transition_id, door_id in DoorDb.iteritems():
+        ta = TransitionAction(transition_id.state_index, transition_id.from_state_index, 
+                              CommandList(), transition_id.trigger_id)
+        ta.door_id = door_id
+        result[transition_id]   = ta
+
 def test(ActionDB):
     entry = Entry(0, ActionDB.keys())
     for from_state_index, action_list in ActionDB.iteritems():
         for element in action_list:
             if isinstance(element, list):
-                entry.doors_accept(from_state_index, element)
+                entry.action_db.add_specific_Accepter(from_state_index, element)
             else:
-                entry.doors_store(from_state_index, 
-                                  element.pre_context_id, 
-                                  element.position_register, 
-                                  element.offset)
-    door_db, transition_db, door_tree_root = categorize_command_lists(0, entry.action_db.values())
-    print door_tree_root.get_string(transition_db)
+                entry.action_db.add_StoreInputPosition(from_state_index, 
+                                                       element.pre_context_id, 
+                                                       element.position_register, 
+                                                       element.offset)
+    door_db, door_tree_root = categorize_command_lists(0, entry.action_db.values())
+    print door_tree_root.get_string(make_action_db(door_db))
 
 if "1" in sys.argv:
     # All three states have exactly the same entry actions
@@ -145,8 +153,8 @@ elif "set_state_key" in sys.argv:
         TransitionAction(3, 2, CommandList([ SetTemplateStateKey(3) ])),
         TransitionAction(4, 2, CommandList([ SetTemplateStateKey(4) ])),
     ]
-    door_db, transition_db, door_tree_root = categorize_command_lists(4711, action_list)
-    print door_tree_root.get_string(transition_db)
+    door_db, door_tree_root = categorize_command_lists(4711, action_list)
+    print door_tree_root.get_string(make_action_db(door_db))
     sys.exit(0)
 
 elif "set_path_iterator" in sys.argv:
@@ -160,8 +168,8 @@ elif "set_path_iterator" in sys.argv:
         TransitionAction(3, 2, CommandList([ SetPathIterator(1, 2, 1) ])),
         TransitionAction(4, 2, CommandList([ SetPathIterator(1, 1, 2) ])),
     ]
-    door_db, transition_db, door_tree_root = categorize_command_lists(4711, action_list)
-    print door_tree_root.get_string(transition_db)
+    door_db, door_tree_root = categorize_command_lists(4711, action_list)
+    print door_tree_root.get_string(make_action_db(door_db))
     sys.exit(0)
 
 elif "clear_door_tree" in sys.argv:

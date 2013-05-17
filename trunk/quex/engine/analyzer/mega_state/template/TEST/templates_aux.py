@@ -117,7 +117,7 @@ def test_combination(StateA, StateB, analyzer, StateA_Name="A", StateB_Name="B",
 
     if DrawF:
         print "DoorTree(%s|%s):" % (StateA_Name, StateB_Name)
-        print "    " + result.entry.door_tree_root.get_string(result.entry.transition_db).replace("\n", "\n    ")
+        print "    " + result.entry.door_tree_root.get_string(result.entry.action_db).replace("\n", "\n    ")
     print "Result"
 
     for state_index in result.implemented_state_index_list():

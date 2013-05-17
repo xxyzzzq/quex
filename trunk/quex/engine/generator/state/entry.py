@@ -56,8 +56,7 @@ def do_node(txt, TheState, Node, LastChildF=False, BIPD_ID=None):
         #                         -- The state is a PathWalkerState which is uniform.
         # Reload is involved if:      The transition map is not empty.
         #                         and Not in Backward Input Position Detection Mode.
-        transition_id_list     = TheState.entry.transition_db.get(Node.door_id)
-        has_transition_f       = (transition_id_list is not None) and len(transition_id_list) != 0
+        has_transition_f       = TheState.entry.action_db.has_transitions_to_door_id(Node.door_id)
         has_reload_f           = len(TheState.transition_map) != 0 and BIPD_ID is None
         has_multiple_childs_f  = len(Node.child_list) > 1
         is_uniform_path_walker_state_f = isinstance(TheState, PathWalkerState) and \
@@ -76,7 +75,7 @@ def do_node(txt, TheState, Node, LastChildF=False, BIPD_ID=None):
 
 def do_entry_from_NONE(txt, TheState):
     LanguageDB = Setup.language_db
-    action = TheState.entry.action_db_get_command_list(TheState.index, E_StateIndices.NONE)
+    action = TheState.entry.action_db.get_action(TheState.index, E_StateIndices.NONE)
     if action is None: 
         return
     txt.extend(LanguageDB.COMMAND(command) for command in action.command_list) 
@@ -85,7 +84,7 @@ def comment_door(txt, Node, TheEntry):
     LanguageDB = Setup.language_db
 
     # If the door is entered by another state, write a comment from where it is entered.
-    transition_id_list = TheEntry.transition_db[Node.door_id]
+    transition_id_list = TheEntry.action_db.get_transition_id_list(Node.door_id)
     if len(transition_id_list) != 0:
         txt.append(" ")
         LanguageDB.COMMENT(txt, "".join([ "(%s from %s) " % (x.state_index, x.from_state_index) for x in transition_id_list])[:-1])

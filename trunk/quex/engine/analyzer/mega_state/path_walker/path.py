@@ -22,7 +22,7 @@ class PathWalkerState_Entry(MegaState_Entry):
     A PathWalkerState is a MegaState, meaning it implements multiple states at
     once. Entries into the PathWalkerState must have an action that sets the
     'state key' for the state that it is about to represent. The 'state key'
-    of a PathWalkerState' is the offset of the path iterator from the character
+    of a PathWalkerState is the offset of the path iterator from the character
     path's base.
 
     During analysis, only the '.action_db' is of interest. There the 
@@ -40,14 +40,15 @@ class PathWalkerState_Entry(MegaState_Entry):
         """Include 'TheState.entry.action_db' into this state. That means,
         that any mapping:
            
-                transition (StateIndex, FromStateIndex) --> CommandList 
+             transition (StateIndex, FromStateIndex) --> CommandList 
 
-        is absorbed in 'self.__action_db'. Additionally, any command list must
-        contain the 'SetTemplateStateKey' command that sets the state key for
-        TheState. At each (external) entry into the Template state the
-        'state_key' must be set, so that the template state can operate
-        accordingly.  
+        is ABSORBED AS THEY ARE in 'self.__action_db'.  Additionally, any
+        command list must contain the 'SetPathIterator' command that sets the
+        state key for represented state. At each (external) entry into the path
+        walker state the 'state_key' must be set, so that it can mimik the
+        represented state.
         """
+
         for transition_id, action in TheEntry.action_db.iteritems():
             clone = action.clone()
             # Create new 'SetPathIterator' for current state
@@ -189,7 +190,7 @@ class CharacterPath(object):
         prev_state_index = self.__sequence[0].state_index
         prototype        = None
         for x in self.__sequence[1:-1]:
-            action = self.entry.action_db_get_command_list(x.state_index, prev_state_index)
+            action = self.entry.action_db.get_action(x.state_index, prev_state_index)
             if prototype is not None:
                 if not prototype.is_equivalent(action.command_list):
                     return None
@@ -226,7 +227,7 @@ class CharacterPath(object):
         if uniform_entry is None: # Actually, this could be an assert. This function is only
             return False          # to be executed when building uniform paths.
 
-        action = self.entry.action_db_get_command_list(State.index, self.__sequence[-1].state_index)
+        action = self.entry.action_db.get_action(State.index, self.__sequence[-1].state_index)
         if not uniform_entry.is_equivalent(action.command_list):
             return False
         return True
