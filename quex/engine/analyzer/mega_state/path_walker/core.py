@@ -233,11 +233,11 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
             TreeWalker.__init__(self)
 
         def on_enter(self, Args):
-            path   = Args[0]
-            State  = Args[1]
+            path   = Args[0]  # 'CharacterPath'
+            State  = Args[1]  # 'AnalyzerState'
 
             # list: (interval, target)  --> (interval, door_id)
-            transition_map = State.transition_map # .relate_to_door_ids(self.analyzer, State.index)
+            transition_map = State.transition_map 
 
             # BRANCH __________________________________________________________
             sub_list = []
@@ -337,7 +337,7 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
     target_state = analyzer.state_db[TargetIndex]
     path         = CharacterPath(FromState, TransitionChar, tm_clone)
 
-    path_finder = PathFinder(analyzer, CompressionType, AvailableStateIndexSet)
+    path_finder  = PathFinder(analyzer, CompressionType, AvailableStateIndexSet)
 
     if path_finder.uniform_f and not PathFinder.check_uniformity(path, target_state): 
         return []
@@ -476,27 +476,19 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
             # Create a new PathWalkerState
             path_walker_list.append(PathWalkerState(path, TheAnalyzer, CompressionType))
 
-    # 'absorbance_db': state_index --> PathWalkerState which implements it.
-    absorbance_db = defaultdict(set)
+    # Handle the special transition 'from self to self'.
     for path_walker in path_walker_list:
-        absorbance_db.update((i, path_walker) for i in path_walker.implemented_state_index_list())
-
+        my_index                 = path_walker.index
+        from_self_to_self_action = TransitionAction(my_index, my_index)
         if path_walker.uniform_entry_command_list_along_all_paths is not None:
             # Assign the uniform command list to the transition 'path_walker -> path_walker'
-            transition_action = TransitionAction(path_walker.index, path_walker.index, 
-                                                 path_walker.uniform_entry_command_list_along_all_paths)
+            from_self_to_self_action.command_list = path_walker.uniform_entry_command_list_along_all_paths.clone()
             # Delete transitions on the path itself => No doors for them will be implemented.
             path_walker.delete_transitions_on_path() # LEAVE THIS! This is the way to 
             #                                        # indicate unimportant entry doors!
-        else:
-            # Nothing special to be done upon iteration over the path
-            transition_action = TransitionAction(path_walker.index, path_walker.index)
 
-        transition_id = TransitionID(path_walker.index, path_walker.index)
-        path_walker.entry.action_db[transition_id] = transition_action
+        transition_id                              = TransitionID(my_index, my_index)
+        path_walker.entry.action_db[transition_id] = from_self_to_self_action
 
-        # Once the entries are combined, re-configure the door tree
-        path_walker.entry.door_tree_configure()
-
-    return absorbance_db
+    return path_walker_list
 

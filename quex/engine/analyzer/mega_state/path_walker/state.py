@@ -216,6 +216,6 @@ class PathWalkerState(MegaState):
         for sequence in self.__path_list:
             from_index = sequence[0].state_index
             for x in sequence[1:-1]:
-                self.entry.action_db_delete_transition(x.state_index, from_index)
+                self.entry.action_db.delete(x.state_index, from_index)
                 from_index = x.state_index
 

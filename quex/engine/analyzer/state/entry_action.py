@@ -1,5 +1,5 @@
 from   quex.blackboard          import setup as Setup, \
-                                       E_StateIndices, E_PreContextIDs, E_TransitionSubIDs
+                                       E_StateIndices, E_PreContextIDs, E_TriggerIDs
 from   quex.engine.misc.file_in import error_msg
 from   quex.engine.tools        import pair_combinations
 
@@ -9,11 +9,13 @@ from   copy                     import deepcopy, copy
 from   itertools                import islice, izip
 
 class TransitionAction(object):
-    __slots__ = ("transition_id", "command_list")
-    def __init__(self, StateIndex, FromStateIndex, TheCommandList=None, SubID=E_TransitionSubIDs.NONE):
+    __slots__ = ("transition_id", "door_id", "command_list")
+    def __init__(self, StateIndex, FromStateIndex, TheCommandList=None, TriggerId=E_TriggerIDs.NONE):
         assert TheCommandList is None or isinstance(TheCommandList, CommandList)
 
-        self.transition_id = TransitionID(StateIndex, FromStateIndex, SubID)
+        self.door_id  = None # DoorID into door tree from where the command list is executed
+
+        self.transition_id = TransitionID(StateIndex, FromStateIndex, TriggerId)
         if TheCommandList is not None: self.command_list = TheCommandList
         else:                          self.command_list = CommandList()
  
@@ -41,21 +43,21 @@ class TransitionID(object):
 
         state_index      --> target of the transition
         from_state_index --> origin of the transition
-        sub_id           --> if there are multiple transitions from 'from_state_index'
+        trigger_id       --> if there are multiple transitions from 'from_state_index'
                              to 'state_index' with DIFFERENT command lists, then 
-                             the transitions can be identified by a sub-id.
+                             the transitions can be identified by a trigger-id.
                              
 
        Objects of this type are for example used in TemplateState objects.
     """
-    __slots__ = ("state_index", "from_state_index", "sub_id")
-    def __init__(self, StateIndex, FromStateIndex, SubID=E_TransitionSubIDs.NONE):
+    __slots__ = ("state_index", "from_state_index", "trigger_id")
+    def __init__(self, StateIndex, FromStateIndex, TriggerId=E_TriggerIDs.NONE):
         assert isinstance(StateIndex, (int, long))     or StateIndex     in E_StateIndices
         assert isinstance(FromStateIndex, (int, long)) or FromStateIndex in E_StateIndices
-        assert isinstance(SubID, (int, long))          or SubID          in E_TransitionSubIDs
+        assert isinstance(TriggerId, (int, long))      or TriggerId      in E_TriggerIDs
         self.state_index      = StateIndex
         self.from_state_index = FromStateIndex
-        self.sub_id           = SubID
+        self.trigger_id       = TriggerId
 
     def precedes(self, Other):
         """This function helps sorting transition ids. It is not considered
@@ -68,24 +70,22 @@ class TransitionID(object):
         elif self.from_state_index > Other.from_state_index: return False
         elif self.state_index < Other.state_index:           return True
         elif self.state_index > Other.state_index:           return False
-        elif self.sub_id < Other.sub_id:                     return True
-        elif self.sub_id > Other.sub_id:                     return False
+        elif self.trigger_id < Other.trigger_id:                     return True
+        elif self.trigger_id > Other.trigger_id:                     return False
         else:                                                return True 
 
     def __hash__(self):
-        if isinstance(self.from_state_index, (int, long)): 
-            xor_sum = self.from_state_index + 1
-        else:         
-            xor_sum = 0
-        if isinstance(self.state_index, (int, long)): 
-            xor_sum ^= self.state_index + 1
+        if isinstance(self.from_state_index, (int, long)): xor_sum = self.from_state_index + 1
+        else:                                              xor_sum = 0
+        if isinstance(self.state_index, (int, long)):      xor_sum ^= self.state_index + 1
+        if isinstance(self.trigger_id, (int, long)):       xor_sum ^= self.trigger_id + 1
         return xor_sum
 
     def __eq__(self, Other):
         if not isinstance(Other, TransitionID): return False
         return     self.from_state_index == Other.from_state_index \
                and self.state_index      == Other.state_index \
-               and self.sub_id           == Other.sub_id
+               and self.trigger_id           == Other.trigger_id
     def __repr__(self):
         return "TransitionID(to=%s, from=%s)" % (self.state_index, self.from_state_index)
 
@@ -547,10 +547,14 @@ class Door:
     def __repr__(self):
         assert False, "Use 'get_string()'"
 
-    def get_string(self, DoorID_to_TransitionID_DB, OnlyFromStateIndexF=False):
+    def get_string(self, ActionDB, OnlyFromStateIndexF=False):
         """DoorID_to_TransitionID_DB can be received, for example from the 
-           'entry.transition_db' object.
+           'entry.action_db' object.
         """
+        DoorID_to_TransitionID_DB = defaultdict(list)
+        for transition_id, action in ActionDB.iteritems():
+            DoorID_to_TransitionID_DB[transition_id].append(action.door_id)
+
         txt = []
         for child in sorted(self.child_list, key=attrgetter("door_id")):
             txt.append("%s\n" % child.get_string(DoorID_to_TransitionID_DB))
@@ -658,7 +662,7 @@ def categorize_command_lists(StateIndex, TransitionActionList):
     ##    parent.child_list.append(door)
 
     # All pending are subject to investigation
-    work_list    = [ (parent, pending_list) ]
+    work_list = [ (parent, pending_list) ]
     while len(work_list) != 0:
         parent, pending_list = work_list.pop()
 
@@ -715,9 +719,7 @@ def categorize_command_lists(StateIndex, TransitionActionList):
     remove_empty_nodes(root)
     assert root is not None
 
-    return copy(Door.transition_id_to_door_id_db), \
-           copy(Door.door_id_to_transition_id_list_db), \
-           root
+    return copy(Door.transition_id_to_door_id_db), root
 
 def pre_investigate(TransitionActionList):
     """Categorize the TransitionActions into one of three kinds:

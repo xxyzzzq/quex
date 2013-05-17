@@ -86,9 +86,9 @@ def do(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList):
     candidate_list
 
        A list of TemplateStateCandidate-s. A candidate represents the possible
-       combination of two states from the 'elects'. A candidate contains information
-       about the possible gain which could be expected from combining two
-       particular states from the 'elect_db'.
+       combination of two states from the 'elects'. A candidate contains
+       information about the possible gain which could be expected from
+       combining two particular states from the 'elect_db'.
 
     To support the homogeneity of the algorithm all AnalyzerState-s are
     translated into PseudoMegaState-s prior the analysis procedure.
@@ -128,7 +128,7 @@ def do(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList):
         #    (After 'update' to avoid combination with itself)
         elect_db[elect.index] = elect
 
-    return elect_db.get_template_states()
+    return [ state for state in self.itervalues() if isinstance(state, TemplateState) ]
 
 class CandidateList(list):
     """________________________________________________________________________
@@ -320,14 +320,4 @@ class ElectDB(dict):
 
         self.update(result)
 
-    def get_template_states(self):
-        """RETURNS: Map from 'absorbed AnalyzerState' indices to the Template state 
-                    which implements it.
-        """
-        result = {}
-        for state in (x for x in self.itervalues() if isinstance(x, TemplateState)):
-            state.entry.door_tree_configure()
-            result.update((i, state) for i in state.implemented_state_index_list())
-
-        return result
 
