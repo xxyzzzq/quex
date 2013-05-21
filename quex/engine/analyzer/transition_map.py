@@ -105,36 +105,35 @@ class TransitionMap(list):
         
         return self.__class__.from_iterable(self, relate)
 
-    def re_relate_door_ids(self, TheAnalyzer, StateIndex):
+    def replace_door_ids(self, MapOldDoorIdToNewDoorId):
         """Transition maps have been configured to enter states through DoorID-s.
         MegaState-s replace original states and old DoorID-s must be replaced by
         new ones, those that enter MegaState-s.
 
         It is assumed that MegaStates made their entry in the databases!
         """
-        def relate(StateIndex, Target, StateDB):
+        def relate(Target, MapOldDoorIdToNewDoorId):
+            """RETURN: None      --> entry in transition map is left as is.
+                       NewTarget --> new entry in transition is to be made.
+            """
             if Target == E_StateIndices.DROP_OUT:
                 return None # Nothing to be done
-            # RETURN: None --> entry in transition map is left as is.
-            #         else --> new entry in transition is made with new DoorId.
-            return StateDB[Target.state_index].entry.door_id_update(Target)
 
-        self.__re_relate_core(TheAnalyzer, StateIndex, relate)
+            elif isinstance(Target, MegaState_Target):
+                Target.replace_door_ids(MapOldDoorIdToNewDoorId) 
+                # All required changes on target have been accomplished, no new
+                # entry in transition map is required.
+                return None  
 
-    def re_relate_door_ids_in_MegaState_Targets(self, TheAnalyzer, StateIndex):
-        def relate(StateIndex, Target, StateDB):
-            the_mega_state = StateDB[StateIndex]
-            Target.door_id_update(the_mega_state, StateDB)
-            # RETURN: None --> Always, because the MegaState_Target has been adapted.
-            #                  No change in the transition map is necessary.
-            return None
+            elif isinstance(Target, DoorID):
+                return MapOldDoorIdToNewDoorId.get(Target)
 
-        self.__re_relate_core(TheAnalyzer, StateIndex, relate)
+            else:
+                assert False
 
-    def __re_relate_core(self, TheAnalyzer, StateIndex, factory):
         for i, info in enumerate(self):
             interval, target = info
-            new_target = factory(StateIndex, target, TheAnalyzer.state_db)
+            new_target = relate(target, MapOldDoorIdToNewDoorId)
             if new_target is None: continue
             self[i] = (interval, new_target)
 
