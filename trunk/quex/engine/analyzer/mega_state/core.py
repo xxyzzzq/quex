@@ -88,7 +88,7 @@ class MegaState_Entry(Entry):
     def __init__(self, MegaStateIndex):
         Entry.__init__(self, MegaStateIndex, FromStateIndexList=[])
 
-    def door_tree_configure(self)
+    def door_tree_configure(self):
         door_db = self._door_tree_configure_core()
 
         # Record relation between old and new DoorID
@@ -98,7 +98,7 @@ class MegaState_Entry(Entry):
         )
 
         # Set the new door id for each action
-        for transition_id, new_door_id in door_db.iteritems()
+        for transition_id, new_door_id in door_db.iteritems():
             self.__action_db[transition_id].door_id = new_door_id
 
         return map_old_door_id_to_new_door_id
@@ -338,28 +338,31 @@ class MegaState_Target(object):
     @property
     def scheme_id(self):           return self.__scheme_id
 
-    def door_id_update(self, TheMegaState, StateDB):
+    def replace_door_ids(self, MapOldDoorIdToNewDoorId):
+        """RETURNS: True  if there where internal replacements of door ids.
+                    False if there was no replacement to be done.
+        """
         if self.__target_state_index is not None: 
-            return 
+            return False
 
         elif self.__door_id is not None:
-            target_state = StateDB[self.__door_id.state_index]
-            new_door_id  = target_state.entry.door_id_update(self.__door_id)
-            if new_door_id is None: return
+            new_door_id = MapOldDoorIdToNewDoorId.get(self.__door_id)
+            if new_door_id is None: return False
             self.__door_id = new_door_id
 
         elif self.__scheme is not None:
             new_scheme = None
             for i, door_id in enumerate(self.__scheme):
-                target_state = StateDB[self.__door_id.state_index]
-                new_door_id  = target_state.door_id_update(self.__door_id)
+                new_door_id  = MapOldDoorIdToNewDoorId.get(self.__door_id)
                 if new_door_id is None: continue
                 if new_scheme is None: new_scheme = list(self.__scheme)
                 new_scheme[i] = new_door_id
 
-            if new_scheme is None: return
+            if new_scheme is None: return False
+
             self.__scheme = tuple(new_scheme)
-        return
+
+        return True
 
     def finalize(self, TheMegaState, StateDB, scheme_db):
         """Once the whole state configuration and the states' entry doors are
@@ -616,23 +619,6 @@ class AbsorbedState_Entry(Entry):
     def __init__(self, StateIndex, ActionDB):
         Entry.__init__(self, StateIndex, FromStateIndexList=[])
         self.__action_db = ActionDB
-
-    def door_id_update(self, DoorId):
-        """During MegaState analysis, doors are related to a different state. 
-        RETURNS: None          -- if DoorId has not been updated or is not present
-                 UpdatedDoorId -- else.
-        """
-        #return self.__old_to_new_door_id_db[DoorId]
-        transition_id_list = self.__old_transition_db.get(DoorId)
-        if transition_id_list is None or len(transition_id_list) == 0: 
-            return None
-
-        for transition_id in transition_id_list:
-            new_door_id = self.door_db.get(transition_id)
-            if   new_door_id is None:   continue
-            elif new_door_id == DoorId: return None
-            else:                       return new_door_id
-        assert False
 
 class AbsorbedState(AnalyzerState):
     """________________________________________________________________________

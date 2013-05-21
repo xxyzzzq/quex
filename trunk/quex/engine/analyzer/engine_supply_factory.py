@@ -79,7 +79,11 @@ class Class_BACKWARD_PRE_CONTEXT(Base):
     def create_Entry(self, SM_State, StateIndex, FromStateIndexList):
         pre_context_id_fulfilled_list = [ origin.pattern_id() for origin in SM_State.origins() \
                                                               if origin.is_acceptance() ]
-        return Entry(StateIndex, FromStateIndexList, pre_context_id_fulfilled_list)
+        result = Entry(StateIndex, FromStateIndexList)
+        for transition_action in result.action_db.itervalues():
+            transition_action.command_list.misc.update(pre_context_ok_command_list)
+        return result
+
 
     def create_DropOut(self, SM_State):                        
         return DropOutIndifferent()

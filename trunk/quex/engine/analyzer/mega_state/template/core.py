@@ -274,16 +274,13 @@ class CandidateList(list):
         combined with another state anymore.
         """
 
-        size     = len(self)
-        i        = 0
+        i        = len(self) - i
         done_set = (I, K)
         while i < size:
             entry = self[i]
             if entry.state_a.index in done_set or entry.state_b.index in done_set:
                 del self[i]
-                size -= 1
-            else:
-                i += 1
+            i -= 1
 
         return 
 

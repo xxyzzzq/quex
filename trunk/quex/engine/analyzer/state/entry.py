@@ -14,11 +14,12 @@ class EntryActionDB(dict):
            may fail somewhere down the lines.
         """
         iterable = (                                                         \
-              (TransitionID(StateIndex, i), TransitionAction(StateIndex, i)) \
+              (TransitionID(StateIndex, i), TransitionAction()) \
               for i in FromStateIndexList                                    \
         )
         dict.__init__(self, iterable)
-        self.__state_index = StateIndex
+        self.__state_index             = StateIndex
+        self.__largest_used_door_sub_index = 0  # '0' is used for 'Door 0', i.e. reload entry
 
     def add_Accepter(self, PreContextID, PatternID):
         """Add an acceptance at the top of each accepter at every door. If there
@@ -124,6 +125,39 @@ class EntryActionDB(dict):
                         except: pass
         return
 
+    def categorize(self, StateIndex):
+        """Identifies command lists which are the same. Each unique command list
+        receives a 'door_id' which identifies the entry into the state from where
+        the command list is executed.
+        """
+        command_list_db = {}    # Helps to detect actions with same command list
+        replacement_db  = None  # Tracks re-assignment of door-ids
+        i               = 0
+        for transition_id, action in self.iteritems():
+            i += 1
+            # If there was an action with the same command list, then assign
+            # the same door id.
+            door_id = command_list_db.get(action.command_list)
+            if door_id is not None:
+                new_door_id = door_id
+            else:
+                new_door_id = DoorID(StateIndex, i)
+                command_list_db[action.command_list] = new_door_id
+
+            # Keep track of changed door ids in the 'replacement_db'
+            if action.door_id is not None:
+                replacement_db[action.door_id] = new_door_id 
+
+            # Relate the action's CommandList to a DoorID.
+            action.door_id = new_door_id
+
+        self.__largest_used_door_sub_index = i  # '0' is used for 'Door 0', i.e. reload entry
+        return replacement_db
+
+    @property 
+    def largest_used_door_sub_index(self):
+        return self.__largest_used_door_sub_index
+
     def has_transitions_to_door_id(self, DoorId):
         for action in self.itervalues():
             if action.door_id == DoorId:
@@ -199,28 +233,17 @@ class Entry(object):
     action can be provided.
     ___________________________________________________________________________
     """
-    __slots__ = ("__state_index", "__uniform_doors_f", "__action_db", "__transition_db", "__door_tree_root")
+    __slots__ = ("__state_index", "__action_db", "__door_tree_root")
 
-    def __init__(self, StateIndex, FromStateIndexList, PreContextFulfilledID_List=None):
+    def __init__(self, StateIndex, FromStateIndexList):
         # map:  (from_state_index) --> list of actions to be taken if state is entered 
         #                              'from_state_index' for a given pre-context.
         # if len(FromStateIndexList) == 0: FromStateIndexList = [ E_StateIndices.NONE ]
         self.__state_index = StateIndex
         self.__action_db   = EntryActionDB(StateIndex, FromStateIndexList)
 
-        # Are the actions for all doors the same?
-        self.__uniform_doors_f = None 
-
-        # Function 'categorize_command_lists()' fills the following members
-        self.__transition_db  = None # map: door_id       --> transition_id
+        # Function 'build_door_tree()' fills the following members
         self.__door_tree_root = None # The root of the door tree.
-
-        # Only for 'Backward Detecting Pre-Contexts'.
-        if PreContextFulfilledID_List is not None:
-            pre_context_ok_command_list = [ entry_action.PreConditionOK(pre_context_id) \
-                                            for pre_context_id in PreContextFulfilledID_List ]
-            for transition_action in self.__action_db.itervalues():
-                transition_action.command_list.misc.update(pre_context_ok_command_list)
 
     @property
     def state_index(self): 
@@ -232,7 +255,7 @@ class Entry(object):
 
     @property
     def door_tree_root(self): 
-        """The door_tree_root is determined by 'categorize_command_lists()'"""
+        """The door_tree_root is determined by 'build_door_tree()'"""
         assert self.__door_tree_root is not None
         return self.__door_tree_root
 
@@ -265,9 +288,6 @@ class Entry(object):
                 return action.door_id
         return None
 
-    def door_id_update(self, DoorId):
-        return None # Normal States do not need to update door ids; only AbsorbedState-s.
-
     def __hash__(self):
         xor_sum = 0
         for door in self.__action_db.itervalues():
@@ -285,9 +305,6 @@ class Entry(object):
     def is_equal(self, Other):
         # Maybe, we can delete this ...
         return self.__eq__(self, Other)
-
-    def uniform_doors_f(self): 
-        return self.__uniform_doors_f
 
     def _door_tree_configure_core(self):
         """Configure the 'door tree' (see module 'entry_action).
@@ -314,14 +331,8 @@ class Entry(object):
         #       It appears only in the init state when the thread of 
         #       control drops into the first state. The from 'NONE' door
         #       is implemented referring to '.action_db.get_action(...)'.
-        transition_action_list = [ 
-            transition_action.clone() 
-            for transition_id, transition_action in self.__action_db.iteritems() 
-            if transition_id.from_state_index != E_StateIndices.NONE
-        ]
-
         door_db,       \
-        self.__door_tree_root = entry_action.categorize_command_lists(self.__state_index, transition_action_list)
+        self.__door_tree_root = entry_action.build_door_tree(self.__state_index, self.__action_db)
         assert self.__door_tree_root is not None
 
         return door_db

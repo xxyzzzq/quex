@@ -4,16 +4,16 @@ import os
 import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.engine.analyzer.state.entry        import *
-from   quex.engine.analyzer.state.entry_action import *
-import help
+from   quex.engine.analyzer.state.entry            import *
+from   quex.engine.analyzer.state.entry_action     import *
+import quex.engine.generator.state.entry_door_tree as     entry_door_tree
 
 from   collections import namedtuple
 from   copy import copy
 from   random import randint
 
 if "--hwut-info" in sys.argv:
-    print "Categorize Entry Door Actions"
+    print "Build Tree of Entry Door Commands"
     print "CHOICES: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, set_state_key, set_path_iterator;" #, clear_door_tree;"
     sys.exit()
 
@@ -40,7 +40,8 @@ def make_action_db(DoorDb):
         result[transition_id]   = ta
 
 def test(ActionDB):
-    entry = Entry(0, ActionDB.keys())
+    state_index = 0
+    entry = Entry(state_index, ActionDB.keys())
     for from_state_index, action_list in ActionDB.iteritems():
         for element in action_list:
             if isinstance(element, list):
@@ -50,8 +51,9 @@ def test(ActionDB):
                                                        element.pre_context_id, 
                                                        element.position_register, 
                                                        element.offset)
-    door_db, door_tree_root = categorize_command_lists(0, entry.action_db.values())
-    print door_tree_root.get_string(make_action_db(door_db))
+    entry.action_db.categorize(state_index)
+    door_db, door_tree_root = entry_door_tree.do(state_index, entry.action_db)
+    print door_tree_root.get_string(entry.action_db)
 
 if "1" in sys.argv:
     # All three states have exactly the same entry actions
@@ -153,7 +155,7 @@ elif "set_state_key" in sys.argv:
         TransitionAction(3, 2, CommandList([ SetTemplateStateKey(3) ])),
         TransitionAction(4, 2, CommandList([ SetTemplateStateKey(4) ])),
     ]
-    door_db, door_tree_root = categorize_command_lists(4711, action_list)
+    door_db, door_tree_root = build_door_tree(4711, action_list)
     print door_tree_root.get_string(make_action_db(door_db))
     sys.exit(0)
 
@@ -168,7 +170,7 @@ elif "set_path_iterator" in sys.argv:
         TransitionAction(3, 2, CommandList([ SetPathIterator(1, 2, 1) ])),
         TransitionAction(4, 2, CommandList([ SetPathIterator(1, 1, 2) ])),
     ]
-    door_db, door_tree_root = categorize_command_lists(4711, action_list)
+    door_db, door_tree_root = build_door_tree(4711, action_list)
     print door_tree_root.get_string(make_action_db(door_db))
     sys.exit(0)
 

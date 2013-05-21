@@ -60,7 +60,7 @@ def do(TheAnalyzer):
     )
 
     map_door_ids = {}
-    for mega_state in mega_state_list:
+    for mega_state in TheAnalyzer.mega_state_list:
         map_door_ids.update(mega_state.entry.door_tree_configure())
 
     for state in TheAnalyzer.state_db.itervalues():
