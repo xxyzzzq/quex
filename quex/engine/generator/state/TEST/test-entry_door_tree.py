@@ -52,7 +52,16 @@ def test(ActionDB):
                                                        element.position_register, 
                                                        element.offset)
     entry.action_db.categorize(state_index)
-    door_db, door_tree_root = entry_door_tree.do(state_index, entry.action_db)
+    door_tree_root = entry_door_tree.do(state_index, entry.action_db)
+    #print "#door_tree_root:", door_tree_root.door_id
+    #for c in door_tree_root.child_set:
+    #    print "#door_tree_root.child:", c
+    #    if c.child_set is not None:
+    #        for cc in c.child_set:
+    #            print "#door_tree_root.child.child:", cc
+    #    else:
+    #        print "#door_tree_root.child.child: <none>"
+
     print door_tree_root.get_string(entry.action_db)
 
 if "1" in sys.argv:
@@ -145,33 +154,37 @@ elif "11" in sys.argv:
     action_db = dict((i, [StoreInputPosition(0, 0, i)]) for i in xrange(10))
 
 elif "set_state_key" in sys.argv:
-    action_list = [
-        TransitionAction(1, 1, CommandList([ SetTemplateStateKey(1) ])),
-        TransitionAction(2, 1, CommandList([ SetTemplateStateKey(2) ])),
-        TransitionAction(3, 1, CommandList([ SetTemplateStateKey(2) ])),
-        TransitionAction(4, 1, CommandList([ SetTemplateStateKey(2) ])),
-        TransitionAction(1, 2, CommandList([ SetTemplateStateKey(3) ])),
-        TransitionAction(2, 2, CommandList([ SetTemplateStateKey(3) ])),
-        TransitionAction(3, 2, CommandList([ SetTemplateStateKey(3) ])),
-        TransitionAction(4, 2, CommandList([ SetTemplateStateKey(4) ])),
-    ]
-    door_db, door_tree_root = build_door_tree(4711, action_list)
-    print door_tree_root.get_string(make_action_db(door_db))
+    action_db = EntryActionDB(0, [])
+    action_db.update({
+        TransitionID(1, 1): TransitionAction(CommandList([ SetTemplateStateKey(1) ])),
+        TransitionID(2, 1): TransitionAction(CommandList([ SetTemplateStateKey(2) ])),
+        TransitionID(3, 1): TransitionAction(CommandList([ SetTemplateStateKey(2) ])),
+        TransitionID(4, 1): TransitionAction(CommandList([ SetTemplateStateKey(2) ])),
+        TransitionID(1, 2): TransitionAction(CommandList([ SetTemplateStateKey(3) ])),
+        TransitionID(2, 2): TransitionAction(CommandList([ SetTemplateStateKey(3) ])),
+        TransitionID(3, 2): TransitionAction(CommandList([ SetTemplateStateKey(3) ])),
+        TransitionID(4, 2): TransitionAction(CommandList([ SetTemplateStateKey(4) ])),
+    })
+    action_db.categorize(4711)
+    door_tree_root = entry_door_tree.do(4711, action_db)
+    print door_tree_root.get_string(action_db)
     sys.exit(0)
 
 elif "set_path_iterator" in sys.argv:
-    action_list = [
-        TransitionAction(1, 1, CommandList([ SetPathIterator(0, 1, 1) ])),
-        TransitionAction(2, 1, CommandList([ SetPathIterator(0, 1, 1) ])),
-        TransitionAction(3, 1, CommandList([ SetPathIterator(0, 1, 1) ])),
-        TransitionAction(4, 1, CommandList([ SetPathIterator(1, 1, 1) ])),
-        TransitionAction(1, 2, CommandList([ SetPathIterator(1, 1, 1) ])),
-        TransitionAction(2, 2, CommandList([ SetPathIterator(2, 1, 1) ])),
-        TransitionAction(3, 2, CommandList([ SetPathIterator(1, 2, 1) ])),
-        TransitionAction(4, 2, CommandList([ SetPathIterator(1, 1, 2) ])),
-    ]
-    door_db, door_tree_root = build_door_tree(4711, action_list)
-    print door_tree_root.get_string(make_action_db(door_db))
+    action_db = EntryActionDB(0, [])
+    action_db.update({
+        TransitionID(1, 1): TransitionAction(CommandList([ SetPathIterator(0, 1, 1) ])),
+        TransitionID(2, 1): TransitionAction(CommandList([ SetPathIterator(0, 1, 1) ])),
+        TransitionID(3, 1): TransitionAction(CommandList([ SetPathIterator(0, 1, 1) ])),
+        TransitionID(4, 1): TransitionAction(CommandList([ SetPathIterator(1, 1, 1) ])),
+        TransitionID(1, 2): TransitionAction(CommandList([ SetPathIterator(1, 1, 1) ])),
+        TransitionID(2, 2): TransitionAction(CommandList([ SetPathIterator(2, 1, 1) ])),
+        TransitionID(3, 2): TransitionAction(CommandList([ SetPathIterator(1, 2, 1) ])),
+        TransitionID(4, 2): TransitionAction(CommandList([ SetPathIterator(1, 1, 2) ])),
+    })
+    action_db.categorize(4711)
+    door_tree_root = entry_door_tree.do(4711, action_db)
+    print door_tree_root.get_string(action_db)
     sys.exit(0)
 
 elif "clear_door_tree" in sys.argv:
@@ -211,6 +224,14 @@ elif "X" in sys.argv:
         del result[Index % L]
         return result
     action_db = dict((i, get_actions(i)) for i in xrange(1000))
+
+elif "debug" in sys.argv:
+    action_db = {
+        0: [ A1, S000 ],
+        1: [ A1, S000, S101 ],
+        2: [ A1, S001, S102 ],
+        3: [ A1, S001 ],
+    }
 
 test(action_db)
 
