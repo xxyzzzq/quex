@@ -1,5 +1,5 @@
 Plotting State Machine Graphs
------------------------------
+=============================
 
 For plotting graphs, the graphviz utility must be installed. It can
 be downloaded from http://www.graphviz.org. If it still does not 

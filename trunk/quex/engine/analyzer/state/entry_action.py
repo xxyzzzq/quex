@@ -110,6 +110,10 @@ class CommandList:
         if self.accepter == CommandList.accepter: self.accepter = None
         self.misc.difference_update(CommandList.misc)
 
+    @staticmethod
+    def intersection(This, That):
+        return CommandList(cmd for cmd in This.__iter__() if That.has_action(cmd))
+
     def is_empty(self):
         if self.accepter is not None: return False
         return len(self.misc) == 0
@@ -465,6 +469,7 @@ class DoorID(object):
     def state_index(self): return self.__state_index
     @property
     def door_index(self): return self.__door_index
+    def set_door_index(self, Value): self.__door_index = Value
 
     def set(self, Other):
         self.__state_index = Other.__state_index

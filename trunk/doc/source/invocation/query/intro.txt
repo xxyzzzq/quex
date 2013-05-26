@@ -62,6 +62,20 @@ how quex can be used to query the unicode database and see the effect of
 character set expressions immediately, without having to compile a whole
 lexical analyzer. 
 
+.. warning::
+
+   Be careful with whitespace in expressions. A query such as::
+
+      quex --set-by-expression 'intersection([a-m], [h-z])' 
+
+   may fail, because of the whitespace after the ','. The query::
+
+      quex --set-by-expression 'intersection([a-m],[h-z])' 
+
+   works properly in any case.
+
+
+
 .. toctree::
 
    properties.txt  

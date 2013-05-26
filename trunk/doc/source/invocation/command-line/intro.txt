@@ -808,26 +808,6 @@ of this information for further processing. For example, the Unix command 'awk' 
 
    awk 'BEGIN {w=0} /BEGIN:/ {w=1;} // {if(w) print;} /END:/ {w=0;}' MyLexer.c
 
-The following option influences the analysis process on the very lowest level.
-
-.. cmdoption:: --state-entry-analysis-complexity-limit N
-
-   .. note::
-
-       Never use this option until quex proposes in a warning message that you may
-       use it to control the speed of code generation.  The warning message
-       proposing the usage of this option should only appear in engines with
-       thousands of very similar patterns including some repetitions.
-
-   For state entry analysis an algorithm is applied that is quadratic with 
-   the number of different cases to be considered. In extremely strange
-   setups, this may blow the computation time beyond of what is acceptable.
-   When more than 'N' different cases are detected, Quex only considers
-   the 'N' best candidates in the search of an optimal solution. This 
-   includes a certain risk of not finding the absolute optimum.
-
-   DEFAULT = 1000
-
 Some warnings, notes, or error messages might not be interesting or even
 be disturbing for the user. For such cases, quex provides an interface to 
 avoid prints on the standard output.

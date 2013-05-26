@@ -171,7 +171,6 @@ SETUP_INFO = {
     "source_package_directory":       [["--source-package", "--sp"],         ""],
     "show_name_spaces_f":             [["--show-name-spaces", "--sns"],      SetupParTypes.FLAG],
     "single_mode_analyzer_f":         [["--single-mode-analyzer", "--sma"],  SetupParTypes.FLAG],
-    "state_entry_analysis_complexity_limit": [["--state-entry-analysis-complexity-limit", "--seacl"], 1000],
     "user_application_version_id":    [["--version-id"],                     "0.0.0-pre-release"],
     #
     "version_information":               [["--version", "-v"],                SetupParTypes.FLAG],
@@ -240,6 +239,7 @@ SETUP_INFO = {
     "XX_error_on_special_pattern_outrun_f": [["--no-error-on-special-pattern-outrun", "--neospo"],  SetupParTypes.NEGATED_FLAG],
     "XX_error_on_special_pattern_subset_f": [["--no-error-on-special-pattern-subset", "--neospsu"], SetupParTypes.NEGATED_FLAG],
     "XX_warning_disabled_no_token_queue_f": [["--no-warning-on-no-token-queue"], SetupParTypes.FLAG],
+    "XX_state_entry_analysis_complexity_limit": [["--state-entry-analysis-complexity-limit", "--seacl"], 1000],
 }
 
 class NotificationDB:
@@ -391,6 +391,9 @@ DEPRECATED = {
   "XX_warning_disabled_no_token_queue_f": 
       ("Option '--no-warning-on-no-token-queue' has been replaced with '--suppress %s'"
        % NotificationDB.warning_on_no_token_queue, "0.64.3"),
+  "XX_state_entry_analysis_complexity_limit":
+      ("Option '--state-entry-analysis-complexity-limit' is no longer necessary.\n"
+       "The related algorithm has been improved.", "0.65.1"),
 }
  
 global_character_type_db = {

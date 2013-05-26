@@ -17,32 +17,110 @@ def do(StateIndex, TransitionActionDB):
        It is assumed, that the actions in 'TransitionActionDB' are
        '.categorized', i.e.  the command list are associated with a 'DoorID'.
     """
-    candidate_list         = CandidateList(TransitionActionDB)
+    root = Door(CommandList(), None, None, DoorID(StateIndex, 0))
 
-    door_sub_index_counter = TransitionActionDB.largest_used_door_sub_index + 1
+    # Begin: All doors relate to transitions for other states. They are 
+    #        'childs' of root. Root is the door without command lists.
+    #
+    #                       .-- DoorA: c2, c4, c7, c9
+    #          root: <> ----+-- DoorB: c0, c4, c5, c9
+    #                       +-- DoorC: c0, c3, c7, c9
+    #                       '-- DoorD: c1, c7, c9
+    #    
+    # A parent/child relationship is maintained by mentioning the child in the 
+    # '.child_set' of the parent and with the '.parent' member of every child
+    # pointing to the parent.
+    door_set = set(
+         Door(action.command_list, Parent=root, ChildSet=None, DoorId=action.door_id)
+         for transition_id, action in TransitionActionDB.iteritems()
+            if transition_id.from_state_index != E_StateIndices.NONE
+    )
+    root.child_set = door_set
+
+    # Possible shared command list sets -- organized by the shared command list
+    #
+    #          c4, c9      shared by (DoorA, DoorB, DoorD) 
+    #          c0, c4, c9  shared by (DoorB, DoorC)
+    #          c7, c9      shared by (DoorC, DoorD)
+    #
+    # (For doors to share they must have the same parent)
+    candidate_list = CandidateList(door_set)
+
+    door_sub_index_counter = TransitionActionDB.largest_used_door_sub_index 
     while 1 + 1 == 2:
         # Get best combination of command lists--those which share the 
         # most and are shared by the most.
-        best = candidate_list.pop_best()
+        best = candidate_list.pop_best_combination()
+        # Example: 
+        #             best = c4, c9 shared by (DoorA, DoorB, DoorD)
         if best is None: break
 
-        # Delete the command commands from the doors which share the 
-        # 'best.command_list'.
-        for child in best.door_set:
-            child.command_list.difference_update(best.command_list)
-
-        new_door_id             = DoorID(StateIndex, door_sub_index_counter)
+        # (1) Generate a new branch in the tree.
+        #
+        # The branch is a 'Door' object with the shared command list.  Its
+        # parent is the common parent of the sharing doors; its childs are the
+        # sharing doors.
         door_sub_index_counter += 1
-        new_door                = Door(best.command_list, 
-                                       ChildList = best.door_set, 
-                                       DoorId    = new_door_id)
-        candidate_list.enter(new_door)
+        new_door = Door(CmdList  = best.command_list, 
+                        ChildSet = best.door_set, 
+                        Parent   = best.parent,
+                        DoorId   = DoorID(StateIndex, door_sub_index_counter))
 
-    print "#candidate_list.no_sharer_list:", [ "%s\n" % x.door_id for x in candidate_list.no_sharer_list ]
-    root = Door(None, candidate_list.no_sharer_list, 
-                DoorID(StateIndex, 0))
+        # -- Remove child branches from direct parent. They are now parented
+        #    by 'new_node' which is a child of parent.
+        assert best.parent is not None # The root node is never combined!
+        new_door.parent.child_set.difference_update(new_door.child_set)
+        # -- Inform parent about the new_door being the direct child
+        new_door.parent.child_set.add(new_door)
 
-    Door.paternity_log(root, TransitionActionDB)
+        # -- Shared commands must be deleted from childs. They are implemented
+        #    in new 'new_door.command_list'.
+        for child in new_door.child_set:
+            child.command_list.difference_update(new_door.command_list)
+            # Set new door as parent of childs
+            child.parent = new_door
+         
+        # Resulting tree with 'New' door:
+        #                                             .-- DoorA: c2, c7
+        #        root --+-- New:   c4, c9 ------------+-- DoorB: c0, c5
+        #               |                             '-- DoorD: c1, c7
+        #               |
+        #               '-- DoorC: c0, c3, c7, c9
+
+        # (2) Update the list of possible combinations
+        #
+        # -- The children's command lists have been modified. Thus, any
+        #    possible combination which includes them is invalid.
+        candidate_list.delete_references(new_door.child_set)
+
+        # -- Enter the modified doors into candidate list, if the share 
+        #    something.
+        candidate_list.enter_door_set_of_new_parent(new_door.child_set)
+        # -- Enter the new door as a possible 'sharer' into the candidate list.
+        candidate_list.enter_door(new_door)
+        
+
+    return root
+
+class DoorCombination:
+    def __init__(self, SharedCmdList, Parent, DoorSet):
+        """SharedCmdList -- List of commands shared by the doors.
+           DoorIdList    -- Ids of the doors which share the commands.
+        """
+        assert isinstance(SharedCmdList, CommandList)
+        assert isinstance(DoorSet, set)
+        assert len(DoorSet) >= 2
+        assert Parent is not None  # Root shall never be part of a combination!
+
+        self.command_list = SharedCmdList
+        self.door_set     = DoorSet
+        # Command list is implemented once, instead of 'DoorN' times.
+        # => gain = cost(command_list) * (N - 1)
+        self.parent       = Parent
+
+    @property
+    def gain(self):
+        return float(self.command_list.cost() * (len(self.door_set) - 1))
 
 class Door:
     """A 'Door' is a node in a door tree. A door tree is constructed from 
@@ -77,32 +155,48 @@ class Door:
 
        The entry from state 'A' happens through door 2 and the entry from state
        'B' happens through door 1. Door 1 and 2 store door 0 as their parent.
-       By means of the the '.parent' and '.child_list' members the tree
+       By means of the the '.parent' and '.child_set' members the tree
        structure is maintained. The relation from which state one comes and
        through which door one enters is stored in the global variable
        'Door.transition_id_to_door_id_db', it maps:
 
                   transition_id ---> door_identifier
     """
-    def __init__(self, CommandList, ChildList, DoorId):
+    def __init__(self, CmdList, Parent, ChildSet, DoorId):
         # Only 'Leaf' nodes have the 'related actions', i.e. TA assigned.
+        assert isinstance(CmdList, CommandList)
+        assert (ChildSet is None) or isinstance(ChildSet, set)
+        assert (Parent is None)   or isinstance(Parent, Door)
         assert isinstance(DoorId, DoorID)
-        self.parent       = None  
-        self.child_list   = ChildList
-        self.command_list = CommandList
+        self.parent       = Parent  
+        self.child_set    = ChildSet
+        self.command_list = CmdList
         self.__door_id    = DoorId
-        print "#DoorId:", DoorId
 
     @staticmethod
-    def paternity_log(tree_root, DEBUG_ADB):
+    def paternity_log(tree_root, TransitionActionDB):
+        """For each node with a non-empty child_set, assign the childs
+           its parent. 
+
+           Re-assign door-indices which have been generated. This is only
+           for beauty. The goal is to have a cohesive set of numbers as
+           door indices
+        """
         done_set  = set()
         work_list = [ tree_root ]
+
+        # Any door_index > door_index_counter_base has been generated.
+        door_index_counter_base = TransitionActionDB.largest_used_door_sub_index
+        door_index_counter      = door_index_counter_base + 1
         while len(work_list) != 0:
             parent = work_list.pop()
-            assert parent.door_id not in done_set, "Recursion should not happen in the door tree!"
-            for child in parent.child_list:
+            #if parent.door_id.door_index > door_index_counter_base:
+                #parent.door_id.set_door_index(door_index_counter)
+                #door_index_counter += 1
+            considered_child_list = [x for x in parent.child_set if x not in done_set]
+            for child in sorted(considered_child_list):
                 child.parent = parent
-            work_list.extend(x for x in parent.child_list)
+            work_list.extend(considered_child_list)
             
             done_set.add(parent.door_id)
 
@@ -115,7 +209,7 @@ class Door:
         for found in (x for x in self.common_command_list if not isinstance(x, MegaState_Command)):
             return True
 
-        for child in self.child_list:
+        for child in self.child_set:
             if child.has_commands_other_than_MegaState_Command(): return True
 
         return False
@@ -130,132 +224,156 @@ class Door:
         return "Door(id: %s)" % self.door_id
         assert False, "Use 'get_string()'"
 
-    def get_string(self, ActionDB, OnlyFromStateIndexF=False):
-        """DoorID_to_TransitionID_DB can be received, for example from the 
-           'entry.action_db' object.
+    def get_string(self, ActionDB=None, OnlyFromStateIndexF=False):
+        """ActionDB can be received, for example from the 'entry.action_db' object.
+           If it is 'None', then no transition-id information is printed.
         """
-        DoorID_to_TransitionID_DB = defaultdict(list)
-        #for transition_id, action in ActionDB.iteritems():
-        #    DoorID_to_TransitionID_DB[transition_id].append(action.door_id)
+        def door_id_to_transition_id_list(DoorId, ActionDB):
+            if ActionDB is None:
+                return None
+            return [
+                transition_id for transition_id, action in ActionDB.iteritems()
+                              if action.door_id == DoorId
+            ]
 
         txt = []
-        for child in sorted(self.child_list, key=attrgetter("door_id")):
-            txt.append("%s\n" % child.get_string(DoorID_to_TransitionID_DB))
+        if self.child_set is not None:
+            def sort_key(X, ActionDB):
+                return (door_id_to_transition_id_list(X.door_id, ActionDB), X)
+                    
+            for child in sorted(self.child_set, key=lambda x: sort_key(x, ActionDB)):
+                txt.append("%s\n" % child.get_string(ActionDB))
 
         if self.door_id is not None: txt.append("[%s]: " % self.door_id.door_index)
         else:                        txt.append("[None]: ")
 
-        #transition_id_list = DoorID_to_TransitionID_DB[self.door_id]
-        #for transition_id in sorted(transition_id_list, key=attrgetter("state_index", "from_state_index")):
-        #    if OnlyFromStateIndexF:
-        #        txt.append("(%s) " % transition_id.from_state_index)
-        #    else:
-        #        txt.append("(%s<-%s) " % (transition_id.state_index, transition_id.from_state_index))
+        if ActionDB is not None:
+            transition_id_list = door_id_to_transition_id_list(self.door_id, ActionDB)
+           
+            for transition_id in sorted(transition_id_list, key=attrgetter("state_index", "from_state_index")):
+                if OnlyFromStateIndexF:
+                    txt.append("(%s) " % transition_id.from_state_index)
+                else:
+                    txt.append("(%s<-%s) " % (transition_id.state_index, transition_id.from_state_index))
+
         if self.command_list is not None:
             txt.append("\n")
             for action in self.command_list:
                 action_str = repr(action)
                 action_str = "    " + action_str[:-1].replace("\n", "\n    ") + action_str[-1]
                 txt.append(action_str)
+        else:
+            txt.append("\n")
 
         if self.parent is None: txt.append("parent: [None]\n")
         else:                   txt.append("parent: [%s]\n" % repr(self.parent.door_id.door_index))
         return "".join(txt)
 
-class CandidateList(list):
-    def __init__(self, TransitionActionDB):
+class CandidateList:
+    def __init__(self, DoorSet):
         """Compare the shared command lists between doors in the DoorList.
-        Associate each sharing with a 'gain'.
+           Associate each sharing with a 'gain'.
         """
-        class SharingInfo:
-            def __init__(self, SharedCmdList, DoorSet):
-                """SharedCmdList -- List of commands shared by the doors.
-                   DoorIdList    -- Ids of the doors which share the commands.
-                """
-                self.gain         = - SharedCmdList.cost() * len(DoorSet)
-                self.command_list = SharedCmdList
-                # self.door_id_set  = set(x.door_id for x in DoorSet)
-                self.door_set     = DoorSet
+        shared_db, sharing_door_set    = self.__find_sharings(DoorSet)
 
-            def add_door(self, TheDoor):
-                # Update 'gain':  (gain per door: gain / L) * (new number of doors: L + 1)
-                L         = (self.door_set)
-                self.gain = (self.gain / L) * (L + 1)
-                self.door_set.add(TheDoor)
+        self.possible_combination_list = shared_db.values()
+        # A door which does not share yet will never share, because no new
+        # commands will appear. Thus, the set of doors which are available
+        # for combination is defined by the set of sharing doors. 
+        # 
+        # The rest of the doors are setup by their 'parent/child' relation
+        # ship. They have their place in the door tree already.
+        self.available_door_set        = sharing_door_set
 
-        def iterable(DoorList):
-            for i, door_x in enumerate(DoorList):
-                for door_y in islice(DoorList, i+1):
-                    print "#dydy:", door_x, door_y
-                    yield door_x, door_y
+    def __find_sharings(self, DoorSet):
+        """Enter a set of doors into the database. This function finds shared
+           commands in the command list.
 
-        def shared_command_list(DoorX, DoorY):
-            return CommandList(cmd for cmd in DoorX.command_list 
-                                   if DoorY.command_list.has_action(cmd))
+           RETURNS:  [0] -- shared_db, i.e. a mapping
 
-        print "#Begin"
-        DoorList = [
-             Door(action.command_list, ChildList=[], DoorId=action.door_id)
-             for transition_id, action in TransitionActionDB.iteritems()
-                if transition_id.from_state_index != E_StateIndices.NONE
-        ]
-        print "#DoorList:", DoorList
-        share_db    = defaultdict(set)
-        sharer_list = []
-        for x, y in iterable(DoorList):
-            cmd_list = shared_command_list(x, y)
+                            CommandList --> DoorCombination
+
+                     [1] -- sharing_door_set
+
+        """
+        shared_db        = {}
+        sharing_door_set = set()
+        for x, y in pair_combinations(DoorSet):
+            assert x.parent == y.parent 
+            cmd_list = CommandList.intersection(x.command_list, y.command_list)
             if cmd_list.is_empty(): continue
-            share_db[cmd_list].add(x); share_db[cmd_list].add(y)
-            sharer_list.append(x);     sharer_list.append(y)
-        
-        self.no_sharer_list = [ 
-            x for x in DoorList if x not in sharer_list 
-        ]
+            entry    = shared_db.get(cmd_list)
+            if entry is None:
+                shared_db[cmd_list] = DoorCombination(cmd_list, Parent=x.parent, DoorSet=set([x, y]))
+            else:
+                entry.door_set.add(x)
+                entry.door_set.add(y)
+            sharing_door_set.add(x)
+            sharing_door_set.add(y)
 
-        self.extend(
-            SharingInfo(cmd_list, door_set)
-            for cmd_list, door_set in share_db.iteritems()
-        )
+        return shared_db, sharing_door_set
 
-        self.sort(key=attrgetter("gain"))
+    def pop_best_combination(self):
+        """Pop the best possible 'combination' of command lists of doors, 
+           i.e. the combination which brings the most of a gain.
+        """
+        best     = None
+        best_i   = None
+        max_gain = 0     # No negative gain will ever be accepted!
+        for i, door_combination in enumerate(self.possible_combination_list):
+            if door_combination.gain <= max_gain: continue
+            best     = door_combination
+            best_i   = i
+            max_gain = best.gain
 
-    def pop_best(self):
-        if len(self) == 0:
+        if best is None:
             return None
 
-        best = self.pop()
-
-        self.__delete_references(best.door_set)
+        del self.possible_combination_list[best_i]
 
         return best
 
-    def enter(self, NewDoor):
-        shared_f  = False
-        for share_info in self:
-            cmd_list = shared_command_list(NewDoor.command_list, 
-                                           share_info.command_list)
+    def enter_door_set_of_new_parent(self, DoorSet):
+        """Assume: All doors in DoorSet have the same (new) parent. The 
+           parent is not yet present in the database. Therefore, no
+           shared command lists can appear with other doors from 
+           'available_door_set'.
+        """
+        shared_db, sharing_door_set = self.__find_sharings(DoorSet)
+        self.possible_combination_list.extend(shared_db.itervalues())
+        self.available_door_set.update(sharing_door_set)
+
+    def enter_door(self, NewDoor):
+        """Enter a new door as a candidate into the data base. For this, it
+           possible combinations with other doors need to be considered.
+        """
+        shared_f     = False
+        command_list = NewDoor.command_list
+        for door in self.available_door_set:
+            if door.parent != NewDoor.parent: continue
+            cmd_list = CommandList.intersection(door.command_list, command_list)
             if cmd_list.is_empty(): continue
-            share_info.add_door(NewDoor)
             shared_f = True
+            # It is impossible that exact the same command list appears in another
+            # door combination with the same parent. Otherwise, it would have been
+            # combined into the 'best' door combination before.
+            dc = DoorCombination(cmd_list, door.parent, set([door, NewDoor]))
+            self.possible_combination_list.append(dc)
 
-        if not shared_f:
-            self.no_sharer_list.append(NewDoor)
-
-        self.sort(key=attrgetter("gain"))
+        if shared_f:
+            self.available_door_set.add(NewDoor)
         
-    def __delete_references(self, DoneDoorSet):
+    def delete_references(self, DoneDoorSet):
         """Delete all references to any door in DoorList. 
         """
-        i = len(self) - 1
+        i = len(self.possible_combination_list) - 1
         while i >= 0:
-            share_info = self[i]
-            share_info.door_id_set.difference_update(DoneDoorSet)
+            candidate = self.possible_combination_list[i]
+            candidate.door_set.difference_update(DoneDoorSet)
             # A command list that is shared by less than 2, is not shared.
-            if len(share_info.door_id_set) == 1:
-                self.no_sharer_list.append(share_info.door_set.pop())
-                del self[i]
-            elif len(share_info.door_id_set) == 0:
-                del self[i]
+            # => it is no longer a candidate.
+            if len(candidate.door_set) <= 1:
+                del self.possible_combination_list[i]
             i -= 1
 
         return 
