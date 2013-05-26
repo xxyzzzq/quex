@@ -18,6 +18,7 @@ Contents:
    advanced/intro.txt
    tuning/intro.txt
    invocation/intro.txt
+   trouble/intro.txt
 
 
 Indices and tables

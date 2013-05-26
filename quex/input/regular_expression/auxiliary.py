@@ -7,7 +7,7 @@ from quex.engine.state_machine.core import StateMachine
 from quex.exception                 import RegularExpressionException
 
 __debug_recursion_depth  = -1
-__debug_output_enabled_f = False # True #False # True / False 
+__debug_output_enabled_f = False # True / False 
 
 def __snap_until(stream, ClosingDelimiter, OpeningDelimiter=None):
      """Cuts the first letters of the utf8_string until an un-backslashed

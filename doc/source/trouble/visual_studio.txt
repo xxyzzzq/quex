@@ -1,5 +1,5 @@
-Visual Studio(tm) Trouble Shooting
-----------------------------------
+Visual Studio(tm) 
+=================
 
 At the time of this writing a development tool called 'Visual Studio' by a
 company called Microsoft(tm) is very popular. It provides a graphical user

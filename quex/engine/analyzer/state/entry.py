@@ -133,22 +133,21 @@ class EntryActionDB(dict):
         command_list_db = {}    # Helps to detect actions with same command list
         replacement_db  = None  # Tracks re-assignment of door-ids
         i               = 0
-        for transition_id, action in self.iteritems():
-            i += 1
+        def sort_key(X):
+            return (X[0].state_index, X[0].from_state_index)
+
+        for transition_id, action in sorted(self.items(), key=sort_key): # NOT: 'iteritems()'
             # If there was an action with the same command list, then assign
-            # the same door id.
-            door_id = command_list_db.get(action.command_list)
-            if door_id is not None:
-                new_door_id = door_id
-            else:
+            # the same door id. Leave the action intact! May be, it is modified
+            # later and will differ from the currently same action.
+            new_door_id = command_list_db.get(action.command_list)
+            if new_door_id is None:
+                i += 1
                 new_door_id = DoorID(StateIndex, i)
                 command_list_db[action.command_list] = new_door_id
 
-            # Keep track of changed door ids in the 'replacement_db'
-            if action.door_id is not None:
-                replacement_db[action.door_id] = new_door_id 
-
-            # Relate the action's CommandList to a DoorID.
+            if action.door_id is not None:                     # Keep track of changed
+                replacement_db[action.door_id] = new_door_id   # DoorIds
             action.door_id = new_door_id
 
         self.__largest_used_door_sub_index = i  # '0' is used for 'Door 0', i.e. reload entry
