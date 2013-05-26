@@ -1,8 +1,3 @@
-command line: The limit of state entry action complexity has been exceeded. To be 
-command line: able to handle the analysis, Quex decided to reduce the complexity with
-command line: the risk that the result may not be the absolute optimum. Currently,
-command line: this value is set to 5. It can be modified with the command line
-command line: option '--state-entry-analysis-complexity-limit'.
 [1]: (0<-0) 
     pre(0) --> store[0] = input_p - 0;
 parent: [0]
