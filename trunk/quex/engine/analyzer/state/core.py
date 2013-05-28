@@ -96,9 +96,7 @@ class AnalyzerState(object):
         """The 'SetTemplateStateKey' commands cost nothing, so an easy condition for
            'all entries empty' is that the door_tree_root reports a cost of '0'.
         """
-        # This function can only be called after a call to 'finish()'.
-        assert self.entry.door_tree_root is not None
-        return self.entry.door_tree_root.has_commands_other_than_MegaState_Command()
+        return self.entry.action_db.has_commands_other_than_MegaState_Command()
 
     def get_string(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
         return "".join(self.get_string_array(InputF, EntryF, TransitionMapF, DropOutF))

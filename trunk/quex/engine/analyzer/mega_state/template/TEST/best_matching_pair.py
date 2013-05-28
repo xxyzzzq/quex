@@ -37,7 +37,7 @@ def test(TriggerMapList):
     # Backward analyzers do not consider so much entry and drop-out ...
     analyzer = Analyzer(sm, engine.BACKWARD_PRE_CONTEXT)
     for state in analyzer.state_db.itervalues():
-        state.entry.door_tree_configure()
+        state.entry.action_db.categorize()
 
     elect_db       = templates.ElectDB(analyzer.state_db, analyzer.state_db.keys())
     candidate_list = templates.CandidateList(elect_db, False, 33)

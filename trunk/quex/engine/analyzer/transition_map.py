@@ -100,7 +100,7 @@ class TransitionMap(list):
             if Target == E_StateIndices.DROP_OUT:
                 return Target
             else:
-                result = TheAnalyzer.state_db[Target].entry.get_door_id(StateIndex=Target, FromStateIndex=StateIndex)
+                result = TheAnalyzer.state_db[Target].entry.action_db.get_door_id(StateIndex=Target, FromStateIndex=StateIndex)
                 return result
         
         return self.__class__.from_iterable(self, relate)

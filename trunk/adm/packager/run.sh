@@ -159,6 +159,9 @@ function collect_packages()
     # -- create the batch file for sftp
     scriptfile=
     cat > /tmp/quex-packages/sftp-frs.sourceforge.net.sh << EOF
+RSYNC:
+rsync -e ssh quex* fschaef@frs.sourceforge.net:/home/frs/project/quex/DOWNLOAD
+FTP:
 cd uploads
 put quex-$1.7z                           /home/frs/project/quex/DOWNLOAD
 put quex-$1.tar.gz                       /home/frs/project/quex/DOWNLOAD

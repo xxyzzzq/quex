@@ -76,7 +76,7 @@ def __do(SM, EngineType):
 
     # Better configure the door tree AFTER position registers are replaced.
     for state in analyzer.state_db.itervalues():
-        state.entry.door_tree_configure()
+        state.entry.action_db.categorize()
     for state in analyzer.state_db.itervalues():
         state.transition_map = state.transition_map.relate_to_door_ids(analyzer, state.index)
 

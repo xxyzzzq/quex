@@ -1,5 +1,6 @@
 from   quex.engine.analyzer.state.core                   import AnalyzerState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
+from   quex.engine.generator.state.entry_door_tree       as     entry_door_tree
 
 from quex.blackboard import setup as Setup, \
                             E_StateIndices
@@ -30,7 +31,9 @@ def do(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
     else:
         BIPD_ID = None
 
-    do_node(txt, TheState, TheState.entry.door_tree_root, LastChildF=False, BIPD_ID=BIPD_ID)
+    door_tree_root = entry_door_tree.do(TheState.index, TheState.entry.action_db)
+
+    do_node(txt, TheState, door_tree_root, LastChildF=False, BIPD_ID=BIPD_ID)
 
     return True
 

@@ -130,7 +130,7 @@ class MegaStateTransitionCodeFactory:
             # HOWEVER: If no transition_id is found, then transition_map is erroneous!
             for from_state_index in cls.implemented_state_index_list:
                 target_entry = cls.state_db[Target.target_state_index].entry
-                door_id      = target_entry.get_door_id(Target.target_state_index, from_state_index)
+                door_id      = target_entry.action_db.get_door_id(Target.target_state_index, from_state_index)
                 if door_id is None: continue
                 code = [LanguageDB.GOTO_BY_DOOR_ID(door_id)]
                 break
@@ -220,8 +220,8 @@ def require_scheme_variable(SchemeID, Scheme, TState, StateDB):
             return get_address("$drop-out", TState.index, U=True, R=True)
 
         from_state_index = TheState.map_state_key_to_state_index(StateKey)
-        door_id          = StateDB[Target].entry.get_door_id(Target, 
-                                                             FromStateIndex=from_state_index)
+        door_id          = StateDB[Target].entry.action_db.get_door_id(Target, 
+                                                                       FromStateIndex=from_state_index)
 
         if door_id is None:
             # IMPORTANT NOTE: (This case is separated to make this comment)

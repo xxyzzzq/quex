@@ -47,9 +47,14 @@ should be adapted to something similar to
 
 In conclusion, the only thing that has to be made sure is that the generated
 analyzers live in separate namespaces. All related entities of the analyzers
-are then propperly distinguished for compiling and linking. Note, that
-directory ``demo/012`` contains an example implementation of an application
-containing three different analyzers with different numbers of bytes per
-character and different decoders (ICU, IConv and engine codec).
+are then propperly distinguished for compiling and linking.  Directory
+``demo/012`` contains an example implementation of an application containing
+three different analyzers with different numbers of bytes per character and
+different decoders (ICU, IConv and engine codec). 
+
+Directory ``demo\012b`` contains an example with multiple lexical analyzers
+using the same token class.  This subject is discusses in section
+:ref:`sec-shared-token-class`.
+
 
 

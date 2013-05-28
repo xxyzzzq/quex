@@ -221,7 +221,7 @@ class LanguageDB_Cpp(dict):
             # Return the '0' Door, the door without actions
             return self.ADDRESS_BY_DOOR_ID(entry_action.DoorID(StateIndex, DoorIndex=0)) 
 
-        door_id = self.__analyzer.state_db[StateIndex].entry.get_door_id(StateIndex, FromStateIndex)
+        door_id = self.__analyzer.state_db[StateIndex].entry.action_db.get_door_id(StateIndex, FromStateIndex)
 
         assert isinstance(door_id, entry_action.DoorID)
 

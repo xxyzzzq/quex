@@ -155,10 +155,6 @@ class PathWalkerState(MegaState):
         return self.__state_index_sequence
 
     @property
-    def uniform_entries_f(self):   
-        assert False, "Use: uniform_entry_door_id_along_all_paths"
-
-    @property
     def uniform_entry_command_list_along_all_paths(self):
         """At any step along the path commands may be executed upon entry
            into the target state. If those commands are uniform, then this
@@ -176,7 +172,7 @@ class PathWalkerState(MegaState):
         """
         if self.__uniform_entry_command_list_along_path is None: return None
 
-        door_id = self.entry.get_door_id_by_command_list(self.__uniform_entry_command_list_along_path)
+        door_id = self.entry.action_db.get_door_id_by_command_list(self.__uniform_entry_command_list_along_path)
 
         assert door_id is not None, "There MUST be a door for the uniform entry command list."
         return door_id
@@ -192,8 +188,8 @@ class PathWalkerState(MegaState):
         before_terminal_state_index = Path[-2].state_index
         terminal_state_index        = Path[-1].state_index
         # Determine DoorID by transition
-        return StateDB[terminal_state_index].entry.get_door_id(terminal_state_index, 
-                                                               before_terminal_state_index)
+        return StateDB[terminal_state_index].entry.action_db.get_door_id(terminal_state_index, 
+                                                                         before_terminal_state_index)
 
     def get_uniform_terminal_entry_door_id(self, StateDB):
         """RETURNS: DoorID -- if all paths which are involved enter the same 

@@ -26,9 +26,10 @@ class PathWalkerState_Entry(MegaState_Entry):
     path's base.
 
     During analysis, only the '.action_db' is of interest. There the 
-    'SetPathIterator' Command is added for each transition. After analysis
-    'door_tree_configure()' may be called and those actions are combined
-    propperly.
+    'SetPathIterator' command is to each TransitionAction's CommandList. The
+    command lists 'equal' and 'not-equal' relationships remain the same, since
+    the 'SetPathIterator' for all TransitionAction of a given state. Thus,
+    the DoorID objects can act as unique identifiers of command lists.
     ___________________________________________________________________________
     """
     def __init__(self, MegaStateIndex, TheEntry):

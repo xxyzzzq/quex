@@ -7,6 +7,7 @@ from   quex.engine.analyzer.mega_state.core                 import PseudoMegaSta
 import quex.engine.analyzer.mega_state.template.core        as templates 
 from   quex.engine.analyzer.mega_state.template.state       import MegaState_Target, TemplateState
 from   quex.engine.analyzer.mega_state.template.candidate   import TemplateStateCandidate
+import quex.engine.generator.state.entry_door_tree          as     entry_door_tree
 from   quex.engine.state_machine.core                       import State
 from   quex.engine.interval_handling                        import NumberSet, Interval
 
@@ -60,7 +61,7 @@ def setup_AnalyzerStates(StatesDescription):
         if sm_state is None: sm_state = setup_sm_state(state_index, [])
         raw_state    = AnalyzerState(sm_state, state_index, False, EngineType, set(from_state_list))
         state        = PseudoMegaState(raw_state)
-        state.entry.door_tree_configure()
+        state.entry.action_db.categorize()
         analyzer.state_db[state_index] = state
 
     state_list = [ analyzer.state_db[long(state_index)] for state_index in requested_state_index_list ]
@@ -113,11 +114,12 @@ def test_combination(StateA, StateB, analyzer, StateA_Name="A", StateB_Name="B",
     print
     candidate = TemplateStateCandidate(StateA, StateB)
     result    = TemplateState(candidate)
-    result.entry.door_tree_configure()
+    result.entry.action_db.categorize()
 
     if DrawF:
+        door_tree_root = entry_door_tree.do(result.state_index, result.entry.action_db)
         print "DoorTree(%s|%s):" % (StateA_Name, StateB_Name)
-        print "    " + result.entry.door_tree_root.get_string(result.entry.action_db).replace("\n", "\n    ")
+        print "    " + door_tree_root.get_string(result.entry.action_db).replace("\n", "\n    ")
     print "Result"
 
     for state_index in result.implemented_state_index_list():

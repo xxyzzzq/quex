@@ -21,7 +21,7 @@ if "--hwut-info" in sys.argv:
 def get_analyzer_state(sm, state_index):
     sm.states[state_index] = core.State()
     state = AnalyzerState(sm.states[state_index], state_index, state_index == sm.init_state_index, engine.FORWARD, set()) 
-    state.entry.door_tree_configure()
+    state.entry.action_db.categorize()
     return state
 
 def get_path_list(PlainLists):
