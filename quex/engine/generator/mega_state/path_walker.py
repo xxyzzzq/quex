@@ -116,7 +116,7 @@ def framework(txt, PWState, TheAnalyzer):
         #           else:                                 goto TerminalDoor
         #
         # -- "goto CommonPathWalkerDoor"
-        uniform_entry_door_id = PWState.entry.get_door_id(PWState.index, PWState.index)
+        uniform_entry_door_id = PWState.entry.action_db.get_door_id(PWState.index, PWState.index)
         goto_next_door    = "            %s\n"  % LanguageDB.GOTO_BY_DOOR_ID(uniform_entry_door_id)
 
         # -- "goto TerminalDoor"

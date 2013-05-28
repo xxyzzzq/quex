@@ -1,10 +1,33 @@
-# (C) 2006-2013 Frank-Rene Schaefer
+"""
+DOOR TREE ______________________________________________________________
+
+For code generation, the TransitionActions are organized more efficiently.
+Many transitions may share some commands, so that they could actually enter
+the state through the same or similar doors. Example:
+
+    (4, from 1) --> accept 4711; store input position;
+    (4, from 2) --> accept 4711; 
+    (4, from 2) --> nothing;
+
+Then, the entry could look like this:
+
+    Door2: store input position; 
+           goto Door1;
+    Door1: accept 4711; 
+           goto Door0;
+    Door0: /* nothing */
+
+    ... the transition map ...
+
+___________________________________________________________________________
+(C) 2006-2013 Frank-Rene Schaefer
+"""
 from quex.engine.analyzer.state.entry_action import *
 from quex.blackboard  import E_StateIndices
 
-from collections import defaultdict
-from itertools   import islice
-from operator    import attrgetter
+from collections      import defaultdict
+from itertools        import islice
+from operator         import attrgetter
 
 def do(StateIndex, TransitionActionDB):
     """Better clone the TransitionActionList before calling this function, 
@@ -203,16 +226,6 @@ class Door:
     @property
     def door_id(self):
         return self.__door_id
-
-    def has_commands_other_than_MegaState_Command(self):
-        # __dive --> here we have recursion
-        for found in (x for x in self.common_command_list if not isinstance(x, MegaState_Command)):
-            return True
-
-        for child in self.child_set:
-            if child.has_commands_other_than_MegaState_Command(): return True
-
-        return False
 
     def __hash__(self):
         return hash(self.door_id)

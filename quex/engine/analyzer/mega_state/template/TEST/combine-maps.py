@@ -3,9 +3,10 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.engine.analyzer.mega_state.template.core               as templates
+import quex.engine.analyzer.mega_state.template.core               as     templates
 from   quex.engine.analyzer.mega_state.template.state              import combine_maps, TemplateState
 from   quex.engine.analyzer.mega_state.template.TEST.templates_aux import *
+import quex.engine.generator.state.entry_door_tree                 as     entry_door_tree
 
 from   quex.engine.interval_handling import *
 
@@ -22,9 +23,14 @@ def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L], DrawF=Fal
 
     if DrawF:
         print "DoorTree(A):"
-        print "    " + StateA.entry.door_tree_root.get_string(StateA.entry.action_db).replace("\n", "\n    ")
+        StateA.entry.action_db.categorize()
+        door_tree_root = entry_door_tree.do(StateA.state_index, StateA.entry.action_db)
+        print "    " + door_tree_root.get_string(StateA.entry.action_db).replace("\n", "\n    ")
+
+        StateB.entry.action_db.categorize()
+        door_tree_root = entry_door_tree.do(StateB.state_index, StateB.entry.action_db)
         print "DoorTree(B):"
-        print "    " + StateB.entry.door_tree_root.get_string(StateB.entry.action_db).replace("\n", "\n    ")
+        print "    " + door_tree_root.get_string(StateB.entry.action_db).replace("\n", "\n    ")
 
     print "(Straight)---------------------------------------"
     test_combination(StateA, StateB, analyzer, "A", "B", DrawF)

@@ -169,11 +169,46 @@ class EntryActionDB(dict):
                          if action.door_id == DoorId 
         ]
 
+    def get_door_id(self, StateIndex, FromStateIndex, TriggerId=E_TriggerIDs.NONE):
+        """RETURN: DoorID of the door which implements the transition 
+                          (FromStateIndex, StateIndex).
+                   None,  if the transition is not implemented in this
+                          state.
+        """
+        global tmp_transition_id
+        tmp_transition_id.state_index      = StateIndex
+        tmp_transition_id.from_state_index = FromStateIndex
+        tmp_transition_id.trigger_id       = TriggerId
+        
+        action = self.get(tmp_transition_id)
+        if action is None: return None
+        return action.door_id
+
+    def get_door_id_by_command_list(self, TheCommandList):
+        """Finds the DoorID of the door that implements TheCommandList.
+           RETURNS: None if no such door exists that implements TheCommandList.
+        """
+        if TheCommandList.is_empty():
+            return DoorID(self.__state_index, 0) # 'Door 0' is sure to not do anything!
+
+        for action in self.itervalues():
+            if action.command_list == TheCommandList:
+                return action.door_id
+        return None
+
+    def has_commands_other_than_MegaState_Command(self):
+        for action in self.itervalues():
+            for found in (x for x in action.command_list if not isinstance(x, MegaState_Command)):
+                return True
+
+        return False
+
 class Entry(object):
     """________________________________________________________________________
 
     An Entry object stores commands to be executed at entry into a state
-    depending on a particular source state.
+    depending on a particular source state; and may be also depending on
+    the particular trigger.
     
     BASICS _________________________________________________________________
 
@@ -187,52 +222,40 @@ class Entry(object):
                                       .state_index
                                       .trigger_id 
  
-    and a TransitionAction consists of: .transition_id
+    and a TransitionAction consists of: .door_id
                                         .command_list
                                         
-    where '.command_list' are commands that are executed for the given
-    transition.
+    where '.door_id'  identifies a specific door  of the  entry into  the state.
+    It is distinctly associated with a list of commands '.command_list'. The 
+    commands of '.command_list' are executed if the state is entered by
+    a transition given with the key's TransitionID. A call to 
 
-    The actions associated with transitions may be equal or have many
-    commonalities.  In order to avoid multiple definitions of the same action,
-    a 'door tree' is constructed.  Now, transitions need to be associated with
-    doors into the entry. The corresponding door to an action is available
-    at 'action.door_id' after 'door_tree_configure()' has been
-    called.
+                            action_db.categorize()
 
-    DOOR TREE ______________________________________________________________
+    ensures that
+                                  1      1
+                        DoorID  <---------> CommandList
+   
+    In words: 
+    
+       -- each TransitionAction *has a* valid door_id. That is, every list of
+          commands is identified with a door_id.
 
-    For code generation, the TransitionActions are organized more efficiently.
-    Many transitions may share some commands, so that they could actually enter
-    the state through the same or similar doors. Example:
+       -- The door_id *distinctly* determines the command list (in the entry). 
+          That is, door_id-s of TransitionAction-s differ if and only if their
+          command lists are different.
+                  
+    Later on in the code generation, a 'door tree' is generated to produce
+    optimized code which profits from common commands in command lists. But,
+    for now, it is important to remember:
 
-        (4, from 1) --> accept 4711; store input position;
-        (4, from 2) --> accept 4711; 
-        (4, from 2) --> nothing;
-
-    Then, the entry could look like this:
-
-        Door2: store input position; 
-               goto Door1;
-        Door1: accept 4711; 
-               goto Door0;
-        Door0: /* nothing */
-
-        ... the transition map ...
-
-    This configuration is done in function 'door_tree_configure()'. As a result
-    the command list in actions of 'self.action_db' contain a '.door_id' which
-    tells about what door needs to be entered so that the list of commands is
-    executed. 
-
-    BRIEF REMARK: _________________________________________________________
-
-    Before 'door_tree_configure()' is called no assumptions about doors
-    can be made. Then, only information about what transition causes what
-    action can be provided.
-    ___________________________________________________________________________
+              .---------------------------------------------------.
+              |  A DoorID distinctly identifies a CommandList to  |
+              |       be executed the at entry of a state.        |
+              '---------------------------------------------------'
     """
-    __slots__ = ("__state_index", "__action_db", "__door_tree_root")
+
+    __slots__ = ("__state_index", "__action_db")
 
     def __init__(self, StateIndex, FromStateIndexList):
         # map:  (from_state_index) --> list of actions to be taken if state is entered 
@@ -240,9 +263,6 @@ class Entry(object):
         # if len(FromStateIndexList) == 0: FromStateIndexList = [ E_StateIndices.NONE ]
         self.__state_index = StateIndex
         self.__action_db   = EntryActionDB(StateIndex, FromStateIndexList)
-
-        # Function 'build_door_tree()' fills the following members
-        self.__door_tree_root = None # The root of the door tree.
 
     @property
     def state_index(self): 
@@ -257,35 +277,6 @@ class Entry(object):
         """The door_tree_root is determined by 'build_door_tree()'"""
         assert self.__door_tree_root is not None
         return self.__door_tree_root
-
-    def get_door_id(self, StateIndex, FromStateIndex, TriggerId=E_TriggerIDs.NONE):
-        """RETURN: DoorID of the door which implements the transition 
-                          (FromStateIndex, StateIndex).
-                   None,  if the transition is not implemented in this
-                          state.
-        """
-        global tmp_transition_id
-        tmp_transition_id.state_index      = StateIndex
-        tmp_transition_id.from_state_index = FromStateIndex
-        tmp_transition_id.trigger_id       = TriggerId
-        
-        action = self.__action_db.get(tmp_transition_id)
-        if action is None: return None
-        return action.door_id
-
-    def get_door_id_by_command_list(self, TheCommandList):
-        """Finds the DoorID of the door that implements TheCommandList.
-           RETURNS: None if no such door exists that implements TheCommandList.
-        """
-        assert self.__door_tree_root is not None, "door_tree_configure() has not yet been called!"
-
-        if TheCommandList.is_empty():
-            return DoorID(self.__state_index, 0) # 'Door 0' is sure to not do anything!
-
-        for action in self.action_db.itervalues():
-            if action.command_list == TheCommandList:
-                return action.door_id
-        return None
 
     def __hash__(self):
         xor_sum = 0
@@ -304,45 +295,6 @@ class Entry(object):
     def is_equal(self, Other):
         # Maybe, we can delete this ...
         return self.__eq__(self, Other)
-
-    def _door_tree_configure_core(self):
-        """Configure the 'door tree' (see module 'entry_action).
-
-           BEFORE: An 'action_db' maps 
-
-                   TransitionID  ---> CommandList
-
-           That is, the action_db tells for a given transition (state_index,
-           from_state_index) what commands are to be executed. Based on 
-           action_db a 'door tree' is configured. The door tree profits from
-           the fact, that some commands may be the same for more than one 
-           transition into the state. Now, the state can be entered via these
-           doors.
-           
-           AFTER: Each command list in 'ActionDB' has the 'door_id' set, i.e.
-
-              self.action_db[door_id].door_id = something.
-
-        """
-        # (*) Categorize action lists
-
-        # NOTE: The transition from 'NONE' does not enter the door tree.
-        #       It appears only in the init state when the thread of 
-        #       control drops into the first state. The from 'NONE' door
-        #       is implemented referring to '.action_db.get_action(...)'.
-        door_db,       \
-        self.__door_tree_root = entry_action.build_door_tree(self.__state_index, self.__action_db)
-        assert self.__door_tree_root is not None
-
-        return door_db
-
-    def door_tree_configure(self):
-        """This function may be overloaded, so that derived classes (e.g. MegaState_Entry)
-        can do other things with the information provided in 'door_db'.
-        """
-        door_db = self._door_tree_configure_core()
-        for transition_id, door_id in door_db.iteritems():
-            self.__action_db[transition_id].door_id = door_id
 
     def __repr__(self):
         def get_accepters(AccepterList):

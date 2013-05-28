@@ -88,21 +88,6 @@ class MegaState_Entry(Entry):
     def __init__(self, MegaStateIndex):
         Entry.__init__(self, MegaStateIndex, FromStateIndexList=[])
 
-    def door_tree_configure(self):
-        door_db = self._door_tree_configure_core()
-
-        # Record relation between old and new DoorID
-        map_old_door_id_to_new_door_id = dict(
-            (self.action_db[transition_id].door_id, new_door_id)
-            for transition_id, new_door_id in door_db.iteritems()
-        )
-
-        # Set the new door id for each action
-        for transition_id, new_door_id in door_db.iteritems():
-            self.__action_db[transition_id].door_id = new_door_id
-
-        return map_old_door_id_to_new_door_id
-
 class MegaState(AnalyzerState):
     """________________________________________________________________________
     
@@ -394,8 +379,8 @@ class MegaState_Target(object):
         #       is possible that not all implemented states of a MegaState trigger
         #       to '.target_state_index' or the states mentioned in '.scheme'.
         #
-        #       This results in 'target_entry.get_door_id(To, From)' being 'None'
-        #       sometimes. This is not an error!
+        #       This results in '.get_door_id(To, From)' being 'None' sometimes. 
+        #       This is not an error!
         if self.scheme is not None:
             assert len(self.scheme) == L
             # The targets in a 'scheme' may be implemented by the same MegaState--
@@ -410,7 +395,7 @@ class MegaState_Target(object):
                     # DROP_OUT cannot be in a scheme, if there was some non-DROP-OUT there.
                     # => Only give it a chance as long as no DROP_OUT target appears.
                     target_entry = StateDB[target_state_index].entry
-                    door_id      = target_entry.get_door_id(target_state_index, state_index)
+                    door_id      = target_entry.action_db.get_door_id(target_state_index, state_index)
                     if   prototype is None:    prototype = door_id; continue
                     elif prototype == door_id: continue
 
@@ -431,7 +416,7 @@ class MegaState_Target(object):
             target_entry = StateDB[self.target_state_index].entry
             prototype    = None
             for state_index in implemented_state_index_list:
-                door_id   = target_entry.get_door_id(self.target_state_index, state_index)
+                door_id   = target_entry.action_db.get_door_id(self.target_state_index, state_index)
                 if prototype is None:      prototype = door_id; continue
                 elif prototype == door_id: continue
 

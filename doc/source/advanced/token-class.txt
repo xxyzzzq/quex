@@ -232,7 +232,7 @@ sections. The variable ``self`` is a reference to the token object itself.
    .. code-block:: cpp
 
        constructor { 
-           self.pointer_to_something = 0x0;   /* default */
+           self.pointer_to_something = 0x0;   // default 
            std::cout << "Constructor\n"; 
        }
 
@@ -260,7 +260,7 @@ sections. The variable ``self`` is a reference to the token object itself.
 
        copy { 
            std::cout << "Copy\n"; 
-           /* Copy core elements: id, line, and column number */
+           // Copy core elements: id, line, and column number
            self._id = Other._id;
        #      ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
        #      ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
@@ -271,10 +271,10 @@ sections. The variable ``self`` is a reference to the token object itself.
        #      endif
        #      endif
 
-           /* copy all members */
+           // copy all members 
            self.name        = Other.name;
            self.number_list = Other.number_list;
-           /* plain content copy of the union content */
+           // plain content copy of the union content 
            self.content     = Other.content;
        }
 
@@ -287,14 +287,14 @@ sections. The variable ``self`` is a reference to the token object itself.
    .. code-block:: cpp
 
        copy { 
-           /* Explicit Deletion of non-trivial members */
+           // Explicit Deletion of non-trivial members 
            self.name.~std::basic_string<QUEX_TYPE_CHARACTER>();
            self.number_list.~std::vector<int>();
 
-           /* Copy the plain memory chunk of the token object. */
+           // Copy the plain memory chunk of the token object. 
            __STD_QUEX_memcpy((void*)&self, (void*)&Other), sizeof(QUEX_TYPE_TOKEN));
            
-           /* Call placement new for non-trivial types: */
+           // Call placement new for non-trivial types: 
            new(&self.name)        std::basic_string<QUEX_TYPE_CHARACTER>(Other.name);
            new(&self.number_list) std::vector<int>(Other.number_list);
        }
@@ -354,7 +354,7 @@ sections. The variable ``self`` is a reference to the token object itself.
 
              if(    Begin >= analyzer.buffer._memory._front 
                  && End   <= analyzer.buffer._memory._back ) {
-                 /* Never claim ownership on analyzer's buffer ... */
+                 /* Never claim ownership on analyzer's buffer ...    */
                  /* Need one more space to store the terminating zero */
                  if( self.text != 0x0 ) {
                      QUEX_NAME(MemoryManager_Text_free(self.text);
@@ -963,7 +963,7 @@ description is surrounded by the marker ``<<<QUEX-OPTIONS>>>`` then
 quex can actually read it! The user will not have to bother to specify
 it himself. For example, a comment section as::
 
-   ... code-block:: cpp
+   .. code-block:: cpp
 
        /* My File: This file does ...
         *    ...
@@ -988,16 +988,18 @@ Shared Token Classes
 
 With the command line option ``--token-class-only`` generates solely a token
 class. The token class, though, is designed to be shared between multiple
-lexical analyzers. A typical command line using this feature looks like
-this::
+lexical analyzers (see also :ref:`sec-multiple-lexical-analyzers`). A typical command line using this feature looks like
+this:
 
 .. code-block:: bash
 
-	quex --icu -b 4 \
-         -i token_ids.qx --token-id-prefix TKN_         \
-		 -o A::B::C      --token-class A::B::C::Token   \
-		 --token-class-only 
-		 
+    quex --icu -b 4 \
+         -i                 token_ids.qx     \
+         -o                 A::B::C          \
+         --token-id-prefix  TKN_             \
+         --token-class      A::B::C::Token   \
+         --token-class-only 
+         
 The first three arguments ``--icu -b 4`` give some specifications of the lexer
 for which the token is to be used.  Here it is a converting lexer based on ICU
 using a 4 byte wide buffer element type.  The token class provides a pretty
@@ -1070,7 +1072,7 @@ in the case of a generated token class in plain C.
 
 .. rubric:: Footnotes
 
-.. [#f1] Section :ref:sec-token-stamping` discusses when line and column numbers 
+.. [#f1] Section :ref:`sec-token-stamping` discusses when line and column numbers 
    are required inside the token object.
 
 .. [#f2] In C the boolean values ``true`` and ``false`` are available as macro

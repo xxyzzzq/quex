@@ -254,7 +254,7 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
                 target_state = self.analyzer.state_db[target_index]
 
                 # Do the transitions fit the path's transition map?
-                target_door_id = target_state.entry.get_door_id(target_index, State.index)
+                target_door_id = target_state.entry.action_db.get_door_id(target_index, State.index)
                 plug           = path.match(transition_map, target_door_id, transition_char)
                 if plug is None: continue # No match possible 
 
