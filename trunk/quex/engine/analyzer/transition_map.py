@@ -1,9 +1,11 @@
-from   quex.engine.interval_handling import Interval
-from   quex.blackboard import E_StateIndices, E_ActionIDs
-from   quex.engine.tools import r_enumerate
-from   quex.blackboard   import E_StateIndices
+from   quex.engine.interval_handling           import Interval
+from   quex.blackboard                         import E_StateIndices, E_ActionIDs
+from   quex.engine.tools                       import r_enumerate
+from   quex.engine.analyzer.mega_state.target  import MegaState_Target
+from   quex.engine.analyzer.state.entry_action import DoorID
+from   quex.blackboard                         import E_StateIndices
 
-from   copy import deepcopy, copy
+from   copy      import deepcopy, copy
 from   itertools import izip
 import sys
 

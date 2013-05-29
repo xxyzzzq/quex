@@ -5,6 +5,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
 from quex.engine.state_machine.core import *
+from quex.engine.analyzer.transition_map import TransitionMap
 
 if "--hwut-info" in sys.argv:
     print "DFA: Get Trigger Map (intervals --> target states)"
@@ -18,7 +19,7 @@ def test(state):
         print "    %3i <--- %s" % (int(key), repr(trigger_set))
 
     print "\n## Map: Trigger Intervals (sorted) --> Target Index\n"
-    tm = state.target_map.get_trigger_map()
+    tm = TransitionMap.from_TargetMap(state.transitions())
     # (*) print the trigger map entries
     prev_end = None
     for trigger_interval, target_index in tm:

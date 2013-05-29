@@ -1,25 +1,41 @@
-"""
-DOOR TREE ______________________________________________________________
+"""The Door Tree ______________________________________________________________    
 
-For code generation, the TransitionActions are organized more efficiently.
-Many transitions may share some commands, so that they could actually enter
-the state through the same or similar doors. Example:
+At code generation time, Door-s are organized in a tree structure.  The 'door
+tree' tries to avoid double definition of commands of if they appear the same
+in multiple doors.
 
-    (4, from 1) --> accept 4711; store input position;
-    (4, from 2) --> accept 4711; 
-    (4, from 2) --> nothing;
+Example:
 
-Then, the entry could look like this:
+      From State A:                      From State B:
+    
+      last_acceptance = 12;              last_acceptance = 12;
+      position[0]     = input_p - 2;     position[0] = input_p - 2;
+      position[1]     = input_p;         position[1] = input_p - 1;
 
-    Door2: store input position; 
-           goto Door1;
-    Door1: accept 4711; 
-           goto Door0;
-    Door0: /* nothing */
+In this case, the entry from A and B have the following commands in common:
 
-    ... the transition map ...
+                  last_acceptance = 12;
+                  position[0]     = input_p - 2;
 
-___________________________________________________________________________
+The following door tree can be constructed:
+
+        Door 2:                        Door 1:     
+        position[1] = input_p;         position[1] = input_p - 1;
+        goto Door 0;                   goto Door 0;
+        
+        
+                         Door 0:
+                         last_acceptance = 12;
+                         position[0]     = input_p - 2;
+                         (...  to transition map ... )
+
+The entry from state 'A' happens through door 2 and the entry from state 'B'
+happens through door 1.  Door 1 and 2 store door 0 as their parent. It implements
+what their shared CommandList. 
+
+The structure of the tree is maintained by the '.parent' and '.child_set'
+members of Door object.
+_______________________________________________________________________________
 (C) 2006-2013 Frank-Rene Schaefer
 """
 from quex.engine.analyzer.state.entry_action import *
@@ -146,45 +162,10 @@ class DoorCombination:
         return float(self.command_list.cost() * (len(self.door_set) - 1))
 
 class Door:
-    """A 'Door' is a node in a door tree. A door tree is constructed from 
-       a set of command lists, each command list is to be executed upon 
-       entry from another state. For example,
-
-
-          From State A:                      From State B:
-
-          last_acceptance = 12;              last_acceptance = 12;
-          position[0]     = input_p - 2;     position[0] = input_p - 2;
-          position[1]     = input_p;         position[1] = input_p - 1;
-
-
-       In this case, the entry from A and B have the following commands in common:
-
-                          last_acceptance = 12;
-                          position[0]     = input_p - 2;
-
-       The following door tree can be constructed:
-
-
-          Door 2:                        Door 1:     
-          position[1] = input_p;         position[1] = input_p - 1;
-          goto Door 0;                   goto Door 0;
-
-
-                           Door 0:
-                           last_acceptance = 12;
-                           position[0]     = input_p - 2;
-                           (...  to transition map ... )
-
-       The entry from state 'A' happens through door 2 and the entry from state
-       'B' happens through door 1. Door 1 and 2 store door 0 as their parent.
-       By means of the the '.parent' and '.child_set' members the tree
-       structure is maintained. The relation from which state one comes and
-       through which door one enters is stored in the global variable
-       'Door.transition_id_to_door_id_db', it maps:
-
-                  transition_id ---> door_identifier
-    """
+    """Upon entry into a state CommandList-s wait to be executed, depending on
+       the original state or even the trigger. Each distinct CommandList is
+       associated with a 'Door' of the 'Entry' into the 'AnalyzerState'.
+   """
     def __init__(self, CmdList, Parent, ChildSet, DoorId):
         # Only 'Leaf' nodes have the 'related actions', i.e. TA assigned.
         assert isinstance(CmdList, CommandList)
