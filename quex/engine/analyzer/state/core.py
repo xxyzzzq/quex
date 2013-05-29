@@ -1,4 +1,5 @@
 from   quex.engine.state_machine.core      import State
+from quex.engine.analyzer.transition_map import TransitionMap
 from   quex.blackboard  import E_StateIndices, \
                                E_InputActions
 
@@ -53,7 +54,7 @@ class AnalyzerState(object):
         self.entry = EngineType.create_Entry(SM_State, StateIndex, FromStateIndexList)
 
         # (*) Transition
-        self.transition_map                    = SM_State.target_map.get_trigger_map()
+        self.transition_map                    = TransitionMap.from_TargetMap(SM_State.target_map)
         self.__target_index_list               = SM_State.target_map.get_map().keys()
         # Currently, the following is only used for path compression. If the alternative
         # is implemented, then the following is no longer necessary.

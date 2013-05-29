@@ -1,8 +1,6 @@
 # import array
 
 from   quex.engine.interval_handling       import NumberSet, Interval
-import quex.engine.analyzer.transition_map as     transition_map_tool
-from   quex.engine.analyzer.transition_map import TransitionMap
 from   quex.engine.misc.enum               import Enum
 from   quex.blackboard                     import E_StateIndices, E_Border
 
@@ -228,19 +226,6 @@ class TargetMap:
         history.sort(key=attrgetter("position"))
 
         return history      
-
-    def get_trigger_map(self):
-        ## OPT: if self.__DEBUG_trigger_map is not None: return self.__DEBUG_trigger_map
-        # At this point only DFAs shall be considered. Thus there cannot be any epsilon
-        # target transitions.
-        assert len(self.__epsilon_target_index_list) == 0, \
-               "Trigger maps can only be computed on DFAs. Epsilon transition detected."
-
-        # (?) NOTE: The response '[]' is a **signal** that there is only an epsilon
-        # (?)       transition. The response as such would be incorrect. But the signal
-        # (?)       'empty reply' needs to be treated by the caller.
-        # (? fschaef: I do not remember what I was thinking. 13y05m06d)
-        return TransitionMap.from_TargetMap(self)
 
     def get_trigger_set_to_target(self, TargetIdx):
         """Returns all triggers that lead to target 'TargetIdx'. If a trigger 'None' is returned

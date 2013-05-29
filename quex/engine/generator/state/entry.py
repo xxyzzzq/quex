@@ -1,6 +1,6 @@
 from   quex.engine.analyzer.state.core                   import AnalyzerState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
-from   quex.engine.generator.state.entry_door_tree       as     entry_door_tree
+import quex.engine.generator.state.entry_door_tree       as     entry_door_tree
 
 from quex.blackboard import setup as Setup, \
                             E_StateIndices
@@ -41,9 +41,10 @@ def do_node(txt, TheState, Node, LastChildF=False, BIPD_ID=None):
     """Recursive function: '__dive' -- Marked, TODO: implement by TreeWalker.
     """
     LanguageDB = Setup.language_db
-    LastI      = len(Node.child_list) - 1
-    for i, child in enumerate(sorted(Node.child_list, key=attrgetter("door_id"))):
-        do_node(txt, TheState, child, LastChildF=(i==LastI), BIPD_ID=BIPD_ID)
+    if Node.child_set is not None:
+        LastI = len(Node.child_set) - 1
+        for i, child in enumerate(sorted(Node.child_set, key=attrgetter("door_id"))):
+            do_node(txt, TheState, child, LastChildF=(i==LastI), BIPD_ID=BIPD_ID)
     
     # If the door can be a 'goto' target, the label needs to be defined.
     if TheState.init_state_f and BIPD_ID is not None:
@@ -61,7 +62,7 @@ def do_node(txt, TheState, Node, LastChildF=False, BIPD_ID=None):
         #                         and Not in Backward Input Position Detection Mode.
         has_transition_f       = TheState.entry.action_db.has_transitions_to_door_id(Node.door_id)
         has_reload_f           = len(TheState.transition_map) != 0 and BIPD_ID is None
-        has_multiple_childs_f  = len(Node.child_list) > 1
+        has_multiple_childs_f  = len(Node.child_set) > 1
         is_uniform_path_walker_state_f = isinstance(TheState, PathWalkerState) and \
                                          TheState.uniform_entry_door_id_along_all_paths is not None
         if has_transition_f or has_reload_f or has_multiple_childs_f or is_uniform_path_walker_state_f:
@@ -69,7 +70,7 @@ def do_node(txt, TheState, Node, LastChildF=False, BIPD_ID=None):
 
     comment_door(txt, Node, TheState.entry)
 
-    action_txt = [ LanguageDB.COMMAND(command) for command in Node.common_command_list ]
+    action_txt = [ LanguageDB.COMMAND(command) for command in Node.command_list ]
     if Node.parent is not None and not LastChildF: 
         action_txt.append(1)
         action_txt.append(LanguageDB.GOTO_BY_DOOR_ID(Node.parent.door_id))

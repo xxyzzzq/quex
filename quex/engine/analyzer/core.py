@@ -58,12 +58,16 @@ def do(SM, EngineType=engine.FORWARD):
 
     analyzer = __do(SM, EngineType)
 
+    # AnalyzerState.transition_map:   Interval --> DoorID
+
     # The language database requires the analyzer for labels etc.
     if Setup.language_db is not None:
         Setup.language_db.register_analyzer(analyzer)
 
-    # If required by the user: Combine some states into mega states.
+    # [Optional] Combination of states into MegaState-s.
     mega_state_analyzer.do(analyzer)
+
+    # MegaState.transition_map:       Interval --> MegaState_Target
 
     return analyzer
 
@@ -74,9 +78,9 @@ def __do(SM, EngineType):
     # Optimize the Analyzer
     analyzer = optimizer.do(analyzer)
 
-    # Better configure the door tree AFTER position registers are replaced.
+    # Assign DoorID-s to transition actions and relate transitions to DoorID-s.
     for state in analyzer.state_db.itervalues():
-        state.entry.action_db.categorize()
+        state.entry.action_db.categorize(state.index)
     for state in analyzer.state_db.itervalues():
         state.transition_map = state.transition_map.relate_to_door_ids(analyzer, state.index)
 
