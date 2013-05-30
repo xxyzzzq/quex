@@ -1,6 +1,7 @@
-from   quex.engine.analyzer.state.entry    import Entry
-from   quex.engine.analyzer.state.drop_out import DropOutIndifferent, \
-                                                  DropOutBackwardInputPositionDetection
+from   quex.engine.analyzer.state.entry        import Entry
+from   quex.engine.analyzer.state.entry_action import PreConditionOK
+from   quex.engine.analyzer.state.drop_out     import DropOutIndifferent, \
+                                                      DropOutBackwardInputPositionDetection
 from   quex.blackboard  import E_InputActions
 
 class Base:
@@ -81,7 +82,7 @@ class Class_BACKWARD_PRE_CONTEXT(Base):
                                                               if origin.is_acceptance() ]
         result = Entry(StateIndex, FromStateIndexList)
         for transition_action in result.action_db.itervalues():
-            transition_action.command_list.misc.update(pre_context_ok_command_list)
+            transition_action.command_list.misc.update(PreConditionOK(x) for x in pre_context_id_fulfilled_list)
         return result
 
 

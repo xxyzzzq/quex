@@ -8,7 +8,7 @@ fi
 tmp=`pwd`
 cd $bug/ 
 echo No output is just fine
-quex -i error.qx -o Simple
+quex -i error.qx -o Simple --debug-exception
 
 # cleansening
 rm -f Simple*

@@ -28,3 +28,16 @@ def pair_combinations(iterable):
     for i, x in enumerate(other):
         for y in islice(other, i+1, None):
             yield x, y
+
+class TypedSet(set):
+    def __init__(self, Cls):
+        self.__element_class = Cls
+
+    def add(self, X):
+        assert isinstance(X, self.__element_class)
+
+    def update(self, Iterable):
+        for x in Iterable:
+            assert isinstance(x, self.__element_class)
+        set.update(self, Iterable)
+

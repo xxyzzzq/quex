@@ -156,14 +156,14 @@ elif "11" in sys.argv:
 elif "set_state_key" in sys.argv:
     action_db = EntryActionDB(0, [])
     action_db.update({
-        TransitionID(1, 1): TransitionAction(CommandList([ SetTemplateStateKey(1) ])),
-        TransitionID(2, 1): TransitionAction(CommandList([ SetTemplateStateKey(2) ])),
-        TransitionID(3, 1): TransitionAction(CommandList([ SetTemplateStateKey(2) ])),
-        TransitionID(4, 1): TransitionAction(CommandList([ SetTemplateStateKey(2) ])),
-        TransitionID(1, 2): TransitionAction(CommandList([ SetTemplateStateKey(3) ])),
-        TransitionID(2, 2): TransitionAction(CommandList([ SetTemplateStateKey(3) ])),
-        TransitionID(3, 2): TransitionAction(CommandList([ SetTemplateStateKey(3) ])),
-        TransitionID(4, 2): TransitionAction(CommandList([ SetTemplateStateKey(4) ])),
+        TransitionID(1, 1): TransitionAction(CommandList.from_iterable([ SetTemplateStateKey(1) ])),
+        TransitionID(2, 1): TransitionAction(CommandList.from_iterable([ SetTemplateStateKey(2) ])),
+        TransitionID(3, 1): TransitionAction(CommandList.from_iterable([ SetTemplateStateKey(2) ])),
+        TransitionID(4, 1): TransitionAction(CommandList.from_iterable([ SetTemplateStateKey(2) ])),
+        TransitionID(1, 2): TransitionAction(CommandList.from_iterable([ SetTemplateStateKey(3) ])),
+        TransitionID(2, 2): TransitionAction(CommandList.from_iterable([ SetTemplateStateKey(3) ])),
+        TransitionID(3, 2): TransitionAction(CommandList.from_iterable([ SetTemplateStateKey(3) ])),
+        TransitionID(4, 2): TransitionAction(CommandList.from_iterable([ SetTemplateStateKey(4) ])),
     })
     action_db.categorize(4711)
     door_tree_root = entry_door_tree.do(4711, action_db)
@@ -173,14 +173,14 @@ elif "set_state_key" in sys.argv:
 elif "set_path_iterator" in sys.argv:
     action_db = EntryActionDB(0, [])
     action_db.update({
-        TransitionID(1, 1): TransitionAction(CommandList([ SetPathIterator(0, 1, 1) ])),
-        TransitionID(2, 1): TransitionAction(CommandList([ SetPathIterator(0, 1, 1) ])),
-        TransitionID(3, 1): TransitionAction(CommandList([ SetPathIterator(0, 1, 1) ])),
-        TransitionID(4, 1): TransitionAction(CommandList([ SetPathIterator(1, 1, 1) ])),
-        TransitionID(1, 2): TransitionAction(CommandList([ SetPathIterator(1, 1, 1) ])),
-        TransitionID(2, 2): TransitionAction(CommandList([ SetPathIterator(2, 1, 1) ])),
-        TransitionID(3, 2): TransitionAction(CommandList([ SetPathIterator(1, 2, 1) ])),
-        TransitionID(4, 2): TransitionAction(CommandList([ SetPathIterator(1, 1, 2) ])),
+        TransitionID(1, 1): TransitionAction(CommandList.from_iterable([ SetPathIterator(0, 1, 1) ])),
+        TransitionID(2, 1): TransitionAction(CommandList.from_iterable([ SetPathIterator(0, 1, 1) ])),
+        TransitionID(3, 1): TransitionAction(CommandList.from_iterable([ SetPathIterator(0, 1, 1) ])),
+        TransitionID(4, 1): TransitionAction(CommandList.from_iterable([ SetPathIterator(1, 1, 1) ])),
+        TransitionID(1, 2): TransitionAction(CommandList.from_iterable([ SetPathIterator(1, 1, 1) ])),
+        TransitionID(2, 2): TransitionAction(CommandList.from_iterable([ SetPathIterator(2, 1, 1) ])),
+        TransitionID(3, 2): TransitionAction(CommandList.from_iterable([ SetPathIterator(1, 2, 1) ])),
+        TransitionID(4, 2): TransitionAction(CommandList.from_iterable([ SetPathIterator(1, 1, 2) ])),
     })
     action_db.categorize(4711)
     door_tree_root = entry_door_tree.do(4711, action_db)
@@ -191,19 +191,6 @@ elif "clear_door_tree" in sys.argv:
     Door.init()
     # Create an empty tree of nodes --> should totally collapse to one node.
     ti   = 0
-    #    def generate_childs(parent, Depth=0):
-    #        global ti
-    #        child_n    = randint(1, 3 - Depth)
-    #        if Depth == 1:
-    #            parent.child_list = [ Door(parent, CommandList(), [TransitionAction(ti + i)]) \
-    #                                for i in xrange(child_n) ]
-    #            ti += child_n
-    #        else:
-    #            parent.child_list = [ Door(parent, CommandList(), []) for i in xrange(child_n) ]
-    #            for child in parent.child_list:
-    #                generate_childs(child, Depth + 1)
-    # root = Door(None, CommandList(), [])
-    # generate_childs(root)
 
     root = Door(None, CommandList(), [])
     node = root
