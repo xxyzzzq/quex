@@ -1,7 +1,7 @@
 from   quex.blackboard          import setup as Setup, \
                                        E_StateIndices, E_PreContextIDs, E_TriggerIDs
 from   quex.engine.misc.file_in import error_msg
-from   quex.engine.tools        import pair_combinations
+from   quex.engine.tools        import pair_combinations, TypedSet
 
 from   collections              import defaultdict, namedtuple
 from   operator                 import attrgetter, itemgetter
@@ -93,115 +93,6 @@ class TransitionID(object):
     def __repr__(self):
         return "TransitionID(to=%s, from=%s)" % (self.state_index, self.from_state_index)
 
-class CommandList:
-    def __init__(self, TheCommandList=None, TheAccepter=None):
-        self.accepter = TheAccepter
-        self.misc     = set()
-        if TheCommandList is None:
-            return
-        for action in TheCommandList:
-            if isinstance(action, Accepter):
-                assert self.accepter is None
-                self.accepter = action
-            else:
-                self.misc.add(action)
-
-    def difference_update(self, CommandList):
-        if self.accepter == CommandList.accepter: self.accepter = None
-        self.misc.difference_update(CommandList.misc)
-
-    @staticmethod
-    def intersection(This, That):
-        return CommandList(cmd for cmd in This.__iter__() if That.has_action(cmd))
-
-    def is_empty(self):
-        if self.accepter is not None: return False
-        return len(self.misc) == 0
-
-    def has_action(self, X):
-        if isinstance(X, Accepter): return self.accepter == X
-        return X in self.misc
-
-    def clone(self):
-        if self.accepter is None: accepter = None
-        else:                     accepter = self.accepter.clone()
-        result = CommandList(TheAccepter    = accepter, 
-                             TheCommandList = (x.clone() for x in self.misc))
-        return result
-
-    def cost(self):
-        return sum(x.cost() for x in self)
-
-    def delete_SetPathIterator_commands(self):
-        """Delete the 'SetPathIterator' command from the command list. There should
-           never be more than ONE such command in a commant list. This is so, because
-           the 'SetPathIterator' defines a state that the MegaState shall represent.
-           A MegaState can only represent on state at a time.
-        """
-        for element in self.misc:
-            if isinstance(element, SetPathIterator): 
-                self.misc.remove(element)
-                break
-        else:
-            return
-
-        # Double check that there was only one SetPathIterator command in the list.
-        for element in self.misc:
-            assert not isinstance(element, SetPathIterator)
-
-    def __iter__(self):
-        """Allow iteration over comand list."""
-        if self.accepter is not None: 
-            yield self.accepter
-        def sort_key(X):
-            if   isinstance(X, StoreInputPosition): 
-                return (0, X.pre_context_id, X.position_register, X.offset)
-            elif isinstance(X, PreConditionOK):   
-                return (1, X.pre_context_id)
-            elif isinstance(X, SetTemplateStateKey):   
-                return (2, X.value)
-            elif isinstance(X, SetPathIterator):   
-                return (3, X.offset, X.path_id, X.path_walker_id)
-            else:
-                assert False, "Command '%s' cannot be part of .misc." % X.__class__.__name__
-
-        for action in sorted(self.misc, key=sort_key):
-            yield action
-
-    def __hash__(self):
-        xor_sum = 0
-        for x in self.misc:
-            xor_sum ^= hash(x)
-
-        if self.accepter is not None:
-            xor_sum ^= hash(self.accepter)
-
-        return xor_sum
-
-    def is_equivalent(self, Other):
-        """For 'equivalence' the commands 'MegaState_Command' are unimportant."""
-        # Rely on '__eq__' of Accepter
-        if not (self.accepter == Other.accepter): return False
-        self_misc_pure  = set(x for x in self.misc  if not isinstance(x, MegaState_Command))
-        Other_misc_pure = set(x for x in Other.misc if not isinstance(x, MegaState_Command))
-        return self_misc_pure == Other_misc_pure
-
-    def __eq__(self, Other):
-        # Rely on '__eq__' of Accepter
-        if not (self.accepter == Other.accepter): return False
-        return self.misc == Other.misc
-
-    def __repr__(self):
-        txt = ""
-        if self.accepter is not None:
-            txt += "a"
-            for x in self.accepter:
-                txt += "%s," % repr(x.pattern_id)
-
-        for action in self.misc:
-            txt += "%s" % action
-        return txt
-
 class Command(object):
     def __init__(self, Cost=None, ParamaterList=None, Hash=None):
         assert ParamaterList is None or type(ParamaterList) == list
@@ -240,6 +131,126 @@ class Command(object):
         if self.__class__ != Other.__class__:
             return False
         return self._x == Other._x
+
+class CommandList:
+    def __init__(self):
+        self.accepter = None
+        self.misc     = TypedSet(Command)
+
+    @classmethod
+    def from_iterable(cls, Iterable):
+        result = CommandList()
+        for cmd in Iterable:
+            assert isinstance(cmd, Command)
+            if isinstance(cmd, Accepter):
+                assert self.accepter is None
+                result.accepter = cmd
+            else:
+                result.misc.add(cmd)
+        return result
+
+    @staticmethod
+    def intersection(This, That):
+        result = CommandList()
+        if This.accepter == That.accepter: result.accepter = This.accepter.clone()
+        else:                              result.accepter = None
+        result.misc = set(cmd.clone() for cmd in This.misc if cmd in That.misc)
+        return result
+
+    def clone(self):
+        result = CommandList()
+        if self.accepter is not None: result.accepter = self.accepter.clone()
+        else:                         result.accepter = None
+        result.misc = set(cmd.clone() for cmd in self.misc)
+        return result
+
+    def difference_update(self, Other):
+        """Delete all commands from Other from this command list.
+        """
+        if self.accepter == Other.accepter: 
+            self.accepter = None
+
+        assert type(Other.misc) == set
+        for cmd in Other.misc:
+            assert isinstance(cmd, Command)
+
+        self.misc.difference_update(Other.misc)
+
+    def is_empty(self):
+        if self.accepter is not None: return False
+        return len(self.misc) == 0
+
+    def cost(self):
+        return sum(x.cost() for x in self)
+
+    def delete_SetPathIterator_commands(self):
+        """Delete the 'SetPathIterator' command from the command list. There should
+           never be more than ONE such command in a commant list. This is so, because
+           the 'SetPathIterator' defines a state that the MegaState shall represent.
+           A MegaState can only represent on state at a time.
+        """
+        for element in self.misc:
+            if not isinstance(element, SetPathIterator): continue
+
+            self.misc.remove(element)
+            # Double check that there was only one SetPathIterator command in the list.
+            for element in self.misc:
+                assert not isinstance(element, SetPathIterator)
+
+        return
+
+    def __iter__(self):
+        """Allow iteration over comand list."""
+        if self.accepter is not None: 
+            yield self.accepter
+        def sort_key(Cmd):
+            if   isinstance(Cmd, StoreInputPosition): 
+                return (0, Cmd.pre_context_id, Cmd.position_register, Cmd.offset)
+            elif isinstance(Cmd, PreConditionOK):   
+                return (1, Cmd.pre_context_id)
+            elif isinstance(Cmd, SetTemplateStateKey):   
+                return (2, Cmd.value)
+            elif isinstance(Cmd, SetPathIterator):   
+                return (3, Cmd.offset, Cmd.path_id, Cmd.path_walker_id)
+            else:
+                assert False, "Command '%s' cannot be part of .misc." % Cmd.__class__.__name__
+
+        for action in sorted(self.misc, key=sort_key):
+            yield action
+
+    def __hash__(self):
+        xor_sum = 0
+        for x in self.misc:
+            xor_sum ^= hash(x)
+
+        if self.accepter is not None:
+            xor_sum ^= hash(self.accepter)
+
+        return xor_sum
+
+    def is_equivalent(self, Other):
+        """For 'equivalence' the commands 'MegaState_Command' are unimportant."""
+        # Rely on '__eq__' of Accepter
+        if not (self.accepter == Other.accepter): return False
+        self_misc_pure  = set(cmd for cmd in self.misc  if not isinstance(cmd, MegaState_Command))
+        Other_misc_pure = set(cmd for cmd in Other.misc if not isinstance(cmd, MegaState_Command))
+        return self_misc_pure == Other_misc_pure
+
+    def __eq__(self, Other):
+        # Rely on '__eq__' of Accepter
+        if not (self.accepter == Other.accepter): return False
+        return self.misc == Other.misc
+
+    def __repr__(self):
+        txt = ""
+        if self.accepter is not None:
+            txt += "a"
+            for x in self.accepter:
+                txt += "%s," % repr(x.pattern_id)
+
+        for action in self.misc:
+            txt += "%s" % action
+        return txt
 
 class IncrementInputP(Command):
     def __init__(self):  

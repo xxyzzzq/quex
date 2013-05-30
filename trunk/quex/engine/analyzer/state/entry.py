@@ -103,7 +103,9 @@ class EntryActionDB(dict):
                 # Replace position register according to 'PositionRegisterMap'
                 cmd.position_register = PositionRegisterMap[cmd.position_register]
                 change_f = True
+
             # If there was a replacement, ensure that each command appears only once
+            # (Elements changed their value)
             if change_f:
                 # Adding one by one ensures that double entries are avoided
                 action.command_list.misc = set(x for x in action.command_list.misc)
