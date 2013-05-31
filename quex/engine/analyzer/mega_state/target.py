@@ -1,3 +1,4 @@
+from quex.engine.analyzer.state.entry_action import DoorID
 from quex.blackboard                         import E_StateIndices
 
 MegaState_Target_DROP_OUT_hash = hash(E_StateIndices.DROP_OUT)
@@ -62,7 +63,7 @@ class MegaState_Target(object):
     NOTE: All 'DropOut' MegaState_Target are represented by the single object
           'MegaState_Target_DROP_OUT'. This saves memory.
     """
-    __slots__   = ('__drop_out_f', '__scheme', '__scheme_id', '__hash', '__target_state_index', '__door_id')
+    __slots__   = ('__drop_out_f', '__scheme', '__scheme_id', '__hash', '__door_id')
     __object_db = dict()
 
     @staticmethod
@@ -84,7 +85,10 @@ class MegaState_Target(object):
     @staticmethod
     def create(Target):
         assert Target is not None 
-
+        assert    Target == E_StateIndices.DROP_OUT \
+               or isinstance(Target, DoorID)        \
+               or type(Target) == tuple
+       
         result = MegaState_Target.__object_db.get(Target)
         if result is None: 
             result = MegaState_Target(Target)
@@ -97,85 +101,68 @@ class MegaState_Target(object):
         if Target is None: # Only to be used by 'self.clone()'
             return 
 
-        self.__target_state_index = None
-        self.__scheme             = None
-        self.__scheme_id          = None # Only possibly set in 'finalize'
-        self.__door_id            = None # Only possibly set in 'finalize'
+        self.__scheme     = None
+        self.__scheme_id  = None # Only possibly set in 'finalize'
+        self.__door_id    = None # Only possibly set in 'finalize'
+        self.__drop_out_f = False
+        self.__hash       = None
 
         if   Target == E_StateIndices.DROP_OUT: 
             self.__drop_out_f = True; 
             self.__hash       = MegaState_Target_DROP_OUT_hash 
-            return
-
-        self.__drop_out_f = False
-        self.__hash       = None
-        if   isinstance(Target, long):   self.__target_state_index = Target 
-        elif isinstance(Target, tuple):  self.__scheme             = Target
-        elif isinstance(Target, DoorID): self.__door_id            = Target # only by '.finalize()'
-        else:                            assert False, Target.__class__.__name__
+        elif isinstance(Target, tuple):  
+            for x in Target:
+                assert isinstance(x, DoorID)
+            self.__scheme     = Target
+        elif isinstance(Target, DoorID): 
+            self.__door_id    = Target # only by '.finalize()'
+        else:
+            assert False, Target.__class__.__name__
 
     def get_hash(self):
+        assert False, "Supposed to use __hash__"
         if self.__hash is None: 
             if self.__target_state_index is not None: self.__hash = hash(self.__target_state_index)
             elif self.__scheme is not None:           self.__hash = hash(self.__scheme)
             else:                                     self.__hash = hash(self.__door_id)
         return self.__hash
     @property
-    def scheme(self):              return self.__scheme
+    def scheme(self):       return self.__scheme
     @property
-    def target_state_index(self):  return self.__target_state_index
+    def door_id(self):      return self.__door_id
     @property
-    def target_door_id(self):      return self.__door_id
-    @property
-    def drop_out_f(self):          return self.__drop_out_f
+    def drop_out_f(self):   return self.__drop_out_f
     @property
     def scheme_id(self):           return self.__scheme_id
 
-    def replace_door_ids(self, MapOldDoorIdToNewDoorId):
+    def replace_door_ids(self, MapOldToNewDoorIDs):
         """RETURNS: True  if there where internal replacements of door ids.
                     False if there was no replacement to be done.
         """
-        if self.__target_state_index is not None: 
-            return False
-
-        elif self.__door_id is not None:
-            new_door_id = MapOldDoorIdToNewDoorId.get(self.__door_id)
+        if self.__door_id is not None:
+            new_door_id = MapOldToNewDoorIDs.get(self.__door_id)
             if new_door_id is None: return False
             self.__door_id = new_door_id
 
         elif self.__scheme is not None:
             new_scheme = None
             for i, door_id in enumerate(self.__scheme):
-                new_door_id  = MapOldDoorIdToNewDoorId.get(self.__door_id)
-                if new_door_id is None: continue
-                if new_scheme is None: new_scheme = list(self.__scheme)
+                new_door_id  = MapOldToNewDoorIDs.get(self.__door_id)
+                if   new_door_id is None: 
+                    continue
+                elif new_scheme is None: 
+                    new_scheme = list(self.__scheme)
                 new_scheme[i] = new_door_id
 
-            if new_scheme is None: return False
+            if new_scheme is None: 
+                return False
 
             self.__scheme = tuple(new_scheme)
 
         return True
 
-    def finalize(self, TheMegaState, StateDB, scheme_db):
-        """Once the whole state configuration and the states' entry doors are
-        determined, the actual MegaState_Target object can be finalized.
-        That is:
-           
-           -- A common target may become a scheme, if the DoorIDs differ
-              depending on the 'from_state_index' (which is one of the
-              .implemented_state_index_list()).
-
-           -- A scheme may become a common target, if the target DoorID 
-              is the same for all indices in .implemented_state_index_list().
-        """
-        if self.drop_out_f:
-            return
-
-        implemented_state_index_list = TheMegaState.implemented_state_index_list()
-        L = len(implemented_state_index_list)
-        assert L > 1
-
+    @staticmethod
+    def assign_scheme_ids(transition_map):
         def determine_scheme_id(scheme_db, Scheme):
             scheme_id = scheme_db.get(Scheme)
             if scheme_id is None: 
@@ -183,88 +170,61 @@ class MegaState_Target(object):
                 scheme_db[Scheme] = scheme_id
             return scheme_id
 
-        # NOTE: Due to the possible cover-up of parts of the transition map, it
-        #       is possible that not all implemented states of a MegaState trigger
-        #       to '.target_state_index' or the states mentioned in '.scheme'.
-        #
-        #       This results in '.get_door_id(To, From)' being 'None' sometimes. 
-        #       This is not an error!
-        if self.scheme is not None:
-            assert len(self.scheme) == L
-            # The targets in a 'scheme' may be implemented by the same MegaState--
-            # with the CommandList at state entry. In this case, a target state
-            # scheme translates into a common transition to target DoorID.
-            prototype = None
-            for state_index in implemented_state_index_list:
-                state_key          = TheMegaState.map_state_index_to_state_key(state_index)
-                target_state_index = self.scheme[state_key]
+        scheme_db = {}
+        for interval, target in transition_map:
+            assert isinstance(target, MegaState_Target)
+            if target.__scheme is None: continue
+            target.__scheme_id = determine_scheme_id(scheme_db, target.__scheme)
 
-                if target_state_index != E_StateIndices.DROP_OUT:
-                    # DROP_OUT cannot be in a scheme, if there was some non-DROP-OUT there.
-                    # => Only give it a chance as long as no DROP_OUT target appears.
-                    target_entry = StateDB[target_state_index].entry
-                    door_id      = target_entry.action_db.get_door_id(target_state_index, state_index)
-                    if   prototype is None:    prototype = door_id; continue
-                    elif prototype == door_id: continue
+    @staticmethod
+    def rejoin_uniform_schemes(transition_map):
+        """If all DoorIDs in a scheme are the same, the target becomes
+        a 'DoorID' target instead a scheme target. That is, the target
+        is no longer dependent on the state to be implemented.
+        """
+        def rejoin(scheme):
+            prototype  = None
+            for door_id in target.__scheme:
+                if   door_id == prototype: continue
+                elif prototype is None:    prototype = door_id  # first door_id --> protype
+                else:                      return None          # scheme not uniform
+            # All door_ids uniform:
+            return MegaState_Target.create(prototype)
 
-                # The scheme is indeed not uniform => Stay with the scheme
-                self.__scheme_id = determine_scheme_id(scheme_db, self.__scheme)
-                return # Nothing to be done
-            else:
-                # All has been uniform => generate transition through common DoorID
-                assert prototype is not None
-                return MegaState_Target.create(prototype)
+        for i, info in enumerate(transition_map):
+            interval, target = info
+            if target.__scheme is None: continue
+            new_target = rejoin(target.__scheme)
+            if new_target is None: continue
+            transition_map[i] = (interval, new_target)
 
-        elif self.target_state_index is not None:
-            # The common target state may be entered by different doors
-            # depending on the 'from_state' which is currently implemented by
-            # the MegaState. Then, a common 'target_state_index' translates into 
-            # a target scheme. DoorID's for each element are computed later
-            # depending on the '.implemented_state_index_list'.
-            target_entry = StateDB[self.target_state_index].entry
-            prototype    = None
-            for state_index in implemented_state_index_list:
-                door_id   = target_entry.action_db.get_door_id(self.target_state_index, state_index)
-                if prototype is None:      prototype = door_id; continue
-                elif prototype == door_id: continue
-
-                # The door_ids are not uniform => generate a scheme
-                result = MegaState_Target.create((self.target_state_index,) * L)
-                result.__scheme_id = determine_scheme_id(scheme_db, result.scheme)
-                return result
-            else:
-                # All has been uniform => Stay with 'target_state_index'
-                assert prototype is not None
-                return # Nothing to be done
-        else:
-            pass
+        return
 
     def __repr__(self):
-        if   self.drop_out_f:                     return "MegaState_Target:DropOut"
-        elif self.target_state_index is not None: return "MegaState_Target:(%s)"       % repr(self.__target_state_index).replace("L", "")
-        elif self.target_door_id is not None:     return "MegaState_Target:%s"         % repr(self.__door_id).replace("L", "")
-        elif self.scheme is not None:             return "MegaState_Target:scheme(%s)" % repr(self.__scheme).replace("L", "")
-        else:                                     return "MegaState_Target:<ERROR>"
+        if   self.drop_out_f:          return "MegaState_Target:DropOut"
+        elif self.door_id is not None: return "MegaState_Target:%s"         % repr(self.__door_id).replace("L", "")
+        elif self.scheme is not None:  return "MegaState_Target:scheme(%s)" % repr(self.__scheme).replace("L", "")
+        else:                          return "MegaState_Target:<ERROR>"
 
     def __hash__(self):
-        if   self.__drop_out_f:                     return 0
-        elif self.__target_state_index is not None: return self.__target_state_index.state_index
-        elif self.__scheme is not None:             return hash(self.__scheme)
-        else:                                       assert False
+        if self.__hash is None:
+            if   self.__drop_out_f:          self.__hash = 0
+            elif self.__door_id is not None: self.__hash = self.__door_id.state_index
+            elif self.__scheme is not None:  self.__hash = hash(self.__scheme)
+            else:                            assert False
+        return self.__hash
 
     def __eq__(self, Other):
         if   isinstance(Other, MegaState_Target) == False: 
             return False
         elif self.__drop_out_f and Other.__drop_out_f: 
             return True
-        elif self.__target_state_index is not None and Other.__target_state_index is not None:
-            return self.__target_state_index == Other.__target_state_index
+        elif self.__door_id is not None and Other.__door_id is not None:
+            return self.__door_id == Other.__door_id
         elif self.__scheme  is not None and Other.__scheme  is not None:
             return self.__scheme == Other.__scheme
         else:
             return False
-        ## if self.__scheme_id != Other.__scheme_id: return False
-        return self.__scheme == Other.__scheme
 
 # Globally unique object to stand up for all 'drop-outs'.
 MegaState_Target_DROP_OUT      = MegaState_Target(E_StateIndices.DROP_OUT)

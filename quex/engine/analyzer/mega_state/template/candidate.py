@@ -256,10 +256,10 @@ class TargetFactory:
                 return TA
             TA_scheme = self.__drop_out_scheme_a
 
-        elif TA.target_state_index is not None:
-            if TB.target_state_index is not None and TA.target_state_index == TB.target_state_index:
+        elif TA.door_id is not None:
+            if TB.door_id is not None and TA.door_id == TB.door_id:
                 return TA
-            TA_scheme = (TA.target_state_index,) * self.__length_a
+            TA_scheme = (TA.door_id,) * self.__length_a
 
         else:
             TA_scheme = TA.scheme
@@ -268,9 +268,9 @@ class TargetFactory:
             # TA was not drop-out, otherwise we would have returned earlier
             TB_scheme = self.__drop_out_scheme_b
 
-        elif TB.target_state_index is not None:
+        elif TB.door_id is not None:
             # TA was not the same door, otherwise we would have returned earlier
-            TB_scheme = (TB.target_state_index,) * self.__length_b
+            TB_scheme = (TB.door_id,) * self.__length_b
 
         else:
             TB_scheme = TB.scheme
@@ -289,10 +289,10 @@ class TargetFactory:
         if TA.drop_out_f and TB.drop_out_f:
             return 
 
-        elif TA.target_state_index is not None:
-            if TB.target_state_index is not None and TA.target_state_index == TB.target_state_index:
+        elif TA.door_id is not None:
+            if TB.door_id is not None and TA.door_id == TB.door_id:
                 return 
 
-        my_hash = TA.get_hash() ^ TB.get_hash()
+        my_hash = hash(TA) ^ hash(TB)
         scheme_set.add(my_hash)
 

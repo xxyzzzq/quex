@@ -152,8 +152,8 @@ class CommandList:
     @staticmethod
     def intersection(This, That):
         result = CommandList()
-        if This.accepter == That.accepter: result.accepter = This.accepter.clone()
-        else:                              result.accepter = None
+        if This.accepter is not None and This.accepter == That.accepter: result.accepter = This.accepter.clone()
+        else:                                                            result.accepter = None
         result.misc = set(cmd.clone() for cmd in This.misc if cmd in That.misc)
         return result
 
@@ -189,13 +189,15 @@ class CommandList:
            the 'SetPathIterator' defines a state that the MegaState shall represent.
            A MegaState can only represent on state at a time.
         """
-        for element in self.misc:
-            if not isinstance(element, SetPathIterator): continue
+        for cmd in self.misc:
+            if isinstance(cmd, SetPathIterator): break
+        else:
+            return
 
-            self.misc.remove(element)
-            # Double check that there was only one SetPathIterator command in the list.
-            for element in self.misc:
-                assert not isinstance(element, SetPathIterator)
+        self.misc.remove(cmd)
+        # Double check that there was only one SetPathIterator command in the list.
+        for element in self.misc:
+            assert not isinstance(element, SetPathIterator)
 
         return
 

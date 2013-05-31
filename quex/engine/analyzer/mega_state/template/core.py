@@ -128,7 +128,7 @@ def do(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList):
         #    (After 'update' to avoid combination with itself)
         elect_db[elect.index] = elect
 
-    return [ state for state in self.itervalues() if isinstance(state, TemplateState) ]
+    return [ state for state in elect_db.itervalues() if isinstance(state, TemplateState) ]
 
 class CandidateList(list):
     """________________________________________________________________________
@@ -274,9 +274,9 @@ class CandidateList(list):
         combined with another state anymore.
         """
 
-        i        = len(self) - i
         done_set = (I, K)
-        while i < size:
+        i        = len(self) - 1
+        while i >= 0:
             entry = self[i]
             if entry.state_a.index in done_set or entry.state_b.index in done_set:
                 del self[i]
