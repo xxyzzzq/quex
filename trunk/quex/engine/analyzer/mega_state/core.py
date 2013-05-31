@@ -180,20 +180,6 @@ class MegaState(AnalyzerState):
         """
         return self.__bad_company
 
-    def finalize_transition_map(self, StateDB):
-        """Finalizes the all involved targets in the transition map. Due
-        to some mega state analysis door ids may have changed. Thus, some 
-        common states may be entered through different doors, etc.
-
-        Call '.finalize()' for each involved MegaState_Target.
-        """
-        scheme_db = {}
-        for i, info in enumerate(self.transition_map):
-            interval, target = info
-            adapted = target.finalize(self, StateDB, scheme_db)
-            if adapted is None: continue
-            self.transition_map[i] = (interval, adapted)
-
 class MegaState_DropOut(dict):
     """_________________________________________________________________________
     

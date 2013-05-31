@@ -107,7 +107,7 @@ class TransitionMap(list):
         
         return self.__class__.from_iterable(self, relate)
 
-    def replace_door_ids(self, MapOldDoorIdToNewDoorId):
+    def replace_DoorIDs(self, MapOldDoorIdToNewDoorId):
         """Transition maps have been configured to enter states through DoorID-s.
         MegaState-s replace original states and old DoorID-s must be replaced by
         new ones, those that enter MegaState-s.
@@ -120,15 +120,30 @@ class TransitionMap(list):
             """
             if Target == E_StateIndices.DROP_OUT:
                 return None # Nothing to be done
+            elif isinstance(Target, DoorID):
+                return MapOldDoorIdToNewDoorId.get(Target)
+            else:
+                assert False
+
+        for i, info in enumerate(self):
+            interval, target = info
+            new_target = relate(target, MapOldDoorIdToNewDoorId)
+            if new_target is None: continue
+            self[i] = (interval, new_target)
+
+    def replace_DoorIDs_in_MegaStateTargets(self, MapOldDoorIdToNewDoorId):
+        def relate(Target, MapOldDoorIdToNewDoorId):
+            """RETURN: None      --> entry in transition map is left as is.
+                       NewTarget --> new entry in transition is to be made.
+            """
+            if Target == E_StateIndices.DROP_OUT:
+                return None # Nothing to be done
 
             elif isinstance(Target, MegaState_Target):
                 Target.replace_door_ids(MapOldDoorIdToNewDoorId) 
                 # All required changes on target have been accomplished, no new
                 # entry in transition map is required.
                 return None  
-
-            elif isinstance(Target, DoorID):
-                return MapOldDoorIdToNewDoorId.get(Target)
 
             else:
                 assert False

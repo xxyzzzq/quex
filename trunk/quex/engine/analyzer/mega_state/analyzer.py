@@ -1,7 +1,8 @@
 # (C) 2012 Frank-Rene Schaefer
 import quex.engine.analyzer.mega_state.template.core    as     template_analyzer
 import quex.engine.analyzer.mega_state.path_walker.core as     path_analyzer
-from   quex.engine.analyzer.mega_state.core             import AbsorbedState
+from   quex.engine.analyzer.mega_state.core             import AbsorbedState, MegaState
+from   quex.engine.analyzer.mega_state.target           import MegaState_Target
 from   quex.blackboard                                  import setup as Setup, \
                                                                E_Compression
 
@@ -44,7 +45,7 @@ def do(TheAnalyzer):
             )
 
             # Track the remaining not-yet-absorbed states
-            remainder.subtract(mega_state.implemented_state_index_list())
+            remainder.difference_update(mega_state.implemented_state_index_list())
 
         TheAnalyzer.mega_state_list.extend(mega_state_list)
 
@@ -59,14 +60,31 @@ def do(TheAnalyzer):
        (mega_state.index, mega_state) for mega_state in TheAnalyzer.mega_state_list
     )
 
-    map_door_ids = {}
+    _update_MegaState_door_ids(TheAnalyzer)
+
+def _update_MegaState_door_ids(TheAnalyzer):
+    """DoorID-s to to this point in time relate to origanl AnalyzerState-s.
+       Since the CommandList-s are now implemented in MegaState-s and since
+       they might profit from being the same, they are categorized again
+       and new DoorID-s are assigned according to the MegaState which 
+       implements them.
+
+       The transition maps are adapted accordingly.
+    """
+    map_old_to_new_door_id = {}
     for mega_state in TheAnalyzer.mega_state_list:
-        map_door_ids.update(mega_state.entry.action_db.categorize())
+        replacement_db = mega_state.entry.action_db.categorize(mega_state.index)
+        if replacement_db is not None:
+            print "#replacement_db:", replacement_db
+            map_old_to_new_door_id.update(replacement_db)
 
     for state in TheAnalyzer.state_db.itervalues():
-        state.transition_map.replace_door_ids(map_door_ids)
-
-    for mega_state in TheAnalyzer.mega_state_list:
-        mega_state.finalize_transition_map(TheAnalyzer.state_db)
-
+        if isinstance(state, AbsorbedState): 
+            continue
+        elif isinstance(state, MegaState):
+            state.transition_map.replace_DoorIDs_in_MegaStateTargets(map_old_to_new_door_id)
+            MegaState_Target.rejoin_uniform_schemes(state.transition_map)
+            MegaState_Target.assign_scheme_ids(state.transition_map)
+        else:
+            state.transition_map.replace_DoorIDs(map_old_to_new_door_id)
 
