@@ -50,8 +50,6 @@ def do(SM_A, SM_B):
 
     (C) 2013 Frank-Rene Schaefer
     """
-    #print "#SM_A", SM_A.get_string(NormalizeF=False)
-    #print "#SM_B", SM_B.get_string(NormalizeF=False)
     cutter = WalkAlong(SM_A, SM_B)
     cutter.do((SM_A.init_state_index, SM_B.init_state_index, None))
 

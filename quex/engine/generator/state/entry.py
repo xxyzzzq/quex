@@ -47,10 +47,11 @@ def do_node(txt, TheState, Node, LastChildF=False, BIPD_ID=None):
             do_node(txt, TheState, child, LastChildF=(i==LastI), BIPD_ID=BIPD_ID)
     
     # If the door can be a 'goto' target, the label needs to be defined.
+    door_label = None
     if TheState.init_state_f and BIPD_ID is not None:
-        txt.append(LanguageDB.LABEL_BACKWARD_INPUT_POSITION_DETECTOR(BIPD_ID))
+        door_label = LanguageDB.LABEL_BACKWARD_INPUT_POSITION_DETECTOR(BIPD_ID)
     elif Node.door_id.door_index != 0:
-        txt.append(LanguageDB.LABEL_BY_DOOR_ID(Node.door_id))
+        door_label = LanguageDB.LABEL_BY_DOOR_ID(Node.door_id)
     else:
         # 'Door 0' is needed if:  -- There is transition to 'Door 0'.
         #                         -- A reload procedure is involved. Reload requires
@@ -66,7 +67,10 @@ def do_node(txt, TheState, Node, LastChildF=False, BIPD_ID=None):
         is_uniform_path_walker_state_f = isinstance(TheState, PathWalkerState) and \
                                          TheState.uniform_entry_door_id_along_all_paths is not None
         if has_transition_f or has_reload_f or has_multiple_childs_f or is_uniform_path_walker_state_f:
-            txt.append(LanguageDB.LABEL_BY_DOOR_ID(Node.door_id))
+            door_label = LanguageDB.LABEL_BY_DOOR_ID(Node.door_id)
+
+    if door_label is not None:
+        txt.append(door_label)
 
     comment_door(txt, Node, TheState.entry)
 
