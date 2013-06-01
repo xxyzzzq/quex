@@ -479,7 +479,7 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
     # Handle the special transition 'from self to self'.
     for path_walker in path_walker_list:
         my_index                 = path_walker.index
-        from_self_to_self_action = TransitionAction(my_index, my_index)
+        from_self_to_self_action = TransitionAction()
         if path_walker.uniform_entry_command_list_along_all_paths is not None:
             # Assign the uniform command list to the transition 'path_walker -> path_walker'
             from_self_to_self_action.command_list = path_walker.uniform_entry_command_list_along_all_paths.clone()

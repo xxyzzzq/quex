@@ -9,26 +9,24 @@ from   copy                     import deepcopy, copy
 from   itertools                import islice, izip
 
 class TransitionAction(object):
-    """.transition_id --> information from what state the transition happens
-                          and to what state it goes. if the trigger id is set
-                          different triggers for the same transition may be
-                          distinguished.
+    """Object containing information about commands to be executed upon
+       transition into a state.
+
        .command_list  --> list of commands to be executed upon the transition.
-       .door_id       --> An 'id' which is supposed to be unique for a command 
-                          list. It tells 'where' a state is to be entered in 
-                          order for the commands to be executed.
+       .door_id       --> An 'id' which is supposed to be unique for a command list. 
+                          It is (re-)assigned during the process of 
+                          'EntryActionDB.categorize()'.
     """
     __slots__ = ("door_id", "command_list")
-    def __init__(self, TheCommandList=None):
-        assert TheCommandList is None or isinstance(TheCommandList, CommandList)
-
-        self.door_id  = None # DoorID into door tree from where the command list is executed
-
-        if TheCommandList is not None: self.command_list = TheCommandList
-        else:                          self.command_list = CommandList()
+    def __init__(self, CommandListObjectF=True):
+        self.door_id      = None # DoorID into door tree from where the command list is executed
+        self.command_list = CommandList() if CommandListObjectF else None
  
     def clone(self):
-        return TransitionAction(self.command_list.clone())
+        result = TransitionAction(CommandListObjectF=False)
+        result.door_id      = self.door_id
+        result.command_list = self.command_list
+        return result
 
     # Make TransitionAction usable for dictionary and set
     def __hash__(self):      
@@ -149,19 +147,19 @@ class CommandList:
                 result.misc.add(cmd)
         return result
 
+    def clone(self):
+        result = CommandList()
+        if self.accepter is not None: result.accepter = self.accepter.clone()
+        else:                         result.accepter = None
+        result.misc = set(cmd.clone() for cmd in self.misc)
+        return result
+
     @staticmethod
     def intersection(This, That):
         result = CommandList()
         if This.accepter is not None and This.accepter == That.accepter: result.accepter = This.accepter.clone()
         else:                                                            result.accepter = None
         result.misc = set(cmd.clone() for cmd in This.misc if cmd in That.misc)
-        return result
-
-    def clone(self):
-        result = CommandList()
-        if self.accepter is not None: result.accepter = self.accepter.clone()
-        else:                         result.accepter = None
-        result.misc = set(cmd.clone() for cmd in self.misc)
         return result
 
     def difference_update(self, Other):

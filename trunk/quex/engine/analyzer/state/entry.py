@@ -148,8 +148,10 @@ class EntryActionDB(dict):
                 new_door_id = DoorID(StateIndex, i)
                 command_list_db[action.command_list] = new_door_id
 
-            if action.door_id is not None:                     # Keep track of changed
-                replacement_db[action.door_id] = new_door_id   # DoorIds
+            # Keep track of changed DoorID-s
+            if action.door_id is not None:                     
+                if replacement_db is None: replacement_db = { action.door_id: new_door_id }
+                else:                      replacement_db[action.door_id] = new_door_id   
             action.door_id = new_door_id
 
         self.__largest_used_door_sub_index = i  # '0' is used for 'Door 0', i.e. reload entry

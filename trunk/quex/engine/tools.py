@@ -35,6 +35,7 @@ class TypedSet(set):
 
     def add(self, X):
         assert isinstance(X, self.__element_class)
+        set.add(self, X)
 
     def update(self, Iterable):
         for x in Iterable:

@@ -147,7 +147,7 @@ class MegaState_Target(object):
         elif self.__scheme is not None:
             new_scheme = None
             for i, door_id in enumerate(self.__scheme):
-                new_door_id  = MapOldToNewDoorIDs.get(self.__door_id)
+                new_door_id  = MapOldToNewDoorIDs.get(door_id)
                 if   new_door_id is None: 
                     continue
                 elif new_scheme is None: 
