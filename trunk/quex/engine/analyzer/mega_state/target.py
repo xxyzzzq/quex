@@ -112,7 +112,7 @@ class MegaState_Target(object):
             self.__hash       = MegaState_Target_DROP_OUT_hash 
         elif isinstance(Target, tuple):  
             for x in Target:
-                assert isinstance(x, DoorID)
+                assert x == E_StateIndices.DROP_OUT or isinstance(x, DoorID)
             self.__scheme     = Target
         elif isinstance(Target, DoorID): 
             self.__door_id    = Target # only by '.finalize()'
@@ -129,11 +129,14 @@ class MegaState_Target(object):
     @property
     def scheme(self):       return self.__scheme
     @property
-    def door_id(self):      return self.__door_id
+    def door_id(self):      
+        assert self.__door_id is None or isinstance(self.__door_id, DoorID)
+        return self.__door_id
     @property
     def drop_out_f(self):   return self.__drop_out_f
+
     @property
-    def scheme_id(self):           return self.__scheme_id
+    def scheme_id(self):    return self.__scheme_id
 
     def replace_door_ids(self, MapOldToNewDoorIDs):
         """RETURNS: True  if there where internal replacements of door ids.
