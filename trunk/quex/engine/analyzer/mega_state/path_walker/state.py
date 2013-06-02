@@ -42,7 +42,7 @@ class PathWalkerState(MegaState):
     def transition_map(self):
         return self.__transition_map_to_mega_state_targets 
 
-    def accept(self, Path, StateDB):
+    def accept(self, Path):
         """Accepts the given Path to be walked, if the remaining transition_maps
         match. If additionally uniformity is required, then only states with
         same drop_out and entry are accepted.
@@ -63,9 +63,10 @@ class PathWalkerState(MegaState):
         #                     existing one.
         uniform_entry_f = False
         if self.__uniform_entry_command_list_along_path is not None:
-            uniform_entry = Path.get_uniform_entry_command_list_along_path()
-            if     uniform_entry is not None \
-               and uniform_entry.is_equivalent(self.__uniform_entry_command_list_along_path):
+            # other_ueclap := other's .__uniform_entry_command_list_along_path
+            other_ueclap = Path.get_uniform_entry_command_list_along_path()
+            if     other_ueclap is not None \
+               and other_ueclap.is_equivalent(self.__uniform_entry_command_list_along_path):
                     uniform_entry_f = True
 
         if self.__uniformity_required_f:
@@ -111,14 +112,15 @@ class PathWalkerState(MegaState):
         for action in TheEntry.action_db.itervalues():
             found_f = False
             for command in action.command_list:
-                if isinstance(command, SetPathIterator):
-                    assert not found_f # Double check that there are not more than one 
-                    #                  # such command per command_list.
-                    found_f = True
-                    command.set_path_walker_id(PathWalkerIndex)
-                    command.set_path_id(PathID)
-                    # There shall not be more then one 'SetPathIterator' command 
-                    # for one transition.
+                if not isinstance(command, SetPathIterator): continue
+
+                assert not found_f # Double check that is  not more than one 
+                #                  # such command per command_list.
+                found_f = True
+                command.set_path_walker_id(PathWalkerIndex)
+                command.set_path_id(PathID)
+                # There shall not be more then one 'SetPathIterator' command 
+                # for one transition.
 
         return TheEntry
 
