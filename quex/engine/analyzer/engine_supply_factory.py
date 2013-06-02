@@ -78,11 +78,13 @@ class Class_BACKWARD_PRE_CONTEXT(Base):
         return E_InputActions.DECREMENT_THEN_DEREF
 
     def create_Entry(self, SM_State, StateIndex, FromStateIndexList):
-        pre_context_id_fulfilled_list = [ origin.pattern_id() for origin in SM_State.origins() \
-                                                              if origin.is_acceptance() ]
         result = Entry(StateIndex, FromStateIndexList)
+        pre_context_ok_command_list = [ 
+            PreConditionOK(origin.pattern_id()) for origin in SM_State.origins() \
+            if origin.is_acceptance() 
+        ]
         for transition_action in result.action_db.itervalues():
-            transition_action.command_list.misc.update(PreConditionOK(x) for x in pre_context_id_fulfilled_list)
+            transition_action.command_list.misc.update(pre_context_ok_command_list)
         return result
 
 

@@ -471,7 +471,7 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
     for path in CharacterPathList:
         for path_walker in path_walker_list:
             # Set-up the walk in an existing PathWalkerState
-            if path_walker.accept(path, TheAnalyzer.state_db): break
+            if path_walker.accept(path): break
         else:
             # Create a new PathWalkerState
             path_walker_list.append(PathWalkerState(path, TheAnalyzer, CompressionType))

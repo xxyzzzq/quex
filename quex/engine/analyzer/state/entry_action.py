@@ -24,8 +24,8 @@ class TransitionAction(object):
  
     def clone(self):
         result = TransitionAction(CommandListObjectF=False)
-        result.door_id      = self.door_id
-        result.command_list = self.command_list
+        result.door_id      = self.door_id.clone()
+        result.command_list = self.command_list.clone()
         return result
 
     # Make TransitionAction usable for dictionary and set

@@ -52,7 +52,7 @@ class PathWalkerState_Entry(MegaState_Entry):
 
         for transition_id, action in TheEntry.action_db.iteritems():
             clone = action.clone()
-            # Create new 'SetPathIterator' for current state
+            # Create new 'SetPathIterator' for the state which is represented
             clone.command_list.misc.add(SetPathIterator(Offset=Offset))
 
             self.action_db[transition_id] = clone
