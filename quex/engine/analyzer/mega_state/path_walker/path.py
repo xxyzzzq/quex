@@ -192,6 +192,7 @@ class CharacterPath(object):
         prototype        = None
         for x in self.__sequence[1:-1]:
             action = self.entry.action_db.get_action(x.state_index, prev_state_index)
+            assert action is not None
             if prototype is not None:
                 if not prototype.is_equivalent(action.command_list):
                     return None

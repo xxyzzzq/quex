@@ -65,9 +65,9 @@ def do(SM, EngineType=engine.FORWARD):
         Setup.language_db.register_analyzer(analyzer)
 
     # [Optional] Combination of states into MegaState-s.
-    mega_state_analyzer.do(analyzer)
-
-    # MegaState.transition_map:       Interval --> MegaState_Target
+    if len(Setup.compression_type_list) != 0:
+        mega_state_analyzer.do(analyzer)
+        # MegaState.transition_map:   Interval --> MegaState_Target
 
     return analyzer
 
@@ -118,6 +118,9 @@ class Analyzer:
                                         EngineType, self.__from_db[state_index])) 
             for state_index in self.__trace_db.iterkeys()])
 
+        self.mega_state_list          = []
+        self.non_mega_state_index_set = set(state_index for state_index in SM.states.iterkeys())
+
         if not EngineType.requires_detailed_track_analysis():
             self.__position_register_map = None
             return
@@ -139,6 +142,7 @@ class Analyzer:
                 self.__position_register_map = position_register_map.do(self)
             else:
                 self.__position_register_map = None
+
 
     @property
     def trace_db(self):                    return self.__trace_db

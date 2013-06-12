@@ -16,7 +16,34 @@ def do(TheAnalyzer):
     have to be executed in to construct MegaStates (if any at all). Consider
     'core.py' in this directory for further reading.
     ___________________________________________________________________________
-    """
+
+    NOTE: MegaState-s apply some 'mechanics' for implementing the state which
+          they represent. However, the TransitionMap-s of other states are 
+          not effected. They remain targetting the same DoorID-s.
+
+    Example: 
+
+          ( 1 )--- 'a' -->[Door0]-->( 2 )--- 'b' ---> ( 3 )
+                                    /                 / 
+          ( 4 )--- 'c' -->[Door1]--'                 /
+                                                    /
+          ( 5 )--- 'd' -->[Door2]-->( 6 )--- 'e' --'
+
+    After implementing 2 and 6 in a MegaState:
+
+                         MegaState
+                          .--------------------.
+          ( 1 )--- 'a' -->[Door0] ... [state=2?]--- 'b' ---> ( 3 )
+                          |                    |    /        / 
+          ( 4 )--- 'c' -->[Door1] ... [state=2?]---'        /
+                          |                    |           /
+          ( 5 )--- 'd' -->[Door2] ... [state=6?]--- 'e' --'
+                          '--------------------'
+
+    So, from outside, there is no observable change in behavior. Other states
+    do not 'feel' that there is a MegaState.
+    ___________________________________________________________________________
+    """ assert len(Setup.compression_type_list) != 0
     TheAnalyzer.mega_state_list = []
 
     # The 'remainder' keeps track of states which have not yet been
@@ -38,6 +65,8 @@ def do(TheAnalyzer):
 
         # -- Post-process the absorption of AnalyzerState-s into MegaState-s
         for mega_state in mega_state_list:
+            assert mega_state.entry.action_db.check_consistency()
+
             # Replace the absorbed AnalyzerState by its dummy.
             TheAnalyzer.state_db.update(
                  (state_index, AbsorbedState(TheAnalyzer.state_db[state_index], mega_state))
@@ -60,55 +89,5 @@ def do(TheAnalyzer):
        (mega_state.index, mega_state) for mega_state in TheAnalyzer.mega_state_list
     )
 
-    _update_MegaState_door_ids(TheAnalyzer)
-
-def _update_MegaState_door_ids(TheAnalyzer):
-    """DoorID-s to to this point in time relate to origanl AnalyzerState-s.
-       Since the CommandList-s are now implemented in MegaState-s and since
-       they might profit from being the same, they are categorized again
-       and new DoorID-s are assigned according to the MegaState which 
-       implements them.
-
-       The transition maps are adapted accordingly.
-    """
-    # Determine new DoorID-s in MegaState-s
-    map_old_to_new_door_id = {}
-    for mega_state in TheAnalyzer.mega_state_list:
-        replacement_db = mega_state.entry.action_db.categorize(mega_state.index)
-        if replacement_db is not None:
-            map_old_to_new_door_id.update(replacement_db)
-
-    # Replace the old by new DoorID-s
-    for state in TheAnalyzer.state_db.itervalues():
-        if isinstance(state, AbsorbedState): 
-            continue
-        elif isinstance(state, MegaState):
-            state.transition_map.replace_DoorIDs_in_MegaStateTargets(map_old_to_new_door_id)
-            MegaState_Target.rejoin_uniform_schemes(state.transition_map)
-            MegaState_Target.assign_scheme_ids(state.transition_map)
-        else:
-            state.transition_map.replace_DoorIDs(map_old_to_new_door_id)
-
-        # Before: Adjacent intervals had a different targets (DoorID-s).
-        # After:  Adjacent intervals CANNOT have the same target, either.
-        # 
-        # Proof: 
-        # (0) Adjacent intervals have different targets.
-        # (1) Two targets 'x' and 'y' in an AnalyzerState relate to two
-        #     different target states.
-        # (2) A MegaState which implements a state 'x' or 'y' does so by
-        #     setting a 'key' at the entry which represents the state. This
-        #     key is unique for each state. 
-        # (3) The 'set-key' command for 'x' and 'y' differs. Otherwise,
-        #     the key would not identify a state.
-        # (4) It follows from (3) that the CommandLists() at the entry
-        #     of the MegaState differ. It depends whether the MegaState
-        #     represents 'x' or 'y'.
-        # (5) Since the CommandList-s differ, EntryActionDB.categorize()
-        #     will assign different DoorID-s. 
-        #  => For each two different targets 'x' and 'y' in a transition
-        #     map, it holds that their replacements also differ.
-        #  => from (0) it holds that adjacent intervals have different
-        #     targets after the replacement operation in the transition map.
-        state.transition_map.assert_continuity()
+    return
 

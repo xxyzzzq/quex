@@ -1,4 +1,4 @@
-from quex.engine.analyzer.state.entry_action import DoorID
+from quex.engine.analyzer.state.entry_action import DoorID, DoorID_Scheme
 from quex.blackboard                         import E_StateIndices
 
 MegaState_Target_DROP_OUT_hash = hash(E_StateIndices.DROP_OUT)
@@ -87,7 +87,7 @@ class MegaState_Target(object):
         assert Target is not None 
         assert    Target == E_StateIndices.DROP_OUT \
                or isinstance(Target, DoorID)        \
-               or type(Target) == tuple
+               or isinstance(Target, DoorID_Scheme)
        
         result = MegaState_Target.__object_db.get(Target)
         if result is None: 
@@ -110,9 +110,9 @@ class MegaState_Target(object):
         if   Target == E_StateIndices.DROP_OUT: 
             self.__drop_out_f = True; 
             self.__hash       = MegaState_Target_DROP_OUT_hash 
-        elif isinstance(Target, tuple):  
+        elif isinstance(Target, DoorID_Scheme):  
             for x in Target:
-                assert x == E_StateIndices.DROP_OUT or isinstance(x, DoorID)
+                assert x == E_StateIndices.DROP_OUT or isinstance(x, DoorID), x
             self.__scheme     = Target
         elif isinstance(Target, DoorID): 
             self.__door_id    = Target # only by '.finalize()'
@@ -160,7 +160,7 @@ class MegaState_Target(object):
             if new_scheme is None: 
                 return False
 
-            self.__scheme = tuple(new_scheme)
+            self.__scheme = DoorID_Scheme(new_scheme)
 
         return True
 

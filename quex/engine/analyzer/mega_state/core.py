@@ -271,34 +271,30 @@ class PseudoMegaState(MegaState):
 
         self.__state_index_sequence = [ Represented_AnalyzerState.index ]
 
-        self.transition_map = self.__transition_map_construct()
-
-    def __transition_map_construct(self):
-        """Build a transition map that triggers to MegaState_Target-s rather
-        than simply to target states.
-
-        CAVEAT: In general, it is **NOT TRUE** that if two transitions (x,a) and
-        (x, b) to a state 'x' share a DoorID in the original state, then they
-        share the DoorID in the MegaState. 
-        
-        The critical case is the recursive transition (x,x). It may trigger the
-        same actions as another transition (x,a) in the original state.
-        However, when 'x' is implemented in a MegaState it needs to set a
-        'state_key' upon entry from 'a'. This is, or may be, necessary to tell
-        the MegaState on which's behalf it has to operate. The recursive
-        transition from 'x' to 'x', though, does not have to set the state_key,
-        since the MegaState still operates on behalf of the same state. While
-        (x,x) and (x,a) have the same DoorID in the original state, their DoorID
-        differs in the MegaState which implements 'x'.
-        
-        THUS: A translation 'old DoorID' --> 'new DoorID' is not sufficient to
-        adapt transition maps!
-        
-        Here, the recursive target is implemented as a 'scheme' in order to
-        prevent that it may be treated as 'uniform' with other targets.
-        """
-        return TransitionMap.from_iterable(self.__state.transition_map, 
-                                           MegaState_Target.create)
+        # (*) Transition map that triggers to MegaState_Target-s 
+        #     instead of triggering to DoorID-s.
+        # 
+        # CAVEAT: In general, it is **NOT TRUE** that if two transitions (x,a) and
+        # (x, b) to a state 'x' share a DoorID in the original state, then they
+        # share the DoorID in the MegaState. 
+        #
+        # The critical case is the recursive transition (x,x). It may trigger the
+        # same actions as another transition (x,a) in the original state.
+        # However, when 'x' is implemented in a MegaState it needs to set a
+        # 'state_key' upon entry from 'a'. This is, or may be, necessary to tell
+        # the MegaState on which's behalf it has to operate. The recursive
+        # transition from 'x' to 'x', though, does not have to set the state_key,
+        # since the MegaState still operates on behalf of the same state. While
+        # (x,x) and (x,a) have the same DoorID in the original state, their DoorID
+        # differs in the MegaState which implements 'x'.
+        #
+        # THUS: A translation 'old DoorID' --> 'new DoorID' is not sufficient to
+        # adapt transition maps!
+        #
+        # Here, the recursive target is implemented as a 'scheme' in order to
+        # prevent that it may be treated as 'uniform' with other targets.
+        self.transition_map = TransitionMap.from_iterable(self.__state.transition_map, 
+                                                          MegaState_Target.create)
 
     def state_index_sequence(self):
         return self.__state_index_sequence

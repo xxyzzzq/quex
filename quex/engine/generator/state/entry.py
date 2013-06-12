@@ -69,6 +69,7 @@ def do_node(txt, TheState, Node, LastChildF=False, BIPD_ID=None):
         if has_transition_f or has_reload_f or has_multiple_childs_f or is_uniform_path_walker_state_f:
             door_label = LanguageDB.LABEL_BY_DOOR_ID(Node.door_id)
 
+    ## print "#Gen: Node.door_id:", Node.door_id, "--> label:", door_label
     if door_label is not None:
         txt.append(door_label)
 

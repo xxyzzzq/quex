@@ -123,7 +123,7 @@ class TransitionMap(list):
             elif isinstance(Target, DoorID):
                 return MapOldDoorIdToNewDoorId.get(Target)
             else:
-                assert False
+                assert False, Target
 
         for i, info in enumerate(self):
             interval, target = info
@@ -153,6 +153,14 @@ class TransitionMap(list):
             new_target = relate(target, MapOldDoorIdToNewDoorId)
             if new_target is None: continue
             self[i] = (interval, new_target)
+
+    def contains_DoorIDs(self, DoorIdSet):
+        print "#dids:", DoorIdSet
+        for i, info in self:
+            assert info == E_StateIndices.DROP_OUT or isinstance(info, DoorID), "%s%s" % (info.__class__, info)
+            print "#dddd:", info, info in DoorIdSet
+            if info in DoorIdSet: return True
+        return False
 
     def is_equal(self, Other):
         if len(self) != len(Other): return False
