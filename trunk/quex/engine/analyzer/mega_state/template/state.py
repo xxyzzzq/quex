@@ -4,7 +4,8 @@ from   quex.engine.analyzer.mega_state.core         import MegaState, \
                                                            MegaState_DropOut
 from   quex.engine.analyzer.mega_state.template.candidate  import TargetFactory
 from   quex.engine.analyzer.transition_map          import TransitionMap        
-from   quex.engine.analyzer.state.entry_action      import SetTemplateStateKey
+from   quex.engine.analyzer.state.entry_action      import SetTemplateStateKey, \
+                                                           DoorID_Scheme
 import quex.engine.state_machine.index              as     index
 from   quex.engine.interval_handling                       import Interval
 
@@ -47,21 +48,15 @@ class TemplateState_Entry(MegaState_Entry):
         Template state the 'state_key' must be set, so that the template state
         can operate accordingly.
         """
+        ##print "#adb-1: action_db["
+        ##for action in TheEntry.action_db.itervalues():
+        ##    print "#door_id:", action.door_id
+        ##    print "#cmlist:", action.command_list
         for transition_id, action in TheEntry.action_db.iteritems():
             clone = action.clone()
-            if transition_id.state_index == transition_id.from_state_index: 
-                # Recursion of a state will be a recursion of the template state.
-                #   => The state_key does not have to be set (again) at entry.
-                #   => With the "door_tree_configure()" comes an elegant consequence:
-                # 
-                # ALL RECURSIVE TARGETS INSIDE THE TEMPLATE WILL ENTER THROUGH THE
-                # SAME DOOR, AS LONG AS THEY DO THE SAME THING. 
-                # 
-                # RECURSION WILL BE A SPECIAL CASE OF 'SAME DOOR' TARGET WHICH HAS 
-                # NOT TO BE DEALT WITH SEPARATELY.
-                pass
-            else:
-                # Not recursive => add control command 'SetTemplateStateKey'
+            assert clone.door_id is not None
+            if transition_id.state_index != transition_id.from_state_index: 
+                # Add 'SetTemplateStateKey'
                 #
                 # Determine 'state_key' (an integer value) for state that is
                 # entered.  Since TheState may already be a template state, use
@@ -76,8 +71,23 @@ class TemplateState_Entry(MegaState_Entry):
                 else:
                     # Create new 'SetTemplateStateKey' for current state
                     clone.command_list.misc.add(SetTemplateStateKey(state_key))
+            else:
+                # Recursion => No 'SetTemplateStateKey'
+                #
+                #   => The state_key does not have to be set (again) at entry.
+                #   => It makes sense to have a dedicated DoorID which is going
+                #      to be set by 'action_db.categorize()'
+                clone.door_id = None
 
-            self.action_db[transition_id] = clone
+            # -- The TransitionID contains the state index of the absorbed state.
+            # -- No state can be absorbed twice 
+            # => It is impossible that 'transition_id' appears as a key before
+            assert self.action_db.get(transition_id) == None
+            self.action_db.enter(transition_id, clone)
+
+        # Generate new DoorIDs for all TransitionID-s where '.door_id is None'.
+        # That is, for the recursive transitions, as shown in the loop.
+        self.action_db.categorize()
 
 class TemplateState(MegaState):
     """________________________________________________________________________
@@ -268,7 +278,7 @@ def combine_maps(StateA, StateB):
     mega_state_target_db = MegaState_Target.disconnect_object_db()
     # Number of different target schemes:
     scheme_n = 0
-    for x in (key for key in mega_state_target_db.iterkeys() if isinstance(key, tuple)):
+    for x in (key for key in mega_state_target_db.iterkeys() if isinstance(key, DoorID_Scheme)):
         scheme_n += 1
 
     return result, scheme_n

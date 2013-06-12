@@ -8,6 +8,59 @@ from   operator                 import attrgetter, itemgetter
 from   copy                     import deepcopy, copy
 from   itertools                import islice, izip
 
+class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
+    def __new__(self, StateIndex, DoorIndex):
+        assert isinstance(StateIndex, (int, long)) or StateIndex in E_StateIndices
+        # 'DoorIndex is None' --> right after the entry commands (targetted after reload).
+        assert isinstance(DoorIndex, (int, long))  or DoorIndex is None
+        return super(DoorID, self).__new__(self, StateIndex, DoorIndex)
+
+    def __repr__(self):
+        return "DoorID(s=%s, d=%s)" % (self.state_index, self.door_index)
+
+    # Force to generate new objects
+    def set_door_index(self, Value): assert False
+    def set(self, Other):            assert False
+
+class DoorID_Scheme(tuple):
+    """A TargetScheme maps from a index, i.e. a state_key to a particular
+       target (e.g. a DoorID). It is implemented as a tuple which can be 
+       identified by the class 'TargetScheme'.
+    """
+    def __new__(self, DoorID_List):
+        return tuple.__new__(self, DoorID_List)
+
+    @staticmethod
+    def concatinate(This, That):
+        door_id_list = list(This)
+        door_id_list.extend(list(That))
+        return DoorID_Scheme(door_id_list)
+
+class TransitionID(namedtuple("TransitionID_tuple", ("state_index", "from_state_index", "trigger_id"))):
+    """Objects of this type identify a transition. That is, they tell
+       from which state ('from_state_index') to which state ('state_index')
+       the transition happens. The particular transition may relate to the
+       triggering character set. This is reflected the 'trigger_id'. A
+       'trigger_id' of 'None' means that the transition id represents
+       all transitions from 'from_state_index' to 'state_index'.
+
+            state_index      --> target of the transition
+            from_state_index --> origin of the transition
+            trigger_id       --> identifies the triggering character set.
+
+    """
+    def __new__(self, StateIndex, FromStateIndex, TriggerId=E_TriggerIDs.NONE):
+        assert isinstance(StateIndex, (int, long))     or StateIndex     in E_StateIndices
+        assert isinstance(FromStateIndex, (int, long)) or FromStateIndex in E_StateIndices
+        assert isinstance(TriggerId, (int, long))      or TriggerId      in E_TriggerIDs
+        return super(TransitionID, self).__new__(self, StateIndex, FromStateIndex, TriggerId)
+
+    def __repr__(self):
+        if self.trigger_id == E_TriggerIDs.NONE:
+            return "TransitionID(to=%s, from=%s)" % (self.state_index, self.from_state_index)
+        else:
+            return "TransitionID(to=%s, from=%s, trid=%s)" % (self.state_index, self.from_state_index, self.trigger_id)
+
 class TransitionAction(object):
     """Object containing information about commands to be executed upon
        transition into a state.
@@ -24,7 +77,7 @@ class TransitionAction(object):
  
     def clone(self):
         result = TransitionAction(CommandListObjectF=False)
-        result.door_id      = self.door_id.clone()
+        result.door_id      = self.door_id  # DoorID-s are immutable
         result.command_list = self.command_list.clone()
         return result
 
@@ -37,59 +90,6 @@ class TransitionAction(object):
 
     def __repr__(self):
         return "(%s: [%s])" % (self.door_id, self.command_list)
-
-class TransitionID(object):
-    """An 'advanced' implementation of a 'transition_id' that includes
-       the state which is entered. Objects of this type can be used whenever
-       a 'transition_id' is required with which an command_list is associated.
-
-        state_index      --> target of the transition
-        from_state_index --> origin of the transition
-        trigger_id       --> if there are multiple transitions from 'from_state_index'
-                             to 'state_index' with DIFFERENT command lists, then 
-                             the transitions can be identified by a trigger-id.
-                             
-
-       Objects of this type are for example used in TemplateState objects.
-    """
-    __slots__ = ("state_index", "from_state_index", "trigger_id")
-    def __init__(self, StateIndex, FromStateIndex, TriggerId=E_TriggerIDs.NONE):
-        assert isinstance(StateIndex, (int, long))     or StateIndex     in E_StateIndices
-        assert isinstance(FromStateIndex, (int, long)) or FromStateIndex in E_StateIndices
-        assert isinstance(TriggerId, (int, long))      or TriggerId      in E_TriggerIDs
-        self.state_index      = StateIndex
-        self.from_state_index = FromStateIndex
-        self.trigger_id       = TriggerId
-
-    def precedes(self, Other):
-        """This function helps sorting transition ids. It is not considered
-           critical in the sense that it changes WHAT is going on. So, 
-           the assumption that 'self' precedes 'Other' if both are equal
-           does not do any harm. It safes some time, though at the place
-           where this function is used (see  get_best_common_command_list()).
-        """
-        if   self.from_state_index < Other.from_state_index: return True
-        elif self.from_state_index > Other.from_state_index: return False
-        elif self.state_index < Other.state_index:           return True
-        elif self.state_index > Other.state_index:           return False
-        elif self.trigger_id < Other.trigger_id:                     return True
-        elif self.trigger_id > Other.trigger_id:                     return False
-        else:                                                return True 
-
-    def __hash__(self):
-        if isinstance(self.from_state_index, (int, long)): xor_sum = self.from_state_index + 1
-        else:                                              xor_sum = 0
-        if isinstance(self.state_index, (int, long)):      xor_sum ^= self.state_index + 1
-        if isinstance(self.trigger_id, (int, long)):       xor_sum ^= self.trigger_id + 1
-        return xor_sum
-
-    def __eq__(self, Other):
-        if not isinstance(Other, TransitionID): return False
-        return     self.from_state_index == Other.from_state_index \
-               and self.state_index      == Other.state_index \
-               and self.trigger_id           == Other.trigger_id
-    def __repr__(self):
-        return "TransitionID(to=%s, from=%s)" % (self.state_index, self.from_state_index)
 
 class Command(object):
     def __init__(self, Cost=None, ParamaterList=None, Hash=None):
@@ -199,6 +199,12 @@ class CommandList:
 
         return
 
+    def has_SetMegaStateKey(self):
+        for element in self.misc:
+            if isinstance(element, SetMegaStateKey): 
+                return True
+        return False
+
     def __iter__(self):
         """Allow iteration over comand list."""
         if self.accepter is not None: 
@@ -240,6 +246,9 @@ class CommandList:
         # Rely on '__eq__' of Accepter
         if not (self.accepter == Other.accepter): return False
         return self.misc == Other.misc
+
+    def __ne__(self, Other):
+        return not (self.__eq__(Other))
 
     def __repr__(self):
         txt = ""
@@ -437,7 +446,10 @@ class MegaState_Command(Command):
     """
     pass
 
-class SetTemplateStateKey(MegaState_Command):
+class SetMegaStateKey(MegaState_Command):
+    pass
+
+class SetTemplateStateKey(SetMegaStateKey):
     def __init__(self, StateKey):
         Command.__init__(self, 1, [StateKey])
     @property
@@ -448,7 +460,7 @@ class SetTemplateStateKey(MegaState_Command):
     def __repr__(self):       
         return "    state_key = %s;\n" % self.value
 
-class SetPathIterator(MegaState_Command):
+class SetPathIterator(SetMegaStateKey):
     def __init__(self, Offset, PathWalkerID=-1, PathID=-1):
         Command.__init__(self, 1, [Offset, PathWalkerID, PathID])
 
@@ -467,41 +479,4 @@ class SetPathIterator(MegaState_Command):
 
     def __repr__(self):       
         return "    (pw=%s,pid=%s,off=%s)\n" % (self.path_walker_id, self.path_id, self.offset)
-
-class DoorID(object):
-    __slots__ = ("__state_index", "__door_index")
-    def __init__(self, StateIndex, DoorIndex):
-        assert isinstance(StateIndex, (int, long)) or StateIndex in E_StateIndices
-        # 'DoorIndex is None' --> right after the entry commands (targetted after reload).
-        assert isinstance(DoorIndex, (int, long))  or DoorIndex is None
-        self.__state_index = StateIndex
-        self.__door_index  = DoorIndex
-    @property
-    def state_index(self): return self.__state_index
-    @property
-    def door_index(self): return self.__door_index
-    def set_door_index(self, Value): self.__door_index = Value
-
-    def set(self, Other):
-        self.__state_index = Other.__state_index
-        self.__door_index  = Other.__door_index
-
-    def clone(self):
-        return DoorID(self.__state_index, self.__door_index)
-    def __hash__(self):
-        if isinstance(self.__state_index, (int, long)): xor_sum = self.__state_index + 1
-        else:                                           xor_sum = 0
-        xor_sum ^= self.__door_index 
-        return xor_sum
-    def __eq__(self, Other):
-        if not isinstance(Other, DoorID): return False
-        return     self.__state_index == Other.__state_index \
-               and self.__door_index  == Other.__door_index
-    def __cmp__(self, Other):
-        if not isinstance(Other, DoorID): return -1
-        result = cmp(self.__state_index, Other.__state_index)
-        if result != 0: return result
-        return cmp(self.__door_index, Other.__door_index)
-    def __repr__(self):
-        return "DoorID(s=%s, d=%s)" % (self.__state_index, self.__door_index)
 

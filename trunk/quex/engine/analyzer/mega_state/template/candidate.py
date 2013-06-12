@@ -1,6 +1,7 @@
 # vim:set encoding=utf8:
 # (C) 2010-2012 Frank-Rene Schäfer
 from   quex.engine.analyzer.mega_state.core import MegaState_Target
+from   quex.engine.analyzer.state.entry_action  import DoorID_Scheme
 from   quex.engine.analyzer.state.drop_out  import DropOut, \
                                                    DropOutIndifferent, \
                                                    DropOutBackwardInputPositionDetection
@@ -275,7 +276,7 @@ class TargetFactory:
         else:
             TB_scheme = TB.scheme
 
-        return MegaState_Target.create(TA_scheme + TB_scheme)
+        return MegaState_Target.create(DoorID_Scheme.concatinate(TA_scheme,TB_scheme))
 
     @staticmethod
     def update_scheme_set(TA, TB, scheme_set):
