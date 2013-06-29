@@ -105,8 +105,8 @@ class MegaState_Entry(Entry):
 
     ___________________________________________________________________________
     """
-    def __init__(self, MegaStateIndex):
-        Entry.__init__(self, MegaStateIndex, FromStateIndexList=[])
+    def __init__(self):
+        Entry.__init__(self, FromStateIndexList=[])
 
         # Some transitions may not require a 'SetStateKey' command, such 
         # as the recursive transition in TemplateState-s or the 'on-path-
