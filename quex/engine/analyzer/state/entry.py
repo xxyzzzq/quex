@@ -6,7 +6,7 @@ from   quex.blackboard import E_PreContextIDs,  \
 from   operator        import attrgetter
 
 class EntryActionDB:
-    def __init__(self, StateIndex, FromStateIndexList):
+    def __init__(self):
         """Assume that 'Iterable' provides all TransitionID-s which may ever
            appear in the action_db. If this is not the case, then a self[tid]
            may fail somewhere down the lines.
@@ -21,10 +21,6 @@ class EntryActionDB:
            The major role plays function '.categorize()'. It makes sure that
            every TransitionAction has a DoorID assigned to it.
         """
-        iterable = (                                                         \
-              (TransitionID(StateIndex, i), TransitionAction()) \
-              for i in FromStateIndexList                                    \
-        )
         self.__db                          = dict() # iterable)
         self.__largest_used_door_sub_index = 0  # '0' is used for 'Door 0', i.e. reload entry
 
@@ -305,11 +301,11 @@ class Entry(object):
 
     __slots__ = ("__action_db")
 
-    def __init__(self, StateIndex, FromStateIndexList):
+    def __init__(self, FromStateIndexList):
         # map:  (from_state_index) --> list of actions to be taken if state is entered 
         #                              'from_state_index' for a given pre-context.
         # if len(FromStateIndexList) == 0: FromStateIndexList = [ E_StateIndices.NONE ]
-        self.__action_db   = EntryActionDB(StateIndex, FromStateIndexList)
+        self.__action_db = EntryActionDB()
 
     @property
     def action_db(self):

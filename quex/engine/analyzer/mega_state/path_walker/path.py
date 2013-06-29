@@ -34,7 +34,7 @@ class PathWalkerState_Entry(MegaState_Entry):
     ___________________________________________________________________________
     """
     def __init__(self, MegaStateIndex, TheEntry):
-        MegaState_Entry.__init__(self, MegaStateIndex)
+        MegaState_Entry.__init__(self)
 
         self.action_db_update(TheEntry, 0, E_StateIndices.NONE)
 

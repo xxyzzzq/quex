@@ -52,7 +52,7 @@ class Class_FORWARD(Base):
         return "FORWARD"
 
     def create_Entry(self, SM_State, StateIndex, FromStateIndexList):
-        result = Entry(StateIndex, FromStateIndexList)
+        result = Entry(FromStateIndexList)
         Base.prepare_Entry(result, StateIndex, FromStateIndexList)
         return result
 
@@ -71,7 +71,7 @@ class Class_CHARACTER_COUNTER(Class_FORWARD):
         return False
 
     def create_Entry(self, SM_State, StateIndex, FromStateIndexList):
-        result = Entry(StateIndex, FromStateIndexList)
+        result = Entry(FromStateIndexList)
         Base.prepare_Entry(result, StateIndex, FromStateIndexList)
         return result
 
@@ -89,7 +89,7 @@ class Class_BACKWARD_PRE_CONTEXT(Base):
         return E_InputActions.DECREMENT_THEN_DEREF
 
     def create_Entry(self, SM_State, StateIndex, FromStateIndexList):
-        result = Entry(StateIndex, FromStateIndexList)
+        result = Entry(FromStateIndexList)
         Base.prepare_Entry(result, StateIndex, FromStateIndexList)
         pre_context_ok_command_list = [ 
             PreConditionOK(origin.pattern_id()) for origin in SM_State.origins() \
@@ -120,7 +120,7 @@ class Class_BACKWARD_INPUT_POSITION(Base):
         return E_InputActions.DECREMENT_THEN_DEREF
 
     def create_Entry(self, SM_State, StateIndex, FromStateIndexList):
-        result = Entry(StateIndex, FromStateIndexList)
+        result = Entry(FromStateIndexList)
         Base.prepare_Entry(result, StateIndex, FromStateIndexList)
         return result
 
