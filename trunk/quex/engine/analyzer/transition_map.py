@@ -38,9 +38,9 @@ class TransitionMap(list):
         return result
 
     @classmethod
-    def from_iterable(cls, Iterable, TargetFactory=deepcopy):
+    def from_iterable(cls, Iterable, TheTargetFactory=deepcopy):
         result = cls()
-        result.extend((interval.clone(), TargetFactory(target)) 
+        result.extend((interval.clone(), TheTargetFactory(target)) 
                       for interval, target in Iterable)
         return result
 
@@ -131,29 +131,6 @@ class TransitionMap(list):
             if new_target is None: continue
             self[i] = (interval, new_target)
 
-    def replace_DoorIDs_in_MegaStateTargets(self, MapOldDoorIdToNewDoorId):
-        def relate(Target, MapOldDoorIdToNewDoorId):
-            """RETURN: None      --> entry in transition map is left as is.
-                       NewTarget --> new entry in transition is to be made.
-            """
-            if Target == E_StateIndices.DROP_OUT:
-                return None # Nothing to be done
-
-            elif isinstance(Target, MegaState_Target):
-                Target.replace_door_ids(MapOldDoorIdToNewDoorId) 
-                # All required changes on target have been accomplished, no new
-                # entry in transition map is required.
-                return None  
-
-            else:
-                assert False
-
-        for i, info in enumerate(self):
-            interval, target = info
-            new_target = relate(target, MapOldDoorIdToNewDoorId)
-            if new_target is None: continue
-            self[i] = (interval, new_target)
-
     def contains_DoorIDs(self, DoorIdSet):
         print "#dids:", DoorIdSet
         for i, info in self:
@@ -168,6 +145,39 @@ class TransitionMap(list):
             if   x[0] != y[0]: return False  # Interval
             elif x[1] != y[1]: return False  # Target
         return True
+
+    def match_with_wildcard(self, Other, ExceptionCharacter=None, ExceptionTarget=None):
+        """Determines whether the transition map matches Other. If 'self' 
+        contains a transition to 'E_StateIndices.NONE', then a wild card
+        may be applied. A transition of Other to 'ExceptionTarget' on 
+        'ExceptionCharacter' is ignored as being different.
+
+        RETURNS: 
+         
+        int > 0, the character that the wild card shall take so that the
+                 path's transition map matches the TransitionMap.
+
+        - 1,     if path's transition map and TransitionMap match anyway 
+                 and no wild card plug is necessary.
+
+        None,    if there is no way that the path's transition map and the
+                 TransitionMap could match.
+        """
+        wildcard_target = -1
+        for begin, end, a_target, b_target in TransitionMap.izip(self, Other):
+            if a_target == b_target: continue    # There is no problem at all
+
+            # A mismatching target has been detected. If the size of the interval
+            # is greater than '1', then a single character wildcard is of no help.
+            if end - begin != 1 or wildcard_target != -1:
+                return None
+
+            if   b_target == ExceptionTarget and begin == ExceptionCharacter: continue
+            elif a_target == E_StateIndices.VOID: wildcard_target = b_target; continue
+            else:                                                             return None
+
+        # Here: The transition maps match, but possibly require the use of a wildcard.
+        return wildcard_target
 
     def get_target(self, Character):
         i = self._bisect(Character)

@@ -95,7 +95,7 @@ class TransitionCodeFactory:
             return TransitionCode(LanguageDB.GOTO_BY_DOOR_ID(Target))
 
         else:
-            assert False
+            assert False, "Target = '%s'" % Target
 
 class MegaStateTransitionCodeFactory:
     @classmethod
@@ -126,6 +126,7 @@ class MegaStateTransitionCodeFactory:
             return TransitionCode(LanguageDB.GOTO_BY_DOOR_ID(Target.door_id))
 
         elif Target.scheme is not None:
+            assert Target.scheme_id is not None
             variable_name = require_scheme_variable(Target.scheme_id, Target.scheme, cls.state, cls.state_db)
             return TransitionCode(LanguageDB.GOTO_BY_VARIABLE("%s[%s]" % (variable_name, cls.state_key_str)))
 

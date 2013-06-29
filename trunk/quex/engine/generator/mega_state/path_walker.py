@@ -117,7 +117,7 @@ def framework(txt, PWState, TheAnalyzer):
         #
         # -- "goto CommonPathWalkerDoor"
         uniform_entry_door_id = PWState.entry.action_db.get_door_id(PWState.index, PWState.index)
-        goto_next_door    = "            %s\n"  % LanguageDB.GOTO_BY_DOOR_ID(uniform_entry_door_id)
+        goto_next_door        = "            %s\n"  % LanguageDB.GOTO_BY_DOOR_ID(uniform_entry_door_id)
 
         # -- "goto TerminalDoor"
         uniform_terminal_entry_door_id = PWState.get_uniform_terminal_entry_door_id(TheAnalyzer.state_db)
@@ -136,7 +136,7 @@ def framework(txt, PWState, TheAnalyzer):
             #      ...
             tmp = ""
             for path_id, sequence in enumerate(PWState.path_list):
-                terminal_door_id = PathWalkerState.get_terminal_door_id(sequence, TheAnalyzer.state_db)
+                terminal_door_id = sequence[-1].door_id # Terminal DoorId
                 tmp +=  "            %s"       % LanguageDB.IF("path_iterator", "==", "path_walker_%i_path_%i + %s" %  \
                                                                (PWState.index, path_id, len(sequence)-1),              \
                                                                FirstF=(path_id == 0))                                  \
@@ -197,11 +197,11 @@ def require_data(PWState, TheAnalyzer):
             #       used is reload during the FIRST state. The reload adapts the positions
             #       and acceptances are not changed. So, we can use the common entry
             #       to the first state as a reference here.
-            prev_state_index = path[0].state_index
             result.append("        ")
-            for state_index in (x.state_index for x in path[1:]):
-                result.append("QUEX_LABEL(%i), " % LanguageDB.ADDRESS(state_index, prev_state_index))
-                prev_state_index = state_index
+            result.extend(
+                "QUEX_LABEL(%i), " % LanguageDB.ADDRESS_BY_DOOR_ID(x.target_door_id)
+                for x in path[:-1]
+            )
             result.append("/* Zero of Elegance */0x0,")
             result.append("\n")
 
@@ -243,10 +243,10 @@ def require_data(PWState, TheAnalyzer):
     
     # (*) The State Information for each path step
     if PWState.uniform_entry_door_id_along_all_paths is None:
-        element_n, state_sequence_str = __door_adr_sequences()
+        element_n, door_adr_sequence_str = __door_adr_sequences()
         variable_db.require_array("path_walker_%i_state_base", 
                                   ElementN = element_n,
-                                  Initial  = state_sequence_str,
+                                  Initial  = door_adr_sequence_str,
                                   Index    = PWState.index)
         # The path_iterator is incremented before the 'goto', thus
         # 'path_iterator - (path_base + 1)' gives actually the correct offset.

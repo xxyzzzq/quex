@@ -5,7 +5,7 @@ REM Pass up to 30 arguments to quex. Since the very sophisticated .bat files of
 REM Microsoft (TM) do no support more than ten direct accesses to command line arguments,
 REM it is necessary to shift. See below.
 REM
-REM (C) 2008, 2009 Frank-Rene Schaefer
+REM (C) 2008, 2013 Frank-Rene Schaefer
 REM
 REM     Contributions:
 REM

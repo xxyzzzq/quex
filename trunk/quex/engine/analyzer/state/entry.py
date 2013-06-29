@@ -25,8 +25,7 @@ class EntryActionDB:
               (TransitionID(StateIndex, i), TransitionAction()) \
               for i in FromStateIndexList                                    \
         )
-        self.__db = dict(iterable)
-        self.__state_index                 = StateIndex
+        self.__db                          = dict() # iterable)
         self.__largest_used_door_sub_index = 0  # '0' is used for 'Door 0', i.e. reload entry
 
     def get(self, TheTransitionID):
@@ -35,25 +34,54 @@ class EntryActionDB:
     def get_action(self, StateIndex, FromStateIndex, TriggerId=E_TriggerIDs.NONE):
         return self.__db.get(TransitionID(StateIndex, FromStateIndex, TriggerId))
 
+    def get_command_list_by_door_id(self, DoorId):
+        for action in self.__db.itervalues():
+            if action.door_id == DoorId:
+                return action.command_list
+        return None
+
     def get_door_id(self, StateIndex, FromStateIndex, TriggerId=E_TriggerIDs.NONE):
         """RETURN: DoorID of the door which implements the transition 
                           (FromStateIndex, StateIndex).
                    None,  if the transition is not implemented in this
                           state.
         """
-        action = self.__db.get(TransitionID(self.__state_index, FromStateIndex, E_TriggerIDs.NONE))
+        action = self.__db.get(TransitionID(StateIndex, FromStateIndex, E_TriggerIDs.NONE))
         if action is None: return None
         return action.door_id
+
+    def get_transition_id_list(self, DoorId):
+        return [ 
+           transition_id for transition_id, action in self.__db.iteritems()
+                         if action.door_id == DoorId 
+        ]
+
+    def get_door_id_by_command_list(self, TheCommandList):
+        """Finds the DoorID of the door that implements TheCommandList.
+           RETURNS: None if no such door exists that implements TheCommandList.
+        """
+        for action in self.__db.itervalues():
+            if action.command_list == TheCommandList:
+                return action.door_id
+        return None
+
+    def absorb(self, Other):
+        self.__db.update(Other.__db)
+        if self.__largest_used_door_sub_index < Other.__largest_used_door_sub_index:
+            self.__largest_used_door_sub_index = Other.__largest_used_door_sub_index
 
     def enter(self, TheTransitionID, TheAction):
         assert isinstance(TheTransitionID, TransitionID)
         assert isinstance(TheAction, TransitionAction)
         self.__db[TheTransitionID] = TheAction
 
+    def enter_iterable(self, Iterable):
+        self.__db.update(Iterable)
+
     def size(self):
         return len(self.__db)
 
-    def add_Accepter(self, PreContextID, PatternID):
+    def add_Accepter_on_all(self, PreContextID, PatternID):
         """Add an acceptance at the top of each accepter at every door. If there
            is no accepter in a door it is created.
         """
@@ -65,31 +93,18 @@ class EntryActionDB:
             # NOT: transition_action.command_list.accepter.clean_up()
             #      The list might be deliberately ordered differently
 
-    def add_specific_Accepter(self, FromStateIndex, PathTraceList):
-        """At entry via 'FromStateIndex' implement an acceptance pattern that 
-           is determined via 'PathTraceList'. This function is called upon the
-           detection of a state that restores acceptance. The previous state 
-           must be of uniform acceptance (does not restore). At the entry of 
-           this function we implement the acceptance pattern of the previous
-           state.
-        """
-        # Construct the Accepter from PathTraceList
-        accepter = entry_action.Accepter(PathTraceList)
-
-        self.__db[TransitionID(self.__state_index, FromStateIndex, E_TriggerIDs.NONE)].command_list.accepter = accepter
-
     def has_Accepter(self):
         for action in self.__db.itervalues():
             for cmd in action.command_list:
                 if isinstance(cmd, entry_action.Accepter): return True
         return False
 
-    def add_StoreInputPosition(self, FromStateIndex, PreContextID, PositionRegister, Offset):
+    def add_StoreInputPosition(self, StateIndex, FromStateIndex, PreContextID, PositionRegister, Offset):
         """Add 'store input position' to specific door. See 'entry_action.StoreInputPosition'
            comment for the reason why we do not store pre-context-id.
         """
         entry = entry_action.StoreInputPosition(PreContextID, PositionRegister, Offset)
-        self.__db[TransitionID(self.__state_index, FromStateIndex, E_TriggerIDs.NONE)].command_list.misc.add(entry)
+        self.__db[TransitionID(StateIndex, FromStateIndex, E_TriggerIDs.NONE)].command_list.misc.add(entry)
 
     def delete(self, StateIndex, FromStateIndex, TriggerId=E_TriggerIDs.NONE):
         del self.__db[TransitionID(StateIndex, FromStateIndex, E_TriggerIDs.NONE)]
@@ -159,37 +174,43 @@ class EntryActionDB:
 
         RETURNS: List of newly assigned pairs of (TransitionID, DoorID)s.
         """
-        command_list_db = {}  # Helps to detect actions with same command list
+        todo = [
+            (transition_id, action) for transition_id, action in self.__db.iteritems()
+                                    if action.door_id is None
+        ]
+
         if ReportF:
-            assigned_db = []  # Tracks re-assignment of door-ids
+            assigned_db = {}  # Tracks re-assignment of door-ids
+
+        if len(todo) == 0:
+            if ReportF: return assigned_db
+            else:       return
+
+        command_list_db = dict(
+            (action.command_list, action.door_id) for action in self.__db.itervalues()
+                                                  if action.door_id is not None
+        )
+
+        def get_door_id(CL):
+            # If there was an action with the same command list, then assign
+            # the same door id. Leave the action intact! May be, it is modified
+            # later and will differ from the currently same action.
+            new_door_id = command_list_db.get(CL)
+
+            if new_door_id is not None: 
+                return new_door_id
+
+            self.__largest_used_door_sub_index += 1
+            return DoorID(StateIndex, self.__largest_used_door_sub_index)
 
         def sort_key(X):
             return (X[0].state_index, X[0].from_state_index)
 
-        todo = ((transition_id, action) for transition_id, action in self.__db.iteritems()
-                                        if action.door_id is None)
-
-        command_list_db = dict(
-             (action.command_list, action.door_id) for action in self.__db.itervalues()
-                                                   if action.door_id is not None
-        )
-
-        i = self.__largest_used_door_sub_index
         for transition_id, action in sorted(todo, key=sort_key): # NOT: 'iteritems()'
-            # If there was an action with the same command list, then assign
-            # the same door id. Leave the action intact! May be, it is modified
-            # later and will differ from the currently same action.
-            new_door_id = command_list_db.get(action.command_list)
-            if new_door_id is None:
-                i += 1
-                new_door_id = DoorID(StateIndex, i)
-                command_list_db[action.command_list] = new_door_id
-                if ReportF:
-                    assigned_db.append((transition_id, new_door_id))
+            action.door_id                       = get_door_id(action.command_list)
+            command_list_db[action.command_list] = action.door_id
 
-            action.door_id = new_door_id
-
-        self.__largest_used_door_sub_index = i  # '0' is used for 'Door 0', i.e. reload entry
+            if not ReportF: continue
 
         assert self.check_consistency()
 
@@ -205,24 +226,6 @@ class EntryActionDB:
             if action.door_id == DoorId:
                 return True
         return False
-
-    def get_transition_id_list(self, DoorId):
-        return [ 
-           transition_id for transition_id, action in self.__db.iteritems()
-                         if action.door_id == DoorId 
-        ]
-
-    def get_door_id_by_command_list(self, TheCommandList):
-        """Finds the DoorID of the door that implements TheCommandList.
-           RETURNS: None if no such door exists that implements TheCommandList.
-        """
-        if TheCommandList.is_empty():
-            return DoorID(self.__state_index, 0) # 'Door 0' is sure to not do anything!
-
-        for action in self.__db.itervalues():
-            if action.command_list == TheCommandList:
-                return action.door_id
-        return None
 
     def has_commands_other_than_MegaState_Command(self):
         for action in self.__db.itervalues():
@@ -247,7 +250,6 @@ class EntryActionDB:
                 print "# '%s' vs. '%s'" % (action.command_list, cmp_command_list)
                 return False
         return True
-
 
 class Entry(object):
     """________________________________________________________________________
@@ -301,28 +303,17 @@ class Entry(object):
               '---------------------------------------------------'
     """
 
-    __slots__ = ("__state_index", "__action_db")
+    __slots__ = ("__action_db")
 
     def __init__(self, StateIndex, FromStateIndexList):
         # map:  (from_state_index) --> list of actions to be taken if state is entered 
         #                              'from_state_index' for a given pre-context.
         # if len(FromStateIndexList) == 0: FromStateIndexList = [ E_StateIndices.NONE ]
-        self.__state_index = StateIndex
         self.__action_db   = EntryActionDB(StateIndex, FromStateIndexList)
-
-    @property
-    def state_index(self): 
-        return self.__state_index
 
     @property
     def action_db(self):
         return self.__action_db
-
-    @property
-    def door_tree_root(self): 
-        """The door_tree_root is determined by 'build_door_tree()'"""
-        assert self.__door_tree_root is not None
-        return self.__door_tree_root
 
     def __hash__(self):
         xor_sum = 0
@@ -331,10 +322,6 @@ class Entry(object):
         return xor_sum
 
     def __eq__(self, Other):
-        assert self.__door_tree_root is not None
-        return self.__door_tree_root.is_equivalent(Other.__door_tree_root)
-
-    def is_uniform(self, Other):
         assert self.__door_tree_root is not None
         return self.__door_tree_root.is_equivalent(Other.__door_tree_root)
 

@@ -5,6 +5,7 @@ from   quex.engine.analyzer.mega_state.core         import MegaState, \
 from   quex.engine.analyzer.mega_state.template.candidate  import TargetFactory
 from   quex.engine.analyzer.transition_map          import TransitionMap        
 from   quex.engine.analyzer.state.entry_action      import SetTemplateStateKey, \
+                                                           DoorID, \
                                                            DoorID_Scheme
 import quex.engine.state_machine.index              as     index
 from   quex.engine.interval_handling                       import Interval
@@ -34,9 +35,11 @@ class TemplateState_Entry(MegaState_Entry):
         MegaState_Entry.__init__(self, RelatedMegaStateIndex)
 
         for entry in EntryList:
-            self.action_db_update(entry, StateIndexToStateKeyDB)
+            self.action_db_update(RelatedMegaStateIndex, entry.action_db, StateIndexToStateKeyDB)
 
-    def action_db_update(self, TheEntry, StateIndexToStateKeyDB):
+        self.reassigned_transition_db_construct(RelatedMegaStateIndex)
+
+    def action_db_update(self, StateIndex, ActionDb, StateIndexToStateKeyDB):
         """Include 'TheState.entry.action_db' into this state. That means,
         that any mapping:
            
@@ -47,12 +50,16 @@ class TemplateState_Entry(MegaState_Entry):
         which is currently represented. At each (external) entry into the
         Template state the 'state_key' must be set, so that the template state
         can operate accordingly.
+
+        RETURNS: List of pairs (TransitionID, DoorID) for newly assigned 
+                 DoorIDs to old transitions. This should only be recursive
+                 transitions.
         """
         ##print "#adb-1: action_db["
         ##for action in TheEntry.action_db.itervalues():
         ##    print "#door_id:", action.door_id
         ##    print "#cmlist:", action.command_list
-        for transition_id, action in TheEntry.action_db.iteritems():
+        for transition_id, action in ActionDb.iteritems():
             clone = action.clone()
             assert clone.door_id is not None
             if transition_id.state_index != transition_id.from_state_index: 
@@ -77,6 +84,7 @@ class TemplateState_Entry(MegaState_Entry):
                 #   => The state_key does not have to be set (again) at entry.
                 #   => It makes sense to have a dedicated DoorID which is going
                 #      to be set by 'action_db.categorize()'
+                self.noned_list.append((StateIndex, transition_id, clone.door_id))
                 clone.door_id = None
 
             # -- The TransitionID contains the state index of the absorbed state.
@@ -85,9 +93,7 @@ class TemplateState_Entry(MegaState_Entry):
             assert self.action_db.get(transition_id) == None
             self.action_db.enter(transition_id, clone)
 
-        # Generate new DoorIDs for all TransitionID-s where '.door_id is None'.
-        # That is, for the recursive transitions, as shown in the loop.
-        self.action_db.categorize()
+        return
 
 class TemplateState(MegaState):
     """________________________________________________________________________
@@ -115,7 +121,7 @@ class TemplateState(MegaState):
         MegaState.__init__(self, entry, drop_out, my_index)
 
         self.__transition_map, \
-        self.__target_scheme_n = combine_maps(self.__state_a, self.__state_b)
+        self.__target_scheme_n = combine_maps(self.__state_a, self.__state_b, entry.reassigned_transition_db)
 
         # Compatible with AnalyzerState
         # (A template state can never mimik an init state)
@@ -146,7 +152,7 @@ class TemplateState(MegaState):
     def implemented_state_index_list(self):    
         return self.__state_index_sequence
 
-def combine_maps(StateA, StateB):
+def combine_maps(StateA, StateB, ReassignedTransitionDB):
     """RETURNS:
 
           -- Transition map = combined transition map of StateA and StateB.
@@ -263,16 +269,44 @@ def combine_maps(StateA, StateB):
           entry in a scheme is to represent the transitions of state '57'. Then,
           it is clear that the door relating to transition '57->32' must be targetted.
     """
+    if ReassignedTransitionDB is None:
+        reassignment_db_a = None
+        reassignment_db_b = None
+    else:
+        reassignment_db_a = ReassignedTransitionDB.get(StateA.index)
+        reassignment_db_b = ReassignedTransitionDB.get(StateB.index)
+
+    def real_target(ReassignmentDB, Target):
+        if ReassignmentDB is None: return Target
+        if   isinstance(Target, DoorID):           
+            replacement = ReassignmentDB.get(Target)
+            if replacement is None: return Target
+            else:                   return MegaState_Target.create(replacement)
+
+        elif isinstance(Target, MegaState_Target): 
+            replacement = Target.replace_self(ReassignmentDB)
+            if replacement is None: return Target
+            else:                   return replacement
+
+        else:                                      
+            assert False
+
+    def target(a_target, b_target):
+        a_target = real_target(reassignment_db_a, a_target)
+        b_target = real_target(reassignment_db_b, b_target)
+        return factory.get(a_target, b_target)
+
     StateA.transition_map.assert_adjacency(TotalRangeF=True)
     StateB.transition_map.assert_adjacency(TotalRangeF=True)
 
     MegaState_Target.init() # Initialize the tracking of generated MegaState_Target-s
     factory = TargetFactory(StateA, StateB)
-    result  = TransitionMap()
-    for begin, end, a_target, b_target in TransitionMap.izip(StateA.transition_map, 
-                                                             StateB.transition_map):
-        target = factory.get(a_target, b_target)
-        result.append((Interval(begin, end), target))
+
+    result = TransitionMap.from_iterable(
+        ((Interval(begin, end), target(a_target, b_target)))
+        for begin, end, a_target, b_target in TransitionMap.izip(StateA.transition_map, 
+                                                                 StateB.transition_map)
+    )
 
     # Return the database of generated MegaState_Target objects
     mega_state_target_db = MegaState_Target.disconnect_object_db()

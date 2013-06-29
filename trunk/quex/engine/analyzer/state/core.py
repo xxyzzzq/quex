@@ -1,5 +1,6 @@
 from   quex.engine.state_machine.core      import State
-from quex.engine.analyzer.transition_map import TransitionMap
+from   quex.engine.analyzer.transition_map import TransitionMap
+from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction
 from   quex.blackboard  import E_StateIndices, \
                                E_InputActions
 

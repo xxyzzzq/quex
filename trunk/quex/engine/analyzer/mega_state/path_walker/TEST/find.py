@@ -58,7 +58,7 @@ def test(Skeleton, *StringPaths):
     print
     analyzer = Analyzer(sm, engine.FORWARD)
     for state in analyzer.state_db.itervalues():
-        state.entry.action_db.categorize()
+        state.entry.action_db.categorize(state.index)
     result = paths.collect(analyzer, 
                            CompressionType=E_Compression.PATH, 
                            AvailableStateIndexList=analyzer.state_db.keys())

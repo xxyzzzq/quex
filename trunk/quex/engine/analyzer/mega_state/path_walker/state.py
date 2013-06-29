@@ -1,4 +1,4 @@
-# (C) 2010-2012 Frank-Rene Schaefer
+# (C) 2010-2013 Frank-Rene Schaefer
 from   quex.engine.analyzer.transition_map      import TransitionMap   
 from   quex.engine.analyzer.state.entry_action  import SetPathIterator, DoorID
 from   quex.engine.analyzer.mega_state.core     import MegaState, MegaState_Target
@@ -13,14 +13,16 @@ class PathWalkerState(MegaState):
     """
     def __init__(self, FirstPath, TheAnalyzer, CompressionType):
 
-        self.__path_list = [ FirstPath.sequence() ]
-
         entry    = PathWalkerState.adapt_path_walker_id_and_path_id(FirstPath.index, 
-                                                                    FirstPath.entry, 
-                                                                    PathID=0)
+                   FirstPath.entry, 
+                   PathID=0)
+
         drop_out = FirstPath.drop_out   # map: drop_out --> state_index_list
 
         MegaState.__init__(self, entry, drop_out, FirstPath.index)
+
+        adapted_path = self.adapt_door_ids_along_path(FirstPath)
+        self.__path_list = [ adapted_path ]
 
         # original_transition_map: interval --> DoorID
         #
@@ -34,9 +36,27 @@ class PathWalkerState(MegaState):
                                             MegaState_Target.create)
 
         self.__uniformity_required_f                 = (CompressionType == E_Compression.PATH_UNIFORM)
-        self.__uniform_entry_command_list_along_path = FirstPath.get_uniform_entry_command_list_along_path()
+        self.__uniform_entry_command_list_along_path = FirstPath.uniform_entry_command_list_along_path()
 
         self.__state_index_sequence    = None # Computed on demand
+
+    def adapt_door_ids_along_path(self, ThePath):
+        """Inside the PathWalker, DoorID-s have been adapted. DoorIDs of
+        doors which lie on the path do not need SetStateKey commands and
+        are therefore kept seperate from the rest.
+        """
+        entry  = ThePath.entry
+        result = ThePath.sequence()
+
+        entry.reassigned_transition_db_construct(self.index)
+        # The last '.target_door_id' is not part of the path.
+        # It has not to be transformed. Outside DoorID-s remain the same.
+        for x in result[:-1]:
+            new_door_id = entry.reassigned_transition_db.get_replacement(x.state_index, x.target_door_id)
+            assert new_door_id is not None
+            x.target_door_id = new_door_id
+
+        return result
 
     @property
     def transition_map(self):
@@ -64,7 +84,7 @@ class PathWalkerState(MegaState):
         uniform_entry_f = False
         if self.__uniform_entry_command_list_along_path is not None:
             # other_ueclap := other's .__uniform_entry_command_list_along_path
-            other_ueclap = Path.get_uniform_entry_command_list_along_path()
+            other_ueclap = Path.uniform_entry_command_list_along_path()
             if     other_ueclap is not None \
                and other_ueclap.is_equivalent(self.__uniform_entry_command_list_along_path):
                     uniform_entry_f = True
@@ -90,14 +110,15 @@ class PathWalkerState(MegaState):
         #      (This means: new last index = current size of the list.)
         path_id = len(self.__path_list) 
 
-        # (2a) Absorb the state sequence of the path
-        #      (verify/falsify the uniform terminal entry)
-        self.__path_list.append(Path.sequence())
-
-        # (2b) Absorb Entry Information
+        # (2a) Absorb Entry Information
         #      Absorb entry's action_db (maps: 'transition_id --> command_list')
         adapted_entry = PathWalkerState.adapt_path_walker_id_and_path_id(self.index, Path.entry, PathID=path_id)
-        self.entry.action_db.update(adapted_entry.action_db)
+        self.entry.action_db.absorb(adapted_entry.action_db)
+
+        # (2b) Absorb the state sequence of the path
+        #      (verify/falsify the uniform terminal entry)
+        adapted_path = self.adapt_door_ids_along_path(Path)
+        self.__path_list.append(adapted_path)
 
         # (2c) Absorb the drop-out information
         self.drop_out.update_from_other(Path.drop_out)
@@ -172,26 +193,18 @@ class PathWalkerState(MegaState):
         """RETURNS: -- An 'CommandList' object if it is common for all paths.
                     -- None, the entries along the paths are somehow differring.
         """
-        if self.__uniform_entry_command_list_along_path is None: return None
+        if self.__uniform_entry_command_list_along_path is None: 
+            return None
 
-        door_id = self.entry.action_db.get_door_id_by_command_list(self.__uniform_entry_command_list_along_path)
+        if TheCommandList.is_empty():
+            # TODO: May be: This can be deleted, because even an empty CommandList
+            #       must be mentioned in the action_db
+            door_id = DoorID(self.index, 0) # 'Door 0' is sure to not do anything!
+        else:
+            door_id = self.entry.action_db.get_door_id_by_command_list(self.__uniform_entry_command_list_along_path)
 
         assert door_id is not None, "There MUST be a door for the uniform entry command list."
         return door_id
-
-    @staticmethod
-    def get_terminal_door_id(Path, StateDB):
-        """Determine the DoorID by which the path number 'PathID' enters
-           the terminal state of the path (which is not implemented by 
-           the pathwalker).
-        """
-        assert len(Path) >= 2
-
-        before_terminal_state_index = Path[-2].state_index
-        terminal_state_index        = Path[-1].state_index
-        # Determine DoorID by transition
-        return StateDB[terminal_state_index].entry.action_db.get_door_id(terminal_state_index, 
-                                                                         before_terminal_state_index)
 
     def get_uniform_terminal_entry_door_id(self, StateDB):
         """RETURNS: DoorID -- if all paths which are involved enter the same 
@@ -200,10 +213,9 @@ class PathWalkerState(MegaState):
         """
         prototype = None
         for sequence in self.__path_list:
-            if prototype is None:
-                prototype = PathWalkerState.get_terminal_door_id(sequence, StateDB)
-            elif prototype != PathWalkerState.get_terminal_door_id(sequence, StateDB):
-                return None
+            terminal_door_id = sequence[-1].door_id
+            if   prototype is None:             prototype = terminal_door_id
+            elif prototype != terminal_door_id: return None
         return prototype
 
     def delete_transitions_on_path(self):

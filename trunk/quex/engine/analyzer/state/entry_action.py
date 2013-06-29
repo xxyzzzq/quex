@@ -18,10 +18,6 @@ class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
     def __repr__(self):
         return "DoorID(s=%s, d=%s)" % (self.state_index, self.door_index)
 
-    # Force to generate new objects
-    def set_door_index(self, Value): assert False
-    def set(self, Other):            assert False
-
 class DoorID_Scheme(tuple):
     """A TargetScheme maps from a index, i.e. a state_key to a particular
        target (e.g. a DoorID). It is implemented as a tuple which can be 
@@ -180,24 +176,6 @@ class CommandList:
 
     def cost(self):
         return sum(x.cost() for x in self)
-
-    def delete_SetPathIterator_commands(self):
-        """Delete the 'SetPathIterator' command from the command list. There should
-           never be more than ONE such command in a commant list. This is so, because
-           the 'SetPathIterator' defines a state that the MegaState shall represent.
-           A MegaState can only represent on state at a time.
-        """
-        for cmd in self.misc:
-            if isinstance(cmd, SetPathIterator): break
-        else:
-            return
-
-        self.misc.remove(cmd)
-        # Double check that there was only one SetPathIterator command in the list.
-        for element in self.misc:
-            assert not isinstance(element, SetPathIterator)
-
-        return
 
     def has_SetMegaStateKey(self):
         for element in self.misc:

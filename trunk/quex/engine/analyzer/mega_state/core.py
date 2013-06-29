@@ -71,7 +71,25 @@ from quex.engine.analyzer.state.entry_action import DoorID
 from quex.engine.analyzer.transition_map     import TransitionMap
 from quex.blackboard                         import E_StateIndices
 
+from quex.engine.tools import print_callstack
+
 from copy import copy
+
+class DoorIdReassignmentDB(dict):
+    def __init__(self):
+        dict.__init__(self)
+
+    def get_replacement(self, FromStateIndex, OldDoorId):
+        change_db = dict.get(self, FromStateIndex)
+        if change_db is None: return None
+        return change_db[OldDoorId]
+
+    def add(self, FromStateIndex, OldDoorId, NewDoorId):
+        assert isinstance(OldDoorId, DoorID)
+        assert isinstance(NewDoorId, DoorID)
+        change_db = dict.get(self, FromStateIndex)
+        if change_db is not None: change_db[OldDoorId] = NewDoorId
+        else:                     self[FromStateIndex] = { OldDoorId: NewDoorId, }
 
 class MegaState_Entry(Entry):
     """________________________________________________________________________
@@ -89,6 +107,30 @@ class MegaState_Entry(Entry):
     """
     def __init__(self, MegaStateIndex):
         Entry.__init__(self, MegaStateIndex, FromStateIndexList=[])
+
+        # Some transitions may not require a 'SetStateKey' command, such 
+        # as the recursive transition in TemplateState-s or the 'on-path-
+        # transition' in PathWalker-s. The corresponding TransitionAction-s
+        # will have a '.door_id = None', so that a new DoorID has to be 
+        # assigned to them. The correspondent list is called the 'noned_list'.
+        self.noned_list               = []
+        self.reassigned_transition_db = DoorIdReassignmentDB()
+
+    def reassigned_transition_db_construct(self, RelatedMegaStateIndex):
+        """Generate new DoorIDs for all TransitionID-s where '.door_id is None'.
+           This shall only be the case for originaly recursive transitions, 
+           see 'action_db_update()'.
+        """
+        ##print "#reassigned_transition_db id:", id(self)
+        ##print_callstack()
+        assert len(self.reassigned_transition_db) == 0
+
+        self.action_db.categorize(RelatedMegaStateIndex)
+
+        for state_index, transition_id, old_door_id in self.noned_list:
+            action = self.action_db.get(transition_id)
+            assert action is not None
+            self.reassigned_transition_db.add(state_index, old_door_id, NewDoorId=action.door_id)
 
 class MegaState(AnalyzerState):
     """________________________________________________________________________
