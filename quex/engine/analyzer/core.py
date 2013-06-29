@@ -358,7 +358,7 @@ class Analyzer:
             for x in sorted(prototype, key=attrgetter("pattern_id", "pre_context_id")):
                 if x.accepting_state_index != state_index: 
                     continue
-                entry.action_db.add_Accepter(x.pre_context_id, x.pattern_id)
+                entry.action_db.add_Accepter_on_all(x.pre_context_id, x.pattern_id)
 
     def acceptance_storage_post_pone_do(self, StateIndex, PatternId):
 
@@ -395,7 +395,8 @@ class Analyzer:
                     if target_index == state_index: # Position is stored upon entry in *other*
                         continue                    # state--not the state itself. 
                     entry = self.__state_db[target_index].entry
-                    entry.action_db.add_StoreInputPosition(FromStateIndex   = state_index, 
+                    entry.action_db.add_StoreInputPosition(StateIndex       = target_index, 
+                                                           FromStateIndex   = state_index, 
                                                            PreContextID     = pre_context_id, 
                                                            PositionRegister = pattern_id, 
                                                            Offset           = 0)
@@ -415,62 +416,4 @@ class Analyzer:
 
         txt = [ repr(state) for state in sorted(self.__state_db.itervalues(), key=order) ]
         return "".join(txt)
-
-    def DELETED_detect_on_paths(self, BeginStateIndex, EndStateIndex, break_condition, break_action):
-
-        class DetectorWalker(TreeWalker):
-            """Walks all paths from StateIndex0 to StateIndex1, but only until  
-            a condition is met. When the condition is met, an action is executed 
-            and the path is no longer followed.
-            ___________________________________________________________________
-            """
-            def __init__(self, EndStateIndex, StateDB, ToDB, TraceDB, BreakConditionFunc, ActionFunc):
-                self.end_state_index = EndStateIndex
-
-                self.state_db  = StateDB
-                self.to_db     = ToDB
-                self.trace_db  = TraceDB
-                self.done_set  = set()
-                self.condition = BreakConditionFunc
-                self.action    = ActionFunc
-                self.success_f = False
-                TreeWalker.__init__(self)
-
-            def on_enter(self, Args):
-                PrevStateIndex, StateIndex = Args
-
-                state = self.state_db[StateIndex]
-                # Never break-up on the first state (neglect PrevStateIndex is None)
-                if PrevStateIndex is not None and self.condition(state):
-                    self.action(PrevStateIndex, state, self.trace_db)
-                    self.done_set.add(StateIndex)
-                    self.success_f = True
-                    return None
-
-                if StateIndex in self.done_set:
-                    # Even, if the state was done, the entry from PrevStateIndex had
-                    # to be consdired. Only then, it can be considered 'done'.
-                    return None
-                else:
-                    # Since, we do a 'depth-first' search, nothing has to be undone.
-                    # If a state is registered as 'done', then all of its sub-paths 
-                    # can be considered as being treated.
-                    self.done_set.add(StateIndex)
-
-                if StateIndex == self.end_state_index:
-                    return None
-
-                return [(StateIndex, state_index) for state_index in self.to_db[StateIndex]]
-
-            def on_finished(self, Node):
-                pass
-
-        walker = DetectorWalker(EndStateIndex, 
-                                self.__state_db, self.__to_db, self.__trace_db,
-                                break_condition, break_action)
-        walker.do((None, BeginStateIndex))
-
-        # -- True  => that the condition was met and an action has been performed
-        # -- False => the condition was not met for any state.
-        return walker.success_f
 

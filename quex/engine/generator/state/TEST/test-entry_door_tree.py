@@ -44,13 +44,16 @@ def test(ActionDB):
     entry = Entry(state_index, ActionDB.keys())
     for from_state_index, action_list in ActionDB.iteritems():
         for element in action_list:
+            tid = TransitionID(state_index, from_state_index, E_TriggerIDs.NONE)
             if isinstance(element, list):
-                entry.action_db.add_specific_Accepter(from_state_index, element)
+                accepter = entry_action.Accepter(element)
+                self.__db[tid].command_list.accepter = accepter
             else:
-                entry.action_db.add_StoreInputPosition(from_state_index, 
-                                                       element.pre_context_id, 
-                                                       element.position_register, 
-                                                       element.offset)
+                storer = entry_action.StoreInputPosition(element.pre_context_id, 
+                                                         element.position_register, 
+                                                         element.offset)
+                self.__db[tid].command_list.misc.add(storer)
+
     entry.action_db.categorize(state_index)
     door_tree_root = entry_door_tree.do(state_index, entry.action_db)
     #print "#door_tree_root:", door_tree_root.door_id

@@ -43,7 +43,8 @@ def do(TheAnalyzer):
     So, from outside, there is no observable change in behavior. Other states
     do not 'feel' that there is a MegaState.
     ___________________________________________________________________________
-    """ assert len(Setup.compression_type_list) != 0
+    """ 
+    assert len(Setup.compression_type_list) != 0
     TheAnalyzer.mega_state_list = []
 
     # The 'remainder' keeps track of states which have not yet been
@@ -88,6 +89,11 @@ def do(TheAnalyzer):
     TheAnalyzer.state_db.update(
        (mega_state.index, mega_state) for mega_state in TheAnalyzer.mega_state_list
     )
+
+
+    for mega_state in TheAnalyzer.mega_state_list:
+         MegaState_Target.rejoin_uniform_schemes(mega_state.transition_map)
+         MegaState_Target.assign_scheme_ids(mega_state.transition_map)
 
     return
 

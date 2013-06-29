@@ -96,14 +96,45 @@ class MegaState_Target(object):
 
         return result
 
+    def replace_self(self, MapOldToNewDoorIDs):
+        """Replaces DoorIDs based on 'MapOldToNewDoorIDs', if necessary. 
+
+        RETURNS: None,            if no replacement was necessary.
+                 A clone of self, with replaced DoorID-s if a replacement
+                                  was necessary.
+        """
+        if self.__drop_out_f: 
+            return None
+
+        elif self.__door_id is not None:
+            new_door_id = MapOldToNewDoorIDs.get(self.__door_id)
+            if new_door_id is None: return None
+            else:                   return MegaState_Target(new_door_id)
+
+        elif self.__scheme is not None:
+            new_scheme = None
+            for i, door_id in enumerate(self.__scheme):
+                new_door_id  = MapOldToNewDoorIDs.get(door_id)
+                if   new_door_id is None: 
+                    continue
+                elif new_scheme is None: 
+                    new_scheme = list(self.__scheme)
+                new_scheme[i] = new_door_id
+
+            if new_scheme is None: return None
+            else:                  return MegaState_Target(DoorID_Scheme(new_scheme))
+
+        else:
+            assert False
+
     def __init__(self, Target):
         global MegaState_Target_DROP_OUT_hash
         if Target is None: # Only to be used by 'self.clone()'
             return 
 
         self.__scheme     = None
-        self.__scheme_id  = None # Only possibly set in 'finalize'
-        self.__door_id    = None # Only possibly set in 'finalize'
+        self.__scheme_id  = None # Only possibly set in 'assign_scheme_ids'
+        self.__door_id    = None 
         self.__drop_out_f = False
         self.__hash       = None
 
@@ -137,32 +168,6 @@ class MegaState_Target(object):
 
     @property
     def scheme_id(self):    return self.__scheme_id
-
-    def replace_door_ids(self, MapOldToNewDoorIDs):
-        """RETURNS: True  if there where internal replacements of door ids.
-                    False if there was no replacement to be done.
-        """
-        if self.__door_id is not None:
-            new_door_id = MapOldToNewDoorIDs.get(self.__door_id)
-            if new_door_id is None: return False
-            self.__door_id = new_door_id
-
-        elif self.__scheme is not None:
-            new_scheme = None
-            for i, door_id in enumerate(self.__scheme):
-                new_door_id  = MapOldToNewDoorIDs.get(door_id)
-                if   new_door_id is None: 
-                    continue
-                elif new_scheme is None: 
-                    new_scheme = list(self.__scheme)
-                new_scheme[i] = new_door_id
-
-            if new_scheme is None: 
-                return False
-
-            self.__scheme = DoorID_Scheme(new_scheme)
-
-        return True
 
     @staticmethod
     def assign_scheme_ids(transition_map):

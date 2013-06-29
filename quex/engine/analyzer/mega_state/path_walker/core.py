@@ -227,22 +227,36 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
             self.__depth       = 0
             self.analyzer      = TheAnalyzer
             self.available_set = AvailableStateIndexSet
-            self.uniform_f     = CompressionType == E_Compression.PATH_UNIFORM
+            self.uniform_f     = (CompressionType == E_Compression.PATH_UNIFORM)
             self.result        = []
             self.info_db       = defaultdict(list)
             TreeWalker.__init__(self)
 
         def on_enter(self, Args):
-            path   = Args[0]  # 'CharacterPath'
-            State  = Args[1]  # 'AnalyzerState'
-
-            # list: (interval, target)  --> (interval, door_id)
+            path           = Args[0]  # 'CharacterPath'
+            State          = Args[1]  # 'AnalyzerState'
             transition_map = State.transition_map 
+
+            # We are searching on follow states of this 'State'. 
+            # => 'State' will becomes an element of the path.
+            #    (Its target state still will remain an external 'Terminal')
+            # => Entry and DropOut of 'State' are implemented as part of the 
+            #    path walker.
+            
+            # If uniformity is required, then this is the place to check for it.
+            if self.uniform_f and not path.check_uniformity(TargetState, TargetDoorId): 
+                if len(path) > 1:
+                    path.finalize()
+                    self.result.append(path)
+                return None
+
+            # Integrate the Entry and DropOut behavior of the given 'State'. 
+            path.integrate(State)
 
             # BRANCH __________________________________________________________
             sub_list = []
             for target_index, trigger_set in State.map_target_index_to_character_set.iteritems():
-                if target_index not in self.available_set: return
+                if target_index not in self.available_set: continue
 
                 # Only single character transitions can be element of a path.
                 transition_char = trigger_set.get_the_only_element()
@@ -251,98 +265,42 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
                 # A PathWalkerState cannot implement a loop.
                 if path.contains_state(target_index): continue # Loop--don't go!
 
-                target_state = self.analyzer.state_db[target_index]
-
-                # Do the transitions fit the path's transition map?
+                target_state   = self.analyzer.state_db[target_index]
                 target_door_id = target_state.entry.action_db.get_door_id(target_index, State.index)
-                plug           = path.match(transition_map, target_door_id, transition_char)
-                if plug is None: continue # No match possible 
 
-                # If required, can uniformity be maintained?
-                uniform_drop_out_expected_f = False
-                if self.uniform_f:
-                    if not PathFinder.check_uniformity(path, target_state): continue
-                    uniform_drop_out_expected_f = True
+                # TransitionMap matching? 
+                plug = path.transition_map.match(transition_map, transition_char, target_door_id)
+                if   plug is None:
+                    continue # No match possible 
+                elif plug > 0  and not path.has_wildcard(): 
+                    continue # Wilcard required for match, but there is no wildcard open.
+
+                new_path = path.extended_clone(State.index, transition_char, target_door_id, plug) 
 
                 # RECURSION STEP ______________________________________________
-                # May be, we do not have to clone the transition map if plug == -1
-                new_path = path.clone() 
-
-                # Find a continuation of the path
-                new_path.append_state(State, transition_char)
-
-                if uniform_drop_out_expected_f:
-                    assert len(new_path.drop_out) == 1
-
-                if plug != -1: new_path.plug_wildcard(plug)
-
+                # (May be, we do not have to clone the transition map if plug == -1)
+                # Clone the current state and append the new terminal.
                 sub_list.append((new_path, target_state))
 
             # TERMINATION _____________________________________________________
             if len(sub_list) == 0:
                 if len(path) > 1: 
-                    path.append_state(State, None) # trans. char = None => do not consider entry_db
                     path.finalize()
-                    self.add_result(path)
-                return
+                    self.result.append(path)
+                return None
 
             return sub_list
 
         def on_finished(self, Args):
             self.__depth -= 1
 
-        def add_result(self, ThePath):
-            self.result.append(ThePath)
-            #for x in ThePath.sequence()[:-1]:
-            #    self.info_db[x.state_index].append(ThePath) 
+    target_state   = analyzer.state_db[TargetIndex]
+    target_door_id = target_state.entry.action_db.get_door_id(target_state.index, FromState.index)
+    path           = CharacterPath(FromState, FromTransitionMap, TransitionChar, target_door_id)
 
-        @staticmethod
-        def check_uniformity(ThePath, TargetState):
-            assert len(ThePath.drop_out) == 1
-            drop_out_uniform_f = ThePath.drop_out.is_uniform_with(TargetState.drop_out) 
-            entry_uniform_f    = ThePath.check_uniform_entry_to_state(TargetState)
-            return drop_out_uniform_f and entry_uniform_f
-
-        def consider_other_paths_through_state(self, StateIndex, ThePath):
-            """If 'ThePath' is completely a sub-path of another, than there is no
-            need to even consider it. If the path has the same transition map (without
-            wildcard) as another path, then concatinations may be made without further
-            diving deeper into the state machine's graph.
-
-            RETURNS: 'True' sub-graph has to be considered.
-                     'False' sub-graph does not have to be considered.
-            """
-            if   ThePath.has_wildcard():         return True
-            elif StateIndex not in self.info_db: return True
-
-            done_f = False
-            for path in self.info_db[StateIndex]:
-                if not transition_map_tools.is_equal(path.transition_map, ThePath.transition_map):
-                    continue
-                    
-                # Does 'path' cover 'ThePath' completely?
-                if path.is_superpath(ThePath): 
-                    return False
-
-                self.add_result(path.get_sibling(ThePath))
-
-                # There is a path that already contains 'StateIndex' and its
-                # transition map is also the same, so diving deeper in the
-                # state machines graph is not necessary.
-                done_f = True
-
-            return not done_f
-
-    tm_clone     = FromTransitionMap.clone()
-    target_state = analyzer.state_db[TargetIndex]
-    path         = CharacterPath(FromState, TransitionChar, tm_clone)
-
-    path_finder  = PathFinder(analyzer, CompressionType, AvailableStateIndexSet)
-
-    if path_finder.uniform_f and not PathFinder.check_uniformity(path, target_state): 
-        return []
-
+    path_finder = PathFinder(analyzer, CompressionType, AvailableStateIndexSet)
     path_finder.do((path, target_state))
+
     return path_finder.result
 
 def select(path_list):
@@ -469,26 +427,13 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
     # needs to be created.
     path_walker_list = []
     for path in CharacterPathList:
+        print "#path:", id(path), path.sequence()
         for path_walker in path_walker_list:
             # Set-up the walk in an existing PathWalkerState
             if path_walker.accept(path): break
         else:
             # Create a new PathWalkerState
             path_walker_list.append(PathWalkerState(path, TheAnalyzer, CompressionType))
-
-    # Handle the special transition 'from self to self'.
-    for path_walker in path_walker_list:
-        my_index                 = path_walker.index
-        from_self_to_self_action = TransitionAction()
-        if path_walker.uniform_entry_command_list_along_all_paths is not None:
-            # Assign the uniform command list to the transition 'path_walker -> path_walker'
-            from_self_to_self_action.command_list = path_walker.uniform_entry_command_list_along_all_paths.clone()
-            # Delete transitions on the path itself => No doors for them will be implemented.
-            path_walker.delete_transitions_on_path() # LEAVE THIS! This is the way to 
-            #                                        # indicate unimportant entry doors!
-
-        transition_id                              = TransitionID(my_index, my_index)
-        path_walker.entry.action_db[transition_id] = from_self_to_self_action
 
     return path_walker_list
 

@@ -1,5 +1,5 @@
 from   quex.engine.analyzer.state.entry        import Entry
-from   quex.engine.analyzer.state.entry_action import PreConditionOK
+from   quex.engine.analyzer.state.entry_action import PreConditionOK, TransitionID, TransitionAction
 from   quex.engine.analyzer.state.drop_out     import DropOutIndifferent, \
                                                       DropOutBackwardInputPositionDetection
 from   quex.blackboard  import E_InputActions
@@ -20,6 +20,13 @@ class Base:
 
     def create_Entry(self, State, FromStateIndexList): assert False
     def create_DropOut(self, SM_State):                assert False
+    @staticmethod
+    def prepare_Entry(result, StateIndex, FromStateIndexList):
+        result.action_db.enter_iterable(                      \
+            (TransitionID(StateIndex, i), TransitionAction()) \
+            for i in FromStateIndexList                       \
+        )
+
 
 class Class_FORWARD(Base):
     def is_FORWARD(self):                  
@@ -45,7 +52,9 @@ class Class_FORWARD(Base):
         return "FORWARD"
 
     def create_Entry(self, SM_State, StateIndex, FromStateIndexList):
-        return Entry(StateIndex, FromStateIndexList)
+        result = Entry(StateIndex, FromStateIndexList)
+        Base.prepare_Entry(result, StateIndex, FromStateIndexList)
+        return result
 
     def create_DropOut(self, SM_State):                          
         # DropOut and Entry interact and require sophisticated analysis
@@ -62,7 +71,9 @@ class Class_CHARACTER_COUNTER(Class_FORWARD):
         return False
 
     def create_Entry(self, SM_State, StateIndex, FromStateIndexList):
-        return Entry(StateIndex, FromStateIndexList)
+        result = Entry(StateIndex, FromStateIndexList)
+        Base.prepare_Entry(result, StateIndex, FromStateIndexList)
+        return result
 
     def create_DropOut(self, SM_State):                          
         return None
@@ -79,6 +90,7 @@ class Class_BACKWARD_PRE_CONTEXT(Base):
 
     def create_Entry(self, SM_State, StateIndex, FromStateIndexList):
         result = Entry(StateIndex, FromStateIndexList)
+        Base.prepare_Entry(result, StateIndex, FromStateIndexList)
         pre_context_ok_command_list = [ 
             PreConditionOK(origin.pattern_id()) for origin in SM_State.origins() \
             if origin.is_acceptance() 
@@ -108,7 +120,9 @@ class Class_BACKWARD_INPUT_POSITION(Base):
         return E_InputActions.DECREMENT_THEN_DEREF
 
     def create_Entry(self, SM_State, StateIndex, FromStateIndexList):
-        return Entry(StateIndex, FromStateIndexList)
+        result = Entry(StateIndex, FromStateIndexList)
+        Base.prepare_Entry(result, StateIndex, FromStateIndexList)
+        return result
 
     def create_DropOut(self, SM_State):                          
         return DropOutBackwardInputPositionDetection(SM_State.is_acceptance())
