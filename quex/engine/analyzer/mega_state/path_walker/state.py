@@ -2,6 +2,7 @@
 from   quex.engine.analyzer.transition_map      import TransitionMap   
 from   quex.engine.analyzer.state.entry_action  import SetPathIterator, DoorID
 from   quex.engine.analyzer.mega_state.core     import MegaState, MegaState_Target
+import quex.engine.state_machine.index          as     index
 from   quex.blackboard                          import E_Compression
 
 class PathWalkerState(MegaState):
@@ -13,16 +14,16 @@ class PathWalkerState(MegaState):
     """
     def __init__(self, FirstPath, TheAnalyzer, CompressionType):
 
-        entry    = PathWalkerState.adapt_path_walker_id_and_path_id(FirstPath.index, 
-                   FirstPath.entry, 
-                   PathID=0)
+        my_index = index.get()
+        entry    = PathWalkerState.adapt_path_walker_id_and_path_id(my_index,
+                                                                    FirstPath.entry, 
+                                                                    PathID=0)
 
         drop_out = FirstPath.drop_out   # map: drop_out --> state_index_list
 
-        MegaState.__init__(self, entry, drop_out, FirstPath.index)
+        MegaState.__init__(self, entry, drop_out, my_index)
 
-        adapted_path = self.adapt_door_ids_along_path(FirstPath)
-        self.__path_list = [ adapted_path ]
+        self.__path_list = [ FirstPath.sequence ]
 
         # original_transition_map: interval --> DoorID
         #
@@ -36,27 +37,9 @@ class PathWalkerState(MegaState):
                                             MegaState_Target.create)
 
         self.__uniformity_required_f                 = (CompressionType == E_Compression.PATH_UNIFORM)
-        self.__uniform_entry_command_list_along_path = FirstPath.uniform_entry_command_list_along_path()
+        self.__uniform_entry_command_list_along_path = FirstPath.uniform_entry_command_list_along_path
 
         self.__state_index_sequence    = None # Computed on demand
-
-    def adapt_door_ids_along_path(self, ThePath):
-        """Inside the PathWalker, DoorID-s have been adapted. DoorIDs of
-        doors which lie on the path do not need SetStateKey commands and
-        are therefore kept seperate from the rest.
-        """
-        entry  = ThePath.entry
-        result = ThePath.sequence()
-
-        entry.reassigned_transition_db_construct(self.index)
-        # The last '.target_door_id' is not part of the path.
-        # It has not to be transformed. Outside DoorID-s remain the same.
-        for x in result[:-1]:
-            new_door_id = entry.reassigned_transition_db.get_replacement(x.state_index, x.target_door_id)
-            assert new_door_id is not None
-            x.target_door_id = new_door_id
-
-        return result
 
     @property
     def transition_map(self):
@@ -84,7 +67,7 @@ class PathWalkerState(MegaState):
         uniform_entry_f = False
         if self.__uniform_entry_command_list_along_path is not None:
             # other_ueclap := other's .__uniform_entry_command_list_along_path
-            other_ueclap = Path.uniform_entry_command_list_along_path()
+            other_ueclap = Path.uniform_entry_command_list_along_path
             if     other_ueclap is not None \
                and other_ueclap.is_equivalent(self.__uniform_entry_command_list_along_path):
                     uniform_entry_f = True
@@ -117,8 +100,7 @@ class PathWalkerState(MegaState):
 
         # (2b) Absorb the state sequence of the path
         #      (verify/falsify the uniform terminal entry)
-        adapted_path = self.adapt_door_ids_along_path(Path)
-        self.__path_list.append(adapted_path)
+        self.__path_list.append(Path.sequence)
 
         # (2c) Absorb the drop-out information
         self.drop_out.update_from_other(Path.drop_out)
@@ -155,7 +137,7 @@ class PathWalkerState(MegaState):
         for path in self.__path_list:
             # The end state of each path is not implemented
             # (It may be part of another path, though)
-            result.extend(x.state_index for x in path[:-1])
+            result.extend(x.state_index for x in path)
         return result
 
     def map_state_index_to_state_key(self, StateIndex):
@@ -196,7 +178,7 @@ class PathWalkerState(MegaState):
         if self.__uniform_entry_command_list_along_path is None: 
             return None
 
-        if TheCommandList.is_empty():
+        if self.__uniform_entry_command_list_along_path.is_empty():
             # TODO: May be: This can be deleted, because even an empty CommandList
             #       must be mentioned in the action_db
             door_id = DoorID(self.index, 0) # 'Door 0' is sure to not do anything!

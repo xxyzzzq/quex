@@ -1,4 +1,4 @@
-# (C) 2010-2012 Frank-Rene Schaefer
+# (C) 2010-2013 Frank-Rene Schaefer
 from   quex.engine.analyzer.mega_state.path_walker.path  import CharacterPath
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.state.entry_action           import TransitionID, \
@@ -8,6 +8,7 @@ from   quex.engine.misc.tree_walker                      import TreeWalker
 from   quex.blackboard                                   import E_Compression, E_StateIndices
 
 from   collections import defaultdict
+from   copy        import copy
 
 def do(TheAnalyzer, CompressionType, AvailableStateIndexList=None):
     """PATH COMPRESSION: _______________________________________________________
@@ -244,14 +245,11 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
             #    path walker.
             
             # If uniformity is required, then this is the place to check for it.
-            if self.uniform_f and not path.check_uniformity(TargetState, TargetDoorId): 
+            if self.uniform_f and not path.is_uniform_with_predecessor(State): 
                 if len(path) > 1:
                     path.finalize()
                     self.result.append(path)
                 return None
-
-            # Integrate the Entry and DropOut behavior of the given 'State'. 
-            path.integrate(State)
 
             # BRANCH __________________________________________________________
             sub_list = []
@@ -269,13 +267,15 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
                 target_door_id = target_state.entry.action_db.get_door_id(target_index, State.index)
 
                 # TransitionMap matching? 
-                plug = path.transition_map.match(transition_map, transition_char, target_door_id)
+                plug = path.transition_map.match_with_wildcard(transition_map, transition_char, target_door_id)
                 if   plug is None:
                     continue # No match possible 
                 elif plug > 0  and not path.has_wildcard(): 
                     continue # Wilcard required for match, but there is no wildcard open.
 
                 new_path = path.extended_clone(State.index, transition_char, target_door_id, plug) 
+                # Integrate the Entry and DropOut behavior of the given 'State'. 
+                new_path.integrate(State)
 
                 # RECURSION STEP ______________________________________________
                 # (May be, we do not have to clone the transition map if plug == -1)
@@ -320,44 +320,36 @@ def select(path_list):
                 [1] list of indices of paths which would be no longer 
                     available, because the winning path intersects.
         """
-        opportunity_db = get_opportunity_db(AvailablePathList)
-        max_gain = None
-        winner                       = None
-        winner_forbidden_path_id_set = None
-        for path in AvailablePathList:
-            if max_gain is not None and len(path.state_index_set) < max_gain: continue # No chance
+        AvailablePathList = sorted(AvailablePathList, key=lambda p: - p.state_index_list_size())
+        belong_db         = get_belong_db(AvailablePathList)
 
-            gain, forbidden_path_id_set = compute_gain(path, opportunity_db, 
-                                                       (p for p in AvailablePathList if p.index != path.index))
+        max_gain               = None
+        winner_i               = None
+        winner_forbidden_i_set = None
+        for i, path in enumerate(AvailablePathList):
+            if max_gain is not None and len(path.state_index_set()) < max_gain: continue # No chance
 
-            if max_gain is None:
-                winner                       = path
-                winner_forbidden_path_id_set = forbidden_path_id_set
-                max_gain                     = gain
-            elif max_gain == gain:
-                if len(winner.state_index_set) < len(path.state_index_set):
-                    winner                       = path
-                    winner_forbidden_path_id_set = forbidden_path_id_set
-                    max_gain                     = gain
-            elif max_gain < gain:
-                winner                       = path
-                winner_forbidden_path_id_set = forbidden_path_id_set
-                max_gain                     = gain
+            all_but_path = (p for k, p in enumerate(AvailablePathList) if k != i)
+            gain, forbidden_i_set = compute_gain(path, belong_db, all_but_path)
+                                                       
+            if max_gain is None or max_gain < gain:
+                max_gain               = gain
+                winner_i               = i
+                winner_forbidden_i_set = forbidden_i_set
 
-        return winner, winner_forbidden_path_id_set
+        return winner_i, winner_forbidden_i_set
 
-    def get_opportunity_db(AvailablePathList):
-        """opportunity_db: 
+    def get_belong_db(AvailablePathList):
+        """belong_db: 
           
                       state_index --> paths of which state_index is part. 
         """
         result = defaultdict(set)
-        for path in AvailablePathList:
-            for state_index in path.state_index_set:
-                result[state_index].add(path.index)
+        for i, path in enumerate(AvailablePathList):
+            result.update((state_index, i) for state_index in path.state_index_set())
         return result
 
-    def compute_gain(path, opportunity_db, AvailablePathListIterable):
+    def compute_gain(path, BelongDB, AvailablePathListIterable):
         """What happens if 'path' is chosen?
 
            -- Paths which contain any of its state_indices become unavailable.
@@ -371,17 +363,17 @@ def select(path_list):
                    [1] set of ids of paths which are forbidden if 'path' is chosen.
         """
         # -- The states implemented by path
-        state_index_set = path.state_index_set
+        state_index_set = path.state_index_set()
 
         # -- Forbidden are those paths which have a state in common with 'path'
         # -- Those states implemented in forbiddent paths become endangered.
         #    I.e. they might not to be implemented by a PathWalkerState.
-        endangered_set = set()
+        endangered_set        = set()
         forbidden_path_id_set = set()
-        for other_path in AvailablePathListIterable:
-            if state_index_set.isdisjoint(other_path.state_index_set): continue
-            endangered_set.update(other_path.state_index_set - state_index_set)
-            forbidden_path_id_set.add(other_path.index)
+        for other_path_i, other_path in enumerate(AvailablePathListIterable):
+            if state_index_set.isdisjoint(other_path.state_index_set()): continue
+            endangered_set.update(other_path.state_index_set() - state_index_set)
+            forbidden_path_id_set.add(other_path_i)
 
         # (*) Function to model 'cost for an endangered state'
         # 
@@ -395,24 +387,26 @@ def select(path_list):
         # 'Cost' of choosing 'path' = sum of costs for endangered state indices.
         cost = 0 
         for endangered_state_index in endangered_set:
-            alternative_n = len(opportunity_db[endangered_state_index]) 
+            alternative_n = len(BelongDB[endangered_state_index]) 
             cost += 1 / (1 + alternative_n)
 
         # Gain: Each implemented state counts as '1'
         gain = len(state_index_set)
         return gain - cost, forbidden_path_id_set
 
-    work_db = dict((path.index, path) for path in path_list)
+    result    = []
+    work_list = copy(path_list)
+    while len(work_list):
+        elect_i, dropped_list = get_best_path(work_list)
 
-    result = []
-    while len(work_db):
-        elect, dropped_list = get_best_path(sorted(work_db.values(), 
-                                                   key=lambda p: - len(p.state_index_set)))
-        assert elect is not None
-        for path_id in dropped_list:
-            del work_db[path_id]
-        result.append(elect)
-        del work_db[elect.index]
+        # Delete all paths which are impossible, if 'elect_i' is chosen.
+        for i in dropped_list:
+            del work_list[i]
+
+        # Move path from 'work_list' to 'result'.
+        result.append(work_list[elect_i])
+        del work_list[elect_i]
+
     return result
 
 def group(CharacterPathList, TheAnalyzer, CompressionType):
@@ -427,13 +421,15 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
     # needs to be created.
     path_walker_list = []
     for path in CharacterPathList:
-        print "#path:", id(path), path.sequence()
         for path_walker in path_walker_list:
             # Set-up the walk in an existing PathWalkerState
             if path_walker.accept(path): break
         else:
             # Create a new PathWalkerState
             path_walker_list.append(PathWalkerState(path, TheAnalyzer, CompressionType))
+
+    for path_walker in path_walker_list:
+        path_walker.entry.reassigned_transition_db_construct(path_walker.index)
 
     return path_walker_list
 

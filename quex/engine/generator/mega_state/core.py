@@ -109,37 +109,33 @@ def drop_out_scheme_implementation(txt, TheState, TheAnalyzer, StateKeyString, D
     txt.append("%s:\n" % get_label("$drop-out", TheState.index))
     txt.append("    %s\n" % DebugString) 
 
-    def implement_prototype(StateIndices, TheAnalyzer):
-        # There **must** be at least one element, at this point in time
-        assert len(StateIndices) != 0
-        prototype_i = StateIndices.__iter__().next()
-        prototype   = TheAnalyzer.state_db[prototype_i]
-        result      = []
-        drop_out_coder.do(result, prototype, TheAnalyzer, \
-                          DefineLabelF=False, MentionStateIndexF=False)
-        return result
-
+    uniform_drop_out = TheState.drop_out.get_uniform_prototype()
 
     # (*) Drop Out Section(s)
-    if TheState.drop_out.uniform_f:
+    if uniform_drop_out is not None:
         # uniform drop outs => no 'switch-case' required
-        txt.extend(implement_prototype(TheState.implemented_state_index_list(), TheAnalyzer))
+        drop_out_coder.do(txt, TheState.index, uniform_drop_out, TheAnalyzer, \
+                          DefineLabelF=False, MentionStateIndexF=False)
         return
 
-    # non-uniform drop outs => route by 'state_key'
-    case_list = []
-    for drop_out, state_index_set in TheState.drop_out.iteritems():
-        # state keys related to drop out
-        state_key_list = map(lambda i: TheState.map_state_index_to_state_key(i), state_index_set)
-        # drop out action
-        # Implement drop-out for each state key. 'state_key_list' combines
-        # states that implement the same drop-out behavior. Same drop-outs
-        # are implemented only once.
-        case_list.append( (state_key_list, implement_prototype(state_index_set, TheAnalyzer)) )
+    else:
+        # non-uniform drop outs => route by 'state_key'
+        case_list = []
+        for drop_out, state_index_set in TheState.drop_out.iteritems():
+            # state keys related to drop out
+            state_key_list = map(lambda i: TheState.map_state_index_to_state_key(i), state_index_set)
+            # drop out action
+            # Implement drop-out for each state key. 'state_key_list' combines
+            # states that implement the same drop-out behavior. Same drop-outs
+            # are implemented only once.
+            txt = []
+            drop_out_coder.do(txt, state_index_set.pop(), drop_out, TheAnalyzer, 
+                              DefineLabelF=False, MentionStateIndexF=False)
+            case_list.append((state_key_list, txt))
 
-    case_txt = LanguageDB.SELECTION(StateKeyString, case_list)
-    LanguageDB.INDENT(case_txt)
-    txt.extend(case_txt)
+        case_txt = LanguageDB.SELECTION(StateKeyString, case_list)
+        LanguageDB.INDENT(case_txt)
+        txt.extend(case_txt)
 
 def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr):
     """Generate targets in the transition map which the code generation can 

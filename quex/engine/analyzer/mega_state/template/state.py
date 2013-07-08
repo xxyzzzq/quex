@@ -32,12 +32,7 @@ class TemplateState_Entry(MegaState_Entry):
     ___________________________________________________________________________
     """
     def __init__(self, RelatedMegaStateIndex, StateIndexToStateKeyDB, *EntryList):
-        MegaState_Entry.__init__(self, RelatedMegaStateIndex)
-
-        for entry in EntryList:
-            self.action_db_update(RelatedMegaStateIndex, entry.action_db, StateIndexToStateKeyDB)
-
-        self.reassigned_transition_db_construct(RelatedMegaStateIndex)
+        MegaState_Entry.__init__(self)
 
     def action_db_update(self, StateIndex, ActionDb, StateIndexToStateKeyDB):
         """Include 'TheState.entry.action_db' into this state. That means,
@@ -119,6 +114,11 @@ class TemplateState(MegaState):
         entry    = TemplateState_Entry(my_index, self.__state_index_to_state_key_db, StateA.entry, StateB.entry)
         drop_out = MegaState_DropOut(StateA, StateB)
         MegaState.__init__(self, entry, drop_out, my_index)
+
+        for state in [StateA, StateB]:
+            self.entry.action_db_update(state.index, state.entry.action_db, 
+                                        self.__state_index_to_state_key_db)
+        self.entry.reassigned_transition_db_construct(my_index)
 
         self.__transition_map, \
         self.__target_scheme_n = combine_maps(self.__state_a, self.__state_b, entry.reassigned_transition_db)
@@ -275,6 +275,9 @@ def combine_maps(StateA, StateB, ReassignedTransitionDB):
     else:
         reassignment_db_a = ReassignedTransitionDB.get(StateA.index)
         reassignment_db_b = ReassignedTransitionDB.get(StateB.index)
+
+    ##print "#reassignment_db_a:", StateA.index, reassignment_db_a
+    ##print "#reassignment_db_b:", StateB.index, reassignment_db_b
 
     def real_target(ReassignmentDB, Target):
         if ReassignmentDB is None: return Target

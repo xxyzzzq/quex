@@ -116,7 +116,7 @@ def framework(txt, PWState, TheAnalyzer):
         #           else:                                 goto TerminalDoor
         #
         # -- "goto CommonPathWalkerDoor"
-        uniform_entry_door_id = PWState.entry.action_db.get_door_id(PWState.index, PWState.index)
+        uniform_entry_door_id = PWState.uniform_entry_door_id_along_all_paths
         goto_next_door        = "            %s\n"  % LanguageDB.GOTO_BY_DOOR_ID(uniform_entry_door_id)
 
         # -- "goto TerminalDoor"
@@ -199,7 +199,7 @@ def require_data(PWState, TheAnalyzer):
             #       to the first state as a reference here.
             result.append("        ")
             result.extend(
-                "QUEX_LABEL(%i), " % LanguageDB.ADDRESS_BY_DOOR_ID(x.target_door_id)
+                "QUEX_LABEL(%i), " % LanguageDB.ADDRESS_BY_DOOR_ID(x.door_id)
                 for x in path[:-1]
             )
             result.append("/* Zero of Elegance */0x0,")
@@ -220,7 +220,7 @@ def require_data(PWState, TheAnalyzer):
             # memory.append(LanguageDB.COMMENT("".join(sequence_str)) + "\n")
             # Last element of sequence contains only the 'end state'.
             result.append("        ")
-            result.extend("%i, " % x.transition_char_to_next for x in path[:-1])
+            result.extend("%i, " % x.trigger for x in path[:-1])
             result.append("QUEX_SETTING_PATH_TERMINATION_CODE,")
             result.append("\n")
 

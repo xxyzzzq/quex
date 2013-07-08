@@ -33,7 +33,7 @@ def do(code, TheState, TheAnalyzer):
     transition_block.do(txt, tm)
 
     # (*) Drop Out ____________________________________________________________
-    drop_out.do(txt, TheState, TheAnalyzer)
+    drop_out.do(txt, TheState.index, TheState.drop_out, TheAnalyzer)
 
     # ( ) Side entry to init state (if necessary)
     side_entry_do(txt, TheState, TheAnalyzer)
