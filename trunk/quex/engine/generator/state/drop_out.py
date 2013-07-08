@@ -1,17 +1,17 @@
 from   quex.engine.generator.languages.address    import Address
-from   quex.blackboard                            import E_AcceptanceIDs,  E_StateIndices, \
+from   quex.blackboard                            import E_AcceptanceIDs, E_StateIndices, \
                                                          E_TransitionN, E_PostContextIDs, E_PreContextIDs, \
                                                          setup as Setup
 
-def do(txt, TheState, TheAnalyzer, DefineLabelF=True, MentionStateIndexF=True):
+def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateIndexF=True):
     LanguageDB = Setup.language_db
 
     if DefineLabelF:
-        txt.append(Address("$drop-out", TheState.index))
+        txt.append(Address("$drop-out", StateIndex))
 
     if MentionStateIndexF:
         txt.append(1)
-        txt.append("__quex_debug_drop_out(%i);\n" % TheState.index)
+        txt.append("__quex_debug_drop_out(%i);\n" % StateIndex)
 
     if TheAnalyzer.engine_type.is_BACKWARD_PRE_CONTEXT():
         txt.append(1)
@@ -19,7 +19,7 @@ def do(txt, TheState, TheAnalyzer, DefineLabelF=True, MentionStateIndexF=True):
         return
 
     elif TheAnalyzer.engine_type.is_BACKWARD_INPUT_POSITION():
-        if TheState.drop_out.reachable_f:
+        if DropOut.reachable_f:
             # 'TheAnalyzer' is the state machine which does the backward input position
             # detection. => TheAnalyzer.state_machine_id = id of the backward input 
             # position detector.
@@ -32,7 +32,7 @@ def do(txt, TheState, TheAnalyzer, DefineLabelF=True, MentionStateIndexF=True):
             ])
         return
 
-    info = TheState.drop_out.trivialize()
+    info = DropOut.trivialize()
     # (1) Trivial Solution
     if info is not None:
         for i, easy in enumerate(info):
@@ -53,7 +53,7 @@ def do(txt, TheState, TheAnalyzer, DefineLabelF=True, MentionStateIndexF=True):
 
     # (2) Separate: Pre-Context Check and Routing to Terminal
     # (2.1) Pre-Context Check
-    for i, element in enumerate(TheState.drop_out.get_acceptance_checker()):
+    for i, element in enumerate(DropOut.get_acceptance_checker()):
         if     element.pre_context_id == E_PreContextIDs.NONE \
            and element.acceptance_id  == E_AcceptanceIDs.VOID: 
                break
@@ -67,7 +67,7 @@ def do(txt, TheState, TheAnalyzer, DefineLabelF=True, MentionStateIndexF=True):
     # (2.2) Routing to Terminal
     # (2.2.1) If the positioning is the same for all entries (except the FAILURE)
     #         then, again, the routing may be simplified:
-    #router    = TheState.drop_out.router
+    #router    = DropOut.router
     #prototype = (router[0].positioning, router[0].position_register)
     #simple_f  = True
     #for element in islice(router, 1, None):
@@ -82,7 +82,7 @@ def do(txt, TheState, TheAnalyzer, DefineLabelF=True, MentionStateIndexF=True):
     #                LanguageDB.GOTO_TERMINAL(E_AcceptanceIDs.VOID)))
     #else:
     case_list = []
-    for element in TheState.drop_out.get_terminal_router():
+    for element in DropOut.get_terminal_router():
         if element.positioning == E_TransitionN.VOID: register = element.position_register
         else:                                         register = None
         case_list.append((LanguageDB.ACCEPTANCE(element.acceptance_id), 

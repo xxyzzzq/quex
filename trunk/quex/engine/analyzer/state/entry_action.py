@@ -222,8 +222,9 @@ class CommandList:
 
     def __eq__(self, Other):
         # Rely on '__eq__' of Accepter
-        if not (self.accepter == Other.accepter): return False
-        return self.misc == Other.misc
+        if isinstance(Other, CommandList) == False: return False
+        elif not (self.accepter == Other.accepter): return False
+        else:                                       return self.misc == Other.misc
 
     def __ne__(self, Other):
         return not (self.__eq__(Other))

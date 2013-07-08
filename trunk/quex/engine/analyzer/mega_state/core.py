@@ -106,7 +106,7 @@ class MegaState_Entry(Entry):
     ___________________________________________________________________________
     """
     def __init__(self):
-        Entry.__init__(self, FromStateIndexList=[])
+        Entry.__init__(self)
 
         # Some transitions may not require a 'SetStateKey' command, such 
         # as the recursive transition in TemplateState-s or the 'on-path-
@@ -121,8 +121,10 @@ class MegaState_Entry(Entry):
            This shall only be the case for originaly recursive transitions, 
            see 'action_db_update()'.
         """
-        ##print "#reassigned_transition_db id:", id(self)
-        ##print_callstack()
+        ## print "#reassigned_transition_db_construct:", RelatedMegaStateIndex
+        ## print "#noned_list:", self.noned_list
+        ## print "#reassigned_transition_db id:", id(self)
+        ## print_callstack()
         assert len(self.reassigned_transition_db) == 0
 
         self.action_db.categorize(RelatedMegaStateIndex)
@@ -131,6 +133,8 @@ class MegaState_Entry(Entry):
             action = self.action_db.get(transition_id)
             assert action is not None
             self.reassigned_transition_db.add(state_index, old_door_id, NewDoorId=action.door_id)
+
+        ## print "#reassigned_transition_db:", self.reassigned_transition_db
 
 class MegaState(AnalyzerState):
     """________________________________________________________________________
@@ -248,14 +252,14 @@ class MegaState_DropOut(dict):
             self.update_from_state(state)
         return
 
-    @property
-    def uniform_f(self):
+    def get_uniform_prototype(TheState.drop_out):
         """Uniform drop-out means, that for all drop-outs mentioned the same
         actions have to be performed. This is the case, if all states are
         categorized under the same drop-out. Thus the dictionary's size
         will be '1'.
         """
-        return len(self) == 1
+        if len(self) != 1: return None
+        else:              return self.iterkeys().next()
 
     def is_uniform_with(self, Other):
         """The given Other drop-out belongs to a 'normal state'. This function
@@ -359,7 +363,7 @@ class AbsorbedState_Entry(Entry):
     ___________________________________________________________________________
     """
     def __init__(self, StateIndex, ActionDB):
-        Entry.__init__(self, StateIndex, FromStateIndexList=[])
+        Entry.__init__(self)
         self.__action_db = ActionDB
 
 class AbsorbedState(AnalyzerState):

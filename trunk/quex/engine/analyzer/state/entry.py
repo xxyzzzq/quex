@@ -301,10 +301,7 @@ class Entry(object):
 
     __slots__ = ("__action_db")
 
-    def __init__(self, FromStateIndexList):
-        # map:  (from_state_index) --> list of actions to be taken if state is entered 
-        #                              'from_state_index' for a given pre-context.
-        # if len(FromStateIndexList) == 0: FromStateIndexList = [ E_StateIndices.NONE ]
+    def __init__(self):
         self.__action_db = EntryActionDB()
 
     @property

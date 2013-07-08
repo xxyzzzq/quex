@@ -1,4 +1,5 @@
 import quex.engine.state_machine.index         as index
+from   quex.engine.tools import print_callstack
 
 def __nice(SM_ID): 
     assert isinstance(SM_ID, (long, int))
@@ -126,11 +127,16 @@ def get_address(Type, Arg=None, U=False, R=False):
     global __label_db
     address = __label_db[Type](Arg)
 
+
     assert type(address) in (int, long), \
            "Label type '%s' is not suited for routing. Found %s" % (Type, address)
     
     if U: __referenced_label_set_add(get_label_of_address(address))
     if R: __routed_address_set.add(address)
+
+    ## if address == 171:
+    ##    print "#ARG:", Type, Arg
+    ##    print_callstack()
 
     return address
 
