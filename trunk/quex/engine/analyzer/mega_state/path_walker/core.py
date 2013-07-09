@@ -273,9 +273,7 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
                 elif plug > 0  and not path.has_wildcard(): 
                     continue # Wilcard required for match, but there is no wildcard open.
 
-                new_path = path.extended_clone(State.index, transition_char, target_door_id, plug) 
-                # Integrate the Entry and DropOut behavior of the given 'State'. 
-                new_path.integrate(State)
+                new_path = path.extended_clone(State, transition_char, target_door_id, plug) 
 
                 # RECURSION STEP ______________________________________________
                 # (May be, we do not have to clone the transition map if plug == -1)
