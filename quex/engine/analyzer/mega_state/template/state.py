@@ -78,7 +78,8 @@ class TemplateState_Entry(MegaState_Entry):
                 #
                 #   => The state_key does not have to be set (again) at entry.
                 #   => It makes sense to have a dedicated DoorID which is going
-                #      to be set by 'action_db.categorize()'
+                #      to be set by 'action_db.categorize()'. The translation
+                #      is then documented in '.reassigned_transition_db'.
                 self.noned_list.append((StateIndex, transition_id, clone.door_id))
                 clone.door_id = None
 

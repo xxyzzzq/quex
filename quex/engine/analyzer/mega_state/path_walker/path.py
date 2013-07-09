@@ -8,8 +8,10 @@ import quex.engine.state_machine.index         as     index
 
 from   quex.blackboard import E_StateIndices
 
-from   itertools import ifilter
+from   itertools   import ifilter
 from   collections import namedtuple
+
+from   copy import deepcopy
 
 class PathWalkerState_Entry(MegaState_Entry):
     """________________________________________________________________________
@@ -37,8 +39,9 @@ class PathWalkerState_Entry(MegaState_Entry):
         MegaState_Entry.__init__(self)
 
         self.action_db_update(TheEntry, 0, E_StateIndices.NONE)
+        self.previous_on_path_CommandList = None
 
-    def action_db_update(self, TheEntry, Offset, FromStateIndex):
+    def action_db_update(self, TheEntry, Offset, OnPathDoorId):
         """Include 'TheState.entry.action_db' into this state. That means,
         that any mappings:
            
@@ -58,6 +61,7 @@ class PathWalkerState_Entry(MegaState_Entry):
 
             self.action_db[transition_id] = clone
 
+        self.previous_on_path_CommandList = TheEntry.get_command_list_by_door_id(OnPathDoorId)
         return
 
 class CharacterPathStep(namedtuple("CharacterPathStep_tuple", ("state_index", "trigger", "door_id"))):
@@ -192,35 +196,32 @@ class CharacterPath(object):
     def clone(self):
         result = CharacterPath(None, None, None, None)
 
-        result.entry                          = self.entry
-        result.drop_out                       = self.drop_out
+        result.entry                          = deepcopy(self.entry)
+        result.drop_out                       = deepcopy(self.drop_out)
         result.__sequence                     = [ x for x in self.__sequence ] # CharacterPathStep are immutable
         result.__transition_map               = self.__transition_map.clone()
         result.__transition_map_wildcard_char = self.__transition_map_wildcard_char
         return result
 
-    def extended_clone(self, StartStateIndex, TransitionCharacter, TargetDoorId, TransitionMapWildCardPlug):
+    def extended_clone(self, PreviousTerminal, TransitionCharacter, TargetDoorId, TransitionMapWildCardPlug):
         """Append 'State' to path:
 
         -- add 'State' to the sequence of states on the path.
 
-        -- absorb the 'State's' drop-out and entry actions into 
-           the path's drop-out and entry actions.
+        -- absorb the 'State's' drop-out and entry actions into the path's 
+           drop-out and entry actions.
         
-        If 'TransitionCharacter' is None, then the state is
-        considered a terminal state. Terminal states are not themselves
-        implemented inside a PathWalkerState. Thus, their entry and drop out
-        information does not have to be absorbed.
-
-        Terminal states are indicated in the 'sequence' by a
-        'transition_char_to_next' of 'None' (which corresponds well with the
-        aforementioned).
+        If 'TransitionCharacter' is None, then the state is considered a
+        terminal state. Terminal states are not themselves implemented inside a
+        PathWalkerState. Thus, their entry and drop out information does not
+        have to be absorbed.
         """
         assert TransitionCharacter is not None
         assert    TransitionMapWildCardPlug is None \
                or isinstance(TransitionMapWildCardPlug, DoorID) \
                or Target == E_StateIndices.DROP_OUT
 
+        StartStateIndex = PreviousTerminal.index
         result = self.clone()
 
         if TransitionMapWildCardPlug != -1: 
@@ -229,21 +230,18 @@ class CharacterPath(object):
             self.__transition_map.set_target(self.__transition_map_wildcard_char, TransitionMapWildCardPlug)
             self.__transition_map_wildcard_char = None
 
+        prev_door_id = result.__sequence[-1].door_id
         result.__sequence.append(CharacterPathStep(StartStateIndex, TransitionCharacter, TargetDoorId))
 
-        return result
-
-    def integrate(self, PreviousTerminal):
-        # The index of the state on the path determines the path iterator's offset
-        offset             = len(self.__sequence) + 1
-        from_state_index   = self.__sequence[-1].state_index
-        old_target_door_id = self.__sequence[-1].door_id
-
         # Adapt the entry's action_db: include the entries of the new state
-        self.entry.action_db_update(PreviousTerminal.entry, offset, FromStateIndex=from_state_index)
+        # (The index of the state on the path determines the path iterator's offset)
+        offset = len(result.__sequence) + 1
+        result.entry.action_db_update(PreviousTerminal.entry, offset, OnPathDoorId=prev_door_id)
 
         # Adapt information about entry and drop-out actions
-        self.drop_out.update_from_state(PreviousTerminal)
+        result.drop_out.update_from_state(PreviousTerminal)
+
+        return result
 
     def has_wildcard(self):
         return self.__transition_map_wildcard_char is not None
@@ -298,12 +296,10 @@ class CharacterPath(object):
         # Check whether the entry of the last state on the path executes the
         # same as the entry to 'State'.
         door_id      = self.__sequence[-1].door_id
-        prev_door_id = self.__sequence[-2].state_index
         
         # CommandList upon Entry to TargetState
-        command_list      = State.entry.action_db.get_command_list_by_door_id(door_id)
-        prev_command_list = self.entry.action_db.get_command_list_by_door_id(prev_door_id)
-        if not command_list.is_equivalent(prev_door_id):
+        command_list = State.entry.action_db.get_command_list_by_door_id(door_id)
+        if not self.entry.previous_on_path_CommandList.is_equivalent(command_list):
             return False
 
         return False
