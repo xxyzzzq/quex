@@ -65,7 +65,7 @@ def do_node(txt, TheState, Node, LastChildF=False, BIPD_ID=None):
         has_reload_f           = len(TheState.transition_map) != 0 and BIPD_ID is None
         has_multiple_childs_f  = len(Node.child_set) > 1
         is_uniform_path_walker_state_f = isinstance(TheState, PathWalkerState) and \
-                                         TheState.uniform_entry_door_id_along_all_paths is not None
+                                         TheState.uniform_door_id is not None
         if has_transition_f or has_reload_f or has_multiple_childs_f or is_uniform_path_walker_state_f:
             door_label = LanguageDB.LABEL_BY_DOOR_ID(Node.door_id)
 

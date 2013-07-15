@@ -29,6 +29,16 @@ def pair_combinations(iterable):
         for y in islice(other, i+1, None):
             yield x, y
 
+def uniformity_check_and_set(X, NewX):
+    if X == -1:      # Not yet set.
+        return NewX  # => Set first time.
+    elif X is None:  # Know to be not uniform.
+        return X     # => No change.
+    elif X != NewX:  # Uniform until now, but not with 'NewX'.
+        return None  # => Not uniform.
+    else:            # Uniform with 'NewX'.
+        return X     # => Nothing to be done.
+
 class TypedSet(set):
     def __init__(self, Cls):
         self.__element_class = Cls
