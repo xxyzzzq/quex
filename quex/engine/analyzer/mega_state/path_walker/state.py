@@ -3,6 +3,7 @@ from   quex.engine.analyzer.transition_map      import TransitionMap
 from   quex.engine.analyzer.state.entry_action  import SetPathIterator, DoorID
 from   quex.engine.analyzer.mega_state.core     import MegaState, MegaState_Target
 import quex.engine.state_machine.index          as     index
+from   quex.engine.tools                        import uniformity_check_and_set
 from   quex.blackboard                          import E_Compression
 
 class PathWalkerState(MegaState):
@@ -41,6 +42,11 @@ class PathWalkerState(MegaState):
 
         self.__state_index_sequence    = None # Computed on demand
 
+        # Following are set by 'finalize()'.
+        self.__uniform_door_id          = -1
+        self.__uniform_terminal_door_id = -1
+        self.__door_id_sequence         = -1
+
     @property
     def transition_map(self):
         return self.__transition_map_to_mega_state_targets 
@@ -74,7 +80,7 @@ class PathWalkerState(MegaState):
 
         if self.__uniformity_required_f:
             # If uniformity is required, then a non-uniform entry should never been
-            # accepted. Thus, there **must** be a 'uniform_entry_door_id_along_all_paths'.
+            # accepted. Thus, there **must** be a 'uniform_door_id'.
             assert self.__uniform_entry_command_list_along_path is not None
             # If uniformity is a required, more than one drop-out scheme should never
             # been accepted. 
@@ -127,6 +133,41 @@ class PathWalkerState(MegaState):
 
         return TheEntry
 
+    def finalize(self):
+        """Ensure that the CommandList-s for the entries along the 
+           path are properly setup. Also, determine whether those
+           entries are uniform.
+        """
+        # First make sure, that the CommandList-s on the paths are organized
+        # and assigned with new DoorID-s.
+        self.entry.reassigned_transition_db_construct()
+
+        # Determine uniformity and the door_id_sequence.
+        uniform_door_id          = -1 # Not yet set.
+        uniform_terminal_door_id = -1 # Not yet set.
+        door_id_sequence         = []
+        for path in self.__path_list:
+
+            for step in path[:-1]:
+                # DoorID -- replace old be new.
+                new_door_id = self.entry.find_new_door_id(step)
+                door_id_sequence.append(new_door_id)
+
+                # CommandList -- consider unformity expressed as uniform door_id.
+                uniform_door_id = uniformity_check_and_set(uniform_door_id, new_door_id)
+
+            # DoorID -- replace old be new.
+            new_door_id = self.entry.find_new_door_id(path[-1], MustF=False)
+            door_id_sequence.append(new_door_id)
+
+            # Terminal DoorID uniform?
+            uniform_terminal_door_id = uniformity_check_and_set(uniform_terminal_door_id, 
+                                                                new_door_id)
+
+        self.__uniform_door_id_along_all_paths = uniform_door_id
+        self.__uniform_terminal_door_id        = uniform_terminal_door_id
+        self.__door_id_sequence                = door_id_sequence
+
     @property
     def path_list(self):          
         assert type(self.__path_list) == list
@@ -160,7 +201,7 @@ class PathWalkerState(MegaState):
         return self.__state_index_sequence
 
     @property
-    def uniform_entry_command_list_along_all_paths(self):
+    def uniform_door_id(self):
         """At any step along the path commands may be executed upon entry
            into the target state. If those commands are uniform, then this
            function returns a CommandList object of those uniform commands.
@@ -171,34 +212,16 @@ class PathWalkerState(MegaState):
         return self.__uniform_entry_command_list_along_path
 
     @property
-    def uniform_entry_door_id_along_all_paths(self):   
-        """RETURNS: -- An 'CommandList' object if it is common for all paths.
-                    -- None, the entries along the paths are somehow differring.
-        """
-        if self.__uniform_entry_command_list_along_path is None: 
-            return None
+    def door_id_sequence(self):
+        return self.__door_id_sequence
 
-        if self.__uniform_entry_command_list_along_path.is_empty():
-            # TODO: May be: This can be deleted, because even an empty CommandList
-            #       must be mentioned in the action_db
-            door_id = DoorID(self.index, 0) # 'Door 0' is sure to not do anything!
-        else:
-            door_id = self.entry.action_db.get_door_id_by_command_list(self.__uniform_entry_command_list_along_path)
-
-        assert door_id is not None, "There MUST be a door for the uniform entry command list."
-        return door_id
-
-    def get_uniform_terminal_entry_door_id(self, StateDB):
+    @property
+    def uniform_terminal_door_id(self):
         """RETURNS: DoorID -- if all paths which are involved enter the same 
                                terminal state through the same entry door.
                     None   -- if not.
         """
-        prototype = None
-        for sequence in self.__path_list:
-            terminal_door_id = sequence[-1].door_id
-            if   prototype is None:             prototype = terminal_door_id
-            elif prototype != terminal_door_id: return None
-        return prototype
+        return self.__uniform_terminal_door_id
 
     def delete_transitions_on_path(self):
         """Deletes all transitions that lie on the path. That is safe with respect

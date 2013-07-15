@@ -105,7 +105,7 @@ def framework(txt, PWState, TheAnalyzer):
     ## LanguageDB.STATE_DEBUG_INFO(txt, PWState) -- done in input_do
 
     # Three Versions of PathWalker Heads:
-    if PWState.uniform_entry_command_list_along_all_paths is not None:
+    if PWState.uniform_door_id is not None:
         # UNIFORM PATHS: Along the path, always the same (or no) commands are executed.
         #
         # PathWalker Head Implementation:
@@ -116,14 +116,12 @@ def framework(txt, PWState, TheAnalyzer):
         #           else:                                 goto TerminalDoor
         #
         # -- "goto CommonPathWalkerDoor"
-        uniform_entry_door_id = PWState.uniform_entry_door_id_along_all_paths
-        goto_next_door        = "            %s\n"  % LanguageDB.GOTO_BY_DOOR_ID(uniform_entry_door_id)
+        goto_next_door = "            %s\n" % LanguageDB.GOTO_BY_DOOR_ID(PWState.uniform_door_id)
 
         # -- "goto TerminalDoor"
-        uniform_terminal_entry_door_id = PWState.get_uniform_terminal_entry_door_id(TheAnalyzer.state_db)
-        if uniform_terminal_entry_door_id is not None:
+        if PWState.uniform_terminal_door_id is not None:
             # All path have same terminal state and enter it at the same door
-            goto_terminal_door   = "            %s\n" % LanguageDB.GOTO_BY_DOOR_ID(uniform_terminal_entry_door_id)
+            goto_terminal_door   = "            %s\n" % LanguageDB.GOTO_BY_DOOR_ID(PWState.uniform_terminal_door_id)
         else:
             # The terminals of the paths are different
             # 
@@ -134,11 +132,13 @@ def framework(txt, PWState, TheAnalyzer):
             #      else if path_iterator == path_1_end:  goto TerminalDoorOfPath1
             #      else if path_iterator == path_2_end:  goto TerminalDoorOfPath2
             #      ...
-            tmp = ""
-            for path_id, sequence in enumerate(PWState.path_list):
-                terminal_door_id = sequence[-1].door_id # Terminal DoorId
-                tmp +=  "            %s"       % LanguageDB.IF("path_iterator", "==", "path_walker_%i_path_%i + %s" %  \
-                                                               (PWState.index, path_id, len(sequence)-1),              \
+            tmp    = ""
+            offset = 0
+            for path_id, path in enumerate(PWState.path_list):
+                offset += len(path)
+                terminal_door_id = path[-1].door_id # Terminal DoorId
+                tmp +=  "            %s"       % LanguageDB.IF("path_iterator", "==", "&path_walker_%i_path_base[%s]" %  \
+                                                               (PWState.index, path_id, offset - 1),                   \
                                                                FirstF=(path_id == 0))                                  \
                        + "                %s\n" % LanguageDB.GOTO_BY_DOOR_ID(terminal_door_id) 
             tmp += "            %s"       % LanguageDB.ELSE                                  
@@ -184,10 +184,10 @@ def require_data(PWState, TheAnalyzer):
     LanguageDB = Setup.language_db
     variable_db.require("path_iterator")
 
-    def __door_adr_sequences():
+    def __door_adr_sequences(PathList):
         result = ["{\n"]
         offset = 0
-        for path_id, path in enumerate(PWState.path_list):
+        for path_id, path in enumerate(PathList):
             # NOTE: For all states in the path the 'from_state_index, to_state_index' can
             #       be determined, **except** for the FIRST state in the path. Thus for
             #       this state the 'door' cannot be determined in case that it is 
@@ -210,23 +210,19 @@ def require_data(PWState, TheAnalyzer):
         result.append("    }");
         return offset, result
 
-    def __character_sequences():
+    def __character_sequences(PathList):
         result = ["{\n"]
         offset = 0
-        for path_id, path in enumerate(PWState.path_list):
+        for path_id, path in enumerate(PathList):
             # Commenting the transition sequence is not dangerous. 'COMMENT' eliminates
             # comment delimiters if they would appear in the sequence_str.
             # sequence_str = imap(lambda x: Interval(x[1]).get_utf8_string(), path[:-1])
             # memory.append(LanguageDB.COMMENT("".join(sequence_str)) + "\n")
             # Last element of sequence contains only the 'end state'.
             result.append("        ")
-            result.extend("%i, " % x.trigger for x in path[:-1])
+            result.extend("%i, " % x.trigger for x in path)
             result.append("QUEX_SETTING_PATH_TERMINATION_CODE,")
             result.append("\n")
-
-            variable_db.require("path_walker_%i_path_%i", 
-                                Initial = "path_walker_%i_path_base + %i" % (PWState.index, offset), 
-                                Index   = (PWState.index, path_id))
 
             offset += len(path)
 
@@ -235,19 +231,26 @@ def require_data(PWState, TheAnalyzer):
 
     # (*) Path Walker Basis
     # The 'base' must be defined before all --> PriorityF (see table in variable_db)
-    element_n, character_sequence_str = __character_sequences()
+    element_n, character_sequence_str = __character_sequences(PWState.path_list)
+
+    for path_id in xrange(len(PWState.path_list)):
+        variable_db.require("path_walker_%i_path_%i", 
+                            Initial = "path_walker_%i_path_base + %i" % (PWState.index, offset), 
+                            Index   = (PWState.index, path_id))
+
     variable_db.require_array("path_walker_%i_path_base", 
                               ElementN = element_n,
                               Initial  = character_sequence_str,
                               Index    = PWState.index)
     
     # (*) The State Information for each path step
-    if PWState.uniform_entry_door_id_along_all_paths is None:
-        element_n, door_adr_sequence_str = __door_adr_sequences()
+    if PWState.uniform_door_id is None:
+        element_n, door_adr_sequence_str = __door_adr_sequences(PWState.path_list)
         variable_db.require_array("path_walker_%i_state_base", 
                                   ElementN = element_n,
                                   Initial  = door_adr_sequence_str,
                                   Index    = PWState.index)
+
         # The path_iterator is incremented before the 'goto', thus
         # 'path_iterator - (path_base + 1)' gives actually the correct offset.
         # We define a variable for that, for elegance.

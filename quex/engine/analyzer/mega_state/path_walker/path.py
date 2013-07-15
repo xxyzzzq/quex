@@ -55,14 +55,35 @@ class PathWalkerState_Entry(MegaState_Entry):
         """
         for transition_id, action in TheEntry.action_db.iteritems():
             clone = action.clone()
-            if transition_id.from_state_index != FromStateIndex:
+            if clone.door_id != OnPathDoorId:
                 # Create new 'SetPathIterator' for the state which is represented
                 clone.command_list.misc.add(SetPathIterator(Offset=Offset))
+            else:
+                # Entry along path.
+                #
+                #   => The state_key does not have to be set at entry. It 
+                #      results directly from the iterator position.
+                #   => It makes sense to have a dedicated DoorID which is going
+                #      to be set by 'action_db.categorize()'. The translation
+                #      is then documented in '.reassigned_transition_db'.
+                self.noned_list.append((StateIndex, transition_id, clone.door_id))
+                clone.door_id = None
 
             self.action_db[transition_id] = clone
 
         self.previous_on_path_CommandList = TheEntry.get_command_list_by_door_id(OnPathDoorId)
         return
+
+    def find_new_door_id(self, step, MustF=True):
+        """Find the new DoorID for a step on the path. 
+        """
+        new_door_id = self.reassigned_transition_db.get(step.state_index, step.door_id) 
+        if new_door_id is None:
+            assert not MustF
+            new_door_id = step.door_id
+        assert new_door_id is not None
+
+        return new_door_id
 
 class CharacterPathStep(namedtuple("CharacterPathStep_tuple", ("state_index", "trigger", "door_id"))):
     """See also class 'CharacterPath' where the role of the CharacterPathStep
@@ -132,7 +153,7 @@ class CharacterPath(object):
       the last state triggered by the terminal element of '.sequence'. As in the
       example, the state '5' is EXTERNAL and not part of the path itself.
 
-     .uniform_entry_door_id_along_all_paths
+     .uniform_door_id
 
       which is 'None' if the entries along the path are all uniform. 
       
@@ -216,7 +237,7 @@ class CharacterPath(object):
         PathWalkerState. Thus, their entry and drop out information does not
         have to be absorbed.
         """
-        assert TransitionCharacter is not None
+        assert    TransitionCharacter is not None
         assert    TransitionMapWildCardPlug is None \
                or isinstance(TransitionMapWildCardPlug, DoorID) \
                or Target == E_StateIndices.DROP_OUT
@@ -295,7 +316,7 @@ class CharacterPath(object):
         # 
         # Check whether the entry of the last state on the path executes the
         # same as the entry to 'State'.
-        door_id      = self.__sequence[-1].door_id
+        door_id = self.__sequence[-1].door_id
         
         # CommandList upon Entry to TargetState
         command_list = State.entry.action_db.get_command_list_by_door_id(door_id)
