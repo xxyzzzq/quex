@@ -71,7 +71,8 @@ from quex.engine.analyzer.state.entry_action import DoorID
 from quex.engine.analyzer.transition_map     import TransitionMap
 from quex.blackboard                         import E_StateIndices
 
-from quex.engine.tools import print_callstack
+from quex.engine.tools import print_callstack, \
+                              TypedDict
 
 from copy import copy
 
@@ -226,7 +227,7 @@ class MegaState(AnalyzerState):
         """
         return self.__bad_company
 
-class MegaState_DropOut(dict):
+class MegaState_DropOut(TypedDict):
     """_________________________________________________________________________
     
     Map: 'DropOut' object --> indices of states that implement the 
@@ -248,6 +249,8 @@ class MegaState_DropOut(dict):
         """Receives a list of states, extracts the drop outs and associates 
         each DropOut with the state indices that implement it.
         """
+        TypedDict.__init__(self, DropOut, set)
+
         for state in StateList:
             self.update_from_state(state)
         return
@@ -275,8 +278,8 @@ class MegaState_DropOut(dict):
         prototype = self.iterkeys().next()
         return prototype == Other
 
-    def update_from_other(self, MS_DropOut):
-        for drop_out, state_index_set in MS_DropOut.iteritems():
+    def update_from_mega_state(self, MState):
+        for drop_out, state_index_set in MState.drop_out.iteritems():
             # assert hasattr(drop_out, "__hash__")
             # assert hasattr(drop_out, "__eq__") # PathWalker may enter 'None' in unit test
             x = self.get(drop_out)
@@ -284,12 +287,11 @@ class MegaState_DropOut(dict):
             else:         x.update(state_index_set)
 
     def update_from_state(self, TheState):
-        drop_out = TheState.drop_out
-        if isinstance(drop_out,  MegaState_DropOut): 
-            self.update_from_other(drop_out)
+        if isinstance(TheState,  MegaState): 
+            self.update_from_mega_state(TheState)
         else:
-            x = self.get(drop_out)
-            if x is None: self[drop_out] = set([TheState.index])
+            x = self.get(TheState.drop_out)
+            if x is None: self[TheState.drop_out] = set([TheState.index])
             else:         x.add(TheState.index)
 
 class PseudoMegaState(MegaState): 

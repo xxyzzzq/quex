@@ -52,3 +52,28 @@ class TypedSet(set):
             assert isinstance(x, self.__element_class)
         set.update(self, Iterable)
 
+class TypedDict(dict):
+    def __init__(self, ClsKey=None, ClsValue=None):
+        self.__key_class   = ClsKey
+        self.__value_class = ClsValue
+
+    def get(self, Key):
+        assert self.__key_class is None or isinstance(Key, self.__key_class)
+        return dict.get(self, Key)
+
+    def __getitem__(self, Key):
+        assert self.__key_class is None or isinstance(Key, self.__key_class)
+        return dict.__getitem__(self, Key)
+
+    def __setitem__(self, Key, Value):
+        assert self.__key_class   is None or isinstance(Key, self.__key_class)
+        assert self.__value_class is None or isinstance(Value, self.__value_class)
+        return dict.__setitem__(self, Key, Value)
+
+    def update(self, Iterable):
+        for x in Iterable:
+            assert isinstance(x, tuple)
+            assert self.__key_class   is None or isinstance(x[0], self.__key_class)
+            assert self.__value_class is None or isinstance(x[1], self.__value_class)
+        dict.update(self, Iterable)
+
