@@ -252,14 +252,15 @@ class MegaState_DropOut(dict):
             self.update_from_state(state)
         return
 
-    def get_uniform_prototype(TheState.drop_out):
+    def get_uniform_prototype(self):
         """Uniform drop-out means, that for all drop-outs mentioned the same
         actions have to be performed. This is the case, if all states are
         categorized under the same drop-out. Thus the dictionary's size
         will be '1'.
         """
         if len(self) != 1: return None
-        else:              return self.iterkeys().next()
+        prototype = self.iterkeys().next()
+        return prototype
 
     def is_uniform_with(self, Other):
         """The given Other drop-out belongs to a 'normal state'. This function
@@ -269,7 +270,7 @@ class MegaState_DropOut(dict):
         If this MegaState_DropOut is not uniform, then of course it cannot
         become uniform with 'Other'.
         """
-        if not self.uniform_f: return False
+        if len(self) > 1: return False
 
         prototype = self.iterkeys().next()
         return prototype == Other
@@ -284,14 +285,12 @@ class MegaState_DropOut(dict):
 
     def update_from_state(self, TheState):
         drop_out = TheState.drop_out
-        if hasattr(drop_out, "iteritems"): 
+        if isinstance(drop_out,  MegaState_DropOut): 
             self.update_from_other(drop_out)
-            return
-        #assert hasattr(drop_out, "__hash__")
-        #assert hasattr(drop_out, "__eq__")
-        x = self.get(drop_out)
-        if x is None: self[drop_out] = set([TheState.index])
-        else:         x.add(TheState.index)
+        else:
+            x = self.get(drop_out)
+            if x is None: self[drop_out] = set([TheState.index])
+            else:         x.add(TheState.index)
 
 class PseudoMegaState(MegaState): 
     """________________________________________________________________________
