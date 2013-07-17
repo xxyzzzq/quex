@@ -141,10 +141,10 @@ def drop_out_scheme_do(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
             # Implement drop-out for each state key. 'state_key_list' combines
             # states that implement the same drop-out behavior. Same drop-outs
             # are implemented only once.
-            txt = []
-            drop_out_coder.do(txt, TheState.index, drop_out, TheAnalyzer, 
+            case_txt = []
+            drop_out_coder.do(case_txt, TheState.index, drop_out, TheAnalyzer, 
                               DefineLabelF=False, MentionStateIndexF=False)
-            case_list.append((state_key_list, txt))
+            case_list.append((state_key_list, case_txt))
 
         case_txt = LanguageDB.SELECTION(StateKeyString, case_list)
         LanguageDB.INDENT(case_txt)

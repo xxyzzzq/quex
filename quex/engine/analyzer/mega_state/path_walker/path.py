@@ -71,7 +71,7 @@ class PathWalkerState_Entry(MegaState_Entry):
 
             self.action_db[transition_id] = clone
 
-        self.previous_on_path_CommandList = TheEntry.get_command_list_by_door_id(OnPathDoorId)
+        self.previous_on_path_CommandList = TheEntry.action_db.get_command_list_by_door_id(OnPathDoorId)
         return
 
     def find_new_door_id(self, step, MustF=True):
