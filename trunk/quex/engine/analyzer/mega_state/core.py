@@ -80,10 +80,12 @@ class DoorIdReassignmentDB(dict):
     def __init__(self):
         dict.__init__(self)
 
-    def get_replacement(self, FromStateIndex, OldDoorId):
+    def get_replacement(self, FromStateIndex, OldDoorId, Default=None):
         change_db = dict.get(self, FromStateIndex)
-        if change_db is None: return None
-        return change_db[OldDoorId]
+        if change_db is None: return Default
+        result    = change_db.get(OldDoorId)
+        if result is None:    return Default
+        else:                 return result
 
     def add(self, FromStateIndex, OldDoorId, NewDoorId):
         assert isinstance(OldDoorId, DoorID)

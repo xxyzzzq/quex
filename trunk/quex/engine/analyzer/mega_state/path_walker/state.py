@@ -150,14 +150,19 @@ class PathWalkerState(MegaState):
 
             for step in path[:-1]:
                 # DoorID -- replace old be new.
-                new_door_id = self.entry.find_new_door_id(step)
+                new_door_id = self.entry.reassigned_transition_db.get_replacement(step.state_index, 
+                                                                                  step.door_id)
+                assert new_door_id is not None
                 door_id_sequence.append(new_door_id)
 
                 # CommandList -- consider unformity expressed as uniform door_id.
                 uniform_door_id = uniformity_check_and_set(uniform_door_id, new_door_id)
 
             # DoorID -- replace old be new.
-            new_door_id = self.entry.find_new_door_id(path[-1], MustF=False)
+            step = path[-1]
+            new_door_id = self.entry.reassigned_transition_db.get_replacement(step.state_index, 
+                                                                              step.door_id, 
+                                                                              Default=step.door_id)
             door_id_sequence.append(new_door_id)
 
             # Terminal DoorID uniform?

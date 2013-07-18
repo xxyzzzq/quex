@@ -66,24 +66,13 @@ class PathWalkerState_Entry(MegaState_Entry):
                 #   => It makes sense to have a dedicated DoorID which is going
                 #      to be set by 'action_db.categorize()'. The translation
                 #      is then documented in '.reassigned_transition_db'.
-                self.noned_list.append((StateIndex, transition_id, clone.door_id))
+                self.noned_list.append((OnPathDoorId.state_index, transition_id, clone.door_id))
                 clone.door_id = None
 
             self.action_db[transition_id] = clone
 
         self.previous_on_path_CommandList = TheEntry.action_db.get_command_list_by_door_id(OnPathDoorId)
         return
-
-    def find_new_door_id(self, step, MustF=True):
-        """Find the new DoorID for a step on the path. 
-        """
-        new_door_id = self.reassigned_transition_db.get(step.state_index, step.door_id) 
-        if new_door_id is None:
-            assert not MustF
-            new_door_id = step.door_id
-        assert new_door_id is not None
-
-        return new_door_id
 
 class CharacterPathStep(namedtuple("CharacterPathStep_tuple", ("state_index", "trigger", "door_id"))):
     """See also class 'CharacterPath' where the role of the CharacterPathStep
