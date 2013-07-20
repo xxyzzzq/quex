@@ -65,9 +65,9 @@ class PathWalkerState_Entry(MegaState_Entry):
                 #      results directly from the iterator position.
                 #   => It makes sense to have a dedicated DoorID which is going
                 #      to be set by 'action_db.categorize()'. The translation
-                #      is then documented in '.reassigned_transition_db'.
-                self.noned_list.append((OnPathDoorId.state_index, transition_id, clone.door_id))
-                clone.door_id = None
+                #      is then documented in '.transition_reassignment_db'.
+                self.transition_reassignment_candidate_list.append((OnPathDoorId.state_index, transition_id))
+                # clone.door_id = None
 
             self.action_db[transition_id] = clone
 
@@ -249,7 +249,7 @@ class CharacterPath(object):
         result.entry.action_db_update(PreviousTerminal.entry, offset, OnPathDoorId=prev_door_id)
 
         # Adapt information about entry and drop-out actions
-        result.drop_out.update_from_state(PreviousTerminal)
+        result.drop_out.add(PreviousTerminal.index, PreviousTerminal.drop_out)
 
         return result
 

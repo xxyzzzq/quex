@@ -138,7 +138,7 @@ def framework(txt, PWState, TheAnalyzer):
                 offset += len(path)
                 terminal_door_id = path[-1].door_id # Terminal DoorId
                 tmp +=  "            %s"       % LanguageDB.IF("path_iterator", "==", "&path_walker_%i_path_base[%s]" %  \
-                                                               (PWState.index, path_id, offset - 1),                   \
+                                                               (PWState.index, offset - 1),                   \
                                                                FirstF=(path_id == 0))                                  \
                        + "                %s\n" % LanguageDB.GOTO_BY_DOOR_ID(terminal_door_id) 
             tmp += "            %s"       % LanguageDB.ELSE                                  
@@ -208,7 +208,7 @@ def require_data(PWState, TheAnalyzer):
             offset += len(path)
 
         result.append("    }");
-        return offset, result
+        return offset + len(PathList), result
 
     def __character_sequences(PathList):
         result = ["{\n"]
@@ -227,15 +227,17 @@ def require_data(PWState, TheAnalyzer):
             offset += len(path)
 
         result.append("    }")
-        return offset, result
+        return offset + len(PathList), result
 
     # (*) Path Walker Basis
     # The 'base' must be defined before all --> PriorityF (see table in variable_db)
     element_n, character_sequence_str = __character_sequences(PWState.path_list)
 
-    for path_id in xrange(len(PWState.path_list)):
+    offset = 0
+    for path_id, path in enumerate(PWState.path_list):
+        offset += len(path)
         variable_db.require("path_walker_%i_path_%i", 
-                            Initial = "path_walker_%i_path_base + %i" % (PWState.index, offset), 
+                            Initial = "&path_walker_%i_path_base[%i]" % (PWState.index, offset), 
                             Index   = (PWState.index, path_id))
 
     variable_db.require_array("path_walker_%i_path_base", 

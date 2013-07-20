@@ -79,9 +79,9 @@ class TemplateState_Entry(MegaState_Entry):
                 #   => The state_key does not have to be set (again) at entry.
                 #   => It makes sense to have a dedicated DoorID which is going
                 #      to be set by 'action_db.categorize()'. The translation
-                #      is then documented in '.reassigned_transition_db'.
-                self.noned_list.append((StateIndex, transition_id, clone.door_id))
-                clone.door_id = None
+                #      is then documented in '.transition_reassignment_db'.
+                self.transition_reassignment_candidate_list.append((StateIndex, transition_id))
+                # clone.door_id = None
 
             # -- The TransitionID contains the state index of the absorbed state.
             # -- No state can be absorbed twice 
@@ -119,10 +119,10 @@ class TemplateState(MegaState):
         for state in [StateA, StateB]:
             self.entry.action_db_update(state.index, state.entry.action_db, 
                                         self.__state_index_to_state_key_db)
-        self.entry.reassigned_transition_db_construct(my_index)
+        self.entry.transition_reassignment_db_construct(my_index)
 
         self.__transition_map, \
-        self.__target_scheme_n = combine_maps(self.__state_a, self.__state_b, entry.reassigned_transition_db)
+        self.__target_scheme_n = combine_maps(self.__state_a, self.__state_b, entry.transition_reassignment_db)
 
         # Compatible with AnalyzerState
         # (A template state can never mimik an init state)
