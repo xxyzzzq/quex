@@ -111,33 +111,48 @@ class MegaState_Entry(Entry):
     def __init__(self):
         Entry.__init__(self)
 
-        # Some transitions may not require a 'SetStateKey' command, such 
-        # as the recursive transition in TemplateState-s or the 'on-path-
-        # transition' in PathWalker-s. The corresponding TransitionAction-s
-        # will have a '.door_id = None', so that a new DoorID has to be 
-        # assigned to them. The correspondent list is called the 'noned_list'.
-        self.noned_list               = []
-        self.reassigned_transition_db = DoorIdReassignmentDB()
+        # Some transitions into a MegaState_Entry do not require a
+        # 'SetStateKey' command. This is true, for example, for the recursive
+        # transition in TemplateState-s or the 'on-path-transition' in
+        # PathWalkerState-s. 
+        #
+        # If a transition shared a DoorID with another one which does not
+        # contain a 'SetStateKey' command, then this is no longer the case
+        # and the transition needs a new DoorID. The relation between the
+        # new and the old DoorID is stored in 'self.transition_reassignment_db'.
+        
+        self.transition_reassignment_candidate_list = []
+        self.transition_reassignment_db = DoorIdReassignmentDB()
 
-    def reassigned_transition_db_construct(self, RelatedMegaStateIndex):
+    def transition_reassignment_db_construct(self, RelatedMegaStateIndex):
         """Generate new DoorIDs for all TransitionID-s where '.door_id is None'.
            This shall only be the case for originaly recursive transitions, 
            see 'action_db_update()'.
         """
-        ## print "#reassigned_transition_db_construct:", RelatedMegaStateIndex
-        ## print "#noned_list:", self.noned_list
-        ## print "#reassigned_transition_db id:", id(self)
+        ## print "#transition_reassignment_db_construct:", RelatedMegaStateIndex
+        ## print "#transition_reassignment_candidate_list:", self.transition_reassignment_candidate_list
+        ## print "#transition_reassignment_db id:", id(self)
         ## print_callstack()
-        assert len(self.reassigned_transition_db) == 0
+        assert len(self.transition_reassignment_db) == 0
 
+        # All CommandList-s which are subject to DoorID reassignment are set to
+        # 'None'. Then 'action_db.categorize()' can determine new DoorID-s.
+        old_db = dict((transition_id, self.action_db.get(transition_id).door_id)
+                      for state_index, transition_id in self.transition_reassignment_candidate_list)
+
+        for state_index, transition_id in self.transition_reassignment_candidate_list:
+            self.action_db.get(transition_id).door_id = None
+        
         self.action_db.categorize(RelatedMegaStateIndex)
 
-        for state_index, transition_id, old_door_id in self.noned_list:
+        for state_index, transition_id in self.transition_reassignment_candidate_list:
             action = self.action_db.get(transition_id)
             assert action is not None
-            self.reassigned_transition_db.add(state_index, old_door_id, NewDoorId=action.door_id)
+            self.transition_reassignment_db.add(state_index, 
+                                                OldDoorId = old_db[transition_id], 
+                                                NewDoorId = action.door_id)
 
-        ## print "#reassigned_transition_db:", self.reassigned_transition_db
+        ## print "#transition_reassignment_db:", self.transition_reassignment_db
 
 class MegaState(AnalyzerState):
     """________________________________________________________________________
@@ -254,7 +269,10 @@ class MegaState_DropOut(TypedDict):
         TypedDict.__init__(self, DropOut, set)
 
         for state in StateList:
-            self.update_from_state(state)
+            if isinstance(state,  MegaState): 
+                self.update(state.drop_out.iteritems())
+            else:
+                self.add(state.index, state.drop_out)
         return
 
     def get_uniform_prototype(self):
@@ -275,26 +293,23 @@ class MegaState_DropOut(TypedDict):
         If this MegaState_DropOut is not uniform, then of course it cannot
         become uniform with 'Other'.
         """
+        assert len(self) > 0
+
         if len(self) > 1: return False
 
         prototype = self.iterkeys().next()
         return prototype == Other
 
-    def update_from_mega_state(self, MState):
-        for drop_out, state_index_set in MState.drop_out.iteritems():
-            # assert hasattr(drop_out, "__hash__")
-            # assert hasattr(drop_out, "__eq__") # PathWalker may enter 'None' in unit test
+    def update(self, Iterable):
+        for drop_out, state_index_set in Iterable:
             x = self.get(drop_out)
             if x is None: self[drop_out] = copy(state_index_set)
             else:         x.update(state_index_set)
 
-    def update_from_state(self, TheState):
-        if isinstance(TheState,  MegaState): 
-            self.update_from_mega_state(TheState)
-        else:
-            x = self.get(TheState.drop_out)
-            if x is None: self[TheState.drop_out] = set([TheState.index])
-            else:         x.add(TheState.index)
+    def add(self, StateIndex, TheDropOut):
+        x = self.get(TheDropOut)
+        if x is None: self[TheDropOut] = set([StateIndex])
+        else:         x.add(StateIndex)
 
 class PseudoMegaState(MegaState): 
     """________________________________________________________________________

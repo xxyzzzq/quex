@@ -109,7 +109,7 @@ class PathWalkerState(MegaState):
         self.__path_list.append(Path.sequence)
 
         # (2c) Absorb the drop-out information
-        self.drop_out.update_from_other(Path.drop_out)
+        self.drop_out.update(Path.drop_out.iteritems())
 
         return True
 
@@ -140,7 +140,7 @@ class PathWalkerState(MegaState):
         """
         # First make sure, that the CommandList-s on the paths are organized
         # and assigned with new DoorID-s.
-        self.entry.reassigned_transition_db_construct()
+        self.entry.transition_reassignment_db_construct(self.index)
 
         # Determine uniformity and the door_id_sequence.
         uniform_door_id          = -1 # Not yet set.
@@ -148,21 +148,24 @@ class PathWalkerState(MegaState):
         door_id_sequence         = []
         for path in self.__path_list:
 
-            for step in path[:-1]:
+            step = path[0]
+            for next_step in path[1:-1]:
                 # DoorID -- replace old be new.
-                new_door_id = self.entry.reassigned_transition_db.get_replacement(step.state_index, 
-                                                                                  step.door_id)
+                new_door_id = self.entry.transition_reassignment_db.get_replacement(next_step.state_index, 
+                                                                                    step.door_id)
                 assert new_door_id is not None
                 door_id_sequence.append(new_door_id)
 
                 # CommandList -- consider unformity expressed as uniform door_id.
                 uniform_door_id = uniformity_check_and_set(uniform_door_id, new_door_id)
 
+                step = next_step
+
             # DoorID -- replace old be new.
             step = path[-1]
-            new_door_id = self.entry.reassigned_transition_db.get_replacement(step.state_index, 
-                                                                              step.door_id, 
-                                                                              Default=step.door_id)
+            new_door_id = self.entry.transition_reassignment_db.get_replacement(step.state_index, 
+                                                                                step.door_id, 
+                                                                                Default=step.door_id)
             door_id_sequence.append(new_door_id)
 
             # Terminal DoorID uniform?
@@ -214,7 +217,7 @@ class PathWalkerState(MegaState):
            RETURNS: None, if the commands at entry of the states on the path
                           are not uniform.
         """
-        return self.__uniform_entry_command_list_along_path
+        return self.__uniform_door_id_along_all_paths
 
     @property
     def door_id_sequence(self):

@@ -302,6 +302,8 @@ class LanguageDB_Cpp(dict):
         return "QUEX_GOTO_STATE(%s);" % VariableName 
 
     def GOTO_BY_DOOR_ID(self, DoorId):
+        assert DoorId.__class__.__name__ == "DoorID"
+
         # Only for normal 'forward analysis' the from state is of interest.
         # Because, only during forward analysis some actions depend on the 
         # state from where we come.

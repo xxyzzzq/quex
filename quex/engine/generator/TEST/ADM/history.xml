@@ -1,4 +1,4 @@
-<history date="Thu Jul 18 00:22:13 2013" element-n="1288">
+<history date="Sat Jul 20 09:06:00 2013" element-n="1288">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>

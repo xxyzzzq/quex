@@ -426,8 +426,9 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
             # Create a new PathWalkerState
             path_walker_list.append(PathWalkerState(path, TheAnalyzer, CompressionType))
 
+    # Once, all path walkers are setup, finalize.
     for path_walker in path_walker_list:
-        path_walker.entry.reassigned_transition_db_construct(path_walker.index)
+        path_walker.finalize()
 
     return path_walker_list
 
