@@ -14,15 +14,14 @@ class PathWalkerState(MegaState):
     ___________________________________________________________________________
     """
     def __init__(self, FirstPath, TheAnalyzer, CompressionType):
-
+        # Overtake '.entry' and '.drop_out' from the 'FirstPath'. 
+        # ('FirstPath' will no longer be referenced elsewhere.)
         my_index = index.get()
-        entry    = PathWalkerState.adapt_path_walker_id_and_path_id(my_index,
-                                                                    FirstPath.entry, 
-                                                                    PathID=0)
+        FirstPath.entry.adapt_SetStateKey(my_index, PathID=0)
+        print "#reascl:", FirstPath.entry.transition_reassignment_candidate_list
 
-        drop_out = FirstPath.drop_out   # map: drop_out --> state_index_list
+        MegaState.__init__(self, FirstPath.entry, FirstPath.drop_out, my_index)
 
-        MegaState.__init__(self, entry, drop_out, my_index)
 
         self.__path_list = [ FirstPath.sequence ]
 
@@ -91,6 +90,8 @@ class PathWalkerState(MegaState):
             # (*) Check Drop-Out Uniformity
             elif self.drop_out != Path.drop_out: return False
 
+        # (**) HERE: We ACCEPT the Path!
+
         if uniform_entry_f == False:
             self.__uniform_entry_command_list_along_path = None
 
@@ -101,8 +102,9 @@ class PathWalkerState(MegaState):
 
         # (2a) Absorb Entry Information
         #      Absorb entry's action_db (maps: 'transition_id --> command_list')
-        adapted_entry = PathWalkerState.adapt_path_walker_id_and_path_id(self.index, Path.entry, PathID=path_id)
-        self.entry.action_db.absorb(adapted_entry.action_db)
+        Path.entry.adapt_SetStateKey(self.index, PathID=path_id)
+        print "#reascl:", Path.entry.transition_reassignment_candidate_list
+        self.entry.absorb(Path.entry)
 
         # (2b) Absorb the state sequence of the path
         #      (verify/falsify the uniform terminal entry)
@@ -112,26 +114,6 @@ class PathWalkerState(MegaState):
         self.drop_out.update(Path.drop_out.iteritems())
 
         return True
-
-    @staticmethod
-    def adapt_path_walker_id_and_path_id(PathWalkerIndex, TheEntry, PathID):
-        """Ensure that any 'SetPathIterator' contains the right references
-        to the pathwalker and path id.
-        """
-        for action in TheEntry.action_db.itervalues():
-            found_f = False
-            for command in action.command_list:
-                if not isinstance(command, SetPathIterator): continue
-
-                assert not found_f # Double check that is  not more than one 
-                #                  # such command per command_list.
-                found_f = True
-                command.set_path_walker_id(PathWalkerIndex)
-                command.set_path_id(PathID)
-                # There shall not be more then one 'SetPathIterator' command 
-                # for one transition.
-
-        return TheEntry
 
     def finalize(self):
         """Ensure that the CommandList-s for the entries along the 
@@ -148,18 +130,16 @@ class PathWalkerState(MegaState):
         door_id_sequence         = []
         for path in self.__path_list:
 
-            step = path[0]
-            for next_step in path[1:-1]:
+            for step in path[:-1]:
                 # DoorID -- replace old be new.
-                new_door_id = self.entry.transition_reassignment_db.get_replacement(next_step.state_index, 
+                print "#step:", step
+                new_door_id = self.entry.transition_reassignment_db.get_replacement(step.state_index, 
                                                                                     step.door_id)
                 assert new_door_id is not None
                 door_id_sequence.append(new_door_id)
 
                 # CommandList -- consider unformity expressed as uniform door_id.
                 uniform_door_id = uniformity_check_and_set(uniform_door_id, new_door_id)
-
-                step = next_step
 
             # DoorID -- replace old be new.
             step = path[-1]

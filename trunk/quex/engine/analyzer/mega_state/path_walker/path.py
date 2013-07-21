@@ -38,10 +38,10 @@ class PathWalkerState_Entry(MegaState_Entry):
     def __init__(self, TheEntry):
         MegaState_Entry.__init__(self)
 
-        self.action_db_update(TheEntry, 0, E_StateIndices.NONE)
+        self.action_db_update(TheEntry, 0)
         self.previous_on_path_CommandList = None
 
-    def action_db_update(self, TheEntry, Offset, OnPathDoorId):
+    def action_db_update(self, TheEntry, Offset, PreviousStep=None):
         """Include 'TheState.entry.action_db' into this state. That means,
         that any mappings:
            
@@ -53,9 +53,17 @@ class PathWalkerState_Entry(MegaState_Entry):
         walker state the 'state_key' must be set, so that it can mimik the
         represented state.
         """
+        if PreviousStep is not None:
+            OnPathDoorId     = PreviousStep.door_id
+            OnPathStateIndex = PreviousStep.state_index
+        else:
+            OnPathDoorId     = None
+            OnPathStateIndex = None
+
         for transition_id, action in TheEntry.action_db.iteritems():
             clone = action.clone()
-            if clone.door_id != OnPathDoorId:
+            print "#tid:", transition_id, OnPathStateIndex
+            if transition_id.state_index != OnPathStateIndex:
                 # Create new 'SetPathIterator' for the state which is represented
                 clone.command_list.misc.add(SetPathIterator(Offset=Offset))
             else:
@@ -66,12 +74,32 @@ class PathWalkerState_Entry(MegaState_Entry):
                 #   => It makes sense to have a dedicated DoorID which is going
                 #      to be set by 'action_db.categorize()'. The translation
                 #      is then documented in '.transition_reassignment_db'.
-                self.transition_reassignment_candidate_list.append((OnPathDoorId.state_index, transition_id))
+                self.transition_reassignment_candidate_list.append((OnPathStateIndex, transition_id))
                 # clone.door_id = None
 
             self.action_db[transition_id] = clone
 
+        print "#REASCL:", self.transition_reassignment_candidate_list
         self.previous_on_path_CommandList = TheEntry.action_db.get_command_list_by_door_id(OnPathDoorId)
+        return
+
+    def adapt_SetStateKey(self, PathWalkerIndex, PathID):
+        """Ensure that any 'SetPathIterator' contains the right references
+        to the pathwalker and path id.
+        """
+        for action in self.action_db.itervalues():
+            found_f = False
+            for command in action.command_list:
+                if not isinstance(command, SetPathIterator): continue
+
+                assert not found_f # Double check that is  not more than one 
+                #                  # such command per command_list.
+                found_f = True
+                command.set_path_walker_id(PathWalkerIndex)
+                command.set_path_id(PathID)
+                # There shall not be more then one 'SetPathIterator' command 
+                # for one transition.
+
         return
 
 class CharacterPathStep(namedtuple("CharacterPathStep_tuple", ("state_index", "trigger", "door_id"))):
@@ -240,13 +268,14 @@ class CharacterPath(object):
             self.__transition_map.set_target(self.__transition_map_wildcard_char, TransitionMapWildCardPlug)
             self.__transition_map_wildcard_char = None
 
-        prev_door_id = result.__sequence[-1].door_id
         result.__sequence.append(CharacterPathStep(StartStateIndex, TransitionCharacter, TargetDoorId))
 
         # Adapt the entry's action_db: include the entries of the new state
         # (The index of the state on the path determines the path iterator's offset)
         offset = len(result.__sequence) + 1
-        result.entry.action_db_update(PreviousTerminal.entry, offset, OnPathDoorId=prev_door_id)
+        prev_step = result.__sequence[-1]
+        result.entry.action_db_update(PreviousTerminal.entry, offset, 
+                                      PreviousStep=self.__sequence[-1])
 
         # Adapt information about entry and drop-out actions
         result.drop_out.add(PreviousTerminal.index, PreviousTerminal.drop_out)
