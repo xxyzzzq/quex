@@ -22,7 +22,7 @@ Analogous to the AnalyzerState, a MegaState has special classes to implement
 'Entry' and 'DropOut', namely 'MegaState_Entry' and 'MegaState_DropOut'.  Where
 an AnalyzerState's transition_map associates a character interval with a target
 state index, the MegaState's transition_map associates a character interval
-with a 'MegaState_Target'. Given a state_key, the MegaState_Target provides the
+with a 'MegaState_Transition'. Given a state_key, the MegaState_Transition provides the
 target state index for the given character interval.
 
 The following pinpoints the general idea of a MegaState.
@@ -61,7 +61,7 @@ _______________________________________________________________________________
 (C) 2012 Frank-Rene Schaefer
 """
 from quex.engine.analyzer.state.core         import AnalyzerState
-from quex.engine.analyzer.mega_state.target  import MegaState_Target, \
+from quex.engine.analyzer.mega_state.target  import MegaState_Transition, \
                                                     MegaState_Target_DROP_OUT
 from quex.engine.analyzer.state.entry        import Entry
 from quex.engine.analyzer.state.drop_out     import DropOut, \
@@ -129,9 +129,9 @@ class MegaState_Entry(Entry):
            This shall only be the case for originaly recursive transitions, 
            see 'action_db_update()'.
         """
-        print "#transition_reassignment_db_construct:", RelatedMegaStateIndex
-        print "#transition_reassignment_candidate_list:", self.transition_reassignment_candidate_list
-        print "#transition_reassignment_db id:", id(self)
+        ## print "#transition_reassignment_db_construct:", RelatedMegaStateIndex
+        ## print "#transition_reassignment_candidate_list:", self.transition_reassignment_candidate_list
+        ## print "#transition_reassignment_db id:", id(self)
         ## print_callstack()
         assert self.transition_reassignment_db is None
 
@@ -156,7 +156,7 @@ class MegaState_Entry(Entry):
                                                 OldDoorId = old_db[transition_id], 
                                                 NewDoorId = action.door_id)
 
-        print "#transition_reassignment_db:", self.transition_reassignment_db
+        ## print "#transition_reassignment_db:", self.transition_reassignment_db
 
     def absorb(self, Other):
         assert isinstance(Other, MegaState_Entry)
@@ -329,9 +329,9 @@ class PseudoMegaState(MegaState):
     
     Represents an AnalyzerState in a way to that it acts homogeneously with
     other MegaState-s. That is, the transition_map is adapted so that it maps
-    from a character interval to a MegaState_Target.
+    from a character interval to a MegaState_Transition.
 
-              transition_map:  interval --> MegaState_Target
+              transition_map:  interval --> MegaState_Transition
 
     instead of mapping to a target state index.
     ___________________________________________________________________________
@@ -348,7 +348,7 @@ class PseudoMegaState(MegaState):
 
         self.__state_index_sequence = [ Represented_AnalyzerState.index ]
 
-        # (*) Transition map that triggers to MegaState_Target-s 
+        # (*) Transition map that triggers to MegaState_Transition-s 
         #     instead of triggering to DoorID-s.
         # 
         # CAVEAT: In general, it is **NOT TRUE** that if two transitions (x,a) and
@@ -371,7 +371,7 @@ class PseudoMegaState(MegaState):
         # Here, the recursive target is implemented as a 'scheme' in order to
         # prevent that it may be treated as 'uniform' with other targets.
         self.transition_map = TransitionMap.from_iterable(self.__state.transition_map, 
-                                                          MegaState_Target.create)
+                                                          MegaState_Transition.create)
 
     def state_index_sequence(self):
         return self.__state_index_sequence

@@ -1,7 +1,7 @@
 # (C) 2010-2013 Frank-Rene Schaefer
 from   quex.engine.analyzer.transition_map      import TransitionMap   
 from   quex.engine.analyzer.state.entry_action  import SetPathIterator, DoorID
-from   quex.engine.analyzer.mega_state.core     import MegaState, MegaState_Target
+from   quex.engine.analyzer.mega_state.core     import MegaState, MegaState_Transition
 import quex.engine.state_machine.index          as     index
 from   quex.engine.tools                        import uniformity_check_and_set
 from   quex.blackboard                          import E_Compression
@@ -30,11 +30,11 @@ class PathWalkerState(MegaState):
         #     '.accept(...)' requires a 'DoorID - transition_map' for 
         #     comparison. Thus, keep original transition map as reference.
         #
-        # transition_map:          interval --> MegaState_Target
+        # transition_map:          interval --> MegaState_Transition
         self.__transition_map_to_door_ids           = FirstPath.transition_map
         self.__transition_map_to_mega_state_targets =                          \
                 TransitionMap.from_iterable(self.__transition_map_to_door_ids, \
-                                            MegaState_Target.create)
+                                            MegaState_Transition.create)
 
         self.__uniformity_required_f                 = (CompressionType == E_Compression.PATH_UNIFORM)
         self.__uniform_entry_command_list_along_path = FirstPath.uniform_entry_command_list_along_path
@@ -163,10 +163,12 @@ class PathWalkerState(MegaState):
 
     def implemented_state_index_list(self):
         result = [] # **MUST** be a list, because we might identify 'state_keys' with it.
+        print "#implemented_state_index_list:"
         for path in self.__path_list:
             # The end state of each path is not implemented
             # (It may be part of another path, though)
             result.extend(x.state_index for x in path)
+            print "#extend:", [x.state_index for x in path]
         return result
 
     def map_state_index_to_state_key(self, StateIndex):

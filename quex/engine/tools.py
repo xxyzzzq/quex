@@ -58,22 +58,41 @@ class TypedDict(dict):
         self.__value_class = ClsValue
 
     def get(self, Key):
-        assert self.__key_class is None or isinstance(Key, self.__key_class)
+        assert self.__key_class is None or isinstance(Key, self.__key_class), \
+               self._error_key(Key)
         return dict.get(self, Key)
 
     def __getitem__(self, Key):
-        assert self.__key_class is None or isinstance(Key, self.__key_class)
+        assert self.__key_class is None or isinstance(Key, self.__key_class), \
+               self._error_key(Key)
         return dict.__getitem__(self, Key)
 
     def __setitem__(self, Key, Value):
-        assert self.__key_class   is None or isinstance(Key, self.__key_class)
-        assert self.__value_class is None or isinstance(Value, self.__value_class)
+        assert self.__key_class   is None or isinstance(Key, self.__key_class), \
+               self._error_key(Key)
+        assert self.__value_class is None or isinstance(Value, self.__value_class), \
+               self._error_value(Key)
         return dict.__setitem__(self, Key, Value)
 
     def update(self, Iterable):
         for x in Iterable:
             assert isinstance(x, tuple)
-            assert self.__key_class   is None or isinstance(x[0], self.__key_class)
-            assert self.__value_class is None or isinstance(x[1], self.__value_class)
+            assert self.__key_class   is None or isinstance(x[0], self.__key_class), \
+                   self._error_key(x[0])
+            assert self.__value_class is None or isinstance(x[1], self.__value_class), \
+                   self._error_value(x[1])
         dict.update(self, Iterable)
+
+    def _error(self, ExpectedClass):
+        return "TypedDict(%s, %s) expects %s" % \
+                (self.__key_class.__name__, self.__value_class.__name__, \
+                 ExpectedClass.__name__)
+
+    def _error_key(self, Key):
+        return "%s as a key. Found '%s'" % \
+                (self._error(self.__key_class), Key.__class__.__name__)
+
+    def _error_value(self, Value):
+        return "%s as a key. Found '%s'" % \
+                (self._error(self.__value_class), Value.__class__.__name__)
 

@@ -3,19 +3,19 @@ from quex.blackboard                         import E_StateIndices
 
 MegaState_Target_DROP_OUT_hash = hash(E_StateIndices.DROP_OUT)
 
-class MegaState_Target(object):
+class MegaState_Transition(object):
     """________________________________________________________________________
     
     Where an AnalyzerState's transition map associates a character interval
     with a target state index, a MegaState's transition map associates a
-    character interval with a MegaState_Target.
+    character interval with a MegaState_Transition.
 
-    A MegaState_Target determines the target state, or target state's entry
+    A MegaState_Transition determines the target state, or target state's entry
     door, by means of a state key. It is very well possible that it is
     homogeneous and independent of the state key. In that case, it contains a
     '.target_state_index' or '.door_id'. If not, the '.scheme' member describes
     the relationship between and target state index. For example, a given
-    interval X triggers to MegaState_Target T, i.e. there is an element in the
+    interval X triggers to MegaState_Transition T, i.e. there is an element in the
     transition map:
 
              ...
@@ -38,17 +38,17 @@ class MegaState_Target(object):
     keeps track of the schemes by means of the '.object_db'. Before handling 
     a transition map the function
 
-              MegaState_Target.init()
+              MegaState_Transition.init()
 
     initializes the .object_db. An independent copy of the .object_db can be
     obtained by
 
-              my_copy = MegaState_Target.disconnect_object_db()
+              my_copy = MegaState_Transition.disconnect_object_db()
 
     FINALIZATION: _____________________________________________________________
 
     Once the whole state configuration and the states' entry doors are
-    determined, the actual MegaState_Target object can be finalized. That is:
+    determined, the actual MegaState_Transition object can be finalized. That is:
        
        -- A common target may become a scheme, if the DoorIDs differ depending
           on the 'from_state_index' (from .implemented_state_index_list()).
@@ -60,7 +60,7 @@ class MegaState_Target(object):
     '.door_id' if the target state's door is the same for all involved states.
 
     ___________________________________________________________________________
-    NOTE: All 'DropOut' MegaState_Target are represented by the single object
+    NOTE: All 'DropOut' MegaState_Transition are represented by the single object
           'MegaState_Target_DROP_OUT'. This saves memory.
     """
     __slots__   = ('__drop_out_f', '__scheme', '__scheme_id', '__hash', '__door_id')
@@ -68,18 +68,18 @@ class MegaState_Target(object):
 
     @staticmethod
     def init():
-        """Initializes: '__object_db' which keeps track of generated MegaState_Target-s."""
-        MegaState_Target.__object_db.clear()
+        """Initializes: '__object_db' which keeps track of generated MegaState_Transition-s."""
+        MegaState_Transition.__object_db.clear()
         # The Drop-Out target must be always in there.
-        MegaState_Target.__object_db[E_StateIndices.DROP_OUT] = MegaState_Target_DROP_OUT
+        MegaState_Transition.__object_db[E_StateIndices.DROP_OUT] = MegaState_Target_DROP_OUT
 
     @staticmethod
     def disconnect_object_db():
         """Disconnects the '__object_db' so that it may be used without influencing 
-           the '__object_db' of MegaState_Target.
+           the '__object_db' of MegaState_Transition.
         """
-        tmp_object_db                = MegaState_Target.__object_db
-        MegaState_Target.__object_db = dict()
+        tmp_object_db                = MegaState_Transition.__object_db
+        MegaState_Transition.__object_db = dict()
         return tmp_object_db
 
     @staticmethod
@@ -89,10 +89,10 @@ class MegaState_Target(object):
                or isinstance(Target, DoorID)        \
                or isinstance(Target, DoorID_Scheme)
        
-        result = MegaState_Target.__object_db.get(Target)
+        result = MegaState_Transition.__object_db.get(Target)
         if result is None: 
-            result = MegaState_Target(Target)
-            MegaState_Target.__object_db[Target] = result
+            result = MegaState_Transition(Target)
+            MegaState_Transition.__object_db[Target] = result
 
         return result
 
@@ -109,7 +109,7 @@ class MegaState_Target(object):
         elif self.__door_id is not None:
             new_door_id = MapOldToNewDoorIDs.get(self.__door_id)
             if new_door_id is None: return None
-            else:                   return MegaState_Target(new_door_id)
+            else:                   return MegaState_Transition(new_door_id)
 
         elif self.__scheme is not None:
             new_scheme = None
@@ -122,7 +122,7 @@ class MegaState_Target(object):
                 new_scheme[i] = new_door_id
 
             if new_scheme is None: return None
-            else:                  return MegaState_Target(DoorID_Scheme(new_scheme))
+            else:                  return MegaState_Transition(DoorID_Scheme(new_scheme))
 
         else:
             assert False
@@ -180,7 +180,7 @@ class MegaState_Target(object):
 
         scheme_db = {}
         for interval, target in transition_map:
-            assert isinstance(target, MegaState_Target)
+            assert isinstance(target, MegaState_Transition)
             if target.__scheme is None: continue
             target.__scheme_id = determine_scheme_id(scheme_db, target.__scheme)
 
@@ -197,7 +197,7 @@ class MegaState_Target(object):
                 elif prototype is None:    prototype = door_id  # first door_id --> protype
                 else:                      return None          # scheme not uniform
             # All door_ids uniform:
-            return MegaState_Target.create(prototype)
+            return MegaState_Transition.create(prototype)
 
         for i, info in enumerate(transition_map):
             interval, target = info
@@ -209,10 +209,10 @@ class MegaState_Target(object):
         return
 
     def __repr__(self):
-        if   self.drop_out_f:          return "MegaState_Target:DropOut"
-        elif self.door_id is not None: return "MegaState_Target:%s"         % repr(self.__door_id).replace("L", "")
-        elif self.scheme is not None:  return "MegaState_Target:scheme(%s)" % repr(self.__scheme).replace("L", "")
-        else:                          return "MegaState_Target:<ERROR>"
+        if   self.drop_out_f:          return "MegaState_Transition:DropOut"
+        elif self.door_id is not None: return "MegaState_Transition:%s"         % repr(self.__door_id).replace("L", "")
+        elif self.scheme is not None:  return "MegaState_Transition:scheme(%s)" % repr(self.__scheme).replace("L", "")
+        else:                          return "MegaState_Transition:<ERROR>"
 
     def __hash__(self):
         if self.__hash is None:
@@ -223,7 +223,7 @@ class MegaState_Target(object):
         return self.__hash
 
     def __eq__(self, Other):
-        if   isinstance(Other, MegaState_Target) == False: 
+        if   isinstance(Other, MegaState_Transition) == False: 
             return False
         elif self.__drop_out_f and Other.__drop_out_f: 
             return True
@@ -235,5 +235,5 @@ class MegaState_Target(object):
             return False
 
 # Globally unique object to stand up for all 'drop-outs'.
-MegaState_Target_DROP_OUT      = MegaState_Target(E_StateIndices.DROP_OUT)
+MegaState_Target_DROP_OUT      = MegaState_Transition(E_StateIndices.DROP_OUT)
 

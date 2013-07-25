@@ -200,7 +200,7 @@ class EntryActionDB:
             return DoorID(StateIndex, self.__largest_used_door_sub_index)
 
         def sort_key(X):
-            return (X[0].state_index, X[0].from_state_index)
+            return (X[0].target_state_index, X[0].action_id.source_state_index)
 
         for transition_id, action in sorted(todo, key=sort_key): # NOT: 'iteritems()'
             action.door_id                       = get_door_id(action.command_list)

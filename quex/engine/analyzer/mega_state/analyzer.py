@@ -2,7 +2,7 @@
 import quex.engine.analyzer.mega_state.template.core    as     template_analyzer
 import quex.engine.analyzer.mega_state.path_walker.core as     path_analyzer
 from   quex.engine.analyzer.mega_state.core             import AbsorbedState, MegaState
-from   quex.engine.analyzer.mega_state.target           import MegaState_Target
+from   quex.engine.analyzer.mega_state.target           import MegaState_Transition
 from   quex.blackboard                                  import setup as Setup, \
                                                                E_Compression
 
@@ -92,8 +92,8 @@ def do(TheAnalyzer):
 
 
     for mega_state in TheAnalyzer.mega_state_list:
-         MegaState_Target.rejoin_uniform_schemes(mega_state.transition_map)
-         MegaState_Target.assign_scheme_ids(mega_state.transition_map)
+         MegaState_Transition.rejoin_uniform_schemes(mega_state.transition_map)
+         MegaState_Transition.assign_scheme_ids(mega_state.transition_map)
 
     return
 

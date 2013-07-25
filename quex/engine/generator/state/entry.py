@@ -96,7 +96,7 @@ def comment_door(txt, Node, TheEntry):
     transition_id_list = TheEntry.action_db.get_transition_id_list(Node.door_id)
     if len(transition_id_list) != 0:
         txt.append(" ")
-        LanguageDB.COMMENT(txt, "".join([ "(%s from %s) " % (x.state_index, x.from_state_index) for x in transition_id_list])[:-1])
+        LanguageDB.COMMENT(txt, "".join([ "(%s from %s) " % (x.target_state_index, x.action_id.source_state_index) for x in transition_id_list])[:-1])
     else:
         txt.append("\n") 
 

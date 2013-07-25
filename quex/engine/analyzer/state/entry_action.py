@@ -32,7 +32,19 @@ class DoorID_Scheme(tuple):
         door_id_list.extend(list(That))
         return DoorID_Scheme(door_id_list)
 
-class TransitionID(namedtuple("TransitionID_tuple", ("state_index", "from_state_index", "trigger_id"))):
+class TransitionActionID(namedtuple("TransitionActionID_tuple", ("source_state_index", "trigger_id"))):
+    def __new__(self, SourceStateIndex, TriggerId=E_TriggerIDs.NONE):
+        assert isinstance(SourceStateIndex, (int, long)) or SourceStateIndex in E_StateIndices
+        assert isinstance(TriggerId, (int, long))        or TriggerId        in E_TriggerIDs
+        return super(TransitionActionID, self).__new__(self, SourceStateIndex, TriggerId)
+
+    def __repr__(self):
+        if self.trigger_id == E_TriggerIDs.NONE:
+            return "TransitionID(to=%s, from=%s)" % (self.state_index, self.from_state_index)
+        else:
+            return "TransitionID(to=%s, from=%s, trid=%s)" % (self.state_index, self.from_state_index, self.trigger_id)
+
+class TransitionID(namedtuple("TransitionID_tuple", ("target_state_index", "action_id"))):
     """Objects of this type identify a transition. That is, they tell
        from which state ('from_state_index') to which state ('state_index')
        the transition happens. The particular transition may relate to the
@@ -49,7 +61,7 @@ class TransitionID(namedtuple("TransitionID_tuple", ("state_index", "from_state_
         assert isinstance(StateIndex, (int, long))     or StateIndex     in E_StateIndices
         assert isinstance(FromStateIndex, (int, long)) or FromStateIndex in E_StateIndices
         assert isinstance(TriggerId, (int, long))      or TriggerId      in E_TriggerIDs
-        return super(TransitionID, self).__new__(self, StateIndex, FromStateIndex, TriggerId)
+        return super(TransitionID, self).__new__(self, StateIndex, TransitionActionID(FromStateIndex, TriggerId))
 
     def __repr__(self):
         if self.trigger_id == E_TriggerIDs.NONE:
