@@ -212,7 +212,7 @@ class DropOutIndifferent(DropOut):
 #    def finish(self, PositionRegisterMap):
 #        pass
 
-class DropOutBackwardInputPositionDetection(object):
+class DropOutBackwardInputPositionDetection(DropOut):
     __slots__ = ("__reachable_f")
     def __init__(self, AcceptanceF):
         """A non-acceptance drop-out can never be reached, because we walk a 

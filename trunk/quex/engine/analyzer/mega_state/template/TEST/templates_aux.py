@@ -5,7 +5,7 @@ from   quex.engine.analyzer.state.entry_action              import DoorID
 import quex.engine.analyzer.engine_supply_factory           as     engine
 from   quex.engine.analyzer.mega_state.core                 import PseudoMegaState, MegaState, AbsorbedState
 import quex.engine.analyzer.mega_state.template.core        as templates 
-from   quex.engine.analyzer.mega_state.template.state       import MegaState_Target, TemplateState
+from   quex.engine.analyzer.mega_state.template.state       import MegaState_Transition, TemplateState
 from   quex.engine.analyzer.mega_state.template.candidate   import TemplateStateCandidate
 import quex.engine.generator.state.entry_door_tree          as     entry_door_tree
 from   quex.engine.state_machine.core                       import State
@@ -160,7 +160,7 @@ def print_tm(TM, StateIndexList):
     tm_str = [("  [INTERVAL]", "[TARGET/STATE %s]" % [int(x) for x in StateIndexList])]
     for interval, target in TM:
         interval_str = "  " + repr(interval).replace("%i" % sys.maxint, "oo").replace("%i" % (sys.maxint-1), "oo")
-        target_str   = repr(target).replace("MegaState_Target", "MST")
+        target_str   = repr(target).replace("MegaState_Transition", "MST")
         tm_str.append((interval_str, target_str))
 
     L = max(len(x[0]) for x in tm_str)
@@ -195,7 +195,7 @@ def OLD_print_tm(TM):
     txt = ""
     last_i = len(TM) - 1
     for i, info in enumerate(TM):
-        if not isinstance(info[1], MegaState_Target): 
+        if not isinstance(info[1], MegaState_Transition): 
             txt += "%s" % repr(info[1]).replace("L", "")
         else: 
             txt += "%s" % scheme_str(info[1])
@@ -208,7 +208,7 @@ def print_metric(TM):
     def get_target_scheme_list(TM):
         result = []
         for interval, target in TM:
-            assert isinstance(target, MegaState_Target)
+            assert isinstance(target, MegaState_Transition)
             if target.scheme is not None: result.append(target)
         return result
 

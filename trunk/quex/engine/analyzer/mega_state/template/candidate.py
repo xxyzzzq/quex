@@ -1,6 +1,6 @@
 # vim:set encoding=utf8:
 # (C) 2010-2012 Frank-Rene Schäfer
-from   quex.engine.analyzer.mega_state.core import MegaState_Target
+from   quex.engine.analyzer.mega_state.core import MegaState_Transition
 from   quex.engine.analyzer.state.entry_action  import DoorID_Scheme
 from   quex.engine.analyzer.state.drop_out  import DropOut, \
                                                    DropOutIndifferent, \
@@ -221,12 +221,12 @@ class TargetFactory:
     """________________________________________________________________________
     
     The 'TargetFactory' is concerned with the combination of two 
-    MegaState_Target-s from two transition maps--assumed that they trigger on
+    MegaState_Transition-s from two transition maps--assumed that they trigger on
     the same character range. The TargetFactory accomplishes two jobs:
 
         .get(A, B): 
         
-           --> MegaState_Target target implements target A and B.
+           --> MegaState_Transition target implements target A and B.
 
         .update_scheme_set(A, B, scheme_set)
 
@@ -243,14 +243,14 @@ class TargetFactory:
     def get(self, TA, TB):
         """RETURNS:
         
-        A MegaState_Target which represents the combination of target A and
-        target B. If both are equal the MegaState_Target may have the
+        A MegaState_Transition which represents the combination of target A and
+        target B. If both are equal the MegaState_Transition may have the
         '.target_state_index' set. If not a 'scheme' is developped is
         developed, which determines a target based on a state key, i.e.
         'target_state_index = scheme[state_key]'.
         """
-        assert isinstance(TA, MegaState_Target) 
-        assert isinstance(TB, MegaState_Target) 
+        assert isinstance(TA, MegaState_Transition) 
+        assert isinstance(TB, MegaState_Transition) 
 
         if TA.drop_out_f:
             if TB.drop_out_f:
@@ -276,7 +276,7 @@ class TargetFactory:
         else:
             TB_scheme = TB.scheme
 
-        return MegaState_Target.create(DoorID_Scheme.concatinate(TA_scheme,TB_scheme))
+        return MegaState_Transition.create(DoorID_Scheme.concatinate(TA_scheme,TB_scheme))
 
     @staticmethod
     def update_scheme_set(TA, TB, scheme_set):
@@ -284,8 +284,8 @@ class TargetFactory:
         combination of transition maps. The number of different schemes is used
         to determine the cost a combination of transition maps.
         """
-        assert isinstance(TA, MegaState_Target) 
-        assert isinstance(TB, MegaState_Target) 
+        assert isinstance(TA, MegaState_Transition) 
+        assert isinstance(TB, MegaState_Transition) 
 
         if TA.drop_out_f and TB.drop_out_f:
             return 

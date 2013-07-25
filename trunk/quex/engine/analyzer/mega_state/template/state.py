@@ -1,5 +1,5 @@
 from   quex.engine.analyzer.mega_state.core         import MegaState, \
-                                                           MegaState_Target, \
+                                                           MegaState_Transition, \
                                                            MegaState_Entry, \
                                                            MegaState_DropOut
 from   quex.engine.analyzer.mega_state.template.candidate  import TargetFactory
@@ -198,8 +198,8 @@ def combine_maps(StateA, StateB, ReassignedTransitionDB):
 
 
        For some intervals, the target is the same. But for some it is different.
-       In a TemplateState, the intervals are associated with MegaState_Target 
-       objects. A MegaState_Target object tells the target state dependent
+       In a TemplateState, the intervals are associated with MegaState_Transition 
+       objects. A MegaState_Transition object tells the target state dependent
        on the 'state_key'. The above example may result in a transition map
        as below:
 
@@ -285,9 +285,9 @@ def combine_maps(StateA, StateB, ReassignedTransitionDB):
         if   isinstance(Target, DoorID):           
             replacement = ReassignmentDB.get(Target)
             if replacement is None: return Target
-            else:                   return MegaState_Target.create(replacement)
+            else:                   return MegaState_Transition.create(replacement)
 
-        elif isinstance(Target, MegaState_Target): 
+        elif isinstance(Target, MegaState_Transition): 
             replacement = Target.replace_self(ReassignmentDB)
             if replacement is None: return Target
             else:                   return replacement
@@ -303,7 +303,7 @@ def combine_maps(StateA, StateB, ReassignedTransitionDB):
     StateA.transition_map.assert_adjacency(TotalRangeF=True)
     StateB.transition_map.assert_adjacency(TotalRangeF=True)
 
-    MegaState_Target.init() # Initialize the tracking of generated MegaState_Target-s
+    MegaState_Transition.init() # Initialize the tracking of generated MegaState_Transition-s
     factory = TargetFactory(StateA, StateB)
 
     result = TransitionMap.from_iterable(
@@ -312,8 +312,8 @@ def combine_maps(StateA, StateB, ReassignedTransitionDB):
                                                                  StateB.transition_map)
     )
 
-    # Return the database of generated MegaState_Target objects
-    mega_state_target_db = MegaState_Target.disconnect_object_db()
+    # Return the database of generated MegaState_Transition objects
+    mega_state_target_db = MegaState_Transition.disconnect_object_db()
     # Number of different target schemes:
     scheme_n = 0
     for x in (key for key in mega_state_target_db.iterkeys() if isinstance(key, DoorID_Scheme)):

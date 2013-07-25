@@ -18,10 +18,10 @@ if "--hwut-info" in sys.argv:
 def print_tm(TM):
     for interval, target in TM:
         if   isinstance(target, (int, long)) \
-           or isinstance(target, MegaState_Target) and not target.drop_out_f:
-            print "(%s, %s), " % (interval, repr(target).replace("MegaState_Target", "MST")),
+           or isinstance(target, MegaState_Transition) and not target.drop_out_f:
+            print "(%s, %s), " % (interval, repr(target).replace("MegaState_Transition", "MST")),
         else:
-            print "%s " % repr(target).replace("MegaState_Target", "MST"),
+            print "%s " % repr(target).replace("MegaState_Transition", "MST"),
     print
 
 if "plain" in sys.argv:

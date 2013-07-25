@@ -1,6 +1,6 @@
 import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.state.entry_action      import DoorID
-from   quex.engine.analyzer.mega_state.core         import MegaState_Target, \
+from   quex.engine.analyzer.mega_state.core         import MegaState_Transition, \
                                                            MegaState_Target_DROP_OUT
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.generator.languages.address      import get_address
@@ -118,7 +118,7 @@ class MegaStateTransitionCodeFactory:
                 return TransitionCode(LanguageDB.GOTO_RELOAD(cls.state.index, 
                                                              cls.state.init_state_f,
                                                              cls.engine_type))
-        assert isinstance(Target, MegaState_Target)
+        assert isinstance(Target, MegaState_Transition)
         if Target.drop_out_f:
             return TransitionCode_DropOut(cls.state.index) 
 

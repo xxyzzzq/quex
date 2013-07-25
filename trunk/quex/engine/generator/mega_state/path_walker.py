@@ -136,11 +136,11 @@ def framework(txt, PWState, TheAnalyzer):
             offset = 0
             for path_id, path in enumerate(PWState.path_list):
                 offset += len(path)
+                print "#path:", path
                 terminal_door_id = path[-1].door_id # Terminal DoorId
-                tmp +=  "            %s"       % LanguageDB.IF("path_iterator", "==", "&path_walker_%i_path_base[%s]" %  \
-                                                               (PWState.index, offset - 1),                   \
-                                                               FirstF=(path_id == 0))                                  \
-                       + "                %s\n" % LanguageDB.GOTO_BY_DOOR_ID(terminal_door_id) 
+                tmp +=  "            %s"  % LanguageDB.IF("path_iterator", "==", "&path_walker_%i_path_base[%s]" %  \
+                                                          (PWState.index, offset - 1), FirstF=(path_id == 0))                                  \
+                      + "                %s\n" % LanguageDB.GOTO_BY_DOOR_ID(terminal_door_id) 
             tmp += "            %s"       % LanguageDB.ELSE                                  
             tmp += "                %s\n" % LanguageDB.UNREACHABLE
             tmp += "            %s\n"     % LanguageDB.END_IF()                                  
