@@ -64,10 +64,10 @@ class TransitionID(namedtuple("TransitionID_tuple", ("target_state_index", "acti
         return super(TransitionID, self).__new__(self, StateIndex, TransitionActionID(FromStateIndex, TriggerId))
 
     def __repr__(self):
-        if self.trigger_id == E_TriggerIDs.NONE:
-            return "TransitionID(to=%s, from=%s)" % (self.state_index, self.from_state_index)
+        if self.action_id.trigger_id == E_TriggerIDs.NONE:
+            return "TransitionID(to=%s, from=%s)" % (self.target_state_index, self.action_id.source_state_index)
         else:
-            return "TransitionID(to=%s, from=%s, trid=%s)" % (self.state_index, self.from_state_index, self.trigger_id)
+            return "TransitionID(to=%s, from=%s, trid=%s)" % (self.target_state_index, self.action_id.source_state_index, self.action_id.trigger_id)
 
 class TransitionAction(object):
     """Object containing information about commands to be executed upon

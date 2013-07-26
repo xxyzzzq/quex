@@ -63,7 +63,7 @@ class PathWalkerState_Entry(MegaState_Entry):
         for transition_id, action in TheEntry.action_db.iteritems():
             clone = action.clone()
             print "#tid:", transition_id, OnPathStateIndex
-            if transition_id.from_state_index != OnPathStateIndex:
+            if transition_id.action_id.source_state_index != OnPathStateIndex:
                 # Create new 'SetPathIterator' for the state which is represented
                 clone.command_list.misc.add(SetPathIterator(Offset=Offset))
             else:
