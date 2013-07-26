@@ -57,14 +57,14 @@ class TemplateState_Entry(MegaState_Entry):
         for transition_id, action in ActionDb.iteritems():
             clone = action.clone()
             assert clone.door_id is not None
-            if transition_id.state_index != transition_id.from_state_index: 
+            if transition_id.target_state_index != transition_id.action_id.source_state_index: 
                 # Add 'SetTemplateStateKey'
                 #
                 # Determine 'state_key' (an integer value) for state that is
                 # entered.  Since TheState may already be a template state, use
                 # 'transition_id.state_index' to handle already absorbed states
                 # correctly.
-                state_key = StateIndexToStateKeyDB[transition_id.state_index]
+                state_key = StateIndexToStateKeyDB[transition_id.target_state_index]
                 for command in clone.command_list.misc:
                     if not isinstance(command, SetTemplateStateKey): continue
                     # Adapt the existing 'SetTemplateStateKey' command
@@ -264,7 +264,7 @@ def combine_maps(StateA, StateB, ReassignedTransitionDB):
               [99]         --> Scheme((DROP_OUT, 13, 51))
               [100, oo]    --> DropOut
 
-          lets find the transition '(from_state_index, to_state_index)' for each
+          lets find the transition '(action_id.source_state_index, to_state_index)' for each
           entry in a scheme. E.g. the second entry in the second scheme is the
           target state '32'. The 'state_index_sequence' might tell that the second
           entry in a scheme is to represent the transitions of state '57'. Then,
