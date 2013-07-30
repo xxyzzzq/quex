@@ -103,6 +103,9 @@ class TransitionMap(list):
                 return Target
             else:
                 result = TheAnalyzer.state_db[Target].entry.action_db.get_door_id(StateIndex=Target, FromStateIndex=StateIndex)
+                print "#action_db:", [ (x,y) for x,y in TheAnalyzer.state_db[Target].entry.action_db.iteritems() ]
+                print "#from, to:", StateIndex, Target
+                assert result is not None
                 return result
         
         return self.__class__.from_iterable(self, relate)
@@ -461,7 +464,7 @@ class TransitionMap(list):
             assert interval.begin >= prev_interval.end  # Intervals appear sorted, 
             if interval.begin == prev_interval.end and StrictF:
                 # If the touch, require the target is different
-                assert target != prev_target
+                assert target != prev_target, "%s" % self
             prev_interval = interval
             prev_target   = target
 

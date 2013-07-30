@@ -63,7 +63,7 @@ class PathWalkerState_Entry(MegaState_Entry):
         for transition_id, action in TheEntry.action_db.iteritems():
             clone = action.clone()
             print "#tid:", transition_id, OnPathStateIndex
-            if transition_id.action_id.source_state_index != OnPathStateIndex:
+            if transition_id.source_state_index != OnPathStateIndex:
                 # Create new 'SetPathIterator' for the state which is represented
                 clone.command_list.misc.add(SetPathIterator(Offset=Offset))
             else:
@@ -79,7 +79,8 @@ class PathWalkerState_Entry(MegaState_Entry):
 
             self.action_db[transition_id] = clone
 
-        print "#REASCL:", self.transition_reassignment_candidate_list
+        print "#-- action_db:", [(x,y) for x,y in self.action_db.iteritems() ]
+        print "#-- reascl:", self.transition_reassignment_candidate_list
         self.previous_on_path_CommandList = TheEntry.action_db.get_command_list_by_door_id(OnPathDoorId)
         return
 
@@ -102,40 +103,44 @@ class PathWalkerState_Entry(MegaState_Entry):
 
         return
 
-class CharacterPathStep(namedtuple("CharacterPathStep_tuple", ("state_index", "trigger", "door_id"))):
+class CharacterPathStep(namedtuple("CharacterPathStep_tuple", ("state_index", "trigger"))):
     """See also class 'CharacterPath' where the role of the CharacterPathStep
        is explained further.
 
        The CharacterPathStep contains information about one single step
        along the CharacterPath. It tells from what state the step starts
 
-                           Start    Trigger      DoorID
-                           State    Character    
-                            .---.                      .---.
-                        ----| 1 |----- 'g' ----->[(3,4)] 3 |---
-                            '---'                      '---'
+                        .source_state_index   .trigger     
+                        .---.                                        .---.
+                        | 1 |------------------ 'g' ---------------->| 3 |
+                        '---'                                        '---'
 
-       So, the step from state 1 to 3 would be described by:
+       The '2' is the '.source_state_index' of the next CharacterPathStep on the
+       CharacterPath. The step from state 1 to X is described by:
 
-                .state_index = 1       # Index of the state where the step starts
-                .trigger     = 'g'     # The triggering character
-                .door_id     = (3,4)   # The DoorID in the target state.
+                current.state_index =  1   # Index of the state where the step starts
+                current.trigger     = 'g'  # The triggering character
+                next.state_index    =  3   # Index of the state where the step goes
    
        Note, that this setup fits well the case where the path is described by a
-       list of CharacterPathStep-s. Then, the last state is not element of the 
-       list which corresponds to the fact that it is not element of the path.
+       list of CharacterPathStep-s. 
+
+       Special Case: 
+       
+          .trigger = None
+
+          => Terminal, no further transition. '.state_index' is the first state 
+             behind the path.
     """
-    def __new__(self, StateIndex, TransitionChar, TargetDoorId):
+    def __new__(self, StateIndex, TransitionChar):
         assert isinstance(StateIndex, long)
-        assert isinstance(TransitionChar, (int, long))
-        assert isinstance(TargetDoorId, DoorID)      
-        return super(CharacterPathStep, self).__new__(self, StateIndex, TransitionChar, TargetDoorId)
+        assert TransitionChar is None or isinstance(TransitionChar, (int, long))
+        return super(CharacterPathStep, self).__new__(self, StateIndex, TransitionChar)
 
     def __repr__(self):
         return ".state_index = %s;\n" \
                ".trigger     = '%s';\n" \
-               ".door_id     = %s;\n"  \
-               % (self.state_index, self.trigger, self.door_id)
+               % (self.state_index, self.trigger)
 
 class CharacterPath(object):
     """________________________________________________________________________
@@ -146,38 +151,36 @@ class CharacterPath(object):
        ( 1 )--- 'a' -->( 2 )--- 'b' -->( 3 )--- 'c' -->( 4 )--- 'd' -->( 5 )
 
     where the remaining transitions in each state match (except for the last).
-    A CharacterPath contains a '.sequence' of CharacterPathSteps, e.g.
+    A CharacterPath contains a '.step_list' of CharacterPathSteps, e.g.
   
-      .sequence:
+    .step_list:
 
-       .----------------. .----------------. .----------------. .----------------. 
-       |.trigger = 'a'  |-|.trigger = 'b'  |-|.trigger = 'c'  |-|.trigger = 'd'  |
-       |.door_id = (2,1)| |.door_id = (3,3)| |.door_id = (4,2)| |.door_id = (5,1)|
-       '----------------' '----------------' '----------------' '----------------' 
-
-       where '.door_id = (x,y)' stands for a door in state 'x' with some index 'y'. 
+       .------------------. .------------------. .------------------.
+       |.state_index = 1  | |.state_index = 2  | |.state_index = 3  |
+       |.trigger     = 'a'| |.trigger     = 'b'| |.trigger     = 'b'| . . .
+       '------------------' '------------------' '------------------'
    
-     .terminal:
+    .terminal:
 
        The AnalyzerState which is entered from the last element of the path via
        a single character transition. It is not implemented by the CharacterPath.
        As soon as another state is appended, it becomes part of the path and the 
        newly appended becomes the terminal.
 
-     .implemented_state_index_list:
+    .implemented_state_index_list:
      
       A list of state indices which the path can cover. This does not include
-      the last state triggered by the terminal element of '.sequence'. As in the
+      the last state triggered by the terminal element of '.step_list'. As in the
       example, the state '5' is EXTERNAL and not part of the path itself.
 
-     .uniform_door_id
+    .uniform_door_id
 
       which is 'None' if the entries along the path are all uniform. 
       
       This does not include the entry to the terminal state. This entry is
       implemented by the terminal state itself, not by this path.
 
-     .entry
+    .entry
 
       entry information foreach entry into the state. In particular it contains
       the '.action_db' which contains the CommandLists according to each
@@ -186,7 +189,7 @@ class CharacterPath(object):
       The 'entry.action_db' does not contain information about entry into the
       terminal state, because it is not implemented by the path.
 
-     .drop_out
+    .drop_out
 
       maps: state_index --> DropOut object
     ___________________________________________________________________________
@@ -200,9 +203,9 @@ class CharacterPath(object):
 
     (2) In function '__find_continuation()' a CharacterPath is created which
 
-        -- where the .sequence contains a single CharacterPathStep, i.e.
+        -- where the .step_list contains a single CharacterPathStep, i.e.
         
-              [ .trigger = C, .door_id = (b,a,C) ]
+              [ .state_index = X, .trigger = C ]
 
         -- The terminal state is 'B'
 
@@ -213,10 +216,11 @@ class CharacterPath(object):
     ___________________________________________________________________________
     """
     __slots__ = ("index", "entry", "drop_out", 
-                 "__sequence",       
-                 "__transition_map", "__transition_map_wildcard_char") 
+                 "__step_list",       
+                 "__transition_map", "__transition_map_wildcard_char", 
+                 "__entry_uniformity_along_path_f") 
 
-    def __init__(self, StartState, TheTransitionMap, TransitionCharacter, TargetDoorId):
+    def __init__(self, StartState, TheTransitionMap, TransitionCharacter):
         if StartState is None: return # Only for Clone
 
         assert isinstance(StartState, AnalyzerState)
@@ -226,22 +230,24 @@ class CharacterPath(object):
         self.entry    = PathWalkerState_Entry(StartState.entry)
         self.drop_out = MegaState_DropOut(StartState) 
 
-        self.__sequence                     = [ CharacterPathStep(StartState.index, TransitionCharacter, TargetDoorId) ]
+        self.__step_list                    = [ CharacterPathStep(StartState.index, TransitionCharacter) ]
         self.__transition_map               = TheTransitionMap.clone()
         self.__transition_map_wildcard_char = TransitionCharacter
         self.__transition_map.set_target(TransitionCharacter, E_StateIndices.VOID)
+        self.__entry_uniformity_along_path_f   = True
 
     def clone(self):
         result = CharacterPath(None, None, None, None)
 
-        result.entry                          = deepcopy(self.entry)
-        result.drop_out                       = deepcopy(self.drop_out)
-        result.__sequence                     = [ x for x in self.__sequence ] # CharacterPathStep are immutable
-        result.__transition_map               = self.__transition_map.clone()
-        result.__transition_map_wildcard_char = self.__transition_map_wildcard_char
+        result.entry                           = deepcopy(self.entry)
+        result.drop_out                        = deepcopy(self.drop_out)
+        result.__step_list                     = [ x for x in self.__step_list ] # CharacterPathStep are immutable
+        result.__transition_map                = self.__transition_map.clone()
+        result.__transition_map_wildcard_char  = self.__transition_map_wildcard_char
+        result.__entry_uniformity_along_path_f = self.__entry_uniformity_along_path_f
         return result
 
-    def extended_clone(self, PreviousTerminal, TransitionCharacter, TargetDoorId, TransitionMapWildCardPlug):
+    def extended_clone(self, PreviousTerminal, TransitionCharacter, TransitionMapWildCardPlug):
         """Append 'State' to path:
 
         -- add 'State' to the sequence of states on the path.
@@ -255,8 +261,7 @@ class CharacterPath(object):
         have to be absorbed.
         """
         assert    TransitionCharacter is not None
-        assert    TransitionMapWildCardPlug is None \
-               or isinstance(TransitionMapWildCardPlug, DoorID) \
+        assert    isinstance(TransitionMapWildCardPlug, DoorID) \
                or Target == E_StateIndices.DROP_OUT
 
         StartStateIndex = PreviousTerminal.index
@@ -268,14 +273,14 @@ class CharacterPath(object):
             self.__transition_map.set_target(self.__transition_map_wildcard_char, TransitionMapWildCardPlug)
             self.__transition_map_wildcard_char = None
 
-        result.__sequence.append(CharacterPathStep(StartStateIndex, TransitionCharacter, TargetDoorId))
+        result.__step_list.append(CharacterPathStep(StartStateIndex, TransitionCharacter))
 
         # Adapt the entry's action_db: include the entries of the new state
         # (The index of the state on the path determines the path iterator's offset)
-        offset = len(result.__sequence) + 1
-        prev_step = result.__sequence[-1]
+        offset = len(result.__step_list) + 1
+        prev_step = result.__step_list[-1]
         result.entry.action_db_update(PreviousTerminal.entry, offset, 
-                                      PreviousStep=self.__sequence[-1])
+                                      PreviousStep=self.__step_list[-1])
 
         # Adapt information about entry and drop-out actions
         result.drop_out.add(PreviousTerminal.index, PreviousTerminal.drop_out)
@@ -286,12 +291,33 @@ class CharacterPath(object):
         return self.__transition_map_wildcard_char is not None
 
     @property
-    def sequence(self):
-        return self.__sequence
+    def step_list(self):
+        return self.__step_list
 
     @property
     def transition_map(self):
         return self.__transition_map
+
+    def entry_uniformity_with_predecessor(self, State):
+        """Check whether the entry of the last state on the path executes the
+           same CommandList as the entry to 'State'. 
+        """
+        # There can be only one transition from source to target. Otherwise,
+        # the path finding algorithm would not have accepted the CharacterStep.
+        source_state_index = self.__step_list[-1].state_index
+        target_state_index = State.index
+        
+        # CommandList upon Entry to State
+        command_list = State.entry.action_db.get_command_list(source_state_index, 
+                                                              target_state_index)
+        assert command_list is not None
+        if not self.entry.previous_on_path_CommandList.is_equivalent(command_list):
+            return False
+
+        return True
+
+    def entry_uniformity_along_path_unset(self):
+        self.__entry_uniformity_along_path_f = False
 
     @property
     def uniform_entry_command_list_along_path(self):
@@ -302,46 +328,10 @@ class CharacterPath(object):
            None       -- Each step on the path requires a different 
                          CommandLists to be executed. 
         """
-        step      = self.__sequence[0]
-        prototype = self.entry.action_db.get_command_list_by_door_id(step.door_id)
-        for step in self.__sequence[1:-1]:
-            command_list = self.entry.action_db.get_command_list_by_door_id(step.door_id)
-            if not command_list.is_equivalent(prototype):
-                return None
-        return prototype
-
-    def contains_state(self, StateIndex):
-        for dummy in ifilter(lambda x: x.state_index == StateIndex, self.__sequence):
-            return True
-        return False
-
-    def is_uniform_with_predecessor(self, State):
-        """Considers the command lists for Entry and DropOut of the state. If
-        the are uniform with the current setting.
-
-        RETURNS: True  -- Uniform Entry and DropOut-s.
-                 False -- One of them is not uniform.
-        """
-        # (*) DropOut
-        #
-        # It can easily check uniformity with all. This does not restrict the
-        # general solution. Since as a result of having subsequent states on a
-        # path uniform, all drop-outs on the path are uniform.
-        if not self.drop_out.is_uniform_with(State.drop_out):
-            return False
-
-        # (*) Entry
-        # 
-        # Check whether the entry of the last state on the path executes the
-        # same as the entry to 'State'.
-        door_id = self.__sequence[-1].door_id
-        
-        # CommandList upon Entry to TargetState
-        command_list = State.entry.action_db.get_command_list_by_door_id(door_id)
-        if not self.entry.previous_on_path_CommandList.is_equivalent(command_list):
-            return False
-
-        return False
+        if not self.__entry_uniformity_along_path_f:
+            return None
+        else:
+            return self.entry.previous_on_path_CommandList
 
     def finalize(self):
         # Ensure that there is no wildcard in the transition map
@@ -349,6 +339,29 @@ class CharacterPath(object):
 
         self.__transition_map.smoothen(self.__transition_map_wildcard_char)
         self.__transition_map_wildcard_char = None
+
+    def contains_state(self, StateIndex):
+        for dummy in ifilter(lambda x: x.state_index == StateIndex, self.__step_list[:-1]):
+            return True
+        return False
+
+    def state_index_list_size(self):
+        return len(self.__step_list) - 1
+
+    def state_index_list(self):
+        assert len(self.__step_list) > 1
+        return [ x.state_index for x in self.__step_list[:-1] ]
+
+    def state_index_set(self):
+        assert len(self.__step_list) > 1
+        return set(x.state_index for x in self.__step_list[:-1])
+
+    def __len__(self):
+        assert False, "Ambigous: len = length of path or number of states on path?"
+        return len(self.__step_list)
+
+    def __repr__(self):
+        return self.get_string()
 
     def get_string(self, NormalizeDB=None):
         # assert NormalizeDB is None, "Sorry, I guessed that this was no longer used."
@@ -363,29 +376,12 @@ class CharacterPath(object):
             skeleton_txt += "   %s%s -> %s\n" % (interval_str, " " * (L - len(interval_str)), target_door_id)
 
         sequence_txt = ""
-        for x in self.__sequence[:-1]:
+        for x in self.__step_list[:-1]:
             sequence_txt += "(%i)--'%s'-->" % (x.state_index, chr(x.trigger))
-        sequence_txt += "[%i]" % norm(self.__sequence[-1].state_index)
+        sequence_txt += "[%i]" % norm(self.__step_list[-1].state_index)
 
-        return "".join(["start    = %i;\n" % norm(self.__sequence[0].state_index),
+        return "".join(["start    = %i;\n" % norm(self.__step_list[0].state_index),
                         "path     = %s;\n" % sequence_txt,
                         "skeleton = {\n%s}\n"  % skeleton_txt, 
                         "wildcard = %s;\n" % repr(self.__transition_map_wildcard_char is not None)])
-
-    def __repr__(self):
-        return self.get_string()
-
-    def __len__(self):
-        return len(self.__sequence)
-
-    def state_index_list_size(self):
-        return len(self.__sequence)
-
-    def state_index_list(self):
-        assert len(self.__sequence) > 1
-        return [ x.state_index for x in self.__sequence ]
-
-    def state_index_set(self):
-        assert len(self.__sequence) > 1
-        return set(x.state_index for x in self.__sequence)
 

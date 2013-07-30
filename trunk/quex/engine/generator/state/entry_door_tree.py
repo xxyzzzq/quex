@@ -72,7 +72,7 @@ def do(StateIndex, TransitionActionDB):
     door_set = set(
          Door(action.command_list, Parent=root, ChildSet=None, DoorId=action.door_id)
          for transition_id, action in TransitionActionDB.iteritems()
-            if transition_id.action_id.source_state_index != E_StateIndices.NONE
+            if transition_id.source_state_index != E_StateIndices.NONE
     )
     root.child_set = door_set
 
@@ -244,11 +244,11 @@ class Door:
         if ActionDB is not None:
             transition_id_list = door_id_to_transition_id_list(self.door_id, ActionDB)
            
-            for transition_id in sorted(transition_id_list, key=attrgetter("state_index", "action_id.source_state_index")):
+            for transition_id in sorted(transition_id_list, key=attrgetter("state_index", "source_state_index")):
                 if OnlyFromStateIndexF:
-                    txt.append("(%s) " % transition_id.action_id.source_state_index)
+                    txt.append("(%s) " % transition_id.source_state_index)
                 else:
-                    txt.append("(%s<-%s) " % (transition_id.state_index, transition_id.action_id.source_state_index))
+                    txt.append("(%s<-%s) " % (transition_id.state_index, transition_id.source_state_index))
 
         if self.command_list is not None:
             txt.append("\n")

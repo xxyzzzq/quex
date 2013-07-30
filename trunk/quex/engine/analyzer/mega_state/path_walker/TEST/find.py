@@ -65,7 +65,7 @@ def test(Skeleton, *StringPaths):
     if filter_f:
         result = paths.select(result)
 
-    for path in sorted(result, key=lambda x: (-len(x), x.sequence()[0].state_index)):
+    for path in sorted(result, key=lambda x: (-len(x), x.step_list[:-1].state_index)):
         print "# " + path.get_string().replace("\n", "\n# ")
 
 skeleton_blah = { 

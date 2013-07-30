@@ -1,5 +1,6 @@
 import quex.engine.analyzer.state.entry_action as entry_action
 from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction, DoorID
+from   quex.engine.tools import TypedDict
 from   quex.blackboard import E_PreContextIDs,  \
                               E_AcceptanceIDs, E_PostContextIDs, \
                               E_TransitionN, E_StateIndices, E_TriggerIDs
@@ -21,7 +22,7 @@ class EntryActionDB:
            The major role plays function '.categorize()'. It makes sure that
            every TransitionAction has a DoorID assigned to it.
         """
-        self.__db                          = dict() # iterable)
+        self.__db                          = TypedDict(TransitionID, TransitionAction)
         self.__largest_used_door_sub_index = 0  # '0' is used for 'Door 0', i.e. reload entry
 
     def get(self, TheTransitionID):
@@ -29,6 +30,11 @@ class EntryActionDB:
 
     def get_action(self, StateIndex, FromStateIndex, TriggerId=E_TriggerIDs.NONE):
         return self.__db.get(TransitionID(StateIndex, FromStateIndex, TriggerId))
+
+    def get_command_list(self, StateIndex, FromStateIndex, TriggerId=E_TriggerIDs.NONE):
+        action = self.__db.get(TransitionID(StateIndex, FromStateIndex, TriggerId))
+        if action is None: return None
+        else:              return action.command_list
 
     def get_command_list_by_door_id(self, DoorId):
         for action in self.__db.itervalues():
@@ -62,13 +68,18 @@ class EntryActionDB:
         return None
 
     def absorb(self, Other):
+        print "#Other.__db:", [ x for x, y in Other.__db.iteritems() ]
+        print "#self.__db:",  [ x for x, y in self.__db.iteritems() ]
         self.__db.update(Other.__db)
         if self.__largest_used_door_sub_index < Other.__largest_used_door_sub_index:
             self.__largest_used_door_sub_index = Other.__largest_used_door_sub_index
 
+    ##def add(self, TargetStateIndex, SourceStateIndex, Cmd):
+    ##    self.__db[TransitionID(TargetStateIndex, SourceStateIndex, E_TriggerIDs.NONE)].command_list.misc.add(Cmd)
+
     def enter(self, TheTransitionID, TheAction):
         assert isinstance(TheTransitionID, TransitionID)
-        assert isinstance(TheAction, TransitionAction)
+        assert isinstance(TheAction,       TransitionAction)
         self.__db[TheTransitionID] = TheAction
 
     def enter_iterable(self, Iterable):
@@ -89,18 +100,18 @@ class EntryActionDB:
             # NOT: transition_action.command_list.accepter.clean_up()
             #      The list might be deliberately ordered differently
 
-    def has_Accepter(self):
-        for action in self.__db.itervalues():
-            for cmd in action.command_list:
-                if isinstance(cmd, entry_action.Accepter): return True
-        return False
-
     def add_StoreInputPosition(self, StateIndex, FromStateIndex, PreContextID, PositionRegister, Offset):
         """Add 'store input position' to specific door. See 'entry_action.StoreInputPosition'
            comment for the reason why we do not store pre-context-id.
         """
         entry = entry_action.StoreInputPosition(PreContextID, PositionRegister, Offset)
         self.__db[TransitionID(StateIndex, FromStateIndex, E_TriggerIDs.NONE)].command_list.misc.add(entry)
+
+    def has_Accepter(self):
+        for action in self.__db.itervalues():
+            for cmd in action.command_list:
+                if isinstance(cmd, entry_action.Accepter): return True
+        return False
 
     def delete(self, StateIndex, FromStateIndex, TriggerId=E_TriggerIDs.NONE):
         del self.__db[TransitionID(StateIndex, FromStateIndex, E_TriggerIDs.NONE)]
@@ -200,7 +211,7 @@ class EntryActionDB:
             return DoorID(StateIndex, self.__largest_used_door_sub_index)
 
         def sort_key(X):
-            return (X[0].target_state_index, X[0].action_id.source_state_index)
+            return (X[0].target_state_index, X[0].source_state_index)
 
         for transition_id, action in sorted(todo, key=sort_key): # NOT: 'iteritems()'
             action.door_id                       = get_door_id(action.command_list)
