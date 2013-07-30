@@ -350,6 +350,9 @@ class Analyzer:
         # preceed the already mentioned ones. Since they all trigger on lexemes of the
         # same length, the only precendence criteria is the pattern_id.
         # 
+        def add_Accepter(entry, PreContextId, PatternId):
+            entry.action_db.add_Accepter_on_all(PreContextId, PatternId)
+
         for state_index in self.__require_acceptance_storage_db.iterkeys():
             entry = self.__state_db[state_index].entry
             # Only the trace content that concerns the current state is filtered out.
@@ -358,7 +361,7 @@ class Analyzer:
             for x in sorted(prototype, key=attrgetter("pattern_id", "pre_context_id")):
                 if x.accepting_state_index != state_index: 
                     continue
-                entry.action_db.add_Accepter_on_all(x.pre_context_id, x.pattern_id)
+                add_Accepter(entry, x.pre_context_id, x.pattern_id)
 
     def acceptance_storage_post_pone_do(self, StateIndex, PatternId):
 
@@ -395,6 +398,7 @@ class Analyzer:
                     if target_index == state_index: # Position is stored upon entry in *other*
                         continue                    # state--not the state itself. 
                     entry = self.__state_db[target_index].entry
+
                     entry.action_db.add_StoreInputPosition(StateIndex       = target_index, 
                                                            FromStateIndex   = state_index, 
                                                            PreContextID     = pre_context_id, 

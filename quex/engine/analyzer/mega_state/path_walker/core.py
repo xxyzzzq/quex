@@ -173,7 +173,7 @@ def __find(analyzer, StateIndex, CompressionType, AvailableStateIndexSet):
 
     State          = analyzer.state_db[StateIndex]
     target_map     = State.map_target_index_to_character_set
-    transition_map = State.transition_map # .relate_to_door_ids(analyzer, State.index)
+    transition_map = State.transition_map 
 
     for target_idx, trigger_set in target_map.iteritems():
         if   target_idx not in AvailableStateIndexSet: continue # State is not an option.
@@ -245,11 +245,16 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
             #    path walker.
             
             # If uniformity is required, then this is the place to check for it.
-            if self.uniform_f and not path.is_uniform_with_predecessor(State): 
+            drop_out_uniform_f = path.drop_out.is_uniform_with(State)
+            entry_uniform_f    = path.entry_uniformity_with_predecessor(State)
+            if self.uniform_f and (not drop_out_uniform_f) or (not entry_uniform_f):
                 if len(path) > 1:
                     path.finalize()
                     self.result.append(path)
                 return None
+
+            if not entry_uniform_f:
+                path.entry_uniformity_along_path_unset()
 
             # BRANCH __________________________________________________________
             sub_list = []
@@ -264,16 +269,17 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
                 if path.contains_state(target_index): continue # Loop--don't go!
 
                 target_state   = self.analyzer.state_db[target_index]
-                target_door_id = target_state.entry.action_db.get_door_id(target_index, State.index)
 
                 # TransitionMap matching? 
+                target_door_id = target_state.entry.action_db.get_door_id(target_index, State.index)
+                assert target_door_id is not None
                 plug = path.transition_map.match_with_wildcard(transition_map, transition_char, target_door_id)
                 if   plug is None:
                     continue # No match possible 
                 elif plug > 0  and not path.has_wildcard(): 
                     continue # Wilcard required for match, but there is no wildcard open.
 
-                new_path = path.extended_clone(State, transition_char, target_door_id, plug) 
+                new_path = path.extended_clone(State, transition_char, plug) 
 
                 # RECURSION STEP ______________________________________________
                 # (May be, we do not have to clone the transition map if plug == -1)
@@ -292,11 +298,10 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
         def on_finished(self, Args):
             self.__depth -= 1
 
-    target_state   = analyzer.state_db[TargetIndex]
-    target_door_id = target_state.entry.action_db.get_door_id(target_state.index, FromState.index)
-    path           = CharacterPath(FromState, FromTransitionMap, TransitionChar, target_door_id)
+    target_state = analyzer.state_db[TargetIndex]
+    path         = CharacterPath(FromState, FromTransitionMap, TransitionChar)
 
-    path_finder = PathFinder(analyzer, CompressionType, AvailableStateIndexSet)
+    path_finder  = PathFinder(analyzer, CompressionType, AvailableStateIndexSet)
     path_finder.do((path, target_state))
 
     return path_finder.result

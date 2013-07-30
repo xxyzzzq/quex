@@ -75,12 +75,17 @@ class TypedDict(dict):
         return dict.__setitem__(self, Key, Value)
 
     def update(self, Iterable):
-        for x in Iterable:
+        # Need to iterate twice: 'list()' may be faster here then 'tee()'.
+        if isinstance(Iterable, dict): iterable2 = Iterable.iteritems()
+        else:                          iterable2 = list(Iterable).__iter__()
+
+        for x in iterable2:
             assert isinstance(x, tuple)
             assert self.__key_class   is None or isinstance(x[0], self.__key_class), \
                    self._error_key(x[0])
             assert self.__value_class is None or isinstance(x[1], self.__value_class), \
                    self._error_value(x[1])
+
         dict.update(self, Iterable)
 
     def _error(self, ExpectedClass):
@@ -89,8 +94,8 @@ class TypedDict(dict):
                  ExpectedClass.__name__)
 
     def _error_key(self, Key):
-        return "%s as a key. Found '%s'" % \
-                (self._error(self.__key_class), Key.__class__.__name__)
+        return "%s as a key. Found type='%s; value='%s';" % \
+                (self._error(self.__key_class), Key.__class__.__name__, Key)
 
     def _error_value(self, Value):
         return "%s as a key. Found '%s'" % \

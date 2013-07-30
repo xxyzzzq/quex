@@ -18,12 +18,11 @@ class PathWalkerState(MegaState):
         # ('FirstPath' will no longer be referenced elsewhere.)
         my_index = index.get()
         FirstPath.entry.adapt_SetStateKey(my_index, PathID=0)
-        print "#reascl:", FirstPath.entry.transition_reassignment_candidate_list
 
         MegaState.__init__(self, FirstPath.entry, FirstPath.drop_out, my_index)
 
 
-        self.__path_list = [ FirstPath.sequence ]
+        self.__path_list = [ FirstPath.step_list ]
 
         # original_transition_map: interval --> DoorID
         #
@@ -36,8 +35,12 @@ class PathWalkerState(MegaState):
                 TransitionMap.from_iterable(self.__transition_map_to_door_ids, \
                                             MegaState_Transition.create)
 
+        # Uniform CommandList along entries on the path (optional)
         self.__uniformity_required_f                 = (CompressionType == E_Compression.PATH_UNIFORM)
-        self.__uniform_entry_command_list_along_path = FirstPath.uniform_entry_command_list_along_path
+        self.__uniform_entry_command_list_along_path = \
+                FirstPath.uniform_entry_command_list_along_path
+        assert not self.__uniformity_required_f \
+               or  self.__uniform_entry_command_list_along_path is not None
 
         self.__state_index_sequence    = None # Computed on demand
 
@@ -103,12 +106,14 @@ class PathWalkerState(MegaState):
         # (2a) Absorb Entry Information
         #      Absorb entry's action_db (maps: 'transition_id --> command_list')
         Path.entry.adapt_SetStateKey(self.index, PathID=path_id)
-        print "#reascl:", Path.entry.transition_reassignment_candidate_list
+        print "#Path.action_db:", [ x for x, y in Path.entry.action_db.iteritems() ]
+        print "#self.action_db:", [ x for x, y in self.entry.action_db.iteritems() ]
+        print "#reascl:",    Path.entry.transition_reassignment_candidate_list
         self.entry.absorb(Path.entry)
 
         # (2b) Absorb the state sequence of the path
         #      (verify/falsify the uniform terminal entry)
-        self.__path_list.append(Path.sequence)
+        self.__path_list.append(Path.step_list)
 
         # (2c) Absorb the drop-out information
         self.drop_out.update(Path.drop_out.iteritems())

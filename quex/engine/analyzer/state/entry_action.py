@@ -32,42 +32,31 @@ class DoorID_Scheme(tuple):
         door_id_list.extend(list(That))
         return DoorID_Scheme(door_id_list)
 
-class TransitionActionID(namedtuple("TransitionActionID_tuple", ("source_state_index", "trigger_id"))):
-    def __new__(self, SourceStateIndex, TriggerId=E_TriggerIDs.NONE):
-        assert isinstance(SourceStateIndex, (int, long)) or SourceStateIndex in E_StateIndices
-        assert isinstance(TriggerId, (int, long))        or TriggerId        in E_TriggerIDs
-        return super(TransitionActionID, self).__new__(self, SourceStateIndex, TriggerId)
-
-    def __repr__(self):
-        if self.trigger_id == E_TriggerIDs.NONE:
-            return "TransitionID(to=%s, from=%s)" % (self.state_index, self.from_state_index)
-        else:
-            return "TransitionID(to=%s, from=%s, trid=%s)" % (self.state_index, self.from_state_index, self.trigger_id)
-
-class TransitionID(namedtuple("TransitionID_tuple", ("target_state_index", "action_id"))):
-    """Objects of this type identify a transition. That is, they tell
-       from which state ('from_state_index') to which state ('state_index')
-       the transition happens. The particular transition may relate to the
-       triggering character set. This is reflected the 'trigger_id'. A
-       'trigger_id' of 'None' means that the transition id represents
-       all transitions from 'from_state_index' to 'state_index'.
-
-            state_index      --> target of the transition
-            from_state_index --> origin of the transition
-            trigger_id       --> identifies the triggering character set.
+class TransitionID(namedtuple("TransitionID_tuple", ("target_state_index", "source_state_index", "trigger_id"))):
+    """Objects of this type identify a transition. 
+    
+                   .----- trigger_id ---->-[ TransitionAction ]----.
+                   |                                               |
+        .--------------------.                          .--------------------.
+        | source_state_index |                          | target_state_index |
+        '--------------------'                          '--------------------'
+    
+       NOTE: There might be multiple transitions from source to target. Each transition
+             has another trigger_id. The relation between a TransitionID and a 
+             TransitionAction is 1:1.
 
     """
     def __new__(self, StateIndex, FromStateIndex, TriggerId=E_TriggerIDs.NONE):
         assert isinstance(StateIndex, (int, long))     or StateIndex     in E_StateIndices
         assert isinstance(FromStateIndex, (int, long)) or FromStateIndex in E_StateIndices
         assert isinstance(TriggerId, (int, long))      or TriggerId      in E_TriggerIDs
-        return super(TransitionID, self).__new__(self, StateIndex, TransitionActionID(FromStateIndex, TriggerId))
+        return super(TransitionID, self).__new__(self, StateIndex, FromStateIndex, TriggerId)
 
     def __repr__(self):
-        if self.action_id.trigger_id == E_TriggerIDs.NONE:
-            return "TransitionID(to=%s, from=%s)" % (self.target_state_index, self.action_id.source_state_index)
+        if self.trigger_id == E_TriggerIDs.NONE:
+            return "TransitionID(to=%s, from=%s)" % (self.target_state_index, self.source_state_index)
         else:
-            return "TransitionID(to=%s, from=%s, trid=%s)" % (self.target_state_index, self.action_id.source_state_index, self.action_id.trigger_id)
+            return "TransitionID(to=%s, from=%s, trid=%s)" % (self.target_state_index, self.source_state_index, self.gtrigger_id)
 
 class TransitionAction(object):
     """Object containing information about commands to be executed upon

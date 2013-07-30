@@ -52,13 +52,13 @@ def __test(path_list):
     print
     print "BEFORE:"
     for i, path in enumerate(path_list):
-        print "  ", i, map(lambda x: x.state_index, path.sequence())
+        print "  ", i, map(lambda x: x.state_index, path.step_list[:-1])
 
     path_list = select(path_list)
 
     print "AFTER:"
     for i, path in enumerate(path_list):
-        print "  ", i, map(lambda x: x.state_index, path.sequence())
+        print "  ", i, map(lambda x: x.state_index, path.step_list[:-1])
     print
 
 
