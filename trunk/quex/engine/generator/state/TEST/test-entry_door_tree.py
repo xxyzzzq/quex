@@ -44,7 +44,7 @@ def test(ActionDB):
     entry = Entry(state_index, ActionDB.keys())
     for from_state_index, action_list in ActionDB.iteritems():
         for element in action_list:
-            tid = TransitionID(state_index, from_state_index, E_TriggerIDs.NONE)
+            tid = TransitionID(state_index, from_state_index, 0)
             if isinstance(element, list):
                 accepter = entry_action.Accepter(element)
                 self.__db[tid].command_list.accepter = accepter

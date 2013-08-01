@@ -46,14 +46,14 @@ class TransitionID(namedtuple("TransitionID_tuple", ("target_state_index", "sour
              TransitionAction is 1:1.
 
     """
-    def __new__(self, StateIndex, FromStateIndex, TriggerId=E_TriggerIDs.NONE):
+    def __new__(self, StateIndex, FromStateIndex, TriggerId):
         assert isinstance(StateIndex, (int, long))     or StateIndex     in E_StateIndices
         assert isinstance(FromStateIndex, (int, long)) or FromStateIndex in E_StateIndices
         assert isinstance(TriggerId, (int, long))      or TriggerId      in E_TriggerIDs
         return super(TransitionID, self).__new__(self, StateIndex, FromStateIndex, TriggerId)
 
     def __repr__(self):
-        if self.trigger_id == E_TriggerIDs.NONE:
+        if self.trigger_id == 0:
             return "TransitionID(to=%s, from=%s)" % (self.target_state_index, self.source_state_index)
         else:
             return "TransitionID(to=%s, from=%s, trid=%s)" % (self.target_state_index, self.source_state_index, self.gtrigger_id)

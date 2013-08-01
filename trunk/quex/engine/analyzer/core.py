@@ -143,7 +143,6 @@ class Analyzer:
             else:
                 self.__position_register_map = None
 
-
     @property
     def trace_db(self):                    return self.__trace_db
     @property
