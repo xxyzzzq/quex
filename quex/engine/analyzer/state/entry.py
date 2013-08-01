@@ -7,7 +7,7 @@ from   quex.blackboard import E_PreContextIDs,  \
 from   operator        import attrgetter
 
 class EntryActionDB:
-    def __init__(self):
+    def __init__(self, Opt_StateIndex, Opt_FromStateIndex_List):
         """Assume that 'Iterable' provides all TransitionID-s which may ever
            appear in the action_db. If this is not the case, then a self[tid]
            may fail somewhere down the lines.
@@ -22,17 +22,29 @@ class EntryActionDB:
            The major role plays function '.categorize()'. It makes sure that
            every TransitionAction has a DoorID assigned to it.
         """
-        self.__db                          = TypedDict(TransitionID, TransitionAction)
+        self.__db = TypedDict(TransitionID, TransitionAction)
         self.__largest_used_door_sub_index = 0  # '0' is used for 'Door 0', i.e. reload entry
+
+        if Opt_StateIndex is not None:
+            assert isinstance(Opt_StateIndex, long)
+            assert isinstance(Opt_FromStateIndex_List, (set, list))
+
+            self.__db.update(
+                (TransitionID(Opt_StateIndex, i, 0), TransitionAction()) \
+                for i in Opt_FromStateIndex_List                         \
+            )
 
     def get(self, TheTransitionID):
         return self.__db.get(TheTransitionID)
 
-    def get_action(self, StateIndex, FromStateIndex, TriggerId=E_TriggerIDs.NONE):
+    def get_action(self, StateIndex, FromStateIndex, TriggerId=0):
         return self.__db.get(TransitionID(StateIndex, FromStateIndex, TriggerId))
 
-    def get_command_list(self, StateIndex, FromStateIndex, TriggerId=E_TriggerIDs.NONE):
+    def get_command_list(self, StateIndex, FromStateIndex, TriggerId=0):
+        print "#action_db:", [ x for x, y in self.__db.iteritems() ]
+        print "#command_list:", StateIndex, FromStateIndex
         action = self.__db.get(TransitionID(StateIndex, FromStateIndex, TriggerId))
+        print "#action:", action
         if action is None: return None
         else:              return action.command_list
 
@@ -42,13 +54,13 @@ class EntryActionDB:
                 return action.command_list
         return None
 
-    def get_door_id(self, StateIndex, FromStateIndex, TriggerId=E_TriggerIDs.NONE):
+    def get_door_id(self, StateIndex, FromStateIndex, TriggerId=0):
         """RETURN: DoorID of the door which implements the transition 
                           (FromStateIndex, StateIndex).
                    None,  if the transition is not implemented in this
                           state.
         """
-        action = self.__db.get(TransitionID(StateIndex, FromStateIndex, E_TriggerIDs.NONE))
+        action = self.__db.get(TransitionID(StateIndex, FromStateIndex, 0))
         if action is None: return None
         return action.door_id
 
@@ -75,15 +87,12 @@ class EntryActionDB:
             self.__largest_used_door_sub_index = Other.__largest_used_door_sub_index
 
     ##def add(self, TargetStateIndex, SourceStateIndex, Cmd):
-    ##    self.__db[TransitionID(TargetStateIndex, SourceStateIndex, E_TriggerIDs.NONE)].command_list.misc.add(Cmd)
+    ##    self.__db[TransitionID(TargetStateIndex, SourceStateIndex, 0)].command_list.misc.add(Cmd)
 
     def enter(self, TheTransitionID, TheAction):
         assert isinstance(TheTransitionID, TransitionID)
         assert isinstance(TheAction,       TransitionAction)
         self.__db[TheTransitionID] = TheAction
-
-    def enter_iterable(self, Iterable):
-        self.__db.update(Iterable)
 
     def size(self):
         return len(self.__db)
@@ -105,7 +114,7 @@ class EntryActionDB:
            comment for the reason why we do not store pre-context-id.
         """
         entry = entry_action.StoreInputPosition(PreContextID, PositionRegister, Offset)
-        self.__db[TransitionID(StateIndex, FromStateIndex, E_TriggerIDs.NONE)].command_list.misc.add(entry)
+        self.__db[TransitionID(StateIndex, FromStateIndex, 0)].command_list.misc.add(entry)
 
     def has_Accepter(self):
         for action in self.__db.itervalues():
@@ -113,8 +122,8 @@ class EntryActionDB:
                 if isinstance(cmd, entry_action.Accepter): return True
         return False
 
-    def delete(self, StateIndex, FromStateIndex, TriggerId=E_TriggerIDs.NONE):
-        del self.__db[TransitionID(StateIndex, FromStateIndex, E_TriggerIDs.NONE)]
+    def delete(self, StateIndex, FromStateIndex, TriggerId=0):
+        del self.__db[TransitionID(StateIndex, FromStateIndex, 0)]
 
     def reconfigure_position_registers(self, PositionRegisterMap):
         """Originally, each pattern gets its own position register if it is
@@ -312,8 +321,8 @@ class Entry(object):
 
     __slots__ = ("__action_db")
 
-    def __init__(self):
-        self.__action_db = EntryActionDB()
+    def __init__(self, Opt_StateIndex=None, Opt_FromStateIndex_List=None):
+        self.__action_db = EntryActionDB(Opt_StateIndex, Opt_FromStateIndex_List)
 
     @property
     def action_db(self):

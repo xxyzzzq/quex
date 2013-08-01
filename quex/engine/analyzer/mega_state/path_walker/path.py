@@ -54,10 +54,8 @@ class PathWalkerState_Entry(MegaState_Entry):
         represented state.
         """
         if PreviousStep is not None:
-            OnPathDoorId     = PreviousStep.door_id
             OnPathStateIndex = PreviousStep.state_index
         else:
-            OnPathDoorId     = None
             OnPathStateIndex = None
 
         for transition_id, action in TheEntry.action_db.iteritems():
@@ -81,7 +79,6 @@ class PathWalkerState_Entry(MegaState_Entry):
 
         print "#-- action_db:", [(x,y) for x,y in self.action_db.iteritems() ]
         print "#-- reascl:", self.transition_reassignment_candidate_list
-        self.previous_on_path_CommandList = TheEntry.action_db.get_command_list_by_door_id(OnPathDoorId)
         return
 
     def adapt_SetStateKey(self, PathWalkerIndex, PathID):
@@ -237,7 +234,7 @@ class CharacterPath(object):
         self.__entry_uniformity_along_path_f   = True
 
     def clone(self):
-        result = CharacterPath(None, None, None, None)
+        result = CharacterPath(None, None, None)
 
         result.entry                           = deepcopy(self.entry)
         result.drop_out                        = deepcopy(self.drop_out)
@@ -264,7 +261,6 @@ class CharacterPath(object):
         assert    isinstance(TransitionMapWildCardPlug, DoorID) \
                or Target == E_StateIndices.DROP_OUT
 
-        StartStateIndex = PreviousTerminal.index
         result = self.clone()
 
         if TransitionMapWildCardPlug != -1: 
@@ -273,7 +269,8 @@ class CharacterPath(object):
             self.__transition_map.set_target(self.__transition_map_wildcard_char, TransitionMapWildCardPlug)
             self.__transition_map_wildcard_char = None
 
-        result.__step_list.append(CharacterPathStep(StartStateIndex, TransitionCharacter))
+        before_previous_state_index = self.__step_list[-1].state_index
+        result.__step_list.append(CharacterPathStep(PreviousTerminal.index, TransitionCharacter))
 
         # Adapt the entry's action_db: include the entries of the new state
         # (The index of the state on the path determines the path iterator's offset)
@@ -281,6 +278,10 @@ class CharacterPath(object):
         prev_step = result.__step_list[-1]
         result.entry.action_db_update(PreviousTerminal.entry, offset, 
                                       PreviousStep=self.__step_list[-1])
+        result.entry.previous_on_path_CommandList = \
+                PreviousTerminal.entry.action_db.get_command_list(before_previous_state_index,
+                                                                  PreviousTerminal.index, 
+                                                                  TriggerId=0)
 
         # Adapt information about entry and drop-out actions
         result.drop_out.add(PreviousTerminal.index, PreviousTerminal.drop_out)
@@ -308,11 +309,14 @@ class CharacterPath(object):
         target_state_index = State.index
         
         # CommandList upon Entry to State
-        command_list = State.entry.action_db.get_command_list(source_state_index, 
-                                                              target_state_index)
+        # (TriggerIndex == 0, because there can only be one transition from
+        #                     one state to the next on the path).
+        command_list = State.entry.action_db.get_command_list(target_state_index, 
+                                                              source_state_index)
         assert command_list is not None
-        if not self.entry.previous_on_path_CommandList.is_equivalent(command_list):
-            return False
+        if self.entry.previous_on_path_CommandList is not None:
+            if not self.entry.previous_on_path_CommandList.is_equivalent(command_list):
+                return False
 
         return True
 

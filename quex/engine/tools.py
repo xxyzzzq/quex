@@ -77,7 +77,7 @@ class TypedDict(dict):
     def update(self, Iterable):
         # Need to iterate twice: 'list()' may be faster here then 'tee()'.
         if isinstance(Iterable, dict): iterable2 = Iterable.iteritems()
-        else:                          iterable2 = list(Iterable).__iter__()
+        else:                          Iterable = list(Iterable); iterable2 = Iterable.__iter__()
 
         for x in iterable2:
             assert isinstance(x, tuple)
