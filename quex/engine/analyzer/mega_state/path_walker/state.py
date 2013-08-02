@@ -130,35 +130,33 @@ class PathWalkerState(MegaState):
         self.entry.transition_reassignment_db_construct(self.index)
 
         # Determine uniformity and the door_id_sequence.
-        uniform_door_id          = -1 # Not yet set.
-        uniform_terminal_door_id = -1 # Not yet set.
+        uniform_door_id          = UniformObject()
+        uniform_terminal_door_id = UniformObject()
         door_id_sequence         = []
-        for path in self.__path_list:
+        for step_list in self.__path_list:
 
-            for step in path[:-1]:
-                # DoorID -- replace old be new.
-                print "#step:", step
-                new_door_id = self.entry.transition_reassignment_db.get_replacement(step.state_index, 
-                                                                                    step.door_id)
-                assert new_door_id is not None
-                door_id_sequence.append(new_door_id)
+            prev_step = step_list[0]
+            last_i    = len(step_list) - 1
+            for i, step in step_list[1:]:
+                # (Recall: there is only one transition => TriggerId == 0)
+                door_id = self.entry.action_db.get_door_id(prev_step.state_index, step.state_index, 
+                                                           TriggerId=0)
+                assert door_id is not None
 
-                # CommandList -- consider unformity expressed as uniform door_id.
-                uniform_door_id = uniformity_check_and_set(uniform_door_id, new_door_id)
+                door_id_sequence.append(door_id)
 
-            # DoorID -- replace old be new.
-            step = path[-1]
-            new_door_id = self.entry.transition_reassignment_db.get_replacement(step.state_index, 
-                                                                                step.door_id, 
-                                                                                Default=step.door_id)
-            door_id_sequence.append(new_door_id)
+                # The last step goes into Terminal, the entry there is not 
+                # inside the path and is not considered for uniform entry command lists.
+                if i != last_i: uniform_door_id <<= door_id
 
-            # Terminal DoorID uniform?
-            uniform_terminal_door_id = uniformity_check_and_set(uniform_terminal_door_id, 
-                                                                new_door_id)
+                prev_step = step
 
-        self.__uniform_door_id_along_all_paths = uniform_door_id
-        self.__uniform_terminal_door_id        = uniform_terminal_door_id
+            # Last DoorID was the terminal_door_id of the path
+            # => check its uniformity
+            uniform_terminal_door_id <<= door_id
+
+        self.__uniform_door_id_along_all_paths = uniform_door_id.content
+        self.__uniform_terminal_door_id        = uniform_terminal_door_id.content
         self.__door_id_sequence                = door_id_sequence
 
     @property
