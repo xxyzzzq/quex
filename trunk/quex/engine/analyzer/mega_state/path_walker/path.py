@@ -6,6 +6,8 @@ from   quex.engine.analyzer.mega_state.core    import MegaState_Entry, \
 from   quex.engine.analyzer.transition_map     import TransitionMap       
 import quex.engine.state_machine.index         as     index
 
+from   quex.engine.tools                       import UniformObject
+
 from   quex.blackboard import E_StateIndices
 
 from   itertools   import ifilter
@@ -39,7 +41,7 @@ class PathWalkerState_Entry(MegaState_Entry):
         MegaState_Entry.__init__(self)
 
         self.action_db_update(TheEntry, 0)
-        self.previous_on_path_CommandList = None
+        self.uniform_CommandList_along_path = UniformObject(EqualCmp=CommandList.is_equivalent)
 
     def action_db_update(self, TheEntry, Offset, PreviousStep=None):
         """Include 'TheState.entry.action_db' into this state. That means,
@@ -278,10 +280,11 @@ class CharacterPath(object):
         prev_step = result.__step_list[-1]
         result.entry.action_db_update(PreviousTerminal.entry, offset, 
                                       PreviousStep=self.__step_list[-1])
-        result.entry.previous_on_path_CommandList = \
-                PreviousTerminal.entry.action_db.get_command_list(before_previous_state_index,
-                                                                  PreviousTerminal.index, 
-                                                                  TriggerId=0)
+
+        command_list = PreviousTerminal.entry.action_db.get_command_list(before_previous_state_index,
+                                                                         PreviousTerminal.index, 
+                                                                         TriggerId=0)
+        result.entry.uniform_CommandList_along_path <<= command_list
 
         # Adapt information about entry and drop-out actions
         result.drop_out.add(PreviousTerminal.index, PreviousTerminal.drop_out)
@@ -314,9 +317,8 @@ class CharacterPath(object):
         command_list = State.entry.action_db.get_command_list(target_state_index, 
                                                               source_state_index)
         assert command_list is not None
-        if self.entry.previous_on_path_CommandList is not None:
-            if not self.entry.previous_on_path_CommandList.is_equivalent(command_list):
-                return False
+        if not self.entry.uniform_CommandList_along_path.fit(command_list):
+            return False
 
         return True
 
@@ -332,10 +334,7 @@ class CharacterPath(object):
            None       -- Each step on the path requires a different 
                          CommandLists to be executed. 
         """
-        if not self.__entry_uniformity_along_path_f:
-            return None
-        else:
-            return self.entry.previous_on_path_CommandList
+        return self.entry.uniform_CommandList_along_path.content
 
     def finalize(self):
         # Ensure that there is no wildcard in the transition map
