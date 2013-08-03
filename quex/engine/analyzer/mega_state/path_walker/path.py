@@ -271,11 +271,12 @@ class CharacterPath(object):
         # (The index of the state on the path determines the path iterator's offset)
         offset = len(result.__step_list)
         result.entry.action_db_update(PreviousTerminal.entry, offset, 
-                                      FromStateIndex=prev_step.index)
+                                      FromStateIndex=prev_step.state_index)
 
-        command_list = PreviousTerminal.entry.action_db.get_command_list(prev_step.state_index,
-                                                                         PreviousTerminal.index, 
-                                                                         TriggerId=0)
+        command_list = result.entry.action_db.get_command_list(PreviousTerminal.index, 
+                                                               prev_step.state_index,
+                                                               TriggerId=0)
+        assert command_list is not None
         result.entry.uniform_CommandList_along_path <<= command_list
 
         # Adapt information about entry and drop-out actions
