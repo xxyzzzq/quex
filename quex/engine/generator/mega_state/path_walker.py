@@ -136,7 +136,6 @@ def framework(txt, PWState, TheAnalyzer):
             offset = 0
             for path_id, path in enumerate(PWState.path_list):
                 offset += len(path)
-                print "#path:", path
                 terminal_door_id = path[-1].door_id # Terminal DoorId
                 tmp +=  "            %s"  % LanguageDB.IF("path_iterator", "==", "&path_walker_%i_path_base[%s]" %  \
                                                           (PWState.index, offset - 1), FirstF=(path_id == 0))                                  \
@@ -184,10 +183,10 @@ def require_data(PWState, TheAnalyzer):
     LanguageDB = Setup.language_db
     variable_db.require("path_iterator")
 
-    def __door_adr_sequences(PathList):
+    def __door_adr_sequences(PWState):
         result = ["{\n"]
-        offset = 0
-        for path_id, path in enumerate(PathList):
+        length = 0
+        for path_id, door_id_sequence in enumerate(PWState.door_id_sequence_list):
             # NOTE: For all states in the path the 'from_state_index, to_state_index' can
             #       be determined, **except** for the FIRST state in the path. Thus for
             #       this state the 'door' cannot be determined in case that it is 
@@ -198,33 +197,31 @@ def require_data(PWState, TheAnalyzer):
             #       and acceptances are not changed. So, we can use the common entry
             #       to the first state as a reference here.
             result.append("        ")
-            result.extend(
-                "QUEX_LABEL(%i), " % LanguageDB.ADDRESS_BY_DOOR_ID(x.door_id)
-                for x in path[:-1]
-            )
-            result.append("/* Zero of Elegance */0x0,")
+            result.extend("QUEX_LABEL(%i), " % LanguageDB.ADDRESS_BY_DOOR_ID(door_id)
+                          for door_id in door_id_sequence)
+            result.append("/* Padding */0x0,")
             result.append("\n")
 
-            offset += len(path)
+            length += len(door_id_sequence) 
 
         result.append("    }");
-        return offset + len(PathList), result
+        return length, result
 
     def __character_sequences(PathList):
         result = ["{\n"]
         offset = 0
-        for path_id, path in enumerate(PathList):
-            # Commenting the transition sequence is not dangerous. 'COMMENT' eliminates
-            # comment delimiters if they would appear in the sequence_str.
-            # sequence_str = imap(lambda x: Interval(x[1]).get_utf8_string(), path[:-1])
-            # memory.append(LanguageDB.COMMENT("".join(sequence_str)) + "\n")
-            # Last element of sequence contains only the 'end state'.
+        for path_id, step_list in enumerate(PathList):
+            ## Commenting the transition sequence is not dangerous. 'COMMENT' eliminates
+            ## comment delimiters if they would appear in the sequence_str.
+            ##   sequence_str = imap(lambda x: Interval(x[1]).get_utf8_string(), step_list[:-1])
+            ##   memory.append(LanguageDB.COMMENT("".join(sequence_str)) + "\n")
+
             result.append("        ")
-            result.extend("%i, " % x.trigger for x in path)
+            result.extend("%i, " % x.trigger for x in step_list[:-1])
             result.append("QUEX_SETTING_PATH_TERMINATION_CODE,")
             result.append("\n")
 
-            offset += len(path)
+            offset += len(step_list)
 
         result.append("    }")
         return offset + len(PathList), result
@@ -247,7 +244,7 @@ def require_data(PWState, TheAnalyzer):
     
     # (*) The State Information for each path step
     if PWState.uniform_door_id is None:
-        element_n, door_adr_sequence_str = __door_adr_sequences(PWState.path_list)
+        element_n, door_adr_sequence_str = __door_adr_sequences(PWState)
         variable_db.require_array("path_walker_%i_state_base", 
                                   ElementN = element_n,
                                   Initial  = door_adr_sequence_str,

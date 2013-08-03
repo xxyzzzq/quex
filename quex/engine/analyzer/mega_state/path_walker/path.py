@@ -1,6 +1,7 @@
 from   quex.engine.analyzer.state.core         import AnalyzerState
 from   quex.engine.analyzer.state.entry_action import DoorID, \
-                                                      SetPathIterator
+                                                      SetPathIterator, \
+                                                      CommandList
 from   quex.engine.analyzer.mega_state.core    import MegaState_Entry, \
                                                       MegaState_DropOut
 from   quex.engine.analyzer.transition_map     import TransitionMap       
@@ -43,7 +44,7 @@ class PathWalkerState_Entry(MegaState_Entry):
         self.action_db_update(TheEntry, 0)
         self.uniform_CommandList_along_path = UniformObject(EqualCmp=CommandList.is_equivalent)
 
-    def action_db_update(self, TheEntry, Offset, PreviousStep=None):
+    def action_db_update(self, TheEntry, Offset, FromStateIndex=None):
         """Include 'TheState.entry.action_db' into this state. That means,
         that any mappings:
            
@@ -55,15 +56,9 @@ class PathWalkerState_Entry(MegaState_Entry):
         walker state the 'state_key' must be set, so that it can mimik the
         represented state.
         """
-        if PreviousStep is not None:
-            OnPathStateIndex = PreviousStep.state_index
-        else:
-            OnPathStateIndex = None
-
         for transition_id, action in TheEntry.action_db.iteritems():
             clone = action.clone()
-            print "#tid:", transition_id, OnPathStateIndex
-            if transition_id.source_state_index != OnPathStateIndex:
+            if transition_id.source_state_index != FromStateIndex:
                 # Create new 'SetPathIterator' for the state which is represented
                 clone.command_list.misc.add(SetPathIterator(Offset=Offset))
             else:
@@ -74,13 +69,11 @@ class PathWalkerState_Entry(MegaState_Entry):
                 #   => It makes sense to have a dedicated DoorID which is going
                 #      to be set by 'action_db.categorize()'. The translation
                 #      is then documented in '.transition_reassignment_db'.
-                self.transition_reassignment_candidate_list.append((OnPathStateIndex, transition_id))
+                self.transition_reassignment_candidate_list.append((FromStateIndex, transition_id))
                 # clone.door_id = None
 
             self.action_db[transition_id] = clone
 
-        print "#-- action_db:", [(x,y) for x,y in self.action_db.iteritems() ]
-        print "#-- reascl:", self.transition_reassignment_candidate_list
         return
 
     def adapt_SetStateKey(self, PathWalkerIndex, PathID):
@@ -271,17 +264,16 @@ class CharacterPath(object):
             self.__transition_map.set_target(self.__transition_map_wildcard_char, TransitionMapWildCardPlug)
             self.__transition_map_wildcard_char = None
 
-        before_previous_state_index = self.__step_list[-1].state_index
+        prev_step = self.__step_list[-1]
         result.__step_list.append(CharacterPathStep(PreviousTerminal.index, TransitionCharacter))
 
         # Adapt the entry's action_db: include the entries of the new state
         # (The index of the state on the path determines the path iterator's offset)
-        offset = len(result.__step_list) + 1
-        prev_step = result.__step_list[-1]
+        offset = len(result.__step_list)
         result.entry.action_db_update(PreviousTerminal.entry, offset, 
-                                      PreviousStep=self.__step_list[-1])
+                                      FromStateIndex=prev_step.index)
 
-        command_list = PreviousTerminal.entry.action_db.get_command_list(before_previous_state_index,
+        command_list = PreviousTerminal.entry.action_db.get_command_list(prev_step.state_index,
                                                                          PreviousTerminal.index, 
                                                                          TriggerId=0)
         result.entry.uniform_CommandList_along_path <<= command_list
@@ -336,7 +328,8 @@ class CharacterPath(object):
         """
         return self.entry.uniform_CommandList_along_path.content
 
-    def finalize(self):
+    def finalize(self, TerminalStateIndex):
+        self.__step_list.append(CharacterPathStep(TerminalStateIndex, None))
         # Ensure that there is no wildcard in the transition map
         if self.__transition_map_wildcard_char is None: return
 

@@ -41,10 +41,7 @@ class EntryActionDB:
         return self.__db.get(TransitionID(StateIndex, FromStateIndex, TriggerId))
 
     def get_command_list(self, StateIndex, FromStateIndex, TriggerId=0):
-        print "#action_db:", [ x for x, y in self.__db.iteritems() ]
-        print "#command_list:", StateIndex, FromStateIndex
         action = self.__db.get(TransitionID(StateIndex, FromStateIndex, TriggerId))
-        print "#action:", action
         if action is None: return None
         else:              return action.command_list
 
@@ -80,8 +77,6 @@ class EntryActionDB:
         return None
 
     def absorb(self, Other):
-        print "#Other.__db:", [ x for x, y in Other.__db.iteritems() ]
-        print "#self.__db:",  [ x for x, y in self.__db.iteritems() ]
         self.__db.update(Other.__db)
         if self.__largest_used_door_sub_index < Other.__largest_used_door_sub_index:
             self.__largest_used_door_sub_index = Other.__largest_used_door_sub_index
@@ -262,8 +257,6 @@ class EntryActionDB:
             if cmp_command_list is None: 
                 check_db[action.door_id] = action.command_list
             elif cmp_command_list != action.command_list:
-                print "# Failure:", action.door_id
-                print "# '%s' vs. '%s'" % (action.command_list, cmp_command_list)
                 return False
         return True
 

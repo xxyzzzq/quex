@@ -103,8 +103,6 @@ class TransitionMap(list):
                 return Target
             else:
                 result = TheAnalyzer.state_db[Target].entry.action_db.get_door_id(StateIndex=Target, FromStateIndex=StateIndex)
-                print "#action_db:", [ (x,y) for x,y in TheAnalyzer.state_db[Target].entry.action_db.iteritems() ]
-                print "#from, to:", StateIndex, Target
                 assert result is not None
                 return result
         
@@ -149,7 +147,7 @@ class TransitionMap(list):
             elif x[1] != y[1]: return False  # Target
         return True
 
-    def match_with_wildcard(self, Other, ExceptionCharacter=None, ExceptionTarget=None):
+    def match_with_wildcard(self, Other, ExceptionCharacter=None):
         """Determines whether the transition map matches Other. If 'self' 
         contains a transition to 'E_StateIndices.NONE', then a wild card
         may be applied. A transition of Other to 'ExceptionTarget' on 
@@ -168,16 +166,19 @@ class TransitionMap(list):
         """
         wildcard_target = -1
         for begin, end, a_target, b_target in TransitionMap.izip(self, Other):
-            if a_target == b_target: continue    # There is no problem at all
+            if a_target == b_target: continue    
 
-            # A mismatching target has been detected. If the size of the interval
-            # is greater than '1', then a single character wildcard is of no help.
-            if end - begin != 1 or wildcard_target != -1:
+            # Here: Mismatching targets on same character interval.
+
+            if   end - begin != 1:             # No help for size > one character.
                 return None
-
-            if   b_target == ExceptionTarget and begin == ExceptionCharacter: continue
-            elif a_target == E_StateIndices.VOID: wildcard_target = b_target; continue
-            else:                                                             return None
+            elif begin == ExceptionCharacter:  # Difference on 'ExceptionCharacter' ignored                         
+                continue
+            elif wildcard_target == -1 and a_target == E_StateIndices.VOID: 
+                wildcard_target = b_target     # Wildcard used to plug hole
+                continue
+            else:                              # No exception, no wildcard plug -> misfit                               
+                return None
 
         # Here: The transition maps match, but possibly require the use of a wildcard.
         return wildcard_target

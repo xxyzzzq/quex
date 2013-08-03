@@ -249,7 +249,7 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
             entry_uniform_f    = path.entry_uniformity_with_predecessor(State)
             if self.uniform_f and (not drop_out_uniform_f) or (not entry_uniform_f):
                 if len(path.step_list) > 1:
-                    path.finalize()
+                    path.finalize(State.index)
                     self.result.append(path)
                 return None
 
@@ -271,15 +271,16 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
                 target_state   = self.analyzer.state_db[target_index]
 
                 # TransitionMap matching? 
-                target_door_id = target_state.entry.action_db.get_door_id(target_index, State.index)
-                assert target_door_id is not None
-                plug = path.transition_map.match_with_wildcard(transition_map, transition_char, target_door_id)
+                print "#step_list:", [ x.trigger for x in path.step_list ]
+                plug = path.transition_map.match_with_wildcard(transition_map, transition_char)
+                print "#plug:", plug, path.has_wildcard()
                 if   plug is None:
                     continue # No match possible 
                 elif plug > 0  and not path.has_wildcard(): 
                     continue # Wilcard required for match, but there is no wildcard open.
 
                 new_path = path.extended_clone(State, transition_char, plug) 
+                print "#new.step_list:", [ x.trigger for x in new_path.step_list ]
 
                 # RECURSION STEP ______________________________________________
                 # (May be, we do not have to clone the transition map if plug == -1)
@@ -289,7 +290,7 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
             # TERMINATION _____________________________________________________
             if len(sub_list) == 0:
                 if len(path.step_list) > 1: 
-                    path.finalize()
+                    path.finalize(State.index)
                     self.result.append(path)
                 return None
 
@@ -313,6 +314,17 @@ def select(path_list):
 
     Function modifies 'path_list'.
     """
+    def get_belong_db(AvailablePathList):
+        """belong_db: 
+          
+                      state_index --> paths of which state_index is part. 
+        """
+        result = defaultdict(set)
+        for i, path in enumerate(AvailablePathList):
+            for state_index in path.state_index_set():
+                result[state_index].add(i)
+        return result
+
     def get_best_path(AvailablePathList):
         """The best path is the path that brings the most gain. The 'gain'
         of a path is a function of the number of states it implements minus
@@ -342,16 +354,6 @@ def select(path_list):
 
         return winner_i, winner_forbidden_i_set
 
-    def get_belong_db(AvailablePathList):
-        """belong_db: 
-          
-                      state_index --> paths of which state_index is part. 
-        """
-        result = defaultdict(set)
-        for i, path in enumerate(AvailablePathList):
-            result.update((state_index, i) for state_index in path.state_index_set())
-        return result
-
     def compute_gain(path, BelongDB, AvailablePathListIterable):
         """What happens if 'path' is chosen?
 
@@ -369,13 +371,17 @@ def select(path_list):
         state_index_set = path.state_index_set()
 
         # -- Forbidden are those paths which have a state in common with 'path'
-        # -- Those states implemented in forbiddent paths become endangered.
+        # -- Those states implemented in forbidden paths become endangered.
         #    I.e. they might not to be implemented by a PathWalkerState.
         endangered_set        = set()
         forbidden_path_id_set = set()
         for other_path_i, other_path in enumerate(AvailablePathListIterable):
             if state_index_set.isdisjoint(other_path.state_index_set()): continue
+
+            # If 'other_path' is dropped: 
+            # => its states may not be implemented in PathWalkerState.
             endangered_set.update(other_path.state_index_set() - state_index_set)
+
             forbidden_path_id_set.add(other_path_i)
 
         # (*) Function to model 'cost for an endangered state'
@@ -433,7 +439,7 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
 
     # Once, all path walkers are setup, finalize.
     for path_walker in path_walker_list:
-        path_walker.finalize()
+        path_walker.finalize(TheAnalyzer)
 
     return path_walker_list
 
