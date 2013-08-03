@@ -3,8 +3,10 @@ from   quex.engine.analyzer.transition_map      import TransitionMap
 from   quex.engine.analyzer.state.entry_action  import SetPathIterator, DoorID
 from   quex.engine.analyzer.mega_state.core     import MegaState, MegaState_Transition
 import quex.engine.state_machine.index          as     index
-from   quex.engine.tools                        import uniformity_check_and_set
+from   quex.engine.tools                        import UniformObject
 from   quex.blackboard                          import E_Compression
+
+from   itertools import izip
 
 class PathWalkerState(MegaState):
     """________________________________________________________________________
@@ -45,9 +47,9 @@ class PathWalkerState(MegaState):
         self.__state_index_sequence    = None # Computed on demand
 
         # Following are set by 'finalize()'.
-        self.__uniform_door_id          = -1
-        self.__uniform_terminal_door_id = -1
-        self.__door_id_sequence         = -1
+        self.__uniform_door_id_along_all_paths = None
+        self.__uniform_terminal_door_id        = None
+        self.__door_id_sequence_list           = None
 
     @property
     def transition_map(self):
@@ -106,13 +108,11 @@ class PathWalkerState(MegaState):
         # (2a) Absorb Entry Information
         #      Absorb entry's action_db (maps: 'transition_id --> command_list')
         Path.entry.adapt_SetStateKey(self.index, PathID=path_id)
-        print "#Path.action_db:", [ x for x, y in Path.entry.action_db.iteritems() ]
-        print "#self.action_db:", [ x for x, y in self.entry.action_db.iteritems() ]
-        print "#reascl:",    Path.entry.transition_reassignment_candidate_list
         self.entry.absorb(Path.entry)
 
         # (2b) Absorb the state sequence of the path
-        #      (verify/falsify the uniform terminal entry)
+        #      (Meaningful paths consist of more than one state and a terminal.)
+        assert len(Path.step_list) > 2
         self.__path_list.append(Path.step_list)
 
         # (2c) Absorb the drop-out information
@@ -120,7 +120,7 @@ class PathWalkerState(MegaState):
 
         return True
 
-    def finalize(self):
+    def finalize(self, TheAnalyzer):
         """Ensure that the CommandList-s for the entries along the 
            path are properly setup. Also, determine whether those
            entries are uniform.
@@ -132,32 +132,41 @@ class PathWalkerState(MegaState):
         # Determine uniformity and the door_id_sequence.
         uniform_door_id          = UniformObject()
         uniform_terminal_door_id = UniformObject()
-        door_id_sequence         = []
-        for step_list in self.__path_list:
 
-            prev_step = step_list[0]
-            last_i    = len(step_list) - 1
-            for i, step in step_list[1:]:
-                # (Recall: there is only one transition => TriggerId == 0)
-                door_id = self.entry.action_db.get_door_id(prev_step.state_index, step.state_index, 
-                                                           TriggerId=0)
-                assert door_id is not None
+        print "#action_db:", [x for x, y in self.entry.action_db.iteritems()]
+        self.__door_id_sequence_list = []
+        for step_list in self.__path_list:
+            # Meaningful paths consist of more than one state and a terminal. 
+            assert len(step_list) > 2
+
+            door_id_sequence = []
+            prev_step        = step_list[0]
+            action_db        = self.entry.action_db
+            for step in step_list[1:-1]:
+                # (Recall: there is only one transition (from, to) => TriggerId == 0)
+                door_id = action_db.get_door_id(step.state_index, prev_step.state_index, TriggerId=0)
+                print "# %s->%s: %s" % (prev_step.state_index, step.state_index, door_id)
 
                 door_id_sequence.append(door_id)
-
-                # The last step goes into Terminal, the entry there is not 
-                # inside the path and is not considered for uniform entry command lists.
-                if i != last_i: uniform_door_id <<= door_id
+                uniform_door_id <<= door_id
 
                 prev_step = step
 
-            # Last DoorID was the terminal_door_id of the path
-            # => check its uniformity
+            step           = step_list[-1] # Terminal
+            terminal_state = TheAnalyzer.state_db[step.state_index]
+            action_db      = terminal_state.entry.action_db
+            door_id        = action_db.get_door_id(step.state_index, prev_step.state_index, TriggerId=0)
+
+            door_id_sequence.append(door_id)
             uniform_terminal_door_id <<= door_id
+
+            print "# %s->%s: %s" % (prev_step.state_index, step.state_index, door_id)
+            print "#step_list:", [ x.state_index for x in step_list ]
+            print "#door_id_sequence:", door_id_sequence
+            self.__door_id_sequence_list.append(door_id_sequence)
 
         self.__uniform_door_id_along_all_paths = uniform_door_id.content
         self.__uniform_terminal_door_id        = uniform_terminal_door_id.content
-        self.__door_id_sequence                = door_id_sequence
 
     @property
     def path_list(self):          
@@ -166,12 +175,10 @@ class PathWalkerState(MegaState):
 
     def implemented_state_index_list(self):
         result = [] # **MUST** be a list, because we might identify 'state_keys' with it.
-        print "#implemented_state_index_list:"
         for path in self.__path_list:
             # The end state of each path is not implemented
             # (It may be part of another path, though)
             result.extend(x.state_index for x in path)
-            print "#extend:", [x.state_index for x in path]
         return result
 
     def map_state_index_to_state_key(self, StateIndex):
@@ -205,8 +212,11 @@ class PathWalkerState(MegaState):
         return self.__uniform_door_id_along_all_paths
 
     @property
-    def door_id_sequence(self):
-        return self.__door_id_sequence
+    def door_id_sequence_list(self):
+        assert len(self.__path_list) == len(self.__door_id_sequence_list)
+        for path, door_id_sequence in izip(self.__path_list, self.__door_id_sequence_list):
+            assert len(path) == len(door_id_sequence) + 1
+        return self.__door_id_sequence_list
 
     @property
     def uniform_terminal_door_id(self):

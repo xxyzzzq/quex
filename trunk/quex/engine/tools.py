@@ -29,8 +29,8 @@ def pair_combinations(iterable):
         for y in islice(other, i+1, None):
             yield x, y
 
-class UniformObject:
-    __slots__ = ("_content")
+class UniformObject(object):
+    __slots__ = ("_content", "_equal")
     def __init__(self, EqualCmp=lambda x,y: x!=y):
         self._content = -1   # '-1' Not yet set; 'None' set but not uniform
         self._equal   = EqualCmp
@@ -39,6 +39,7 @@ class UniformObject:
         if   self._content == - 1:                   self._content = NewContent
         elif self._content is None:                  return
         elif self._equal(self._content, NewContent): self._content = None
+        return self
 
     def fit(self, NewContent):
         if   self._content == -1:   return True
