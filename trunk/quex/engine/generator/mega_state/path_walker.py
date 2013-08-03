@@ -196,13 +196,15 @@ def require_data(PWState, TheAnalyzer):
             #       used is reload during the FIRST state. The reload adapts the positions
             #       and acceptances are not changed. So, we can use the common entry
             #       to the first state as a reference here.
+            print "#DoorID, Adr:", [(door_id, LanguageDB.ADDRESS_BY_DOOR_ID(door_id)) \
+                                     for door_id in door_id_sequence]
             result.append("        ")
             result.extend("QUEX_LABEL(%i), " % LanguageDB.ADDRESS_BY_DOOR_ID(door_id)
                           for door_id in door_id_sequence)
             result.append("/* Padding */0x0,")
             result.append("\n")
 
-            length += len(door_id_sequence) 
+            length += len(door_id_sequence) + 1 # 1 padding element
 
         result.append("    }");
         return length, result

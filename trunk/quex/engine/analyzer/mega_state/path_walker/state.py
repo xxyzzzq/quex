@@ -127,13 +127,15 @@ class PathWalkerState(MegaState):
         """
         # First make sure, that the CommandList-s on the paths are organized
         # and assigned with new DoorID-s.
+        print "#reassignment:", self.entry.transition_reassignment_candidate_list 
         self.entry.transition_reassignment_db_construct(self.index)
 
         # Determine uniformity and the door_id_sequence.
         uniform_door_id          = UniformObject()
         uniform_terminal_door_id = UniformObject()
 
-        print "#action_db:", [x for x, y in self.entry.action_db.iteritems()]
+        print "#self.index:", self.index
+        print "#action_db:", [(x, y.door_id) for x, y in self.entry.action_db.iteritems()]
         self.__door_id_sequence_list = []
         for step_list in self.__path_list:
             # Meaningful paths consist of more than one state and a terminal. 
@@ -146,6 +148,8 @@ class PathWalkerState(MegaState):
                 # (Recall: there is only one transition (from, to) => TriggerId == 0)
                 door_id = action_db.get_door_id(step.state_index, prev_step.state_index, TriggerId=0)
                 print "# %s->%s: %s" % (prev_step.state_index, step.state_index, door_id)
+                # Every DoorID on the path must be a new-assigned one to this PathWalkerState.
+                assert door_id.state_index == self.index
 
                 door_id_sequence.append(door_id)
                 uniform_door_id <<= door_id
@@ -153,9 +157,13 @@ class PathWalkerState(MegaState):
                 prev_step = step
 
             step           = step_list[-1] # Terminal
-            terminal_state = TheAnalyzer.state_db[step.state_index]
-            action_db      = terminal_state.entry.action_db
-            door_id        = action_db.get_door_id(step.state_index, prev_step.state_index, TriggerId=0)
+            # In case of 'crossing' a terminal state may be element of another path.
+            # Then, we have to ask ourselves before asking the terminal.
+            door_id = action_db.get_door_id(step.state_index, prev_step.state_index, TriggerId=0)
+            if door_id is None:
+                terminal_state = TheAnalyzer.state_db[step.state_index]
+                action_db      = terminal_state.entry.action_db
+                door_id        = action_db.get_door_id(step.state_index, prev_step.state_index, TriggerId=0)
 
             door_id_sequence.append(door_id)
             uniform_terminal_door_id <<= door_id
@@ -175,10 +183,12 @@ class PathWalkerState(MegaState):
 
     def implemented_state_index_list(self):
         result = [] # **MUST** be a list, because we might identify 'state_keys' with it.
-        for path in self.__path_list:
+        for step_list in self.__path_list:
             # The end state of each path is not implemented
             # (It may be part of another path, though)
-            result.extend(x.state_index for x in path)
+            result.extend(x.state_index for x in step_list[:-1])
+
+        print "#implemented_state_index_list:", result
         return result
 
     def map_state_index_to_state_key(self, StateIndex):

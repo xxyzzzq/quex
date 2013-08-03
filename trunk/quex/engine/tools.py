@@ -37,7 +37,7 @@ class UniformObject(object):
 
     def __ilshift__(self, NewContent):
         if   self._content == - 1:                   self._content = NewContent
-        elif self._content is None:                  return
+        elif self._content is None:                  pass
         elif self._equal(self._content, NewContent): self._content = None
         return self
 
