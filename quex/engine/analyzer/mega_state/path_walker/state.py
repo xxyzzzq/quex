@@ -64,6 +64,14 @@ class PathWalkerState(MegaState):
                  True  -- Path can be walked by PathWalkerState and has been 
                           accepted.
         """
+        #! A terminal of one path cannot be element of another path of the
+        #! same PathWalkerState. This might cause huge trouble! 
+        #! Further: DO NOT ALLOW ANY INTERSECTIONS!
+        state_index_set = set(step.state_index for step in Path.step_list)
+        for step_list in self.__path_list:
+            if len(state_index_set.intersection(set(step.state_index for step in step_list))) != 0:
+                return False
+
         # (1) Compare the transition maps.
         if not self.__transition_map_to_door_ids.is_equal(Path.transition_map): 
             return False
@@ -131,11 +139,9 @@ class PathWalkerState(MegaState):
         self.entry.transition_reassignment_db_construct(self.index)
 
         # Determine uniformity and the door_id_sequence.
-        uniform_door_id          = UniformObject()
-        uniform_terminal_door_id = UniformObject()
+        uniform_door_id              = UniformObject()
+        uniform_terminal_door_id     = UniformObject()
 
-        print "#self.index:", self.index
-        print "#action_db:", [(x, y.door_id) for x, y in self.entry.action_db.iteritems()]
         self.__door_id_sequence_list = []
         for step_list in self.__path_list:
             # Meaningful paths consist of more than one state and a terminal. 
@@ -147,7 +153,7 @@ class PathWalkerState(MegaState):
             for step in step_list[1:-1]:
                 # (Recall: there is only one transition (from, to) => TriggerId == 0)
                 door_id = action_db.get_door_id(step.state_index, prev_step.state_index, TriggerId=0)
-                print "# %s->%s: %s" % (prev_step.state_index, step.state_index, door_id)
+
                 # Every DoorID on the path must be a new-assigned one to this PathWalkerState.
                 assert door_id.state_index == self.index
 
@@ -157,20 +163,19 @@ class PathWalkerState(MegaState):
                 prev_step = step
 
             step           = step_list[-1] # Terminal
-            # In case of 'crossing' a terminal state may be element of another path.
-            # Then, we have to ask ourselves before asking the terminal.
-            door_id = action_db.get_door_id(step.state_index, prev_step.state_index, TriggerId=0)
-            if door_id is None:
-                terminal_state = TheAnalyzer.state_db[step.state_index]
-                action_db      = terminal_state.entry.action_db
-                door_id        = action_db.get_door_id(step.state_index, prev_step.state_index, TriggerId=0)
+
+            #! A terminal of one path cannot be element of another path of the
+            #! same PathWalkerState. This might cause huge trouble!
+            #! (Ensured by the function '.accept(Path)')
+            print "#terminal: to: %s from: %s" % (step.state_index, prev_step.state_index)
+            assert step.state_index not in self.implemented_state_index_list()
+
+            action_db = TheAnalyzer.state_db[step.state_index].entry.action_db
+            door_id   = action_db.get_door_id(step.state_index, prev_step.state_index, TriggerId=0)
 
             door_id_sequence.append(door_id)
             uniform_terminal_door_id <<= door_id
 
-            print "# %s->%s: %s" % (prev_step.state_index, step.state_index, door_id)
-            print "#step_list:", [ x.state_index for x in step_list ]
-            print "#door_id_sequence:", door_id_sequence
             self.__door_id_sequence_list.append(door_id_sequence)
 
         self.__uniform_door_id_along_all_paths = uniform_door_id.content
