@@ -145,14 +145,15 @@ def framework(txt, PWState, TheAnalyzer):
             tmp += "            %s\n"     % LanguageDB.END_IF()                                  
             goto_terminal_door = tmp
 
-        path_walker_head = ["    %s"            % LanguageDB.IF_INPUT("==", "*path_iterator"),
-                            "        %s\n"      % LanguageDB.PATH_ITERATOR_INCREMENT,
-                            "        %s"        % LanguageDB.IF("*path_iterator", "!=", "QUEX_SETTING_PATH_TERMINATION_CODE"),
-                            goto_next_door,
-                            "        %s"        % LanguageDB.ELSE,                                  
-                            goto_terminal_door,
-                            "        %s\n"      % LanguageDB.END_IF(),
-                            "    %s\n"          % LanguageDB.END_IF()]
+        path_walker_head = \
+            ["    %s"            % LanguageDB.IF_INPUT("==", "*path_iterator"),
+             "        %s\n"      % LanguageDB.PATH_ITERATOR_INCREMENT,
+             "        %s"        % LanguageDB.IF("*path_iterator", "!=", "QUEX_SETTING_PATH_TERMINATION_CODE"),
+             goto_next_door,
+             "        %s"        % LanguageDB.ELSE,                                  
+             goto_terminal_door,
+             "        %s\n"      % LanguageDB.END_IF(),
+             "    %s\n"          % LanguageDB.END_IF()]
     else:
         # NON UNIFORM PATHS
         #
@@ -199,9 +200,9 @@ def require_data(PWState, TheAnalyzer):
             print "#DoorID, Adr:", [(door_id, LanguageDB.ADDRESS_BY_DOOR_ID(door_id)) \
                                      for door_id in door_id_sequence]
             result.append("        ")
+            result.append("/* Padding */0x0, ")
             result.extend("QUEX_LABEL(%i), " % LanguageDB.ADDRESS_BY_DOOR_ID(door_id)
                           for door_id in door_id_sequence)
-            result.append("/* Padding */0x0,")
             result.append("\n")
 
             length += len(door_id_sequence) + 1 # 1 padding element
@@ -226,18 +227,18 @@ def require_data(PWState, TheAnalyzer):
             offset += len(step_list)
 
         result.append("    }")
-        return offset + len(PathList), result
+        return offset, result
 
     # (*) Path Walker Basis
     # The 'base' must be defined before all --> PriorityF (see table in variable_db)
     element_n, character_sequence_str = __character_sequences(PWState.path_list)
 
     offset = 0
-    for path_id, path in enumerate(PWState.path_list):
-        offset += len(path)
+    for path_id, step_list in enumerate(PWState.path_list):
         variable_db.require("path_walker_%i_path_%i", 
                             Initial = "&path_walker_%i_path_base[%i]" % (PWState.index, offset), 
                             Index   = (PWState.index, path_id))
+        offset += len(step_list)
 
     variable_db.require_array("path_walker_%i_path_base", 
                               ElementN = element_n,
@@ -256,6 +257,6 @@ def require_data(PWState, TheAnalyzer):
         # 'path_iterator - (path_base + 1)' gives actually the correct offset.
         # We define a variable for that, for elegance.
         variable_db.require("path_walker_%i_reference", 
-                            Initial = "path_walker_%i_path_base + 1" % PWState.index, 
+                            Initial = "path_walker_%i_path_base" % PWState.index, 
                             Index   = (PWState.index))
 
