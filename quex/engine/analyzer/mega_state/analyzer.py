@@ -52,6 +52,7 @@ def do(TheAnalyzer):
     remainder = set(TheAnalyzer.state_db.iterkeys())
     remainder.remove(TheAnalyzer.init_state_index)
 
+    implemented_check_set = set()
     for ctype in Setup.compression_type_list:
         # -- MegaState-s by Path-Compression
         if ctype in (E_Compression.PATH, E_Compression.PATH_UNIFORM):
@@ -65,8 +66,9 @@ def do(TheAnalyzer):
             assert False
 
         # -- Post-process the absorption of AnalyzerState-s into MegaState-s
+
         for mega_state in mega_state_list:
-            assert mega_state.entry.action_db.check_consistency()
+            mega_state.check_consistency(remainder)
 
             # Replace the absorbed AnalyzerState by its dummy.
             TheAnalyzer.state_db.update(
@@ -94,26 +96,6 @@ def do(TheAnalyzer):
     for mega_state in TheAnalyzer.mega_state_list:
         MegaState_Transition.rejoin_uniform_schemes(mega_state.transition_map)
         MegaState_Transition.assign_scheme_ids(mega_state.transition_map)
-
-    implemented_check_set = set()
-    for mega_state in TheAnalyzer.mega_state_list:
-        implemented_state_index_set = set(mega_state.implemented_state_index_list())
-        # A state cannot be implemented by two MegaState-s
-        assert len(implemented_check_set.intersection(implemented_state_index_set)) == 0
-        implemented_check_set.update(implemented_state_index_set)
-        print "#--------------------"
-        print "#MegaState.index:", mega_state.index
-        print "#MegaState.action_db:", \
-              [x for x, y in mega_state.entry.action_db.iteritems()]
-        print "#MegaState.implemented:", implemented_state_index_set
-        print "#--------------------"
-        # A MegaState shall not change DoorID-s of entry actions,
-        # except for transitions inside the MegaState itself.
-        for transition_id, action in mega_state.entry.action_db.iteritems():
-            if action.door_id.state_index != mega_state.index: continue
-            assert transition_id.target_state_index in implemented_state_index_set
-            assert transition_id.source_state_index in implemented_state_index_set
-
 
     return
 

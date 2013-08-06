@@ -257,6 +257,22 @@ class MegaState(AnalyzerState):
         """
         return self.__bad_company
 
+    def check_consistency(self, RemainingStateIndexSet):
+        # Check the MegaState's consistency
+        assert self.entry.action_db.check_consistency()
+
+        # A MegaState shall not change DoorID-s of entry actions,
+        # except for transitions inside the MegaState itself.
+        for transition_id, action in self.entry.action_db.iteritems():
+            if action.door_id.state_index != self.index: continue
+            assert transition_id.target_state_index in implemented_state_index_set
+            assert transition_id.source_state_index in implemented_state_index_set
+
+        # A state cannot be implemented by two MegaState-s
+        # => All implemented states must be from 'RemainingStateIndexSet'
+        assert len(set(self.implemented_state_index_list()).difference(RemainingStateIndexSet)) == 0
+
+
 class MegaState_DropOut(TypedDict):
     """_________________________________________________________________________
     

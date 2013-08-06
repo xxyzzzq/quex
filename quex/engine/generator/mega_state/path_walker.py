@@ -121,6 +121,9 @@ def framework(txt, PWState, TheAnalyzer):
         # -- "goto TerminalDoor"
         if PWState.uniform_terminal_door_id is not None:
             # All path have same terminal state and enter it at the same door
+            print "#uniform_terminal_door_id:", PWState.uniform_terminal_door_id, \
+                                                LanguageDB.GOTO_BY_DOOR_ID(PWState.uniform_terminal_door_id)
+
             goto_terminal_door   = "            %s\n" % LanguageDB.GOTO_BY_DOOR_ID(PWState.uniform_terminal_door_id)
         else:
             # The terminals of the paths are different

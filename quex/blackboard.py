@@ -111,6 +111,8 @@ E_MapImplementationType = Enum("STATE_MACHINE_TRIVIAL",
 
 E_Border = Enum("BEGIN", "END", "UNDEFINED", "_DEBUG_Border")
 
+E_Values = Enum("UNASSIGNED", "VOID", "_DEBUG_E_Values")
+
 #-----------------------------------------------------------------------------------------
 # mode_db: storing the mode information into a dictionary:
 #            key  = mode name
