@@ -1,3 +1,4 @@
+from   quex.blackboard import E_Values
 from   itertools       import izip, islice
 import sys
 import os
@@ -32,24 +33,52 @@ def pair_combinations(iterable):
 class UniformObject(object):
     __slots__ = ("_content", "_equal")
     def __init__(self, EqualCmp=lambda x,y: x!=y):
-        self._content = -1   # '-1' Not yet set; 'None' set but not uniform
+        self._content = E_Values.UNASSIGNED
         self._equal   = EqualCmp
 
+    def clone():
+        result = UniformObject(self._equal)
+        result._content = self._content
+        return result
+
     def __ilshift__(self, NewContent):
-        if   self._content == - 1:                   self._content = NewContent
-        elif self._content is None:                  pass
-        elif self._equal(self._content, NewContent): self._content = None
+        if   self._content == E_Values.UNASSIGNED:   self._content = NewContent
+        elif self._content == E_Values.VOID:         pass
+        elif self._equal(self._content, NewContent): self._content = E_Values.VOID
         return self
 
     def fit(self, NewContent):
-        if   self._content == -1:   return True
-        elif self._content is None: return False
+        if   self._content == E_Values.UNASSIGNED: return True
+        elif self._content == E_Values.VOID:       return False
         return self._equal(self._content, NewContent)
 
     @property
     def content(self):
-        if self._content == -1: return None
-        else:                   return self._content
+        if   self._content == E_Values.UNASSIGNED: return None
+        elif self._content == E_Values.VOID:       return None
+        else:                                      return self._content
+
+#class AssignedOnce(object):
+#    __slots__ = ("_content", "_equal")
+#
+#    def __init__(self, EqualCmp=lambda x,y: x!=y):
+#        self._content = E_Values.UNASSIGNED
+#        self._equal   = EqualCmp
+#
+#    def clone():
+#        result = UniformObject(self._equal)
+#        result._content = self._content
+#        return result
+#
+#    def __ilshift__(self, NewContent):
+#        if   self._content == E_Values.UNASSIGNED: self._content = NewContent
+#        return self
+#
+#    @property
+#    def content(self):
+#        if self._content == E_Values.UNASSIGNED: return None
+#        else:                                    return self._content
+
 
 class TypedSet(set):
     def __init__(self, Cls):

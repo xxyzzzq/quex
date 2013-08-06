@@ -245,16 +245,11 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
             #    path walker.
             
             # If uniformity is required, then this is the place to check for it.
-            drop_out_uniform_f = path.drop_out.is_uniform_with(State.drop_out)
-            entry_uniform_f    = path.entry_uniformity_with_predecessor(State)
-            if self.uniform_f and (not drop_out_uniform_f) or (not entry_uniform_f):
+            if self.uniform_f and path.uniformity_with_predecessor(State):
                 if len(path.step_list) > 1:
                     path.finalize(State.index)
                     self.result.append(path)
                 return None
-
-            if not entry_uniform_f:
-                path.entry_uniformity_along_path_unset()
 
             # BRANCH __________________________________________________________
             sub_list = []

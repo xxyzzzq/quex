@@ -8,6 +8,118 @@ from   quex.blackboard                          import E_Compression
 
 from   itertools import izip
 
+class PathWalkerState_ContentFinalized(object):
+    def __init__(self, PWState, TheAnalyzer):
+
+        self.uniform_door_id_along_all_paths = None
+        self.uniform_terminal_door_id        = None
+        self.door_id_sequence_list           = None
+
+        # First make sure, that the CommandList-s on the paths are organized
+        # and assigned with new DoorID-s.
+        PWState.entry.transition_reassignment_db_construct(self.index)
+
+        # Determine uniformity and the door_id_sequence.
+        uniform_door_id              = UniformObject()
+        uniform_terminal_door_id     = UniformObject()
+
+        self.__door_id_sequence_list = []
+        for step_list in PWState.path_list:
+            # Meaningful paths consist of more than one state and a terminal. 
+            assert len(step_list) > 2
+
+            door_id_sequence = []
+            prev_step        = step_list[0]
+            action_db        = PWState.entry.action_db
+            for step in step_list[1:-1]:
+                # (Recall: there is only one transition (from, to) => TriggerId == 0)
+                door_id = action_db.get_door_id(step.state_index, prev_step.state_index, TriggerId=0)
+
+                # Every DoorID on the path must be a new-assigned one to this PathWalkerState.
+                assert door_id.state_index == PWState.index
+
+                door_id_sequence.append(door_id)
+                uniform_door_id <<= door_id
+
+                prev_step = step
+
+            step           = step_list[-1] # Terminal
+
+            #! A terminal of one path cannot be element of another path of the
+            #! same PathWalkerState. This might cause huge trouble!
+            #! (Ensured by the function '.accept(Path)')
+            print "#terminal: to: %s from: %s" % (step.state_index, prev_step.state_index)
+            assert step.state_index not in PWState.implemented_state_index_list()
+
+            action_db = TheAnalyzer.state_db[step.state_index].entry.action_db
+            door_id   = action_db.get_door_id(step.state_index, prev_step.state_index, TriggerId=0)
+
+            door_id_sequence.append(door_id)
+            uniform_terminal_door_id <<= door_id
+
+            self.door_id_sequence_list.append(door_id_sequence)
+
+        self.uniform_door_id_along_all_paths = uniform_door_id.content
+        self.uniform_terminal_door_id        = uniform_terminal_door_id.content
+
+
+class PathWalkerState_Entry(MegaState_Entry):
+    """________________________________________________________________________
+
+    Entry into a PathWalkerState. As the base's base class 'Entry' it holds
+    information about what CommandList is to be executed upon entry from a
+    particular source state.
+    
+    PRELIMINARY: Documentation of class 'MegaState_Entry'.
+
+    A PathWalkerState is a MegaState, meaning it implements multiple states at
+    once. Entries into the PathWalkerState must have an action that sets the
+    'state key' for the state that it is about to represent. The 'state key'
+    of a PathWalkerState is the offset of the path iterator from the character
+    path's base.
+
+    During analysis, only the '.action_db' is of interest. There the 
+    'SetPathIterator' command is to each TransitionAction's CommandList. The
+    command lists 'equal' and 'not-equal' relationships remain the same, since
+    the 'SetPathIterator' for all TransitionAction of a given state. Thus,
+    the DoorID objects can act as unique identifiers of command lists.
+    ___________________________________________________________________________
+    """
+    def __init__(self):
+        MegaState_Entry.__init__(self)
+
+    def action_db_update(self, TheEntry, Offset, FromStateIndex=None):
+        """Include 'TheState.entry.action_db' into this state. That means,
+        that any mappings:
+           
+             transition (StateIndex, FromStateIndex) --> CommandList 
+
+        is ABSORBED AS THEY ARE from  'TheEntry.action_db'.  Additionally, any
+        command list must contain the 'SetPathIterator' command that sets the
+        state key for represented state. At each (external) entry into the path
+        walker state the 'state_key' must be set, so that it can mimik the
+        represented state.
+        """
+        for transition_id, action in TheEntry.action_db.iteritems():
+            clone = action.clone()
+            if transition_id.source_state_index != FromStateIndex:
+                # Create new 'SetPathIterator' for the state which is represented
+                clone.command_list.misc.add(SetPathIterator(Offset=Offset))
+            else:
+                # Entry along path.
+                #
+                #   => The state_key does not have to be set at entry. It 
+                #      results directly from the iterator position.
+                #   => It makes sense to have a dedicated DoorID which is going
+                #      to be set by 'action_db.categorize()'. The translation
+                #      is then documented in '.transition_reassignment_db'.
+                self.transition_reassignment_candidate_list.append((FromStateIndex, transition_id))
+                # clone.door_id = None
+
+            self.action_db[transition_id] = clone
+
+        return
+
 class PathWalkerState(MegaState):
     """________________________________________________________________________
     A path walker state is a state that can walk along one or more paths
@@ -19,41 +131,29 @@ class PathWalkerState(MegaState):
         # Overtake '.entry' and '.drop_out' from the 'FirstPath'. 
         # ('FirstPath' will no longer be referenced elsewhere.)
         my_index = index.get()
-        FirstPath.entry.adapt_SetStateKey(my_index, PathID=0)
 
-        MegaState.__init__(self, FirstPath.entry, FirstPath.drop_out, my_index)
-
-
-        self.__path_list = [ FirstPath.step_list ]
-
-        # original_transition_map: interval --> DoorID
-        #
-        #     '.accept(...)' requires a 'DoorID - transition_map' for 
-        #     comparison. Thus, keep original transition map as reference.
-        #
-        # transition_map:          interval --> MegaState_Transition
-        self.__transition_map_to_door_ids           = FirstPath.transition_map
-        self.__transition_map_to_mega_state_targets =                          \
-                TransitionMap.from_iterable(self.__transition_map_to_door_ids, \
-                                            MegaState_Transition.create)
+        MegaState.__init__(self, PathWalkerState_Entry(), MegaState_DropOut(), my_index)
 
         # Uniform CommandList along entries on the path (optional)
-        self.__uniformity_required_f                 = (CompressionType == E_Compression.PATH_UNIFORM)
-        self.__uniform_entry_command_list_along_path = \
-                FirstPath.uniform_entry_command_list_along_path
+        self.__uniformity_required_f   = (CompressionType == E_Compression.PATH_UNIFORM)
+        self.uniform_entry_CommandList = FirstPath.uniform_entry_CommandList
+        self.uniform_DropOut           = FirstPath.uniform_DropOut
         assert not self.__uniformity_required_f \
-               or  self.__uniform_entry_command_list_along_path is not None
+               or  self.uniform_entry_CommandList.content is not None
 
-        self.__state_index_sequence    = None # Computed on demand
+        self.__path_list = []
+
+        self.absorb_path(FirstPath)
+
+        self.__transition_map_to_door_ids = FirstPath.transition_map
 
         # Following are set by 'finalize()'.
-        self.__uniform_door_id_along_all_paths = None
-        self.__uniform_terminal_door_id        = None
-        self.__door_id_sequence_list           = None
+        self.__finalized = None # <-- PathWalkerState_ContentFinalized()
 
     @property
     def transition_map(self):
-        return self.__transition_map_to_mega_state_targets 
+        return TransitionMap.from_iterable(self.__transition_map_to_door_ids, \
+                                           MegaState_Transition.create)
 
     def accept(self, Path):
         """Accepts the given Path to be walked, if the remaining transition_maps
@@ -82,49 +182,36 @@ class PathWalkerState(MegaState):
         #                  -- There is a uniform command list along the path
         #                  -- The uniform command list is equivalent with the 
         #                     existing one.
-        uniform_entry_f = False
-        if self.__uniform_entry_command_list_along_path is not None:
-            # other_ueclap := other's .__uniform_entry_command_list_along_path
-            other_ueclap = Path.uniform_entry_command_list_along_path
-            if     other_ueclap is not None \
-               and other_ueclap.is_equivalent(self.__uniform_entry_command_list_along_path):
-                    uniform_entry_f = True
-
         if self.__uniformity_required_f:
-            # If uniformity is required, then a non-uniform entry should never been
-            # accepted. Thus, there **must** be a 'uniform_door_id'.
-            assert self.__uniform_entry_command_list_along_path is not None
-            # If uniformity is a required, more than one drop-out scheme should never
-            # been accepted. 
-            assert len(Path.drop_out) == 1, repr(Path.drop_out)
-
-            # (*) Check Entry Uniformity
-            if   not uniform_entry_f:            return False
-            # (*) Check Drop-Out Uniformity
-            elif self.drop_out != Path.drop_out: return False
-
-        # (**) HERE: We ACCEPT the Path!
-
-        if uniform_entry_f == False:
-            self.__uniform_entry_command_list_along_path = None
+            if not self.uniform_entry_CommandList.fit(Path.uniform_entry_CommandList):
+                return False
+            if not self.uniform_DropOut.fit(Path.uniform_entry_CommandList):
+                return False
 
         # (2)  Absorb the Path
         #      The path_id of the path to be added is the length of the current path list.
         #      (This means: new last index = current size of the list.)
-        path_id = len(self.__path_list) 
+        self.absorb_path(Path)
 
-        # (2a) Absorb Entry Information
-        #      Absorb entry's action_db (maps: 'transition_id --> command_list')
-        Path.entry.adapt_SetStateKey(self.index, PathID=path_id)
-        self.entry.absorb(Path.entry)
+    def absorb_path(self, Path):
+        offset = len(self.__path_list) 
 
-        # (2b) Absorb the state sequence of the path
-        #      (Meaningful paths consist of more than one state and a terminal.)
+        # (*) Absorb Entry/DropOut Information
+        #     Entry's action_db (maps: 'transition_id --> command_list')
+        prev_state_index = None
+        for i, step in Path.step_list[:-1]:
+            state = TheAnalyzer.state_db[step.state_index]
+
+            self.entry.action_db_update(state.entry, offset + i, prev_state_index)
+            self.drop_out[offset + i] = state.drop_out
+
+            prev_state_index = state_index
+
+        # (*) Absorb the state sequence of the path
+        #     (Meaningful paths consist of more than one state and a terminal.)
         assert len(Path.step_list) > 2
         self.__path_list.append(Path.step_list)
-
-        # (2c) Absorb the drop-out information
-        self.drop_out.update(Path.drop_out.iteritems())
+        self.__state_index_sequence.extend(x.state_index for x in FirstPath.step_list)
 
         return True
 
@@ -133,53 +220,7 @@ class PathWalkerState(MegaState):
            path are properly setup. Also, determine whether those
            entries are uniform.
         """
-        # First make sure, that the CommandList-s on the paths are organized
-        # and assigned with new DoorID-s.
-        print "#reassignment:", self.entry.transition_reassignment_candidate_list 
-        self.entry.transition_reassignment_db_construct(self.index)
-
-        # Determine uniformity and the door_id_sequence.
-        uniform_door_id              = UniformObject()
-        uniform_terminal_door_id     = UniformObject()
-
-        self.__door_id_sequence_list = []
-        for step_list in self.__path_list:
-            # Meaningful paths consist of more than one state and a terminal. 
-            assert len(step_list) > 2
-
-            door_id_sequence = []
-            prev_step        = step_list[0]
-            action_db        = self.entry.action_db
-            for step in step_list[1:-1]:
-                # (Recall: there is only one transition (from, to) => TriggerId == 0)
-                door_id = action_db.get_door_id(step.state_index, prev_step.state_index, TriggerId=0)
-
-                # Every DoorID on the path must be a new-assigned one to this PathWalkerState.
-                assert door_id.state_index == self.index
-
-                door_id_sequence.append(door_id)
-                uniform_door_id <<= door_id
-
-                prev_step = step
-
-            step           = step_list[-1] # Terminal
-
-            #! A terminal of one path cannot be element of another path of the
-            #! same PathWalkerState. This might cause huge trouble!
-            #! (Ensured by the function '.accept(Path)')
-            print "#terminal: to: %s from: %s" % (step.state_index, prev_step.state_index)
-            assert step.state_index not in self.implemented_state_index_list()
-
-            action_db = TheAnalyzer.state_db[step.state_index].entry.action_db
-            door_id   = action_db.get_door_id(step.state_index, prev_step.state_index, TriggerId=0)
-
-            door_id_sequence.append(door_id)
-            uniform_terminal_door_id <<= door_id
-
-            self.__door_id_sequence_list.append(door_id_sequence)
-
-        self.__uniform_door_id_along_all_paths = uniform_door_id.content
-        self.__uniform_terminal_door_id        = uniform_terminal_door_id.content
+        self.__finalized = PathWalkerState_ContentFinalized(self, TheAnalyzer)
 
     @property
     def path_list(self):          
@@ -187,7 +228,7 @@ class PathWalkerState(MegaState):
         return self.__path_list
 
     def implemented_state_index_list(self):
-        result = [] # **MUST** be a list, because we might identify 'state_keys' with it.
+    #NOOO    result = [] # **MUST** be a list, because we might identify 'state_keys' with it.
         for step_list in self.__path_list:
             # The end state of each path is not implemented
             # (It may be part of another path, though)
@@ -208,11 +249,6 @@ class PathWalkerState(MegaState):
            'implemented_state_index_list' because it maintains the 'order' and 
            it allows to associate a 'state_index' with a 'state_key'.
         """
-        if self.__state_index_sequence is None:
-            result = [] # **MUST** be a list, because we identify 'state_keys' with it.
-            for path in self.__path_list:
-                result.extend(x.state_index for x in path)
-            self.__state_index_sequence = result
         return self.__state_index_sequence
 
     @property
