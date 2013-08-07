@@ -101,7 +101,7 @@ class MegaStateTransitionCodeFactory:
     @classmethod
     def init(cls, TheState, StateDB, StateKeyStr, EngineType, GotoReloadStr):
         cls.state                        = TheState
-        cls.implemented_state_index_list = TheState.implemented_state_index_list()
+        cls.implemented_state_index_list = TheState.implemented_state_index_set()
         cls.state_db                     = StateDB
         cls.state_key_str                = StateKeyStr
         cls.engine_type                  = EngineType
@@ -184,7 +184,7 @@ def require_scheme_variable(SchemeID, Scheme, TState, StateDB):
        a common door of the template state.
     """
     LanguageDB = Setup.language_db
-    assert len(Scheme) == len(TState.implemented_state_index_list())
+    assert len(Scheme) == len(TState.state_index_sequence())
 
     def get_code(AdrList):
         last_i = len(AdrList) - 1
@@ -210,7 +210,7 @@ def require_scheme_variable(SchemeID, Scheme, TState, StateDB):
     address_list = [ address(x) for x in Scheme ]
 
     return variable_db.require_array("template_%i_target_%i", 
-                                     ElementN = len(TState.implemented_state_index_list()), 
+                                     ElementN = len(TState.state_index_sequence()), 
                                      Initial  = get_code(address_list),
                                      Index    = (TState.index, SchemeID))
 

@@ -73,11 +73,11 @@ def do(TheAnalyzer):
             # Replace the absorbed AnalyzerState by its dummy.
             TheAnalyzer.state_db.update(
                  (state_index, AbsorbedState(TheAnalyzer.state_db[state_index], mega_state))
-                 for state_index in mega_state.implemented_state_index_list()
+                 for state_index in mega_state.implemented_state_index_set()
             )
 
             # Track the remaining not-yet-absorbed states
-            remainder.difference_update(mega_state.implemented_state_index_list())
+            remainder.difference_update(mega_state.implemented_state_index_set())
 
         TheAnalyzer.mega_state_list.extend(mega_state_list)
 

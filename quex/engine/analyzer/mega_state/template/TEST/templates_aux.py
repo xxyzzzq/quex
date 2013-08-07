@@ -122,7 +122,7 @@ def test_combination(StateA, StateB, analyzer, StateA_Name="A", StateB_Name="B",
         print "    " + door_tree_root.get_string(result.entry.action_db).replace("\n", "\n    ")
     print "Result"
 
-    for state_index in result.implemented_state_index_list():
+    for state_index in result.implemented_state_index_set():
         analyzer.state_db[state_index] = AbsorbedState(analyzer.state_db[state_index], 
                                                        result)
 

@@ -187,15 +187,15 @@ def _transition_cost_single(State):
     if hasattr(State, "target_scheme_n"): scheme_n = State.target_scheme_n
     else:                                 scheme_n = 0
 
-    return __transition_cost(InvolvedStateN = len(State.implemented_state_index_list()), 
+    return __transition_cost(InvolvedStateN = len(State.implemented_state_index_set()), 
                              IntervalN      = len(State.transition_map),
                              SchemeN        = scheme_n)
     
 def _transition_cost_combined(StateA, StateB):
     """Computes the storage consumption of a transition map.
     """
-    involved_state_n =  len(StateA.implemented_state_index_list()) \
-                      + len(StateB.implemented_state_index_list())
+    involved_state_n =  len(StateA.implemented_state_index_set()) \
+                      + len(StateB.implemented_state_index_set())
     TM_A = StateA.transition_map
     TM_B = StateB.transition_map
 
@@ -235,8 +235,8 @@ class TargetFactory:
     ___________________________________________________________________________
     """
     def __init__(self, StateA, StateB):
-        self.__length_a = len(StateA.implemented_state_index_list())
-        self.__length_b = len(StateB.implemented_state_index_list())
+        self.__length_a = len(StateA.implemented_state_index_set())
+        self.__length_b = len(StateB.implemented_state_index_set())
         self.__drop_out_scheme_a = (E_StateIndices.DROP_OUT,) * self.__length_a
         self.__drop_out_scheme_b = (E_StateIndices.DROP_OUT,) * self.__length_b
 

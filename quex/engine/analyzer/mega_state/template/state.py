@@ -141,6 +141,9 @@ class TemplateState(MegaState):
     def target_scheme_n(self):  
         return self.__target_scheme_n
 
+    def implemented_state_index_list(self):    
+        return self.__state_index_sequence
+
     def state_index_sequence(self):    
         return self.__state_index_sequence
 
@@ -149,9 +152,6 @@ class TemplateState(MegaState):
 
     def map_state_key_to_state_index(self, StateKey):
         return self.__state_index_sequence[StateKey]
-
-    def implemented_state_index_list(self):    
-        return self.__state_index_sequence
 
 def combine_maps(StateA, StateB, ReassignedTransitionDB):
     """RETURNS:
