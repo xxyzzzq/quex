@@ -172,10 +172,15 @@ class MegaState(AnalyzerState):
     
     Interface for all derived MegaState-s:
 
-       .implemented_state_index_list():
+       .implemented_state_index_set():
        
-          List of indices of AnalyzerState-s which have been absorbed by the 
+          Set of indices of AnalyzerState-s which have been absorbed by the 
           MegaState.
+
+       .state_index_sequence()
+
+          List of state indices where state_index_sequence[state_key] gives the 
+          according state_index.
 
        .map_state_index_to_state_key(): 
        
@@ -270,7 +275,7 @@ class MegaState(AnalyzerState):
 
         # A state cannot be implemented by two MegaState-s
         # => All implemented states must be from 'RemainingStateIndexSet'
-        assert len(set(self.implemented_state_index_list()).difference(RemainingStateIndexSet)) == 0
+        assert len(self.implemented_state_index_set().difference(RemainingStateIndexSet)) == 0
 
 
 class MegaState_DropOut(TypedDict):
@@ -428,7 +433,7 @@ class AbsorbedState(AnalyzerState):
         # than the transitions into the AbsorbedAnalyzerState. Those, others
         # do not do any harm, though. Filtering out those out of the hash map
         # does, most likely, not bring any benefit.
-        assert AbsorbedAnalyzerState.index in AbsorbingMegaState.implemented_state_index_list()
+        assert AbsorbedAnalyzerState.index in AbsorbingMegaState.implemented_state_index_set()
         #----------------------------------------------------------------------
 
         self.__entry     = AbsorbedState_Entry(AbsorbedAnalyzerState.index, 

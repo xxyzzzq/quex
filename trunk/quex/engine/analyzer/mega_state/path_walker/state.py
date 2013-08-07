@@ -49,7 +49,7 @@ class PathWalkerState_ContentFinalized(object):
             #! same PathWalkerState. This might cause huge trouble!
             #! (Ensured by the function '.accept(Path)')
             print "#terminal: to: %s from: %s" % (step.state_index, prev_step.state_index)
-            assert step.state_index not in PWState.implemented_state_index_list()
+            assert step.state_index not in PWState.implemented_state_index_set()
 
             action_db = TheAnalyzer.state_db[step.state_index].entry.action_db
             door_id   = action_db.get_door_id(step.state_index, prev_step.state_index, TriggerId=0)
@@ -141,8 +141,9 @@ class PathWalkerState(MegaState):
         assert not self.__uniformity_required_f \
                or  self.uniform_entry_CommandList.content is not None
 
-        self.__path_list = []
-
+        self.__path_list                   = []
+        self.__implemented_state_index_set = []
+        self.__state_index_sequence        = []
         self.absorb_path(FirstPath)
 
         self.__transition_map_to_door_ids = FirstPath.transition_map
@@ -164,6 +165,8 @@ class PathWalkerState(MegaState):
                  True  -- Path can be walked by PathWalkerState and has been 
                           accepted.
         """
+        # (1) Determine whether path can be accepted in PathWalkerState
+        # 
         #! A terminal of one path cannot be element of another path of the
         #! same PathWalkerState. This might cause huge trouble! 
         #! Further: DO NOT ALLOW ANY INTERSECTIONS!
@@ -172,25 +175,24 @@ class PathWalkerState(MegaState):
             if len(state_index_set.intersection(set(step.state_index for step in step_list))) != 0:
                 return False
 
-        # (1) Compare the transition maps.
+        # (1.1) Compare the transition maps.
         if not self.__transition_map_to_door_ids.is_equal(Path.transition_map): 
             return False
 
-        # (1b) If uniformity is required and not maintained, then refuse.
-        #      Uniformity: -- There exists uniformity in all previously accepted 
-        #                     paths. 
-        #                  -- There is a uniform command list along the path
-        #                  -- The uniform command list is equivalent with the 
-        #                     existing one.
+        # (1.2) If uniformity is required and not maintained, then refuse.
         if self.__uniformity_required_f:
             if not self.uniform_entry_CommandList.fit(Path.uniform_entry_CommandList):
                 return False
             if not self.uniform_DropOut.fit(Path.uniform_entry_CommandList):
                 return False
 
-        # (2)  Absorb the Path
-        #      The path_id of the path to be added is the length of the current path list.
-        #      (This means: new last index = current size of the list.)
+        # (2)   Path has been accepted.
+        #
+        # (2.1) Absorb information about uniformity.
+        self.uniform_entry_CommandList <<= Path.uniform_entry_CommandList
+        self.uniform_DropOut           <<= Path.uniform_DropOut
+
+        # (2.2) Absorb the steps on the path
         self.absorb_path(Path)
 
     def absorb_path(self, Path):
@@ -211,7 +213,8 @@ class PathWalkerState(MegaState):
         #     (Meaningful paths consist of more than one state and a terminal.)
         assert len(Path.step_list) > 2
         self.__path_list.append(Path.step_list)
-        self.__state_index_sequence.extend(x.state_index for x in FirstPath.step_list)
+        self.__state_index_sequence.extend(x.state_index for x in Path.step_list)
+        self.__implemented_state_index_set.extend(x.state_index for x in Path.step_list[:-1])
 
         return True
 
@@ -227,29 +230,25 @@ class PathWalkerState(MegaState):
         assert type(self.__path_list) == list
         return self.__path_list
 
-    def implemented_state_index_list(self):
-    #NOOO    result = [] # **MUST** be a list, because we might identify 'state_keys' with it.
-        for step_list in self.__path_list:
-            # The end state of each path is not implemented
-            # (It may be part of another path, though)
-            result.extend(x.state_index for x in step_list[:-1])
-
-        print "#implemented_state_index_list:", result
-        return result
-
-    def map_state_index_to_state_key(self, StateIndex):
-        return self.state_index_sequence().index(StateIndex)
-
-    def map_state_key_to_state_index(self, StateKey):
-        return self.state_index_sequence()[StateKey]
+    def implemented_state_index_set(self):
+        return self.__implemented_state_index_set
 
     def state_index_sequence(self):
         """RETURN: The sequence of involved states according to the position on
            the path that they occur. This is different from
            'implemented_state_index_list' because it maintains the 'order' and 
            it allows to associate a 'state_index' with a 'state_key'.
+
+           It actually contain states which are not element of a path: the
+           terminal states.
         """
         return self.__state_index_sequence
+
+    def map_state_index_to_state_key(self, StateIndex):
+        return self.state_index_sequence().index(StateIndex)
+
+    def map_state_key_to_state_index(self, StateKey):
+        return self.state_index_sequence()[StateKey]
 
     @property
     def uniform_door_id(self):
@@ -260,14 +259,11 @@ class PathWalkerState(MegaState):
            RETURNS: None, if the commands at entry of the states on the path
                           are not uniform.
         """
-        return self.__uniform_door_id_along_all_paths
+        return self.finalized.uniform_door_id_along_all_paths
 
     @property
     def door_id_sequence_list(self):
-        assert len(self.__path_list) == len(self.__door_id_sequence_list)
-        for path, door_id_sequence in izip(self.__path_list, self.__door_id_sequence_list):
-            assert len(path) == len(door_id_sequence) + 1
-        return self.__door_id_sequence_list
+        return self.finalized.door_id_sequence_list
 
     @property
     def uniform_terminal_door_id(self):
@@ -275,7 +271,7 @@ class PathWalkerState(MegaState):
                                terminal state through the same entry door.
                     None   -- if not.
         """
-        return self.__uniform_terminal_door_id
+        return self.finalized.uniform_terminal_door_id
 
     def delete_transitions_on_path(self):
         """Deletes all transitions that lie on the path. That is safe with respect

@@ -51,10 +51,10 @@ class MegaState_Transition(object):
     determined, the actual MegaState_Transition object can be finalized. That is:
        
        -- A common target may become a scheme, if the DoorIDs differ depending
-          on the 'from_state_index' (from .implemented_state_index_list()).
+          on the 'from_state_index' (from .implemented_state_index_set).
 
        -- A scheme may become a common target, if the target DoorID 
-          is the same for all indices in .implemented_state_index_list().
+          is the same for all indices in .implemented_state_index_set.
 
     Finalization sets the 'scheme_id' if it is a scheme. It set's the
     '.door_id' if the target state's door is the same for all involved states.

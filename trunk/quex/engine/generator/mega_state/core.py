@@ -34,11 +34,11 @@ class Handler:
 
     def debug_info_map_state_key_to_state_index(self, txt):
         txt.append("#   define __QUEX_DEBUG_MAP_STATE_KEY_TO_STATE(X) ( \\\n")
-        for state_index in self.state.implemented_state_index_list()[:-1]:
+        for state_index in self.state.state_index_sequence()[:-1]:
             state_key = self.state.map_state_index_to_state_key(state_index)
             txt.append("             (X) == %i ? %i :    \\\n" % (state_key, state_index))
 
-        state_index = self.state.implemented_state_index_list()[-1]
+        state_index = self.state.state_index_sequence()[-1]
         state_key   = self.state.map_state_index_to_state_key(state_index)
         txt.append("             (X) == %i ? %i : 0)" % (state_key, state_index))
 

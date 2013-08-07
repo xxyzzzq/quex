@@ -203,7 +203,7 @@ class CandidateList(list):
         n           = len(self)
         MaxSize     = len(self) + MaxIncrease
         self.extend([None] * MaxIncrease)
-        ImplementedStateIndexList = set(NewElect.implemented_state_index_list())
+        ImplementedStateIndexSet = NewElect.implemented_state_index_set()
 
         for state in TheElectDB.itervalues():
             if self.__uniformity_required_f:
@@ -215,7 +215,7 @@ class CandidateList(list):
             # Do not try to combine states that have proven to be 'bad_company'.
             if       state.index in NewElect.bad_company():                                   continue
             elif not NewElect.bad_company().isdisjoint(state.implemented_state_index_list()): continue
-            elif not state.bad_company().isdisjoint(ImplementedStateIndexList):               continue
+            elif not state.bad_company().isdisjoint(ImplementedStateIndexSet):                continue
             # IMPOSSIBLE: NewElect.index in state.bad_company() 
             #             because when 'state' was created, 'NewElect' did not exist.
             candidate = TemplateStateCandidate(NewElect, state)
