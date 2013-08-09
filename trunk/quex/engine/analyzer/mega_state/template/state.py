@@ -4,7 +4,7 @@ from   quex.engine.analyzer.mega_state.core         import MegaState, \
                                                            MegaState_DropOut
 from   quex.engine.analyzer.mega_state.template.candidate  import TargetFactory
 from   quex.engine.analyzer.transition_map          import TransitionMap        
-from   quex.engine.analyzer.state.entry_action      import SetTemplateStateKey, \
+from   quex.engine.analyzer.state.entry_action      import TemplateStateKeySet, \
                                                            DoorID, \
                                                            DoorID_Scheme
 import quex.engine.state_machine.index              as     index
@@ -26,7 +26,7 @@ class TemplateState_Entry(MegaState_Entry):
     path's base.
 
     During analysis, only the '.action_db' is of interest. There the 
-    'SetTemplateStateKey' Command is added for each transition. After analysis
+    'TemplateStateKeySet' Command is added for each transition. After analysis
     'door_tree_configure()' may be called and those actions are combined
     propperly.
     ___________________________________________________________________________
@@ -41,7 +41,7 @@ class TemplateState_Entry(MegaState_Entry):
               transition (StateIndex, FromStateIndex) --> CommandList 
 
         is absorbed in '.action_db'. Additionally, any CommandList must contain
-        the 'SetTemplateStateKey' command that sets the state key for the state
+        the 'TemplateStateKeySet' command that sets the state key for the state
         which is currently represented. At each (external) entry into the
         Template state the 'state_key' must be set, so that the template state
         can operate accordingly.
@@ -58,7 +58,7 @@ class TemplateState_Entry(MegaState_Entry):
             clone = action.clone()
             assert clone.door_id is not None
             if transition_id.target_state_index != transition_id.source_state_index: 
-                # Add 'SetTemplateStateKey'
+                # Add 'TemplateStateKeySet'
                 #
                 # Determine 'state_key' (an integer value) for state that is
                 # entered.  Since TheState may already be a template state, use
@@ -66,15 +66,15 @@ class TemplateState_Entry(MegaState_Entry):
                 # correctly.
                 state_key = StateIndexToStateKeyDB[transition_id.target_state_index]
                 for command in clone.command_list.misc:
-                    if not isinstance(command, SetTemplateStateKey): continue
-                    # Adapt the existing 'SetTemplateStateKey' command
+                    if not isinstance(command, TemplateStateKeySet): continue
+                    # Adapt the existing 'TemplateStateKeySet' command
                     command.set_value(state_key)
                     break
                 else:
-                    # Create new 'SetTemplateStateKey' for current state
-                    clone.command_list.misc.add(SetTemplateStateKey(state_key))
+                    # Create new 'TemplateStateKeySet' for current state
+                    clone.command_list.misc.add(TemplateStateKeySet(state_key))
             else:
-                # Recursion => No 'SetTemplateStateKey'
+                # Recursion => No 'TemplateStateKeySet'
                 #
                 #   => The state_key does not have to be set (again) at entry.
                 #   => It makes sense to have a dedicated DoorID which is going

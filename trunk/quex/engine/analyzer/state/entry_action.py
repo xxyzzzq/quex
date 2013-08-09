@@ -193,9 +193,9 @@ class CommandList:
                 return (0, Cmd.pre_context_id, Cmd.position_register, Cmd.offset)
             elif isinstance(Cmd, PreConditionOK):   
                 return (1, Cmd.pre_context_id)
-            elif isinstance(Cmd, SetTemplateStateKey):   
+            elif isinstance(Cmd, TemplateStateKeySet):   
                 return (2, Cmd.value)
-            elif isinstance(Cmd, SetPathIterator):   
+            elif isinstance(Cmd, PathIteratorSet):   
                 return (3, Cmd.offset, Cmd.path_id, Cmd.path_walker_id)
             else:
                 assert False, "Command '%s' cannot be part of .misc." % Cmd.__class__.__name__
@@ -422,14 +422,14 @@ class Accepter(Command):
 
 class MegaState_Command(Command):
     """Base class for all commands related to MegaState control, 
-       such as 'SetTemplateStateKey' and 'SetPathIterator'.
+       such as 'TemplateStateKeySet' and 'PathIteratorSet'.
     """
     pass
 
 class SetMegaStateKey(MegaState_Command):
     pass
 
-class SetTemplateStateKey(SetMegaStateKey):
+class TemplateStateKeySet(SetMegaStateKey):
     def __init__(self, StateKey):
         Command.__init__(self, 1, [StateKey])
     @property
@@ -440,7 +440,7 @@ class SetTemplateStateKey(SetMegaStateKey):
     def __repr__(self):       
         return "    state_key = %s;\n" % self.value
 
-class SetPathIterator(SetMegaStateKey):
+class PathIteratorSet(SetMegaStateKey):
     def __init__(self, Offset, PathWalkerID=-1, PathID=-1):
         Command.__init__(self, 1, [Offset, PathWalkerID, PathID])
 
