@@ -191,13 +191,13 @@ class LanguageDB_Cpp(dict):
                    + "    __quex_debug(\"pre_context_%i_fulfilled_f = true\\n\");\n" \
                    % EntryAction.pre_context_id
 
-        elif isinstance(EntryAction, entry_action.SetTemplateStateKey):
+        elif isinstance(EntryAction, entry_action.TemplateStateKeySet):
             return   "    state_key = %i;\n"                      \
                    % EntryAction.value                            \
                    + "    __quex_debug(\"state_key = %i\\n\");\n" \
                    % EntryAction.value
 
-        elif isinstance(EntryAction, entry_action.SetPathIterator):
+        elif isinstance(EntryAction, entry_action.PathIteratorSet):
             offset_str = ""
             if EntryAction.offset != 0: offset_str = " + %i" % EntryAction.offset
             txt =   "    path_iterator  = path_walker_%i_path_%i%s;\n"                   \

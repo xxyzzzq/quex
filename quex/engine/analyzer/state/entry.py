@@ -369,15 +369,15 @@ class Entry(object):
                 txt.append("%s" % repr(action))
             return txt
 
-        def get_set_template_state_keys(SetTemplateStateKeyList):
+        def get_set_template_state_keys(TemplateStateKeySetList):
             txt = []
-            for action in sorted(SetTemplateStateKeyList, key=attrgetter("value")):
+            for action in sorted(TemplateStateKeySetList, key=attrgetter("value")):
                 txt.append("%s" % repr(action))
             return txt
 
-        def get_set_path_iterator_keys(SetPathIteratorKeyList):
+        def get_set_path_iterator_keys(PathIteratorSetKeyList):
             txt = []
-            for action in sorted(SetPathIteratorKeyList, key=attrgetter("path_walker_id", "path_id", "offset")):
+            for action in sorted(PathIteratorSetKeyList, key=attrgetter("path_walker_id", "path_id", "offset")):
                 txt.append("%s" % repr(action))
             return txt
 
@@ -393,9 +393,9 @@ class Entry(object):
                     accept_command_list.append(action)
                 elif isinstance(action, entry_action.PreConditionOK):
                     pcok_command_list.append(action)
-                elif isinstance(action, entry_action.SetTemplateStateKey):
+                elif isinstance(action, entry_action.TemplateStateKeySet):
                     ssk_command_list.append(action)
-                elif isinstance(action, entry_action.SetPathIterator):
+                elif isinstance(action, entry_action.PathIteratorSet):
                     spi_command_list.append(action)
                 else:
                     store_command_list.append(action)

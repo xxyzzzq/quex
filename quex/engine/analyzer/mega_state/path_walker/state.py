@@ -1,6 +1,6 @@
 # (C) 2010-2013 Frank-Rene Schaefer
 from   quex.engine.analyzer.transition_map      import TransitionMap   
-from   quex.engine.analyzer.state.entry_action  import SetPathIterator, DoorID
+from   quex.engine.analyzer.state.entry_action  import PathIteratorSet, DoorID
 from   quex.engine.analyzer.mega_state.core     import MegaState, MegaState_Transition
 import quex.engine.state_machine.index          as     index
 from   quex.engine.tools                        import UniformObject
@@ -79,9 +79,9 @@ class PathWalkerState_Entry(MegaState_Entry):
     path's base.
 
     During analysis, only the '.action_db' is of interest. There the 
-    'SetPathIterator' command is to each TransitionAction's CommandList. The
+    'PathIteratorSet' command is to each TransitionAction's CommandList. The
     command lists 'equal' and 'not-equal' relationships remain the same, since
-    the 'SetPathIterator' for all TransitionAction of a given state. Thus,
+    the 'PathIteratorSet' for all TransitionAction of a given state. Thus,
     the DoorID objects can act as unique identifiers of command lists.
     ___________________________________________________________________________
     """
@@ -95,7 +95,7 @@ class PathWalkerState_Entry(MegaState_Entry):
              transition (StateIndex, FromStateIndex) --> CommandList 
 
         is ABSORBED AS THEY ARE from  'TheEntry.action_db'.  Additionally, any
-        command list must contain the 'SetPathIterator' command that sets the
+        command list must contain the 'PathIteratorSet' command that sets the
         state key for represented state. At each (external) entry into the path
         walker state the 'state_key' must be set, so that it can mimik the
         represented state.
@@ -103,8 +103,8 @@ class PathWalkerState_Entry(MegaState_Entry):
         for transition_id, action in TheEntry.action_db.iteritems():
             clone = action.clone()
             if transition_id.source_state_index != FromStateIndex:
-                # Create new 'SetPathIterator' for the state which is represented
-                clone.command_list.misc.add(SetPathIterator(Offset=Offset))
+                # Create new 'PathIteratorSet' for the state which is represented
+                clone.command_list.misc.add(PathIteratorSet(Offset=Offset))
             else:
                 # Entry along path.
                 #
@@ -114,6 +114,7 @@ class PathWalkerState_Entry(MegaState_Entry):
                 #      to be set by 'action_db.categorize()'. The translation
                 #      is then documented in '.transition_reassignment_db'.
                 self.transition_reassignment_candidate_list.append((FromStateIndex, transition_id))
+                clone.command_list.misc.add(IcrementPathIterator(Offset=Offset))
                 # clone.door_id = None
 
             self.action_db[transition_id] = clone
@@ -165,25 +166,16 @@ class PathWalkerState(MegaState):
                  True  -- Path can be walked by PathWalkerState and has been 
                           accepted.
         """
-        # (1) Determine whether path can be accepted in PathWalkerState
-        # 
-        #! A terminal of one path cannot be element of another path of the
-        #! same PathWalkerState. This might cause huge trouble! 
-        #! Further: DO NOT ALLOW ANY INTERSECTIONS!
-        state_index_set = set(step.state_index for step in Path.step_list)
-        for step_list in self.__path_list:
-            if len(state_index_set.intersection(set(step.state_index for step in step_list))) != 0:
-                return False
+        # (1) Check conditions for acceptance
 
         # (1.1) Compare the transition maps.
         if not self.__transition_map_to_door_ids.is_equal(Path.transition_map): 
             return False
 
-        # (1.2) If uniformity is required and not maintained, then refuse.
+        # (1.2) If uniformity is required, check it!
         if self.__uniformity_required_f:
-            if not self.uniform_entry_CommandList.fit(Path.uniform_entry_CommandList):
-                return False
-            if not self.uniform_DropOut.fit(Path.uniform_entry_CommandList):
+            if    (not self.uniform_entry_CommandList.fit(Path.uniform_entry_CommandList)):
+               or (not self.uniform_DropOut.fit(Path.uniform_entry_CommandList)):
                 return False
 
         # (2)   Path has been accepted.
@@ -198,7 +190,21 @@ class PathWalkerState(MegaState):
     def absorb_path(self, Path):
         offset = len(self.__path_list) 
 
-        # (*) Absorb Entry/DropOut Information
+        # (1) Absorb the state sequence of the path
+        #     Resulting data is required (1) for decisions made in (2).
+
+        # (Meaningful paths consist of more than one state and a terminal.)
+        assert len(Path.step_list) > 2
+        self.__path_list.append(Path.step_list)
+        new_state_index_list             = [x.state_index for x in Path.step_list]
+        new_implemented_state_index_list = set(new_state_index_list[:-1])
+
+        # (A state cannot be implemented by two different paths)
+        assert set(self.__implemented_state_index_set).isdisjoint(implemented_state_index_set)
+        self.__state_index_sequence.extend(new_state_indices]
+        self.__implemented_state_index_set.update(new_implemented_state_index_set)
+
+        # (2) Absorb Entry/DropOut Information
         #     Entry's action_db (maps: 'transition_id --> command_list')
         prev_state_index = None
         for i, step in Path.step_list[:-1]:
@@ -208,13 +214,6 @@ class PathWalkerState(MegaState):
             self.drop_out[offset + i] = state.drop_out
 
             prev_state_index = state_index
-
-        # (*) Absorb the state sequence of the path
-        #     (Meaningful paths consist of more than one state and a terminal.)
-        assert len(Path.step_list) > 2
-        self.__path_list.append(Path.step_list)
-        self.__state_index_sequence.extend(x.state_index for x in Path.step_list)
-        self.__implemented_state_index_set.extend(x.state_index for x in Path.step_list[:-1])
 
         return True
 

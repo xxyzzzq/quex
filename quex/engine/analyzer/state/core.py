@@ -95,7 +95,7 @@ class AnalyzerState(object):
         return txt
 
     def entries_empty_f(self):
-        """The 'SetTemplateStateKey' commands cost nothing, so an easy condition for
+        """The 'TemplateStateKeySet' commands cost nothing, so an easy condition for
            'all entries empty' is that the door_tree_root reports a cost of '0'.
         """
         return self.entry.action_db.has_commands_other_than_MegaState_Command()
