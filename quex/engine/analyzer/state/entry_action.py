@@ -89,12 +89,12 @@ class TransitionAction(object):
         return "(%s: [%s])" % (self.door_id, self.command_list)
 
 class Command(object):
-    def __init__(self, Cost=None, ParamaterList=None, Hash=None):
-        assert ParamaterList is None or type(ParamaterList) == list
+    def __init__(self, Cost=None, ParameterList=None, Hash=None):
+        assert ParameterList is None or type(ParameterList) == list, "ParameterList: '%s'" % ParameterList
         assert Hash is None          or isinstance(Hash, (int, long))
         self._cost = Cost
         self._hash = Hash
-        self._x    = ParamaterList
+        self._x    = ParameterList
 
     def clone(self):         
         if   self._x is None:   return self.__class__()
@@ -178,12 +178,6 @@ class CommandList:
     def cost(self):
         return sum(x.cost() for x in self)
 
-    def has_SetMegaStateKey(self):
-        for element in self.misc:
-            if isinstance(element, SetMegaStateKey): 
-                return True
-        return False
-
     def __iter__(self):
         """Allow iteration over comand list."""
         if self.accepter is not None: 
@@ -240,6 +234,16 @@ class CommandList:
         for action in self.misc:
             txt += "%s" % action
         return txt
+
+E_Commands = Enum("INPUT_P_INCREMENT", 
+                  "INPUT_P_STORE",
+                  "COUNT_COLUMN_N_REFERENCE_P_SET",
+                  "COUNT_COLUMN_N_REFERENCE_P_ADD",
+                  "COUNT_COLUMN_N_ADD",
+                  "COUNT_COLUMN_N_GRID",
+                  "PRE_CONDITION_ACKNOWLEDGE",
+command_table = {
+}
 
 class IncrementInputP(Command):
     def __init__(self):  
@@ -440,23 +444,24 @@ class TemplateStateKeySet(SetMegaStateKey):
     def __repr__(self):       
         return "    state_key = %s;\n" % self.value
 
-class PathIteratorSet(SetMegaStateKey):
-    def __init__(self, Offset, PathWalkerID=-1, PathID=-1):
-        Command.__init__(self, 1, [Offset, PathWalkerID, PathID])
-
-    def set_path_walker_id(self, Value): self._x[1] = Value
-    def set_path_id(self, Value):        self._x[2] = Value
+class PathIteratorSet(Command):
+    def __init__(self, PathWalkerID, PathID, Offset):
+        Command.__init__(self, 1, [PathWalkerID, PathID, Offset])
 
     @property
-    def offset(self):         return self._x[0]
+    def path_walker_id(self): return self._x[0]
     @property
-    def path_walker_id(self): return self._x[1]
+    def path_id(self):        return self._x[1]
     @property
-    def path_id(self):        return self._x[2]
-
-    def __hash__(self):       
-        return self.path_walker_id ^ self.path_id ^ self.offset
+    def offset(self):         return self._x[2]
 
     def __repr__(self):       
         return "    (pw=%s,pid=%s,off=%s)\n" % (self.path_walker_id, self.path_id, self.offset)
+
+class PathIteratorIncrement(Command):
+    def __init__(self):
+        Command.__init__(self, 1, Hash=0x4712)
+
+    def __repr__(self):       
+        return "    (++path_iterator)\n"
 
