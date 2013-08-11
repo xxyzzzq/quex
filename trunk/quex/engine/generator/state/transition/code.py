@@ -21,8 +21,8 @@ class TransitionCodeFactory:
         cls.analyzer        = TheAnalyzer
 
 
-    @classmethod
-    def prepare_reload_tansition(cls, TM,
+    @staticmethod
+    def prepare_reload_tansition(TM,
                                  StateIndex     = None,
                                  EngineType     = engine.FORWARD,
                                  InitStateF     = False,
@@ -38,12 +38,14 @@ class TransitionCodeFactory:
         if not EngineType.requires_buffer_limit_code_for_reload():
             return None
 
-        cls.prepare_transition_map_for_reload(TM)
+        TransitionCodeFactory.prepare_transition_map_for_reload(TM)
 
-        return cls.prepare_reload_action(StateIndex, EngineType, InitStateF, GotoReload_Str)
 
-    @classmethod
-    def prepare_transition_map_for_reload(cls, TM):
+        # RETURN: goto_reload_str
+        return TransitionCodeFactory.prepare_reload_action(StateIndex, EngineType, InitStateF, GotoReload_Str)
+
+    @staticmethod
+    def prepare_transition_map_for_reload(TM):
         # Insist that transitions to reload procedure have been prepared!
         # There is no state transition to 'RELOAD_PROCEDURE', so transition on
         # buffer limit code MUST trigger a 'DROP_OUT'.

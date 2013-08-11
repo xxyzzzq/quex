@@ -306,7 +306,7 @@ class MegaState_DropOut(TypedDict):
             if isinstance(state,  MegaState): 
                 self.update(state.drop_out.iteritems())
             else:
-                self.add(state.index, state.drop_out)
+                self.absorb(state.index, state.drop_out)
         return
 
     def get_uniform_prototype(self):
@@ -385,8 +385,8 @@ class PseudoMegaState(MegaState):
     def state_index_sequence(self):
         return self.__state_index_sequence
 
-    def implemented_state_index_list(self):
-        return self.__state_index_sequence
+    def implemented_state_index_set(self):
+        return set(self.__state_index_sequence)
 
     def map_state_index_to_state_key(self, StateIndex):
         assert False, "PseudoMegaState-s exist only for analysis. They shall never be implemented."

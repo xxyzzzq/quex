@@ -213,9 +213,9 @@ class CandidateList(list):
 
 
             # Do not try to combine states that have proven to be 'bad_company'.
-            if       state.index in NewElect.bad_company():                                   continue
-            elif not NewElect.bad_company().isdisjoint(state.implemented_state_index_list()): continue
-            elif not state.bad_company().isdisjoint(ImplementedStateIndexSet):                continue
+            if       state.index in NewElect.bad_company():                                  continue
+            elif not NewElect.bad_company().isdisjoint(state.implemented_state_index_set()): continue
+            elif not state.bad_company().isdisjoint(ImplementedStateIndexSet):               continue
             # IMPOSSIBLE: NewElect.index in state.bad_company() 
             #             because when 'state' was created, 'NewElect' did not exist.
             candidate = TemplateStateCandidate(NewElect, state)
@@ -262,7 +262,7 @@ class CandidateList(list):
         # related to 'p' are deleted, thus all other combinations that contain
         # 'i' and 'k' are impossible.
         #
-        # => The consideration of 'implemented_state_index_list' is not necessary.
+        # => The consideration of 'implemented_state_index_set' is not necessary.
         self.__delete_references(best.state_a.index, best.state_b.index)
 
         return best

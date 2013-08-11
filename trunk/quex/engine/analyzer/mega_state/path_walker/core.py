@@ -266,16 +266,13 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
                 target_state   = self.analyzer.state_db[target_index]
 
                 # TransitionMap matching? 
-                print "#step_list:", [ x.trigger for x in path.step_list ]
                 plug = path.transition_map.match_with_wildcard(transition_map, transition_char)
-                print "#plug:", plug, path.has_wildcard()
                 if   plug is None:
                     continue # No match possible 
                 elif plug > 0  and not path.has_wildcard(): 
                     continue # Wilcard required for match, but there is no wildcard open.
 
                 new_path = path.extended_clone(State, transition_char, plug) 
-                print "#new.step_list:", [ x.trigger for x in new_path.step_list ]
 
                 # RECURSION STEP ______________________________________________
                 # (May be, we do not have to clone the transition map if plug == -1)

@@ -81,7 +81,7 @@ class CharacterPath(object):
        As soon as another state is appended, it becomes part of the path and the 
        newly appended becomes the terminal.
 
-    .implemented_state_index_list:
+    .implemented_state_index_set:
      
       A list of state indices which the path can cover. This does not include
       the last state triggered by the terminal element of '.step_list'. As in the
@@ -181,7 +181,8 @@ class CharacterPath(object):
         """
         assert    TransitionCharacter is not None
         assert    isinstance(TransitionMapWildCardPlug, DoorID) \
-               or Target == E_StateIndices.DROP_OUT
+               or TransitionMapWildCardPlug == -1, \
+                  "TransitionMapWildCardPlug: '%s'" % TransitionMapWildCardPlug
 
         result = self.clone()
 
@@ -215,8 +216,9 @@ class CharacterPath(object):
         # (TriggerIndex == 0, because there can only be one transition from
         #                     one state to the next on the path).
         prev_step    = self.__step_list[-1]
-        command_list = State.entry.action_db.get_command_list(State.index, prev_step.index, 
-                                                              TriggerIndex=0)
+        print "#spt:", State.index, prev_step.state_index
+        command_list = State.entry.action_db.get_command_list(State.index, prev_step.state_index, 
+                                                              TriggerId=0)
         assert command_list is not None
 
         if   not self.uniform_entry_CommandList.fit(command_list): return False

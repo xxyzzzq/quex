@@ -179,7 +179,6 @@ class WalkAlong(TreeWalker):
         #old_ti = state_index
         for ai, bi, trigger_set in islice(self.path, first_remainder_k+1, None):
             target_index, target_state = self.get_state(ai, bi)
-            ##print "#new 1:", target_index
             state.add_transition(trigger_set, target_index)
             #print "# %i -- %s --> %s" % (old_ti, trigger_set.get_utf8_string(), target_index)
             state = target_state
