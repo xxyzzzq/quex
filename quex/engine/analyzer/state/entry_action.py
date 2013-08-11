@@ -2,6 +2,7 @@ from   quex.blackboard          import setup as Setup, \
                                        E_StateIndices, E_PreContextIDs, E_TriggerIDs
 from   quex.engine.misc.file_in import error_msg
 from   quex.engine.tools        import pair_combinations, TypedSet
+from   quex.engine.misc.enum    import Enum
 
 from   collections              import defaultdict, namedtuple
 from   operator                 import attrgetter, itemgetter
@@ -89,7 +90,7 @@ class TransitionAction(object):
         return "(%s: [%s])" % (self.door_id, self.command_list)
 
 class Command(object):
-    def __init__(self, Cost=None, ParameterList=None, Hash=None):
+    def __init__(self, Cost=None, ParameterList=None, Hash=None, Id=None):
         assert ParameterList is None or type(ParameterList) == list, "ParameterList: '%s'" % ParameterList
         assert Hash is None          or isinstance(Hash, (int, long))
         self._cost = Cost
@@ -241,8 +242,10 @@ E_Commands = Enum("INPUT_P_INCREMENT",
                   "COUNT_COLUMN_N_REFERENCE_P_ADD",
                   "COUNT_COLUMN_N_ADD",
                   "COUNT_COLUMN_N_GRID",
-                  "PRE_CONDITION_ACKNOWLEDGE",
+                  "PRE_CONDITION_ACKNOWLEDGE")
 command_table = {
+   E_Commands.INPUT_P_INCREMENT: (1, 0x4711, None),
+   E_Commands.INPUT_P_STORE:     (1, None,   ("pre_context_id", "position_register", "offset")),
 }
 
 class IncrementInputP(Command):

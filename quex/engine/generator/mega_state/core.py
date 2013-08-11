@@ -182,8 +182,11 @@ def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr):
             (Interval(-sys.maxint, sys.maxint), MegaState_Target_DROP_OUT) 
         )
 
+    # In case that TheState.transition_map clones (which it should not),
+    # the following is safe:
+    tm = TheState.transition_map
     goto_reload_str = TransitionCodeFactory.prepare_reload_tansition(
-                                 TM            = TheState.transition_map,
+                                 TM            = tm,
                                  StateIndex    = TheState.index,
                                  EngineType    = TheAnalyzer.engine_type,
                                  InitStateF    = TheState.init_state_f)
@@ -191,6 +194,5 @@ def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr):
     MegaStateTransitionCodeFactory.init(TheState, TheAnalyzer.state_db, StateKeyStr, 
                                         TheAnalyzer.engine_type, goto_reload_str)
 
-    return TransitionMap.from_iterable(TheState.transition_map, 
-                                       MegaStateTransitionCodeFactory.do)
+    return TransitionMap.from_iterable(tm, MegaStateTransitionCodeFactory.do)
 

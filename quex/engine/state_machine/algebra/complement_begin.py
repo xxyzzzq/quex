@@ -72,7 +72,6 @@ class WalkAlong(TreeWalker):
         TreeWalker.__init__(self)
 
     def on_enter(self, Args):
-        # print "#self.path:", self.path
         if Args in self.path: 
             return None
 

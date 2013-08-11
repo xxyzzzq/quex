@@ -21,7 +21,6 @@ class PathWalkerState_ContentFinalized(object):
 
         # First make sure, that the CommandList-s on the paths are organized
         # and assigned with new DoorID-s.
-        print "#reassignment:", PWState.entry.transition_reassignment_candidate_list
         PWState.entry.transition_reassignment_db_construct(PWState.index)
 
         # Determine uniformity and the door_id_sequence.
@@ -53,7 +52,6 @@ class PathWalkerState_ContentFinalized(object):
             #! A terminal of one path cannot be element of another path of the
             #! same PathWalkerState. This might cause huge trouble!
             #! (Ensured by the function '.accept(Path)')
-            print "#terminal: to: %s from: %s" % (step.state_index, prev_step.state_index)
             assert step.state_index not in PWState.implemented_state_index_set()
 
             action_db = TheAnalyzer.state_db[step.state_index].entry.action_db
@@ -212,7 +210,6 @@ class PathWalkerState(MegaState):
             self.entry.action_db.absorb(state.entry.action_db)
             self.drop_out.absorb(step.state_index, state.drop_out)
 
-        print "#self.action_db:", [x for x, y in self.entry.action_db.iteritems()]
         return True
 
     def finalize(self, TheAnalyzer):
@@ -251,7 +248,7 @@ class PathWalkerState(MegaState):
     def state_index_sequence(self):
         """RETURN: The sequence of involved states according to the position on
            the path that they occur. This is different from
-           'implemented_state_index_list' because it maintains the 'order' and 
+           'implemented_state_index_set' because it maintains the 'order' and 
            it allows to associate a 'state_index' with a 'state_key'.
 
            It actually contain states which are not element of a path: the

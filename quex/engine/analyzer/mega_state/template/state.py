@@ -141,8 +141,8 @@ class TemplateState(MegaState):
     def target_scheme_n(self):  
         return self.__target_scheme_n
 
-    def implemented_state_index_list(self):    
-        return self.__state_index_sequence
+    def implemented_state_index_set(self):    
+        return set(self.__state_index_sequence)
 
     def state_index_sequence(self):    
         return self.__state_index_sequence

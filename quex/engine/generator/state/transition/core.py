@@ -46,16 +46,19 @@ def do(txt, TM):
         txt.append(LanguageDB.ENDIF)
 
 def prepare_transition_map(TM, 
-                           StateIndex         = None,
-                           EngineType         = engine.FORWARD,
-                           InitStateF         = False,
-                           GotoReload_Str     = None,
-                           TheAnalyzer        = None):
+                           StateIndex     = None,
+                           InitStateF     = False,
+                           GotoReload_Str = None,
+                           TheAnalyzer    = None,
+                           EngineType     = engine.FORWARD):
     global LanguageDB
     assert isinstance(TM, list)
-    assert isinstance(EngineType, engine.Base)
+    assert TheAnalyzer is not None or isinstance(EngineType, engine.Base)
     assert isinstance(InitStateF, bool)
-    assert StateIndex       is None or isinstance(StateIndex, long)
+    assert StateIndex  is None     or isinstance(StateIndex, long)
+
+    if TheAnalyzer is not None:
+        EngineType = TheAnalyzer.engine_type
 
     # If a state has no transitions, no new input needs to be eaten => no reload.
     #

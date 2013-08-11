@@ -26,7 +26,6 @@ def do(code, TheState, TheAnalyzer):
     # (*) Transition Map ______________________________________________________
     tm = transition_block.prepare_transition_map(TheState.transition_map, 
                                                  TheState.index, 
-                                                 TheState.engine_type, 
                                                  TheState.init_state_f, 
                                                  TheAnalyzer = TheAnalyzer)
 
