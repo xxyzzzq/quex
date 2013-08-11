@@ -1,4 +1,5 @@
 from   quex.engine.analyzer.state.core         import AnalyzerState
+from   quex.engine.analyzer.state.drop_out     import DropOut
 from   quex.engine.analyzer.state.entry_action import DoorID, \
                                                       PathIteratorSet, \
                                                       CommandList
@@ -128,10 +129,11 @@ class CharacterPath(object):
         terminal is setup.
     ___________________________________________________________________________
     """
-    __slots__ = ("index", 
-                 "__step_list",       
+    __slots__ = ("__step_list",       
                  "__transition_map", 
-                 "__transition_map_wildcard_char") 
+                 "__transition_map_wildcard_char", 
+                 "uniform_entry_CommandList", 
+                 "uniform_DropOut") 
 
     def __init__(self, StartState, TheTransitionMap, TransitionCharacter):
         if StartState is None: return # Only for Clone
@@ -141,7 +143,7 @@ class CharacterPath(object):
         assert isinstance(TheTransitionMap,    TransitionMap)
 
         self.uniform_entry_CommandList = UniformObject(EqualCmp=CommandList.is_equivalent)
-        self.uniform_DropOut           = UniformObject(EqualCmp=MegaState_DropOut.is_uniform_with)
+        self.uniform_DropOut           = UniformObject(EqualCmp=DropOut.is_equal)
 
         self.__step_list                    = [ CharacterPathStep(StartState.index, TransitionCharacter) ]
 
@@ -187,8 +189,9 @@ class CharacterPath(object):
         # (TriggerIndex == 0, because there can only be one transition from
         #                     one state to the next on the path).
         prev_step = self.__step_list[-1]
-        command_list = result.entry.action_db.get_command_list(PreviousTerminal.index, prev_step.state_index,
-                                                               TriggerId=0)
+        command_list = PreviousTerminal.entry.action_db.get_command_list(PreviousTerminal.index, 
+                                                                         prev_step.state_index,
+                                                                         TriggerId=0)
         assert command_list is not None
 
         result.uniform_entry_CommandList <<= command_list

@@ -36,14 +36,14 @@ class UniformObject(object):
         self._content = E_Values.UNASSIGNED
         self._equal   = EqualCmp
 
-    def clone():
+    def clone(self):
         result = UniformObject(self._equal)
         result._content = self._content
         return result
 
     def __ilshift__(self, NewContent):
-        if   self._content == E_Values.UNASSIGNED:   self._content = NewContent
-        elif self._content == E_Values.VOID:         pass
+        if   E_Values.UNASSIGNED == self._content:   self._content = NewContent
+        elif E_Values.VOID       == self._content:   pass
         elif self._equal(self._content, NewContent): self._content = E_Values.VOID
         return self
 

@@ -309,16 +309,24 @@ def select(path_list):
 
     Function modifies 'path_list'.
     """
-    def get_belong_db(AvailablePathList):
+    class BelongDB(dict):
         """belong_db: 
           
                       state_index --> paths of which state_index is part. 
         """
-        result = defaultdict(set)
-        for i, path in enumerate(AvailablePathList):
-            for state_index in path.state_index_set():
-                result[state_index].add(i)
-        return result
+        def __init__(self, PathList):
+            self.path_info_list = [ (i, path) for i, path in enumerate(PathList) ]
+
+            for i, path in self.path_info_list:
+                for state_index in path.state_index_set():
+                    entry = self.get(state_index)
+                    if entry is not None: entry.add(i)
+                    else:                 self[state_index] = set([i])
+            return
+
+        def iterpaths(self):
+            for i, path in self.path_info_list:
+                yield i, path
 
     def get_best_path(AvailablePathList):
         """The best path is the path that brings the most gain. The 'gain'
@@ -330,26 +338,28 @@ def select(path_list):
                 [1] list of indices of paths which would be no longer 
                     available, because the winning path intersects.
         """
-        AvailablePathList = sorted(AvailablePathList, key=lambda p: - p.state_index_list_size())
-        belong_db         = get_belong_db(AvailablePathList)
+        belong_db              = BelongDB(AvailablePathList)
 
         max_gain               = None
         winner_i               = None
         winner_forbidden_i_set = None
-        for i, path in enumerate(AvailablePathList):
+        for i, path in belong_db.iterpaths():
             if max_gain is not None and len(path.state_index_set()) < max_gain: continue # No chance
 
-            all_but_path = (p for k, p in enumerate(AvailablePathList) if k != i)
+            all_but_path = (path for k, path in belong_db.iterpaths() if k != i)
             gain, forbidden_i_set = compute_gain(path, belong_db, all_but_path)
+
+            for i in forbidden_i_set:
+                assert i < len(AvailablePathList)
                                                        
             if max_gain is None or max_gain < gain:
                 max_gain               = gain
                 winner_i               = i
                 winner_forbidden_i_set = forbidden_i_set
 
-        return winner_i, winner_forbidden_i_set
+        return winner_i, list(winner_forbidden_i_set)
 
-    def compute_gain(path, BelongDB, AvailablePathListIterable):
+    def compute_gain(path, belong_db, AvailablePathListIterable):
         """What happens if 'path' is chosen?
 
            -- Paths which contain any of its state_indices become unavailable.
@@ -391,7 +401,7 @@ def select(path_list):
         # 'Cost' of choosing 'path' = sum of costs for endangered state indices.
         cost = 0 
         for endangered_state_index in endangered_set:
-            alternative_n = len(BelongDB[endangered_state_index]) 
+            alternative_n = len(belong_db[endangered_state_index]) 
             cost += 1 / (1 + alternative_n)
 
         # Gain: Each implemented state counts as '1'
@@ -401,15 +411,20 @@ def select(path_list):
     result    = []
     work_list = copy(path_list)
     while len(work_list):
+        work_list.sort(key=lambda p: - p.state_index_list_size())
+
         elect_i, dropped_list = get_best_path(work_list)
 
-        # Delete all paths which are impossible, if 'elect_i' is chosen.
-        for i in dropped_list:
-            del work_list[i]
-
-        # Move path from 'work_list' to 'result'.
+        # Copy path from 'work_list' to 'result', 
+        # BEFORE list content is changed.
         result.append(work_list[elect_i])
-        del work_list[elect_i]
+
+        # Delete all paths which are impossible, if 'elect_i' is chosen.
+        # Reverse sort of list indices (greater first) 
+        # => simply 'del work_list[i]' 
+        dropped_list.append(elect_i)
+        for i in sorted(dropped_list, reverse=True):
+            del work_list[i]
 
     return result
 
@@ -427,7 +442,7 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
     for path in CharacterPathList:
         for path_walker in path_walker_list:
             # Set-up the walk in an existing PathWalkerState
-            if path_walker.accept(path): break
+            if path_walker.accept(path, TheAnalyzer): break
         else:
             # Create a new PathWalkerState
             path_walker_list.append(PathWalkerState(path, TheAnalyzer, CompressionType))

@@ -241,7 +241,7 @@ class MegaState(AnalyzerState):
     def state_index_sequence(self):
         assert False, "This function needs to be overwritten by derived class."
 
-    def implemented_state_index_list(self):
+    def implemented_state_index_set(self):
         assert False, "This function needs to be overwritten by derived class."
 
     def map_state_index_to_state_key(self, StateIndex):
@@ -270,8 +270,8 @@ class MegaState(AnalyzerState):
         # except for transitions inside the MegaState itself.
         for transition_id, action in self.entry.action_db.iteritems():
             if action.door_id.state_index != self.index: continue
-            assert transition_id.target_state_index in implemented_state_index_set
-            assert transition_id.source_state_index in implemented_state_index_set
+            assert transition_id.target_state_index in self.implemented_state_index_set()
+            assert transition_id.source_state_index in self.implemented_state_index_set()
 
         # A state cannot be implemented by two MegaState-s
         # => All implemented states must be from 'RemainingStateIndexSet'
@@ -319,28 +319,16 @@ class MegaState_DropOut(TypedDict):
         prototype = self.iterkeys().next()
         return prototype
 
-    def is_uniform_with(self, Other):
-        """The given Other drop-out belongs to a 'normal state'. This function
-        investigates if it's drop-out behavior is the same as all in others
-        in this MegaState_DropOut. 
-
-        If this MegaState_DropOut is not uniform, then of course it cannot
-        become uniform with 'Other'.
-        """
-        assert len(self) > 0
-
-        if len(self) > 1: return False
-
-        prototype = self.iterkeys().next()
-        return prototype == Other
-
     def update(self, Iterable):
         for drop_out, state_index_set in Iterable:
             x = self.get(drop_out)
             if x is None: self[drop_out] = copy(state_index_set)
             else:         x.update(state_index_set)
 
-    def add(self, StateIndex, TheDropOut):
+    def add(self, S, D):
+        assert False, "Call 'absorb'"
+
+    def absorb(self, StateIndex, TheDropOut):
         x = self.get(TheDropOut)
         if x is None: self[TheDropOut] = set([StateIndex])
         else:         x.add(StateIndex)

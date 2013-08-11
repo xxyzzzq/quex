@@ -190,8 +190,8 @@ class EntryActionDB:
                                     if action.door_id is None
         ]
 
-        if ReportF:
-            assigned_db = {}  # Tracks re-assignment of door-ids
+        if ReportF: assigned_db = {}  # Tracks re-assignment of door-ids
+        else:       assigned_db = None
 
         if len(todo) == 0:
             if ReportF: return assigned_db
