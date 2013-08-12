@@ -116,6 +116,7 @@ def do(TheAnalyzer, CompressionType, AvailableStateIndexList=None):
 
     (C) 2009-2012 Frank-Rene Schaefer
     """
+    print "#AvailableStateIndexList:", AvailableStateIndexList
     assert CompressionType in [E_Compression.PATH, E_Compression.PATH_UNIFORM]
 
     if AvailableStateIndexList is None: 
@@ -124,6 +125,9 @@ def do(TheAnalyzer, CompressionType, AvailableStateIndexList=None):
     # (*) Find all single character transitions (paths) inside TheAnalyzer's 
     #     state machine.
     path_list = collect(TheAnalyzer, CompressionType, AvailableStateIndexList)
+    # None of the paths shall contain a state which is not available for compression.
+    for path in path_list:
+        assert path.state_index_set().issubset(AvailableStateIndexList)
 
     # (*) Select paths, so that a maximum of states is implemented by path walkers.
     path_list = select(path_list)
@@ -325,6 +329,46 @@ def select(path_list):
             for i, path in self.path_info_list:
                 yield i, path
 
+        def compute_gain(self, path_i):
+            """What happens if 'path' is chosen?
+
+               -- Paths which contain any of its state_indices become unavailable.
+                  (states can only be implemented once) => forbidden paths.
+               
+               -- States in a forbidden path which are not in state_index_set cannot
+                  be implemented, except that they are implemented by another path
+                  which does not intersect with this path.
+               
+              RETURNS: [0] 'gain' of choosing 'path' 
+            """
+            # -- The states implemented by path
+            path            = self.path_info_list[path_i][1]
+            implemented_set = path.state_index_set()
+
+            # -- Forbidden are those paths which have a state in common with 'path'
+            # -- Those states implemented in forbidden paths become endangered.
+            #    I.e. they might not to be implemented by a PathWalkerState.
+            lost_path_list               = []
+            remaining_path_list          = []
+            remaining_implementation_set = set()
+            for other_path_i, other_path in self.path_info_list:
+                if   path_i == other_path_i: continue
+
+                if implemented_set.isdisjoint(other_path.state_index_set()): 
+                    remaining_path_list.append(other_path)
+                    remaining_implementation_set.update(path.state_index_set())
+                else:
+                    lost_path_list.append(other_path)
+
+            lost_implementation_set = set()
+            for path in lost_path_list:
+                lost = path.state_index_set() - implemented_set - remaining_implementation_set
+                lost_implementation_set.update(lost)
+
+            cost = - len(lost_implementation_set)
+            gain =   len(implemented_set)
+            return gain - cost
+
     def get_best_path(AvailablePathList):
         """The best path is the path that brings the most gain. The 'gain'
         of a path is a function of the number of states it implements minus
@@ -341,87 +385,47 @@ def select(path_list):
         winner_i               = None
         winner_forbidden_i_set = None
         for i, path in belong_db.iterpaths():
-            if max_gain is not None and len(path.state_index_set()) < max_gain: continue # No chance
+            if max_gain is not None and len(path.state_index_set()) < max_gain: 
+                continue # No chance
 
-            all_but_path = (path for k, path in belong_db.iterpaths() if k != i)
-            gain, forbidden_i_set = compute_gain(path, belong_db, all_but_path)
+            gain = belong_db.compute_gain(i)
 
-            for i in forbidden_i_set:
-                assert i < len(AvailablePathList)
-                                                       
             if max_gain is None or max_gain < gain:
-                max_gain               = gain
-                winner_i               = i
-                winner_forbidden_i_set = forbidden_i_set
+                max_gain = gain
+                winner_i = i
 
-        return winner_i, list(winner_forbidden_i_set)
+        return winner_i
 
-    def compute_gain(path, belong_db, AvailablePathListIterable):
-        """What happens if 'path' is chosen?
-
-           -- Paths which contain any of its state_indices become unavailable.
-              (states can only be implemented once) => forbidden paths.
-           
-           -- States in a forbidden path which are not in state_index_set cannot
-              be implemented, except that they are implemented by another path
-              which does not intersect with this path.
-           
-          RETURNS: [0] 'gain' of choosing 'path' 
-                   [1] set of ids of paths which are forbidden if 'path' is chosen.
-        """
-        # -- The states implemented by path
-        state_index_set = path.state_index_set()
-
-        # -- Forbidden are those paths which have a state in common with 'path'
-        # -- Those states implemented in forbidden paths become endangered.
-        #    I.e. they might not to be implemented by a PathWalkerState.
-        endangered_set        = set()
-        forbidden_path_id_set = set()
-        for other_path_i, other_path in enumerate(AvailablePathListIterable):
-            if state_index_set.isdisjoint(other_path.state_index_set()): continue
-
-            # If 'other_path' is dropped: 
-            # => its states may not be implemented in PathWalkerState.
-            endangered_set.update(other_path.state_index_set() - state_index_set)
-
-            forbidden_path_id_set.add(other_path_i)
-
-        # (*) Function to model 'cost for an endangered state'
-        # 
-        #                       1 / (1 + alternative_n)
-        # 
-        #  = 1,  if there is no alternative implementation for 'state_index'. 
-        #        The state is definitely not implemented in a PathWalkerState. 
-        #
-        #  decreasing, with the number of remaining alternatives.
-        #
-        # 'Cost' of choosing 'path' = sum of costs for endangered state indices.
-        cost = 0 
-        for endangered_state_index in endangered_set:
-            alternative_n = len(belong_db[endangered_state_index]) 
-            cost += 1 / (1 + alternative_n)
-
-        # Gain: Each implemented state counts as '1'
-        gain = len(state_index_set)
-        return gain - cost, forbidden_path_id_set
 
     result    = []
     work_list = copy(path_list)
     while len(work_list):
         work_list.sort(key=lambda p: - p.state_index_list_size())
 
-        elect_i, dropped_list = get_best_path(work_list)
+        elect_i = get_best_path(work_list)
 
         # Copy path from 'work_list' to 'result', 
         # BEFORE list content is changed.
-        result.append(work_list[elect_i])
+        elect = work_list[elect_i]
+        del work_list[elect_i]
+        result.append(elect)
+
+        dropped_list    = []
+        implemented_set = elect.state_index_set()
+        for i, path in enumerate(work_list):
+            if implemented_set.isdisjoint(path.state_index_set()): continue
+            dropped_list.append(i)
 
         # Delete all paths which are impossible, if 'elect_i' is chosen.
         # Reverse sort of list indices (greater first) 
         # => simply 'del work_list[i]' 
-        dropped_list.append(elect_i)
         for i in sorted(dropped_list, reverse=True):
             del work_list[i]
+
+        # None of the remaining paths shall have states in common with the elect.
+        for path in work_list:
+            assert elect.state_index_set().isdisjoint(path.state_index_set()), \
+                   "elect: %s; path: %s;" % (elect.state_index_set(), path.state_index_set())
 
     return result
 

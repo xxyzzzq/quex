@@ -275,7 +275,7 @@ class MegaState(AnalyzerState):
 
         # A state cannot be implemented by two MegaState-s
         # => All implemented states must be from 'RemainingStateIndexSet'
-        assert len(self.implemented_state_index_set().difference(RemainingStateIndexSet)) == 0
+        assert self.implemented_state_index_set().issubset(RemainingStateIndexSet)
 
 
 class MegaState_DropOut(TypedDict):
