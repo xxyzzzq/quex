@@ -1,4 +1,4 @@
-# (C) 2012 Frank-Rene Schaefer
+# (C) 2013 Frank-Rene Schaefer
 import quex.engine.analyzer.mega_state.template.core    as     template_analyzer
 import quex.engine.analyzer.mega_state.path_walker.core as     path_analyzer
 from   quex.engine.analyzer.mega_state.core             import AbsorbedState, MegaState

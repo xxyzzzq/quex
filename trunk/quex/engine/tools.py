@@ -42,8 +42,12 @@ class UniformObject(object):
         return result
 
     def __ilshift__(self, NewContent):
+        if isinstance(NewContent, UniformObject):    
+            NewContent = NewContent._content
+
         if   E_Values.UNASSIGNED == self._content:   self._content = NewContent
         elif E_Values.VOID       == self._content:   pass
+        elif E_Values.VOID       == NewContent:      self._content = E_Values.VOID
         elif self._equal(self._content, NewContent): self._content = E_Values.VOID
         return self
 

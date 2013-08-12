@@ -198,7 +198,8 @@ class PathWalkerState(MegaState):
         new_implemented_state_index_set = set(new_state_index_list[:-1])
 
         # (A state cannot be implemented by two different paths)
-        assert set(self.__implemented_state_index_set).isdisjoint(new_implemented_state_index_set)
+        assert set(self.__implemented_state_index_set).isdisjoint(new_implemented_state_index_set), \
+               "%s & %s != empty" % (self.__implemented_state_index_set, new_implemented_state_index_set)
         self.__state_index_sequence.extend(new_state_index_list)
         self.__implemented_state_index_set.update(new_implemented_state_index_set)
 
