@@ -116,7 +116,6 @@ def do(TheAnalyzer, CompressionType, AvailableStateIndexList=None):
 
     (C) 2009-2012 Frank-Rene Schaefer
     """
-    print "#AvailableStateIndexList:", AvailableStateIndexList
     assert CompressionType in [E_Compression.PATH, E_Compression.PATH_UNIFORM]
 
     if AvailableStateIndexList is None: 
@@ -125,12 +124,17 @@ def do(TheAnalyzer, CompressionType, AvailableStateIndexList=None):
     # (*) Find all single character transitions (paths) inside TheAnalyzer's 
     #     state machine.
     path_list = collect(TheAnalyzer, CompressionType, AvailableStateIndexList)
-    # None of the paths shall contain a state which is not available for compression.
-    for path in path_list:
-        assert path.state_index_set().issubset(AvailableStateIndexList)
+
 
     # (*) Select paths, so that a maximum of states is implemented by path walkers.
     path_list = select(path_list)
+
+    # None of the paths shall contain a state which is not available for compression.
+    # No state shall be implemented by more than one path.
+    remainder = set(AvailableStateIndexList)
+    for path in path_list:
+        assert path.state_index_set().issubset(remainder)
+        remainder.difference_update(path.state_index_set())
 
     # (*) Group paths
     #    
@@ -267,7 +271,7 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
                 # A PathWalkerState cannot implement a loop.
                 if path.contains_state(target_index): continue # Loop--don't go!
 
-                target_state   = self.analyzer.state_db[target_index]
+                target_state = self.analyzer.state_db[target_index]
 
                 # TransitionMap matching? 
                 plug = path.transition_map.match_with_wildcard(transition_map, transition_char)
@@ -400,7 +404,7 @@ def select(path_list):
     result    = []
     work_list = copy(path_list)
     while len(work_list):
-        work_list.sort(key=lambda p: - p.state_index_list_size())
+        work_list.sort(key=lambda p: - p.state_index_set_size())
 
         elect_i = get_best_path(work_list)
 
@@ -443,14 +447,17 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
     for path in CharacterPathList:
         for path_walker in path_walker_list:
             # Set-up the walk in an existing PathWalkerState
-            if path_walker.accept(path, TheAnalyzer): break
+            if path_walker.accept(path, TheAnalyzer): 
+                break
         else:
             # Create a new PathWalkerState
-            path_walker_list.append(PathWalkerState(path, TheAnalyzer, CompressionType))
+            path_walker = PathWalkerState(path, TheAnalyzer, CompressionType)
+            path_walker_list.append(path_walker)
 
     # Once, all path walkers are setup, finalize.
     for path_walker in path_walker_list:
         path_walker.finalize(TheAnalyzer)
 
+    
     return path_walker_list
 

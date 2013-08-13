@@ -66,7 +66,6 @@ def do(TheAnalyzer):
             assert False
 
         # -- Post-process the absorption of AnalyzerState-s into MegaState-s
-
         for mega_state in mega_state_list:
             mega_state.check_consistency(remainder)
 

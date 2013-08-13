@@ -121,9 +121,6 @@ def framework(txt, PWState, TheAnalyzer):
         # -- "goto TerminalDoor"
         if PWState.uniform_terminal_door_id is not None:
             # All path have same terminal state and enter it at the same door
-            print "#uniform_terminal_door_id:", PWState.uniform_terminal_door_id, \
-                                                LanguageDB.GOTO_BY_DOOR_ID(PWState.uniform_terminal_door_id)
-
             goto_terminal_door   = "            %s\n" % LanguageDB.GOTO_BY_DOOR_ID(PWState.uniform_terminal_door_id)
         else:
             # The terminals of the paths are different
@@ -137,12 +134,11 @@ def framework(txt, PWState, TheAnalyzer):
             #      ...
             tmp    = ""
             offset = 0
-            for path_id, path in enumerate(PWState.path_list):
-                offset += len(path)
-                terminal_door_id = path[-1].door_id # Terminal DoorId
+            for path_id, door_id_sequence in enumerate(PWState.door_id_sequence_list):
+                offset += len(door_id_sequence) + 1
                 tmp +=  "            %s"  % LanguageDB.IF("path_iterator", "==", "&path_walker_%i_path_base[%s]" %  \
                                                           (PWState.index, offset - 1), FirstF=(path_id == 0))                                  \
-                      + "                %s\n" % LanguageDB.GOTO_BY_DOOR_ID(terminal_door_id) 
+                      + "                %s\n" % LanguageDB.GOTO_BY_DOOR_ID(door_id_sequence[-1]) 
             tmp += "            %s"       % LanguageDB.ELSE                                  
             tmp += "                %s\n" % LanguageDB.UNREACHABLE
             tmp += "            %s\n"     % LanguageDB.END_IF()                                  

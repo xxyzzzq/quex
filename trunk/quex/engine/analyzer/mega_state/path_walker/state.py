@@ -20,17 +20,21 @@ class PathWalkerState_ContentFinalized(object):
         self.door_id_sequence_list           = []
 
         # First make sure, that the CommandList-s on the paths are organized
-        # and assigned with new DoorID-s.
+        # and assigned with new DoorID-s. Assume, that 
+        # 'transition_reassignment_candidate_list' has been set properly.
+        assert len(PWState.entry.transition_reassignment_candidate_list) > 0
         PWState.entry.transition_reassignment_db_construct(PWState.index)
 
         # Determine uniformity and the door_id_sequence.
-        uniform_door_id              = UniformObject()
-        uniform_terminal_door_id     = UniformObject()
+        uniform_door_id          = UniformObject()
+        uniform_terminal_door_id = UniformObject()
 
         for step_list in PWState.path_list:
             # Meaningful paths consist of more than one state and a terminal. 
             assert len(step_list) > 2
 
+            # -- States on path
+            #    (entries are considered from the second state on path on)
             door_id_sequence = []
             prev_step        = step_list[0]
             action_db        = PWState.entry.action_db
@@ -47,12 +51,13 @@ class PathWalkerState_ContentFinalized(object):
 
                 prev_step = step
 
-            step           = step_list[-1] # Terminal
+            # -- Terminal
+            step      = step_list[-1] 
 
             #! A terminal of one path cannot be element of another path of the
             #! same PathWalkerState. This might cause huge trouble!
             #! (Ensured by the function '.accept(Path)')
-            assert step.state_index not in PWState.implemented_state_index_set()
+            # assert step.state_index not in PWState.implemented_state_index_set()
 
             action_db = TheAnalyzer.state_db[step.state_index].entry.action_db
             door_id   = action_db.get_door_id(step.state_index, prev_step.state_index, TriggerId=0)
@@ -109,14 +114,15 @@ class PathWalkerState_Entry(MegaState_Entry):
                 continue
 
             elif transition_id.source_state_index != From:
-                # Entry from outside: Set the 'state_key'
-                action.command_list.misc.add(FromOutsideCmd)
+                cmd = FromOutsideCmd
 
             else:
-                # Entry from inside: Only 'increment'
-                action.command_list.misc.add(FromOutsideCmd)
+                cmd = FromInsideCmd
                 # Later we will try to unify all entries from inside.
                 self.transition_reassignment_candidate_list.append((From, transition_id))
+
+            if cmd is not None:
+                action.command_list.misc.add(cmd)
 
         return
 
@@ -185,6 +191,7 @@ class PathWalkerState(MegaState):
 
         # (2.2) Absorb the steps on the path
         self.absorb_path(Path, TheAnalyzer)
+        return True
 
     def absorb_path(self, Path, TheAnalyzer):
 
@@ -194,6 +201,7 @@ class PathWalkerState(MegaState):
         # (Meaningful paths consist of more than one state and a terminal.)
         assert len(Path.step_list) > 2
         self.__path_list.append(Path.step_list)
+
         new_state_index_list            = [x.state_index for x in Path.step_list]
         new_implemented_state_index_set = set(new_state_index_list[:-1])
 
@@ -205,7 +213,7 @@ class PathWalkerState(MegaState):
 
         # (2) Absorb Entry/DropOut Information
         #     Entry's action_db (maps: 'transition_id --> command_list')
-        for i, step in enumerate(Path.step_list[:-1]):
+        for step in Path.step_list[:-1]:
             state     = TheAnalyzer.state_db[step.state_index]
 
             self.entry.action_db.absorb(state.entry.action_db)
@@ -220,8 +228,8 @@ class PathWalkerState(MegaState):
         """
 
         # Entries along the path: PathIteratorIncrement
+        #                         ... but this is handled better by the code generator.
         # Entries from outside:   PathIteratorSet
-        from_inside = PathIteratorIncrement()
         for path_id, step_list in enumerate(self.__path_list):
             prev_state_index = None
             # Terminal is not element of path => consider only 'step_list[:-1]'
@@ -231,9 +239,17 @@ class PathWalkerState(MegaState):
                 self.entry.action_db_update(From           = prev_state_index, 
                                             To             = step.state_index, 
                                             FromOutsideCmd = from_outside,
-                                            FromInsideCmd  = from_inside)
+                                            FromInsideCmd  = None)
 
                 prev_state_index = step.state_index
+
+        # A CommandList at a door can at maximum contain 1 path iterator command!
+        for action in self.entry.action_db.itervalues():
+            path_iterator_cmd_n = 0
+            for cmd in action.command_list:
+                if not isinstance(cmd, (PathIteratorSet, PathIteratorIncrement)): continue
+                path_iterator_cmd_n += 1
+                assert path_iterator_cmd_n < 2
 
         self.__finalized = PathWalkerState_ContentFinalized(self, TheAnalyzer)
         return

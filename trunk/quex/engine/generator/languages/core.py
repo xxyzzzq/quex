@@ -206,6 +206,10 @@ class LanguageDB_Cpp(dict):
                   % (EntryAction.path_walker_id, EntryAction.path_id, EntryAction.offset)
             return txt
 
+        elif isinstance(EntryAction, entry_action.PathIteratorIncrement):
+            return  "    (++path_iterator);\n" \
+                  + "    __quex_debug(\"++path_iterator\");\n" 
+
         else:
             assert False, "Unknown Entry Action"
 

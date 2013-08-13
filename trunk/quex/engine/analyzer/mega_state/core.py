@@ -122,7 +122,7 @@ class MegaState_Entry(Entry):
         # new and the old DoorID is stored in 'self.transition_reassignment_db'.
         
         self.transition_reassignment_candidate_list = []
-        self.transition_reassignment_db             = None
+        self.__transition_reassignment_db           = None
 
     def transition_reassignment_db_construct(self, RelatedMegaStateIndex):
         """Generate new DoorIDs for all TransitionID-s where '.door_id is None'.
@@ -133,9 +133,9 @@ class MegaState_Entry(Entry):
         ## print "#transition_reassignment_candidate_list:", self.transition_reassignment_candidate_list
         ## print "#transition_reassignment_db id:", id(self)
         ## print_callstack()
-        assert self.transition_reassignment_db is None
+        assert self.__transition_reassignment_db is None
 
-        self.transition_reassignment_db = DoorIdReassignmentDB()
+        self.__transition_reassignment_db = DoorIdReassignmentDB()
 
         # All CommandList-s which are subject to DoorID reassignment are set to
         # 'None'. Then 'action_db.categorize()' can determine new DoorID-s.
@@ -152,16 +152,20 @@ class MegaState_Entry(Entry):
             #                  the replacement.
             action = self.action_db.get(transition_id)
             assert action is not None
-            self.transition_reassignment_db.add(IndexOfStateOfConcernedTransistionMap = tm_state_index, 
-                                                OldDoorId = old_db[transition_id], 
-                                                NewDoorId = action.door_id)
+            self.__transition_reassignment_db.add(IndexOfStateOfConcernedTransistionMap = tm_state_index, 
+                                                  OldDoorId = old_db[transition_id], 
+                                                  NewDoorId = action.door_id)
 
-        ## print "#transition_reassignment_db:", self.transition_reassignment_db
+        return
+
+    @property
+    def transition_reassignment_db(self):
+        return self.__transition_reassignment_db
 
     def absorb(self, Other):
         assert isinstance(Other, MegaState_Entry)
-        assert self.transition_reassignment_db is None
-        assert Other.transition_reassignment_db is None
+        assert self.__transition_reassignment_db is None
+        assert Other.__transition_reassignment_db is None
 
         self.action_db.absorb(Other.action_db)
         self.transition_reassignment_candidate_list.extend(Other.transition_reassignment_candidate_list)
