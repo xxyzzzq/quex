@@ -192,6 +192,8 @@ class CommandList:
                 return (2, Cmd.value)
             elif isinstance(Cmd, PathIteratorSet):   
                 return (3, Cmd.offset, Cmd.path_id, Cmd.path_walker_id)
+            elif isinstance(Cmd, PathIteratorIncrement):   
+                return (3, 0)
             else:
                 assert False, "Command '%s' cannot be part of .misc." % Cmd.__class__.__name__
 

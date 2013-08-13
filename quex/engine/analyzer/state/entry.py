@@ -19,10 +19,10 @@ class EntryActionDB:
 
            db         --> map: DoorID --> TransitionAction
 
-           The major role plays function '.categorize()'. It makes sure that
+           The major role plays function 'categorize()'. It makes sure that
            every TransitionAction has a DoorID assigned to it.
         """
-        self.__db = TypedDict(TransitionID, TransitionAction)
+        self.__db                          = TypedDict(TransitionID, TransitionAction)
         self.__largest_used_door_sub_index = 0  # '0' is used for 'Door 0', i.e. reload entry
 
         if Opt_StateIndex is not None:
@@ -87,6 +87,11 @@ class EntryActionDB:
     def enter(self, TheTransitionID, TheAction):
         assert isinstance(TheTransitionID, TransitionID)
         assert isinstance(TheAction,       TransitionAction)
+        #!! It is ABSOLUTELY essential, that the CommandList-s related to actions are
+        #!! independent! Each transition must have its OWN CommandList!
+        for action in self.__db.itervalues():
+            assert id(TheAction.command_list) != id(action.command_list)
+
         self.__db[TheTransitionID] = TheAction
 
     def size(self):
@@ -173,10 +178,15 @@ class EntryActionDB:
         return self.__db.iteritems()
 
     def __setitem__(self, Key, Value):
+        #!! It is ABSOLUTELY essential, that the CommandList-s related to actions are
+        #!! independent! Each transition must have its OWN CommandList!
+        for action in self.__db.itervalues():
+            assert id(Value.command_list) != id(action.command_list)
+
         self.__db[Key] = Value
         return Value
 
-    def categorize(self, StateIndex, ReportF=False):
+    def categorize(self, StateIndex):
         """
         This function considers TransitionActions where '.door_id is None' and
         assigns them a DoorID.  A DoorID identifies (globally) the CommandList
@@ -185,48 +195,45 @@ class EntryActionDB:
 
         RETURNS: List of newly assigned pairs of (TransitionID, DoorID)s.
         """
-        todo = [
+        #!! It is ABSOLUTELY essential, that the CommandList-s related to actions are
+        #!! independent! Each transition must have its OWN CommandList!
+        cmd_list_ids = [ id(action.command_list) for action in self.__db.itervalues() ]
+        assert len(cmd_list_ids) == len(set(cmd_list_ids)) # size(list) == size(unique set)
+
+        work_list = [
             (transition_id, action) for transition_id, action in self.__db.iteritems()
                                     if action.door_id is None
         ]
 
-        if ReportF: assigned_db = {}  # Tracks re-assignment of door-ids
-        else:       assigned_db = None
-
-        if len(todo) == 0:
-            if ReportF: return assigned_db
-            else:       return
+        if len(work_list) == 0:
+            return
 
         command_list_db = dict(
             (action.command_list, action.door_id) for action in self.__db.itervalues()
                                                   if action.door_id is not None
         )
 
-        def get_door_id(CL):
+        def _get_door_id(CL):
             # If there was an action with the same command list, then assign
             # the same door id. Leave the action intact! May be, it is modified
             # later and will differ from the currently same action.
             new_door_id = command_list_db.get(CL)
 
-            if new_door_id is not None: 
-                return new_door_id
+            if new_door_id is not None: return new_door_id
 
             self.__largest_used_door_sub_index += 1
             return DoorID(StateIndex, self.__largest_used_door_sub_index)
 
         def sort_key(X):
-            return (X[0].target_state_index, X[0].source_state_index)
+            return (X[0].target_state_index, X[0].source_state_index, X[0].trigger_id)
 
-        for transition_id, action in sorted(todo, key=sort_key): # NOT: 'iteritems()'
-            action.door_id                       = get_door_id(action.command_list)
+        for transition_id, action in sorted(work_list, key=sort_key): # NOT: 'iteritems()'
+            action.door_id                       = _get_door_id(action.command_list)
             command_list_db[action.command_list] = action.door_id
-
-            if not ReportF: continue
 
         assert self.check_consistency()
 
-        if ReportF: return assigned_db
-        else:       return
+        return
 
     @property 
     def largest_used_door_sub_index(self):

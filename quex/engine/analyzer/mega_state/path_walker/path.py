@@ -181,6 +181,7 @@ class CharacterPath(object):
         """
         assert    TransitionCharacter is not None
         assert    isinstance(TransitionMapWildCardPlug, DoorID) \
+               or TransitionMapWildCardPlug == E_StateIndices.DROP_OUT \
                or TransitionMapWildCardPlug == -1, \
                   "TransitionMapWildCardPlug: '%s'" % TransitionMapWildCardPlug
 
@@ -189,7 +190,7 @@ class CharacterPath(object):
         # CommandList upon Entry to State
         # (TriggerIndex == 0, because there can only be one transition from
         #                     one state to the next on the path).
-        prev_step = self.__step_list[-1]
+        prev_step    = self.__step_list[-1]
         command_list = PreviousTerminal.entry.action_db.get_command_list(PreviousTerminal.index, 
                                                                          prev_step.state_index,
                                                                          TriggerId=0)
@@ -216,7 +217,6 @@ class CharacterPath(object):
         # (TriggerIndex == 0, because there can only be one transition from
         #                     one state to the next on the path).
         prev_step    = self.__step_list[-1]
-        print "#spt:", State.index, prev_step.state_index
         command_list = State.entry.action_db.get_command_list(State.index, prev_step.state_index, 
                                                               TriggerId=0)
         assert command_list is not None
@@ -237,20 +237,6 @@ class CharacterPath(object):
     def transition_map(self):
         return self.__transition_map
 
-    def drop_out_uniformity_with_predecessor(self, State):
-        return self.uniform_DropOut.fit(State.drop_out)
-
-    @property
-    def uniform_entry_command_list_along_path(self):
-        """RETURNS: 
-        
-           ComandList -- For each step on the path the same ComandList
-                         is executed.
-           None       -- Each step on the path requires a different 
-                         CommandLists to be executed. 
-        """
-        return self.uniform_entry_CommandList.content
-
     def finalize(self, TerminalStateIndex):
         self.__step_list.append(CharacterPathStep(TerminalStateIndex, None))
         # Ensure that there is no wildcard in the transition map
@@ -260,24 +246,17 @@ class CharacterPath(object):
         self.__transition_map_wildcard_char = None
 
     def contains_state(self, StateIndex):
-        for dummy in ifilter(lambda x: x.state_index == StateIndex, self.__step_list[:-1]):
+        """Is 'StateIndex' on the path(?). This includes the terminal."""
+        for dummy in (x for x in self.__step_list if x.state_index == StateIndex):
             return True
         return False
 
-    def state_index_list_size(self):
+    def state_index_set_size(self):
         return len(self.__step_list) - 1
-
-    def state_index_list(self):
-        assert len(self.__step_list) > 1
-        return [ x.state_index for x in self.__step_list[:-1] ]
 
     def state_index_set(self):
         assert len(self.__step_list) > 1
         return set(x.state_index for x in self.__step_list[:-1])
-
-    def __len__(self):
-        assert False, "Ambigous: len = length of path or number of states on path?"
-        return len(self.__step_list)
 
     def __repr__(self):
         return self.get_string()
