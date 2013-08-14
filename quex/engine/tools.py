@@ -32,7 +32,7 @@ def pair_combinations(iterable):
 
 class UniformObject(object):
     __slots__ = ("_content", "_equal")
-    def __init__(self, EqualCmp=lambda x,y: x!=y):
+    def __init__(self, EqualCmp=lambda x,y: x==y):
         self._content = E_Values.UNASSIGNED
         self._equal   = EqualCmp
 
@@ -45,22 +45,32 @@ class UniformObject(object):
         if isinstance(NewContent, UniformObject):    
             NewContent = NewContent._content
 
-        if   E_Values.UNASSIGNED == self._content:   self._content = NewContent
-        elif E_Values.VOID       == self._content:   pass
-        elif E_Values.VOID       == NewContent:      self._content = E_Values.VOID
-        elif self._equal(self._content, NewContent): self._content = E_Values.VOID
+        if   E_Values.UNASSIGNED == self._content:       self._content = NewContent
+        elif E_Values.VOID       == self._content:       pass
+        elif E_Values.VOID       == NewContent:          self._content = E_Values.VOID
+        elif not self._equal(self._content, NewContent): self._content = E_Values.VOID
         return self
 
     def fit(self, NewContent):
-        if   self._content == E_Values.UNASSIGNED: return True
-        elif self._content == E_Values.VOID:       return False
+        if isinstance(NewContent, UniformObject):    
+            NewContent = NewContent._content
+
+        if   E_Values.UNASSIGNED == self._content: return True
+        elif E_Values.VOID       == self._content: return False
         return self._equal(self._content, NewContent)
 
     @property
     def content(self):
-        if   self._content == E_Values.UNASSIGNED: return None
-        elif self._content == E_Values.VOID:       return None
+        if   E_Values.UNASSIGNED == self._content: return None
+        elif E_Values.VOID       == self._content: return None
         else:                                      return self._content
+
+    def is_uniform(self):
+        """If the content is UNASSIGNED or remained uniform, then this
+           function returns 'True'. It returns 'False' if two different
+           values have been shifted into it.
+        """
+        return E_Values.VOID != self._content
 
 #class AssignedOnce(object):
 #    __slots__ = ("_content", "_equal")

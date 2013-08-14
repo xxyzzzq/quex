@@ -150,6 +150,7 @@ def collect(TheAnalyzer, CompressionType, AvailableStateIndexList):
     done_set = set()
 
     # (1) Consider first the states which immediately follow the initial state.
+    #     => We quickly get a 'done_set' which covers many states.
     path_list = []
     for state_index in TheAnalyzer.state_db[TheAnalyzer.init_state_index].map_target_index_to_character_set.iterkeys():
         if   state_index == TheAnalyzer.init_state_index: continue
@@ -253,7 +254,7 @@ def __find_continuation(analyzer, CompressionType, AvailableStateIndexSet,
             #    path walker.
             
             # If uniformity is required, then this is the place to check for it.
-            if self.uniform_f and path.uniformity_with_predecessor(State):
+            if self.uniform_f and not path.uniformity_with_predecessor(State):
                 if len(path.step_list) > 1:
                     path.finalize(State.index)
                     self.result.append(path)
@@ -457,7 +458,9 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
     # Once, all path walkers are setup, finalize.
     for path_walker in path_walker_list:
         path_walker.finalize(TheAnalyzer)
-
+        assert    CompressionType != E_Compression.PATH_UNIFORM \
+               or (    path_walker.uniform_door_id is not None \
+                   and (True or path_walker.drop_out.is_uniform())) # Left 'True' while analyzing another issue! Delete it!
     
     return path_walker_list
 

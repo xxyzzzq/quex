@@ -134,9 +134,23 @@ def drop_out_scheme_do(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
     else:
         # non-uniform drop outs => route by 'state_key'
         case_list = []
+        assert_remainder = set( 
+            TheState.state_index_sequence().index(state_index) 
+            for state_index in TheState.implemented_state_index_set() 
+        )
+
+        for i, state_index in enumerate(TheState.state_index_sequence()):
+            print "[%i] %s %s" % (i, state_index, state_index in TheState.implemented_state_index_set())
+
         for drop_out, state_index_set in TheState.drop_out.iteritems():
+
             # state keys related to drop out
             state_key_list = map(lambda i: TheState.map_state_index_to_state_key(i), state_index_set)
+            print "#assert_remainder 0:", sorted(list(assert_remainder))
+            print "#state_key_list:", sorted(state_key_list)
+            assert assert_remainder.issuperset(state_key_list)
+            assert_remainder.difference_update(state_key_list)
+            print "#assert_remainder 1:", sorted(list(assert_remainder))
             # drop out action
             # Implement drop-out for each state key. 'state_key_list' combines
             # states that implement the same drop-out behavior. Same drop-outs
@@ -145,6 +159,8 @@ def drop_out_scheme_do(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
             drop_out_coder.do(case_txt, TheState.index, drop_out, TheAnalyzer, 
                               DefineLabelF=False, MentionStateIndexF=False)
             case_list.append((state_key_list, case_txt))
+    
+        assert len(assert_remainder) == 0, "Missing:" + assert_remainder
 
         case_txt = LanguageDB.SELECTION(StateKeyString, case_list)
         LanguageDB.INDENT(case_txt)

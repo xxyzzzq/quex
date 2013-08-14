@@ -18,6 +18,20 @@ class PathWalkerState_ContentFinalized(object):
         self.uniform_door_id_along_all_paths = None
         self.uniform_terminal_door_id        = None
         self.door_id_sequence_list           = []
+        self.map_state_index_to_state_key    = {}
+
+        offset = 0
+        for step_list in PWState.path_list:
+            for i, step in enumerate(step_list[:-1]):
+                self.map_state_index_to_state_key[step.state_index] = offset + i
+            offset += len(step_list)
+
+        for state_index in PWState.implemented_state_index_set():
+            assert state_index in self.map_state_index_to_state_key, \
+                   "Missing: '%s'" % state_index
+
+        print "#", 522L in PWState.implemented_state_index_set()
+        print "#", self.map_state_index_to_state_key.get(522L)
 
         # First make sure, that the CommandList-s on the paths are organized
         # and assigned with new DoorID-s. Assume, that 
@@ -180,7 +194,7 @@ class PathWalkerState(MegaState):
         # (1.2) If uniformity is required, check it!
         if self.__uniformity_required_f:
             if    (not self.uniform_entry_CommandList.fit(Path.uniform_entry_CommandList)) \
-               or (not self.uniform_DropOut.fit(Path.uniform_entry_CommandList)):
+               or (not self.uniform_DropOut.fit(Path.uniform_DropOut)):
                 return False
 
         # (2)   Path has been accepted.
@@ -274,10 +288,10 @@ class PathWalkerState(MegaState):
         return self.__state_index_sequence
 
     def map_state_index_to_state_key(self, StateIndex):
-        return self.state_index_sequence().index(StateIndex)
+        return self.__finalized.map_state_index_to_state_key[StateIndex]
 
     def map_state_key_to_state_index(self, StateKey):
-        return self.state_index_sequence()[StateKey]
+        return self.__state_index_sequence[StateKey]
 
     @property
     def uniform_door_id(self):
