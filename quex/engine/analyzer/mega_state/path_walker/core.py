@@ -440,6 +440,15 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
     character paths and assigns them to PathWalkerState-s. The
     PathWalkerState-s can then immediately be used for code generation.  
     """
+    # A state shall not be implemented on two paths. It was the task of 
+    # 'select()' to make an optimal choice.
+    appeared_state_index_set = set()
+    for path in CharacterPathList:
+        delta = len(path.step_list) - 1
+        size_before = len(appeared_state_index_set)
+        appeared_state_index_set.update(step.state_index for step in path.step_list[:-1])
+        size_after  = len(appeared_state_index_set)
+        assert size_after - size_before == delta
 
     # Generate the path walkers.  One pathwalker may be able to walk along more
     # than one path.  If a pathwalker accepts another path, no extra pathwalker
@@ -458,6 +467,9 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
     # Once, all path walkers are setup, finalize.
     for path_walker in path_walker_list:
         path_walker.finalize(TheAnalyzer)
+
+    for path_walker in path_walker_list:
+        # If uniformity was required, then it must have been maintained.
         assert    CompressionType != E_Compression.PATH_UNIFORM \
                or (    path_walker.uniform_door_id is not None \
                    and (True or path_walker.drop_out.is_uniform())) # Left 'True' while analyzing another issue! Delete it!

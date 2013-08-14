@@ -34,12 +34,13 @@ class Handler:
 
     def debug_info_map_state_key_to_state_index(self, txt):
         txt.append("#   define __QUEX_DEBUG_MAP_STATE_KEY_TO_STATE(X) ( \\\n")
-        for state_index in self.state.state_index_sequence()[:-1]:
-            state_key = self.state.map_state_index_to_state_key(state_index)
+        pair_list = list((self.state.map_state_index_to_state_key(si), si) \
+                         for si in self.state.implemented_state_index_set())
+        pair_list.sort()
+        for state_key, state_index in pair_list[:-1]:
             txt.append("             (X) == %i ? %i :    \\\n" % (state_key, state_index))
 
-        state_index = self.state.state_index_sequence()[-1]
-        state_key   = self.state.map_state_index_to_state_key(state_index)
+        state_index, state_index = pair_list[-1]
         txt.append("             (X) == %i ? %i : 0)" % (state_key, state_index))
 
         if isinstance(self.state, PathWalkerState):
@@ -135,22 +136,16 @@ def drop_out_scheme_do(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
         # non-uniform drop outs => route by 'state_key'
         case_list = []
         assert_remainder = set( 
-            TheState.state_index_sequence().index(state_index) 
+            TheState.map_state_index_to_state_key(state_index)
             for state_index in TheState.implemented_state_index_set() 
         )
 
-        for i, state_index in enumerate(TheState.state_index_sequence()):
-            print "[%i] %s %s" % (i, state_index, state_index in TheState.implemented_state_index_set())
-
         for drop_out, state_index_set in TheState.drop_out.iteritems():
-
             # state keys related to drop out
             state_key_list = map(lambda i: TheState.map_state_index_to_state_key(i), state_index_set)
-            print "#assert_remainder 0:", sorted(list(assert_remainder))
-            print "#state_key_list:", sorted(state_key_list)
             assert assert_remainder.issuperset(state_key_list)
             assert_remainder.difference_update(state_key_list)
-            print "#assert_remainder 1:", sorted(list(assert_remainder))
+
             # drop out action
             # Implement drop-out for each state key. 'state_key_list' combines
             # states that implement the same drop-out behavior. Same drop-outs
