@@ -27,11 +27,7 @@ class PathWalkerState_ContentFinalized(object):
             offset += len(step_list)
 
         for state_index in PWState.implemented_state_index_set():
-            assert state_index in self.map_state_index_to_state_key, \
-                   "Missing: '%s'" % state_index
-
-        print "#", 522L in PWState.implemented_state_index_set()
-        print "#", self.map_state_index_to_state_key.get(522L)
+            assert state_index in self.map_state_index_to_state_key
 
         # First make sure, that the CommandList-s on the paths are organized
         # and assigned with new DoorID-s. Assume, that 
