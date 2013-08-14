@@ -90,6 +90,7 @@ class DropOut(object):
         assert False, "Use __eq__()"
 
     def __eq__(self, Other):
+        assert isinstance(Other, DropOut)
         if   self.__acceptance_checker != Other.__acceptance_checker: return False
         elif self.__terminal_router    != Other.__terminal_router:    return False
         return True

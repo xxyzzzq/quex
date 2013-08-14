@@ -313,6 +313,9 @@ class MegaState_DropOut(TypedDict):
                 self.absorb(state.index, state.drop_out)
         return
 
+    def is_uniform(self):
+        return len(self) == 1
+
     def get_uniform_prototype(self):
         """Uniform drop-out means, that for all drop-outs mentioned the same
         actions have to be performed. This is the case, if all states are

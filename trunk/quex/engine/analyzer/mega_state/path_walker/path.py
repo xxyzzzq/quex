@@ -213,6 +213,11 @@ class CharacterPath(object):
         """Check whether the entry of the last state on the path executes the
            same CommandList as the entry to 'State'. 
         """
+        # This function is supposed to be called only when uniformity is required.
+        # If so, then the path must be in a uniform state at any time. 
+        assert self.uniform_entry_CommandList.is_uniform()
+        assert self.uniform_DropOut.is_uniform()
+
         # CommandList upon Entry to State
         # (TriggerIndex == 0, because there can only be one transition from
         #                     one state to the next on the path).
