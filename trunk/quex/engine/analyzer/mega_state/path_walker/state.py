@@ -26,9 +26,6 @@ class PathWalkerState_ContentFinalized(object):
                 self.map_state_index_to_state_key[step.state_index] = offset + i
             offset += len(step_list)
 
-        for state_index in PWState.implemented_state_index_set():
-            assert state_index in self.map_state_index_to_state_key
-
         # First make sure, that the CommandList-s on the paths are organized
         # and assigned with new DoorID-s. Assume, that 
         # 'transition_reassignment_candidate_list' has been set properly.
@@ -52,9 +49,8 @@ class PathWalkerState_ContentFinalized(object):
                 # (Recall: there is only one transition (from, to) => TriggerId == 0)
                 door_id = action_db.get_door_id(step.state_index, prev_step.state_index, TriggerId=0)
 
-                # Every DoorID on the path must be a new-assigned one to this PathWalkerState.
-                assert door_id.state_index == PWState.index, \
-                       "From: %s; To: %s; --> DoorID: %s" % (prev_step.state_index, step.state_index, door_id)
+                # Every DoorID on the path must be a newly-assigned one to this PathWalkerState.
+                assert door_id.state_index == PWState.index
 
                 door_id_sequence.append(door_id)
                 uniform_door_id <<= door_id
@@ -143,36 +139,32 @@ class PathWalkerState(MegaState):
     for code generation.
     ___________________________________________________________________________
     """
-    def __init__(self, FirstPath, TheAnalyzer, CompressionType):
-        # Overtake '.entry' and '.drop_out' from the 'FirstPath'. 
-        # ('FirstPath' will no longer be referenced elsewhere.)
-        my_index = index.get()
-
-        MegaState.__init__(self, PathWalkerState_Entry(), MegaState_DropOut(), my_index)
+    def __init__(self, FirstPath, TheAnalyzer):
+        MegaState.__init__(self, PathWalkerState_Entry(), MegaState_DropOut(), index.get())
 
         # Uniform CommandList along entries on the path (optional)
-        self.__uniformity_required_f   = (CompressionType == E_Compression.PATH_UNIFORM)
-        self.uniform_entry_CommandList = FirstPath.uniform_entry_CommandList
-        self.uniform_DropOut           = FirstPath.uniform_DropOut
-        assert not self.__uniformity_required_f \
-               or  self.uniform_entry_CommandList.content is not None
+        self.uniform_entry_CommandList = FirstPath.uniform_entry_CommandList.clone()
+        self.uniform_DropOut           = FirstPath.uniform_DropOut.clone()
 
         self.__path_list                   = []
         self.__implemented_state_index_set = set()
         self.__state_index_sequence        = []
-        self.absorb_path(FirstPath, TheAnalyzer)
+        self.__absorb_path(FirstPath, TheAnalyzer)
 
         self.__transition_map_to_door_ids = FirstPath.transition_map
+        self.__transition_map             = None
 
         # Following are set by 'finalize()'.
         self.__finalized = None # <-- PathWalkerState_ContentFinalized()
 
     @property
     def transition_map(self):
-        return TransitionMap.from_iterable(self.__transition_map_to_door_ids, \
-                                           MegaState_Transition.create)
+        if self.__transition_map is None:
+            self.__transition_map = TransitionMap.from_iterable(self.__transition_map_to_door_ids, \
+                                                                MegaState_Transition.create)
+        return self.__transition_map
 
-    def accept(self, Path, TheAnalyzer):
+    def accept(self, Path, TheAnalyzer, CompressionType):
         """Accepts the given Path to be walked, if the remaining transition_maps
         match. If additionally uniformity is required, then only states with
         same drop_out and entry are accepted.
@@ -181,53 +173,65 @@ class PathWalkerState(MegaState):
                  True  -- Path can be walked by PathWalkerState and has been 
                           accepted.
         """
-        # (1) Check conditions for acceptance
+        if not self.__can_absorb_path(Path, TheAnalyzer, CompressionType):
+            return False
 
-        # (1.1) Compare the transition maps.
+        self.__absorb_path(Path, TheAnalyzer)
+        return True
+
+    def __can_absorb_path(self, Path, TheAnalyzer, CompressionType):
+        """Check whether a path can be walked along with the given PathWalkerState.
+           For this, the following has to hold:
+
+            -- The transition_maps must match.
+            -- If uniformity is required, the entries and drop-outs must 
+               be uniform with the existing onces.
+        """
         if not self.__transition_map_to_door_ids.is_equal(Path.transition_map): 
             return False
 
-        # (1.2) If uniformity is required, check it!
-        if self.__uniformity_required_f:
+        if CompressionType == E_Compression.PATH_UNIFORM:
             if    (not self.uniform_entry_CommandList.fit(Path.uniform_entry_CommandList)) \
                or (not self.uniform_DropOut.fit(Path.uniform_DropOut)):
                 return False
 
-        # (2)   Path has been accepted.
-        #
-        # (2.1) Absorb information about uniformity.
-        self.uniform_entry_CommandList <<= Path.uniform_entry_CommandList
-        self.uniform_DropOut           <<= Path.uniform_DropOut
-
-        # (2.2) Absorb the steps on the path
-        self.absorb_path(Path, TheAnalyzer)
         return True
 
-    def absorb_path(self, Path, TheAnalyzer):
-
-        # (1) Absorb the state sequence of the path
-        #     Resulting data is required (1) for decisions made in (2).
+    def __absorb_path(self, Path, TheAnalyzer):
+        """-- Absorb the state sequence of the path.
+           -- Absorb the Entry/DropOut information.
+        """
 
         # (Meaningful paths consist of more than one state and a terminal.)
         assert len(Path.step_list) > 2
         self.__path_list.append(Path.step_list)
 
+        # (1) Absorb the state sequence of the path.
+        #
         new_state_index_list            = [x.state_index for x in Path.step_list]
         new_implemented_state_index_set = set(new_state_index_list[:-1])
 
-        # (A state cannot be implemented by two different paths)
-        assert set(self.__implemented_state_index_set).isdisjoint(new_implemented_state_index_set), \
-               "%s & %s != empty" % (self.__implemented_state_index_set, new_implemented_state_index_set)
+        # Assert: A state cannot be implemented on two different paths.
+        assert set(self.__implemented_state_index_set).isdisjoint(new_implemented_state_index_set)
         self.__state_index_sequence.extend(new_state_index_list)
         self.__implemented_state_index_set.update(new_implemented_state_index_set)
 
         # (2) Absorb Entry/DropOut Information
+        #
+        self.uniform_entry_CommandList <<= Path.uniform_entry_CommandList
+        self.uniform_DropOut           <<= Path.uniform_DropOut
+
         #     Entry's action_db (maps: 'transition_id --> command_list')
-        for step in Path.step_list[:-1]:
-            state     = TheAnalyzer.state_db[step.state_index]
+        for state_index in (step.state_index for step in Path.step_list[:-1]):
+            state = TheAnalyzer.state_db[state_index]
 
             self.entry.action_db.absorb(state.entry.action_db)
-            self.drop_out.absorb(step.state_index, state.drop_out)
+            self.drop_out.absorb(state_index, state.drop_out)
+            # HERE: We cannot conclude anything from 'not uniform_DropOut'
+            #       => NOT: assert uniform_DropOut.is_uniform() == drop_out.is_uniform()
+            if self.uniform_DropOut.is_uniform(): assert self.drop_out.is_uniform()
+
+        assert self.uniform_DropOut.is_uniform() == self.drop_out.is_uniform()
 
         return True
 
@@ -323,3 +327,31 @@ class PathWalkerState(MegaState):
                 self.entry.action_db.delete(x.state_index, from_index)
                 from_index = x.state_index
 
+    def assert_consistency(self, CompressionType):
+        # Each state is only implemented once.
+        # => The mapping from 'state_index' to 'state_key' is 1:1.
+        assert len(self.__implemented_state_index_set) == len(self.__finalized.map_state_index_to_state_key)
+        for state_index in self.__implemented_state_index_set:
+            assert state_index in self.__finalized.map_state_index_to_state_key
+
+        # If uniform_DropOut is claimed, then there can be only
+        # drop-out alternative--and vice versa.
+        assert self.drop_out.is_uniform() == self.uniform_DropOut.is_uniform()
+
+        # If uniform_entry_CommandList is claimed, then the DoorID must be 
+        # the same along all paths--and vice versa.
+        assert    (self.uniform_door_id is not None) \
+               == self.uniform_entry_CommandList.is_uniform()
+
+        # If uniformity was required, then it must have been maintained.
+        if CompressionType == E_Compression.PATH_UNIFORM:
+            assert self.uniform_door_id is not None
+            assert self.drop_out.is_uniform()
+            assert self.uniform_DropOut.is_uniform()
+            assert self.uniform_entry_CommandList.is_uniform()
+
+        # The door_id_sequence_list corresponds to the path_list.
+        assert len(self.door_id_sequence_list) == len(self.path_list)
+        for door_id_sequence, step_list in izip(self.door_id_sequence_list, self.path_list):
+            # Path entry is not element of door_id_sequence => '-1'
+            assert len(door_id_sequence) == len(step_list) - 1 

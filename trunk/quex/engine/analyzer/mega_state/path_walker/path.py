@@ -10,7 +10,7 @@ import quex.engine.state_machine.index         as     index
 
 from   quex.engine.tools                       import UniformObject
 
-from   quex.blackboard import E_StateIndices
+from   quex.blackboard                         import E_Compression, E_StateIndices
 
 from   itertools   import ifilter
 from   collections import namedtuple
@@ -142,10 +142,19 @@ class CharacterPath(object):
         assert isinstance(TransitionCharacter, (int, long))
         assert isinstance(TheTransitionMap,    TransitionMap)
 
+        # uniform_entry_CommandList: 
+        #    The entry into the StartState happens from outside.
+        #    => A 'state_key' is assigned (the path_iterator)
+        #       and it is not part of the iteration loop.
+        #    => The StartState's entry IS NOT subject to uniformity considerations.
         self.uniform_entry_CommandList = UniformObject(EqualCmp=CommandList.is_equivalent)
-        self.uniform_DropOut           = UniformObject(EqualCmp=DropOut.is_equal)
+        # uniform_DropOut:
+        #    Any drop-out is implemented at the end of the iteration loop.
+        #    => The StartState's drop-out IS subject to uniformity considerations.
+        self.uniform_DropOut = UniformObject(EqualCmp=DropOut.is_equal, 
+                                             Initial=StartState.drop_out)
 
-        self.__step_list                    = [ CharacterPathStep(StartState.index, TransitionCharacter) ]
+        self.__step_list = [ CharacterPathStep(StartState.index, TransitionCharacter) ]
 
         self.__transition_map_wildcard_char = TransitionCharacter
         self.__transition_map               = TheTransitionMap.clone()
@@ -155,7 +164,7 @@ class CharacterPath(object):
     def clone(self):
         assert    self.__transition_map_wildcard_char is None \
                or isinstance(self.__transition_map_wildcard_char, (int, long))
-        assert isinstance(self.__transition_map,    TransitionMap)
+        assert isinstance(self.__transition_map, TransitionMap)
 
         result = CharacterPath(None, None, None)
 
@@ -190,13 +199,13 @@ class CharacterPath(object):
         # CommandList upon Entry to State
         # (TriggerIndex == 0, because there can only be one transition from
         #                     one state to the next on the path).
-        prev_step    = self.__step_list[-1]
-        command_list = PreviousTerminal.entry.action_db.get_command_list(PreviousTerminal.index, 
-                                                                         prev_step.state_index,
-                                                                         TriggerId=0)
-        assert command_list is not None
+        prev_step         = self.__step_list[-1]
+        entry_CommandList = PreviousTerminal.entry.action_db.get_command_list(PreviousTerminal.index, 
+                                                                              prev_step.state_index,
+                                                                              TriggerId=0)
+        assert entry_CommandList is not None
 
-        result.uniform_entry_CommandList <<= command_list
+        result.uniform_entry_CommandList <<= entry_CommandList
         result.uniform_DropOut           <<= PreviousTerminal.drop_out
 
         result.__step_list.append(CharacterPathStep(PreviousTerminal.index, TransitionCharacter))
@@ -287,4 +296,28 @@ class CharacterPath(object):
                         "path     = %s;\n" % sequence_txt,
                         "skeleton = {\n%s}\n"  % skeleton_txt, 
                         "wildcard = %s;\n" % repr(self.__transition_map_wildcard_char is not None)])
+
+
+    def assert_consistency(self, TheAnalyzer, CompressionType):
+        assert len(self.__step_list) >= 2
+
+        # If uniformity was required, it must have been maintained.
+        if CompressionType == E_Compression.PATH_UNIFORM:
+            assert self.uniform_entry_CommandList.is_uniform()
+            assert self.uniform_DropOut.is_uniform()
+
+        # If entry command list is claimed to be uniform
+        # => then all states in path must have this particular drop-out (except for the first).
+        if self.uniform_entry_CommandList.is_uniform():
+            prev_state_index = self.__step_list[0].state_index
+            for state in (TheAnalyzer.state_db[s.state_index] for s in self.__step_list[1:-1]):
+                command_list = state.entry.action_db.get_command_list(state.index, prev_state_index, TriggerId=0)
+                assert command_list == self.uniform_entry_CommandList.content
+                prev_state_index = state.index
+
+        # If drop out is claimed to be uniform
+        # => then all states in path must have this particular drop-out.
+        if self.uniform_DropOut.is_uniform():
+            for state in (TheAnalyzer.state_db[s.state_index] for s in self.__step_list[:-1]):
+                assert state.drop_out == self.uniform_DropOut.content
 
