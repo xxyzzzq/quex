@@ -32,8 +32,8 @@ def pair_combinations(iterable):
 
 class UniformObject(object):
     __slots__ = ("_content", "_equal")
-    def __init__(self, EqualCmp=lambda x,y: x==y):
-        self._content = E_Values.UNASSIGNED
+    def __init__(self, EqualCmp=lambda x,y: x==y, Initial=E_Values.UNASSIGNED):
+        self._content = Initial
         self._equal   = EqualCmp
 
     def clone(self):

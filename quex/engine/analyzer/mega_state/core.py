@@ -170,7 +170,6 @@ class MegaState_Entry(Entry):
         self.action_db.absorb(Other.action_db)
         self.transition_reassignment_candidate_list.extend(Other.transition_reassignment_candidate_list)
 
-
 class MegaState(AnalyzerState):
     """________________________________________________________________________
     
@@ -280,7 +279,6 @@ class MegaState(AnalyzerState):
         # A state cannot be implemented by two MegaState-s
         # => All implemented states must be from 'RemainingStateIndexSet'
         assert self.implemented_state_index_set().issubset(RemainingStateIndexSet)
-
 
 class MegaState_DropOut(TypedDict):
     """_________________________________________________________________________

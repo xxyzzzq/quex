@@ -129,12 +129,7 @@ def do(TheAnalyzer, CompressionType, AvailableStateIndexList=None):
     # (*) Select paths, so that a maximum of states is implemented by path walkers.
     path_list = select(path_list)
 
-    # None of the paths shall contain a state which is not available for compression.
-    # No state shall be implemented by more than one path.
-    remainder = set(AvailableStateIndexList)
-    for path in path_list:
-        assert path.state_index_set().issubset(remainder)
-        remainder.difference_update(path.state_index_set())
+    path_list_assert_consistency(path_list, TheAnalyzer, AvailableStateIndexList, CompressionType)
 
     # (*) Group paths
     #    
@@ -440,16 +435,6 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
     character paths and assigns them to PathWalkerState-s. The
     PathWalkerState-s can then immediately be used for code generation.  
     """
-    # A state shall not be implemented on two paths. It was the task of 
-    # 'select()' to make an optimal choice.
-    appeared_state_index_set = set()
-    for path in CharacterPathList:
-        delta = len(path.step_list) - 1
-        size_before = len(appeared_state_index_set)
-        appeared_state_index_set.update(step.state_index for step in path.step_list[:-1])
-        size_after  = len(appeared_state_index_set)
-        assert size_after - size_before == delta
-
     # Generate the path walkers.  One pathwalker may be able to walk along more
     # than one path.  If a pathwalker accepts another path, no extra pathwalker
     # needs to be created.
@@ -457,11 +442,11 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
     for path in CharacterPathList:
         for path_walker in path_walker_list:
             # Set-up the walk in an existing PathWalkerState
-            if path_walker.accept(path, TheAnalyzer): 
+            if path_walker.accept(path, TheAnalyzer, CompressionType): 
                 break
         else:
             # Create a new PathWalkerState
-            path_walker = PathWalkerState(path, TheAnalyzer, CompressionType)
+            path_walker = PathWalkerState(path, TheAnalyzer)
             path_walker_list.append(path_walker)
 
     # Once, all path walkers are setup, finalize.
@@ -469,10 +454,28 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
         path_walker.finalize(TheAnalyzer)
 
     for path_walker in path_walker_list:
-        # If uniformity was required, then it must have been maintained.
-        assert    CompressionType != E_Compression.PATH_UNIFORM \
-               or (    path_walker.uniform_door_id is not None \
-                   and (True or path_walker.drop_out.is_uniform())) # Left 'True' while analyzing another issue! Delete it!
+        path_walker.assert_consistency(CompressionType)
     
     return path_walker_list
 
+def path_list_assert_consistency(path_list, TheAnalyzer, AvailableStateIndexList, CompressionType):
+    # None of the paths shall contain a state which is not available for compression.
+    # No state shall be implemented by more than one path.
+    remainder = set(AvailableStateIndexList)
+    for path in path_list:
+        assert path.state_index_set().issubset(remainder)
+        remainder.difference_update(path.state_index_set())
+
+    # A state shall not be implemented on two paths. It was the task of 
+    # 'select()' to make an optimal choice.
+    appeared_state_index_set = set()
+    for path in path_list:
+        delta = len(path.step_list) - 1
+        size_before = len(appeared_state_index_set)
+        appeared_state_index_set.update(step.state_index for step in path.step_list[:-1])
+        size_after  = len(appeared_state_index_set)
+        assert size_after - size_before == delta
+
+    # Each path must be consistent in itself
+    for path in path_list:
+        path.assert_consistency(TheAnalyzer, CompressionType)
