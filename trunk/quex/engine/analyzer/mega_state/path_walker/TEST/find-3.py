@@ -10,6 +10,8 @@ from   quex.engine.analyzer.core       import Analyzer
 import quex.engine.analyzer.engine_supply_factory      as     engine
 from   quex.blackboard                 import E_Compression
 
+from   helper import find_core
+
 if "--hwut-info" in sys.argv:
     print "Paths: Plugging Wild Cards;"
     print "CHOICES: 1, 2, 3, 4;"
@@ -27,14 +29,8 @@ def test(sm):
     sm.init_state_index = 7777L
 
     # print Skeleton
-    print sm.get_graphviz_string(NormalizeF=False)
-    print
-    analyzer = Analyzer(sm, engine.FORWARD)
-    for state in analyzer.state_db.itervalues():
-        state.entry.action_db.categorize()
-    result   = paths.collect(analyzer, 
-                             CompressionType=E_Compression.PATH, 
-                             AvailableStateIndexList=analyzer.state_db.keys())
+    result = find_core(sm)
+
     for path in result:
         print "# " + repr(path).replace("\n", "\n# ")
 

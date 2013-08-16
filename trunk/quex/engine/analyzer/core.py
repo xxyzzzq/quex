@@ -86,7 +86,6 @@ def __do(SM, EngineType):
 
     return analyzer
 
-
 class Analyzer:
     """A representation of a pattern analyzing StateMachine suitable for
        effective code generation.

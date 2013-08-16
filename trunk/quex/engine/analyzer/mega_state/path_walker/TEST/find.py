@@ -3,13 +3,13 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.engine.interval_handling        import *
-import quex.engine.state_machine.core          as core
-import quex.engine.state_machine.algorithm.nfa_to_dfa as nfa_to_dfa
-import quex.engine.analyzer.mega_state.path_walker.core          as paths 
-from   quex.engine.analyzer.core               import Analyzer
-import quex.engine.analyzer.engine_supply_factory      as     engine
-from   quex.blackboard                         import E_Compression
+from   quex.engine.interval_handling                    import *
+import quex.engine.state_machine.core                   as core
+import quex.engine.state_machine.algorithm.nfa_to_dfa   as nfa_to_dfa
+import quex.engine.analyzer.mega_state.path_walker.core as paths 
+from   quex.blackboard                                  import E_Compression
+
+from   helper import find_core
 
 if "--hwut-info" in sys.argv:
     print "Paths: collect;"
@@ -54,18 +54,12 @@ def test(Skeleton, *StringPaths):
     sm.init_state_index = 7777L
 
     sm = sm.normalized_clone()
-    print sm.get_graphviz_string(NormalizeF=False)
-    print
-    analyzer = Analyzer(sm, engine.FORWARD)
-    for state in analyzer.state_db.itervalues():
-        state.entry.action_db.categorize(state.index)
-    result = paths.collect(analyzer, 
-                           CompressionType=E_Compression.PATH, 
-                           AvailableStateIndexList=analyzer.state_db.keys())
-    if filter_f:
-        result = paths.select(result)
+    path_list = find_core(sm)
 
-    for path in sorted(result, key=lambda x: (-len(x), x.step_list[:-1].state_index)):
+    if filter_f:
+        path_list = paths.select(path_list)
+
+    for path in sorted(path_list, key=lambda x: (-len(x.step_list), x.step_list[-1].state_index)):
         print "# " + path.get_string().replace("\n", "\n# ")
 
 skeleton_blah = { 

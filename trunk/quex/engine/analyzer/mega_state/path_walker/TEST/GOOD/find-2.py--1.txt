@@ -15,8 +15,8 @@ node [shape = circle];
 # path     = (7)--'b'-->(8)--'b'-->(8)--'a'-->[9];
 # skeleton = {
 #    [-oo, '`'] -> DROP_OUT
-#    'a'        -> DoorID(s=9, d=0)
-#    'b'        -> DoorID(s=8, d=0)
+#    'a'        -> DoorID(s=9, d=1)
+#    'b'        -> DoorID(s=8, d=1)
 #    ['c', oo]  -> DROP_OUT
 # }
 # wildcard = False;
@@ -25,8 +25,8 @@ node [shape = circle];
 # path     = (7)--'b'-->(8)--'a'-->[9];
 # skeleton = {
 #    [-oo, '`'] -> DROP_OUT
-#    'a'        -> DoorID(s=9, d=0)
-#    'b'        -> DoorID(s=8, d=0)
+#    'a'        -> DoorID(s=9, d=1)
+#    'b'        -> DoorID(s=8, d=1)
 #    ['c', oo]  -> DROP_OUT
 # }
 # wildcard = False;

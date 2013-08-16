@@ -10,6 +10,8 @@ import quex.engine.analyzer.engine_supply_factory      as     engine
 from   quex.engine.analyzer.core       import Analyzer
 from   quex.blackboard                 import E_Compression
 
+from   helper import find_core
+
 if "--hwut-info" in sys.argv:
     print "Paths: find_path (mean tests);"
     print "CHOICES: 1, 2, 3;"
@@ -27,14 +29,8 @@ def test(sm):
     sm.init_state_index = 7777L
 
     # print Skeleton
-    print sm.get_graphviz_string(NormalizeF=False)
-    print
-    analyzer = Analyzer(sm, engine.FORWARD)
-    for state in analyzer.state_db.itervalues():
-        state.entry.action_db.categorize()
-    result   = paths.collect(analyzer, 
-                             CompressionType=E_Compression.PATH, 
-                             AvailableStateIndexList=analyzer.state_db.keys())
+    result = find_core(sm)
+
     for path in result:
         print "# " + repr(path).replace("\n", "\n# ")
 
@@ -114,6 +110,61 @@ elif "3" in sys.argv:
     sm.add_transition(11L, ord('c'), 11L)
 
     test(sm)
+
+elif "4" in sys.argv:
+    """Generate a larger grid where all would allow a path:
+
+                .--( )--a-->( )--a-->( )--a-->( )
+             ( )---( )--a-->( )--a-->( )--a-->( )
+                '--( )--a-->( )--a-->( )--a-->( )
+
+    """
+    def state_index_by_node(LayerIndex, NodeIndex):
+        return long((node_i + layer_i * layer_n) + 1)
+
+    sm.init_state_index = 0L
+    node_n_per_layer    = 10
+    layer_n             = 2
+    node_n              = node_n_per_layer + layer_n
+    # Generate the states.
+    for layer_i in xrange(layer_n):
+        for node_i in xrange(node_n_per_layer):
+            # Only the nodes at the end 'accept'
+            acceptance_f = (layer_i == layer_n - 1)
+            sm.create_new_state(acceptance_f, state_index_by_node(layer_i, node_i))
+        # Let each state at the end be a different acceptance state
+        state_index = state_index_by_node(layer_i, node_n_per_layer - 1)
+        sm.states[state_index].mark_self_as_origin(StateMachineID=layer_i, StateIndex=state_index) 
+
+    for node_i in xrange(node_n_per_layer):
+        # Fork into the different lines 
+        state_index = state_index_by_node(0, node_i)
+        sm.add_transition(sm.init_state_index, ord('a') + node_i, state_index)
+        # Generate transitions along the lines (all on 'a')
+        for layer_i in xrange(layer_n-1):
+            state_index                   = state_index_by_node(layer_i, node_i)
+            straight_follower_state_index = state_index_by_node(layer_i + 1, node_i)
+            sm.add_transition(state_index, ord('a'), straight_follower_state_index)
+
+    # Generate transitions:
+    # On 'a' they go the the 'straight follower'.
+    # On 'a-...' every state goes to the same state dependent on the character.
+    def add_common_transitions(sm, LayerIndex, NodeIndex, NodeN):
+        state_index                   = state_index_by_node(LayerIndex,     NodeIndex)
+        straight_follower_state_index = state_index_by_node(LayerIndex + 1, NodeIndex)
+        for node_id in xrange(NodeN):
+            character          = ord('b') + node_id
+            target_state_index = long(node_id + 1)
+            if target_state_index == straight_follower_state_index: continue
+            sm.add_transition(state_index, character, target_state_index)
+
+    for layer_i in xrange(layer_n):
+        for node_i in xrange(node_n_per_layer-1):
+            add_common_transitions(sm, layer_i, node_i, node_n)
+
+    test(sm)
+    print "#DONE"
+
 print "#"
 print "# Some recursions are possible, if the skeleton contains them."
 print "# In this case, the path cannot contain but the 'iterative' char"
