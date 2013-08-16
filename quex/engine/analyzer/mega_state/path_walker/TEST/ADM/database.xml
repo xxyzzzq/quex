@@ -1,7 +1,7 @@
-<test-database execution-time-sec="4.10" date="Thu Aug 15 08:26:05 2013">
+<test-database execution-time-sec="3.01" date="Fri Aug 16 03:29:09 2013">
     <last-used-diff-display-program name=""/>
     <group name="Paths">
-        <test title="select" time-sum-sec="2.00"> 
+        <test title="select" time-sum-sec="1.99"> 
             <application file-name="select_longest_paths.py" info-request-time="1375163963L" vanished="False"/>
             <choice-list number="14" same_result="False">
                <choice name="0" result="FAIL" time_sec="0.14" crc="858932159"/>
@@ -20,32 +20,32 @@
                <choice name="12" result="FAIL" time_sec="0.14" crc="-1818699120"/>
             </choice-list>
         </test>
-        <test title="collect" time-sum-sec="0.92"> 
-            <application file-name="find.py" info-request-time="1375163973L" vanished="False"/>
+        <test title="collect" time-sum-sec="0.89"> 
+            <application file-name="find.py" info-request-time="1376616097L" vanished="False"/>
             <choice-list number="6" same_result="False">
-               <choice name="1" result="FAIL" time_sec="0.15" crc="-1358464012"/>
-               <choice name="2" result="FAIL" time_sec="0.15" crc="225548120"/>
-               <choice name="3" result="FAIL" time_sec="0.15" crc="1562864869"/>
-               <choice name="4" result="FAIL" time_sec="0.16" crc="-1319881458"/>
-               <choice name="5" result="FAIL" time_sec="0.15" crc="-589057722"/>
-               <choice name="6" result="FAIL" time_sec="0.15" crc="754868726"/>
+               <choice name="1" result="FAIL" time_sec="0.16" crc="-1203354911"/>
+               <choice name="2" result="FAIL" time_sec="0.15" crc="1612971693"/>
+               <choice name="3" result="FAIL" time_sec="0.14" crc="400581494"/>
+               <choice name="4" result="FAIL" time_sec="0.14" crc="-1277361907"/>
+               <choice name="5" result="FAIL" time_sec="0.16" crc="2138614948"/>
+               <choice name="6" result="FAIL" time_sec="0.14" crc="484304317"/>
             </choice-list>
         </test>
-        <test title="Plugging Wild Cards" time-sum-sec="0.61"> 
-            <application file-name="find-3.py" info-request-time="1369714397L" vanished="False"/>
+        <test title="Plugging Wild Cards" time-sum-sec="0.00"> 
+            <application file-name="find-3.py" info-request-time="1376616526L" vanished="False"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="FAIL" time_sec="0.16" crc="-63730863"/>
-               <choice name="2" result="FAIL" time_sec="0.15" crc="1223793757"/>
-               <choice name="3" result="FAIL" time_sec="0.15" crc="-1522421087"/>
-               <choice name="4" result="FAIL" time_sec="0.15" crc="687699620"/>
+               <choice name="1" result="OK" time_sec="0.00" crc="-479518213"/>
+               <choice name="2" result="OK" time_sec="0.00" crc="-1713661510"/>
+               <choice name="3" result="OK" time_sec="0.00" crc="-1172760565"/>
+               <choice name="4" result="OK" time_sec="0.00" crc="-1482143936"/>
             </choice-list>
         </test>
-        <test title="find_path (mean tests)" time-sum-sec="0.44"> 
-            <application file-name="find-2.py" info-request-time="1369714385L" vanished="False"/>
+        <test title="find_path (mean tests)" time-sum-sec="0.00"> 
+            <application file-name="find-2.py" info-request-time="1376616434L" vanished="False"/>
             <choice-list number="3" same_result="False">
-               <choice name="1" result="FAIL" time_sec="0.15" crc="1396941579"/>
-               <choice name="2" result="FAIL" time_sec="0.15" crc="-714012800"/>
-               <choice name="3" result="FAIL" time_sec="0.15" crc="-1943837758"/>
+               <choice name="1" result="OK" time_sec="0.00" crc="-1366932189"/>
+               <choice name="2" result="OK" time_sec="0.00" crc="-348004902"/>
+               <choice name="3" result="OK" time_sec="0.00" crc="-1508126363"/>
             </choice-list>
         </test>
         <test title="is_difference_single_character" time-sum-sec="0.13"> 

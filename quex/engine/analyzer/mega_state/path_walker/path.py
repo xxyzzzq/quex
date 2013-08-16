@@ -162,17 +162,13 @@ class CharacterPath(object):
                                          E_StateIndices.VOID)
 
     def clone(self):
-        assert    self.__transition_map_wildcard_char is None \
-               or isinstance(self.__transition_map_wildcard_char, (int, long))
-        assert isinstance(self.__transition_map, TransitionMap)
-
         result = CharacterPath(None, None, None)
 
         result.uniform_entry_CommandList       = self.uniform_entry_CommandList.clone()
         result.uniform_DropOut                 = self.uniform_DropOut.clone()
         result.__step_list                     = [ x for x in self.__step_list ] # CharacterPathStep are immutable
         result.__transition_map                = self.__transition_map.clone()
-        result.__transition_map_wildcard_char  = self.__transition_map_wildcard_char
+        result.__transition_map_wildcard_char  = deepcopy(self.__transition_map_wildcard_char)
         return result
 
     def extended_clone(self, PreviousTerminal, TransitionCharacter, TransitionMapWildCardPlug):
@@ -191,8 +187,7 @@ class CharacterPath(object):
         assert    TransitionCharacter is not None
         assert    isinstance(TransitionMapWildCardPlug, DoorID) \
                or TransitionMapWildCardPlug == E_StateIndices.DROP_OUT \
-               or TransitionMapWildCardPlug == -1, \
-                  "TransitionMapWildCardPlug: '%s'" % TransitionMapWildCardPlug
+               or TransitionMapWildCardPlug == -1
 
         result = self.clone()
 
@@ -211,10 +206,10 @@ class CharacterPath(object):
         result.__step_list.append(CharacterPathStep(PreviousTerminal.index, TransitionCharacter))
 
         if TransitionMapWildCardPlug != -1: 
-            assert self.__transition_map_wildcard_char is not None
-            assert self.__transition_map.get_target(self.__transition_map_wildcard_char) == E_StateIndices.VOID
-            self.__transition_map.set_target(self.__transition_map_wildcard_char, TransitionMapWildCardPlug)
-            self.__transition_map_wildcard_char = None
+            assert result.__transition_map_wildcard_char is not None
+            assert result.__transition_map.get_target(self.__transition_map_wildcard_char) == E_StateIndices.VOID
+            result.__transition_map.set_target(self.__transition_map_wildcard_char, TransitionMapWildCardPlug)
+            result.__transition_map_wildcard_char = None
 
         return result
 

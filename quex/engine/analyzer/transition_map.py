@@ -353,11 +353,11 @@ class TransitionMap(list):
             target   = self[i][1]
 
 
-            ##print 
-            ##print "#i:", i
-            ##print "#tm:", self
-            ##print "#int,target:", interval, target
-            ##print "#prev_end, prev_target:", prev_end, prev_target
+            if interval.begin < prev_end:
+                print "#i:", i
+                print "#tm:", self.get_string()
+                print "#int,target:", interval, target
+                print "#prev_end, prev_target:", prev_end, prev_target
             assert interval.begin != interval.end
             assert interval.begin >= prev_end
 
