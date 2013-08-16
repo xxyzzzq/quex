@@ -111,58 +111,64 @@ elif "3" in sys.argv:
 
     test(sm)
 
-elif "4" in sys.argv:
-    """Generate a larger grid where all would allow a path:
+else:
+    def state_index_by_node(LayerIndex, NodeIndex, NodeNperLayer):
+        return long((NodeIndex + LayerIndex * NodeNperLayer) + 1)
 
-                .--( )--a-->( )--a-->( )--a-->( )
-             ( )---( )--a-->( )--a-->( )--a-->( )
-                '--( )--a-->( )--a-->( )--a-->( )
+    def setup_fork(sm, LayerN, NodeNperLayer):
+        """Generate a larger grid where all would allow a path:
 
-    """
-    def state_index_by_node(LayerIndex, NodeIndex):
-        return long((NodeIndex + LayerIndex * node_n_per_layer) + 1)
+                    .--( )--a-->( )--a-->( )--a-->( )
+                 ( )---( )--a-->( )--a-->( )--a-->( )
+                    '--( )--a-->( )--a-->( )--a-->( )
 
-    sm.init_state_index = 0L
-    node_n_per_layer    = 10
-    layer_n             = 3
-    node_n              = node_n_per_layer + layer_n
-    # Generate the states.
-    for layer_i in xrange(layer_n):
-        for node_i in xrange(node_n_per_layer):
-            # Only the nodes at the end 'accept'
-            acceptance_f = (node_i == node_n_per_layer - 1)
-            sm.create_new_state(acceptance_f, state_index_by_node(layer_i, node_i))
-        # Let each state at the end be a different acceptance state
-        state_index = state_index_by_node(layer_i, node_n_per_layer - 1)
-        sm.states[state_index].mark_self_as_origin(StateMachineID=layer_i, StateIndex=state_index) 
+        """
+        sm.init_state_index = 0L
+        # Generate the states.
+        for layer_i in xrange(LayerN):
+            for node_i in xrange(NodeNperLayer):
+                # Only the nodes at the end 'accept'
+                acceptance_f = (node_i == NodeNperLayer - 1)
+                sm.create_new_state(acceptance_f, state_index_by_node(layer_i, node_i, NodeNperLayer))
+            # Let each state at the end be a different acceptance state
+            state_index = state_index_by_node(layer_i, NodeNperLayer - 1, NodeNperLayer)
+            sm.states[state_index].mark_self_as_origin(StateMachineID=layer_i, StateIndex=state_index) 
 
-    for layer_i in xrange(layer_n):
-        # Fork into the different lines 
-        target_state_index = state_index_by_node(layer_i, 0)
-        sm.add_transition(sm.init_state_index, ord('A') + layer_i, target_state_index)
-        # Generate transitions along the lines (all on 'a')
-        for node_i in xrange(node_n_per_layer - 1):
-            state_index                   = state_index_by_node(layer_i, node_i)
-            straight_follower_state_index = state_index_by_node(layer_i, node_i + 1)
-            print "# %s ----> %s" % (state_index, straight_follower_state_index)
-            sm.add_transition(state_index, ord('a'), straight_follower_state_index)
+        for layer_i in xrange(LayerN):
+            # Fork into the different lines 
+            target_state_index = state_index_by_node(layer_i, 0, NodeNperLayer)
+            sm.add_transition(sm.init_state_index, ord('A') + layer_i, target_state_index)
+            # Generate transitions along the lines (all on 'a')
+            for node_i in xrange(NodeNperLayer - 1):
+                state_index                   = state_index_by_node(layer_i, node_i, NodeNperLayer)
+                straight_follower_state_index = state_index_by_node(layer_i, node_i + 1, NodeNperLayer)
+                print "# %s ----> %s" % (state_index, straight_follower_state_index)
+                sm.add_transition(state_index, ord('a'), straight_follower_state_index)
 
-    # Generate transitions:
-    # On 'a' they go the the 'straight follower'.
-    # On 'a-...' every state goes to the same state dependent on the character.
-    def add_common_transitions(sm, LayerIndex, NodeIndex, NodeN):
-        state_index                   = state_index_by_node(LayerIndex,     NodeIndex)
-        straight_follower_state_index = state_index_by_node(LayerIndex + 1, NodeIndex)
-        for node_id in xrange(NodeN):
-            character          = ord('b') + node_id
-            target_state_index = long(node_id + 1)
-            if target_state_index == straight_follower_state_index: continue
-            sm.add_transition(state_index, character, target_state_index)
+    def create_levitating_nodes(sm, LayerN, NodeNperLayer):
+        # Generate transitions:
+        # On 'a' they go the the 'straight follower'.
+        # On 'a-...' every state goes to the same state dependent on the character.
+        def add_common_transitions(sm, StateIndex, NodeN):
+            for node_id in xrange(NodeN, NodeN*2):
+                character          = ord('b') + node_id
+                target_state_index = long(node_id + 1)
+                sm.add_transition(StateIndex, character, target_state_index)
 
-#    for layer_i in xrange(layer_n):
-#        for node_i in xrange(node_n_per_layer-1):
-#            add_common_transitions(sm, layer_i, node_i, node_n)
+        NodeN = LayerN * NodeNperLayer
+        for layer_i in xrange(LayerN):
+            for node_i in xrange(NodeNperLayer - 1):
+                state_index = state_index_by_node(layer_i, node_i, NodeNperLayer)
+                add_common_transitions(sm, state_index, NodeN)
 
+    #    for layer_i in xrange(LayerN):
+    #        for node_i in xrange(NodeNperLayer-1):
+    #            add_common_transitions(sm, layer_i, node_i, node_n)
+    if "4a" in sys.argv:
+        setup_fork(sm, 5, 100)
+    elif "4b" in sys.argv:
+        setup_fork(sm, 5, 5)
+        create_levitating_nodes(sm, 5, 5)
     test(sm)
     print "#DONE"
 
