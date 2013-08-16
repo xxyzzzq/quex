@@ -120,30 +120,31 @@ elif "4" in sys.argv:
 
     """
     def state_index_by_node(LayerIndex, NodeIndex):
-        return long((node_i + layer_i * layer_n) + 1)
+        return long((NodeIndex + LayerIndex * node_n_per_layer) + 1)
 
     sm.init_state_index = 0L
     node_n_per_layer    = 10
-    layer_n             = 2
+    layer_n             = 3
     node_n              = node_n_per_layer + layer_n
     # Generate the states.
     for layer_i in xrange(layer_n):
         for node_i in xrange(node_n_per_layer):
             # Only the nodes at the end 'accept'
-            acceptance_f = (layer_i == layer_n - 1)
+            acceptance_f = (node_i == node_n_per_layer - 1)
             sm.create_new_state(acceptance_f, state_index_by_node(layer_i, node_i))
         # Let each state at the end be a different acceptance state
         state_index = state_index_by_node(layer_i, node_n_per_layer - 1)
         sm.states[state_index].mark_self_as_origin(StateMachineID=layer_i, StateIndex=state_index) 
 
-    for node_i in xrange(node_n_per_layer):
+    for layer_i in xrange(layer_n):
         # Fork into the different lines 
-        state_index = state_index_by_node(0, node_i)
-        sm.add_transition(sm.init_state_index, ord('a') + node_i, state_index)
+        target_state_index = state_index_by_node(layer_i, 0)
+        sm.add_transition(sm.init_state_index, ord('A') + layer_i, target_state_index)
         # Generate transitions along the lines (all on 'a')
-        for layer_i in xrange(layer_n-1):
+        for node_i in xrange(node_n_per_layer - 1):
             state_index                   = state_index_by_node(layer_i, node_i)
-            straight_follower_state_index = state_index_by_node(layer_i + 1, node_i)
+            straight_follower_state_index = state_index_by_node(layer_i, node_i + 1)
+            print "# %s ----> %s" % (state_index, straight_follower_state_index)
             sm.add_transition(state_index, ord('a'), straight_follower_state_index)
 
     # Generate transitions:
@@ -158,9 +159,9 @@ elif "4" in sys.argv:
             if target_state_index == straight_follower_state_index: continue
             sm.add_transition(state_index, character, target_state_index)
 
-    for layer_i in xrange(layer_n):
-        for node_i in xrange(node_n_per_layer-1):
-            add_common_transitions(sm, layer_i, node_i, node_n)
+#    for layer_i in xrange(layer_n):
+#        for node_i in xrange(node_n_per_layer-1):
+#            add_common_transitions(sm, layer_i, node_i, node_n)
 
     test(sm)
     print "#DONE"
