@@ -14,14 +14,14 @@ from   helper import find_core
 
 if "--hwut-info" in sys.argv:
     print "Paths: find_path (mean tests);"
-    print "CHOICES: 1, 2, 3;"
+    print "CHOICES: 1, 2, 3, 4a, 4b;"
     sys.exit(0)
 
 if len(sys.argv) < 2:
     print "Call this with: --hwut-info"
     sys.exit(0)
 
-def test(sm):
+def test(sm, SelectF=False):
     for state_index in sm.get_orphaned_state_index_list():
         del sm.states[state_index]
 
@@ -29,7 +29,7 @@ def test(sm):
     sm.init_state_index = 7777L
 
     # print Skeleton
-    result = find_core(sm)
+    result = find_core(sm, SelectF)
 
     for path in result:
         print "# " + repr(path).replace("\n", "\n# ")
@@ -145,31 +145,28 @@ else:
                 print "# %s ----> %s" % (state_index, straight_follower_state_index)
                 sm.add_transition(state_index, ord('a'), straight_follower_state_index)
 
-    def create_levitating_nodes(sm, LayerN, NodeNperLayer):
-        # Generate transitions:
-        # On 'a' they go the the 'straight follower'.
-        # On 'a-...' every state goes to the same state dependent on the character.
-        def add_common_transitions(sm, StateIndex, NodeN):
-            for node_id in xrange(NodeN, NodeN*2):
-                character          = ord('b') + node_id
-                target_state_index = long(node_id + 1)
-                sm.add_transition(StateIndex, character, target_state_index)
-
-        NodeN = LayerN * NodeNperLayer
+    def create_common_nucleus(sm, LayerN, NodeNperLayer):
+        NodeN               = LayerN * NodeNperLayer
+        nucleus_state_index = long(NodeN + 1)
         for layer_i in xrange(LayerN):
             for node_i in xrange(NodeNperLayer - 1):
                 state_index = state_index_by_node(layer_i, node_i, NodeNperLayer)
-                add_common_transitions(sm, state_index, NodeN)
+                sm.add_transition(state_index, ord('b'), nucleus_state_index, AcceptanceF=True)
 
+    #        def add_common_transitions(sm, StateIndex, NodeN):
+    #            for node_id in xrange(NodeN, NodeN*2):
+    #                character          = ord('b') + node_id
+    #                target_state_index = long(node_id + 1)
+    #                sm.add_transition(StateIndex, character, target_state_index)
     #    for layer_i in xrange(LayerN):
     #        for node_i in xrange(NodeNperLayer-1):
     #            add_common_transitions(sm, layer_i, node_i, node_n)
     if "4a" in sys.argv:
-        setup_fork(sm, 5, 100)
+        setup_fork(sm, 5, 5)
     elif "4b" in sys.argv:
         setup_fork(sm, 5, 5)
-        create_levitating_nodes(sm, 5, 5)
-    test(sm)
+        create_common_nucleus(sm, 5, 5)
+    test(sm, SelectF=True)
     print "#DONE"
 
 print "#"
