@@ -316,9 +316,9 @@ def select(path_list):
                       state_index --> paths of which state_index is part. 
         """
         def __init__(self, PathList):
-            self.path_info_list = [ (i, path) for i, path in enumerate(PathList) ]
+            self.path_list = [path for path in PathList] # clone.
 
-            for i, path in self.path_info_list:
+            for i, path in enumerate(self.path_list):
                 for state_index in path.state_index_set():
                     entry = self.get(state_index)
                     if entry is not None: entry.add(i)
@@ -326,10 +326,10 @@ def select(path_list):
             return
 
         def iterpaths(self):
-            for i, path in self.path_info_list:
+            for i, path in enumerate(self.path_list):
                 yield i, path
 
-        def compute_gain(self, path_i):
+        def compute_value(self, path_i):
             """What happens if 'path' is chosen?
 
                -- Paths which contain any of its state_indices become unavailable.
@@ -342,7 +342,7 @@ def select(path_list):
               RETURNS: [0] 'gain' of choosing 'path' 
             """
             # -- The states implemented by path
-            path            = self.path_info_list[path_i][1]
+            path            = self.path_list[path_i]
             implemented_set = path.state_index_set()
 
             # -- Forbidden are those paths which have a state in common with 'path'
@@ -351,7 +351,7 @@ def select(path_list):
             lost_path_list               = []
             remaining_path_list          = []
             remaining_implementation_set = set()
-            for other_path_i, other_path in self.path_info_list:
+            for other_path_i, other_path in self.iterpaths():
                 if   path_i == other_path_i: continue
 
                 if implemented_set.isdisjoint(other_path.state_index_set()): 
@@ -361,13 +361,23 @@ def select(path_list):
                     lost_path_list.append(other_path)
 
             lost_implementation_set = set()
-            for path in lost_path_list:
-                lost = path.state_index_set() - implemented_set - remaining_implementation_set
+            for lost_path in lost_path_list:
+                lost = lost_path.state_index_set() - implemented_set - remaining_implementation_set
                 lost_implementation_set.update(lost)
 
             cost = - len(lost_implementation_set)
             gain =   len(implemented_set)
-            return gain - cost
+            total_gain = gain - cost
+
+            # EXTRA COMPARISON KEYS, so that sorting becomes DETERMINISTIC in 
+            # in case that two paths provide the SAME GAIN. Clearly, these keys
+            # are no functional necessity.
+            #
+            #  -- The 'negative' triggers, so that lower triggers sort higher.
+            extra_key_0 = tuple(- x.trigger for x in path.step_list[:-1])
+            #  -- The number of the first state on the path.
+            extra_key_1 = path.step_list[0].state_index
+            return (gain - cost, extra_key_0, extra_key_1)
 
     def get_best_path(AvailablePathList):
         """The best path is the path that brings the most gain. The 'gain'
@@ -381,18 +391,21 @@ def select(path_list):
         """
         belong_db              = BelongDB(AvailablePathList)
 
-        max_gain               = None
+        max_value              = None
         winner_i               = None
         winner_forbidden_i_set = None
         for i, path in belong_db.iterpaths():
-            if max_gain is not None and len(path.state_index_set()) < max_gain: 
+            # INPORTANT: Consider 'length == length' so that other criteria
+            #            can trigger which support deterministic solutions.
+            if max_value is not None and len(path.step_list) < max_length: 
                 continue # No chance
 
-            gain = belong_db.compute_gain(i)
+            value = belong_db.compute_value(i)
 
-            if max_gain is None or max_gain < gain:
-                max_gain = gain
-                winner_i = i
+            if max_value is None or max_value < value:
+                max_value  = value
+                winner_i   = i
+                max_length = len(belong_db.path_list[i].step_list)
 
         return winner_i
 
