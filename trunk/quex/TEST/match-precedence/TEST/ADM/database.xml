@@ -1,4 +1,4 @@
-<test-database execution-time-sec="12.03" date="Sat Aug 17 09:10:38 2013">
+<test-database execution-time-sec="12.03" date="Sun Aug 18 08:55:50 2013">
     <last-used-diff-display-program name=""/>
     <test title="Checking PRIORITY-MARK internally." time-sum-sec="2.71"> 
         <application file-name="priority.py" info-request-time="1356524803L" vanished="False"/>

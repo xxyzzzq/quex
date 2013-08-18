@@ -389,7 +389,7 @@ class Entry(object):
             return txt
 
         result = []
-        for transition_id, door in sorted(self.__action_db.iteritems(),key=lambda x: x[0].from_state_index):
+        for transition_id, door in sorted(self.__action_db.iteritems(),key=lambda x: x[0].source_state_index):
             accept_command_list = []
             store_command_list  = []
             pcok_command_list   = []
@@ -407,7 +407,7 @@ class Entry(object):
                 else:
                     store_command_list.append(action)
 
-            result.append("    .from %s:" % repr(transition_id.from_state_index).replace("L", ""))
+            result.append("    .from %s:" % repr(transition_id.source_state_index).replace("L", ""))
             a_txt  = get_accepters(accept_command_list)
             s_txt  = get_storers(store_command_list)
             p_txt  = get_pre_context_oks(pcok_command_list)
