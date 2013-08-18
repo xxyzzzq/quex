@@ -8,7 +8,9 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.engine.interval_handling    import *
 import quex.engine.state_machine.core   as     core
 from   quex.engine.analyzer.state.core  import AnalyzerState
-from   quex.engine.analyzer.mega_state.path_walker.core   import select, CharacterPath     
+from   quex.engine.analyzer.state.drop_out  import DropOut
+from   quex.engine.analyzer.mega_state.path_walker.core   import select
+from   quex.engine.analyzer.mega_state.path_walker.path   import CharacterPath, CharacterPathStep
 from   quex.engine.analyzer.transition_map                import TransitionMap              
 import quex.engine.analyzer.engine_supply_factory      as     engine
 
@@ -17,27 +19,25 @@ if "--hwut-info" in sys.argv:
     print "CHOICES: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11a, 11b, 12;"
     sys.exit(0)
     
+class MiniPath:
+    def __init__(self, StateIndexSequence):
+        self.step_list = [
+            CharacterPathStep(state_index, ord('a'))
+            for state_index in StateIndexSequence[:-1]
+        ]
+        self.step_list.append(CharacterPathStep(StateIndexSequence[-1], None))
 
-def get_analyzer_state(sm, state_index):
-    sm.states[state_index] = core.State()
-    state = AnalyzerState(sm.states[state_index], state_index, state_index == sm.init_state_index, engine.FORWARD, set()) 
-    state.entry.action_db.categorize()
-    return state
+    def implemented_state_index_set(self):
+        return set(x.state_index for x in self.step_list[:-1])
+
+    def state_index_set(self):
+        return set(x.state_index for x in self.step_list)
+
+    def state_index_set_size(self):
+        return len(self.step_list)
 
 def get_path_list(PlainLists):
-    dummy_char = ord("a")
-    dummy_sm   = core.StateMachine()
-
-    result = []
-    for sequence in PlainLists:
-        path = CharacterPath(get_analyzer_state(dummy_sm, sequence[0]), dummy_char, 
-                             TransitionMap.from_iterable([(Interval(-sys.maxint, sys.maxint), "1")]))
-        for state_index in sequence[1:-1]:
-            path.append_state(get_analyzer_state(dummy_sm, state_index), dummy_char)
-
-        path.append_state(get_analyzer_state(dummy_sm, sequence[-1]))
-        result.append(path)
-    return result
+    return [ MiniPath([long(x) for x in sequence]) for sequence in PlainLists ]
 
 def test(*PlainLists):
     path_list = get_path_list(PlainLists)
@@ -52,13 +52,13 @@ def __test(path_list):
     print
     print "BEFORE:"
     for i, path in enumerate(path_list):
-        print "  ", i, map(lambda x: x.state_index, path.step_list[:-1])
+        print "  ", i, map(lambda x: x.state_index, path.step_list)
 
     path_list = select(path_list)
 
     print "AFTER:"
     for i, path in enumerate(path_list):
-        print "  ", i, map(lambda x: x.state_index, path.step_list[:-1])
+        print "  ", i, map(lambda x: x.state_index, path.step_list)
     print
 
 

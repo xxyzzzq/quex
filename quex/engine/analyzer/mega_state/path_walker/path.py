@@ -56,6 +56,47 @@ class CharacterPathStep(namedtuple("CharacterPathStep_tuple", ("state_index", "t
                ".trigger     = '%s';\n" \
                % (self.state_index, self.trigger)
 
+class TransitionMapData(object):
+    __slots__ = ("transition_map", "wildcard_char")
+
+    def __init__(self, TheTransitionMap, TransitionCharacter):
+        if TheTransitionMap is None: return # Called from '.clone()'
+        self.wildcard_char  = deepcopy(TransitionCharacter)
+        self.transition_map = TheTransitionMap.clone()
+        self.transition_map.set_target(self.wildcard_char, E_StateIndices.VOID)
+
+    def clone(self):
+        result = TransitionMapData(None, None)
+        result.transition_map = self.transition_map.clone()
+        result.wildcard_char  = deepcopy(self.wildcard_char)
+        return result
+
+    def plug_this(self, WildCardPlug):
+        if WildCardPlug == -1: return
+        assert self.wildcard_char is not None
+        assert self.transition_map.get_target(self.wildcard_char) == E_StateIndices.VOID
+        self.transition_map.set_target(self.wildcard_char, WildCardPlug)
+        self.wildcard_char = None
+
+    def finalize(self):
+        # Ensure that there is no wildcard in the transition map
+        if self.wildcard_char is None: return
+
+        self.transition_map.smoothen(self.wildcard_char)
+        self.wildcard_char = None
+
+    def get_string(self):
+        L   = max(len(x[0].get_utf8_string()) for x in self.transition_map)
+        txt = []
+        def stringify(interval, target_door_id):
+            interval_str  = interval.get_utf8_string()
+            return "   %s%s -> %s\n" % (interval_str, " " * (L - len(interval_str)), target_door_id)
+
+        return "".join( 
+           stringify(interval, target_door_id) 
+           for interval, target_door_id in self.transition_map
+        )
+
 class CharacterPath(object):
     """________________________________________________________________________
 
@@ -67,45 +108,30 @@ class CharacterPath(object):
     where the remaining transitions in each state match (except for the last).
     A CharacterPath contains a '.step_list' of CharacterPathSteps, e.g.
   
-    .step_list:
+    .__step_list:
 
-       .------------------. .------------------. .------------------.
-       |.state_index = 1  | |.state_index = 2  | |.state_index = 3  |
-       |.trigger     = 'a'| |.trigger     = 'b'| |.trigger     = 'b'| . . .
-       '------------------' '------------------' '------------------'
+       .------------------. .------------------.       .--------------------.
+       |.state_index = 1  | |.state_index = 2  |       |.state_index = 4711 |
+       |.trigger     = 'a'| |.trigger     = 'b'| . . . |.trigger     = None |
+       '------------------' '------------------'       '--------------------'
+
+       The last element of the '__step_list' contains the terminal. The 
+       terminal state is not implemented by the path walker. It is the first
+       state entered after the path walker has finished. Its role is further
+       indicated by a trigger of 'None'.
    
-    .terminal:
+    .uniform_entry_CommandList:
+    .uniform_DropOut:
 
-       The AnalyzerState which is entered from the last element of the path via
-       a single character transition. It is not implemented by the CharacterPath.
-       As soon as another state is appended, it becomes part of the path and the 
-       newly appended becomes the terminal.
+      These two objects  keep track about the actions to  be executed upon entry
+      into a state on the path and upon drop-out of a state on on the path. If 
+      any of them is the same for all paths on the state it contains an object
+      which is not 'None'. In case it is not uniform 'None' is contained.
 
-    .implemented_state_index_set:
-     
-      A list of state indices which the path can cover. This does not include
-      the last state triggered by the terminal element of '.step_list'. As in the
-      example, the state '5' is EXTERNAL and not part of the path itself.
+    .transition_map_data
 
-    .uniform_door_id
+     maintains data about the common transition map of all states. 
 
-      which is 'None' if the entries along the path are all uniform. 
-      
-      This does not include the entry to the terminal state. This entry is
-      implemented by the terminal state itself, not by this path.
-
-    .entry
-
-      entry information foreach entry into the state. In particular it contains
-      the '.action_db' which contains the CommandLists according to each
-      DoorID which is relevant for the path. 
-
-      The 'entry.action_db' does not contain information about entry into the
-      terminal state, because it is not implemented by the path.
-
-    .drop_out
-
-      maps: state_index --> DropOut object
     ___________________________________________________________________________
     EXPLANATION:
 
@@ -130,8 +156,7 @@ class CharacterPath(object):
     ___________________________________________________________________________
     """
     __slots__ = ("__step_list",       
-                 "__transition_map", 
-                 "__transition_map_wildcard_char", 
+                 "transition_map_data", 
                  "uniform_entry_CommandList", 
                  "uniform_DropOut") 
 
@@ -139,7 +164,7 @@ class CharacterPath(object):
         if StartState is None: return # Only for Clone
 
         assert isinstance(StartState,          AnalyzerState)
-        assert isinstance(TransitionCharacter, (int, long))
+        assert isinstance(TransitionCharacter, (int, long)), "Found '%s'" % TransitionCharacter
         assert isinstance(TheTransitionMap,    TransitionMap)
 
         # uniform_entry_CommandList: 
@@ -151,15 +176,12 @@ class CharacterPath(object):
         # uniform_DropOut:
         #    Any drop-out is implemented at the end of the iteration loop.
         #    => The StartState's drop-out IS subject to uniformity considerations.
-        self.uniform_DropOut = UniformObject(EqualCmp=DropOut.is_equal, 
-                                             Initial=StartState.drop_out)
+        self.uniform_DropOut           = UniformObject(EqualCmp=DropOut.is_equal, 
+                                                       Initial=StartState.drop_out)
 
         self.__step_list = [ CharacterPathStep(StartState.index, TransitionCharacter) ]
 
-        self.__transition_map_wildcard_char = TransitionCharacter
-        self.__transition_map               = TheTransitionMap.clone()
-        self.__transition_map.set_target(self.__transition_map_wildcard_char, 
-                                         E_StateIndices.VOID)
+        self.transition_map_data = TransitionMapData(TheTransitionMap, TransitionCharacter)
 
     def clone(self):
         result = CharacterPath(None, None, None)
@@ -167,8 +189,7 @@ class CharacterPath(object):
         result.uniform_entry_CommandList       = self.uniform_entry_CommandList.clone()
         result.uniform_DropOut                 = self.uniform_DropOut.clone()
         result.__step_list                     = [ x for x in self.__step_list ] # CharacterPathStep are immutable
-        result.__transition_map                = self.__transition_map.clone()
-        result.__transition_map_wildcard_char  = deepcopy(self.__transition_map_wildcard_char)
+        result.transition_map_data             = self.transition_map_data.clone()
         return result
 
     def extended_clone(self, PreviousTerminal, TransitionCharacter, TransitionMapWildCardPlug):
@@ -205,11 +226,7 @@ class CharacterPath(object):
 
         result.__step_list.append(CharacterPathStep(PreviousTerminal.index, TransitionCharacter))
 
-        if TransitionMapWildCardPlug != -1: 
-            assert result.__transition_map_wildcard_char is not None
-            assert result.__transition_map.get_target(self.__transition_map_wildcard_char) == E_StateIndices.VOID
-            result.__transition_map.set_target(self.__transition_map_wildcard_char, TransitionMapWildCardPlug)
-            result.__transition_map_wildcard_char = None
+        result.transition_map_data.plug_this(TransitionMapWildCardPlug)
 
         return result
 
@@ -222,6 +239,12 @@ class CharacterPath(object):
         assert self.uniform_entry_CommandList.is_uniform()
         assert self.uniform_DropOut.is_uniform()
 
+        # (1) Check on 'DropOut'. This is done quickly.
+        if not self.uniform_DropOut.fit(State.drop_out): 
+            return False
+
+        # (2) Check on 'Entry' for what is done along the path.
+        #
         # CommandList upon Entry to State
         # (TriggerIndex == 0, because there can only be one transition from
         #                     one state to the next on the path).
@@ -230,13 +253,13 @@ class CharacterPath(object):
                                                               TriggerId=0)
         assert command_list is not None
 
-        if   not self.uniform_entry_CommandList.fit(command_list): return False
-        elif not self.uniform_DropOut.fit(State.drop_out):         return False
+        if not self.uniform_entry_CommandList.fit(command_list): 
+            return False
 
         return True
 
     def has_wildcard(self):
-        return self.__transition_map_wildcard_char is not None
+        return self.transition_map_data.wildcard_char is not None
 
     @property
     def step_list(self):
@@ -244,21 +267,20 @@ class CharacterPath(object):
 
     @property
     def transition_map(self):
-        return self.__transition_map
+        return self.transition_map_data.transition_map
 
     def finalize(self, TerminalStateIndex):
         self.__step_list.append(CharacterPathStep(TerminalStateIndex, None))
-        # Ensure that there is no wildcard in the transition map
-        if self.__transition_map_wildcard_char is None: return
-
-        self.__transition_map.smoothen(self.__transition_map_wildcard_char)
-        self.__transition_map_wildcard_char = None
+        self.transition_map_data.finalize()
 
     def contains_state(self, StateIndex):
         """Is 'StateIndex' on the path(?). This includes the terminal."""
         for dummy in (x for x in self.__step_list if x.state_index == StateIndex):
             return True
         return False
+
+    def implemented_state_index_set(self):
+        return set(x.state_index for x in self.__step_list[:-1])
 
     def state_index_set_size(self):
         return len(self.__step_list) - 1
@@ -276,11 +298,7 @@ class CharacterPath(object):
             assert isinstance(X, (int, long)) or X is None
             return X if NormalizeDB is None else NormalizeDB[X]
 
-        L            = max(len(x[0].get_utf8_string()) for x in self.__transition_map)
-        skeleton_txt = ""
-        for interval, target_door_id in self.__transition_map:
-            interval_str  = interval.get_utf8_string()
-            skeleton_txt += "   %s%s -> %s\n" % (interval_str, " " * (L - len(interval_str)), target_door_id)
+        skeleton_txt = self.transition_map_data.get_string()
 
         sequence_txt = ""
         for x in self.__step_list[:-1]:
@@ -290,7 +308,7 @@ class CharacterPath(object):
         return "".join(["start    = %i;\n" % norm(self.__step_list[0].state_index),
                         "path     = %s;\n" % sequence_txt,
                         "skeleton = {\n%s}\n"  % skeleton_txt, 
-                        "wildcard = %s;\n" % repr(self.__transition_map_wildcard_char is not None)])
+                        "wildcard = %s;\n" % repr(self.transition_map_data.wildcard_char is not None)])
 
 
     def assert_consistency(self, TheAnalyzer, CompressionType):
