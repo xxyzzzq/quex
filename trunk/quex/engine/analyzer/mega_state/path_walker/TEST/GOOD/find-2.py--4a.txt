@@ -52,22 +52,8 @@ node [shape = circle];
 }
 
 
-# start    = 21;
-# path     = (21)--'a'-->(22)--'a'-->(23)--'a'-->(24)--'a'-->[25];
-# skeleton = {
-#    [-oo, oo] -> DROP_OUT
-# }
-# wildcard = False;
-# 
-# start    = 16;
-# path     = (16)--'a'-->(17)--'a'-->(18)--'a'-->(19)--'a'-->[20];
-# skeleton = {
-#    [-oo, oo] -> DROP_OUT
-# }
-# wildcard = False;
-# 
-# start    = 11;
-# path     = (11)--'a'-->(12)--'a'-->(13)--'a'-->(14)--'a'-->[15];
+# start    = 1;
+# path     = (1)--'a'-->(2)--'a'-->(3)--'a'-->(4)--'a'-->[5];
 # skeleton = {
 #    [-oo, oo] -> DROP_OUT
 # }
@@ -80,8 +66,22 @@ node [shape = circle];
 # }
 # wildcard = False;
 # 
-# start    = 1;
-# path     = (1)--'a'-->(2)--'a'-->(3)--'a'-->(4)--'a'-->[5];
+# start    = 11;
+# path     = (11)--'a'-->(12)--'a'-->(13)--'a'-->(14)--'a'-->[15];
+# skeleton = {
+#    [-oo, oo] -> DROP_OUT
+# }
+# wildcard = False;
+# 
+# start    = 16;
+# path     = (16)--'a'-->(17)--'a'-->(18)--'a'-->(19)--'a'-->[20];
+# skeleton = {
+#    [-oo, oo] -> DROP_OUT
+# }
+# wildcard = False;
+# 
+# start    = 21;
+# path     = (21)--'a'-->(22)--'a'-->(23)--'a'-->(24)--'a'-->[25];
 # skeleton = {
 #    [-oo, oo] -> DROP_OUT
 # }

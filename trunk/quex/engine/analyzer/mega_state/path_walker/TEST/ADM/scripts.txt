@@ -1,3 +1,4 @@
 *.py
 --not templates_aux.py
 --not __init__.py
+--not helper.py
