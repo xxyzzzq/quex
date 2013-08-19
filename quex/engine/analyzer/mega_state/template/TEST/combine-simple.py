@@ -29,7 +29,12 @@ if "plain" in sys.argv:
            (Interval(10, 11), 1L),
          ]
 
-    state_list, analyzer = setup_AnalyzerStates([(index.get(), TM), (index.get(), TM), (index.get(), TM), (index.get(), TM), (index.get(), TM)])
+    state_index_list = [ index.get() for i in range(5)]
+    analyzer = setup_AnalyzerStates([(state_index_list[0], TM), 
+                                     (state_index_list[1], TM), 
+                                     (state_index_list[2], TM), 
+                                     (state_index_list[3], TM), 
+                                     (state_index_list[4], TM)])
 
 elif "recursive" in sys.argv:
     setup_list = []
@@ -48,6 +53,8 @@ elif "distinguished" in sys.argv:
         setup_list.append((state_index, tm))
 
     state_list, analyzer = setup_AnalyzerStates(setup_list)
+
+state_list = [ analyzer.state_db[i] for i in state_index_list ]
 
 t01       = test_combination(state_list[0], state_list[1], analyzer, StateA_Name="0",              StateB_Name="1", DrawF=True, FinalizeF=False)
 t23       = test_combination(state_list[2], state_list[3], analyzer, StateA_Name="2",              StateB_Name="3", DrawF=True, FinalizeF=False)

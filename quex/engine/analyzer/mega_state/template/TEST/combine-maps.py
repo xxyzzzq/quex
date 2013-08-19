@@ -17,9 +17,10 @@ if "--hwut-info" in sys.argv:
 
 def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L], DrawF=False):
 
-    StateList, analyzer = setup_AnalyzerStates([(InvolvedStateListA[0], TMa), 
-                                                (InvolvedStateListB[0], TMb)])
-    StateA, StateB = StateList
+    analyzer = setup_AnalyzerStates([(InvolvedStateListA[0], TMa), 
+                                     (InvolvedStateListB[0], TMb)])
+    StateA = analyzer.state_db[InvolvedStateListA[0]]
+    StateB = analyzer.state_db[InvolvedStateListB[0]]
 
     if DrawF:
         print "DoorTree(A):"

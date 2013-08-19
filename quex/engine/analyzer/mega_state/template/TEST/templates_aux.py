@@ -38,7 +38,7 @@ def setup_AnalyzerStates(StatesDescription):
 
     # Pseudo transitions from init state to all
     InitStateIndex = 7777L
-    init_tm        = [ (Interval(i, i+1), long(state_index)) for i, state_index in enumerate(requested_state_index_list) ]
+    init_tm        = [ (Interval(i, i+1), state_index) for i, state_index in enumerate(requested_state_index_list) ]
     init_state     = setup_sm_state(InitStateIndex, init_tm)
     sm_state_db    = dict((state_index, setup_sm_state(long(state_index), tm)) for state_index, tm in StatesDescription)
     analyzer       = TestAnalyzer(engine.BACKWARD_PRE_CONTEXT)
@@ -47,7 +47,6 @@ def setup_AnalyzerStates(StatesDescription):
     # states. Collect transition information.
     transition_db = defaultdict(list)
     for state_index, transition_map in StatesDescription:
-        state_index = long(state_index)
         for interval, target_index in transition_map:
             if not isinstance(target_index, (long,int)): continue
             transition_db[target_index].append(state_index)
@@ -56,16 +55,20 @@ def setup_AnalyzerStates(StatesDescription):
     # Setup the states with their 'from_state_list'
     InitState  = AnalyzerState(init_state, InitStateIndex, True, EngineType, set())
     for state_index, from_state_list in transition_db.iteritems():
-        state_index = long(state_index)
         sm_state = sm_state_db.get(state_index)
         if sm_state is None: sm_state = setup_sm_state(state_index, [])
-        raw_state    = AnalyzerState(sm_state, state_index, False, EngineType, set(from_state_list))
-        state        = PseudoMegaState(raw_state)
-        state.entry.action_db.categorize()
-        analyzer.state_db[state_index] = state
+        analyzer.state_db[state_index] = AnalyzerState(sm_state, state_index, False, EngineType, set(from_state_list))
 
-    state_list = [ analyzer.state_db[long(state_index)] for state_index in requested_state_index_list ]
-    return state_list, analyzer
+    for state in analyzer.state_db.itervalues():
+        state.entry.action_db.categorize(state.index)
+    for state in analyzer.state_db.itervalues():
+        state.transition_map = state.transition_map.relate_to_door_ids(analyzer, state.index)
+
+    # Repplace all states with a pseudo MegaState
+    for state in analyzer.state_db.values():
+        analyzer.state_db[state.index] = PseudoMegaState(state)
+
+    return analyzer
 
 def setup_TemplateState(analyzer, StateIndexList):
     assert len(StateIndexList) > 1
@@ -91,7 +94,7 @@ def configure_States(TriggerMapA, StateN_A, TriggerMapB, StateN_B):
     state_setup.extend([ (index.get(), extract_transition_map(TriggerMapA, i)) for i, state_index in enumerate(StateListA)])
     state_setup.extend([ (index.get(), extract_transition_map(TriggerMapB, i)) for i, state_index in enumerate(StateListB)])
 
-    state_list, analyzer = setup_AnalyzerStates(state_setup)
+    analyzer = setup_AnalyzerStates(state_setup)
     if StateN_A == 1: state_a = analyzer.state_db[StateListA[0]] # Normal AnalyzerState
     else:             state_a = setup_TemplateState(analyzer, StateListA)
     if StateN_B == 1: state_b = analyzer.state_db[StateListB[0]] # Normal AnalyzerState
@@ -114,10 +117,11 @@ def test_combination(StateA, StateB, analyzer, StateA_Name="A", StateB_Name="B",
     print
     candidate = TemplateStateCandidate(StateA, StateB)
     result    = TemplateState(candidate)
-    result.entry.action_db.categorize()
+    result.entry.action_db.categorize(result.index)
+    # result.transition_map = result.transition_map.relate_to_door_ids(analyzer, result.index)
 
     if DrawF:
-        door_tree_root = entry_door_tree.do(result.state_index, result.entry.action_db)
+        door_tree_root = entry_door_tree.do(result.index, result.entry.action_db)
         print "DoorTree(%s|%s):" % (StateA_Name, StateB_Name)
         print "    " + door_tree_root.get_string(result.entry.action_db).replace("\n", "\n    ")
     print "Result"
@@ -126,8 +130,8 @@ def test_combination(StateA, StateB, analyzer, StateA_Name="A", StateB_Name="B",
         analyzer.state_db[state_index] = AbsorbedState(analyzer.state_db[state_index], 
                                                        result)
 
-    if FinalizeF:
-        result.finalize_transition_map(analyzer.state_db)
+    #if FinalizeF:
+    #    result.transition_map.relate_to_door_ids(analyzer.state_db)
 
     print_tm(result.transition_map, result.state_index_sequence())
     print_metric(result.transition_map)
@@ -156,11 +160,41 @@ def scheme_str(X):
     else:
         return "<<error>>"
 
+def __MegaState_Transition_print(ego, PrintDoorsF=False, FrameF=True):
+    prefix  = "MST:"
+    content = ""
+    suffix  = "" 
+
+    if   ego.drop_out_f:          
+        content  = "DropOut"
+
+    elif ego.door_id is not None: 
+        if PrintDoorsF: target = ego.door_id
+        else:           target = ego.door_id.state_index
+        prefix  += "("
+        content  = repr(target).replace("L", "")
+        suffix   = ")"
+
+    elif ego.scheme is not None:  
+        if PrintDoorsF: scheme = ego.scheme
+        else:           scheme = tuple(door.state_index for door in ego.scheme)
+        prefix  += "scheme("
+        content  = repr(scheme).replace("L", "")
+        suffix   = ")"
+
+    else:                         
+        return "<ERROR>"
+
+    if FrameF:
+        return prefix + content + suffix
+    else:
+        return content
+
 def print_tm(TM, StateIndexList):
     tm_str = [("  [INTERVAL]", "[TARGET/STATE %s]" % [int(x) for x in StateIndexList])]
     for interval, target in TM:
         interval_str = "  " + repr(interval).replace("%i" % sys.maxint, "oo").replace("%i" % (sys.maxint-1), "oo")
-        target_str   = repr(target).replace("MegaState_Transition", "MST")
+        target_str   = __MegaState_Transition_print(target)
         tm_str.append((interval_str, target_str))
 
     L = max(len(x[0]) for x in tm_str)
@@ -219,8 +253,8 @@ def print_metric(TM):
    
     tc_str = ""
     last_i = len(SL) - 1
-    for i, info in enumerate(SL):
-        tc_str += "%s" % scheme_str(info)
+    for i, mst in enumerate(SL):
+        tc_str += "%s" % __MegaState_Transition_print(mst, FrameF=False)
         if i != last_i: tc_str += ", "
     print "Target Schemes = %s" % tc_str
 
