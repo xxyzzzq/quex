@@ -87,7 +87,7 @@ class MegaState_Transition(object):
         assert Target is not None 
         assert    Target == E_StateIndices.DROP_OUT \
                or isinstance(Target, DoorID)        \
-               or isinstance(Target, DoorID_Scheme)
+               or isinstance(Target, DoorID_Scheme), "%s" % Target.__class__.__name__
        
         result = MegaState_Transition.__object_db.get(Target)
         if result is None: 

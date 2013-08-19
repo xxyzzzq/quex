@@ -238,17 +238,17 @@ class Door:
             for child in sorted(self.child_set, key=lambda x: sort_key(x, ActionDB)):
                 txt.append("%s\n" % child.get_string(ActionDB))
 
-        if self.door_id is not None: txt.append("[%s]: " % self.door_id.door_index)
+        if self.door_id is not None: txt.append("[%s:%s]: " % (self.door_id.state_index, self.door_id.door_index))
         else:                        txt.append("[None]: ")
 
         if ActionDB is not None:
             transition_id_list = door_id_to_transition_id_list(self.door_id, ActionDB)
            
-            for transition_id in sorted(transition_id_list, key=attrgetter("state_index", "source_state_index")):
+            for transition_id in sorted(transition_id_list, key=attrgetter("target_state_index", "source_state_index")):
                 if OnlyFromStateIndexF:
                     txt.append("(%s) " % transition_id.source_state_index)
                 else:
-                    txt.append("(%s<-%s) " % (transition_id.state_index, transition_id.source_state_index))
+                    txt.append("(%s<-%s) " % (transition_id.target_state_index, transition_id.source_state_index))
 
         if self.command_list is not None:
             txt.append("\n")
