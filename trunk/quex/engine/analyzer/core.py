@@ -165,6 +165,39 @@ class Analyzer:
         """Map: state_index --> list of states which which lie on a path to state_index."""
         return self.__from_db
 
+    def iterable_target_state_indices(self, StateIndex):
+        for i in self.__state_db[StateIndex].map_target_index_to_character_set.iterkeys():
+            yield i
+        yield None
+
+    def get_depth_db(self):
+        """Determine a database which tells about the minimum distance to the initial state.
+
+            map: state_index ---> min. number of transitions from the initial state.
+
+        """
+        depth_db = { self.__init_state_index: 0, }
+
+        work_set   = set(self.__state_db.keys())
+        work_set.remove(self.__init_state_index)
+        last_level = set([ self.__init_state_index ])
+        level_i    = 1
+        while len(work_set):
+            len_before = len(work_set)
+            this_level = set()
+            for state_index in last_level:
+                for i in self.iterable_target_state_indices(state_index):
+                    if   i not in work_set: continue
+                    elif i in depth_db:     continue 
+                    depth_db[i] = level_i
+                    this_level.add(i)
+                    work_set.remove(i)
+            assert len_before != len(work_set), "There are orphaned states!" 
+            last_level = this_level
+            level_i += 1
+
+        return depth_db
+
     def has_transition_to_init_state(self):
         """Determine whether the init state is entered from another state.
         (If not, only the default entry into the init state is generated.)
