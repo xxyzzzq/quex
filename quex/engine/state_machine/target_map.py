@@ -142,6 +142,13 @@ class TargetMap:
     def get_non_epsilon_target_state_index_list(self):
         return self.__db.keys()
 
+    def iterable_target_state_indices(self):
+        for state_index in self.__db.iterkeys():
+            yield state_index
+        for state_index in self.__epsilon_target_index_list:
+            yield state_index
+        yield None
+
     def get_target_state_index_list(self):
         """Union of target states that can be reached either via epsilon transition
            or 'real' transition via character.

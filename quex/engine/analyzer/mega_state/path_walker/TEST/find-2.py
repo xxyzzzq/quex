@@ -166,6 +166,9 @@ else:
     elif "4b" in sys.argv:
         setup_fork(sm, 5, 5)
         create_common_nucleus(sm, 5, 5)
+    elif "4c" in sys.argv:
+        setup_fork(sm, 5, 50)
+        create_common_nucleus(sm, 5, 50)
     test(sm, SelectF=True)
     print "#DONE"
 

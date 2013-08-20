@@ -13,15 +13,15 @@ def find_core(sm, SelectF=False):
     for state in analyzer.state_db.itervalues():
         state.transition_map = state.transition_map.relate_to_door_ids(analyzer, state.index)
 
-    AvailableStateIndexList = analyzer.state_db.keys()
-    CompressionType         = E_Compression.PATH
+    AvailableStateIndexSet = set(analyzer.state_db.keys())
+    CompressionType        = E_Compression.PATH
     result = find.do(analyzer, 
                      CompressionType=CompressionType, 
-                     AvailableStateIndexList=AvailableStateIndexList)
+                     AvailableStateIndexSet=AvailableStateIndexSet)
 
     if SelectF:
         result = paths.select(result)
-        paths.path_list_assert_consistency(result, analyzer, AvailableStateIndexList, CompressionType)
+        paths.path_list_assert_consistency(result, analyzer, AvailableStateIndexSet, CompressionType)
 
     return result
 

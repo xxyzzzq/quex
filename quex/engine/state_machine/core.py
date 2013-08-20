@@ -274,61 +274,6 @@ class StateMachine(object):
                           PreContextReplacementDB=pre_context_map, 
                           PatternIDReplacementDB=pattern_id_map)
 
-    def get_id(self):
-        assert isinstance(self.__id, long)
-        return self.__id  # core.id()
-
-    def set_id(self, Value):
-        assert isinstance(Value, long)
-        self.__id = Value # core.set_id(Value)
-
-    def get_init_state(self):
-        return self.states[self.init_state_index]
-
-    def is_init_state_a_target_state(self):
-        init_state_index = self.init_state_index
-        for state in self.states.values():
-            target_state_index_list = state.target_map.get_target_state_index_list()
-            if init_state_index in target_state_index_list: return True
-        return False
-        
-    def has_orphaned_states(self):
-        """Detect whether there are states where there is no transition to them."""
-        unique = set([])
-        for state in self.states.values():
-            unique.update(state.target_map.get_target_state_index_list())
-
-        for state_index in self.states.keys():
-            # The init state is never considered to be an 'orphan'
-            if state_index not in unique and state_index != self.init_state_index: return True
-        return False
-
-    def has_acceptance_states(self):
-        for state in self.states.itervalues():
-            if state.is_acceptance(): return True
-        return False
-
-    def get_orphaned_state_index_list(self):
-        """Find list of orphan states.
-
-        ORPHAN STATE: A state that is not connected to an init state. That is
-                      it can never be reached from the init state.
-        """
-        work_set      = set([ self.init_state_index ])
-        connected_set = set()
-        while len(work_set) != 0:
-            state_index = work_set.pop()
-            state       = self.states[state_index]
-            connected_set.add(state_index)
-
-            work_set.update((i for i in state.target_map.get_target_state_index_list()
-                             if  i not in connected_set))
-
-        # State indices in 'connected_set' have a connection to the init state.
-        # State indice not in 'connected_set' do not. => Those are the orphans.
-
-        return [ i for i in self.states.iterkeys() if i not in connected_set ]
-
     def delete_orphaned_states(self):
         """Remove all orphan states.
 
@@ -338,32 +283,6 @@ class StateMachine(object):
         for state_index in self.get_orphaned_state_index_list():
             if state_index == self.init_state_index: continue
             del self.states[state_index]
-
-    def get_hopeless_state_index_list(self):
-        """Find list of hopeless states, i.e. states from one can never 
-        reach an acceptance state. 
-        
-        HOPELESS STATE: A state that cannot reach an acceptance state.
-                       (There is no connection forward to an acceptance state).
-        """
-        from_db = defaultdict(set)
-        for state_index, state in self.states.iteritems():
-            target_index_list = state.target_map.get_target_state_index_list()
-            for target_index in target_index_list:
-                from_db[target_index].add(state_index)
-
-        work_set     = set(self.get_acceptance_state_index_list())
-        reaching_set = set()  # set of states that reach acceptance states
-        while len(work_set) != 0:
-            state_index = work_set.pop()
-            state       = self.states[state_index]
-            reaching_set.add(state_index)
-
-            work_set.update((i for i in from_db[state_index] if  i not in reaching_set))
-
-        # State indices in 'reaching_set' have a connection to an acceptance state.
-        # State indice not in 'reaching_set' do not. => Those are the hopeless.
-        return [ i for i in self.states.iterkeys() if i not in reaching_set ]
 
     def delete_hopeless_states(self):
         """Delete all hopeless states and transitions to them.
@@ -395,6 +314,354 @@ class StateMachine(object):
 
         return
 
+    def __dive_for_epsilon_closure(self, state_index, result):
+        index_list = self.states[state_index].target_map.get_epsilon_target_state_index_list()
+        for target_index in ifilter(lambda x: x not in result, index_list):
+            result.add(target_index)
+            self.__dive_for_epsilon_closure(target_index, result)
+
+    def is_empty(self):
+        """If state machine only contains the initial state that points nowhere,
+           then it is empty.
+        """
+        if len(self.states) != 1: return False
+        return self.states[self.init_state_index].target_map.is_empty()
+
+    def is_init_state_a_target_state(self):
+        init_state_index = self.init_state_index
+        for state in self.states.values():
+            target_state_index_list = state.target_map.get_target_state_index_list()
+            if init_state_index in target_state_index_list: return True
+        return False
+        
+    def is_DFA_compliant(self):
+        for state in self.states.values():
+            if state.target_map.is_DFA_compliant() == False: 
+                return False
+        return True
+
+    def has_orphaned_states(self):
+        """Detect whether there are states where there is no transition to them."""
+        unique = set([])
+        for state in self.states.values():
+            unique.update(state.target_map.get_target_state_index_list())
+
+        for state_index in self.states.keys():
+            # The init state is never considered to be an 'orphan'
+            if state_index not in unique and state_index != self.init_state_index: return True
+        return False
+
+    def has_acceptance_states(self):
+        for state in self.states.itervalues():
+            if state.is_acceptance(): return True
+        return False
+
+    def has_origins(self):
+        for state in self.states.values():
+            if len(state.origins()) > 1: return True
+        return False
+
+    def create_new_init_state(self, AcceptanceF=False):
+
+        self.init_state_index = self.create_new_state()
+        return self.init_state_index
+
+    def create_new_state(self, AcceptanceF=False, StateIdx=None):
+        if StateIdx is None: new_state_index = state_machine_index.get()
+        else:                new_state_index = StateIdx
+
+        self.states[new_state_index] = State(AcceptanceF)
+        return new_state_index
+        
+    def add_transition(self, StartStateIdx, TriggerSet, TargetStateIdx = None, AcceptanceF = False):
+        """Adds a transition from Start to Target based on a given Trigger.
+
+           TriggerSet can be of different types: ... see add_transition()
+           
+           (see comment on 'State::add_transition)
+
+           RETURNS: The target state index.
+        """
+        assert type(StartStateIdx) == long
+        # NOTE: The Transition Constructor is very tolerant, so no tests on TriggerSet()
+        #       assert TriggerSet.__class__.__name__ == "NumberSet"
+        assert type(TargetStateIdx) == long or TargetStateIdx is None
+        assert type(AcceptanceF) == bool
+
+        # If target state is undefined (None) then a new one has to be created
+        if TargetStateIdx is None:                       TargetStateIdx = state_machine_index.get()
+        if self.states.has_key(StartStateIdx) == False:  self.states[StartStateIdx]  = State()        
+        if self.states.has_key(TargetStateIdx) == False: self.states[TargetStateIdx] = State()
+        if AcceptanceF:                                  self.states[TargetStateIdx].set_acceptance(True)
+
+        self.states[StartStateIdx].add_transition(TriggerSet, TargetStateIdx)
+
+        return TargetStateIdx
+            
+    def add_epsilon_transition(self, StartStateIdx, TargetStateIdx=None, RaiseAcceptanceF=False):
+        assert TargetStateIdx is None or type(TargetStateIdx) == long
+
+        # create new state if index does not exist
+        if not self.states.has_key(StartStateIdx):
+            self.states[StartStateIdx] = State()
+        if TargetStateIdx is None:
+            TargetStateIdx = self.create_new_state(AcceptanceF=RaiseAcceptanceF)
+        elif not self.states.has_key(TargetStateIdx):
+            self.states[TargetStateIdx] = State()
+
+        # add the epsilon target state
+        self.states[StartStateIdx].target_map.add_epsilon_target_state(TargetStateIdx)     
+        # optionally raise the state of the target to 'acceptance'
+        if RaiseAcceptanceF: self.states[TargetStateIdx].set_acceptance(True)
+
+        return TargetStateIdx
+
+    def mark_state_origins(self, OtherStateMachineID=-1L):
+        """Marks at each state that it originates from this state machine. This is
+           important, when multiple patterns are combined into a single DFA and
+           origins need to be traced down. In this case, each pattern (which is
+           are all state machines) needs to mark the states with the state machine 
+           identifier and the state inside this state machine.
+
+           If OtherStateMachineID and StateIdx are specified other origins
+              than the current state machine can be defined (useful for pre- and post-
+              conditions).         
+
+           DontMarkIfOriginsPresentF can be set to ensure that origin data structures
+              are only provided for states where non is set yet. This can be unsed
+              to ensure that every state has an origin structure related to it, without
+              overiding existing ones.
+        """
+        assert type(OtherStateMachineID) == long
+
+        if OtherStateMachineID == -1L: state_machine_id = self.__id
+        else:                          state_machine_id = OtherStateMachineID
+
+        for state_idx, state in self.states.items():
+            state.mark_self_as_origin(state_machine_id, state_idx)
+
+    def mount_to_acceptance_states(self, MountedStateIdx, 
+                                   CancelStartAcceptanceStateF=True):
+        """Mount on any acceptance state the MountedStateIdx via epsilon transition.
+        """
+        for state_idx, state in self.states.iteritems():
+            # -- only handle only acceptance states
+            # -- only consider state other than the state to be mounted
+            if not state.is_acceptance():    continue
+            if state_idx == MountedStateIdx: continue
+            # add the MountedStateIdx to the list of epsilon transition targets
+            state.target_map.add_epsilon_target_state(MountedStateIdx)
+            # if required (e.g. for sequentialization) cancel the acceptance status
+            if CancelStartAcceptanceStateF: 
+                # If there was a condition to acceptance => Cancel it first
+                state.set_pre_context_id(E_PreContextIDs.NONE) 
+                state.set_acceptance(False)
+
+    def mount_newline_to_acceptance_states(self, DOS_CarriageReturnNewlineF, InverseF=False):     
+        """Adds the condition 'newline or border character' at the end of the given
+           state machine. Acceptance is only reached when the newline or border
+           occurs. 
+           
+           This function is used for begin of line or end of line pre-conditions,
+           thus: IT DOES NOT SETUP A POST-CONDITITION in the sense that output is
+           scanned but cursor is being reset after match!  The caller provides the
+           post-condition modifications itself, if needed.
+
+           We simply append to each acceptance state the trigger '\n' or
+           BorderCharacter that leads to the new acceptance.  The old acceptance
+           state is annulated.  
+        """    
+        assert type(DOS_CarriageReturnNewlineF) == bool
+        assert type(InverseF)                   == bool
+
+        old_acceptance_state_list = self.get_acceptance_state_list() 
+        new_state_idx             = state_machine_index.get()
+        new_state                 = State(StateIndex=new_state_idx)
+        # New state must be just like any of the acceptance states (take the first).
+        # The transition map, of course must be empty.
+        new_state.origins().set([old_acceptance_state_list[0].origins().get_the_only_one().clone()])
+
+        self.states[new_state_idx] = new_state
+
+        if InverseF: sequence = [ord("\n"), ord("\r")]
+        else:        sequence = [ord("\r"), ord("\n")]
+
+        for state in old_acceptance_state_list:
+            # Transition '\n' --> Acceptance
+            state.add_transition(ord('\n'), new_state_idx)
+            
+            if DOS_CarriageReturnNewlineF:
+                # Alternative Transition '\r\n' --> Acceptance
+                aux_idx = self.create_new_state(AcceptanceF=False)
+                state.add_transition(sequence[0], aux_idx)
+                self.states[aux_idx].add_transition(sequence[1], new_state_idx)
+
+            # (-) Cancel acceptance of old state
+            state.origins().remove_the_only_one()
+            
+        return new_state_idx    
+
+    def mount_to_initial_state(self, TargetStateIdx):
+        """Adds an epsilon transition from initial state to the given 'TargetStateIdx'. 
+        The initial states epsilon transition to TERMINATE is deleted."""
+
+        assert self.states.has_key(self.init_state_index)
+
+        self.states[self.init_state_index].target_map.add_epsilon_target_state(TargetStateIdx)
+
+    def mount_cloned(self, OtherSM, OperationIndex, OtherStartIndex, OtherEndIndex):
+        """Clone all states in 'OtherSM' which lie on the path from 'OtherStartIndex'
+        to 'OtherEndIndex'. If 'OtherEndIndex' is None, then it ends when there's no further
+        path to go. 
+
+        State indices of the cloned states are generated by pairs of (other_i, OperationIndex).
+        This makes it possible to refer to those states, even before they are generated.
+        """
+        assert OtherStartIndex is not None
+
+        work_set = set([OtherStartIndex])
+
+        if OtherEndIndex is None:   done_set = set()
+        else:                       done_set = set([OtherEndIndex])
+
+        while len(work_set) != 0:
+            other_i     = work_set.pop()
+            other_state = OtherSM.states[other_i]
+
+            state_i = state_machine_index.map_state_combination_to_index((other_i, OperationIndex))
+            done_set.add(state_i)
+
+            state = self.states.get(state_i)
+            if state is None:
+                state = State(AcceptanceF=other_state.is_acceptance())
+                self.states[state_i] = state
+
+            for other_ti, other_trigger_set in other_state.target_map.get_map().iteritems():
+                target_i = state_machine_index.map_state_combination_to_index((other_ti, OperationIndex))
+                # The state 'target_i' either:
+                #   -- exists, because it is in the done_set, or
+                #   -- will be created because its correspondance 'other_i' is 
+                #      added to the work set.
+                state.add_transition(other_trigger_set, target_i)
+                if target_i not in done_set:
+                    assert other_i in OtherSM.states
+                    work_set.add(other_ti)
+
+        return
+
+    def mount_cloned_until(self, OtherSM, OtherEndIndex, OperationIndex):
+        self.mount_cloned(OtherSM, OperationIndex, 
+                          OtherSM.init_state_index, OtherEndIndex)
+
+    def mount_cloned_subsequent_states(self, OtherSM, OtherStartIndex, OperationIndex):
+        """Mount a cloned instance of states following 'OtherStartIndex' in 
+        'OtherSM' to this state machine. The start state in 'self' is determined
+        by an index generated from (OtherStartIndex, OperationIndex). Indices of
+        subsequent states are generated by the pairs (other_i, OperationIndex) 
+        where 'other_i' is an index from 'OtherSM'. This way, the states
+        remain referencable from outside and even before this operation.
+        """
+        self.mount_cloned(OtherSM, OperationIndex, OtherStartIndex, None)
+
+    def filter_dominated_origins(self):
+        for state in self.states.values(): 
+            state.origins().delete_dominated()
+
+    def transform(self, TrafoInfo):
+        """RETURNS: True  transformation for all states happend completely.
+                    False transformation may not have transformed all elements because
+                          the target codec does not cover them.
+        """
+        complete_f = True
+        for state in self.states.itervalues():
+            if not state.transform(TrafoInfo):
+                complete_f = False
+
+        return complete_f
+
+    def transform_to_anti_pattern(self):
+        """Anti Pattern: 
+                          -- drop-out                  => transition to acceptance state.
+                          -- transition to acceptances => drop-out
+        """
+        original_acceptance_state_index_list = self.get_acceptance_state_index_list()
+        acceptance_state_index               = self.create_new_state(AcceptanceF=True)
+
+        for state_index, state in self.states.iteritems():
+            if state_index == acceptance_state_index: continue
+
+            # Transform DropOuts --> Transition to Acceptance
+            drop_out_trigger_set = state.target_map.get_drop_out_trigger_set_union()
+            state.add_transition(drop_out_trigger_set, acceptance_state_index)
+
+            # Transform Transitions to Acceptance --> DropOut
+            transition_map = state.target_map.get_map()
+            for target_index in original_acceptance_state_index_list:
+                if transition_map.has_key(target_index):
+                    state.target_map.delete_transitions_to_target(target_index)
+
+        # All original target states are deleted
+        for target_index in original_acceptance_state_index_list:
+            del self.states[target_index]
+
+    def get_id(self):
+        assert isinstance(self.__id, long)
+        return self.__id  # core.id()
+
+    def set_id(self, Value):
+        assert isinstance(Value, long)
+        self.__id = Value # core.set_id(Value)
+
+    def get_init_state(self):
+        return self.states[self.init_state_index]
+
+    def get_orphaned_state_index_list(self):
+        """Find list of orphan states.
+
+        ORPHAN STATE: A state that is not connected to an init state. That is
+                      it can never be reached from the init state.
+        """
+        work_set      = set([ self.init_state_index ])
+        connected_set = set()
+        while len(work_set) != 0:
+            state_index = work_set.pop()
+            state       = self.states[state_index]
+            connected_set.add(state_index)
+
+            work_set.update((i for i in state.target_map.get_target_state_index_list()
+                             if  i not in connected_set))
+
+        # State indices in 'connected_set' have a connection to the init state.
+        # State indice not in 'connected_set' do not. => Those are the orphans.
+
+        return [ i for i in self.states.iterkeys() if i not in connected_set ]
+
+    def get_hopeless_state_index_list(self):
+        """Find list of hopeless states, i.e. states from one can never 
+        reach an acceptance state. 
+        
+        HOPELESS STATE: A state that cannot reach an acceptance state.
+                       (There is no connection forward to an acceptance state).
+        """
+        from_db = defaultdict(set)
+        for state_index, state in self.states.iteritems():
+            target_index_list = state.target_map.get_target_state_index_list()
+            for target_index in target_index_list:
+                from_db[target_index].add(state_index)
+
+        work_set     = set(self.get_acceptance_state_index_list())
+        reaching_set = set()  # set of states that reach acceptance states
+        while len(work_set) != 0:
+            state_index = work_set.pop()
+            state       = self.states[state_index]
+            reaching_set.add(state_index)
+
+            work_set.update((i for i in from_db[state_index] if  i not in reaching_set))
+
+        # State indices in 'reaching_set' have a connection to an acceptance state.
+        # State indice not in 'reaching_set' do not. => Those are the hopeless.
+        return [ i for i in self.states.iterkeys() if i not in reaching_set ]
+
     def get_epsilon_closure_db(self):
         db = {}
         for index, state in self.states.items():
@@ -425,12 +692,6 @@ class StateMachine(object):
             result.update(EC_DB[index])
 
         return result
-
-    def __dive_for_epsilon_closure(self, state_index, result):
-        index_list = self.states[state_index].target_map.get_epsilon_target_state_index_list()
-        for target_index in ifilter(lambda x: x not in result, index_list):
-            result.add(target_index)
-            self.__dive_for_epsilon_closure(target_index, result)
 
     def get_epsilon_closure(self, StateIdx):
         """Return all states that can be reached from 'StateIdx' via epsilon
@@ -614,31 +875,6 @@ class StateMachine(object):
                 from_db[to_index].add(from_index)
         return from_db, to_db
 
-    def transform_to_anti_pattern(self):
-        """Anti Pattern: 
-                          -- drop-out                  => transition to acceptance state.
-                          -- transition to acceptances => drop-out
-        """
-        original_acceptance_state_index_list = self.get_acceptance_state_index_list()
-        acceptance_state_index               = self.create_new_state(AcceptanceF=True)
-
-        for state_index, state in self.states.iteritems():
-            if state_index == acceptance_state_index: continue
-
-            # Transform DropOuts --> Transition to Acceptance
-            drop_out_trigger_set = state.target_map.get_drop_out_trigger_set_union()
-            state.add_transition(drop_out_trigger_set, acceptance_state_index)
-
-            # Transform Transitions to Acceptance --> DropOut
-            transition_map = state.target_map.get_map()
-            for target_index in original_acceptance_state_index_list:
-                if transition_map.has_key(target_index):
-                    state.target_map.delete_transitions_to_target(target_index)
-
-        # All original target states are deleted
-        for target_index in original_acceptance_state_index_list:
-            del self.states[target_index]
-
     def does_sequence_match(self, UserSequence):
         """Returns: True, if the sequences ends in an acceptance state.
                     False, if not.
@@ -722,290 +958,6 @@ class StateMachine(object):
             if state.target_map.has_target(TargetStateIndex):
                 if result is None: result = state_index
                 else:              return None           # More than one state trigger to target
-        return result
-
-    def is_empty(self):
-        """If state machine only contains the initial state that points nowhere,
-           then it is empty.
-        """
-        if len(self.states) != 1: return False
-        return self.states[self.init_state_index].target_map.is_empty()
-
-    def has_origins(self):
-        for state in self.states.values():
-            if len(state.origins()) > 1: return True
-        return False
-
-    def is_DFA_compliant(self):
-        for state in self.states.values():
-            if state.target_map.is_DFA_compliant() == False: 
-                return False
-        return True
-
-    def mark_state_origins(self, OtherStateMachineID=-1L):
-        """Marks at each state that it originates from this state machine. This is
-           important, when multiple patterns are combined into a single DFA and
-           origins need to be traced down. In this case, each pattern (which is
-           are all state machines) needs to mark the states with the state machine 
-           identifier and the state inside this state machine.
-
-           If OtherStateMachineID and StateIdx are specified other origins
-              than the current state machine can be defined (useful for pre- and post-
-              conditions).         
-
-           DontMarkIfOriginsPresentF can be set to ensure that origin data structures
-              are only provided for states where non is set yet. This can be unsed
-              to ensure that every state has an origin structure related to it, without
-              overiding existing ones.
-        """
-        assert type(OtherStateMachineID) == long
-
-        if OtherStateMachineID == -1L: state_machine_id = self.__id
-        else:                          state_machine_id = OtherStateMachineID
-
-        for state_idx, state in self.states.items():
-            state.mark_self_as_origin(state_machine_id, state_idx)
-
-    def create_new_init_state(self, AcceptanceF=False):
-
-        self.init_state_index = self.create_new_state()
-        return self.init_state_index
-
-    def create_new_state(self, AcceptanceF=False, StateIdx=None):
-        if StateIdx is None: new_state_index = state_machine_index.get()
-        else:                new_state_index = StateIdx
-
-        self.states[new_state_index] = State(AcceptanceF)
-        return new_state_index
-        
-    def add_transition(self, StartStateIdx, TriggerSet, TargetStateIdx = None, AcceptanceF = False):
-        """Adds a transition from Start to Target based on a given Trigger.
-
-           TriggerSet can be of different types: ... see add_transition()
-           
-           (see comment on 'State::add_transition)
-
-           RETURNS: The target state index.
-        """
-        assert type(StartStateIdx) == long
-        # NOTE: The Transition Constructor is very tolerant, so no tests on TriggerSet()
-        #       assert TriggerSet.__class__.__name__ == "NumberSet"
-        assert type(TargetStateIdx) == long or TargetStateIdx is None
-        assert type(AcceptanceF) == bool
-
-        # If target state is undefined (None) then a new one has to be created
-        if TargetStateIdx is None:                       TargetStateIdx = state_machine_index.get()
-        if self.states.has_key(StartStateIdx) == False:  self.states[StartStateIdx]  = State()        
-        if self.states.has_key(TargetStateIdx) == False: self.states[TargetStateIdx] = State()
-        if AcceptanceF:                                  self.states[TargetStateIdx].set_acceptance(True)
-
-        self.states[StartStateIdx].add_transition(TriggerSet, TargetStateIdx)
-
-        return TargetStateIdx
-            
-    def add_epsilon_transition(self, StartStateIdx, TargetStateIdx=None, RaiseAcceptanceF=False):
-        assert TargetStateIdx is None or type(TargetStateIdx) == long
-
-        # create new state if index does not exist
-        if not self.states.has_key(StartStateIdx):
-            self.states[StartStateIdx] = State()
-        if TargetStateIdx is None:
-            TargetStateIdx = self.create_new_state(AcceptanceF=RaiseAcceptanceF)
-        elif not self.states.has_key(TargetStateIdx):
-            self.states[TargetStateIdx] = State()
-
-        # add the epsilon target state
-        self.states[StartStateIdx].target_map.add_epsilon_target_state(TargetStateIdx)     
-        # optionally raise the state of the target to 'acceptance'
-        if RaiseAcceptanceF: self.states[TargetStateIdx].set_acceptance(True)
-
-        return TargetStateIdx
-
-    def mount_to_acceptance_states(self, MountedStateIdx, 
-                                   CancelStartAcceptanceStateF=True):
-        """Mount on any acceptance state the MountedStateIdx via epsilon transition.
-        """
-        for state_idx, state in self.states.iteritems():
-            # -- only handle only acceptance states
-            # -- only consider state other than the state to be mounted
-            if not state.is_acceptance():    continue
-            if state_idx == MountedStateIdx: continue
-            # add the MountedStateIdx to the list of epsilon transition targets
-            state.target_map.add_epsilon_target_state(MountedStateIdx)
-            # if required (e.g. for sequentialization) cancel the acceptance status
-            if CancelStartAcceptanceStateF: 
-                # If there was a condition to acceptance => Cancel it first
-                state.set_pre_context_id(E_PreContextIDs.NONE) 
-                state.set_acceptance(False)
-
-    def mount_newline_to_acceptance_states(self, DOS_CarriageReturnNewlineF, InverseF=False):     
-        """Adds the condition 'newline or border character' at the end of the given
-           state machine. Acceptance is only reached when the newline or border
-           occurs. 
-           
-           This function is used for begin of line or end of line pre-conditions,
-           thus: IT DOES NOT SETUP A POST-CONDITITION in the sense that output is
-           scanned but cursor is being reset after match!  The caller provides the
-           post-condition modifications itself, if needed.
-
-           We simply append to each acceptance state the trigger '\n' or
-           BorderCharacter that leads to the new acceptance.  The old acceptance
-           state is annulated.  
-        """    
-        assert type(DOS_CarriageReturnNewlineF) == bool
-        assert type(InverseF)                   == bool
-
-        old_acceptance_state_list = self.get_acceptance_state_list() 
-        new_state_idx             = state_machine_index.get()
-        new_state                 = State(StateIndex=new_state_idx)
-        # New state must be just like any of the acceptance states (take the first).
-        # The transition map, of course must be empty.
-        new_state.origins().set([old_acceptance_state_list[0].origins().get_the_only_one().clone()])
-
-        self.states[new_state_idx] = new_state
-
-        if InverseF: sequence = [ord("\n"), ord("\r")]
-        else:        sequence = [ord("\r"), ord("\n")]
-
-        for state in old_acceptance_state_list:
-            # Transition '\n' --> Acceptance
-            state.add_transition(ord('\n'), new_state_idx)
-            
-            if DOS_CarriageReturnNewlineF:
-                # Alternative Transition '\r\n' --> Acceptance
-                aux_idx = self.create_new_state(AcceptanceF=False)
-                state.add_transition(sequence[0], aux_idx)
-                self.states[aux_idx].add_transition(sequence[1], new_state_idx)
-
-            # (-) Cancel acceptance of old state
-            state.origins().remove_the_only_one()
-            
-        return new_state_idx    
-
-    def mount_to_initial_state(self, TargetStateIdx):
-        """Adds an epsilon transition from initial state to the given 'TargetStateIdx'. 
-        The initial states epsilon transition to TERMINATE is deleted."""
-
-        assert self.states.has_key(self.init_state_index)
-
-        self.states[self.init_state_index].target_map.add_epsilon_target_state(TargetStateIdx)
-
-    def mount_cloned(self, OtherSM, OperationIndex, OtherStartIndex, OtherEndIndex):
-        """Clone all states in 'OtherSM' which lie on the path from 'OtherStartIndex'
-        to 'OtherEndIndex'. If 'OtherEndIndex' is None, then it ends when there's no further
-        path to go. 
-
-        State indices of the cloned states are generated by pairs of (other_i, OperationIndex).
-        This makes it possible to refer to those states, even before they are generated.
-        """
-        assert OtherStartIndex is not None
-
-        work_set = set([OtherStartIndex])
-
-        if OtherEndIndex is None:   done_set = set()
-        else:                       done_set = set([OtherEndIndex])
-
-        while len(work_set) != 0:
-            other_i     = work_set.pop()
-            other_state = OtherSM.states[other_i]
-
-            state_i = state_machine_index.map_state_combination_to_index((other_i, OperationIndex))
-            done_set.add(state_i)
-
-            state = self.states.get(state_i)
-            if state is None:
-                state = State(AcceptanceF=other_state.is_acceptance())
-                self.states[state_i] = state
-
-            for other_ti, other_trigger_set in other_state.target_map.get_map().iteritems():
-                target_i = state_machine_index.map_state_combination_to_index((other_ti, OperationIndex))
-                # The state 'target_i' either:
-                #   -- exists, because it is in the done_set, or
-                #   -- will be created because its correspondance 'other_i' is 
-                #      added to the work set.
-                state.add_transition(other_trigger_set, target_i)
-                if target_i not in done_set:
-                    assert other_i in OtherSM.states
-                    work_set.add(other_ti)
-
-        return
-
-    def mount_cloned_until(self, OtherSM, OtherEndIndex, OperationIndex):
-        self.mount_cloned(OtherSM, OperationIndex, 
-                          OtherSM.init_state_index, OtherEndIndex)
-
-    def mount_cloned_subsequent_states(self, OtherSM, OtherStartIndex, OperationIndex):
-        """Mount a cloned instance of states following 'OtherStartIndex' in 
-        'OtherSM' to this state machine. The start state in 'self' is determined
-        by an index generated from (OtherStartIndex, OperationIndex). Indices of
-        subsequent states are generated by the pairs (other_i, OperationIndex) 
-        where 'other_i' is an index from 'OtherSM'. This way, the states
-        remain referencable from outside and even before this operation.
-        """
-        self.mount_cloned(OtherSM, OperationIndex, OtherStartIndex, None)
-
-    def filter_dominated_origins(self):
-        for state in self.states.values(): 
-            state.origins().delete_dominated()
-
-    def transform(self, TrafoInfo):
-        """RETURNS: True  transformation for all states happend completely.
-                    False transformation may not have transformed all elements because
-                          the target codec does not cover them.
-        """
-        complete_f = True
-        for state in self.states.itervalues():
-            if not state.transform(TrafoInfo):
-                complete_f = False
-
-        return complete_f
-
-    def __repr__(self):
-        return self.get_string(NormalizeF=True)
-
-    def __get_state_sequence_for_normalization(self):
-
-        result     = []
-        work_stack = [ self.init_state_index ]
-        done_set   = set()
-        while len(work_stack) != 0:
-            i = work_stack.pop()
-            if i in done_set: continue
-
-            result.append(i)
-            done_set.add(i)
-            state = self.states[i]
-
-            # Decide which target state is to be considered next.
-            # sort by 'lowest trigger'
-            def comparison_key(state_db, tm, A):
-                trigger_set_to_A = tm.get(A)
-                assert trigger_set_to_A is not None
-                trigger_set_min = trigger_set_to_A.minimum()
-                target_tm       = state_db[A].target_map.get_map()
-                target_branch_n = len(target_tm)
-                if len(target_tm) == 0: target_tm_min = -sys.maxint
-                else:                   target_tm_min = min(map(lambda x: x.minimum(), target_tm.itervalues()))
-                return (trigger_set_min, target_branch_n, target_tm_min, A)
-
-            tm = state.target_map.get_map()
-            target_state_index_list = [ i for i in tm.iterkeys() if i not in done_set ]
-            target_state_index_list.sort(key=lambda x: comparison_key(self.states, tm, x), reverse=True)
-
-            work_stack.extend(target_state_index_list)
-                                         
-        # There might be 'orphans' which are not at all connected. Append them
-        # sorted by a simple rule: by state index.
-        if len(self.states) != len(result):
-            for i in sorted(self.states.iterkeys()):
-                if i in result: continue
-                result.append(i)
-
-        # DEBUG: double check that the sequence is complete
-        x = self.states.keys(); x.sort()  # DEBUG
-        y = deepcopy(result);   y.sort()  # DEBUG
-        assert x == y                     # DEBUG
-
         return result
 
     def get_state_index_normalization(self, NormalizeF=True):
@@ -1095,6 +1047,57 @@ class StateMachine(object):
         return blue_print(frame_txt, [["$$ACCEPTANCE_STATES$$", acceptance_state_str ],
                                       ["$$TRANSITIONS$$",       transition_str]])
         
+    def iterable_target_state_indices(self, StateIndex):
+        return self.state_db[StateIndex].iterable_target_state_indices(StateIndex)
+
+    def __get_state_sequence_for_normalization(self):
+
+        result     = []
+        work_stack = [ self.init_state_index ]
+        done_set   = set()
+        while len(work_stack) != 0:
+            i = work_stack.pop()
+            if i in done_set: continue
+
+            result.append(i)
+            done_set.add(i)
+            state = self.states[i]
+
+            # Decide which target state is to be considered next.
+            # sort by 'lowest trigger'
+            def comparison_key(state_db, tm, A):
+                trigger_set_to_A = tm.get(A)
+                assert trigger_set_to_A is not None
+                trigger_set_min = trigger_set_to_A.minimum()
+                target_tm       = state_db[A].target_map.get_map()
+                target_branch_n = len(target_tm)
+                if len(target_tm) == 0: target_tm_min = -sys.maxint
+                else:                   target_tm_min = min(map(lambda x: x.minimum(), target_tm.itervalues()))
+                return (trigger_set_min, target_branch_n, target_tm_min, A)
+
+            tm = state.target_map.get_map()
+            target_state_index_list = [ i for i in tm.iterkeys() if i not in done_set ]
+            target_state_index_list.sort(key=lambda x: comparison_key(self.states, tm, x), reverse=True)
+
+            work_stack.extend(target_state_index_list)
+                                         
+        # There might be 'orphans' which are not at all connected. Append them
+        # sorted by a simple rule: by state index.
+        if len(self.states) != len(result):
+            for i in sorted(self.states.iterkeys()):
+                if i in result: continue
+                result.append(i)
+
+        # DEBUG: double check that the sequence is complete
+        x = self.states.keys(); x.sort()  # DEBUG
+        y = deepcopy(result);   y.sort()  # DEBUG
+        assert x == y                     # DEBUG
+
+        return result
+
+    def __repr__(self):
+        return self.get_string(NormalizeF=True)
+
     def assert_consistency(self):
         """Check: -- whether each target state in contained inside the state machine.
         """
@@ -1107,7 +1110,4 @@ class StateMachine(object):
                        "present state indices: " + repr(self.states.keys()) + "\n" + \
                        "state machine = " + self.get_string(NormalizeF=False)
 
-    __core    = property(deprecated, deprecated, deprecated, "Member '__core' deprecated!")
-    side_info = property(deprecated, deprecated, deprecated, "Member 'side_info' deprecated!")
-    def core(self): assert False
             
