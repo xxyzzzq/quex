@@ -29,15 +29,17 @@ class CharacterPathStep(namedtuple("CharacterPathStep_tuple", ("state_index", "t
                         | 1 |------------------ 'g' ---------------->| 3 |
                         '---'                                        '---'
 
-       The '2' is the '.source_state_index' of the next CharacterPathStep on the
-       CharacterPath. The step from state 1 to X is described by:
+       The '1' is the '.state_index' of the current CharacterPathStep on the
+       CharacterPath. The step from state 1 to 3 is described by:
 
                 current.state_index =  1   # Index of the state where the step starts
                 current.trigger     = 'g'  # The triggering character
+
                 next.state_index    =  3   # Index of the state where the step goes
    
-       Note, that this setup fits well the case where the path is described by a
-       list of CharacterPathStep-s. 
+       That is, the full information about a step containing the 'from state', the 
+       'to state', and the 'trigger' by which the transition is made, can only be 
+       observed when the CharacterPathStep plays its role in a CharacterPath.
 
        Special Case: 
        
@@ -106,9 +108,16 @@ class CharacterPath(object):
        ( 1 )--- 'a' -->( 2 )--- 'b' -->( 3 )--- 'c' -->( 4 )--- 'd' -->( 5 )
 
     where the remaining transitions in each state match (except for the last).
-    A CharacterPath contains a '.step_list' of CharacterPathSteps, e.g.
+
+    During analysis, the CharacterPath acts as a container which also stores
+    information about the transition_map. The TransitionMapData object
+    maintains information about possible transition_map matches with other
+    states.
+
+    ___________________________________________________________________________
+    MEMBERS:
   
-    .__step_list:
+    .step_list: (list of CharacterPathStep-s)
 
        .------------------. .------------------.       .--------------------.
        |.state_index = 1  | |.state_index = 2  |       |.state_index = 4711 |
@@ -131,28 +140,6 @@ class CharacterPath(object):
     .transition_map_data
 
      maintains data about the common transition map of all states. 
-
-    ___________________________________________________________________________
-    EXPLANATION:
-
-    The steps of path generation are the following:
-
-    (1) The function '__find()' finds an initial transition of a state A to a 
-        state B via a single character C. Let (b,a,C) be the DoorID where state
-        B is entered from A via C.
-
-    (2) In function '__find_continuation()' a CharacterPath is created which
-
-        -- where the .step_list contains a single CharacterPathStep, i.e.
-        
-              [ .state_index = X, .trigger = C ]
-
-        -- The terminal state is 'B'
-
-    (3) A recursive search starts for more single character transitions 
-        beginning from state B. Each time another single character transition
-        is found, the terminal is integrated into the path and the new 
-        terminal is setup.
     ___________________________________________________________________________
     """
     __slots__ = ("__step_list",       
