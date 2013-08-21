@@ -14,7 +14,7 @@ def do(TheAnalyzer, CompressionType, AvailableStateIndexSet):
     from follower states unnecessary.
     """
     # depth_db: state_index ---> distance from init state.
-    # We first search for the longest paths, so that searches for subpaths
+    # We first search for the longest paths, so that searches for sub paths
     # become unnecessary. This way computation time is reduced.
     depth_db = TheAnalyzer.get_depth_db()
 
@@ -34,9 +34,9 @@ def do(TheAnalyzer, CompressionType, AvailableStateIndexSet):
 def CharacterPathList_find(analyzer, StateIndex, CompressionType, AvailableStateIndexSet):
     """Searches for the BEGINNING of a path, i.e. a single character transition
     to a subsequent state. If such a transition is found, a search for a path
-    is initiated (call to '__find_continuation(..)').
+    is initiated using the 'PathFinder'.
 
-    This function itself it not recursive.
+    This function itself it not recursive. PathFinder does a Depth-First Search.
     """
     result_list = []
 
@@ -63,10 +63,6 @@ def CharacterPathList_find(analyzer, StateIndex, CompressionType, AvailableState
 
 class PathFinder(TreeWalker):
     """
-    A single character transition has been found for a given state 'FromState'.
-    Thus, this function sets up a CharacterPath object that is the 'head' of
-    a potential path to be found. 
-
     This function is its nature recursive. To avoid problems with stack size,
     it relies on 'TreeWalker'.
 
@@ -78,7 +74,7 @@ class PathFinder(TreeWalker):
 
     RECURSION STEP: 
     
-            -- Add current path add the end of the given path.
+            -- Add current state add the end of the given path.
             -- If required: Plug the wildcard.
 
     BRANCH: Branch to all follow-up states where:
@@ -114,9 +110,7 @@ class PathFinder(TreeWalker):
         # If uniformity is required, then this is the place to check for it.
         if self.uniform_f and not path.uniformity_with_predecessor(State):
             # TERMINATION _________________________________________________
-            if len(path.step_list) > 1:
-                path.finalize(State.index)
-                self.result.append(path)
+            self.result_add(path, State.index)
             return None
 
         # BRANCH __________________________________________________________
@@ -143,19 +137,22 @@ class PathFinder(TreeWalker):
             new_path = path.extended_clone(State, transition_char, plug) 
 
             # RECURSION STEP ______________________________________________
-            # (May be, we do not have to clone the transition map if plug == -1)
             # Clone the current state and append the new terminal.
             sub_list.append((new_path, target_state))
 
         # TERMINATION _____________________________________________________
         if len(sub_list) == 0:
-            if len(path.step_list) > 1: 
-                path.finalize(State.index)
-                self.result.append(path)
+            self.result_add(path, State.index)
             return None
 
         return sub_list
 
     def on_finished(self, Args):
         self.__depth -= 1
+
+    def result_add(self, path, TerminalStateIndex):
+        if len(path.step_list) <= 1: return
+        path.finalize(TerminalStateIndex)
+        self.result.append(path)
+
 
