@@ -443,9 +443,7 @@ class TemplateStateKeySet(SetMegaStateKey):
         Command.__init__(self, 1, [StateKey])
     @property
     def value(self): return self._x[0]
-    def set_value(self, Value): 
-        assert isinstance(Value, (int, long))
-        self._x[0] = Value
+
     def __repr__(self):       
         return "    state_key = %s;\n" % self.value
 

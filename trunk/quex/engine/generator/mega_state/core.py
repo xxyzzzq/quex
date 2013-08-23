@@ -133,6 +133,10 @@ def drop_out_scheme_do(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
         drop_out_coder.do(txt, TheState.index, uniform_drop_out, TheAnalyzer, \
                           DefineLabelF=False, MentionStateIndexF=False)
     else:
+        # There must be more than one drop-out scheme. Otherwise, it would be 
+        # uniform.
+        assert len(TheState.drop_out) > 1
+
         # non-uniform drop outs => route by 'state_key'
         case_list = []
         assert_remainder = set( 
@@ -155,7 +159,7 @@ def drop_out_scheme_do(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
                               DefineLabelF=False, MentionStateIndexF=False)
             case_list.append((state_key_list, case_txt))
     
-        assert len(assert_remainder) == 0, "Missing:" + assert_remainder
+        assert len(assert_remainder) == 0, "Missing: '%s'" % assert_remainder
 
         case_txt = LanguageDB.SELECTION(StateKeyString, case_list)
         LanguageDB.INDENT(case_txt)

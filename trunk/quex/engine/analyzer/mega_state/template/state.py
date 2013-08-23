@@ -1,7 +1,8 @@
 from   quex.engine.analyzer.mega_state.core         import MegaState, \
                                                            MegaState_Transition, \
                                                            MegaState_Entry, \
-                                                           MegaState_DropOut
+                                                           MegaState_DropOut, \
+                                                           StateKeyIndexDB
 from   quex.engine.analyzer.mega_state.template.candidate  import TargetFactory
 from   quex.engine.analyzer.transition_map          import TransitionMap        
 from   quex.engine.analyzer.state.entry_action      import TemplateStateKeySet, \
@@ -9,87 +10,6 @@ from   quex.engine.analyzer.state.entry_action      import TemplateStateKeySet, 
                                                            DoorID_Scheme
 import quex.engine.state_machine.index              as     index
 from   quex.engine.interval_handling                       import Interval
-
-class TemplateState_Entry(MegaState_Entry):
-    """________________________________________________________________________
-
-    Entry into a TemplateState. As the base's base class 'Entry' it holds
-    information about what CommandList is to be executed upon entry from a
-    particular source state.
-
-    PRELIMINARY: Documentation of class 'MegaState_Entry'.
-
-    A TemplateState is a MegaState, meaning it implements multiple states at
-    once. Entries into the TemplateState must have an action that sets the
-    'state key' for the state that it is about to represent. The 'state key'
-    of a PathWalkerState' is the offset of the path iterator from the character
-    path's base.
-
-    During analysis, only the '.action_db' is of interest. There the 
-    'TemplateStateKeySet' Command is added for each transition. After analysis
-    'door_tree_configure()' may be called and those actions are combined
-    propperly.
-    ___________________________________________________________________________
-    """
-    def __init__(self, RelatedMegaStateIndex, StateIndexToStateKeyDB, *EntryList):
-        MegaState_Entry.__init__(self)
-
-    def action_db_update(self, StateIndex, ActionDb, StateIndexToStateKeyDB):
-        """Include 'TheState.entry.action_db' into this state. That means,
-        that any mapping:
-           
-              transition (StateIndex, FromStateIndex) --> CommandList 
-
-        is absorbed in '.action_db'. Additionally, any CommandList must contain
-        the 'TemplateStateKeySet' command that sets the state key for the state
-        which is currently represented. At each (external) entry into the
-        Template state the 'state_key' must be set, so that the template state
-        can operate accordingly.
-
-        RETURNS: List of pairs (TransitionID, DoorID) for newly assigned 
-                 DoorIDs to old transitions. This should only be recursive
-                 transitions.
-        """
-        ##print "#adb-1: action_db["
-        ##for action in TheEntry.action_db.itervalues():
-        ##    print "#door_id:", action.door_id
-        ##    print "#cmlist:", action.command_list
-        for transition_id, action in ActionDb.iteritems():
-            clone = action.clone()
-            assert clone.door_id is not None
-            if transition_id.target_state_index != transition_id.source_state_index: 
-                # Add 'TemplateStateKeySet'
-                #
-                # Determine 'state_key' (an integer value) for state that is
-                # entered.  Since TheState may already be a template state, use
-                # 'transition_id.state_index' to handle already absorbed states
-                # correctly.
-                state_key = StateIndexToStateKeyDB[transition_id.target_state_index]
-                for command in clone.command_list.misc:
-                    if not isinstance(command, TemplateStateKeySet): continue
-                    # Adapt the existing 'TemplateStateKeySet' command
-                    command.set_value(state_key)
-                    break
-                else:
-                    # Create new 'TemplateStateKeySet' for current state
-                    clone.command_list.misc.add(TemplateStateKeySet(state_key))
-            else:
-                # Recursion => No 'TemplateStateKeySet'
-                #
-                #   => The state_key does not have to be set (again) at entry.
-                #   => It makes sense to have a dedicated DoorID which is going
-                #      to be set by 'action_db.categorize()'. The translation
-                #      is then documented in '.transition_reassignment_db'.
-                self.transition_reassignment_candidate_list.append((StateIndex, transition_id))
-                # clone.door_id = None
-
-            # -- The TransitionID contains the state index of the absorbed state.
-            # -- No state can be absorbed twice 
-            # => It is impossible that 'transition_id' appears as a key before
-            assert self.action_db.get(transition_id) == None
-            self.action_db.enter(transition_id, clone)
-
-        return
 
 class TemplateState(MegaState):
     """________________________________________________________________________
@@ -105,33 +25,62 @@ class TemplateState(MegaState):
     def __init__(self, Candidate):
         StateA = Candidate.state_a
         StateB = Candidate.state_b
-        my_index                    = index.get()
-        self.__state_a              = StateA
-        self.__state_b              = StateB
-        self.__state_index_sequence = StateA.state_index_sequence() + StateB.state_index_sequence()
-        self.__state_index_to_state_key_db = dict((state_index, i) for i, state_index in enumerate(self.__state_index_sequence))
+
+        self.ski_db = StateKeyIndexDB()
+        self.ski_db.extend(StateA.state_index_sequence() + StateB.state_index_sequence())
 
         # Combined DropOut and Entry schemes are generated by the same function
-        entry    = TemplateState_Entry(my_index, self.__state_index_to_state_key_db, StateA.entry, StateB.entry)
-        drop_out = MegaState_DropOut(StateA, StateB)
-        MegaState.__init__(self, entry, drop_out, my_index)
+        MegaState.__init__(self, index.get())
 
         for state in [StateA, StateB]:
             self.entry.action_db_update(state.index, state.entry.action_db, 
                                         self.__state_index_to_state_key_db)
-        self.entry.transition_reassignment_db_construct(my_index)
+        self.entry.transition_reassignment_db_construct(self.index)
 
         self.__transition_map, \
-        self.__target_scheme_n = combine_maps(self.__state_a, self.__state_b, entry.transition_reassignment_db)
+        self.__target_scheme_n = combine_maps(StateA, StateB, entry.transition_reassignment_db)
 
         # Compatible with AnalyzerState
         # (A template state can never mimik an init state)
         self.__engine_type = None # StateA.engine_type
-        # self.input         = None # StateA.input # get_input_action(StateA.engine_type, InitStateF=False)
 
-        MegaState.bad_company_set(self, self.__state_a.bad_company().union(self.__state_b.bad_company()))
+        MegaState.bad_company_set(self, StateA.bad_company().union(StateB.bad_company()))
 
-    def _DEBUG_combined_state_indices(self): return self.__state_a.index, self.__state_b.index
+    def finalize(self):
+        self.collect_Entry_and_DropOut(TheAnalyzer)
+        # assert self.uniform_DropOut.is_uniform() == self.drop_out.is_uniform()
+
+        self.__configure_entry_CommandLists()
+        self.__finalized = FinalizedContent(self, TheAnalyzer)
+        return
+
+    def __configure_entry_CommandLists(self):
+        """If a state is entered from outside the path walker, then the 'state_key',
+        respectively, the 'path_iterator' needs to be set. During the walk along
+        a path, the 'path_iterator' is simply incremented--and this happens in the
+        code generated for the path walker (later on).
+        """
+        # Entries along the path: PathIteratorIncrement
+        #                         ... but this is handled better by the code generator.
+        # Entries from outside:   PathIteratorSet
+        for state_index in self.ski_db.implemented_state_index_set:
+            # Inside transition:     target_state_index == source_state_index
+            #                        => nothing extra to be done.
+            # All other transitions: => require state_key to be set.
+
+            state_key = self.ski_db.map_state_index_to_state_key(state_index)
+            # Update sets inside transition's 'door_id = None' and adds
+            # the transition to 'transition_reassignment_candidate_list'.
+            self.entry.action_db_update(From           = state_index,
+                                        To             = state_index, 
+                                        FromOutsideCmd = TemplateStateKeySet(state_key),
+                                        FromInsideCmd  = None)
+
+
+        # Make sure, that the CommandList-s on the paths are organized and
+        # assigned with new DoorID-s. 
+        assert len(self.entry.transition_reassignment_candidate_list) > 0
+        self.entry.transition_reassignment_db_construct(self.index)
 
     @property 
     def transition_map(self): 
@@ -140,18 +89,6 @@ class TemplateState(MegaState):
     @property
     def target_scheme_n(self):  
         return self.__target_scheme_n
-
-    def implemented_state_index_set(self):    
-        return set(self.__state_index_sequence)
-
-    def state_index_sequence(self):    
-        return self.__state_index_sequence
-
-    def map_state_index_to_state_key(self, StateIndex):
-        return self.__state_index_to_state_key_db[StateIndex]
-
-    def map_state_key_to_state_index(self, StateKey):
-        return self.__state_index_sequence[StateKey]
 
 def combine_maps(StateA, StateB, ReassignedTransitionDB):
     """RETURNS:

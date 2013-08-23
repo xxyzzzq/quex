@@ -1,7 +1,7 @@
 # (C) 2013 Frank-Rene Schaefer
 import quex.engine.analyzer.mega_state.template.core    as     template_analyzer
 import quex.engine.analyzer.mega_state.path_walker.core as     path_analyzer
-from   quex.engine.analyzer.mega_state.core             import AbsorbedState, MegaState
+from   quex.engine.analyzer.mega_state.core             import MegaState
 from   quex.engine.analyzer.mega_state.target           import MegaState_Transition
 from   quex.blackboard                                  import setup as Setup, \
                                                                E_Compression
@@ -70,10 +70,12 @@ def do(TheAnalyzer):
             mega_state.check_consistency(remainder)
 
             # Replace the absorbed AnalyzerState by its dummy.
-            TheAnalyzer.state_db.update(
-                 (state_index, AbsorbedState(TheAnalyzer.state_db[state_index], mega_state))
-                 for state_index in mega_state.implemented_state_index_set()
-            )
+            for state_index in mega_state.implemented_state_index_set():
+                del TheAnalyzer.state_db[state_index]
+            #TheAnalyzer.state_db.update(
+            #     (state_index, AbsorbedState(TheAnalyzer.state_db[state_index], mega_state))
+            #     for state_index in mega_state.implemented_state_index_set()
+            #)
 
             # Track the remaining not-yet-absorbed states
             remainder.difference_update(mega_state.implemented_state_index_set())

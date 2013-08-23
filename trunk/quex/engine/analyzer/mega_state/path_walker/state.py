@@ -3,68 +3,15 @@ from   quex.engine.analyzer.transition_map      import TransitionMap
 from   quex.engine.analyzer.state.entry_action  import PathIteratorSet, \
                                                        PathIteratorIncrement, \
                                                        DoorID
-from   quex.engine.analyzer.mega_state.core     import MegaState, MegaState_Transition
+from   quex.engine.analyzer.mega_state.core     import MegaState, \
+                                                       MegaState_Transition, \
+                                                       MegaState_Entry, \
+                                                       MegaState_DropOut
 import quex.engine.state_machine.index          as     index
 from   quex.engine.tools                        import UniformObject
 from   quex.blackboard                          import E_Compression
-from   quex.engine.analyzer.mega_state.core     import MegaState_Entry, \
-                                                       MegaState_DropOut
 
 from   itertools import izip
-
-class PathWalkerState_Entry(MegaState_Entry):
-    """________________________________________________________________________
-
-    Entry into a PathWalkerState. As the base's base class 'Entry' it holds
-    information about what CommandList is to be executed upon entry from a
-    particular source state.
-    
-    PRELIMINARY: Documentation of class 'MegaState_Entry'.
-
-    A PathWalkerState is a MegaState, meaning it implements multiple states at
-    once. Entries into the PathWalkerState must have an action that sets the
-    'state key' for the state that it is about to represent. The 'state key'
-    of a PathWalkerState is the offset of the path iterator from the character
-    path's base.
-
-    During analysis nothing actually happens, accept that the transitions
-    which happen inside the path are tagged in 
-
-                  .transition_reassignment_candidate_list
-
-    Once, the PathWalkerState is constructed the reassignment happens and
-    the action_db is updated.
-    ___________________________________________________________________________
-    """
-    def __init__(self):
-        MegaState_Entry.__init__(self)
-
-    def action_db_update(self, From, To, FromOutsideCmd, FromInsideCmd):
-        """Considers the actions related to transitions on the path of a
-        PathWalkerState.  For transitions from outside need to set a
-        'state_key', i.e.  the PathIteraor.  Transitions inside the only
-        increment the path_iterator which is done in the implementation of the
-        PathWalkerState.
-        """
-
-        for transition_id, action in self.action_db.iteritems():
-
-            if transition_id.target_state_index != To:
-                # This transition does not concern the state which is meant.
-                continue
-
-            elif transition_id.source_state_index != From:
-                cmd = FromOutsideCmd
-
-            else:
-                cmd = FromInsideCmd
-                # Later we will try to unify all entries from inside.
-                self.transition_reassignment_candidate_list.append((From, transition_id))
-
-            if cmd is not None:
-                action.command_list.misc.add(cmd)
-
-        return
 
 class PathWalkerState(MegaState):
     """________________________________________________________________________
@@ -103,22 +50,21 @@ class PathWalkerState(MegaState):
     ___________________________________________________________________________
     """
     def __init__(self, FirstPath, TheAnalyzer):
-        MegaState.__init__(self, PathWalkerState_Entry(), MegaState_DropOut(), index.get())
+        MegaState.__init__(self, index.get())
 
         # Uniform CommandList along entries on the path (optional)
         self.uniform_entry_CommandList = FirstPath.uniform_entry_CommandList.clone()
         self.uniform_DropOut           = FirstPath.uniform_DropOut.clone()
 
         self.__path_list                   = []
-        self.__implemented_state_index_set = set()
-        self.__state_index_sequence        = []
         self.__absorb_path(FirstPath, TheAnalyzer)
 
         self.__transition_map_to_door_ids = FirstPath.transition_map
         self.__transition_map             = None
 
         # Following are set by 'finalize()'.
-        self.__finalized = None # <-- PathWalkerState_ContentFinalized()
+        self.__finalized = None # <-- FinalizedContent()
+
 
     @property
     def transition_map(self):
@@ -154,20 +100,6 @@ class PathWalkerState(MegaState):
     def path_list(self):          
         assert type(self.__path_list) == list
         return self.__path_list
-
-    def implemented_state_index_set(self):
-        return self.__implemented_state_index_set
-
-    def state_index_sequence(self):
-        """RETURN: The sequence of involved states according to the position on
-           the path that they occur. This is different from
-           'implemented_state_index_set' because it maintains the 'order' and 
-           it allows to associate a 'state_index' with a 'state_key'.
-
-           It actually contain states which are not element of a path: the
-           terminal states.
-        """
-        return self.__state_index_sequence
 
     def accept(self, Path, TheAnalyzer, CompressionType):
         """Checks whether conditions of absorbing the Path are met, and if
@@ -212,13 +144,11 @@ class PathWalkerState(MegaState):
 
         # (1) Absorb the state sequence of the path.
         #
-        new_state_index_list            = [x.state_index for x in Path.step_list]
-        new_implemented_state_index_set = set(new_state_index_list[:-1])
-
+        new_state_index_list = [x.state_index for x in Path.step_list]
+        terminal_index       = len(new_state_index_list) - 1
         # Assert: A state cannot be implemented on two different paths.
-        assert set(self.__implemented_state_index_set).isdisjoint(new_implemented_state_index_set)
-        self.__state_index_sequence.extend(new_state_index_list)
-        self.__implemented_state_index_set.update(new_implemented_state_index_set)
+        assert set(self.ski_db.implemented_state_index_set).isdisjoint(new_state_index_list[:terminal_index])
+        self.ski_db.extend(new_state_index_list, IgnoredListIndex=terminal_index)
 
         # (2) Absorb Entry/DropOut Information
         #
@@ -232,33 +162,12 @@ class PathWalkerState(MegaState):
            path are properly setup. Also, determine whether those
            entries are uniform.
         """
-
-        self.__collect_Entry_and_DropOut_along_paths(TheAnalyzer)
-        self.__configure_entry_CommandLists()
-        self.__finalized = PathWalkerState_ContentFinalized(self, TheAnalyzer)
-        return
-
-    def __collect_Entry_and_DropOut_along_paths(self, TheAnalyzer):
-        """Entry's action_db: transition_id --> command_list
-        
-               --> now:              simply absorb all informations about 
-                                     transitions.
-               --> in '.finalize()': adapt transitions on the path and those
-                                     which come from outside.
-        
-           DropOut:           index of represented state --> its drop out CommandList
-        """
-        for step_list in self.__path_list:
-            for state_index in (step.state_index for step in step_list[:-1]):
-                state = TheAnalyzer.state_db[state_index]
-
-                self.entry.action_db.absorb(state.entry.action_db)
-                self.drop_out.absorb(state_index, state.drop_out)
-                # HERE: We cannot conclude anything from 'not uniform_DropOut'
-                #       => NOT: assert uniform_DropOut.is_uniform() == drop_out.is_uniform()
-                if self.uniform_DropOut.is_uniform(): assert self.drop_out.is_uniform()
-
+        self.collect_Entry_and_DropOut(TheAnalyzer)
         assert self.uniform_DropOut.is_uniform() == self.drop_out.is_uniform()
+
+        self.__configure_entry_CommandLists()
+        self.__finalized = FinalizedContent(self, TheAnalyzer)
+        return
 
     def __configure_entry_CommandLists(self):
         """If a state is entered from outside the path walker, then the 'state_key',
@@ -276,13 +185,12 @@ class PathWalkerState(MegaState):
                 # Inside transition:     'prev_state.index --> step.state_index'
                 # All other transitions: '       *         --> step.state_index'
                 # are transitions from states outside the path.
-                from_outside = PathIteratorSet(self.index, path_id, offset)
-
+                state_key = offset
                 # Update sets inside transition's 'door_id = None' and adds
                 # the transition to 'transition_reassignment_candidate_list'.
                 self.entry.action_db_update(From           = prev_state_index, 
                                             To             = step.state_index, 
-                                            FromOutsideCmd = from_outside,
+                                            FromOutsideCmd = PathIteratorSet(self.index, path_id, state_key),
                                             FromInsideCmd  = None)
 
                 prev_state_index = step.state_index
@@ -292,19 +200,7 @@ class PathWalkerState(MegaState):
         assert len(self.entry.transition_reassignment_candidate_list) > 0
         self.entry.transition_reassignment_db_construct(self.index)
 
-    def map_state_index_to_state_key(self, StateIndex):
-        return self.__finalized.map_state_index_to_state_key[StateIndex]
-
-    def map_state_key_to_state_index(self, StateKey):
-        return self.__state_index_sequence[StateKey]
-
     def assert_consistency(self, CompressionType):
-        # Each state is only implemented once.
-        # => The mapping from 'state_index' to 'state_key' is 1:1.
-        assert len(self.__implemented_state_index_set) == len(self.__finalized.map_state_index_to_state_key)
-        for state_index in self.__implemented_state_index_set:
-            assert state_index in self.__finalized.map_state_index_to_state_key
-
         # If uniform_DropOut is claimed, then there can be only
         # drop-out alternative--and vice versa.
         assert self.drop_out.is_uniform() == self.uniform_DropOut.is_uniform()
@@ -335,15 +231,12 @@ class PathWalkerState(MegaState):
                 path_iterator_cmd_n += 1
                 assert path_iterator_cmd_n < 2
 
-class PathWalkerState_ContentFinalized(object):
-    __slots__ = ("map_state_index_to_state_key",
-                 "uniform_door_id",
+class FinalizedContent(object):
+    __slots__ = ("uniform_door_id",
                  "uniform_terminal_door_id",
                  "door_id_sequence_list")
 
     def __init__(self, PWState, TheAnalyzer):
-        self.map_state_index_to_state_key    = self.__map_state_index_to_state_key_construct(PWState)
-
         self.uniform_door_id                 = UniformObject()
         self.uniform_terminal_door_id        = UniformObject()
         self.door_id_sequence_list           = []
@@ -393,13 +286,4 @@ class PathWalkerState_ContentFinalized(object):
         self.uniform_terminal_door_id <<= door_id
 
         return door_id_sequence
-
-    def __map_state_index_to_state_key_construct(self, PWState):
-        offset = 0
-        result = {}
-        for step_list in PWState.path_list:
-            for i, step in enumerate(step_list[:-1]):
-                result[step.state_index] = offset + i
-            offset += len(step_list)
-        return result
 
