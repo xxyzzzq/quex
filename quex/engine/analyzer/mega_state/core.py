@@ -124,6 +124,70 @@ class MegaState_Entry(Entry):
         self.transition_reassignment_candidate_list = []
         self.__transition_reassignment_db           = None
 
+    @property
+    def transition_reassignment_db(self):
+        return self.__transition_reassignment_db
+
+    def absorb(self, Other):
+        assert isinstance(Other, MegaState_Entry)
+        assert self.__transition_reassignment_db is None
+        assert Other.__transition_reassignment_db is None
+
+        self.action_db.absorb(Other.action_db)
+
+        # It is nice to have 'action_db_update' happen in the process of 'finalization'
+        # after all absorbtion has taken place. This makes things much less dynamic and
+        # much more understandable. Thus, assume that 'action_db_update' has never been
+        # called and the 'transition_reassignment_candidate_list' is empty.
+        assert len(self.transition_reassignment_candidate_list) == 0
+        # self.transition_reassignment_candidate_list.extend(Other.transition_reassignment_candidate_list)
+
+    def action_db_update(self, From, To, FromOutsideCmd, FromInsideCmd):
+        """MegaStates may add 'set-state-key-commands' to the CommandLists of
+        the state entries. 
+        
+        For any state which is implemented in a MegaState and which is entered
+        from outside a state key MUST be set. For transitions inside a
+        MegaState itself, there might be other mechanisms to determine the
+        state key.
+
+        'To' and 'From' = indices of a state which is implemented by the
+        MegaState.
+        
+        For any transition if
+
+               .source_state_index == From and .target_state_index == To
+
+        then this transition happens without leaving the MegaState. It happens
+        'inside'. For any action associate with a TransitionID
+
+              TransitionID inside => adorn action with 'FromInsideCmd'
+              else                => adorn action with 'FromOutsideCmd'
+
+        DoorIDs of transitions which happen from outside MUST remain the same.
+        DoorIDs inside the MegaState are subject to reconfiguration. They are
+        listed in 'transition_reassignment_candidate_list'.
+        """
+
+        for transition_id, action in self.action_db.iteritems():
+
+            if transition_id.target_state_index != To:
+                # This transition does not concern the state which is meant.
+                continue
+
+            elif transition_id.source_state_index != From:
+                cmd = FromOutsideCmd
+
+            else:
+                cmd = FromInsideCmd
+                # Later we will try to unify all entries from inside.
+                self.transition_reassignment_candidate_list.append((From, transition_id))
+
+            if cmd is not None:
+                action.command_list.misc.add(cmd)
+
+        return
+
     def transition_reassignment_db_construct(self, RelatedMegaStateIndex):
         """Generate new DoorIDs for all TransitionID-s where '.door_id is None'.
            This shall only be the case for originaly recursive transitions, 
@@ -158,17 +222,66 @@ class MegaState_Entry(Entry):
 
         return
 
+
+class StateKeyIndexDB(dict):
+    """Maintenance of relationships between 'state_keys' of a MegaState and the
+       'state_index' of the state which they represent.
+                
+    The state indices of a MegaState are lined up in some sequence which may
+    contain other, non-implemented states (see PathWalkerState).  The
+    implemented state index set only contains states which are implemented.
+
+    This may be subtle: A state index may appear in the state index sequence
+    while it is not part of the implemented state index.  The happens, for
+    example, in the role of a 'terminal' of a path in a PathWalkerState.  Then,
+    however, it may appear again as an implemented state, i.e.
+    
+                        '13' as terminal --.
+                                           |
+     state_index_sequence: .. [  ][  ][  ][13][  ][  ][  ][13][  ][  ] ..
+                                                           |
+                               '13' as implemented state --'
+    
+    Thus, 'state_index_sequence.index(StateIndex)' would not return the 
+    correct result. A map is required.
+    """
+    __slots__ = ("__map_state_index_to_state_key",
+                 "__implemented_state_index_set",
+                 "__state_index_sequence")
+
+    def __init__(self):
+        self.__map_state_index_to_state_key = {}
+        self.__implemented_state_index_set  = set()
+        self.__state_index_sequence         = []
+
     @property
-    def transition_reassignment_db(self):
-        return self.__transition_reassignment_db
+    def state_index_sequence(self): 
+        return self.__state_index_sequence
 
-    def absorb(self, Other):
-        assert isinstance(Other, MegaState_Entry)
-        assert self.__transition_reassignment_db is None
-        assert Other.__transition_reassignment_db is None
+    @property
+    def implemented_state_index_set(self): 
+        return self.__implemented_state_index_set
 
-        self.action_db.absorb(Other.action_db)
-        self.transition_reassignment_candidate_list.extend(Other.transition_reassignment_candidate_list)
+    def map_state_key_to_state_index(self, StateKey):   
+        result = self.__state_index_sequence[StateKey]
+        assert result in self.__implemented_state_index_set
+        return result
+
+    def map_state_index_to_state_key(self, StateIndex): 
+        assert StateIndex in self.__implemented_state_index_set
+        return self.__map_state_index_to_state_key[StateIndex]
+
+    def extend(self, StateIndexList, IgnoredListIndex=None):
+        offset = len(self.__state_index_sequence)
+        for i, state_index in enumerate(StateIndexList):
+            if i == IgnoredListIndex: continue
+            self.__map_state_index_to_state_key[state_index] = offset + i
+
+        self.__state_index_sequence.extend(StateIndexList)
+        self.__implemented_state_index_set.update(
+             x for i, x in enumerate(StateIndexList) if i != IgnoredListIndex
+        )
+
 
 class MegaState(AnalyzerState):
     """________________________________________________________________________
@@ -214,16 +327,16 @@ class MegaState(AnalyzerState):
           been generated.
     ___________________________________________________________________________
     """ 
-    def __init__(self, TheEntry, TheDropOut, StateIndex):
+    def __init__(self, StateIndex):
         # A 'PseudoMegaState' does not implement a 'MegaState_Entry' and 'MegaState_DropOut'.
         # On the long term 'MegaState_DropOut' should be derived from 'DropOut'.
-        assert isinstance(TheEntry, Entry), Entry.__class__.__name__
-        assert isinstance(TheDropOut, (MegaState_DropOut, DropOut, DropOutIndifferent, DropOutBackwardInputPositionDetection)) 
         assert isinstance(StateIndex, long)
 
-        self.__entry    = TheEntry
-        self.__drop_out = TheDropOut
+        self.__entry    = MegaState_Entry()
+        self.__drop_out = MegaState_DropOut()
         AnalyzerState.set_index(self, StateIndex)
+
+        self.ski_db     = StateKeyIndexDB()
 
         # Maintain a list of states with which the state may not combine well
         self.__bad_company = set()
@@ -241,17 +354,17 @@ class MegaState(AnalyzerState):
     @property
     def init_state_f(self): return False
 
-    def state_index_sequence(self):
-        assert False, "This function needs to be overwritten by derived class."
-
     def implemented_state_index_set(self):
-        assert False, "This function needs to be overwritten by derived class."
+        return self.ski_db.implemented_state_index_set
+
+    def state_index_sequence(self):
+        return self.ski_db.state_index_sequence
 
     def map_state_index_to_state_key(self, StateIndex):
-        assert False, "This function needs to be overwritten by derived class."
+        return self.ski_db.map_state_index_to_state_key(StateIndex)
 
     def map_state_key_to_state_index(self, StateKey):
-        assert False, "This function needs to be overwritten by derived class."
+        return self.ski_db.map_state_key_to_state_index(StateKey)
 
     def bad_company_add(self, StateIndex):
         self.__bad_company.add(StateIndex)
@@ -264,6 +377,27 @@ class MegaState(AnalyzerState):
                    combine well.
         """
         return self.__bad_company
+
+    def collect_Entry_and_DropOut(self, TheAnalyzer):
+        """Collect all Entry and DropOut objects of states which are 
+        represented by the MegaState.
+        """
+        for state_index in self.ski_db.implemented_state_index_set:
+            self._absorb_Entry_DropOut_from_state(TheAnalyzer.state_db[state_index])
+            # HERE: We cannot conclude anything from 'not uniform_DropOut'
+            #       => NOT: assert uniform_DropOut.is_uniform() == drop_out.is_uniform()
+            # if self.uniform_DropOut.is_uniform(): assert self.drop_out.is_uniform()
+        return
+
+    def _absorb_Entry_DropOut_from_state(self, TheState):
+        self.entry.action_db.absorb(TheState.entry.action_db)
+        self.drop_out.absorb(TheState.index, TheState.drop_out)
+
+    def transition_is_inside(self, TId):
+        """RETURNS: True  - if transition happens inside this MegaState.
+                    False - if not.
+        """
+        assert False, "--> must be implemented by derived class"
 
     def check_consistency(self, RemainingStateIndexSet):
         # Check the MegaState's consistency
@@ -356,11 +490,10 @@ class PseudoMegaState(MegaState):
 
         pseudo_mega_state_drop_out = MegaState_DropOut(Represented_AnalyzerState)
 
-        MegaState.__init__(self, self.__state.entry, 
-                           pseudo_mega_state_drop_out,
-                           Represented_AnalyzerState.index)
+        MegaState.__init__(self, Represented_AnalyzerState.index)
 
-        self.__state_index_sequence = [ Represented_AnalyzerState.index ]
+        self.ski_db.extend([ Represented_AnalyzerState.index ])
+        self._absorb_Entry_DropOut_from_state(Represented_AnalyzerState)
 
         # (*) Transition map that triggers to MegaState_Transition-s 
         #     instead of triggering to DoorID-s.
@@ -387,58 +520,46 @@ class PseudoMegaState(MegaState):
         self.transition_map = TransitionMap.from_iterable(self.__state.transition_map, 
                                                           MegaState_Transition.create)
 
-    def state_index_sequence(self):
-        return self.__state_index_sequence
-
-    def implemented_state_index_set(self):
-        return set(self.__state_index_sequence)
-
-    def map_state_index_to_state_key(self, StateIndex):
-        assert False, "PseudoMegaState-s exist only for analysis. They shall never be implemented."
-
-    def map_state_key_to_state_index(self, StateKey):
-        assert False, "PseudoMegaState-s exist only for analysis. They shall never be implemented."
-
-class AbsorbedState_Entry(Entry):
-    """________________________________________________________________________
-
-    The information about what transition is implemented by what
-    DoorID is stored in this Entry. It is somewhat isolated from the
-    AbsorbedState's Entry object.
-    ___________________________________________________________________________
-    """
-    def __init__(self, StateIndex, ActionDB):
-        Entry.__init__(self)
-        self.__action_db = ActionDB
-
-class AbsorbedState(AnalyzerState):
-    """________________________________________________________________________
-    
-    An AbsorbedState object represents an AnalyzerState which has been
-    implemented by a MegaState. Its sole purpose is to pinpoint to the
-    MegaState which implements it and to translate the transtions into itself
-    to DoorIDs of the implementing MegaState.
-    ___________________________________________________________________________
-    """
-    def __init__(self, AbsorbedAnalyzerState, AbsorbingMegaState):
-        AnalyzerState.set_index(self, AbsorbedAnalyzerState.index)
-        # The absorbing MegaState may, most likely, contain other transitions
-        # than the transitions into the AbsorbedAnalyzerState. Those, others
-        # do not do any harm, though. Filtering out those out of the hash map
-        # does, most likely, not bring any benefit.
-        assert AbsorbedAnalyzerState.index in AbsorbingMegaState.implemented_state_index_set()
-        #----------------------------------------------------------------------
-
-        self.__entry     = AbsorbedState_Entry(AbsorbedAnalyzerState.index, 
-                                               AbsorbingMegaState.entry.action_db)
-        self.absorbed_by = AbsorbingMegaState
-        self.__state     = AbsorbedAnalyzerState
-
-    @property
-    def drop_out(self):
-        return self.__state.drop_out
-
-    @property
-    def entry(self): 
-        return self.__entry
+#class AbsorbedState_Entry(Entry):
+#    """________________________________________________________________________
+#
+#    The information about what transition is implemented by what
+#    DoorID is stored in this Entry. It is somewhat isolated from the
+#    AbsorbedState's Entry object.
+#    ___________________________________________________________________________
+#    """
+#    def __init__(self, StateIndex, ActionDB):
+#        Entry.__init__(self)
+#        self.__action_db = ActionDB
+#
+#class AbsorbedState(AnalyzerState):
+#    """________________________________________________________________________
+#    
+#    An AbsorbedState object represents an AnalyzerState which has been
+#    implemented by a MegaState. Its sole purpose is to pinpoint to the
+#    MegaState which implements it and to translate the transtions into itself
+#    to DoorIDs of the implementing MegaState.
+#    ___________________________________________________________________________
+#    """
+#    def __init__(self, AbsorbedAnalyzerState, AbsorbingMegaState):
+#        AnalyzerState.set_index(self, AbsorbedAnalyzerState.index)
+#        # The absorbing MegaState may, most likely, contain other transitions
+#        # than the transitions into the AbsorbedAnalyzerState. Those, others
+#        # do not do any harm, though. Filtering out those out of the hash map
+#        # does, most likely, not bring any benefit.
+#        assert AbsorbedAnalyzerState.index in AbsorbingMegaState.implemented_state_index_set()
+#        #----------------------------------------------------------------------
+#
+#        self.__entry     = AbsorbedState_Entry(AbsorbedAnalyzerState.index, 
+#                                               AbsorbingMegaState.entry.action_db)
+#        self.absorbed_by = AbsorbingMegaState
+#        self.__state     = AbsorbedAnalyzerState
+#
+#    @property
+#    def drop_out(self):
+#        return self.__state.drop_out
+#
+#    @property
+#    def entry(self): 
+#        return self.__entry
 

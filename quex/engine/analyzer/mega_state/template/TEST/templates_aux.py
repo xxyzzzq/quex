@@ -3,7 +3,7 @@ from   quex.engine.analyzer.state.core                      import AnalyzerState
 from   quex.engine.analyzer.state.entry                     import Entry
 from   quex.engine.analyzer.state.entry_action              import DoorID
 import quex.engine.analyzer.engine_supply_factory           as     engine
-from   quex.engine.analyzer.mega_state.core                 import PseudoMegaState, MegaState, AbsorbedState
+from   quex.engine.analyzer.mega_state.core                 import PseudoMegaState, MegaState
 import quex.engine.analyzer.mega_state.template.core        as templates 
 from   quex.engine.analyzer.mega_state.template.state       import MegaState_Transition, TemplateState
 from   quex.engine.analyzer.mega_state.template.candidate   import TemplateStateCandidate
@@ -126,9 +126,9 @@ def test_combination(StateA, StateB, analyzer, StateA_Name="A", StateB_Name="B",
         print "    " + door_tree_root.get_string(result.entry.action_db).replace("\n", "\n    ")
     print "Result"
 
-    for state_index in result.implemented_state_index_set():
-        analyzer.state_db[state_index] = AbsorbedState(analyzer.state_db[state_index], 
-                                                       result)
+    #for state_index in result.implemented_state_index_set():
+    #    analyzer.state_db[state_index] = AbsorbedState(analyzer.state_db[state_index], 
+    #                                                   result)
 
     #if FinalizeF:
     #    result.transition_map.relate_to_door_ids(analyzer.state_db)

@@ -32,10 +32,10 @@ implemented in one MegaState, i.e. a 'PathWalkerState'.
 As shown in the above figure, a PathWalkerState implements the states on the
 path by 'path walking'.  That is, it compares the current input with the
 current character on the path.  If it fits, it continues on the path.  If it
-does not it enters the PathWalkerState's transition map.  The transition map of
-all AnalyzerState-s absorbed by a PathWalkerState must be the same.
+does not, then it enters the PathWalkerState's transition map.  The transition 
+map of all AnalyzerState-s absorbed by a PathWalkerState must be the same.
 
-EXPLANATION: _______________________________________________________________
+EXPLANATION: __________________________________________________________________
 
 For path compression, traits of single character transitions are identified
 while the remaining transitions of the involved states are the same (or covered

@@ -24,12 +24,12 @@ def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L], DrawF=Fal
 
     if DrawF:
         print "DoorTree(A):"
-        StateA.entry.action_db.categorize()
-        door_tree_root = entry_door_tree.do(StateA.state_index, StateA.entry.action_db)
+        # StateA.entry.action_db.categorize()
+        door_tree_root = entry_door_tree.do(StateA.index, StateA.entry.action_db)
         print "    " + door_tree_root.get_string(StateA.entry.action_db).replace("\n", "\n    ")
 
-        StateB.entry.action_db.categorize()
-        door_tree_root = entry_door_tree.do(StateB.state_index, StateB.entry.action_db)
+        #StateB.entry.action_db.categorize()
+        door_tree_root = entry_door_tree.do(StateB.index, StateB.entry.action_db)
         print "DoorTree(B):"
         print "    " + door_tree_root.get_string(StateB.entry.action_db).replace("\n", "\n    ")
 
