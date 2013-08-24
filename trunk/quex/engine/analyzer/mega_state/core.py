@@ -195,7 +195,7 @@ class MegaState_Entry(Entry):
         """
         ## print "#transition_reassignment_db_construct:", RelatedMegaStateIndex
         ## print "#transition_reassignment_candidate_list:", self.transition_reassignment_candidate_list
-        ## print "#transition_reassignment_db id:", id(self)
+        ## print "#door_id_replacement_db id:", id(self)
         ## print_callstack()
         assert self.__transition_reassignment_db is None
 
@@ -221,7 +221,6 @@ class MegaState_Entry(Entry):
                                                   NewDoorId = action.door_id)
 
         return
-
 
 class StateKeyIndexDB(dict):
     """Maintenance of relationships between 'state_keys' of a MegaState and the
@@ -281,7 +280,6 @@ class StateKeyIndexDB(dict):
         self.__implemented_state_index_set.update(
              x for i, x in enumerate(StateIndexList) if i != IgnoredListIndex
         )
-
 
 class MegaState(AnalyzerState):
     """________________________________________________________________________

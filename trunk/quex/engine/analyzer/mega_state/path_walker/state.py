@@ -68,6 +68,8 @@ class PathWalkerState(MegaState):
 
     @property
     def transition_map(self):
+        """It is totally unnecessary to have a more complex transition map."""
+        return self.__transition_map_to_door_ids
         if self.__transition_map is None:
             self.__transition_map = TransitionMap.from_iterable(self.__transition_map_to_door_ids, \
                                                                 MegaState_Transition.create)
@@ -167,6 +169,7 @@ class PathWalkerState(MegaState):
 
         self.__configure_entry_CommandLists()
         self.__finalized = FinalizedContent(self, TheAnalyzer)
+
         return
 
     def __configure_entry_CommandLists(self):

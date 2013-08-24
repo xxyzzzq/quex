@@ -128,7 +128,10 @@ def do(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList):
         #    (After 'update' to avoid combination with itself)
         elect_db[elect.index] = elect
 
-    return [ state for state in elect_db.itervalues() if isinstance(state, TemplateState) ]
+    for state in elect_db.iterable_template_states():
+        state.finalize()
+
+    return list(elect_db.iterable_template_states())
 
 class CandidateList(list):
     """________________________________________________________________________
@@ -316,5 +319,10 @@ class ElectDB(dict):
                       for state_index, state in ifilter(condition, StateDB.iteritems()) )
 
         self.update(result)
+
+    def iterable_template_states(self):
+        for state in elect_db.itervalues():
+            if isinstance(state, TemplateState):
+                yield state
 
 
