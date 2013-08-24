@@ -1,6 +1,8 @@
 from quex.engine.analyzer.state.entry_action import DoorID, DoorID_Scheme
 from quex.blackboard                         import E_StateIndices
 
+from collections import namedtuple
+
 MegaState_Target_DROP_OUT_hash = hash(E_StateIndices.DROP_OUT)
 
 class MegaState_Transition(object):

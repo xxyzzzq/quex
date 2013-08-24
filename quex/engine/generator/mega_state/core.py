@@ -184,6 +184,11 @@ def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr):
        jump to the state's drop-out in case of failure. There is no difference
        here in the template state example.
     """
+    if not isinstance(TheState, TemplateState):
+        return transition_block.prepare_transition_map(TheState.transition_map, 
+                                                       TheState.index, 
+                                                       TheState.init_state_f, 
+                                                       TheAnalyzer = TheAnalyzer)
     # Transition map of the 'skeleton'        
     if TheState.transition_map_empty_f:
         # Transition Map Empty:
