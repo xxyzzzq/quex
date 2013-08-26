@@ -21,18 +21,18 @@ node [shape = circle];
 # start    = 2;
 # path     = (2)--'b'-->(4)--'c'-->[5];
 # skeleton = {
-#    [-oo, '`'] -> DROP_OUT
+#    [-oo, '`'] -> DoorID(s=DROP_OUT, d=0)
 #    ['a', 'z'] -> DoorID(s=3, d=1)
-#    ['{', oo]  -> DROP_OUT
+#    ['{', oo]  -> DoorID(s=DROP_OUT, d=0)
 # }
 # wildcard = False;
 # 
 # start    = 6;
 # path     = (6)--'d'-->(7)--'e'-->[8];
 # skeleton = {
-#    [-oo, '`'] -> DROP_OUT
+#    [-oo, '`'] -> DoorID(s=DROP_OUT, d=0)
 #    ['a', 'z'] -> DoorID(s=3, d=1)
-#    ['{', oo]  -> DROP_OUT
+#    ['{', oo]  -> DoorID(s=DROP_OUT, d=0)
 # }
 # wildcard = False;
 # 

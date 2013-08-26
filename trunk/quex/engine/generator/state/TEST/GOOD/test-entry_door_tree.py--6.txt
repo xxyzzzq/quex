@@ -1,31 +1,31 @@
-[1]: (0<-0) 
+[0:1]: (0<-0) 
     pre(1) --> store[0] = input_p - 0;
 parent: [6]
 
-[2]: (0<-1) 
+[0:2]: (0<-1) 
     pre(1) --> store[0] = input_p - 1;
 parent: [6]
 
-[6]: 
+[0:6]: 
     pre(1) --> accept(10)
     pre(2) --> accept(20)
     pre(0) --> store[0] = input_p - 0;
 parent: [0]
 
-[3]: (0<-2) 
+[0:3]: (0<-2) 
     pre(1) --> store[0] = input_p - 2;
 parent: [5]
 
-[4]: (0<-3) 
+[0:4]: (0<-3) 
     pre(0) --> store[1] = input_p - 0;
 parent: [5]
 
-[5]: 
+[0:5]: 
     pre(2) --> accept(20)
     pre(1) --> accept(10)
     pre(0) --> store[0] = input_p - 1;
 parent: [0]
 
-[0]: 
+[0:0]: 
 parent: [None]
 

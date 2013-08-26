@@ -1,6 +1,5 @@
 from   quex.engine.misc.file_in                        import error_msg
 from   quex.engine.generator.action_info               import PatternActionInfo
-from   quex.engine.generator.state.entry_action        import DoorID_DROP_OUT
 import quex.engine.generator.state_machine_coder       as     state_machine_coder
 import quex.engine.generator.state_router              as     state_router_generator
 from   quex.engine.generator.languages.variable_db     import variable_db
@@ -17,6 +16,7 @@ import quex.engine.state_machine.transformation        as     transformation
 from   quex.engine.generator.state.transition.code     import TransitionCodeFactory
 import quex.engine.generator.state.transition.core     as     transition_block
 import quex.engine.analyzer.engine_supply_factory      as     engine
+from   quex.engine.analyzer.state.entry_action         import DoorID_DROP_OUT
 from   quex.engine.analyzer.transition_map             import TransitionMap
 import quex.engine.analyzer.core                       as     analyzer_generator
 from   quex.engine.interval_handling                   import NumberSet, Interval

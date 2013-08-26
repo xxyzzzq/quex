@@ -26,7 +26,7 @@ class EntryActionDB:
         self.__largest_used_door_sub_index = 0  # '0' is used for 'Door 0', i.e. reload entry
 
         if Opt_StateIndex is not None:
-            assert isinstance(Opt_StateIndex, long)
+            assert isinstance(Opt_StateIndex, long), "%s" % Opt_StateIndex
             assert isinstance(Opt_FromStateIndex_List, (set, list))
 
             self.__db.update(

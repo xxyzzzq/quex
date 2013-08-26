@@ -73,6 +73,7 @@ class TransitionAction(object):
     """
     __slots__ = ("door_id", "command_list")
     def __init__(self, CommandListObjectF=True):
+        assert type(CommandListObjectF) == bool
         self.door_id      = None # DoorID into door tree from where the command list is executed
         self.command_list = CommandList() if CommandListObjectF else None
  
@@ -130,6 +131,15 @@ class Command(object):
         if self.__class__ != Other.__class__:
             return False
         return self._x == Other._x
+
+#E_Commands = Enum("InputPIncrement", "StoreInputPosition", "RestoreInputPosition", "Accept")
+#
+#__db = {
+#    E_Commands.InputPIncrement:      (,),
+#    E_Commands.StoreInputPosition:   ("offset",),
+#    E_Commands.RestoreInputPosition: (,),
+#    E_Commands.Accept:               ("pattern_id", "pre_context_id", "position_register",),
+#}
 
 class CommandList:
     def __init__(self):
