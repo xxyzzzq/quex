@@ -1,6 +1,6 @@
 # vim:set encoding=utf8:
 # (C) 2010-2012 Frank-Rene Schäfer
-from   quex.engine.analyzer.mega_state.core import MegaState_Transition
+from   quex.engine.analyzer.mega_state.core import TargetByStateKey
 from   quex.engine.analyzer.state.entry_action  import DoorID_Scheme
 from   quex.engine.analyzer.state.drop_out  import DropOut, \
                                                    DropOutIndifferent, \
@@ -10,6 +10,7 @@ from   quex.engine.analyzer.transition_map  import TransitionMap
 from   quex.blackboard import E_AcceptanceIDs, \
                               E_TransitionN, \
                               E_StateIndices
+from   itertools import chain
 
 class TemplateStateCandidate(object):
     """________________________________________________________________________
@@ -221,12 +222,12 @@ class TargetFactory:
     """________________________________________________________________________
     
     The 'TargetFactory' is concerned with the combination of two 
-    MegaState_Transition-s from two transition maps--assumed that they trigger on
+    TargetByStateKey-s from two transition maps--assumed that they trigger on
     the same character range. The TargetFactory accomplishes two jobs:
 
         .get(A, B): 
         
-           --> MegaState_Transition target implements target A and B.
+           --> TargetByStateKey target implements target A and B.
 
         .update_scheme_set(A, B, scheme_set)
 
@@ -235,65 +236,38 @@ class TargetFactory:
     ___________________________________________________________________________
     """
     def __init__(self, StateA, StateB):
-        self.__length_a = len(StateA.implemented_state_index_set())
-        self.__length_b = len(StateB.implemented_state_index_set())
-        self.__drop_out_scheme_a = (E_StateIndices.DROP_OUT,) * self.__length_a
-        self.__drop_out_scheme_b = (E_StateIndices.DROP_OUT,) * self.__length_b
+        pass 
 
     def get(self, TA, TB):
         """RETURNS:
         
-        A MegaState_Transition which represents the combination of target A and
-        target B. If both are equal the MegaState_Transition may have the
+        A TargetByStateKey which represents the combination of target A and
+        target B. If both are equal the TargetByStateKey may have the
         '.target_state_index' set. If not a 'scheme' is developped is
         developed, which determines a target based on a state key, i.e.
         'target_state_index = scheme[state_key]'.
         """
-        assert isinstance(TA, MegaState_Transition) 
-        assert isinstance(TB, MegaState_Transition) 
-
-        if TA.drop_out_f:
-            if TB.drop_out_f:
-                return TA
-            TA_scheme = self.__drop_out_scheme_a
-
-        elif TA.door_id is not None:
-            if TB.door_id is not None and TA.door_id == TB.door_id:
-                return TA
-            TA_scheme = (TA.door_id,) * self.__length_a
-
-        else:
-            TA_scheme = TA.scheme
-
-        if TB.drop_out_f:
-            # TA was not drop-out, otherwise we would have returned earlier
-            TB_scheme = self.__drop_out_scheme_b
-
-        elif TB.door_id is not None:
-            # TA was not the same door, otherwise we would have returned earlier
-            TB_scheme = (TB.door_id,) * self.__length_b
-
-        else:
-            TB_scheme = TB.scheme
-
-        return MegaState_Transition.create(DoorID_Scheme.concatinate(TA_scheme,TB_scheme))
+        return TargetByStateKey.from_2_TargetByStateKeys(TA,TB)
 
     @staticmethod
     def update_scheme_set(TA, TB, scheme_set):
         """This function is used to count the number of different schemes in a
         combination of transition maps. The number of different schemes is used
         to determine the cost a combination of transition maps.
+
+        NOTE: The use of 'hash' has the potential to miss a non-equal occurrence.
+              The value is only for metrics. So its no great deal.
         """
-        assert isinstance(TA, MegaState_Transition) 
-        assert isinstance(TB, MegaState_Transition) 
+        assert isinstance(TA, TargetByStateKey) 
+        assert isinstance(TB, TargetByStateKey) 
 
-        if TA.drop_out_f and TB.drop_out_f:
-            return 
-
-        elif TA.door_id is not None:
-            if TB.door_id is not None and TA.door_id == TB.door_id:
+        # The 'common drop_out case' is covered by 'uniform_door_id'
+        if TA.uniform_door_id is not None:
+            if TA.uniform_door_id == TB.uniform_door_id:
                 return 
 
-        my_hash = hash(TA) ^ hash(TB)
+        my_hash = 0x5A5A5A5A
+        for x in chain(TA.iterable_door_id_scheme(), TB.iterable_door_id_scheme()):
+            my_hash ^= hash(x)
         scheme_set.add(my_hash)
 

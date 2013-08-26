@@ -1,8 +1,8 @@
 from   quex.engine.interval_handling           import Interval
 from   quex.blackboard                         import E_StateIndices, E_ActionIDs
 from   quex.engine.tools                       import r_enumerate
-from   quex.engine.analyzer.mega_state.target  import MegaState_Transition
-from   quex.engine.analyzer.state.entry_action import DoorID, TransitionID
+from   quex.engine.analyzer.mega_state.target  import TargetByStateKey
+from   quex.engine.analyzer.state.entry_action import DoorID, TransitionID, DoorID_DROP_OUT
 from   quex.blackboard                         import E_StateIndices
 
 from   copy      import deepcopy, copy
@@ -19,7 +19,7 @@ class TransitionMap(list):
                   [ interval_N, target_N] ]
 
     where the intervals are sorted and non-overlapping. Drop-out intervals 
-    are best associated with a target == E_StateIndices.DROP_OUT.
+    are best associated with a target == *DROP_OUT.
 
     NOTE: len(self) == 0 indicates: empty transition map.
     ___________________________________________________________________________
@@ -100,7 +100,7 @@ class TransitionMap(list):
         """
         def relate(Target):
             if Target == E_StateIndices.DROP_OUT:
-                return Target
+                return DoorID_DROP_OUT
             else:
                 result = TheAnalyzer.state_db[Target].entry.action_db.get_door_id(StateIndex=Target, FromStateIndex=StateIndex)
                 assert result is not None
@@ -108,37 +108,24 @@ class TransitionMap(list):
         
         return self.__class__.from_iterable(self, relate)
 
-    def replace_DoorIDs(self, MapOldDoorIdToNewDoorId):
-        """Transition maps have been configured to enter states through DoorID-s.
-        MegaState-s replace original states and old DoorID-s must be replaced by
-        new ones, those that enter MegaState-s.
-
-        It is assumed that MegaStates made their entry in the databases!
+    def adapt_targets(self, helper_object, adapt_this):
+        """Adapts targets in the transition map independent on the intervals. 
+        
+        'adapt' is a function which:
+           -- receives the target of an interval as argument. 
+           -- returns 'None' if the value of the target shall not be changed. 
+           -- if it returns a value which 'is not None', then this value
+              is implemented as the replacement for the target.
         """
-        def relate(Target, MapOldDoorIdToNewDoorId):
-            """RETURN: None      --> entry in transition map is left as is.
-                       NewTarget --> new entry in transition is to be made.
-            """
-            if Target == E_StateIndices.DROP_OUT:
-                return None # Nothing to be done
-            elif isinstance(Target, DoorID):
-                return MapOldDoorIdToNewDoorId.get(Target)
-            elif isinstance(Target, MegaState_Transition):
-                result = MegaState_Transition.replace_self(MapOldDoorIdToNewDoorId)
-            else:
-                assert False, Target
-
         for i, info in enumerate(self):
             interval, target = info
-            new_target = relate(target, MapOldDoorIdToNewDoorId)
+            new_target = adapt_this(helper_object, target)
             if new_target is None: continue
             self[i] = (interval, new_target)
 
     def contains_DoorIDs(self, DoorIdSet):
-        print "#dids:", DoorIdSet
         for i, info in self:
-            assert info == E_StateIndices.DROP_OUT or isinstance(info, DoorID), "%s%s" % (info.__class__, info)
-            print "#dddd:", info, info in DoorIdSet
+            assert isinstance(info, DoorID), "%s%s" % (info.__class__, info)
             if info in DoorIdSet: return True
         return False
 

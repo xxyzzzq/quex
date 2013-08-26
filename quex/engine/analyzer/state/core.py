@@ -1,6 +1,7 @@
 from   quex.engine.state_machine.core      import State
 from   quex.engine.analyzer.transition_map import TransitionMap
-from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction
+from   quex.engine.analyzer.state.entry_action import TransitionID, DoorID_DROP_OUT, TransitionAction
+from   quex.engine.analyzer.mega_state.target  import TargetByStateKey_DROP_OUT
 from   quex.blackboard  import E_StateIndices, \
                                E_InputActions
 
@@ -82,7 +83,8 @@ class AnalyzerState(object):
         L = len(self.transition_map)
         if   L > 1:  return False
         elif L == 0: return True
-        elif self.transition_map[0][1] == E_StateIndices.DROP_OUT: return True
+        elif self.transition_map[0][1] == DoorID_DROP_OUT:           return True
+        elif self.transition_map[0][1] == TargetByStateKey_DROP_OUT: return True
         return False
 
     def get_string_array(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
@@ -105,22 +107,4 @@ class AnalyzerState(object):
 
     def __repr__(self):
         return self.get_string()
-
-def get_input_action(EngineType, TheState, ForceInputDereferencingF):
-    action = EngineType.input_action(TheState.init_state_f)
-
-    if TheState.transition_map_empty_f:
-        # If the state has no further transitions then the input character does 
-        # not have to be read. This is so, since without a transition map, the 
-        # state immediately drops out. The drop out transits to a terminal. 
-        # Then, the next action will happen from the init state where we work
-        # on the same position. If required the reload happens at that moment.
-        #
-        # This is not true for Path Walker States, so we offer the option 
-        # 'ForceInputDereferencingF'
-        if not ForceInputDereferencingF:
-            if   action == E_InputActions.INCREMENT_THEN_DEREF: return E_InputActions.INCREMENT
-            elif action == E_InputActions.DECREMENT_THEN_DEREF: return E_InputActions.DECREMENT
-
-    return action
 

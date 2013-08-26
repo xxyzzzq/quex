@@ -4,7 +4,7 @@ from   quex.engine.analyzer.state.entry_action  import PathIteratorSet, \
                                                        PathIteratorIncrement, \
                                                        DoorID
 from   quex.engine.analyzer.mega_state.core     import MegaState, \
-                                                       MegaState_Transition, \
+                                                       TargetByStateKey, \
                                                        MegaState_Entry, \
                                                        MegaState_DropOut
 import quex.engine.state_machine.index          as     index
@@ -72,7 +72,7 @@ class PathWalkerState(MegaState):
         return self.__transition_map_to_door_ids
         if self.__transition_map is None:
             self.__transition_map = TransitionMap.from_iterable(self.__transition_map_to_door_ids, \
-                                                                MegaState_Transition.create)
+                                                                TargetByStateKey.create)
         return self.__transition_map
 
     @property
@@ -149,7 +149,7 @@ class PathWalkerState(MegaState):
         new_state_index_list = [x.state_index for x in Path.step_list]
         terminal_index       = len(new_state_index_list) - 1
         # Assert: A state cannot be implemented on two different paths.
-        assert set(self.ski_db.implemented_state_index_set).isdisjoint(new_state_index_list[:terminal_index])
+        assert self.ski_db.not_implemented_yet(new_state_index_list[:terminal_index])
         self.ski_db.extend(new_state_index_list, IgnoredListIndex=terminal_index)
 
         # (2) Absorb Entry/DropOut Information
@@ -177,6 +177,10 @@ class PathWalkerState(MegaState):
         respectively, the 'path_iterator' needs to be set. During the walk along
         a path, the 'path_iterator' is simply incremented--and this happens in the
         code generated for the path walker (later on).
+
+        NOTE: Here, it must be ensured that the DoorID-s for entries from 
+              outside remain the same! This way, any external transition map
+              may remain the same.
         """
         # Entries along the path: PathIteratorIncrement
         #                         ... but this is handled better by the code generator.

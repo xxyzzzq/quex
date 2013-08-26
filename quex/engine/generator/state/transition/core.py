@@ -1,4 +1,5 @@
 from   quex.engine.generator.state.transition.code      import TransitionCodeFactory
+from   quex.engine.generator.state.entry_action         import DoorID_DROP_OUT
 import quex.engine.generator.state.transition.solution  as     solution
 import quex.engine.generator.state.transition.bisection as     bisection
 import quex.engine.analyzer.engine_supply_factory       as     engine
@@ -68,7 +69,7 @@ def prepare_transition_map(TM,
         return TM
 
     TM.assert_continuity()
-    TM.fill_gaps(E_StateIndices.DROP_OUT)
+    TM.fill_gaps(DoorID_DROP_OUT)
 
     goto_reload_str = TransitionCodeFactory.prepare_reload_tansition(TM,
                                      StateIndex,
