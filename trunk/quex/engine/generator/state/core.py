@@ -1,6 +1,5 @@
 from   quex.engine.analyzer.core                    import Analyzer
-from   quex.engine.analyzer.state.core              import AnalyzerState, \
-                                                           get_input_action
+from   quex.engine.analyzer.state.core              import AnalyzerState
 import quex.engine.generator.state.transition.core  as transition_block
 import quex.engine.generator.state.entry            as entry
 import quex.engine.generator.state.drop_out         as drop_out
@@ -109,4 +108,22 @@ def input_do(txt, TheState, TheAnalyzer, ForceInputDereferencingF=False):
     LanguageDB.ACCESS_INPUT(txt, action, 1)
     txt.append(1)
     LanguageDB.STATE_DEBUG_INFO(txt, TheState)
+
+def get_input_action(EngineType, TheState, ForceInputDereferencingF):
+    action = EngineType.input_action(TheState.init_state_f)
+
+    if TheState.transition_map_empty_f:
+        # If the state has no further transitions then the input character does 
+        # not have to be read. This is so, since without a transition map, the 
+        # state immediately drops out. The drop out transits to a terminal. 
+        # Then, the next action will happen from the init state where we work
+        # on the same position. If required the reload happens at that moment.
+        #
+        # This is not true for Path Walker States, so we offer the option 
+        # 'ForceInputDereferencingF'
+        if not ForceInputDereferencingF:
+            if   action == E_InputActions.INCREMENT_THEN_DEREF: return E_InputActions.INCREMENT
+            elif action == E_InputActions.DECREMENT_THEN_DEREF: return E_InputActions.DECREMENT
+
+    return action
 

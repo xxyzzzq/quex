@@ -1,7 +1,6 @@
 from   quex.blackboard                                   import setup as Setup
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
-from   quex.engine.analyzer.mega_state.core              import MegaState_Target_DROP_OUT
 from   quex.engine.analyzer.transition_map               import TransitionMap
 from   quex.engine.generator.state.transition.code       import TransitionCodeFactory, \
                                                                 MegaStateTransitionCodeFactory
@@ -199,13 +198,13 @@ def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr):
         # => Adapt the trigger map, so that the 'buffer limit' is an 
         #    isolated single interval.
         TheState.transition_map = TransitionMap.from_iterable( 
-            (Interval(-sys.maxint, sys.maxint), MegaState_Target_DROP_OUT) 
+            (Interval(-sys.maxint, sys.maxint), TargetByStateKey.DROP_OUT) 
         )
 
     # In case that TheState.transition_map clones (which it should not),
     # the following is safe:
     tm = TheState.transition_map
-    goto_reload_str = TransitionCodeFactory.prepare_reload_tansition(
+    goto_reload_str = MegaStateTransitionCodeFactory.prepare_reload_tansition(
                                  TM            = tm,
                                  StateIndex    = TheState.index,
                                  EngineType    = TheAnalyzer.engine_type,

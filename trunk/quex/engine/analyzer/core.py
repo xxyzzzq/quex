@@ -67,7 +67,7 @@ def do(SM, EngineType=engine.FORWARD):
     # [Optional] Combination of states into MegaState-s.
     if len(Setup.compression_type_list) != 0:
         mega_state_analyzer.do(analyzer)
-        # MegaState.transition_map:   Interval --> MegaState_Target
+        # MegaState.transition_map:   Interval --> TargetByStateKey
 
     return analyzer
 

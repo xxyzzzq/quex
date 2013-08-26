@@ -194,7 +194,6 @@ class CharacterPath(object):
         """
         assert    TransitionCharacter is not None
         assert    isinstance(TransitionMapWildCardPlug, DoorID) \
-               or TransitionMapWildCardPlug == E_StateIndices.DROP_OUT \
                or TransitionMapWildCardPlug == -1
 
         result = self.clone()

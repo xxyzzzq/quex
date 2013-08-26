@@ -22,7 +22,7 @@ Analogous to the AnalyzerState, a MegaState has special classes to implement
 'Entry' and 'DropOut', namely 'MegaState_Entry' and 'MegaState_DropOut'.  Where
 an AnalyzerState's transition_map associates a character interval with a target
 state index, the MegaState's transition_map associates a character interval
-with a 'MegaState_Transition'. Given a state_key, the MegaState_Transition provides the
+with a 'TargetByStateKey'. Given a state_key, the TargetByStateKey provides the
 target state index for the given character interval.
 
 The following pinpoints the general idea of a MegaState.
@@ -34,11 +34,11 @@ The following pinpoints the general idea of a MegaState.
     /* Some Specific Actions ... */
 
     tansition_map( input ) {
-        in interval_0:  MegaState_Target_0[state_key];  --> Target states
-        in interval_1:  MegaState_Target_1[state_key];  --> depending on
-        in interval_2:  MegaState_Target_2[state_key];  --> current input
+        in interval_0:  TargetByStateKey_0[state_key];  --> Target states
+        in interval_1:  TargetByStateKey_1[state_key];  --> depending on
+        in interval_2:  TargetByStateKey_2[state_key];  --> current input
         ...                                             --> character.
-        in interval_N:  MegaState_Target_N[state_key]; 
+        in interval_N:  TargetByStateKey_N[state_key]; 
     }
 
     MegaState_DropOut:
@@ -49,7 +49,7 @@ _______________________________________________________________________________
 This file provides two special classes for to represent 'normal' 
 AnalyzerState-s:
 
--- PseudoMegaState: represents an AnalyzerState as if it was a 
+-- PseudoTemplateState: represents an AnalyzerState as if it was a 
                     MegaState. This way, it may act homogeneously in 
                     algorithms that work on MegaState-s and AnalyzerState-s
                     at the same time.
@@ -61,8 +61,7 @@ _______________________________________________________________________________
 (C) 2012 Frank-Rene Schaefer
 """
 from quex.engine.analyzer.state.core         import AnalyzerState
-from quex.engine.analyzer.mega_state.target  import MegaState_Transition, \
-                                                    MegaState_Target_DROP_OUT
+from quex.engine.analyzer.mega_state.target  import TargetByStateKey
 from quex.engine.analyzer.state.entry        import Entry
 from quex.engine.analyzer.state.drop_out     import DropOut, \
                                                     DropOutIndifferent, \
@@ -75,24 +74,6 @@ from quex.engine.tools import print_callstack, \
                               TypedDict
 
 from copy import copy
-
-class DoorIdReassignmentDB(dict):
-    def __init__(self):
-        dict.__init__(self)
-
-    def get_replacement(self, FromStateIndex, OldDoorId, Default=None):
-        change_db = dict.get(self, FromStateIndex)
-        if change_db is None: return Default
-        result    = change_db.get(OldDoorId)
-        if result is None:    return Default
-        else:                 return result
-
-    def add(self, IndexOfStateOfConcernedTransistionMap, OldDoorId, NewDoorId):
-        assert isinstance(OldDoorId, DoorID)
-        assert isinstance(NewDoorId, DoorID)
-        change_db = dict.get(self, IndexOfStateOfConcernedTransistionMap)
-        if change_db is not None: change_db[OldDoorId] = NewDoorId
-        else:                     self[ IndexOfStateOfConcernedTransistionMap] = { OldDoorId: NewDoorId, }
 
 class MegaState_Entry(Entry):
     """________________________________________________________________________
@@ -199,26 +180,21 @@ class MegaState_Entry(Entry):
         ## print_callstack()
         assert self.__transition_reassignment_db is None
 
-        self.__transition_reassignment_db = DoorIdReassignmentDB()
 
         # All CommandList-s which are subject to DoorID reassignment are set to
         # 'None'. Then 'action_db.categorize()' can determine new DoorID-s.
-        old_db = dict((transition_id, self.action_db.get(transition_id).door_id)
-                      for dummy, transition_id in self.transition_reassignment_candidate_list)
-
         for dummy, transition_id in self.transition_reassignment_candidate_list:
             self.action_db.get(transition_id).door_id = None
         
         self.action_db.categorize(RelatedMegaStateIndex)
 
+        self.__transition_reassignment_db = {}
         for tm_state_index, transition_id in self.transition_reassignment_candidate_list:
             # tm_state_index = index of the state whose transition map is subject to 
             #                  the replacement.
             action = self.action_db.get(transition_id)
             assert action is not None
-            self.__transition_reassignment_db.add(IndexOfStateOfConcernedTransistionMap = tm_state_index, 
-                                                  OldDoorId = old_db[transition_id], 
-                                                  NewDoorId = action.door_id)
+            self.__transition_reassignment_db[transition_id] = action.door_id 
 
         return
 
@@ -270,6 +246,10 @@ class StateKeyIndexDB(dict):
         assert StateIndex in self.__implemented_state_index_set
         return self.__map_state_index_to_state_key[StateIndex]
 
+    def assign(self, StateIndexList):
+        self.__init__()
+        self.extend(StateIndexList)
+
     def extend(self, StateIndexList, IgnoredListIndex=None):
         offset = len(self.__state_index_sequence)
         for i, state_index in enumerate(StateIndexList):
@@ -280,6 +260,13 @@ class StateKeyIndexDB(dict):
         self.__implemented_state_index_set.update(
              x for i, x in enumerate(StateIndexList) if i != IgnoredListIndex
         )
+
+    def not_implemented_yet(self, StateIndexSet):
+        """RETURNS: True, if none of the States in StateIndexSet is in
+                          .implemented_state_index_set.
+                    False, else.
+        """
+        return self.implemented_state_index_set.isdisjoint(StateIndexSet)
 
 class MegaState(AnalyzerState):
     """________________________________________________________________________
@@ -326,7 +313,7 @@ class MegaState(AnalyzerState):
     ___________________________________________________________________________
     """ 
     def __init__(self, StateIndex):
-        # A 'PseudoMegaState' does not implement a 'MegaState_Entry' and 'MegaState_DropOut'.
+        # A 'PseudoTemplateState' does not implement a 'MegaState_Entry' and 'MegaState_DropOut'.
         # On the long term 'MegaState_DropOut' should be derived from 'DropOut'.
         assert isinstance(StateIndex, long)
 
@@ -469,54 +456,6 @@ class MegaState_DropOut(TypedDict):
         x = self.get(TheDropOut)
         if x is None: self[TheDropOut] = set([StateIndex])
         else:         x.add(StateIndex)
-
-class PseudoMegaState(MegaState): 
-    """________________________________________________________________________
-    
-    Represents an AnalyzerState in a way to that it acts homogeneously with
-    other MegaState-s. That is, the transition_map is adapted so that it maps
-    from a character interval to a MegaState_Transition.
-
-              transition_map:  interval --> MegaState_Transition
-
-    instead of mapping to a target state index.
-    ___________________________________________________________________________
-    """
-    def __init__(self, Represented_AnalyzerState):
-        assert not isinstance(Represented_AnalyzerState, MegaState)
-        self.__state = Represented_AnalyzerState
-
-        pseudo_mega_state_drop_out = MegaState_DropOut(Represented_AnalyzerState)
-
-        MegaState.__init__(self, Represented_AnalyzerState.index)
-
-        self.ski_db.extend([ Represented_AnalyzerState.index ])
-        self._absorb_Entry_DropOut_from_state(Represented_AnalyzerState)
-
-        # (*) Transition map that triggers to MegaState_Transition-s 
-        #     instead of triggering to DoorID-s.
-        # 
-        # CAVEAT: In general, it is **NOT TRUE** that if two transitions (x,a) and
-        # (x, b) to a state 'x' share a DoorID in the original state, then they
-        # share the DoorID in the MegaState. 
-        #
-        # The critical case is the recursive transition (x,x). It may trigger the
-        # same actions as another transition (x,a) in the original state.
-        # However, when 'x' is implemented in a MegaState it needs to set a
-        # 'state_key' upon entry from 'a'. This is, or may be, necessary to tell
-        # the MegaState on which's behalf it has to operate. The recursive
-        # transition from 'x' to 'x', though, does not have to set the state_key,
-        # since the MegaState still operates on behalf of the same state. While
-        # (x,x) and (x,a) have the same DoorID in the original state, their DoorID
-        # differs in the MegaState which implements 'x'.
-        #
-        # THUS: A translation 'old DoorID' --> 'new DoorID' is not sufficient to
-        # adapt transition maps!
-        #
-        # Here, the recursive target is implemented as a 'scheme' in order to
-        # prevent that it may be treated as 'uniform' with other targets.
-        self.transition_map = TransitionMap.from_iterable(self.__state.transition_map, 
-                                                          MegaState_Transition.create)
 
 #class AbsorbedState_Entry(Entry):
 #    """________________________________________________________________________

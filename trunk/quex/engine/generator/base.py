@@ -1,5 +1,6 @@
 from   quex.engine.misc.file_in                        import error_msg
 from   quex.engine.generator.action_info               import PatternActionInfo
+from   quex.engine.generator.state.entry_action        import DoorID_DROP_OUT
 import quex.engine.generator.state_machine_coder       as     state_machine_coder
 import quex.engine.generator.state_router              as     state_router_generator
 from   quex.engine.generator.languages.variable_db     import variable_db
@@ -353,7 +354,7 @@ class LoopGenerator(Generator):
             AfterReloadAction.insert(0, "%s\n" % LanguageDB.INPUT_P_INCREMENT())
             AfterReloadAction.insert(0, 1)
 
-            TM.set_target(Setup.buffer_limit_code, E_StateIndices.DROP_OUT)
+            TM.set_target(Setup.buffer_limit_code, DoorID_DROP_OUT)
             BeforeReloadAction.append("%s\n" % LanguageDB.LEXEME_START_SET())
 
             #TM.replace_action_id(E_ActionIDs.ON_EXIT, 
@@ -656,7 +657,7 @@ def get_pattern_action_pair_list_from_map(TM):
     # Sort by actions.
     action_code_db = defaultdict(NumberSet)
     for character_set, action_list in TM:
-        if action_list == E_StateIndices.DROP_OUT: continue
+        if action_list == DoorID_DROP_OUT: continue
         assert isinstance(action_list, list)
         # Make 'action_list' a tuple so that it is hash-able
         action_code_db[tuple(action_list)].unite_with(character_set)

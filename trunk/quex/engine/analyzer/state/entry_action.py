@@ -19,10 +19,13 @@ class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
     def __repr__(self):
         return "DoorID(s=%s, d=%s)" % (self.state_index, self.door_index)
 
+DoorID_DROP_OUT = DoorID(E_StateIndices.DROP_OUT, 0)
+DoorID_RELOAD   = DoorID(E_StateIndices.RELOAD_PROCEDURE, 0)
+
 class DoorID_Scheme(tuple):
-    """A TargetScheme maps from a index, i.e. a state_key to a particular
+    """A TargetByStateKey maps from a index, i.e. a state_key to a particular
        target (e.g. a DoorID). It is implemented as a tuple which can be 
-       identified by the class 'TargetScheme'.
+       identified by the class 'TargetByStateKey'.
     """
     def __new__(self, DoorID_List):
         return tuple.__new__(self, DoorID_List)

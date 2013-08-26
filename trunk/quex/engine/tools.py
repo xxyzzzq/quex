@@ -36,6 +36,17 @@ class UniformObject(object):
         self._content = Initial
         self._equal   = EqualCmp
 
+    @staticmethod
+    def from_iterable(Iterable, EqualCmp=lambda x,y: x==y):
+        try:    initial = Iterable.next()
+        except: return UniformObject(EqualCmp, Initial=E_Values.VOID)
+
+        result = UniformObject(EqualCmp, Initial=initial)
+        for x in Iterable:
+            result <<= x
+        return result
+
+
     def clone(self):
         result = UniformObject(self._equal)
         result._content = self._content

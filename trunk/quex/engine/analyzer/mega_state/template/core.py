@@ -1,6 +1,5 @@
 # (C) 2010-2012 Frank-Rene Schaefer
-from   quex.engine.analyzer.mega_state.core               import PseudoMegaState
-from   quex.engine.analyzer.mega_state.template.state     import TemplateState
+from   quex.engine.analyzer.mega_state.template.state     import TemplateState, PseudoTemplateState
 from   quex.engine.analyzer.mega_state.template.candidate import TemplateStateCandidate
 from   quex.blackboard import E_Compression
 from   itertools       import ifilter, islice
@@ -91,7 +90,7 @@ def do(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList):
        combining two particular states from the 'elect_db'.
 
     To support the homogeneity of the algorithm all AnalyzerState-s are
-    translated into PseudoMegaState-s prior the analysis procedure.
+    translated into PseudoTemplateState-s prior the analysis procedure.
 
     COMBINATION GAIN VALUE ____________________________________________________
 
@@ -129,7 +128,7 @@ def do(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList):
         elect_db[elect.index] = elect
 
     for state in elect_db.iterable_template_states():
-        state.finalize()
+        state.finalize(TheAnalyzer)
 
     return list(elect_db.iterable_template_states())
 
@@ -137,7 +136,7 @@ class CandidateList(list):
     """________________________________________________________________________
 
     Maintain list of possible state combinations into a TemplateState. States
-    to be combined can be AnalyzerState-s (i.e. PseudoMegaState-s) or 
+    to be combined can be AnalyzerState-s (i.e. PseudoTemplateState-s) or 
     TemplateState-s. For each possible combination a 'gain' needs to be computed.
     This happens during the construction of a 'TemplateStateCandidate'. This
     list maintains all candidates that provide a minimum gain in a sorted 
@@ -291,7 +290,7 @@ class ElectDB(dict):
     """________________________________________________________________________
 
     Database of states which are either AnalyzerState-s (i.e.
-    PseudoMegaState-s) from the original state machine, or TemplateState-s
+    PseudoTemplateState-s) from the original state machine, or TemplateState-s
     which implement two or more of such AnalyzerState-s. 
     
     Whenever two states are combined into one TemplateState, the two
@@ -313,15 +312,15 @@ class ElectDB(dict):
                               and len(x[1].transition_map) != 0   \
                               and x[1].init_state_f == False
 
-        # Represent AnalyzerState-s by PseudoMegaState-s so they behave
+        # Represent AnalyzerState-s by PseudoTemplateState-s so they behave
         # uniformly with TemplateState-s.
-        result = dict((state_index, PseudoMegaState(state)) \
+        result = dict((state_index, PseudoTemplateState(state)) \
                       for state_index, state in ifilter(condition, StateDB.iteritems()) )
 
         self.update(result)
 
     def iterable_template_states(self):
-        for state in elect_db.itervalues():
+        for state in self.itervalues():
             if isinstance(state, TemplateState):
                 yield state
 

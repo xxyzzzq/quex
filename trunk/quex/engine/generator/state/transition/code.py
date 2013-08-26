@@ -1,10 +1,9 @@
 import quex.engine.analyzer.engine_supply_factory   as     engine
-from   quex.engine.analyzer.state.entry_action      import DoorID
-from   quex.engine.analyzer.mega_state.core         import MegaState_Transition, \
-                                                           MegaState_Target_DROP_OUT
+from   quex.engine.analyzer.state.entry_action      import DoorID, DoorID_DROP_OUT, DoorID_RELOAD
+from   quex.engine.analyzer.mega_state.target       import TargetByStateKey, TargetByStateKey_DROP_OUT, TargetByStateKey_RELOAD
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.generator.languages.address      import get_address
-import quex.engine.analyzer.transition_map              as transition_map_tool
+import quex.engine.analyzer.transition_map          as     transition_map_tool
 from   quex.blackboard import E_StateIndices, \
                               setup as Setup
 
@@ -21,8 +20,9 @@ class TransitionCodeFactory:
         cls.analyzer        = TheAnalyzer
 
 
-    @staticmethod
-    def prepare_reload_tansition(TM,
+    @classmethod
+    def prepare_reload_tansition(cls, 
+                                 TM,
                                  StateIndex     = None,
                                  EngineType     = engine.FORWARD,
                                  InitStateF     = False,
@@ -38,25 +38,21 @@ class TransitionCodeFactory:
         if not EngineType.requires_buffer_limit_code_for_reload():
             return None
 
-        TransitionCodeFactory.prepare_transition_map_for_reload(TM)
-
+        cls.prepare_transition_map_for_reload(TM)
 
         # RETURN: goto_reload_str
-        return TransitionCodeFactory.prepare_reload_action(StateIndex, EngineType, InitStateF, GotoReload_Str)
+        return cls.prepare_reload_action(StateIndex, EngineType, InitStateF, GotoReload_Str)
 
     @staticmethod
     def prepare_transition_map_for_reload(TM):
+        """Ensures that the buffer limit code causes a transition to a
+        reload section. That is, there will be an interval of size 1 at
+        the buffer limit code which maps to DoorID_RELOAD.
+        """
         # Insist that transitions to reload procedure have been prepared!
-        # There is no state transition to 'RELOAD_PROCEDURE', so transition on
-        # buffer limit code MUST trigger a 'DROP_OUT'.
-        blc_target = TM.get_target(Setup.buffer_limit_code) 
-        assert    blc_target == E_StateIndices.DROP_OUT \
-               or blc_target == MegaState_Target_DROP_OUT \
-               or blc_target == E_StateIndices.RELOAD_PROCEDURE
-
-        # Signalize 'reload' upon buffer limit code.
-        TM.set_target(Setup.buffer_limit_code, 
-                      E_StateIndices.RELOAD_PROCEDURE)
+        assert TM.get_target(Setup.buffer_limit_code) in (DoorID_DROP_OUT, DoorID_RELOAD), \
+               "%s" % TM.get_target(Setup.buffer_limit_code)
+        TM.set_target(Setup.buffer_limit_code, DoorID_RELOAD)
 
     @classmethod
     def prepare_reload_action(cls, StateIndex, EngineType, InitStateF, GotoReload_Str):
@@ -80,26 +76,25 @@ class TransitionCodeFactory:
         elif isinstance(Target, (str, unicode)) or isinstance(Target, list):
             return TransitionCode(Target)
 
-        elif Target == E_StateIndices.RELOAD_PROCEDURE:
-            if cls.goto_reload_str is not None: 
-                return TransitionCode(cls.goto_reload_str)
-            else:                          
-                return TransitionCode(LanguageDB.GOTO_RELOAD(cls.state_index, 
-                                                             cls.init_state_f,
-                                                             cls.engine_type))
-
-        elif Target == E_StateIndices.DROP_OUT:
-            return TransitionCode_DropOut(cls.state_index)
-
         elif isinstance(Target, DoorID):
-            # The transition to another target state cannot possibly be cut out!
-            # => no postponed code generation
-            return TransitionCode(LanguageDB.GOTO_BY_DOOR_ID(Target))
+            if   Target == DoorID_DROP_OUT:
+                return TransitionCode_DropOut(cls.state_index)
+            elif Target == DoorID_RELOAD:
+                if cls.goto_reload_str is not None: 
+                    return TransitionCode(cls.goto_reload_str)
+                else:                          
+                    return TransitionCode(LanguageDB.GOTO_RELOAD(cls.state_index, 
+                                                                 cls.init_state_f,
+                                                                 cls.engine_type))
+            else:
+                # The transition to another target state cannot possibly be cut out!
+                # => no postponed code generation
+                return TransitionCode(LanguageDB.GOTO_BY_DOOR_ID(Target))
 
         else:
             assert False, "Target = '%s'" % Target
 
-class MegaStateTransitionCodeFactory:
+class MegaStateTransitionCodeFactory(TransitionCodeFactory):
     @classmethod
     def init(cls, TheState, StateDB, StateKeyStr, EngineType, GotoReloadStr):
         cls.state                        = TheState
@@ -109,31 +104,39 @@ class MegaStateTransitionCodeFactory:
         cls.engine_type                  = EngineType
         cls.goto_reload_str              = GotoReloadStr
 
+    @staticmethod
+    def prepare_transition_map_for_reload(TM):
+        """Ensures that the buffer limit code causes a transition to a
+        reload section. That is, there will be an interval of size 1 at
+        the buffer limit code which maps to DoorID_RELOAD.
+        """
+        # Insist that transitions to reload procedure have been prepared!
+        assert TM.get_target(Setup.buffer_limit_code) in (TargetByStateKey_DROP_OUT, TargetByStateKey_RELOAD), \
+               "%s" % TM.get_target(Setup.buffer_limit_code)
+        TM.set_target(Setup.buffer_limit_code, TargetByStateKey_RELOAD)
+
     @classmethod
     def do(cls, Target):
         LanguageDB = Setup.language_db
 
-        if Target == E_StateIndices.RELOAD_PROCEDURE:
+        if Target == TargetByStateKey_RELOAD:
             if cls.goto_reload_str is not None: 
                 return TransitionCode(cls.goto_reload_str)
             else:                          
                 return TransitionCode(LanguageDB.GOTO_RELOAD(cls.state.index, 
                                                              cls.state.init_state_f,
                                                              cls.engine_type))
-        assert isinstance(Target, MegaState_Transition)
-        if Target.drop_out_f:
-            return TransitionCode_DropOut(cls.state.index) 
-
-        elif Target.door_id is not None:
-            return TransitionCode(LanguageDB.GOTO_BY_DOOR_ID(Target.door_id))
-
-        elif Target.scheme is not None:
-            assert Target.scheme_id is not None
-            variable_name = require_scheme_variable(Target.scheme_id, Target.scheme, cls.state, cls.state_db)
-            return TransitionCode(LanguageDB.GOTO_BY_VARIABLE("%s[%s]" % (variable_name, cls.state_key_str)))
+        assert isinstance(Target, TargetByStateKey)
+        if Target.uniform_door_id is not None:
+            if Target.drop_out_f:
+                return TransitionCode_DropOut(cls.state.index) 
+            else:
+                return TransitionCode(LanguageDB.GOTO_BY_DOOR_ID(Target.uniform_door_id))
 
         else:
-            assert False
+            assert Target.scheme_id is not None
+            variable_name = require_scheme_variable(Target.scheme_id, Target.iterable_door_id_scheme(), cls.state, cls.state_db)
+            return TransitionCode(LanguageDB.GOTO_BY_VARIABLE("%s[%s]" % (variable_name, cls.state_key_str)))
 
 class TransitionCode:
     def __init__(self, Code, DropOutF=False, StateIndex=None):
@@ -180,13 +183,12 @@ class TransitionCode_DropOut(TransitionCode):
     def _get_drop_out_f(self):  
         return True
 
-def require_scheme_variable(SchemeID, Scheme, TState, StateDB):
+def require_scheme_variable(SchemeID, SchemeIterable, TState, StateDB):
     """Defines the transition targets for each involved state. Note, that recursion
        is handled as part of the general case, where all involved states target 
        a common door of the template state.
     """
     LanguageDB = Setup.language_db
-    assert len(Scheme) == len(TState.state_index_sequence())
 
     def get_code(AdrList):
         last_i = len(AdrList) - 1
@@ -199,17 +201,22 @@ def require_scheme_variable(SchemeID, Scheme, TState, StateDB):
         txt.append(" }")
         return "".join(txt)
 
-    def address(Target):
-        if Target == E_StateIndices.DROP_OUT:
+    def _address(Target):
+        assert isinstance(Target, DoorID)
+        if Target == DoorID_DROP_OUT:
             # All drop outs end up at the end of the transition map, where
             # it is routed via the state_key to the state's particular drop out.
             return get_address("$drop-out", TState.index, U=True, R=True)
-        elif isinstance(Target, DoorID):
-            return LanguageDB.ADDRESS_BY_DOOR_ID(Target)
         else:
-            assert False
+            return LanguageDB.ADDRESS_BY_DOOR_ID(Target)
 
-    address_list = [ address(x) for x in Scheme ]
+    def address(Target):
+        result = _address(Target)
+        return result
+
+    address_list = [ address(x) for x in SchemeIterable ]
+
+    assert len(address_list) == len(TState.state_index_sequence())
 
     return variable_db.require_array("template_%i_target_%i", 
                                      ElementN = len(TState.state_index_sequence()), 

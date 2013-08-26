@@ -3,9 +3,9 @@ from   quex.engine.analyzer.state.core                      import AnalyzerState
 from   quex.engine.analyzer.state.entry                     import Entry
 from   quex.engine.analyzer.state.entry_action              import DoorID
 import quex.engine.analyzer.engine_supply_factory           as     engine
-from   quex.engine.analyzer.mega_state.core                 import PseudoMegaState, MegaState
+from   quex.engine.analyzer.mega_state.core                 import MegaState
 import quex.engine.analyzer.mega_state.template.core        as templates 
-from   quex.engine.analyzer.mega_state.template.state       import MegaState_Transition, TemplateState
+from   quex.engine.analyzer.mega_state.template.state       import TargetByStateKey, TemplateState, PseudoTemplateState
 from   quex.engine.analyzer.mega_state.template.candidate   import TemplateStateCandidate
 import quex.engine.generator.state.entry_door_tree          as     entry_door_tree
 from   quex.engine.state_machine.core                       import State
@@ -66,7 +66,7 @@ def setup_AnalyzerStates(StatesDescription):
 
     # Repplace all states with a pseudo MegaState
     for state in analyzer.state_db.values():
-        analyzer.state_db[state.index] = PseudoMegaState(state)
+        analyzer.state_db[state.index] = PseudoTemplateState(state)
 
     return analyzer
 
@@ -105,12 +105,12 @@ def configure_States(TriggerMapA, StateN_A, TriggerMapB, StateN_B):
 def test_combination(StateA, StateB, analyzer, StateA_Name="A", StateB_Name="B", DrawF=False, FinalizeF=True):
     print
     if not isinstance(StateA, MegaState): 
-        StateA = PseudoMegaState(StateA)
+        StateA = PseudoTemplateState(StateA)
     print "State%s:" % StateA_Name, StateA.state_index_sequence()
     print_tm(StateA.transition_map, StateA.state_index_sequence())
 
     if not isinstance(StateB, MegaState): 
-        StateB = PseudoMegaState(StateB)
+        StateB = PseudoTemplateState(StateB)
     print "State%s:" % StateB_Name, StateB.state_index_sequence()
     print_tm(StateB.transition_map, StateB.state_index_sequence())
 
@@ -160,7 +160,7 @@ def scheme_str(X):
     else:
         return "<<error>>"
 
-def __MegaState_Transition_print(ego, PrintDoorsF=False, FrameF=True):
+def __TargetByStateKey_print(ego, PrintDoorsF=False, FrameF=True):
     prefix  = "MST:"
     content = ""
     suffix  = "" 
@@ -194,7 +194,7 @@ def print_tm(TM, StateIndexList):
     tm_str = [("  [INTERVAL]", "[TARGET/STATE %s]" % [int(x) for x in StateIndexList])]
     for interval, target in TM:
         interval_str = "  " + repr(interval).replace("%i" % sys.maxint, "oo").replace("%i" % (sys.maxint-1), "oo")
-        target_str   = __MegaState_Transition_print(target)
+        target_str   = __TargetByStateKey_print(target)
         tm_str.append((interval_str, target_str))
 
     L = max(len(x[0]) for x in tm_str)
@@ -229,7 +229,7 @@ def OLD_print_tm(TM):
     txt = ""
     last_i = len(TM) - 1
     for i, info in enumerate(TM):
-        if not isinstance(info[1], MegaState_Transition): 
+        if not isinstance(info[1], TargetByStateKey): 
             txt += "%s" % repr(info[1]).replace("L", "")
         else: 
             txt += "%s" % scheme_str(info[1])
@@ -242,7 +242,7 @@ def print_metric(TM):
     def get_target_scheme_list(TM):
         result = []
         for interval, target in TM:
-            assert isinstance(target, MegaState_Transition)
+            assert isinstance(target, TargetByStateKey)
             if target.scheme is not None: result.append(target)
         return result
 
@@ -254,7 +254,7 @@ def print_metric(TM):
     tc_str = ""
     last_i = len(SL) - 1
     for i, mst in enumerate(SL):
-        tc_str += "%s" % __MegaState_Transition_print(mst, FrameF=False)
+        tc_str += "%s" % __TargetByStateKey_print(mst, FrameF=False)
         if i != last_i: tc_str += ", "
     print "Target Schemes = %s" % tc_str
 
