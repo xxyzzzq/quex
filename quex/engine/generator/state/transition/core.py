@@ -1,8 +1,8 @@
 from   quex.engine.generator.state.transition.code      import TransitionCodeFactory
-from   quex.engine.generator.state.entry_action         import DoorID_DROP_OUT
 import quex.engine.generator.state.transition.solution  as     solution
 import quex.engine.generator.state.transition.bisection as     bisection
 import quex.engine.analyzer.engine_supply_factory       as     engine
+from   quex.engine.analyzer.state.entry_action          import DoorID_DROP_OUT
 from   quex.engine.analyzer.transition_map              import TransitionMap
 from   quex.blackboard                                  import setup as Setup, E_StateIndices
 from   copy      import copy

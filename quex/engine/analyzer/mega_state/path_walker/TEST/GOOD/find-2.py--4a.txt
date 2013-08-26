@@ -55,35 +55,35 @@ node [shape = circle];
 # start    = 1;
 # path     = (1)--'a'-->(2)--'a'-->(3)--'a'-->(4)--'a'-->[5];
 # skeleton = {
-#    [-oo, oo] -> DROP_OUT
+#    [-oo, oo] -> DoorID(s=DROP_OUT, d=0)
 # }
 # wildcard = False;
 # 
 # start    = 6;
 # path     = (6)--'a'-->(7)--'a'-->(8)--'a'-->(9)--'a'-->[10];
 # skeleton = {
-#    [-oo, oo] -> DROP_OUT
+#    [-oo, oo] -> DoorID(s=DROP_OUT, d=0)
 # }
 # wildcard = False;
 # 
 # start    = 11;
 # path     = (11)--'a'-->(12)--'a'-->(13)--'a'-->(14)--'a'-->[15];
 # skeleton = {
-#    [-oo, oo] -> DROP_OUT
+#    [-oo, oo] -> DoorID(s=DROP_OUT, d=0)
 # }
 # wildcard = False;
 # 
 # start    = 16;
 # path     = (16)--'a'-->(17)--'a'-->(18)--'a'-->(19)--'a'-->[20];
 # skeleton = {
-#    [-oo, oo] -> DROP_OUT
+#    [-oo, oo] -> DoorID(s=DROP_OUT, d=0)
 # }
 # wildcard = False;
 # 
 # start    = 21;
 # path     = (21)--'a'-->(22)--'a'-->(23)--'a'-->(24)--'a'-->[25];
 # skeleton = {
-#    [-oo, oo] -> DROP_OUT
+#    [-oo, oo] -> DoorID(s=DROP_OUT, d=0)
 # }
 # wildcard = False;
 # 

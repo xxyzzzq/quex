@@ -168,22 +168,19 @@ def __TargetByStateKey_print(ego, PrintDoorsF=False, FrameF=True):
     if   ego.drop_out_f:          
         content  = "DropOut"
 
-    elif ego.door_id is not None: 
-        if PrintDoorsF: target = ego.door_id
-        else:           target = ego.door_id.state_index
+    elif ego.uniform_door_id is not None: 
+        if PrintDoorsF: target = ego.uniform_door_id
+        else:           target = ego.uniform_door_id.state_index
         prefix  += "("
         content  = repr(target).replace("L", "")
         suffix   = ")"
 
-    elif ego.scheme is not None:  
-        if PrintDoorsF: scheme = ego.scheme
-        else:           scheme = tuple(door.state_index for door in ego.scheme)
+    else:
+        if PrintDoorsF: scheme = [x for x in ego.iterable_door_id_scheme()]
+        else:           scheme = tuple(door_id.state_index for door_id in ego.iterable_door_id_scheme())
         prefix  += "scheme("
         content  = repr(scheme).replace("L", "")
         suffix   = ")"
-
-    else:                         
-        return "<ERROR>"
 
     if FrameF:
         return prefix + content + suffix
@@ -243,11 +240,12 @@ def print_metric(TM):
         result = []
         for interval, target in TM:
             assert isinstance(target, TargetByStateKey)
-            if target.scheme is not None: result.append(target)
+            if target.uniform_door_id is not None: continue
+            result.append(target)
         return result
 
     SL = get_target_scheme_list(TM)
-    SL.sort(key=attrgetter("scheme"))
+    SL.sort(key=lambda x: tuple(x.iterable_door_id_scheme()))
 
     print "BorderN        = %i" % (len(TM) - 1)
    

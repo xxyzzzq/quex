@@ -14,20 +14,20 @@ node [shape = circle];
 # start    = 7;
 # path     = (7)--'b'-->(8)--'b'-->(8)--'a'-->[9];
 # skeleton = {
-#    [-oo, '`'] -> DROP_OUT
+#    [-oo, '`'] -> DoorID(s=DROP_OUT, d=0)
 #    'a'        -> DoorID(s=9, d=1)
 #    'b'        -> DoorID(s=8, d=1)
-#    ['c', oo]  -> DROP_OUT
+#    ['c', oo]  -> DoorID(s=DROP_OUT, d=0)
 # }
 # wildcard = False;
 # 
 # start    = 7;
 # path     = (7)--'b'-->(8)--'a'-->[9];
 # skeleton = {
-#    [-oo, '`'] -> DROP_OUT
+#    [-oo, '`'] -> DoorID(s=DROP_OUT, d=0)
 #    'a'        -> DoorID(s=9, d=1)
 #    'b'        -> DoorID(s=8, d=1)
-#    ['c', oo]  -> DROP_OUT
+#    ['c', oo]  -> DoorID(s=DROP_OUT, d=0)
 # }
 # wildcard = False;
 # 

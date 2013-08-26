@@ -2,7 +2,7 @@ from   quex.blackboard                              import setup as Setup, \
                                                            E_StateIndices
 import quex.blackboard                              as     blackboard
 import quex.engine.state_machine.index              as     sm_index
-from   quex.engine.generator.state.entry_action     import DoorID_DROP_OUT
+from   quex.engine.analyzer.state.entry_action      import DoorID_DROP_OUT
 import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.transition_map          import TransitionMap
 import quex.engine.generator.state.transition.core  as     transition_block
