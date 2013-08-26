@@ -19,7 +19,7 @@ def test(state):
         print "    %3i <--- %s" % (int(key), repr(trigger_set))
 
     print "\n## Map: Trigger Intervals (sorted) --> Target Index\n"
-    tm = TransitionMap.from_TargetMap(state.transitions())
+    tm = TransitionMap.from_TargetMap(state.target_map)
     # (*) print the trigger map entries
     prev_end = None
     for trigger_interval, target_index in tm:
