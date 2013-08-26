@@ -14,7 +14,7 @@ if "--hwut-info" in sys.argv:
 
 def test(state):
     # (*) compute the trigger map
-    tm = TransitionMap.from_TargetMap(state.transitions())
+    tm = TransitionMap.from_TargetMap(state.target_map)
     # (*) print the trigger map entries
     for trigger_interval, target_index in tm:
         if target_index is None or target_index == E_StateIndices.DROP_OUT:
