@@ -155,6 +155,10 @@ class CandidateList(list):
         state_list = TheElectDB.values()
         L          = len(state_list)
 
+        def bad_company_announcement(A, B):
+            A.bad_company_add(B.index)  # Make a note, that it makes not sense
+            B.bad_company_add(A.index)  # to try ony of the two again together.
+
         # Pre-allocate the result array to avoid frequent allocations
         #
         # NOTE: L * (L - 1) is always even, i.e. dividable by 2.
@@ -171,10 +175,11 @@ class CandidateList(list):
         for i, i_state in enumerate(state_list):
             for k_state in islice(state_list, i + 1, None):
 
-                if self.__uniformity_required_f:
-                    # Rely on __eq__ operator (used '=='). '!=' uses __neq__ 
-                    if   not (i_state.drop_out == k_state.drop_out):    continue
-                    elif not (i_state.entry.is_uniform(k_state.entry)): continue
+                if     self.__uniformity_required_f                                               \
+                   and (   i_state.uniform_DropOut           != k_state.uniform_DropOut           \
+                        or i_state.uniform_entry_CommandList != k_state.uniform_entry_CommandList): 
+                    bad_company_announcement(i_state, k_state)
+                    continue
 
                 candidate = TemplateStateCandidate(i_state, k_state)
 
@@ -182,9 +187,7 @@ class CandidateList(list):
                     result[n] = candidate
                     n += 1
                 else:
-                    # Mention the states for which the other does not combine properly
-                    i_state.bad_company_add(k_state.index)
-                    k_state.bad_company_add(i_state.index)
+                    bad_company_announcement(i_state, k_state)
 
         if n != MaxSize:
             del result[n:]

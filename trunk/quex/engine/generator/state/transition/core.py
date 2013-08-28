@@ -2,8 +2,8 @@ from   quex.engine.generator.state.transition.code      import TransitionCodeFac
 import quex.engine.generator.state.transition.solution  as     solution
 import quex.engine.generator.state.transition.bisection as     bisection
 import quex.engine.analyzer.engine_supply_factory       as     engine
-from   quex.engine.analyzer.state.entry_action          import DoorID_DROP_OUT
 from   quex.engine.analyzer.transition_map              import TransitionMap
+from   quex.engine.analyzer.state.entry_action          import DoorID
 from   quex.blackboard                                  import setup as Setup, E_StateIndices
 from   copy      import copy
 from   itertools import islice
@@ -47,11 +47,12 @@ def do(txt, TM):
         txt.append(LanguageDB.ENDIF)
 
 def prepare_transition_map(TM, 
-                           StateIndex     = None,
-                           InitStateF     = False,
-                           GotoReload_Str = None,
-                           TheAnalyzer    = None,
-                           EngineType     = engine.FORWARD):
+                           StateIndex         = None,
+                           InitStateF         = False,
+                           GotoReload_Str     = None,
+                           TheAnalyzer        = None,
+                           EngineType         = engine.FORWARD, 
+                           DoorId_AfterReload = None):
     global LanguageDB
     assert isinstance(TM, list)
     assert TheAnalyzer is not None or isinstance(EngineType, engine.Base)
@@ -69,13 +70,13 @@ def prepare_transition_map(TM,
         return TM
 
     TM.assert_continuity()
-    TM.fill_gaps(DoorID_DROP_OUT)
+    TM.fill_gaps(DoorID.drop_out(StateIndex))
 
     goto_reload_str = TransitionCodeFactory.prepare_reload_tansition(TM,
                                      StateIndex,
                                      EngineType     = EngineType,
                                      InitStateF     = InitStateF,
-                                     GotoReload_Str = GotoReload_Str)
+                                     GotoReload_Str = GotoReload_Str) 
 
     TransitionCodeFactory.init(EngineType, 
                                StateIndex    = StateIndex,

@@ -7,7 +7,7 @@ from   quex.engine.generator.languages.address         import get_address,      
                                                               get_label_of_address,               \
                                                               get_plain_strings,                  \
                                                               get_address_set_subject_to_routing, \
-                                                              is_label_referenced
+                                                              address_exists
 import quex.engine.state_machine.parallelize           as     parallelize
 import quex.engine.state_machine.algorithm.beautifier  as     beautifier
 import quex.engine.state_machine.index                 as     index
@@ -15,8 +15,8 @@ from   quex.engine.state_machine.core                  import StateMachine
 import quex.engine.state_machine.transformation        as     transformation
 from   quex.engine.generator.state.transition.code     import TransitionCodeFactory
 import quex.engine.generator.state.transition.core     as     transition_block
+from   quex.engine.analyzer.state.entry_action         import DoorID
 import quex.engine.analyzer.engine_supply_factory      as     engine
-from   quex.engine.analyzer.state.entry_action         import DoorID_DROP_OUT
 from   quex.engine.analyzer.transition_map             import TransitionMap
 import quex.engine.analyzer.core                       as     analyzer_generator
 from   quex.engine.interval_handling                   import NumberSet, Interval
@@ -148,6 +148,8 @@ class Generator(GeneratorBase):
         return [ state_router_generator.do(routed_state_info_list) ]
 
     def variable_definitions(self):
+        LanguageDB = Setup.language_db
+
         # Variable to store the current input
         variable_db.require("input") 
 
@@ -172,7 +174,8 @@ class Generator(GeneratorBase):
         variable_db.require("target_state_index", Condition_ComputedGoto=False) 
 
         # Variables that tell where to go after reload success and reload failure
-        if is_label_referenced("$reload-FORWARD") or is_label_referenced("$reload-BACKWARD"):
+        if    address_exists(LanguageDB.ADDRESS_BY_DOOR_ID(DoorID.global_reload_forward())) \
+           or address_exists(LanguageDB.ADDRESS_BY_DOOR_ID(DoorID.global_reload_backward())):
             variable_db.require("target_state_else_index")  # upon reload failure
             variable_db.require("target_state_index")       # upon reload success
 
@@ -345,7 +348,8 @@ class LoopGenerator(Generator):
     def code_action_map_plain(cls, TM, BeforeReloadAction=None, AfterReloadAction=None):
         TM.assert_adjacency()
 
-        LanguageDB = Setup.language_db
+        pseudo_state_index = LanguageDB.ADDRESS(index.get(), None)
+        LanguageDB         = Setup.language_db
 
         if BeforeReloadAction is None: 
             engine_type = engine.CHARACTER_COUNTER
@@ -354,7 +358,7 @@ class LoopGenerator(Generator):
             AfterReloadAction.insert(0, "%s\n" % LanguageDB.INPUT_P_INCREMENT())
             AfterReloadAction.insert(0, 1)
 
-            TM.set_target(Setup.buffer_limit_code, DoorID_DROP_OUT)
+            TM.set_target(Setup.buffer_limit_code, DoorID.drop_out(pseudo_state_index))
             BeforeReloadAction.append("%s\n" % LanguageDB.LEXEME_START_SET())
 
             #TM.replace_action_id(E_ActionIDs.ON_EXIT, 
@@ -371,7 +375,6 @@ class LoopGenerator(Generator):
         TM.delete_action_ids()
 
         txt = []
-        pseudo_state_index = LanguageDB.ADDRESS(index.get(), None)
         if BeforeReloadAction is not None:
             assert engine_type.requires_buffer_limit_code_for_reload()
             cls.code_generation_reload_preparation(txt, pseudo_state_index)
@@ -657,7 +660,7 @@ def get_pattern_action_pair_list_from_map(TM):
     # Sort by actions.
     action_code_db = defaultdict(NumberSet)
     for character_set, action_list in TM:
-        if action_list == DoorID_DROP_OUT: continue
+        if hasattr(action_list, "drop_out_f") and action_list.drop_out_f(): continue
         assert isinstance(action_list, list)
         # Make 'action_list' a tuple so that it is hash-able
         action_code_db[tuple(action_list)].unite_with(character_set)

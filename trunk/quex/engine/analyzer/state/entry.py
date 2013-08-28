@@ -1,10 +1,12 @@
 import quex.engine.analyzer.state.entry_action as entry_action
-from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction, DoorID
+from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction, DoorID, TransitionID_AFTER_RELOAD
 from   quex.engine.tools import TypedDict
 from   quex.blackboard import E_PreContextIDs,  \
                               E_AcceptanceIDs, E_PostContextIDs, \
                               E_TransitionN, E_StateIndices, E_TriggerIDs
 from   operator        import attrgetter
+
+from   quex.blackboard import setup as Setup
 
 class EntryActionDB:
     def __init__(self, Opt_StateIndex, Opt_FromStateIndex_List):
@@ -33,6 +35,10 @@ class EntryActionDB:
                 (TransitionID(Opt_StateIndex, i, 0), TransitionAction()) \
                 for i in Opt_FromStateIndex_List                         \
             )
+
+        if not Setup.buffer_based_analyzis_f:
+            # There must be a 'reload entry' where absolutely nothing happens.
+            self.__db[TransitionID_AFTER_RELOAD] = TransitionAction()
 
     def get(self, TheTransitionID):
         return self.__db.get(TheTransitionID)
@@ -77,7 +83,10 @@ class EntryActionDB:
         return None
 
     def absorb(self, Other):
+        # NOTE: The reload transition is never doubled, because it has always
+        #       the same transition_id.
         self.__db.update(Other.__db)
+
         if self.__largest_used_door_sub_index < Other.__largest_used_door_sub_index:
             self.__largest_used_door_sub_index = Other.__largest_used_door_sub_index
 
@@ -89,8 +98,9 @@ class EntryActionDB:
         assert isinstance(TheAction,       TransitionAction)
         #!! It is ABSOLUTELY essential, that the CommandList-s related to actions are
         #!! independent! Each transition must have its OWN CommandList!
-        for action in self.__db.itervalues():
-            assert id(TheAction.command_list) != id(action.command_list)
+        for transition_id, action in self.__db.iteritems():
+            if transition_id == TransitionID_AFTER_RELOAD: continue
+            assert id(TheAction.command_list) != id(action.command_list) 
 
         self.__db[TheTransitionID] = TheAction
 
@@ -207,6 +217,8 @@ class EntryActionDB:
 
         if len(work_list) == 0:
             return
+
+        self.__db[TransitionID_AFTER_RELOAD].door_id = DoorID.after_reload(StateIndex)
 
         command_list_db = dict(
             (action.command_list, action.door_id) for action in self.__db.itervalues()
@@ -338,6 +350,7 @@ class Entry(object):
         return xor_sum
 
     def __eq__(self, Other):
+        assert False, "not used"
         assert self.__door_tree_root is not None
         return self.__door_tree_root.is_equivalent(Other.__door_tree_root)
 

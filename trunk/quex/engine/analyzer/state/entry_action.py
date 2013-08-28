@@ -9,18 +9,47 @@ from   operator                 import attrgetter, itemgetter
 from   copy                     import deepcopy, copy
 from   itertools                import islice, izip
 
+E_DoorIdIndex = Enum("DROP_OUT", 
+                     "GOTO_RELOAD", 
+                     "AFTER_RELOAD", 
+                     "GLOBAL_RELOAD_FORWARD", 
+                     "GLOBAL_RELOAD_BACKWARD", 
+                     "GLOBAL_STATE_ROUTER", 
+                     "GLOBAL_TERMINAL_ROUTER", 
+                     "GLOBAL_TERMINAL_END_OF_FILE", 
+                     "GLOBAL_TERMINAL_FAILURE") 
+
 class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
     def __new__(self, StateIndex, DoorIndex):
         assert isinstance(StateIndex, (int, long)) or StateIndex in E_StateIndices
         # 'DoorIndex is None' --> right after the entry commands (targetted after reload).
-        assert isinstance(DoorIndex, (int, long))  or DoorIndex is None
+        assert isinstance(DoorIndex, (int, long))  or DoorIndex is None or DoorIndex in E_DoorIdIndex, "%s" % DoorIndex
         return super(DoorID, self).__new__(self, StateIndex, DoorIndex)
+
+    @staticmethod
+    def drop_out(StateIndex):          return DoorID(StateIndex, E_DoorIdIndex.DROP_OUT)
+    @staticmethod                     
+    def goto_reload():                 return DoorID(0,          E_DoorIdIndex.GOTO_RELOAD)
+    @staticmethod                     
+    def after_reload(StateIndex):      return DoorID(StateIndex, E_DoorIdIndex.AFTER_RELOAD)
+    @staticmethod                     
+    def global_reload_forward():       return DoorID(0,          E_DoorIdIndex.GLOBAL_RELOAD_FORWARD)
+    @staticmethod                     
+    def global_reload_backward():      return DoorID(0,          E_DoorIdIndex.GLOBAL_RELOAD_BACKWARD)
+    @staticmethod                     
+    def global_state_router():         return DoorID(0,          E_DoorIdIndex.GLOBAL_STATE_ROUTER)
+    @staticmethod                     
+    def global_terminal_router():      return DoorID(0,          E_DoorIdIndex.GLOBAL_TERMINAL_ROUTER)
+    @staticmethod
+    def global_terminal_end_of_file(): return DoorID(0,          E_DoorIdIndex.GLOBAL_TERMINAL_END_OF_FILE)
+    @staticmethod
+    def global_terminal_failure():     return DoorID(0,          E_DoorIdIndex.GLOBAL_TERMINAL_FAILURE)
+
+    def drop_out_f(self):    return self.door_index == E_DoorIdIndex.DROP_OUT
+    def goto_reload_f(self): return self.door_index == E_DoorIdIndex.GOTO_RELOAD
 
     def __repr__(self):
         return "DoorID(s=%s, d=%s)" % (self.state_index, self.door_index)
-
-DoorID_DROP_OUT = DoorID(E_StateIndices.DROP_OUT, 0)
-DoorID_RELOAD   = DoorID(E_StateIndices.RELOAD_PROCEDURE, 0)
 
 class DoorID_Scheme(tuple):
     """A TargetByStateKey maps from a index, i.e. a state_key to a particular
@@ -57,10 +86,18 @@ class TransitionID(namedtuple("TransitionID_tuple", ("target_state_index", "sour
         return super(TransitionID, self).__new__(self, StateIndex, FromStateIndex, TriggerId)
 
     def __repr__(self):
-        if self.trigger_id == 0:
-            return "TransitionID(to=%s, from=%s)" % (self.target_state_index, self.source_state_index)
+        if self.target_state_index == E_StateIndices.RELOAD_PROCEDURE:
+            source_state_str = "this"
         else:
-            return "TransitionID(to=%s, from=%s, trid=%s)" % (self.target_state_index, self.source_state_index, self.gtrigger_id)
+            source_state_str = "%s" % self.source_state_index
+
+        if self.trigger_id == 0:
+            return "TransitionID(to=%s, from=%s)" % (self.target_state_index, source_state_str)
+        else:
+            return "TransitionID(to=%s, from=%s, trid=%s)" % (self.target_state_index, source_state_str, self.gtrigger_id)
+
+TransitionID_DROP_OUT     = TransitionID(E_StateIndices.DROP_OUT, 0, 0)
+TransitionID_AFTER_RELOAD = TransitionID(E_StateIndices.RELOAD_PROCEDURE, 0L, 0)
 
 class TransitionAction(object):
     """Object containing information about commands to be executed upon
@@ -73,6 +110,9 @@ class TransitionAction(object):
     """
     __slots__ = ("door_id", "command_list")
     def __init__(self, CommandListObjectF=True):
+        # NOTE: 'DoorId' is not accepted as argument. Is needs to be assigned
+        #       by '.categorize()' in the action_db. Then, transition actions
+        #       with the same CommandList-s share the same DoorID.
         assert type(CommandListObjectF) == bool
         self.door_id      = None # DoorID into door tree from where the command list is executed
         self.command_list = CommandList() if CommandListObjectF else None
@@ -223,13 +263,13 @@ class CommandList:
 
         return xor_sum
 
-    def is_equivalent(self, Other):
-        """For 'equivalence' the commands 'MegaState_Command' are unimportant."""
-        # Rely on '__eq__' of Accepter
-        if not (self.accepter == Other.accepter): return False
-        self_misc_pure  = set(cmd for cmd in self.misc  if not isinstance(cmd, MegaState_Command))
-        Other_misc_pure = set(cmd for cmd in Other.misc if not isinstance(cmd, MegaState_Command))
-        return self_misc_pure == Other_misc_pure
+#    def is_equivalent(self, Other):
+#        """For 'equivalence' the commands 'MegaState_Command' are unimportant."""
+#        # Rely on '__eq__' of Accepter
+#        if not (self.accepter == Other.accepter): return False
+#        self_misc_pure  = set(cmd for cmd in self.misc  if not isinstance(cmd, MegaState_Command))
+#        Other_misc_pure = set(cmd for cmd in Other.misc if not isinstance(cmd, MegaState_Command))
+#        return self_misc_pure == Other_misc_pure
 
     def __eq__(self, Other):
         # Rely on '__eq__' of Accepter
@@ -238,7 +278,7 @@ class CommandList:
         else:                                       return self.misc == Other.misc
 
     def __ne__(self, Other):
-        return not (self.__eq__(Other))
+        return not self.__eq__(Other)
 
     def __repr__(self):
         txt = ""

@@ -65,8 +65,8 @@ def setup_AnalyzerStates(StatesDescription):
         state.transition_map = state.transition_map.relate_to_door_ids(analyzer, state.index)
 
     # Repplace all states with a pseudo MegaState
-    for state in analyzer.state_db.values():
-        analyzer.state_db[state.index] = PseudoTemplateState(state)
+    #for state in analyzer.state_db.values():
+    #    analyzer.state_db[state.index] = PseudoTemplateState(state)
 
     return analyzer
 
@@ -117,7 +117,7 @@ def test_combination(StateA, StateB, analyzer, StateA_Name="A", StateB_Name="B",
     print
     candidate = TemplateStateCandidate(StateA, StateB)
     result    = TemplateState(candidate)
-    result.entry.action_db.categorize(result.index)
+    result.finalize(analyzer) # entry.action_db.categorize(result.index)
     # result.transition_map = result.transition_map.relate_to_door_ids(analyzer, result.index)
 
     if DrawF:
