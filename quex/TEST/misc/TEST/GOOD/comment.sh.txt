@@ -21,10 +21,10 @@
 <      */
 <         case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 10, 13);/* \0 */
 < 
-<         case 0x61: goto _11;/* 'a' */
+<         case 0x61: goto _14;/* 'a' */
 < 
 >         case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 10, 13);
->         case 0x61: goto _11;
+>         case 0x61: goto _14;
 <     /* BEGIN: MODE PATTERNS
 <      * 
 <      * MODE: X

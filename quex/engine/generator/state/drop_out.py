@@ -1,4 +1,5 @@
-from   quex.engine.generator.languages.address    import Address
+from   quex.engine.generator.languages.address    import LabelIfDoorIdReferenced
+from   quex.engine.analyzer.state.entry_action    import DoorID
 from   quex.blackboard                            import E_AcceptanceIDs, E_StateIndices, \
                                                          E_TransitionN, E_PostContextIDs, E_PreContextIDs, \
                                                          setup as Setup
@@ -7,7 +8,7 @@ def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateInd
     LanguageDB = Setup.language_db
 
     if DefineLabelF:
-        txt.append(Address("$drop-out", StateIndex))
+        txt.append(LabelIfDoorIdReferenced(DoorID.drop_out(StateIndex)))
 
     if MentionStateIndexF:
         txt.append(1)

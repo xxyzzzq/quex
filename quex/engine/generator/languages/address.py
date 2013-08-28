@@ -94,10 +94,9 @@ def __referenced_label_set_add(Label):
     if Label == "__TERMINAL_ROUTER": 
         __referenced_label_set.add("__STATE_ROUTER")
 
-def is_label_referenced(Type, Arg=None):
+def address_exists(Address):
     global __referenced_label_set
-    label = get_label(Type, Arg)
-    return label in __referenced_label_set
+    return get_label_of_address(Address) in __referenced_label_set
 
 __routed_address_set = set([])
 def init_address_handling():
@@ -174,22 +173,28 @@ def get_label_of_address(Adr, U=False):
 
     return result
 
-class Address:
-    def __init__(self, LabelType, LabelTypeArg=None, Code=None):
+class CodeIfDoorIdReferenced:
+    def __init__(self, DoorId, Code=None):
         """LabelType, LabelTypeArg --> used to access __address_db.
 
            Code  = Code that is to be generated, supposed that the 
                    label is actually referred.
                    (May be empty, so that that only the label is not printed.)
         """
-        self.label = get_label(LabelType, LabelTypeArg)
+        assert isinstance(Code, list) or Code is None
 
-        if   Code is None:       self.code = [ self.label, ":\n" ]
-        elif type(Code) == list: self.code = Code
-        else:                    self.code = [ Code ]
+        address    = get_address("$entry", DoorId, U=False, R=False)
+        self.label = get_label_of_address(address)
+        if Code is None: self.code = [ self.label, ":\n" ]
+        else:            self.code = Code
+
+class LabelIfDoorIdReferenced(CodeIfDoorIdReferenced):
+    def __init__(self, DoorId):
+        CodeIfDoorIdReferenced.__init__(self, DoorId)
+
 
 def get_plain_strings(txt_list, RoutingInfoF=True):
-    """-- Replaces unreferenced 'Address' objects by empty strings.
+    """-- Replaces unreferenced 'CodeIfLabelReferenced' objects by empty strings.
        -- Replaces integers by indentation, i.e. '1' = 4 spaces.
     """
     global __referenced_label_set
@@ -205,7 +210,7 @@ def get_plain_strings(txt_list, RoutingInfoF=True):
             # Indentation: elm = number of indentations
             txt_list[i] = "    " * elm
 
-        elif not isinstance(elm, Address): 
+        elif not isinstance(elm, CodeIfDoorIdReferenced): 
             # Text is left as it is
             continue
 

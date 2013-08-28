@@ -86,17 +86,14 @@ class DropOut(object):
             self.__hash = h
         return self.__hash
 
-    def __neq__(self, Other):
-        assert False, "Use __eq__()"
-
     def __eq__(self, Other):
-        assert isinstance(Other, DropOut)
-        if   self.__acceptance_checker != Other.__acceptance_checker: return False
+        if   not isinstance(Other, DropOut):                          return False
+        elif self.__acceptance_checker != Other.__acceptance_checker: return False
         elif self.__terminal_router    != Other.__terminal_router:    return False
         return True
 
-    def is_equal(self, Other):
-        return self.__eq__(Other)
+    def __ne__(self, Other):
+        return not self.__eq__(Other)
 
     def finish(self, PositionRegisterMap):
         for element in self.__terminal_router:
@@ -227,8 +224,11 @@ class DropOutBackwardInputPositionDetection(DropOut):
     @property
     def reachable_f(self):         return self.__reachable_f
 
-    def __hash__(self):            return self.__reachable_f
-    def __eq__(self, Other):       return self.__reachable_f == Other.__reachable_f
+    def __hash__(self):            
+        return self.__reachable_f
+    def __eq__(self, Other):       
+        if not isinstance(Other, DropOutBackwardInputPositionDetection): return False
+        return self.__reachable_f == Other.__reachable_f
     def __repr__(self):
         if not self.__reachable_f: return "<unreachable>"
         else:                      return "<backward input position detected>"

@@ -16,8 +16,9 @@ import quex.engine.generator.languages.cpp       as     cpp
 from   quex.engine.generator.languages.address   import get_address, \
                                                         db, \
                                                         get_label, \
+                                                        get_label_of_address, \
                                                         get_plain_strings, \
-                                                        Address
+                                                        CodeIfDoorIdReferenced
 from   quex.blackboard                           import E_StateIndices,  \
                                                         E_AcceptanceIDs, \
                                                         E_InputActions,  \
@@ -213,9 +214,10 @@ class LanguageDB_Cpp(dict):
         else:
             assert False, "Unknown Entry Action"
 
-    def ADDRESS_BY_DOOR_ID(self, DoorId):
-        ## print "#DoorID %s --> Address: %s" % (DoorId, get_address("$entry", DoorId, U=True, R=True))
-        return get_address("$entry", DoorId, U=True, R=True)
+    def ADDRESS_BY_DOOR_ID(self, DoorId, SubjectToStateRoutingF=True, SubjectToGotoF=True):
+        if SubjectToStateRoutingF: SubjectToGotoF = True
+        print "#DoorID %s --> Address: %s" % (DoorId, get_address("$entry", DoorId, U=False, R=False))
+        return get_address("$entry", DoorId, U=SubjectToGotoF, R=SubjectToStateRoutingF)
 
     def ADDRESS(self, StateIndex, FromStateIndex):
         if self.__analyzer is None: 
@@ -265,10 +267,11 @@ class LanguageDB_Cpp(dict):
     def ADDRESS_LABEL(self, Address):
         return "_%i" % Address
 
-    def LABEL_BY_DOOR_ID(self, DoorId):
+    def LABEL_BY_DOOR_ID(self, DoorId, ColonF=True):
         label = self.__label_name_by_door_id(DoorId)
         # if NewlineF: return label + ":\n"
-        return label + ":"
+        if ColonF: return label + ":"
+        else:      return label
 
     def LABEL_DROP_OUT(self, StateIndex):
         return "_%s:" % self.ADDRESS_DROP_OUT(StateIndex)
@@ -334,24 +337,29 @@ class LanguageDB_Cpp(dict):
                  The related drop-out label can be determined here.
         """
         # 'DoorIndex == 0' is the entry into the state without any actions.
-        on_success = get_address("$entry", entry_action.DoorID(StateIndex, DoorIndex=0), U=True)
+        on_success = self.ADDRESS_BY_DOOR_ID(entry_action.DoorID.after_reload(StateIndex),
+                                             SubjectToStateRoutingF=True)
 
         if self.__code_generation_on_reload_fail_adr is not None:
             on_fail = self.__code_generation_on_reload_fail_adr
         else:
             if InitStateIndexF and EngineType.is_FORWARD():
-                on_fail = get_address("$terminal-EOF", U=True) 
+                door_id = entry_action.DoorID.global_terminal_end_of_file()
             else:
-                on_fail = get_address("$drop-out", StateIndex, U=True, R=True) 
+                door_id = entry_action.DoorID.drop_out(StateIndex)
+            on_fail = self.ADDRESS_BY_DOOR_ID(door_id, SubjectToStateRoutingF=True)
 
-        get_label("$state-router", U=True)            # Mark as 'referenced'
+        # Mark as 'used': The State Router
+        self.ADDRESS_BY_DOOR_ID(entry_action.DoorID.global_state_router(), SubjectToGotoF=True)
 
-        reload_label = self.__code_generation_reload_label
-        if self.__code_generation_reload_label is None:
-            direction = EngineType.direction_str() 
-            assert direction is not None
-            reload_label = get_label("$reload-%s" % direction, U=True)   
-
+        if self.__code_generation_reload_label is not None:
+            reload_label = self.__code_generation_reload_label
+        else:
+            if EngineType.is_FORWARD(): door_id = entry_action.DoorID.global_reload_forward()
+            else:                       door_id = entry_action.DoorID.global_reload_backward()
+            address      = self.ADDRESS_BY_DOOR_ID(door_id, SubjectToStateRoutingF=False)
+            reload_label = get_label_of_address(address)
+        
         return "QUEX_GOTO_RELOAD(%s, %s, %s);" % (reload_label, on_success, on_fail)
 
     def GOTO_TERMINAL(self, AcceptanceID):
@@ -645,19 +653,23 @@ class LanguageDB_Cpp(dict):
 
     def RELOAD(self):
         assert self.__code_generation_reload_label is None
-        forward_str = "".join([
+        forward_code = [
             cpp_reload_forward_str[0],
-            "__RELOAD_FORWARD:\n",
+            self.LABEL_BY_DOOR_ID(entry_action.DoorID.global_reload_forward()),
             cpp_reload_forward_str[1],
             cpp_reload_forward_str[2],
             cpp_reload_forward_str[3],
-        ])
-
-        txt = [
-            Address("$reload-FORWARD",  None, forward_str),
-            Address("$reload-BACKWARD", None, cpp_reload_backward_str)
         ]
-        return txt
+        backward_code = [
+            cpp_reload_backward_str[0],
+            self.LABEL_BY_DOOR_ID(entry_action.DoorID.global_reload_forward()),
+            cpp_reload_backward_str[1],
+        ]
+
+        return [
+            CodeIfDoorIdReferenced(entry_action.DoorID.global_reload_forward(),  forward_code),
+            CodeIfDoorIdReferenced(entry_action.DoorID.global_reload_backward(), backward_code)
+        ]
 
 cpp_reload_forward_str = ["""
     __quex_assert_no_passage();
@@ -679,9 +691,10 @@ cpp_reload_forward_str = ["""
     QUEX_GOTO_STATE(target_state_else_index);
 """]
 
-cpp_reload_backward_str = """
+cpp_reload_backward_str = ["""
     __quex_assert_no_passage();
-__RELOAD_BACKWARD:
+""",
+"""
     __quex_debug1("__RELOAD_BACKWARD");
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( QUEX_NAME(Buffer_is_begin_of_file)(&me->buffer) == false ) {
@@ -692,7 +705,7 @@ __RELOAD_BACKWARD:
     }
     __quex_debug("reload impossible\\n");
     QUEX_GOTO_STATE(target_state_else_index);
-"""
+"""]
 
 db["C++"] = LanguageDB_Cpp(CppBase)
 

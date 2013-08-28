@@ -2,7 +2,6 @@ from   quex.blackboard                              import setup as Setup, \
                                                            E_StateIndices
 import quex.blackboard                              as     blackboard
 import quex.engine.state_machine.index              as     sm_index
-from   quex.engine.analyzer.state.entry_action      import DoorID_DROP_OUT
 import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.transition_map          import TransitionMap
 import quex.engine.generator.state.transition.core  as     transition_block
@@ -296,7 +295,7 @@ def __get_transition_block(IndentationSetup, CounterAdr):
                Detect_Bad(CounterAdr))
 
     transition_map.sort()
-    transition_map.fill_gaps(DoorID_DROP_OUT)
+    transition_map.fill_gaps(DoorID.drop_out(CounterAdr))
 
     txt = []
     tm = transition_block.prepare_transition_map(transition_map, 

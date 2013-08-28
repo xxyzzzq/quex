@@ -1,6 +1,6 @@
 from   quex.engine.state_machine.core      import State
 from   quex.engine.analyzer.transition_map import TransitionMap
-from   quex.engine.analyzer.state.entry_action import TransitionID, DoorID_DROP_OUT, TransitionAction
+from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction
 from   quex.engine.analyzer.mega_state.target  import TargetByStateKey_DROP_OUT
 from   quex.blackboard  import E_StateIndices, \
                                E_InputActions
@@ -83,8 +83,7 @@ class AnalyzerState(object):
         L = len(self.transition_map)
         if   L > 1:  return False
         elif L == 0: return True
-        elif self.transition_map[0][1] == DoorID_DROP_OUT:           return True
-        elif self.transition_map[0][1] == TargetByStateKey_DROP_OUT: return True
+        elif self.transition_map[0][1].drop_out_f(): return True
         return False
 
     def get_string_array(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):

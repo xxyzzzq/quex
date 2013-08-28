@@ -1,4 +1,4 @@
-<test-database execution-time-sec="207.45" date="Mon Aug 26 23:52:05 2013">
+<test-database execution-time-sec="207.43" date="Tue Aug 27 07:00:49 2013">
     <last-used-diff-display-program name=""/>
     <test title="Mode Changes" time-sum-sec="2.35"> 
         <application file-name="test-mode-changes.py" info-request-time="1355705371L" vanished="False"/>
@@ -200,7 +200,7 @@
         </test>
     </group>
     <group name="Pseudo Ambgiguous Post Condition">
-        <test title="Part II" time-sum-sec="8.69"> 
+        <test title="Part II" time-sum-sec="8.67"> 
             <application file-name="test-pseudo_ambiguous_post_conditions-2.py" info-request-time="1356506044L" vanished="False"/>
             <choice-list number="10" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.64" crc="1614045300"/>
@@ -210,7 +210,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="0.97" crc="1614045300"/>
                <choice name="Cpp-Template" result="OK" time_sec="0.97" crc="1614045300"/>
                <choice name="Cpp-Template-CG" result="OK" time_sec="0.96" crc="1614045300"/>
-               <choice name="Cpp-Path" result="OK" time_sec="0.95" crc="1614045300"/>
+               <choice name="Cpp-Path" result="OK" time_sec="0.93" crc="1614045300"/>
                <choice name="Cpp-Path-CG" result="OK" time_sec="0.96" crc="1614045300"/>
                <choice name="ANSI-C-PathTemplate" result="OK" time_sec="1.00" crc="1614045300"/>
             </choice-list>

@@ -1,7 +1,8 @@
 from   quex.engine.misc.string_handling        import blue_print
+from   quex.engine.analyzer.state.entry_action import DoorID
 
 from   quex.engine.generator.languages.address import get_label, \
-                                                      Address
+                                                      CodeIfDoorIdReferenced
 from   quex.engine.interval_handling           import NumberSet
 from   quex.blackboard import E_ActionIDs
 from   operator import itemgetter
@@ -508,12 +509,13 @@ def __reentry_preparation(LanguageDB, PreConditionIDList, OnAfterMatchStr, Termi
     ])
 
 def __terminal_router(TerminalFailureRef, TerminalFailureDef):
-    return Address("$terminal-router", None, [
-          blue_print(__terminal_router_prolog_str,
-          [
-           ["$$TERMINAL_FAILURE-REF$$", TerminalFailureRef],
-           ["$$TERMINAL_FAILURE$$",     TerminalFailureDef],
-          ]),
+    prolog = blue_print(__terminal_router_prolog_str, [
+                         ["$$TERMINAL_FAILURE-REF$$", TerminalFailureRef],
+                         ["$$TERMINAL_FAILURE$$",     TerminalFailureDef],
+                        ])
+    return CodeIfDoorIdReferenced(DoorID.global_terminal_router(),
+    [
+          prolog,
           # DO NOT 'U=True' for the state router. This is done automatically if 
           # 'goto reload' is used. 
           get_label("$state-router"), ";",
@@ -530,10 +532,10 @@ def __terminal_states(action_db, PreConditionIDList, Setup, SimpleF=False):
     # If there is at least a single terminal, the the 're-entry' preparation must be accomplished
     if len(action_db) != 0: get_label("$re-start", U=True) # mark as 'used'
 
-    terminal_end_of_stream_def = get_label("$terminal-EOF")
+    terminal_end_of_stream_def = LanguageDB.LABEL_BY_DOOR_ID(DoorID.global_terminal_end_of_file(), ColonF=False)
 
-    terminal_failure_ref       = "QUEX_LABEL(%i)" % LanguageDB.ADDRESS_ON_FAILURE()
-    terminal_failure_def       = "_%s" % LanguageDB.ADDRESS_ON_FAILURE()
+    terminal_failure_ref       = "QUEX_LABEL(%i)" % LanguageDB.ADDRESS_BY_DOOR_ID(DoorID.global_terminal_failure())
+    terminal_failure_def       = LanguageDB.LABEL_BY_DOOR_ID(DoorID.global_terminal_failure(), ColonF=False)
 
     # (*) Text Blocks _________________________________________________________
     pattern_terminals_code         = []

@@ -1,5 +1,5 @@
 import quex.engine.analyzer.engine_supply_factory   as     engine
-from   quex.engine.analyzer.state.entry_action      import DoorID, DoorID_DROP_OUT, DoorID_RELOAD
+from   quex.engine.analyzer.state.entry_action      import DoorID
 from   quex.engine.analyzer.mega_state.target       import TargetByStateKey, TargetByStateKey_DROP_OUT, TargetByStateKey_RELOAD
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.generator.languages.address      import get_address
@@ -47,12 +47,11 @@ class TransitionCodeFactory:
     def prepare_transition_map_for_reload(TM):
         """Ensures that the buffer limit code causes a transition to a
         reload section. That is, there will be an interval of size 1 at
-        the buffer limit code which maps to DoorID_RELOAD.
+        the buffer limit code which maps to DoorID.goto_reload().
         """
         # Insist that transitions to reload procedure have been prepared!
-        assert TM.get_target(Setup.buffer_limit_code) in (DoorID_DROP_OUT, DoorID_RELOAD), \
-               "%s" % TM.get_target(Setup.buffer_limit_code)
-        TM.set_target(Setup.buffer_limit_code, DoorID_RELOAD)
+        assert TM.get_target(Setup.buffer_limit_code).drop_out_f
+        TM.set_target(Setup.buffer_limit_code, DoorID.goto_reload())
 
     @classmethod
     def prepare_reload_action(cls, StateIndex, EngineType, InitStateF, GotoReload_Str):
@@ -77,9 +76,9 @@ class TransitionCodeFactory:
             return TransitionCode(Target)
 
         elif isinstance(Target, DoorID):
-            if   Target == DoorID_DROP_OUT:
+            if   Target.drop_out_f():
                 return TransitionCode_DropOut(cls.state_index)
-            elif Target == DoorID_RELOAD:
+            elif Target.goto_reload_f():
                 if cls.goto_reload_str is not None: 
                     return TransitionCode(cls.goto_reload_str)
                 else:                          
@@ -108,12 +107,12 @@ class MegaStateTransitionCodeFactory(TransitionCodeFactory):
     def prepare_transition_map_for_reload(TM):
         """Ensures that the buffer limit code causes a transition to a
         reload section. That is, there will be an interval of size 1 at
-        the buffer limit code which maps to DoorID_RELOAD.
+        the buffer limit code which maps to DoorID.goto_reload().
         """
         # Insist that transitions to reload procedure have been prepared!
         assert TM.get_target(Setup.buffer_limit_code) in (TargetByStateKey_DROP_OUT, TargetByStateKey_RELOAD), \
                "%s" % TM.get_target(Setup.buffer_limit_code)
-        TM.set_target(Setup.buffer_limit_code, TargetByStateKey_RELOAD)
+        TM.set_target(Setup.buffer_limit_code, TargetByStateKey.goto_reload())
 
     @classmethod
     def do(cls, Target):
@@ -201,20 +200,9 @@ def require_scheme_variable(SchemeID, SchemeIterable, TState, StateDB):
         txt.append(" }")
         return "".join(txt)
 
-    def _address(Target):
-        assert isinstance(Target, DoorID)
-        if Target == DoorID_DROP_OUT:
-            # All drop outs end up at the end of the transition map, where
-            # it is routed via the state_key to the state's particular drop out.
-            return get_address("$drop-out", TState.index, U=True, R=True)
-        else:
-            return LanguageDB.ADDRESS_BY_DOOR_ID(Target)
-
-    def address(Target):
-        result = _address(Target)
-        return result
-
-    address_list = [ address(x) for x in SchemeIterable ]
+    address_list = [ 
+        LanguageDB.ADDRESS_BY_DOOR_ID(x) for x in SchemeIterable 
+    ]
 
     assert len(address_list) == len(TState.state_index_sequence())
 

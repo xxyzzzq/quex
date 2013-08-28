@@ -2,7 +2,7 @@ from   quex.engine.interval_handling           import Interval
 from   quex.blackboard                         import E_StateIndices, E_ActionIDs
 from   quex.engine.tools                       import r_enumerate
 from   quex.engine.analyzer.mega_state.target  import TargetByStateKey
-from   quex.engine.analyzer.state.entry_action import DoorID, TransitionID, DoorID_DROP_OUT
+from   quex.engine.analyzer.state.entry_action import DoorID, TransitionID
 from   quex.blackboard                         import E_StateIndices
 
 from   copy      import deepcopy, copy
@@ -100,7 +100,7 @@ class TransitionMap(list):
         """
         def relate(Target):
             if Target == E_StateIndices.DROP_OUT:
-                return DoorID_DROP_OUT
+                return DoorID.drop_out(StateIndex)
             else:
                 result = TheAnalyzer.state_db[Target].entry.action_db.get_door_id(StateIndex=Target, FromStateIndex=StateIndex)
                 assert result is not None

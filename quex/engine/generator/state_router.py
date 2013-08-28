@@ -1,4 +1,5 @@
-from   quex.engine.generator.languages.address  import Address, get_label, get_address, get_label_of_address
+from   quex.engine.analyzer.state.entry_action  import DoorID
+from   quex.engine.generator.languages.address  import CodeIfDoorIdReferenced, get_label, get_address, get_label_of_address
 from   operator                                 import itemgetter
 
 def do(StateRouterInfoList):
@@ -8,17 +9,20 @@ def do(StateRouterInfoList):
              "    __quex_assert_no_passage();\n"       \
              "__STATE_ROUTER:\n"
 
+    code   = __get_code(StateRouterInfoList)
+
+    epilog = "#   endif /* QUEX_OPTION_COMPUTED_GOTOS */\n"
+
+    return CodeIfDoorIdReferenced(DoorID.global_state_router(), 
+                                  [prolog] + code + [epilog])
+
+def __get_code(StateRouterInfoList):
     # It is conceivable, that 'last_acceptance' is never set to a valid 
     # terminal. Further, there might be solely the init state. In this
     # case the state router is void of states. But, the terminal router
     # requires it to be defined --> define a dummy state router.
     if len(StateRouterInfoList) == 0:
-        return Address("$state-router",
-                       Code = [  prolog  \
-                               + "    QUEX_ERROR_EXIT(\"Entered section of empty state router.\");\n"
-                               + "#   endif\n"
-                               ])
-
+        return ["    QUEX_ERROR_EXIT(\"Entered section of empty state router.\");\n"]
 
     txt = ["    switch( target_state_index ) {\n" ]
 
@@ -37,9 +41,7 @@ def do(StateRouterInfoList):
     txt.append("            QUEX_ERROR_EXIT(\"State router: unknown index.\\n\");\n")
     txt.append("    }\n")
 
-    epilog = "#   endif /* QUEX_OPTION_COMPUTED_GOTOS */\n"
-
-    return Address("$state-router", Code=[prolog] + txt + [epilog])
+    return txt
 
 def get_info(StateIndexList):
     """In some strange cases, a 'dummy' state router is required so that 

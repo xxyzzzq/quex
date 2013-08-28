@@ -159,12 +159,11 @@ class CharacterPath(object):
         #    => A 'state_key' is assigned (the path_iterator)
         #       and it is not part of the iteration loop.
         #    => The StartState's entry IS NOT subject to uniformity considerations.
-        self.uniform_entry_CommandList = UniformObject(EqualCmp=CommandList.is_equivalent)
+        self.uniform_entry_CommandList = UniformObject()
         # uniform_DropOut:
         #    Any drop-out is implemented at the end of the iteration loop.
         #    => The StartState's drop-out IS subject to uniformity considerations.
-        self.uniform_DropOut           = UniformObject(EqualCmp=DropOut.is_equal, 
-                                                       Initial=StartState.drop_out)
+        self.uniform_DropOut           = UniformObject(Initial=StartState.drop_out)
 
         self.__step_list = [ CharacterPathStep(StartState.index, TransitionCharacter) ]
 
