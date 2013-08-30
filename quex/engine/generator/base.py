@@ -15,6 +15,7 @@ from   quex.engine.state_machine.core                  import StateMachine
 import quex.engine.state_machine.transformation        as     transformation
 from   quex.engine.generator.state.transition.code     import TransitionCodeFactory
 import quex.engine.generator.state.transition.core     as     transition_block
+import quex.engine.generator.state.reload_state        as     reload_state_coder
 from   quex.engine.analyzer.state.entry_action         import DoorID
 import quex.engine.analyzer.engine_supply_factory      as     engine
 from   quex.engine.analyzer.transition_map             import TransitionMap
@@ -97,6 +98,16 @@ class Generator(GeneratorBase):
 
     def __init__(self, PatternActionPair_List):
         GeneratorBase.__init__(self, PatternActionPair_List)
+        self.__reload_state_backward = ReloadState()
+        self.__reload_state_forward  = None
+
+    def code_reload_procedures(self):
+        txt = []
+        if self.__reload_state_forward is not None:
+            txt.extend(reload_state_coder.do(self.__reload_state_forward, ForwardF=True))
+        if self.pre_context_sm is not None or len(self.bipd_sm_list) != 0:
+            txt.extend(reload_state_coder.do(self.__reload_state_backward, ForwardF=False))
+        return txt
 
     def code_pre_context_state_machine(self):
         LanguageDB = Setup.language_db
@@ -105,6 +116,9 @@ class Generator(GeneratorBase):
 
         txt, dummy = Generator.code_state_machine(self.pre_context_sm, 
                                                   engine.BACKWARD_PRE_CONTEXT) 
+
+        self.__reload_state_backward.entry.action_db.absorb(analyzer.reload_state.entry.action_db)
+
 
         txt.append("\n%s" % LanguageDB.LABEL(E_StateIndices.END_OF_PRE_CONTEXT_CHECK))
         # -- set the input stream back to the real current position.
@@ -120,11 +134,13 @@ class Generator(GeneratorBase):
         terminal_txt, \
         analyzer      = self.code_state_machine_core(engine.FORWARD, False)
 
+        self.__reload_state_forward = analyzer.reload_state
+
         # Number of different entries in the position register map
         self.__position_register_n                 = len(set(analyzer.position_register_map.itervalues()))
         self.__last_acceptance_variable_required_f = analyzer.last_acceptance_variable_required()
 
-        return sm_txt + terminal_txt + LanguageDB.RELOAD()
+        return sm_txt + terminal_txt 
 
     def code_state_machine_core(self, EngineType, SimpleF):
         sm_txt, analyzer = Generator.code_state_machine(self.sm, EngineType)
@@ -136,8 +152,9 @@ class Generator(GeneratorBase):
     def code_backward_input_position_detection(self):
         result = []
         for sm in self.bipd_sm_list:
-            txt, dummy = Generator.code_state_machine(sm, engine.BACKWARD_INPUT_POSITION) 
+            txt, analyzer = Generator.code_state_machine(sm, engine.BACKWARD_INPUT_POSITION) 
             result.extend(txt)
+            self.__reload_state_backward.entry.action_db.absorb(analyzer.reload_state.entry.action_db)
         return result
 
     def state_router(self):
@@ -442,6 +459,8 @@ class LoopGenerator(Generator):
         sm_txt,       \
         terminal_txt, \
         dummy         = generator.code_state_machine_core(engine_type, SimpleF=True)
+
+        self.__reload_state_forward = analyzer.reload_state
 
         reload_txt = []
         if BeforeReloadAction is not None:

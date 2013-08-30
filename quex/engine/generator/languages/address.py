@@ -40,11 +40,6 @@ special_labels = (
     (DoorID.global_reentry_preparation_2(),       "REENTRY_PREPARATION_2"),
 )
 
-special_label_db = dict(
-    (map_door_id_to_address(door_id), label)
-    for door_id, label in special_labels
-)
-
 __door_id_to_address_db = TypedDict(DoorID, long)
 
 def map_door_id_to_address(DoorId):
@@ -55,10 +50,15 @@ def map_door_id_to_address(DoorId):
     """
     global __door_id_to_address_db
     address = __door_id_to_address_db.get(DoorId)
-    if result is None:
+    if address is None:
         address = index.get()
         __door_id_to_address_db[DoorId] = address
     return address
+
+special_label_db = dict(
+    (map_door_id_to_address(door_id), label)
+    for door_id, label in special_labels
+)
 
 def map_address_to_label(Adr):
     if Adr in special_label_db:
@@ -76,8 +76,6 @@ def get_new_address():
     state_index = index.get()
     return map_door_id_to_address(DoorID(state_index, 0))
 
-
-
 class Label:
     """This class shall be a short-hand for 'map_door_id_to_address' of global
        labels. It was designed to provide the same interface as the 'DoorID.global_*' 
@@ -86,35 +84,40 @@ class Label:
     @staticmethod
     def drop_out(StateIndex, GotoedF=False):         return map_door_id_to_label(DoorID.drop_out(StateIndex), GotoedF)
     @staticmethod                        
-    def goto_reload(GotoedF=False):                  return DoorID(map_door_id_to_label(DoorID.goto_reload(StateIndex), GotoedF)
+    def goto_reload(GotoedF=False):                  return map_door_id_to_label(DoorID.goto_reload(StateIndex), GotoedF)
     @staticmethod                        
     def after_reload(StateIndex, GotoedF=False):     return map_door_id_to_label(DoorID.after_reload(StateIndex), GotoedF)
     @staticmethod                        
     def transition_block(StateIndex, GotoedF=False): return map_door_id_to_label(DoorID.transition_block(StateIndex), GotoedF)
     @staticmethod
-    def global_reload_forward(GotoedF=False):        return map_door_id_to_label(DoorID.global_reload_forward(GotoedF))
+    def global_reload_forward(GotoedF=False):        return map_door_id_to_label(DoorID.global_reload_forward(), GotoedF)
     @staticmethod
-    def global_reload_backward(GotoedF=False):       return map_door_id_to_label(DoorID.global_reload_backward(GotoedF))
+    def global_reload_backward(GotoedF=False):       return map_door_id_to_label(DoorID.global_reload_backward(), GotoedF)
     @staticmethod
-    def global_state_router(GotoedF=False):          return map_door_id_to_label(DoorID.global_state_router(GotoedF))
+    def global_state_router(GotoedF=False):          return map_door_id_to_label(DoorID.global_state_router(), GotoedF)
     @staticmethod
-    def global_terminal_router(GotoedF=False):       return map_door_id_to_label(DoorID.global_terminal_router(GotoedF))
+    def global_terminal_router(GotoedF=False):       return map_door_id_to_label(DoorID.global_terminal_router(), GotoedF)
     @staticmethod
-    def global_terminal_end_of_file(GotoedF=False):  return map_door_id_to_label(DoorID.global_terminal_end_of_file(GotoedF))
+    def global_terminal_end_of_file(GotoedF=False):  return map_door_id_to_label(DoorID.global_terminal_end_of_file(), GotoedF)
     @staticmethod
-    def global_terminal_failure(GotoedF=False):      return map_door_id_to_label(DoorID.global_terminal_failure(GotoedF))
+    def acceptance(PatternId, GotoedF=False):        return map_door_id_to_label(DoorID.acceptance(PatternId), GotoedF)
     @staticmethod
-    def global_reentry(GotoedF=False):               return map_door_id_to_label(DoorID.global_reentry(GotoedF))
+    def global_terminal_failure(GotoedF=False):      return map_door_id_to_label(DoorID.global_terminal_failure(), GotoedF)
     @staticmethod
-    def global_reentry_preparation(GotoedF=False):   return map_door_id_to_label(DoorID.global_reentry_preparation(GotoedF))
+    def global_reentry(GotoedF=False):               return map_door_id_to_label(DoorID.global_reentry(), GotoedF)
     @staticmethod
-    def global_reentry_preparation_2(GotoedF=False): return map_door_id_to_label(DoorID.global_reentry_preparation_2(GotoedF))
+    def global_reentry_preparation(GotoedF=False):   return map_door_id_to_label(DoorID.global_reentry_preparation(), GotoedF)
+    @staticmethod
+    def global_reentry_preparation_2(GotoedF=False): return map_door_id_to_label(DoorID.global_reentry_preparation_2(), GotoedF)
 
 __referenced_label_set     = set([])
 __state_router_address_set = set([])
 
 def mark_label_as_gotoed(Label):
     __referenced_label_set.add(Label)
+
+def mark_door_id_as_gotoed(DoorId):
+    mark_label_as_gotoed(map_door_id_to_label(DoorId))
 
 def mark_address_for_state_routing(Adr):
     __state_router_address_set.add(Adr)

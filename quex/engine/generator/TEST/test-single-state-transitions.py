@@ -128,7 +128,7 @@ def get_transition_function(tm, Codec):
     else:
         Setup.buffer_codec_transformation_info = "utf8-state-split"
         tm_txt = LoopGenerator.code_action_state_machine(tm, None, None)
-        tm_txt.append("%s return (int)-1;\n" % LanguageDB.LABEL_ON_FAILURE())
+        tm_txt.append("%s return (int)-1;\n" % Label.global_terminal_failure())
         tm_txt = LanguageDB.GET_PLAIN_STRINGS(tm_txt)
         LoopGenerator.replace_iterator_name(tm_txt, "input_p", E_MapImplementationType.STATE_MACHINE)
 
