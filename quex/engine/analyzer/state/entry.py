@@ -36,10 +36,6 @@ class EntryActionDB:
                 for i in Opt_FromStateIndex_List                         \
             )
 
-        if not Setup.buffer_based_analyzis_f:
-            # There must be a 'reload entry' where absolutely nothing happens.
-            self.__db[TransitionID_AFTER_RELOAD] = TransitionAction()
-
     def get(self, TheTransitionID):
         return self.__db.get(TheTransitionID)
 
@@ -103,6 +99,12 @@ class EntryActionDB:
             assert id(TheAction.command_list) != id(action.command_list) 
 
         self.__db[TheTransitionID] = TheAction
+
+    def remove_transition_from_states(self, StateIndexSet):
+        assert isinstance(StateIndexSet, set)
+        for transition_id in self.__db.keys():
+            if transition_id.source_state_index in StateIndexSet:
+                del self.__db[transition_id]
 
     def size(self):
         return len(self.__db)

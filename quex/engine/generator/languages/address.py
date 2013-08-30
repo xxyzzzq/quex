@@ -1,177 +1,137 @@
 import quex.engine.state_machine.index         as index
-from   quex.engine.tools import print_callstack
+from   quex.engine.analyzer.state.entry_action import DoorID
+from   quex.engine.tools import print_callstack, TypedDict
 
-def __nice(SM_ID): 
-    assert isinstance(SM_ID, (long, int))
-    return repr(SM_ID).replace("L", "").replace("'", "")
-    
-db = {}
+#__label_db = {
+#    # Let's make one thing clear: addresses of labels are aligned with state indices:
+#    "$entry":                 lambda DoorId:      __address_db.get_entry(DoorId),
+#    # 
+#    "$terminal":              lambda TerminalIdx: __address_db.get("TERMINAL_%s"        % __nice(TerminalIdx)),
+#    "$terminal-router":       lambda NoThing:     __address_db.get("__TERMINAL_ROUTER"),
+#    "$terminal-direct":       lambda TerminalIdx: __address_db.get("TERMINAL_%s_DIRECT" % __nice(TerminalIdx)),
+#    "$terminal-general-bw":   lambda NoThing:     __address_db.get("TERMINAL_GENERAL_BACKWARD"),
+#    "$terminal-EOF":          lambda NoThing:     __address_db.get("TERMINAL_END_OF_STREAM"),
+#    "$terminal-FAILURE":      lambda SM_Id:       __address_db.get("TERMINAL_FAILURE_%s" % SM_Id),
+#    #
+#    "$state-router":          lambda NoThing:     __address_db.get("__STATE_ROUTER"),
+#    #
+#    "$reload":                lambda StateIdx:    __address_db.get("STATE_%s_RELOAD"    % __nice(StateIdx)),
+#    "$reload-FORWARD":        lambda StateIdx:    __address_db.get("__RELOAD_FORWARD"),
+#    "$reload-BACKWARD":       lambda StateIdx:    __address_db.get("__RELOAD_BACKWARD"),
+#    "$drop-out":              lambda StateIdx:    __address_db.get("STATE_%s_DROP_OUT" % __nice(StateIdx)),
+#    "$re-start":              lambda NoThing:     __address_db.get("__REENTRY_PREPARATION"),
+#    "$re-start-2":            lambda NoThing:     __address_db.get("__REENTRY_PREPARATION_2"),
+#    "$start":                 lambda NoThing:     __address_db.get("__REENTRY"),
+#    "$skipper-reload":        lambda StateIdx:    __address_db.get("__SKIPPER_RELOAD_TERMINATED_%s" % __nice(StateIdx)),
+#    "$bipd-return":           lambda DetectorID:  __address_db.get("BIPD_%i_RETURN" % DetectorID),
+#    "$bipd-terminal":         lambda DetectorID:  __address_db.get("BIPD_%i_TERMINAL" % DetectorID),
+#    # There may be more than one ... in skipp for example ...
+#    "$init_state_transition_block": lambda StateIndex:   __address_db.get("INIT_STATE_%i_TRANSITION_BLOCK" % StateIndex),
+#}
+special_labels = (
+    (DoorID.global_reload_forward(),              "RELOAD_FORWARD"),
+    (DoorID.global_reload_backward(),             "RELOAD_BACKWARD"),
+    (DoorID.global_state_router(),                "STATE_ROUTER"),
+    (DoorID.global_terminal_router(),             "TERMINAL_ROUTER"),
+    (DoorID.global_terminal_end_of_file(),        "TERMINAL_END_OF_FILE"),
+    (DoorID.global_terminal_failure(),            "TERMINAL_FAILURE"),
+    (DoorID.global_reentry(),                     "REENTRY"),
+    (DoorID.global_reentry_preparation(),         "REENTRY_PREPARATION"),
+    (DoorID.global_reentry_preparation_2(),       "REENTRY_PREPARATION_2"),
+)
 
-class AddressDB:
-    #-----------------------------------------------------------------------
-    #  Maps anything, such as a 'terminal' or anything else to an address.
-    #  The address of a state machine state is the state's index. New
-    #  addresses are generated using 'index.get()' which produces unique
-    #  state indices.
-    #-----------------------------------------------------------------------
-    def __init__(self):
-        self.__db = {}
-        self.__special = set([
-            "__RELOAD_FORWARD", 
-            "__RELOAD_BACKWARD", 
-            "__STATE_ROUTER", 
-            "__TERMINAL_ROUTER",
-            "__REENTRY_PREPARATION", 
-            "__REENTRY_PREPARATION_2", 
-            "__REENTRY",
-        ])
+special_label_db = dict(
+    (map_door_id_to_address(door_id), label)
+    for door_id, label in special_labels
+)
 
-    def get(self, NameOrTerminalID):
-        """NameOrTerminalID is something that identifies a position/address 
-                            in the code. This function returns a numeric id
-                            for this address. 
+__door_id_to_address_db = TypedDict(DoorID, long)
 
-           Exceptions are labels that are 'unique' inside a state machine 
-           as defined by '__address_db_special'. For those the string itself
-           is returned.
-        """
-        # Special addresses are not treated, but returned as string
-        if NameOrTerminalID in self.__special:
-            return NameOrTerminalID
+def map_door_id_to_address(DoorId):
+    """RETURNS: Address of given DoorId
 
-        # If the thing is known, return its id immediately
-        entry = self.__db.get(NameOrTerminalID)
-        if entry is not None: return entry
+       Ensures that there is an entry in __door_id_to_address_db for
+       the given DoorId.
+    """
+    global __door_id_to_address_db
+    address = __door_id_to_address_db.get(DoorId)
+    if result is None:
+        address = index.get()
+        __door_id_to_address_db[DoorId] = address
+    return address
 
-        # Generate unique id for the label: Use unique state index
-        entry = index.get()
-        self.__db[NameOrTerminalID] = entry
-        return entry
+def map_address_to_label(Adr):
+    if Adr in special_label_db:
+        special_label_db[Adr]
+    return "_%s" % Adr
 
-    def get_entry(self, DoorId):
-        assert DoorId.__class__.__name__ == "DoorID", "%s\n%s"  % (repr(DoorId), DoorId.__class__.__name__)
-        # TODO: door_index == 0 is a special: The entry into the state without any
-        #       commands/actions being applied. This is also the entry after reload.
-        #       In this case, the the addess be the state index itself.
-        if DoorId.door_index == 0: return DoorId.state_index
-
-        return self.get("%i_from_%s" % (DoorId.state_index, DoorId.door_index))
-
-__address_db = AddressDB()
-
-__label_db = {
-    # Let's make one thing clear: addresses of labels are aligned with state indices:
-    "$entry":                 lambda DoorId:      __address_db.get_entry(DoorId),
-    # 
-    "$terminal":              lambda TerminalIdx: __address_db.get("TERMINAL_%s"        % __nice(TerminalIdx)),
-    "$terminal-router":       lambda NoThing:     __address_db.get("__TERMINAL_ROUTER"),
-    "$terminal-direct":       lambda TerminalIdx: __address_db.get("TERMINAL_%s_DIRECT" % __nice(TerminalIdx)),
-    "$terminal-general-bw":   lambda NoThing:     __address_db.get("TERMINAL_GENERAL_BACKWARD"),
-    "$terminal-EOF":          lambda NoThing:     __address_db.get("TERMINAL_END_OF_STREAM"),
-    "$terminal-FAILURE":      lambda SM_Id:       __address_db.get("TERMINAL_FAILURE_%s" % SM_Id),
+def map_door_id_to_label(DoorId, GotoedF=False):
+    # 'map_door_id_to_address' ensures that there is an address for the DoorId
     #
-    "$state-router":          lambda NoThing:     __address_db.get("__STATE_ROUTER"),
-    #
-    "$reload":                lambda StateIdx:    __address_db.get("STATE_%s_RELOAD"    % __nice(StateIdx)),
-    "$reload-FORWARD":        lambda StateIdx:    __address_db.get("__RELOAD_FORWARD"),
-    "$reload-BACKWARD":       lambda StateIdx:    __address_db.get("__RELOAD_BACKWARD"),
-    "$drop-out":              lambda StateIdx:    __address_db.get("STATE_%s_DROP_OUT" % __nice(StateIdx)),
-    "$re-start":              lambda NoThing:     __address_db.get("__REENTRY_PREPARATION"),
-    "$re-start-2":            lambda NoThing:     __address_db.get("__REENTRY_PREPARATION_2"),
-    "$start":                 lambda NoThing:     __address_db.get("__REENTRY"),
-    "$skipper-reload":        lambda StateIdx:    __address_db.get("__SKIPPER_RELOAD_TERMINATED_%s" % __nice(StateIdx)),
-    "$bipd-return":           lambda DetectorID:  __address_db.get("BIPD_%i_RETURN" % DetectorID),
-    "$bipd-terminal":         lambda DetectorID:  __address_db.get("BIPD_%i_TERMINAL" % DetectorID),
-    # There may be more than one ... in skipp for example ...
-    "$init_state_transition_block": lambda StateIndex:   __address_db.get("INIT_STATE_%i_TRANSITION_BLOCK" % StateIndex),
-}
+    label = map_address_to_label(map_door_id_to_address(DoorId))
+    if GotoedF: mark_label_as_gotoed(GotoedF)
+    return label
 
-__referenced_label_set = set([])
-def __referenced_label_set_add(Label):
-    global __referenced_label_set
+def get_new_address():
+    state_index = index.get()
+    return map_door_id_to_address(DoorID(state_index, 0))
+
+
+
+class Label:
+    """This class shall be a short-hand for 'map_door_id_to_address' of global
+       labels. It was designed to provide the same interface as the 'DoorID.global_*' 
+       functions.
+    """
+    @staticmethod
+    def drop_out(StateIndex, GotoedF=False):         return map_door_id_to_label(DoorID.drop_out(StateIndex), GotoedF)
+    @staticmethod                        
+    def goto_reload(GotoedF=False):                  return DoorID(map_door_id_to_label(DoorID.goto_reload(StateIndex), GotoedF)
+    @staticmethod                        
+    def after_reload(StateIndex, GotoedF=False):     return map_door_id_to_label(DoorID.after_reload(StateIndex), GotoedF)
+    @staticmethod                        
+    def transition_block(StateIndex, GotoedF=False): return map_door_id_to_label(DoorID.transition_block(StateIndex), GotoedF)
+    @staticmethod
+    def global_reload_forward(GotoedF=False):        return map_door_id_to_label(DoorID.global_reload_forward(GotoedF))
+    @staticmethod
+    def global_reload_backward(GotoedF=False):       return map_door_id_to_label(DoorID.global_reload_backward(GotoedF))
+    @staticmethod
+    def global_state_router(GotoedF=False):          return map_door_id_to_label(DoorID.global_state_router(GotoedF))
+    @staticmethod
+    def global_terminal_router(GotoedF=False):       return map_door_id_to_label(DoorID.global_terminal_router(GotoedF))
+    @staticmethod
+    def global_terminal_end_of_file(GotoedF=False):  return map_door_id_to_label(DoorID.global_terminal_end_of_file(GotoedF))
+    @staticmethod
+    def global_terminal_failure(GotoedF=False):      return map_door_id_to_label(DoorID.global_terminal_failure(GotoedF))
+    @staticmethod
+    def global_reentry(GotoedF=False):               return map_door_id_to_label(DoorID.global_reentry(GotoedF))
+    @staticmethod
+    def global_reentry_preparation(GotoedF=False):   return map_door_id_to_label(DoorID.global_reentry_preparation(GotoedF))
+    @staticmethod
+    def global_reentry_preparation_2(GotoedF=False): return map_door_id_to_label(DoorID.global_reentry_preparation_2(GotoedF))
+
+__referenced_label_set     = set([])
+__state_router_address_set = set([])
+
+def mark_label_as_gotoed(Label):
     __referenced_label_set.add(Label)
-    # If a terminal router is used, then a state router is also required.
-    if Label == "__TERMINAL_ROUTER": 
-        __referenced_label_set.add("__STATE_ROUTER")
+
+def mark_address_for_state_routing(Adr):
+    __state_router_address_set.add(Adr)
+    # Any address which is subject to state routing relates to a label which
+    # is 'gotoed' from inside the state router.
+    mark_label_as_gotoed(map_address_to_label(Adr))
 
 def address_exists(Address):
     global __referenced_label_set
     return get_label_of_address(Address) in __referenced_label_set
 
-__routed_address_set = set([])
 def init_address_handling():
     __referenced_label_set.clear()
-    __routed_address_set.clear()
+    __state_router_address_set.clear()
 
 def get_address_set_subject_to_routing():
-    return __routed_address_set
-
-def address_set_subject_to_routing_add(Address):
-    """Skippers and Indentation Counters use transition maps without being
-    an official state of the state machine. Their addresses may be subject
-    to routing, but they are not part of the scheme 'TransitionID->DoorID'.
-
-    This function gives them a back-door to register their addresses.
-    """
-    assert isinstance(Address, long)
-    __routed_address_set.add(Address)
-
-def get_address(Type, Arg=None, U=False, R=False):
-    """U -- mark as 'used' if True
-       R -- mark as subject to 'routing' if True
-    
-       RETURNS A NUMBER that can be potentially be used for 
-       routing (i.e. "switch( index ) { case N: goto _address; ... "
-    """
-    global __label_db
-    address = __label_db[Type](Arg)
-
-
-    assert type(address) in (int, long), \
-           "Label type '%s' is not suited for routing. Found %s" % (Type, address)
-    
-    if U: __referenced_label_set_add(get_label_of_address(address))
-    if R: __routed_address_set.add(address)
-
-    ## if address == 171:
-    ##    print "#ARG:", Type, Arg
-    ##    print_callstack()
-
-    return address
-
-def get_label(LabelType, Arg=None, U=False, R=False):
-    """U -- mark as 'used' if True
-       R -- mark as subject to 'routing' if True
-    
-       RETURNS A STRING, that can be used directly for a goto statement.
-    """
-    global __label_db
-    label_id = __label_db[LabelType](Arg)
-    if type(label_id) in (int, long): label = get_label_of_address(label_id)
-    else:                             label = label_id
-
-    assert type(label) in [str, unicode]
-
-    if U: 
-        __referenced_label_set_add(label)
-    if R: 
-        assert type(label_id) in (int, long), \
-               "Only labels that expand to addresses can be routed."
-        __routed_address_set.add(label_id)
-
-    return label
-
-def get_label_of_address(Adr, U=False):
-    """U -- mark as 'used' if True
-       (labels cannot be routed => no option 'R')
-    
-       RETURNS A STRING--the label that belongs to a certain (numeric) address.
-    """
-
-    result = "_%s" % __nice(Adr)
-    if U: __referenced_label_set_add(result)
-
-    return result
+    return __state_router_address_set
 
 class CodeIfDoorIdReferenced:
     def __init__(self, DoorId, Code=None):
@@ -183,15 +143,13 @@ class CodeIfDoorIdReferenced:
         """
         assert isinstance(Code, list) or Code is None
 
-        address    = get_address("$entry", DoorId, U=False, R=False)
-        self.label = get_label_of_address(address)
+        self.label = map_door_id_to_label(DoorId)
         if Code is None: self.code = [ self.label, ":\n" ]
         else:            self.code = Code
 
 class LabelIfDoorIdReferenced(CodeIfDoorIdReferenced):
     def __init__(self, DoorId):
         CodeIfDoorIdReferenced.__init__(self, DoorId)
-
 
 def get_plain_strings(txt_list, RoutingInfoF=True):
     """-- Replaces unreferenced 'CodeIfLabelReferenced' objects by empty strings.
@@ -226,3 +184,7 @@ def get_plain_strings(txt_list, RoutingInfoF=True):
 
     return txt_list
 
+def __nice(SM_ID): 
+    assert isinstance(SM_ID, (long, int))
+    return repr(SM_ID).replace("L", "").replace("'", "")
+    

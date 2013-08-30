@@ -12,12 +12,16 @@ from   itertools                import islice, izip
 E_DoorIdIndex = Enum("DROP_OUT", 
                      "GOTO_RELOAD", 
                      "AFTER_RELOAD", 
+                     "TRANSITION_BLOCK", 
                      "GLOBAL_RELOAD_FORWARD", 
                      "GLOBAL_RELOAD_BACKWARD", 
                      "GLOBAL_STATE_ROUTER", 
                      "GLOBAL_TERMINAL_ROUTER", 
                      "GLOBAL_TERMINAL_END_OF_FILE", 
-                     "GLOBAL_TERMINAL_FAILURE") 
+                     "GLOBAL_TERMINAL_FAILURE",
+                     "GLOBAL_REENTRY",
+                     "GLOBAL_REENTRY_PREPARATION",
+                     "GLOBAL_REENTRY_PREPARATION_2") 
 
 class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
     def __new__(self, StateIndex, DoorIndex):
@@ -27,23 +31,31 @@ class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
         return super(DoorID, self).__new__(self, StateIndex, DoorIndex)
 
     @staticmethod
-    def drop_out(StateIndex):          return DoorID(StateIndex, E_DoorIdIndex.DROP_OUT)
-    @staticmethod                     
-    def goto_reload():                 return DoorID(0,          E_DoorIdIndex.GOTO_RELOAD)
-    @staticmethod                     
-    def after_reload(StateIndex):      return DoorID(StateIndex, E_DoorIdIndex.AFTER_RELOAD)
-    @staticmethod                     
-    def global_reload_forward():       return DoorID(0,          E_DoorIdIndex.GLOBAL_RELOAD_FORWARD)
-    @staticmethod                     
-    def global_reload_backward():      return DoorID(0,          E_DoorIdIndex.GLOBAL_RELOAD_BACKWARD)
-    @staticmethod                     
-    def global_state_router():         return DoorID(0,          E_DoorIdIndex.GLOBAL_STATE_ROUTER)
-    @staticmethod                     
-    def global_terminal_router():      return DoorID(0,          E_DoorIdIndex.GLOBAL_TERMINAL_ROUTER)
+    def drop_out(StateIndex):             return DoorID(StateIndex, E_DoorIdIndex.DROP_OUT)
+    @staticmethod                        
+    def goto_reload():                    return DoorID(0,          E_DoorIdIndex.GOTO_RELOAD)
+    @staticmethod                        
+    def after_reload(StateIndex):         return DoorID(StateIndex, E_DoorIdIndex.AFTER_RELOAD)
+    @staticmethod                        
+    def transition_block(StateIndex):     return DoorID(StateIndex, E_DoorIdIndex.TRANSITION_BLOCK)
+    @staticmethod                        
+    def global_reload_forward():          return DoorID(0,          E_DoorIdIndex.GLOBAL_RELOAD_FORWARD)
+    @staticmethod                        
+    def global_reload_backward():         return DoorID(0,          E_DoorIdIndex.GLOBAL_RELOAD_BACKWARD)
+    @staticmethod                        
+    def global_state_router():            return DoorID(0,          E_DoorIdIndex.GLOBAL_STATE_ROUTER)
+    @staticmethod                        
+    def global_terminal_router():         return DoorID(0,          E_DoorIdIndex.GLOBAL_TERMINAL_ROUTER)
+    @staticmethod                         
+    def global_terminal_end_of_file():    return DoorID(0,          E_DoorIdIndex.GLOBAL_TERMINAL_END_OF_FILE)
+    @staticmethod                         
+    def global_terminal_failure():        return DoorID(0,          E_DoorIdIndex.GLOBAL_TERMINAL_FAILURE)
     @staticmethod
-    def global_terminal_end_of_file(): return DoorID(0,          E_DoorIdIndex.GLOBAL_TERMINAL_END_OF_FILE)
+    def global_reentry():                 return DoorID(0,          E_DoorIdIndex.GLOBAL_REENTRY)
     @staticmethod
-    def global_terminal_failure():     return DoorID(0,          E_DoorIdIndex.GLOBAL_TERMINAL_FAILURE)
+    def global_reentry_preparation():     return DoorID(0,          E_DoorIdIndex.GLOBAL_REENTRY_PREPARATION)
+    @staticmethod
+    def global_reentry_preparation_2():   return DoorID(0,          E_DoorIdIndex.GLOBAL_REENTRY_PREPARATION_2)
 
     def drop_out_f(self):    return self.door_index == E_DoorIdIndex.DROP_OUT
     def goto_reload_f(self): return self.door_index == E_DoorIdIndex.GOTO_RELOAD
@@ -247,6 +259,8 @@ class CommandList:
                 return (3, Cmd.offset, Cmd.path_id, Cmd.path_walker_id)
             elif isinstance(Cmd, PathIteratorIncrement):   
                 return (3, 0)
+            elif isinstance(Cmd, PrepareAfterReload):   
+                return (4, 0)
             else:
                 assert False, "Command '%s' cannot be part of .misc." % Cmd.__class__.__name__
 
@@ -417,6 +431,28 @@ class PreConditionOK(Command):
     def pre_context_id(self): return self._x[0]
     def __repr__(self):       
         return "    pre-context-fulfilled = %s;\n" % self.pre_context_id
+
+class PrepareAfterReload(Command):
+    def __init__(self, StateIndex):
+        Command.__init__(self, 1, [StateIndex])
+    @property
+    def state_index(self): return self._x[0]
+    def __repr__(self):       
+        return "    prepare reload for state = %s;" % (self.state_index)
+
+class PrepareAfterReload_InitState(Command):
+    def __init__(self, StateIndex):
+        Command.__init__(self, 1, [StateIndex])
+    @property
+    def state_index(self): return self._x[0]
+    def __repr__(self):       
+        return "    prepare reload init state = %s;" % (self.state_index)
+
+class LexemeStartToReferenceP(Command):
+    def __init__(self, StateIndex):
+        Command.__init__(self, 1, [])
+    def __repr__(self):       
+        return "    lexeme_start_p = reference_p;"
 
 # Accepter:
 # 

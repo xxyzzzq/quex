@@ -46,7 +46,7 @@ def do(TheAnalyzer):
     ___________________________________________________________________________
     """ 
     assert len(Setup.compression_type_list) != 0
-    TheAnalyzer.mega_state_list = []
+    mega_state_list = []
 
     # The 'remainder' keeps track of states which have not yet been
     # absorbed into a MegaState.
@@ -57,45 +57,27 @@ def do(TheAnalyzer):
     for ctype in Setup.compression_type_list:
         # -- MegaState-s by Path-Compression
         if ctype in (E_Compression.PATH, E_Compression.PATH_UNIFORM):
-            mega_state_list = path_analyzer.do(TheAnalyzer, ctype, remainder)
+            new_mega_state_list = path_analyzer.do(TheAnalyzer, ctype, remainder)
     
         # -- MegaState-s by Template-Compression
         elif ctype in (E_Compression.TEMPLATE, E_Compression.TEMPLATE_UNIFORM):
-            mega_state_list = template_analyzer.do(TheAnalyzer, Setup.compression_template_min_gain, 
-                                                   ctype, remainder)
+            new_mega_state_list = template_analyzer.do(TheAnalyzer, Setup.compression_template_min_gain, 
+                                                       ctype, remainder)
         else:
             assert False
 
-        # -- Post-process the absorption of AnalyzerState-s into MegaState-s
-        for mega_state in mega_state_list:
+        # -- Track the remaining not-yet-absorbed states
+        for mega_state in new_mega_state_list:
             mega_state.check_consistency(remainder)
-
-            # Replace the absorbed AnalyzerState by its dummy.
-            for state_index in mega_state.implemented_state_index_set():
-                del TheAnalyzer.state_db[state_index]
-            #TheAnalyzer.state_db.update(
-            #     (state_index, AbsorbedState(TheAnalyzer.state_db[state_index], mega_state))
-            #     for state_index in mega_state.implemented_state_index_set()
-            #)
-
-            # Track the remaining not-yet-absorbed states
             remainder.difference_update(mega_state.implemented_state_index_set())
 
-        TheAnalyzer.mega_state_list.extend(mega_state_list)
-
-    # Let the analyzer know about the MegaState-s and what states they left
-    # unabsorbed. 
-    TheAnalyzer.non_mega_state_index_set = remainder
-    TheAnalyzer.non_mega_state_index_set.add(TheAnalyzer.init_state_index)
+        mega_state_list.extend(new_mega_state_list)
 
     # Only now: We enter the MegaState-s into the 'state_db'. If it was done before,
-    # the MegaStates might try to absorb each other.
-    TheAnalyzer.state_db.update(
-       (mega_state.index, mega_state) for mega_state in TheAnalyzer.mega_state_list
-    )
+    # the MegaState-s might try to absorb each other.
+    TheAnalyzer.add_mega_states(mega_state_list)
 
-
-    for mega_state in TheAnalyzer.mega_state_list:
+    for mega_state in mega_state_list:
         if isinstance(mega_state, TemplateState):
             ## TargetByStateKey.rejoin_uniform_schemes(mega_state.transition_map)
             TargetByStateKey.assign_scheme_ids(mega_state.transition_map)

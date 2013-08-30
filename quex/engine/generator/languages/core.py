@@ -15,8 +15,7 @@
 import quex.engine.generator.languages.cpp       as     cpp
 from   quex.engine.generator.languages.address   import get_address, \
                                                         db, \
-                                                        get_label, \
-                                                        get_label_of_address, \
+                                                        Label, \
                                                         get_plain_strings, \
                                                         CodeIfDoorIdReferenced
 from   quex.blackboard                           import E_StateIndices,  \
@@ -211,13 +210,52 @@ class LanguageDB_Cpp(dict):
             return  "    (++path_iterator);\n" \
                   + "    __quex_debug(\"++path_iterator\");\n" 
 
+        elif isinstance(EntryAction, entry_action.PrepareAfterReload_InitState):
+            # On reload success --> goto on_success_adr
+            action_db = self.analyzer.state_db[state_index].entry.action_db
+            on_success_action  = action_db.get_action(E_StateIndices.RELOAD_PROCEDURE, EntryAction.state_index)
+            assert on_success_action is not None
+            on_success_door_id = on_success_action.door_id
+            assert on_success_door_id is not None
+            on_success_adr     = map_door_id_to_address(on_success_door_id)
+
+            # On reload failure --> goto on_failure_adr
+            on_failure_adr     = map_door_id_to_address(DoorID.global_terminal_end_of_file())
+            return   "    target_state_index = QUEX_LABEL(%i); target_state_else_index = QUEX_LABEL(%i);\n"  \
+                   % (on_success_adr, on_failure_adr)                                                        \
+                   + "    __quex_debug(\"RELOAD: on success goto %i; on failure goto %i;\\n\");\n"           \
+                   % (on_success_adr, on_failure_adr)        
+
+        elif isinstance(EntryAction, entry_action.PrepareAfterReload):
+            # On reload success --> goto on_success_adr
+            action_db = self.analyzer.state_db[state_index].entry.action_db
+            on_success_action  = action_db.get_action(E_StateIndices.RELOAD_PROCEDURE, EntryAction.state_index)
+            assert on_success_action is not None
+            on_success_door_id = on_success_action.door_id
+            assert on_success_door_id is not None
+            on_success_adr     = map_door_id_to_address(on_success_door_id)
+
+            # On reload failure --> goto on_failure_adr
+            on_failure_door_id = DoorID.drop_out(EntryAction.state_index)
+            on_failure_adr     = map_door_id_to_address(on_failure_door_id)
+            return   "    target_state_index = QUEX_LABEL(%i); target_state_else_index = QUEX_LABEL(%i);\n"  \
+                   % (on_success_adr, on_failure_adr)                                                        \
+                   + "    __quex_debug(\"RELOAD: on success goto %i; on failure goto %i;\\n\");\n"           \
+                   % (on_success_adr, on_failure_adr)        
+
+        elif isinstance(EntryAction, entry_action.LexemeStartToReferenceP):
+            return "    %s\n" % self.LEXEME_START_SET("reference_p")
+
         else:
             assert False, "Unknown Entry Action"
 
     def ADDRESS_BY_DOOR_ID(self, DoorId, SubjectToStateRoutingF=True, SubjectToGotoF=True):
         if SubjectToStateRoutingF: SubjectToGotoF = True
-        print "#DoorID %s --> Address: %s" % (DoorId, get_address("$entry", DoorId, U=False, R=False))
-        return get_address("$entry", DoorId, U=SubjectToGotoF, R=SubjectToStateRoutingF)
+        print "#DoorID %s --> Address: %s" % (DoorId, map_door_id_to_address(DoorId))
+        adr = map_door_id_to_address(DoorId) 
+        if SubjectToStateRoutingF: mark_address_for_state_routing(adr)
+        if SubjectToGotoF:         mark_door_id_as_gotoed(DoorId)
+        return adr
 
     def ADDRESS(self, StateIndex, FromStateIndex):
         if self.__analyzer is None: 
@@ -318,7 +356,7 @@ class LanguageDB_Cpp(dict):
         return result
 
     def GOTO_DROP_OUT(self, StateIndex):
-        return "goto %s;" % get_label("$drop-out", StateIndex, U=True, R=True)
+        return "goto %s;" % Label.drop_out(StateIndex, GotoedF=True)
 
     def GOTO_RELOAD(self, StateIndex, InitStateIndexF, EngineType):
         """On reload a special section is entered that tries to reload data. Reload
@@ -349,16 +387,14 @@ class LanguageDB_Cpp(dict):
                 door_id = entry_action.DoorID.drop_out(StateIndex)
             on_fail = self.ADDRESS_BY_DOOR_ID(door_id, SubjectToStateRoutingF=True)
 
-        # Mark as 'used': The State Router
-        self.ADDRESS_BY_DOOR_ID(entry_action.DoorID.global_state_router(), SubjectToGotoF=True)
-
         if self.__code_generation_reload_label is not None:
             reload_label = self.__code_generation_reload_label
         else:
             if EngineType.is_FORWARD(): door_id = entry_action.DoorID.global_reload_forward()
             else:                       door_id = entry_action.DoorID.global_reload_backward()
-            address      = self.ADDRESS_BY_DOOR_ID(door_id, SubjectToStateRoutingF=False)
-            reload_label = get_label_of_address(address)
+            address      = map_door_id_to_address(door_id)
+            reload_label = map_address_to_label(address)
+            mark_address_for_state_routing(address)
         
         return "QUEX_GOTO_RELOAD(%s, %s, %s);" % (reload_label, on_success, on_fail)
 

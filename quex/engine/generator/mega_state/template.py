@@ -90,5 +90,4 @@ def require_data(TState, TheAnalyzer):
              in quex.engine.generator.mega_state.core.py
     """
     variable_db.require("state_key")
-    get_label("$state-router", U=True) # Ensure reference of state router
 

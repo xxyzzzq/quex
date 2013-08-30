@@ -48,14 +48,12 @@ def do(Data, Mode=None):
 
     # The 'TransitionCode -> DoorID' has to be circumvented, because this state
     # is not officially part of the state machine.
-    counter_adr          = sm_index.get()
-    counter_label        = LanguageDB.ADDRESS_LABEL(counter_adr)
+    counter_adr          = get_new_address()
+    counter_label        = map_address_to_label(counter_adr)
     counter_adr_str      = "%i" % counter_adr
     transition_block_str = __get_transition_block(IndentationSetup, counter_adr)
     end_procedure        = __get_end_procedure(IndentationSetup, Mode)
 
-    # Mark as 'used'
-    get_label("$state-router", U=True)  # 'reload' requires state router
     address_set_subject_to_routing_add(counter_adr) 
 
     # The finishing touch
@@ -68,11 +66,12 @@ def do(Data, Mode=None):
                          ])
 
     # The finishing touch
+    teof_address = map_door_id_to_address(DoorID.global_terminal_end_of_file()
+    mark_address_for_state_routing(teof_address)
+
     epilog = blue_print(epilog_txt,
                       [
                        ["$$ADDRESS$$",                 counter_adr_str], 
-                       ["$$TERMINAL_EOF_ADR$$",        "%i" % (get_address("$terminal-EOF", U=True))],
-                       ["$$LEXEME_START_SET_TO_REF$$", LanguageDB.LEXEME_START_SET("reference_p")],
                        ["$$END_PROCEDURE$$",           "".join(end_procedure)],
                        ["$$REENTRY$$",                 get_label("$start", U=True)],
                        ["$$BAD_CHARACTER_HANDLING$$",  __get_bad_character_handler(Mode, IndentationSetup, counter_adr)],
@@ -82,7 +81,6 @@ def do(Data, Mode=None):
     txt.extend(transition_block_str)
     txt.append(epilog)
 
-    get_label("$state-router", U=True) # mark as 'used'
     variable_db.require("reference_p")
 
     return txt
@@ -117,12 +115,6 @@ epilog_txt = """
 $$END_PROCEDURE$$                           
     /* No need for re-entry preparation. Acceptance flags and modes are untouched. */
     goto $$REENTRY$$;
-
-_RELOAD_$$ADDRESS$$:
-    /* The application might actually be interested in the indentation string.
-     * => make sure it remains in the buffer upon reload.                    */
-    $$LEXEME_START_SET_TO_REF$$
-    QUEX_GOTO_RELOAD(__RELOAD_FORWARD, $$ADDRESS$$, $$TERMINAL_EOF_ADR$$);
 
 $$BAD_CHARACTER_HANDLING$$
 """
@@ -277,8 +269,7 @@ def __get_transition_block(IndentationSetup, CounterAdr):
         # Count indentation/column at end of run;
         # simply: current position - reference_p
         character_set  = IndentationSetup.space_db.values()[0]
-        extend(transition_map, character_set, 
-               TransitionCode(LanguageDB.GOTO_ADDRESS(CounterAdr)))
+        extend(transition_map, character_set, TransitionCode(LanguageDB.GOTO_ADDRESS(CounterAdr)))
 
     else:
         # Add the space counters
@@ -297,11 +288,15 @@ def __get_transition_block(IndentationSetup, CounterAdr):
     transition_map.sort()
     transition_map.fill_gaps(DoorID.drop_out(CounterAdr))
 
+    reload_cl = CommandList()
+    reload_cl.append(LexemeStartToReferenceP())
+    reload_cl.append(PrepareAfterReload_InitState()) # This causes 'Terminal End-of-File' upon reload failure.
+    analyzer.reload_state.add_state(CounterAdr, reload_cl)
+
     txt = []
     tm = transition_block.prepare_transition_map(transition_map, 
                                                  StateIndex     = CounterAdr, 
-                                                 EngineType     = engine.FORWARD,
-                                                 GotoReload_Str = "goto _RELOAD_%s;" % CounterAdr)
+                                                 EngineType     = engine.FORWARD)
     transition_block.do(txt, tm) 
     txt.append("\n")
 

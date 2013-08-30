@@ -29,8 +29,6 @@ def do(Data, Mode):
     assert not CharacterSet.is_empty()
     assert type(require_label_SKIP_f) == bool
 
-    get_label("$state-router", U=True)             # 'reload' req. state router
-
     # Implement the core loop _________________________________________________
     #
     implementation_type, \

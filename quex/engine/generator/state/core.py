@@ -3,7 +3,7 @@ from   quex.engine.analyzer.state.core              import AnalyzerState
 import quex.engine.generator.state.transition.core  as transition_block
 import quex.engine.generator.state.entry            as entry
 import quex.engine.generator.state.drop_out         as drop_out
-from   quex.engine.generator.languages.address      import get_label, get_address
+from   quex.engine.generator.languages.address      import Label, get_address
 from   quex.blackboard                              import setup as Setup, E_InputActions
 
 LanguageDB = None
@@ -55,7 +55,7 @@ def entry_do(txt, TheState, TheAnalyzer):
     # the LABEL INIT STATE TRANSITION BLOCK from there.
     if TheAnalyzer.has_transition_to_init_state():
         txt.append("%s: /* INIT_STATE_TRANSITION_BLOCK */\n" \
-                   % get_label("$init_state_transition_block", TheState.index))
+                   % Label.transition_block(TheState.index))
 
     # The Init State: Implement the 'NONE' door. 
     entry.do_entry_from_NONE(txt, TheState)
