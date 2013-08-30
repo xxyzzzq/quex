@@ -107,3 +107,41 @@ class AnalyzerState(object):
     def __repr__(self):
         return self.get_string()
 
+class ReloadState:
+    """The 'reload' state shall partly be handled like a normal state. It does
+    not have a transition map (i.e. 'input causes transition'). But it has an
+    entry action database. That is dependent from where it is entered different
+    things are done.
+
+    A 'normal' state, for example sets the address where to go upon successful
+    reload and the address where to go upon failure. 
+
+                     ReloadState
+                     .--------------------------------------------.
+     .-----.         |                                            |
+     | 341 |--'load'--> s = 341;                                  |
+     '-----'         |  f = DropOut(341); --.            .----------> goto 's'
+     .-----.         |                      |           / success |
+     | 412 |--'load'--> s = 412;            |          /          |
+     '-----'         |  f = DropOut(412); --+--> Reload           |
+     .-----.         |                      |          \          |
+     | 765 |--'load'--> s = 765;            |           \ failure |
+     '-----'         |  f = DropOut(765); --'            '----------> goto 'f'
+                     |                                            |
+                     '--------------------------------------------'
+    """
+    def __init__(self, InitStateIndex, StateIndexSet):
+        self.entry = Entry(Opt_StateIndex          = E_StateIndices.RELOAD_PROCEDURE, 
+                           Opt_FromStateIndex_List = StateIndexSet)
+        for state_index in StateIndexSet:
+            self.add(state_index, InitStateF=(state_index == InitStateIndex))
+
+    def remove_states(self, StateIndexSet):
+        self.entry.action_db.remove_transition_from_states(StateIndexSet)
+                
+    def add_state(self, StateIndex, InitStateF):
+        if InitStateF: command = entry_action.PrepareAfterReload_InitState(state_index)))
+        else:          command = entry_action.PrepareAfterReload(state_index)))
+
+        self.entry.action_db.enter(TransitionID(E_StateIndices.RELOAD_PROCEDURE, state_index, 0), command)
+

@@ -3,7 +3,7 @@ from   quex.engine.generator.action_info               import PatternActionInfo
 import quex.engine.generator.state_machine_coder       as     state_machine_coder
 import quex.engine.generator.state_router              as     state_router_generator
 from   quex.engine.generator.languages.variable_db     import variable_db
-from   quex.engine.generator.languages.address         import get_address,                        \
+from   quex.engine.generator.languages.address         import get_new_address,                        \
                                                               get_label_of_address,               \
                                                               get_plain_strings,                  \
                                                               get_address_set_subject_to_routing, \
@@ -454,10 +454,13 @@ class LoopGenerator(Generator):
         LanguageDB = Setup.language_db
         reload_adr, reload_label = cls.generate_new_label()
         LanguageDB.code_generation_reload_label_set(reload_label)
-        LanguageDB.code_generation_on_reload_fail_adr_set(get_address("$terminal-EOF", U=True))
+
+        address = map_door_id_to_address(DoorID.global_terminal_end_of_file())
+        mark_address_for_state_routing(address)
+        LanguageDB.code_generation_on_reload_fail_adr_set(address)
 
         if UponReloadDoneAdr is not None:
-            txt.append("%s:\n" % LanguageDB.ADDRESS_LABEL(UponReloadDoneAdr))
+            txt.append("%s:\n" % map_address_to_label(UponReloadDoneAdr))
 
     @staticmethod
     def code_generation_reload_clean_up(txt, BeforeReloadAction, AfterReloadAction):
@@ -559,9 +562,7 @@ class LoopGenerator(Generator):
 
     @staticmethod
     def generate_new_label():
-        LanguageDB = Setup.language_db
-        adr        = LanguageDB.ADDRESS(index.get(), None)
-        return adr, get_label_of_address(adr, U=False) # Not subject to routing
+        return adr, get_label_of_address(get_new_address()) 
 
     @staticmethod
     def replace_iterator_name(txt, IteratorName, ImplementationType):

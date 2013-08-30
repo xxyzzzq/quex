@@ -23,7 +23,7 @@ analyzer. This includes the following:
 """
 from   quex.engine.generator.action_info           import CodeFragment, \
                                                           PatternActionInfo
-from   quex.engine.generator.languages.address     import get_label
+from   quex.engine.generator.languages.address     import Label
 from   quex.blackboard                             import setup as Setup, E_ActionIDs
 import quex.output.cpp.counter_for_pattern         as     counter_for_pattern
 
@@ -233,7 +233,7 @@ def __prepare_on_failure_action(Mode, BeginOfLineSupportF, require_terminating_z
         2,         "}\n",
         1,     "}\n",
         1,     "%s\n"     % prepared_code.get_code_string(), 
-        1,     "goto %s;" % get_label("$re-start-2", U=True)
+        1,     "goto %s;" % Label.global_reentry_preparation_2(GotoedF=True)
     ]
 
     return PatternActionInfo(E_ActionIDs.ON_FAILURE, CodeFragment(txt))

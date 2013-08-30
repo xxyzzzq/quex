@@ -8,7 +8,7 @@ from   quex.input.files.counter_db                     import CounterDB
 from   quex.input.files.counter_setup                  import LineColumnCounterSetup_Default
 import quex.input.files.consistency_check              as     consistency_check
 import quex.engine.generator.skipper.indentation_counter as     indentation_counter
-from   quex.engine.generator.languages.address         import get_label
+from   quex.engine.generator.languages.address         import Label
 import quex.engine.generator.skipper.character_set     as     skip_character_set
 from   quex.engine.generator.action_info               import CodeFragment, \
                                                               UserCodeFragment, \
@@ -609,9 +609,10 @@ class Mode:
                                    isetup.newline_state_machine.get()])
 
             # When a suppressed newline is detected, restart the analysis.
-            code = UserCodeFragment("goto %s;" % get_label("$start", U=True), 
+            code = UserCodeFragment("goto %s;" % Label.global_reentry(GotoedF=True), 
                                     isetup.newline_suppressor_state_machine.file_name, 
                                     isetup.newline_suppressor_state_machine.line_n)
+
             pap_suppressed_newline = PatternActionInfo(Pattern(sm), code, 
                                                        pattern_str, 
                                                        ModeName=self.name, 

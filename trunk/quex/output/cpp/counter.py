@@ -4,7 +4,7 @@ _______________________________________________________________________________
 """
 from   quex.engine.generator.base                   import LoopGenerator
 from   quex.engine.generator.languages.variable_db  import variable_db
-from   quex.engine.generator.languages.address      import get_label
+from   quex.engine.generator.languages.address      import Label
 
 from   quex.blackboard import setup as Setup, \
                               DefaultCounterFunctionDB, \
@@ -73,7 +73,7 @@ def __frame(FunctionName, ImplementationType, LoopTxt, EntryAction, ExitAction):
     if ImplementationType == E_MapImplementationType.STATE_MACHINE:
         prolog.append("    QUEX_TYPE_CHARACTER  input       = (QUEX_TYPE_CHARACTER)0;\n")
         on_failure_action = [     
-            "%s:\n" % get_label("$terminal-FAILURE"), 
+            "%s:\n" % Label.global_terminal_failure(), 
             1, "QUEX_ERROR_EXIT(\"State machine failed.\");\n" 
         ]
     else:

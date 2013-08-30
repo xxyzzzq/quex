@@ -67,7 +67,13 @@ def do(SM, EngineType=engine.FORWARD):
     # [Optional] Combination of states into MegaState-s.
     if len(Setup.compression_type_list) != 0:
         mega_state_analyzer.do(analyzer)
-        # MegaState.transition_map:   Interval --> TargetByStateKey
+        # MegaState.transition_map:    Interval --> TargetByStateKey
+        #                           or Interval --> DoorID
+
+    # Assign DoorID-s to the entries into the 'reload state'. The 
+    # 'PrepareAfterReload' commands will search for DoorID-s themselves.
+    # It is not required to adapt transition maps in any way.
+    analyzer.reload_state.entry.action_db.categorize()
 
     return analyzer
 
@@ -81,6 +87,7 @@ def __do(SM, EngineType):
     # Assign DoorID-s to transition actions and relate transitions to DoorID-s.
     for state in analyzer.state_db.itervalues():
         state.entry.action_db.categorize(state.index)
+
     for state in analyzer.state_db.itervalues():
         state.transition_map = state.transition_map.relate_to_door_ids(analyzer, state.index)
 
@@ -117,6 +124,8 @@ class Analyzer:
                                         EngineType, self.__from_db[state_index])) 
             for state_index in self.__trace_db.iterkeys()])
 
+        self.reload_state = ReloadState(SM.init_state_index, StateIndexSet=SM.states.keys())
+
         self.mega_state_list          = []
         self.non_mega_state_index_set = set(state_index for state_index in SM.states.iterkeys())
 
@@ -142,6 +151,27 @@ class Analyzer:
             else:
                 self.__position_register_map = None
 
+    def add_mega_states(self, MegaStateList):
+        """Add MegaState-s into the analyzer and remove the states which are 
+        represented by them.
+        """
+        for mega_state in MegaStateList:
+            for state_index in StateIndexSet:
+                del self.__state_db[state_index]
+            self.reload_state.remove_states(StateIndexSet)
+            self.reload_state.add_state(mega_state.index)
+
+        self.__mega_state_list          = MegaStateList
+        self.__non_mega_state_index_set = set(self.__state_db.iterkeys())
+
+        self.__state_db.update(
+           (mega_state.index, mega_state) for mega_state in MegaStateList
+        )
+
+    @property
+    def mega_state_list(self): return self.__mega_state_list
+    @property
+    def non_mega_state_index_set(self): return self.__non_mega_state_index_set
     @property
     def trace_db(self):                    return self.__trace_db
     @property

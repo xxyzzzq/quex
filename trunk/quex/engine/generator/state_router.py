@@ -1,20 +1,22 @@
 from   quex.engine.analyzer.state.entry_action  import DoorID
-from   quex.engine.generator.languages.address  import CodeIfDoorIdReferenced, get_label, get_address, get_label_of_address
+from   quex.engine.generator.languages.address  import Label, map_address_to_label, map_door_id_to_label
 from   operator                                 import itemgetter
 
 def do(StateRouterInfoList):
     """Create code that allows to jump to a state based on an integer value.
     """
+    if len(StateRouterInfoList) == 0:
+        return []
+
     prolog = "#   ifndef QUEX_OPTION_COMPUTED_GOTOS\n" \
              "    __quex_assert_no_passage();\n"       \
-             "__STATE_ROUTER:\n"
+             "%s:\n" % Label.global_state_router()
 
     code   = __get_code(StateRouterInfoList)
 
     epilog = "#   endif /* QUEX_OPTION_COMPUTED_GOTOS */\n"
 
-    return CodeIfDoorIdReferenced(DoorID.global_state_router(), 
-                                  [prolog] + code + [epilog])
+    return [prolog] + code + [epilog])
 
 def __get_code(StateRouterInfoList):
     # It is conceivable, that 'last_acceptance' is never set to a valid 
@@ -56,10 +58,9 @@ def get_info(StateIndexList):
         assert type(index) != str
         if index >= 0:
             # Transition to state entry
-            code = "goto %s; " % get_label_of_address(index)
-            result[i] = (index, code)
+            result[i] = (index, "goto %s; " % map_address_to_label(index, GotoedF=True))
         else:
             # Transition to a templates 'drop-out'
-            code = "goto " + get_label("$drop-out", - index) + "; "
-            result[i] = (get_address("$drop-out", - index), code)
+            door_id   = DoorID.drop_out(- index)) 
+            result[i] = (map_door_id_to_address(door_id), "goto %s; " % map_door_id_to_label(door_id))
     return result

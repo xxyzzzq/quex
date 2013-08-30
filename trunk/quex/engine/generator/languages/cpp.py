@@ -1,7 +1,8 @@
 from   quex.engine.misc.string_handling        import blue_print
 from   quex.engine.analyzer.state.entry_action import DoorID
 
-from   quex.engine.generator.languages.address import get_label, \
+from   quex.engine.generator.languages.address import map_door_id_to_label, \
+                                                      mark_door_id_as_gotoed, \
                                                       CodeIfDoorIdReferenced
 from   quex.engine.interval_handling           import NumberSet
 from   quex.blackboard import E_ActionIDs
@@ -51,7 +52,8 @@ def __header_definitions(LanguageDB, OnAfterMatch):
     #txt += "/MARK/ '%s'\n" % __return_with_on_after_match
     #txt += "/MARK/ %i '%s'\n" % (len(__return_without_on_after_match), map(ord, __return_without_on_after_match))
     #txt += "/MARK/ '%s'\n" % __return_without_on_after_match
-    txt = txt.replace("$$GOTO_START_PREPARATION$$", get_label("$re-start", U=True))
+    txt = txt.replace("$$GOTO_START_PREPARATION$$", map_door_id_to_label(DoorID.global_reentry_preparation()))
+    mark_door_id_as_gotoed(DoorID.global_reentry_preparation())
 
     if OnAfterMatch is not None: txt += __return_with_on_after_match
     else:                        txt += __return_without_on_after_match
@@ -219,7 +221,7 @@ def __analyzer_function(StateMachineName, Setup,
         "#   endif\n",
     ])
 
-    txt.append(get_label("$start") + ":\n")
+    txt.append("%s:\n" % Label.global_reentry())
 
     # -- entry to the actual function body
     txt.append("    %s\n" % LanguageDB.LEXEME_START_SET())
@@ -309,13 +311,13 @@ __terminal_state_prolog  = """
 """
 
 __reentry_preparation_str = """
-$$REENTRY_PREPARATION$$:
+$$REENTRY_PREPARATION$$
     /* (*) Common point for **restarting** lexical analysis.
      *     at each time when CONTINUE is called at the end of a pattern.     */
 $$ON_AFTER_MATCH$$ 
 
     /* FAILURE needs not to run through 'on_after_match'. It enters here.    */
-$$REENTRY_PREPARATION_2$$:
+$$REENTRY_PREPARATION_2$$
 
 #   undef Lexeme
 #   undef LexemeBegin
@@ -414,7 +416,7 @@ def __pattern_terminal_code(PatternID, Info, SimpleF, Setup):
     else:                                         assert False
 
     if not SimpleF: 
-        result.extend(["\n", 1, "goto %s;\n" % get_label("$re-start", U=True)])
+        result.extend(["\n", 1, "goto %s;\n" % Label.global_reentry_preparation(GotoedF=True)])
     return result
 
 def __jump_to_backward_input_position_detector(BIPD_SM, Setup):
@@ -499,10 +501,10 @@ def __reentry_preparation(LanguageDB, PreConditionIDList, OnAfterMatchStr, Termi
         ])
 
     return blue_print(__reentry_preparation_str, [
-          ["$$REENTRY_PREPARATION$$",                    get_label("$re-start")],
-          ["$$REENTRY_PREPARATION_2$$",                  get_label("$re-start-2")],
+          ["$$REENTRY_PREPARATION$$",                    LabelIfDoorIdReferenced(DoorID.global_reentry_preparation())],
+          ["$$REENTRY_PREPARATION_2$$",                  LabelIfDoorIdReferenced(DoorID.global_reentry_preparation_2())],
           ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$",  unset_pre_context_flags_str],
-          ["$$GOTO_START$$",                             get_label("$start", U=True)],
+          ["$$GOTO_START$$",                             Label.global_reentry(GotoedF=True)],
           ["$$ON_AFTER_MATCH$$",                         OnAfterMatchStr],
           ["$$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$", comment_on_post_context_position_init_str],
           ["$$TERMINAL_FAILURE-REF$$",                   TerminalFailureRef],
@@ -516,9 +518,7 @@ def __terminal_router(TerminalFailureRef, TerminalFailureDef):
     return CodeIfDoorIdReferenced(DoorID.global_terminal_router(),
     [
           prolog,
-          # DO NOT 'U=True' for the state router. This is done automatically if 
-          # 'goto reload' is used. 
-          get_label("$state-router"), ";",
+          Label.global_state_router(), ";", # WHY NOT 'global_terminal_router()' 
           __terminal_router_epilog_str, 
     ])
 
@@ -529,13 +529,10 @@ def __terminal_states(action_db, PreConditionIDList, Setup, SimpleF=False):
     """      
     LanguageDB = Setup.language_db
 
-    # If there is at least a single terminal, the the 're-entry' preparation must be accomplished
-    if len(action_db) != 0: get_label("$re-start", U=True) # mark as 'used'
+    terminal_end_of_stream_def = Label.global_terminal_end_of_file()
 
-    terminal_end_of_stream_def = LanguageDB.LABEL_BY_DOOR_ID(DoorID.global_terminal_end_of_file(), ColonF=False)
-
-    terminal_failure_ref       = "QUEX_LABEL(%i)" % LanguageDB.ADDRESS_BY_DOOR_ID(DoorID.global_terminal_failure())
-    terminal_failure_def       = LanguageDB.LABEL_BY_DOOR_ID(DoorID.global_terminal_failure(), ColonF=False)
+    terminal_failure_ref       = "QUEX_LABEL(%i)" % map_door_id_to_address(DoorID.global_terminal_failure())
+    terminal_failure_def       = Label.global_terminal_failure()
 
     # (*) Text Blocks _________________________________________________________
     pattern_terminals_code         = []
