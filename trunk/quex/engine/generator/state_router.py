@@ -16,7 +16,7 @@ def do(StateRouterInfoList):
 
     epilog = "#   endif /* QUEX_OPTION_COMPUTED_GOTOS */\n"
 
-    return [prolog] + code + [epilog])
+    return [prolog] + code + [epilog]
 
 def __get_code(StateRouterInfoList):
     # It is conceivable, that 'last_acceptance' is never set to a valid 
@@ -61,6 +61,6 @@ def get_info(StateIndexList):
             result[i] = (index, "goto %s; " % map_address_to_label(index, GotoedF=True))
         else:
             # Transition to a templates 'drop-out'
-            door_id   = DoorID.drop_out(- index)) 
+            door_id   = DoorID.drop_out(- index) 
             result[i] = (map_door_id_to_address(door_id), "goto %s; " % map_door_id_to_label(door_id))
     return result

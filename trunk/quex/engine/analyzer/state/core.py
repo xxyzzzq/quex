@@ -1,6 +1,7 @@
 from   quex.engine.state_machine.core      import State
+import quex.engine.state_machine.index     as     index
 from   quex.engine.analyzer.transition_map import TransitionMap
-from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction
+from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction, PrepareAfterReload_InitState, PrepareAfterReload
 from   quex.engine.analyzer.mega_state.target  import TargetByStateKey_DROP_OUT
 from   quex.blackboard  import E_StateIndices, \
                                E_InputActions
@@ -131,6 +132,7 @@ class ReloadState:
                      '--------------------------------------------'
     """
     def __init__(self, InitStateIndex, StateIndexSet):
+        self.index = index.get()
         self.entry = Entry(Opt_StateIndex          = E_StateIndices.RELOAD_PROCEDURE, 
                            Opt_FromStateIndex_List = StateIndexSet)
         for state_index in StateIndexSet:
@@ -140,8 +142,8 @@ class ReloadState:
         self.entry.action_db.remove_transition_from_states(StateIndexSet)
                 
     def add_state(self, StateIndex, InitStateF):
-        if InitStateF: command = entry_action.PrepareAfterReload_InitState(state_index)))
-        else:          command = entry_action.PrepareAfterReload(state_index)))
+        if InitStateF: command = PrepareAfterReload_InitState(state_index)
+        else:          command = PrepareAfterReload(state_index)
 
         self.entry.action_db.enter(TransitionID(E_StateIndices.RELOAD_PROCEDURE, state_index, 0), command)
 

@@ -31,49 +31,31 @@ def do(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
     else:
         BIPD_ID = None
 
-    door_tree_root = entry_door_tree.do(TheState.index, TheState.entry.action_db)
+    return do_core(txt, TheState.index, TheState.entry.action_db)
 
-    do_node(txt, TheState, door_tree_root, LastChildF=False, BIPD_ID=BIPD_ID)
+def do_core(txt, StateIndex, ActionDb):
+    door_tree_root = entry_door_tree.do(StateIndex, ActionDb)
+
+    do_node(txt, ActionDb, door_tree_root, LastChildF=False, BIPD_ID=BIPD_ID)
 
     return True
 
-def do_node(txt, TheState, Node, LastChildF=False, BIPD_ID=None):
+def do_node(txt, ActionDb, Node, LastChildF=False, BIPD_ID=None):
     """Recursive function: '__dive' -- Marked, TODO: implement by TreeWalker.
     """
     LanguageDB = Setup.language_db
     if Node.child_set is not None:
         LastI = len(Node.child_set) - 1
         for i, child in enumerate(sorted(Node.child_set, key=attrgetter("door_id"))):
-            do_node(txt, TheState, child, LastChildF=(i==LastI), BIPD_ID=BIPD_ID)
+            do_node(txt, ActionDb, child, LastChildF=(i==LastI), BIPD_ID=BIPD_ID)
     
     # If the door can be a 'goto' target, the label needs to be defined.
-    door_label = None
-    if TheState.init_state_f and BIPD_ID is not None:
-        door_label = LanguageDB.LABEL_BACKWARD_INPUT_POSITION_DETECTOR(BIPD_ID)
-    elif Node.door_id.door_index != 0:
-        door_label = LanguageDB.LABEL_BY_DOOR_ID(Node.door_id)
-    else:
-        # 'Door 0' is needed if:  -- There is transition to 'Door 0'.
-        #                         -- A reload procedure is involved. Reload requires
-        #                            to go back to Door 0 after reload.
-        #                         -- 'Door 0' has more than one child. The second
-        #                            child needs to goto 'Door 0'.
-        #                         -- The state is a PathWalkerState which is uniform.
-        # Reload is involved if:      The transition map is not empty.
-        #                         and Not in Backward Input Position Detection Mode.
-        has_transition_f       = TheState.entry.action_db.has_transitions_to_door_id(Node.door_id)
-        has_reload_f           = len(TheState.transition_map) != 0 and BIPD_ID is None
-        has_multiple_childs_f  = len(Node.child_set) > 1
-        is_uniform_path_walker_state_f = isinstance(TheState, PathWalkerState) and \
-                                         TheState.uniform_door_id is not None
-        if has_transition_f or has_reload_f or has_multiple_childs_f or is_uniform_path_walker_state_f:
-            door_label = LanguageDB.LABEL_BY_DOOR_ID(Node.door_id) 
+    door_label = map_door_id_to_label(Node.door_id)
 
-    ## print "#Gen: Node.door_id:", Node.door_id, "--> label:", door_label
     if door_label is not None:
         txt.append(door_label)
 
-    comment_door(txt, Node, TheState.entry)
+    comment_door(txt, Node, ActionDb)
 
     action_txt = [ LanguageDB.COMMAND(command) for command in Node.command_list ]
     if Node.parent is not None and not LastChildF: 
@@ -89,11 +71,11 @@ def do_entry_from_NONE(txt, TheState):
         return
     txt.extend(LanguageDB.COMMAND(command) for command in action.command_list) 
     
-def comment_door(txt, Node, TheEntry):
+def comment_door(txt, Node, ActionDb):
     LanguageDB = Setup.language_db
 
     # If the door is entered by another state, write a comment from where it is entered.
-    transition_id_list = TheEntry.action_db.get_transition_id_list(Node.door_id)
+    transition_id_list = ActionDb.get_transition_id_list(Node.door_id)
     if len(transition_id_list) != 0:
         txt.append(" ")
         LanguageDB.COMMENT(txt, "".join([ "(%s from %s) " % (x.target_state_index, x.source_state_index) for x in transition_id_list])[:-1])

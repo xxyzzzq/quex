@@ -16,6 +16,7 @@ E_DoorIdIndex = Enum("DROP_OUT",
                      "GLOBAL_RELOAD_FORWARD", 
                      "GLOBAL_RELOAD_BACKWARD", 
                      "GLOBAL_STATE_ROUTER", 
+                     "ACCEPTANCE", 
                      "GLOBAL_TERMINAL_ROUTER", 
                      "GLOBAL_TERMINAL_END_OF_FILE", 
                      "GLOBAL_TERMINAL_FAILURE",
@@ -45,6 +46,8 @@ class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
     @staticmethod                        
     def global_state_router():            return DoorID(0,          E_DoorIdIndex.GLOBAL_STATE_ROUTER)
     @staticmethod                        
+    def acceptance(PatternId):            return DoorID(PatternId,  E_DoorIdIndex.ACCEPTANCE)
+    @staticmethod                         
     def global_terminal_router():         return DoorID(0,          E_DoorIdIndex.GLOBAL_TERMINAL_ROUTER)
     @staticmethod                         
     def global_terminal_end_of_file():    return DoorID(0,          E_DoorIdIndex.GLOBAL_TERMINAL_END_OF_FILE)

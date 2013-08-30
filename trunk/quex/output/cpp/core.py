@@ -67,9 +67,13 @@ def do_core(PatternActionPair_List):
     #     (Something that can goto a state address by an given integer value)
     state_router         = generator.state_router()
 
+    # (*) Reload procedures
+    reload_procedures    = generator.code_reload_procedures()
+
     # (*) Variable Definitions
     #     (Code that defines all required variables for the analyzer)
     variable_definitions = generator.variable_definitions()
+
 
     # (*) Putting it all together
     function_body = []
@@ -77,6 +81,7 @@ def do_core(PatternActionPair_List):
     function_body.extend(main)         # main pattern matcher
     function_body.extend(bipd)         # (seldom != empty; only for pseudo-ambiguous post contexts)
     function_body.extend(state_router) # route to state by index (only if no computed gotos)
+    function_body.extend(reload_procedures)
 
     return function_body, variable_definitions, generator.action_db
 

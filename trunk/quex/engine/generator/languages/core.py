@@ -13,11 +13,8 @@
 # ABSOLUTELY NO WARRANTY
 #########################################################################################################
 import quex.engine.generator.languages.cpp       as     cpp
-from   quex.engine.generator.languages.address   import get_address, \
-                                                        db, \
-                                                        Label, \
-                                                        get_plain_strings, \
-                                                        CodeIfDoorIdReferenced
+from   quex.engine.generator.languages.address   import Label, \
+                                                        get_plain_strings
 from   quex.blackboard                           import E_StateIndices,  \
                                                         E_AcceptanceIDs, \
                                                         E_InputActions,  \
@@ -271,12 +268,6 @@ class LanguageDB_Cpp(dict):
 
         return self.ADDRESS_BY_DOOR_ID(door_id)
 
-    def ADDRESS_DROP_OUT(self, StateIndex):
-        return get_address("$drop-out", StateIndex)
-
-    def ADDRESS_ON_FAILURE(self, UsedF=False):
-        return get_address("$terminal-FAILURE", Arg=self.__state_machine_identifier, U=UsedF)
-
     def __label_name(self, StateIndex, FromStateIndex):
         if StateIndex in E_StateIndices:
             assert StateIndex != E_StateIndices.DROP_OUT
@@ -310,12 +301,6 @@ class LanguageDB_Cpp(dict):
         # if NewlineF: return label + ":\n"
         if ColonF: return label + ":"
         else:      return label
-
-    def LABEL_DROP_OUT(self, StateIndex):
-        return "_%s:" % self.ADDRESS_DROP_OUT(StateIndex)
-
-    def LABEL_ON_FAILURE(self):
-        return "_%s:" % self.ADDRESS_ON_FAILURE()
 
     def LABEL_SHARED_ENTRY(self, TemplateIndex, EntryN=None):
         if EntryN is None: return "_%i_shared_entry:\n"    % TemplateIndex
@@ -402,10 +387,11 @@ class LanguageDB_Cpp(dict):
         if AcceptanceID == E_AcceptanceIDs.VOID: 
             return "QUEX_GOTO_TERMINAL(last_acceptance);"
         elif AcceptanceID == E_AcceptanceIDs.FAILURE:
-            return "goto _%i; /* TERMINAL_FAILURE */" % self.ADDRESS_ON_FAILURE(UsedF=True)
+            return "goto %s; /* TERMINAL_FAILURE */" % Label.global_terminal_failure(GotoedF=True)
         else:
             assert isinstance(AcceptanceID, (int, long))
-            return "goto TERMINAL_%i;" % AcceptanceID
+            return "goto %s;" % Label.acceptance(AcceptanceID)
+
 
     def GOTO_SHARED_ENTRY(self, TemplateIndex, EntryN=None):
         if EntryN is None: return "goto _%i_shared_entry;"    % TemplateIndex
@@ -687,25 +673,23 @@ class LanguageDB_Cpp(dict):
 
         return result
 
-    def RELOAD(self):
+    def RELOAD_PROCEDURE(self, ForwardF):
         assert self.__code_generation_reload_label is None
-        forward_code = [
-            cpp_reload_forward_str[0],
-            self.LABEL_BY_DOOR_ID(entry_action.DoorID.global_reload_forward()),
-            cpp_reload_forward_str[1],
-            cpp_reload_forward_str[2],
-            cpp_reload_forward_str[3],
-        ]
-        backward_code = [
-            cpp_reload_backward_str[0],
-            self.LABEL_BY_DOOR_ID(entry_action.DoorID.global_reload_forward()),
-            cpp_reload_backward_str[1],
-        ]
+        if ForwardF:
+            return [
+                cpp_reload_forward_str[0],
+                self.LABEL_BY_DOOR_ID(entry_action.DoorID.global_reload_forward()),
+                cpp_reload_forward_str[1],
+                cpp_reload_forward_str[2],
+                cpp_reload_forward_str[3],
+            ]
+        else:
+            return [
+                cpp_reload_backward_str[0],
+                self.LABEL_BY_DOOR_ID(entry_action.DoorID.global_reload_forward()),
+                cpp_reload_backward_str[1],
+            ]
 
-        return [
-            CodeIfDoorIdReferenced(entry_action.DoorID.global_reload_forward(),  forward_code),
-            CodeIfDoorIdReferenced(entry_action.DoorID.global_reload_backward(), backward_code)
-        ]
 
 cpp_reload_forward_str = ["""
     __quex_assert_no_passage();
@@ -742,6 +726,8 @@ cpp_reload_backward_str = ["""
     __quex_debug("reload impossible\\n");
     QUEX_GOTO_STATE(target_state_else_index);
 """]
+
+db = {}
 
 db["C++"] = LanguageDB_Cpp(CppBase)
 
