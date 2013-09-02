@@ -3,7 +3,7 @@ from   quex.engine.analyzer.state.core              import AnalyzerState
 import quex.engine.generator.state.transition.core  as transition_block
 import quex.engine.generator.state.entry            as entry
 import quex.engine.generator.state.drop_out         as drop_out
-from   quex.engine.generator.languages.address      import Label, get_address
+from   quex.engine.generator.languages.address      import Label
 from   quex.blackboard                              import setup as Setup, E_InputActions
 
 LanguageDB = None
@@ -85,7 +85,7 @@ def side_entry_do(txt, TheState, TheAnalyzer):
     txt.extend([
         "\n", 
         1, "%s\n" % LanguageDB.INPUT_P_INCREMENT(),
-        1, "%s\n" % LanguageDB.GOTO_ADDRESS(get_address("$init_state_transition_block", TheState.index))
+        1, "goto %s;\n" % Label.transition_block(TheState.index, GotoedF=True)
     ])
     return txt
 

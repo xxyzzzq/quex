@@ -14,6 +14,11 @@
 #########################################################################################################
 import quex.engine.generator.languages.cpp       as     cpp
 from   quex.engine.generator.languages.address   import Label, \
+                                                        map_door_id_to_address, \
+                                                        map_address_to_label, \
+                                                        mark_address_for_state_routing, \
+                                                        mark_label_as_gotoed, \
+                                                        mark_door_id_as_gotoed, \
                                                         get_plain_strings
 from   quex.blackboard                           import E_StateIndices,  \
                                                         E_AcceptanceIDs, \
@@ -208,32 +213,32 @@ class LanguageDB_Cpp(dict):
                   + "    __quex_debug(\"++path_iterator\");\n" 
 
         elif isinstance(EntryAction, entry_action.PrepareAfterReload_InitState):
+            state_index        = EntryAction.state_index
+            reload_state_index = EntryAction.reload_state_index
             # On reload success --> goto on_success_adr
-            action_db = self.analyzer.state_db[state_index].entry.action_db
-            on_success_action  = action_db.get_action(E_StateIndices.RELOAD_PROCEDURE, EntryAction.state_index)
-            assert on_success_action is not None
-            on_success_door_id = on_success_action.door_id
+            action_db          = self.analyzer.state_db[state_index].entry.action_db
+            on_success_door_id = action_db.get_door_id(state_index, reload_state_index)
             assert on_success_door_id is not None
             on_success_adr     = map_door_id_to_address(on_success_door_id)
 
             # On reload failure --> goto on_failure_adr
-            on_failure_adr     = map_door_id_to_address(DoorID.global_terminal_end_of_file())
+            on_failure_adr     = map_door_id_to_address(entry_action.DoorID.global_terminal_end_of_file())
             return   "    target_state_index = QUEX_LABEL(%i); target_state_else_index = QUEX_LABEL(%i);\n"  \
                    % (on_success_adr, on_failure_adr)                                                        \
                    + "    __quex_debug(\"RELOAD: on success goto %i; on failure goto %i;\\n\");\n"           \
                    % (on_success_adr, on_failure_adr)        
 
         elif isinstance(EntryAction, entry_action.PrepareAfterReload):
+            state_index        = EntryAction.state_index
+            reload_state_index = EntryAction.reload_state_index
             # On reload success --> goto on_success_adr
-            action_db = self.analyzer.state_db[state_index].entry.action_db
-            on_success_action  = action_db.get_action(E_StateIndices.RELOAD_PROCEDURE, EntryAction.state_index)
-            assert on_success_action is not None
-            on_success_door_id = on_success_action.door_id
+            action_db          = self.analyzer.state_db[state_index].entry.action_db
+            on_success_door_id = action_db.get_door_id(state_index, reload_state_index)
             assert on_success_door_id is not None
             on_success_adr     = map_door_id_to_address(on_success_door_id)
 
             # On reload failure --> goto on_failure_adr
-            on_failure_door_id = DoorID.drop_out(EntryAction.state_index)
+            on_failure_door_id = entry_action.DoorID.drop_out(state_index)
             on_failure_adr     = map_door_id_to_address(on_failure_door_id)
             return   "    target_state_index = QUEX_LABEL(%i); target_state_else_index = QUEX_LABEL(%i);\n"  \
                    % (on_success_adr, on_failure_adr)                                                        \
@@ -344,6 +349,7 @@ class LanguageDB_Cpp(dict):
         return "goto %s;" % Label.drop_out(StateIndex, GotoedF=True)
 
     def GOTO_RELOAD(self, StateIndex, InitStateIndexF, EngineType):
+        assert False, "GOTO_BY_DOOR_ID is enough"
         """On reload a special section is entered that tries to reload data. Reload
            has two possible results:
            
@@ -359,29 +365,29 @@ class LanguageDB_Cpp(dict):
            Thus: The reload behavior can be determined based on **one** state index.
                  The related drop-out label can be determined here.
         """
-        # 'DoorIndex == 0' is the entry into the state without any actions.
-        on_success = self.ADDRESS_BY_DOOR_ID(entry_action.DoorID.after_reload(StateIndex),
-                                             SubjectToStateRoutingF=True)
-
-        if self.__code_generation_on_reload_fail_adr is not None:
-            on_fail = self.__code_generation_on_reload_fail_adr
-        else:
-            if InitStateIndexF and EngineType.is_FORWARD():
-                door_id = entry_action.DoorID.global_terminal_end_of_file()
-            else:
-                door_id = entry_action.DoorID.drop_out(StateIndex)
-            on_fail = self.ADDRESS_BY_DOOR_ID(door_id, SubjectToStateRoutingF=True)
-
-        if self.__code_generation_reload_label is not None:
-            reload_label = self.__code_generation_reload_label
-        else:
-            if EngineType.is_FORWARD(): door_id = entry_action.DoorID.global_reload_forward()
-            else:                       door_id = entry_action.DoorID.global_reload_backward()
-            address      = map_door_id_to_address(door_id)
-            reload_label = map_address_to_label(address)
-            mark_address_for_state_routing(address)
-        
-        return "QUEX_GOTO_RELOAD(%s, %s, %s);" % (reload_label, on_success, on_fail)
+        #        # 'DoorIndex == 0' is the entry into the state without any actions.
+        #        on_success = self.ADDRESS_BY_DOOR_ID(entry_action.DoorID.after_reload(StateIndex),
+        #                                             SubjectToStateRoutingF=True)
+        #
+        #        if self.__code_generation_on_reload_fail_adr is not None:
+        #            on_fail = self.__code_generation_on_reload_fail_adr
+        #        else:
+        #            if InitStateIndexF and EngineType.is_FORWARD():
+        #                door_id = entry_action.DoorID.global_terminal_end_of_file()
+        #            else:
+        #                door_id = entry_action.DoorID.drop_out(StateIndex)
+        #            on_fail = self.ADDRESS_BY_DOOR_ID(door_id, SubjectToStateRoutingF=True)
+        #
+        #        if self.__code_generation_reload_label is not None:
+        #            reload_label = self.__code_generation_reload_label
+        #        else:
+        #            if EngineType.is_FORWARD(): door_id = entry_action.DoorID.global_reload_forward()
+        #            else:                       door_id = entry_action.DoorID.global_reload_backward()
+        #            address      = map_door_id_to_address(door_id)
+        #            reload_label = map_address_to_label(address)
+        #            mark_address_for_state_routing(address)
+        #        
+        #        return "QUEX_GOTO_RELOAD(%s, %s, %s);" % (reload_label, on_success, on_fail)
 
     def GOTO_TERMINAL(self, AcceptanceID):
         if AcceptanceID == E_AcceptanceIDs.VOID: 
@@ -390,8 +396,8 @@ class LanguageDB_Cpp(dict):
             return "goto %s; /* TERMINAL_FAILURE */" % Label.global_terminal_failure(GotoedF=True)
         else:
             assert isinstance(AcceptanceID, (int, long))
-            return "goto %s;" % Label.acceptance(AcceptanceID)
-
+            print "#Labello:", Label.acceptance(AcceptanceID)
+            return "goto %s;" % Label.acceptance(AcceptanceID, GotoedF=True)
 
     def GOTO_SHARED_ENTRY(self, TemplateIndex, EntryN=None):
         if EntryN is None: return "goto _%i_shared_entry;"    % TemplateIndex
@@ -669,62 +675,53 @@ class LanguageDB_Cpp(dict):
         result.extend(BeforeReloadAction)
         result.append(cpp_reload_forward_str[2])
         result.extend(AfterReloadAction)
-        result.append(cpp_reload_forward_str[3])
+        result.append(
+           cpp_reload_forward_str[3].replace("$$STATE_ROUTER$$",  
+                                             Label.global_state_router(GotoedF=True)))
 
         return result
 
     def RELOAD_PROCEDURE(self, ForwardF):
         assert self.__code_generation_reload_label is None
+
         if ForwardF:
             return [
                 cpp_reload_forward_str[0],
-                self.LABEL_BY_DOOR_ID(entry_action.DoorID.global_reload_forward()),
                 cpp_reload_forward_str[1],
                 cpp_reload_forward_str[2],
-                cpp_reload_forward_str[3],
             ]
         else:
-            return [
-                cpp_reload_backward_str[0],
-                self.LABEL_BY_DOOR_ID(entry_action.DoorID.global_reload_forward()),
-                cpp_reload_backward_str[1],
-            ]
+            return cpp_reload_backward_str[0]
 
 
-cpp_reload_forward_str = ["""
-    __quex_assert_no_passage();
-""",
-"""
-    __quex_debug1("__RELOAD_FORWARD");
+cpp_reload_forward_str = [
+"""    __quex_debug1("RELOAD_FORWARD");
     __quex_assert(*(me->buffer._input_p) == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( me->buffer._memory._end_of_file_p == 0x0 ) {
 """,
 """
-        __quex_debug_reload_before(); /* Leave macro here to report source position. */
+        __quex_debug_reload_before();          /* Report source position. */
         QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)position, PositionRegisterN);
 """,
 """
         __quex_debug_reload_after();
-        QUEX_GOTO_STATE(target_state_index);
+        QUEX_GOTO_STATE(target_state_index);   /* may use 'computed goto' */
     }
     __quex_debug("reload impossible\\n");
-    QUEX_GOTO_STATE(target_state_else_index);
+    QUEX_GOTO_STATE(target_state_else_index);  /* may use 'computed goto' */
 """]
 
-cpp_reload_backward_str = ["""
-    __quex_assert_no_passage();
-""",
-"""
-    __quex_debug1("__RELOAD_BACKWARD");
+cpp_reload_backward_str = [
+"""    __quex_debug1("RELOAD_BACKWARD");
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( QUEX_NAME(Buffer_is_begin_of_file)(&me->buffer) == false ) {
-        __quex_debug_reload_before(); /* Leave macro here to report source position. */
+        __quex_debug_reload_before();          /* Report source position. */
         QUEX_NAME(buffer_reload_backward)(&me->buffer);
         __quex_debug_reload_after();
-        QUEX_GOTO_STATE(target_state_index);
+        QUEX_GOTO_STATE(target_state_index);   /* may use 'computed goto' */
     }
     __quex_debug("reload impossible\\n");
-    QUEX_GOTO_STATE(target_state_else_index);
+    QUEX_GOTO_STATE(target_state_else_index);  /* may use 'computed goto' */
 """]
 
 db = {}

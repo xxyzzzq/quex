@@ -378,12 +378,6 @@ class MegaState(AnalyzerState):
         self.entry.action_db.absorb(TheState.entry.action_db)
         self.drop_out.absorb(TheState.index, TheState.drop_out)
 
-    def transition_is_inside(self, TId):
-        """RETURNS: True  - if transition happens inside this MegaState.
-                    False - if not.
-        """
-        assert False, "--> must be implemented by derived class"
-
     def check_consistency(self, RemainingStateIndexSet):
         # Check the MegaState's consistency
         assert self.entry.action_db.check_consistency()

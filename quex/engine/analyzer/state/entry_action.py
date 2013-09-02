@@ -13,8 +13,6 @@ E_DoorIdIndex = Enum("DROP_OUT",
                      "GOTO_RELOAD", 
                      "AFTER_RELOAD", 
                      "TRANSITION_BLOCK", 
-                     "GLOBAL_RELOAD_FORWARD", 
-                     "GLOBAL_RELOAD_BACKWARD", 
                      "GLOBAL_STATE_ROUTER", 
                      "ACCEPTANCE", 
                      "GLOBAL_TERMINAL_ROUTER", 
@@ -101,18 +99,12 @@ class TransitionID(namedtuple("TransitionID_tuple", ("target_state_index", "sour
         return super(TransitionID, self).__new__(self, StateIndex, FromStateIndex, TriggerId)
 
     def __repr__(self):
-        if self.target_state_index == E_StateIndices.RELOAD_PROCEDURE:
-            source_state_str = "this"
-        else:
-            source_state_str = "%s" % self.source_state_index
+        source_state_str = "%s" % self.source_state_index
 
         if self.trigger_id == 0:
             return "TransitionID(to=%s, from=%s)" % (self.target_state_index, source_state_str)
         else:
             return "TransitionID(to=%s, from=%s, trid=%s)" % (self.target_state_index, source_state_str, self.gtrigger_id)
-
-TransitionID_DROP_OUT     = TransitionID(E_StateIndices.DROP_OUT, 0, 0)
-TransitionID_AFTER_RELOAD = TransitionID(E_StateIndices.RELOAD_PROCEDURE, 0L, 0)
 
 class TransitionAction(object):
     """Object containing information about commands to be executed upon
@@ -263,6 +255,8 @@ class CommandList:
             elif isinstance(Cmd, PathIteratorIncrement):   
                 return (3, 0)
             elif isinstance(Cmd, PrepareAfterReload):   
+                return (4, 0)
+            elif isinstance(Cmd, PrepareAfterReload_InitState):   
                 return (4, 0)
             else:
                 assert False, "Command '%s' cannot be part of .misc." % Cmd.__class__.__name__
@@ -436,20 +430,24 @@ class PreConditionOK(Command):
         return "    pre-context-fulfilled = %s;\n" % self.pre_context_id
 
 class PrepareAfterReload(Command):
-    def __init__(self, StateIndex):
-        Command.__init__(self, 1, [StateIndex])
+    def __init__(self, StateIndex, ReloadStateIndex):
+        Command.__init__(self, 1, [StateIndex, ReloadStateIndex])
     @property
-    def state_index(self): return self._x[0]
+    def state_index(self):        return self._x[0]
+    @property
+    def reload_state_index(self): return self._x[1]
     def __repr__(self):       
-        return "    prepare reload for state = %s;" % (self.state_index)
+        return "    prepare reload(%s) for state = %s;" % (self.reload_state_index, self.state_index)
 
 class PrepareAfterReload_InitState(Command):
-    def __init__(self, StateIndex):
-        Command.__init__(self, 1, [StateIndex])
+    def __init__(self, StateIndex, ReloadStateIndex):
+        Command.__init__(self, 1, [StateIndex, ReloadStateIndex])
     @property
-    def state_index(self): return self._x[0]
+    def state_index(self):        return self._x[0]
+    @property
+    def reload_state_index(self): return self._x[1]
     def __repr__(self):       
-        return "    prepare reload init state = %s;" % (self.state_index)
+        return "    prepare reload(%s) for init state = %s;" % (self.reload_state_index, self.state_index)
 
 class LexemeStartToReferenceP(Command):
     def __init__(self, StateIndex):

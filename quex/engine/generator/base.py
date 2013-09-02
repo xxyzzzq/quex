@@ -3,8 +3,10 @@ from   quex.engine.generator.action_info               import PatternActionInfo
 import quex.engine.generator.state_machine_coder       as     state_machine_coder
 import quex.engine.generator.state_router              as     state_router_generator
 from   quex.engine.generator.languages.variable_db     import variable_db
-from   quex.engine.generator.languages.address         import get_new_address,                        \
-                                                              get_label_of_address,               \
+from   quex.engine.generator.languages.address         import get_new_address,                    \
+                                                              map_address_to_label,               \
+                                                              map_door_id_to_address,             \
+                                                              mark_label_as_gotoed,               \
                                                               get_plain_strings,                  \
                                                               get_address_set_subject_to_routing, \
                                                               address_exists
@@ -15,12 +17,15 @@ from   quex.engine.state_machine.core                  import StateMachine
 import quex.engine.state_machine.transformation        as     transformation
 from   quex.engine.generator.state.transition.code     import TransitionCodeFactory
 import quex.engine.generator.state.transition.core     as     transition_block
-import quex.engine.generator.state.reload_state        as     reload_state_coder
+import quex.engine.generator.reload_state              as     reload_state_coder
 from   quex.engine.analyzer.state.entry_action         import DoorID
 import quex.engine.analyzer.engine_supply_factory      as     engine
 from   quex.engine.analyzer.transition_map             import TransitionMap
 import quex.engine.analyzer.core                       as     analyzer_generator
+from   quex.engine.analyzer.state.core                 import ReloadState
+import quex.engine.analyzer.engine_supply_factory      as     engine_supply_factory
 from   quex.engine.interval_handling                   import NumberSet, Interval
+from   quex.engine.tools                               import all_isinstance
 from   quex.input.regular_expression.construct         import Pattern
 
 from   quex.blackboard import E_ActionIDs, \
@@ -98,15 +103,15 @@ class Generator(GeneratorBase):
 
     def __init__(self, PatternActionPair_List):
         GeneratorBase.__init__(self, PatternActionPair_List)
-        self.__reload_state_backward = ReloadState()
-        self.__reload_state_forward  = None
+        self.reload_state_forward  = ReloadState(engine_supply_factory.FORWARD)
+        self.reload_state_backward = ReloadState(engine_supply_factory.BACKWARD_PRE_CONTEXT) # Important: 'BACKWARD'
 
     def code_reload_procedures(self):
         txt = []
-        if self.__reload_state_forward is not None:
-            txt.extend(reload_state_coder.do(self.__reload_state_forward, ForwardF=True))
-        if self.pre_context_sm is not None or len(self.bipd_sm_list) != 0:
-            txt.extend(reload_state_coder.do(self.__reload_state_backward, ForwardF=False))
+        if self.reload_state_forward is not None:
+            txt.extend(reload_state_coder.do(self.reload_state_forward))
+        if self.reload_state_backward is not None:
+            txt.extend(reload_state_coder.do(self.reload_state_backward))
         return txt
 
     def code_pre_context_state_machine(self):
@@ -114,11 +119,8 @@ class Generator(GeneratorBase):
 
         if len(self.pre_context_sm_list) == 0: return []
 
-        txt, dummy = Generator.code_state_machine(self.pre_context_sm, 
-                                                  engine.BACKWARD_PRE_CONTEXT) 
-
-        self.__reload_state_backward.entry.action_db.absorb(analyzer.reload_state.entry.action_db)
-
+        txt, analyzer = Generator.code_state_machine(self.pre_context_sm, 
+                                                     engine.BACKWARD_PRE_CONTEXT) 
 
         txt.append("\n%s" % LanguageDB.LABEL(E_StateIndices.END_OF_PRE_CONTEXT_CHECK))
         # -- set the input stream back to the real current position.
@@ -134,7 +136,7 @@ class Generator(GeneratorBase):
         terminal_txt, \
         analyzer      = self.code_state_machine_core(engine.FORWARD, False)
 
-        self.__reload_state_forward = analyzer.reload_state
+        self.reload_state_forward.absorb(analyzer.reload_state)
 
         # Number of different entries in the position register map
         self.__position_register_n                 = len(set(analyzer.position_register_map.itervalues()))
@@ -154,15 +156,24 @@ class Generator(GeneratorBase):
         for sm in self.bipd_sm_list:
             txt, analyzer = Generator.code_state_machine(sm, engine.BACKWARD_INPUT_POSITION) 
             result.extend(txt)
-            self.__reload_state_backward.entry.action_db.absorb(analyzer.reload_state.entry.action_db)
+            self.reload_state_backward.absorb(analyzer.reload_state)
         return result
 
     def state_router(self):
-        # (*) Determine required labels and variables
         routed_address_set = get_address_set_subject_to_routing()
-        routed_address_set.add(get_address("$terminal-EOF", U=True))
+        # If there is only one address subject to state routing, then the
+        # state router needs to be implemented.
+        #if len(routed_address_set) == 0:
+        #    return []
+
+        # Add the address of 'terminal_end_of_file()' if it is not there, already.
+        # (It should: assert address_eof in routed_address_set
+        address_eof        = map_door_id_to_address(DoorID.global_terminal_end_of_file()) 
+        routed_address_set.add(address_eof)
+        mark_label_as_gotoed(map_address_to_label(address_eof))
+
         routed_state_info_list = state_router_generator.get_info(routed_address_set)
-        return [ state_router_generator.do(routed_state_info_list) ]
+        return state_router_generator.do(routed_state_info_list) 
 
     def variable_definitions(self):
         LanguageDB = Setup.language_db
@@ -191,8 +202,7 @@ class Generator(GeneratorBase):
         variable_db.require("target_state_index", Condition_ComputedGoto=False) 
 
         # Variables that tell where to go after reload success and reload failure
-        if    address_exists(LanguageDB.ADDRESS_BY_DOOR_ID(DoorID.global_reload_forward())) \
-           or address_exists(LanguageDB.ADDRESS_BY_DOOR_ID(DoorID.global_reload_backward())):
+        if not Setup.buffer_based_analyzis_f:               # Reload requires:
             variable_db.require("target_state_else_index")  # upon reload failure
             variable_db.require("target_state_index")       # upon reload success
 
@@ -213,7 +223,7 @@ class Generator(GeneratorBase):
         ]
         txt.extend(get_plain_strings(analyzer_function))
 
-        Generator.assert_txt(txt)
+        assert all_isinstance(txt, (str, unicode))
 
         return txt
 
@@ -248,17 +258,6 @@ class Generator(GeneratorBase):
         """
         LanguageDB = Setup.language_db
         return LanguageDB["$terminal-code"](ActionDB, PreContextID_List, Setup, SimpleF) 
-
-    @staticmethod
-    def assert_txt(txt):
-        for i, element in enumerate(txt):
-            if isinstance(element, (str, unicode)): continue
-            print element.__class__.__name__
-            for k in range(max(0,i-10)):
-                print "before:", k, txt[k]
-            for k in range(i+1, min(i+10, len(txt))):
-                print "after: ", k, txt[k]
-            assert False
 
 class LoopGenerator(Generator):
     @classmethod
@@ -458,9 +457,9 @@ class LoopGenerator(Generator):
 
         sm_txt,       \
         terminal_txt, \
-        dummy         = generator.code_state_machine_core(engine_type, SimpleF=True)
+        analyzer      = generator.code_state_machine_core(engine_type, SimpleF=True)
 
-        self.__reload_state_forward = analyzer.reload_state
+        self.reload_state_forward.absorb(analyzer.reload_state)
 
         reload_txt = []
         if BeforeReloadAction is not None:
@@ -581,7 +580,7 @@ class LoopGenerator(Generator):
 
     @staticmethod
     def generate_new_label():
-        return adr, get_label_of_address(get_new_address()) 
+        return adr, map_address_to_label(get_new_address()) 
 
     @staticmethod
     def replace_iterator_name(txt, IteratorName, ImplementationType):

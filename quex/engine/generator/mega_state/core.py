@@ -9,7 +9,7 @@ import quex.engine.generator.state.drop_out         as     drop_out_coder
 import quex.engine.generator.state.entry            as     entry_coder
 import quex.engine.generator.mega_state.template    as     template
 import quex.engine.generator.mega_state.path_walker as     path_walker
-from   quex.engine.generator.languages.address      import get_label
+from   quex.engine.generator.languages.address      import Label
 from   quex.engine.interval_handling                import Interval
 import sys
 
@@ -121,7 +121,7 @@ def drop_out_scheme_do(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
     # (*) Central Label for the Templates Drop Out
     #     (The rules for having or not having a label here are complicated, 
     #      so rely on the label's usage database.)
-    txt.append("%s:\n" % get_label("$drop-out", TheState.index))
+    txt.append(LabelIfDoorIdReferenced(DoorID.drop_out(TheState.index)))
     txt.append("    %s\n" % DebugString) 
 
     uniform_drop_out = TheState.drop_out.get_uniform_prototype()
@@ -204,14 +204,12 @@ def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr):
     # In case that TheState.transition_map clones (which it should not),
     # the following is safe:
     tm = TheState.transition_map
-    goto_reload_str = MegaStateTransitionCodeFactory.prepare_reload_tansition(
+    MegaStateTransitionCodeFactory.init(TheState, TheAnalyzer, StateKeyStr)
+
+    MegaStateTransitionCodeFactory.prepare_transition_map_for_reload(
                                  TM            = tm,
                                  StateIndex    = TheState.index,
-                                 EngineType    = TheAnalyzer.engine_type,
-                                 InitStateF    = TheState.init_state_f)
-
-    MegaStateTransitionCodeFactory.init(TheState, TheAnalyzer.state_db, StateKeyStr, 
-                                        TheAnalyzer.engine_type, goto_reload_str)
+                                 EngineType    = TheAnalyzer.engine_type)
 
     return TransitionMap.from_iterable(tm, MegaStateTransitionCodeFactory.do)
 

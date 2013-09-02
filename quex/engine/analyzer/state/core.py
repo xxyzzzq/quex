@@ -1,9 +1,11 @@
-from   quex.engine.state_machine.core      import State
-import quex.engine.state_machine.index     as     index
-from   quex.engine.analyzer.transition_map import TransitionMap
+from   quex.engine.state_machine.core          import State
+import quex.engine.state_machine.index         as     index
+from   quex.engine.analyzer.transition_map     import TransitionMap
+from   quex.engine.analyzer.state.entry        import Entry
 from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction, PrepareAfterReload_InitState, PrepareAfterReload
 from   quex.engine.analyzer.mega_state.target  import TargetByStateKey_DROP_OUT
-from   quex.blackboard  import E_StateIndices, \
+from   quex.blackboard  import setup as Setup, \
+                               E_StateIndices, \
                                E_InputActions
 
 class AnalyzerState(object):
@@ -57,8 +59,8 @@ class AnalyzerState(object):
         self.entry = EngineType.create_Entry(SM_State, StateIndex, FromStateIndexList)
 
         # (*) Transition
-        self.transition_map                    = TransitionMap.from_TargetMap(SM_State.target_map)
-        self.__target_index_list               = SM_State.target_map.get_map().keys()
+        self.transition_map      = TransitionMap.from_TargetMap(SM_State.target_map)
+        self.__target_index_list = SM_State.target_map.get_map().keys()
         # Currently, the following is only used for path compression. If the alternative
         # is implemented, then the following is no longer necessary.
         self.map_target_index_to_character_set = SM_State.target_map.get_map()
@@ -86,6 +88,24 @@ class AnalyzerState(object):
         elif L == 0: return True
         elif self.transition_map[0][1].drop_out_f(): return True
         return False
+
+    def prepare_for_reload(self, reload_state):
+        """Ensures that the buffer limit code causes a transition to a
+        reload section. That is, there will be an interval of size 1 at
+        the buffer limit code which maps to DoorID.goto_reload().
+        """
+        assert reload_state.index in (E_StateIndices.RELOAD_FORWARD, E_StateIndices.RELOAD_BACKWARD)
+
+        # Prepare the entry into the state from 'After Reload'.
+        # => Emtpy transition action, nothing to do.
+        self.entry.action_db.enter(TransitionID(self.index, reload_state.index, 0), 
+                                   TransitionAction())
+
+        # Prepare the ReloadState for an entry from this state.
+        reload_state.add_state(self.index, self.init_state_f)
+
+        # Ensure a transition on 'buffer limit code' to the reload procedure.
+        self.transition_map.set_target(Setup.buffer_limit_code, reload_state.index)
 
     def get_string_array(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
         txt = [ "State %s:\n" % repr(self.index).replace("L", "") ]
@@ -131,19 +151,24 @@ class ReloadState:
                      |                                            |
                      '--------------------------------------------'
     """
-    def __init__(self, InitStateIndex, StateIndexSet):
-        self.index = index.get()
-        self.entry = Entry(Opt_StateIndex          = E_StateIndices.RELOAD_PROCEDURE, 
-                           Opt_FromStateIndex_List = StateIndexSet)
-        for state_index in StateIndexSet:
-            self.add(state_index, InitStateF=(state_index == InitStateIndex))
+    def __init__(self, EngineType):
+        if EngineType.is_FORWARD(): self.index = E_StateIndices.RELOAD_FORWARD
+        else:                       self.index = E_StateIndices.RELOAD_BACKWARD
+        self.entry = Entry()
 
     def remove_states(self, StateIndexSet):
         self.entry.action_db.remove_transition_from_states(StateIndexSet)
-                
-    def add_state(self, StateIndex, InitStateF):
-        if InitStateF: command = PrepareAfterReload_InitState(state_index)
-        else:          command = PrepareAfterReload(state_index)
 
-        self.entry.action_db.enter(TransitionID(E_StateIndices.RELOAD_PROCEDURE, state_index, 0), command)
+    def absorb(self, OtherReloadState):
+        # Do not absorb RELOAD_FORWARD into RELOAD_BACKWARD, and vice versa.
+        assert self.index == OtherReloadState.index
+        self.entry.action_db.absorb(OtherReloadState.entry.action_db)
+
+    def add_state(self, StateIndex, InitStateF):
+        if InitStateF: command = PrepareAfterReload_InitState(StateIndex, self.index)
+        else:          command = PrepareAfterReload(StateIndex, self.index)
+        before_reload_action = TransitionAction()
+        before_reload_action.command_list.misc.add(command)
+        self.entry.action_db.enter(TransitionID(self.index, StateIndex, 0), 
+                                   before_reload_action)
 

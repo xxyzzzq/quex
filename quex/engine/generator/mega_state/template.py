@@ -1,6 +1,5 @@
 # (C) 2009-2011 Frank-Rene Schaefer
 from   quex.engine.generator.state.core             import input_do
-from   quex.engine.generator.languages.address      import get_label
 from   quex.engine.generator.languages.variable_db  import variable_db
 """Template Compression _______________________________________________________
 

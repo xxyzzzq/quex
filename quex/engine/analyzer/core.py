@@ -37,7 +37,7 @@ _______________________________________________________________________________
 
 import quex.engine.analyzer.track_analysis        as     track_analysis
 import quex.engine.analyzer.optimizer             as     optimizer
-from   quex.engine.analyzer.state.core            import AnalyzerState
+from   quex.engine.analyzer.state.core            import AnalyzerState, ReloadState
 from   quex.engine.analyzer.state.drop_out        import DropOut
 import quex.engine.analyzer.mega_state.analyzer   as     mega_state_analyzer
 import quex.engine.analyzer.position_register_map as     position_register_map
@@ -70,11 +70,6 @@ def do(SM, EngineType=engine.FORWARD):
         # MegaState.transition_map:    Interval --> TargetByStateKey
         #                           or Interval --> DoorID
 
-    # Assign DoorID-s to the entries into the 'reload state'. The 
-    # 'PrepareAfterReload' commands will search for DoorID-s themselves.
-    # It is not required to adapt transition maps in any way.
-    analyzer.reload_state.entry.action_db.categorize()
-
     return analyzer
 
 def __do(SM, EngineType):
@@ -84,9 +79,18 @@ def __do(SM, EngineType):
     # Optimize the Analyzer
     analyzer = optimizer.do(analyzer)
 
+    # Implement the infrastructure for 'reload':
+    # -- Transition maps goto the 'reload procedure' upon 'buffer limit' code
+    # -- The 'reload state' does certain things dependent on the from what state
+    #    it is entered.
+    # -- The states have a dedicated entry from after the reload procedure.
+    for state in analyzer.state_db.itervalues():
+        state.prepare_for_reload(analyzer.reload_state)
+
     # Assign DoorID-s to transition actions and relate transitions to DoorID-s.
     for state in analyzer.state_db.itervalues():
         state.entry.action_db.categorize(state.index)
+    analyzer.reload_state.entry.action_db.categorize(analyzer.reload_state.index)
 
     for state in analyzer.state_db.itervalues():
         state.transition_map = state.transition_map.relate_to_door_ids(analyzer, state.index)
@@ -124,7 +128,7 @@ class Analyzer:
                                         EngineType, self.__from_db[state_index])) 
             for state_index in self.__trace_db.iterkeys()])
 
-        self.reload_state = ReloadState(SM.init_state_index, StateIndexSet=SM.states.keys())
+        self.reload_state = ReloadState(EngineType=self.__engine_type)
 
         self.mega_state_list          = []
         self.non_mega_state_index_set = set(state_index for state_index in SM.states.iterkeys())

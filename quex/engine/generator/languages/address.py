@@ -29,18 +29,17 @@ from   quex.engine.tools import print_callstack, TypedDict
 #    "$init_state_transition_block": lambda StateIndex:   __address_db.get("INIT_STATE_%i_TRANSITION_BLOCK" % StateIndex),
 #}
 special_labels = (
-    (DoorID.global_reload_forward(),              "RELOAD_FORWARD"),
-    (DoorID.global_reload_backward(),             "RELOAD_BACKWARD"),
-    (DoorID.global_state_router(),                "STATE_ROUTER"),
-    (DoorID.global_terminal_router(),             "TERMINAL_ROUTER"),
-    (DoorID.global_terminal_end_of_file(),        "TERMINAL_END_OF_FILE"),
-    (DoorID.global_terminal_failure(),            "TERMINAL_FAILURE"),
-    (DoorID.global_reentry(),                     "REENTRY"),
-    (DoorID.global_reentry_preparation(),         "REENTRY_PREPARATION"),
-    (DoorID.global_reentry_preparation_2(),       "REENTRY_PREPARATION_2"),
+    (DoorID.global_state_router(),                "QUEX_STATE_ROUTER"),
+    (DoorID.global_terminal_router(),             "QUEX_TERMINAL_ROUTER"),
+    (DoorID.global_terminal_end_of_file(),        "QUEX_TERMINAL_END_OF_FILE"),
+    (DoorID.global_terminal_failure(),            "QUEX_TERMINAL_FAILURE"),
+    (DoorID.global_reentry(),                     "QUEX_REENTRY"),
+    (DoorID.global_reentry_preparation(),         "QUEX_REENTRY_PREPARATION"),
+    (DoorID.global_reentry_preparation_2(),       "QUEX_REENTRY_PREPARATION_2"),
 )
 
 __door_id_to_address_db = TypedDict(DoorID, long)
+
 
 def map_door_id_to_address(DoorId):
     """RETURNS: Address of given DoorId
@@ -53,6 +52,7 @@ def map_door_id_to_address(DoorId):
     if address is None:
         address = index.get()
         __door_id_to_address_db[DoorId] = address
+    print "#mappey:", DoorId, address
     return address
 
 special_label_db = dict(
@@ -62,19 +62,28 @@ special_label_db = dict(
 
 def map_address_to_label(Adr):
     if Adr in special_label_db:
-        special_label_db[Adr]
+        return special_label_db[Adr]
     return "_%s" % Adr
 
 def map_door_id_to_label(DoorId, GotoedF=False):
     # 'map_door_id_to_address' ensures that there is an address for the DoorId
     #
-    label = map_address_to_label(map_door_id_to_address(DoorId))
-    if GotoedF: mark_label_as_gotoed(GotoedF)
+    address = map_door_id_to_address(DoorId)
+    label   = map_address_to_label(address)
+    print "#label:", DoorId, address, label
+    if GotoedF: mark_label_as_gotoed(label)
     return label
 
 def get_new_address():
     state_index = index.get()
     return map_door_id_to_address(DoorID(state_index, 0))
+
+def address_exists(Address):
+    global __door_id_to_address_db
+    for address in __door_id_to_address_db.itervalues():
+        if address == Address: return True
+    return False
+
 
 class Label:
     """This class shall be a short-hand for 'map_door_id_to_address' of global
@@ -89,10 +98,6 @@ class Label:
     def after_reload(StateIndex, GotoedF=False):     return map_door_id_to_label(DoorID.after_reload(StateIndex), GotoedF)
     @staticmethod                        
     def transition_block(StateIndex, GotoedF=False): return map_door_id_to_label(DoorID.transition_block(StateIndex), GotoedF)
-    @staticmethod
-    def global_reload_forward(GotoedF=False):        return map_door_id_to_label(DoorID.global_reload_forward(), GotoedF)
-    @staticmethod
-    def global_reload_backward(GotoedF=False):       return map_door_id_to_label(DoorID.global_reload_backward(), GotoedF)
     @staticmethod
     def global_state_router(GotoedF=False):          return map_door_id_to_label(DoorID.global_state_router(), GotoedF)
     @staticmethod
@@ -114,9 +119,13 @@ __referenced_label_set     = set([])
 __state_router_address_set = set([])
 
 def mark_label_as_gotoed(Label):
+    assert isinstance(Label, (str, unicode))
     __referenced_label_set.add(Label)
+    print "#gotoed label:", Label
+
 
 def mark_door_id_as_gotoed(DoorId):
+    print "#gotoed door_id:", DoorId
     mark_label_as_gotoed(map_door_id_to_label(DoorId))
 
 def mark_address_for_state_routing(Adr):
@@ -124,10 +133,6 @@ def mark_address_for_state_routing(Adr):
     # Any address which is subject to state routing relates to a label which
     # is 'gotoed' from inside the state router.
     mark_label_as_gotoed(map_address_to_label(Adr))
-
-def address_exists(Address):
-    global __referenced_label_set
-    return get_label_of_address(Address) in __referenced_label_set
 
 def init_address_handling():
     __referenced_label_set.clear()

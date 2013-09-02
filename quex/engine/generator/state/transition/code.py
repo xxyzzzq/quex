@@ -1,6 +1,6 @@
 import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.state.entry_action      import DoorID
-from   quex.engine.analyzer.mega_state.target       import TargetByStateKey, TargetByStateKey_DROP_OUT, TargetByStateKey_RELOAD
+from   quex.engine.analyzer.mega_state.target       import TargetByStateKey, TargetByStateKey_DROP_OUT
 from   quex.engine.generator.languages.variable_db  import variable_db
 import quex.engine.analyzer.transition_map          as     transition_map_tool
 from   quex.blackboard import E_StateIndices, \
@@ -20,51 +20,6 @@ class TransitionCodeFactory:
 
 
     @classmethod
-    def prepare_reload_tansition(cls, 
-                                 TM,
-                                 StateIndex     = None,
-                                 EngineType     = engine.FORWARD,
-                                 InitStateF     = False,
-                                 GotoReload_Str = None):
-        """If the engine type requires a reload the following is done:
-
-           (1) It is made sure that the transition map transits:
-
-                    buffer limit code --> reload procedure.
-
-           (2) An action is determined for the reload itself.
-        """
-        if not EngineType.requires_buffer_limit_code_for_reload():
-            return None
-
-        cls.prepare_transition_map_for_reload(TM)
-
-        # RETURN: goto_reload_str
-        return cls.prepare_reload_action(StateIndex, EngineType, InitStateF, GotoReload_Str)
-
-    @staticmethod
-    def prepare_transition_map_for_reload(TM):
-        """Ensures that the buffer limit code causes a transition to a
-        reload section. That is, there will be an interval of size 1 at
-        the buffer limit code which maps to DoorID.goto_reload().
-        """
-        # Insist that transitions to reload procedure have been prepared!
-        assert TM.get_target(Setup.buffer_limit_code).drop_out_f
-        TM.set_target(Setup.buffer_limit_code, DoorID.goto_reload())
-
-    @classmethod
-    def prepare_reload_action(cls, StateIndex, EngineType, InitStateF, GotoReload_Str):
-        LanguageDB = Setup.language_db
-        result = []
-
-        if GotoReload_Str is not None:
-            result.extend(GotoReload_Str)
-        else:
-            result.append(LanguageDB.GOTO_RELOAD(StateIndex, InitStateF, EngineType))
-
-        return "".join(result)
-
-    @classmethod
     def do(cls, Target):
         LanguageDB = Setup.language_db
 
@@ -75,26 +30,14 @@ class TransitionCodeFactory:
             return TransitionCode(Target)
 
         elif isinstance(Target, DoorID):
-            if   Target.drop_out_f():
-                return TransitionCode_DropOut(cls.state_index)
-            elif Target.goto_reload_f():
-                if cls.goto_reload_str is not None: 
-                    return TransitionCode(cls.goto_reload_str)
-                else:                          
-                    return TransitionCode(LanguageDB.GOTO_RELOAD(cls.state_index, 
-                                                                 cls.init_state_f,
-                                                                 cls.engine_type))
-            else:
-                # The transition to another target state cannot possibly be cut out!
-                # => no postponed code generation
-                return TransitionCode(LanguageDB.GOTO_BY_DOOR_ID(Target))
+            return TransitionCode(LanguageDB.GOTO_BY_DOOR_ID(Target))
 
         else:
             assert False, "Target = '%s'" % Target
 
 class MegaStateTransitionCodeFactory(TransitionCodeFactory):
     @classmethod
-    def init(cls, TheState, StateDB, StateKeyStr, EngineType, GotoReloadStr):
+    def init(cls, TheState, TheAnalyzer, StateKeyStr):
         cls.state                        = TheState
         cls.implemented_state_index_list = TheState.implemented_state_index_set()
         cls.state_db                     = StateDB
@@ -102,28 +45,10 @@ class MegaStateTransitionCodeFactory(TransitionCodeFactory):
         cls.engine_type                  = EngineType
         cls.goto_reload_str              = GotoReloadStr
 
-    @staticmethod
-    def prepare_transition_map_for_reload(TM):
-        """Ensures that the buffer limit code causes a transition to a
-        reload section. That is, there will be an interval of size 1 at
-        the buffer limit code which maps to DoorID.goto_reload().
-        """
-        # Insist that transitions to reload procedure have been prepared!
-        assert TM.get_target(Setup.buffer_limit_code) in (TargetByStateKey_DROP_OUT, TargetByStateKey_RELOAD), \
-               "%s" % TM.get_target(Setup.buffer_limit_code)
-        TM.set_target(Setup.buffer_limit_code, TargetByStateKey.goto_reload())
-
     @classmethod
     def do(cls, Target):
         LanguageDB = Setup.language_db
 
-        if Target == TargetByStateKey_RELOAD:
-            if cls.goto_reload_str is not None: 
-                return TransitionCode(cls.goto_reload_str)
-            else:                          
-                return TransitionCode(LanguageDB.GOTO_RELOAD(cls.state.index, 
-                                                             cls.state.init_state_f,
-                                                             cls.engine_type))
         assert isinstance(Target, TargetByStateKey)
         if Target.uniform_door_id is not None:
             if Target.drop_out_f:
@@ -133,7 +58,7 @@ class MegaStateTransitionCodeFactory(TransitionCodeFactory):
 
         else:
             assert Target.scheme_id is not None
-            variable_name = require_scheme_variable(Target.scheme_id, Target.iterable_door_id_scheme(), cls.state, cls.state_db)
+            variable_name = require_scheme_variable(Target.scheme_id, Target.iterable_door_id_scheme(), cls.state, cls.analyzer.state_db)
             return TransitionCode(LanguageDB.GOTO_BY_VARIABLE("%s[%s]" % (variable_name, cls.state_key_str)))
 
 class TransitionCode:

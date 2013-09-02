@@ -20,7 +20,7 @@ from   quex.input.files.counter_db             import CounterDB
 # import quex.engine.generator.skipper.core          as skipper
 from   quex.engine.generator.languages.variable_db import VariableDB
 import quex.engine.generator.languages.variable_db as     variable_db
-from   quex.engine.generator.languages.address     import get_label
+from   quex.engine.generator.languages.address     import Label
 import quex.input.regular_expression.engine        as     regex
 from   quex.input.files.counter_setup              import LineColumnCounterSetup_Default
 #
@@ -275,7 +275,7 @@ def compile(Language, SourceCode, AssertsActionvation_str="", StrangeStream_str=
     # if compile_str.find("-DQUEX_OPTION_COMPUTED_GOTOS") != -1:
     #   run_this(compile_str + " -E") # -E --> expand macros
     #   content = open(filename_tmp, "rb").read()
-    #   if content.find("__STATE_ROUTER"):
+    #   if content.find("QUEX_STATE_ROUTER"):
     #       print "##Error: computed gotos contain state router."
     #       sys.exit()
 
@@ -357,7 +357,7 @@ def create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFall
 def create_state_machine_function(PatternActionPairList, PatternDictionary, 
                                   BufferLimitCode, SecondModeF=False):
     on_failure_action  = "return false;\n"
-    on_failure_action += "goto %s; /* Avoid unreferenced label. */" % get_label("$re-start-2", U=True)
+    on_failure_action += "goto %s; /* Avoid unreferenced label. */" % Label.global_reentry_preparation_2(GotoedF=True)
 
 
     # -- produce some visible output about the setup

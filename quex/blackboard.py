@@ -37,7 +37,8 @@ setup = QuexSetup(SETUP_INFO)
 # StateIndices: Values to be used as target states for transitions
 #-----------------------------------------------------------------------------------------
 E_StateIndices = Enum("DROP_OUT", 
-                      "RELOAD_PROCEDURE",
+                      "RELOAD_FORWARD",
+                      "RELOAD_BACKWARD",
                       "END_OF_PRE_CONTEXT_CHECK",
                       "RECURSIVE",
                       "ALL", 

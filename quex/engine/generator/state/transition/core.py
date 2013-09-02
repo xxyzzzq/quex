@@ -49,7 +49,6 @@ def do(txt, TM):
 def prepare_transition_map(TM, 
                            StateIndex         = None,
                            InitStateF         = False,
-                           GotoReload_Str     = None,
                            TheAnalyzer        = None,
                            EngineType         = engine.FORWARD, 
                            DoorId_AfterReload = None):
@@ -72,16 +71,9 @@ def prepare_transition_map(TM,
     TM.assert_continuity()
     TM.fill_gaps(DoorID.drop_out(StateIndex))
 
-    goto_reload_str = TransitionCodeFactory.prepare_reload_tansition(TM,
-                                     StateIndex,
-                                     EngineType     = EngineType,
-                                     InitStateF     = InitStateF,
-                                     GotoReload_Str = GotoReload_Str) 
-
     TransitionCodeFactory.init(EngineType, 
                                StateIndex    = StateIndex,
                                InitStateF    = InitStateF,
-                               GotoReloadStr = goto_reload_str,
                                TheAnalyzer   = TheAnalyzer)
 
     return TransitionMap.from_iterable(TM, TransitionCodeFactory.do)
