@@ -1,9 +1,12 @@
 from   quex.engine.misc.string_handling        import blue_print
 from   quex.engine.analyzer.state.entry_action import DoorID
 
-from   quex.engine.generator.languages.address import map_door_id_to_label, \
+from   quex.engine.generator.languages.address import Label, \
+                                                      map_door_id_to_address, \
+                                                      map_door_id_to_label, \
                                                       mark_door_id_as_gotoed, \
-                                                      CodeIfDoorIdReferenced
+                                                      CodeIfDoorIdReferenced, \
+                                                      LabelIfDoorIdReferenced
 from   quex.engine.interval_handling           import NumberSet
 from   quex.blackboard import E_ActionIDs
 from   operator import itemgetter
@@ -311,13 +314,13 @@ __terminal_state_prolog  = """
 """
 
 __reentry_preparation_str = """
-$$REENTRY_PREPARATION$$
+$$REENTRY_PREPARATION$$:
     /* (*) Common point for **restarting** lexical analysis.
      *     at each time when CONTINUE is called at the end of a pattern.     */
 $$ON_AFTER_MATCH$$ 
 
     /* FAILURE needs not to run through 'on_after_match'. It enters here.    */
-$$REENTRY_PREPARATION_2$$
+$$REENTRY_PREPARATION_2$$:
 
 #   undef Lexeme
 #   undef LexemeBegin
@@ -399,7 +402,7 @@ def __pattern_terminal_code(PatternID, Info, SimpleF, Setup):
     safe_pattern = "".join(safe(x) for x in pattern_string)
     
     result = [  "\n", 
-                 "TERMINAL_%i:\n" % PatternID,
+                 "%s:\n" % Label.acceptance(PatternID),
               1, "__quex_debug(\"* terminal %i:   %s\\n\");\n" % (PatternID, safe_pattern)]
 
     # Pseudo-ambiguous post contexts require a backward search of the next
@@ -501,8 +504,8 @@ def __reentry_preparation(LanguageDB, PreConditionIDList, OnAfterMatchStr, Termi
         ])
 
     return blue_print(__reentry_preparation_str, [
-          ["$$REENTRY_PREPARATION$$",                    LabelIfDoorIdReferenced(DoorID.global_reentry_preparation())],
-          ["$$REENTRY_PREPARATION_2$$",                  LabelIfDoorIdReferenced(DoorID.global_reentry_preparation_2())],
+          ["$$REENTRY_PREPARATION$$",                    Label.global_reentry_preparation()],
+          ["$$REENTRY_PREPARATION_2$$",                  Label.global_reentry_preparation_2()],
           ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$",  unset_pre_context_flags_str],
           ["$$GOTO_START$$",                             Label.global_reentry(GotoedF=True)],
           ["$$ON_AFTER_MATCH$$",                         OnAfterMatchStr],

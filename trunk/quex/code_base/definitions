@@ -97,10 +97,10 @@
 #   define QUEX_LABEL(StateIndex)                    StateIndex 
 
 #   define QUEX_GOTO_TERMINAL(LABEL)                 last_acceptance = LABEL; \
-                                                     goto __TERMINAL_ROUTER;
+                                                     goto QUEX_TERMINAL_ROUTER;
 
 #   define QUEX_GOTO_STATE(LABEL)                    target_state_index = LABEL; \
-                                                     goto __STATE_ROUTER;
+                                                     goto QUEX_STATE_ROUTER;
 #endif
 
 #define    QUEX_GOTO_RELOAD(RELOAD_LABEL, ON_SUCCESS, ON_FAIL)  \

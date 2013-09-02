@@ -39,6 +39,12 @@ class TransitionMap(list):
 
     @classmethod
     def from_iterable(cls, Iterable, TheTargetFactory=deepcopy):
+        DEBUG = list(Iterable)
+        Iterable = copy(DEBUG)
+        for interval, target in DEBUG:
+            print "#iv:", interval, target
+        print "#---"
+
         result = cls()
         result.extend((interval.clone(), TheTargetFactory(target)) 
                       for interval, target in Iterable)
@@ -101,10 +107,13 @@ class TransitionMap(list):
         def relate(Target):
             if Target == E_StateIndices.DROP_OUT:
                 return DoorID.drop_out(StateIndex)
+            if Target == E_StateIndices.RELOAD_FORWARD or Target == E_StateIndices.RELOAD_BACKWARD:
+                ts = TheAnalyzer.reload_state
             else:
-                result = TheAnalyzer.state_db[Target].entry.action_db.get_door_id(StateIndex=Target, FromStateIndex=StateIndex)
-                assert result is not None
-                return result
+                ts = TheAnalyzer.state_db[Target]
+            door_id = ts.entry.action_db.get_door_id(StateIndex=Target, FromStateIndex=StateIndex)
+            assert door_id is not None
+            return door_id
         
         return self.__class__.from_iterable(self, relate)
 

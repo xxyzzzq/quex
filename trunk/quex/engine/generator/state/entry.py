@@ -1,4 +1,5 @@
 from   quex.engine.analyzer.state.core                   import AnalyzerState
+from   quex.engine.generator.languages.address           import map_door_id_to_label
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 import quex.engine.generator.state.entry_door_tree       as     entry_door_tree
 
@@ -26,34 +27,29 @@ def do(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
         txt.append(1)
         txt.append("%s\n" % LanguageDB.UNREACHABLE)
 
-    if TheAnalyzer.engine_type.is_BACKWARD_INPUT_POSITION():
-        BIPD_ID = TheAnalyzer.state_machine_id
-    else:
-        BIPD_ID = None
-
     return do_core(txt, TheState.index, TheState.entry.action_db)
 
 def do_core(txt, StateIndex, ActionDb):
     door_tree_root = entry_door_tree.do(StateIndex, ActionDb)
 
-    do_node(txt, ActionDb, door_tree_root, LastChildF=False, BIPD_ID=BIPD_ID)
+    do_node(txt, ActionDb, door_tree_root, LastChildF=False)
 
     return True
 
-def do_node(txt, ActionDb, Node, LastChildF=False, BIPD_ID=None):
+def do_node(txt, ActionDb, Node, LastChildF=False):
     """Recursive function: '__dive' -- Marked, TODO: implement by TreeWalker.
     """
     LanguageDB = Setup.language_db
     if Node.child_set is not None:
         LastI = len(Node.child_set) - 1
         for i, child in enumerate(sorted(Node.child_set, key=attrgetter("door_id"))):
-            do_node(txt, ActionDb, child, LastChildF=(i==LastI), BIPD_ID=BIPD_ID)
+            do_node(txt, ActionDb, child, LastChildF=(i==LastI))
     
     # If the door can be a 'goto' target, the label needs to be defined.
     door_label = map_door_id_to_label(Node.door_id)
 
     if door_label is not None:
-        txt.append(door_label)
+        txt.append("%s:\n" % door_label)
 
     comment_door(txt, Node, ActionDb)
 

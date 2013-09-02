@@ -1,5 +1,5 @@
 import quex.engine.analyzer.state.entry_action as entry_action
-from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction, DoorID, TransitionID_AFTER_RELOAD
+from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction, DoorID
 from   quex.engine.tools import TypedDict
 from   quex.blackboard import E_PreContextIDs,  \
                               E_AcceptanceIDs, E_PostContextIDs, \
@@ -28,7 +28,7 @@ class EntryActionDB:
         self.__largest_used_door_sub_index = 0  # '0' is used for 'Door 0', i.e. reload entry
 
         if Opt_StateIndex is not None:
-            assert isinstance(Opt_StateIndex, long), "%s" % Opt_StateIndex
+            assert isinstance(Opt_StateIndex, long) or Opt_StateIndex == E_StateIndices.RELOAD_PROCEDURE, "%s" % Opt_StateIndex
             assert isinstance(Opt_FromStateIndex_List, (set, list))
 
             self.__db.update(
@@ -59,8 +59,13 @@ class EntryActionDB:
                    None,  if the transition is not implemented in this
                           state.
         """
+        print "#get_door_id:", StateIndex, FromStateIndex, TriggerId
+        for tid in self.__db.iterkeys():
+            print "#tid:", tid, tid == TransitionID(StateIndex, FromStateIndex, 0)
+        print "#>>" 
         action = self.__db.get(TransitionID(StateIndex, FromStateIndex, 0))
         if action is None: return None
+        print "#>>", action.door_id
         return action.door_id
 
     def get_transition_id_list(self, DoorId):
@@ -95,7 +100,6 @@ class EntryActionDB:
         #!! It is ABSOLUTELY essential, that the CommandList-s related to actions are
         #!! independent! Each transition must have its OWN CommandList!
         for transition_id, action in self.__db.iteritems():
-            if transition_id == TransitionID_AFTER_RELOAD: continue
             assert id(TheAction.command_list) != id(action.command_list) 
 
         self.__db[TheTransitionID] = TheAction
@@ -219,8 +223,6 @@ class EntryActionDB:
 
         if len(work_list) == 0:
             return
-
-        self.__db[TransitionID_AFTER_RELOAD].door_id = DoorID.after_reload(StateIndex)
 
         command_list_db = dict(
             (action.command_list, action.door_id) for action in self.__db.itervalues()

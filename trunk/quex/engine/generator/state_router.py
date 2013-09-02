@@ -1,5 +1,8 @@
 from   quex.engine.analyzer.state.entry_action  import DoorID
-from   quex.engine.generator.languages.address  import Label, map_address_to_label, map_door_id_to_label
+from   quex.engine.generator.languages.address  import Label, \
+                                                       map_address_to_label, \
+                                                       map_door_id_to_label, \
+                                                       mark_label_as_gotoed
 from   operator                                 import itemgetter
 
 def do(StateRouterInfoList):
@@ -7,6 +10,8 @@ def do(StateRouterInfoList):
     """
     if len(StateRouterInfoList) == 0:
         return []
+
+    print "###################### SR:", Label.global_state_router()
 
     prolog = "#   ifndef QUEX_OPTION_COMPUTED_GOTOS\n" \
              "    __quex_assert_no_passage();\n"       \
@@ -16,7 +21,10 @@ def do(StateRouterInfoList):
 
     epilog = "#   endif /* QUEX_OPTION_COMPUTED_GOTOS */\n"
 
-    return [prolog] + code + [epilog]
+    result = [ prolog ] 
+    result.extend(code)
+    result.append(epilog)
+    return result
 
 def __get_code(StateRouterInfoList):
     # It is conceivable, that 'last_acceptance' is never set to a valid 
@@ -47,7 +55,7 @@ def __get_code(StateRouterInfoList):
 
 def get_info(StateIndexList):
     """In some strange cases, a 'dummy' state router is required so that 
-    'goto __STATE_ROUTER;' does not reference a non-existing label. Then,
+    'goto QUEX_STATE_ROUTER;' does not reference a non-existing label. Then,
     we return an empty text array.
     """
     if len(StateIndexList) == 0: return []
@@ -58,9 +66,15 @@ def get_info(StateIndexList):
         assert type(index) != str
         if index >= 0:
             # Transition to state entry
-            result[i] = (index, "goto %s; " % map_address_to_label(index, GotoedF=True))
+            case_index = index
+            label      = map_address_to_label(index)
         else:
             # Transition to a templates 'drop-out'
-            door_id   = DoorID.drop_out(- index) 
-            result[i] = (map_door_id_to_address(door_id), "goto %s; " % map_door_id_to_label(door_id))
+            door_id    = DoorID.drop_out(- index)
+            case_index = map_door_id_to_address(door_id)
+            label      = map_door_id_to_label(door_id)
+
+        result[i] = (index, "goto %s; " % label)
+        mark_label_as_gotoed(label)
+
     return result

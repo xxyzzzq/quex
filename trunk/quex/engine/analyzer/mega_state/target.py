@@ -214,5 +214,4 @@ class TargetByStateKey(object):
 
 # Globally unique object to stand up for all 'drop-outs'.
 TargetByStateKey_DROP_OUT = TargetByStateKey.special(E_StateIndices.DROP_OUT)
-TargetByStateKey_RELOAD   = TargetByStateKey.special(E_StateIndices.RELOAD_PROCEDURE)
 

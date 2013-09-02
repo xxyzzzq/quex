@@ -141,6 +141,7 @@ def do(StateIndex, TransitionActionDB):
     ## It is conceivable, that 'root' had only one child. In that case, the
     ## child may play the role of 'root'.
     ## if len(root.child_set) == 1: return root.child_set.pop()
+    print "#root.door_id:", root.door_id
     return root
 
 class DoorCombination:
@@ -249,7 +250,7 @@ class Door:
             for transition_id in sorted(transition_id_list, key=attrgetter("target_state_index", "source_state_index")):
                 if OnlyFromStateIndexF:
                     txt.append("(%s) " % transition_id.source_state_index)
-                elif transition_id == TransitionID_AFTER_RELOAD:
+                elif transition_id.source_state_index == E_StateIndices.RELOAD_PROCEDURE:
                     txt.append("(this<-RELOAD) ")
                 else:
                     txt.append("(%s<-%s) " % (transition_id.target_state_index, transition_id.source_state_index))
