@@ -15,6 +15,7 @@
 import quex.engine.generator.languages.cpp       as     cpp
 from   quex.engine.generator.languages.address   import Label, \
                                                         map_door_id_to_address, \
+                                                        map_door_id_to_label, \
                                                         map_address_to_label, \
                                                         mark_address_for_state_routing, \
                                                         mark_label_as_gotoed, \
@@ -24,7 +25,8 @@ from   quex.blackboard                           import E_StateIndices,  \
                                                         E_AcceptanceIDs, \
                                                         E_InputActions,  \
                                                         E_TransitionN,   \
-                                                        E_PreContextIDs
+                                                        E_PreContextIDs, \
+                                                        E_DoorIdIndex
 import quex.engine.analyzer.state.entry_action           as entry_action
 from   quex.engine.analyzer.state.core                   import AnalyzerState
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
@@ -113,11 +115,8 @@ class LanguageDB_Cpp(dict):
     def LEXEME_START_SET(self, PositionStorage=None):
         if PositionStorage is None: return "me->buffer._lexeme_start_p = me->buffer._input_p;"
         else:                       return "me->buffer._lexeme_start_p = %s;" % PositionStorage
-    def LEXEME_LENGTH(self):
-        return "((size_t)(me->buffer._input_p - me->buffer._lexeme_start_p))"
-    def CHARACTER_BEGIN_P_SET(self):
-        return "character_begin_p = me->buffer._input_p;\n"
-
+    def LEXEME_LENGTH(self):                       return "((size_t)(me->buffer._input_p - me->buffer._lexeme_start_p))"
+    def CHARACTER_BEGIN_P_SET(self):               return "character_begin_p = me->buffer._input_p;\n"
     def INPUT_P(self):                             return "me->buffer._input_p"
     def INPUT_P_INCREMENT(self):                   return "++(me->buffer._input_p);"
     def INPUT_P_DECREMENT(self):                   return "--(me->buffer._input_p);"
@@ -219,10 +218,10 @@ class LanguageDB_Cpp(dict):
             action_db          = self.analyzer.state_db[state_index].entry.action_db
             on_success_door_id = action_db.get_door_id(state_index, reload_state_index)
             assert on_success_door_id is not None
-            on_success_adr     = map_door_id_to_address(on_success_door_id)
+            on_success_adr     = map_door_id_to_address(on_success_door_id, RoutedF=True)
 
             # On reload failure --> goto on_failure_adr
-            on_failure_adr     = map_door_id_to_address(entry_action.DoorID.global_terminal_end_of_file())
+            on_failure_adr     = map_door_id_to_address(entry_action.DoorID.global_terminal_end_of_file(), RoutedF=True)
             return   "    target_state_index = QUEX_LABEL(%i); target_state_else_index = QUEX_LABEL(%i);\n"  \
                    % (on_success_adr, on_failure_adr)                                                        \
                    + "    __quex_debug(\"RELOAD: on success goto %i; on failure goto %i;\\n\");\n"           \
@@ -235,11 +234,11 @@ class LanguageDB_Cpp(dict):
             action_db          = self.analyzer.state_db[state_index].entry.action_db
             on_success_door_id = action_db.get_door_id(state_index, reload_state_index)
             assert on_success_door_id is not None
-            on_success_adr     = map_door_id_to_address(on_success_door_id)
+            on_success_adr     = map_door_id_to_address(on_success_door_id, RoutedF=True)
 
             # On reload failure --> goto on_failure_adr
             on_failure_door_id = entry_action.DoorID.drop_out(state_index)
-            on_failure_adr     = map_door_id_to_address(on_failure_door_id)
+            on_failure_adr     = map_door_id_to_address(on_failure_door_id, RoutedF=True)
             return   "    target_state_index = QUEX_LABEL(%i); target_state_else_index = QUEX_LABEL(%i);\n"  \
                    % (on_success_adr, on_failure_adr)                                                        \
                    + "    __quex_debug(\"RELOAD: on success goto %i; on failure goto %i;\\n\");\n"           \
@@ -250,62 +249,6 @@ class LanguageDB_Cpp(dict):
 
         else:
             assert False, "Unknown Entry Action"
-
-    def ADDRESS_BY_DOOR_ID(self, DoorId, SubjectToStateRoutingF=True, SubjectToGotoF=True):
-        if SubjectToStateRoutingF: SubjectToGotoF = True
-        print "#DoorID %s --> Address: %s" % (DoorId, map_door_id_to_address(DoorId))
-        adr = map_door_id_to_address(DoorId) 
-        if SubjectToStateRoutingF: mark_address_for_state_routing(adr)
-        if SubjectToGotoF:         mark_door_id_as_gotoed(DoorId)
-        return adr
-
-    def ADDRESS(self, StateIndex, FromStateIndex):
-        if self.__analyzer is None: 
-            return self.ADDRESS_BY_DOOR_ID(entry_action.DoorID(StateIndex, None))
-
-        if FromStateIndex is None:
-            # Return the '0' Door, the door without actions
-            return self.ADDRESS_BY_DOOR_ID(entry_action.DoorID(StateIndex, DoorIndex=0)) 
-
-        door_id = self.__analyzer.state_db[StateIndex].entry.action_db.get_door_id(StateIndex, FromStateIndex)
-
-        assert isinstance(door_id, entry_action.DoorID)
-
-        return self.ADDRESS_BY_DOOR_ID(door_id)
-
-    def __label_name(self, StateIndex, FromStateIndex):
-        if StateIndex in E_StateIndices:
-            assert StateIndex != E_StateIndices.DROP_OUT
-            assert StateIndex != E_StateIndices.RELOAD_PROCEDURE
-            return {
-                E_StateIndices.END_OF_PRE_CONTEXT_CHECK:    "END_OF_PRE_CONTEXT_CHECK",
-                E_StateIndices.ANALYZER_REENTRY:            "__REENTRY",
-            }[StateIndex]
-
-        return "_%i" % self.ADDRESS(StateIndex, FromStateIndex)
-
-    def __label_name_by_door_id(self, DoorId):
-        return "_%i" % self.ADDRESS_BY_DOOR_ID(DoorId)
-
-    def LABEL(self, StateIndex, FromStateIndex=None, NewlineF=True):
-        label = self.__label_name(StateIndex, FromStateIndex)
-        if NewlineF: return label + ":\n"
-        return label + ":"
-
-    def LABEL_BY_ADDRESS(self, Address):
-        if Address is None:
-            return "QUEX_GOTO_LABEL_VOID"
-        else:
-            return "QUEX_LABEL(%i)" % Address
-
-    def ADDRESS_LABEL(self, Address):
-        return "_%i" % Address
-
-    def LABEL_BY_DOOR_ID(self, DoorId, ColonF=True):
-        label = self.__label_name_by_door_id(DoorId)
-        # if NewlineF: return label + ":\n"
-        if ColonF: return label + ":"
-        else:      return label
 
     def LABEL_SHARED_ENTRY(self, TemplateIndex, EntryN=None):
         if EntryN is None: return "_%i_shared_entry:\n"    % TemplateIndex
@@ -324,6 +267,7 @@ class LanguageDB_Cpp(dict):
         # Only for normal 'forward analysis' the from state is of interest.
         # Because, only during forward analysis some actions depend on the 
         # state from where we come.
+        assert False, "USE 'GOTO_ADDRESS' or 'GOTO_BY_DOOR_ID'"
         result = "goto %s;" % self.__label_name(TargetStateIndex, FromStateIndex)
         return result
 
@@ -331,7 +275,7 @@ class LanguageDB_Cpp(dict):
         """Skippers and Indentation Counters circumvent the 'TransitionID -> DoorID'
         mapping. They rely on providing directly an address as target of the goto.
         """
-        return "goto %s;" % self.ADDRESS_LABEL(Address)
+        return "goto %s;" % map_address_to_label(Address, GotoedF=True)
 
     def GOTO_BY_VARIABLE(self, VariableName):
         return "QUEX_GOTO_STATE(%s);" % VariableName 
@@ -339,65 +283,16 @@ class LanguageDB_Cpp(dict):
     def GOTO_BY_DOOR_ID(self, DoorId):
         assert DoorId.__class__.__name__ == "DoorID"
 
+        if     DoorId.door_index == E_DoorIdIndex.ACCEPTANCE \
+           and DoorId.state_index == E_AcceptanceIDs.VOID:
+             return "QUEX_GOTO_TERMINAL(last_acceptance);"
         # Only for normal 'forward analysis' the from state is of interest.
         # Because, only during forward analysis some actions depend on the 
         # state from where we come.
-        result = "goto %s;" % self.__label_name_by_door_id(DoorId)
-        return result
+        return "goto %s;" % map_door_id_to_label(DoorId, GotoedF=True)
 
     def GOTO_DROP_OUT(self, StateIndex):
         return "goto %s;" % Label.drop_out(StateIndex, GotoedF=True)
-
-    def GOTO_RELOAD(self, StateIndex, InitStateIndexF, EngineType):
-        assert False, "GOTO_BY_DOOR_ID is enough"
-        """On reload a special section is entered that tries to reload data. Reload
-           has two possible results:
-           
-           -- Data has been loaded: Now, a new input character can be determined
-              and the current transition map can be reentered. For convenience, 
-              'RELOAD' expects to jump to right before the place where the input
-              pointer is adapted.
-
-           -- No data available to be loaded: Then the current state's drop-out
-              section must be entered. The forward init state immediate jumps
-              to 'end of stream'.
-
-           Thus: The reload behavior can be determined based on **one** state index.
-                 The related drop-out label can be determined here.
-        """
-        #        # 'DoorIndex == 0' is the entry into the state without any actions.
-        #        on_success = self.ADDRESS_BY_DOOR_ID(entry_action.DoorID.after_reload(StateIndex),
-        #                                             SubjectToStateRoutingF=True)
-        #
-        #        if self.__code_generation_on_reload_fail_adr is not None:
-        #            on_fail = self.__code_generation_on_reload_fail_adr
-        #        else:
-        #            if InitStateIndexF and EngineType.is_FORWARD():
-        #                door_id = entry_action.DoorID.global_terminal_end_of_file()
-        #            else:
-        #                door_id = entry_action.DoorID.drop_out(StateIndex)
-        #            on_fail = self.ADDRESS_BY_DOOR_ID(door_id, SubjectToStateRoutingF=True)
-        #
-        #        if self.__code_generation_reload_label is not None:
-        #            reload_label = self.__code_generation_reload_label
-        #        else:
-        #            if EngineType.is_FORWARD(): door_id = entry_action.DoorID.global_reload_forward()
-        #            else:                       door_id = entry_action.DoorID.global_reload_backward()
-        #            address      = map_door_id_to_address(door_id)
-        #            reload_label = map_address_to_label(address)
-        #            mark_address_for_state_routing(address)
-        #        
-        #        return "QUEX_GOTO_RELOAD(%s, %s, %s);" % (reload_label, on_success, on_fail)
-
-    def GOTO_TERMINAL(self, AcceptanceID):
-        if AcceptanceID == E_AcceptanceIDs.VOID: 
-            return "QUEX_GOTO_TERMINAL(last_acceptance);"
-        elif AcceptanceID == E_AcceptanceIDs.FAILURE:
-            return "goto %s; /* TERMINAL_FAILURE */" % Label.global_terminal_failure(GotoedF=True)
-        else:
-            assert isinstance(AcceptanceID, (int, long))
-            print "#Labello:", Label.acceptance(AcceptanceID)
-            return "goto %s;" % Label.acceptance(AcceptanceID, GotoedF=True)
 
     def GOTO_SHARED_ENTRY(self, TemplateIndex, EntryN=None):
         if EntryN is None: return "goto _%i_shared_entry;"    % TemplateIndex
@@ -553,17 +448,6 @@ class LanguageDB_Cpp(dict):
         if txt is None: return "".join(code)
 
         txt.extend(code)
-
-    def STATE_ENTRY(self, txt, TheState, FromStateIndex=None, NewlineF=True, BIPD_ID=None):
-        label = None
-        if    TheState.init_state_f \
-          and TheState.engine_type.is_BACKWARD_INPUT_POSITION():
-            label = "%s:\n" % self.LABEL_NAME_BACKWARD_INPUT_POSITION_DETECTOR(BIPD_ID) 
-        else:
-            index = TheState.index
-
-        if label is None: label = self.LABEL(index, FromStateIndex, NewlineF)
-        txt.append(label)
 
     def STATE_DEBUG_INFO(self, txt, TheState):
         if isinstance(TheState, TemplateState):

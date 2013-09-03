@@ -1,6 +1,35 @@
-import quex.engine.state_machine.index         as index
+import quex.engine.state_machine.index         as     index
 from   quex.engine.analyzer.state.entry_action import DoorID
-from   quex.engine.tools import print_callstack, TypedDict
+from   quex.engine.tools                       import print_callstack, TypedDict
+from   quex.blackboard import E_AcceptanceIDs
+
+__address_subject_to_goto_set    = set([])
+__address_subject_to_routing_set = set([])
+
+def init_address_handling():
+    global __address_subject_to_goto_set
+    global __address_subject_to_routing_set
+    __address_subject_to_goto_set.clear()
+    __address_subject_to_routing_set.clear()
+
+def mark_label_as_gotoed(Label):
+    global __address_subject_to_goto_set
+    assert isinstance(Label, (str, unicode))
+    __address_subject_to_goto_set.add(Label)
+
+def mark_door_id_as_gotoed(DoorId):
+    mark_label_as_gotoed(map_door_id_to_label(DoorId))
+
+def mark_address_for_state_routing(Adr):
+    global __address_subject_to_routing_set
+    __address_subject_to_routing_set.add(Adr)
+    # Any address which is subject to state routing relates to a label which
+    # is 'gotoed' from inside the state router.
+    mark_label_as_gotoed(map_address_to_label(Adr))
+
+def get_address_set_subject_to_routing():
+    global __address_subject_to_routing_set
+    return __address_subject_to_routing_set
 
 #__label_db = {
 #    # Let's make one thing clear: addresses of labels are aligned with state indices:
@@ -29,10 +58,10 @@ from   quex.engine.tools import print_callstack, TypedDict
 #    "$init_state_transition_block": lambda StateIndex:   __address_db.get("INIT_STATE_%i_TRANSITION_BLOCK" % StateIndex),
 #}
 special_labels = (
+    (DoorID.acceptance(E_AcceptanceIDs.FAILURE),  "QUEX_TERMINAL_FAILURE"),
     (DoorID.global_state_router(),                "QUEX_STATE_ROUTER"),
     (DoorID.global_terminal_router(),             "QUEX_TERMINAL_ROUTER"),
     (DoorID.global_terminal_end_of_file(),        "QUEX_TERMINAL_END_OF_FILE"),
-    (DoorID.global_terminal_failure(),            "QUEX_TERMINAL_FAILURE"),
     (DoorID.global_reentry(),                     "QUEX_REENTRY"),
     (DoorID.global_reentry_preparation(),         "QUEX_REENTRY_PREPARATION"),
     (DoorID.global_reentry_preparation_2(),       "QUEX_REENTRY_PREPARATION_2"),
@@ -41,18 +70,21 @@ special_labels = (
 __door_id_to_address_db = TypedDict(DoorID, long)
 
 
-def map_door_id_to_address(DoorId):
+def map_door_id_to_address(DoorId, RoutedF=False):
     """RETURNS: Address of given DoorId
 
        Ensures that there is an entry in __door_id_to_address_db for
        the given DoorId.
     """
     global __door_id_to_address_db
+    global __address_subject_to_routing_set
+
     address = __door_id_to_address_db.get(DoorId)
     if address is None:
         address = index.get()
         __door_id_to_address_db[DoorId] = address
-    print "#mappey:", DoorId, address
+    if RoutedF:
+        mark_address_for_state_routing(address)
     return address
 
 special_label_db = dict(
@@ -70,7 +102,9 @@ def map_door_id_to_label(DoorId, GotoedF=False):
     #
     address = map_door_id_to_address(DoorId)
     label   = map_address_to_label(address)
-    print "#label:", DoorId, address, label
+    if address == 153:
+        print_callstack()
+    print "#al:", address, label
     if GotoedF: mark_label_as_gotoed(label)
     return label
 
@@ -93,10 +127,6 @@ class Label:
     @staticmethod
     def drop_out(StateIndex, GotoedF=False):         return map_door_id_to_label(DoorID.drop_out(StateIndex), GotoedF)
     @staticmethod                        
-    def goto_reload(GotoedF=False):                  return map_door_id_to_label(DoorID.goto_reload(StateIndex), GotoedF)
-    @staticmethod                        
-    def after_reload(StateIndex, GotoedF=False):     return map_door_id_to_label(DoorID.after_reload(StateIndex), GotoedF)
-    @staticmethod                        
     def transition_block(StateIndex, GotoedF=False): return map_door_id_to_label(DoorID.transition_block(StateIndex), GotoedF)
     @staticmethod
     def global_state_router(GotoedF=False):          return map_door_id_to_label(DoorID.global_state_router(), GotoedF)
@@ -107,39 +137,11 @@ class Label:
     @staticmethod
     def acceptance(PatternId, GotoedF=False):        return map_door_id_to_label(DoorID.acceptance(PatternId), GotoedF)
     @staticmethod
-    def global_terminal_failure(GotoedF=False):      return map_door_id_to_label(DoorID.global_terminal_failure(), GotoedF)
-    @staticmethod
     def global_reentry(GotoedF=False):               return map_door_id_to_label(DoorID.global_reentry(), GotoedF)
     @staticmethod
     def global_reentry_preparation(GotoedF=False):   return map_door_id_to_label(DoorID.global_reentry_preparation(), GotoedF)
     @staticmethod
     def global_reentry_preparation_2(GotoedF=False): return map_door_id_to_label(DoorID.global_reentry_preparation_2(), GotoedF)
-
-__referenced_label_set     = set([])
-__state_router_address_set = set([])
-
-def mark_label_as_gotoed(Label):
-    assert isinstance(Label, (str, unicode))
-    __referenced_label_set.add(Label)
-    print "#gotoed label:", Label
-
-
-def mark_door_id_as_gotoed(DoorId):
-    print "#gotoed door_id:", DoorId
-    mark_label_as_gotoed(map_door_id_to_label(DoorId))
-
-def mark_address_for_state_routing(Adr):
-    __state_router_address_set.add(Adr)
-    # Any address which is subject to state routing relates to a label which
-    # is 'gotoed' from inside the state router.
-    mark_label_as_gotoed(map_address_to_label(Adr))
-
-def init_address_handling():
-    __referenced_label_set.clear()
-    __state_router_address_set.clear()
-
-def get_address_set_subject_to_routing():
-    return __state_router_address_set
 
 class CodeIfDoorIdReferenced:
     def __init__(self, DoorId, Code=None):
@@ -163,7 +165,7 @@ def get_plain_strings(txt_list, RoutingInfoF=True):
     """-- Replaces unreferenced 'CodeIfLabelReferenced' objects by empty strings.
        -- Replaces integers by indentation, i.e. '1' = 4 spaces.
     """
-    global __referenced_label_set
+    global __address_subject_to_goto_set
 
     size = len(txt_list)
     i    = -1
@@ -180,7 +182,7 @@ def get_plain_strings(txt_list, RoutingInfoF=True):
             # Text is left as it is
             continue
 
-        elif elm.label in __referenced_label_set: 
+        elif elm.label in __address_subject_to_goto_set: 
             # If an address is referenced, the correspondent code is inserted.
             txt_list[i:i+1] = elm.code
             # txt_list = txt_list[:i] + elm.code + txt_list[i+1:]

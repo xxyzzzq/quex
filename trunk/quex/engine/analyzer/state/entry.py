@@ -59,14 +59,9 @@ class EntryActionDB:
                    None,  if the transition is not implemented in this
                           state.
         """
-        print "#get_door_id:", StateIndex, FromStateIndex, TriggerId
-        for tid in self.__db.iterkeys():
-            print "#tid:", tid, tid == TransitionID(StateIndex, FromStateIndex, 0)
-        print "#>>" 
         action = self.__db.get(TransitionID(StateIndex, FromStateIndex, 0))
         if action is None: return None
-        print "#>>", action.door_id
-        return action.door_id
+        else:              return action.door_id
 
     def get_transition_id_list(self, DoorId):
         return [ 
@@ -90,9 +85,6 @@ class EntryActionDB:
 
         if self.__largest_used_door_sub_index < Other.__largest_used_door_sub_index:
             self.__largest_used_door_sub_index = Other.__largest_used_door_sub_index
-
-    ##def add(self, TargetStateIndex, SourceStateIndex, Cmd):
-    ##    self.__db[TransitionID(TargetStateIndex, SourceStateIndex, 0)].command_list.misc.add(Cmd)
 
     def enter(self, TheTransitionID, TheAction):
         assert isinstance(TheTransitionID, TransitionID)

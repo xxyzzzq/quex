@@ -199,7 +199,7 @@ def require_data(PWState, TheAnalyzer):
             ## print "#DoorID, Adr:", [(door_id, LanguageDB.ADDRESS_BY_DOOR_ID(door_id)) for door_id in door_id_sequence]
             result.append("        ")
             result.append("/* Padding */0x0, ")
-            result.extend("QUEX_LABEL(%i), " % LanguageDB.ADDRESS_BY_DOOR_ID(door_id)
+            result.extend("QUEX_LABEL(%i), " % map_door_id_to_address(door_id, RoutedF=True)
                           for door_id in door_id_sequence)
             result.append("\n")
 

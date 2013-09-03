@@ -376,7 +376,7 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, IndentationCounterTermina
                            ["$$INPUT_GET$$",                      LanguageDB.ACCESS_INPUT()],
                            ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB.IF_INPUT("==", "Skipper$$SKIPPER_INDEX$$[0]")],
                            ["$$ENDIF$$",                          LanguageDB.END_IF()],
-                           ["$$ENTRY$$",                          LanguageDB.LABEL(skipper_index)],
+                           ["$$ENTRY$$",                          map_address_to_label(skipper_adr)],
                            ["$$RELOAD$$",                         get_label("$reload", skipper_index)],
                            ["$$GOTO_ENTRY$$",                     LanguageDB.GOTO(skipper_index)],
                            ["$$INPUT_P_TO_LEXEME_START$$",        LanguageDB.INPUT_P_TO_LEXEME_START()],

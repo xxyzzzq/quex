@@ -39,12 +39,6 @@ class TransitionMap(list):
 
     @classmethod
     def from_iterable(cls, Iterable, TheTargetFactory=deepcopy):
-        DEBUG = list(Iterable)
-        Iterable = copy(DEBUG)
-        for interval, target in DEBUG:
-            print "#iv:", interval, target
-        print "#---"
-
         result = cls()
         result.extend((interval.clone(), TheTargetFactory(target)) 
                       for interval, target in Iterable)

@@ -6,6 +6,7 @@ from   quex.engine.generator.languages.variable_db     import variable_db
 from   quex.engine.generator.languages.address         import get_new_address,                    \
                                                               map_address_to_label,               \
                                                               map_door_id_to_address,             \
+                                                              map_door_id_to_label,               \
                                                               mark_label_as_gotoed,               \
                                                               get_plain_strings,                  \
                                                               get_address_set_subject_to_routing, \
@@ -122,7 +123,7 @@ class Generator(GeneratorBase):
         txt, analyzer = Generator.code_state_machine(self.pre_context_sm, 
                                                      engine.BACKWARD_PRE_CONTEXT) 
 
-        txt.append("\n%s" % LanguageDB.LABEL(E_StateIndices.END_OF_PRE_CONTEXT_CHECK))
+        txt.append("\n%s:" % map_door_id_to_label(DoorID.global_end_of_pre_context_check()))
         # -- set the input stream back to the real current position.
         #    during backward lexing the analyzer went backwards, so it needs to be reset.
         txt.append("    %s\n" % LanguageDB.INPUT_P_TO_LEXEME_START())
@@ -364,7 +365,7 @@ class LoopGenerator(Generator):
     def code_action_map_plain(cls, TM, BeforeReloadAction=None, AfterReloadAction=None):
         TM.assert_adjacency()
 
-        pseudo_state_index = LanguageDB.ADDRESS(index.get(), None)
+        pseudo_state_index = get_new_address()
         LanguageDB         = Setup.language_db
 
         if BeforeReloadAction is None: 

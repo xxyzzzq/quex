@@ -114,6 +114,19 @@ E_Border = Enum("BEGIN", "END", "UNDEFINED", "_DEBUG_Border")
 
 E_Values = Enum("UNASSIGNED", "VOID", "_DEBUG_E_Values")
 
+E_DoorIdIndex = Enum("DROP_OUT", 
+                     "TRANSITION_BLOCK", 
+                     "GLOBAL_STATE_ROUTER", 
+                     "ACCEPTANCE", 
+                     "GLOBAL_END_OF_PRE_CONTEXT_CHECK", 
+                     "GLOBAL_TERMINAL_ROUTER", 
+                     "GLOBAL_TERMINAL_END_OF_FILE", 
+                     "GLOBAL_TERMINAL_FAILURE",
+                     "GLOBAL_REENTRY",
+                     "GLOBAL_REENTRY_PREPARATION",
+                     "GLOBAL_REENTRY_PREPARATION_2",
+                     "_DEBUG_DoorIdIndex") 
+
 #-----------------------------------------------------------------------------------------
 # mode_db: storing the mode information into a dictionary:
 #            key  = mode name

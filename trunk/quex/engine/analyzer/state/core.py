@@ -90,9 +90,13 @@ class AnalyzerState(object):
         return False
 
     def prepare_for_reload(self, reload_state):
-        """Ensures that the buffer limit code causes a transition to a
-        reload section. That is, there will be an interval of size 1 at
-        the buffer limit code which maps to DoorID.goto_reload().
+        """Prepares state for reload:
+           (i)   Create entry from 'reload procedure'.
+           (ii)  Create in reload state entry from this state, so
+                 that reload is prepared propperly.
+           (iii) Adapt the transition map, so that:
+                 buffer_limit_code --> reload procedure.
+           
         """
         assert reload_state.index in (E_StateIndices.RELOAD_FORWARD, E_StateIndices.RELOAD_BACKWARD)
 

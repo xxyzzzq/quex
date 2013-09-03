@@ -1,4 +1,5 @@
-from   quex.engine.generator.languages.address    import LabelIfDoorIdReferenced
+from   quex.engine.generator.languages.address    import LabelIfDoorIdReferenced, \
+                                                         map_door_id_to_address
 from   quex.engine.analyzer.state.entry_action    import DoorID
 from   quex.blackboard                            import E_AcceptanceIDs, E_StateIndices, \
                                                          E_TransitionN, E_PostContextIDs, E_PreContextIDs, \
@@ -16,7 +17,7 @@ def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateInd
 
     if TheAnalyzer.engine_type.is_BACKWARD_PRE_CONTEXT():
         txt.append(1)
-        txt.append("%s\n" % LanguageDB.GOTO(E_StateIndices.END_OF_PRE_CONTEXT_CHECK))
+        txt.append("%s\n" % LanguageDB.GOTO_BY_DOOR_ID(DoorID.global_end_of_pre_context_check()))
         return
 
     elif TheAnalyzer.engine_type.is_BACKWARD_INPUT_POSITION():
@@ -46,7 +47,7 @@ def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateInd
                 consequence.append(positioning_str)
                 consequence.append(0)
 
-            goto_terminal_str = "%s" % LanguageDB.GOTO_TERMINAL(easy[1].acceptance_id)
+            goto_terminal_str = "%s" % LanguageDB.GOTO_BY_DOOR_ID(DoorID.acceptance(easy[1].acceptance_id))
             consequence.append(0)
             consequence.append(goto_terminal_str)
             LanguageDB.IF_PRE_CONTEXT(txt, i == 0, easy[0].pre_context_id, consequence)
@@ -80,7 +81,7 @@ def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateInd
     #if simple_f:
     #    txt.append("    %s\n    %s\n" % 
     #               (LanguageDB.POSITIONING(element.positioning, element.position_register), 
-    #                LanguageDB.GOTO_TERMINAL(E_AcceptanceIDs.VOID)))
+    #                LanguageDB.GOTO_BY_DOOR_ID(DoorID.acceptance(E_AcceptanceIDs.VOID))
     #else:
     case_list = []
     for element in DropOut.get_terminal_router():
@@ -89,7 +90,7 @@ def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateInd
         case_list.append((LanguageDB.ACCEPTANCE(element.acceptance_id), 
                           "%s %s" % \
                           (LanguageDB.POSITIONING(element.positioning, register),
-                           LanguageDB.GOTO_TERMINAL(element.acceptance_id))))
+                           LanguageDB.GOTO_BY_DOOR_ID(DoorID.acceptance(element.acceptance_id)))))
 
     txt.extend(LanguageDB.SELECTION("last_acceptance", case_list))
 

@@ -212,7 +212,7 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
                    ["$$INPUT_GET$$",                      LanguageDB.ACCESS_INPUT()],
                    ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB.IF_INPUT("==", "Skipper$$SKIPPER_INDEX$$[0]")],
                    ["$$ENDIF$$",                          LanguageDB.END_IF()],
-                   ["$$ENTRY$$",                          LanguageDB.LABEL(skipper_index)],
+                   ["$$ENTRY$$",                          map_address_to_label(skipper_adr)],
                    ["$$RELOAD$$",                         get_label("$reload", skipper_index)],
                    ["$$GOTO_AFTER_END_OF_SKIPPING$$",     goto_after_end_of_skipping_str], 
                    ["$$GOTO_RELOAD$$",                    get_label("$reload", skipper_index)],

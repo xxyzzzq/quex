@@ -198,7 +198,6 @@ def implant(trigger_map, RegionList):
         del trigger_map[insertion_i + 1: insertion_i + region.size]
         offset += region.size
 
-
 def get(TriggerMap, 
         size_all_intervals=None, 
         size_all_drop_out_intervals=None):
