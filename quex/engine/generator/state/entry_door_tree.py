@@ -251,8 +251,6 @@ class Door:
             for transition_id in sorted(transition_id_list, key=attrgetter("target_state_index", "source_state_index")):
                 if OnlyFromStateIndexF:
                     txt.append("(%s) " % transition_id.source_state_index)
-                elif transition_id.source_state_index == E_StateIndices.RELOAD_PROCEDURE:
-                    txt.append("(this<-RELOAD) ")
                 else:
                     txt.append("(%s<-%s) " % (transition_id.target_state_index, transition_id.source_state_index))
 

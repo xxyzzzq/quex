@@ -49,7 +49,7 @@ def do_node(txt, ActionDb, Node, LastChildF=False):
     door_label = map_door_id_to_label(Node.door_id)
 
     if door_label is not None:
-        txt.append("%s:\n" % door_label)
+        txt.append("%s: " % door_label)
 
     comment_door(txt, Node, ActionDb)
 

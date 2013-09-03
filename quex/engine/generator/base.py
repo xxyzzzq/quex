@@ -109,10 +109,8 @@ class Generator(GeneratorBase):
 
     def code_reload_procedures(self):
         txt = []
-        if self.reload_state_forward is not None:
-            txt.extend(reload_state_coder.do(self.reload_state_forward))
-        if self.reload_state_backward is not None:
-            txt.extend(reload_state_coder.do(self.reload_state_backward))
+        txt.extend(reload_state_coder.do(self.reload_state_forward))
+        txt.extend(reload_state_coder.do(self.reload_state_backward))
         return txt
 
     def code_pre_context_state_machine(self):
@@ -122,6 +120,8 @@ class Generator(GeneratorBase):
 
         txt, analyzer = Generator.code_state_machine(self.pre_context_sm, 
                                                      engine.BACKWARD_PRE_CONTEXT) 
+
+        self.reload_state_backward.absorb(analyzer.reload_state)
 
         txt.append("\n%s:" % map_door_id_to_label(DoorID.global_end_of_pre_context_check()))
         # -- set the input stream back to the real current position.

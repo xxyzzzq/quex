@@ -163,7 +163,7 @@ class Analyzer:
             for state_index in StateIndexSet:
                 del self.__state_db[state_index]
             self.reload_state.remove_states(StateIndexSet)
-            self.reload_state.add_state(mega_state.index)
+            self.reload_state.add_state(mega_state)
 
         self.__mega_state_list          = MegaStateList
         self.__non_mega_state_index_set = set(self.__state_db.iterkeys())
