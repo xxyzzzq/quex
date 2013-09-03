@@ -30,7 +30,7 @@ from   copy import deepcopy
 # Switch: Removal of source and executable file
 #         'False' --> No removal.
 if False: REMOVE_FILES = True
-else:     REMOVE_FILES = False
+else:    REMOVE_FILES = False
 
 # Switch: Verbose debug output: 
 #         'False' --> Verbose debug output

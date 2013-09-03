@@ -5,7 +5,6 @@ from   quex.blackboard import setup as Setup, \
 def do(TheReloadState):
     LanguageDB = Setup.language_db
 
-    print "#ReloadState:", TheReloadState.index, TheReloadState.entry.action_db.size()
     if TheReloadState.entry.action_db.size() == 0:
         return []
 
