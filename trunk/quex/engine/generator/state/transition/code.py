@@ -29,7 +29,6 @@ class TransitionCodeFactory:
             return TransitionCode(Target)
 
         elif isinstance(Target, DoorID):
-            print "#Target:", Target
             return TransitionCode(LanguageDB.GOTO_BY_DOOR_ID(Target))
 
         else:

@@ -58,10 +58,8 @@ def get_address_set_subject_to_routing():
 #    "$init_state_transition_block": lambda StateIndex:   __address_db.get("INIT_STATE_%i_TRANSITION_BLOCK" % StateIndex),
 #}
 special_labels = (
-    (DoorID.acceptance(E_AcceptanceIDs.FAILURE),  "QUEX_TERMINAL_FAILURE"),
     (DoorID.global_state_router(),                "QUEX_STATE_ROUTER"),
     (DoorID.global_terminal_router(),             "QUEX_TERMINAL_ROUTER"),
-    (DoorID.global_terminal_end_of_file(),        "QUEX_TERMINAL_END_OF_FILE"),
     (DoorID.global_reentry(),                     "QUEX_REENTRY"),
     (DoorID.global_reentry_preparation(),         "QUEX_REENTRY_PREPARATION"),
     (DoorID.global_reentry_preparation_2(),       "QUEX_REENTRY_PREPARATION_2"),
@@ -102,9 +100,7 @@ def map_door_id_to_label(DoorId, GotoedF=False):
     #
     address = map_door_id_to_address(DoorId)
     label   = map_address_to_label(address)
-    if address == 153:
-        print_callstack()
-    print "#al:", address, label
+
     if GotoedF: mark_label_as_gotoed(label)
     return label
 
