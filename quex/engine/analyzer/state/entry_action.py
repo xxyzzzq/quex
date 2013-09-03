@@ -3,28 +3,16 @@ from   quex.blackboard          import setup as Setup, \
 from   quex.engine.misc.file_in import error_msg
 from   quex.engine.tools        import pair_combinations, TypedSet
 from   quex.engine.misc.enum    import Enum
+from   quex.blackboard          import E_AcceptanceIDs, E_DoorIdIndex
 
 from   collections              import defaultdict, namedtuple
 from   operator                 import attrgetter, itemgetter
 from   copy                     import deepcopy, copy
 from   itertools                import islice, izip
 
-E_DoorIdIndex = Enum("DROP_OUT", 
-                     "GOTO_RELOAD", 
-                     "AFTER_RELOAD", 
-                     "TRANSITION_BLOCK", 
-                     "GLOBAL_STATE_ROUTER", 
-                     "ACCEPTANCE", 
-                     "GLOBAL_TERMINAL_ROUTER", 
-                     "GLOBAL_TERMINAL_END_OF_FILE", 
-                     "GLOBAL_TERMINAL_FAILURE",
-                     "GLOBAL_REENTRY",
-                     "GLOBAL_REENTRY_PREPARATION",
-                     "GLOBAL_REENTRY_PREPARATION_2") 
-
 class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
     def __new__(self, StateIndex, DoorIndex):
-        assert isinstance(StateIndex, (int, long)) or StateIndex in E_StateIndices
+        assert isinstance(StateIndex, (int, long)) or StateIndex in E_StateIndices or StateIndex == E_AcceptanceIDs.FAILURE
         # 'DoorIndex is None' --> right after the entry commands (targetted after reload).
         assert isinstance(DoorIndex, (int, long))  or DoorIndex is None or DoorIndex in E_DoorIdIndex, "%s" % DoorIndex
         return super(DoorID, self).__new__(self, StateIndex, DoorIndex)
@@ -32,25 +20,17 @@ class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
     @staticmethod
     def drop_out(StateIndex):             return DoorID(StateIndex, E_DoorIdIndex.DROP_OUT)
     @staticmethod                        
-    def goto_reload():                    return DoorID(0,          E_DoorIdIndex.GOTO_RELOAD)
-    @staticmethod                        
-    def after_reload(StateIndex):         return DoorID(StateIndex, E_DoorIdIndex.AFTER_RELOAD)
-    @staticmethod                        
     def transition_block(StateIndex):     return DoorID(StateIndex, E_DoorIdIndex.TRANSITION_BLOCK)
-    @staticmethod                        
-    def global_reload_forward():          return DoorID(0,          E_DoorIdIndex.GLOBAL_RELOAD_FORWARD)
-    @staticmethod                        
-    def global_reload_backward():         return DoorID(0,          E_DoorIdIndex.GLOBAL_RELOAD_BACKWARD)
     @staticmethod                        
     def global_state_router():            return DoorID(0,          E_DoorIdIndex.GLOBAL_STATE_ROUTER)
     @staticmethod                        
     def acceptance(PatternId):            return DoorID(PatternId,  E_DoorIdIndex.ACCEPTANCE)
     @staticmethod                         
+    def global_end_of_pre_context_check(): return DoorID(0,         E_DoorIdIndex.GLOBAL_END_OF_PRE_CONTEXT_CHECK)
+    @staticmethod                         
     def global_terminal_router():         return DoorID(0,          E_DoorIdIndex.GLOBAL_TERMINAL_ROUTER)
     @staticmethod                         
     def global_terminal_end_of_file():    return DoorID(0,          E_DoorIdIndex.GLOBAL_TERMINAL_END_OF_FILE)
-    @staticmethod                         
-    def global_terminal_failure():        return DoorID(0,          E_DoorIdIndex.GLOBAL_TERMINAL_FAILURE)
     @staticmethod
     def global_reentry():                 return DoorID(0,          E_DoorIdIndex.GLOBAL_REENTRY)
     @staticmethod
@@ -59,7 +39,6 @@ class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
     def global_reentry_preparation_2():   return DoorID(0,          E_DoorIdIndex.GLOBAL_REENTRY_PREPARATION_2)
 
     def drop_out_f(self):    return self.door_index == E_DoorIdIndex.DROP_OUT
-    def goto_reload_f(self): return self.door_index == E_DoorIdIndex.GOTO_RELOAD
 
     def __repr__(self):
         return "DoorID(s=%s, d=%s)" % (self.state_index, self.door_index)

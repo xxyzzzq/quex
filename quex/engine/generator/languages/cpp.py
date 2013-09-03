@@ -8,7 +8,7 @@ from   quex.engine.generator.languages.address import Label, \
                                                       CodeIfDoorIdReferenced, \
                                                       LabelIfDoorIdReferenced
 from   quex.engine.interval_handling           import NumberSet
-from   quex.blackboard import E_ActionIDs
+from   quex.blackboard import E_ActionIDs, E_AcceptanceIDs
 from   operator import itemgetter
 from   copy     import copy
 #
@@ -534,8 +534,8 @@ def __terminal_states(action_db, PreConditionIDList, Setup, SimpleF=False):
 
     terminal_end_of_stream_def = Label.global_terminal_end_of_file()
 
-    terminal_failure_ref       = "QUEX_LABEL(%i)" % map_door_id_to_address(DoorID.global_terminal_failure())
-    terminal_failure_def       = Label.global_terminal_failure()
+    terminal_failure_ref = "QUEX_LABEL(%i)" % map_door_id_to_address(DoorID.acceptance(E_AcceptanceIDs.FAILURE))
+    terminal_failure_def = Label.acceptance(E_AcceptanceIDs.FAILURE)
 
     # (*) Text Blocks _________________________________________________________
     pattern_terminals_code         = []

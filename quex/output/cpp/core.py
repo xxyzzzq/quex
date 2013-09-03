@@ -67,14 +67,14 @@ def do_core(PatternActionPair_List):
     bipd                 = generator.code_backward_input_position_detection()
     # assert all_isinstance(bipd, (CodeIfDoorIdReferenced, int, str, unicode))
 
+    # (*) Reload procedures
+    reload_procedures    = generator.code_reload_procedures()
+    # assert all_isinstance(reload_procedures, (CodeIfDoorIdReferenced, int, str, unicode))
+
     # (*) State Router
     #     (Something that can goto a state address by an given integer value)
     state_router         = generator.state_router()
     # assert all_isinstance(state_router, (CodeIfDoorIdReferenced, int, str, unicode))
-
-    # (*) Reload procedures
-    reload_procedures    = generator.code_reload_procedures()
-    # assert all_isinstance(reload_procedures, (CodeIfDoorIdReferenced, int, str, unicode))
 
     # (*) Variable Definitions
     #     (Code that defines all required variables for the analyzer)

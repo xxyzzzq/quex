@@ -8,13 +8,12 @@ from   quex.blackboard import E_StateIndices, \
 
 class TransitionCodeFactory:
     @classmethod
-    def init(cls, EngineType, StateIndex, InitStateF=False, GotoReloadStr=None, TheAnalyzer=None, ImplementedStateIndexList=None):
+    def init(cls, EngineType, StateIndex, InitStateF=False, TheAnalyzer=None, ImplementedStateIndexList=None):
         assert StateIndex is None or isinstance(StateIndex, (int, long))
         assert type(InitStateF) == bool
 
         cls.state_index     = StateIndex
         cls.init_state_f    = InitStateF
-        cls.goto_reload_str = GotoReloadStr
         cls.engine_type     = EngineType
         cls.analyzer        = TheAnalyzer
 
@@ -43,7 +42,6 @@ class MegaStateTransitionCodeFactory(TransitionCodeFactory):
         cls.state_db                     = StateDB
         cls.state_key_str                = StateKeyStr
         cls.engine_type                  = EngineType
-        cls.goto_reload_str              = GotoReloadStr
 
     @classmethod
     def do(cls, Target):
@@ -111,28 +109,16 @@ def require_scheme_variable(SchemeID, SchemeIterable, TState, StateDB):
        is handled as part of the general case, where all involved states target 
        a common door of the template state.
     """
-    LanguageDB = Setup.language_db
+    door_id_list = list(SchemeIterable)
 
-    def get_code(AdrList):
-        last_i = len(AdrList) - 1
-        txt = ["{ "]
-        for i, adr in enumerate(AdrList):
-            if i != last_i:
-                txt.append("%s, " % LanguageDB.LABEL_BY_ADDRESS(adr)) 
-            else:
-                txt.append("%s " % LanguageDB.LABEL_BY_ADDRESS(adr)) 
-        txt.append(" }")
-        return "".join(txt)
-
-    address_list = [ 
-        LanguageDB.ADDRESS_BY_DOOR_ID(x) for x in SchemeIterable 
-    ]
-
-    assert len(address_list) == len(TState.state_index_sequence())
+    txt = ["{ "]
+    for door_id in door_id_list[:-1]:
+        txt.append("QUEX_LABEL(%s), " % map_door_id_to_address(door_id, RoutedF=True)) 
+    txt.append("QUEX_LABEL(%s) }" % map_door_id_to_address(door_id_list[-1], RoutedF=True)) 
 
     return variable_db.require_array("template_%i_target_%i", 
                                      ElementN = len(TState.state_index_sequence()), 
-                                     Initial  = get_code(address_list),
+                                     Initial  = "".join(txt),
                                      Index    = (TState.index, SchemeID))
 
 

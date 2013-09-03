@@ -8,10 +8,9 @@ from   operator                                 import itemgetter
 def do(StateRouterInfoList):
     """Create code that allows to jump to a state based on an integer value.
     """
+    
     if len(StateRouterInfoList) == 0:
         return []
-
-    print "###################### SR:", Label.global_state_router()
 
     prolog = "#   ifndef QUEX_OPTION_COMPUTED_GOTOS\n" \
              "    __quex_assert_no_passage();\n"       \

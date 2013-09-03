@@ -138,10 +138,11 @@ def do(StateIndex, TransitionActionDB):
         # -- Enter the new door as a possible 'sharer' into the candidate list.
         candidate_list.enter_door(new_door)
         
-    ## It is conceivable, that 'root' had only one child. In that case, the
-    ## child may play the role of 'root'.
-    ## if len(root.child_set) == 1: return root.child_set.pop()
-    print "#root.door_id:", root.door_id
+    # It is conceivable, that an empty 'root' had only one child. In that case, the
+    # child may play the role of 'root'.
+    if len(root.child_set) == 1 and root.command_list.is_empty(): 
+        root = root.child_set.pop()
+        root.parent = None
     return root
 
 class DoorCombination:
