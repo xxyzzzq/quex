@@ -290,8 +290,8 @@ def __get_transition_block(IndentationSetup, CounterAdr):
 
     reload_cl = CommandList()
     reload_cl.append(LexemeStartToReferenceP())
-    reload_cl.append(PrepareAfterReload_InitState()) # This causes 'Terminal End-of-File' upon reload failure.
-    analyzer.reload_state.add_state(CounterAdr, reload_cl)
+    reload_cl.append(PrepareAfterReload_InitState(state)) # This causes 'Terminal End-of-File' upon reload failure.
+    analyzer.reload_state.add_state(CounterState, reload_cl)
 
     txt = []
     tm = transition_block.prepare_transition_map(transition_map, 

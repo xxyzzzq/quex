@@ -409,20 +409,20 @@ class PreConditionOK(Command):
         return "    pre-context-fulfilled = %s;\n" % self.pre_context_id
 
 class PrepareAfterReload(Command):
-    def __init__(self, StateIndex, ReloadStateIndex):
-        Command.__init__(self, 1, [StateIndex, ReloadStateIndex])
+    def __init__(self, State, ReloadStateIndex):
+        Command.__init__(self, 1, [State, ReloadStateIndex])
     @property
-    def state_index(self):        return self._x[0]
+    def state(self):              return self._x[0]
     @property
     def reload_state_index(self): return self._x[1]
     def __repr__(self):       
         return "    prepare reload(%s) for state = %s;" % (self.reload_state_index, self.state_index)
 
 class PrepareAfterReload_InitState(Command):
-    def __init__(self, StateIndex, ReloadStateIndex):
-        Command.__init__(self, 1, [StateIndex, ReloadStateIndex])
+    def __init__(self, State, ReloadStateIndex):
+        Command.__init__(self, 1, [State, ReloadStateIndex])
     @property
-    def state_index(self):        return self._x[0]
+    def state(self):              return self._x[0]
     @property
     def reload_state_index(self): return self._x[1]
     def __repr__(self):       

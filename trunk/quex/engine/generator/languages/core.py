@@ -211,38 +211,24 @@ class LanguageDB_Cpp(dict):
             return  "    (++path_iterator);\n" \
                   + "    __quex_debug(\"++path_iterator\");\n" 
 
-        elif isinstance(EntryAction, entry_action.PrepareAfterReload_InitState):
-            state_index        = EntryAction.state_index
+        elif isinstance(EntryAction, (entry_action.PrepareAfterReload_InitState, entry_action.PrepareAfterReload)):
+            state              = EntryAction.state
             reload_state_index = EntryAction.reload_state_index
             # On reload success --> goto on_success_adr
-            action_db          = self.analyzer.state_db[state_index].entry.action_db
-            on_success_door_id = action_db.get_door_id(state_index, reload_state_index)
+            on_success_door_id = state.entry.action_db.get_door_id(state.index, reload_state_index)
             assert on_success_door_id is not None
             on_success_adr     = map_door_id_to_address(on_success_door_id, RoutedF=True)
 
-            # On reload failure --> goto on_failure_adr
-            on_failure_adr     = map_door_id_to_address(entry_action.DoorID.global_terminal_end_of_file(), RoutedF=True)
-            return   "    target_state_index = QUEX_LABEL(%i); target_state_else_index = QUEX_LABEL(%i);\n"  \
-                   % (on_success_adr, on_failure_adr)                                                        \
-                   + "    __quex_debug(\"RELOAD: on success goto %i; on failure goto %i;\\n\");\n"           \
-                   % (on_success_adr, on_failure_adr)        
+            if isinstance(EntryAction, entry_action.PrepareAfterReload_InitState):
+                # On reload failure --> goto on_terminal_end_of_file
+                on_failure_adr     = map_door_id_to_address(entry_action.DoorID.global_terminal_end_of_file(), RoutedF=True)
+            else:
+                # On reload failure --> goto on_failure_adr
+                on_failure_door_id = entry_action.DoorID.drop_out(state.index)
+                on_failure_adr     = map_door_id_to_address(on_failure_door_id, RoutedF=True)
 
-        elif isinstance(EntryAction, entry_action.PrepareAfterReload):
-            state_index        = EntryAction.state_index
-            reload_state_index = EntryAction.reload_state_index
-            # On reload success --> goto on_success_adr
-            action_db          = self.analyzer.state_db[state_index].entry.action_db
-            on_success_door_id = action_db.get_door_id(state_index, reload_state_index)
-            assert on_success_door_id is not None
-            on_success_adr     = map_door_id_to_address(on_success_door_id, RoutedF=True)
-
-            # On reload failure --> goto on_failure_adr
-            on_failure_door_id = entry_action.DoorID.drop_out(state_index)
-            on_failure_adr     = map_door_id_to_address(on_failure_door_id, RoutedF=True)
             return   "    target_state_index = QUEX_LABEL(%i); target_state_else_index = QUEX_LABEL(%i);\n"  \
-                   % (on_success_adr, on_failure_adr)                                                        \
-                   + "    __quex_debug(\"RELOAD: on success goto %i; on failure goto %i;\\n\");\n"           \
-                   % (on_success_adr, on_failure_adr)        
+                   % (on_success_adr, on_failure_adr)                                                        
 
         elif isinstance(EntryAction, entry_action.LexemeStartToReferenceP):
             return "    %s\n" % self.LEXEME_START_SET("reference_p")
@@ -579,7 +565,7 @@ class LanguageDB_Cpp(dict):
 
 
 cpp_reload_forward_str = [
-"""    __quex_debug1("RELOAD_FORWARD");
+"""    __quex_debug3("RELOAD_FORWARD: success->%i; failure->%i", (int)target_state_index, (int)target_state_else_index);
     __quex_assert(*(me->buffer._input_p) == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( me->buffer._memory._end_of_file_p == 0x0 ) {
 """,
@@ -596,7 +582,7 @@ cpp_reload_forward_str = [
 """]
 
 cpp_reload_backward_str = [
-"""    __quex_debug1("RELOAD_BACKWARD");
+"""    __quex_debug3("RELOAD_BACKWARD: success->%i; failure->%i", (int)target_state_index, (int)target_state_else_index);
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( QUEX_NAME(Buffer_is_begin_of_file)(&me->buffer) == false ) {
         __quex_debug_reload_before();          /* Report source position. */

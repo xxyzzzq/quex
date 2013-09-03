@@ -106,7 +106,7 @@ class AnalyzerState(object):
                                    TransitionAction())
 
         # Prepare the ReloadState for an entry from this state.
-        reload_state.add_state(self.index, self.init_state_f)
+        reload_state.add_state(self, self.init_state_f)
 
         # Ensure a transition on 'buffer limit code' to the reload procedure.
         self.transition_map.set_target(Setup.buffer_limit_code, reload_state.index)
@@ -168,11 +168,11 @@ class ReloadState:
         assert self.index == OtherReloadState.index
         self.entry.action_db.absorb(OtherReloadState.entry.action_db)
 
-    def add_state(self, StateIndex, InitStateF):
-        if InitStateF: command = PrepareAfterReload_InitState(StateIndex, self.index)
-        else:          command = PrepareAfterReload(StateIndex, self.index)
+    def add_state(self, State, InitStateF):
+        if InitStateF: command = PrepareAfterReload_InitState(State, self.index)
+        else:          command = PrepareAfterReload(State, self.index)
         before_reload_action = TransitionAction()
         before_reload_action.command_list.misc.add(command)
-        self.entry.action_db.enter(TransitionID(self.index, StateIndex, 0), 
+        self.entry.action_db.enter(TransitionID(self.index, State.index, 0), 
                                    before_reload_action)
 

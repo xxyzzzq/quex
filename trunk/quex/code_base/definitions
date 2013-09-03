@@ -216,6 +216,7 @@
 #   define __quex_debug(FormatStr)                /* empty */
 #   define __quex_debug1(Str)                     /* empty */
 #   define __quex_debug2(FormatStr, Arg)          /* empty */
+#   define __quex_debug3(FormatStr, Arg0, Arg1)   /* empty */
 
 #   define __quex_debug_state(StateIdx)           \
            __quex_optional_statistics(StateIdx)
