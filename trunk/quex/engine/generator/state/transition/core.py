@@ -65,17 +65,12 @@ def prepare_transition_map(TM,
     #
     # NOTE: The only case where the buffer reload is not required are empty states,
     #       AND states during backward input position detection!
-    if len(TM) == 0: 
+    if TM.is_empty():
         return TM
 
     TM.assert_continuity()
-    TM.fill_gaps(DoorID.drop_out(StateIndex))
-
-    TransitionCodeFactory.init(EngineType, 
-                               StateIndex    = StateIndex,
-                               InitStateF    = InitStateF,
-                               TheAnalyzer   = TheAnalyzer)
-
+    TM.assert_adjacency()
+    # TM.fill_gaps(DoorID.drop_out(StateIndex))
     return TransitionMap.from_iterable(TM, TransitionCodeFactory.do)
 
 class SubTriggerMap(object):

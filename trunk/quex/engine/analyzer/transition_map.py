@@ -139,6 +139,13 @@ class TransitionMap(list):
             elif x[1] != y[1]: return False  # Target
         return True
 
+    def is_empty(self):
+        if len(self) == 0:   return True
+        elif len(self) == 1: return self[0][1].drop_out_f()
+        else:                return False
+
+
+
     def match_with_wildcard(self, Other, ExceptionCharacter=None):
         """Determines whether the transition map matches Other. If 'self' 
         contains a transition to 'E_StateIndices.NONE', then a wild card

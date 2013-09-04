@@ -23,10 +23,12 @@ def do(code, TheState, TheAnalyzer):
     input_do(txt, TheState, TheAnalyzer)
 
     # (*) Transition Map ______________________________________________________
+    print "#tm.before:", TheState.transition_map.get_string()
     tm = transition_block.prepare_transition_map(TheState.transition_map, 
                                                  TheState.index, 
                                                  TheState.init_state_f, 
                                                  TheAnalyzer = TheAnalyzer)
+    print "#tm.after:", tm.get_string()
 
     transition_block.do(txt, tm)
 
