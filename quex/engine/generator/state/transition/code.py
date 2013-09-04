@@ -8,17 +8,6 @@ from   quex.blackboard import E_StateIndices, \
 
 class TransitionCodeFactory:
     @classmethod
-    def init(cls, EngineType, StateIndex, InitStateF=False, TheAnalyzer=None, ImplementedStateIndexList=None):
-        assert StateIndex is None or isinstance(StateIndex, (int, long))
-        assert type(InitStateF) == bool
-
-        cls.state_index     = StateIndex
-        cls.init_state_f    = InitStateF
-        cls.engine_type     = EngineType
-        cls.analyzer        = TheAnalyzer
-
-
-    @classmethod
     def do(cls, Target):
         LanguageDB = Setup.language_db
 
@@ -37,11 +26,10 @@ class TransitionCodeFactory:
 class MegaStateTransitionCodeFactory(TransitionCodeFactory):
     @classmethod
     def init(cls, TheState, TheAnalyzer, StateKeyStr):
-        cls.state                        = TheState
-        cls.implemented_state_index_list = TheState.implemented_state_index_set()
-        cls.state_db                     = StateDB
-        cls.state_key_str                = StateKeyStr
-        cls.engine_type                  = EngineType
+        cls.state         = TheState
+        cls.state_db      = StateDB
+        cls.state_key_str = StateKeyStr
+        cls.engine_type   = EngineType
 
     @classmethod
     def do(cls, Target):
@@ -56,7 +44,7 @@ class MegaStateTransitionCodeFactory(TransitionCodeFactory):
 
         else:
             assert Target.scheme_id is not None
-            variable_name = require_scheme_variable(Target.scheme_id, Target.iterable_door_id_scheme(), cls.state, cls.analyzer.state_db)
+            variable_name = require_scheme_variable(Target.scheme_id, Target.iterable_door_id_scheme(), cls.state, cls.state_db)
             return TransitionCode(LanguageDB.GOTO_BY_VARIABLE("%s[%s]" % (variable_name, cls.state_key_str)))
 
 class TransitionCode:

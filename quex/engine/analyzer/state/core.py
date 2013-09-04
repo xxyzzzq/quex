@@ -100,6 +100,10 @@ class AnalyzerState(object):
         """
         assert reload_state.index in (E_StateIndices.RELOAD_FORWARD, E_StateIndices.RELOAD_BACKWARD)
 
+        # Empty states simply drop_out, they do NOT reload.
+        if self.transition_map.is_empty():
+            return
+
         # Prepare the entry into the state from 'After Reload'.
         # => Emtpy transition action, nothing to do.
         self.entry.action_db.enter(TransitionID(self.index, reload_state.index, 0), 

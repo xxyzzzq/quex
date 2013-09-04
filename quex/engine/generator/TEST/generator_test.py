@@ -39,7 +39,7 @@ if True: #True: # False: # True:
     SHOW_BUFFER_LOADS_STR = ""
 else:
     SHOW_TRANSITIONS_STR  = "-DQUEX_OPTION_DEBUG_SHOW "  
-    SHOW_BUFFER_LOADS_STR = "-DQUEX_OPTION_DEBUG_SHOW_LOADS"
+    SHOW_BUFFER_LOADS_STR = "-DQUEX_OPTION_DEBUG_SHOW_LOADS -DQUEX_OPTION_INFORMATIVE_BUFFER_OVERFLOW_MESSAGE"
 
 # Switch: Turn off some warnings
 #         'False' --> show (almost) all compiler warnings
