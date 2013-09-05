@@ -127,9 +127,6 @@ def do(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList):
         #    (After 'update' to avoid combination with itself)
         elect_db[elect.index] = elect
 
-    for state in elect_db.iterable_template_states():
-        state.finalize(TheAnalyzer)
-
     return list(elect_db.iterable_template_states())
 
 class CandidateList(list):

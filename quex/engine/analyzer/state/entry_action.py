@@ -77,6 +77,10 @@ class TransitionID(namedtuple("TransitionID_tuple", ("target_state_index", "sour
         assert isinstance(TriggerId, (int, long))      or TriggerId      in E_TriggerIDs
         return super(TransitionID, self).__new__(self, StateIndex, FromStateIndex, TriggerId)
 
+    def is_from_reload(self):
+        return   self.source_state_index == E_StateIndices.RELOAD_FORWARD \
+              or self.source_state_index == E_StateIndices.RELOAD_BACKWARD
+
     def __repr__(self):
         source_state_str = "%s" % self.source_state_index
 

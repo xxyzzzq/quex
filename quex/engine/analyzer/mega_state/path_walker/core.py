@@ -321,13 +321,6 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
             # Create a new PathWalkerState
             path_walker = PathWalkerState(path, TheAnalyzer)
             path_walker_list.append(path_walker)
-
-    # Once, all path walkers are setup, finalize.
-    for path_walker in path_walker_list:
-        path_walker.finalize(TheAnalyzer)
-
-    for path_walker in path_walker_list:
-        path_walker.assert_consistency(CompressionType)
     
     return path_walker_list
 

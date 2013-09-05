@@ -79,9 +79,13 @@ class EntryActionDB:
         return None
 
     def absorb(self, Other):
-        # NOTE: The reload transition is never doubled, because it has always
-        #       the same transition_id.
-        self.__db.update(Other.__db)
+        """Absorbs all, but the 'reload transitions'.
+        """
+        self.__db.update(
+            (transition_id, action)
+            for transition_id, action in Other.__db.iteritems()
+            if not TransitionID.is_from_reload(transition_id)
+        )
 
         if self.__largest_used_door_sub_index < Other.__largest_used_door_sub_index:
             self.__largest_used_door_sub_index = Other.__largest_used_door_sub_index

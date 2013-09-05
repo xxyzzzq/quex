@@ -215,6 +215,7 @@ class LanguageDB_Cpp(dict):
             state              = EntryAction.state
             reload_state_index = EntryAction.reload_state_index
             # On reload success --> goto on_success_adr
+            print "#action_db:", [(key, value) for key, value in state.entry.action_db.iteritems()]
             on_success_door_id = state.entry.action_db.get_door_id(state.index, reload_state_index)
             assert on_success_door_id is not None
             on_success_adr     = map_door_id_to_address(on_success_door_id, RoutedF=True)
@@ -256,12 +257,6 @@ class LanguageDB_Cpp(dict):
         assert False, "USE 'GOTO_ADDRESS' or 'GOTO_BY_DOOR_ID'"
         result = "goto %s;" % self.__label_name(TargetStateIndex, FromStateIndex)
         return result
-
-    def GOTO_ADDRESS(self, Address):
-        """Skippers and Indentation Counters circumvent the 'TransitionID -> DoorID'
-        mapping. They rely on providing directly an address as target of the goto.
-        """
-        return "goto %s;" % map_address_to_label(Address, GotoedF=True)
 
     def GOTO_BY_VARIABLE(self, VariableName):
         return "QUEX_GOTO_STATE(%s);" % VariableName 
