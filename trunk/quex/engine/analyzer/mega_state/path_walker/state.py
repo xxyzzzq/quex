@@ -5,6 +5,7 @@ from   quex.engine.analyzer.state.entry_action  import PathIteratorSet, \
                                                        DoorID
 from   quex.engine.analyzer.mega_state.core     import MegaState, \
                                                        TargetByStateKey, \
+                                                       StateKeyIndexDB, \
                                                        MegaState_Entry, \
                                                        MegaState_DropOut
 import quex.engine.state_machine.index          as     index
@@ -50,30 +51,18 @@ class PathWalkerState(MegaState):
     ___________________________________________________________________________
     """
     def __init__(self, FirstPath, TheAnalyzer):
-        MegaState.__init__(self, index.get())
+        ski_db = StateKeyIndexDB([x.state_index for x in FirstPath.step_list],
+                                 IgnoredListIndex=len(FirstPath)-1)
+        MegaState.__init__(self, index.get(), FirstPath.transition_map, ski_db)
 
         # Uniform CommandList along entries on the path (optional)
         self.uniform_entry_CommandList = FirstPath.uniform_entry_CommandList.clone()
         self.uniform_DropOut           = FirstPath.uniform_DropOut.clone()
 
-        self.__path_list                   = []
-        self.__absorb_path(FirstPath, TheAnalyzer)
-
-        self.__transition_map_to_door_ids = FirstPath.transition_map
-        self.__transition_map             = None
+        self.__path_list = [ FirstPath.step_list ]
 
         # Following are set by 'finalize()'.
-        self.__finalized = None # <-- FinalizedContent()
-
-
-    @property
-    def transition_map(self):
-        """It is totally unnecessary to have a more complex transition map."""
-        return self.__transition_map_to_door_ids
-        if self.__transition_map is None:
-            self.__transition_map = TransitionMap.from_iterable(self.__transition_map_to_door_ids, \
-                                                                TargetByStateKey.create)
-        return self.__transition_map
+        self.__finalized = None # <-- ._finalize_content()
 
     @property
     def door_id_sequence_list(self):
@@ -159,20 +148,7 @@ class PathWalkerState(MegaState):
 
         return True
 
-    def finalize(self, TheAnalyzer):
-        """Ensure that the CommandList-s for the entries along the 
-           path are properly setup. Also, determine whether those
-           entries are uniform.
-        """
-        self.collect_Entry_and_DropOut(TheAnalyzer)
-        assert self.uniform_DropOut.is_uniform() == self.drop_out.is_uniform()
-
-        self.__configure_entry_CommandLists()
-        self.__finalized = FinalizedContent(self, TheAnalyzer)
-
-        return
-
-    def __configure_entry_CommandLists(self):
+    def _finalize_entry_CommandLists(self):
         """If a state is entered from outside the path walker, then the 'state_key',
         respectively, the 'path_iterator' needs to be set. During the walk along
         a path, the 'path_iterator' is simply incremented--and this happens in the
@@ -205,9 +181,18 @@ class PathWalkerState(MegaState):
         # Make sure, that the CommandList-s on the paths are organized and
         # assigned with new DoorID-s. 
         assert len(self.entry.transition_reassignment_candidate_list) > 0
-        self.entry.transition_reassignment_db_construct(self.index)
 
-    def assert_consistency(self, CompressionType):
+    def _finalize_transition_map(self):
+        """Nothing to be done. All re-assigned transition lie on the path. The
+        path is implemented by the character sequence and not part of the 
+        transition map.
+        """
+        pass
+
+    def _finalize_content(self, TheAnalyzer):
+        self.__finalized = FinalizedContent(self, TheAnalyzer)
+
+    def _assert_consistency(self, CompressionType, RemainingStateIndexSet):            
         # If uniform_DropOut is claimed, then there can be only
         # drop-out alternative--and vice versa.
         assert self.drop_out.is_uniform() == self.uniform_DropOut.is_uniform()

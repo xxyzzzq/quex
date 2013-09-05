@@ -113,7 +113,7 @@ class MegaState_Entry(Entry):
         assert isinstance(Other, MegaState_Entry)
         assert self.__transition_reassignment_db is None
         assert Other.__transition_reassignment_db is None
-
+        assert False, "Replaced by 'entry.absorb'"
         self.action_db.absorb(Other.action_db)
 
         # It is nice to have 'action_db_update' happen in the process of 'finalization'
@@ -224,10 +224,11 @@ class StateKeyIndexDB(dict):
                  "__implemented_state_index_set",
                  "__state_index_sequence")
 
-    def __init__(self):
+    def __init__(self, StateIndexList, IgnoredListIndex=None):
         self.__map_state_index_to_state_key = {}
         self.__implemented_state_index_set  = set()
         self.__state_index_sequence         = []
+        self.extend(StateIndexList, IgnoredListIndex)
 
     @property
     def state_index_sequence(self): 
@@ -245,10 +246,6 @@ class StateKeyIndexDB(dict):
     def map_state_index_to_state_key(self, StateIndex): 
         assert StateIndex in self.__implemented_state_index_set
         return self.__map_state_index_to_state_key[StateIndex]
-
-    def assign(self, StateIndexList):
-        self.__init__()
-        self.extend(StateIndexList)
 
     def extend(self, StateIndexList, IgnoredListIndex=None):
         offset = len(self.__state_index_sequence)
@@ -312,7 +309,7 @@ class MegaState(AnalyzerState):
           been generated.
     ___________________________________________________________________________
     """ 
-    def __init__(self, StateIndex):
+    def __init__(self, StateIndex, TheTransitionMap, SkiDb):
         # A 'PseudoTemplateState' does not implement a 'MegaState_Entry' and 'MegaState_DropOut'.
         # On the long term 'MegaState_DropOut' should be derived from 'DropOut'.
         assert isinstance(StateIndex, long)
@@ -321,7 +318,8 @@ class MegaState(AnalyzerState):
         self.__drop_out = MegaState_DropOut()
         AnalyzerState.set_index(self, StateIndex)
 
-        self.ski_db     = StateKeyIndexDB()
+        self.ski_db         = SkiDb
+        self.transition_map = TheTransitionMap
 
         # Maintain a list of states with which the state may not combine well
         self.__bad_company = set()
@@ -331,10 +329,10 @@ class MegaState(AnalyzerState):
         self.__state_index_sequence = None
 
     @property
-    def entry(self):        return self.__entry
+    def entry(self): return self.__entry
 
     @property
-    def drop_out(self):     return self.__drop_out
+    def drop_out(self): return self.__drop_out
 
     @property
     def init_state_f(self): return False
@@ -363,22 +361,40 @@ class MegaState(AnalyzerState):
         """
         return self.__bad_company
 
-    def collect_Entry_and_DropOut(self, TheAnalyzer):
-        """Collect all Entry and DropOut objects of states which are 
-        represented by the MegaState.
-        """
+    def finalize(self, TheAnalyzer, CompressionType):
+        # (1.1) Collect all Entry and DropOut objects from implemented states.
         for state_index in self.ski_db.implemented_state_index_set:
-            self._absorb_Entry_DropOut_from_state(TheAnalyzer.state_db[state_index])
-            # HERE: We cannot conclude anything from 'not uniform_DropOut'
-            #       => NOT: assert uniform_DropOut.is_uniform() == drop_out.is_uniform()
-            # if self.uniform_DropOut.is_uniform(): assert self.drop_out.is_uniform()
-        return
+            self._finalize_absorb_Entry_DropOut_from_state(TheAnalyzer.state_db[state_index])
 
-    def _absorb_Entry_DropOut_from_state(self, TheState):
+        # (1.2) Configure the entry actions, so that the state key is set 
+        #       where necessary.
+        self._finalize_entry_CommandLists()                    # --> derived class!
+        #      => '.transition_reassignment_db'
+        self.entry.transition_reassignment_db_construct(self.index)
+
+        # (2) Reconfigure the transition map based on 
+        #     '.transition_reassignment_db'
+        self._finalize_transition_map()                        # --> derived class!
+
+        # (3) Finalize some specific content
+        self._finalize_content(TheAnalyzer)                    # --> derived class!
+
+    def _finalize_absorb_Entry_DropOut_from_state(self, TheState):
         self.entry.action_db.absorb(TheState.entry.action_db)
         self.drop_out.absorb(TheState.index, TheState.drop_out)
 
-    def check_consistency(self, RemainingStateIndexSet):
+    def _finalize_transition_map(self):     
+        def get_new_target(TransitionIdToDoorId_db, Target):
+            return Target.clone_adapted_self(TransitionIdToDoorId_db)
+        self.transition_map.adapt_targets(self.entry.transition_reassignment_db, get_new_target)
+
+    def _finalize_entry_CommandLists(self): 
+        assert False, "--> derived class"
+
+    def _finalize_content(self):            
+        assert False, "--> derived class"
+
+    def assert_consistency(self, CompressionType, RemainingStateIndexSet):
         # Check the MegaState's consistency
         assert self.entry.action_db.check_consistency()
 
@@ -392,6 +408,12 @@ class MegaState(AnalyzerState):
         # A state cannot be implemented by two MegaState-s
         # => All implemented states must be from 'RemainingStateIndexSet'
         assert self.implemented_state_index_set().issubset(RemainingStateIndexSet)
+
+        # (4) Check consistency
+        self._assert_consistency(CompressionType, RemainingStateIndexSet) # --> derived class
+
+    def _assert_consistency(self, CompressionType, RemainingStateIndexSet):            
+        assert False, "--> derived class"
 
 class MegaState_DropOut(TypedDict):
     """_________________________________________________________________________
@@ -451,46 +473,4 @@ class MegaState_DropOut(TypedDict):
         if x is None: self[TheDropOut] = set([StateIndex])
         else:         x.add(StateIndex)
 
-#class AbsorbedState_Entry(Entry):
-#    """________________________________________________________________________
-#
-#    The information about what transition is implemented by what
-#    DoorID is stored in this Entry. It is somewhat isolated from the
-#    AbsorbedState's Entry object.
-#    ___________________________________________________________________________
-#    """
-#    def __init__(self, StateIndex, ActionDB):
-#        Entry.__init__(self)
-#        self.__action_db = ActionDB
-#
-#class AbsorbedState(AnalyzerState):
-#    """________________________________________________________________________
-#    
-#    An AbsorbedState object represents an AnalyzerState which has been
-#    implemented by a MegaState. Its sole purpose is to pinpoint to the
-#    MegaState which implements it and to translate the transtions into itself
-#    to DoorIDs of the implementing MegaState.
-#    ___________________________________________________________________________
-#    """
-#    def __init__(self, AbsorbedAnalyzerState, AbsorbingMegaState):
-#        AnalyzerState.set_index(self, AbsorbedAnalyzerState.index)
-#        # The absorbing MegaState may, most likely, contain other transitions
-#        # than the transitions into the AbsorbedAnalyzerState. Those, others
-#        # do not do any harm, though. Filtering out those out of the hash map
-#        # does, most likely, not bring any benefit.
-#        assert AbsorbedAnalyzerState.index in AbsorbingMegaState.implemented_state_index_set()
-#        #----------------------------------------------------------------------
-#
-#        self.__entry     = AbsorbedState_Entry(AbsorbedAnalyzerState.index, 
-#                                               AbsorbingMegaState.entry.action_db)
-#        self.absorbed_by = AbsorbingMegaState
-#        self.__state     = AbsorbedAnalyzerState
-#
-#    @property
-#    def drop_out(self):
-#        return self.__state.drop_out
-#
-#    @property
-#    def entry(self): 
-#        return self.__entry
 

@@ -1,4 +1,5 @@
 from   quex.blackboard                                   import setup as Setup
+from   quex.engine.analyzer.state.entry_action           import DoorID
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.transition_map               import TransitionMap
@@ -9,7 +10,7 @@ import quex.engine.generator.state.drop_out         as     drop_out_coder
 import quex.engine.generator.state.entry            as     entry_coder
 import quex.engine.generator.mega_state.template    as     template
 import quex.engine.generator.mega_state.path_walker as     path_walker
-from   quex.engine.generator.languages.address      import Label
+from   quex.engine.generator.languages.address      import Label, LabelIfDoorIdReferenced
 from   quex.engine.interval_handling                import Interval
 import sys
 
@@ -205,11 +206,6 @@ def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr):
     # the following is safe:
     tm = TheState.transition_map
     MegaStateTransitionCodeFactory.init(TheState, TheAnalyzer, StateKeyStr)
-
-    MegaStateTransitionCodeFactory.prepare_transition_map_for_reload(
-                                 TM            = tm,
-                                 StateIndex    = TheState.index,
-                                 EngineType    = TheAnalyzer.engine_type)
 
     return TransitionMap.from_iterable(tm, MegaStateTransitionCodeFactory.do)
 

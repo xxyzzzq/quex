@@ -56,23 +56,18 @@ from   operator         import attrgetter
 
 def do(SM, EngineType=engine.FORWARD):
 
-    analyzer = __do(SM, EngineType)
-
-    # AnalyzerState.transition_map:   Interval --> DoorID
-
-    # The language database requires the analyzer for labels etc.
-    if Setup.language_db is not None:
-        Setup.language_db.register_analyzer(analyzer)
+    analyzer = __main_analysis(SM, EngineType)
+    # AnalyzerState.transition_map:    Interval --> DoorID
 
     # [Optional] Combination of states into MegaState-s.
     if len(Setup.compression_type_list) != 0:
-        mega_state_analyzer.do(analyzer)
+        __mega_state_analysis(analyzer)
         # MegaState.transition_map:    Interval --> TargetByStateKey
         #                           or Interval --> DoorID
 
     return analyzer
 
-def __do(SM, EngineType):
+def __main_analysis(SM, EngineType):
     # Generate Analyzer from StateMachine
     analyzer = Analyzer(SM, EngineType)
 
@@ -96,6 +91,16 @@ def __do(SM, EngineType):
         state.transition_map = state.transition_map.relate_to_door_ids(analyzer, state.index)
 
     return analyzer
+
+def __mega_state_analysis(analyzer):
+    """Tries to find MegaStates which combine multiple states into one.
+    """
+    mega_state_analyzer.do(analyzer)
+
+    for mega_state in analyzer.mega_state_list:
+        mega_state.prepare_for_reload(analyzer.reload_state)
+    analyzer.reload_state.entry.action_db.categorize(analyzer.reload_state.index)
+
 
 class Analyzer:
     """A representation of a pattern analyzing StateMachine suitable for
@@ -130,8 +135,8 @@ class Analyzer:
 
         self.reload_state = ReloadState(EngineType=self.__engine_type)
 
-        self.mega_state_list          = []
-        self.non_mega_state_index_set = set(state_index for state_index in SM.states.iterkeys())
+        self.__mega_state_list          = []
+        self.__non_mega_state_index_set = set(state_index for state_index in SM.states.iterkeys())
 
         if not EngineType.requires_detailed_track_analysis():
             self.__position_register_map = None
@@ -160,10 +165,11 @@ class Analyzer:
         represented by them.
         """
         for mega_state in MegaStateList:
-            for state_index in StateIndexSet:
+            state_index_set = mega_state.implemented_state_index_set()
+            for state_index in state_index_set:
                 del self.__state_db[state_index]
-            self.reload_state.remove_states(StateIndexSet)
-            self.reload_state.add_state(mega_state)
+            self.reload_state.remove_states(state_index_set)
+            self.reload_state.add_state(mega_state, InitStateForwardF=False)
 
         self.__mega_state_list          = MegaStateList
         self.__non_mega_state_index_set = set(self.__state_db.iterkeys())
@@ -173,9 +179,9 @@ class Analyzer:
         )
 
     @property
-    def mega_state_list(self): return self.__mega_state_list
+    def mega_state_list(self):             return self.__mega_state_list
     @property
-    def non_mega_state_index_set(self): return self.__non_mega_state_index_set
+    def non_mega_state_index_set(self):    return self.__non_mega_state_index_set
     @property
     def trace_db(self):                    return self.__trace_db
     @property

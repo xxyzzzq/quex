@@ -169,7 +169,7 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
     closer_length = len(CloserSequence)
 
     if not end_delimiter_is_subset_of_indentation_counter_newline(Mode, CloserSequence):
-        goto_after_end_of_skipping_str = LanguageDB.GOTO(E_StateIndices.ANALYZER_REENTRY)
+        goto_after_end_of_skipping_str = LanguageDB.GOTO_BY_VARIABLE(E_StateIndices.ANALYZER_REENTRY)
     else:
         # If there is indentation counting involved, then the counter's terminal id must
         # be determined at this place.
@@ -219,7 +219,7 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
                    ["$$INPUT_P_TO_LEXEME_START$$",        LanguageDB.INPUT_P_TO_LEXEME_START()],
                    # When things were skipped, no change to acceptance flags or modes has
                    # happend. One can jump immediately to the start without re-entry preparation.
-                   ["$$GOTO_ENTRY$$",                     LanguageDB.GOTO(skipper_index)],
+                   ["$$GOTO_ENTRY$$",                     LanguageDB.GOTOBY_DOOR_ID(skipper_index)],
                    ["$$MARK_LEXEME_START$$",              LanguageDB.LEXEME_START_SET()],
                    ["$$ON_SKIP_RANGE_OPEN$$",             on_skip_range_open_str],
                    #

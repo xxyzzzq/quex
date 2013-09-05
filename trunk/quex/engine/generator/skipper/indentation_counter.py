@@ -181,7 +181,7 @@ class Count_Space(IndentationCounter):
         # Spaces simply increment
         if self.number != -1: add_str = "%i" % self.number
         else:                 add_str = "me->" + self.variable_name
-        return "me->counter._indentation += %s;" % add_str + LanguageDB.GOTO_ADDRESS(self.counter_adr)
+        return "me->counter._indentation += %s;" % add_str + LanguageDB.GOTO_door_id(self.counter_door_id)
 
 class Count_Grid(IndentationCounter):
     """________________________________________________________________________
@@ -208,7 +208,7 @@ class Count_Grid(IndentationCounter):
         LanguageDB.REPLACE_INDENT(txt)
 
         return   "".join(txt) \
-               + LanguageDB.GOTO_ADDRESS(self.counter_adr)
+               + LanguageDB.GOTO_DOOR_ID(self.counter_door_id)
 
 class Detect_Bad(IndentationCounter):
     """________________________________________________________________________
@@ -269,7 +269,7 @@ def __get_transition_block(IndentationSetup, CounterAdr):
         # Count indentation/column at end of run;
         # simply: current position - reference_p
         character_set  = IndentationSetup.space_db.values()[0]
-        extend(transition_map, character_set, TransitionCode(LanguageDB.GOTO_ADDRESS(CounterAdr)))
+        extend(transition_map, character_set, TransitionCode(LanguageDB.GOTO_BY_DOOR_ID(CounterDoorId)))
 
     else:
         # Add the space counters

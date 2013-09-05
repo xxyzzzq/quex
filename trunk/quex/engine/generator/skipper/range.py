@@ -350,7 +350,7 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, IndentationCounterTermina
             i += 1
             txt += "    %s\n"    % LanguageDB.ASSIGN("input", LanguageDB.INPUT_P_DEREFERENCE(i-1))
             txt += "    %s"      % LanguageDB.IF_INPUT("!=", "Skipper$$SKIPPER_INDEX$$[%i]" % i)
-            txt += "         %s" % LanguageDB.GOTO(skipper_index)
+            txt += "         %s" % LanguageDB.GOTO_BY_DOOR_ID(skipper_door_id)
             txt += "    %s"      % LanguageDB.END_IF()
         delimiter_remainder_test_str = txt
 
@@ -378,7 +378,7 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, IndentationCounterTermina
                            ["$$ENDIF$$",                          LanguageDB.END_IF()],
                            ["$$ENTRY$$",                          map_address_to_label(skipper_adr)],
                            ["$$RELOAD$$",                         get_label("$reload", skipper_index)],
-                           ["$$GOTO_ENTRY$$",                     LanguageDB.GOTO(skipper_index)],
+                           ["$$GOTO_ENTRY$$",                     LanguageDB.GOTO_BY_DOOR_ID(skipper_door_id)],
                            ["$$INPUT_P_TO_LEXEME_START$$",        LanguageDB.INPUT_P_TO_LEXEME_START()],
                            # When things were skipped, no change to acceptance flags or modes has
                            # happend. One can jump immediately to the start without re-entry preparation.
