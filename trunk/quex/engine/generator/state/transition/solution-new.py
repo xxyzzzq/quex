@@ -210,7 +210,7 @@ def get(TriggerMap,
         size_all_intervals          = 0
         size_all_drop_out_intervals = 0
         for interval, target in TriggerMap:
-            if target.drop_out_f: size_all_drop_out_intervals += interval.size()
+            if target.drop_out_f(): size_all_drop_out_intervals += interval.size()
             size_all_intervals += interval.size()
 
     if size_all_intervals - size_all_drop_out_intervals == 0:

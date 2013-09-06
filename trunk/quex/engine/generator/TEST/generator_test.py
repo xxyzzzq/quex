@@ -421,7 +421,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
     for i, elm in enumerate(code):
         if type(elm) != str: 
-            if hasattr(elm, "code"): txt = elm.code
+            if hasattr(elm, "code"): txt = elm.code()
             else:                    txt = repr(elm)
             print "##", elm.__class__.__name__, txt
             assert False

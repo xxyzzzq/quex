@@ -38,17 +38,23 @@ class AnalyzerState(object):
                  "drop_out", 
                  "_origin_list")
 
-    def __init__(self, SM_State, StateIndex, InitStateF, EngineType, FromStateIndexList):
+    def __init__(self):
+        return
+
+    @staticmethod
+    def from_State(SM_State, StateIndex, InitStateF, EngineType, FromStateIndexList):
         assert isinstance(SM_State, State)
         assert isinstance(StateIndex, (int, long))
         assert type(InitStateF) is bool
         assert isinstance(FromStateIndexList, set)
 
-        self.__index        = StateIndex
-        self.__init_state_f = InitStateF
-        self.__engine_type  = EngineType
+        x = AnalyzerState()
 
-        if self.__init_state_f: 
+        x.__index        = StateIndex
+        x.__init_state_f = InitStateF
+        x.__engine_type  = EngineType
+
+        if x.__init_state_f: 
             if E_StateIndices.NONE not in FromStateIndexList:
                 FromStateIndexList.add(E_StateIndices.NONE)
 
@@ -56,19 +62,20 @@ class AnalyzerState(object):
         # assert len(FromStateIndexList) != 0
 
         # (*) Entry Action
-        self.entry = EngineType.create_Entry(SM_State, StateIndex, FromStateIndexList)
+        x.entry    = EngineType.create_Entry(SM_State, StateIndex, FromStateIndexList)
+        # (*) Drop Out
+        x.drop_out = EngineType.create_DropOut(SM_State)
 
         # (*) Transition
-        self.transition_map      = TransitionMap.from_TargetMap(SM_State.target_map)
-        self.__target_index_list = SM_State.target_map.get_map().keys()
+        x.transition_map      = TransitionMap.from_TargetMap(SM_State.target_map)
+        x.__target_index_list = SM_State.target_map.get_map().keys()
         # Currently, the following is only used for path compression. If the alternative
         # is implemented, then the following is no longer necessary.
-        self.map_target_index_to_character_set = SM_State.target_map.get_map()
+        x.map_target_index_to_character_set = SM_State.target_map.get_map()
 
-        # (*) Drop Out
-        self.drop_out     = EngineType.create_DropOut(SM_State)
+        x._origin_list = SM_State.origins().get_list()
 
-        self._origin_list = SM_State.origins().get_list()
+        return x
 
     @property
     def index(self):                  return self.__index
@@ -81,13 +88,6 @@ class AnalyzerState(object):
     def engine_type(self):            return self.__engine_type
     @property
     def target_index_list(self):      return self.__target_index_list
-    @property
-    def transition_map_empty_f(self): 
-        L = len(self.transition_map)
-        if   L > 1:  return False
-        elif L == 0: return True
-        elif self.transition_map[0][1].drop_out_f(): return True
-        return False
 
     def prepare_for_reload(self, reload_state):
         """Prepares state for reload:
@@ -148,14 +148,14 @@ class ReloadState:
                      ReloadState
                      .--------------------------------------------.
      .-----.         |                                            |
-     | 341 |--'load'--> s = 341;                                  |
-     '-----'         |  f = DropOut(341); --.            .----------> goto 's'
+     | 341 |--'load'--> S = 341;                                  |
+     '-----'         |  F = DropOut(341); --.            .----------> goto S
      .-----.         |                      |           / success |
-     | 412 |--'load'--> s = 412;            |          /          |
-     '-----'         |  f = DropOut(412); --+--> Reload           |
+     | 412 |--'load'--> S = 412;            |          /          |
+     '-----'         |  F = DropOut(412); --+--> Reload           |
      .-----.         |                      |          \          |
-     | 765 |--'load'--> s = 765;            |           \ failure |
-     '-----'         |  f = DropOut(765); --'            '----------> goto 'f'
+     | 765 |--'load'--> S = 765;            |           \ failure |
+     '-----'         |  F = DropOut(765); --'            '----------> goto F
                      |                                            |
                      '--------------------------------------------'
     """

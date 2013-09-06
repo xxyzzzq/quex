@@ -36,8 +36,8 @@ def __get_switch_cases_info(TriggerMap):
         i += 1
         sum_interval_size[i]          = sum_interval_size[i-1]
         sum_drop_out_interval_size[i] = sum_drop_out_interval_size[i-1]
-        if target.drop_out_f: sum_drop_out_interval_size[i] += interval.size()
-        else:                 sum_interval_size[i]          += interval.size()
+        if target.drop_out_f(): sum_drop_out_interval_size[i] += interval.size()
+        else:                   sum_interval_size[i]          += interval.size()
 
     switch_case_range_list = []
     p = 0

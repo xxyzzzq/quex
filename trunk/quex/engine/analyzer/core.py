@@ -128,9 +128,9 @@ class Analyzer:
 
         # (*) Prepare AnalyzerState Objects
         self.__state_db = dict([
-            (state_index, AnalyzerState(SM.states[state_index], state_index,
-                                        state_index == SM.init_state_index, 
-                                        EngineType, self.__from_db[state_index])) 
+            (state_index, AnalyzerState.from_State(SM.states[state_index], state_index,
+                                                   state_index == SM.init_state_index, 
+                                                   EngineType, self.__from_db[state_index])) 
             for state_index in self.__trace_db.iterkeys()])
 
         self.reload_state = ReloadState(EngineType=self.__engine_type)

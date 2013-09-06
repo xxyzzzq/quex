@@ -46,33 +46,6 @@ def do(txt, TM):
     if outstanding_list is not None: 
         txt.append(LanguageDB.ENDIF)
 
-def prepare_transition_map(TM, 
-                           StateIndex         = None,
-                           InitStateF         = False,
-                           TheAnalyzer        = None,
-                           EngineType         = engine.FORWARD, 
-                           DoorId_AfterReload = None):
-    global LanguageDB
-    assert isinstance(TM, list)
-    assert TheAnalyzer is not None or isinstance(EngineType, engine.Base)
-    assert isinstance(InitStateF, bool)
-    assert StateIndex  is None     or isinstance(StateIndex, long)
-
-    if TheAnalyzer is not None:
-        EngineType = TheAnalyzer.engine_type
-
-    # If a state has no transitions, no new input needs to be eaten => no reload.
-    #
-    # NOTE: The only case where the buffer reload is not required are empty states,
-    #       AND states during backward input position detection!
-    if TM.is_empty():
-        return TM
-
-    TM.assert_continuity()
-    TM.assert_adjacency()
-    # TM.fill_gaps(DoorID.drop_out(StateIndex))
-    return TransitionMap.from_iterable(TM, TransitionCodeFactory.do)
-
 class SubTriggerMap(object):
     """A trigger map that 'points' into a subset of a trigger map.
        Instead of creating whole new subsets, relate to the original
@@ -172,7 +145,7 @@ def __get_switch(txt, TriggerMap):
 
     case_code_list = []
     for interval, target in TriggerMap:
-        if target.drop_out_f: continue
+        if target.drop_out_f(): continue
         target_code = []
         __get_transition(target_code, (interval, target))
         case_code_list.append((range(interval.begin, interval.end), target_code))
@@ -198,7 +171,7 @@ def __get_bisection(txt, TriggerMap):
     def is_only_drop_out(X):
         """RETURN: True, if all intervals (actually n==1) in X only transit 
                    to DROP_OUT."""
-        return len(X) == 1 and X[0][1].drop_out_f
+        return len(X) == 1 and X[0][1].drop_out_f()
 
     def is_single_character(X):
         """RETURN: True, if interval of X transits on a single character."""
@@ -278,7 +251,7 @@ def __get_comparison_sequence(txt, TriggerMap):
         else:
             txt.append(LanguageDB.IF_INPUT(_border_cmp, _border(interval), i==0))
 
-        if not target.drop_out_f:
+        if not target.drop_out_f():
             __get_transition(txt, entry, IndentF=True)
 
     txt.append("\n")
@@ -293,7 +266,7 @@ def __get_transition(txt, TriggerMapEntry, IndentF=False):
     if IndentF:
         txt.append(1)  # indent one scope
 
-    code = TriggerMapEntry[1].code
+    code = TriggerMapEntry[1].code()
     if type(code) == list: txt.extend(code)
     else:                  txt.append(code)
 

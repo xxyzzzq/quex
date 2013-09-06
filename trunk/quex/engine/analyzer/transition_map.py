@@ -140,7 +140,7 @@ class TransitionMap(list):
         return True
 
     def is_empty(self):
-        if len(self) == 0:   return True
+        if   len(self) == 0: return True
         elif len(self) == 1: return self[0][1].drop_out_f()
         else:                return False
 

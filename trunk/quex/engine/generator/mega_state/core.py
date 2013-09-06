@@ -3,9 +3,8 @@ from   quex.engine.analyzer.state.entry_action           import DoorID
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.transition_map               import TransitionMap
-from   quex.engine.generator.state.transition.code       import TransitionCodeFactory, \
-                                                                MegaStateTransitionCodeFactory
-import quex.engine.generator.state.transition.core  as     transition_block
+from   quex.engine.generator.state.transition.code       import TransitionCodeFactory
+import quex.engine.generator.state.transition.core  as     MegaState_relate_to_transition_code
 import quex.engine.generator.state.drop_out         as     drop_out_coder
 import quex.engine.generator.state.entry            as     entry_coder
 import quex.engine.generator.mega_state.template    as     template
@@ -69,7 +68,7 @@ def do(txt, TheState, TheAnalyzer):
     specific.framework(txt, TheState, TheAnalyzer)
 
     # (*) Transition Map ______________________________________________________
-    tm = prepare_transition_map(TheState, TheAnalyzer, specific.state_key_str)
+    tm = MegaState_relate_to_transition_code(TheState, TheAnalyzer, specific.state_key_str)
     transition_block.do(txt, tm)
 
     # (*) Drop Out ____________________________________________________________
@@ -164,48 +163,4 @@ def drop_out_scheme_do(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
         case_txt = LanguageDB.SELECTION(StateKeyString, case_list)
         LanguageDB.INDENT(case_txt)
         txt.extend(case_txt)
-
-def prepare_transition_map(TheState, TheAnalyzer, StateKeyStr):
-    """Generate targets in the transition map which the code generation can 
-       handle. The transition map will consist of pairs of
-    
-                          (Interval, TransitionCode)
-    
-       objects. 
-
-       NOTE: A word about the reload procedure.
-       
-       Reload can end either with success (new data has been loaded), or failure
-       (no more data available). In case of success the **only** the transition
-       step has to be repeated. Nothing else is effected.  Stored positions are
-       adapted automatically.
-       
-       By convention we redo the transition map, in case of reload success and 
-       jump to the state's drop-out in case of failure. There is no difference
-       here in the template state example.
-    """
-    if not isinstance(TheState, TemplateState):
-        return transition_block.prepare_transition_map(TheState.transition_map, 
-                                                       TheState.index, 
-                                                       TheState.init_state_f, 
-                                                       TheAnalyzer = TheAnalyzer)
-    # Transition map of the 'skeleton'        
-    if TheState.transition_map_empty_f:
-        # Transition Map Empty:
-        # This happens, for example, if there are only keywords and no 
-        # 'overlaying' identifier pattern. But, in this case also, there
-        # must be something that catches the 'buffer limit code'. 
-        # => Define an 'all drop out' trigger_map, and then later
-        # => Adapt the trigger map, so that the 'buffer limit' is an 
-        #    isolated single interval.
-        TheState.transition_map = TransitionMap.from_iterable( 
-            (Interval(-sys.maxint, sys.maxint), TargetByStateKey.DROP_OUT) 
-        )
-
-    # In case that TheState.transition_map clones (which it should not),
-    # the following is safe:
-    tm = TheState.transition_map
-    MegaStateTransitionCodeFactory.init(TheState, TheAnalyzer, StateKeyStr)
-
-    return TransitionMap.from_iterable(tm, MegaStateTransitionCodeFactory.do)
 
