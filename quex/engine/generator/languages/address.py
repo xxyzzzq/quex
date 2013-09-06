@@ -15,6 +15,8 @@ def init_address_handling():
 def mark_label_as_gotoed(Label):
     global __address_subject_to_goto_set
     assert isinstance(Label, (str, unicode))
+    if Label == "_110":
+        print_callstack()
     __address_subject_to_goto_set.add(Label)
 
 def mark_door_id_as_gotoed(DoorId):

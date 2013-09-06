@@ -4,7 +4,7 @@ import quex.blackboard                              as     blackboard
 import quex.engine.state_machine.index              as     sm_index
 import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.transition_map          import TransitionMap
-import quex.engine.generator.state.transition.core  as     transition_block
+from   quex.engine.generator.state.transition.core  as     relate_to_TransitionCode
 from   quex.engine.generator.state.transition.code  import TransitionCode
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.generator.languages.address      import get_label, \
@@ -294,9 +294,7 @@ def __get_transition_block(IndentationSetup, CounterAdr):
     analyzer.reload_state.add_state(CounterState, reload_cl)
 
     txt = []
-    tm = transition_block.prepare_transition_map(transition_map, 
-                                                 StateIndex     = CounterAdr, 
-                                                 EngineType     = engine.FORWARD)
+    tm = relate_to_TransitionCode(transition_map)
     transition_block.do(txt, tm) 
     txt.append("\n")
 

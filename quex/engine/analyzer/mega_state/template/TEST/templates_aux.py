@@ -53,11 +53,11 @@ def setup_AnalyzerStates(StatesDescription):
         transition_db[state_index].append(InitStateIndex)
 
     # Setup the states with their 'from_state_list'
-    InitState  = AnalyzerState(init_state, InitStateIndex, True, EngineType, set())
+    InitState  = AnalyzerState.from_State(init_state, InitStateIndex, True, EngineType, set())
     for state_index, from_state_list in transition_db.iteritems():
         sm_state = sm_state_db.get(state_index)
         if sm_state is None: sm_state = setup_sm_state(state_index, [])
-        analyzer.state_db[state_index] = AnalyzerState(sm_state, state_index, False, EngineType, set(from_state_list))
+        analyzer.state_db[state_index] = AnalyzerState.from_State(sm_state, state_index, False, EngineType, set(from_state_list))
 
     for state in analyzer.state_db.itervalues():
         state.entry.action_db.categorize(state.index)

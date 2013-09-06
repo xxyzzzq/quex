@@ -1,6 +1,6 @@
 from   quex.engine.analyzer.core                    import Analyzer
 from   quex.engine.analyzer.state.core              import AnalyzerState
-import quex.engine.generator.state.transition.core  as transition_block
+from   quex.engine.generator.state.transition.core  import relate_to_TransitionCode
 import quex.engine.generator.state.entry            as entry
 import quex.engine.generator.state.drop_out         as drop_out
 from   quex.engine.generator.languages.address      import Label
@@ -23,10 +23,7 @@ def do(code, TheState, TheAnalyzer):
     input_do(txt, TheState, TheAnalyzer)
 
     # (*) Transition Map ______________________________________________________
-    tm = transition_block.prepare_transition_map(TheState.transition_map, 
-                                                 TheState.index, 
-                                                 TheState.init_state_f, 
-                                                 TheAnalyzer = TheAnalyzer)
+    tm = relate_to_TransitionCode(transition_map)
     transition_block.do(txt, tm)
 
     # (*) Drop Out ____________________________________________________________
@@ -111,7 +108,7 @@ def input_do(txt, TheState, TheAnalyzer, ForceInputDereferencingF=False):
 def get_input_action(EngineType, TheState, ForceInputDereferencingF):
     action = EngineType.input_action(TheState.init_state_f)
 
-    if TheState.transition_map_empty_f:
+    if TheState.transition_map.is_empty():
         # If the state has no further transitions then the input character does 
         # not have to be read. This is so, since without a transition map, the 
         # state immediately drops out. The drop out transits to a terminal. 
