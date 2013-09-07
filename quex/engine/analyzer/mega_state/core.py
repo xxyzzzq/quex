@@ -317,25 +317,19 @@ class MegaState(AnalyzerState):
         self.__entry    = MegaState_Entry()
         self.__drop_out = MegaState_DropOut()
         AnalyzerState.set_index(self, StateIndex)
+        # AnalyzerState.__init__(StateIndex, InitStateF, EngineType, TheTransitionMap):
 
         self.ski_db         = SkiDb
         self.transition_map = TheTransitionMap
 
         # Maintain a list of states with which the state may not combine well
         self.__bad_company = set()
-        
-        # State Index Sequence: Implemented States (and may be others) in an 
-        # ordered Sequence.
-        self.__state_index_sequence = None
 
     @property
     def entry(self): return self.__entry
 
     @property
     def drop_out(self): return self.__drop_out
-
-    @property
-    def init_state_f(self): return False
 
     def implemented_state_index_set(self):
         return self.ski_db.implemented_state_index_set

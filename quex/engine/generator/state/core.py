@@ -1,6 +1,7 @@
 from   quex.engine.analyzer.core                    import Analyzer
 from   quex.engine.analyzer.state.core              import AnalyzerState
-from   quex.engine.generator.state.transition.core  import relate_to_TransitionCode
+from   quex.engine.generator.state.transition.code  import relate_to_TransitionCode
+import quex.engine.generator.state.transition.core  as transition_block
 import quex.engine.generator.state.entry            as entry
 import quex.engine.generator.state.drop_out         as drop_out
 from   quex.engine.generator.languages.address      import Label
@@ -23,7 +24,7 @@ def do(code, TheState, TheAnalyzer):
     input_do(txt, TheState, TheAnalyzer)
 
     # (*) Transition Map ______________________________________________________
-    tm = relate_to_TransitionCode(transition_map)
+    tm = relate_to_TransitionCode(TheState.transition_map)
     transition_block.do(txt, tm)
 
     # (*) Drop Out ____________________________________________________________
@@ -40,7 +41,7 @@ def do(code, TheState, TheAnalyzer):
     code.extend(txt)
 
 def entry_do(txt, TheState, TheAnalyzer):
-    if not TheState.init_state_forward_f:
+    if not TheAnalyzer.is_init_state_forward(TheState.index):
         # The very normal entry into a normal state
         entry.do(txt, TheState, TheAnalyzer)
         return
@@ -72,8 +73,8 @@ def side_entry_do(txt, TheState, TheAnalyzer):
     global LanguageDB
 
     # Check whether the side entry is actually an issue for the given state
-    if   not TheState.init_state_forward_f:              return
-    elif not TheAnalyzer.has_transition_to_init_state(): return
+    if   not TheAnalyzer.is_init_state_forward(TheState.index): return
+    elif not TheAnalyzer.has_transition_to_init_state():        return
 
     # Implement side entry: - increment input pointer 
     #                       - goto transition block.
@@ -99,14 +100,14 @@ def input_do(txt, TheState, TheAnalyzer, ForceInputDereferencingF=False):
        non_default_init_state_entry().
     """
     LanguageDB = Setup.language_db
-    action     = get_input_action(TheAnalyzer.engine_type, TheState, ForceInputDereferencingF)
+    action     = get_input_action(TheAnalyzer, TheState, ForceInputDereferencingF)
     txt.append(1)
     LanguageDB.ACCESS_INPUT(txt, action, 1)
     txt.append(1)
-    LanguageDB.STATE_DEBUG_INFO(txt, TheState)
+    LanguageDB.STATE_DEBUG_INFO(txt, TheState, TheAnalyzer)
 
-def get_input_action(EngineType, TheState, ForceInputDereferencingF):
-    action = EngineType.input_action(TheState.init_state_f)
+def get_input_action(TheAnalyzer, TheState, ForceInputDereferencingF):
+    action = TheAnalyzer.engine_type.input_action(TheState.index == TheAnalyzer.init_state_index)
 
     if TheState.transition_map.is_empty():
         # If the state has no further transitions then the input character does 

@@ -16,9 +16,6 @@ class AnalyzerState(object):
        entry -- tells what has to happen at entry to the state (depending 
                 on the state from which it is entered).
 
-       input -- determined how to access the character that is used for 
-                transition triggering.
-
        transition_map -- telling what subsequent state is to be entered
                          dependent on the triggering character.
 
@@ -27,36 +24,25 @@ class AnalyzerState(object):
     ___________________________________________________________________________
     """
     __slots__ = ("__index", 
-                 "__init_state_f", 
-                 "__target_index_list", 
-                 "__engine_type", 
-                 "__state_machine_id",
-                 "input", 
                  "entry", 
-                 "map_target_index_to_character_set", 
-                 "transition_map", 
                  "drop_out", 
-                 "_origin_list")
+                 "map_target_index_to_character_set", 
+                 "transition_map") 
 
-    def __init__(self):
-        return
+    def __init__(self, StateIndex, TheTransitionMap):
+        self.__index                           = StateIndex
+        self.drop_out                          = None
+        self.entry                             = None
+        self.map_target_index_to_character_set = None
+        self.transition_map                    = TheTransitionMap
 
     @staticmethod
-    def from_State(SM_State, StateIndex, InitStateF, EngineType, FromStateIndexList):
+    def from_State(SM_State, StateIndex, FromStateIndexList, EngineType):
         assert isinstance(SM_State, State)
         assert isinstance(StateIndex, (int, long))
-        assert type(InitStateF) is bool
         assert isinstance(FromStateIndexList, set)
 
-        x = AnalyzerState()
-
-        x.__index        = StateIndex
-        x.__init_state_f = InitStateF
-        x.__engine_type  = EngineType
-
-        if x.__init_state_f: 
-            if E_StateIndices.NONE not in FromStateIndexList:
-                FromStateIndexList.add(E_StateIndices.NONE)
+        x = AnalyzerState(StateIndex, TransitionMap.from_TargetMap(SM_State.target_map))
 
         # Test "quex/engine/analyzer/mega_state/template/TEST/best_matching_pair.py" would not work!
         # assert len(FromStateIndexList) != 0
@@ -67,29 +53,17 @@ class AnalyzerState(object):
         x.drop_out = EngineType.create_DropOut(SM_State)
 
         # (*) Transition
-        x.transition_map      = TransitionMap.from_TargetMap(SM_State.target_map)
-        x.__target_index_list = SM_State.target_map.get_map().keys()
         # Currently, the following is only used for path compression. If the alternative
         # is implemented, then the following is no longer necessary.
         x.map_target_index_to_character_set = SM_State.target_map.get_map()
-
-        x._origin_list = SM_State.origins().get_list()
 
         return x
 
     @property
     def index(self):                  return self.__index
     def set_index(self, Value):       assert isinstance(Value, long); self.__index = Value
-    @property
-    def init_state_f(self):           return self.__init_state_f
-    @property
-    def init_state_forward_f(self):   return self.__init_state_f and self.__engine_type.is_FORWARD()
-    @property
-    def engine_type(self):            return self.__engine_type
-    @property
-    def target_index_list(self):      return self.__target_index_list
 
-    def prepare_for_reload(self, reload_state):
+    def prepare_for_reload(self, TheAnalyzer):
         """Prepares state for reload:
            (i)   Create entry from 'reload procedure'.
            (ii)  Create in reload state entry from this state, so
@@ -98,6 +72,7 @@ class AnalyzerState(object):
                  buffer_limit_code --> reload procedure.
            
         """
+        reload_state = TheAnalyzer.reload_state
         assert reload_state.index in (E_StateIndices.RELOAD_FORWARD, E_StateIndices.RELOAD_BACKWARD)
 
         # Empty states simply drop_out, they do NOT reload.
@@ -110,7 +85,7 @@ class AnalyzerState(object):
                                    TransitionAction())
 
         # Prepare the ReloadState for an entry from this state.
-        reload_state.add_state(self, self.init_state_forward_f)
+        reload_state.add_state(self, TheAnalyzer.is_init_state_forward(self.index))
 
         # Ensure a transition on 'buffer limit code' to the reload procedure.
         self.transition_map.set_target(Setup.buffer_limit_code, reload_state.index)

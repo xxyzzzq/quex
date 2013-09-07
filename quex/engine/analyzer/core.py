@@ -80,7 +80,7 @@ def __main_analysis(SM, EngineType):
     #    it is entered.
     # -- The states have a dedicated entry from after the reload procedure.
     for state in analyzer.state_db.itervalues():
-        state.prepare_for_reload(analyzer.reload_state)
+        state.prepare_for_reload(analyzer)
 
     # Assign DoorID-s to transition actions and relate transitions to DoorID-s.
     for state in analyzer.state_db.itervalues():
@@ -98,7 +98,7 @@ def __mega_state_analysis(analyzer):
     mega_state_analyzer.do(analyzer)
 
     for mega_state in analyzer.mega_state_list:
-        mega_state.prepare_for_reload(analyzer.reload_state)
+        mega_state.prepare_for_reload(analyzer)
     analyzer.reload_state.entry.action_db.categorize(analyzer.reload_state.index)
 
 
@@ -127,11 +127,17 @@ class Analyzer:
         self.__path_element_db = track_analysis.do(SM, self.__to_db)
 
         # (*) Prepare AnalyzerState Objects
+        def prepare(OldState, StateIndex):
+            from_state_index_list = self.__from_db[StateIndex]
+            if     StateIndex == self.__init_state_index \
+               and E_StateIndices.NONE not in from_state_index_list:
+                    from_state_index_list.add(E_StateIndices.NONE)
+            return AnalyzerState.from_State(OldState, state_index, from_state_index_list, EngineType)
+
         self.__state_db = dict([
-            (state_index, AnalyzerState.from_State(SM.states[state_index], state_index,
-                                                   state_index == SM.init_state_index, 
-                                                   EngineType, self.__from_db[state_index])) 
-            for state_index in self.__trace_db.iterkeys()])
+            (state_index, prepare(SM.states[state_index], state_index))
+            for state_index in self.__trace_db.iterkeys()]
+        )
 
         self.reload_state = ReloadState(EngineType=self.__engine_type)
 
@@ -475,6 +481,9 @@ class Analyzer:
                                                            PreContextID     = pre_context_id, 
                                                            PositionRegister = pattern_id, 
                                                            Offset           = 0)
+
+    def is_init_state_forward(self, StateIndex):
+        return StateIndex == self.init_state_index and self.engine_type.is_FORWARD()     
                 
     def __iter__(self):
         for x in self.__state_db.values():

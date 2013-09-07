@@ -103,7 +103,7 @@ def do(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList):
     assert CompressionType in (E_Compression.TEMPLATE, E_Compression.TEMPLATE_UNIFORM)
     assert isinstance(MinGain, (int, long, float))
 
-    elect_db       = ElectDB(TheAnalyzer.state_db, AvailableStateIndexList)
+    elect_db       = ElectDB(TheAnalyzer, AvailableStateIndexList)
     candidate_list = CandidateList(elect_db, 
                                    UniformityF = (CompressionType == E_Compression.TEMPLATE_UNIFORM),
                                    MinGain     = float(MinGain))
@@ -307,10 +307,12 @@ class ElectDB(dict):
                 -- states which are no longer available for implementation.
                 -- the init-state..
         """
+        StateDB        = TheAnalyzer.state_db
+        InitStateIndex = TheAnalyzer.init_state_index
         # x[0] = state_index, x[1] = state
         condition = lambda x:     x[0] in AvailableStateIndexList \
                               and len(x[1].transition_map) != 0   \
-                              and x[1].init_state_f == False
+                              and x[1].index != InitStateIndex 
 
         # Represent AnalyzerState-s by PseudoTemplateState-s so they behave
         # uniformly with TemplateState-s.

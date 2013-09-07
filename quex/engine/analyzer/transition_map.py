@@ -144,8 +144,6 @@ class TransitionMap(list):
         elif len(self) == 1: return self[0][1].drop_out_f()
         else:                return False
 
-
-
     def match_with_wildcard(self, Other, ExceptionCharacter=None):
         """Determines whether the transition map matches Other. If 'self' 
         contains a transition to 'E_StateIndices.NONE', then a wild card
