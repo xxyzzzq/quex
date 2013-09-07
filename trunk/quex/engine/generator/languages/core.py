@@ -215,7 +215,6 @@ class LanguageDB_Cpp(dict):
             state              = EntryAction.state
             reload_state_index = EntryAction.reload_state_index
             # On reload success --> goto on_success_adr
-            print "#action_db:", [(key, value) for key, value in state.entry.action_db.iteritems()]
             on_success_door_id = state.entry.action_db.get_door_id(state.index, reload_state_index)
             assert on_success_door_id is not None
             on_success_adr     = map_door_id_to_address(on_success_door_id, RoutedF=True)
@@ -430,7 +429,7 @@ class LanguageDB_Cpp(dict):
 
         txt.extend(code)
 
-    def STATE_DEBUG_INFO(self, txt, TheState):
+    def STATE_DEBUG_INFO(self, txt, TheState, TheAnalyzer):
         if isinstance(TheState, TemplateState):
             txt.append("__quex_debug_template_state(%i, state_key);\n" \
                        % TheState.index)
@@ -439,7 +438,7 @@ class LanguageDB_Cpp(dict):
                        % (TheState.index, TheState.index))
         else:
             assert isinstance(TheState, AnalyzerState)
-            if TheState.init_state_forward_f: 
+            if TheAnalyzer.is_init_state_forward(TheState.index): 
                 txt.append("__quex_debug(\"Init State\\n\");\n")
                 txt.append(1)
             txt.append("__quex_debug_state(%i);\n" % TheState.index)

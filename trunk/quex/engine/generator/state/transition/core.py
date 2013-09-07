@@ -38,7 +38,6 @@ def do(txt, TM):
 
     # (*) Bisection until other solution is more suitable.
     #     (This may include 'no bisectioning')
-    # print "#TM:\n", TM.get_string(Option="hex")
     __bisection(txt, TM)
 
     # (*) When there was an outstanding character, then the whole bisection was

@@ -1,3 +1,4 @@
+from   quex.engine.analyzer.transition_map          import TransitionMap
 import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.state.entry_action      import DoorID
 from   quex.engine.analyzer.mega_state.target       import TargetByStateKey, TargetByStateKey_DROP_OUT
@@ -13,13 +14,13 @@ def relate_to_TransitionCode(tm):
     #
     # NOTE: The only case where the buffer reload is not required are empty states,
     #       AND states during backward input position detection!
-    if TM.is_empty():
-        return TM
+    if tm.is_empty():
+        return tm
 
-    TM.assert_continuity()
-    TM.assert_adjacency()
+    tm.assert_continuity()
+    tm.assert_adjacency()
     # TM.fill_gaps(DoorID.drop_out(StateIndex))
-    return TransitionMap.from_iterable(TM, TransitionCodeFactory.do)
+    return TransitionMap.from_iterable(tm, TransitionCodeFactory.do)
 
 def MegaState_relate_to_transition_code(tm, TheState, TheAnalyzer, StateKeyStr):
     TransitionCodeFactory.init_MegaState_handling(TheState, TheAnalyzer, StateKeyStr)
@@ -81,7 +82,7 @@ class TransitionCodeByDoorId(TransitionCode):
         LanguageDB = Setup.language_db
         return LanguageDB.GOTO_BY_DOOR_ID(self.__door_id)
     def drop_out_f(self): 
-        return self.__door_id.drop_out_f
+        return self.__door_id.drop_out_f()
     def __eq__(self, Other):
         if not isinstance(Other, TransitionCodeByDoorId): return False
         return self.__door_id == Other.__door_id

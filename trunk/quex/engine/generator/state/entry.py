@@ -22,8 +22,8 @@ def do(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
 
     txt.append("\n\n")
     if      UnreachablePrefixF \
-        and (    (not TheState.init_state_f) \
-              or (TheState.engine_type.is_BACKWARD_INPUT_POSITION())): 
+        and (    (not TheState.index == TheAnalyzer.init_state_index) \
+              or (TheAnalyzer.engine_type.is_BACKWARD_INPUT_POSITION())): 
         txt.append(1)
         txt.append("%s\n" % LanguageDB.UNREACHABLE)
 
