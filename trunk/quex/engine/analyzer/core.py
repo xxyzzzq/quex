@@ -127,13 +127,6 @@ class Analyzer:
         self.__path_element_db = track_analysis.do(SM, self.__to_db)
 
         # (*) Prepare AnalyzerState Objects
-        def prepare(OldState, StateIndex):
-            from_state_index_list = self.__from_db[StateIndex]
-            if     StateIndex == self.__init_state_index \
-               and E_StateIndices.NONE not in from_state_index_list:
-                    from_state_index_list.add(E_StateIndices.NONE)
-            return AnalyzerState.from_State(OldState, state_index, from_state_index_list, EngineType)
-
         self.__state_db = dict([
             (state_index, prepare(SM.states[state_index], state_index))
             for state_index in self.__trace_db.iterkeys()]
@@ -216,6 +209,47 @@ class Analyzer:
             yield i
         yield None
 
+    def prepare_state(OldState, StateIndex):
+        from_state_index_list = self.__from_db[StateIndex]
+        if     StateIndex == self.__init_state_index \
+           and E_StateIndices.NONE not in from_state_index_list:
+                from_state_index_list.add(E_StateIndices.NONE)
+
+        state = AnalyzerState.from_State(OldState, state_index, from_state_index_list, EngineType)
+
+        action = TheAnalyzer.engine_type.input_action(TheState.index == TheAnalyzer.init_state_index)
+        if TheState.transition_map.is_empty():
+            # If the state has no further transitions then the input character does 
+            # not have to be read. This is so, since without a transition map, the 
+            # state immediately drops out. The drop out transits to a terminal. 
+            # Then, the next action will happen from the init state where we work
+            # on the same position. If required the reload happens at that moment.
+            #
+            # This is not true for Path Walker States, so we offer the option 
+            # 'ForceInputDereferencingF'
+            if not ForceInputDereferencingF:
+                if   action == E_InputActions.INCREMENT_THEN_DEREF: return E_InputActions.INCREMENT
+                elif action == E_InputActions.DECREMENT_THEN_DEREF: return E_InputActions.DECREMENT
+
+        ta = TransitionAction()
+        if self.engine_type.is_FORWARD(): ta.command_list.append(InputPIncrement())
+        else:                             ta.command_list.append(InputPDerefernce())
+        ta.command_list.append(InputPDereference())
+
+        for source_state_index in from_state_index_list: 
+            tid = TransitionID(StateIndex, source_state_index, TriggerId=0)
+            if source_state_index != E_StateIndices.NONE:
+                state.action_db.enter(tid, ta.clone())
+            else:
+                ta = TransitionAction()
+                ta.command_list.append(InputPDereference())
+                state.action_db.enter(tid, ta)
+
+                                      
+    def get_action_at_state_machine_entry(self):
+        assert self.engine_type.is_FORWARDS()
+        return self.state_db[self.init_state_index].get_action(self.init_state_index, E_StateIndices.NONE)
+
     def get_depth_db(self):
         """Determine a database which tells about the minimum distance to the initial state.
 
@@ -257,6 +291,7 @@ class Analyzer:
         if source_state_list is None:                                  return False
         if len(source_state_list) == 0:                                return False
         # To be 100% sure (robust against double occurence of NONE)
+        # => not only consider len(source_state_list) >= 2, but iterate
         for source_state in source_state_list:
             if source_state != E_StateIndices.NONE:                    return True
 

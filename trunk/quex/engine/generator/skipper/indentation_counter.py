@@ -289,7 +289,7 @@ def __get_transition_block(IndentationSetup, CounterAdr):
     transition_map.fill_gaps(DoorID.drop_out(CounterAdr))
 
     reload_cl = CommandList()
-    reload_cl.append(LexemeStartToReferenceP())
+    reload_cl.append(LexemeStartToReferenceP("reference_p"))
     reload_cl.append(PrepareAfterReload_InitState(state)) # This causes 'Terminal End-of-File' upon reload failure.
     analyzer.reload_state.add_state(CounterState, reload_cl)
 

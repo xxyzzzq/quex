@@ -231,7 +231,10 @@ class LanguageDB_Cpp(dict):
                    % (on_success_adr, on_failure_adr)                                                        
 
         elif isinstance(EntryAction, entry_action.LexemeStartToReferenceP):
-            return "    %s\n" % self.LEXEME_START_SET("reference_p")
+            return "    %s\n" % self.LEXEME_START_SET(EntryAction.reference_pointer_name)
+
+        elif isinstance(EntryAction, entry_action.LexemeResetTerminatingZero):
+            return "    QUEX_LEXEME_TERMINATING_ZERO_UNDO(&me->buffer);\n"
 
         else:
             assert False, "Unknown Entry Action"

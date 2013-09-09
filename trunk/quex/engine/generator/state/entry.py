@@ -1,5 +1,7 @@
+from   quex.engine.analyzer.state.entry_action           import DoorID
 from   quex.engine.analyzer.state.core                   import AnalyzerState
-from   quex.engine.generator.languages.address           import map_door_id_to_label
+from   quex.engine.generator.languages.address           import map_door_id_to_label, \
+                                                                LabelIfDoorIdReferenced
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 import quex.engine.generator.state.entry_door_tree       as     entry_door_tree
 
@@ -8,33 +10,49 @@ from quex.blackboard import setup as Setup, \
 
 from operator import attrgetter
 
-def do(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
+def do_pre(txt, TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
     """Writes code for the state entry into 'txt'.
 
        RETURNS: True -- if further code for the transition block and the 
                         drop out is required.
                 False -- if no further code is required.
     """
+    LanguageDB = Setup.language_db
     assert isinstance(TheState, AnalyzerState)
     assert type(UnreachablePrefixF) == bool
     assert type(LabelF) == bool
-    LanguageDB = Setup.language_db
 
-    txt.append("\n\n")
-    if      UnreachablePrefixF \
-        and (    (not TheState.index == TheAnalyzer.init_state_index) \
-              or (TheAnalyzer.engine_type.is_BACKWARD_INPUT_POSITION())): 
+    if TheAnalyzer.is_init_state_forward(TheState.index):
+        do_state_machine_entry(txt, TheAnalyzer)
+        return
+    else:
+        txt.append("\n\n")
+        if UnreachablePrefixF:
+            txt.append(1)
+            txt.append("%s\n" % LanguageDB.UNREACHABLE)
+
+        door_tree_root = entry_door_tree.do(StateIndex, ActionDb)
+        do_node(txt, ActionDb, door_tree_root, LastChildF=False)
+        return do_core(txt, TheState.index, TheState.entry.action_db)
+
+def do_post(txt, TheState, TheAnalyzer):
+    if not TheAnalyzer.is_init_state_forward(TheState.index):
+        return
+    else:
         txt.append(1)
         txt.append("%s\n" % LanguageDB.UNREACHABLE)
+        door_tree_root = entry_door_tree.do(StateIndex, ActionDb)
+        do_node(txt, ActionDb, door_tree_root, LastChildF=False)
+        return do_core(txt, TheState, TheAnalyzer)
 
-    return do_core(txt, TheState.index, TheState.entry.action_db)
+def do_state_machine_entry(txt, TheAnalyzer):
+    LanguageDB = Setup.language_db
 
-def do_core(txt, StateIndex, ActionDb):
-    door_tree_root = entry_door_tree.do(StateIndex, ActionDb)
-
-    do_node(txt, ActionDb, door_tree_root, LastChildF=False)
-
-    return True
+    action  = TheAnalyzer.get_action_at_state_machine_entry()
+    assert action is not None
+    door_id = action.door_id
+    txt.append("%s\n" % LabelIfDoorIdReferenced(door_id))
+    txt.extend(LanguageDB.COMMAND(command) for command in action.command_list) 
 
 def do_node(txt, ActionDb, Node, LastChildF=False):
     """Recursive function: '__dive' -- Marked, TODO: implement by TreeWalker.
@@ -60,13 +78,6 @@ def do_node(txt, ActionDb, Node, LastChildF=False):
     txt.extend(action_txt)
     txt.extend("\n")
 
-def do_entry_from_NONE(txt, TheState):
-    LanguageDB = Setup.language_db
-    action = TheState.entry.action_db.get_action(TheState.index, E_StateIndices.NONE)
-    if action is None: 
-        return
-    txt.extend(LanguageDB.COMMAND(command) for command in action.command_list) 
-    
 def comment_door(txt, Node, ActionDb):
     LanguageDB = Setup.language_db
 
