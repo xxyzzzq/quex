@@ -116,8 +116,10 @@ E_Values = Enum("UNASSIGNED", "VOID", "_DEBUG_E_Values")
 
 E_DoorIdIndex = Enum("DROP_OUT", 
                      "TRANSITION_BLOCK", 
-                     "GLOBAL_STATE_ROUTER", 
                      "ACCEPTANCE", 
+                     "STATE_MACHINE_ENTRY", 
+                     "BIPD_RETURN", 
+                     "GLOBAL_STATE_ROUTER", 
                      "GLOBAL_END_OF_PRE_CONTEXT_CHECK", 
                      "GLOBAL_TERMINAL_ROUTER", 
                      "GLOBAL_TERMINAL_END_OF_FILE", 

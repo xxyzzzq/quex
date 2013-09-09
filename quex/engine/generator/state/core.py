@@ -18,7 +18,7 @@ def do(code, TheState, TheAnalyzer):
     txt        = []
 
     # (*) Entry _______________________________________________________________
-    entry_do(txt, TheState, TheAnalyzer)
+    entry.do_pre(txt, TheState, TheAnalyzer)
 
     # (*) Access the triggering character _____________________________________
     input_do(txt, TheState, TheAnalyzer)
@@ -30,8 +30,8 @@ def do(code, TheState, TheAnalyzer):
     # (*) Drop Out ____________________________________________________________
     drop_out.do(txt, TheState.index, TheState.drop_out, TheAnalyzer)
 
-    # ( ) Side entry to init state (if necessary)
-    side_entry_do(txt, TheState, TheAnalyzer)
+    # ( ) Post-state entry to init state (if necessary)
+    entry.do_post(txt, TheState, TheAnalyzer)
 
     # (*) Cleaning Up _________________________________________________________
     for i, x in enumerate(txt):
@@ -39,52 +39,6 @@ def do(code, TheState, TheAnalyzer):
         assert not x is None, txt[i-2:i+2]
 
     code.extend(txt)
-
-def entry_do(txt, TheState, TheAnalyzer):
-    if not TheAnalyzer.is_init_state_forward(TheState.index):
-        # The very normal entry into a normal state
-        entry.do(txt, TheState, TheAnalyzer)
-        return
-
-    # Init state in forward direction: there is no increment of input_p
-    # when first entered. If the state machine requires a side entry to the
-    # init state, it is implemented in 'side_entry_do()' and it jumps to
-    # the LABEL INIT STATE TRANSITION BLOCK from there.
-    if TheAnalyzer.has_transition_to_init_state():
-        txt.append("%s: /* INIT_STATE_TRANSITION_BLOCK */\n" \
-                   % Label.transition_block(TheState.index))
-
-    # The Init State: Implement the 'NONE' door. 
-    entry.do_entry_from_NONE(txt, TheState)
-
-def side_entry_do(txt, TheState, TheAnalyzer):
-    """Generate side entry to the init state, IF NECESSARY. An init state does
-    not increment the input pointer at its first entry (when the function is
-    entered). Other states, though, may enter the init state and then the input
-    pointer must be incremented. This is solved by the construction:
-
-       INIT_STATE_TRANSITION_BLOCK:
-            ... transitions based on 'input' ...
-
-       _xyz:           /* xyz = Init State Index  */
-            ++input_p; /* Increment input pointer */
-            goto INIT_STATE_TRANSITION_BLOCK;
-    """
-    global LanguageDB
-
-    # Check whether the side entry is actually an issue for the given state
-    if   not TheAnalyzer.is_init_state_forward(TheState.index): return
-    elif not TheAnalyzer.has_transition_to_init_state():        return
-
-    # Implement side entry: - increment input pointer 
-    #                       - goto transition block.
-    entry.do(txt, TheState, TheAnalyzer)
-    txt.extend([
-        "\n", 
-        1, "%s\n" % LanguageDB.INPUT_P_INCREMENT(),
-        1, "goto %s;\n" % Label.transition_block(TheState.index, GotoedF=True)
-    ])
-    return txt
 
 def input_do(txt, TheState, TheAnalyzer, ForceInputDereferencingF=False):
     """Generate the code fragment that accesses the 'input' character for
@@ -105,22 +59,4 @@ def input_do(txt, TheState, TheAnalyzer, ForceInputDereferencingF=False):
     LanguageDB.ACCESS_INPUT(txt, action, 1)
     txt.append(1)
     LanguageDB.STATE_DEBUG_INFO(txt, TheState, TheAnalyzer)
-
-def get_input_action(TheAnalyzer, TheState, ForceInputDereferencingF):
-    action = TheAnalyzer.engine_type.input_action(TheState.index == TheAnalyzer.init_state_index)
-
-    if TheState.transition_map.is_empty():
-        # If the state has no further transitions then the input character does 
-        # not have to be read. This is so, since without a transition map, the 
-        # state immediately drops out. The drop out transits to a terminal. 
-        # Then, the next action will happen from the init state where we work
-        # on the same position. If required the reload happens at that moment.
-        #
-        # This is not true for Path Walker States, so we offer the option 
-        # 'ForceInputDereferencingF'
-        if not ForceInputDereferencingF:
-            if   action == E_InputActions.INCREMENT_THEN_DEREF: return E_InputActions.INCREMENT
-            elif action == E_InputActions.DECREMENT_THEN_DEREF: return E_InputActions.DECREMENT
-
-    return action
 

@@ -58,11 +58,11 @@ def get_address_set_subject_to_routing():
 #    "$init_state_transition_block": lambda StateIndex:   __address_db.get("INIT_STATE_%i_TRANSITION_BLOCK" % StateIndex),
 #}
 special_labels = (
-    (DoorID.global_state_router(),                "QUEX_STATE_ROUTER"),
-    (DoorID.global_terminal_router(),             "QUEX_TERMINAL_ROUTER"),
-    (DoorID.global_reentry(),                     "QUEX_REENTRY"),
-    (DoorID.global_reentry_preparation(),         "QUEX_REENTRY_PREPARATION"),
-    (DoorID.global_reentry_preparation_2(),       "QUEX_REENTRY_PREPARATION_2"),
+    (DoorID.global_state_router(),          "QUEX_STATE_ROUTER"),
+    (DoorID.global_terminal_router(),       "QUEX_TERMINAL_ROUTER"),
+    (DoorID.global_reentry(),               "QUEX_REENTRY"),
+    (DoorID.global_reentry_preparation(),   "QUEX_REENTRY_PREPARATION"),
+    (DoorID.global_reentry_preparation_2(), "QUEX_REENTRY_PREPARATION_2"),
 )
 
 __door_id_to_address_db = TypedDict(DoorID, long)
@@ -132,6 +132,10 @@ class Label:
     def global_terminal_end_of_file(GotoedF=False):  return map_door_id_to_label(DoorID.global_terminal_end_of_file(), GotoedF)
     @staticmethod
     def acceptance(PatternId, GotoedF=False):        return map_door_id_to_label(DoorID.acceptance(PatternId), GotoedF)
+    @staticmethod                        
+    def state_machine_entry(SM_Id, GotoedF=False):   return map_door_id_to_label(DoorID.state_machine_entry(SM_Id), GotoedF)
+    @staticmethod                        
+    def backward_input_position_detector_return(PatternId, GotoedF=False): return map_door_id_to_label(DoorID.backward_input_position_detector_return(PatternId), GotoedF)
     @staticmethod
     def global_reentry(GotoedF=False):               return map_door_id_to_label(DoorID.global_reentry(), GotoedF)
     @staticmethod

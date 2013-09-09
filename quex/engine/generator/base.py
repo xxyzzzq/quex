@@ -252,6 +252,9 @@ class Generator(GeneratorBase):
         LanguageDB.REPLACE_INDENT(state_machine_code)
 
         txt.extend(state_machine_code)
+        print "#BIPD.txt:"
+        for x in txt:
+            print x,
 
         return txt, analyzer
 

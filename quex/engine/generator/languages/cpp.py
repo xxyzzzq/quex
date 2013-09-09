@@ -435,9 +435,13 @@ def __jump_to_backward_input_position_detector(BIPD_SM, Setup):
     LanguageDB = Setup.language_db
 
     bipd_id   = BIPD_SM.get_id()
-    bipd_str  = "    goto %s;\n" % LanguageDB.LABEL_NAME_BACKWARD_INPUT_POSITION_DETECTOR(bipd_id)
+    door_id   = BIPD_SM.get_action_at_state_machine_entry().door_id
+    bipd_str  = "    goto %s; /* Backward input position detector */\n" % \
+                map_door_id_to_label(door_id, GotoedF=True)
     # After having finished the analyzis, enter the terminal code, here.
-    bipd_str += "%s:\n" % LanguageDB.LABEL_NAME_BACKWARD_INPUT_POSITION_RETURN(bipd_id) 
+    bipd_str += "%s: /* After return from backward input position detector.\n" % \
+                Label.backward_input_position_detector_return(bipd_id)
+    print "#bipd_str:", bipd_str, bipd_str
     return bipd_str
 
 def __terminal_on_failure(OnFailureAction, TerminalFailureDef):

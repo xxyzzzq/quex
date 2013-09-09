@@ -146,7 +146,7 @@ class TransitionMap(list):
 
     def match_with_wildcard(self, Other, ExceptionCharacter=None):
         """Determines whether the transition map matches Other. If 'self' 
-        contains a transition to 'E_StateIndices.NONE', then a wild card
+        contains a transition to 'E_StateIndices.VOID', then a wild card
         may be applied. A transition of Other to 'ExceptionTarget' on 
         'ExceptionCharacter' is ignored as being different.
 

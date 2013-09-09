@@ -24,7 +24,11 @@ class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
     @staticmethod                        
     def global_state_router():            return DoorID(0,          E_DoorIdIndex.GLOBAL_STATE_ROUTER)
     @staticmethod                        
-    def acceptance(PatternId):            return DoorID(PatternId,  E_DoorIdIndex.ACCEPTANCE)
+    def acceptance(PatternId):                                return DoorID(PatternId,  E_DoorIdIndex.ACCEPTANCE)
+    @staticmethod                        
+    def state_machine_entry(SM_Id):                           return DoorID(SM_Id,  E_DoorIdIndex.STATE_MACHINE_ENTRY)
+    @staticmethod                        
+    def backward_input_position_detector_return(PatternId):   return DoorID(PatternId,  E_DoorIdIndex.BIPD_RETURN)
     @staticmethod                         
     def global_end_of_pre_context_check(): return DoorID(0,         E_DoorIdIndex.GLOBAL_END_OF_PRE_CONTEXT_CHECK)
     @staticmethod                         
@@ -297,9 +301,17 @@ command_table = {
    E_Commands.INPUT_P_STORE:     (1, None,   ("pre_context_id", "position_register", "offset")),
 }
 
-class IncrementInputP(Command):
+class InputPIncrement(Command)
     def __init__(self):  
-        Command.__init__(self, 1, Hash=0x4711)
+        Command.__init__(self, 1)
+
+class InputPDecrement(Command)
+    def __init__(self):  
+        Command.__init__(self, 1)
+
+class InputPDereference(Command)
+    def __init__(self):  
+        Command.__init__(self, 1)
 
 class BeforeIncrementInputP_Command(Command):
     """Base class for all commands which have to appear BEFORE
@@ -433,10 +445,18 @@ class PrepareAfterReload_InitState(Command):
         return "    prepare reload(%s) for init state = %s;" % (self.reload_state_index, self.state_index)
 
 class LexemeStartToReferenceP(Command):
-    def __init__(self, StateIndex):
+    def __init__(self, ReferencePName):
+        Command.__init__(self, 1, [ReferencePName])
+    @property
+    def reference_pointer_name(self): return self._x[0]
+    def __repr__(self):       
+        return "    lexeme_start_p = %s;" % self._x[0]
+
+class LexemeResetTerminatingZero(Command):
+    def __init__(self):
         Command.__init__(self, 1, [])
     def __repr__(self):       
-        return "    lexeme_start_p = reference_p;"
+        return "    reset terminating zero."
 
 # Accepter:
 # 

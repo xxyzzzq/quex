@@ -1,4 +1,5 @@
-from   quex.engine.generator.languages.address    import LabelIfDoorIdReferenced, \
+from   quex.engine.generator.languages.address    import Label, \
+                                                         LabelIfDoorIdReferenced, \
                                                          map_door_id_to_address
 from   quex.engine.analyzer.state.entry_action    import DoorID
 from   quex.blackboard                            import E_AcceptanceIDs, E_StateIndices, \
@@ -30,7 +31,7 @@ def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateInd
                    % TheAnalyzer.state_machine_id,
                 1, "%s\n\n" % LanguageDB.INPUT_P_INCREMENT(),
                 1, "goto %s;\n" \
-                   % LanguageDB.LABEL_NAME_BACKWARD_INPUT_POSITION_RETURN(TheAnalyzer.state_machine_id)
+                   % Label.backward_input_position_detector_return(TheAnalyzer.state_machine_id, GotoedF=True)
             ])
         return
 
