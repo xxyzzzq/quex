@@ -1,5 +1,5 @@
-# (C) 2009-2011 Frank-Rene Schaefer
-from   quex.engine.generator.state.core             import input_do
+# (C) Frank-Rene Schaefer
+##from   quex.engine.generator.state.core             import input_do
 from   quex.engine.generator.languages.variable_db  import variable_db
 """Template Compression _______________________________________________________
 
@@ -79,7 +79,8 @@ from   quex.engine.generator.languages.variable_db  import variable_db
 """
 
 def framework(txt, TState, TheAnalyzer):
-    input_do(txt, TState, TheAnalyzer) 
+    pass
+    ##input_do(txt, TState, TheAnalyzer) 
     ## LanguageDB.STATE_DEBUG_INFO(txt, TState) -- Done in input_do
 
 def require_data(TState, TheAnalyzer):

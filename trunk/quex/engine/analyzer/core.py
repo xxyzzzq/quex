@@ -39,6 +39,13 @@ import quex.engine.analyzer.track_analysis        as     track_analysis
 import quex.engine.analyzer.optimizer             as     optimizer
 from   quex.engine.analyzer.state.core            import AnalyzerState, ReloadState
 from   quex.engine.analyzer.state.drop_out        import DropOut
+from   quex.engine.analyzer.state.entry_action    import TransitionID, \
+                                                         TransitionAction, \
+                                                         InputPDereference, \
+                                                         InputPIncrement, \
+                                                         InputPIncrementThenDereference, \
+                                                         InputPDecrement, \
+                                                         InputPDecrementThenDereference
 import quex.engine.analyzer.mega_state.analyzer   as     mega_state_analyzer
 import quex.engine.analyzer.position_register_map as     position_register_map
 import quex.engine.analyzer.engine_supply_factory as     engine
@@ -128,7 +135,7 @@ class Analyzer:
 
         # (*) Prepare AnalyzerState Objects
         self.__state_db = dict([
-            (state_index, prepare(SM.states[state_index], state_index))
+            (state_index, self.prepare_state(SM.states[state_index], state_index))
             for state_index in self.__trace_db.iterkeys()]
         )
 
@@ -209,46 +216,69 @@ class Analyzer:
             yield i
         yield None
 
-    def prepare_state(OldState, StateIndex):
-        from_state_index_list = self.__from_db[StateIndex]
-        if     StateIndex == self.__init_state_index \
-           and E_StateIndices.NONE not in from_state_index_list:
-                from_state_index_list.add(E_StateIndices.NONE)
+    def prepare_state(self, OldState, StateIndex):
+        """REQUIRES: 'self.init_state_forward_f', 'self.engine_type', 'self.__from_db'.
+        """
+        init_state_forward_f  = self.is_init_state_forward(StateIndex)
 
-        state = AnalyzerState.from_State(OldState, state_index, from_state_index_list, EngineType)
+        state = AnalyzerState.from_State(OldState, StateIndex, set(), self.engine_type)
 
-        action = TheAnalyzer.engine_type.input_action(TheState.index == TheAnalyzer.init_state_index)
-        if TheState.transition_map.is_empty():
+        ta = TransitionAction()
+        if state.transition_map.is_empty() and False: 
+            # NOTE: We need a way to disable this exception for PathWalkerState-s(!)
+            #       It safe, not to allow it, in general.
+            #------------------------------------------------------------------------
             # If the state has no further transitions then the input character does 
             # not have to be read. This is so, since without a transition map, the 
             # state immediately drops out. The drop out transits to a terminal. 
             # Then, the next action will happen from the init state where we work
-            # on the same position. If required the reload happens at that moment.
+            # on the same position. If required the reload happens at that moment,
+            # NOT before the empty transition block.
             #
             # This is not true for Path Walker States, so we offer the option 
             # 'ForceInputDereferencingF'
-            if not ForceInputDereferencingF:
-                if   action == E_InputActions.INCREMENT_THEN_DEREF: return E_InputActions.INCREMENT
-                elif action == E_InputActions.DECREMENT_THEN_DEREF: return E_InputActions.DECREMENT
+            assert StateIndex != self.init_state_index # Empty state machine! --> impossible
 
-        ta = TransitionAction()
-        if self.engine_type.is_FORWARD(): ta.command_list.append(InputPIncrement())
-        else:                             ta.command_list.append(InputPDerefernce())
-        ta.command_list.append(InputPDereference())
+            if self.engine_type.is_FORWARD(): command_list = [InputPIncrement()]
+            else:                             command_list = [InputPDecrement()]
+        else:
+            if self.engine_type.is_FORWARD(): command_list = [InputPIncrement(), InputPDereference()]
+            else:                             command_list = [InputPDecrement(), InputPDereference()]
 
-        for source_state_index in from_state_index_list: 
+        for command in command_list:
+            ta.command_list.misc.add(command)
+
+        if self.engine_type.is_FORWARD(): from_reload = E_StateIndices.RELOAD_FORWARD
+        else:                             from_reload = E_StateIndices.RELOAD_BACKWARD
+        tid_from_reload = TransitionID(StateIndex, from_reload, TriggerId=0)
+
+        for source_state_index in self.__from_db[StateIndex]: 
+            assert source_state_index != E_StateIndices.NONE
             tid = TransitionID(StateIndex, source_state_index, TriggerId=0)
-            if source_state_index != E_StateIndices.NONE:
-                state.action_db.enter(tid, ta.clone())
-            else:
-                ta = TransitionAction()
-                ta.command_list.append(InputPDereference())
-                state.action_db.enter(tid, ta)
+            state.entry.action_db.enter(tid, ta.clone())
+            state.entry.action_db.enter(tid_from_reload, ta.clone())
 
+        if StateIndex == self.init_state_index:
+            tid_at_entry = TransitionID(StateIndex, E_StateIndices.NONE, TriggerId=0)
+            if self.engine_type.is_FORWARD():
+                ta = TransitionAction()
+                ta.command_list.misc.add(InputPDereference())
+            state.entry.action_db.enter(tid_from_reload, ta.clone())
+            state.entry.action_db.enter(tid_at_entry, ta)
+
+        for key, value in state.entry.action_db.iteritems():
+            print "#tid:", key
+            print "#value:", value.command_list
+
+        return state
                                       
     def get_action_at_state_machine_entry(self):
-        assert self.engine_type.is_FORWARDS()
-        return self.state_db[self.init_state_index].get_action(self.init_state_index, E_StateIndices.NONE)
+        assert self.engine_type.is_FORWARD()
+        print "#action_db:", self.init_state_index
+        for key, value in self.state_db[self.init_state_index].entry.action_db.iteritems():
+            print "#key:", key
+            print "#value:", value.door_id
+        return self.state_db[self.init_state_index].entry.action_db.get_action(self.init_state_index, E_StateIndices.NONE)
 
     def get_depth_db(self):
         """Determine a database which tells about the minimum distance to the initial state.

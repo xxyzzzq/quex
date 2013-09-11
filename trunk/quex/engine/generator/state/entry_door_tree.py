@@ -36,10 +36,11 @@ what their shared CommandList.
 The structure of the tree is maintained by the '.parent' and '.child_set'
 members of Door object.
 _______________________________________________________________________________
-(C) 2006-2013 Frank-Rene Schaefer
+(C) Frank-Rene Schaefer
 """
 from quex.engine.analyzer.state.entry_action import *
-from quex.blackboard  import E_StateIndices
+from quex.blackboard  import E_StateIndices, \
+                             E_DoorIdIndex
 
 from collections      import defaultdict
 from itertools        import islice
@@ -56,24 +57,33 @@ def do(StateIndex, TransitionActionDB):
        It is assumed, that the actions in 'TransitionActionDB' are
        '.categorized', i.e.  the command list are associated with a 'DoorID'.
     """
-    root = Door(CommandList(), None, None, DoorID(StateIndex, 0))
+    root = Door(CommandList(), None, None, DoorID(StateIndex, E_DoorIdIndex.EMPTY))
 
-    # Begin: All doors relate to transitions for other states. They are 
-    #        'childs' of root. Root is the door without command lists.
-    #
-    #                       .-- DoorA: c2, c4, c7, c9
-    #          root: <> ----+-- DoorB: c0, c4, c5, c9
-    #                       +-- DoorC: c0, c3, c7, c9
-    #                       '-- DoorD: c1, c7, c9
-    #    
-    # A parent/child relationship is maintained by mentioning the child in the 
-    # '.child_set' of the parent and with the '.parent' member of every child
-    # pointing to the parent.
-    door_set = set(
-         Door(action.command_list, Parent=root, ChildSet=None, DoorId=action.door_id)
-         for transition_id, action in TransitionActionDB.iteritems()
-            if transition_id.source_state_index != E_StateIndices.NONE
-    )
+    # Multiple transactions may share the same DoorID. Filter.
+    door_set = set()
+    done_db  = {}
+    for action in TransitionActionDB.itervalues():
+        if action.door_id in done_db: 
+            # If two action share the same DoorID, their actions must be the same
+            assert action == done_db[action.door_id]
+            continue
+
+        done_db[action.door_id] = action
+
+        assert action.door_id is not None # '.categorize()' must have been called before!
+        # Begin: All doors relate to transitions for other states. They are 
+        #        'childs' of root. Root is the door without command lists.
+        #
+        #                       .-- DoorA: c2, c4, c7, c9
+        #          root: <> ----+-- DoorB: c0, c4, c5, c9
+        #                       +-- DoorC: c0, c3, c7, c9
+        #                       '-- DoorD: c1, c7, c9
+        #    
+        # A parent/child relationship is maintained by mentioning the child in the 
+        # '.child_set' of the parent and with the '.parent' member of every child
+        # pointing to the parent.
+        door_set.add(Door(action.command_list, Parent=root, ChildSet=None, DoorId=action.door_id))
+
     root.child_set = door_set
 
     # Possible shared command list sets -- organized by the shared command list
@@ -140,10 +150,29 @@ def do(StateIndex, TransitionActionDB):
         
     # It is conceivable, that an empty 'root' had only one child. In that case, the
     # child may play the role of 'root'.
-    if len(root.child_set) == 1 and root.command_list.is_empty(): 
-        root = root.child_set.pop()
-        root.parent = None
+    #if len(root.child_set) == 1 and root.command_list.is_empty(): 
+    #    root = root.child_set.pop()
+    #    root.parent = None
     return root
+
+def find(root, DoorId):
+    """Searches in the Door-Tree given by its 'root' for a node with 'DoorId'.
+    RETURNS: None - of no such node was found.
+             node - which is the node with '.door_id == DoorId'.
+    """
+    work_list = [root]
+    done_set  = set()
+    while len(work_list) != 0:
+        candidate = work_list.pop()
+        print "#dd:", DoorId, candidate.door_id
+        print "#childset:", candidate.child_set
+        if candidate.door_id == DoorId:
+            return candidate
+        assert candidate.door_id not in done_set
+        done_set.add(candidate.door_id)
+        if candidate.child_set is not None:
+            work_list.extend(candidate.child_set)
+    return None
 
 class DoorCombination:
     def __init__(self, SharedCmdList, Parent, DoorSet):
@@ -171,7 +200,6 @@ class Door:
        associated with a 'Door' of the 'Entry' into the 'AnalyzerState'.
    """
     def __init__(self, CmdList, Parent, ChildSet, DoorId):
-        # Only 'Leaf' nodes have the 'related actions', i.e. TA assigned.
         assert isinstance(CmdList, CommandList)
         assert (ChildSet is None) or isinstance(ChildSet, set)
         assert (Parent is None)   or isinstance(Parent, Door)
@@ -219,7 +247,7 @@ class Door:
         return self.door_id == Other.door_id
 
     def __repr__(self):
-        return "Door(id: %s)" % self.door_id
+        return "Door(id: %s)" % self.door_id.__class__
         assert False, "Use 'get_string()'"
 
     def get_string(self, ActionDB=None, OnlyFromStateIndexF=False):
@@ -272,7 +300,7 @@ class CandidateList:
         """Compare the shared command lists between doors in the DoorList.
            Associate each sharing with a 'gain'.
         """
-        shared_db, sharing_door_set    = self.__find_sharings(DoorSet)
+        shared_db, sharing_door_set = self.__find_sharings(DoorSet)
 
         self.possible_combination_list = shared_db.values()
         # A door which does not share yet will never share, because no new
