@@ -108,8 +108,9 @@ class TransitionAction(object):
         #       by '.categorize()' in the action_db. Then, transition actions
         #       with the same CommandList-s share the same DoorID.
         assert type(CommandListObjectF) == bool
-        self.door_id      = None # DoorID into door tree from where the command list is executed
-        self.command_list = CommandList() if CommandListObjectF else None
+        self.door_id = None # DoorID into door tree from where the command list is executed
+        if CommandListObjectF: self.command_list = CommandList() 
+        else:                  self.command_list = None
  
     def clone(self):
         result = TransitionAction(CommandListObjectF=False)
@@ -152,20 +153,19 @@ class Command(object):
 
     db = {
         E_Commands.StoreInputPosition:            (0, 1, namedtuple("C0", "pre_context_id", "position_register", "offset")),
-        E_Commands.PreConditionOK:                (0, 1, namedtuple("C1", "pre_context_id"),
-        E_Commands.TemplateStateKeySet:           (0, 1, namedtuple("C2", "state_key"),
-        E_Commands.PathIteratorSet:               (0, 1, namedtuple("C3", "path_walker_id", "path_id", "offset"),
+        E_Commands.PreConditionOK:                (0, 1, namedtuple("C1", "pre_context_id")),
+        E_Commands.TemplateStateKeySet:           (0, 1, namedtuple("C2", "state_key")),
+        E_Commands.PathIteratorSet:               (0, 1, namedtuple("C3", "path_walker_id", "path_id", "offset")),
         E_Commands.PathIteratorIncrement:         (0, 1, None),
-        E_Commands.PrepareAfterReload:            (0, 1, namedtuple("C4", "state_index"),
-        E_Commands.PrepareAfterReload_InitState:  (0, 1, namedtuple("C5", "state_index"),
+        E_Commands.PrepareAfterReload:            (0, 1, namedtuple("C4", "state_index")),
+        E_Commands.PrepareAfterReload_InitState:  (0, 1, namedtuple("C5", "state_index")),
         E_Commands.InputPIncrement:               (1, 1, None),
         E_Commands.InputPDecrement:               (1, 1, None),
         E_Commands.InputPDereference:             (2, 1, None),
     }
 
     def __init__(self, Id, *ParameterList):
-        assert ParameterList is None or type(ParameterList) == list, "ParameterList: '%s'" % ParameterList
-        assert Hash is None          or isinstance(Hash, (int, long))
+        assert type(ParameterList) == tuple, "ParameterList: '%s'" % str(ParameterList)
         cmd_info   = Command.db[Id]
         self.id      = Id
         self.level   = cmd_info[0]
@@ -233,7 +233,9 @@ def InputPDereference():
 class CommandList:
     def __init__(self):
         self.accepter = None
-        for i in xrange(CommandList.MaxLevelN):
+        self.level    = [] 
+         
+        for i in xrange(Command.MaxLevelN+1):
             self.level.append([]) # .level[i] --> Commands of level 'i'
 
     @classmethod
@@ -248,11 +250,15 @@ class CommandList:
                 result.level[cmd.level].append(cmd)
         return result
 
+    def add(self, Cmd):
+        print "#level:", Cmd.level, self.level
+        self.level[Cmd.level].append(Cmd)
+
     def clone(self):
         result = CommandList()
         if self.accepter is not None: result.accepter = self.accepter.clone()
         else:                         result.accepter = None
-        for i in xrange(CommandList.MaxLevelN):
+        for i in xrange(Command.MaxLevelN+1):
             result.level[i] = [ cmd.clone() for cmd in self.level[i] ]
         return result
 
@@ -261,7 +267,7 @@ class CommandList:
         result = CommandList()
         # If one has commands on higher level and the other not, then there is no 'sharing'
         # Level '0' can freely share
-        for i in reversed(xrange(1, Command.MaxLevelN)):
+        for i in reversed(xrange(1, Command.MaxLevelN+1)):
             if This.level[i] != That.level[i]: break
             result.level[i] = [ x.clone() for x in That.level[i] ]
 
