@@ -282,6 +282,15 @@ class EntryActionDB:
                 return False
         return True
 
+    def get_string(self):
+        txt = []
+        for tid, ta in self.__db.iteritems():
+            txt.append("%s:%s: {\n" % (tid, ta.door_id))
+            for command in ta.command_list:
+                txt.append("    " + repr(command))
+            txt.append("}\n")
+        return "".join(txt)
+
 class Entry(object):
     """________________________________________________________________________
 

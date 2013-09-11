@@ -85,41 +85,34 @@ class UniformObject(object):
         """
         return E_Values.VOID != self._content
 
+def _report_failed_assertion(i, txt):
+    for k in range(max(0,i-10),i):
+        print "[%i](before) \"%s\"" % (k, txt[k])
+    print "[%i] Error: '%s'" % (i, element.__class__.__name__)
+    print "[%i] Error: '%s'" % (i, element)
+    for k in range(i+1, min(i+10, len(txt))):
+        print "[%i](after) \"%s\"" % (k, txt[k])
+
 def all_isinstance(txt, Type):
     for i, element in enumerate(txt):
-        if isinstance(element, Type): 
-            continue
-
-        for k in range(max(0,i-10),i):
-            print "[%i](before) \"%s\"" % (k, txt[k])
-        print "[%i] Error: '%s'" % (i, element.__class__.__name__)
-        print "[%i] Error: '%s'" % (i, element)
-        for k in range(i+1, min(i+10, len(txt))):
-            print "[%i](after) \"%s\"" % (k, txt[k])
-        assert False
+        if isinstance(element, Type): continue
+        _report_failed_assertion(i, txt)
+        return False
     return True
 
-#class AssignedOnce(object):
-#    __slots__ = ("_content", "_equal")
-#
-#    def __init__(self, EqualCmp=lambda x,y: x!=y):
-#        self._content = E_Values.UNASSIGNED
-#        self._equal   = EqualCmp
-#
-#    def clone():
-#        result = UniformObject(self._equal)
-#        result._content = self._content
-#        return result
-#
-#    def __ilshift__(self, NewContent):
-#        if   self._content == E_Values.UNASSIGNED: self._content = NewContent
-#        return self
-#
-#    @property
-#    def content(self):
-#        if self._content == E_Values.UNASSIGNED: return None
-#        else:                                    return self._content
+def none_isinstance(txt, Type):
+    for i, element in enumerate(txt):
+        if not isinstance(element, Type): continue
+        _report_failed_assertion(i, txt)
+        return False
+    return True
 
+def none_is_None(txt):
+    for i, element in enumerate(txt):
+        if element is not None: continue
+        _report_failed_assertion(i, txt)
+        return False
+    return True
 
 class TypedSet(set):
     def __init__(self, Cls):

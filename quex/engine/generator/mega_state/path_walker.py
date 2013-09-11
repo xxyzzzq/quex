@@ -78,7 +78,7 @@
             }
 """
 from quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
-from quex.engine.generator.state.core                  import input_do
+##from quex.engine.generator.state.core                  import input_do
 from quex.engine.generator.languages.variable_db       import variable_db
 from quex.blackboard import setup as Setup
 
@@ -101,7 +101,7 @@ def framework(txt, PWState, TheAnalyzer):
              states outside the path may happen.
     """
     LanguageDB = Setup.language_db
-    input_do(txt, PWState, TheAnalyzer, ForceInputDereferencingF=True) 
+    ## input_do(txt, PWState, TheAnalyzer, ForceInputDereferencingF=True) 
     ## LanguageDB.STATE_DEBUG_INFO(txt, PWState) -- done in input_do
 
     # Three Versions of PathWalker Heads:

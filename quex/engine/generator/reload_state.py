@@ -10,7 +10,7 @@ def do(TheReloadState):
 
     txt = ["%s\n" % LanguageDB.UNREACHABLE]
 
-    entry.do_core(txt, TheReloadState.index, TheReloadState.entry.action_db)
+    entry.do_core(txt, TheReloadState)
 
     txt.extend(LanguageDB.RELOAD_PROCEDURE(ForwardF=(TheReloadState.index == E_StateIndices.RELOAD_FORWARD)))
 

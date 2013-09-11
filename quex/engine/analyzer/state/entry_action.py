@@ -127,13 +127,55 @@ class TransitionAction(object):
     def __repr__(self):
         return "(%s: [%s])" % (self.door_id, self.command_list)
 
+E_Commands = Enum("StoreInputPosition",
+                  "PreConditionOK",
+                  "TemplateStateKeySet",
+                  "PathIteratorSet",
+                  "PathIteratorIncrement",
+                  "PrepareAfterReload",
+                  "PrepareAfterReload_InitState",
+                  "InputPIncrement",
+                  "InputPDecrement",
+                  "InputPDereference",
+                  "_DEBUG_Commands")
+
+# To come:
+# CountColumnN_ReferenceSet
+# CountColumnN_ReferenceAdd
+# CountColumnN_Add
+# CountColumnN_Grid
+# CountLineN_Add
+
 class Command(object):
-    def __init__(self, Cost=None, ParameterList=None, Hash=None, Id=None):
+    __slots__ = ("id", "level", "cost", "content", "_hash")
+    MaxLevelN = 2
+
+    db = {
+        E_Commands.StoreInputPosition:            (0, 1, namedtuple("C0", "pre_context_id", "position_register", "offset")),
+        E_Commands.PreConditionOK:                (0, 1, namedtuple("C1", "pre_context_id"),
+        E_Commands.TemplateStateKeySet:           (0, 1, namedtuple("C2", "state_key"),
+        E_Commands.PathIteratorSet:               (0, 1, namedtuple("C3", "path_walker_id", "path_id", "offset"),
+        E_Commands.PathIteratorIncrement:         (0, 1, None),
+        E_Commands.PrepareAfterReload:            (0, 1, namedtuple("C4", "state_index"),
+        E_Commands.PrepareAfterReload_InitState:  (0, 1, namedtuple("C5", "state_index"),
+        E_Commands.InputPIncrement:               (1, 1, None),
+        E_Commands.InputPDecrement:               (1, 1, None),
+        E_Commands.InputPDereference:             (2, 1, None),
+    }
+
+    def __init__(self, Id, *ParameterList):
         assert ParameterList is None or type(ParameterList) == list, "ParameterList: '%s'" % ParameterList
         assert Hash is None          or isinstance(Hash, (int, long))
-        self._cost = Cost
-        self._hash = Hash
-        self._x    = ParameterList
+        cmd_info   = Command.db[Id]
+        self.id      = Id
+        self.level   = cmd_info[0]
+        self.cost    = cmd_info[1]
+        L = len(ParameterList)
+        if   L == 0: self.content = None
+        elif L == 1: self.content = cmd_info[3](ParameterList[0])
+        elif L == 2: self.content = cmd_info[3](ParameterList[0], ParameterList[1])
+        elif L == 3: self.content = cmd_info[3](ParameterList[0], ParameterList[1], ParameterList[2])
+        self._hash = hash(Id) ^ hash(self.content)
 
     def clone(self):         
         if   self._x is None:   return self.__class__()
@@ -142,43 +184,57 @@ class Command(object):
         elif len(self._x) == 3: return self.__class__(self._x[0], self._x[1], self._x[2])
         else:                   assert False
 
-    def cost(self):          
-        assert self._cost is not None, \
-               "Derived class must implement .cost() function."
-        return self._cost
-
     def __hash__(self):      
-        if self._hash is not None:
-            assert isinstance(self._hash, (int, long))
-            return self._hash
-        elif self._x is None:
-            assert self._hash is not None, \
-                   "Derived class must implement .__hash__() function."
-            assert isinstance(self._hash, (int, long))
-            return self._hash
-        else:
-            value = self._x[0]
-            if isinstance(value, (int, long)): return value
-            else:                              return -1
+        return self._hash
 
     def __eq__(self, Other): 
-        if self.__class__ != Other.__class__:
-            return False
-        return self._x == Other._x
+        if   self.__class__ != Other.__class__: return False
+        elif self.id        != Other.id:        return False
+        assert self.level == Other.level and self.cost == Other.cost
+        return self.content == Other.content
 
-#E_Commands = Enum("InputPIncrement", "StoreInputPosition", "RestoreInputPosition", "Accept")
-#
-#__db = {
-#    E_Commands.InputPIncrement:      (,),
-#    E_Commands.StoreInputPosition:   ("offset",),
-#    E_Commands.RestoreInputPosition: (,),
-#    E_Commands.Accept:               ("pattern_id", "pre_context_id", "position_register",),
-#}
+    def __str__(self):
+        name_str    = str(self.id)
+        content_str = "".join("%s=%s, " % (member, value) for member, value in self.content._asdict.iteritems())
+        return "%s: { %s }" % (name_str, content_str)
+
+# TODO: Consider 'Flyweight pattern'. Check wether object with same content exists, 
+#       then return pointer to object in database.
+def StoreInputPosition(PreContextID, PositionRegister, Offset):
+    return Command(E_Commands.StoreInputPosition, PreContextID, PositionRegister, Offset)
+
+def PreConditionOK(PreContextID):
+    return Command(E_Commands.PreContextID, PreContextID)
+
+def TemplateStateKeySet(StateKey):
+    return Command(E_Commands.TemplateStateKeySet, StateKey)
+
+def PathIteratorSet(PathWalkerID, PathID, Offset):
+    return Command(E_Commands.PathIteratorSet, PathWalkerID, PathID, Offset)
+
+def PathIteratorIncrement():
+    return Command(E_Commands.PathIteratorIncrement)
+
+def PrepareAfterReload():
+    return Command(E_Commands.PrepareAfterReload, StateIndex)
+
+def PrepareAfterReload_InitState():
+    return Command(E_Commands.PrepareAfterReload_InitState, StateIndex)
+
+def InputPIncrement():
+    return Command(E_Commands.InputPIncrement)
+
+def InputPDecrement():
+    return Command(E_Commands.InputPDecrement)
+
+def InputPDereference():
+    return Command(E_Commands.InputPDereference)
 
 class CommandList:
     def __init__(self):
         self.accepter = None
-        self.misc     = TypedSet(Command)
+        for i in xrange(CommandList.MaxLevelN):
+            self.level.append([]) # .level[i] --> Commands of level 'i'
 
     @classmethod
     def from_iterable(cls, Iterable):
@@ -189,22 +245,28 @@ class CommandList:
                 assert self.accepter is None
                 result.accepter = cmd
             else:
-                result.misc.add(cmd)
+                result.level[cmd.level].append(cmd)
         return result
 
     def clone(self):
         result = CommandList()
         if self.accepter is not None: result.accepter = self.accepter.clone()
         else:                         result.accepter = None
-        result.misc = set(cmd.clone() for cmd in self.misc)
+        for i in xrange(CommandList.MaxLevelN):
+            result.level[i] = [ cmd.clone() for cmd in self.level[i] ]
         return result
 
     @staticmethod
     def intersection(This, That):
         result = CommandList()
+        # If one has commands on higher level and the other not, then there is no 'sharing'
+        # Level '0' can freely share
+        for i in reversed(xrange(1, Command.MaxLevelN)):
+            if This.level[i] != That.level[i]: break
+            result.level[i] = [ x.clone() for x in That.level[i] ]
+
         if This.accepter is not None and This.accepter == That.accepter: result.accepter = This.accepter.clone()
         else:                                                            result.accepter = None
-        result.misc = set(cmd.clone() for cmd in This.misc if cmd in That.misc)
         return result
 
     def difference_update(self, Other):
@@ -230,25 +292,8 @@ class CommandList:
         """Allow iteration over comand list."""
         if self.accepter is not None: 
             yield self.accepter
-        def sort_key(Cmd):
-            if   isinstance(Cmd, StoreInputPosition): 
-                return (0, Cmd.pre_context_id, Cmd.position_register, Cmd.offset)
-            elif isinstance(Cmd, PreConditionOK):   
-                return (1, Cmd.pre_context_id)
-            elif isinstance(Cmd, TemplateStateKeySet):   
-                return (2, Cmd.value)
-            elif isinstance(Cmd, PathIteratorSet):   
-                return (3, Cmd.offset, Cmd.path_id, Cmd.path_walker_id)
-            elif isinstance(Cmd, PathIteratorIncrement):   
-                return (3, 0)
-            elif isinstance(Cmd, PrepareAfterReload):   
-                return (4, 0)
-            elif isinstance(Cmd, PrepareAfterReload_InitState):   
-                return (4, 0)
-            else:
-                assert False, "Command '%s' cannot be part of .misc." % Cmd.__class__.__name__
 
-        for action in sorted(self.misc, key=sort_key):
+        for action in sorted(self.misc, key=attrgetter("level", "id")):
             yield action
 
     def __hash__(self):
@@ -260,14 +305,6 @@ class CommandList:
             xor_sum ^= hash(self.accepter)
 
         return xor_sum
-
-#    def is_equivalent(self, Other):
-#        """For 'equivalence' the commands 'MegaState_Command' are unimportant."""
-#        # Rely on '__eq__' of Accepter
-#        if not (self.accepter == Other.accepter): return False
-#        self_misc_pure  = set(cmd for cmd in self.misc  if not isinstance(cmd, MegaState_Command))
-#        Other_misc_pure = set(cmd for cmd in Other.misc if not isinstance(cmd, MegaState_Command))
-#        return self_misc_pure == Other_misc_pure
 
     def __eq__(self, Other):
         # Rely on '__eq__' of Accepter
@@ -288,276 +325,4 @@ class CommandList:
         for action in self.misc:
             txt += "%s" % action
         return txt
-
-E_Commands = Enum("INPUT_P_INCREMENT", 
-                  "INPUT_P_STORE",
-                  "COUNT_COLUMN_N_REFERENCE_P_SET",
-                  "COUNT_COLUMN_N_REFERENCE_P_ADD",
-                  "COUNT_COLUMN_N_ADD",
-                  "COUNT_COLUMN_N_GRID",
-                  "PRE_CONDITION_ACKNOWLEDGE")
-command_table = {
-   E_Commands.INPUT_P_INCREMENT: (1, 0x4711, None),
-   E_Commands.INPUT_P_STORE:     (1, None,   ("pre_context_id", "position_register", "offset")),
-}
-
-class InputPIncrement(Command)
-    def __init__(self):  
-        Command.__init__(self, 1)
-
-class InputPDecrement(Command)
-    def __init__(self):  
-        Command.__init__(self, 1)
-
-class InputPDereference(Command)
-    def __init__(self):  
-        Command.__init__(self, 1)
-
-class BeforeIncrementInputP_Command(Command):
-    """Base class for all commands which have to appear BEFORE
-       the input pointer increment action.
-    """
-    pass
-
-class CountColumnN_ReferenceSet(BeforeIncrementInputP_Command):
-    def __init__(self):  
-        Command.__init__(self, 1, Hash=0x4712)
-
-class CountColumnN_ReferenceAdd(BeforeIncrementInputP_Command):
-    def __init__(self, ColumnNPerChunk):      
-        Command.__init__(self, 1, [ColumnNPerChunk])
-    @property
-    def column_n_per_chunk(self): 
-        return self._x[0]
-
-class CountColumnN_Add(Command):
-    def __init__(self, Offset):      
-        Command.__init__(self, 1, [Offset])
-    @property
-    def offset(self): 
-        return self._x[0]
-
-class CountColumnN_Grid(BeforeIncrementInputP_Command):
-    def __init__(self, GridWidth):      
-        Command.__init__(self, 1, [GridWidth])
-    @property
-    def grid_width(self): 
-        return self._x[0]
-
-class CountLineN_Add(Command):
-    def __init__(self, Offset):      
-        Command.__init__(self, 1, [Offset])
-    @property
-    def offset(self): 
-        return self._x[0]
-
-class StoreInputPosition(BeforeIncrementInputP_Command):
-    """
-    StoreInputPosition: 
-
-    Storing the input position is actually dependent on the pre_context_id, if 
-    there is one. The pre_context_id is left out for the following reasons:
-
-    -- Testing the pre_context_id is not necessary.
-       If a pre-contexted acceptance is reach where the pre-context is required
-       two things can happen: 
-       (i) Pre-context-id is not fulfilled, then no input position needs to 
-           be restored. Storing does no harm.
-       (ii) Pre-context-id is fulfilled, then the position is restored. 
-
-    -- Avoiding overhead for pre_context_id test.
-       In case (i) cost = test + jump, (ii) cost = test + assign + jump. Without
-       test (i) cost = assign, (ii) cost = storage. Assume cost for test <= assign.
-       Thus not testing is cheaper.
-
-    -- In the process of register economization, some post contexts may use the
-       same position register. The actions which can be combined then can be 
-       easily detected, if no pre-context is considered.
-    """
-    def __init__(self, PreContextID, PositionRegister, Offset):
-        Command.__init__(self, 1, [PreContextID, PositionRegister, Offset])
-
-    def GET_pre_context_id(self):       return self._x[0]
-    def SET_pre_context_id(self, X):    self._x[0] = X
-    pre_context_id = property(GET_pre_context_id, SET_pre_context_id)
-    def GET_position_register(self):    return self._x[1]
-    def SET_position_register(self, X): self._x[1] = X
-    position_register = property(GET_position_register, SET_position_register)
-    def GET_offset(self):               return self._x[2]
-    def SET_offset(self, X):            self._x[2] = X
-    offset = property(GET_offset, SET_offset)
-
-    def __hash__(self):
-        # 'Command.__hash__' takes '_x[0]' as hash value.
-        # position_register = _x[1]
-        if isinstance(self.position_register, (int, long)): return self.position_register
-        else:                                               return -1
-
-    def __cmp__(self, Other):
-        if   self.pre_context_id    > Other.pre_context_id:    return 1
-        elif self.pre_context_id    < Other.pre_context_id:    return -1
-        elif self.position_register > Other.position_register: return 1
-        elif self.position_register < Other.position_register: return -1
-        elif self.offset            > Other.offset:            return 1
-        elif self.offset            < Other.offset:            return -1
-        return 0
-
-    def __repr__(self):
-        # if self.pre_context_id != E_PreContextIDs.NONE:
-        #     if_txt = "if '%s': " % repr_pre_context_id(self.pre_context_id)
-        # else:
-        #     if_txt = ""
-        #
-        # if self.offset == 0:
-        #     return "%s%s = input_p;\n" % (if_txt, repr_position_register(self.position_register))
-        # else:
-        #     return "%s%s = input_p - %i;\n" % (if_txt, repr_position_register(self.position_register), 
-        #                                        self.offset))
-        return "pre(%s) --> store[%i] = input_p - %i;\n" % \
-               (self.pre_context_id, self.position_register, self.offset) 
-
-class PreConditionOK(Command):
-    def __init__(self, PreContextID):
-        Command.__init__(self, 1, [PreContextID])
-    @property
-    def pre_context_id(self): return self._x[0]
-    def __repr__(self):       
-        return "    pre-context-fulfilled = %s;\n" % self.pre_context_id
-
-class PrepareAfterReload(Command):
-    def __init__(self, State, ReloadStateIndex):
-        Command.__init__(self, 1, [State, ReloadStateIndex])
-    @property
-    def state(self):              return self._x[0]
-    @property
-    def reload_state_index(self): return self._x[1]
-    def __repr__(self):       
-        return "    prepare reload(%s) for state = %s;" % (self.reload_state_index, self.state_index)
-
-class PrepareAfterReload_InitState(Command):
-    def __init__(self, State, ReloadStateIndex):
-        Command.__init__(self, 1, [State, ReloadStateIndex])
-    @property
-    def state(self):              return self._x[0]
-    @property
-    def reload_state_index(self): return self._x[1]
-    def __repr__(self):       
-        return "    prepare reload(%s) for init state = %s;" % (self.reload_state_index, self.state_index)
-
-class LexemeStartToReferenceP(Command):
-    def __init__(self, ReferencePName):
-        Command.__init__(self, 1, [ReferencePName])
-    @property
-    def reference_pointer_name(self): return self._x[0]
-    def __repr__(self):       
-        return "    lexeme_start_p = %s;" % self._x[0]
-
-class LexemeResetTerminatingZero(Command):
-    def __init__(self):
-        Command.__init__(self, 1, [])
-    def __repr__(self):       
-        return "    reset terminating zero."
-
-# Accepter:
-# 
-# In this case the pre-context-id is essential. We cannot accept a pattern if
-# its pre-context is not fulfilled.
-AccepterElement = namedtuple("AccepterElement", ("pre_context_id", "pattern_id"))
-class Accepter(Command):
-    __slots__ = ["__list"]
-    def __init__(self, PathTraceList=None):
-        Command.__init__(self)
-        if PathTraceList is None: 
-            self.__list = []
-        else:
-            self.__list = [ AccepterElement(x.pre_context_id, x.pattern_id) for x in PathTraceList ]
-
-    def clone(self):
-        result = Accepter()
-        result.__list = [ deepcopy(x) for x in self.__list ]
-        return result
-    
-    def add(self, PreContextID, PatternID):
-        self.__list.append(AccepterElement(PreContextID, PatternID))
-
-    def clean_up(self):
-        """Ensure that nothing follows and unconditional acceptance."""
-        self.__list.sort(key=attrgetter("pattern_id"))
-        for i, x in enumerate(self.__list):
-            if x.pre_context_id == E_PreContextIDs.NONE:
-                break
-        if i != len(self.__list) - 1:
-            del self.__list[i+1:]
-
-    # Estimate cost for the accepter:
-    # pre-context check + assign acceptance + conditional jump: 3
-    # assign acceptance:                                        1
-    def cost(self):
-        result = 0
-        for action in self.__list:
-            if action.pre_context_id: result += 3
-            else:                     result += 1
-        return result
-
-    # Require '__hash__' and '__eq__' to be element of a set.
-    def __hash__(self): 
-        xor_sum = 0
-        for x in self.__list:
-            if isinstance(x.pattern_id, (int, long)): xor_sum ^= x.pattern_id
-        return xor_sum
-
-    def __eq__(self, Other):
-        if not isinstance(Other, Accepter):             return False
-        if len(self.__list) != len(Other.__list):       return False
-        for x, y in zip(self.__list, Other.__list):
-            if   x.pre_context_id != y.pre_context_id:  return False
-            elif x.pattern_id     != y.pattern_id:      return False
-        return True
-
-    def __iter__(self):
-        for x in self.__list:
-            yield x
-
-    def __repr__(self):
-        return "".join(["pre(%s) --> accept(%s)\n" % (element.pre_context_id, element.pattern_id) \
-                       for element in self.__list])
-
-class MegaState_Command(Command):
-    """Base class for all commands related to MegaState control, 
-       such as 'TemplateStateKeySet' and 'PathIteratorSet'.
-    """
-    pass
-
-class SetMegaStateKey(MegaState_Command):
-    pass
-
-class TemplateStateKeySet(SetMegaStateKey):
-    def __init__(self, StateKey):
-        Command.__init__(self, 1, [StateKey])
-    @property
-    def value(self): return self._x[0]
-
-    def __repr__(self):       
-        return "    state_key = %s;\n" % self.value
-
-class PathIteratorSet(Command):
-    def __init__(self, PathWalkerID, PathID, Offset):
-        Command.__init__(self, 1, [PathWalkerID, PathID, Offset])
-
-    @property
-    def path_walker_id(self): return self._x[0]
-    @property
-    def path_id(self):        return self._x[1]
-    @property
-    def offset(self):         return self._x[2]
-
-    def __repr__(self):       
-        return "    (pw=%s,pid=%s,off=%s)\n" % (self.path_walker_id, self.path_id, self.offset)
-
-class PathIteratorIncrement(Command):
-    def __init__(self):
-        Command.__init__(self, 1, Hash=0x4712)
-
-    def __repr__(self):       
-        return "    (++path_iterator)\n"
 

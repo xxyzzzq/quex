@@ -236,6 +236,22 @@ class LanguageDB_Cpp(dict):
         elif isinstance(EntryAction, entry_action.LexemeResetTerminatingZero):
             return "    QUEX_LEXEME_TERMINATING_ZERO_UNDO(&me->buffer);\n"
 
+        elif isinstance(EntryAction, entry_action.InputPDereference):
+            return "    %s\n" % self.ASSIGN("input", self.INPUT_P_DEREFERENCE())
+
+        elif isinstance(EntryAction, entry_action.InputPIncrement):
+            return "    %s\n" % self.INPUT_P_INCREMENT()
+
+        elif isinstance(EntryAction, entry_action.InputPIncrementThenDereference):
+            return "    %s\n    %s\n" % (self.INPUT_P_INCREMENT(),
+                                         self.ASSIGN("input", self.INPUT_P_DEREFERENCE()))
+
+        elif isinstance(EntryAction, entry_action.InputPDecrement):
+            return "    %s\n" % self.INPUT_P_DECREMENT()
+
+        elif isinstance(EntryAction, entry_action.InputPDecrementThenDereference):
+            return "    %s\n    %s\n" % (self.INPUT_P_INCREMENT(),
+                                         self.ASSIGN("input", self.INPUT_P_DEREFERENCE()))
         else:
             assert False, "Unknown Entry Action"
 
