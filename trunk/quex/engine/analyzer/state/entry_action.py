@@ -3,7 +3,7 @@ from   quex.blackboard          import setup as Setup, \
 from   quex.engine.misc.file_in import error_msg
 from   quex.engine.tools        import pair_combinations, TypedSet
 from   quex.engine.misc.enum    import Enum
-from   quex.blackboard          import E_AcceptanceIDs, E_DoorIdIndex
+from   quex.blackboard          import E_AcceptanceIDs, E_DoorIdIndex, E_Commands
 
 from   collections              import defaultdict, namedtuple
 from   operator                 import attrgetter, itemgetter
@@ -128,18 +128,6 @@ class TransitionAction(object):
     def __repr__(self):
         return "(%s: [%s])" % (self.door_id, self.command_list)
 
-E_Commands = Enum("StoreInputPosition",
-                  "PreConditionOK",
-                  "TemplateStateKeySet",
-                  "PathIteratorSet",
-                  "PathIteratorIncrement",
-                  "PrepareAfterReload",
-                  "PrepareAfterReload_InitState",
-                  "InputPIncrement",
-                  "InputPDecrement",
-                  "InputPDereference",
-                  "_DEBUG_Commands")
-
 # To come:
 # CountColumnN_ReferenceSet
 # CountColumnN_ReferenceAdd
@@ -149,9 +137,107 @@ E_Commands = Enum("StoreInputPosition",
 
 class Command(object):
     __slots__ = ("id", "level", "cost", "content", "_hash")
-    MaxLevelN = 2
+    def __init__(self, Id, Level, Content, Hash, Cost):
+        self.id    = Id
+        self.level = Level
+        self.cost  = Cost
+        self._hash = hash(Id) ^ hash(Content)
+        self.x     = Content
+
+    def clone(self):         
+        if   self.x is None:   return Command(self.id)
+        elif len(self.x) == 1: return Command(self.id, self.x[0])
+        elif len(self.x) == 2: return Command(self.id, self.x[0], self.x[1])
+        elif len(self.x) == 3: return Command(self.id, self.x[0], self.x[1], self.x[2])
+        else:                  assert False
+
+    def __hash__(self):      
+        return self._hash
+
+    def __eq__(self, Other): 
+        if   self.__class__ != Other.__class__: return False
+        elif self.id        != Other.id:        return False
+        assert self.level == Other.level and self.cost == Other.cost
+        return self.x == Other.x
+
+    def __str__(self):
+        name_str    = str(self.id)
+        if self.x is None:
+            content_str = ""
+        else:
+            content_str = "".join("%s=%s, " % (member, value) for member, value in self.x._asdict.iteritems())
+        return "%s: { %s }" % (name_str, content_str)
+
+# Accepter:
+# 
+# In this case the pre-context-id is essential. We cannot accept a pattern if
+# its pre-context is not fulfilled.
+AccepterElement = namedtuple("AccepterElement", ("pre_context_id", "pattern_id"))
+class Accepter(Command):
+    __slots__ = ["__list"]
+    def __init__(self, PathTraceList=None):
+        Command.__init__(self)
+        if PathTraceList is None: 
+            self.__list = []
+        else:
+            self.__list = [ AccepterElement(x.pre_context_id, x.pattern_id) for x in PathTraceList ]
+
+    def clone(self):
+        result = Accepter()
+        result.__list = [ deepcopy(x) for x in self.__list ]
+        return result
+    
+    def add(self, PreContextID, PatternID):
+        self.__list.append(AccepterElement(PreContextID, PatternID))
+
+    def clean_up(self):
+        """Ensure that nothing follows and unconditional acceptance."""
+        self.__list.sort(key=attrgetter("pattern_id"))
+        for i, x in enumerate(self.__list):
+            if x.pre_context_id == E_PreContextIDs.NONE:
+                break
+        if i != len(self.__list) - 1:
+            del self.__list[i+1:]
+
+    # Estimate cost for the accepter:
+    # pre-context check + assign acceptance + conditional jump: 3
+    # assign acceptance:                                        1
+    def cost(self):
+        result = 0
+        for action in self.__list:
+            if action.pre_context_id: result += 3
+            else:                     result += 1
+        return result
+
+    # Require '__hash__' and '__eq__' to be element of a set.
+    def __hash__(self): 
+        xor_sum = 0
+        for x in self.__list:
+            if isinstance(x.pattern_id, (int, long)): xor_sum ^= x.pattern_id
+        return xor_sum
+
+    def __eq__(self, Other):
+        if not isinstance(Other, Accepter):             return False
+        if len(self.__list) != len(Other.__list):       return False
+        for x, y in zip(self.__list, Other.__list):
+            if   x.pre_context_id != y.pre_context_id:  return False
+            elif x.pattern_id     != y.pattern_id:      return False
+        return True
+
+    def __iter__(self):
+        for x in self.__list:
+            yield x
+
+    def __repr__(self):
+        return "".join(["pre(%s) --> accept(%s)\n" % (element.pre_context_id, element.pattern_id) \
+                       for element in self.__list])
+
+
+class CommandFactory:
+    LevelN    = 3
 
     db = {
+        E_Commands.Accepter:                      (0, 1, Accepter),
         E_Commands.StoreInputPosition:            (0, 1, namedtuple("C0", "pre_context_id", "position_register", "offset")),
         E_Commands.PreConditionOK:                (0, 1, namedtuple("C1", "pre_context_id")),
         E_Commands.TemplateStateKeySet:           (0, 1, namedtuple("C2", "state_key")),
@@ -164,128 +250,132 @@ class Command(object):
         E_Commands.InputPDereference:             (2, 1, None),
     }
 
-    def __init__(self, Id, *ParameterList):
+    def do(self, Id, *ParameterList):
+        # TODO: Consider 'Flyweight pattern'. Check wether object with same content exists, 
+        #       then return pointer to object in database.
         assert type(ParameterList) == tuple, "ParameterList: '%s'" % str(ParameterList)
-        cmd_info   = Command.db[Id]
-        self.id      = Id
-        self.level   = cmd_info[0]
-        self.cost    = cmd_info[1]
-        L = len(ParameterList)
-        if   L == 0: self.content = None
-        elif L == 1: self.content = cmd_info[3](ParameterList[0])
-        elif L == 2: self.content = cmd_info[3](ParameterList[0], ParameterList[1])
-        elif L == 3: self.content = cmd_info[3](ParameterList[0], ParameterList[1], ParameterList[2])
-        self._hash = hash(Id) ^ hash(self.content)
+        cmd_info   = CommandFactory.db[Id]
+        if   L == 0: content = None
+        elif L == 1: content = cmd_info[2](ParameterList[0])
+        elif L == 2: content = cmd_info[2](ParameterList[0], ParameterList[1])
+        elif L == 3: content = cmd_info[2](ParameterList[0], ParameterList[1], ParameterList[2])
 
-    def clone(self):         
-        if   self._x is None:   return self.__class__()
-        elif len(self._x) == 1: return self.__class__(self._x[0])
-        elif len(self._x) == 2: return self.__class__(self._x[0], self._x[1])
-        elif len(self._x) == 3: return self.__class__(self._x[0], self._x[1], self._x[2])
-        else:                   assert False
+        return Command(Id, cmd_info[0], cmd_info[1], content)
 
-    def __hash__(self):      
-        return self._hash
 
-    def __eq__(self, Other): 
-        if   self.__class__ != Other.__class__: return False
-        elif self.id        != Other.id:        return False
-        assert self.level == Other.level and self.cost == Other.cost
-        return self.content == Other.content
-
-    def __str__(self):
-        name_str    = str(self.id)
-        content_str = "".join("%s=%s, " % (member, value) for member, value in self.content._asdict.iteritems())
-        return "%s: { %s }" % (name_str, content_str)
-
-# TODO: Consider 'Flyweight pattern'. Check wether object with same content exists, 
-#       then return pointer to object in database.
 def StoreInputPosition(PreContextID, PositionRegister, Offset):
-    return Command(E_Commands.StoreInputPosition, PreContextID, PositionRegister, Offset)
+    return CommandFactory.do(E_Commands.StoreInputPosition, PreContextID, PositionRegister, Offset)
 
 def PreConditionOK(PreContextID):
-    return Command(E_Commands.PreContextID, PreContextID)
+    return CommandFactory.do(E_Commands.PreContextID, PreContextID)
 
 def TemplateStateKeySet(StateKey):
-    return Command(E_Commands.TemplateStateKeySet, StateKey)
+    return CommandFactory.do(E_Commands.TemplateStateKeySet, StateKey)
 
 def PathIteratorSet(PathWalkerID, PathID, Offset):
-    return Command(E_Commands.PathIteratorSet, PathWalkerID, PathID, Offset)
+    return CommandFactory.do(E_Commands.PathIteratorSet, PathWalkerID, PathID, Offset)
 
 def PathIteratorIncrement():
-    return Command(E_Commands.PathIteratorIncrement)
+    return CommandFactory.do(E_Commands.PathIteratorIncrement)
 
-def PrepareAfterReload():
-    return Command(E_Commands.PrepareAfterReload, StateIndex)
+def PrepareAfterReload(StateIndex):
+    return CommandFactory(E_Commands.PrepareAfterReload, StateIndex)
 
-def PrepareAfterReload_InitState():
-    return Command(E_Commands.PrepareAfterReload_InitState, StateIndex)
+def PrepareAfterReload_InitState(StateIndex):
+    return CommandFactory(E_Commands.PrepareAfterReload_InitState, StateIndex)
 
 def InputPIncrement():
-    return Command(E_Commands.InputPIncrement)
+    return CommandFactory(E_Commands.InputPIncrement)
 
 def InputPDecrement():
-    return Command(E_Commands.InputPDecrement)
+    return CommandFactory(E_Commands.InputPDecrement)
 
 def InputPDereference():
-    return Command(E_Commands.InputPDereference)
+    return CommandFactory(E_Commands.InputPDereference)
 
 class CommandList:
+    """CommandList -- a list of commands.
+
+    CommandList-s are subject to sharing. However, there are important
+    rules, such as 'dereferencing a pointer comes after pointer increment'.
+    To command lists A and B as in
+
+
+           A:                         B:
+           input_p => position        input_p => position
+                                      input_p++
+
+    cannot be combined into 
+
+                    B: input_p++                  # ERROR
+                    A: input_p => position        # ERROR
+
+    because, then in case of B the input pointer is incremented BEFORE the
+    position is stored. Since the dependencies are always the same, commands
+    are associated with 'levels'. In the above example 'input_p++' has a
+    higher level than 'input_p => position'. The following must hold:
+
+          For every command Ca with a level La in a command list A,
+          a command list B cannot share commands of level Lb < La
+          if the command Ca is not in B.
+
+    An exception are commands of level '-1' because they have no dependency,
+    e.g. 'Accepter', 'PreConditionOK', 'TemplateStateKeySet' or 'PathIteratorSet'.
+    """
     def __init__(self):
-        self.accepter = None
-        self.level    = [] 
-         
-        for i in xrange(Command.MaxLevelN+1):
-            self.level.append([]) # .level[i] --> Commands of level 'i'
+        self.level_db = defaultdict(list)
 
     @classmethod
     def from_iterable(cls, Iterable):
         result = CommandList()
-        for cmd in Iterable:
-            assert isinstance(cmd, Command)
-            if isinstance(cmd, Accepter):
-                assert self.accepter is None
-                result.accepter = cmd
-            else:
-                result.level[cmd.level].append(cmd)
+        result.extend(Iterable)
         return result
 
     def add(self, Cmd):
-        print "#level:", Cmd.level, self.level
-        self.level[Cmd.level].append(Cmd)
+        assert isinstance(cmd, Command)
+        self.level_db[Cmd.level].append(Cmd)
+
+    def extend(self, Iterable):
+        for cmd in Iterable:
+            self.add(Cmd)
 
     def clone(self):
         result = CommandList()
-        if self.accepter is not None: result.accepter = self.accepter.clone()
-        else:                         result.accepter = None
-        for i in xrange(Command.MaxLevelN+1):
-            result.level[i] = [ cmd.clone() for cmd in self.level[i] ]
+        for level, command_list in self.level_db.iteritems():
+            result.level_db[level] = [ x.clone() for x in command_list ]
         return result
 
     @staticmethod
     def intersection(This, That):
-        result = CommandList()
-        # If one has commands on higher level and the other not, then there is no 'sharing'
-        # Level '0' can freely share
-        for i in reversed(xrange(1, Command.MaxLevelN+1)):
-            if This.level[i] != That.level[i]: break
-            result.level[i] = [ x.clone() for x in That.level[i] ]
+        def iterable_shared(CLa, CLb):
+            return (command for command in CLa if command in CLb)
 
-        if This.accepter is not None and This.accepter == That.accepter: result.accepter = This.accepter.clone()
-        else:                                                            result.accepter = None
+        # Check what is shared on the '-1 level', i.e. the level without
+        # dependencies.
+        result = CommandList.from_iterable(iterable_shared(This.level_db[-1], That.level_db[-1]))
+
+        this_level_list = sorted(This.level_db.keys())
+        that_level_list = sorted(That.level_db.keys())
+        while 1 + 1 == 2:
+            if len(this_level_list) == 0 or len(that_level_list) == 0: 
+                break
+            level = this_level_list.pop()
+            that_level_list.pop()
+            result.extend(iterable_shared(This.level_db[level], That.level_db[level]))
+
         return result
 
     def difference_update(self, Other):
         """Delete all commands from Other from this command list.
         """
-        if self.accepter == Other.accepter: 
-            self.accepter = None
-
-        assert type(Other.misc) == set
-        for cmd in Other.misc:
-            assert isinstance(cmd, Command)
-
-        self.misc.difference_update(Other.misc)
+        for level, command_list in self.level_db.iteritems():
+            other_command_list = Otherl.level_db[level]
+            i = len(command_list) - 1
+            while i >= 0:
+                cmd = command_list[i]
+                if cmd in other_command_list:
+                    del command_list[i]
+                i -= 1
 
     def is_empty(self):
         if self.accepter is not None: return False
@@ -299,24 +389,20 @@ class CommandList:
         if self.accepter is not None: 
             yield self.accepter
 
-        for action in sorted(self.misc, key=attrgetter("level", "id")):
-            yield action
+        for i in reversed(xrange(Command.LevelN)):
+            for action in sorted(self.level[i], key=attrgetter("id")):
+                yield action
 
     def __hash__(self):
         xor_sum = 0
-        for x in self.misc:
+        for cmd in self:
             xor_sum ^= hash(x)
-
-        if self.accepter is not None:
-            xor_sum ^= hash(self.accepter)
-
         return xor_sum
 
     def __eq__(self, Other):
         # Rely on '__eq__' of Accepter
         if isinstance(Other, CommandList) == False: return False
-        elif not (self.accepter == Other.accepter): return False
-        else:                                       return self.misc == Other.misc
+        return self.level_db == Other.level_db
 
     def __ne__(self, Other):
         return not self.__eq__(Other)
@@ -328,7 +414,8 @@ class CommandList:
             for x in self.accepter:
                 txt += "%s," % repr(x.pattern_id)
 
-        for action in self.misc:
-            txt += "%s" % action
+        for i in reversed(xrange(Command.LevelN)):
+            for action in self.level[i]:
+                txt += "%s" % action
         return txt
 

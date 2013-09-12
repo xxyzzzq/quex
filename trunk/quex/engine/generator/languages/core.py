@@ -26,7 +26,8 @@ from   quex.blackboard                           import E_StateIndices,  \
                                                         E_InputActions,  \
                                                         E_TransitionN,   \
                                                         E_PreContextIDs, \
-                                                        E_DoorIdIndex
+                                                        E_DoorIdIndex, \
+                                                        E_Commands
 import quex.engine.analyzer.state.entry_action           as entry_action
 from   quex.engine.analyzer.state.core                   import AnalyzerState
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
@@ -160,11 +161,11 @@ class LanguageDB_Cpp(dict):
         comment = Comment.replace("/*", "SLASH_STAR").replace("*/", "STAR_SLASH").replace("\n", "\n%s * " % indent_str)
         txt.append("%s/* %s\n%s */" % (indent_str, comment, indent_str))
 
-    def COMMAND(self, EntryAction):
-        if isinstance(EntryAction, entry_action.Accepter):
+    def COMMAND(self, Cmd):
+        if Cmd.id == E_Commands.Accepter:
             else_str = ""
             txt      = []
-            for element in EntryAction:
+            for element in Cmd:
                 if   element.pre_context_id == E_PreContextIDs.BEGIN_OF_LINE:
                     txt.append("    %sif( me->buffer._character_before_lexeme_start == '\\n' )" % else_str)
                 elif element.pre_context_id != E_PreContextIDs.NONE:
@@ -176,50 +177,51 @@ class LanguageDB_Cpp(dict):
                 else_str = "else "
             return "".join(txt)
 
-        elif isinstance(EntryAction, entry_action.StoreInputPosition):
+        elif Cmd.id == E_Commands.StoreInputPosition:
             # Assume that checking for the pre-context is just overhead that 
             # does not accelerate anything.
-            if EntryAction.offset == 0:
+            if Cmd.offset == 0:
                 return "    position[%i] = me->buffer._input_p; __quex_debug(\"position[%i] = input_p;\\n\");\n" \
-                       % (EntryAction.position_register, EntryAction.position_register)
+                       % (Cmd.position_register, Cmd.position_register)
             else:
                 return "    position[%i] = me->buffer._input_p - %i; __quex_debug(\"position[%i] = input_p - %i;\\n\");\n" \
-                       % (EntryAction.position_register, EntryAction.offset, EntryAction.offset)
+                       % (Cmd.position_register, Cmd.offset, Cmd.offset)
 
-        elif isinstance(EntryAction, entry_action.PreConditionOK):
+        elif Cmd.id == E_Commands.PreConditionOK:
             return   "    pre_context_%i_fulfilled_f = 1;\n"                         \
-                   % EntryAction.pre_context_id                                      \
+                   % Cmd.pre_context_id                                      \
                    + "    __quex_debug(\"pre_context_%i_fulfilled_f = true\\n\");\n" \
-                   % EntryAction.pre_context_id
+                   % Cmd.pre_context_id
 
-        elif isinstance(EntryAction, entry_action.TemplateStateKeySet):
+        elif Cmd.id == E_Commands.TemplateStateKeySet:
             return   "    state_key = %i;\n"                      \
-                   % EntryAction.value                            \
+                   % Cmd.value                            \
                    + "    __quex_debug(\"state_key = %i\\n\");\n" \
-                   % EntryAction.value
+                   % Cmd.value
 
-        elif isinstance(EntryAction, entry_action.PathIteratorSet):
+        elif Cmd.id == E_Commands.PathIteratorSet:
             offset_str = ""
-            if EntryAction.offset != 0: offset_str = " + %i" % EntryAction.offset
+            if Cmd.offset != 0: offset_str = " + %i" % Cmd.offset
             txt =   "    path_iterator  = path_walker_%i_path_%i%s;\n"                   \
-                  % (EntryAction.path_walker_id, EntryAction.path_id, offset_str)        \
+                  % (Cmd.path_walker_id, Cmd.path_id, offset_str)        \
                   + "    __quex_debug(\"path_iterator = (Pathwalker: %i, Path: %i, Offset: %i)\\n\");\n" \
-                  % (EntryAction.path_walker_id, EntryAction.path_id, EntryAction.offset)
+                  % (Cmd.path_walker_id, Cmd.path_id, Cmd.offset)
             return txt
 
-        elif isinstance(EntryAction, entry_action.PathIteratorIncrement):
+        elif Cmd.id == E_Commands.PathIteratorIncrement:
             return  "    (++path_iterator);\n" \
                   + "    __quex_debug(\"++path_iterator\");\n" 
 
-        elif isinstance(EntryAction, (entry_action.PrepareAfterReload_InitState, entry_action.PrepareAfterReload)):
-            state              = EntryAction.state
-            reload_state_index = EntryAction.reload_state_index
+        elif   Cmd.id == E_Commands.PrepareAfterReload_InitState \
+            or Cmd.id == E_Commands.PrepareAfterReload:
+            state              = Cmd.state
+            reload_state_index = Cmd.reload_state_index
             # On reload success --> goto on_success_adr
             on_success_door_id = state.entry.action_db.get_door_id(state.index, reload_state_index)
             assert on_success_door_id is not None
             on_success_adr     = map_door_id_to_address(on_success_door_id, RoutedF=True)
 
-            if isinstance(EntryAction, entry_action.PrepareAfterReload_InitState):
+            if Cmd.id == E_Commands.PrepareAfterReload_InitState:
                 # On reload failure --> goto on_terminal_end_of_file
                 on_failure_adr     = map_door_id_to_address(entry_action.DoorID.global_terminal_end_of_file(), RoutedF=True)
             else:
@@ -230,26 +232,26 @@ class LanguageDB_Cpp(dict):
             return   "    target_state_index = QUEX_LABEL(%i); target_state_else_index = QUEX_LABEL(%i);\n"  \
                    % (on_success_adr, on_failure_adr)                                                        
 
-        elif isinstance(EntryAction, entry_action.LexemeStartToReferenceP):
-            return "    %s\n" % self.LEXEME_START_SET(EntryAction.reference_pointer_name)
+        elif Cmd.id == E_Commands.LexemeStartToReferenceP:
+            return "    %s\n" % self.LEXEME_START_SET(Cmd.reference_pointer_name)
 
-        elif isinstance(EntryAction, entry_action.LexemeResetTerminatingZero):
+        elif Cmd.id == E_Commands.LexemeResetTerminatingZero:
             return "    QUEX_LEXEME_TERMINATING_ZERO_UNDO(&me->buffer);\n"
 
-        elif isinstance(EntryAction, entry_action.InputPDereference):
+        elif Cmd.id == E_Commands.InputPDereference:
             return "    %s\n" % self.ASSIGN("input", self.INPUT_P_DEREFERENCE())
 
-        elif isinstance(EntryAction, entry_action.InputPIncrement):
+        elif Cmd.id == E_Commands.InputPIncrement:
             return "    %s\n" % self.INPUT_P_INCREMENT()
 
-        elif isinstance(EntryAction, entry_action.InputPIncrementThenDereference):
+        elif Cmd.id == E_Commands.InputPIncrementThenDereference:
             return "    %s\n    %s\n" % (self.INPUT_P_INCREMENT(),
                                          self.ASSIGN("input", self.INPUT_P_DEREFERENCE()))
 
-        elif isinstance(EntryAction, entry_action.InputPDecrement):
+        elif Cmd.id == E_Commands.InputPDecrement:
             return "    %s\n" % self.INPUT_P_DECREMENT()
 
-        elif isinstance(EntryAction, entry_action.InputPDecrementThenDereference):
+        elif Cmd.id == E_Commands.InputPDecrementThenDereference:
             return "    %s\n    %s\n" % (self.INPUT_P_INCREMENT(),
                                          self.ASSIGN("input", self.INPUT_P_DEREFERENCE()))
         else:

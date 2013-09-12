@@ -3,7 +3,7 @@ from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAc
 from   quex.engine.tools import TypedDict
 from   quex.blackboard import E_PreContextIDs,  \
                               E_AcceptanceIDs, E_PostContextIDs, \
-                              E_TransitionN, E_StateIndices, E_TriggerIDs
+                              E_TransitionN, E_StateIndices, E_TriggerIDs, E_Commands 
 from   operator        import attrgetter
 
 from   quex.blackboard import setup as Setup
@@ -131,7 +131,7 @@ class EntryActionDB:
     def has_Accepter(self):
         for action in self.__db.itervalues():
             for cmd in action.command_list:
-                if isinstance(cmd, entry_action.Accepter): return True
+                if cmd.id == E_Commands.Accepter: return True
         return False
 
     def delete(self, StateIndex, FromStateIndex, TriggerId=0):
@@ -149,7 +149,7 @@ class EntryActionDB:
 
         def store_input_position(iterable):
             for cmd in iterable:
-                if isinstance(cmd, entry_action.StoreInputPosition):
+                if cmd.id == E_Commands.StoreInputPosition:
                     yield cmd
 
         for action in self.__db.itervalues():
@@ -174,10 +174,10 @@ class EntryActionDB:
         """
         for action in self.__db.itervalues():
             for cmd in list(x for x in action.command_list \
-                            if     isinstance(x, entry_action.StoreInputPosition) \
+                            if     x.id == E_Commands.StoreInputPosition \
                                and x.pre_context_id == E_PreContextIDs.NONE):
                 for x in list(x for x in action.command_list.misc \
-                              if isinstance(x, entry_action.StoreInputPosition)):
+                              if x.id == E_Commands.StoreInputPosition):
                     if x.position_register == cmd.position_register and x.pre_context_id != E_PreContextIDs.NONE:
                         try:    action.command_list.misc.remove(x)
                         except: pass
@@ -255,13 +255,6 @@ class EntryActionDB:
         for action in self.__db.itervalues():
             if action.door_id == DoorId:
                 return True
-        return False
-
-    def has_commands_other_than_MegaState_Command(self):
-        for action in self.__db.itervalues():
-            for found in (x for x in action.command_list if not isinstance(x, MegaState_Command)):
-                return True
-
         return False
 
     def check_consistency(self):
@@ -421,13 +414,13 @@ class Entry(object):
             ssk_command_list    = []
             spi_command_list    = []
             for action in door.command_list:
-                if isinstance(action, entry_action.Accepter): 
+                if action.id == E_Commands.Accepter: 
                     accept_command_list.append(action)
-                elif isinstance(action, entry_action.PreConditionOK):
+                elif action.id == E_Commands.PreConditionOK:
                     pcok_command_list.append(action)
-                elif isinstance(action, entry_action.TemplateStateKeySet):
+                elif action.id == E_Commands.TemplateStateKeySet:
                     ssk_command_list.append(action)
-                elif isinstance(action, entry_action.PathIteratorSet):
+                elif action.id == E_Commands.PathIteratorSet:
                     spi_command_list.append(action)
                 else:
                     store_command_list.append(action)

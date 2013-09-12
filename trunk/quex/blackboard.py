@@ -130,6 +130,19 @@ E_DoorIdIndex = Enum("DROP_OUT",
                      "GLOBAL_REENTRY_PREPARATION_2",
                      "_DEBUG_DoorIdIndex") 
 
+E_Commands = Enum("Accepter",
+                  "StoreInputPosition",
+                  "PreConditionOK",
+                  "TemplateStateKeySet",
+                  "PathIteratorSet",
+                  "PathIteratorIncrement",
+                  "PrepareAfterReload",
+                  "PrepareAfterReload_InitState",
+                  "InputPIncrement",
+                  "InputPDecrement",
+                  "InputPDereference",
+                  "_DEBUG_Commands")
+
 #-----------------------------------------------------------------------------------------
 # mode_db: storing the mode information into a dictionary:
 #            key  = mode name
