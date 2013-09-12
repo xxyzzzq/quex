@@ -7,7 +7,8 @@ from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 import quex.engine.generator.state.entry_door_tree       as     entry_door_tree
 
 from quex.blackboard import setup as Setup, \
-                            E_StateIndices
+                            E_StateIndices, \
+                            E_Commands
 
 from operator import attrgetter
 

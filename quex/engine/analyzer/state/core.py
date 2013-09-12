@@ -99,12 +99,6 @@ class AnalyzerState(object):
         txt.append("\n")
         return txt
 
-    def entries_empty_f(self):
-        """The 'TemplateStateKeySet' commands cost nothing, so an easy condition for
-           'all entries empty' is that the door_tree_root reports a cost of '0'.
-        """
-        return self.entry.action_db.has_commands_other_than_MegaState_Command()
-
     def get_string(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
         return "".join(self.get_string_array(InputF, EntryF, TransitionMapF, DropOutF))
 
@@ -148,10 +142,10 @@ class ReloadState:
         self.entry.action_db.absorb(OtherReloadState.entry.action_db)
 
     def add_state(self, State, InitStateForwardF):
-        if InitStateForwardF: command = PrepareAfterReload_InitState(State, self.index)
-        else:                 command = PrepareAfterReload(State, self.index)
+        if InitStateForwardF: command = PrepareAfterReload_InitState(self.index)
+        else:                 command = PrepareAfterReload(self.index)
         before_reload_action = TransitionAction()
-        before_reload_action.command_list.misc.add(command)
+        before_reload_action.command_list.add(command)
         self.entry.action_db.enter(TransitionID(self.index, State.index, 0), 
                                    before_reload_action)
 
