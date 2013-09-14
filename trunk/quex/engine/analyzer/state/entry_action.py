@@ -8,7 +8,7 @@ from   quex.blackboard          import E_AcceptanceIDs, E_DoorIdIndex, E_Command
 from   collections              import defaultdict, namedtuple
 from   operator                 import attrgetter, itemgetter
 from   copy                     import deepcopy, copy
-from   itertools                import islice, izip
+from   itertools                import islice, izip, chain
 
 class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
     def __new__(self, StateIndex, DoorIndex):
@@ -135,46 +135,41 @@ class TransitionAction(object):
 # CountColumnN_Grid
 # CountLineN_Add
 
-class Command(object):
-    __slots__ = ("id", "level", "cost", "content", "_hash")
-    def __init__(self, Id, Level, Content, Hash, Cost):
-        self.id    = Id
-        self.level = Level
-        self.cost  = Cost
-        self._hash = hash(Id) ^ hash(Content)
-        self.x     = Content
+class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
+    def __new__(self, Id, Content):
+        return super(Command, self).__new__(self, Id, Content, hash(Id) ^ hash(Content))
 
     def clone(self):         
-        if   self.x is None:   return Command(self.id)
-        elif len(self.x) == 1: return Command(self.id, self.x[0])
-        elif len(self.x) == 2: return Command(self.id, self.x[0], self.x[1])
-        elif len(self.x) == 3: return Command(self.id, self.x[0], self.x[1], self.x[2])
-        else:                  assert False
+        if hasattr(self.content, "clone"): 
+            content = self.content.clone()
+        else:
+            content = tuple(copy(x) for x in self.content)
+        return Command(self.id, content, self.my_hash, self.cost)
 
     def __hash__(self):      
-        return self._hash
-
-    def __eq__(self, Other): 
-        if   self.__class__ != Other.__class__: return False
-        elif self.id        != Other.id:        return False
-        assert self.level == Other.level and self.cost == Other.cost
-        return self.x == Other.x
+        return self.my_hash
 
     def __str__(self):
-        name_str    = str(self.id)
-        if self.x is None:
-            content_str = ""
+        name_str = str(self.id)
+        if self.content is None:
+            return "%s" % name_str
         else:
-            content_str = "".join("%s=%s, " % (member, value) for member, value in self.x._asdict.iteritems())
-        return "%s: { %s }" % (name_str, content_str)
+            content_str = "".join("%s=%s, " % (member, value) for member, value in self.content._asdict().iteritems())
+            return "%s: { %s }" % (name_str, content_str)
 
-# Accepter:
+# Accepter: A list of conditional pattern acceptance actions. It corresponds
+#           to a sequence of if-else statements such as 
+#
+#         if   pre_condition_4711_f: acceptance = Pattern32
+#         elif pre_condition_512_f:  acceptance = Pattern21
+#         else:                      acceptance = Pattern56
 # 
-# In this case the pre-context-id is essential. We cannot accept a pattern if
-# its pre-context is not fulfilled.
+# AccepterElement: An element in the sorted list of test/accept commands. It
+#                  contains the 'pre_context_id' of the condition to be checked
+#                  and the 'pattern_id' to be accepted if the condition is true.
+#
 AccepterElement = namedtuple("AccepterElement", ("pre_context_id", "pattern_id"))
-class Accepter(Command):
-    __slots__ = ["__list"]
+class Accepter:
     def __init__(self, PathTraceList=None):
         Command.__init__(self)
         if PathTraceList is None: 
@@ -228,40 +223,51 @@ class Accepter(Command):
         for x in self.__list:
             yield x
 
-    def __repr__(self):
+    def __str__(self):
         return "".join(["pre(%s) --> accept(%s)\n" % (element.pre_context_id, element.pattern_id) \
                        for element in self.__list])
 
+
+E_InputPAccess = Enum("WRITE", "READ", "NONE", "E_InputAccess_DEBUG")
+
+class CommandInfo(namedtuple("CommandInfo_tuple", ("cost", "write_f", "read_f", "content_type"))):
+    def __new__(self, Cost, Access, ContentType=None):
+        if type(ContentType) == tuple: content_type = namedtuple("Command_tuple", ContentType)
+        else:                          content_type = ContentType
+        return super(CommandInfo, self).__new__(self, 
+                                                Cost, 
+                                                Access == E_InputPAccess.WRITE, # write_f
+                                                Access == E_InputPAccess.READ,  # read_f
+                                                content_type)
 
 class CommandFactory:
     LevelN    = 3
 
     db = {
-        E_Commands.Accepter:                      (0, 1, Accepter),
-        E_Commands.StoreInputPosition:            (0, 1, namedtuple("C0", "pre_context_id", "position_register", "offset")),
-        E_Commands.PreConditionOK:                (0, 1, namedtuple("C1", "pre_context_id")),
-        E_Commands.TemplateStateKeySet:           (0, 1, namedtuple("C2", "state_key")),
-        E_Commands.PathIteratorSet:               (0, 1, namedtuple("C3", "path_walker_id", "path_id", "offset")),
-        E_Commands.PathIteratorIncrement:         (0, 1, None),
-        E_Commands.PrepareAfterReload:            (0, 1, namedtuple("C4", "state_index")),
-        E_Commands.PrepareAfterReload_InitState:  (0, 1, namedtuple("C5", "state_index")),
-        E_Commands.InputPIncrement:               (1, 1, None),
-        E_Commands.InputPDecrement:               (1, 1, None),
-        E_Commands.InputPDereference:             (2, 1, None),
+        E_Commands.Accepter:                      CommandInfo(1, E_InputPAccess.NONE,  Accepter),
+        E_Commands.StoreInputPosition:            CommandInfo(1, E_InputPAccess.READ,  ("pre_context_id", "position_register", "offset")),
+        E_Commands.PreConditionOK:                CommandInfo(1, E_InputPAccess.NONE,  ("pre_context_id")),
+        E_Commands.TemplateStateKeySet:           CommandInfo(1, E_InputPAccess.NONE,  ("state_key")),
+        E_Commands.PathIteratorSet:               CommandInfo(1, E_InputPAccess.NONE,  ("path_walker_id", "path_id", "offset")),
+        E_Commands.PrepareAfterReload:            CommandInfo(1, E_InputPAccess.NONE,  ("state_index")),
+        E_Commands.PrepareAfterReload_InitState:  CommandInfo(1, E_InputPAccess.NONE,  ("state_index")),
+        E_Commands.InputPIncrement:               CommandInfo(1, E_InputPAccess.WRITE),
+        E_Commands.InputPDecrement:               CommandInfo(1, E_InputPAccess.WRITE),
+        E_Commands.InputPDereference:             CommandInfo(1, E_InputPAccess.READ),
     }
 
-    def do(self, Id, *ParameterList):
+    @staticmethod
+    def do(Id, *ParameterList):
         # TODO: Consider 'Flyweight pattern'. Check wether object with same content exists, 
         #       then return pointer to object in database.
         assert type(ParameterList) == tuple, "ParameterList: '%s'" % str(ParameterList)
-        cmd_info   = CommandFactory.db[Id]
+        content_type = CommandFactory.db[Id].content_type
+        L        = len(ParameterList)
         if   L == 0: content = None
-        elif L == 1: content = cmd_info[2](ParameterList[0])
-        elif L == 2: content = cmd_info[2](ParameterList[0], ParameterList[1])
-        elif L == 3: content = cmd_info[2](ParameterList[0], ParameterList[1], ParameterList[2])
-
-        return Command(Id, cmd_info[0], cmd_info[1], content)
-
+        elif L == 1: content = content_type(ParameterList[0])
+        elif L == 2: content = content_type(ParameterList[0], ParameterList[1])
+        elif L == 3: content = content_type(ParameterList[0], ParameterList[1], ParameterList[2])
+        return Command(Id, content)
 
 def StoreInputPosition(PreContextID, PositionRegister, Offset):
     return CommandFactory.do(E_Commands.StoreInputPosition, PreContextID, PositionRegister, Offset)
@@ -279,21 +285,21 @@ def PathIteratorIncrement():
     return CommandFactory.do(E_Commands.PathIteratorIncrement)
 
 def PrepareAfterReload(StateIndex):
-    return CommandFactory(E_Commands.PrepareAfterReload, StateIndex)
+    return CommandFactory.do(E_Commands.PrepareAfterReload, StateIndex)
 
 def PrepareAfterReload_InitState(StateIndex):
-    return CommandFactory(E_Commands.PrepareAfterReload_InitState, StateIndex)
+    return CommandFactory.do(E_Commands.PrepareAfterReload_InitState, StateIndex)
 
 def InputPIncrement():
-    return CommandFactory(E_Commands.InputPIncrement)
+    return CommandFactory.do(E_Commands.InputPIncrement)
 
 def InputPDecrement():
-    return CommandFactory(E_Commands.InputPDecrement)
+    return CommandFactory.do(E_Commands.InputPDecrement)
 
 def InputPDereference():
-    return CommandFactory(E_Commands.InputPDereference)
+    return CommandFactory.do(E_Commands.InputPDereference)
 
-class CommandList:
+class CommandList(list):
     """CommandList -- a list of commands.
 
     CommandList-s are subject to sharing. However, there are important
@@ -323,7 +329,7 @@ class CommandList:
     e.g. 'Accepter', 'PreConditionOK', 'TemplateStateKeySet' or 'PathIteratorSet'.
     """
     def __init__(self):
-        self.level_db = defaultdict(list)
+        list.__init__(self)
 
     @classmethod
     def from_iterable(cls, Iterable):
@@ -331,67 +337,103 @@ class CommandList:
         result.extend(Iterable)
         return result
 
-    def add(self, Cmd):
-        assert isinstance(cmd, Command)
-        self.level_db[Cmd.level].append(Cmd)
-
-    def extend(self, Iterable):
-        for cmd in Iterable:
-            self.add(Cmd)
-
     def clone(self):
-        result = CommandList()
-        for level, command_list in self.level_db.iteritems():
-            result.level_db[level] = [ x.clone() for x in command_list ]
-        return result
+        return CommandList.from_iterable(self)
 
     @staticmethod
-    def intersection(This, That):
-        def iterable_shared(CLa, CLb):
-            return (command for command in CLa if command in CLb)
+    def get_shared_tail(This, That):
+        """DEFINITION 'shared tail':
+        
+        ! A 'shared tail' is a list of commands. For each command of a        !
+        ! shared tail, it holds that:                                         !
+        !                                                                     !
+        !  -- it appears in 'This' and 'That'.                                !
+        !  -- if it is a 'WRITE', there is no related 'READ' or 'WRITE'       !
+        !     command in This or That coming after the shared command.        !
+        !  -- if it is a 'READ', there no related 'WRITE' command in          !
+        !     This or That coming after the shared command.                   !
 
-        # Check what is shared on the '-1 level', i.e. the level without
-        # dependencies.
-        result = CommandList.from_iterable(iterable_shared(This.level_db[-1], That.level_db[-1]))
+        The second and third condition is essential, so that the shared tail
+        can be implemented from a joining point between 'This' and 'That'.
+        Consider
 
-        this_level_list = sorted(This.level_db.keys())
-        that_level_list = sorted(That.level_db.keys())
-        while 1 + 1 == 2:
-            if len(this_level_list) == 0 or len(that_level_list) == 0: 
-                break
-            level = this_level_list.pop()
-            that_level_list.pop()
-            result.extend(iterable_shared(This.level_db[level], That.level_db[level]))
+            This:                               That:
+            * position = input_p # READ         * position = input_p;
+            * ++input_p          # WRITE        * input = *input_p;
+            * input = *input_p;                      
 
-        return result
+        The 'position = input_p' cannot appear after '++input_p'.  Let input_p
+        be 'x' at the entry of This and That.  This and That, both result in
+        'position = x' . Then a combination, however, without AFTER condition
+        results in
 
-    def difference_update(self, Other):
-        """Delete all commands from Other from this command list.
+            This:                           That:
+            * ++input_p;         # READ     * input = *input_p;
+            * input = *input_p;
+                          \                   /
+                           \                 /
+                          * position = input_p; # WRITE (Error for This)
+
+        which in the case of 'This' results in 'position = x + 1' (ERROR).
         """
-        for level, command_list in self.level_db.iteritems():
-            other_command_list = Otherl.level_db[level]
-            i = len(command_list) - 1
+        def is_related_to_unshared_write(CmdI, CmdList, SharedISet):
+            for i in xrange(CmdI+1, len(CmdList)):
+                cmd = CmdList[i]
+                if CommandFactory.db[cmd.id].write_f and i not in SharedISet: 
+                    return True
+            return False
+
+        def is_related_to_unshared_read_write(CmdI, CmdList, SharedISet):
+            for i in xrange(CmdI+1, len(CmdList)):
+                cmd = CmdList[i]
+                if (CommandFactory.db[cmd.id].write_f or CommandFactory.db[cmd.id].read_f) and i not in SharedISet: 
+                    return True
+            return False
+
+        shared_list  = []
+        for i, cmd_a in enumerate(This):
+            for k, cmd_b in enumerate(That):
+                if cmd_a != cmd_b: continue
+                shared_list.append((cmd_a, i, k))
+
+        change_f    = True
+        while change_f:
+            change_f     = False
+            shared_i_set = set(x[1] for x in shared_list)
+            shared_k_set = set(x[k] for x in shared_list)
+            i            = len(shared_list) - 1
             while i >= 0:
-                cmd = command_list[i]
-                if cmd in other_command_list:
-                    del command_list[i]
+                candidate, this_i, that_k = shared_list[i]
+                if     CommandFactory.db[candidate.id].write_f \
+                   and (   is_related_to_unshared_read_write(this_i, This, shared_i_set) \
+                        or is_related_to_unshared_read_write(that_k, That, shared_k_set)):
+                    del shared_list[i]
+                    change_f = True
+                if     CommandFactory.db[candidate.id].read_f \
+                   and (   is_related_to_unshared_write(this_i, This, shared_i_set) \
+                        or is_related_to_unshared_write(that_k, That, shared_k_set)):
+                    del shared_list[i]
+                    change_f = True
+                else:
+                    pass
                 i -= 1
 
+        return CommandList.from_iterable(shared_list) 
+
+    def cut_shared_tail(self, SharedTail):
+        """Delete all commands of SharedTail from this command list.
+        """
+        i = list.__len__(self) - 1
+        while i >= 0:
+            if self[i] in SharedTail:
+                del self[i]
+            i -= 1
+
     def is_empty(self):
-        if self.accepter is not None: return False
-        return len(self.misc) == 0
+        return list.__len__(self)
 
     def cost(self):
         return sum(x.cost() for x in self)
-
-    def __iter__(self):
-        """Allow iteration over comand list."""
-        if self.accepter is not None: 
-            yield self.accepter
-
-        for i in reversed(xrange(Command.LevelN)):
-            for action in sorted(self.level[i], key=attrgetter("id")):
-                yield action
 
     def __hash__(self):
         xor_sum = 0
@@ -402,20 +444,11 @@ class CommandList:
     def __eq__(self, Other):
         # Rely on '__eq__' of Accepter
         if isinstance(Other, CommandList) == False: return False
-        return self.level_db == Other.level_db
+        return self.__eq__(self, Other)
 
     def __ne__(self, Other):
         return not self.__eq__(Other)
 
-    def __repr__(self):
-        txt = ""
-        if self.accepter is not None:
-            txt += "a"
-            for x in self.accepter:
-                txt += "%s," % repr(x.pattern_id)
-
-        for i in reversed(xrange(Command.LevelN)):
-            for action in self.level[i]:
-                txt += "%s" % action
-        return txt
+    def __str__(self):
+        return "\n" + "".join("%s\n" % str(cmd) for cmd in self)
 
