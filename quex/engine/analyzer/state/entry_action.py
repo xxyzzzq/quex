@@ -157,33 +157,33 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
             content_str = "".join("%s=%s, " % (member, value) for member, value in self.content._asdict().iteritems())
             return "%s: { %s }" % (name_str, content_str)
 
-# Accepter: A list of conditional pattern acceptance actions. It corresponds
+# AccepterContent: A list of conditional pattern acceptance actions. It corresponds
 #           to a sequence of if-else statements such as 
 #
 #         if   pre_condition_4711_f: acceptance = Pattern32
 #         elif pre_condition_512_f:  acceptance = Pattern21
 #         else:                      acceptance = Pattern56
 # 
-# AccepterElement: An element in the sorted list of test/accept commands. It
+# AccepterContentElement: An element in the sorted list of test/accept commands. It
 #                  contains the 'pre_context_id' of the condition to be checked
 #                  and the 'pattern_id' to be accepted if the condition is true.
 #
-AccepterElement = namedtuple("AccepterElement", ("pre_context_id", "pattern_id"))
-class Accepter:
+AccepterContentElement = namedtuple("AccepterContentElement", ("pre_context_id", "pattern_id"))
+class AccepterContent:
     def __init__(self, PathTraceList=None):
         Command.__init__(self)
         if PathTraceList is None: 
             self.__list = []
         else:
-            self.__list = [ AccepterElement(x.pre_context_id, x.pattern_id) for x in PathTraceList ]
+            self.__list = [ AccepterContentElement(x.pre_context_id, x.pattern_id) for x in PathTraceList ]
 
     def clone(self):
-        result = Accepter()
+        result = AccepterContent()
         result.__list = [ deepcopy(x) for x in self.__list ]
         return result
     
     def add(self, PreContextID, PatternID):
-        self.__list.append(AccepterElement(PreContextID, PatternID))
+        self.__list.append(AccepterContentElement(PreContextID, PatternID))
 
     def clean_up(self):
         """Ensure that nothing follows and unconditional acceptance."""
@@ -212,7 +212,7 @@ class Accepter:
         return xor_sum
 
     def __eq__(self, Other):
-        if not isinstance(Other, Accepter):             return False
+        if not isinstance(Other, AccepterContent):             return False
         if len(self.__list) != len(Other.__list):       return False
         for x, y in zip(self.__list, Other.__list):
             if   x.pre_context_id != y.pre_context_id:  return False
@@ -244,51 +244,54 @@ class CommandFactory:
     LevelN    = 3
 
     db = {
-        E_Commands.Accepter:                      CommandInfo(1, E_InputPAccess.NONE,  Accepter),
+        E_Commands.Accepter:                      CommandInfo(1, E_InputPAccess.NONE,  AccepterContent),
         E_Commands.StoreInputPosition:            CommandInfo(1, E_InputPAccess.READ,  ("pre_context_id", "position_register", "offset")),
-        E_Commands.PreConditionOK:                CommandInfo(1, E_InputPAccess.NONE,  ("pre_context_id")),
-        E_Commands.TemplateStateKeySet:           CommandInfo(1, E_InputPAccess.NONE,  ("state_key")),
+        E_Commands.PreConditionOK:                CommandInfo(1, E_InputPAccess.NONE,  ("pre_context_id",)),
+        E_Commands.TemplateStateKeySet:           CommandInfo(1, E_InputPAccess.NONE,  ("state_key",)),
         E_Commands.PathIteratorSet:               CommandInfo(1, E_InputPAccess.NONE,  ("path_walker_id", "path_id", "offset")),
-        E_Commands.PrepareAfterReload:            CommandInfo(1, E_InputPAccess.NONE,  ("state_index")),
-        E_Commands.PrepareAfterReload_InitState:  CommandInfo(1, E_InputPAccess.NONE,  ("state_index")),
+        E_Commands.PrepareAfterReload:            CommandInfo(1, E_InputPAccess.NONE,  ("state_index",)),
+        E_Commands.PrepareAfterReload_InitState:  CommandInfo(1, E_InputPAccess.NONE,  ("state_index",)),
         E_Commands.InputPIncrement:               CommandInfo(1, E_InputPAccess.WRITE),
         E_Commands.InputPDecrement:               CommandInfo(1, E_InputPAccess.WRITE),
         E_Commands.InputPDereference:             CommandInfo(1, E_InputPAccess.READ),
     }
 
     @staticmethod
-    def do(Id, *ParameterList):
+    def do(Id, ParameterList=None):
         # TODO: Consider 'Flyweight pattern'. Check wether object with same content exists, 
         #       then return pointer to object in database.
-        assert type(ParameterList) == tuple, "ParameterList: '%s'" % str(ParameterList)
+        assert ParameterList is None or type(ParameterList) == tuple, "ParameterList: '%s'" % str(ParameterList)
         content_type = CommandFactory.db[Id].content_type
-        L        = len(ParameterList)
-        if   L == 0: content = None
-        elif L == 1: content = content_type(ParameterList[0])
-        elif L == 2: content = content_type(ParameterList[0], ParameterList[1])
-        elif L == 3: content = content_type(ParameterList[0], ParameterList[1], ParameterList[2])
+        if ParameterList is None:
+            content = None
+        else:
+            L        = len(ParameterList)
+            if   L == 0: content = None
+            elif L == 1: content = content_type(ParameterList[0])
+            elif L == 2: content = content_type(ParameterList[0], ParameterList[1])
+            elif L == 3: content = content_type(ParameterList[0], ParameterList[1], ParameterList[2])
         return Command(Id, content)
 
 def StoreInputPosition(PreContextID, PositionRegister, Offset):
-    return CommandFactory.do(E_Commands.StoreInputPosition, PreContextID, PositionRegister, Offset)
+    return CommandFactory.do(E_Commands.StoreInputPosition, (PreContextID, PositionRegister, Offset))
 
 def PreConditionOK(PreContextID):
-    return CommandFactory.do(E_Commands.PreContextID, PreContextID)
+    return CommandFactory.do(E_Commands.PreContextID, (PreContextID))
 
 def TemplateStateKeySet(StateKey):
-    return CommandFactory.do(E_Commands.TemplateStateKeySet, StateKey)
+    return CommandFactory.do(E_Commands.TemplateStateKeySet, (StateKey))
 
 def PathIteratorSet(PathWalkerID, PathID, Offset):
-    return CommandFactory.do(E_Commands.PathIteratorSet, PathWalkerID, PathID, Offset)
+    return CommandFactory.do(E_Commands.PathIteratorSet, (PathWalkerID, PathID, Offset))
 
 def PathIteratorIncrement():
     return CommandFactory.do(E_Commands.PathIteratorIncrement)
 
 def PrepareAfterReload(StateIndex):
-    return CommandFactory.do(E_Commands.PrepareAfterReload, StateIndex)
+    return CommandFactory.do(E_Commands.PrepareAfterReload, (StateIndex))
 
 def PrepareAfterReload_InitState(StateIndex):
-    return CommandFactory.do(E_Commands.PrepareAfterReload_InitState, StateIndex)
+    return CommandFactory.do(E_Commands.PrepareAfterReload_InitState, (StateIndex))
 
 def InputPIncrement():
     return CommandFactory.do(E_Commands.InputPIncrement)
@@ -299,34 +302,11 @@ def InputPDecrement():
 def InputPDereference():
     return CommandFactory.do(E_Commands.InputPDereference)
 
+def Accepter():
+    return CommandFactory.do(E_Commands.Accepter)
+
 class CommandList(list):
     """CommandList -- a list of commands.
-
-    CommandList-s are subject to sharing. However, there are important
-    rules, such as 'dereferencing a pointer comes after pointer increment'.
-    To command lists A and B as in
-
-
-           A:                         B:
-           input_p => position        input_p => position
-                                      input_p++
-
-    cannot be combined into 
-
-                    B: input_p++                  # ERROR
-                    A: input_p => position        # ERROR
-
-    because, then in case of B the input pointer is incremented BEFORE the
-    position is stored. Since the dependencies are always the same, commands
-    are associated with 'levels'. In the above example 'input_p++' has a
-    higher level than 'input_p => position'. The following must hold:
-
-          For every command Ca with a level La in a command list A,
-          a command list B cannot share commands of level Lb < La
-          if the command Ca is not in B.
-
-    An exception are commands of level '-1' because they have no dependency,
-    e.g. 'Accepter', 'PreConditionOK', 'TemplateStateKeySet' or 'PathIteratorSet'.
     """
     def __init__(self):
         list.__init__(self)
@@ -362,17 +342,17 @@ class CommandList(list):
             * ++input_p          # WRITE        * input = *input_p;
             * input = *input_p;                      
 
-        The 'position = input_p' cannot appear after '++input_p'.  Let input_p
-        be 'x' at the entry of This and That.  This and That, both result in
-        'position = x' . Then a combination, however, without AFTER condition
-        results in
+        The 'position = input_p' cannot appear after '++input_p'. Let input_p
+        be 'x' at the entry of This and That. This and That, both result in
+        'position = x'. Then a combination, however, without second and third 
+        condition results in
 
             This:                           That:
             * ++input_p;         # READ     * input = *input_p;
-            * input = *input_p;
+            * input = *input_p;                /
                           \                   /
                            \                 /
-                          * position = input_p; # WRITE (Error for This)
+                          * position = input_p;   # WRITE (Error for This)
 
         which in the case of 'This' results in 'position = x + 1' (ERROR).
         """
@@ -400,7 +380,7 @@ class CommandList(list):
         while change_f:
             change_f     = False
             shared_i_set = set(x[1] for x in shared_list)
-            shared_k_set = set(x[k] for x in shared_list)
+            shared_k_set = set(x[2] for x in shared_list)
             i            = len(shared_list) - 1
             while i >= 0:
                 candidate, this_i, that_k = shared_list[i]
@@ -418,7 +398,7 @@ class CommandList(list):
                     pass
                 i -= 1
 
-        return CommandList.from_iterable(shared_list) 
+        return CommandList.from_iterable(cmd for cmd, i, k in shared_list) 
 
     def cut_shared_tail(self, SharedTail):
         """Delete all commands of SharedTail from this command list.
@@ -442,7 +422,7 @@ class CommandList(list):
         return xor_sum
 
     def __eq__(self, Other):
-        # Rely on '__eq__' of Accepter
+        # Rely on '__eq__' of AccepterContent
         if isinstance(Other, CommandList) == False: return False
         return self.__eq__(self, Other)
 
@@ -450,5 +430,5 @@ class CommandList(list):
         return not self.__eq__(Other)
 
     def __str__(self):
-        return "\n" + "".join("%s\n" % str(cmd) for cmd in self)
+        return "".join("%s\n" % str(cmd) for cmd in self)
 
