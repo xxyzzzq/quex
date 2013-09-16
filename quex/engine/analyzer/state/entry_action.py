@@ -228,7 +228,10 @@ class AccepterContent:
                        for element in self.__list])
 
 
-E_InputPAccess = Enum("WRITE", "READ", "NONE", "E_InputAccess_DEBUG")
+E_InputPAccess = Enum("WRITE",     # writes value to 'x'
+                      "READ",      # reads value of 'x'
+                      "NONE",      # does nothing to 'x'
+                      "E_InputAccess_DEBUG")
 
 class CommandInfo(namedtuple("CommandInfo_tuple", ("cost", "write_f", "read_f", "content_type"))):
     def __new__(self, Cost, Access, ContentType=None):
@@ -370,13 +373,17 @@ class CommandList(list):
                     return True
             return False
 
-        shared_list  = []
+        shared_list = []
+        done_k      = set() # The same command cannot be shared twice
         for i, cmd_a in enumerate(This):
             for k, cmd_b in enumerate(That):
-                if cmd_a != cmd_b: continue
+                if   k in done_k:    continue
+                elif cmd_a != cmd_b: continue
                 shared_list.append((cmd_a, i, k))
+                done_k.add(k) # Command 'k' has been shared. Prevent sharing twice.
+                break         # Command 'i' hass been shared, continue with next 'i'.
 
-        change_f    = True
+        change_f = True
         while change_f:
             change_f     = False
             shared_i_set = set(x[1] for x in shared_list)
@@ -424,7 +431,8 @@ class CommandList(list):
     def __eq__(self, Other):
         # Rely on '__eq__' of AccepterContent
         if isinstance(Other, CommandList) == False: return False
-        return self.__eq__(self, Other)
+        print "##COMP"
+        return list.__eq__(self, Other)
 
     def __ne__(self, Other):
         return not self.__eq__(Other)
