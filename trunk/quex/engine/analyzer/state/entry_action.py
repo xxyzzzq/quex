@@ -379,6 +379,7 @@ class CommandList(list):
             for k, cmd_b in enumerate(That):
                 if   k in done_k:    continue
                 elif cmd_a != cmd_b: continue
+                print "#cmd_class:", cmd_a.__class__
                 shared_list.append((cmd_a, i, k))
                 done_k.add(k) # Command 'k' has been shared. Prevent sharing twice.
                 break         # Command 'i' hass been shared, continue with next 'i'.
@@ -390,6 +391,7 @@ class CommandList(list):
             shared_k_set = set(x[2] for x in shared_list)
             i            = len(shared_list) - 1
             while i >= 0:
+                print "#shared_list:", shared_list
                 candidate, this_i, that_k = shared_list[i]
                 if     CommandFactory.db[candidate.id].write_f \
                    and (   is_related_to_unshared_read_write(this_i, This, shared_i_set) \
@@ -431,7 +433,6 @@ class CommandList(list):
     def __eq__(self, Other):
         # Rely on '__eq__' of AccepterContent
         if isinstance(Other, CommandList) == False: return False
-        print "##COMP"
         return list.__eq__(self, Other)
 
     def __ne__(self, Other):
