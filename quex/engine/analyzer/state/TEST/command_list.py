@@ -7,6 +7,9 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.engine.analyzer.state.entry_action  import *
 from   quex.blackboard                          import E_Commands
 
+from   collections import defaultdict
+from   copy import deepcopy
+
 if "--hwut-info" in sys.argv:
     print "CommandList: get_shared_tail;"
     print "CHOICES:     2-1;"
@@ -65,13 +68,15 @@ def judge(Result, CommonCmd, CommonIsFirstF, OtherCmd):
             assert len(Result) == 1
             assert Result[0] == CommonCmd
 
-count_n = 0
-def call(Iterable0, Iterable1):
-    global count_n
+count_db = defaultdict(int)
+def call(Name, Iterable0, Iterable1):
+    global count_db
     cl0      = CommandList.from_iterable(Iterable0)
     cl1      = CommandList.from_iterable(Iterable1)
+    print "#cl0:", cl0
+    print "#cl1:", cl1
     result   = CommandList.get_shared_tail(cl0, cl1)
-    count_n += 1
+    count_db[Name] += 1
     print_cl("This", cl0)
     print_cl("That", cl1)
     print_cl("=> shared_tail:", result)
@@ -103,55 +108,49 @@ def test(IdList0, IdList1):
     ]
 
     # (1) The pure case
-    result = call(L0, L1)
+    result = call("normal", L0, L1)
     judge(result, common_cmd, common_is_first_f, other_cmd)
 
     # (1.1) Add some unrelated commands to list 0
-    result = call(L0 + unrelated_cmd_list, L1)
+    result = call("normal + unrelated", L0 + unrelated_cmd_list, L1)
     judge(result, common_cmd, common_is_first_f, other_cmd)
 
     # (1.2) Add some unrelated commands to list 1
-    result = call(L0, L1 + unrelated_cmd_list)
+    result = call("normal + unrelated", L0, L1 + unrelated_cmd_list)
     judge(result, common_cmd, common_is_first_f, other_cmd)
 
     # (2) Extreme case 1: Both only have the common command
-    result = call([common_cmd], [common_cmd])
+    result = call("only one common", [common_cmd], [common_cmd])
     assert len(result) == 1
     assert result[0] == common_cmd
 
     # (3) Extreme case 2: One list is empty 
     #     (inverse case tested by caller's strategy)
-    result = call([common_cmd], [])
+    result = call("one command, one list empty", [common_cmd], [])
     assert len(result) == 0                         
 
-def unrelated():
-    # (4) Only unrelated commands
-    result = call(unrelated_cmd_list, [])
-    assert len(result) == 0
-    result = call([], unrelated_cmd_list)
-    assert len(result) == 0
-    result = call(unrelated_cmd_list, unrelated_cmd_list)
-    assert result == CommandList.from_iterable(unrelated_cmd_list)
+class Cursor:
+    """Iterates over the combinations: command in one list, but not in the other.
+    """
+    def __init__(self):
+        self.flags       = [ False ] * len(CommandFactory.db)
+        self.cmd_id_list = [ cmd_id for cmd_id in CommandFactory.db.iterkeys() ]
 
-def no_share_but_many():
-    def increment(cursor):
+    def step(self):
         i = 0
-        while cursor[i]:
-            cursor[i] = False
+        while i < len(self.flags) and self.flags[i]:
+            self.flags[i] = False
             i += 1
-        if i < len(cursor):
-            cursor[i] = True
+        if i < len(self.flags):
+            self.flags[i] = True
             return True
         else:
             return False
-    cursor  = [ False ] * len(CommandFactory.db)
-    id_list = [ cmd_id for cmd_id in CommandFactory.iterkeys() ]
 
-    while increment(cursor):
-        id0_list = [ cmd_id for i, cmd_id in enumerate(id_list) if cursor[i] ]
-        id1_list = [ cmd_id for i, cmd_id in enumerate(id_list) if not cursor[i] ]
-        result = call(id0_list, id1_list)
-        assert len(result) == 0
+    def get_lists(self):
+        list0 = [ get_cmd(cmd_id) for i, cmd_id in enumerate(self.cmd_id_list) if self.flags[i] ]
+        list1 = [ get_cmd(cmd_id) for i, cmd_id in enumerate(self.cmd_id_list) if not self.flags[i] ]
+        return list0, list1
 
 if "2-1" in sys.argv:
     for shared_cmd_id in E_Commands:
@@ -165,4 +164,22 @@ if "2-1" in sys.argv:
             # print "#_____________________"
             test([other_cmd_id, shared_cmd_id], [shared_cmd_id])
 
-    print "%i tests OK" % count_n
+elif "no-common" in sys.argv:
+    cursor = Cursor()
+    while cursor.step():
+        id0_list, id1_list = cursor.get_lists()
+        result = call("[%i][%i]" % (len(id0_list), len(id1_list)), id0_list, id1_list)
+        assert len(result) == 0
+
+elif "all-common" in sys.argv:
+    cursor = Cursor()
+    while cursor.step():
+        id_list, dummy = cursor.get_lists()
+        result = call("[%i][%i]" % (len(id_list), len(id_list)), id_list, deepcopy(id_list))
+        assert len(result) == len(id_list)
+
+
+L = max(len(x) for x in count_db.keys())
+for name, count in sorted(count_db.iteritems()):
+    print "%s:%s %i x OK" % (name, " " * (L - len(name)), count)
+
