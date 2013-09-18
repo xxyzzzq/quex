@@ -134,10 +134,38 @@ class TransitionAction(object):
 # CountColumnN_Add
 # CountColumnN_Grid
 # CountLineN_Add
+E_InputPAccess = Enum("WRITE",     # writes value to 'x'
+                      "READ",      # reads value of 'x'
+                      "NONE",      # does nothing to 'x'
+                      "E_InputAccess_DEBUG")
+
+class CommandInfo(namedtuple("CommandInfo_tuple", ("cost", "write_f", "read_f", "content_type"))):
+    def __new__(self, Cost, Access, ContentType=None):
+        if type(ContentType) == tuple: content_type = namedtuple("Command_tuple", ContentType)
+        else:                          content_type = ContentType
+        return super(CommandInfo, self).__new__(self, 
+                                                Cost, 
+                                                Access == E_InputPAccess.WRITE, # write_f
+                                                Access == E_InputPAccess.READ,  # read_f
+                                                content_type)
+
+CommandDb = dict(
+    E_Commands.Accepter:                      CommandInfo(1, E_InputPAccess.NONE,  AccepterContent),
+    E_Commands.StoreInputPosition:            CommandInfo(1, E_InputPAccess.READ,  ("pre_context_id", "position_register", "offset")),
+    E_Commands.PreConditionOK:                CommandInfo(1, E_InputPAccess.NONE,  ("pre_context_id",)),
+    E_Commands.TemplateStateKeySet:           CommandInfo(1, E_InputPAccess.NONE,  ("state_key",)),
+    E_Commands.PathIteratorSet:               CommandInfo(1, E_InputPAccess.NONE,  ("path_walker_id", "path_id", "offset")),
+    E_Commands.PrepareAfterReload:            CommandInfo(1, E_InputPAccess.NONE,  ("state_index",)),
+    E_Commands.PrepareAfterReload_InitState:  CommandInfo(1, E_InputPAccess.NONE,  ("state_index",)),
+    E_Commands.InputPIncrement:               CommandInfo(1, E_InputPAccess.WRITE),
+    E_Commands.InputPDecrement:               CommandInfo(1, E_InputPAccess.WRITE),
+    E_Commands.InputPDereference:             CommandInfo(1, E_InputPAccess.READ),
+)
 
 class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
-    def __new__(self, Id, Content):
-        return super(Command, self).__new__(self, Id, Content, hash(Id) ^ hash(Content))
+    def __new__(self, Id, Content, Hash=None):
+        if Hash is None: Hash = hash(Id) ^ hash(Content)
+        return super(Command, self).__new__(self, Id, Content, Hash)
 
     def clone(self):         
         if hasattr(self.content, "clone"): 
@@ -227,37 +255,8 @@ class AccepterContent:
         return "".join(["pre(%s) --> accept(%s)\n" % (element.pre_context_id, element.pattern_id) \
                        for element in self.__list])
 
-
-E_InputPAccess = Enum("WRITE",     # writes value to 'x'
-                      "READ",      # reads value of 'x'
-                      "NONE",      # does nothing to 'x'
-                      "E_InputAccess_DEBUG")
-
-class CommandInfo(namedtuple("CommandInfo_tuple", ("cost", "write_f", "read_f", "content_type"))):
-    def __new__(self, Cost, Access, ContentType=None):
-        if type(ContentType) == tuple: content_type = namedtuple("Command_tuple", ContentType)
-        else:                          content_type = ContentType
-        return super(CommandInfo, self).__new__(self, 
-                                                Cost, 
-                                                Access == E_InputPAccess.WRITE, # write_f
-                                                Access == E_InputPAccess.READ,  # read_f
-                                                content_type)
-
 class CommandFactory:
-    LevelN    = 3
-
-    db = {
-        E_Commands.Accepter:                      CommandInfo(1, E_InputPAccess.NONE,  AccepterContent),
-        E_Commands.StoreInputPosition:            CommandInfo(1, E_InputPAccess.READ,  ("pre_context_id", "position_register", "offset")),
-        E_Commands.PreConditionOK:                CommandInfo(1, E_InputPAccess.NONE,  ("pre_context_id",)),
-        E_Commands.TemplateStateKeySet:           CommandInfo(1, E_InputPAccess.NONE,  ("state_key",)),
-        E_Commands.PathIteratorSet:               CommandInfo(1, E_InputPAccess.NONE,  ("path_walker_id", "path_id", "offset")),
-        E_Commands.PrepareAfterReload:            CommandInfo(1, E_InputPAccess.NONE,  ("state_index",)),
-        E_Commands.PrepareAfterReload_InitState:  CommandInfo(1, E_InputPAccess.NONE,  ("state_index",)),
-        E_Commands.InputPIncrement:               CommandInfo(1, E_InputPAccess.WRITE),
-        E_Commands.InputPDecrement:               CommandInfo(1, E_InputPAccess.WRITE),
-        E_Commands.InputPDereference:             CommandInfo(1, E_InputPAccess.READ),
-    }
+    db = CommandDb
 
     @staticmethod
     def do(Id, ParameterList=None):
@@ -379,7 +378,6 @@ class CommandList(list):
             for k, cmd_b in enumerate(That):
                 if   k in done_k:    continue
                 elif cmd_a != cmd_b: continue
-                print "#cmd_class:", cmd_a.__class__
                 shared_list.append((cmd_a, i, k))
                 done_k.add(k) # Command 'k' has been shared. Prevent sharing twice.
                 break         # Command 'i' hass been shared, continue with next 'i'.
@@ -391,7 +389,6 @@ class CommandList(list):
             shared_k_set = set(x[2] for x in shared_list)
             i            = len(shared_list) - 1
             while i >= 0:
-                print "#shared_list:", shared_list
                 candidate, this_i, that_k = shared_list[i]
                 if     CommandFactory.db[candidate.id].write_f \
                    and (   is_related_to_unshared_read_write(this_i, This, shared_i_set) \
