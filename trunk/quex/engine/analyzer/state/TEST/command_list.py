@@ -4,15 +4,15 @@ import os
 import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.engine.analyzer.state.entry_action  import *
-from   quex.blackboard                          import E_Commands
+from   quex.engine.analyzer.commands import *
+from   quex.blackboard               import E_Commands
 
 from   collections import defaultdict
 from   copy import deepcopy
 
 if "--hwut-info" in sys.argv:
     print "CommandList: get_shared_tail;"
-    print "CHOICES:     2-1;"
+    print "CHOICES:     2-1, no-common, all-common, misc;"
     sys.exit()
 
 def print_cl(name, CL):
@@ -73,13 +73,13 @@ def call(Name, Iterable0, Iterable1):
     global count_db
     cl0      = CommandList.from_iterable(Iterable0)
     cl1      = CommandList.from_iterable(Iterable1)
-    print "#cl0:", cl0
-    print "#cl1:", cl1
+    # print "#cl0:", cl0
+    # print "#cl1:", cl1
     result   = CommandList.get_shared_tail(cl0, cl1)
     count_db[Name] += 1
-    print_cl("This", cl0)
-    print_cl("That", cl1)
-    print_cl("=> shared_tail:", result)
+    # print_cl("This", cl0)
+    # print_cl("That", cl1)
+    # print_cl("=> shared_tail:", result)
     return result
 
 def test(IdList0, IdList1):
@@ -119,16 +119,6 @@ def test(IdList0, IdList1):
     result = call("normal + unrelated", L0, L1 + unrelated_cmd_list)
     judge(result, common_cmd, common_is_first_f, other_cmd)
 
-    # (2) Extreme case 1: Both only have the common command
-    result = call("only one common", [common_cmd], [common_cmd])
-    assert len(result) == 1
-    assert result[0] == common_cmd
-
-    # (3) Extreme case 2: One list is empty 
-    #     (inverse case tested by caller's strategy)
-    result = call("one command, one list empty", [common_cmd], [])
-    assert len(result) == 0                         
-
 class Cursor:
     """Iterates over the combinations: command in one list, but not in the other.
     """
@@ -167,16 +157,53 @@ if "2-1" in sys.argv:
 elif "no-common" in sys.argv:
     cursor = Cursor()
     while cursor.step():
-        id0_list, id1_list = cursor.get_lists()
-        result = call("[%i][%i]" % (len(id0_list), len(id1_list)), id0_list, id1_list)
+        cmd0_list, cmd1_list = cursor.get_lists()
+        result = call("[%i][%i]" % (len(cmd0_list), len(cmd1_list)), cmd0_list, cmd1_list)
         assert len(result) == 0
 
 elif "all-common" in sys.argv:
     cursor = Cursor()
     while cursor.step():
-        id_list, dummy = cursor.get_lists()
-        result = call("[%i][%i]" % (len(id_list), len(id_list)), id_list, deepcopy(id_list))
-        assert len(result) == len(id_list)
+        cmd_list, dummy = cursor.get_lists()
+        result = call("[%i][%i]" % (len(cmd_list), len(cmd_list)), cmd_list, deepcopy(cmd_list))
+        assert len(result) == len(cmd_list)
+
+elif "misc" in sys.argv:
+    for cmd_id in E_Commands:
+        if cmd_id == E_Commands._DEBUG_Commands: continue
+        cmd = get_cmd(cmd_id)
+        result = call("only one common", [cmd], [cmd])
+        assert len(result) == 1
+        assert result[0] == cmd
+
+        for other_cmd_id in E_Commands:
+            if   other_cmd_id == E_Commands._DEBUG_Commands: continue
+            elif other_cmd_id == cmd_id: continue
+            other_cmd = get_cmd(other_cmd_id)
+            result = call("1-1 no common", [cmd], [other_cmd])
+            assert len(result) == 0
+
+        result = call("one command, one list empty", [cmd], [])
+        assert len(result) == 0                         
+        result = call("one command, one list empty", [], [cmd])
+        assert len(result) == 0                         
+
+#elif "block" in sys.argv:
+#    write_cmd  = None
+#    write_cmd2 = None
+#    read_cmd   = None
+#    read_cmd2  = None
+#    for cmd_id, info in CommandFactory.db.iteritems():
+#        if info.write_f:
+#            if   write_cmd  is None: write_cmd  = get_cmd(cmd_id) 
+#            elif write_cmd2 is None: write_cmd2 = get_cmd(cmd_id) 
+#        if info.read_f:
+#            if   read_cmd  is None: read_cmd  = get_cmd(cmd_id) 
+#            elif read_cmd2 is None: read_cmd2 = get_cmd(cmd_id) 
+#
+#    cl0 = CommandList.from_iterable([write_cmd, read_cmd])
+#    cl0 = CommandList.from_iterable([write_cmd, read_cmd])
+
 
 
 L = max(len(x) for x in count_db.keys())
