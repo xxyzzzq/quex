@@ -1,8 +1,7 @@
 # (C) 2010-2013 Frank-Rene Schaefer
 from   quex.engine.analyzer.transition_map      import TransitionMap   
-from   quex.engine.analyzer.state.entry_action  import PathIteratorSet, \
-                                                       PathIteratorIncrement, \
-                                                       DoorID
+from   quex.engine.analyzer.state.entry_action  import DoorID
+from   quex.engine.analyzer.commands            import PathIteratorSet
 from   quex.engine.analyzer.mega_state.core     import MegaState, \
                                                        TargetByStateKey, \
                                                        StateKeyIndexDB, \
@@ -219,7 +218,7 @@ class PathWalkerState(MegaState):
         for action in self.entry.action_db.itervalues():
             path_iterator_cmd_n = 0
             for cmd in action.command_list:
-                if not isinstance(cmd, (PathIteratorSet, PathIteratorIncrement)): continue
+                if not isinstance(cmd, (PathIteratorSet)): continue
                 path_iterator_cmd_n += 1
                 assert path_iterator_cmd_n < 2
 
