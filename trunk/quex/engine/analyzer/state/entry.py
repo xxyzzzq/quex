@@ -1,12 +1,17 @@
-import quex.engine.analyzer.state.entry_action as entry_action
+from   quex.engine.analyzer.commands           import Accepter, StoreInputPosition
 from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction, DoorID
-from   quex.engine.tools import TypedDict
-from   quex.blackboard import E_PreContextIDs,  \
-                              E_AcceptanceIDs, E_PostContextIDs, \
-                              E_TransitionN, E_StateIndices, E_TriggerIDs, E_Commands 
-from   operator        import attrgetter
+from   quex.engine.tools                       import TypedDict
+from   quex.blackboard                         import setup as Setup, \
+                                                      E_AcceptanceIDs, \
+                                                      E_Commands, \
+                                                      E_PostContextIDs, \
+                                                      E_PreContextIDs,  \
+                                                      E_StateIndices, \
+                                                      E_TransitionN, \
+                                                      E_TriggerIDs
 
-from   quex.blackboard import setup as Setup
+from   operator import attrgetter
+
 
 class EntryActionDB:
     def __init__(self, Opt_StateIndex, Opt_FromStateIndex_List):
@@ -116,17 +121,17 @@ class EntryActionDB:
         for transition_action in self.__db.itervalues():
             # Catch the accepter, if there is already one, of not create one.
             if transition_action.command_list.accepter is None: 
-                transition_action.command_list.accepter = entry_action.Accepter()
+                transition_action.command_list.accepter = Accepter()
             transition_action.command_list.accepter.add(PreContextID, PatternID)
             # NOT: transition_action.command_list.accepter.clean_up()
             #      The list might be deliberately ordered differently
 
     def add_StoreInputPosition(self, StateIndex, FromStateIndex, PreContextID, PositionRegister, Offset):
-        """Add 'store input position' to specific door. See 'entry_action.StoreInputPosition'
+        """Add 'store input position' to specific door. See 'StoreInputPosition'
            comment for the reason why we do not store pre-context-id.
         """
-        entry = entry_action.StoreInputPosition(PreContextID, PositionRegister, Offset)
-        self.__db[TransitionID(StateIndex, FromStateIndex, 0)].command_list.misc.add(entry)
+        entry = StoreInputPosition(PreContextID, PositionRegister, Offset)
+        self.__db[TransitionID(StateIndex, FromStateIndex, 0)].command_list.append(entry)
 
     def has_Accepter(self):
         for action in self.__db.itervalues():
@@ -378,14 +383,15 @@ class Entry(object):
 
         def get_storers(StorerList):
             txt = []
-            for action in sorted(StorerList, key=attrgetter("pre_context_id", "position_register")):
-                if action.pre_context_id != E_PreContextIDs.NONE:
-                    txt.append("if '%s': " % repr_pre_context_id(action.pre_context_id))
-                if action.offset == 0:
-                    txt.append("%s = input_p;\n" % repr_position_register(action.position_register))
+            for cmd in sorted(StorerList, key=lambda cmd: (cmd.content.pre_context_id, cmd.content.position_register)):
+                x = cmd.content
+                if x.pre_context_id != E_PreContextIDs.NONE:
+                    txt.append("if '%s': " % repr_pre_context_id(x.pre_context_id))
+                if x.offset == 0:
+                    txt.append("%s = input_p;\n" % repr_position_register(x.position_register))
                 else:
-                    txt.append("%s = input_p - %i;\n" % (repr_position_register(action.position_register), 
-                                                          action.offset))
+                    txt.append("%s = input_p - %i;\n" % (repr_position_register(x.position_register), 
+                                                         x.offset))
             return txt
 
         def get_pre_context_oks(PCOKList):

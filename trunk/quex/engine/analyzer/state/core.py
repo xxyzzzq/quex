@@ -2,7 +2,8 @@ from   quex.engine.state_machine.core          import State
 import quex.engine.state_machine.index         as     index
 from   quex.engine.analyzer.transition_map     import TransitionMap
 from   quex.engine.analyzer.state.entry        import Entry
-from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction, PrepareAfterReload_InitState, PrepareAfterReload
+from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction
+from   quex.engine.analyzer.commands           import PrepareAfterReload_InitState, PrepareAfterReload
 from   quex.engine.analyzer.mega_state.target  import TargetByStateKey_DROP_OUT
 from   quex.blackboard  import setup as Setup, \
                                E_StateIndices, \

@@ -6,10 +6,10 @@ from   quex.engine.analyzer.mega_state.core         import MegaState, \
                                                            StateKeyIndexDB
 from   quex.engine.analyzer.mega_state.template.candidate  import TargetFactory
 from   quex.engine.analyzer.transition_map          import TransitionMap        
-from   quex.engine.analyzer.state.entry_action      import TemplateStateKeySet, \
-                                                           TransitionID, \
+from   quex.engine.analyzer.state.entry_action      import TransitionID, \
                                                            DoorID, \
                                                            DoorID_Scheme
+from   quex.engine.analyzer.commands                import TemplateStateKeySet
 import quex.engine.state_machine.index              as     index
 from   quex.engine.interval_handling                       import Interval
 from   quex.engine.tools                            import UniformObject

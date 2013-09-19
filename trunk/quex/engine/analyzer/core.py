@@ -40,8 +40,8 @@ import quex.engine.analyzer.optimizer             as     optimizer
 from   quex.engine.analyzer.state.core            import AnalyzerState, ReloadState
 from   quex.engine.analyzer.state.drop_out        import DropOut
 from   quex.engine.analyzer.state.entry_action    import TransitionID, \
-                                                         TransitionAction, \
-                                                         InputPDereference, \
+                                                         TransitionAction
+from   quex.engine.analyzer.commands              import InputPDereference, \
                                                          InputPIncrement, \
                                                          InputPDecrement
 import quex.engine.analyzer.mega_state.analyzer   as     mega_state_analyzer
@@ -244,7 +244,7 @@ class Analyzer:
             else:                             command_list = [InputPDecrement(), InputPDereference()]
 
         for command in command_list:
-            ta.command_list.add(command)
+            ta.command_list.append(command)
 
         if self.engine_type.is_FORWARD(): from_reload = E_StateIndices.RELOAD_FORWARD
         else:                             from_reload = E_StateIndices.RELOAD_BACKWARD
@@ -260,7 +260,7 @@ class Analyzer:
             tid_at_entry = TransitionID(StateIndex, E_StateIndices.NONE, TriggerId=0)
             if self.engine_type.is_FORWARD():
                 ta = TransitionAction()
-                ta.command_list.add(InputPDereference())
+                ta.command_list.append(InputPDereference())
             state.entry.action_db.enter(tid_from_reload, ta.clone())
             state.entry.action_db.enter(tid_at_entry, ta)
 
