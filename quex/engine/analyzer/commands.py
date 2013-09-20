@@ -94,6 +94,20 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
             content = tuple(copy(x) for x in self.content)
         return Command(self.id, content, self.my_hash, self.cost)
 
+    def get_pretty_string(self):
+        if self.id == E_Commands.StoreInputPosition:
+            x = cmd.content
+            if x.pre_context_id != E_PreContextIDs.NONE:
+                txt.append("if '%s': " % repr_pre_context_id(x.pre_context_id))
+            if x.offset == 0:
+                txt.append("%s = input_p;\n" % repr_position_register(x.position_register))
+            else:
+                txt.append("%s = input_p - %i;\n" % (repr_position_register(x.position_register), x.offset))
+            return "".join(txt)
+
+        else:
+            return str(self)
+
     def __hash__(self):      
         return self.my_hash
 
@@ -144,15 +158,17 @@ class AccepterContent:
         if i != len(self.__list) - 1:
             del self.__list[i+1:]
 
-    # Estimate cost for the accepter:
-    # pre-context check + assign acceptance + conditional jump: 3
-    # assign acceptance:                                        1
-    def cost(self):
-        result = 0
-        for action in self.__list:
-            if action.pre_context_id: result += 3
-            else:                     result += 1
-        return result
+    def get_pretty_string(self):
+        txt    = []
+        if_str = "if     "
+        for x in self.__list:
+            if x.pre_context_id != E_PreContextIDs.NONE:
+                txt.append("%s %s: " % (if_str, repr_pre_context_id(x.pre_context_id)))
+            else:
+                if if_str == "else if": txt.append("else: ")
+            txt.append("last_acceptance = %s\n" % repr_acceptance_id(x.pattern_id))
+            if_str = "else if"
+        return txt
 
     # Require '__hash__' and '__eq__' to be element of a set.
     def __hash__(self): 
@@ -218,8 +234,8 @@ class CommandFactory:
         E_Commands.PreConditionOK:                CommandInfo(1, E_InputPAccess.NONE,  ("pre_context_id",)),
         E_Commands.TemplateStateKeySet:           CommandInfo(1, E_InputPAccess.NONE,  ("state_key",)),
         E_Commands.PathIteratorSet:               CommandInfo(1, E_InputPAccess.NONE,  ("path_walker_id", "path_id", "offset")),
-        E_Commands.PrepareAfterReload:            CommandInfo(1, E_InputPAccess.NONE,  ("state_index",)),
-        E_Commands.PrepareAfterReload_InitState:  CommandInfo(1, E_InputPAccess.NONE,  ("state_index",)),
+        E_Commands.PrepareAfterReload:            CommandInfo(1, E_InputPAccess.NONE,  ("state_index", "reload_state_index")),
+        E_Commands.PrepareAfterReload_InitState:  CommandInfo(1, E_InputPAccess.NONE,  ("state_index", "reload_state_index")),
         E_Commands.InputPIncrement:               CommandInfo(1, E_InputPAccess.WRITE),
         E_Commands.InputPDecrement:               CommandInfo(1, E_InputPAccess.WRITE),
         E_Commands.InputPDereference:             CommandInfo(1, E_InputPAccess.READ),
@@ -247,25 +263,25 @@ class CommandFactory:
         return Command(Id, content)
 
 def StoreInputPosition(PreContextID, PositionRegister, Offset):
-    return CommandFactory.do(E_Commands.StoreInputPosition, (PreContextID, PositionRegister, Offset))
+    return CommandFactory.do(E_Commands.StoreInputPosition, (PreContextID, PositionRegister, Offset,))
 
 def PreConditionOK(PreContextID):
-    return CommandFactory.do(E_Commands.PreContextID, (PreContextID))
+    return CommandFactory.do(E_Commands.PreContextID, (PreContextID,))
 
 def TemplateStateKeySet(StateKey):
-    return CommandFactory.do(E_Commands.TemplateStateKeySet, (StateKey))
+    return CommandFactory.do(E_Commands.TemplateStateKeySet, (StateKey,))
 
 def PathIteratorSet(PathWalkerID, PathID, Offset):
-    return CommandFactory.do(E_Commands.PathIteratorSet, (PathWalkerID, PathID, Offset))
+    return CommandFactory.do(E_Commands.PathIteratorSet, (PathWalkerID, PathID, Offset,))
 
 def PathIteratorIncrement():
     return CommandFactory.do(E_Commands.PathIteratorIncrement)
 
-def PrepareAfterReload(StateIndex):
-    return CommandFactory.do(E_Commands.PrepareAfterReload, (StateIndex))
+def PrepareAfterReload(StateIndex, ReloadStateIndex):
+    return CommandFactory.do(E_Commands.PrepareAfterReload, (StateIndex, ReloadStateIndex,))
 
-def PrepareAfterReload_InitState(StateIndex):
-    return CommandFactory.do(E_Commands.PrepareAfterReload_InitState, (StateIndex))
+def PrepareAfterReload_InitState(StateIndex, ReloadStateIndex):
+    return CommandFactory.do(E_Commands.PrepareAfterReload_InitState, (StateIndex, ReloadStateIndex,))
 
 def InputPIncrement():
     return CommandFactory.do(E_Commands.InputPIncrement)
@@ -275,6 +291,12 @@ def InputPDecrement():
 
 def InputPDereference():
     return CommandFactory.do(E_Commands.InputPDereference)
+
+def LexemeStartToReferenceP():
+    return CommandFactory.do(E_Commands.LexemeStartToReferenceP)
+
+def LexemeResetTerminatingZero():
+    return CommandFactory.do(E_Commands.LexemeResetTerminatingZero)
 
 def Accepter():
     return CommandFactory.do(E_Commands.Accepter)
@@ -396,7 +418,7 @@ class CommandList(list):
     def __hash__(self):
         xor_sum = 0
         for cmd in self:
-            xor_sum ^= hash(x)
+            xor_sum ^= hash(cmd)
         return xor_sum
 
     def __eq__(self, Other):

@@ -208,16 +208,20 @@ class LanguageDB_Cpp(dict):
                   % (Cmd.path_walker_id, Cmd.path_id, Cmd.offset)
             return txt
 
-        elif Cmd.id == E_Commands.PathIteratorIncrement:
-            return  "    (++path_iterator);\n" \
-                  + "    __quex_debug(\"++path_iterator\");\n" 
+        #elif Cmd.id == E_Commands.PathIteratorIncrement:
+        # return  "    (++path_iterator);\n" \
+        #          + "    __quex_debug(\"++path_iterator\");\n" 
 
         elif   Cmd.id == E_Commands.PrepareAfterReload_InitState \
             or Cmd.id == E_Commands.PrepareAfterReload:
-            state              = Cmd.state
-            reload_state_index = Cmd.reload_state_index
+            state_index = Cmd.content.state_index
+            if state_index == E_StateIndices.RELOAD_FORWARD or state_index == E_StateIndices.RELOAD_BACKWARD:
+                state = self.analyzer.reload_state
+            else:
+                state = self.__analyzer.state_db[state_index]
+            reload_state_index = Cmd.content.reload_state_index
             # On reload success --> goto on_success_adr
-            on_success_door_id = state.entry.action_db.get_door_id(state.index, reload_state_index)
+            on_success_door_id = state.entry.action_db.get_door_id(state_index, reload_state_index)
             assert on_success_door_id is not None
             on_success_adr     = map_door_id_to_address(on_success_door_id, RoutedF=True)
 
@@ -226,7 +230,7 @@ class LanguageDB_Cpp(dict):
                 on_failure_adr     = map_door_id_to_address(entry_action.DoorID.global_terminal_end_of_file(), RoutedF=True)
             else:
                 # On reload failure --> goto on_failure_adr
-                on_failure_door_id = entry_action.DoorID.drop_out(state.index)
+                on_failure_door_id = entry_action.DoorID.drop_out(state_index)
                 on_failure_adr     = map_door_id_to_address(on_failure_door_id, RoutedF=True)
 
             return   "    target_state_index = QUEX_LABEL(%i); target_state_else_index = QUEX_LABEL(%i);\n"  \
