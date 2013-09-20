@@ -41,6 +41,7 @@ _______________________________________________________________________________
 from quex.engine.analyzer.state.entry_action import *
 from quex.blackboard  import E_StateIndices, \
                              E_DoorIdIndex
+from quex.engine.tools import pair_combinations
 
 from collections      import defaultdict
 from itertools        import islice

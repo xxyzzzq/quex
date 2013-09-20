@@ -143,10 +143,10 @@ class ReloadState:
         self.entry.action_db.absorb(OtherReloadState.entry.action_db)
 
     def add_state(self, State, InitStateForwardF):
-        if InitStateForwardF: command = PrepareAfterReload_InitState(self.index)
-        else:                 command = PrepareAfterReload(self.index)
+        if InitStateForwardF: command = PrepareAfterReload_InitState(State.index, self.index)
+        else:                 command = PrepareAfterReload(State.index, self.index)
         before_reload_action = TransitionAction()
-        before_reload_action.command_list.add(command)
+        before_reload_action.command_list.append(command)
         self.entry.action_db.enter(TransitionID(self.index, State.index, 0), 
                                    before_reload_action)
 

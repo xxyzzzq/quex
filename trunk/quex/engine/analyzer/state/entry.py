@@ -368,30 +368,13 @@ class Entry(object):
     def __repr__(self):
         def get_accepters(AccepterList):
             if len(AccepterList) == 0: return []
-
-            prototype = AccepterList[0]
-            txt    = []
-            if_str = "if     "
-            for action in prototype:
-                if action.pre_context_id != E_PreContextIDs.NONE:
-                    txt.append("%s %s: " % (if_str, repr_pre_context_id(action.pre_context_id)))
-                else:
-                    if if_str == "else if": txt.append("else: ")
-                txt.append("last_acceptance = %s\n" % repr_acceptance_id(action.pattern_id))
-                if_str = "else if"
-            return txt
+            assert len(AccepterList) == 1
+            return [ AccepterList[0].get_pretty_string() ]
 
         def get_storers(StorerList):
             txt = []
             for cmd in sorted(StorerList, key=lambda cmd: (cmd.content.pre_context_id, cmd.content.position_register)):
-                x = cmd.content
-                if x.pre_context_id != E_PreContextIDs.NONE:
-                    txt.append("if '%s': " % repr_pre_context_id(x.pre_context_id))
-                if x.offset == 0:
-                    txt.append("%s = input_p;\n" % repr_position_register(x.position_register))
-                else:
-                    txt.append("%s = input_p - %i;\n" % (repr_position_register(x.position_register), 
-                                                         x.offset))
+                txt.append(cmd.get_pretty_string())
             return txt
 
         def get_pre_context_oks(PCOKList):
@@ -419,17 +402,12 @@ class Entry(object):
             pcok_command_list   = []
             ssk_command_list    = []
             spi_command_list    = []
-            for action in door.command_list:
-                if action.id == E_Commands.Accepter: 
-                    accept_command_list.append(action)
-                elif action.id == E_Commands.PreConditionOK:
-                    pcok_command_list.append(action)
-                elif action.id == E_Commands.TemplateStateKeySet:
-                    ssk_command_list.append(action)
-                elif action.id == E_Commands.PathIteratorSet:
-                    spi_command_list.append(action)
-                else:
-                    store_command_list.append(action)
+            for cmd in door.command_list:
+                if   cmd.id == E_Commands.Accepter:            accept_command_list.append(cmd)
+                elif cmd.id == E_Commands.PreConditionOK:      pcok_command_list.append(cmd)
+                elif cmd.id == E_Commands.TemplateStateKeySet: ssk_command_list.append(cmd)
+                elif cmd.id == E_Commands.PathIteratorSet:     spi_command_list.append(cmd)
+                else:                                          store_command_list.append(cmd)
 
             result.append("    .from %s:" % repr(transition_id.source_state_index).replace("L", ""))
             a_txt  = get_accepters(accept_command_list)
