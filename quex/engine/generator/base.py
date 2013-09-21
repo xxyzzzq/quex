@@ -246,15 +246,11 @@ class Generator(GeneratorBase):
         # -- implement the state machine itself
         analyzer           = analyzer_generator.do(sm, EngineType)
 
-        Setup.language_db.register_analyzer(analyzer)
         state_machine_code = state_machine_coder.do(analyzer)
 
         LanguageDB.REPLACE_INDENT(state_machine_code)
 
         txt.extend(state_machine_code)
-        print "#BIPD.txt:"
-        for x in txt:
-            print x,
 
         return txt, analyzer
 

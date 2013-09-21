@@ -73,6 +73,11 @@ class LanguageDB_Cpp(dict):
     def register_analyzer(self, TheAnalyzer):
         self.__analyzer = TheAnalyzer
 
+    def unregister_analyzer(self):
+        # Unregistering an analyzer ensures that no one else works with the 
+        # analyzer on something unrelated.
+        self.__analyzer = None
+
     def code_generation_switch_cases_add_statement(self, Value):
         assert Value is None or self.__code_generation_switch_cases_add_statement is None
         self.__code_generation_switch_cases_add_statement = Value
@@ -187,7 +192,7 @@ class LanguageDB_Cpp(dict):
                 return "    position[%i] = me->buffer._input_p - %i; __quex_debug(\"position[%i] = input_p - %i;\\n\");\n" \
                        % (Cmd.position_register, Cmd.offset, Cmd.offset)
 
-        elif Cmd.id == E_Commands.PreConditionOK:
+        elif Cmd.id == E_Commands.PreContextOK:
             return   "    pre_context_%i_fulfilled_f = 1;\n"                         \
                    % Cmd.pre_context_id                                      \
                    + "    __quex_debug(\"pre_context_%i_fulfilled_f = true\\n\");\n" \
@@ -212,26 +217,12 @@ class LanguageDB_Cpp(dict):
         # return  "    (++path_iterator);\n" \
         #          + "    __quex_debug(\"++path_iterator\");\n" 
 
-        elif   Cmd.id == E_Commands.PrepareAfterReload_InitState \
-            or Cmd.id == E_Commands.PrepareAfterReload:
-            state_index = Cmd.content.state_index
-            if state_index == E_StateIndices.RELOAD_FORWARD or state_index == E_StateIndices.RELOAD_BACKWARD:
-                state = self.analyzer.reload_state
-            else:
-                state = self.__analyzer.state_db[state_index]
-            reload_state_index = Cmd.content.reload_state_index
-            # On reload success --> goto on_success_adr
-            on_success_door_id = state.entry.action_db.get_door_id(state_index, reload_state_index)
-            assert on_success_door_id is not None
-            on_success_adr     = map_door_id_to_address(on_success_door_id, RoutedF=True)
+        elif   Cmd.id == E_Commands.PrepareAfterReload:
+            on_success_door_id = Cmd.content.on_success_door_id 
+            on_failure_door_id = Cmd.content.on_failure_door_id 
 
-            if Cmd.id == E_Commands.PrepareAfterReload_InitState:
-                # On reload failure --> goto on_terminal_end_of_file
-                on_failure_adr     = map_door_id_to_address(entry_action.DoorID.global_terminal_end_of_file(), RoutedF=True)
-            else:
-                # On reload failure --> goto on_failure_adr
-                on_failure_door_id = entry_action.DoorID.drop_out(state_index)
-                on_failure_adr     = map_door_id_to_address(on_failure_door_id, RoutedF=True)
+            on_success_adr = map_door_id_to_address(on_success_door_id, RoutedF=True)
+            on_failure_adr = map_door_id_to_address(on_failure_door_id, RoutedF=True)
 
             return   "    target_state_index = QUEX_LABEL(%i); target_state_else_index = QUEX_LABEL(%i);\n"  \
                    % (on_success_adr, on_failure_adr)                                                        
@@ -248,16 +239,15 @@ class LanguageDB_Cpp(dict):
         elif Cmd.id == E_Commands.InputPIncrement:
             return "    %s\n" % self.INPUT_P_INCREMENT()
 
-        elif Cmd.id == E_Commands.InputPIncrementThenDereference:
-            return "    %s\n    %s\n" % (self.INPUT_P_INCREMENT(),
-                                         self.ASSIGN("input", self.INPUT_P_DEREFERENCE()))
-
         elif Cmd.id == E_Commands.InputPDecrement:
             return "    %s\n" % self.INPUT_P_DECREMENT()
 
-        elif Cmd.id == E_Commands.InputPDecrementThenDereference:
-            return "    %s\n    %s\n" % (self.INPUT_P_INCREMENT(),
-                                         self.ASSIGN("input", self.INPUT_P_DEREFERENCE()))
+        #elif Cmd.id == E_Commands.InputPIncrementThenDereference:
+        #    return "    %s\n    %s\n" % (self.INPUT_P_INCREMENT(),
+        #                                 self.ASSIGN("input", self.INPUT_P_DEREFERENCE()))
+        #elif Cmd.id == E_Commands.InputPDecrementThenDereference:
+        #    return "    %s\n    %s\n" % (self.INPUT_P_INCREMENT(),
+        #                                 self.ASSIGN("input", self.INPUT_P_DEREFERENCE()))
         else:
             assert False, "Unknown Entry Action"
 

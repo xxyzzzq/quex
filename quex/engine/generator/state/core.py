@@ -28,6 +28,5 @@ def do(code, TheState, TheAnalyzer):
     # (*) Consistency check ___________________________________________________
     assert none_isinstance(txt, list)
     assert none_is_None(txt)
-
     code.extend(txt)
 

@@ -101,29 +101,38 @@ class TransitionAction(object):
                           It is (re-)assigned during the process of 
                           'EntryActionDB.categorize()'.
     """
-    __slots__ = ("door_id", "command_list")
+    __slots__ = ("door_id", "_command_list")
     def __init__(self, CommandListObjectF=True):
         # NOTE: 'DoorId' is not accepted as argument. Is needs to be assigned
         #       by '.categorize()' in the action_db. Then, transition actions
         #       with the same CommandList-s share the same DoorID.
         assert type(CommandListObjectF) == bool
         self.door_id = None # DoorID into door tree from where the command list is executed
-        if CommandListObjectF: self.command_list = CommandList() 
+        if CommandListObjectF: self._command_list = CommandList() 
         else:                  self.command_list = None
  
+    @property
+    def command_list(self): 
+        return self._command_list
+
+    @command_list.setter
+    def command_list(self, CL): 
+        assert isinstance(CL, CommandList) or CL is None
+        self._command_list = CL
+        
     def clone(self):
         result = TransitionAction(CommandListObjectF=False)
-        result.door_id      = self.door_id  # DoorID-s are immutable
-        result.command_list = self.command_list.clone()
+        result.door_id       = self.door_id  # DoorID-s are immutable
+        result._command_list = self._command_list.clone()
         return result
 
     # Make TransitionAction usable for dictionary and set
     def __hash__(self):      
-        return hash(self.command_list)
+        return hash(self._command_list)
 
     def __eq__(self, Other):
-        return self.command_list == Other.command_list
+        return self._command_list == Other._command_list
 
     def __repr__(self):
-        return "(%s: [%s])" % (self.door_id, self.command_list)
+        return "(%s: [%s])" % (self.door_id, self._command_list)
 

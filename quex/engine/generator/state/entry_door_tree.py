@@ -165,8 +165,8 @@ def find(root, DoorId):
     done_set  = set()
     while len(work_list) != 0:
         candidate = work_list.pop()
-        print "#dd:", DoorId, candidate.door_id
-        print "#childset:", candidate.child_set
+        ##print "#dd:", DoorId, candidate.door_id
+        ##print "#childset:", candidate.child_set
         if candidate.door_id == DoorId:
             return candidate
         assert candidate.door_id not in done_set

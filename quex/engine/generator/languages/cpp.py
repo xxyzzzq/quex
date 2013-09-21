@@ -441,7 +441,7 @@ def __jump_to_backward_input_position_detector(BIPD_SM, Setup):
     # After having finished the analyzis, enter the terminal code, here.
     bipd_str += "%s: /* After return from backward input position detector.\n" % \
                 Label.backward_input_position_detector_return(bipd_id)
-    print "#bipd_str:", bipd_str, bipd_str
+    ##print "#bipd_str:", bipd_str, bipd_str
     return bipd_str
 
 def __terminal_on_failure(OnFailureAction, TerminalFailureDef):
