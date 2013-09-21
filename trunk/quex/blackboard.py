@@ -132,7 +132,7 @@ E_DoorIdIndex = Enum("DROP_OUT",
 
 E_Commands = Enum("Accepter",
                   "StoreInputPosition",
-                  "PreConditionOK",
+                  "PreContextOK",
                   "TemplateStateKeySet",
                   "PathIteratorSet",
                   "PrepareAfterReload",

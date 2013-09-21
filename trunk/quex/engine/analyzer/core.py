@@ -79,6 +79,11 @@ def __main_analysis(SM, EngineType):
     # Optimize the Analyzer
     analyzer = optimizer.do(analyzer)
 
+    # Assign DoorID-s to transition actions and relate transitions to DoorID-s.
+    # ('.prepare_for_reload()' requires DoorID-s.)
+    for state in analyzer.state_db.itervalues():
+        state.entry.action_db.categorize(state.index)
+
     # Implement the infrastructure for 'reload':
     # -- Transition maps goto the 'reload procedure' upon 'buffer limit' code
     # -- The 'reload state' does certain things dependent on the from what state
@@ -86,10 +91,6 @@ def __main_analysis(SM, EngineType):
     # -- The states have a dedicated entry from after the reload procedure.
     for state in analyzer.state_db.itervalues():
         state.prepare_for_reload(analyzer)
-
-    # Assign DoorID-s to transition actions and relate transitions to DoorID-s.
-    for state in analyzer.state_db.itervalues():
-        state.entry.action_db.categorize(state.index)
     analyzer.reload_state.entry.action_db.categorize(analyzer.reload_state.index)
 
     for state in analyzer.state_db.itervalues():
@@ -246,36 +247,27 @@ class Analyzer:
         for command in command_list:
             ta.command_list.append(command)
 
-        if self.engine_type.is_FORWARD(): from_reload = E_StateIndices.RELOAD_FORWARD
-        else:                             from_reload = E_StateIndices.RELOAD_BACKWARD
-        tid_from_reload = TransitionID(StateIndex, from_reload, TriggerId=0)
-
+        # NOTE: The 'from reload transition' is implemented by 'prepare_for_reload()'
         for source_state_index in self.__from_db[StateIndex]: 
             assert source_state_index != E_StateIndices.NONE
             tid = TransitionID(StateIndex, source_state_index, TriggerId=0)
             state.entry.action_db.enter(tid, ta.clone())
-            state.entry.action_db.enter(tid_from_reload, ta.clone())
 
         if StateIndex == self.init_state_index:
             tid_at_entry = TransitionID(StateIndex, E_StateIndices.NONE, TriggerId=0)
             if self.engine_type.is_FORWARD():
                 ta = TransitionAction()
                 ta.command_list.append(InputPDereference())
-            state.entry.action_db.enter(tid_from_reload, ta.clone())
             state.entry.action_db.enter(tid_at_entry, ta)
-
-        for key, value in state.entry.action_db.iteritems():
-            print "#tid:", key
-            print "#value:", value.command_list
 
         return state
                                       
     def get_action_at_state_machine_entry(self):
         assert self.engine_type.is_FORWARD()
-        print "#action_db:", self.init_state_index
-        for key, value in self.state_db[self.init_state_index].entry.action_db.iteritems():
-            print "#key:", key
-            print "#value:", value.door_id
+        ##print "#action_db:", self.init_state_index
+        ##for key, value in self.state_db[self.init_state_index].entry.action_db.iteritems():
+        ##    print "#key:", key
+        ##    print "#value:", value.door_id
         return self.state_db[self.init_state_index].entry.action_db.get_action(self.init_state_index, E_StateIndices.NONE)
 
     def get_depth_db(self):

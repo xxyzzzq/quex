@@ -231,11 +231,10 @@ class CommandFactory:
     db = {
         E_Commands.Accepter:                      CommandInfo(1, E_InputPAccess.NONE,  AccepterContent),
         E_Commands.StoreInputPosition:            CommandInfo(1, E_InputPAccess.READ,  ("pre_context_id", "position_register", "offset")),
-        E_Commands.PreConditionOK:                CommandInfo(1, E_InputPAccess.NONE,  ("pre_context_id",)),
+        E_Commands.PreContextOK:                  CommandInfo(1, E_InputPAccess.NONE,  ("pre_context_id",)),
         E_Commands.TemplateStateKeySet:           CommandInfo(1, E_InputPAccess.NONE,  ("state_key",)),
         E_Commands.PathIteratorSet:               CommandInfo(1, E_InputPAccess.NONE,  ("path_walker_id", "path_id", "offset")),
-        E_Commands.PrepareAfterReload:            CommandInfo(1, E_InputPAccess.NONE,  ("state_index", "reload_state_index")),
-        E_Commands.PrepareAfterReload_InitState:  CommandInfo(1, E_InputPAccess.NONE,  ("state_index", "reload_state_index")),
+        E_Commands.PrepareAfterReload:            CommandInfo(1, E_InputPAccess.NONE,  ("on_success_door_id", "on_failure_door_id")),
         E_Commands.InputPIncrement:               CommandInfo(1, E_InputPAccess.WRITE),
         E_Commands.InputPDecrement:               CommandInfo(1, E_InputPAccess.WRITE),
         E_Commands.InputPDereference:             CommandInfo(1, E_InputPAccess.READ),
@@ -265,8 +264,8 @@ class CommandFactory:
 def StoreInputPosition(PreContextID, PositionRegister, Offset):
     return CommandFactory.do(E_Commands.StoreInputPosition, (PreContextID, PositionRegister, Offset,))
 
-def PreConditionOK(PreContextID):
-    return CommandFactory.do(E_Commands.PreContextID, (PreContextID,))
+def PreContextOK(PreContextID):
+    return CommandFactory.do(E_Commands.PreContextOK, (PreContextID,))
 
 def TemplateStateKeySet(StateKey):
     return CommandFactory.do(E_Commands.TemplateStateKeySet, (StateKey,))
@@ -277,8 +276,8 @@ def PathIteratorSet(PathWalkerID, PathID, Offset):
 def PathIteratorIncrement():
     return CommandFactory.do(E_Commands.PathIteratorIncrement)
 
-def PrepareAfterReload(StateIndex, ReloadStateIndex):
-    return CommandFactory.do(E_Commands.PrepareAfterReload, (StateIndex, ReloadStateIndex,))
+def PrepareAfterReload(OnSuccessDoorId, OnFailureDoorId):
+    return CommandFactory.do(E_Commands.PrepareAfterReload, (OnSuccessDoorId, OnFailureDoorId,))
 
 def PrepareAfterReload_InitState(StateIndex, ReloadStateIndex):
     return CommandFactory.do(E_Commands.PrepareAfterReload_InitState, (StateIndex, ReloadStateIndex,))
@@ -304,8 +303,10 @@ def Accepter():
 class CommandList(list):
     """CommandList -- a list of commands.
     """
-    def __init__(self):
+    def __init__(self, *CL):
         list.__init__(self)
+        if len(CL) != 0:
+            self.extend(CL)
 
     @classmethod
     def from_iterable(cls, Iterable):

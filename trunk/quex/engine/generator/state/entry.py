@@ -23,11 +23,10 @@ def do(TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
         do_node(pre_txt, TheState.entry.action_db, door_tree_root)
         post_txt = []
     else:
-        print "#action_db:\n", TheState.entry.action_db.get_string()
         pre_txt, done_set = do_state_machine_entry(door_tree_root, TheState, TheAnalyzer)
         post_txt = [ "\n\n    %s\n" % LanguageDB.UNREACHABLE ]
         post_txt.extend(do_post(door_tree_root, TheState, done_set))
-
+            
     return pre_txt, post_txt
 
 def do_core(txt, TheState):
@@ -53,7 +52,7 @@ def do_state_machine_entry(door_tree_root, TheState, TheAnalyzer):
 def do_post(door_tree_root, TheState, DoneDoorIdSet):
     txt = []
     do_node(txt, TheState.entry.action_db, door_tree_root, LastChildF=False, DoneDoorIdSet=DoneDoorIdSet)
-    txt.append("    goto %s;\n" % Label.transition_block(TheState.index, GotoedF=True))
+    # txt.append("    goto %s;\n" % Label.transition_block(TheState.index, GotoedF=True))
     return txt
 
 def do_node(txt, ActionDb, Node, LastChildF=False, DoneDoorIdSet=None):
@@ -63,7 +62,7 @@ def do_node(txt, ActionDb, Node, LastChildF=False, DoneDoorIdSet=None):
     if Node.child_set is not None:
         LastI = len(Node.child_set) - 1
         for i, child in enumerate(sorted(Node.child_set, key=attrgetter("door_id"))):
-            do_node(txt, ActionDb, child, LastChildF=(i==LastI))
+            do_node(txt, ActionDb, child, LastChildF=(i==LastI), DoneDoorIdSet=DoneDoorIdSet)
     
     if DoneDoorIdSet is None or Node.door_id not in DoneDoorIdSet:
         # Careful: "GotoParentF = not LastChildF" because of 'DoneDoorIdSet'

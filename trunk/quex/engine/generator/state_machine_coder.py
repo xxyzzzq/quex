@@ -10,6 +10,7 @@ from   copy        import copy
 def do(TheAnalyzer):
     """Generate source code for a given state machine 'SM'.
     """
+    Setup.language_db.register_analyzer(TheAnalyzer)
     LanguageDB = Setup.language_db
     assert id(LanguageDB.analyzer) == id(TheAnalyzer)
 
@@ -30,6 +31,7 @@ def do(TheAnalyzer):
                         key=lambda s: frequency_db[s.index], reverse=True):
         state_coder.do(txt, state, TheAnalyzer) 
 
+    Setup.language_db.unregister_analyzer()
     return txt
 
 def get_frequency_db(StateDB, RemainderStateIndexList):

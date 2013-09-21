@@ -2,28 +2,27 @@ from   quex.engine.state_machine.core          import State
 import quex.engine.state_machine.index         as     index
 from   quex.engine.analyzer.transition_map     import TransitionMap
 from   quex.engine.analyzer.state.entry        import Entry
-from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction
-from   quex.engine.analyzer.commands           import PrepareAfterReload_InitState, PrepareAfterReload
+from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction, DoorID
+from   quex.engine.analyzer.commands           import CommandList, PrepareAfterReload_InitState, PrepareAfterReload, InputPIncrement, InputPDecrement, InputPDereference
 from   quex.engine.analyzer.mega_state.target  import TargetByStateKey_DROP_OUT
 from   quex.blackboard  import setup as Setup, \
                                E_StateIndices, \
                                E_InputActions
 
+#__________________________________________________________________________
+#
+# AnalyzerState consists of the following major components:
+#
+#   entry -- tells what has to happen at entry to the state (depending 
+#            on the state from which it is entered).
+#
+#   transition_map -- telling what subsequent state is to be entered
+#                     dependent on the triggering character.
+#
+#   drop_out -- contains information about what happens when the 
+#               transition map cannot trigger on the character.
+#__________________________________________________________________________
 class AnalyzerState(object):
-    """________________________________________________________________________
-    
-    AnalyzerState consists of the following major components:
-
-       entry -- tells what has to happen at entry to the state (depending 
-                on the state from which it is entered).
-
-       transition_map -- telling what subsequent state is to be entered
-                         dependent on the triggering character.
-
-       drop_out -- contains information about what happens when the 
-                   transition map cannot trigger on the character.
-    ___________________________________________________________________________
-    """
     __slots__ = ("__index", 
                  "entry", 
                  "drop_out", 
@@ -82,11 +81,25 @@ class AnalyzerState(object):
 
         # Prepare the entry into the state from 'After Reload'.
         # => Emtpy transition action, nothing to do.
-        self.entry.action_db.enter(TransitionID(self.index, reload_state.index, 0), 
-                                   TransitionAction())
+        ta = TransitionAction()
+        if TheAnalyzer.engine_type.is_FORWARD(): ta.command_list = CommandList(InputPIncrement(), InputPDereference())
+        else:                                    ta.command_list = CommandList(InputPDecrement(), InputPDereference())
+
+        assert self.index in TheAnalyzer.state_db
+        self.entry.action_db.enter(TransitionID(self.index, reload_state.index, 0), ta)
+        # Need to categorize here, all other transitions have been categorized before
+        self.entry.action_db.categorize(self.index)
 
         # Prepare the ReloadState for an entry from this state.
-        reload_state.add_state(self, TheAnalyzer.is_init_state_forward(self.index))
+        on_success_door_id = self.entry.action_db.get_door_id(self.index, TheAnalyzer.reload_state.index)
+
+        if TheAnalyzer.is_init_state_forward(self.index):
+            on_failure_door_id = DoorID.global_terminal_end_of_file()
+        else:
+            on_failure_door_id = DoorID.drop_out(self.index)
+        assert on_failure_door_id != on_success_door_id
+
+        reload_state.add_state(self.index, on_success_door_id, on_failure_door_id)
 
         # Ensure a transition on 'buffer limit code' to the reload procedure.
         self.transition_map.set_target(Setup.buffer_limit_code, reload_state.index)
@@ -142,11 +155,9 @@ class ReloadState:
         assert self.index == OtherReloadState.index
         self.entry.action_db.absorb(OtherReloadState.entry.action_db)
 
-    def add_state(self, State, InitStateForwardF):
-        if InitStateForwardF: command = PrepareAfterReload_InitState(State.index, self.index)
-        else:                 command = PrepareAfterReload(State.index, self.index)
-        before_reload_action = TransitionAction()
-        before_reload_action.command_list.append(command)
-        self.entry.action_db.enter(TransitionID(self.index, State.index, 0), 
-                                   before_reload_action)
+    def add_state(self, StateIndex, OnSuccessDoorId, OnFailureDoorId):
+        ta = TransitionAction()
+        ta.command_list = CommandList(PrepareAfterReload(OnSuccessDoorId, OnFailureDoorId))
+
+        self.entry.action_db.enter(TransitionID(self.index, StateIndex, 0), ta)
 
