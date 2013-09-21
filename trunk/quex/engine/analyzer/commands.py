@@ -279,9 +279,6 @@ def PathIteratorIncrement():
 def PrepareAfterReload(OnSuccessDoorId, OnFailureDoorId):
     return CommandFactory.do(E_Commands.PrepareAfterReload, (OnSuccessDoorId, OnFailureDoorId,))
 
-def PrepareAfterReload_InitState(StateIndex, ReloadStateIndex):
-    return CommandFactory.do(E_Commands.PrepareAfterReload_InitState, (StateIndex, ReloadStateIndex,))
-
 def InputPIncrement():
     return CommandFactory.do(E_Commands.InputPIncrement)
 

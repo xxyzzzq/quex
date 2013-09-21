@@ -43,7 +43,8 @@ from   quex.engine.analyzer.state.entry_action    import TransitionID, \
                                                          TransitionAction
 from   quex.engine.analyzer.commands              import InputPDereference, \
                                                          InputPIncrement, \
-                                                         InputPDecrement
+                                                         InputPDecrement,  \
+                                                         PreContextOK
 import quex.engine.analyzer.mega_state.analyzer   as     mega_state_analyzer
 import quex.engine.analyzer.position_register_map as     position_register_map
 import quex.engine.analyzer.engine_supply_factory as     engine
@@ -223,6 +224,13 @@ class Analyzer:
         state = AnalyzerState.from_State(OldState, StateIndex, set(), self.engine_type)
 
         ta = TransitionAction()
+        cl = ta.command_list
+        if self.engine_type.is_BACKWARD_PRE_CONTEXT():
+            cl.extend(
+                 PreContextOK(origin.pattern_id()) for origin in OldState.origins() \
+                 if origin.is_acceptance() 
+            )
+
         if state.transition_map.is_empty() and False: 
             # NOTE: We need a way to disable this exception for PathWalkerState-s(!)
             #       It safe, not to allow it, in general.
@@ -238,14 +246,11 @@ class Analyzer:
             # 'ForceInputDereferencingF'
             assert StateIndex != self.init_state_index # Empty state machine! --> impossible
 
-            if self.engine_type.is_FORWARD(): command_list = [InputPIncrement()]
-            else:                             command_list = [InputPDecrement()]
+            if self.engine_type.is_FORWARD(): cl.append(InputPIncrement())
+            else:                             cl.append(InputPDecrement())
         else:
-            if self.engine_type.is_FORWARD(): command_list = [InputPIncrement(), InputPDereference()]
-            else:                             command_list = [InputPDecrement(), InputPDereference()]
-
-        for command in command_list:
-            ta.command_list.append(command)
+            if self.engine_type.is_FORWARD(): cl.extend([InputPIncrement(), InputPDereference()])
+            else:                             cl.extend([InputPDecrement(), InputPDereference()])
 
         # NOTE: The 'from reload transition' is implemented by 'prepare_for_reload()'
         for source_state_index in self.__from_db[StateIndex]: 

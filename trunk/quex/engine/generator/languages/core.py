@@ -187,22 +187,22 @@ class LanguageDB_Cpp(dict):
             # does not accelerate anything.
             if Cmd.offset == 0:
                 return "    position[%i] = me->buffer._input_p; __quex_debug(\"position[%i] = input_p;\\n\");\n" \
-                       % (Cmd.position_register, Cmd.position_register)
+                       % (Cmd.content.content.position_register, Cmd.content.position_register)
             else:
                 return "    position[%i] = me->buffer._input_p - %i; __quex_debug(\"position[%i] = input_p - %i;\\n\");\n" \
-                       % (Cmd.position_register, Cmd.offset, Cmd.offset)
+                       % (Cmd.content.position_register, Cmd.content.offset, Cmd.content.offset)
 
         elif Cmd.id == E_Commands.PreContextOK:
             return   "    pre_context_%i_fulfilled_f = 1;\n"                         \
-                   % Cmd.pre_context_id                                      \
+                   % Cmd.content.pre_context_id                                      \
                    + "    __quex_debug(\"pre_context_%i_fulfilled_f = true\\n\");\n" \
-                   % Cmd.pre_context_id
+                   % Cmd.content.pre_context_id
 
         elif Cmd.id == E_Commands.TemplateStateKeySet:
             return   "    state_key = %i;\n"                      \
-                   % Cmd.value                            \
+                   % Cmd.content.value                            \
                    + "    __quex_debug(\"state_key = %i\\n\");\n" \
-                   % Cmd.value
+                   % Cmd.content.value
 
         elif Cmd.id == E_Commands.PathIteratorSet:
             offset_str = ""
