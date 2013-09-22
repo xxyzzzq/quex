@@ -37,18 +37,14 @@ class AnalyzerState(object):
         self.transition_map                    = TheTransitionMap
 
     @staticmethod
-    def from_State(SM_State, StateIndex, FromStateIndexList, EngineType):
+    def from_State(SM_State, StateIndex, EngineType):
         assert isinstance(SM_State, State)
         assert isinstance(StateIndex, (int, long))
-        assert isinstance(FromStateIndexList, set)
 
         x = AnalyzerState(StateIndex, TransitionMap.from_TargetMap(SM_State.target_map))
 
-        # Test "quex/engine/analyzer/mega_state/template/TEST/best_matching_pair.py" would not work!
-        # assert len(FromStateIndexList) != 0
-
         # (*) Entry Action
-        x.entry    = EngineType.create_Entry(SM_State, StateIndex, FromStateIndexList)
+        x.entry    = Entry()
         # (*) Drop Out
         x.drop_out = EngineType.create_DropOut(SM_State)
 

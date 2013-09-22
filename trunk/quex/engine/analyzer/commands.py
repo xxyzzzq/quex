@@ -252,7 +252,8 @@ class CommandFactory:
         assert ParameterList is None or type(ParameterList) == tuple, "ParameterList: '%s'" % str(ParameterList)
         content_type = CommandFactory.db[Id].content_type
         if ParameterList is None:
-            content = None
+            if content_type is None: content = None
+            else:                    content = content_type()
         else:
             L        = len(ParameterList)
             if   L == 0: content = None
@@ -408,10 +409,72 @@ class CommandList(list):
             i -= 1
 
     def is_empty(self):
-        return list.__len__(self)
+        return list.__len__(self) == 0
 
     def cost(self):
-        return sum(x.cost() for x in self)
+        return sum(CommandFactory.db[cmd.id].cost for cmd in self)
+
+    def has_command_id(self, CmdId):
+        assert CmdId in E_Commands
+        for cmd in self:
+            if cmd.id == CmdId: return True
+        return False
+
+    def access_accepter(self):
+        """Gets the accepter from the command list. If there is no accepter
+        yet, then it creates one and adds it to the list.
+        """
+        accepter = None
+        for cmd in self:
+            if cmd.id == E_Commands.Accepter:
+                accepter = cmd
+                break
+
+        if accepter is None:
+            accepter = Accepter()
+            self.append(accepter)
+
+        return accepter
+
+    def replace_position_registers(self, PositionRegisterMap):
+        """Replace for any position register indices 'x' and 'y' given by
+         
+                      y = PositionRegisterMap[x]
+
+        replace register index 'x' by 'y'.
+        """
+        if PositionRegisterMap is None or len(PositionRegisterMap) == 0: 
+            return
+
+        for i in xrange(len(self)):
+            cmd = self[i]
+            if cmd.id != E_Commands.StoreInputPosition: continue
+
+            # Commands are immutable, so create a new one.
+            new_command = StoreInputPosition(cmd.content.pre_context_id, 
+                                             PositionRegisterMap[cmd.content.position_register],
+                                             cmd.content.offset)
+            self[i] = new_command
+
+    def delete_superfluous_commands(self):
+        """A position storage which is unconditional makes any conditional
+        storage superfluous. Those may be deleted without loss.
+        """
+        unconditional_position_register_set = set(
+            cmd.content.position_register
+            for cmd in self \
+                if     cmd.id == E_Commands.StoreInputPosition \
+                   and cmd.content.pre_context_id == E_PreContextIDs.NONE
+        )
+        i = len(self) - 1
+        while i >= 0:
+            cmd = self[i]
+            if cmd.id != E_Commands.StoreInputPosition:
+                pass
+            elif    cmd.content.position_register in unconditional_position_register_set \
+                and cmd.content.pre_context_id != E_PreContextIDs.NONE:
+                del self[i]
+            i -= 1
 
     def __hash__(self):
         xor_sum = 0
@@ -420,7 +483,6 @@ class CommandList(list):
         return xor_sum
 
     def __eq__(self, Other):
-        # Rely on '__eq__' of AccepterContent
         if isinstance(Other, CommandList) == False: return False
         return list.__eq__(self, Other)
 

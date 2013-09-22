@@ -14,7 +14,7 @@ from   operator import attrgetter
 
 
 class EntryActionDB:
-    def __init__(self, Opt_StateIndex, Opt_FromStateIndex_List):
+    def __init__(self):
         """Assume that 'Iterable' provides all TransitionID-s which may ever
            appear in the action_db. If this is not the case, then a self[tid]
            may fail somewhere down the lines.
@@ -31,15 +31,6 @@ class EntryActionDB:
         """
         self.__db                          = TypedDict(TransitionID, TransitionAction)
         self.__largest_used_door_sub_index = 0  # '0' is used for 'Door 0', i.e. reload entry
-
-        if Opt_StateIndex is not None:
-            assert isinstance(Opt_StateIndex, long) 
-            assert isinstance(Opt_FromStateIndex_List, (set, list))
-
-            self.__db.update(
-                (TransitionID(Opt_StateIndex, i, 0), TransitionAction()) \
-                for i in Opt_FromStateIndex_List                         \
-            )
 
     def get(self, TheTransitionID):
         return self.__db.get(TheTransitionID)
@@ -118,74 +109,43 @@ class EntryActionDB:
         """Add an acceptance at the top of each accepter at every door. If there
            is no accepter in a door it is created.
         """
-        for transition_action in self.__db.itervalues():
-            # Catch the accepter, if there is already one, of not create one.
-            if transition_action.command_list.accepter is None: 
-                transition_action.command_list.accepter = Accepter()
-            transition_action.command_list.accepter.add(PreContextID, PatternID)
-            # NOT: transition_action.command_list.accepter.clean_up()
-            #      The list might be deliberately ordered differently
+        for ta in self.__db.itervalues():
+            # Catch the accepter, if there is already one, if not create one.
+            ta.command_list.access_accepter().content.add(PreContextID, PatternID)
 
     def add_StoreInputPosition(self, StateIndex, FromStateIndex, PreContextID, PositionRegister, Offset):
         """Add 'store input position' to specific door. See 'StoreInputPosition'
            comment for the reason why we do not store pre-context-id.
         """
-        entry = StoreInputPosition(PreContextID, PositionRegister, Offset)
-        self.__db[TransitionID(StateIndex, FromStateIndex, 0)].command_list.append(entry)
+        cmd = StoreInputPosition(PreContextID, PositionRegister, Offset)
+        self.__db[TransitionID(StateIndex, FromStateIndex, 0)].command_list.insert(0, cmd)
 
-    def has_Accepter(self):
+    def has_command(self, CmdId):
+        assert CmdId in E_Commands
         for action in self.__db.itervalues():
-            for cmd in action.command_list:
-                if cmd.id == E_Commands.Accepter: return True
+            if action.command_list.has_command_id(CmdId): 
+                return True
         return False
 
     def delete(self, StateIndex, FromStateIndex, TriggerId=0):
         del self.__db[TransitionID(StateIndex, FromStateIndex, 0)]
 
-    def reconfigure_position_registers(self, PositionRegisterMap):
+    def replace_position_registers(self, PositionRegisterMap):
         """Originally, each pattern gets its own position register if it is
         required to store/restore the input position. The 'PositionRegisterMap'
         is a result of an analysis which tells whether some registers may
         actually be shared. This function does the replacement of positioning
         registers based on what is given in 'PositionRegisterMap'.
         """
-        if PositionRegisterMap is None or len(PositionRegisterMap) == 0: 
-            return
-
-        def store_input_position(iterable):
-            for cmd in iterable:
-                if cmd.id == E_Commands.StoreInputPosition:
-                    yield cmd
-
         for action in self.__db.itervalues():
-            if action.command_list.is_empty(): continue
-            change_f = False
-            for cmd in store_input_position(action.command_list.misc):
-                # Replace position register according to 'PositionRegisterMap'
-                cmd.position_register = PositionRegisterMap[cmd.position_register]
-                change_f = True
+            action.command_list.replace_position_registers(PositionRegisterMap)
 
-            # If there was a replacement, ensure that each command appears only once
-            # (Elements changed their value)
-            if change_f:
-                # Adding one by one ensures that double entries are avoided
-                action.command_list.misc = set(x for x in action.command_list.misc)
         return
 
-    def delete_nonsense_conditions(self):
-        """If a command list stores the input position in register unconditionally,
-        then all other conditions concerning the storage in that register are 
-        nonsensical.
-        """
+    def delete_superfluous_commands(self):
         for action in self.__db.itervalues():
-            for cmd in list(x for x in action.command_list \
-                            if     x.id == E_Commands.StoreInputPosition \
-                               and x.pre_context_id == E_PreContextIDs.NONE):
-                for x in list(x for x in action.command_list.misc \
-                              if x.id == E_Commands.StoreInputPosition):
-                    if x.position_register == cmd.position_register and x.pre_context_id != E_PreContextIDs.NONE:
-                        try:    action.command_list.misc.remove(x)
-                        except: pass
+            action.command_list.delete_superfluous_commands()
+
         return
 
     def itervalues(self):
@@ -340,8 +300,8 @@ class Entry(object):
 
     __slots__ = ("__action_db")
 
-    def __init__(self, Opt_StateIndex=None, Opt_FromStateIndex_List=None):
-        self.__action_db = EntryActionDB(Opt_StateIndex, Opt_FromStateIndex_List)
+    def __init__(self):
+        self.__action_db = EntryActionDB()
 
     @property
     def action_db(self):

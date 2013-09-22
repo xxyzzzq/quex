@@ -170,7 +170,7 @@ class LanguageDB_Cpp(dict):
         if Cmd.id == E_Commands.Accepter:
             else_str = ""
             txt      = []
-            for element in Cmd:
+            for element in Cmd.content:
                 if   element.pre_context_id == E_PreContextIDs.BEGIN_OF_LINE:
                     txt.append("    %sif( me->buffer._character_before_lexeme_start == '\\n' )" % else_str)
                 elif element.pre_context_id != E_PreContextIDs.NONE:
@@ -185,9 +185,9 @@ class LanguageDB_Cpp(dict):
         elif Cmd.id == E_Commands.StoreInputPosition:
             # Assume that checking for the pre-context is just overhead that 
             # does not accelerate anything.
-            if Cmd.offset == 0:
+            if Cmd.content.offset == 0:
                 return "    position[%i] = me->buffer._input_p; __quex_debug(\"position[%i] = input_p;\\n\");\n" \
-                       % (Cmd.content.content.position_register, Cmd.content.position_register)
+                       % (Cmd.content.position_register, Cmd.content.position_register)
             else:
                 return "    position[%i] = me->buffer._input_p - %i; __quex_debug(\"position[%i] = input_p - %i;\\n\");\n" \
                        % (Cmd.content.position_register, Cmd.content.offset, Cmd.content.offset)
