@@ -36,8 +36,8 @@ def do(analyzer):
     # (*) Use information about position storage registers that can be shared.
     #     Replace old register values with new ones.
     for state in analyzer.state_db.itervalues():
-        state.entry.action_db.reconfigure_position_registers(analyzer.position_register_map)
-        state.entry.action_db.delete_nonsense_conditions()
+        state.entry.action_db.replace_position_registers(analyzer.position_register_map)
+        state.entry.action_db.delete_superfluous_commands()
         state.drop_out.finish(analyzer.position_register_map)
 
     return analyzer

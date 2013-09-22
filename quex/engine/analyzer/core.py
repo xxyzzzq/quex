@@ -54,6 +54,7 @@ from   quex.blackboard  import setup as Setup
 from   quex.blackboard  import E_AcceptanceIDs, \
                                E_TransitionN, \
                                E_PreContextIDs, \
+                               E_Commands, \
                                E_StateIndices
 
 from   collections      import defaultdict
@@ -221,7 +222,7 @@ class Analyzer:
         """
         init_state_forward_f  = self.is_init_state_forward(StateIndex)
 
-        state = AnalyzerState.from_State(OldState, StateIndex, set(), self.engine_type)
+        state = AnalyzerState.from_State(OldState, StateIndex, self.engine_type)
 
         ta = TransitionAction()
         cl = ta.command_list
@@ -331,7 +332,7 @@ class Analyzer:
         if not self.__engine_type.is_FORWARD(): 
             return False
         for entry in imap(lambda x: x.entry, self.__state_db.itervalues()):
-            if entry.action_db.has_Accepter(): return True
+            if entry.action_db.has_command(E_Commands.Accepter): return True
         return False
 
     def configure_drop_out(self, StateIndex):

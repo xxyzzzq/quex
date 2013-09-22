@@ -20,7 +20,6 @@ class Base:
 
     def input_action(self, InitStateF):    assert False
 
-    def create_Entry(self, State, FromStateIndexList): assert False
     def create_DropOut(self, SM_State):                assert False
 
 class Class_FORWARD(Base):
@@ -46,9 +45,6 @@ class Class_FORWARD(Base):
     def direction_str(self): 
         return "FORWARD"
 
-    def create_Entry(self, SM_State, StateIndex, FromStateIndexList):
-        return Entry(StateIndex, FromStateIndexList)
-
     def create_DropOut(self, SM_State):                          
         # DropOut and Entry interact and require sophisticated analysis
         # => See "Analyzer.get_drop_out_object(...)"
@@ -63,9 +59,6 @@ class Class_CHARACTER_COUNTER(Class_FORWARD):
         """
         return False
 
-    def create_Entry(self, SM_State, StateIndex, FromStateIndexList):
-        return Entry(StateIndex, FromStateIndexList)
-
     def create_DropOut(self, SM_State):                          
         return None
 
@@ -78,19 +71,6 @@ class Class_BACKWARD_PRE_CONTEXT(Base):
 
     def input_action(self, InitStateF):
         return E_InputActions.DECREMENT_THEN_DEREF
-
-    def create_Entry(self, SM_State, StateIndex, FromStateIndexList):
-        result = Entry(StateIndex, FromStateIndexList)
-
-        print_callstack()
-        pre_context_ok_command_list = [ 
-            PreContextOK(origin.pattern_id()) for origin in SM_State.origins() \
-            if origin.is_acceptance() 
-        ]
-        for transition_action in result.action_db.itervalues():
-            transition_action.command_list.misc.update(pre_context_ok_command_list)
-        return result
-
 
     def create_DropOut(self, SM_State):                        
         return DropOutIndifferent()
@@ -110,9 +90,6 @@ class Class_BACKWARD_INPUT_POSITION(Base):
 
     def input_action(self, InitStateF):
         return E_InputActions.DECREMENT_THEN_DEREF
-
-    def create_Entry(self, SM_State, StateIndex, FromStateIndexList):
-        return Entry(StateIndex, FromStateIndexList)
 
     def create_DropOut(self, SM_State):                          
         return DropOutBackwardInputPositionDetection(SM_State.is_acceptance())
