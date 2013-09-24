@@ -529,7 +529,7 @@ def __terminal_router(TerminalFailureRef, TerminalFailureDef):
           __terminal_router_epilog_str, 
     ])
 
-def __terminal_states(action_db, PreConditionIDList, Setup, SimpleF=False):
+def __terminal_states(TerminalStateDb, PreConditionIDList, Setup, SimpleF=False):
     """NOTE: During backward-lexing, for a pre-context, there is not need for terminal
              states, since only the flag 'pre-context fulfilled is raised.
 
@@ -540,6 +540,8 @@ def __terminal_states(action_db, PreConditionIDList, Setup, SimpleF=False):
 
     terminal_failure_ref = "QUEX_LABEL(%i)" % map_door_id_to_address(DoorID.acceptance(E_AcceptanceIDs.FAILURE))
     terminal_failure_def = Label.acceptance(E_AcceptanceIDs.FAILURE)
+    print "#EOF:", Label.global_terminal_end_of_file()
+    print "#Failure:", Label.acceptance(E_AcceptanceIDs.FAILURE)
 
     # (*) Text Blocks _________________________________________________________
     pattern_terminals_code         = []
@@ -548,7 +550,8 @@ def __terminal_states(action_db, PreConditionIDList, Setup, SimpleF=False):
     on_end_of_stream_str           = ""
     on_failure_str                 = ""
 
-    for pattern_id, info in sorted(action_db.items(), key=lambda x: x[0]):
+    for pattern_id, state in sorted(TerminalStateDb.iteritems(), key=lambda x: x[0]):
+        info = state.action
         if pattern_id == E_ActionIDs.ON_END_OF_STREAM:
             on_end_of_stream_str = __terminal_on_end_of_stream(LanguageDB, info, 
                                                                terminal_end_of_stream_def)

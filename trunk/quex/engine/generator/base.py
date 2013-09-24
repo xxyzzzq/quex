@@ -23,7 +23,8 @@ from   quex.engine.analyzer.state.entry_action         import DoorID
 import quex.engine.analyzer.engine_supply_factory      as     engine
 from   quex.engine.analyzer.transition_map             import TransitionMap
 import quex.engine.analyzer.core                       as     analyzer_generator
-from   quex.engine.analyzer.state.core                 import ReloadState
+from   quex.engine.analyzer.state.core                 import ReloadState, \
+                                                              TerminalState
 import quex.engine.analyzer.engine_supply_factory      as     engine_supply_factory
 from   quex.engine.interval_handling                   import NumberSet, Interval
 from   quex.engine.tools                               import all_isinstance
@@ -56,7 +57,7 @@ class GeneratorBase:
 
         # (*) create state (combined) state machines
         #     -- core state machine
-        self.sm                 = get_combined_state_machine(self.state_machine_list)
+        self.sm = get_combined_state_machine(self.state_machine_list)
 
         #     -- pre conditions, combined into a single state machine
         if len(self.pre_context_sm_list) != 0:
@@ -77,8 +78,14 @@ class GeneratorBase:
         self.action_db = dict((action_id,           pap) for pap, action_id in action_id_iterable)
         self.action_db.update((pattern.sm.get_id(), pap) for pap, pattern in pattern_list)
 
+        # -- Terminal states:
+        self.terminal_state_db = dict((action_id, TerminalState(action_id, pap)) 
+                                      for pap, action_id in action_id_iterable)
+        self.terminal_state_db.update((pattern.sm.get_id(), TerminalState(pattern.sm.get_id(), pap)) 
+                                      for pap, pattern in pattern_list)
+
         # -- Core state machines of patterns
-        self.state_machine_list        = [ pattern.sm for pap, pattern in pattern_list ]
+        self.state_machine_list = [ pattern.sm for pap, pattern in pattern_list ]
 
         # -- Pre-Contexts
         self.pre_context_sm_list       = [    pattern.pre_context_sm for pap, pattern in pattern_list \
@@ -147,7 +154,7 @@ class Generator(GeneratorBase):
 
     def code_state_machine_core(self, EngineType, SimpleF):
         sm_txt, analyzer = Generator.code_state_machine(self.sm, EngineType)
-        terminal_txt     = Generator.code_terminals(self.action_db, 
+        terminal_txt     = Generator.code_terminals(self.terminal_state_db, 
                                                     self.pre_context_sm_id_list, 
                                                     SimpleF)
         return sm_txt, terminal_txt, analyzer
@@ -255,17 +262,17 @@ class Generator(GeneratorBase):
         return txt, analyzer
 
     @staticmethod
-    def code_terminals(ActionDB, PreContextID_List=None, SimpleF=False):
+    def code_terminals(TerminalDb, PreContextID_List=None, SimpleF=False):
         """Implement the 'terminal', i.e. the actions which are performed
         once pattern have matched.
         """
         LanguageDB = Setup.language_db
-        return LanguageDB["$terminal-code"](ActionDB, PreContextID_List, Setup, SimpleF) 
+        return LanguageDB["$terminal-code"](TerminalDb, PreContextID_List, Setup, SimpleF) 
 
 class LoopGenerator(Generator):
     @classmethod
     def do(cls, CounterDB, IteratorName, OnContinue, OnExit, CharacterSet=None, ReloadF=False, 
-                       OnBeforeReload=None, OnAfterReload=None):
+           OnBeforeReload=None, OnAfterReload=None):
         """Buffer Limit Code --> Reload
            Skip Character    --> Loop to Skipper State
            Else              --> Exit Loop
