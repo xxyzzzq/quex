@@ -70,19 +70,20 @@ class GeneratorBase:
         # -- Distinguish between 'real' pattern actions and actions related to 
         #    events, such as ON_END_OF_STREAM, ON_FAILURE, ...
         #    Note, that events are not related to a state machine. Patterns are.
-        pattern_list       = [(pap, pap.pattern()) for pap in PatternActionPair_List if pap.pattern() not in E_ActionIDs]
-        action_id_iterable = ((pap, pap.pattern()) for pap in PatternActionPair_List if pap.pattern() in E_ActionIDs)
+        pattern_list   = [(pap, pap.pattern()) for pap in PatternActionPair_List if pap.pattern() not in E_ActionIDs]
+        action_id_list = [(pap, pap.pattern()) for pap in PatternActionPair_List if pap.pattern() in E_ActionIDs]
 
         # -- action_db: distinguish between event actions (ON_FAILURE, ...) 
         #               and pattern actions.
-        self.action_db = dict((action_id,           pap) for pap, action_id in action_id_iterable)
+        self.action_db = dict((action_id,           pap) for pap, action_id in action_id_list)
         self.action_db.update((pattern.sm.get_id(), pap) for pap, pattern in pattern_list)
 
         # -- Terminal states:
         self.terminal_state_db = dict((action_id, TerminalState(action_id, pap)) 
-                                      for pap, action_id in action_id_iterable)
+                                      for pap, action_id in action_id_list)
         self.terminal_state_db.update((pattern.sm.get_id(), TerminalState(pattern.sm.get_id(), pap)) 
                                       for pap, pattern in pattern_list)
+        print "#terminal_state_db:", self.terminal_state_db.keys()
 
         # -- Core state machines of patterns
         self.state_machine_list = [ pattern.sm for pap, pattern in pattern_list ]
