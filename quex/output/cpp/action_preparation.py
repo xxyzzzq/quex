@@ -48,14 +48,17 @@ def do(Mode, IndentationSupportF, BeginOfLineSupportF):
     assert Mode.__class__.__name__ == "Mode"
 
     # -- 'on after match' action
-    on_after_match, \
+    content, \
     require_terminating_zero_preparation_f = __prepare_on_after_match_action(Mode)
+    result.append(TerminalState(E_ActionIDs.ON_AFTER_MATCH, content))
 
     # -- 'end of stream' action
-    end_of_stream_action = __prepare_on_end_of_stream_action(Mode, IndentationSupportF, BeginOfLineSupportF)
+    content = __prepare_on_end_of_stream_action(Mode, IndentationSupportF, BeginOfLineSupportF)
+    result.append(TerminalState(E_ActionIDs.ON_END_OF_STREAM, content))
 
     # -- 'on failure' action (on the event that nothing matched)
-    on_failure_action    = __prepare_on_failure_action(Mode, BeginOfLineSupportF, require_terminating_zero_preparation_f)
+    content = __prepare_on_failure_action(Mode, BeginOfLineSupportF, require_terminating_zero_preparation_f)
+    result.append(TerminalState(E_ActionIDs.ON_FAILURE, content))
 
     # -- pattern-action pairs
     pattern_action_pair_list        = Mode.get_pattern_action_pair_list()
@@ -63,6 +66,7 @@ def do(Mode, IndentationSupportF, BeginOfLineSupportF):
 
     # Assume pattern-action pairs (matches) are sorted and their pattern state
     # machine ids reflect the sequence of pattern precedence.
+    terminal_state_list = []
     for pattern_info in pattern_action_pair_list:
         action  = pattern_info.action()
         pattern = pattern_info.pattern()
@@ -77,11 +81,9 @@ def do(Mode, IndentationSupportF, BeginOfLineSupportF):
 
         pattern_info.set_action(prepared_action)
 
-    for action in (end_of_stream_action, on_failure_action, on_after_match):
-        if action is None: continue
-        pattern_action_pair_list.append(action)
+        result.append(TerminalState(pattern.sm.get_id(), pattern_info))
     
-    return pattern_action_pair_list
+    return result
 
 Match_Lexeme = re.compile("\\bLexeme\\b", re.UNICODE)
 def get_code(CodeFragmentList, Mode=None):

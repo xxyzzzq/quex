@@ -53,3 +53,15 @@ def get_state_machine_id():
     __internal_state_machine_id_counter += long(1)
     return __internal_state_machine_id_counter 
 
+__map_pattern_id_to_terminal_state_index = {}
+def get_terminal_state_index(PatternId):
+    global __map_pattern_id_to_terminal_state_index
+    assert isinstance(PatternId, (int, long))
+
+    index = __map_pattern_id_to_terminal_state_index.get(PatternId)
+    if index is None:
+        index = get()
+        __map_pattern_id_to_terminal_state_index[PatternId] = index
+    return index
+    
+

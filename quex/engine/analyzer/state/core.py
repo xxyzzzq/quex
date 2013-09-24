@@ -1,5 +1,5 @@
 from   quex.engine.state_machine.core          import State
-import quex.engine.state_machine.index         as     index
+import quex.engine.state_machine.index         as     state_index
 from   quex.engine.analyzer.transition_map     import TransitionMap
 from   quex.engine.analyzer.state.entry        import Entry
 from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction, DoorID
@@ -9,30 +9,49 @@ from   quex.blackboard  import setup as Setup, \
                                E_StateIndices, \
                                E_InputActions
 
+class Processor(object):
+    __slots__ = ("_index", "entry")
+    def __init__(self, StateIndex, TheEntry=None):
+        self._index = StateIndex
+        self.entry  = TheEntry
+    
+    @property
+    def index(self):            return self._index
+    def set_index(self, Value): assert isinstance(Value, long); self._index = Value
+
 #__________________________________________________________________________
 #
-# AnalyzerState consists of the following major components:
+# AnalyzerState:
+# 
+#                  AnalyzerState
+#                  .--------------------------------------------.
+#  .-----.         |                                  .---------|
+#  | 341 |--'load'--> Entry  ----->-----.             |tm(input)| 
+#  '-----'         |  actions           |             |  'a' ------> 313
+#  .-----.         |                    '             |  'c' ------> 142
+#  | 412 |--'load'--> Entry  ---> input = *input_p -->|  'p' ------> 721
+#  '-----'         |  actions           .             |  'q' ------> 313
+#  .-----.         |                    |             |  'x' ------> 472
+#  | 765 |--'load'--> Entry  --->-------'             |  'y' ------> 812
+#  '-----'         |  actions                         |- - - - -|
+#                  |                                  |drop out ---> 
+#                  |                                  '---------|
+#                  '--------------------------------------------'
 #
-#   entry -- tells what has to happen at entry to the state (depending 
-#            on the state from which it is entered).
-#
-#   transition_map -- telling what subsequent state is to be entered
-#                     dependent on the triggering character.
-#
-#   drop_out -- contains information about what happens when the 
-#               transition map cannot trigger on the character.
+# The entry actions depend on the state from which the state is entered.
+# Next, the input pointer is dereferenced and 'input' is assigned. Based
+# on the value of 'input' a subsequent state is targetted. The relation
+# between 'input' and the target state is given by the 'TransitionMap'.
+# If no state transition is possible, then 'drop out actions' are executed.
 #__________________________________________________________________________
-class AnalyzerState(object):
-    __slots__ = ("__index", 
-                 "entry", 
-                 "drop_out", 
+class AnalyzerState(Processor):
+    __slots__ = ("drop_out", 
                  "map_target_index_to_character_set", 
                  "transition_map") 
 
     def __init__(self, StateIndex, TheTransitionMap):
-        self.__index                           = StateIndex
+        Processor.__init__(self, StateIndex)
         self.drop_out                          = None
-        self.entry                             = None
         self.map_target_index_to_character_set = None
         self.transition_map                    = TheTransitionMap
 
@@ -54,10 +73,6 @@ class AnalyzerState(object):
         x.map_target_index_to_character_set = SM_State.target_map.get_map()
 
         return x
-
-    @property
-    def index(self):                  return self.__index
-    def set_index(self, Value):       assert isinstance(Value, long); self.__index = Value
 
     def prepare_for_reload(self, TheAnalyzer):
         """Prepares state for reload:
@@ -115,33 +130,31 @@ class AnalyzerState(object):
     def __repr__(self):
         return self.get_string()
 
-class ReloadState:
-    """The 'reload' state shall partly be handled like a normal state. It does
-    not have a transition map (i.e. 'input causes transition'). But it has an
-    entry action database. That is dependent from where it is entered different
-    things are done.
-
-    A 'normal' state, for example sets the address where to go upon successful
-    reload and the address where to go upon failure. 
-
-                     ReloadState
-                     .--------------------------------------------.
-     .-----.         |                                            |
-     | 341 |--'load'--> S = 341;                                  |
-     '-----'         |  F = DropOut(341); --.            .----------> goto S
-     .-----.         |                      |           / success |
-     | 412 |--'load'--> S = 412;            |          /          |
-     '-----'         |  F = DropOut(412); --+--> Reload           |
-     .-----.         |                      |          \          |
-     | 765 |--'load'--> S = 765;            |           \ failure |
-     '-----'         |  F = DropOut(765); --'            '----------> goto F
-                     |                                            |
-                     '--------------------------------------------'
-    """
+#__________________________________________________________________________
+#
+# ReloadState:
+#                  .--------------------------------------------.
+#  .-----.         |                                            |
+#  | 341 |--'load'--> S = 341;                                  |
+#  '-----'         |  F = DropOut(341); --.            .----------> goto S
+#  .-----.         |                      |           / success |
+#  | 412 |--'load'--> S = 412;            |          /          |
+#  '-----'         |  F = DropOut(412); --+--> Reload           |
+#  .-----.         |                      |          \          |
+#  | 765 |--'load'--> S = 765;            |           \ failure |
+#  '-----'         |  F = DropOut(765); --'            '----------> goto F
+#                  |                                            |
+#                  '--------------------------------------------'
+# 
+# The entry of the reload state sets two variables: The address where to
+# go if the reload was successful and the address where to go in case that
+# the reload fails. 
+#__________________________________________________________________________
+class ReloadState(Processor):
     def __init__(self, EngineType):
-        if EngineType.is_FORWARD(): self.index = E_StateIndices.RELOAD_FORWARD
-        else:                       self.index = E_StateIndices.RELOAD_BACKWARD
-        self.entry = Entry()
+        if EngineType.is_FORWARD(): index = E_StateIndices.RELOAD_FORWARD
+        else:                       index = E_StateIndices.RELOAD_BACKWARD
+        Processor.__init__(self, index, Entry())
 
     def remove_states(self, StateIndexSet):
         self.entry.action_db.remove_transition_from_states(StateIndexSet)
@@ -157,3 +170,30 @@ class ReloadState:
 
         self.entry.action_db.enter(TransitionID(self.index, StateIndex, 0), ta)
 
+#__________________________________________________________________________
+#
+# TerminalState:
+#                    .-------------------------------------------------.
+#  .-----.           |                                                 |
+#  | 341 |--'accept'--> input_p = position[2]; --->---+---------.      |
+#  '-----'           |  set terminating zero;         |         |      |
+#  .-----.           |                                |    .---------. |
+#  | 412 |--'accept'--> column_n += length  ------>---+    | pattern | |
+#  '-----'           |  set terminating zero;         |    |  match  |--->
+#  .-----.           |                                |    | actions | |
+#  | 765 |--'accept'--> line_n += 2;  ------------>---'    '---------' |
+#  '-----'           |  set terminating zero;                          |
+#                    |                                                 |
+#                    '-------------------------------------------------'
+# 
+# A terminal state prepares the execution of the user's pattern match 
+# actions and the start of the next analysis step. For this, it computes
+# line and column numbers, sets terminating zeroes in strings and resets
+# the input pointer to the position where the next analysis step starts.
+#__________________________________________________________________________
+class TerminalState(Processor):
+    __slots__ = ("action", "pattern_id")
+    def __init__(self, PatternId, PatternMatchAction):
+        Processor.__init__(self, state_index.get_terminal_state_index(PatternId), Entry())
+        self.pattern_id = PatternId
+        self.action     = PatternMatchAction
