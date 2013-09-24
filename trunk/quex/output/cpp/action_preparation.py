@@ -48,17 +48,14 @@ def do(Mode, IndentationSupportF, BeginOfLineSupportF):
     assert Mode.__class__.__name__ == "Mode"
 
     # -- 'on after match' action
-    content, \
+    on_after_match, \
     require_terminating_zero_preparation_f = __prepare_on_after_match_action(Mode)
-    result.append(TerminalState(E_ActionIDs.ON_AFTER_MATCH, content))
 
     # -- 'end of stream' action
-    content = __prepare_on_end_of_stream_action(Mode, IndentationSupportF, BeginOfLineSupportF)
-    result.append(TerminalState(E_ActionIDs.ON_END_OF_STREAM, content))
+    on_end_of_stream_action = __prepare_on_end_of_stream_action(Mode, IndentationSupportF, BeginOfLineSupportF)
 
     # -- 'on failure' action (on the event that nothing matched)
-    content = __prepare_on_failure_action(Mode, BeginOfLineSupportF, require_terminating_zero_preparation_f)
-    result.append(TerminalState(E_ActionIDs.ON_FAILURE, content))
+    on_failure_action = __prepare_on_failure_action(Mode, BeginOfLineSupportF, require_terminating_zero_preparation_f)
 
     # -- pattern-action pairs
     pattern_action_pair_list        = Mode.get_pattern_action_pair_list()
@@ -80,10 +77,12 @@ def do(Mode, IndentationSupportF, BeginOfLineSupportF):
                                     require_terminating_zero_preparation_f=require_terminating_zero_preparation_f)
 
         pattern_info.set_action(prepared_action)
-
-        result.append(TerminalState(pattern.sm.get_id(), pattern_info))
     
-    return result
+    for action in (end_of_stream_action, on_failure_action, on_after_match):
+        if action is None: continue
+        pattern_action_pair_list.append(action)
+
+    return pattern_action_pair_list
 
 Match_Lexeme = re.compile("\\bLexeme\\b", re.UNICODE)
 def get_code(CodeFragmentList, Mode=None):
