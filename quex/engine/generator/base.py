@@ -3,7 +3,8 @@ from   quex.engine.generator.action_info               import PatternActionInfo
 import quex.engine.generator.state_machine_coder       as     state_machine_coder
 import quex.engine.generator.state_router              as     state_router_generator
 from   quex.engine.generator.languages.variable_db     import variable_db
-from   quex.engine.generator.languages.address         import get_new_address,                    \
+from   quex.engine.generator.languages.address         import CodeIfDoorIdReferenced, \
+                                                              get_new_address,                    \
                                                               map_address_to_label,               \
                                                               map_door_id_to_address,             \
                                                               map_door_id_to_label,               \
@@ -75,15 +76,15 @@ class GeneratorBase:
 
         # -- action_db: distinguish between event actions (ON_FAILURE, ...) 
         #               and pattern actions.
-        self.action_db = dict((action_id,           pap) for pap, action_id in action_id_list)
-        self.action_db.update((pattern.sm.get_id(), pap) for pap, pattern in pattern_list)
+        ## self.action_db = dict((action_id,           pap) for pap, action_id in action_id_list)
+        ## self.action_db.update((pattern.sm.get_id(), pap) for pap, pattern in pattern_list)
+        self.on_after_match_f = E_ActionIDs.ON_AFTER_MATCH in (action_id for pap, action_id in action_id_list)
 
         # -- Terminal states:
         self.terminal_state_db = dict((action_id, TerminalState(action_id, pap)) 
                                       for pap, action_id in action_id_list)
         self.terminal_state_db.update((pattern.sm.get_id(), TerminalState(pattern.sm.get_id(), pap)) 
                                       for pap, pattern in pattern_list)
-        print "#terminal_state_db:", self.terminal_state_db.keys()
 
         # -- Core state machines of patterns
         self.state_machine_list = [ pattern.sm for pap, pattern in pattern_list ]
@@ -154,10 +155,38 @@ class Generator(GeneratorBase):
         return sm_txt + terminal_txt 
 
     def code_state_machine_core(self, EngineType, SimpleF):
+        LanguageDB = Setup.language_db
+
+        if E_ActionIDs.ON_AFTER_MATCH not in self.terminal_state_db:
+            on_after_match_info = None
+        else:
+            on_after_match_info = self.terminal_state_db[E_ActionIDs.ON_AFTER_MATCH].action
+        
+
         sm_txt, analyzer = Generator.code_state_machine(self.sm, EngineType)
-        terminal_txt     = Generator.code_terminals(self.terminal_state_db, 
-                                                    self.pre_context_sm_id_list, 
-                                                    SimpleF)
+        assert all_isinstance(sm_txt, (str, unicode, CodeIfDoorIdReferenced, int))
+
+        if SimpleF:
+            lexeme_macro_definition_str = ""
+            reentry_preparation_str     = ""
+            terminal_router             = ""
+        else:
+            lexeme_macro_definition_str = LanguageDB.TERMINAL_LEXEME_MACRO_DEFINITIONS()
+            reentry_preparation_str     = LanguageDB.REENTRY_PREPARATION(self.pre_context_sm_id_list, on_after_match_info)
+            terminal_router_txt         = LanguageDB.TERMINAL_ROUTER()
+            assert all_isinstance(terminal_router_txt, (str, unicode, CodeIfDoorIdReferenced, int))
+
+        terminal_states_txt = LanguageDB.TERMINAL_CODE(self.terminal_state_db, 
+                                                       self.pre_context_sm_id_list, 
+                                                       Setup, 
+                                                       SimpleF) 
+        assert all_isinstance(terminal_states_txt, (str, unicode, CodeIfDoorIdReferenced, int))
+
+        terminal_txt = terminal_router_txt
+        terminal_txt.append(lexeme_macro_definition_str)
+        terminal_txt.extend(terminal_states_txt)
+        terminal_txt.append(reentry_preparation_str)
+
         return sm_txt, terminal_txt, analyzer
 
     def code_backward_input_position_detection(self):
@@ -219,22 +248,22 @@ class Generator(GeneratorBase):
         return Setup.language_db.VARIABLE_DEFINITIONS(variable_db)
 
     @staticmethod
-    def code_function(ActionDB, FunctionPrefix, FunctionBody, VariableDefs, ModeNameList):
-        analyzer_function = Setup.language_db["$analyzer-func"](FunctionPrefix,
-                                                                Setup,
-                                                                VariableDefs, 
-                                                                FunctionBody, 
-                                                                ModeNameList) 
+    def code_function(OnAfterMatchF, FunctionPrefix, FunctionBody, VariableDefs, ModeNameList):
+        LanguageDB = Setup.language_db
+        assert type(OnAfterMatchF) == bool
+        analyzer_function = LanguageDB["$analyzer-func"](FunctionPrefix,
+                                                         Setup,
+                                                         VariableDefs, 
+                                                         FunctionBody, 
+                                                         ModeNameList) 
 
-        txt  = [ 
-            Setup.language_db["$header-definitions"](Setup.language_db, 
-                                                     ActionDB.get(E_ActionIDs.ON_AFTER_MATCH)) 
-        ]
-        txt.extend(get_plain_strings(analyzer_function))
+        header_txt = LanguageDB.HEADER_DEFINITIONS(OnAfterMatchF) 
+        assert all_isinstance(header_txt, (str, unicode))
 
-        assert all_isinstance(txt, (str, unicode))
+        analyzer_txt = get_plain_strings(analyzer_function)
+        assert all_isinstance(analyzer_txt, (str, unicode))
 
-        return txt
+        return header_txt + analyzer_txt
 
     @staticmethod
     def code_state_machine(sm, EngineType): 
@@ -261,14 +290,6 @@ class Generator(GeneratorBase):
         txt.extend(state_machine_code)
 
         return txt, analyzer
-
-    @staticmethod
-    def code_terminals(TerminalDb, PreContextID_List=None, SimpleF=False):
-        """Implement the 'terminal', i.e. the actions which are performed
-        once pattern have matched.
-        """
-        LanguageDB = Setup.language_db
-        return LanguageDB["$terminal-code"](TerminalDb, PreContextID_List, Setup, SimpleF) 
 
 class LoopGenerator(Generator):
     @classmethod

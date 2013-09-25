@@ -21,7 +21,8 @@ from   quex.engine.generator.languages.address   import Label, \
                                                         mark_label_as_gotoed, \
                                                         mark_door_id_as_gotoed, \
                                                         get_plain_strings
-from   quex.blackboard                           import E_StateIndices,  \
+from   quex.blackboard                           import setup as Setup, \
+                                                        E_StateIndices,  \
                                                         E_AcceptanceIDs, \
                                                         E_InputActions,  \
                                                         E_TransitionN,   \
@@ -48,8 +49,8 @@ CppBase = {
     "$indentation_check_space":  cpp.__indentation_check_whitespace,
     #
     "$analyzer-func":           cpp.__analyzer_function,
-    "$terminal-code":           cpp.__terminal_states,      
-    "$header-definitions":      cpp.__header_definitions,
+    #"$terminal-code":           cpp.__terminal_states,      
+    #"$header-definitions":      cpp.__header_definitions,
     "$frame":                   cpp.__frame_of_all,
     "$code_base":               "/quex/code_base/",
     "$token-default-file":      "/token/CppDefault.qx",
@@ -250,6 +251,21 @@ class LanguageDB_Cpp(dict):
         #                                 self.ASSIGN("input", self.INPUT_P_DEREFERENCE()))
         else:
             assert False, "Unknown Entry Action"
+
+    def TERMINAL_LEXEME_MACRO_DEFINITIONS(self):
+        return cpp.lexeme_macro_definitions(Setup)
+
+    def TERMINAL_ROUTER(self):
+        return cpp.terminal_router()
+
+    def TERMINAL_CODE(self, TerminalStateDb, PreConditionIDList, Setup, SimpleF=False): 
+        return cpp.terminal_states(TerminalStateDb, PreConditionIDList, Setup, SimpleF)
+
+    def REENTRY_PREPARATION(self, PreConditionIDList, OnAfterMatchInfo):
+        return cpp.reentry_preparation(self, PreConditionIDList, OnAfterMatchInfo)
+
+    def HEADER_DEFINITIONS(self, OnAfterMatchF):
+        return cpp.header_definitions(self, OnAfterMatchF)
 
     def LABEL_SHARED_ENTRY(self, TemplateIndex, EntryN=None):
         if EntryN is None: return "_%i_shared_entry:\n"    % TemplateIndex
