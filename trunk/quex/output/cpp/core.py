@@ -4,7 +4,8 @@ from   quex.engine.generator.base                  import Generator as CppGenera
 from   quex.engine.tools                           import all_isinstance
 import quex.output.cpp.action_preparation          as     action_preparation
 import quex.output.cpp.counter                     as     counter
-from   quex.blackboard                             import setup as Setup
+from   quex.blackboard                             import setup as Setup, \
+                                                          E_ActionIDs
 
 def do_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
 
@@ -36,13 +37,13 @@ def do_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
 def do(PatternActionPair_List, FunctionPrefix, ModeNameList):
     function_body,        \
     variable_definitions, \
-    action_db             = do_core(PatternActionPair_List)
+    on_after_match_f      = do_core(PatternActionPair_List)
 
-    result = CppGenerator.code_function(action_db, 
-                                     FunctionPrefix, 
-                                     function_body,
-                                     variable_definitions, 
-                                     ModeNameList)
+    result = CppGenerator.code_function(on_after_match_f, 
+                                        FunctionPrefix, 
+                                        function_body,
+                                        variable_definitions, 
+                                        ModeNameList)
     return "".join(result)
 
 def do_core(PatternActionPair_List):
@@ -89,7 +90,7 @@ def do_core(PatternActionPair_List):
     function_body.extend(state_router) # route to state by index (only if no computed gotos)
     function_body.extend(reload_procedures)
 
-    return function_body, variable_definitions, generator.action_db
+    return function_body, variable_definitions, generator.on_after_match_f
 
 def do_counter(Mode):
     init_address_handling()

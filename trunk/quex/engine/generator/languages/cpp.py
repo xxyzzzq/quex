@@ -44,22 +44,22 @@ __return_without_on_after_match = """
 #define RETURN    __QUEX_PURE_RETURN;
 """
 
-def __header_definitions(LanguageDB, OnAfterMatch):
+def header_definitions(LanguageDB, OnAfterMatchF):
+    assert type(OnAfterMatchF) == bool
     global __return_without_on_after_match
     global __return_with_on_after_match
     assert len(__return_with_on_after_match) > 10
     assert len(__return_without_on_after_match) > 10
 
-    txt = __header_definitions_txt
     #txt += "/MARK/ %i '%s'\n" % (len(__return_with_on_after_match),    map(ord, __return_with_on_after_match))
     #txt += "/MARK/ '%s'\n" % __return_with_on_after_match
     #txt += "/MARK/ %i '%s'\n" % (len(__return_without_on_after_match), map(ord, __return_without_on_after_match))
     #txt += "/MARK/ '%s'\n" % __return_without_on_after_match
-    txt = txt.replace("$$GOTO_START_PREPARATION$$", map_door_id_to_label(DoorID.global_reentry_preparation()))
-    mark_door_id_as_gotoed(DoorID.global_reentry_preparation())
+    txt = [ __header_definitions_txt.replace("$$GOTO_START_PREPARATION$$", 
+                                             map_door_id_to_label(DoorID.global_reentry_preparation(), GotoedF=True)) ]
 
-    if OnAfterMatch is not None: txt += __return_with_on_after_match
-    else:                        txt += __return_without_on_after_match
+    if OnAfterMatchF: txt.append(__return_with_on_after_match)
+    else:             txt.append(__return_without_on_after_match)
     return txt
 
 def _local_variable_definitions(VariableDB):
@@ -259,20 +259,7 @@ def __analyzer_function(StateMachineName, Setup,
     txt.append("#include <quex/code_base/temporary_macros_off>\n")
     return txt
 
-__terminal_router_prolog_str = """
-    __quex_assert_no_passage();
-#   if defined(QUEX_OPTION_COMPUTED_GOTOS)
-    /* Avoid compilers warning 'unreferenced label __TERMINAL_ROUTER'. Avoid 
-     * this by adding an explicit goto here.                               
-     *
-     * This may happen if: 
-     * -- QUEX_GOTO_TERMINAL(last_acceptance) defined => goto __TERMINAL_ROUTER.
-     * -- All last_acceptance are 'failure'           => no routing.
-     * -- 'QUEX_OPTION_COMPUTED_GOTOS' defined        => no router necessary. */
-    goto __TERMINAL_ROUTER;
-#   endif
-
-__TERMINAL_ROUTER:
+__terminal_router_str = """
     __quex_debug("terminal router");
     /*  if last_acceptance => goto correspondent acceptance terminal state */
     /*  else               => execute default action                       */
@@ -283,9 +270,7 @@ __TERMINAL_ROUTER:
     goto *last_acceptance;
 #   else
     target_state_index = last_acceptance;
-    goto """
-
-__terminal_router_epilog_str = """
+    goto $$STATE_ROUTER$$;
 #   endif /* QUEX_OPTION_COMPUTED_GOTOS */
 """
 __terminal_state_prolog  = """
@@ -367,7 +352,8 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
     goto $$GOTO_START$$;
 """
 
-def __lexeme_macro_definitions(LanguageDB, Setup):
+def lexeme_macro_definitions(Setup):
+    LanguageDB = Setup.language_db
     lexeme_null_object_name = "QUEX_NAME(LexemeNullObject)"
     if Setup.external_lexeme_null_object != "":
         lexeme_null_object_name = Setup.external_lexeme_null_object
@@ -496,7 +482,8 @@ def __on_after_match_then_return(OnAfterMatchAction):
 
     return return_preparation, on_after_match_str
 
-def __reentry_preparation(LanguageDB, PreConditionIDList, OnAfterMatchStr, TerminalFailureRef):
+def reentry_preparation(LanguageDB, PreConditionIDList, OnAfterMatchInfo):
+    TerminalFailureRef = "QUEX_LABEL(%i)" % map_door_id_to_address(DoorID.acceptance(E_AcceptanceIDs.FAILURE))
     """Reentry preperation (without returning from the function."""
     # (*) Unset all pre-context flags which may have possibly been set
     if PreConditionIDList is None:
@@ -507,7 +494,11 @@ def __reentry_preparation(LanguageDB, PreConditionIDList, OnAfterMatchStr, Termi
             for pre_context_id in PreConditionIDList
         ])
 
-    return blue_print(__reentry_preparation_str, [
+    on_after_match_then_return_str, \
+    OnAfterMatchStr                 = __on_after_match_then_return(OnAfterMatchInfo)
+
+    txt = on_after_match_then_return_str
+    txt += blue_print(__reentry_preparation_str, [
           ["$$REENTRY_PREPARATION$$",                    Label.global_reentry_preparation()],
           ["$$REENTRY_PREPARATION_2$$",                  Label.global_reentry_preparation_2()],
           ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$",  unset_pre_context_flags_str],
@@ -516,32 +507,27 @@ def __reentry_preparation(LanguageDB, PreConditionIDList, OnAfterMatchStr, Termi
           ["$$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$", comment_on_post_context_position_init_str],
           ["$$TERMINAL_FAILURE-REF$$",                   TerminalFailureRef],
     ])
+    return txt
 
-def __terminal_router(TerminalFailureRef, TerminalFailureDef):
-    prolog = blue_print(__terminal_router_prolog_str, [
+def terminal_router():
+    TerminalFailureRef = "QUEX_LABEL(%i)" % map_door_id_to_address(DoorID.acceptance(E_AcceptanceIDs.FAILURE))
+    TerminalFailureDef = Label.acceptance(E_AcceptanceIDs.FAILURE)
+    content = blue_print(__terminal_router_str, [
                          ["$$TERMINAL_FAILURE-REF$$", TerminalFailureRef],
                          ["$$TERMINAL_FAILURE$$",     TerminalFailureDef],
+                         ["$$STATE_ROUTER$$",         Label.global_state_router()],
                         ])
-    return CodeIfDoorIdReferenced(DoorID.global_terminal_router(),
-    [
-          prolog,
-          Label.global_state_router(), ";", # WHY NOT 'global_terminal_router()' 
-          __terminal_router_epilog_str, 
-    ])
 
-def __terminal_states(TerminalStateDb, PreConditionIDList, Setup, SimpleF=False):
+    txt =  [ "    __quex_assert_no_passage();\n" ]
+    txt.append(CodeIfDoorIdReferenced(DoorID.global_terminal_router(), [ content ]))
+    return txt
+
+def terminal_states(TerminalStateDb, PreConditionIDList, Setup, SimpleF=False):
     """NOTE: During backward-lexing, for a pre-context, there is not need for terminal
              states, since only the flag 'pre-context fulfilled is raised.
 
     """      
     LanguageDB = Setup.language_db
-
-    terminal_end_of_stream_def = Label.global_terminal_end_of_file()
-
-    terminal_failure_ref = "QUEX_LABEL(%i)" % map_door_id_to_address(DoorID.acceptance(E_AcceptanceIDs.FAILURE))
-    terminal_failure_def = Label.acceptance(E_AcceptanceIDs.FAILURE)
-    print "#EOF:", Label.global_terminal_end_of_file()
-    print "#Failure:", Label.acceptance(E_AcceptanceIDs.FAILURE)
 
     # (*) Text Blocks _________________________________________________________
     pattern_terminals_code         = []
@@ -554,37 +540,21 @@ def __terminal_states(TerminalStateDb, PreConditionIDList, Setup, SimpleF=False)
         info = state.action
         if pattern_id == E_ActionIDs.ON_END_OF_STREAM:
             on_end_of_stream_str = __terminal_on_end_of_stream(LanguageDB, info, 
-                                                               terminal_end_of_stream_def)
+                                                               Label.global_terminal_end_of_file())
 
         elif pattern_id == E_ActionIDs.ON_FAILURE:
-            on_failure_str       = __terminal_on_failure(info, terminal_failure_def)
+            on_failure_str       = __terminal_on_failure(info, Label.acceptance(E_AcceptanceIDs.FAILURE))
 
         elif pattern_id == E_ActionIDs.ON_AFTER_MATCH:
-            on_after_match_then_return_str, \
-            on_after_match_str   = __on_after_match_then_return(info)
+            pass
 
         else:
             pattern_terminals_code.extend(__pattern_terminal_code(pattern_id, info, SimpleF, Setup))
 
-    if SimpleF:
-        lexeme_macro_definition_str = ""
-        reentry_preparation_str     = ""
-        terminal_router             = ""
-    else:
-        lexeme_macro_definition_str = __lexeme_macro_definitions(LanguageDB, Setup)
-
-        reentry_preparation_str     = __reentry_preparation(LanguageDB, PreConditionIDList, 
-                                                            on_after_match_str, terminal_failure_ref)
-        terminal_router             = __terminal_router(terminal_failure_ref, terminal_failure_def)
-
     txt = []
-    txt.append(terminal_router)
-    txt.append(lexeme_macro_definition_str)
     txt.extend(pattern_terminals_code)
     txt.extend(on_failure_str)
     txt.extend(on_end_of_stream_str)
-    txt.append(on_after_match_then_return_str)
-    txt.append(reentry_preparation_str)
 
     return txt
     

@@ -88,8 +88,8 @@ class UniformObject(object):
 def _report_failed_assertion(i, txt):
     for k in range(max(0,i-10),i):
         print "[%i](before) \"%s\"" % (k, txt[k])
-    print "[%i] Error: '%s'" % (i, element.__class__.__name__)
-    print "[%i] Error: '%s'" % (i, element)
+    print "[%i] Error: '%s'" % (i, txt[i].__class__.__name__)
+    print "[%i] Error: '%s'" % (i, txt[i])
     for k in range(i+1, min(i+10, len(txt))):
         print "[%i](after) \"%s\"" % (k, txt[k])
 
