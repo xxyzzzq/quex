@@ -91,6 +91,7 @@ class TargetByStateKey(object):
     def from_2_TargetByStateKeys(A, B):
         result = TargetByStateKey()
         result.__scheme = A.__scheme + B.__scheme
+
         if A.__uniform_door_id == B.__uniform_door_id: 
             result.__uniform_door_id = A.__uniform_door_id
         else:

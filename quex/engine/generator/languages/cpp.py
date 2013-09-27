@@ -364,7 +364,29 @@ def lexeme_macro_definitions(Setup):
           ["$$LEXEME_NULL_OBJECT$$", lexeme_null_object_name],
     ])
 
-def __pattern_terminal_code(PatternID, Info, SimpleF, Setup):
+def __jump_to_backward_input_position_detector_and_return(BIPD_SM, Setup):
+    """Pseudo Ambiguous Post Contexts:
+
+       (1) Jump to the BIPD (backward input position detector)
+       (2) Provide the jump-back label so that BIPD can jump to it
+           once the next input position has been found.
+
+    NOTE: Pseudo-Ambiguous Post Context require that the end of the core 
+    pattern is to be searched! One cannot simply restore a position register.
+    """
+    LanguageDB = Setup.language_db
+
+    bipd_id   = BIPD_SM.get_id()
+    door_id   = BIPD_SM.get_action_at_state_machine_entry().door_id
+    bipd_str  = "    goto %s; /* Backward input position detector */\n" % \
+                map_door_id_to_label(door_id, GotoedF=True)
+    # After having finished the analyzis, enter the terminal code, here.
+    bipd_str += "%s: /* After return from backward input position detector.\n" % \
+                Label.backward_input_position_detector_return(bipd_id)
+    ##print "#bipd_str:", bipd_str, bipd_str
+    return bipd_str
+
+def __terminal_on_pattern_match(PatternID, Info, SimpleF, Setup):
     """ PatternID     -- ID of the winning pattern.
         Action        -- Action to be performed when pattern wins.
         PatternString -- String that describes the pattern.
@@ -380,79 +402,50 @@ def __pattern_terminal_code(PatternID, Info, SimpleF, Setup):
 
     assert type(action_code) == list
 
-
     def safe(Letter):
         if Letter in ['\\', '"', '\n', '\t', '\r', '\a', '\v']: return "\\" + Letter
         else:                                                   return Letter 
 
     safe_pattern = "".join(safe(x) for x in pattern_string)
-    
-    result = [  "\n", 
-                 "%s:\n" % Label.acceptance(PatternID),
-              1, "__quex_debug(\"* terminal %i:   %s\\n\");\n" % (PatternID, safe_pattern)]
+
+    result = []
 
     # Pseudo-ambiguous post contexts require a backward search of the next
     # input position. If the pattern is not 'pseudo-ambiguous' (which it most
     # likely isn't), then 'user_code_prefix' will be "".
     if bipd_sm is not None:
-        result.append(__jump_to_backward_input_position_detector(bipd_sm, Setup))
+        result.append(__jump_to_backward_input_position_detector_and_return(bipd_sm, Setup))
 
     action_code = copy(action_code)
     action_code.insert(0, 0)
     Setup.language_db.INDENT(action_code, 1)
-    if   isinstance(action_code, list):           result.extend(action_code)
-    elif isinstance(action_code, (str, unicode)): result.append(action_code)
-    else:                                         assert False
+    result.extend(action_code)
 
     if not SimpleF: 
         result.extend(["\n", 1, "goto %s;\n" % Label.global_reentry_preparation(GotoedF=True)])
-    return result
 
-def __jump_to_backward_input_position_detector(BIPD_SM, Setup):
-    """Pseudo Ambiguous Post Contexts:
+    class HelpOut:
+        def __init__(self, Code): self.__code = Code
+        def get_code(self):       return self.__code
+    class HelpOut2:
+        def __init__(self, Code): self.__action = HelpOut(Code)
+        def action(self):         return self.__action
+    
+    return __terminally(HelpOut2(result), Label.acceptance(PatternID),
+                        Name="%i:   %s" % (PatternID, safe_pattern))
 
-       (1) Jump to the BIPD (backward input position detector)
-       (2) Provide the jump-back label so that BIPD can jump to it
-           once the next input position has been found.
-
-    NOTE: Pseudo-Ambiguous Post Context require that the end of the core 
-    pattern is to be searched! One cannot simply restore a positoin register.
-    """
-    LanguageDB = Setup.language_db
-
-    bipd_id   = BIPD_SM.get_id()
-    door_id   = BIPD_SM.get_action_at_state_machine_entry().door_id
-    bipd_str  = "    goto %s; /* Backward input position detector */\n" % \
-                map_door_id_to_label(door_id, GotoedF=True)
-    # After having finished the analyzis, enter the terminal code, here.
-    bipd_str += "%s: /* After return from backward input position detector.\n" % \
-                Label.backward_input_position_detector_return(bipd_id)
-    ##print "#bipd_str:", bipd_str, bipd_str
-    return bipd_str
-
-def __terminal_on_failure(OnFailureAction, TerminalFailureDef):
-    if OnFailureAction is None:
+def __terminally(TheAction, TheLabel, Name, Epilog=[]):
+    if TheAction is None:
         return []
 
     txt = [
-       "\n\n",
-       "%s: /* TERMINAL: FAILURE */\n" % TerminalFailureDef,
+       "%s: __quex_debug(\"* TERMINAL %s\\n\");\n" % (TheLabel, Name),
         0 
     ]
-    txt.extend(OnFailureAction.action().get_code())
+    txt.extend(TheAction.action().get_code())
     txt.append("\n")
+    txt.extend(Epilog)
     return txt
-
-def __terminal_on_end_of_stream(LanguageDB, OnEndOfStreamAction, TerminalEndOfStreamDef):
-    if OnEndOfStreamAction is None:
-        return ""
-    return \
-       "\n\n/* TERMINAL: END_OF_STREAM */\n" \
-     + "%s:\n" % TerminalEndOfStreamDef                     \
-     + "%s\n"  % OnEndOfStreamAction.action().get_code_string() \
-     + "    /* End of Stream causes a return from the lexical analyzer, so that no\n"     \
-     + "     * tokens can be filled after the termination token.                    */\n" \
-     + "    RETURN;\n"
 
 __on_after_match_then_return_str = """
 __ON_AFTER_MATCH_THEN_RETURN:
@@ -509,54 +502,36 @@ def reentry_preparation(LanguageDB, PreConditionIDList, OnAfterMatchInfo):
     ])
     return txt
 
-def terminal_router():
-    TerminalFailureRef = "QUEX_LABEL(%i)" % map_door_id_to_address(DoorID.acceptance(E_AcceptanceIDs.FAILURE))
-    TerminalFailureDef = Label.acceptance(E_AcceptanceIDs.FAILURE)
-    content = blue_print(__terminal_router_str, [
-                         ["$$TERMINAL_FAILURE-REF$$", TerminalFailureRef],
-                         ["$$TERMINAL_FAILURE$$",     TerminalFailureDef],
-                         ["$$STATE_ROUTER$$",         Label.global_state_router()],
-                        ])
-
-    txt =  [ "    __quex_assert_no_passage();\n" ]
-    txt.append(CodeIfDoorIdReferenced(DoorID.global_terminal_router(), [ content ]))
-    return txt
-
 def terminal_states(TerminalStateDb, PreConditionIDList, Setup, SimpleF=False):
     """NOTE: During backward-lexing, for a pre-context, there is not need for terminal
              states, since only the flag 'pre-context fulfilled is raised.
 
     """      
-    LanguageDB = Setup.language_db
-
-    # (*) Text Blocks _________________________________________________________
-    pattern_terminals_code         = []
-    on_after_match_str             = ""
-    on_after_match_then_return_str = ""
-    on_end_of_stream_str           = ""
-    on_failure_str                 = ""
+    pattern_terminals_code = []
 
     for pattern_id, state in sorted(TerminalStateDb.iteritems(), key=lambda x: x[0]):
-        info = state.action
         if pattern_id == E_ActionIDs.ON_END_OF_STREAM:
-            on_end_of_stream_str = __terminal_on_end_of_stream(LanguageDB, info, 
-                                                               Label.global_terminal_end_of_file())
+            txt = __terminally(state.action, Label.global_terminal_end_of_file(),
+                Name  = "END_OF_STREAM",
+                Epilog=[
+                "    /* End of Stream causes a return from the lexical analyzer, so that no\n",
+                "     * tokens can be filled after the termination token.                    */\n",
+                "    RETURN;\n"
+            ])
 
         elif pattern_id == E_ActionIDs.ON_FAILURE:
-            on_failure_str       = __terminal_on_failure(info, Label.acceptance(E_AcceptanceIDs.FAILURE))
+            txt = __terminally(state.action, Label.acceptance(E_AcceptanceIDs.FAILURE), 
+                               Name = "FAILURE")
 
         elif pattern_id == E_ActionIDs.ON_AFTER_MATCH:
-            pass
+            continue
 
         else:
-            pattern_terminals_code.extend(__pattern_terminal_code(pattern_id, info, SimpleF, Setup))
+            txt = __terminal_on_pattern_match(pattern_id, state.action, SimpleF, Setup)
 
-    txt = []
-    txt.extend(pattern_terminals_code)
-    txt.extend(on_failure_str)
-    txt.extend(on_end_of_stream_str)
+        pattern_terminals_code.extend(txt)
 
-    return txt
+    return pattern_terminals_code
     
 def __frame_of_all(Code, Setup):
     # namespace_ref   = LanguageDB.NAMESPACE_REFERENCE(Setup.analyzer_name_space)

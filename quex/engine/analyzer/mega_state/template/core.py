@@ -298,7 +298,7 @@ class ElectDB(dict):
     implementing TemplateState is entered.
     ___________________________________________________________________________
     """
-    def __init__(self, StateDB, AvailableStateIndexList):
+    def __init__(self, TheAnalyzer, AvailableStateIndexList):
         """At the beginning all AnalyzerState-s are elected (and they remain
         elected if they cannot be efficiently combined). However, some states
         may NOT be considered as they are:

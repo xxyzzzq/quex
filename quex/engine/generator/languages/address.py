@@ -59,7 +59,6 @@ def get_address_set_subject_to_routing():
 #}
 special_labels = (
     (DoorID.global_state_router(),          "QUEX_STATE_ROUTER"),
-    (DoorID.global_terminal_router(),       "QUEX_TERMINAL_ROUTER"),
     (DoorID.global_reentry(),               "QUEX_REENTRY"),
     (DoorID.global_reentry_preparation(),   "QUEX_REENTRY_PREPARATION"),
     (DoorID.global_reentry_preparation_2(), "QUEX_REENTRY_PREPARATION_2"),
@@ -126,8 +125,6 @@ class Label:
     def transition_block(StateIndex, GotoedF=False): return map_door_id_to_label(DoorID.transition_block(StateIndex), GotoedF)
     @staticmethod
     def global_state_router(GotoedF=False):          return map_door_id_to_label(DoorID.global_state_router(), GotoedF)
-    @staticmethod
-    def global_terminal_router(GotoedF=False):       return map_door_id_to_label(DoorID.global_terminal_router(), GotoedF)
     @staticmethod
     def global_terminal_end_of_file(GotoedF=False):  return map_door_id_to_label(DoorID.global_terminal_end_of_file(), GotoedF)
     @staticmethod

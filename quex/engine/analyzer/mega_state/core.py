@@ -165,7 +165,7 @@ class MegaState_Entry(Entry):
                 self.transition_reassignment_candidate_list.append((From, transition_id))
 
             if cmd is not None:
-                action.command_list.misc.add(cmd)
+                action.command_list.append(cmd)
 
         return
 

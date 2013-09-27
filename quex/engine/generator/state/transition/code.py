@@ -22,9 +22,9 @@ def relate_to_TransitionCode(tm):
     # TM.fill_gaps(DoorID.drop_out(StateIndex))
     return TransitionMap.from_iterable(tm, TransitionCodeFactory.do)
 
-def MegaState_relate_to_transition_code(tm, TheState, TheAnalyzer, StateKeyStr):
+def MegaState_relate_to_transition_code(TheState, TheAnalyzer, StateKeyStr):
     TransitionCodeFactory.init_MegaState_handling(TheState, TheAnalyzer, StateKeyStr)
-    return relate_to_TransitionCode(tm)
+    return relate_to_TransitionCode(TheState.transition_map)
 
 class TransitionCodeFactory:
     @classmethod
@@ -51,6 +51,7 @@ class TransitionCodeFactory:
             variable_name = require_scheme_variable(Target.scheme_id, Target.iterable_door_id_scheme(), cls.state, cls.state_db)
             return TransitionCode(LanguageDB.GOTO_BY_VARIABLE("%s[%s]" % (variable_name, cls.state_key_str)))
         else:
+            print "#Target:", Target, Target.__class__
             assert False
 
 class TransitionCode:
@@ -93,11 +94,16 @@ def require_scheme_variable(SchemeID, SchemeIterable, TState, StateDB):
     target a common door of the template state.
     """
     door_id_list = list(SchemeIterable)
+    
+    def quex_label(DoorId, LastF):
+        address = map_door_id_to_address(door_id, RoutedF=True)
+        if not LastF: return "QUEX_LABEL(%s), " % address
+        else:         return "QUEX_LABEL(%s) }" % address
 
     txt = ["{ "]
-    for door_id in door_id_list[:-1]:
-        txt.append("QUEX_LABEL(%s), " % map_door_id_to_address(door_id, RoutedF=True)) 
-    txt.append("QUEX_LABEL(%s) }" % map_door_id_to_address(door_id_list[-1], RoutedF=True)) 
+    LastI = len(door_id_list) - 1
+    for i, door_id in enumerate(door_id_list):
+        txt.append(quex_label(door_id, LastF=(i==LastI)))
 
     return variable_db.require_array("template_%i_target_%i", 
                                      ElementN = len(TState.state_index_sequence()), 

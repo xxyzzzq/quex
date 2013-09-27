@@ -41,8 +41,20 @@ class DropOut(object):
 
     @property
     def restore_acceptance_f(self):
+        """If there is one acceptance involved which is restored from
+        a stored acceptance, then the acceptance behavior depends on stored
+        acceptances.
+        """
         for element in self.__acceptance_checker:
             if element.acceptance_id == E_AcceptanceIDs.VOID: return True
+        return False
+
+    def restore_position_f(self, RegisterIndex):
+        """If there is one element that requires positions to be restored, 
+        then the drop out is considered as depending on restored positions.
+        """
+        for element in [x for x in self.__terminal_router if x.position_register == RegisterIndex]:
+            return element.positioning == E_TransitionN.VOID
         return False
 
     def set_acceptance_checker(self, AC):
@@ -60,11 +72,6 @@ class DropOut(object):
 
     def get_terminal_router(self):
         return self.__terminal_router
-
-    def restore_position_f(self, RegisterIndex):
-        for element in [x for x in self.__terminal_router if x.position_register == RegisterIndex]:
-            return element.positioning == E_TransitionN.VOID
-        return False
 
     def accept(self, PreContextID, PatternID):
         self.__acceptance_checker.append(
@@ -101,35 +108,34 @@ class DropOut(object):
             element.position_register = PositionRegisterMap[element.position_register]
 
     def trivialize(self):
-        """If there is only one acceptance involved and no pre-context,
-           then the drop-out action can be trivialized.
+        """If there is no stored acceptance involved, then one can directly
+        conclude from the pre-contexts to the acceptance_id. Then the drop-
+        out action can be described as a sequence of checks
 
-           RETURNS: None                          -- if the drop out is not trivial
-                    TerminalRouterElement -- if the drop-out is trivial
+           # [0] Check          [1] Position and Goto Terminal
+           if   pre_context_32: input_p = x; goto terminal_893;
+           elif pre_context_32: goto terminal_893;
+           elif pre_context_32: input_p = x; goto terminal_893;
+           elif pre_context_32: goto terminal_893;
+
+        Such a configuration is considered trivial. No restore is involved.
+
+        RETURNS: None                                          -- if not trivial
+                 list((pre_context_id, TerminalRouterElement)) -- if trivial
         """
-        if E_AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK in imap(lambda x: x.acceptance_id, self.__terminal_router):
-            assert len(self.__acceptance_checker) == 1
-            assert self.__acceptance_checker[0].pre_context_id == E_PreContextIDs.NONE
-            assert self.__acceptance_checker[0].acceptance_id  == E_AcceptanceIDs.VOID
-            assert len(self.__terminal_router) == 1
-            return [None, self.__terminal_router[0]]
-
-        for dummy in ifilter(lambda x: x.acceptance_id == E_AcceptanceIDs.VOID, self.__acceptance_checker):
-            # There is a stored acceptance involved, thus need acceptance_checker + terminal_router.
+        if self.restore_acceptance_f():
             return None
 
         result = []
         for check in self.__acceptance_checker:
-            for route in self.__terminal_router:
-                if route.acceptance_id == check.acceptance_id: break
+            for router_element in self.__terminal_router:
+                if router_element.acceptance_id == check.acceptance_id: break
             else:
-                assert False, \
-                       "Acceptance ID '%s' not found in terminal_router.\nFound: %s" % \
-                       (check.acceptance_id, map(lambda x: x.acceptance_id, self.__terminal_router))
-            result.append((check, route))
-            # NOTE: "if check.pre_context_id is None: break"
-            #       is not necessary since get_drop_out_object() makes sure that the acceptance_checker
-            #       stops after the first non-pre-context drop-out.
+                assert False # check.acceptance_id must be mentioned in self.__terminal_router
+            result.append((check, router_element))
+            # NOTE: "if check.pre_context_id is None: break" is not necessary since 
+            #       get_drop_out_object() makes sure that the acceptance_checker stops after i
+            #       the first non-pre-context drop-out.
 
         return result
 

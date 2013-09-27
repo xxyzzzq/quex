@@ -3,9 +3,10 @@ from   quex.engine.analyzer.state.entry_action           import DoorID
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.transition_map               import TransitionMap
-from   quex.engine.generator.state.transition.code       import TransitionCodeFactory
-import quex.engine.generator.state.transition.core  as     MegaState_relate_to_transition_code
-import quex.engine.generator.state.drop_out         as     drop_out_coder
+from   quex.engine.generator.state.transition.code       import TransitionCodeFactory, \
+                                                                MegaState_relate_to_transition_code
+import quex.engine.generator.state.transition.core  as transition_block
+import quex.engine.generator.state.drop_out         as     drop_out
 import quex.engine.generator.state.entry            as     entry_coder
 import quex.engine.generator.mega_state.template    as     template
 import quex.engine.generator.mega_state.path_walker as     path_walker
@@ -62,7 +63,9 @@ def do(txt, TheState, TheAnalyzer):
     specific.debug_info_map_state_key_to_state_index(txt)
 
     # (*) Entry _______________________________________________________________
-    entry_coder.do(txt, TheState, TheAnalyzer) 
+    pre_txt, post_txt = entry_coder.do(TheState, TheAnalyzer) 
+    txt.extend(pre_txt)
+    assert len(post_txt) == 0
 
     # (*) Access input character etc. _________________________________________
     specific.framework(txt, TheState, TheAnalyzer)
@@ -129,8 +132,9 @@ def drop_out_scheme_do(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
     # (*) Drop Out Section(s)
     if uniform_drop_out is not None:
         # uniform drop outs => no 'switch-case' required
-        drop_out_coder.do(txt, TheState.index, uniform_drop_out, TheAnalyzer, \
-                          DefineLabelF=False, MentionStateIndexF=False)
+        <<< DROP-OUT Labels of all related states  <<
+        drop_out.do(txt, TheState.index, uniform_drop_out, TheAnalyzer, \
+                    DefineLabelF=False, MentionStateIndexF=False)
     else:
         # There must be more than one drop-out scheme. Otherwise, it would be 
         # uniform.
@@ -143,7 +147,9 @@ def drop_out_scheme_do(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
             for state_index in TheState.implemented_state_index_set() 
         )
 
-        for drop_out, state_index_set in TheState.drop_out.iteritems():
+        for drop_out_object, state_index_set in TheState.drop_out.iteritems():
+            <<< DROP-OUT Labels of all related states  << LabelIfDoorIdReferenced(DropOutDoor)+
+
             # state keys related to drop out
             state_key_list = map(lambda i: TheState.map_state_index_to_state_key(i), state_index_set)
             assert assert_remainder.issuperset(state_key_list)
@@ -154,8 +160,8 @@ def drop_out_scheme_do(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
             # states that implement the same drop-out behavior. Same drop-outs
             # are implemented only once.
             case_txt = []
-            drop_out_coder.do(case_txt, TheState.index, drop_out, TheAnalyzer, 
-                              DefineLabelF=False, MentionStateIndexF=False)
+            drop_out.do(case_txt, TheState.index, drop_out_object, TheAnalyzer, 
+                        DefineLabelF=False, MentionStateIndexF=False)
             case_list.append((state_key_list, case_txt))
     
         assert len(assert_remainder) == 0, "Missing: '%s'" % assert_remainder

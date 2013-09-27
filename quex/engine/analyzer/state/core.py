@@ -110,10 +110,10 @@ class AnalyzerState(Processor):
             on_failure_door_id = DoorID.drop_out(self.index)
         assert on_failure_door_id != on_success_door_id
 
-        reload_state.add_state(self.index, on_success_door_id, on_failure_door_id)
+        reload_door_id = reload_state.add_state(self.index, on_success_door_id, on_failure_door_id)
 
         # Ensure a transition on 'buffer limit code' to the reload procedure.
-        self.transition_map.set_target(Setup.buffer_limit_code, reload_state.index)
+        self.transition_map.set_target(Setup.buffer_limit_code, reload_door_id)
 
     def get_string_array(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
         txt = [ "State %s:\n" % repr(self.index).replace("L", "") ]
@@ -165,10 +165,27 @@ class ReloadState(Processor):
         self.entry.action_db.absorb(OtherReloadState.entry.action_db)
 
     def add_state(self, StateIndex, OnSuccessDoorId, OnFailureDoorId):
+        """Adds a state from where the reload state is entered. When reload is
+        done it jumps to 'OnFailureDoorId' if the reload failed and to 'OnSuccessDoorId'
+        if the reload succeeded.
+
+        RETURNS: DoorID into the reload state. Jump to this DoorID in order
+                 to trigger the reload for the state given by 'StateIndex'.
+        """
         ta = TransitionAction()
         ta.command_list = CommandList(PrepareAfterReload(OnSuccessDoorId, OnFailureDoorId))
 
-        self.entry.action_db.enter(TransitionID(self.index, StateIndex, 0), ta)
+        tid = TransitionID(self.index, StateIndex, 0)
+        assert self.entry.action_db.get(tid) is None # Cannot be in there twice!
+
+        # No two transitions into the reload state have the same CommandList!
+        # No two transitions can have the same DoorID!
+        # => it is safe to assign a new DoorID withouth .categorize()
+        ta.door_id = self.entry.action_db.new_DoorID(self.index)
+
+        self.entry.action_db.enter(tid, ta)
+
+        return ta.door_id
 
 #__________________________________________________________________________
 #
@@ -197,3 +214,4 @@ class TerminalState(Processor):
         Processor.__init__(self, state_index.get_terminal_state_index(PatternId), Entry())
         self.pattern_id = PatternId
         self.action     = PatternMatchAction
+

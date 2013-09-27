@@ -16,17 +16,17 @@ from   quex.engine.tools                            import UniformObject
 
 from   quex.blackboard import E_StateIndices
 
+#______________________________________________________________________________
+#
+# TemplateState:
+#
+# implements multiple similar AnalyzerState-s in one single state. Its
+# transition map, its entry and drop-out sections function based on a
+# 'state_key'. That is, when a 'state_key' of an implemented AnalyzerState is
+# set, the transition map, the entry and drop-out sections act the same as the
+# correspondent sections in the original AnalyzerState.
+#______________________________________________________________________________
 class TemplateState(MegaState):
-    """________________________________________________________________________
-
-    A TemplateState implements multiple similar AnalyzerState-s. Its transition
-    map, its entry and drop-out sections function based on a 'state_key'. That
-    is, when a 'state_key' of an implemented AnalyzerState is set, the
-    transition map, the entry and drop-out sections act the same as the
-    correspondent sections in the original AnalyzerState.
-
-    ___________________________________________________________________________
-    """
     def __init__(self, Candidate):
         StateA = Candidate.state_a
         StateB = Candidate.state_b

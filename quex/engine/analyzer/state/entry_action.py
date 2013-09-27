@@ -30,8 +30,6 @@ class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
     def backward_input_position_detector_return(PatternId):   return DoorID(PatternId,  E_DoorIdIndex.BIPD_RETURN)
     @staticmethod                         
     def global_end_of_pre_context_check(): return DoorID(0, E_DoorIdIndex.GLOBAL_END_OF_PRE_CONTEXT_CHECK)
-    @staticmethod                         
-    def global_terminal_router():          return DoorID(0, E_DoorIdIndex.GLOBAL_TERMINAL_ROUTER)
     @staticmethod                        
     def global_terminal_end_of_file():     return DoorID(0, E_DoorIdIndex.GLOBAL_TERMINAL_END_OF_FILE)
     @staticmethod

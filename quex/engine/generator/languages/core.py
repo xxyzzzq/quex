@@ -112,6 +112,7 @@ class LanguageDB_Cpp(dict):
         except KeyError: raise AttributeError
 
     RETURN                  = "return;"
+    RETURN_MACRO            = "RETURN;"
     UNREACHABLE             = "__quex_assert_no_passage();"
     ELSE                    = "} else {\n"
 
@@ -201,17 +202,17 @@ class LanguageDB_Cpp(dict):
 
         elif Cmd.id == E_Commands.TemplateStateKeySet:
             return   "    state_key = %i;\n"                      \
-                   % Cmd.content.value                            \
+                   % Cmd.content.state_key                        \
                    + "    __quex_debug(\"state_key = %i\\n\");\n" \
-                   % Cmd.content.value
+                   % Cmd.content.state_key
 
         elif Cmd.id == E_Commands.PathIteratorSet:
             offset_str = ""
-            if Cmd.offset != 0: offset_str = " + %i" % Cmd.offset
+            if Cmd.content.offset != 0: offset_str = " + %i" % Cmd.content.offset
             txt =   "    path_iterator  = path_walker_%i_path_%i%s;\n"                   \
-                  % (Cmd.path_walker_id, Cmd.path_id, offset_str)        \
+                  % (Cmd.content.path_walker_id, Cmd.content.path_id, offset_str)        \
                   + "    __quex_debug(\"path_iterator = (Pathwalker: %i, Path: %i, Offset: %i)\\n\");\n" \
-                  % (Cmd.path_walker_id, Cmd.path_id, Cmd.offset)
+                  % (Cmd.content.path_walker_id, Cmd.content.path_id, Cmd.content.offset)
             return txt
 
         #elif Cmd.id == E_Commands.PathIteratorIncrement:
@@ -254,9 +255,6 @@ class LanguageDB_Cpp(dict):
 
     def TERMINAL_LEXEME_MACRO_DEFINITIONS(self):
         return cpp.lexeme_macro_definitions(Setup)
-
-    def TERMINAL_ROUTER(self):
-        return cpp.terminal_router()
 
     def TERMINAL_CODE(self, TerminalStateDb, PreConditionIDList, Setup, SimpleF=False): 
         return cpp.terminal_states(TerminalStateDb, PreConditionIDList, Setup, SimpleF)
@@ -478,7 +476,9 @@ class LanguageDB_Cpp(dict):
     def POSITION_REGISTER(self, Index):
         return "position[%i]" % Index
 
-    def POSITIONING(self, Positioning, Register):
+    def POSITIONING(self, X):
+        Positioning = X.positioning
+        Register    = X.positioning_register
         if   Positioning == E_TransitionN.VOID: 
             return   "__quex_assert(position[%i] != 0x0);\n" % Register \
                    + "me->buffer._input_p = position[%i];\n" % Register

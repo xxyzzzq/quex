@@ -169,12 +169,9 @@ class Generator(GeneratorBase):
         if SimpleF:
             lexeme_macro_definition_str = ""
             reentry_preparation_str     = ""
-            terminal_router             = ""
         else:
             lexeme_macro_definition_str = LanguageDB.TERMINAL_LEXEME_MACRO_DEFINITIONS()
             reentry_preparation_str     = LanguageDB.REENTRY_PREPARATION(self.pre_context_sm_id_list, on_after_match_info)
-            terminal_router_txt         = LanguageDB.TERMINAL_ROUTER()
-            assert all_isinstance(terminal_router_txt, (str, unicode, CodeIfDoorIdReferenced, int))
 
         terminal_states_txt = LanguageDB.TERMINAL_CODE(self.terminal_state_db, 
                                                        self.pre_context_sm_id_list, 
@@ -182,8 +179,7 @@ class Generator(GeneratorBase):
                                                        SimpleF) 
         assert all_isinstance(terminal_states_txt, (str, unicode, CodeIfDoorIdReferenced, int))
 
-        terminal_txt = terminal_router_txt
-        terminal_txt.append(lexeme_macro_definition_str)
+        terminal_txt = [ lexeme_macro_definition_str ]
         terminal_txt.extend(terminal_states_txt)
         terminal_txt.append(reentry_preparation_str)
 

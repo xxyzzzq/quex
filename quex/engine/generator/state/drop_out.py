@@ -6,6 +6,12 @@ from   quex.blackboard                            import E_AcceptanceIDs, E_Stat
                                                          E_TransitionN, E_PostContextIDs, E_PreContextIDs, \
                                                          setup as Setup
 
+drop_out.do(txt, TheState.index, TheState.drop_out, TheAnalyzer)
+drop_out.do(txt, TheState.index, uniform_drop_out, TheAnalyzer, \
+            DefineLabelF=False, MentionStateIndexF=False)
+drop_out.do(case_txt, TheState.index, drop_out_object, TheAnalyzer, 
+            DefineLabelF=False, MentionStateIndexF=False)
+
 def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateIndexF=True):
     LanguageDB = Setup.language_db
 
@@ -35,23 +41,20 @@ def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateInd
             ])
         return
 
+    def position_and_goto(X):
+        positioning_str   = LanguageDB.POSITIONING(easy[1])
+        if len(positioning_str) != 0: positioning_str += "\n"
+        goto_terminal_str = LanguageDB.GOTO_BY_DOOR_ID(DoorID.acceptance(easy[1].acceptance_id))
+        return [
+            0, positioning_str, "\n" if len(positioning_str) != 0 else "",
+            0, goto_terminal_str
+        ]
+
     info = DropOut.trivialize()
     # (1) Trivial Solution
     if info is not None:
         for i, easy in enumerate(info):
-            consequence = []
-            if easy[1].positioning != 0:
-                if easy[1].positioning == E_TransitionN.VOID: register = easy[1].position_register
-                else:                                         register = E_PostContextIDs.NONE
-                positioning_str = "%s\n" % LanguageDB.POSITIONING(easy[1].positioning, register)
-                consequence.append(0)
-                consequence.append(positioning_str)
-                consequence.append(0)
-
-            goto_terminal_str = "%s" % LanguageDB.GOTO_BY_DOOR_ID(DoorID.acceptance(easy[1].acceptance_id))
-            consequence.append(0)
-            consequence.append(goto_terminal_str)
-            LanguageDB.IF_PRE_CONTEXT(txt, i == 0, easy[0].pre_context_id, consequence)
+            LanguageDB.IF_PRE_CONTEXT(txt, i == 0, easy[0].pre_context_id, position_and_goto(easy[1])
         return
 
     # (2) Separate: Pre-Context Check and Routing to Terminal
@@ -68,30 +71,10 @@ def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateInd
             break # No check after the unconditional acceptance
 
     # (2.2) Routing to Terminal
-    # (2.2.1) If the positioning is the same for all entries (except the FAILURE)
-    #         then, again, the routing may be simplified:
-    #router    = DropOut.router
-    #prototype = (router[0].positioning, router[0].position_register)
-    #simple_f  = True
-    #for element in islice(router, 1, None):
-    #    if element.acceptance_id == E_AcceptanceIDs.FAILURE: continue
-    #    if prototype != (element.positioning, element.position_register): 
-    #        simple_f = False
-    #        break
-
-    #if simple_f:
-    #    txt.append("    %s\n    %s\n" % 
-    #               (LanguageDB.POSITIONING(element.positioning, element.position_register), 
-    #                LanguageDB.GOTO_BY_DOOR_ID(DoorID.acceptance(E_AcceptanceIDs.VOID))
-    #else:
-    case_list = []
-    for element in DropOut.get_terminal_router():
-        if element.positioning == E_TransitionN.VOID: register = element.position_register
-        else:                                         register = None
-        case_list.append((LanguageDB.ACCEPTANCE(element.acceptance_id), 
-                          "%s %s" % \
-                          (LanguageDB.POSITIONING(element.positioning, register),
-                           LanguageDB.GOTO_BY_DOOR_ID(DoorID.acceptance(element.acceptance_id)))))
+    case_list = [
+        (LanguageDB.ACCEPTANCE(element.acceptance_id), position_and_goto(element))
+        for element in DropOut.get_terminal_router():
+    ]
 
     txt.extend(LanguageDB.SELECTION("last_acceptance", case_list))
 

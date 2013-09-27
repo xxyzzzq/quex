@@ -198,8 +198,7 @@ class EntryActionDB:
 
             if new_door_id is not None: return new_door_id
 
-            self.__largest_used_door_sub_index += 1
-            return DoorID(StateIndex, self.__largest_used_door_sub_index)
+            return self.new_DoorID(StateIndex)
 
         def sort_key(X):
             return (X[0].target_state_index, X[0].source_state_index, X[0].trigger_id)
@@ -215,6 +214,11 @@ class EntryActionDB:
     @property 
     def largest_used_door_sub_index(self):
         return self.__largest_used_door_sub_index
+
+    def new_DoorID(self, StateIndex):
+        result = DoorID(StateIndex, self.__largest_used_door_sub_index)
+        self.__largest_used_door_sub_index += 1
+        return result
 
     def has_transitions_to_door_id(self, DoorId):
         for action in self.__db.itervalues():
@@ -390,7 +394,6 @@ class Entry(object):
 def repr_acceptance_id(Value, PatternStrF=True):
     if   Value == E_AcceptanceIDs.VOID:                       return "last_acceptance"
     elif Value == E_AcceptanceIDs.FAILURE:                    return "Failure"
-    elif Value == E_AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK: return "PreContextCheckTerminated"
     elif Value >= 0:                                    
         if PatternStrF: return "Pattern%i" % Value
         else:           return "%i" % Value
