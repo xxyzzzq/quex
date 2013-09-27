@@ -52,7 +52,6 @@ E_PreContextIDs  = Enum("NONE",
 
 E_AcceptanceIDs  = Enum("FAILURE", 
                         "PRE_CONTEXT_FULFILLED", 
-                        "TERMINAL_PRE_CONTEXT_CHECK", 
                         "TERMINAL_BACKWARD_INPUT_POSITION", 
                         "VOID", 
                         "_DEBUG_NAME_E_AcceptanceIDs")

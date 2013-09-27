@@ -40,6 +40,7 @@ import quex.engine.analyzer.optimizer             as     optimizer
 from   quex.engine.analyzer.state.core            import AnalyzerState, ReloadState
 from   quex.engine.analyzer.state.drop_out        import DropOut
 from   quex.engine.analyzer.state.entry_action    import TransitionID, \
+                                                         DoorID, \
                                                          TransitionAction
 from   quex.engine.analyzer.commands              import InputPDereference, \
                                                          InputPIncrement, \
@@ -68,9 +69,17 @@ def do(SM, EngineType=engine.FORWARD):
 
     # [Optional] Combination of states into MegaState-s.
     if len(Setup.compression_type_list) != 0:
-        __mega_state_analysis(analyzer)
+        mega_state_analyzer.do(analyzer)
         # MegaState.transition_map:    Interval --> TargetByStateKey
         #                           or Interval --> DoorID
+
+    # Implement the infrastructure for 'reload':
+    # -- Transition maps goto the 'reload procedure' upon 'buffer limit' code
+    # -- The 'reload state' does certain things dependent on the from what state
+    #    it is entered.
+    # -- The states have a dedicated entry from after the reload procedure.
+    for state in analyzer.state_db.itervalues():
+        state.prepare_for_reload(analyzer)
 
     return analyzer
 
@@ -86,29 +95,10 @@ def __main_analysis(SM, EngineType):
     for state in analyzer.state_db.itervalues():
         state.entry.action_db.categorize(state.index)
 
-    # Implement the infrastructure for 'reload':
-    # -- Transition maps goto the 'reload procedure' upon 'buffer limit' code
-    # -- The 'reload state' does certain things dependent on the from what state
-    #    it is entered.
-    # -- The states have a dedicated entry from after the reload procedure.
-    for state in analyzer.state_db.itervalues():
-        state.prepare_for_reload(analyzer)
-    analyzer.reload_state.entry.action_db.categorize(analyzer.reload_state.index)
-
     for state in analyzer.state_db.itervalues():
         state.transition_map = state.transition_map.relate_to_door_ids(analyzer, state.index)
 
     return analyzer
-
-def __mega_state_analysis(analyzer):
-    """Tries to find MegaStates which combine multiple states into one.
-    """
-    mega_state_analyzer.do(analyzer)
-
-    for mega_state in analyzer.mega_state_list:
-        mega_state.prepare_for_reload(analyzer)
-    analyzer.reload_state.entry.action_db.categorize(analyzer.reload_state.index)
-
 
 class Analyzer:
     """A representation of a pattern analyzing StateMachine suitable for
@@ -175,8 +165,6 @@ class Analyzer:
             state_index_set = mega_state.implemented_state_index_set()
             for state_index in state_index_set:
                 del self.__state_db[state_index]
-            self.reload_state.remove_states(state_index_set)
-            self.reload_state.add_state(mega_state, InitStateForwardF=False)
 
         self.__mega_state_list          = MegaStateList
         self.__non_mega_state_index_set = set(self.__state_db.iterkeys())

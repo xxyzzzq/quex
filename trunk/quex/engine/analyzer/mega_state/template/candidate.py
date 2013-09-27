@@ -1,10 +1,10 @@
 # vim:set encoding=utf8:
 # (C) 2010-2012 Frank-Rene Schäfer
-from   quex.engine.analyzer.mega_state.core import TargetByStateKey
-from   quex.engine.analyzer.state.entry_action  import DoorID_Scheme
-from   quex.engine.analyzer.state.drop_out  import DropOut, \
-                                                   DropOutIndifferent, \
-                                                   DropOutBackwardInputPositionDetection
+from   quex.engine.analyzer.mega_state.core    import TargetByStateKey
+from   quex.engine.analyzer.state.entry_action import DoorID_Scheme
+from   quex.engine.analyzer.state.drop_out     import DropOut, \
+                                                      DropOutIndifferent, \
+                                                      DropOutBackwardInputPositionDetection
 from   quex.engine.analyzer.transition_map  import TransitionMap       
 
 from   quex.blackboard import E_AcceptanceIDs, \
