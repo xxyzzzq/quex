@@ -117,8 +117,17 @@ class EntryActionDB:
         """Add 'store input position' to specific door. See 'StoreInputPosition'
            comment for the reason why we do not store pre-context-id.
         """
-        cmd = StoreInputPosition(PreContextID, PositionRegister, Offset)
-        self.__db[TransitionID(StateIndex, FromStateIndex, 0)].command_list.insert(0, cmd)
+        command_list = self.__db[TransitionID(StateIndex, FromStateIndex, 0)].command_list
+        cmd          = StoreInputPosition(PreContextID, PositionRegister, Offset)
+        # Make sure it is the first!
+        command_list.insert(0, cmd)
+        # Never store twice in the same position register! 
+        # => Make sure, that there is no second of the same kind!
+        i = len(command_list) - 1
+        while i >= 1: # leave 'i=0' which has just been inserted!
+            if command_list[i] == cmd:
+                del command_list[i]
+            i -= 1
 
     def has_command(self, CmdId):
         assert CmdId in E_Commands
@@ -145,7 +154,6 @@ class EntryActionDB:
     def delete_superfluous_commands(self):
         for action in self.__db.itervalues():
             action.command_list.delete_superfluous_commands()
-
         return
 
     def itervalues(self):
@@ -330,30 +338,36 @@ class Entry(object):
         def get_accepters(AccepterList):
             if len(AccepterList) == 0: return []
             assert len(AccepterList) == 1
-            return [ AccepterList[0].get_pretty_string() ]
+            return [ str(AccepterList[0]) ]
 
         def get_storers(StorerList):
-            txt = []
-            for cmd in sorted(StorerList, key=lambda cmd: (cmd.content.pre_context_id, cmd.content.position_register)):
-                txt.append(cmd.get_pretty_string())
+            txt = [ 
+                str(cmd)
+                for cmd in sorted(StorerList, key=lambda cmd: (cmd.content.pre_context_id, cmd.content.position_register))
+            ]
             return txt
 
         def get_pre_context_oks(PCOKList):
-            txt = []
-            for action in sorted(PCOKList, key=attrgetter("pre_context_id")):
-                txt.append("%s" % repr(action))
+            txt = [
+                str(cmd)
+                for cmd in sorted(PCOKList, key=lambda cmd: cmd.content.pre_context_id)
+            ]
             return txt
 
         def get_set_template_state_keys(TemplateStateKeySetList):
-            txt = []
-            for action in sorted(TemplateStateKeySetList, key=attrgetter("value")):
-                txt.append("%s" % repr(action))
+            txt = [
+                str(cmd)
+                for cmd in sorted(TemplateStateKeySetList, key=lambda cmd: cmd.content.state_key)
+            ]
             return txt
 
         def get_set_path_iterator_keys(PathIteratorSetKeyList):
-            txt = []
-            for action in sorted(PathIteratorSetKeyList, key=attrgetter("path_walker_id", "path_id", "offset")):
-                txt.append("%s" % repr(action))
+            def sort_key(Cmd):
+                return (Cmd.content.path_walker_id, Cmd.content.path_id, Cmd.content.offset)
+            txt = [
+                str(cmd)
+                for cmd in sorted(PathIteratorSetKeyList, key=sort_key)
+            ]
             return txt
 
         result = []
@@ -365,10 +379,10 @@ class Entry(object):
             spi_command_list    = []
             for cmd in door.command_list:
                 if   cmd.id == E_Commands.Accepter:            accept_command_list.append(cmd)
-                elif cmd.id == E_Commands.PreConditionOK:      pcok_command_list.append(cmd)
+                elif cmd.id == E_Commands.PreContextOK:        pcok_command_list.append(cmd)
                 elif cmd.id == E_Commands.TemplateStateKeySet: ssk_command_list.append(cmd)
                 elif cmd.id == E_Commands.PathIteratorSet:     spi_command_list.append(cmd)
-                else:                                          store_command_list.append(cmd)
+                elif cmd.id == E_Commands.StoreInputPosition:  store_command_list.append(cmd)
 
             result.append("    .from %s:" % repr(transition_id.source_state_index).replace("L", ""))
             a_txt  = get_accepters(accept_command_list)
@@ -390,34 +404,4 @@ class Entry(object):
 
         if len(result) == 0: return ""
         return "".join(result)
-
-def repr_acceptance_id(Value, PatternStrF=True):
-    if   Value == E_AcceptanceIDs.VOID:                       return "last_acceptance"
-    elif Value == E_AcceptanceIDs.FAILURE:                    return "Failure"
-    elif Value >= 0:                                    
-        if PatternStrF: return "Pattern%i" % Value
-        else:           return "%i" % Value
-    else:                                               assert False
-
-def repr_position_register(Register):
-    if Register == E_PostContextIDs.NONE: return "position[Acceptance]"
-    else:                                 return "position[PostContext_%i] " % Register
-
-def repr_pre_context_id(Value):
-    if   Value == E_PreContextIDs.NONE:          return "Always"
-    elif Value == E_PreContextIDs.BEGIN_OF_LINE: return "BeginOfLine"
-    elif Value >= 0:                             return "PreContext_%i" % Value
-    else:                                        assert False
-
-def repr_positioning(Positioning, PositionRegisterID):
-    if   Positioning == E_TransitionN.VOID: 
-        return "pos = %s;" % repr_position_register(PositionRegisterID)
-    elif Positioning == E_TransitionN.LEXEME_START_PLUS_ONE: 
-        return "pos = lexeme_start_p + 1; "
-    elif Positioning > 0:   
-        return "pos -= %i; " % Positioning
-    elif Positioning == 0:  
-        return ""
-    else: 
-        assert False
 

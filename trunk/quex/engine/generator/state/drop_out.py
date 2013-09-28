@@ -6,11 +6,11 @@ from   quex.blackboard                            import E_AcceptanceIDs, E_Stat
                                                          E_TransitionN, E_PostContextIDs, E_PreContextIDs, \
                                                          setup as Setup
 
-drop_out.do(txt, TheState.index, TheState.drop_out, TheAnalyzer)
-drop_out.do(txt, TheState.index, uniform_drop_out, TheAnalyzer, \
-            DefineLabelF=False, MentionStateIndexF=False)
-drop_out.do(case_txt, TheState.index, drop_out_object, TheAnalyzer, 
-            DefineLabelF=False, MentionStateIndexF=False)
+#drop_out.do(txt, TheState.index, TheState.drop_out, TheAnalyzer)
+#drop_out.do(txt, TheState.index, uniform_drop_out, TheAnalyzer, \
+#            DefineLabelF=False, MentionStateIndexF=False)
+#drop_out.do(case_txt, TheState.index, drop_out_object, TheAnalyzer, 
+#            DefineLabelF=False, MentionStateIndexF=False)
 
 def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateIndexF=True):
     LanguageDB = Setup.language_db
@@ -54,7 +54,7 @@ def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateInd
     # (1) Trivial Solution
     if info is not None:
         for i, easy in enumerate(info):
-            LanguageDB.IF_PRE_CONTEXT(txt, i == 0, easy[0].pre_context_id, position_and_goto(easy[1])
+            LanguageDB.IF_PRE_CONTEXT(txt, i == 0, easy[0].pre_context_id, position_and_goto(easy[1]))
         return
 
     # (2) Separate: Pre-Context Check and Routing to Terminal
@@ -73,7 +73,7 @@ def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateInd
     # (2.2) Routing to Terminal
     case_list = [
         (LanguageDB.ACCEPTANCE(element.acceptance_id), position_and_goto(element))
-        for element in DropOut.get_terminal_router():
+        for element in DropOut.get_terminal_router()
     ]
 
     txt.extend(LanguageDB.SELECTION("last_acceptance", case_list))

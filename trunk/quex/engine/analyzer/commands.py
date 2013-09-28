@@ -71,7 +71,10 @@
 #______________________________________________________________________________
 from   quex.engine.misc.enum import Enum
 from   quex.blackboard       import E_Commands, \
-                                    E_PreContextIDs
+                                    E_PreContextIDs, \
+                                    E_TransitionN, \
+                                    E_AcceptanceIDs, \
+                                    E_PostContextIDs
 
 from   collections import namedtuple
 from   operator    import attrgetter
@@ -95,18 +98,7 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
         return Command(self.id, content, self.my_hash, self.cost)
 
     def get_pretty_string(self):
-        if self.id == E_Commands.StoreInputPosition:
-            x = cmd.content
-            if x.pre_context_id != E_PreContextIDs.NONE:
-                txt.append("if '%s': " % repr_pre_context_id(x.pre_context_id))
-            if x.offset == 0:
-                txt.append("%s = input_p;\n" % repr_position_register(x.position_register))
-            else:
-                txt.append("%s = input_p - %i;\n" % (repr_position_register(x.position_register), x.offset))
-            return "".join(txt)
-
-        else:
-            return str(self)
+        assert False, "Use self.__str__() instead!"
 
     def __hash__(self):      
         return self.my_hash
@@ -115,6 +107,20 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
         name_str = str(self.id)
         if self.content is None:
             return "%s" % name_str
+        elif self.id == E_Commands.StoreInputPosition:
+            x = self.content
+            txt = ""
+            if x.pre_context_id != E_PreContextIDs.NONE:
+                txt = "if '%s': " % repr_pre_context_id(x.pre_context_id)
+            if x.offset == 0:
+                txt += "%s = input_p;\n" % repr_position_register(x.position_register)
+            else:
+                txt += "%s = input_p - %i;\n" % (repr_position_register(x.position_register), x.offset)
+            return txt
+        elif self.id == E_Commands.Accepter:
+            return str(self.content)
+        elif self.id == E_Commands.PreContextOK:
+            return "pre-context-fulfilled = %s;\n" % self.content.pre_context_id
         else:
             content_str = "".join("%s=%s, " % (member, value) for member, value in self.content._asdict().iteritems())
             return "%s: { %s }" % (name_str, content_str)
@@ -190,8 +196,15 @@ class AccepterContent:
             yield x
 
     def __str__(self):
-        return "".join(["pre(%s) --> accept(%s)\n" % (element.pre_context_id, element.pattern_id) \
-                       for element in self.__list])
+        def to_string(X, FirstF):
+            if X.pre_context_id == E_PreContextIDs.NONE:
+                return "last_acceptance = %s" % repr_acceptance_id(X.pattern_id)
+            elif FirstF:
+                return "if %s:  last_acceptance = %s" % (repr_pre_context_id(element.pre_context_id), repr_acceptance_id(element.pattern_id))
+            else:
+                return "else if %s:  last_acceptance = %s" % (repr_pre_context_id(element.pre_context_id), repr_acceptance_id(element.pattern_id))
+
+        return "".join(["%s\n" % to_string(element, i==0) for i, element in enumerate(self.__list)])
 
 E_InputPAccess = Enum("WRITE",     # writes value to 'x'
                       "READ",      # reads value of 'x'
@@ -219,6 +232,7 @@ class CommandInfo(namedtuple("CommandInfo_tuple", ("cost", "access", "content_ty
     @property
     def write_f(self): return self.access == E_InputPAccess.WRITE
 
+
 #______________________________________________________________________________
 # CommandFactory: Produces Command-s. It contains a database which maps from 
 #     command identifiers to CommandInfo-s. And, it contains the '.do()' 
@@ -238,6 +252,8 @@ class CommandFactory:
         E_Commands.InputPIncrement:               CommandInfo(1, E_InputPAccess.WRITE),
         E_Commands.InputPDecrement:               CommandInfo(1, E_InputPAccess.WRITE),
         E_Commands.InputPDereference:             CommandInfo(1, E_InputPAccess.READ),
+        E_Commands.LexemeStartToReferenceP:       CommandInfo(1, E_InputPAccess.READ,  ("reference_p",)),
+        E_Commands.LexemeResetTerminatingZero:    CommandInfo(1, E_InputPAccess.WRITE),
         # CountColumnN_ReferenceSet
         # CountColumnN_ReferenceAdd
         # CountColumnN_Add
@@ -457,9 +473,14 @@ class CommandList(list):
             self[i] = new_command
 
     def delete_superfluous_commands(self):
-        """A position storage which is unconditional makes any conditional
-        storage superfluous. Those may be deleted without loss.
         """
+        (1) A position storage which is unconditional makes any conditional
+            storage superfluous. Those may be deleted without loss.
+        (2) A position storage does not have to appear twice, leave the first!
+            (This may occur due to register set optimization!)
+        """
+
+        # (1) Unconditional rules out conditional
         unconditional_position_register_set = set(
             cmd.content.position_register
             for cmd in self \
@@ -476,6 +497,25 @@ class CommandList(list):
                 del self[i]
             i -= 1
 
+        # (2) Storage command does not appear twice. Keep first.
+        #     (May occur due to optimizations!)
+        occured_set = set()
+        size        = len(self)
+        i           = 0
+        while i < size:
+            cmd = self[i]
+            if cmd.id == E_Commands.StoreInputPosition: 
+                if cmd not in occured_set: 
+                    occured_set.add(cmd)
+                else:
+                    del self[i]
+                    size -= 1
+                    continue
+            i += 1
+        return
+
+
+
     def __hash__(self):
         xor_sum = 0
         for cmd in self:
@@ -491,4 +531,34 @@ class CommandList(list):
 
     def __str__(self):
         return "".join("%s\n" % str(cmd) for cmd in self)
+
+def repr_acceptance_id(Value, PatternStrF=True):
+    if   Value == E_AcceptanceIDs.VOID:                       return "last_acceptance"
+    elif Value == E_AcceptanceIDs.FAILURE:                    return "Failure"
+    elif Value >= 0:                                    
+        if PatternStrF: return "Pattern%i" % Value
+        else:           return "%i" % Value
+    else:                                               assert False
+
+def repr_position_register(Register):
+    if Register == E_PostContextIDs.NONE: return "position[Acceptance]"
+    else:                                 return "position[PostContext_%i] " % Register
+
+def repr_pre_context_id(Value):
+    if   Value == E_PreContextIDs.NONE:          return "Always"
+    elif Value == E_PreContextIDs.BEGIN_OF_LINE: return "BeginOfLine"
+    elif Value >= 0:                             return "PreContext_%i" % Value
+    else:                                        assert False
+
+def repr_positioning(Positioning, PositionRegisterID):
+    if   Positioning == E_TransitionN.VOID: 
+        return "pos = %s;" % repr_position_register(PositionRegisterID)
+    elif Positioning == E_TransitionN.LEXEME_START_PLUS_ONE: 
+        return "pos = lexeme_start_p + 1; "
+    elif Positioning > 0:   
+        return "pos -= %i; " % Positioning
+    elif Positioning == 0:  
+        return ""
+    else: 
+        assert False
 

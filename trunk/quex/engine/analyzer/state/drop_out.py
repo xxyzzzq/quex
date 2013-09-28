@@ -1,6 +1,6 @@
-from   quex.engine.analyzer.state.entry  import repr_acceptance_id, repr_pre_context_id, repr_positioning
-from   quex.blackboard                   import E_PreContextIDs, E_AcceptanceIDs, E_TransitionN
-from   itertools                         import ifilter, imap
+from   quex.engine.analyzer.commands import repr_acceptance_id, repr_pre_context_id, repr_positioning
+from   quex.blackboard               import E_PreContextIDs, E_AcceptanceIDs, E_TransitionN
+from   itertools                     import ifilter, imap
 
 class DropOut(object):
     """The general drop-out of a state has the following two 'sub-tasks'
@@ -39,7 +39,6 @@ class DropOut(object):
         self.__terminal_router    = []
         self.__hash               = None
 
-    @property
     def restore_acceptance_f(self):
         """If there is one acceptance involved which is restored from
         a stored acceptance, then the acceptance behavior depends on stored

@@ -132,7 +132,7 @@ def drop_out_scheme_do(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
     # (*) Drop Out Section(s)
     if uniform_drop_out is not None:
         # uniform drop outs => no 'switch-case' required
-        <<< DROP-OUT Labels of all related states  <<
+        print "########################### TODO: <<< DROP-OUT Labels of all related states  << LabelIfDoorIdReferenced(DropOutDoor)+"
         drop_out.do(txt, TheState.index, uniform_drop_out, TheAnalyzer, \
                     DefineLabelF=False, MentionStateIndexF=False)
     else:
@@ -148,7 +148,7 @@ def drop_out_scheme_do(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
         )
 
         for drop_out_object, state_index_set in TheState.drop_out.iteritems():
-            <<< DROP-OUT Labels of all related states  << LabelIfDoorIdReferenced(DropOutDoor)+
+            print "########################### TODO: <<< DROP-OUT Labels of all related states  << LabelIfDoorIdReferenced(DropOutDoor)+"
 
             # state keys related to drop out
             state_key_list = map(lambda i: TheState.map_state_index_to_state_key(i), state_index_set)
