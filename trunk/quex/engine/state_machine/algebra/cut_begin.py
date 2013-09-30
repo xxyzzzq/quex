@@ -85,8 +85,6 @@ class WalkAlong(TreeWalker):
         TreeWalker.__init__(self)
 
     def on_enter(self, Args):
-        #print "#path:", self.path
-        #print "#Args:", Args
         a_state_index, b_state_index, trigger_set = Args
         assert b_state_index != self.operation_index
 
@@ -103,7 +101,6 @@ class WalkAlong(TreeWalker):
                 # SM_B cuts the path until the terminal. 
                 pass
             else:
-                #print "#A"
                 self.integrate_path_in_result()
 
         if len(a_tm) == 0:

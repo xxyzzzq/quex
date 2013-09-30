@@ -182,7 +182,7 @@ class PathWalkerState(MegaState):
         assert len(self.entry.transition_reassignment_candidate_list) > 0
 
     def _finalize_transition_map(self):
-        """Nothing to be done. All re-assigned transition lie on the path. The
+        """Nothing to be done. All re-assigned transitions lie on the path. The
         path is implemented by the character sequence and not part of the 
         transition map.
         """
@@ -191,7 +191,7 @@ class PathWalkerState(MegaState):
     def _finalize_content(self, TheAnalyzer):
         self.__finalized = FinalizedContent(self, TheAnalyzer)
 
-    def _assert_consistency(self, CompressionType, RemainingStateIndexSet):            
+    def _assert_consistency(self, CompressionType, RemainingStateIndexSet, TheAnalyzer):            
         # If uniform_DropOut is claimed, then there can be only
         # drop-out alternative--and vice versa.
         assert self.drop_out.is_uniform() == self.uniform_DropOut.is_uniform()

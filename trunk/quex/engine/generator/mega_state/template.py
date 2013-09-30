@@ -80,8 +80,6 @@ from   quex.engine.generator.languages.variable_db  import variable_db
 
 def framework(txt, TState, TheAnalyzer):
     pass
-    ##input_do(txt, TState, TheAnalyzer) 
-    ## LanguageDB.STATE_DEBUG_INFO(txt, TState) -- Done in input_do
 
 def require_data(TState, TheAnalyzer):
     """Requires all variables which are necessary to implement the TemplateState.

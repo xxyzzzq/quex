@@ -42,9 +42,9 @@ def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateInd
         return
 
     def position_and_goto(X):
-        positioning_str   = LanguageDB.POSITIONING(easy[1])
+        positioning_str   = LanguageDB.POSITIONING(X)
         if len(positioning_str) != 0: positioning_str += "\n"
-        goto_terminal_str = LanguageDB.GOTO_BY_DOOR_ID(DoorID.acceptance(easy[1].acceptance_id))
+        goto_terminal_str = LanguageDB.GOTO_BY_DOOR_ID(DoorID.acceptance(X.acceptance_id))
         return [
             0, positioning_str, "\n" if len(positioning_str) != 0 else "",
             0, goto_terminal_str

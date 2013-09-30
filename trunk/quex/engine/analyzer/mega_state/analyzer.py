@@ -66,10 +66,12 @@ def do(TheAnalyzer):
         else:
             assert False
 
-        # -- Track the remaining not-yet-absorbed states
         for mega_state in new_mega_state_list:
             mega_state.finalize(TheAnalyzer, ctype)
-            mega_state.assert_consistency(ctype, remainder)
+            mega_state.assert_consistency(ctype, remainder, TheAnalyzer)
+
+        # -- Track the remaining not-yet-absorbed states
+        for mega_state in new_mega_state_list:
             remainder.difference_update(mega_state.implemented_state_index_set())
 
         mega_state_list.extend(new_mega_state_list)

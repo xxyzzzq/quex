@@ -32,7 +32,6 @@
 
 """
 def do(analyzer):
-
     # (*) Use information about position storage registers that can be shared.
     #     Replace old register values with new ones.
     for state in analyzer.state_db.itervalues():

@@ -151,7 +151,7 @@ class CodeIfDoorIdReferenced:
         assert isinstance(Code, list) or Code is None
 
         self.label = map_door_id_to_label(DoorId)
-        if Code is None: self.code = [ self.label, ":\n" ]
+        if Code is None: self.code = [ self.label, ":" ]
         else:            self.code = Code
 
 class LabelIfDoorIdReferenced(CodeIfDoorIdReferenced):
