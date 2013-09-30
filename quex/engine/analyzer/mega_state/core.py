@@ -174,8 +174,8 @@ class MegaState_Entry(Entry):
            This shall only be the case for originaly recursive transitions, 
            see 'action_db_update()'.
         """
-        ## print "#transition_reassignment_db_construct:", RelatedMegaStateIndex
-        ## print "#transition_reassignment_candidate_list:", self.transition_reassignment_candidate_list
+        ##print "#transition_reassignment_db_construct:", RelatedMegaStateIndex
+        ##print "#transition_reassignment_candidate_list:", self.transition_reassignment_candidate_list
         ## print "#door_id_replacement_db id:", id(self)
         ## print_callstack()
         assert self.__transition_reassignment_db is None
@@ -196,6 +196,7 @@ class MegaState_Entry(Entry):
             assert action is not None
             self.__transition_reassignment_db[transition_id] = action.door_id 
 
+        ##print "#transition_reassignment_db:", self.__transition_reassignment_db
         return
 
 class StateKeyIndexDB(dict):
@@ -378,6 +379,7 @@ class MegaState(AnalyzerState):
         self.drop_out.absorb(TheState.index, TheState.drop_out)
 
     def _finalize_transition_map(self):     
+        print "#transition_reassignment_db:", self.entry.transition_reassignment_db
         def get_new_target(TransitionIdToDoorId_db, Target):
             return Target.clone_adapted_self(TransitionIdToDoorId_db)
         self.transition_map.adapt_targets(self.entry.transition_reassignment_db, get_new_target)
@@ -388,7 +390,7 @@ class MegaState(AnalyzerState):
     def _finalize_content(self):            
         assert False, "--> derived class"
 
-    def assert_consistency(self, CompressionType, RemainingStateIndexSet):
+    def assert_consistency(self, CompressionType, RemainingStateIndexSet, TheAnalyzer):
         # Check the MegaState's consistency
         assert self.entry.action_db.check_consistency()
 
@@ -404,9 +406,9 @@ class MegaState(AnalyzerState):
         assert self.implemented_state_index_set().issubset(RemainingStateIndexSet)
 
         # (4) Check consistency
-        self._assert_consistency(CompressionType, RemainingStateIndexSet) # --> derived class
+        self._assert_consistency(CompressionType, RemainingStateIndexSet, TheAnalyzer) # --> derived class
 
-    def _assert_consistency(self, CompressionType, RemainingStateIndexSet):            
+    def _assert_consistency(self, CompressionType, RemainingStateIndexSet, TheAnalyzer):            
         assert False, "--> derived class"
 
 class MegaState_DropOut(TypedDict):
@@ -448,10 +450,19 @@ class MegaState_DropOut(TypedDict):
         actions have to be performed. This is the case, if all states are
         categorized under the same drop-out. Thus the dictionary's size
         will be '1'.
+
+        RETURNS: [0] uniform prototype
+                 [1] set of all state indices
         """
-        if len(self) != 1: return None
+        if len(self) != 1: return None, None
         prototype = self.iterkeys().next()
-        return prototype
+
+        # Generator of an iteratoer over all state indices
+        all_state_indices = set()
+        for state_index_list in self.itervalues():
+            all_state_indices.update(state_index_list)
+
+        return prototype, all_state_indices
 
     def update(self, Iterable):
         for drop_out, state_index_set in Iterable:

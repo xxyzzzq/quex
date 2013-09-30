@@ -96,7 +96,7 @@ def __main_analysis(SM, EngineType):
         state.entry.action_db.categorize(state.index)
 
     for state in analyzer.state_db.itervalues():
-        state.transition_map = state.transition_map.relate_to_door_ids(analyzer, state.index)
+        state.transition_map = state.transition_map.relate_to_DoorIDs(analyzer, state.index)
 
     return analyzer
 

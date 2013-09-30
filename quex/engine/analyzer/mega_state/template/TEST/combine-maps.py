@@ -3,6 +3,7 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
+from   quex.engine.analyzer.transition_map                         import TransitionMap
 import quex.engine.analyzer.mega_state.template.core               as     templates
 from   quex.engine.analyzer.mega_state.template.state              import combine_maps, TemplateState
 from   quex.engine.analyzer.mega_state.template.TEST.templates_aux import *
@@ -12,7 +13,7 @@ from   quex.engine.interval_handling import *
 
 if "--hwut-info" in sys.argv:
     print "Combination of Two Transition Maps"
-    print "CHOICES: 1, 2, 2b, 3, 4, recursive;"
+    print "CHOICES: 1, 2, 2b, 3, 4;" 
     sys.exit(0)
 
 def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L], DrawF=False):
@@ -39,23 +40,45 @@ def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L], DrawF=Fal
     print "(Vice Versa)-------------------------------------"
     test_combination(StateB, StateA, analyzer, "A", "B", DrawF)
 
+def get_transition_map(TM, StateIndex):
+    def get_door_id(Target):
+        return DoorID(Target, 0)
+    tm = TransitionMap.from_iterable(TM, get_door_id)
+    return tm.relate_to_TargetByStateKeys(StateIndex)
+
+def test_core(tm_a, tm_b):
+    result, scheme_n = combine_maps(tm_a, tm_b)
+    print result.get_string(Option="hex").replace("TargetByStateKey:", "*")
+
+def test(TMA, TMB):
+    tm_a = get_transition_map(TMA, 1L)
+    tm_b = get_transition_map(TMB, 2L)
+    print "TargetMap A:"
+    print tm_a.get_string(Option="hex").replace("TargetByStateKey:", "*")
+    print "TargetMap B:"
+    print tm_b.get_string(Option="hex").replace("TargetByStateKey:", "*")
+    print "Combined (A,B):"
+    test_core(tm_a, tm_b)
+    print "Combined (B,A):"
+    test_core(tm_b, tm_a)
+
 tm0 = [ 
-        (Interval(-sys.maxint, 10), 1L),
-        (Interval(10, sys.maxint),  2L),
-      ]
+    (Interval(-sys.maxint, 10), 1L),
+    (Interval(10, sys.maxint),  2L),
+]
 
 if "1" in sys.argv:
     tm1 = [ 
-            (Interval(-sys.maxint, 30), 1L),
-            (Interval(30, sys.maxint),  2L),
-          ]
+        (Interval(-sys.maxint, 30), 1L),
+        (Interval(30, sys.maxint),  2L),
+    ]
     test(tm0, tm1)
 
 elif "2" in sys.argv:
     tm1 = [ 
-            (Interval(-sys.maxint, 10), 2L),
-            (Interval(10, sys.maxint),  1L),
-          ]
+        (Interval(-sys.maxint, 10), 2L),
+        (Interval(10, sys.maxint),  1L),
+    ]
     test(tm0, tm1)
 
 elif "2b" in sys.argv:
@@ -85,22 +108,24 @@ elif "4" in sys.argv:
           ]
     test(tm0, tm1)
 
-elif "recursive" in sys.argv:
-    print "Involved states in First = 1L"
-    print "Involved states in Second = 2L"
-    print "=> when First triggers to 1L and Second to 2L, then both"
-    print "   are recursive and no distinction needs to be made."
-    tm1 = [ 
-            (Interval(-sys.maxint, sys.maxint), 2L),
-          ]
-    test(tm0, tm1, [1L], [2L], DrawF=True)
+# "recursiveness falls into the domain of 'categorize' 'assign DoorIDs.
+# This is no longer handled in this test!
+# elif "recursive" in sys.argv:
+#     print "Involved states in First = 1L"
+#     print "Involved states in Second = 2L"
+#     print "=> when First triggers to 1L and Second to 2L, then both"
+#     print "   are recursive and no distinction needs to be made."
+#     tm1 = [ 
+#             (Interval(-sys.maxint, sys.maxint), 2L),
+#           ]
+#     test(tm0, tm1) # , [1L], [2L], DrawF=True)
 #    Today, I would say that the comment below is utter nonsense: <fschaef>
 #    print "A target combination (1L, 2L) and vice versa has not to appear,"
 #    print "because this would mean recursion and is thus an equivalence."
 
-elif "recursive-b" in sys.argv:
-    pass
-#    We no longer distinguish between uniform entries for computation of combination maps.
+# elif "recursive-b" in sys.argv:
+#     pass
+# #    We no longer distinguish between uniform entries for computation of combination maps.
 #
 #    print "Involved states in First = 1L"
 #    print "Involved states in Second = 2L"

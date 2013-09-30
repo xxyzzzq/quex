@@ -478,7 +478,7 @@ class LanguageDB_Cpp(dict):
 
     def POSITIONING(self, X):
         Positioning = X.positioning
-        Register    = X.positioning_register
+        Register    = X.position_register
         if   Positioning == E_TransitionN.VOID: 
             return   "__quex_assert(position[%i] != 0x0);\n" % Register \
                    + "me->buffer._input_p = position[%i];\n" % Register

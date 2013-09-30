@@ -95,7 +95,7 @@ class TransitionMap(list):
         yield prev_end, sys.maxint, TransitionMapA[-1][1], TransitionMapB[-1][1]
         return
 
-    def relate_to_door_ids(self, TheAnalyzer, StateIndex):
+    def relate_to_DoorIDs(self, TheAnalyzer, StateIndex):
         """Creates a transition_map that triggers to DoorIDs instead of target states.
         """
         def relate(Target):
@@ -109,6 +109,18 @@ class TransitionMap(list):
             assert door_id is not None
             return door_id
         
+        return self.__class__.from_iterable(self, relate)
+
+    def relate_to_TargetByStateKeys(self, StateIndex):
+        def relate(TargetDoorId):
+            if TargetDoorId.drop_out_f():
+                transition_id = TransitionID(E_StateIndices.DROP_OUT, StateIndex, TriggerId=0)
+                door_id       = DoorID.drop_out(StateIndex)
+            else:
+                transition_id = TransitionID(TargetDoorId.state_index, StateIndex, TriggerId=0)
+                door_id       = TargetDoorId
+            return TargetByStateKey.from_transition(transition_id, door_id)
+
         return self.__class__.from_iterable(self, relate)
 
     def adapt_targets(self, helper_object, adapt_this):

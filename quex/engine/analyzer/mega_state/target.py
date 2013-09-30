@@ -1,5 +1,5 @@
 from quex.engine.analyzer.state.entry_action import TransitionID, DoorID, DoorID_Scheme
-from quex.engine.tools                       import UniformObject
+from quex.engine.tools                       import UniformObject, print_callstack
 from quex.blackboard                         import E_StateIndices
 
 from collections import namedtuple
@@ -107,7 +107,7 @@ class TargetByStateKey(object):
         return result
 
     @staticmethod
-    def special(X):
+    def from_StateIndex_for_DropOut(X):
         return TargetByStateKey.from_transition(TransitionID(X,X,0), DoorID(X,0))
 
     def clone_adapted_self(self, MapTransitionIdToNewDoorId):
@@ -144,6 +144,9 @@ class TargetByStateKey(object):
     def iterable_door_id_scheme(self):
         for x in self.__scheme:
             yield x.door_id
+
+    def get_door_id_by_state_key(self, StateKey):
+        return self.__scheme[StateKey].door_id
 
     @staticmethod
     def assign_scheme_ids(transition_map):
@@ -214,5 +217,5 @@ class TargetByStateKey(object):
             return self.__scheme == Other.__scheme
 
 # Globally unique object to stand up for all 'drop-outs'.
-TargetByStateKey_DROP_OUT = TargetByStateKey.special(E_StateIndices.DROP_OUT)
+TargetByStateKey_DROP_OUT = TargetByStateKey.from_StateIndex_for_DropOut(E_StateIndices.DROP_OUT)
 

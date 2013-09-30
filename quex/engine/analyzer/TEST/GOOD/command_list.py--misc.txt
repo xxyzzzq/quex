@@ -1,0 +1,3 @@
+1-1 no common:               110 x OK
+one command, one list empty: 22 x OK
+only one common:             11 x OK

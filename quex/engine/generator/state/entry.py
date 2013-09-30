@@ -27,6 +27,8 @@ def do(TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
         post_txt = [ "\n\n    %s\n" % LanguageDB.UNREACHABLE ]
         post_txt.extend(do_post(door_tree_root, TheState, done_set))
             
+    pre_txt.append("    ")
+    LanguageDB.STATE_DEBUG_INFO(pre_txt, TheState, TheAnalyzer)
     return pre_txt, post_txt
 
 def do_core(txt, TheState):

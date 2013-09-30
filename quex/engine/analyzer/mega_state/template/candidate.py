@@ -192,6 +192,27 @@ def _transition_cost_single(State):
                              IntervalN      = len(State.transition_map),
                              SchemeN        = scheme_n)
     
+def update_scheme_set(scheme_set, TA, TB):
+    """This function is used to count the number of different schemes in a
+    combination of transition maps. The number of different schemes is used
+    to determine the cost a combination of transition maps.
+
+    NOTE: The use of 'hash' has the potential to miss a non-equal occurrence.
+          The value is only for metrics. So its no great deal.
+    """
+    assert isinstance(TA, TargetByStateKey) 
+    assert isinstance(TB, TargetByStateKey) 
+
+    # The 'common drop_out case' is covered by 'uniform_door_id'
+    if TA.uniform_door_id is not None:
+        if TA.uniform_door_id == TB.uniform_door_id:
+            return 
+
+    my_hash = 0x5A5A5A5A
+    for x in chain(TA.iterable_door_id_scheme(), TB.iterable_door_id_scheme()):
+        my_hash ^= hash(x)
+    scheme_set.add(my_hash)
+
 def _transition_cost_combined(StateA, StateB):
     """Computes the storage consumption of a transition map.
     """
@@ -205,7 +226,7 @@ def _transition_cost_combined(StateA, StateB):
     scheme_set = set()
     for begin, end, a_target, b_target in TransitionMap.izip(TM_A, TM_B):
         interval_n += 1
-        TargetFactory.update_scheme_set(a_target, b_target, scheme_set)
+        update_scheme_set(scheme_set, a_target, b_target)
 
     scheme_n = len(scheme_set)
 
@@ -217,57 +238,4 @@ def __transition_cost(InvolvedStateN, IntervalN, SchemeN):
     cmp_n    = border_n
     byte_n   = SchemeN * InvolvedStateN * 4  # assume 4 bytes per entry in scheme
     return Cost(ComparisonN=cmp_n, JumpN=jump_n, ByteN=byte_n)
-
-class TargetFactory:
-    """________________________________________________________________________
-    
-    The 'TargetFactory' is concerned with the combination of two 
-    TargetByStateKey-s from two transition maps--assumed that they trigger on
-    the same character range. The TargetFactory accomplishes two jobs:
-
-        .get(A, B): 
-        
-           --> TargetByStateKey target implements target A and B.
-
-        .update_scheme_set(A, B, scheme_set)
-
-           --> supports cost computation for the combination of two 
-               transition maps.
-    ___________________________________________________________________________
-    """
-    def __init__(self, StateA, StateB):
-        pass 
-
-    def get(self, TA, TB):
-        """RETURNS:
-        
-        A TargetByStateKey which represents the combination of target A and
-        target B. If both are equal the TargetByStateKey may have the
-        '.target_state_index' set. If not a 'scheme' is developped is
-        developed, which determines a target based on a state key, i.e.
-        'target_state_index = scheme[state_key]'.
-        """
-        return TargetByStateKey.from_2_TargetByStateKeys(TA,TB)
-
-    @staticmethod
-    def update_scheme_set(TA, TB, scheme_set):
-        """This function is used to count the number of different schemes in a
-        combination of transition maps. The number of different schemes is used
-        to determine the cost a combination of transition maps.
-
-        NOTE: The use of 'hash' has the potential to miss a non-equal occurrence.
-              The value is only for metrics. So its no great deal.
-        """
-        assert isinstance(TA, TargetByStateKey) 
-        assert isinstance(TB, TargetByStateKey) 
-
-        # The 'common drop_out case' is covered by 'uniform_door_id'
-        if TA.uniform_door_id is not None:
-            if TA.uniform_door_id == TB.uniform_door_id:
-                return 
-
-        my_hash = 0x5A5A5A5A
-        for x in chain(TA.iterable_door_id_scheme(), TB.iterable_door_id_scheme()):
-            my_hash ^= hash(x)
-        scheme_set.add(my_hash)
 

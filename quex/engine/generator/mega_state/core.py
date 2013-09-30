@@ -127,12 +127,14 @@ def drop_out_scheme_do(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
     txt.append(LabelIfDoorIdReferenced(DoorID.drop_out(TheState.index)))
     txt.append("    %s\n" % DebugString) 
 
-    uniform_drop_out = TheState.drop_out.get_uniform_prototype()
+    uniform_drop_out, state_index_set = TheState.drop_out.get_uniform_prototype()
 
     # (*) Drop Out Section(s)
     if uniform_drop_out is not None:
         # uniform drop outs => no 'switch-case' required
-        print "########################### TODO: <<< DROP-OUT Labels of all related states  << LabelIfDoorIdReferenced(DropOutDoor)+"
+        for state_index in state_index_set:
+            txt.append(LabelIfDoorIdReferenced(DoorID.drop_out(state_index)))
+
         drop_out.do(txt, TheState.index, uniform_drop_out, TheAnalyzer, \
                     DefineLabelF=False, MentionStateIndexF=False)
     else:
@@ -148,8 +150,6 @@ def drop_out_scheme_do(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
         )
 
         for drop_out_object, state_index_set in TheState.drop_out.iteritems():
-            print "########################### TODO: <<< DROP-OUT Labels of all related states  << LabelIfDoorIdReferenced(DropOutDoor)+"
-
             # state keys related to drop out
             state_key_list = map(lambda i: TheState.map_state_index_to_state_key(i), state_index_set)
             assert assert_remainder.issuperset(state_key_list)
@@ -160,6 +160,8 @@ def drop_out_scheme_do(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
             # states that implement the same drop-out behavior. Same drop-outs
             # are implemented only once.
             case_txt = []
+            for state_index in state_index_set:
+                case_txt.append(LabelIfDoorIdReferenced(DoorID.drop_out(state_index)))
             drop_out.do(case_txt, TheState.index, drop_out_object, TheAnalyzer, 
                         DefineLabelF=False, MentionStateIndexF=False)
             case_list.append((state_key_list, case_txt))
