@@ -7,9 +7,11 @@ from   quex.engine.analyzer.mega_state.core     import MegaState, \
                                                        StateKeyIndexDB, \
                                                        MegaState_Entry, \
                                                        MegaState_DropOut
+from   quex.engine.analyzer.mega_state.path_walker.find    import DropOutConsideration_cmp, \
+                                                                  DropOutConsideration_relate
 import quex.engine.state_machine.index          as     index
 from   quex.engine.tools                        import UniformObject
-from   quex.blackboard                          import E_Compression
+from   quex.blackboard                          import E_Compression, E_Commands
 
 from   itertools import izip
 
@@ -50,9 +52,14 @@ class PathWalkerState(MegaState):
     ___________________________________________________________________________
     """
     def __init__(self, FirstPath, TheAnalyzer):
-        ski_db = StateKeyIndexDB([x.state_index for x in FirstPath.step_list],
-                                 IgnoredListIndex=len(FirstPath)-1)
-        MegaState.__init__(self, index.get(), FirstPath.transition_map, ski_db)
+        my_index       = index.get()
+        ski_db         = StateKeyIndexDB([x.state_index for x in FirstPath.step_list],
+                                         IgnoredListIndex=len(FirstPath.step_list)-1)
+        transition_map = TransitionMap.from_iterable(
+            (interval, DropOutConsideration_relate(target, my_index))
+            for interval, target in FirstPath.transition_map
+        )
+        MegaState.__init__(self, my_index, FirstPath.transition_map, ski_db)
 
         # Uniform CommandList along entries on the path (optional)
         self.uniform_entry_CommandList = FirstPath.uniform_entry_CommandList.clone()
@@ -113,7 +120,7 @@ class PathWalkerState(MegaState):
             -- If uniformity is required, the entries and drop-outs must 
                be uniform with the existing onces.
         """
-        if not self.__transition_map_to_door_ids.is_equal(Path.transition_map): 
+        if not self.__transition_map_to_door_ids.is_equal(Path.transition_map, DropOutConsideration_cmp): 
             return False
 
         if CompressionType == E_Compression.PATH_UNIFORM:
@@ -218,7 +225,7 @@ class PathWalkerState(MegaState):
         for action in self.entry.action_db.itervalues():
             path_iterator_cmd_n = 0
             for cmd in action.command_list:
-                if not isinstance(cmd, (PathIteratorSet)): continue
+                if cmd.id != E_Commands.PathIteratorSet: continue
                 path_iterator_cmd_n += 1
                 assert path_iterator_cmd_n < 2
 

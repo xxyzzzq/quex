@@ -1,3 +1,4 @@
+from   quex.engine.analyzer.state.entry_action           import DoorID
 from   quex.engine.analyzer.mega_state.path_walker.path  import CharacterPath
 from   quex.engine.misc.tree_walker                      import TreeWalker
 from   quex.blackboard                                   import E_Compression, E_StateIndices
@@ -30,6 +31,21 @@ def do(TheAnalyzer, CompressionType, AvailableStateIndexSet):
         )
 
     return path_list
+
+def DropOutConsideration_relate(DoorId, PathWalkerState_index):
+    if not DoorId.drop_out_f(): return DoorId
+    else:                       return DoorID.drop_out(PathWalkerState_index)
+
+def DropOutConsideration_cmp(DoorId_A, DoorId_B):
+    """For transition maps on path DropOut == DropOut. At the end of the
+    transition map the drop-outs are distinguished by the state key.
+    """
+    if DoorId_A == E_StateIndices.VOID or DoorId_B == E_StateIndices.VOID:
+        return True
+    elif DoorId_A.drop_out_f() and DoorId_B.drop_out_f():
+        return True
+    else:
+        return DoorId_A == DoorId_B
 
 def CharacterPathList_find(analyzer, StateIndex, CompressionType, AvailableStateIndexSet):
     """Searches for the BEGINNING of a path, i.e. a single character transition
@@ -128,8 +144,12 @@ class PathFinder(TreeWalker):
             target_state = self.analyzer.state_db[target_index]
 
             # TransitionMap matching? 
-            plug = path.transition_map.match_with_wildcard(transition_map, transition_char)
+            plug = path.transition_map.match_with_wildcard(transition_map, transition_char, EqualCmp=DropOutConsideration_cmp)
             if   plug is None:
+                print "#t-char: 0x%04X" % transition_char
+                print "#path.tm:\n" + path.transition_map.get_string("hex")
+                print "#state.tm:\n" + transition_map.get_string("hex")
+                print "#no matchey"
                 continue # No match possible 
             elif plug > 0  and not path.has_wildcard(): 
                 continue # Wilcard required for match, but there is no wildcard open.

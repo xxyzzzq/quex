@@ -379,7 +379,6 @@ class MegaState(AnalyzerState):
         self.drop_out.absorb(TheState.index, TheState.drop_out)
 
     def _finalize_transition_map(self):     
-        print "#transition_reassignment_db:", self.entry.transition_reassignment_db
         def get_new_target(TransitionIdToDoorId_db, Target):
             return Target.clone_adapted_self(TransitionIdToDoorId_db)
         self.transition_map.adapt_targets(self.entry.transition_reassignment_db, get_new_target)

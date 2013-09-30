@@ -144,11 +144,11 @@ class TransitionMap(list):
             if info in DoorIdSet: return True
         return False
 
-    def is_equal(self, Other):
-        if len(self) != len(Other): return False
+    def is_equal(self, Other, EqualCmp=lambda x,y: x==y):
+        if len(self) != len(Other):        return False
         for x, y in izip(self, Other):
-            if   x[0] != y[0]: return False  # Interval
-            elif x[1] != y[1]: return False  # Target
+            if   x[0] != y[0]:             return False  # Interval
+            elif not EqualCmp(x[1], y[1]): return False  # Target
         return True
 
     def is_empty(self):
@@ -156,7 +156,7 @@ class TransitionMap(list):
         elif len(self) == 1: return self[0][1].drop_out_f()
         else:                return False
 
-    def match_with_wildcard(self, Other, ExceptionCharacter=None):
+    def match_with_wildcard(self, Other, ExceptionCharacter=None, EqualCmp=lambda x,y: x==y):
         """Determines whether the transition map matches Other. If 'self' 
         contains a transition to 'E_StateIndices.VOID', then a wild card
         may be applied. A transition of Other to 'ExceptionTarget' on 
@@ -175,7 +175,7 @@ class TransitionMap(list):
         """
         wildcard_target = -1
         for begin, end, a_target, b_target in TransitionMap.izip(self, Other):
-            if a_target == b_target: continue    
+            if EqualCmp(a_target, b_target): continue    
 
             # Here: Mismatching targets on same character interval.
 
