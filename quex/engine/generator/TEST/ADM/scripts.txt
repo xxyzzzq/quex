@@ -6,3 +6,4 @@ python *.py
 --not test-track*
 --not error.py
 --not __init__.py
+--not debug.py
