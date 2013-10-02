@@ -68,6 +68,7 @@ from quex.engine.analyzer.state.drop_out     import DropOut, \
                                                     DropOutBackwardInputPositionDetection
 from quex.engine.analyzer.state.entry_action import DoorID
 from quex.engine.analyzer.transition_map     import TransitionMap
+from quex.engine.interval_handling           import Interval
 from quex.blackboard                         import E_StateIndices
 
 from quex.engine.tools import print_callstack, \
@@ -389,9 +390,51 @@ class MegaState(AnalyzerState):
     def _finalize_content(self):            
         assert False, "--> derived class"
 
+    def _get_target_by_state_key(self, Begin, End, TargetScheme, StateKey):
+        """Given a target in the MegaState-s transition map and the StateKey of the
+        represented state, this function returns the resulting DoorID.
+        """
+        assert False, "--> derived class"
+
+    def verify_transition_map(self, TheAnalyzer):
+        """Each state which is implemented by this MegaState has a transition map.
+        Given the state key of the represented state the TemplateState must know
+        the exact transition map. Exceptions are transitions to DoorID-s which 
+        have been replaced.
+
+        This function relies on '._get_target_by_state_key()' being implemented
+        by the derived class.
+        """
+        # Exceptions: replaced DoorID-s. No assumptions made on those targets.
+        replaced_door_id_set = set(self.entry.transition_reassignment_db.itervalues())
+        self_DoorID_drop_out = DoorID.drop_out(self.index)
+
+        # Iterate over all represented states of the MegaState
+        for state_index in self.implemented_state_index_set():
+            state_key = self.map_state_index_to_state_key(state_index)
+
+            # TransitionMap of the represented state.
+            original_tm = TheAnalyzer.state_db[state_index].transition_map
+            # Compare for each interval original target and target(state_key)
+            for begin, end, target, target_scheme in TransitionMap.izip(original_tm, self.transition_map):
+                target_by_state_key = self._get_target_by_state_key(begin, end, target_scheme, state_key)
+                if   target_by_state_key == target:               continue # The target must be the same, or
+                elif target_by_state_key in replaced_door_id_set: continue # be a 'replaced one'.
+                # A MegaState-s DropOut may represent any DropOut
+                elif target_by_state_key == self_DoorID_drop_out  \
+                     and target.drop_out_f():                     continue 
+
+                print "#original:\n" + original_tm.get_string("hex")
+                print "#scheme:\n"   + self.transition_map.get_string("hex")
+                print "# %s: tm -> %s; scheme[%s] -> %s;" % (Interval(begin, end).get_string("hex"), target, state_key, target_by_state_key)
+                return False
+        return True
     def assert_consistency(self, CompressionType, RemainingStateIndexSet, TheAnalyzer):
         # Check the MegaState's consistency
         assert self.entry.action_db.check_consistency()
+
+        # Check whether the transition map is ok.
+        assert self.verify_transition_map(TheAnalyzer)
 
         # A MegaState shall not change DoorID-s of entry actions,
         # except for transitions inside the MegaState itself.
@@ -404,7 +447,7 @@ class MegaState(AnalyzerState):
         # => All implemented states must be from 'RemainingStateIndexSet'
         assert self.implemented_state_index_set().issubset(RemainingStateIndexSet)
 
-        # (4) Check consistency
+        # Check specific consistency (implemented by derived class)
         self._assert_consistency(CompressionType, RemainingStateIndexSet, TheAnalyzer) # --> derived class
 
     def _assert_consistency(self, CompressionType, RemainingStateIndexSet, TheAnalyzer):            

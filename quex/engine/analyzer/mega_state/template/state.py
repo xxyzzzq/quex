@@ -79,25 +79,19 @@ class TemplateState(MegaState):
     def target_scheme_n(self):  
         return self.__target_scheme_n
 
-    def verify_transition_map(self, TheAnalyzer):
-        # (*) Each state's transition map must be implemented in the 
-        #     Template's transition map.
-        replaced_door_id_set = set(self.entry.transition_reassignment_db.itervalues())
-        for state_key, state_index in enumerate(self.ski_db.state_index_sequence):
-            original_tm = TheAnalyzer.state_db[state_index].transition_map
-            for begin, end, target, target_scheme in TransitionMap.izip(original_tm, self.transition_map):
-                schemed_target = target_scheme.get_door_id_by_state_key(state_key)
-                if   target == schemed_target:               continue
-                elif schemed_target in replaced_door_id_set: continue
-                print "#original:\n" + original_tm.get_string("hex")
-                print "#scheme:\n"   + self.transition_map.get_string("hex")
-                print "# %s: tm -> %s; scheme[%s] -> %s;" % (Interval(begin, end).get_string("hex"), target, state_key, target_scheme.get_door_id_by_state_key(state_key))
-                return False
-        return True
+    def _get_target_by_state_key(self, Begin, End, TargetScheme, StateKey):
+        """A TemplateState may find the target by using the StateKey as an index
+        into an array 'TargetScheme[State]'. For DoorID-s which have been replaced
+        this does not need to work.
+
+        NOTE: This function does not need to work for DoorID-s which are mentioned
+              in 'self.entry.transition_reassignment_db'.
+        """
+        return target_scheme.get_door_id_by_state_key(state_key)
 
     def _assert_consistency(self, CompressionType, RemainingStateIndexSet, TheAnalyzer):            
-        assert self.verify_transition_map(TheAnalyzer)
         pass
+
 
 class PseudoTemplateState(MegaState): 
     """________________________________________________________________________

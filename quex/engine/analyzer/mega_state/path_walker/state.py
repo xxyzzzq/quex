@@ -59,7 +59,7 @@ class PathWalkerState(MegaState):
             (interval, DropOutConsideration_relate(target, my_index))
             for interval, target in FirstPath.transition_map
         )
-        MegaState.__init__(self, my_index, FirstPath.transition_map, ski_db)
+        MegaState.__init__(self, my_index, transition_map, ski_db)
 
         # Uniform CommandList along entries on the path (optional)
         self.uniform_entry_CommandList = FirstPath.uniform_entry_CommandList.clone()
@@ -67,7 +67,7 @@ class PathWalkerState(MegaState):
 
         self.__path_list = [ FirstPath.step_list ]
 
-        # Following are set by 'finalize()'.
+        # Following is set by 'finalize()'.
         self.__finalized = None # <-- ._finalize_content()
 
     @property
@@ -120,7 +120,7 @@ class PathWalkerState(MegaState):
             -- If uniformity is required, the entries and drop-outs must 
                be uniform with the existing onces.
         """
-        if not self.__transition_map_to_door_ids.is_equal(Path.transition_map, DropOutConsideration_cmp): 
+        if not self.transition_map.is_equal(Path.transition_map, DropOutConsideration_cmp): 
             return False
 
         if CompressionType == E_Compression.PATH_UNIFORM:
@@ -198,6 +198,33 @@ class PathWalkerState(MegaState):
     def _finalize_content(self, TheAnalyzer):
         self.__finalized = FinalizedContent(self, TheAnalyzer)
 
+    def get_Trigger_DoorID_by_state_key(self, StateKey):
+        # Find (transition char, DoorID) for given StateKey
+        i      = 0
+        offset = 0
+        for i in xrange(len(self.path_list)):
+            offset += len(self.path_list[i]) + 1
+            if offset > StateKey: 
+                break
+
+        offset -= len(self.path_list[i]) + 1
+        step_i  = StateKey - offset
+        return self.path_list[i][step_i].trigger, self.door_id_sequence_list[i][step_i]
+
+    def _get_target_by_state_key(self, Begin, End, TargetScheme, StateKey):
+        """In a PathWalkerState's transition map, the targets are DoorID-s. They
+        do not depend on a StateKey. The ones which depend on a state key are 
+        are the ones on a path.
+        """
+        # First, look if the character lies on the path. If not rely on the
+        # transition map' target DoorID as it is.
+        if End - Begin == 1:
+            trigger, door_id = self.get_Trigger_DoorID_by_state_key(StateKey)
+            if Begin == trigger:
+                return door_id
+
+        return TargetScheme
+
     def _assert_consistency(self, CompressionType, RemainingStateIndexSet, TheAnalyzer):            
         # If uniform_DropOut is claimed, then there can be only
         # drop-out alternative--and vice versa.
@@ -235,9 +262,9 @@ class FinalizedContent(object):
                  "door_id_sequence_list")
 
     def __init__(self, PWState, TheAnalyzer):
-        self.uniform_door_id                 = UniformObject()
-        self.uniform_terminal_door_id        = UniformObject()
-        self.door_id_sequence_list           = []
+        self.uniform_door_id          = UniformObject()
+        self.uniform_terminal_door_id = UniformObject()
+        self.door_id_sequence_list    = []
         for step_list in PWState.path_list:
             # Meaningful paths consist of more than one state and a terminal. 
             assert len(step_list) > 2
