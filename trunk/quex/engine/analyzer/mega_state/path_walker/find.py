@@ -146,10 +146,6 @@ class PathFinder(TreeWalker):
             # TransitionMap matching? 
             plug = path.transition_map.match_with_wildcard(transition_map, transition_char, EqualCmp=DropOutConsideration_cmp)
             if   plug is None:
-                print "#t-char: 0x%04X" % transition_char
-                print "#path.tm:\n" + path.transition_map.get_string("hex")
-                print "#state.tm:\n" + transition_map.get_string("hex")
-                print "#no matchey"
                 continue # No match possible 
             elif plug > 0  and not path.has_wildcard(): 
                 continue # Wilcard required for match, but there is no wildcard open.
