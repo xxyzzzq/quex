@@ -255,13 +255,13 @@ class AcceptanceCheckerElement(object):
 
        .pre_context_id   PreContextID of concern. 
 
-                         == None --> no pre-context (normal pattern)
-                         == -1   --> pre-context 'begin-of-line'
+                         is None --> no pre-context (normal pattern)
+                         is -1   --> pre-context 'begin-of-line'
                          >= 0    --> id of the pre-context state machine/flag
 
        .acceptance_id    Terminal to be targeted (what was accepted).
 
-                         == None --> acceptance determined by stored value in 
+                         is None --> acceptance determined by stored value in 
                                      'last_acceptance', thus "goto *last_acceptance;"
                          == -1   --> goto terminal 'failure', nothing matched.
                          >= 0    --> goto terminal given by '.terminal_id'

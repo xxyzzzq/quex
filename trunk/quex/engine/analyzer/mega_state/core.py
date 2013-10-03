@@ -421,14 +421,19 @@ class MegaState(AnalyzerState):
                 if   target_by_state_key == target:               continue # The target must be the same, or
                 elif target_by_state_key in replaced_door_id_set: continue # be a 'replaced one'.
                 # A MegaState-s DropOut may represent any DropOut
-                elif target_by_state_key == self_DoorID_drop_out  \
+                elif     target_by_state_key == self_DoorID_drop_out  \
                      and target.drop_out_f():                     continue 
 
-                print "#original:\n" + original_tm.get_string("hex")
-                print "#scheme:\n"   + self.transition_map.get_string("hex")
+                print "#original:\n"    + original_tm.get_string("hex")
+                print "#scheme:\n"      + self.transition_map.get_string("hex")
+                print "#selfDropOut:\n" + str(self_DoorID_drop_out)
+                print "#StateKey:", state_key
+                print "#siseq:", self.ski_db.state_index_sequence
+                print "#siseq[StateKey]:", self.ski_db.state_index_sequence[state_key]
                 print "# %s: tm -> %s; scheme[%s] -> %s;" % (Interval(begin, end).get_string("hex"), target, state_key, target_by_state_key)
                 return False
         return True
+
     def assert_consistency(self, CompressionType, RemainingStateIndexSet, TheAnalyzer):
         # Check the MegaState's consistency
         assert self.entry.action_db.check_consistency()

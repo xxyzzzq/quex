@@ -26,11 +26,19 @@ class TransitionMap(list):
     """
     @classmethod
     def from_TargetMap(cls, TM):
+        if TM is None:
+            return None
+
+        tm_map = TM.get_map()
+        if len(tm_map) == 0:
+            return None
+
         result = cls()
-        for target, character_set in TM.get_map().iteritems():
+        for target, character_set in tm_map.iteritems():
             assert not character_set.is_empty()
             result.extend((interval.clone(), target) 
                         for interval in character_set.get_intervals(PromiseToTreatWellF=True))
+        assert len(result) != 0 # Empty target maps would be 'None'
         result.sort()
         # Empty transition maps shall not fill their gaps!
         if len(result) != 0:
@@ -45,7 +53,8 @@ class TransitionMap(list):
         return result
 
     def clone(self):
-        return self.from_iterable(self)
+        result = self.from_iterable(self)
+        return result
 
     @staticmethod
     def izip(TransitionMapA, TransitionMapB):

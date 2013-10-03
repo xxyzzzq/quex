@@ -36,7 +36,7 @@ def test(A, B):
             print "superset(Original, result):           %s" % superset.do(orig, result)
         if not special.is_none(result):
             tmp = clean(intersection.do([cutter, result]))
-            print "intersection(Cutter, result) == None: %s" % special.is_none(tmp)
+            print "intersection(Cutter, result) is None: %s" % special.is_none(tmp)
         tmp = clean(union.do([orig, result]))
         print "union(Original, result) == Original:  %s" % identity.do(tmp, orig)
         print

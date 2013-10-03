@@ -311,6 +311,7 @@ class ElectDB(dict):
         InitStateIndex = TheAnalyzer.init_state_index
         # x[0] = state_index, x[1] = state
         condition = lambda x:     x[0] in AvailableStateIndexList \
+                              and x[1].transition_map is not None \
                               and len(x[1].transition_map) != 0   \
                               and x[1].index != InitStateIndex 
 

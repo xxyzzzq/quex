@@ -14,8 +14,10 @@ def do(txt, TM):
     global LanguageDB
     LanguageDB = Setup.language_db
 
-    if len(TM) == 0:
+    if TM is None:
         return
+
+    assert len(TM) != 0
 
     # The range of possible characters may be restricted. It must be ensured,
     # that the occurring characters only belong to the admissible range.
@@ -44,6 +46,8 @@ def do(txt, TM):
     #     implemented in an 'ELSE' block which must be closed.
     if outstanding_list is not None: 
         txt.append(LanguageDB.ENDIF)
+
+    txt.append("\n")
 
 class SubTriggerMap(object):
     """A trigger map that 'points' into a subset of a trigger map.

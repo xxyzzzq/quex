@@ -11,7 +11,8 @@ def find_core(sm, SelectF=False):
     for state in analyzer.state_db.itervalues():
         state.entry.action_db.categorize(state.index)
     for state in analyzer.state_db.itervalues():
-        state.transition_map = state.transition_map.relate_to_door_ids(analyzer, state.index)
+        if state.transition_map is None: continue
+        state.transition_map = state.transition_map.relate_to_DoorIDs(analyzer, state.index)
 
     AvailableStateIndexSet = set(analyzer.state_db.keys())
     CompressionType        = E_Compression.PATH

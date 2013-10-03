@@ -4,6 +4,7 @@ from   quex.engine.misc.tree_walker                      import TreeWalker
 from   quex.blackboard                                   import E_Compression, E_StateIndices
 
 from   collections import defaultdict
+from   operator    import xor
 
 def do(TheAnalyzer, CompressionType, AvailableStateIndexSet):
     """Starting point of the search for single character traces in the 
@@ -40,8 +41,8 @@ def DropOutConsideration_cmp(DoorId_A, DoorId_B):
     """For transition maps on path DropOut == DropOut. At the end of the
     transition map the drop-outs are distinguished by the state key.
     """
-    if DoorId_A == E_StateIndices.VOID or DoorId_B == E_StateIndices.VOID:
-        return True
+    if xor((DoorId_A == E_StateIndices.VOID), (DoorId_B == E_StateIndices.VOID)):
+        return False # See 'match_with_wildcard' for further consideration.
     elif DoorId_A.drop_out_f() and DoorId_B.drop_out_f():
         return True
     else:
@@ -149,7 +150,6 @@ class PathFinder(TreeWalker):
                 continue # No match possible 
             elif plug > 0  and not path.has_wildcard(): 
                 continue # Wilcard required for match, but there is no wildcard open.
-
             new_path = path.extended_clone(State, transition_char, plug) 
 
             # RECURSION STEP ______________________________________________
