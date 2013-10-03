@@ -10,21 +10,17 @@ from   quex.blackboard import E_StateIndices, \
                               setup as Setup
 
 def relate_to_TransitionCode(tm):
-    # If a state has no transitions, no new input needs to be eaten => no reload.
-    #
-    # NOTE: The only case where the buffer reload is not required are empty states,
-    #       AND states during backward input position detection!
-    if tm.is_empty():
-        return tm
-
+    if tm is None:
+        return None
     tm.assert_continuity()
     tm.assert_adjacency()
-    # TM.fill_gaps(DoorID.drop_out(StateIndex))
     return TransitionMap.from_iterable(tm, TransitionCodeFactory.do)
 
 def MegaState_relate_to_transition_code(TheState, TheAnalyzer, StateKeyStr):
     TransitionCodeFactory.init_MegaState_handling(TheState, TheAnalyzer, StateKeyStr)
-    return relate_to_TransitionCode(TheState.transition_map)
+    result = relate_to_TransitionCode(TheState.transition_map)
+    TransitionCodeFactory.deinit_MegaState_handling()
+    return result
 
 class TransitionCodeFactory:
     @classmethod
@@ -32,6 +28,12 @@ class TransitionCodeFactory:
         cls.state         = TheState
         cls.state_db      = TheAnalyzer.state_db
         cls.state_key_str = StateKeyStr
+
+    @classmethod
+    def deinit_MegaState_handling(cls):
+        cls.state         = None
+        cls.state_db      = None
+        cls.state_key_str = None
 
     @classmethod
     def do(cls, Target):

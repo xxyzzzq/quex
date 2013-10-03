@@ -42,6 +42,8 @@ def get_frequency_db(StateDB, RemainderStateIndexList):
     # Count number of transitions to a state: frequency_db
     frequency_db = defaultdict(int)
     for state in (StateDB[i] for i in RemainderStateIndexList):
+        if state.transition_map is None:
+            continue
         for interval, target_index in state.transition_map:
             frequency_db[target_index] += 1
     return frequency_db

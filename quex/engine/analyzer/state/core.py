@@ -50,6 +50,8 @@ class AnalyzerState(Processor):
                  "transition_map") 
 
     def __init__(self, StateIndex, TheTransitionMap):
+        # Empty transition maps are reported as 'None'
+        assert isinstance(TheTransitionMap, TransitionMap) or TheTransitionMap is None
         Processor.__init__(self, StateIndex)
         self.drop_out                          = None
         self.map_target_index_to_character_set = None
@@ -83,12 +85,11 @@ class AnalyzerState(Processor):
                  buffer_limit_code --> reload procedure.
            
         """
+        if self.transition_map is None: # A transition map which is not a transition map
+            return                      # cannot trigger any reload.
+
         reload_state = TheAnalyzer.reload_state
         assert reload_state.index in (E_StateIndices.RELOAD_FORWARD, E_StateIndices.RELOAD_BACKWARD)
-
-        # Empty states simply drop_out, they do NOT reload.
-        if self.transition_map.is_empty():
-            return
 
         # Prepare the entry into the state from 'After Reload'.
         # => Emtpy transition action, nothing to do.

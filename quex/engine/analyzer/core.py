@@ -96,6 +96,7 @@ def __main_analysis(SM, EngineType):
         state.entry.action_db.categorize(state.index)
 
     for state in analyzer.state_db.itervalues():
+        if state.transition_map is None: continue
         state.transition_map = state.transition_map.relate_to_DoorIDs(analyzer, state.index)
 
     return analyzer
@@ -220,7 +221,7 @@ class Analyzer:
                  if origin.is_acceptance() 
             )
 
-        if state.transition_map.is_empty() and False: 
+        if state.transition_map is None and False: 
             # NOTE: We need a way to disable this exception for PathWalkerState-s(!)
             #       It safe, not to allow it, in general.
             #------------------------------------------------------------------------
@@ -258,10 +259,6 @@ class Analyzer:
                                       
     def get_action_at_state_machine_entry(self):
         assert self.engine_type.is_FORWARD()
-        ##print "#action_db:", self.init_state_index
-        ##for key, value in self.state_db[self.init_state_index].entry.action_db.iteritems():
-        ##    print "#key:", key
-        ##    print "#value:", value.door_id
         return self.state_db[self.init_state_index].entry.action_db.get_action(self.init_state_index, E_StateIndices.NONE)
 
     def get_depth_db(self):

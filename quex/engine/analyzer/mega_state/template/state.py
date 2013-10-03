@@ -87,7 +87,7 @@ class TemplateState(MegaState):
         NOTE: This function does not need to work for DoorID-s which are mentioned
               in 'self.entry.transition_reassignment_db'.
         """
-        return target_scheme.get_door_id_by_state_key(state_key)
+        return TargetScheme.get_door_id_by_state_key(StateKey)
 
     def _assert_consistency(self, CompressionType, RemainingStateIndexSet, TheAnalyzer):            
         pass

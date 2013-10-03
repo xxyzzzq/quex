@@ -59,6 +59,7 @@ class PathWalkerState(MegaState):
             (interval, DropOutConsideration_relate(target, my_index))
             for interval, target in FirstPath.transition_map
         )
+        transition_map.combine_adjacents()
         MegaState.__init__(self, my_index, transition_map, ski_db)
 
         # Uniform CommandList along entries on the path (optional)
@@ -203,11 +204,11 @@ class PathWalkerState(MegaState):
         i      = 0
         offset = 0
         for i in xrange(len(self.path_list)):
-            offset += len(self.path_list[i]) + 1
-            if offset > StateKey: 
+            end = offset + len(self.path_list[i]) - 1
+            if StateKey < end: 
                 break
+            offset = end + 1
 
-        offset -= len(self.path_list[i]) + 1
         step_i  = StateKey - offset
         return self.path_list[i][step_i].trigger, self.door_id_sequence_list[i][step_i]
 

@@ -177,7 +177,7 @@ class PropertyInfo:
             result = []
             for alias in self.alias_to_alias_combination_db[CmbAlias]:
                 name = self.alias_to_name_map.get(alias)
-                if name == None:
+                if name is None:
                     return "Unicode database error: no name related to alias '%s'" % alias
                 result.append(name)
             return result
