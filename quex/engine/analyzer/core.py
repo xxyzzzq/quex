@@ -136,6 +136,7 @@ class Analyzer:
         self.__mega_state_list          = []
         self.__non_mega_state_index_set = set(state_index for state_index in SM.states.iterkeys())
 
+
         if not EngineType.requires_detailed_track_analysis():
             self.__position_register_map = None
             return
@@ -258,7 +259,6 @@ class Analyzer:
         return state
                                       
     def get_action_at_state_machine_entry(self):
-        assert self.engine_type.is_FORWARD()
         return self.state_db[self.init_state_index].entry.action_db.get_action(self.init_state_index, E_StateIndices.NONE)
 
     def get_depth_db(self):
@@ -527,6 +527,7 @@ class Analyzer:
                                                            PreContextID     = pre_context_id, 
                                                            PositionRegister = pattern_id, 
                                                            Offset           = 0)
+
 
     def is_init_state_forward(self, StateIndex):
         return StateIndex == self.init_state_index and self.engine_type.is_FORWARD()     

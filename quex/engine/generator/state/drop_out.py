@@ -14,7 +14,7 @@ from   quex.blackboard                            import E_AcceptanceIDs, E_Stat
 
 def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateIndexF=True):
     LanguageDB = Setup.language_db
-
+    EngineType = TheAnalyzer.engine_type
     if DefineLabelF:
         txt.append(LabelIfDoorIdReferenced(DoorID.drop_out(StateIndex)))
 
@@ -22,39 +22,26 @@ def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateInd
         txt.append(1)
         txt.append("__quex_debug_drop_out(%i);\n" % StateIndex)
 
-    if TheAnalyzer.engine_type.is_BACKWARD_PRE_CONTEXT():
+    if EngineType.is_BACKWARD_PRE_CONTEXT():
         txt.append(1)
         txt.append("%s\n" % LanguageDB.GOTO_BY_DOOR_ID(DoorID.global_end_of_pre_context_check()))
         return
 
-    elif TheAnalyzer.engine_type.is_BACKWARD_INPUT_POSITION():
+    elif EngineType.is_BACKWARD_INPUT_POSITION():
         if DropOut.reachable_f:
-            # 'TheAnalyzer' is the state machine which does the backward input position
-            # detection. => TheAnalyzer.state_machine_id = id of the backward input 
-            # position detector.
+            acceptance_id = EngineType.acceptance_id_of_bipd()
             txt.extend([ 
-                1, '__quex_debug("backward input position %i detected\\n");\n' \
-                   % TheAnalyzer.state_machine_id,
+                1, '__quex_debug("pattern %i: backward input position detected\\n");\n' % acceptance_id,
                 1, "%s\n\n" % LanguageDB.INPUT_P_INCREMENT(),
-                1, "goto %s;\n" \
-                   % Label.backward_input_position_detector_return(TheAnalyzer.state_machine_id, GotoedF=True)
+                1, "%s\n" % LanguageDB.GOTO_BY_DOOR_ID(DoorID.acceptance(acceptance_id)) \
             ])
         return
-
-    def position_and_goto(X):
-        positioning_str   = LanguageDB.POSITIONING(X)
-        if len(positioning_str) != 0: positioning_str += "\n"
-        goto_terminal_str = LanguageDB.GOTO_BY_DOOR_ID(DoorID.acceptance(X.acceptance_id))
-        return [
-            0, positioning_str, "\n" if len(positioning_str) != 0 else "",
-            0, goto_terminal_str
-        ]
 
     info = DropOut.trivialize()
     # (1) Trivial Solution
     if info is not None:
         for i, easy in enumerate(info):
-            LanguageDB.IF_PRE_CONTEXT(txt, i == 0, easy[0].pre_context_id, position_and_goto(easy[1]))
+            LanguageDB.IF_PRE_CONTEXT(txt, i == 0, easy[0].pre_context_id, position_and_goto(EngineType, easy[1]))
         return
 
     # (2) Separate: Pre-Context Check and Routing to Terminal
@@ -72,9 +59,27 @@ def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateInd
 
     # (2.2) Routing to Terminal
     case_list = [
-        (LanguageDB.ACCEPTANCE(element.acceptance_id), position_and_goto(element))
+        (LanguageDB.ACCEPTANCE(element.acceptance_id), position_and_goto(EngineType, element))
         for element in DropOut.get_terminal_router()
     ]
 
     txt.extend(LanguageDB.SELECTION("last_acceptance", case_list))
+
+def position_and_goto(EngineType, X):
+    LanguageDB = Setup.language_db
+    # If the pattern requires backward input position detection, then
+    # jump to the entry of the detector. (This is a very seldom case)
+    if EngineType.is_FORWARD():
+        bipd_entry_door_id = EngineType.bipd_entry_door_id_db.get(X.acceptance_id)
+        if bipd_entry_door_id is not None:                        
+            return LanguageDB.GOTO_BY_DOOR_ID(bipd_entry_door_id) 
+
+    # Position the input pointer and jump to terminal.
+    positioning_str   = LanguageDB.POSITIONING(X)
+    if len(positioning_str) != 0: positioning_str += "\n"
+    goto_terminal_str = LanguageDB.GOTO_BY_DOOR_ID(DoorID.acceptance(X.acceptance_id))
+    return [
+        0, positioning_str, "\n" if len(positioning_str) != 0 else "",
+        0, goto_terminal_str
+    ]
 

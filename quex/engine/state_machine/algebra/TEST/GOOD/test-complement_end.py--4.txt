@@ -3,7 +3,7 @@ Original = ab("12"+)yz
 Cutter   = ab1212yz
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -57,7 +57,7 @@ Original = ab("12"?)yz
 Cutter   = abyz
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -97,7 +97,7 @@ Original = ab("12"*)yz
 Cutter   = abyz
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -138,7 +138,7 @@ Original = ab("12"|"AB")?yz
 Cutter   = abyz
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -182,7 +182,7 @@ Original = ab("12"|"AB")?yz
 Cutter   = abAByz
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -223,7 +223,7 @@ Original = ab("12"|"AB")*yz
 Cutter   = abyz
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -269,7 +269,7 @@ Original = ab("12"|"AB")*yz
 Cutter   = abAB12yz
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L

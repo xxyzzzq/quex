@@ -21,9 +21,9 @@ class Generator(GeneratorBase):
             self.pre_context_file_name = file_name
             self.__do(self.pre_context_sm, file_name, Option)
 
-        if len(self.bipd_sm_list) != 0:
+        if len(self.bipd_db) != 0:
             self.backward_detector_file_name = []
-            for sm in self.bipd_sm_list:
+            for sm in self.bipd_db.itervalues():
                 file_name = "%s_%i.dot" % (self.state_machine_name, sm.get_id())
                 self.backward_detector_file_name.append(file_name)
                 self.__do(sm, file_name, Option)

@@ -99,9 +99,11 @@ class GeneratorBase:
         self.post_contexted_sm_id_list = [    pattern.sm.get_id() for pap, pattern in pattern_list \
                                            if pattern.has_post_context ]
 
-        # -- Backward input position detection
-        self.bipd_sm_list              = [    pattern.bipd_sm for pap, pattern in pattern_list \
-                                           if pattern.bipd_sm is not None ]
+        # -- Backward input position detection (BIPD)
+        self.bipd_db  = dict( 
+            (pattern.sm.get_id(), pattern.bipd_sm)
+            for pap, pattern in pattern_list if pattern.bipd_sm is not None 
+        )
 
         # -- Ids of patterns which require on-the-fly line/column number counting
         self.pattern_id_list_counting_required = [    pattern.sm.get_id() for pap, pattern in pattern_list \
@@ -139,12 +141,12 @@ class Generator(GeneratorBase):
 
         return txt
 
-    def code_main_state_machine(self):
+    def code_main_state_machine(self, BipdEntryDoorIdDb=None):
         LanguageDB    = Setup.language_db 
 
         sm_txt,       \
         terminal_txt, \
-        analyzer      = self.code_state_machine_core(engine.FORWARD, False)
+        analyzer      = self.code_state_machine_core(engine.Class_FORWARD(BipdEntryDoorIdDb), False)
 
         self.reload_state_forward.absorb(analyzer.reload_state)
 
@@ -187,11 +189,13 @@ class Generator(GeneratorBase):
 
     def code_backward_input_position_detection(self):
         result = []
-        for sm in self.bipd_sm_list:
-            txt, analyzer = Generator.code_state_machine(sm, engine.BACKWARD_INPUT_POSITION) 
+        entry_door_id_db = {}
+        for acceptance_id, bipd_sm in self.bipd_db.iteritems():
+            txt, analyzer = Generator.code_state_machine(bipd_sm, engine.Class_BACKWARD_INPUT_POSITION(acceptance_id)) 
+            entry_door_id_db[acceptance_id] = analyzer.get_action_at_state_machine_entry().door_id
             result.extend(txt)
             self.reload_state_backward.absorb(analyzer.reload_state)
-        return result
+        return result, entry_door_id_db
 
     def state_router(self):
         routed_address_set = get_address_set_subject_to_routing()

@@ -3,7 +3,7 @@ Original = X("a"|"x"?|"e"|"g")
 Cutter   = X
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -31,7 +31,7 @@ Original = X("a"|"x"?|"e"|"g")
 Cutter   = Xx
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -59,7 +59,7 @@ Original = "a"|"x"+|"e"|"g"
 Cutter   = x{5}
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -94,7 +94,7 @@ Original = X("a"|"x"*|"e"|"g")
 Cutter   = X
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -126,7 +126,7 @@ Original = X("a"|"x"*|"e"|"g")
 Cutter   = Xx{5}
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -173,7 +173,7 @@ Original = ab("12"|("AB"|"XY")+)+"12"("AA"|"BB"|"CC")?yz
 Cutter   = ab12AB12AAyz
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -271,7 +271,7 @@ Original = (((a+)b)+c)+
 Cutter   = abcbc
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -295,7 +295,7 @@ Original = abcbc
 Cutter   = (((a+)b)+c)+
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -322,7 +322,7 @@ Original = (pri|ri|i)+
 Cutter   = priri
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -369,7 +369,7 @@ Original = (pri|ri|i)+
 Cutter   = (((p+)r)+i)+
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L

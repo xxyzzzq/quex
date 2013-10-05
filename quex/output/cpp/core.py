@@ -58,15 +58,15 @@ def do_core(PatternActionPair_List):
     pre_context          = generator.code_pre_context_state_machine()
     # assert all_isinstance(pre_context, (CodeIfDoorIdReferenced, int, str, unicode))
         
-    # (*) Main State Machine -- try to match core patterns
-    #     Post-context handling is webbed into the main state machine.
-    main                 = generator.code_main_state_machine()
-    # assert all_isinstance(main, (CodeIfDoorIdReferenced, int, str, unicode))
-
     # (*) Backward input position detection
     #     (Seldomly present -- only for Pseudo-Ambiguous Post Contexts)
-    bipd                 = generator.code_backward_input_position_detection()
+    bipd, bipd_entry_door_id_db = generator.code_backward_input_position_detection()
     # assert all_isinstance(bipd, (CodeIfDoorIdReferenced, int, str, unicode))
+
+    # (*) Main State Machine -- try to match core patterns
+    #     Post-context handling is webbed into the main state machine.
+    main                 = generator.code_main_state_machine(bipd_entry_door_id_db)
+    # assert all_isinstance(main, (CodeIfDoorIdReferenced, int, str, unicode))
 
     # (*) Reload procedures
     reload_procedures    = generator.code_reload_procedures()
