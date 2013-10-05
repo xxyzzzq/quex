@@ -3,7 +3,7 @@ Original = "12"+yz
 Cutter   = 1212
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -27,7 +27,7 @@ Original = 1212
 Cutter   = "12"+yz
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -51,7 +51,7 @@ Original = "12"+yz
 Cutter   = 1212yz
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -99,7 +99,7 @@ Original = abc("123"+)xyz
 Cutter   = abc123123123123xyz
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -188,7 +188,7 @@ Original = abc("123"?)xyz
 Cutter   = abcxyz
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -237,7 +237,7 @@ Original = abc("123"*)xyz
 Cutter   = abcxyz
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -287,7 +287,7 @@ Original = abc("123"|"ABC")?xyz
 Cutter   = abcxyz
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -343,7 +343,7 @@ Original = abc("123"|"ABC")?xyz
 Cutter   = abcABCxyz
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -393,7 +393,7 @@ Original = abc("123"|"ABC")*xyz
 Cutter   = abcxyz
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -451,7 +451,7 @@ Original = abc("123"|"ABC")*xyz
 Cutter   = abcABC123xyz
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L

@@ -23,7 +23,7 @@ Original = X"123"?
 Cutter   = X"123"
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -48,7 +48,7 @@ Original = "123"?X
 Cutter   = "123"X
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -73,7 +73,7 @@ Original = "123"*X
 Cutter   = "123"X
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
@@ -98,7 +98,7 @@ Original = X"123"*
 Cutter   = X"123"
 
 superset(Original, result):           True
-intersection(Cutter, result) == None: True
+intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L

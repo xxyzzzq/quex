@@ -23,6 +23,13 @@ class Base:
     def create_DropOut(self, SM_State):                assert False
 
 class Class_FORWARD(Base):
+    def __init__(self, BipdEntryDoorIdDb=None):
+        # map: AcceptanceID --> Entry Door of the BIPD
+        if BipdEntryDoorIdDb is not None:
+            self.bipd_entry_door_id_db = BipdEntryDoorIdDb
+        else:
+            self.bipd_entry_door_id_db = {}
+
     def is_FORWARD(self):                  
         return True
     def requires_detailed_track_analysis(self):
@@ -76,8 +83,14 @@ class Class_BACKWARD_PRE_CONTEXT(Base):
         return DropOutIndifferent()
 
 class Class_BACKWARD_INPUT_POSITION(Base):
+    def __init__(self, AcceptanceIdOnBehalfOfWhichBipdOperates):
+        self.__acceptance_id_of_bipd = AcceptanceIdOnBehalfOfWhichBipdOperates
+
     def is_BACKWARD_INPUT_POSITION(self):  
         return True
+
+    def acceptance_id_of_bipd(self):
+        return self.__acceptance_id_of_bipd
 
     def requires_buffer_limit_code_for_reload(self): 
         """When going backwards, this happens only along a lexeme which must
@@ -97,4 +110,4 @@ class Class_BACKWARD_INPUT_POSITION(Base):
 FORWARD                 = Class_FORWARD()
 CHARACTER_COUNTER       = Class_CHARACTER_COUNTER()
 BACKWARD_PRE_CONTEXT    = Class_BACKWARD_PRE_CONTEXT()
-BACKWARD_INPUT_POSITION = Class_BACKWARD_INPUT_POSITION()
+# NOT: BACKWARD_INPUT_POSITION = Class_BACKWARD_INPUT_POSITION() --> Each one is different
