@@ -78,7 +78,7 @@
             }
 """
 from quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
-from quex.engine.generator.languages.address           import map_door_id_to_address
+from quex.engine.generator.languages.address           import dial_db
 ##from quex.engine.generator.state.core                  import input_do
 from quex.engine.generator.languages.variable_db       import variable_db
 from quex.blackboard import setup as Setup
@@ -198,7 +198,7 @@ def require_data(PWState, TheAnalyzer):
             ## print "#DoorID, Adr:", [(door_id, LanguageDB.ADDRESS_BY_DOOR_ID(door_id)) for door_id in door_id_sequence]
             result.append("        ")
             result.append("/* Padding */0x0, ")
-            result.extend("QUEX_LABEL(%i), " % map_door_id_to_address(door_id, RoutedF=True)
+            result.extend("QUEX_LABEL(%i), " % dial_db.get_address_by_door_id(door_id, RoutedF=True)
                           for door_id in door_id_sequence)
             result.append("\n")
 

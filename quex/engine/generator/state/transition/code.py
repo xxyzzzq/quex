@@ -3,7 +3,7 @@ import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.state.entry_action      import DoorID
 from   quex.engine.analyzer.mega_state.target       import TargetByStateKey, TargetByStateKey_DROP_OUT
 from   quex.engine.generator.languages.variable_db  import variable_db
-from   quex.engine.generator.languages.address      import map_door_id_to_address
+from   quex.engine.generator.languages.address      import dial_db
 from   quex.engine.tools                            import all_isinstance
 import quex.engine.analyzer.transition_map          as     transition_map_tool
 from   quex.blackboard import E_StateIndices, \
@@ -98,7 +98,7 @@ def require_scheme_variable(SchemeID, SchemeIterable, TState, StateDB):
     door_id_list = list(SchemeIterable)
     
     def quex_label(DoorId, LastF):
-        address = map_door_id_to_address(door_id, RoutedF=True)
+        address = dial_db.get_address_by_door_id(door_id, RoutedF=True)
         if not LastF: return "QUEX_LABEL(%s), " % address
         else:         return "QUEX_LABEL(%s) }" % address
 
