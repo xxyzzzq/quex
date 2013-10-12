@@ -80,7 +80,8 @@ class GeneratedCode(UserCodeFragment):
 class PatternActionInfo:
     def __init__(self, ThePattern, Action, PatternStr="", IL = None, ModeName="", Comment=""):
         assert    ThePattern in E_ActionIDs \
-               or (ThePattern.__class__.__name__ == "Pattern") or (ThePattern is None)
+               or (ThePattern.__class__.__name__ == "Pattern") \
+               or (ThePattern is None)
 
         if Action is None or issubclass(Action.__class__, CodeFragment):
             self.__action = Action
@@ -97,6 +98,9 @@ class PatternActionInfo:
     @property
     def file_name(self): return self.action().filename
 
+    def pattern_id(self):
+        if self.__pattern in E_ActionIDs: return self.__pattern 
+        else:                             return self.__pattern.sm.get_id()
     def pattern(self):
         return self.__pattern
 

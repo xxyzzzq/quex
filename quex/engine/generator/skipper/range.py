@@ -5,7 +5,7 @@ from   quex.engine.generator.skipper.common        import line_counter_in_loop, 
                                                           get_character_sequence, \
                                                           get_on_skip_range_open, \
                                                           line_column_counter_in_loop
-from   quex.engine.generator.languages.address     import __nice, get_label
+from   quex.engine.generator.languages.address     import __nice, dial_db
 from   quex.engine.generator.languages.variable_db import variable_db
 import quex.engine.state_machine.transformation    as     transformation
 from   quex.engine.misc.string_handling            import blue_print
@@ -21,12 +21,12 @@ OnBackToLoopStart = "<<__dummy__OnBackToLoopStart__>>"
 
 def do(Data, Mode=None):
     """
-             .-----------<----------.
-             |                      |
-             +-<--. else            | else         
-             |    |                 |    
-        ---( 1 )--+--->------( 2 )--+-->------- ... ---> RESTART
-                 i == c[0]         i == c[1]
+             .-----------<----------.--------<--------.          
+             |                      |                 |
+             +-<--. else            | else            | else          
+             |    |                 |                 |    
+        ---( 1 )--+--->------( 2 )--+-->-------( 3 )--+-->-------- ... ---> RESTART
+                  inp == c[0]       inp == c[1]       inp == c[2]
     """
 
     ClosingSequence = Data["closer_sequence"]
@@ -244,7 +244,7 @@ $$LC_COUNT_AFTER_RELOAD$$
         }
     }
 $$UPON_RELOAD_DONE_LABEL$$:
-            me->buffer._input_p = me->buffer.lexeme_start_p;
+    me->buffer._input_p = me->buffer.lexeme_start_p;
 """
 
 def __terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePattern, UponReloadDoneAdr):
@@ -367,6 +367,8 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, IndentationCounterTermina
     if OnSkipRangeOpenStr != "": on_skip_range_open_str = OnSkipRangeOpenStr
     else:                        on_skip_range_open_str = get_on_skip_range_open(Mode, EndSequence)
 
+    reload_door_id = dial_db.new_door_id()
+
     # The main part
     code_str = blue_print(template_str,
                           [
@@ -376,8 +378,8 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, IndentationCounterTermina
                            ["$$INPUT_GET$$",                      LanguageDB.ACCESS_INPUT()],
                            ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB.IF_INPUT("==", "Skipper$$SKIPPER_INDEX$$[0]")],
                            ["$$ENDIF$$",                          LanguageDB.END_IF()],
-                           ["$$ENTRY$$",                          map_address_to_label(skipper_adr)],
-                           ["$$RELOAD$$",                         get_label("$reload", skipper_index)],
+                           ["$$ENTRY$$",                          dial_db.map_address_to_label(skipper_adr)],
+                           ["$$RELOAD$$",                         dial_db.map_door_id_to_label(reload_door_id)],
                            ["$$GOTO_ENTRY$$",                     LanguageDB.GOTO_BY_DOOR_ID(skipper_door_id)],
                            ["$$INPUT_P_TO_LEXEME_START$$",        LanguageDB.INPUT_P_TO_LEXEME_START()],
                            # When things were skipped, no change to acceptance flags or modes has
@@ -394,7 +396,7 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, IndentationCounterTermina
     # The finishing touch
     code_str = blue_print(code_str,
                           [["$$SKIPPER_INDEX$$", __nice(skipper_index)],
-                           ["$$GOTO_RELOAD$$",   get_label("$reload", skipper_index)]])
+                           ["$$GOTO_RELOAD$$",   LanguageDB.GOTO_BY_DOOR_ID(reload_door_id)]])
 
     if reference_p_f:
         variable_db.require("reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")

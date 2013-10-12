@@ -1,5 +1,5 @@
 from   quex.engine.generator.languages.variable_db import variable_db
-from   quex.engine.generator.languages.address     import init_address_handling, CodeIfDoorIdReferenced
+from   quex.engine.generator.languages.address     import init_address_handling, IfDoorIdReferencedCode
 from   quex.engine.generator.base                  import Generator as CppGenerator
 from   quex.engine.tools                           import all_isinstance
 import quex.output.cpp.action_preparation          as     action_preparation
@@ -56,31 +56,31 @@ def do_core(PatternActionPair_List):
     # (*) Pre Context State Machine
     #     (If present: All pre-context combined in single backward analyzer.)
     pre_context          = generator.code_pre_context_state_machine()
-    # assert all_isinstance(pre_context, (CodeIfDoorIdReferenced, int, str, unicode))
+    # assert all_isinstance(pre_context, (IfDoorIdReferencedCode, int, str, unicode))
         
     # (*) Backward input position detection
     #     (Seldomly present -- only for Pseudo-Ambiguous Post Contexts)
     bipd, bipd_entry_door_id_db = generator.code_backward_input_position_detection()
-    # assert all_isinstance(bipd, (CodeIfDoorIdReferenced, int, str, unicode))
+    # assert all_isinstance(bipd, (IfDoorIdReferencedCode, int, str, unicode))
 
     # (*) Main State Machine -- try to match core patterns
     #     Post-context handling is webbed into the main state machine.
     main                 = generator.code_main_state_machine(bipd_entry_door_id_db)
-    # assert all_isinstance(main, (CodeIfDoorIdReferenced, int, str, unicode))
+    # assert all_isinstance(main, (IfDoorIdReferencedCode, int, str, unicode))
 
     # (*) Reload procedures
     reload_procedures    = generator.code_reload_procedures()
-    # assert all_isinstance(reload_procedures, (CodeIfDoorIdReferenced, int, str, unicode))
+    # assert all_isinstance(reload_procedures, (IfDoorIdReferencedCode, int, str, unicode))
 
     # (*) State Router
     #     (Something that can goto a state address by an given integer value)
     state_router         = generator.state_router()
-    # assert all_isinstance(state_router, (CodeIfDoorIdReferenced, int, str, unicode))
+    # assert all_isinstance(state_router, (IfDoorIdReferencedCode, int, str, unicode))
 
     # (*) Variable Definitions
     #     (Code that defines all required variables for the analyzer)
     variable_definitions = generator.variable_definitions()
-    # assert all_isinstance(variable_definitions, (CodeIfDoorIdReferenced, int, str, unicode))
+    # assert all_isinstance(variable_definitions, (IfDoorIdReferencedCode, int, str, unicode))
 
     # (*) Putting it all together
     function_body = []

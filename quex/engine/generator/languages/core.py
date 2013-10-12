@@ -14,12 +14,7 @@
 #########################################################################################################
 import quex.engine.generator.languages.cpp       as     cpp
 from   quex.engine.generator.languages.address   import Label, \
-                                                        map_door_id_to_address, \
-                                                        map_door_id_to_label, \
-                                                        map_address_to_label, \
-                                                        mark_address_for_state_routing, \
-                                                        mark_label_as_gotoed, \
-                                                        mark_door_id_as_gotoed, \
+                                                        dial_db, \
                                                         get_plain_strings
 from   quex.blackboard                           import setup as Setup, \
                                                         E_StateIndices,  \
@@ -184,6 +179,52 @@ class LanguageDB_Cpp(dict):
                 else_str = "else "
             return "".join(txt)
 
+        elif Cmd.id == E_Commands.ColumnCountReferencePSet:
+            pointer_name = Cmd.content.pointer_name
+            offset       = Cmd.content.offset
+            if offset != 0:
+                txt.append("__QUEX_IF_COUNT_COLUMNS(reference_p = %s + %i);\n" % (pointer_name, offset))
+            else:
+                txt.append("__QUEX_IF_COUNT_COLUMNS(reference_p = %s);\n" % pointer_name)
+
+        elif Cmd.id == E_Commands.ColumnCountReferencePDeltaAdd:
+            delta_str = "(%s - reference_p)" % Cmd.content.pointer_name         
+            txt.append("__QUEX_IF_COUNT_COLUMNS_ADD((size_t)(%s));\n" \
+                       % self.MULTIPLY_WITH(delta_str, Cmd.content.column_n_per_chunk))
+
+        elif Cmd.id == E_Commands.ColumnCountAdd:
+            txt.append("__QUEX_IF_COUNT_COLUMNS_ADD((size_t)%s);\n" % LanguageDB.VALUE_STRING(Cmd.content.value))
+
+        elif Cmd.id == E_Commands.ColumnCountGridAdd:
+            txt.append(0)
+            txt.extend(LanguageDB.GRID_STEP("self.counter._column_number_at_end", "size_t",
+                                            Cmd.content.value, IfMacro="__QUEX_IF_COUNT_COLUMNS"))
+
+        elif Cmd.id == E_Commands.ColumnCountGridAddWithReferenceP:
+            txt.append(0)
+            LanguageDB.REFERENCE_P_COLUMN_ADD(txt, IteratorName, ColumnCountPerChunk) 
+            txt.append(0)
+            txt.extend(LanguageDB.GRID_STEP("self.counter._column_number_at_end", "size_t",
+                                            Cmd.content.value, IfMacro="__QUEX_IF_COUNT_COLUMNS"))
+            txt.append(0)
+            LanguageDB.REFERENCE_P_RESET(txt, Cmd.content.pointer_name) 
+
+        elif Cmd.id == E_Commands.LineCountAdd:
+            if Cmd.content.value != 0:
+                txt.append("__QUEX_IF_COUNT_LINES_ADD((size_t)%s);\n" % LanguageDB.VALUE_STRING(Cmd.content.value))
+                txt.append(0)
+            txt.append("__QUEX_IF_COUNT_COLUMNS_SET((size_t)1);\n")
+
+        ##elif Cmd.id == E_Commands.GotoDoorId:
+        ##    txt.append(self.GOTO_BY_DOOR_ID(Cmd.content.door_id))
+
+        elif Cmd.id == E_Commands.LineCountAddWithReferenceP:
+            if Cmd.content.value != 0:
+                txt.append("__QUEX_IF_COUNT_LINES_ADD((size_t)%s);\n" % LanguageDB.VALUE_STRING(Cmd.content.value))
+                txt.append(0)
+            txt.append("__QUEX_IF_COUNT_COLUMNS_SET((size_t)1);\n")
+            LanguageDB.REFERENCE_P_RESET(txt, Cmd.content.pointer_name) 
+
         elif Cmd.id == E_Commands.StoreInputPosition:
             # Assume that checking for the pre-context is just overhead that 
             # does not accelerate anything.
@@ -256,11 +297,11 @@ class LanguageDB_Cpp(dict):
     def TERMINAL_LEXEME_MACRO_DEFINITIONS(self):
         return cpp.lexeme_macro_definitions(Setup)
 
-    def TERMINAL_CODE(self, TerminalStateDb, PreConditionIDList, Setup, SimpleF=False): 
-        return cpp.terminal_states(TerminalStateDb, PreConditionIDList, Setup, SimpleF)
+    def TERMINAL_CODE(self, TerminalStateDb): 
+        return cpp.terminal_states(TerminalStateDb)
 
-    def REENTRY_PREPARATION(self, PreConditionIDList, OnAfterMatchInfo):
-        return cpp.reentry_preparation(self, PreConditionIDList, OnAfterMatchInfo)
+    def REENTRY_PREPARATION(self, PreConditionIDList, OnAfterMatchTerminal):
+        return cpp.reentry_preparation(self, PreConditionIDList, OnAfterMatchTerminal)
 
     def HEADER_DEFINITIONS(self, OnAfterMatchF):
         return cpp.header_definitions(self, OnAfterMatchF)
@@ -298,7 +339,7 @@ class LanguageDB_Cpp(dict):
         # Only for normal 'forward analysis' the from state is of interest.
         # Because, only during forward analysis some actions depend on the 
         # state from where we come.
-        return "goto %s;" % map_door_id_to_label(DoorId, GotoedF=True)
+        return "goto %s;" % dial_db.map_door_id_to_label(DoorId, GotoedF=True)
 
     def GOTO_DROP_OUT(self, StateIndex):
         return "goto %s;" % Label.drop_out(StateIndex, GotoedF=True)
@@ -371,7 +412,6 @@ class LanguageDB_Cpp(dict):
             return "%s" % NameOrValue
 
     def REFERENCE_P_COLUMN_ADD(self, txt, IteratorName, ColumnCountPerChunk): # , SubtractOneF=False):
-        # if SubtractOneF: delta_str = "(%s - reference_p - 1)" % IteratorName
         delta_str = "(%s - reference_p)" % IteratorName         
         txt.append("__QUEX_IF_COUNT_COLUMNS_ADD((size_t)(%s));\n" \
                    % self.MULTIPLY_WITH(delta_str, ColumnCountPerChunk))

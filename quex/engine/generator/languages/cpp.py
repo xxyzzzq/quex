@@ -2,11 +2,9 @@ from   quex.engine.misc.string_handling        import blue_print
 from   quex.engine.analyzer.state.entry_action import DoorID
 
 from   quex.engine.generator.languages.address import Label, \
-                                                      map_door_id_to_address, \
-                                                      map_door_id_to_label, \
-                                                      mark_door_id_as_gotoed, \
-                                                      CodeIfDoorIdReferenced, \
-                                                      LabelIfDoorIdReferenced
+                                                      dial_db, \
+                                                      IfDoorIdReferencedCode, \
+                                                      IfDoorIdReferencedLabel
 from   quex.engine.interval_handling           import NumberSet
 from   quex.blackboard import E_ActionIDs, E_AcceptanceIDs
 from   operator import itemgetter
@@ -56,7 +54,7 @@ def header_definitions(LanguageDB, OnAfterMatchF):
     #txt += "/MARK/ %i '%s'\n" % (len(__return_without_on_after_match), map(ord, __return_without_on_after_match))
     #txt += "/MARK/ '%s'\n" % __return_without_on_after_match
     txt = [ __header_definitions_txt.replace("$$GOTO_START_PREPARATION$$", 
-                                             map_door_id_to_label(DoorID.global_reentry_preparation(), GotoedF=True)) ]
+                                             dial_db.map_door_id_to_label(DoorID.global_reentry_preparation(), GotoedF=True)) ]
 
     if OnAfterMatchF: txt.append(__return_with_on_after_match)
     else:             txt.append(__return_without_on_after_match)
@@ -364,11 +362,14 @@ def lexeme_macro_definitions(Setup):
           ["$$LEXEME_NULL_OBJECT$$", lexeme_null_object_name],
     ])
 
-def __terminal_on_pattern_match(PatternID, Info, SimpleF, Setup):
+def __terminal_on_pattern_match(Terminal):
     """ PatternID     -- ID of the winning pattern.
         Action        -- Action to be performed when pattern wins.
         PatternString -- String that describes the pattern.
     """
+    Info      = Terminal.action
+    PatternID = Terminal.pattern_id
+
     def safe(Letter):
         if Letter in ['\\', '"', '\n', '\t', '\r', '\a', '\v']: return "\\" + Letter
         else:                                                   return Letter 
@@ -383,21 +384,28 @@ def __terminal_on_pattern_match(PatternID, Info, SimpleF, Setup):
 
     assert type(action_code) == list
 
-    result = copy(action_code)
+    return __terminally(action_code, Label.acceptance(PatternID), name)
 
-    if not SimpleF: 
-        result.extend(["\n", 1, "goto %s;\n" % Label.global_reentry_preparation(GotoedF=True)])
-    
-    return __terminally(result, Label.acceptance(PatternID), name)
+def __terminal_on_end_of_stream(Terminal):
+    result = Terminal.action.get_code()
+    result.append(
+        "    /* End of Stream FORCES a return from the lexical analyzer, so that no\n"
+        "     * tokens can be filled after the termination token.                    */\n"
+        "    RETURN;\n"
+    )
+    return __terminally(result, Label.global_terminal_end_of_file(), Name = "END_OF_STREAM")
 
-def __terminally(TerminalCode, TheLabel, Name, Epilog=[]):
+def __terminal_on_failure(Terminal):
+    return __terminally(Terminal.action.get_code(), Label.acceptance(E_AcceptanceIDs.FAILURE), 
+                        Name = "FAILURE")
+
+def __terminally(TerminalCode, TheLabel, Name):
     txt = [
        "%s: __quex_debug(\"* TERMINAL %s\\n\");\n" % (TheLabel, Name),
         0 
     ]
     txt.extend(TerminalCode)
     txt.append("\n")
-    txt.extend(Epilog)
     return txt
 
 __on_after_match_then_return_str = """
@@ -410,11 +418,11 @@ $$ON_AFTER_MATCH$$
 #   endif
 """
 
-def __on_after_match_then_return(OnAfterMatchAction):
-    if OnAfterMatchAction is None:
+def __on_after_match_then_return(OnAfterMatchTerminal):
+    if OnAfterMatchTerminal is None:
         return "", ""
 
-    on_after_match_str = OnAfterMatchAction.action().get_code_string()
+    on_after_match_str = OnAfterMatchTerminal.action.get_code_string()
     return_preparation = blue_print(__on_after_match_then_return_str,
                                     [["$$ON_AFTER_MATCH$$",  on_after_match_str]])
 
@@ -428,8 +436,8 @@ def __on_after_match_then_return(OnAfterMatchAction):
 
     return return_preparation, on_after_match_str
 
-def reentry_preparation(LanguageDB, PreConditionIDList, OnAfterMatchInfo):
-    TerminalFailureRef = "QUEX_LABEL(%i)" % map_door_id_to_address(DoorID.acceptance(E_AcceptanceIDs.FAILURE))
+def reentry_preparation(LanguageDB, PreConditionIDList, OnAfterMatchTerminal):
+    TerminalFailureRef = "QUEX_LABEL(%i)" % dial_db.map_door_id_to_address(DoorID.acceptance(E_AcceptanceIDs.FAILURE))
     """Reentry preperation (without returning from the function."""
     # (*) Unset all pre-context flags which may have possibly been set
     if PreConditionIDList is None:
@@ -441,7 +449,7 @@ def reentry_preparation(LanguageDB, PreConditionIDList, OnAfterMatchInfo):
         ])
 
     on_after_match_then_return_str, \
-    OnAfterMatchStr                 = __on_after_match_then_return(OnAfterMatchInfo)
+    OnAfterMatchStr                 = __on_after_match_then_return(OnAfterMatchTerminal)
 
     txt = on_after_match_then_return_str
     txt += blue_print(__reentry_preparation_str, [
@@ -455,36 +463,22 @@ def reentry_preparation(LanguageDB, PreConditionIDList, OnAfterMatchInfo):
     ])
     return txt
 
-def terminal_states(TerminalStateDb, PreConditionIDList, Setup, SimpleF=False):
+def terminal_states(TerminalStateDb, SimpleF=False):
     """NOTE: During backward-lexing, for a pre-context, there is not need for terminal
              states, since only the flag 'pre-context fulfilled is raised.
 
     """      
-    pattern_terminals_code = []
+    code = []
 
     for pattern_id, state in sorted(TerminalStateDb.iteritems(), key=lambda x: x[0]):
-        if pattern_id == E_ActionIDs.ON_END_OF_STREAM:
-            txt = __terminally(state.action.action().get_code(), Label.global_terminal_end_of_file(),
-                Name  = "END_OF_STREAM",
-                Epilog=[
-                "    /* End of Stream causes a return from the lexical analyzer, so that no\n",
-                "     * tokens can be filled after the termination token.                    */\n",
-                "    RETURN;\n"
-            ])
+        if   pattern_id == E_ActionIDs.ON_END_OF_STREAM: txt = __terminal_on_end_of_stream(state)
+        elif pattern_id == E_ActionIDs.ON_FAILURE:       txt = __terminal_on_failure(state)
+        elif pattern_id == E_ActionIDs.ON_AFTER_MATCH:   continue
+        else:                                            txt = __terminal_on_pattern_match(state)
 
-        elif pattern_id == E_ActionIDs.ON_FAILURE:
-            txt = __terminally(state.action.action().get_code(), Label.acceptance(E_AcceptanceIDs.FAILURE), 
-                               Name = "FAILURE")
+        code.extend(txt)
 
-        elif pattern_id == E_ActionIDs.ON_AFTER_MATCH:
-            continue
-
-        else:
-            txt = __terminal_on_pattern_match(pattern_id, state.action, SimpleF, Setup)
-
-        pattern_terminals_code.extend(txt)
-
-    return pattern_terminals_code
+    return code
     
 def __frame_of_all(Code, Setup):
     # namespace_ref   = LanguageDB.NAMESPACE_REFERENCE(Setup.analyzer_name_space)

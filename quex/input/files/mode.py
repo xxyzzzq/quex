@@ -473,6 +473,7 @@ class Mode:
         return CounterDB(lcc_setup)
 
     def __prepare_skip(self, xpap_list, MHI):
+        """MHI = Mode hierarchie index."""
         ssetup_list = self.options.get("skip")
 
         if ssetup_list is None or len(ssetup_list) == 0:
@@ -520,8 +521,7 @@ class Mode:
         # implements the skipper.
         def xpap(MHI, ModeName, SM, Action, PatternStr="<skip: ... (check also base modes)>", Comment=None):
             return ((PatternPriority(MHI, SM.get_id()),    
-                     PatternActionInfo(Pattern(SM), Action, PatternStr, 
-                                       ModeName=ModeName, Comment=Comment)))
+                     PatternActionInfo(Pattern(SM), Action, PatternStr, ModeName=ModeName, Comment=Comment)))
 
         goto_skip_action = UserCodeFragment("goto __SKIP;\n", FileName=file_name, LineN=line_n)
         xpap_list.extend(xpap(MHI, self.name, sm, goto_skip_action) for sm in sm_list[:-1])
@@ -532,19 +532,21 @@ class Mode:
         action.data["require_label_SKIP_f"] = len(sm_list) != 1
 
         xpap_list.append(xpap(MHI, self.name, sm_list[-1], action, 
-                              PatternStr="<skip>", 
-                              Comment=E_SpecialPatterns.SKIP))
+                              PatternStr="<skip>", Comment=E_SpecialPatterns.SKIP))
         return
 
     def __prepare_skip_range(self, xpap_list, MHI):
+        """MHI = Mode hierarchie index."""
         self.__prepare_skip_range_core(xpap_list, MHI, "skip_range", 
                                        skip_range.do, E_SpecialPatterns.SKIP_RANGE)
 
     def __prepare_skip_nested_range(self, xpap_list, MHI):
+        """MHI = Mode hierarchie index."""
         self.__prepare_skip_range_core(xpap_list, MHI, "skip_nested_range", 
                                        skip_nested_range.do, E_SpecialPatterns.SKIP_NESTED_RANGE)
 
     def __prepare_skip_range_core(self, xpap_list, MHI, OptionName, SkipperFunction, Comment):
+        """MHI = Mode hierarchie index."""
 
         ssetup_list = self.options.get(OptionName)
 
@@ -592,6 +594,8 @@ class Mode:
 
         The primary pattern action pair list is to be the head of all pattern
         action pairs.
+
+        MHI = Mode hierarchie index.
         """
 
         isetup = self.__get_unique_setup_option("indentation")
