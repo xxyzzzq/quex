@@ -1,8 +1,6 @@
 from   quex.engine.analyzer.state.entry_action  import DoorID
 from   quex.engine.generator.languages.address  import Label, \
-                                                       map_address_to_label, \
-                                                       map_door_id_to_label, \
-                                                       mark_label_as_gotoed
+                                                       dial_db
 from   operator                                 import itemgetter
 
 def do(StateRouterInfoList):
@@ -66,14 +64,14 @@ def get_info(StateIndexList):
         if index >= 0:
             # Transition to state entry
             case_index = index
-            label      = map_address_to_label(index)
+            label      = dial_db.map_address_to_label(index)
         else:
             # Transition to a templates 'drop-out'
             door_id    = DoorID.drop_out(- index)
-            case_index = map_door_id_to_address(door_id)
-            label      = map_door_id_to_label(door_id)
+            case_index = dial_db.map_door_id_to_address(door_id)
+            label      = dial_db.map_door_id_to_label(door_id)
 
         result[i] = (index, "goto %s; " % label)
-        mark_label_as_gotoed(label)
+        dial_db.mark_label_as_gotoed(label)
 
     return result

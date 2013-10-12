@@ -7,7 +7,8 @@ from   quex.engine.analyzer.transition_map          import TransitionMap
 import quex.engine.generator.state.transition.core  as     relate_to_TransitionCode
 from   quex.engine.generator.state.transition.code  import TransitionCode
 from   quex.engine.generator.languages.variable_db  import variable_db
-from   quex.engine.generator.languages.address      import get_label, \
+from   quex.engine.generator.languages.address      import dial_db, \
+                                                           get_label, \
                                                            get_address, \
                                                            address_set_subject_to_routing_add
 from   quex.engine.misc.string_handling             import blue_print
@@ -48,8 +49,8 @@ def do(Data, Mode=None):
 
     # The 'TransitionCode -> DoorID' has to be circumvented, because this state
     # is not officially part of the state machine.
-    counter_adr          = get_new_address()
-    counter_label        = map_address_to_label(counter_adr)
+    counter_adr          = dial_db.new_address()
+    counter_label        = dial_db.map_address_to_label(counter_adr)
     counter_adr_str      = "%i" % counter_adr
     transition_block_str = __get_transition_block(IndentationSetup, counter_adr)
     end_procedure        = __get_end_procedure(IndentationSetup, Mode)

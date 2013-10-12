@@ -19,7 +19,7 @@ class CounterDB:
         self.grid    = adapt(LCC_Setup.grid_db)
         self.newline = adapt(LCC_Setup.newline_db)
 
-    def get_counter_dictionary(self, ConcernedCharacterSet):
+    def get_counter_dictionary(self, ConcernedCharacterSet, ColumnCountPerChunk, IteratorName):
         """Returns a list of NumberSet objects where for each X of the list it holds:
 
              (i)  X is subset of ConcernedCharacterSet
@@ -39,17 +39,26 @@ class CounterDB:
         for delta, character_set in self.special.iteritems():
             x = prune(character_set, ConcernedCharacterSet)
             if x.is_empty(): continue
-            result.append((x, ColumnAdd(delta)))
+            elif ColumnCountPerChunk is None:
+                result.append((x, CommandList(ColumnCountAdd(delta))))
+            else:
+                result.append((x, CommandList()))
 
         for grid_step_n, character_set in self.grid.iteritems():
             x = prune(character_set, ConcernedCharacterSet)
             if x.is_empty(): continue
-            result.append((x, GridAdd(grid_step_n)))
+            elif ColumnCountPerChunk is None:
+                result.append((x, CommandList(ColumnCountGridAdd(grid_step_n))))
+            else:
+                result.append((x, CommandList(ColumnCountGridAddWithReferenceP(grid_step_n, IteratorName))))
 
         for delta, character_set in self.newline.iteritems():
             x = prune(character_set, ConcernedCharacterSet)
             if x.is_empty(): continue
-            result.append((x, LineAdd(delta)))
+            elif ColumnCountPerChunk is None:
+                result.append((x, CommandList(LineCountAdd(delta))))
+            else:
+                result.append((x, CommandList(LineCountAddWithReferenceP(delta, IteratorName))))
 
         return result
 
@@ -79,10 +88,10 @@ class CounterDB:
                                                        Setup.buffer_codec_transformation_info)
         return result
 
-    def get_map(self, 
-                IteratorName       = None,
-                InsideCharacterSet = None,
-                ReloadF            = False):
+    def get_map(self, X, Y, Z):
+        assert False, "call get_count_command_map"
+
+    def get_count_command_map(self, IteratorName = None, InsideCharacterSet = None):
         """Provide a map which associates intervals with line/column counting 
         actions as well as appropriate increments of the input pointer.
 
@@ -149,6 +158,13 @@ class CounterDB:
         '__special()', '__grid()', and '__newline()'.  It is controlled there by
         argument 'ColumnCountPerChunk'.  If it is not None, it happens to be the
         factor 'C' for the addition of 'C * (iterator - reference_p)'.
+
+        RETURN: TransitionMap()
+
+
+        The transition map may contain intervals with empty 'None' targets. This
+        means that there is no action associated with it, due to the fact that
+        they are not covered by 'CharacterSet'.
         ___________________________________________________________________________
         """
         assert type(ReloadF) == bool
@@ -156,136 +172,57 @@ class CounterDB:
         LanguageDB = Setup.language_db
 
         if InsideCharacterSet is not None:
-            if ReloadF:
-                blc_set    = NumberSet(Setup.buffer_limit_code)
-                inside_set = InsideCharacterSet.clone()
-                inside_set.subtract(blc_set)
-            else:
-                inside_set = InsideCharacterSet
-            exit_set = inside_set.inverse()
-            exit_set.subtract(blc_set)
+            inside_set = InsideCharacterSet
+            exit_set   = inside_set.inverse()
         else:
             inside_set = None # That is: All!
             exit_set   = None # That is: Empty!
 
-        counter_dictionary     = self.get_counter_dictionary(inside_set)
         column_count_per_chunk = self.get_column_number_per_chunk(inside_set)
+        counter_dictionary     = self.get_counter_dictionary(inside_set, column_count_per_chunk)
 
         cm = TransitionMap()
-        for number_set, action in counter_dictionary:
+        for number_set, command_list in counter_dictionary:
             assert inside_set is None or inside_set.is_superset(number_set)
-            action_txt = action.get_txt(column_count_per_chunk, IteratorName)
-            cm.extend((x, action_txt) for x in number_set.get_intervals())
+            cm.extend((x, command_list) for x in number_set.get_intervals())
 
-        implementation_type = LoopGenerator.determine_implementation_type(cm, ReloadF)
+        # Gaps are filled with 'None' to indicate that they are outside the CharacterSet
+        cm.fill_gaps(None)
 
-        cm.add_action_to_all(CountAction.get_epilog(implementation_type))
+        return cm, column_count_per_chunk
 
-        exit_action_txt = ExitAction.get_txt(column_count_per_chunk, IteratorName)
-        exit_action_txt.extend(ExitAction.get_epilog(implementation_type))
-        if exit_set is not None:
-            cm.extend((x, exit_action_txt) for x in exit_set.get_intervals())
+    def get_entry_exit_Commands(self, IteratorName, ColumnCountPerChunk):
+        """RETURNS:
 
-        cm.clean_up()
+        [0], [1]    Commands to be executed [0] upon entry, i.e. when the counting
+                    starts, and [1] upon counting is terminated.
 
-        # Upon reload, the reference pointer may have to be added. When the reload is
-        # done the reference pointer needs to be reset. 
-        entry_action = []
-        exit_action  = []
-        if not ReloadF:
-            before_reload_action = None
-            after_reload_action  = None
-            if column_count_per_chunk is not None:
-                LanguageDB.REFERENCE_P_RESET(entry_action, IteratorName, AddOneF=False)
-                LanguageDB.REFERENCE_P_COLUMN_ADD(exit_action, IteratorName, column_count_per_chunk)
+        None, None  If there is no need to do anthing upon entry or exit.
+        """
+        if ColumnCountPerChunk is None:
+            return None, None
         else:
-            before_reload_action = []
-            after_reload_action  = []
-            if column_count_per_chunk is not None:
-                LanguageDB.REFERENCE_P_RESET(entry_action, IteratorName, AddOneF=False)
-                LanguageDB.REFERENCE_P_COLUMN_ADD(exit_action, IteratorName, column_count_per_chunk)
-                LanguageDB.REFERENCE_P_COLUMN_ADD(before_reload_action, IteratorName, column_count_per_chunk)
-                LanguageDB.REFERENCE_P_RESET(after_reload_action, IteratorName, AddOneF=False)
+            on_entry = ColumnCountReferencePSet(IteratorName)
+            on_exit  = ColumnCountReferencePDeltaAdd(IteratorName, ColumnCountPerChunk)
+            return on_entry, on_exit
+        
+    def get_reload_Commands(self, IteratorName, ColumnCountPerChunk, ReloadF):
+        """RETURNS: 
+        
+        [0], [1]    Commands to be executed before and after buffer reload. 
+                    This basically adapts the reference pointer for column 
+                    number counting. 
+                 
+        None, None  If column number counting cannot profit from the a fixed
+                    ColumnCountPerChunk (applying "column += (p-reference_p)*c")
 
-        if column_count_per_chunk is not None:
-            variable_db.require("reference_p")
-
-        return cm, implementation_type, entry_action, exit_action, before_reload_action, after_reload_action
-
-class CountAction:
-    __slots__ = ("value")
-    def __init__(self, Value):
-        self.value = Value
-
-    @staticmethod
-    def get_epilog(ImplementationType):
-        return [ E_ActionIDs.ON_GOOD_TRANSITION ]
-
-class ExitAction(CountAction):
-    def __init__(self):
-        CountAction.__init__(self, -1)
-
-    @staticmethod
-    def get_txt(ColumnCountPerChunk, IteratorName):
-        LanguageDB = Setup.language_db
-        result = []
-        if ColumnCountPerChunk is not None:
-            LanguageDB.REFERENCE_P_COLUMN_ADD(result, IteratorName, ColumnCountPerChunk)
-        return result
-
-    @staticmethod
-    def get_epilog(ImplementationType):
-        return [ E_ActionIDs.ON_EXIT ]
-
-class ColumnAdd(CountAction):
-    def __init__(self, Value):
-        CountAction.__init__(self, Value)
-
-    def get_txt(self, ColumnCountPerChunk, IteratorName):
-        LanguageDB = Setup.language_db
-        if ColumnCountPerChunk is None and self.value != 0: 
-            return ["__QUEX_IF_COUNT_COLUMNS_ADD((size_t)%s);\n" % LanguageDB.VALUE_STRING(self.value)]
+        For convienience, to spare the caller an "if ReloadF: ..." this function
+        takes the ReloadF and returns "None, None" if it is false.
+        """
+        if ReloadF == False or ColumnCountPerChunk is None:
+            return None, None
         else:
-            return []
-
-class GridAdd(CountAction):
-    def __init__(self, Value):
-        CountAction.__init__(self, Value)
-
-    def get_txt(self, ColumnCountPerChunk, IteratorName):
-        LanguageDB = Setup.language_db
-        txt = []
-        if ColumnCountPerChunk is not None:
-            txt.append(0)
-            LanguageDB.REFERENCE_P_COLUMN_ADD(txt, IteratorName, ColumnCountPerChunk) 
-
-        txt.append(0)
-        txt.extend(LanguageDB.GRID_STEP("self.counter._column_number_at_end", "size_t",
-                                        self.value, IfMacro="__QUEX_IF_COUNT_COLUMNS"))
-
-        if ColumnCountPerChunk is not None:
-            txt.append(0)
-            LanguageDB.REFERENCE_P_RESET(txt, IteratorName) 
-
-        return txt
-
-class LineAdd(CountAction):
-    def __init__(self, Value):
-        CountAction.__init__(self, Value)
-
-    def get_txt(self, ColumnCountPerChunk, IteratorName):
-        LanguageDB = Setup.language_db
-        txt        = []
-        # Maybe, we only want to set the column counter to '0'.
-        # Such action is may be connected to unicode point '0x0D' carriage return.
-        if self.value != 0:
-            txt.append("__QUEX_IF_COUNT_LINES_ADD((size_t)%s);\n" % LanguageDB.VALUE_STRING(self.value))
-            txt.append(0)
-        txt.append("__QUEX_IF_COUNT_COLUMNS_SET((size_t)1);\n")
-
-        if ColumnCountPerChunk is not None:
-            txt.append(0)
-            LanguageDB.REFERENCE_P_RESET(txt, IteratorName) 
-
-        return txt
+            on_before_reload = ColumnCountReferencePDeltaAdd(IteratorName, ColumnCountPerChunk)
+            on_after_reload  = ColumnCountReferencePSet(IteratorName)
+            return on_before_reload, on_after_reload
 

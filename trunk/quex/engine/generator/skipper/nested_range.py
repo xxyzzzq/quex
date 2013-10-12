@@ -5,7 +5,7 @@ from   quex.engine.generator.skipper.common         import end_delimiter_is_subs
 import quex.engine.state_machine.index              as     sm_index
 from   quex.blackboard                              import setup as Setup
 from   quex.engine.misc.string_handling             import blue_print
-from   quex.engine.generator.languages.address      import __nice, get_label
+from   quex.engine.generator.languages.address      import __nice, dial_db
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.blackboard                              import E_StateIndices
 
@@ -203,6 +203,8 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
         end_procedure = "        __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
                         "                                    - reference_p));\n" 
 
+    reload_door_id = dial_db.new_door_id()
+
     code_str = blue_print(template_str, [
                    ["$$SKIPPER_INDEX$$",   __nice(skipper_index)],
                    #
@@ -212,10 +214,10 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
                    ["$$INPUT_GET$$",                      LanguageDB.ACCESS_INPUT()],
                    ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB.IF_INPUT("==", "Skipper$$SKIPPER_INDEX$$[0]")],
                    ["$$ENDIF$$",                          LanguageDB.END_IF()],
-                   ["$$ENTRY$$",                          map_address_to_label(skipper_adr)],
-                   ["$$RELOAD$$",                         get_label("$reload", skipper_index)],
+                   ["$$ENTRY$$",                          dial_db.map_address_to_label(skipper_adr)],
+                   ["$$RELOAD$$",                         dial_db.map_door_id_to_label(reload_door_id)],
                    ["$$GOTO_AFTER_END_OF_SKIPPING$$",     goto_after_end_of_skipping_str], 
-                   ["$$GOTO_RELOAD$$",                    get_label("$reload", skipper_index)],
+                   ["$$GOTO_RELOAD$$",                    LanguageDB.GOTO_RELOAD(reload_door_id)],
                    ["$$INPUT_P_TO_LEXEME_START$$",        LanguageDB.INPUT_P_TO_LEXEME_START()],
                    # When things were skipped, no change to acceptance flags or modes has
                    # happend. One can jump immediately to the start without re-entry preparation.

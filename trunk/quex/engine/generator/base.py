@@ -3,15 +3,10 @@ from   quex.engine.generator.action_info               import PatternActionInfo
 import quex.engine.generator.state_machine_coder       as     state_machine_coder
 import quex.engine.generator.state_router              as     state_router_generator
 from   quex.engine.generator.languages.variable_db     import variable_db
-from   quex.engine.generator.languages.address         import CodeIfDoorIdReferenced, \
-                                                              get_new_address,                    \
-                                                              map_address_to_label,               \
-                                                              map_door_id_to_address,             \
-                                                              map_door_id_to_label,               \
-                                                              mark_label_as_gotoed,               \
+from   quex.engine.generator.languages.address         import IfDoorIdReferencedCode, \
                                                               get_plain_strings,                  \
                                                               get_address_set_subject_to_routing, \
-                                                              address_exists
+                                                              dial_db
 import quex.engine.state_machine.parallelize           as     parallelize
 import quex.engine.state_machine.algorithm.beautifier  as     beautifier
 import quex.engine.state_machine.index                 as     index
@@ -81,10 +76,10 @@ class GeneratorBase:
         self.on_after_match_f = E_ActionIDs.ON_AFTER_MATCH in (action_id for pap, action_id in action_id_list)
 
         # -- Terminal states:
-        self.terminal_state_db = dict((action_id, TerminalState(action_id, pap)) 
-                                      for pap, action_id in action_id_list)
-        self.terminal_state_db.update((pattern.sm.get_id(), TerminalState(pattern.sm.get_id(), pap)) 
-                                      for pap, pattern in pattern_list)
+        self.terminal_state_db = dict(
+            (pap.pattern_id(), TerminalState(pap.pattern_id(), pap.action())) 
+            for pap in PatternActionPair_List
+        )
 
         # -- Core state machines of patterns
         self.state_machine_list = [ pattern.sm for pap, pattern in pattern_list ]
@@ -134,7 +129,7 @@ class Generator(GeneratorBase):
 
         self.reload_state_backward.absorb(analyzer.reload_state)
 
-        txt.append("\n%s:" % map_door_id_to_label(DoorID.global_end_of_pre_context_check()))
+        txt.append("\n%s:" % dial_db.map_door_id_to_label(DoorID.global_end_of_pre_context_check()))
         # -- set the input stream back to the real current position.
         #    during backward lexing the analyzer went backwards, so it needs to be reset.
         txt.append("    %s\n" % LanguageDB.INPUT_P_TO_LEXEME_START())
@@ -159,27 +154,26 @@ class Generator(GeneratorBase):
     def code_state_machine_core(self, EngineType, SimpleF):
         LanguageDB = Setup.language_db
 
-        if E_ActionIDs.ON_AFTER_MATCH not in self.terminal_state_db:
-            on_after_match_info = None
-        else:
-            on_after_match_info = self.terminal_state_db[E_ActionIDs.ON_AFTER_MATCH].action
-        
-
         sm_txt, analyzer = Generator.code_state_machine(self.sm, EngineType)
-        assert all_isinstance(sm_txt, (str, unicode, CodeIfDoorIdReferenced, int))
+        assert all_isinstance(sm_txt, (str, unicode, IfDoorIdReferencedCode, int))
 
         if SimpleF:
             lexeme_macro_definition_str = ""
             reentry_preparation_str     = ""
         else:
             lexeme_macro_definition_str = LanguageDB.TERMINAL_LEXEME_MACRO_DEFINITIONS()
-            reentry_preparation_str     = LanguageDB.REENTRY_PREPARATION(self.pre_context_sm_id_list, on_after_match_info)
+            reentry_preparation_str     = LanguageDB.REENTRY_PREPARATION(self.pre_context_sm_id_list, 
+                                                                         self.terminal_state_db.get(E_ActionIDs.ON_AFTER_MATCH))
 
-        terminal_states_txt = LanguageDB.TERMINAL_CODE(self.terminal_state_db, 
-                                                       self.pre_context_sm_id_list, 
-                                                       Setup, 
-                                                       SimpleF) 
-        assert all_isinstance(terminal_states_txt, (str, unicode, CodeIfDoorIdReferenced, int))
+            # Pattern match terminals goto 'Re-entry' by default
+            for pattern_id, terminal_state in self.terminal_state_db.iteritems():
+                if   pattern_id == E_ActionIDs.ON_END_OF_STREAM: continue
+                elif pattern_id == E_ActionIDs.ON_FAILURE:       continue
+                elif pattern_id == E_ActionIDs.ON_AFTER_MATCH:   continue
+                terminal_state.action.get_code().extend(["\n", 1, LanguageDB.GOTO_BY_DOOR_ID(DoorID.global_reentry_preparation())])
+
+        terminal_states_txt = LanguageDB.TERMINAL_CODE(self.terminal_state_db) 
+        assert all_isinstance(terminal_states_txt, (str, unicode, IfDoorIdReferencedCode, int))
 
         terminal_txt = [ lexeme_macro_definition_str ]
         terminal_txt.extend(terminal_states_txt)
@@ -206,9 +200,9 @@ class Generator(GeneratorBase):
 
         # Add the address of 'terminal_end_of_file()' if it is not there, already.
         # (It should: assert address_eof in routed_address_set
-        address_eof        = map_door_id_to_address(DoorID.global_terminal_end_of_file()) 
+        address_eof        = dial_db.map_door_id_to_address(DoorID.global_terminal_end_of_file()) 
         routed_address_set.add(address_eof)
-        mark_label_as_gotoed(map_address_to_label(address_eof))
+        dial_db.mark_label_as_gotoed(dial_db.map_address_to_label(address_eof))
 
         routed_state_info_list = state_router_generator.get_info(routed_address_set)
         return state_router_generator.do(routed_state_info_list) 
@@ -305,20 +299,14 @@ class LoopGenerator(Generator):
         assert CharacterSet is None or isinstance(CharacterSet, NumberSet)
 
         # Implement the core loop _________________________________________________
-        tm,                   \
-        implementation_type,  \
-        entry_action,         \
-        exit_action,          \
-        before_reload_action, \
-        after_reload_action   = \
-             CounterDB.get_map(IteratorName, CharacterSet, ReloadF)
+        tm,                    \
+        column_count_per_chunk = CounterDB.get_count_command_map(IteratorName, CharacterSet, ReloadF)
 
-        if not ReloadF:
-            assert before_reload_action is None
-            assert after_reload_action is None
-        else:
-            if OnBeforeReload is not None: before_reload_action.extend(OnBeforeReload)
-            if OnAfterReload is not None:  after_reload_action.extend(OnAfterReload)
+        on_entry, \
+        on_exit  = CounterDB.get_entry_exit_Commands(column_count_per_chunk)
+
+        before_reload_action, \
+        after_reload_action   = CounterDB.get_reload_Commands(IteratorName, column_count_per_chunk, ReloadF)
 
         if OnExit is None:
             assert not tm.has_action_id(E_ActionIDs.ON_EXIT)
@@ -330,6 +318,11 @@ class LoopGenerator(Generator):
         implementation_type, \
         loop_txt             = cls.code_action_map(tm, IteratorName, 
                                                    before_reload_action, after_reload_action, OnContinue)
+
+        # Upon reload, the reference pointer may have to be added. When the reload is
+        # done the reference pointer needs to be reset. 
+        if column_count_per_chunk is not None:
+            variable_db.require("reference_p")
 
         #return implementation_type, entry_action, loop_txt
         return implementation_type, loop_txt, entry_action, exit_action
@@ -396,7 +389,7 @@ class LoopGenerator(Generator):
     def code_action_map_plain(cls, TM, BeforeReloadAction=None, AfterReloadAction=None):
         TM.assert_adjacency()
 
-        pseudo_state_index = get_new_address()
+        pseudo_state_index = dial_db.new_address()
         LanguageDB         = Setup.language_db
 
         if BeforeReloadAction is None: 
@@ -427,7 +420,7 @@ class LoopGenerator(Generator):
             assert engine_type.requires_buffer_limit_code_for_reload()
             cls.code_generation_reload_preparation(txt, pseudo_state_index)
 
-        TransitionCodeFactory.init(engine_type, StateIndex = pseudo_state_index)
+        #TransitionCodeFactory.init(engine_type, StateIndex = pseudo_state_index)
 
         if BeforeReloadAction is not None:
             TransitionCodeFactory.prepare_reload_tansition(TM, pseudo_state_index)
@@ -502,15 +495,16 @@ class LoopGenerator(Generator):
     @classmethod
     def code_generation_reload_preparation(cls, txt, UponReloadDoneAdr=None):
         LanguageDB = Setup.language_db
-        reload_adr, reload_label = cls.generate_new_label()
+        reload_adr   = dial_db.new_address()
+        reload_label = dial_db.map_address_to_label(reload_adr) 
         LanguageDB.code_generation_reload_label_set(reload_label)
 
-        address = map_door_id_to_address(DoorID.global_terminal_end_of_file())
-        mark_address_for_state_routing(address)
+        address = dial_db.map_door_id_to_address(DoorID.global_terminal_end_of_file())
+        dial_db.mark_address_for_state_routing(address)
         LanguageDB.code_generation_on_reload_fail_adr_set(address)
 
         if UponReloadDoneAdr is not None:
-            txt.append("%s:\n" % map_address_to_label(UponReloadDoneAdr))
+            txt.append("%s:\n" % dial_db.map_address_to_label(UponReloadDoneAdr))
 
     @staticmethod
     def code_generation_reload_clean_up(txt, BeforeReloadAction, AfterReloadAction):
@@ -609,10 +603,6 @@ class LoopGenerator(Generator):
 
         # Code the transition map
         return cls.code_action_map_plain(tm) # No reload possible (see entry assert) 
-
-    @staticmethod
-    def generate_new_label():
-        return adr, map_address_to_label(get_new_address()) 
 
     @staticmethod
     def replace_iterator_name(txt, IteratorName, ImplementationType):

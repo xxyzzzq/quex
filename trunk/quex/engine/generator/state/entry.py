@@ -1,7 +1,7 @@
 from   quex.engine.analyzer.state.entry_action           import DoorID
 from   quex.engine.analyzer.state.core                   import AnalyzerState
-from   quex.engine.generator.languages.address           import map_door_id_to_label, \
-                                                                LabelIfDoorIdReferenced, \
+from   quex.engine.generator.languages.address           import dial_db, \
+                                                                IfDoorIdReferencedLabel, \
                                                                 Label
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 import quex.engine.generator.state.entry_door_tree       as     entry_door_tree
@@ -48,7 +48,7 @@ def do_state_machine_entry(door_tree_root, TheState, TheAnalyzer):
         code_action(txt, node, TheState.entry.action_db, GotoParentF=False)
         done_door_id_set.add(node.door_id)
         node = node.parent
-    txt.append(LabelIfDoorIdReferenced(DoorID.transition_block(TheState.index)))
+    txt.append(IfDoorIdReferencedLabel(DoorID.transition_block(TheState.index)))
     return txt, done_door_id_set
 
 def do_post(door_tree_root, TheState, DoneDoorIdSet):
@@ -72,7 +72,7 @@ def do_node(txt, ActionDb, Node, LastChildF=False, DoneDoorIdSet=None):
 
 def code_action(txt, Node, ActionDb, GotoParentF):
     LanguageDB = Setup.language_db
-    txt.append(LabelIfDoorIdReferenced(Node.door_id))
+    txt.append(IfDoorIdReferencedLabel(Node.door_id))
 
     comment_door(txt, Node, ActionDb)
 

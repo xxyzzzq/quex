@@ -209,6 +209,7 @@ class AccepterContent:
 E_InputPAccess = Enum("WRITE",     # writes value to 'x'
                       "READ",      # reads value of 'x'
                       "NONE",      # does nothing to 'x'
+                      # --> TODO "BORDER",    # commands cannot be moved before or after this command
                       "E_InputAccess_DEBUG")
 
 #______________________________________________________________________________
@@ -243,17 +244,25 @@ class CommandInfo(namedtuple("CommandInfo_tuple", ("cost", "access", "content_ty
 #______________________________________________________________________________
 class CommandFactory:
     db = {
-        E_Commands.Accepter:                      CommandInfo(1, E_InputPAccess.NONE,  AccepterContent),
-        E_Commands.StoreInputPosition:            CommandInfo(1, E_InputPAccess.READ,  ("pre_context_id", "position_register", "offset")),
-        E_Commands.PreContextOK:                  CommandInfo(1, E_InputPAccess.NONE,  ("pre_context_id",)),
-        E_Commands.TemplateStateKeySet:           CommandInfo(1, E_InputPAccess.NONE,  ("state_key",)),
-        E_Commands.PathIteratorSet:               CommandInfo(1, E_InputPAccess.NONE,  ("path_walker_id", "path_id", "offset")),
-        E_Commands.PrepareAfterReload:            CommandInfo(1, E_InputPAccess.NONE,  ("on_success_door_id", "on_failure_door_id")),
-        E_Commands.InputPIncrement:               CommandInfo(1, E_InputPAccess.WRITE),
-        E_Commands.InputPDecrement:               CommandInfo(1, E_InputPAccess.WRITE),
-        E_Commands.InputPDereference:             CommandInfo(1, E_InputPAccess.READ),
-        E_Commands.LexemeStartToReferenceP:       CommandInfo(1, E_InputPAccess.READ,  ("reference_p",)),
-        E_Commands.LexemeResetTerminatingZero:    CommandInfo(1, E_InputPAccess.WRITE),
+        E_Commands.Accepter:                         CommandInfo(1, E_InputPAccess.NONE,  AccepterContent),
+        E_Commands.InputPDecrement:                  CommandInfo(1, E_InputPAccess.WRITE),
+        E_Commands.InputPDereference:                CommandInfo(1, E_InputPAccess.READ),
+        E_Commands.InputPIncrement:                  CommandInfo(1, E_InputPAccess.WRITE),
+        E_Commands.LexemeResetTerminatingZero:       CommandInfo(1, E_InputPAccess.WRITE),
+        E_Commands.LexemeStartToReferenceP:          CommandInfo(1, E_InputPAccess.READ,   ("reference_p",)),
+        E_Commands.ColumnCountReferencePSet:         CommandInfo(1, E_InputPAccess.NONE,   ("pointer_name", "offset")),
+        E_Commands.ColumnCountReferencePDeltaAdd:    CommandInfo(1, E_InputPAccess.NONE,   ("pointer_name", "column_n_per_chunk")),
+        E_Commands.ColumnCountGridAdd:               CommandInfo(1, E_InputPAccess.NONE,   ("grid_size")),
+        E_Commands.ColumnCountGridAddWithReferenceP: CommandInfo(1, E_InputPAccess.NONE,   ("grid_size", "pointer_name")),
+        E_Commands.ColumnCountAdd:                   CommandInfo(1, E_InputPAccess.NONE,   ("value",)),
+        E_Commands.LineCountAdd:                     CommandInfo(1, E_InputPAccess.NONE,   ("value",)),
+        E_Commands.LineCountAddWithReferenceP:       CommandInfo(1, E_InputPAccess.NONE,   ("value", "pointer_name")),
+        E_Commands.PathIteratorSet:                  CommandInfo(1, E_InputPAccess.NONE,   ("path_walker_id", "path_id", "offset")),
+        E_Commands.PreContextOK:                     CommandInfo(1, E_InputPAccess.NONE,   ("pre_context_id",)),
+        E_Commands.PrepareAfterReload:               CommandInfo(1, E_InputPAccess.NONE,   ("on_success_door_id", "on_failure_door_id")),
+        E_Commands.StoreInputPosition:               CommandInfo(1, E_InputPAccess.READ,   ("pre_context_id", "position_register", "offset")),
+        E_Commands.TemplateStateKeySet:              CommandInfo(1, E_InputPAccess.NONE,   ("state_key",)),
+        # E_Commands.GotoDoorId:                       CommandInfo(1, E_InputPAccess.BORDER, ("door_id",)),
         # CountColumnN_ReferenceSet
         # CountColumnN_ReferenceAdd
         # CountColumnN_Add
@@ -310,6 +319,30 @@ def LexemeStartToReferenceP():
 
 def LexemeResetTerminatingZero():
     return CommandFactory.do(E_Commands.LexemeResetTerminatingZero)
+
+def ColumnCountReferencePSet(PointerName, Offset=0):
+    return CommandFactory.do(E_Commands.ColumnCountReferencePSet, (PointerName, Offset,))
+
+def ColumnCountReferencePDeltaAdd(PointerName, ColumnNPerChunk):
+    return CommandFactory.do(E_Commands.ColumnCountReferencePDeltaAdd, (PointerName, ColumnNPerChunk,))
+
+def ColumnCountAdd(Value):
+    return CommandFactory.do(E_Commands.ColumnCountAdd, (Value,))
+
+def ColumnCountGridAdd(Value):
+    return CommandFactory.do(E_Commands.ColumnCountGridAdd, (GridSize,))
+
+def ColumnCountGridAddWithReferenceP(Value, IteratorName):
+    return CommandFactory.do(E_Commands.ColumnCountGridAddWithReferenceP, (GridSize,))
+
+def LineCountAdd(Value):
+    return CommandFactory.do(E_Commands.LineCountAdd, (Value,))
+
+def LineCountAddWithReferenceP(Value, IteratorName):
+    return CommandFactory.do(E_Commands.LineCountAddWithReferenceP, (Value,))
+
+def GotoDoorId(DoorId):
+    return CommandFactory.do(E_Commands.GotoDoorId, (DoorId,))
 
 def Accepter():
     return CommandFactory.do(E_Commands.Accepter)

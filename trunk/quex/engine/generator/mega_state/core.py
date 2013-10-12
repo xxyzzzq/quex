@@ -10,7 +10,7 @@ import quex.engine.generator.state.drop_out         as     drop_out
 import quex.engine.generator.state.entry            as     entry_coder
 import quex.engine.generator.mega_state.template    as     template
 import quex.engine.generator.mega_state.path_walker as     path_walker
-from   quex.engine.generator.languages.address      import Label, LabelIfDoorIdReferenced
+from   quex.engine.generator.languages.address      import Label, IfDoorIdReferencedLabel
 from   quex.engine.interval_handling                import Interval
 import sys
 
@@ -124,7 +124,7 @@ def drop_out_scheme_do(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
     # (*) Central Label for the Templates Drop Out
     #     (The rules for having or not having a label here are complicated, 
     #      so rely on the label's usage database.)
-    txt.append(LabelIfDoorIdReferenced(DoorID.drop_out(TheState.index)))
+    txt.append(IfDoorIdReferencedLabel(DoorID.drop_out(TheState.index)))
     txt.append("    %s\n" % DebugString) 
 
     uniform_drop_out, state_index_set = TheState.drop_out.get_uniform_prototype()
@@ -133,7 +133,7 @@ def drop_out_scheme_do(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
     if uniform_drop_out is not None:
         # uniform drop outs => no 'switch-case' required
         for state_index in state_index_set:
-            txt.append(LabelIfDoorIdReferenced(DoorID.drop_out(state_index)))
+            txt.append(IfDoorIdReferencedLabel(DoorID.drop_out(state_index)))
 
         drop_out.do(txt, TheState.index, uniform_drop_out, TheAnalyzer, \
                     DefineLabelF=False, MentionStateIndexF=False)
@@ -161,7 +161,7 @@ def drop_out_scheme_do(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
             # are implemented only once.
             case_txt = []
             for state_index in state_index_set:
-                case_txt.append(LabelIfDoorIdReferenced(DoorID.drop_out(state_index)))
+                case_txt.append(IfDoorIdReferencedLabel(DoorID.drop_out(state_index)))
             drop_out.do(case_txt, TheState.index, drop_out_object, TheAnalyzer, 
                         DefineLabelF=False, MentionStateIndexF=False)
             case_list.append((state_key_list, case_txt))

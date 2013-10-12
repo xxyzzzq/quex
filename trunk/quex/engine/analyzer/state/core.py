@@ -165,7 +165,7 @@ class ReloadState(Processor):
         assert self.index == OtherReloadState.index
         self.entry.action_db.absorb(OtherReloadState.entry.action_db)
 
-    def add_state(self, StateIndex, OnSuccessDoorId, OnFailureDoorId):
+    def add_state(self, StateIndex, OnSuccessDoorId, OnFailureDoorId, BeforeReload=None):
         """Adds a state from where the reload state is entered. When reload is
         done it jumps to 'OnFailureDoorId' if the reload failed and to 'OnSuccessDoorId'
         if the reload succeeded.
@@ -173,8 +173,11 @@ class ReloadState(Processor):
         RETURNS: DoorID into the reload state. Jump to this DoorID in order
                  to trigger the reload for the state given by 'StateIndex'.
         """
+        assert BeforeReload is None or isinstance(BeforeReload, CommandList) 
         ta = TransitionAction()
         ta.command_list = CommandList(PrepareAfterReload(OnSuccessDoorId, OnFailureDoorId))
+        if BeforeReload is not None:
+            ta.command_list.extend(BeforeReload)
 
         tid = TransitionID(self.index, StateIndex, 0)
         assert self.entry.action_db.get(tid) is None # Cannot be in there twice!

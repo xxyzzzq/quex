@@ -9,55 +9,6 @@ from   quex.blackboard import setup as Setup, \
 
 from   collections     import namedtuple
 
-class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
-    def __new__(self, StateIndex, DoorIndex):
-        assert isinstance(StateIndex, (int, long)) or StateIndex in E_StateIndices or StateIndex == E_AcceptanceIDs.FAILURE
-        # 'DoorIndex is None' --> right after the entry commands (targetted after reload).
-        assert isinstance(DoorIndex, (int, long))  or DoorIndex is None or DoorIndex in E_DoorIdIndex, "%s" % DoorIndex
-        return super(DoorID, self).__new__(self, StateIndex, DoorIndex)
-
-    @staticmethod
-    def drop_out(StateIndex):             return DoorID(StateIndex, E_DoorIdIndex.DROP_OUT)
-    @staticmethod                        
-    def transition_block(StateIndex):     return DoorID(StateIndex, E_DoorIdIndex.TRANSITION_BLOCK)
-    @staticmethod                        
-    def global_state_router():            return DoorID(0,          E_DoorIdIndex.GLOBAL_STATE_ROUTER)
-    @staticmethod                        
-    def acceptance(PatternId):                                return DoorID(PatternId,  E_DoorIdIndex.ACCEPTANCE)
-    @staticmethod                        
-    def state_machine_entry(SM_Id):                           return DoorID(SM_Id,      E_DoorIdIndex.STATE_MACHINE_ENTRY)
-    @staticmethod                        
-    def backward_input_position_detector_return(PatternId):   return DoorID(PatternId,  E_DoorIdIndex.BIPD_RETURN)
-    @staticmethod                         
-    def global_end_of_pre_context_check(): return DoorID(0, E_DoorIdIndex.GLOBAL_END_OF_PRE_CONTEXT_CHECK)
-    @staticmethod                        
-    def global_terminal_end_of_file():     return DoorID(0, E_DoorIdIndex.GLOBAL_TERMINAL_END_OF_FILE)
-    @staticmethod
-    def global_reentry():                  return DoorID(0, E_DoorIdIndex.GLOBAL_REENTRY)
-    @staticmethod
-    def global_reentry_preparation():      return DoorID(0, E_DoorIdIndex.GLOBAL_REENTRY_PREPARATION)
-    @staticmethod
-    def global_reentry_preparation_2():    return DoorID(0, E_DoorIdIndex.GLOBAL_REENTRY_PREPARATION_2)
-
-    def drop_out_f(self):                  return self.door_index == E_DoorIdIndex.DROP_OUT
-
-    def __repr__(self):
-        return "DoorID(s=%s, d=%s)" % (self.state_index, self.door_index)
-
-class DoorID_Scheme(tuple):
-    """A TargetByStateKey maps from a index, i.e. a state_key to a particular
-       target (e.g. a DoorID). It is implemented as a tuple which can be 
-       identified by the class 'TargetByStateKey'.
-    """
-    def __new__(self, DoorID_List):
-        return tuple.__new__(self, DoorID_List)
-
-    @staticmethod
-    def concatinate(This, That):
-        door_id_list = list(This)
-        door_id_list.extend(list(That))
-        return DoorID_Scheme(door_id_list)
-
 class TransitionID(namedtuple("TransitionID_tuple", ("target_state_index", "source_state_index", "trigger_id"))):
     """Objects of this type identify a transition. 
     

@@ -531,6 +531,15 @@ class TransitionMap(list):
             done_set.add(id(action))
             action.extend(Action)
 
+    def add_command_to_NotNone_targets(self, TheCommand):
+        assert isinstance(Action, list)
+        done_set = set()
+        for interval, command_list in self:
+            if command_list is None: continue
+            elif id(command_list) in done_set: continue
+            done_set.add(id(command_list))
+            command_list.append(TheCommand)
+
     def add_transition_actions(self, TransitionActionMap, OnlyIfEmptyF=False):
         """'TransitionActionMap' describes actions to be taken upon the occurence
         of a particular character.  The actions are to be added to the
@@ -569,6 +578,14 @@ class TransitionMap(list):
             elif action == ActionID:
                 return True
         return False
+
+    def replace_None_targets(self, Replacement):
+        """Each interval which has 'None' as target will have 'Replacement'
+        as target after call of this function.
+        """
+        for i, info in self:
+            if info[1] is not None: continue
+            self[i] = (interval, Replacement)
 
     def replace_action_id(self, ActionID, Action):
         assert ActionID in E_ActionIDs
