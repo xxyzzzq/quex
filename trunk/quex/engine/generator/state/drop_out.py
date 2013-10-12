@@ -1,6 +1,5 @@
 from   quex.engine.generator.languages.address    import Label, \
-                                                         IfDoorIdReferencedLabel, \
-                                                         map_door_id_to_address
+                                                         IfDoorIdReferencedLabel
 from   quex.engine.analyzer.state.entry_action    import DoorID
 from   quex.blackboard                            import E_AcceptanceIDs, E_StateIndices, \
                                                          E_TransitionN, E_PostContextIDs, E_PreContextIDs, \

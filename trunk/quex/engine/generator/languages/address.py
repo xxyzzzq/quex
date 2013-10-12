@@ -90,8 +90,8 @@ class DialDB:
        
         # Track addresses which are subject to 'goto' and those which need to
         # be routed.
-        self.__gotoed_address_set = set([])
-        self.__routed_address_set = set([])
+        self.__gotoed_address_set = TypedSet(long)
+        self.__routed_address_set = TypedSet(long)
 
     def routed_address_set(self):
         return self.__routed_address_set
@@ -149,8 +149,11 @@ class DialDB:
         else:
             return self.__d2la[DoorId][1]
 
-    def get_address_by_door_id(self, DoorId):
-        return self.__d2la[DoorId][0]
+    def get_address_by_door_id(self, DoorId, RoutedF=False):
+        address = self.__d2la[DoorId][0]
+        if RoutedF:
+            self.mark_address_as_routed(address)
+        return address
 
     def get_door_id_by_address(self, Address):
         for door_id, info in self.__d2la.iteritems():
@@ -235,7 +238,7 @@ class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
         return "DoorID(s=%s, d=%s)" % (self.state_index, self.door_index)
 
 class Label:
-    """This class shall be a short-hand for 'map_door_id_to_address' of global
+    """This class shall be a short-hand for 'get_label_by_door_id' of global
        labels. It was designed to provide the same interface as the 'DoorID.global_*' 
        functions.
     """
@@ -282,21 +285,6 @@ def init_address_handling():
     __gotoed_address_set.clear()
     __routed_address_set.clear()
 
-def mark_label_as_gotoed(Label):
-    global __gotoed_address_set
-    assert isinstance(Label, (str, unicode))
-    __gotoed_address_set.add(Label)
-
-def mark_door_id_as_gotoed(DoorId):
-    dial_db.mark_label_as_gotoed(map_door_id_to_label(DoorId))
-
-def mark_address_for_state_routing(Adr):
-    global __routed_address_set
-    __routed_address_set.add(Adr)
-    # Any address which is subject to state routing relates to a label which
-    # is 'gotoed' from inside the state router.
-    mark_label_as_gotoed(dial_db.map_address_to_label(Adr))
-
 def get_address_set_subject_to_routing():
     global __routed_address_set
     return __routed_address_set
@@ -304,28 +292,6 @@ def get_address_set_subject_to_routing():
 
 __door_id_to_address_db = TypedDict(DoorID, long)
 
-
-def map_door_id_to_address(DoorId, RoutedF=False):
-    """RETURNS: Address of given DoorId
-
-       Ensures that there is an entry in __door_id_to_address_db for
-       the given DoorId.
-    """
-    global __door_id_to_address_db
-    global __routed_address_set
-
-    address = __door_id_to_address_db.get(DoorId)
-    if address is None:
-        address = index.get()
-        __door_id_to_address_db[DoorId] = address
-    if RoutedF:
-        mark_address_for_state_routing(address)
-    return address
-
-special_label_db = dict(
-    (map_door_id_to_address(door_id), label)
-    for door_id, label in special_labels
-)
 
 def address_exists(Address):
     global __door_id_to_address_db

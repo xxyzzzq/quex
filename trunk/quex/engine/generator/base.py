@@ -200,7 +200,7 @@ class Generator(GeneratorBase):
 
         # Add the address of 'terminal_end_of_file()' if it is not there, already.
         # (It should: assert address_eof in routed_address_set
-        address_eof        = dial_db.map_door_id_to_address(DoorID.global_terminal_end_of_file()) 
+        address_eof        = dial_db.get_address_by_door_id(DoorID.global_terminal_end_of_file()) 
         routed_address_set.add(address_eof)
         dial_db.mark_label_as_gotoed(dial_db.map_address_to_label(address_eof))
 
@@ -499,8 +499,8 @@ class LoopGenerator(Generator):
         reload_label = dial_db.map_address_to_label(reload_adr) 
         LanguageDB.code_generation_reload_label_set(reload_label)
 
-        address = dial_db.map_door_id_to_address(DoorID.global_terminal_end_of_file())
-        dial_db.mark_address_for_state_routing(address)
+        address = dial_db.get_address_by_door_id(DoorID.global_terminal_end_of_file())
+        dial_db.mark_address_as_routed(address)
         LanguageDB.code_generation_on_reload_fail_adr_set(address)
 
         if UponReloadDoneAdr is not None:

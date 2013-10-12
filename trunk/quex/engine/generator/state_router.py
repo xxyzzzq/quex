@@ -68,8 +68,8 @@ def get_info(StateIndexList):
         else:
             # Transition to a templates 'drop-out'
             door_id    = DoorID.drop_out(- index)
-            case_index = dial_db.map_door_id_to_address(door_id)
-            label      = dial_db.map_door_id_to_label(door_id)
+            case_index = dial_db.get_address_by_door_id(door_id)
+            label      = dial_db.get_label_by_door_id(door_id)
 
         result[i] = (index, "goto %s; " % label)
         dial_db.mark_label_as_gotoed(label)

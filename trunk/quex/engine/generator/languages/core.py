@@ -264,8 +264,8 @@ class LanguageDB_Cpp(dict):
             on_success_door_id = Cmd.content.on_success_door_id 
             on_failure_door_id = Cmd.content.on_failure_door_id 
 
-            on_success_adr = map_door_id_to_address(on_success_door_id, RoutedF=True)
-            on_failure_adr = map_door_id_to_address(on_failure_door_id, RoutedF=True)
+            on_success_adr = dial_db.get_address_by_door_id(on_success_door_id, RoutedF=True)
+            on_failure_adr = dial_db.get_address_by_door_id(on_failure_door_id, RoutedF=True)
 
             return   "    target_state_index = QUEX_LABEL(%i); target_state_else_index = QUEX_LABEL(%i);\n"  \
                    % (on_success_adr, on_failure_adr)                                                        
