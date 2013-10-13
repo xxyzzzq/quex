@@ -27,7 +27,7 @@ from   quex.blackboard                             import setup as Setup, E_MapI
 Setup.language_db = languages.db["C"]              
 LanguageDB        = Setup.language_db
 
-address.init_address_handling()
+dial_db.clear()
 
 if "--hwut-info" in sys.argv:
     print "Single State: Transition Code Generation;"

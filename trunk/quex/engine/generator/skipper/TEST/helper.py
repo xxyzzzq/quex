@@ -15,7 +15,7 @@ def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferS
     end_str  = '    printf("end\\n");'
     end_str += '    return false;\n'
 
-    address.init_address_handling()
+    dial_db.clear()
     variable_db.variable_db.init()
     data = { 
         "character_set":        TriggerSet, 
@@ -45,7 +45,7 @@ def create_range_skipper_code(Language, TestStr, CloserSequence, QuexBufferSize=
     end_str += '    return false;\n'
 
     __Setup_init_language_database(Language)
-    address.init_address_handling()
+    dial_db.clear()
     variable_db.variable_db.init()
 
     data = { 
@@ -72,7 +72,7 @@ def create_nested_range_skipper_code(Language, TestStr, OpenerSequence, CloserSe
     end_str += '    return false;\n'
 
     __Setup_init_language_database(Language)
-    address.init_address_handling()
+    dial_db.clear()
     variable_db.variable_db.init()
 
     data = { 
@@ -132,7 +132,7 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
         for x in LanguageDB.RELOAD():
             txt.extend(x.code)
         # Ensure that '__RELOAD_FORWARD' and '__RELOAD_BACKWARD' is referenced
-        routed_address_set = address.get_address_set_subject_to_routing()
+        routed_address_set = dial_db.get_address_set_subject_to_routing()
         routed_address_set.add(address.get_address("$terminal-EOF", U=True))
         routed_state_info_list = state_router_generator.get_info(routed_address_set)
         txt.extend(address.get_plain_strings([state_router_generator.do(routed_state_info_list)]))

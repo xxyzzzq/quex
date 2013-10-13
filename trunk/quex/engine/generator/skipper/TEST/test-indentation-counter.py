@@ -8,7 +8,7 @@ from   quex.engine.generator.TEST.generator_test import __Setup_init_language_da
 from   helper                                          import *
 from   quex.input.files.counter_setup                  import IndentationSetup
 import quex.engine.generator.skipper.indentation_counter as     indentation_counter
-from   quex.engine.generator.languages.address         import init_address_handling
+from   quex.engine.generator.languages.address         import dial_db
 from   quex.engine.generator.languages.variable_db     import variable_db
 from   quex.engine.interval_handling             import NumberSet, Interval
 
@@ -34,7 +34,7 @@ EndStr = \
 def test(TestStr, IndentationSetup, BufferSize=1024):
     Language = "Cpp"
     __Setup_init_language_database("Cpp")
-    init_address_handling()
+    dial_db.clear()
     code_str = indentation_counter.do({"indentation_setup": IndentationSetup})
 
     txt = create_customized_analyzer_function("Cpp", TestStr, code_str, 

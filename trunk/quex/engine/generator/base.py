@@ -5,7 +5,6 @@ import quex.engine.generator.state_router              as     state_router_gener
 from   quex.engine.generator.languages.variable_db     import variable_db
 from   quex.engine.generator.languages.address         import IfDoorIdReferencedCode, \
                                                               get_plain_strings,                  \
-                                                              get_address_set_subject_to_routing, \
                                                               dial_db
 import quex.engine.state_machine.parallelize           as     parallelize
 import quex.engine.state_machine.algorithm.beautifier  as     beautifier
@@ -192,7 +191,7 @@ class Generator(GeneratorBase):
         return result, entry_door_id_db
 
     def state_router(self):
-        routed_address_set = get_address_set_subject_to_routing()
+        routed_address_set = dial_db.routed_address_set()
         # If there is only one address subject to state routing, then the
         # state router needs to be implemented.
         #if len(routed_address_set) == 0:
