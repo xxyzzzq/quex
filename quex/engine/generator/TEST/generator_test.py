@@ -168,7 +168,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
                                                        BufferLimitCode)
 
     if len(SecondPatternActionPairList) != 0:
-        address.init_address_handling()
+        dial_db.clear()
         state_machine_code += create_state_machine_function(SecondPatternActionPairList, 
                                                             PatternDictionary, 
                                                             BufferLimitCode,

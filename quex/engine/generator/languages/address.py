@@ -93,11 +93,21 @@ class DialDB:
         self.__gotoed_address_set = TypedSet(long)
         self.__routed_address_set = TypedSet(long)
 
+   def clear(self):
+       self.__d2la.clear()
+       self.__door_id_db.clear()
+       self.__gotoed_address_set.clear()
+       self.__routed_address_set.clear()
+
     def routed_address_set(self):
         return self.__routed_address_set
 
     def gotoed_address_set(self):
         return self.__gotoed_address_set
+
+    def label_is_gotoed(self, Label):
+        address = self.get_address_by_label(Label)
+        return address in self.__gotoed_address_set
 
     def __new_entry(self, StateIndex=None, DoorSubIndex=None, Label=None):
         if StateIndex is None:   state_index = index.get() # generate a new StateIndex
@@ -276,28 +286,7 @@ class DoorID_Scheme(tuple):
         return DoorID_Scheme(door_id_list)
 
 
-__gotoed_address_set = set([])
 __routed_address_set = set([])
-
-def init_address_handling():
-    global __gotoed_address_set
-    global __routed_address_set
-    __gotoed_address_set.clear()
-    __routed_address_set.clear()
-
-def get_address_set_subject_to_routing():
-    global __routed_address_set
-    return __routed_address_set
-
-
-__door_id_to_address_db = TypedDict(DoorID, long)
-
-
-def address_exists(Address):
-    global __door_id_to_address_db
-    for address in __door_id_to_address_db.itervalues():
-        if address == Address: return True
-    return False
 
 class IfDoorIdReferencedCode:
     def __init__(self, DoorId, Code=None):
@@ -321,7 +310,6 @@ def get_plain_strings(txt_list, RoutingInfoF=True):
     """-- Replaces unreferenced 'CodeIfLabelReferenced' objects by empty strings.
        -- Replaces integers by indentation, i.e. '1' = 4 spaces.
     """
-    global __gotoed_address_set
 
     size = len(txt_list)
     i    = -1
@@ -338,7 +326,7 @@ def get_plain_strings(txt_list, RoutingInfoF=True):
             # Text is left as it is
             continue
 
-        elif elm.label in __gotoed_address_set: 
+        elif dial_db.label_is_gotoed(elm.label): 
             # If an address is referenced, the correspondent code is inserted.
             txt_list[i:i+1] = elm.code
             # txt_list = txt_list[:i] + elm.code + txt_list[i+1:]

@@ -1,5 +1,5 @@
 from   quex.engine.generator.languages.variable_db import variable_db
-from   quex.engine.generator.languages.address     import init_address_handling, IfDoorIdReferencedCode
+from   quex.engine.generator.languages.address     import dial_db, IfDoorIdReferencedCode
 from   quex.engine.generator.base                  import Generator as CppGenerator
 from   quex.engine.tools                           import all_isinstance
 import quex.output.cpp.action_preparation          as     action_preparation
@@ -12,7 +12,7 @@ def do_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
     # (*) Initialize address handling
     #     (Must happen before call to constructor of Generator, because 
     #      constructor creates some addresses.)
-    init_address_handling()
+    dial_db.clear()
     variable_db.init()
 
     # (*) Skippers, Indentation Handlers, etc. are generated in the 
@@ -93,7 +93,7 @@ def do_core(PatternActionPair_List):
     return function_body, variable_definitions, generator.on_after_match_f
 
 def do_counter(Mode):
-    init_address_handling()
+    dial_db.clear()
     variable_db.init()
 
     if not Mode.default_character_counter_required_f():
