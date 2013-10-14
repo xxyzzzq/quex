@@ -4,7 +4,7 @@ _______________________________________________________________________________
 """
 from   quex.engine.generator.base                   import LoopGenerator
 from   quex.engine.generator.languages.variable_db  import variable_db
-from   quex.engine.generator.languages.address      import Label
+from   quex.engine.analyzer.door_id_address_label   import Label
 
 from   quex.blackboard import setup as Setup, \
                               DefaultCounterFunctionDB, \

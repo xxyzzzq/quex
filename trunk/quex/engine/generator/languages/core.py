@@ -12,8 +12,8 @@
 # AUTHOR: Frank-Rene Schaefer
 # ABSOLUTELY NO WARRANTY
 #########################################################################################################
-import quex.engine.generator.languages.cpp       as     cpp
-from   quex.engine.generator.languages.address   import Label, \
+import quex.engine.generator.languages.cpp        as     cpp
+from   quex.engine.analyzer.door_id_address_label import Label, \
                                                         dial_db, \
                                                         get_plain_strings
 from   quex.blackboard                           import setup as Setup, \
@@ -24,7 +24,6 @@ from   quex.blackboard                           import setup as Setup, \
                                                         E_PreContextIDs, \
                                                         E_DoorIdIndex, \
                                                         E_Commands
-import quex.engine.analyzer.state.entry_action           as entry_action
 from   quex.engine.analyzer.state.core                   import AnalyzerState
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState

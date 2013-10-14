@@ -78,8 +78,8 @@
             }
 """
 from quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
-from quex.engine.generator.languages.address           import dial_db
-##from quex.engine.generator.state.core                  import input_do
+from quex.engine.analyzer.door_id_address_label        import dial_db
+##from quex.engine.generator.state.core                import input_do
 from quex.engine.generator.languages.variable_db       import variable_db
 from quex.blackboard import setup as Setup
 

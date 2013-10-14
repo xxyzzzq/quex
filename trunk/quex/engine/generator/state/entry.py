@@ -1,7 +1,7 @@
-from   quex.engine.analyzer.state.entry_action           import DoorID
 from   quex.engine.analyzer.state.core                   import AnalyzerState
-from   quex.engine.generator.languages.address           import dial_db, \
+from   quex.engine.analyzer.door_id_address_label        import dial_db, \
                                                                 IfDoorIdReferencedLabel, \
+                                                                DoorID, \
                                                                 Label
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 import quex.engine.generator.state.entry_door_tree       as     entry_door_tree

@@ -1,5 +1,5 @@
 from   quex.engine.generator.base              import LoopGenerator
-from   quex.engine.analyzer.state.entry_action import DoorID
+from   quex.engine.analyzer.door_id_address_label import DoorID
 from   quex.engine.analyzer.state.core         import TerminalState
 from   quex.blackboard                         import setup as Setup
 

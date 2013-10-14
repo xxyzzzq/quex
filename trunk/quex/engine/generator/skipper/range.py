@@ -5,7 +5,7 @@ from   quex.engine.generator.skipper.common        import line_counter_in_loop, 
                                                           get_character_sequence, \
                                                           get_on_skip_range_open, \
                                                           line_column_counter_in_loop
-from   quex.engine.generator.languages.address     import __nice, dial_db
+from   quex.engine.analyzer.door_id_address_label  import __nice, dial_db
 from   quex.engine.generator.languages.variable_db import variable_db
 import quex.engine.state_machine.transformation    as     transformation
 from   quex.engine.misc.string_handling            import blue_print

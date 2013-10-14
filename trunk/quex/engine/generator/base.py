@@ -3,8 +3,9 @@ from   quex.engine.generator.action_info               import PatternActionInfo
 import quex.engine.generator.state_machine_coder       as     state_machine_coder
 import quex.engine.generator.state_router              as     state_router_generator
 from   quex.engine.generator.languages.variable_db     import variable_db
-from   quex.engine.generator.languages.address         import IfDoorIdReferencedCode, \
-                                                              get_plain_strings,                  \
+from   quex.engine.analyzer.door_id_address_label      import DoorID, \
+                                                              IfDoorIdReferencedCode, \
+                                                              get_plain_strings, \
                                                               dial_db
 import quex.engine.state_machine.parallelize           as     parallelize
 import quex.engine.state_machine.algorithm.beautifier  as     beautifier
@@ -14,7 +15,6 @@ import quex.engine.state_machine.transformation        as     transformation
 from   quex.engine.generator.state.transition.code     import TransitionCodeFactory
 import quex.engine.generator.state.transition.core     as     transition_block
 import quex.engine.generator.reload_state              as     reload_state_coder
-from   quex.engine.analyzer.state.entry_action         import DoorID
 import quex.engine.analyzer.engine_supply_factory      as     engine
 from   quex.engine.analyzer.transition_map             import TransitionMap
 import quex.engine.analyzer.core                       as     analyzer_generator

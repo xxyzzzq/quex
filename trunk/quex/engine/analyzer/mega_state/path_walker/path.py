@@ -1,11 +1,11 @@
-from   quex.engine.analyzer.state.core         import AnalyzerState
-from   quex.engine.analyzer.state.drop_out     import DropOut
-from   quex.engine.analyzer.state.entry_action import DoorID
-from   quex.engine.analyzer.commands           import PathIteratorSet
-from   quex.engine.analyzer.mega_state.core    import MegaState_Entry, \
-                                                      MegaState_DropOut
-from   quex.engine.analyzer.transition_map     import TransitionMap       
-import quex.engine.state_machine.index         as     index
+from   quex.engine.analyzer.state.core            import AnalyzerState
+from   quex.engine.analyzer.state.drop_out        import DropOut
+from   quex.engine.analyzer.door_id_address_label import DoorID
+from   quex.engine.analyzer.commands              import PathIteratorSet
+from   quex.engine.analyzer.mega_state.core       import MegaState_Entry, \
+                                                         MegaState_DropOut
+from   quex.engine.analyzer.transition_map        import TransitionMap       
+import quex.engine.state_machine.index            as     index
 
 from   quex.engine.tools                       import UniformObject
 

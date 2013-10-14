@@ -5,7 +5,7 @@ from   quex.engine.generator.skipper.common         import end_delimiter_is_subs
 import quex.engine.state_machine.index              as     sm_index
 from   quex.blackboard                              import setup as Setup
 from   quex.engine.misc.string_handling             import blue_print
-from   quex.engine.generator.languages.address      import __nice, dial_db
+from   quex.engine.analyzer.door_id_address_label   import __nice, dial_db
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.blackboard                              import E_StateIndices
 

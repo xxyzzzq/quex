@@ -11,7 +11,6 @@ from quex.exception                   import RegularExpressionException
 from quex.blackboard                  import PatternShorthand, E_Compression
 #
 from   quex.engine.generator.languages.core    import db
-import quex.engine.generator.languages.address as     address
 import quex.engine.generator.state_router      as     state_router_generator
 from   quex.engine.generator.action_info       import PatternActionInfo, CodeFragment
 import quex.output.cpp.core                    as     cpp_generator
@@ -20,7 +19,7 @@ from   quex.input.files.counter_db             import CounterDB
 # import quex.engine.generator.skipper.core          as skipper
 from   quex.engine.generator.languages.variable_db import VariableDB
 import quex.engine.generator.languages.variable_db as     variable_db
-from   quex.engine.generator.languages.address     import Label
+from   quex.engine.analyzer.door_id_address_label  import Label
 import quex.input.regular_expression.engine        as     regex
 from   quex.input.files.counter_setup              import LineColumnCounterSetup_Default
 #

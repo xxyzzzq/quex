@@ -1,10 +1,10 @@
 import quex.engine.state_machine.index                      as index
 from   quex.engine.analyzer.state.core                      import AnalyzerState
 from   quex.engine.analyzer.state.entry                     import Entry
-from   quex.engine.analyzer.state.entry_action              import DoorID
+from   quex.engine.analyzer.door_id_address_label           import DoorID
 import quex.engine.analyzer.engine_supply_factory           as     engine
 from   quex.engine.analyzer.mega_state.core                 import MegaState
-import quex.engine.analyzer.mega_state.template.core        as templates 
+import quex.engine.analyzer.mega_state.template.core        as     templates 
 from   quex.engine.analyzer.mega_state.template.state       import TargetByStateKey, TemplateState, PseudoTemplateState
 from   quex.engine.analyzer.mega_state.template.candidate   import TemplateStateCandidate
 import quex.engine.generator.state.entry_door_tree          as     entry_door_tree

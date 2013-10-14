@@ -1,14 +1,15 @@
-from   quex.engine.analyzer.commands           import Accepter, StoreInputPosition
-from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction, DoorID
-from   quex.engine.tools                       import TypedDict
-from   quex.blackboard                         import setup as Setup, \
-                                                      E_AcceptanceIDs, \
-                                                      E_Commands, \
-                                                      E_PostContextIDs, \
-                                                      E_PreContextIDs,  \
-                                                      E_StateIndices, \
-                                                      E_TransitionN, \
-                                                      E_TriggerIDs
+from   quex.engine.analyzer.commands              import Accepter, StoreInputPosition
+from   quex.engine.analyzer.state.entry_action    import TransitionID, TransitionAction
+from   quex.engine.analyzer.door_id_address_label import DoorID
+from   quex.engine.tools                          import TypedDict
+from   quex.blackboard                            import setup as Setup, \
+                                                         E_AcceptanceIDs, \
+                                                         E_Commands, \
+                                                         E_PostContextIDs, \
+                                                         E_PreContextIDs,  \
+                                                         E_StateIndices, \
+                                                         E_TransitionN, \
+                                                         E_TriggerIDs
 
 from   operator import attrgetter
 

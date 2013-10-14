@@ -5,8 +5,8 @@ from   quex.engine.analyzer.mega_state.core         import MegaState, \
                                                            MegaState_DropOut, \
                                                            StateKeyIndexDB
 from   quex.engine.analyzer.transition_map          import TransitionMap        
-from   quex.engine.analyzer.state.entry_action      import TransitionID, \
-                                                           DoorID, \
+from   quex.engine.analyzer.state.entry_action      import TransitionID
+from   quex.engine.analyzer.door_id_address_label   import DoorID, \
                                                            DoorID_Scheme
 from   quex.engine.analyzer.commands                import TemplateStateKeySet
 import quex.engine.state_machine.index              as     index

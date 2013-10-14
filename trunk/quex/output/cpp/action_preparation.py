@@ -23,7 +23,7 @@ analyzer. This includes the following:
 """
 from   quex.engine.generator.action_info           import CodeFragment, \
                                                           PatternActionInfo
-from   quex.engine.generator.languages.address     import Label
+from   quex.engine.analyzer.door_id_address_label  import Label
 from   quex.blackboard                             import setup as Setup, E_ActionIDs
 import quex.output.cpp.counter_for_pattern         as     counter_for_pattern
 
