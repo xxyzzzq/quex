@@ -1,6 +1,6 @@
-from   quex.engine.analyzer.state.entry_action  import DoorID
-from   quex.engine.generator.languages.address  import Label, \
-                                                       dial_db
+from   quex.engine.analyzer.door_id_address_label  import Label, \
+                                                          DoorID, \
+                                                          dial_db
 from   operator                                 import itemgetter
 
 def do(StateRouterInfoList):

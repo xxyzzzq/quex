@@ -1,8 +1,8 @@
 from   quex.blackboard                                   import setup as Setup
-from   quex.engine.analyzer.state.entry_action           import DoorID
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.transition_map               import TransitionMap
+from   quex.engine.analyzer.door_id_address_label        import Label, DoorID, IfDoorIdReferencedLabel
 from   quex.engine.generator.state.transition.code       import TransitionCodeFactory, \
                                                                 MegaState_relate_to_transition_code
 import quex.engine.generator.state.transition.core  as transition_block
@@ -10,7 +10,6 @@ import quex.engine.generator.state.drop_out         as     drop_out
 import quex.engine.generator.state.entry            as     entry_coder
 import quex.engine.generator.mega_state.template    as     template
 import quex.engine.generator.mega_state.path_walker as     path_walker
-from   quex.engine.generator.languages.address      import Label, IfDoorIdReferencedLabel
 from   quex.engine.interval_handling                import Interval
 import sys
 

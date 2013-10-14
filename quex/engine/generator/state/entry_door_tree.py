@@ -38,7 +38,8 @@ members of Door object.
 _______________________________________________________________________________
 (C) Frank-Rene Schaefer
 """
-from quex.engine.analyzer.state.entry_action import *
+from quex.engine.analyzer.door_id_address_label import DoorID
+from quex.engine.analyzer.commands              import CommandList
 from quex.blackboard  import E_StateIndices, \
                              E_DoorIdIndex
 from quex.engine.tools import pair_combinations

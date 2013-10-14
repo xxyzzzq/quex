@@ -7,7 +7,7 @@ from   quex.engine.analyzer.transition_map          import TransitionMap
 import quex.engine.generator.state.transition.core  as     relate_to_TransitionCode
 from   quex.engine.generator.state.transition.code  import TransitionCode
 from   quex.engine.generator.languages.variable_db  import variable_db
-from   quex.engine.generator.languages.address      import dial_db, \
+from   quex.engine.analyzer.door_id_address_label   import dial_db, \
                                                            get_label, \
                                                            get_address, \
                                                            address_set_subject_to_routing_add

@@ -7,8 +7,8 @@ import quex.input.files.code_fragment                  as     code_fragment
 from   quex.input.files.counter_db                     import CounterDB
 from   quex.input.files.counter_setup                  import LineColumnCounterSetup_Default
 import quex.input.files.consistency_check              as     consistency_check
-import quex.engine.generator.skipper.indentation_counter as     indentation_counter
-from   quex.engine.generator.languages.address         import Label
+import quex.engine.generator.skipper.indentation_counter as   indentation_counter
+from   quex.engine.analyzer.door_id_address_label      import Label
 import quex.engine.generator.skipper.character_set     as     skip_character_set
 from   quex.engine.generator.action_info               import CodeFragment, \
                                                               UserCodeFragment, \

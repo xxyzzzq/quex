@@ -1,10 +1,9 @@
-from   quex.engine.misc.string_handling        import blue_print
-from   quex.engine.analyzer.state.entry_action import DoorID
-
-from   quex.engine.generator.languages.address import Label, \
-                                                      dial_db, \
-                                                      IfDoorIdReferencedCode, \
-                                                      IfDoorIdReferencedLabel
+from   quex.engine.misc.string_handling           import blue_print
+from   quex.engine.analyzer.door_id_address_label import Label, \
+                                                         DoorID, \
+                                                         dial_db, \
+                                                         IfDoorIdReferencedCode, \
+                                                         IfDoorIdReferencedLabel
 from   quex.engine.interval_handling           import NumberSet
 from   quex.blackboard import E_ActionIDs, E_AcceptanceIDs
 from   operator import itemgetter

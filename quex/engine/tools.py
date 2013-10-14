@@ -146,7 +146,7 @@ class TypedDict(dict):
         assert self.__key_class   is None or isinstance(Key, self.__key_class), \
                self._error_key(Key)
         assert self.__value_class is None or isinstance(Value, self.__value_class), \
-               self._error_value(Key)
+               self._error_value(Value)
         return dict.__setitem__(self, Key, Value)
 
     def update(self, Iterable):
@@ -173,6 +173,7 @@ class TypedDict(dict):
                 (self._error(self.__key_class), Key.__class__.__name__, Key)
 
     def _error_value(self, Value):
-        return "%s as a key. Found '%s'" % \
+        print "####", isinstance(Value, long)
+        return "%s as value. Found '%s'" % \
                 (self._error(self.__value_class), Value.__class__.__name__)
 

@@ -40,8 +40,8 @@ import quex.engine.analyzer.optimizer             as     optimizer
 from   quex.engine.analyzer.state.core            import AnalyzerState, ReloadState
 from   quex.engine.analyzer.state.drop_out        import DropOut
 from   quex.engine.analyzer.state.entry_action    import TransitionID, \
-                                                         DoorID, \
                                                          TransitionAction
+from   quex.engine.analyzer.door_id_address_label import DoorID
 from   quex.engine.analyzer.commands              import InputPDereference, \
                                                          InputPIncrement, \
                                                          InputPDecrement,  \

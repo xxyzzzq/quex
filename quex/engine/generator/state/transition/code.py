@@ -1,9 +1,8 @@
 from   quex.engine.analyzer.transition_map          import TransitionMap
 import quex.engine.analyzer.engine_supply_factory   as     engine
-from   quex.engine.analyzer.state.entry_action      import DoorID
 from   quex.engine.analyzer.mega_state.target       import TargetByStateKey, TargetByStateKey_DROP_OUT
 from   quex.engine.generator.languages.variable_db  import variable_db
-from   quex.engine.generator.languages.address      import dial_db
+from   quex.engine.analyzer.door_id_address_label   import dial_db, DoorID 
 from   quex.engine.tools                            import all_isinstance
 import quex.engine.analyzer.transition_map          as     transition_map_tool
 from   quex.blackboard import E_StateIndices, \

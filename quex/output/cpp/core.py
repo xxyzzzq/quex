@@ -1,5 +1,5 @@
 from   quex.engine.generator.languages.variable_db import variable_db
-from   quex.engine.generator.languages.address     import dial_db, IfDoorIdReferencedCode
+from   quex.engine.analyzer.door_id_address_label  import dial_db, IfDoorIdReferencedCode
 from   quex.engine.generator.base                  import Generator as CppGenerator
 from   quex.engine.tools                           import all_isinstance
 import quex.output.cpp.action_preparation          as     action_preparation
