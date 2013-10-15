@@ -379,7 +379,7 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, IndentationCounterTermina
                            ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB.IF_INPUT("==", "Skipper$$SKIPPER_INDEX$$[0]")],
                            ["$$ENDIF$$",                          LanguageDB.END_IF()],
                            ["$$ENTRY$$",                          dial_db.map_address_to_label(skipper_adr)],
-                           ["$$RELOAD$$",                         dial_db.map_door_id_to_label(reload_door_id)],
+                           ["$$RELOAD$$",                         dial_db.get_label_by_door_id(reload_door_id)],
                            ["$$GOTO_ENTRY$$",                     LanguageDB.GOTO_BY_DOOR_ID(skipper_door_id)],
                            ["$$INPUT_P_TO_LEXEME_START$$",        LanguageDB.INPUT_P_TO_LEXEME_START()],
                            # When things were skipped, no change to acceptance flags or modes has

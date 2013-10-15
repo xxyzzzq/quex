@@ -51,9 +51,12 @@ def __get_code(StateRouterInfoList):
     return txt
 
 def get_info(StateIndexList):
-    """In some strange cases, a 'dummy' state router is required so that 
-    'goto QUEX_STATE_ROUTER;' does not reference a non-existing label. Then,
-    we return an empty text array.
+    """
+    NOTE: At least a 'dummy' state router is always equired so that 'goto
+    QUEX_STATE_ROUTER;' does not reference a non-existing label. Then, we
+    return an empty text array.
+
+    <fschaef9/13y10m15d: "Still true with current dial_db implementation?">
     """
     if len(StateIndexList) == 0: return []
 
@@ -64,7 +67,7 @@ def get_info(StateIndexList):
         if index >= 0:
             # Transition to state entry
             case_index = index
-            label      = dial_db.map_address_to_label(index)
+            label      = dial_db.get_label_by_address(index)
         else:
             # Transition to a templates 'drop-out'
             door_id    = DoorID.drop_out(- index)

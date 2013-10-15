@@ -100,7 +100,7 @@
                                                      goto QUEX_TERMINAL_ROUTER;
 
 #   define QUEX_GOTO_STATE(LABEL)                    target_state_index = LABEL; \
-                                                     goto QUEX_STATE_ROUTER;
+                                                     goto QUEX_LABEL_STATE_ROUTER;
 #endif
 
 #define    QUEX_GOTO_RELOAD(RELOAD_LABEL, ON_SUCCESS, ON_FAIL)  \

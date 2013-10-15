@@ -53,7 +53,7 @@ def header_definitions(LanguageDB, OnAfterMatchF):
     #txt += "/MARK/ %i '%s'\n" % (len(__return_without_on_after_match), map(ord, __return_without_on_after_match))
     #txt += "/MARK/ '%s'\n" % __return_without_on_after_match
     txt = [ __header_definitions_txt.replace("$$GOTO_START_PREPARATION$$", 
-                                             dial_db.map_door_id_to_label(DoorID.global_reentry_preparation(), GotoedF=True)) ]
+                                             dial_db.get_label_by_door_id(DoorID.global_reentry_preparation(), GotoedF=True)) ]
 
     if OnAfterMatchF: txt.append(__return_with_on_after_match)
     else:             txt.append(__return_without_on_after_match)
@@ -202,10 +202,11 @@ def __analyzer_function(StateMachineName, Setup,
     SingleModeAnalyzerF = Setup.single_mode_analyzer_f
 
     txt = [
-            "#include <quex/code_base/temporary_macros_on>\n",
-            __function_signature.replace("$$STATE_MACHINE_NAME$$", StateMachineName),
+        "#include <quex/code_base/temporary_macros_on>\n",
+        __function_signature.replace("$$STATE_MACHINE_NAME$$", StateMachineName),
     ]
 
+    txt.append("#define QUEX_LABEL_STATE_ROUTER %s /* Used by QUEX_GOTO_STATE */\n" % Label.global_state_router())
     txt.extend(variable_definitions)
 
     if len(ModeNameList) != 0 and not SingleModeAnalyzerF: 

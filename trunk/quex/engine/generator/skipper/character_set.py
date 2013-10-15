@@ -80,11 +80,11 @@ class TerminalSkipCharacterSet(TerminalState):
         LanguageDB.COMMENT(code, "Character Set Skipper: '%s'" % CharacterSet.get_utf8_string()),
         code.extend([1, "QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);\n"])
         code(on_entry)
-        code(dial_db.map_door_id_to_label(loop_start_door_id))
+        code(dial_db.get_label_by_door_id(loop_start_door_id))
         code(transition_map)
-        code(dial_db.map_door_id_to_label(exit_door_id))
+        code(dial_db.get_label_by_door_id(exit_door_id))
         code(on_exit)
-        code(dial_db.map_door_id_to_label(on_reload_success_door_id))
+        code(dial_db.get_label_by_door_id(on_reload_success_door_id))
         code(on_after_reload)
         code(LanguageDB.GOTO_BY_DOOR_ID(loop_start_door_id))
         return result
