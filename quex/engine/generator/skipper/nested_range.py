@@ -215,7 +215,7 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
                    ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB.IF_INPUT("==", "Skipper$$SKIPPER_INDEX$$[0]")],
                    ["$$ENDIF$$",                          LanguageDB.END_IF()],
                    ["$$ENTRY$$",                          dial_db.map_address_to_label(skipper_adr)],
-                   ["$$RELOAD$$",                         dial_db.map_door_id_to_label(reload_door_id)],
+                   ["$$RELOAD$$",                         dial_db.get_label_by_door_id(reload_door_id)],
                    ["$$GOTO_AFTER_END_OF_SKIPPING$$",     goto_after_end_of_skipping_str], 
                    ["$$GOTO_RELOAD$$",                    LanguageDB.GOTO_RELOAD(reload_door_id)],
                    ["$$INPUT_P_TO_LEXEME_START$$",        LanguageDB.INPUT_P_TO_LEXEME_START()],

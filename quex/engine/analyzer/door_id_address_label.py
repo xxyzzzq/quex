@@ -50,32 +50,45 @@ from   collections import namedtuple
 #            
 #______________________________________________________________________________
 class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
-    def __new__(self, StateIndex, DoorIndex):
+    def __new__(self, StateIndex, DoorIndex, PlainF=False):
         assert isinstance(StateIndex, (int, long)) or StateIndex in E_StateIndices or StateIndex == E_AcceptanceIDs.FAILURE
         # 'DoorIndex is None' --> right after the entry commands (targetted after reload).
         assert isinstance(DoorIndex, (int, long))  or DoorIndex is None or DoorIndex in E_DoorIdIndex, "%s" % DoorIndex
-        return super(DoorID, self).__new__(self, StateIndex, DoorIndex)
+
+        if PlainF:
+            return super(DoorID, self).__new__(self, StateIndex, DoorIndex)
+
+        # If the DoorID object already exists, than do not generate a second one.
+        result = dial_db.access_door_id(StateIndex, DoorIndex)
+        if result is not None:
+            return result
+
+        # Any created DoorID must be properly registered.
+        result = super(DoorID, self).__new__(self, StateIndex, DoorIndex)
+        dial_db.register_door_id(result)
+
+        return result
 
     @staticmethod
-    def drop_out(StateIndex):              return dial_db.access_door_id(StateIndex, E_DoorIdIndex.DROP_OUT)
+    def drop_out(StateIndex):              return DoorID(StateIndex, E_DoorIdIndex.DROP_OUT)
     @staticmethod                        
-    def transition_block(StateIndex):      return dial_db.access_door_id(StateIndex, E_DoorIdIndex.TRANSITION_BLOCK)
+    def transition_block(StateIndex):      return DoorID(StateIndex, E_DoorIdIndex.TRANSITION_BLOCK)
     @staticmethod                        
-    def global_state_router():             return dial_db.access_door_id(0L,         E_DoorIdIndex.GLOBAL_STATE_ROUTER)
+    def global_state_router():             return DoorID(0L,         E_DoorIdIndex.GLOBAL_STATE_ROUTER)
     @staticmethod                        
-    def acceptance(PatternId):             return dial_db.access_door_id(PatternId,  E_DoorIdIndex.ACCEPTANCE)
+    def acceptance(PatternId):             return DoorID(PatternId,  E_DoorIdIndex.ACCEPTANCE)
     @staticmethod                        
-    def state_machine_entry(SM_Id):        return dial_db.access_door_id(SM_Id,      E_DoorIdIndex.STATE_MACHINE_ENTRY)
+    def state_machine_entry(SM_Id):        return DoorID(SM_Id,      E_DoorIdIndex.STATE_MACHINE_ENTRY)
     @staticmethod                         
-    def global_end_of_pre_context_check(): return dial_db.access_door_id(0L,E_DoorIdIndex.GLOBAL_END_OF_PRE_CONTEXT_CHECK)
+    def global_end_of_pre_context_check(): return DoorID(0L,         E_DoorIdIndex.GLOBAL_END_OF_PRE_CONTEXT_CHECK)
     @staticmethod                        
-    def global_terminal_end_of_file():     return dial_db.access_door_id(0L,E_DoorIdIndex.GLOBAL_TERMINAL_END_OF_FILE)
+    def global_terminal_end_of_file():     return DoorID(0L,         E_DoorIdIndex.GLOBAL_TERMINAL_END_OF_FILE)
     @staticmethod
-    def global_reentry():                  return dial_db.access_door_id(0L,E_DoorIdIndex.GLOBAL_REENTRY)
+    def global_reentry():                  return DoorID(0L,         E_DoorIdIndex.GLOBAL_REENTRY)
     @staticmethod
-    def global_reentry_preparation():      return dial_db.access_door_id(0L,E_DoorIdIndex.GLOBAL_REENTRY_PREPARATION)
+    def global_reentry_preparation():      return DoorID(0L,         E_DoorIdIndex.GLOBAL_REENTRY_PREPARATION)
     @staticmethod
-    def global_reentry_preparation_2():    return dial_db.access_door_id(0L,E_DoorIdIndex.GLOBAL_REENTRY_PREPARATION_2)
+    def global_reentry_preparation_2():    return DoorID(0L,         E_DoorIdIndex.GLOBAL_REENTRY_PREPARATION_2)
 
     def drop_out_f(self):                  return self.door_index == E_DoorIdIndex.DROP_OUT
 
@@ -106,6 +119,9 @@ AddressLabelPair = namedtuple("AddressLabelPair_tuple", ("address", "label"))
 class DialDB:
     __slots__ = ( "__d2la", "__door_id_db", "__gotoed_address_set", "__routed_address_set" )
     def __init__(self):
+        self.clear()
+
+    def clear(self):
         # Database: [DoorID] [Address] [Label] 
         # 
         # The database is represented by a dictionary that maps:
@@ -121,7 +137,7 @@ class DialDB:
         # Where the DoorID has the 'state_index' and 'door_index' equal to
         # 'StateIndex' and 'DoorSubIndex'.
         #
-        self.__door_id_db = TypedDict(long, dict)
+        self.__door_id_db = {} # TypedDict(long, dict)
        
         # Track addresses which are subject to 'goto' and those which need to
         # be routed.
@@ -129,13 +145,6 @@ class DialDB:
         self.__routed_address_set = TypedSet(long)
 
         # Address counter to generate unique addresses
-        self.__address_i = long(-1)
-
-    def clear(self):
-        self.__d2la.clear()
-        self.__door_id_db.clear()
-        self.__gotoed_address_set.clear()
-        self.__routed_address_set.clear()
         self.__address_i = long(-1)
 
     def routed_address_set(self):
@@ -154,10 +163,16 @@ class DialDB:
         DoorID and AddressLabelPair is stored in '.__d2la'. A list of existing
         DoorID-s is maintained in '.__door_id_db'.
         """
-        door_id            = self.__new_DoorID(StateIndex, DoorSubIndex)
-        address_label_pair = self.__new_AddressLabelPair() 
+        def specify(StateIndex, DoorSubIndex):
+            if StateIndex is None:   state_index = index.get() # generate a new StateIndex
+            else:                    state_index = StateIndex
+            if DoorSubIndex is None: door_sub_index = self.max_door_sub_index(state_index) + 1
+            else:                    door_sub_index = DoorSubIndex
+            return state_index, door_sub_index
 
-        self.__d2la[door_id] = address_label_pair
+        state_index, door_sub_index = specify(StateIndex, DoorSubIndex)
+        door_id                     = DoorID(state_index, door_sub_index, PlainF=True)
+        address_label_pair          = self.register_door_id(door_id)
 
         return door_id, address_label_pair
 
@@ -169,26 +184,20 @@ class DialDB:
         if sub_db is None: return -1
         return max(sub_db.iterkeys()) # There must be at least one element!
 
-    def __new_DoorID(self, StateIndex, DoorSubIndex):
-        if StateIndex is None:   state_index = index.get() # generate a new StateIndex
-        else:                    state_index = StateIndex
-        if DoorSubIndex is None: door_sub_index = self.max_door_sub_index(state_index) + 1
-        else:                    door_sub_index = DoorSubIndex
-
-        door_id = DoorID(state_index, door_sub_index)
-
-        sub_db = self.__door_id_db.get(StateIndex)
-        if sub_db is None:
-            self.__door_id_db[StateIndex] = { DoorSubIndex: door_id }
-        else:
-            assert DoorSubIndex not in sub_db # Otherwise, it would not be new
-            sub_db[DoorSubIndex] = door_id
-
-        return door_id
-
-    def __new_AddressLabelPair(self):
+    def register_door_id(self, DoorId):
         self.__address_i += 1
-        return AddressLabelPair(self.__address_i, "_%i" % self.__address_i)
+        address_label_pair   = AddressLabelPair(self.__address_i, "_%i" % self.__address_i)
+
+        self.__d2la[DoorId] = address_label_pair
+
+        sub_db = self.__door_id_db.get(DoorId.state_index)
+        if sub_db is None:
+            self.__door_id_db[DoorId.state_index] = { DoorId.door_index: DoorId }
+        else:
+            assert DoorId.door_index not in sub_db # Otherwise, it would not be new
+            sub_db[DoorId.door_index] = DoorId
+
+        return address_label_pair
 
     def access_door_id(self, StateIndex, DoorSubIndex):
         """Try to get a DoorID from the set of existing DoorID-s. If a DoorID

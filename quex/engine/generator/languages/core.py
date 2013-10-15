@@ -338,7 +338,7 @@ class LanguageDB_Cpp(dict):
         # Only for normal 'forward analysis' the from state is of interest.
         # Because, only during forward analysis some actions depend on the 
         # state from where we come.
-        return "goto %s;" % dial_db.map_door_id_to_label(DoorId, GotoedF=True)
+        return "goto %s;" % dial_db.get_label_by_door_id(DoorId, GotoedF=True)
 
     def GOTO_DROP_OUT(self, StateIndex):
         return "goto %s;" % Label.drop_out(StateIndex, GotoedF=True)

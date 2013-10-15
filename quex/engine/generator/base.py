@@ -128,7 +128,7 @@ class Generator(GeneratorBase):
 
         self.reload_state_backward.absorb(analyzer.reload_state)
 
-        txt.append("\n%s:" % dial_db.map_door_id_to_label(DoorID.global_end_of_pre_context_check()))
+        txt.append("\n%s:" % dial_db.get_label_by_door_id(DoorID.global_end_of_pre_context_check()))
         # -- set the input stream back to the real current position.
         #    during backward lexing the analyzer went backwards, so it needs to be reset.
         txt.append("    %s\n" % LanguageDB.INPUT_P_TO_LEXEME_START())
@@ -201,7 +201,7 @@ class Generator(GeneratorBase):
         # (It should: assert address_eof in routed_address_set
         address_eof        = dial_db.get_address_by_door_id(DoorID.global_terminal_end_of_file()) 
         routed_address_set.add(address_eof)
-        dial_db.mark_label_as_gotoed(dial_db.map_address_to_label(address_eof))
+        dial_db.mark_label_as_gotoed(dial_db.get_label_by_address(address_eof))
 
         routed_state_info_list = state_router_generator.get_info(routed_address_set)
         return state_router_generator.do(routed_state_info_list) 
@@ -495,7 +495,7 @@ class LoopGenerator(Generator):
     def code_generation_reload_preparation(cls, txt, UponReloadDoneAdr=None):
         LanguageDB = Setup.language_db
         reload_adr   = dial_db.new_address()
-        reload_label = dial_db.map_address_to_label(reload_adr) 
+        reload_label = dial_db.get_label_by_address(reload_adr) 
         LanguageDB.code_generation_reload_label_set(reload_label)
 
         address = dial_db.get_address_by_door_id(DoorID.global_terminal_end_of_file())
@@ -503,7 +503,7 @@ class LoopGenerator(Generator):
         LanguageDB.code_generation_on_reload_fail_adr_set(address)
 
         if UponReloadDoneAdr is not None:
-            txt.append("%s:\n" % dial_db.map_address_to_label(UponReloadDoneAdr))
+            txt.append("%s:\n" % dial_db.get_label_by_address(UponReloadDoneAdr))
 
     @staticmethod
     def code_generation_reload_clean_up(txt, BeforeReloadAction, AfterReloadAction):
