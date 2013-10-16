@@ -156,6 +156,8 @@ def _local_variable_definitions(VariableDB):
     return txt
          
 __function_signature = """
+#include <quex/code_base/temporary_macros_on>
+
 __QUEX_TYPE_ANALYZER_RETURN_VALUE  
 QUEX_NAME($$STATE_MACHINE_NAME$$_analyzer_function)(QUEX_TYPE_ANALYZER* me) 
 {
@@ -172,6 +174,7 @@ QUEX_NAME($$STATE_MACHINE_NAME$$_analyzer_function)(QUEX_TYPE_ANALYZER* me)
 #       undef self
 #   endif
 #   define self (*((QUEX_TYPE_ANALYZER*)me))
+#   define QUEX_LABEL_STATE_ROUTER $$LABEL_STATE_ROUTER$$ /* Required by QUEX_GOTO_STATE */
 """
 
 comment_on_post_context_position_init_str = """
@@ -201,12 +204,10 @@ def __analyzer_function(StateMachineName, Setup,
     LanguageDB          = Setup.language_db
     SingleModeAnalyzerF = Setup.single_mode_analyzer_f
 
-    txt = [
-        "#include <quex/code_base/temporary_macros_on>\n",
-        __function_signature.replace("$$STATE_MACHINE_NAME$$", StateMachineName),
-    ]
-
-    txt.append("#define QUEX_LABEL_STATE_ROUTER %s /* Used by QUEX_GOTO_STATE */\n" % Label.global_state_router())
+    txt = [blue_print(__function_signature, [
+        ("$$STATE_MACHINE_NAME$$", StateMachineName),
+        ("$$LABEL_STATE_ROUTER$$", Label.global_state_router()),
+    ])]
     txt.extend(variable_definitions)
 
     if len(ModeNameList) != 0 and not SingleModeAnalyzerF: 
@@ -252,6 +253,7 @@ def __analyzer_function(StateMachineName, Setup,
             txt.append("#   undef %s\n" % name)
 
     txt.append("#   undef self\n")
+    txt.append("#   undef QUEX_LABEL_STATE_ROUTER\n")
     txt.append("}\n")
 
     txt.append("#include <quex/code_base/temporary_macros_off>\n")

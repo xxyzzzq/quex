@@ -67,7 +67,7 @@ def do(Data, Mode=None):
                          ])
 
     # The finishing touch
-    teof_address = dial_db.get_address_by_door_id(DoorID.global_terminal_end_of_file()
+    teof_address = dial_db.get_address_by_door_id(DoorID.global_terminal_end_of_file())
     dial_db.mark_address_as_routed(teof_address)
 
     epilog = blue_print(epilog_txt,
