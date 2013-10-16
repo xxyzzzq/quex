@@ -19,7 +19,8 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.engine.interval_handling               import Interval
 from   quex.engine.generator.base                  import LoopGenerator
 import quex.engine.generator.languages.core        as     languages
-import quex.engine.analyzer.door_id_address_label     as     address
+import quex.engine.analyzer.door_id_address_label  as     address
+from   quex.engine.analyzer.door_id_address_label  import dial_db
 import quex.engine.generator.state.transition.core as     transition_block
 from   quex.engine.analyzer.transition_map         import TransitionMap   
 from   quex.blackboard                             import setup as Setup, E_MapImplementationType

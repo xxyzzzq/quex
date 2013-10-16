@@ -192,7 +192,6 @@ class DropOutIndifferent(DropOut):
     def __repr__(self):
         return "    goto CheckTerminated;"
 
-
 #class DropOutCharacterCounter(DropOut):
 #    def __init__(self, AcceptanceID):
 #        DropOut.__init__(self)

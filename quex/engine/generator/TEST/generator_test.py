@@ -19,7 +19,7 @@ from   quex.input.files.counter_db             import CounterDB
 # import quex.engine.generator.skipper.core          as skipper
 from   quex.engine.generator.languages.variable_db import VariableDB
 import quex.engine.generator.languages.variable_db as     variable_db
-from   quex.engine.analyzer.door_id_address_label  import Label
+from   quex.engine.analyzer.door_id_address_label  import Label, dial_db
 import quex.input.regular_expression.engine        as     regex
 from   quex.input.files.counter_setup              import LineColumnCounterSetup_Default
 #
