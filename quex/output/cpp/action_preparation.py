@@ -29,7 +29,170 @@ import quex.output.cpp.counter_for_pattern         as     counter_for_pattern
 
 import re
 
-LanguageDB = None
+LanguageDB   = None
+Match_Lexeme = re.compile("\\bLexeme\\b", re.UNICODE)
+
+class TerminalStateFactory:
+    def __init__(Mode, IndentationSupportF, BeginOfLineSupportF):
+        self.indentation_support_f                  = IndentationSupportF
+        self.begin_of_line_support_f                = BeginOfLineSupportF
+        self.require_terminating_zero_preparation_f = False
+
+        self.on_match                = self.do_OnMatch()
+        self.on_after_match          = self.do_OnAfterMatch()
+        self.on_end_of_stream_action = self.do_OnEndOfStream()
+        self.on_failure_action       = self.do_OnFailure()
+
+        self.indentation_counter_terminal_id = Mode.get_indentation_counter_terminal_index()
+
+    def do_OnMatch(self):
+        if not Mode.has_code_fragment_list("on_match"):
+            return ""
+        result = self.collect_code(Mode.get_code_fragment_list("on_match"), Mode)
+        return result
+
+    def do_OnAfterMatch(self):
+        if not Mode.has_code_fragment_list("on_after_match"):
+            return None, False
+        result = self.collect_code(Mode.get_code_fragment_list("on_after_match"), Mode)
+
+        return PatternActionInfo(E_ActionIDs.ON_AFTER_MATCH, CodeFragment(result))
+
+    def do_OnEndOfStream(self):
+        if Mode.has_code_fragment_list("on_end_of_stream"):
+            code_fragment_list = Mode.get_code_fragment_list("on_end_of_stream")
+        else:
+            # We cannot make any assumptions about the token class, i.e. whether
+            # it can take a lexeme or not. Thus, no passing of lexeme here.
+            txt  = "self_send(__QUEX_SETTING_TOKEN_ID_TERMINATION);\n"
+            txt += "RETURN;\n"
+            code_fragment_list = [ CodeFragment(txt) ]
+
+        if IndentationSupportF:
+            if Mode.default_indentation_handler_sufficient():
+                code = "QUEX_NAME(on_indentation)(me, /*Indentation*/0, LexemeNull);\n"
+            else:
+                code = "QUEX_NAME(%s_on_indentation)(me, /*Indentation*/0, LexemeNull);\n" % Mode.name
+
+            code_fragment_list.insert(0, CodeFragment(code))
+
+        # RETURNS: end_of_stream_action, db 
+        result = __prepare(Mode, code_fragment_list,
+                           None, EOF_ActionF=True, BeginOfLineSupportF=BeginOfLineSupportF)
+
+        return PatternActionInfo(E_ActionIDs.ON_END_OF_STREAM, result)
+
+    def do_OnFailure(self):
+        if Mode.has_code_fragment_list("on_failure"):
+            code_fragment_list = Mode.get_code_fragment_list("on_failure")
+        else:
+            txt  = "QUEX_ERROR_EXIT(\"\\n    Match failure in mode '%s'.\\n\"\n" % Mode.name 
+            txt += "                \"    No 'on_failure' section provided for this mode.\\n\"\n"
+            txt += "                \"    Proposal: Define 'on_failure' and analyze 'Lexeme'.\\n\");\n"
+            code_fragment_list = [ CodeFragment(txt) ]
+
+        # RETURNS: on_failure_action, db 
+        prepared_code = __prepare(Mode, code_fragment_list,
+                                  None, Failure_ActionF=True, 
+                                  BeginOfLineSupportF=BeginOfLineSupportF)
+
+        txt = [
+            1,     "if(QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {\n",
+            2,         "/* Init state is going to detect 'input == buffer limit code', and\n",
+            2,         " * enter the reload procedure, which will decide about 'end of stream'. */\n",
+            1,     "} else {\n",
+            2,         "/* In init state 'input = *input_p' and we need to increment\n",
+            2,         " * in order to avoid getting stalled. Else, input = *(input_p - 1),\n",
+            2,         " * so 'input_p' points already to the next character.                   */\n",
+            2,         "if( me->buffer._input_p == me->buffer._lexeme_start_p ) {\n",
+            3,               "/* Step over non-matching character */\n",
+            3,               "%s\n" % LanguageDB.INPUT_P_INCREMENT(),
+            2,         "}\n",
+            1,     "}\n",
+            1,     "%s\n"     % prepared_code.get_code_string(), 
+            1,     "goto %s;" % Label.global_reentry_preparation_2(GotoedF=True)
+        ]
+
+        return PatternActionInfo(E_ActionIDs.ON_FAILURE, CodeFragment(txt))
+
+    def do(cls, Pattern, action):
+        if hasattr(action, "data") and type(action.data) == dict:   
+            action.data["indentation_counter_terminal_id"] = indentation_counter_terminal_id
+
+    def __prepare(self, Mode, CodeFragmentList, ThePattern, Failure_ActionF=False, EOF_ActionF=False):
+        """-- If there are multiple handlers for a single event they are combined
+        
+           -- Adding debug information printer (if desired)
+        
+           -- The task of this function is it to adorn the action code for each pattern with
+              code for line and column number counting.
+        """
+        assert Mode.__class__.__name__  == "Mode"
+        assert ThePattern      is None or ThePattern.__class__.__name__ == "Pattern" 
+        assert type(Failure_ActionF)    == bool
+        assert type(EOF_ActionF)        == bool
+
+        code_user = self.collect_code(CodeFragmentList, Mode)
+
+        return CodeFragment([
+            self.get_code_line_column_count(ThePattern, EOF_ActionF),
+            self.get_code_store_last_character(),
+            self.get_code_terminating_zero(),
+            self.get_code_on_match(Failure_ActionF),
+            "{\n",
+            code_user,
+            "\n}",
+        ])
+
+    def collect_code(CodeFragmentList, Mode=None):
+        global Match_Lexeme 
+        LanguageDB = Setup.language_db
+        IndentationBase = 1
+
+        code_list = []
+        for fragment in CodeFragmentList:
+            code_list.extend(fragment.get_code(Mode))
+
+        code_str = "".join(LanguageDB.GET_PLAIN_STRINGS(code_list))
+
+        # If 'Lexeme' occurs as an isolated word, then ensure the generation of 
+        # a terminating zero. Note, that the occurence of 'LexemeBegin' does not
+        # ensure the preparation of a terminating zero.
+        self.require_terminating_zero_preparation_f |= (Match_Lexeme.search(code_str) is not None) 
+
+        return pretty_code(code_str, IndentationBase)
+
+    def get_code_on_match(self, Failure_ActionF):
+        if Failure_ActionF:
+            # OnFailure == 'nothing matched'; Thus 'on_match_code' is inappropriate.
+            return ""
+        return self.on_match_code
+
+    def get_code_store_last_character(self):
+        if not self.begin_of_line_support_f:
+            return ""
+
+        # TODO: The character before lexeme start does not have to be written
+        # into a special register. Simply, make sure that '_lexeme_start_p - 1'
+        # is always in the buffer. This may include that on the first buffer
+        # load '\n' needs to be at the beginning of the buffer before the
+        # content is loaded. Not so easy; must be carefully approached.
+        return "    %s\n" % LanguageDB.ASSIGN("me->buffer._character_before_lexeme_start", 
+                                              LanguageDB.INPUT_P_DEREFERENCE(-1))
+
+    def get_code_terminating_zero(self):
+        if not self.require_terminating_zero_preparation_f:
+            return ""
+        return "    QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);\n"
+
+    def get_code_line_column_count(self, ThePattern, EOF_ActionF):
+        default_counter_required_f, \
+        result                      = counter_for_pattern.get(ThePattern, EOF_ActionF)
+        result                      = "".join(LanguageDB.REPLACE_INDENT(lc_count_code))
+        if default_counter_required_f: 
+            Mode.default_character_counter_required_f_set()
+        return result
+
 
 def do(Mode, IndentationSupportF, BeginOfLineSupportF):
     """The module 'quex.output.cpp.core' produces the code for the 
@@ -58,8 +221,7 @@ def do(Mode, IndentationSupportF, BeginOfLineSupportF):
     on_failure_action = __prepare_on_failure_action(Mode, BeginOfLineSupportF, require_terminating_zero_preparation_f)
 
     # -- pattern-action pairs
-    pattern_action_pair_list        = Mode.get_pattern_action_pair_list()
-    indentation_counter_terminal_id = Mode.get_indentation_counter_terminal_index()
+    pattern_action_pair_list = Mode.get_pattern_action_pair_list()
 
     # Assume pattern-action pairs (matches) are sorted and their pattern state
     # machine ids reflect the sequence of pattern precedence.
@@ -83,161 +245,6 @@ def do(Mode, IndentationSupportF, BeginOfLineSupportF):
         pattern_action_pair_list.append(action)
 
     return pattern_action_pair_list
-
-Match_Lexeme = re.compile("\\bLexeme\\b", re.UNICODE)
-def get_code(CodeFragmentList, Mode=None):
-    global Match_Lexeme 
-    global variable_db
-    LanguageDB = Setup.language_db
-    IndentationBase = 1
-
-    code_list = []
-    for fragment in CodeFragmentList:
-        code_list.extend(fragment.get_code(Mode))
-
-    code_str = "".join(LanguageDB.GET_PLAIN_STRINGS(code_list))
-
-    # If 'Lexeme' occurs as an isolated word, then ensure the generation of 
-    # a terminating zero. Note, that the occurence of 'LexemeBegin' does not
-    # ensure the preparation of a terminating zero.
-    require_terminating_zero_f = (Match_Lexeme.search(code_str) is not None) 
-
-    return pretty_code(code_str, IndentationBase), require_terminating_zero_f
-
-def __prepare(Mode, CodeFragment_or_CodeFragments, ThePattern, 
-              Failure_ActionF=False, EOF_ActionF=False, BeginOfLineSupportF=False,
-              require_terminating_zero_preparation_f=False):
-    """-- If there are multiple handlers for a single event they are combined
-    
-       -- Adding debug information printer (if desired)
-    
-       -- The task of this function is it to adorn the action code for each pattern with
-          code for line and column number counting.
-    """
-    assert Mode.__class__.__name__  == "Mode"
-    assert ThePattern      is None or ThePattern.__class__.__name__ == "Pattern" 
-    assert type(Failure_ActionF)    == bool
-    assert type(EOF_ActionF)        == bool
-    # We assume that any state machine presented here has been propperly created
-    # and thus contains some side information about newline number, character number etc.
-
-    if type(CodeFragment_or_CodeFragments) == list:
-        assert Failure_ActionF or EOF_ActionF, \
-               "Action code formatting: Multiple Code Fragments can only be specified for default or\n" + \
-               "end of stream action."
-        CodeFragmentList = CodeFragment_or_CodeFragments
-    else:
-        CodeFragmentList = [ CodeFragment_or_CodeFragments ]
-
-    # (*) Code to be performed on every match -- before the related action
-    on_match_code = ""
-    if not Failure_ActionF:
-        # The 'on_failure' handles the cases that nothing matched. So, 'on_match' is 
-        # not to be applied here.
-        if Mode.has_code_fragment_list("on_match"):
-            on_match_code, rtzp_f = get_code(Mode.get_code_fragment_list("on_match"), Mode)
-            require_terminating_zero_preparation_f = require_terminating_zero_preparation_f or rtzp_f
-
-    # (*) Code to count line and column numbers
-    default_counter_required_f, \
-    lc_count_code               = counter_for_pattern.get(ThePattern, EOF_ActionF)
-    if default_counter_required_f: 
-        Mode.default_character_counter_required_f_set()
-
-    # (*) THE user defined action to be performed in case of a match
-    user_code, rtzp_f = get_code(CodeFragmentList, Mode)
-    require_terminating_zero_preparation_f = require_terminating_zero_preparation_f or rtzp_f
-
-    store_last_character_str = ""
-    if BeginOfLineSupportF:
-        # IDEA (TODO): The character before lexeme start does not have to be
-        # written into a special register. Simply, make sure that
-        # '_lexeme_start_p - 1' is always in the buffer. This may include that
-        # on the first buffer load '\n' needs to be at the beginning of the
-        # buffer before the content is loaded. Not so easy; must be carefully
-        # approached.
-        store_last_character_str = "    %s\n" % LanguageDB.ASSIGN("me->buffer._character_before_lexeme_start", 
-                                                                  LanguageDB.INPUT_P_DEREFERENCE(-1))
-
-    set_terminating_zero_str = ""
-    if require_terminating_zero_preparation_f:
-        set_terminating_zero_str += "    QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);\n"
-
-    txt  = ""
-    txt += "".join(LanguageDB.REPLACE_INDENT(lc_count_code))
-    txt += store_last_character_str
-    txt += set_terminating_zero_str
-    txt += on_match_code
-    txt += "    {\n"
-    txt += user_code
-    txt += "\n    }"
-
-    return CodeFragment(txt)
-
-def __prepare_on_after_match_action(Mode):
-    if not Mode.has_code_fragment_list("on_after_match"):
-        return None, False
-    on_after_match_str, \
-    require_terminating_zero_preparation_f = get_code(Mode.get_code_fragment_list("on_after_match"), Mode)
-    on_after_match                         = PatternActionInfo(E_ActionIDs.ON_AFTER_MATCH, 
-                                                               CodeFragment(on_after_match_str))
-    return on_after_match, require_terminating_zero_preparation_f
-
-def __prepare_on_end_of_stream_action(Mode, IndentationSupportF, BeginOfLineSupportF):
-    if not Mode.has_code_fragment_list("on_end_of_stream"):
-        # We cannot make any assumptions about the token class, i.e. whether
-        # it can take a lexeme or not. Thus, no passing of lexeme here.
-        txt  = "self_send(__QUEX_SETTING_TOKEN_ID_TERMINATION);\n"
-        txt += "RETURN;\n"
-
-        Mode.set_code_fragment_list("on_end_of_stream", CodeFragment(txt))
-
-    if IndentationSupportF:
-        if Mode.default_indentation_handler_sufficient():
-            code = "QUEX_NAME(on_indentation)(me, /*Indentation*/0, LexemeNull);\n"
-        else:
-            code = "QUEX_NAME(%s_on_indentation)(me, /*Indentation*/0, LexemeNull);\n" % Mode.name
-
-        code_fragment = CodeFragment(code)
-        Mode.insert_code_fragment_at_front("on_end_of_stream", code_fragment)
-
-    # RETURNS: end_of_stream_action, db 
-    result = __prepare(Mode, Mode.get_code_fragment_list("on_end_of_stream"), 
-                       None, EOF_ActionF=True, BeginOfLineSupportF=BeginOfLineSupportF)
-
-    return PatternActionInfo(E_ActionIDs.ON_END_OF_STREAM, result)
-
-def __prepare_on_failure_action(Mode, BeginOfLineSupportF, require_terminating_zero_preparation_f):
-    if not Mode.has_code_fragment_list("on_failure"):
-        txt  = "QUEX_ERROR_EXIT(\"\\n    Match failure in mode '%s'.\\n\"\n" % Mode.name 
-        txt += "                \"    No 'on_failure' section provided for this mode.\\n\"\n"
-        txt += "                \"    Proposal: Define 'on_failure' and analyze 'Lexeme'.\\n\");\n"
-        Mode.set_code_fragment_list("on_failure", CodeFragment(txt))
-
-    # RETURNS: on_failure_action, db 
-    prepared_code = __prepare(Mode, Mode.get_code_fragment_list("on_failure"), 
-                              None, Failure_ActionF=True, 
-                              BeginOfLineSupportF=BeginOfLineSupportF,
-                              require_terminating_zero_preparation_f=require_terminating_zero_preparation_f) 
-
-    txt = [
-        1,     "if(QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {\n",
-        2,         "/* Init state is going to detect 'input == buffer limit code', and\n",
-        2,         " * enter the reload procedure, which will decide about 'end of stream'. */\n",
-        1,     "} else {\n",
-        2,         "/* In init state 'input = *input_p' and we need to increment\n",
-        2,         " * in order to avoid getting stalled. Else, input = *(input_p - 1),\n",
-        2,         " * so 'input_p' points already to the next character.                   */\n",
-        2,         "if( me->buffer._input_p == me->buffer._lexeme_start_p ) {\n",
-        3,               "/* Step over non-matching character */\n",
-        3,               "%s\n" % LanguageDB.INPUT_P_INCREMENT(),
-        2,         "}\n",
-        1,     "}\n",
-        1,     "%s\n"     % prepared_code.get_code_string(), 
-        1,     "goto %s;" % Label.global_reentry_preparation_2(GotoedF=True)
-    ]
-
-    return PatternActionInfo(E_ActionIDs.ON_FAILURE, CodeFragment(txt))
 
 def pretty_code(Code, Base):
     """-- Delete empty lines at the beginning

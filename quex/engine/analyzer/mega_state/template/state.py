@@ -117,7 +117,7 @@ class PseudoTemplateState(MegaState):
         # Uniform Entry: In contrast to path compression, here we consider 
         #                all entries into the MegaState. 
         self.uniform_entry_CommandList = UniformObject()
-        for action in Represented_AnalyzerState.entry.action_db.itervalues():
+        for action in Represented_AnalyzerState.entry.itervalues():
             self.uniform_entry_CommandList <<= action.command_list
             if self.uniform_entry_CommandList.is_uniform() == False:
                 break # No more need to investigate

@@ -6,6 +6,10 @@ from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.blackboard import setup as Setup, \
                               E_ActionIDs
 
+from   collections import namedtuple
+
+CountCmdInfo = namedtuple("CountCmdInfo_tuple", ("trigger_set", "command_list"))
+
 class CounterDB:
     # 'CounterDB' maps from counts to the character set that is involved.
     __slots__ = ("special", "grid", "newline")
@@ -19,46 +23,59 @@ class CounterDB:
         self.grid    = adapt(LCC_Setup.grid_db)
         self.newline = adapt(LCC_Setup.newline_db)
 
-    def get_counter_dictionary(self, ConcernedCharacterSet, ColumnCountPerChunk, IteratorName):
+    def get_counter_dictionary(self, FocusCharacterSet, ColumnCountPerChunk, IteratorName):
         """Returns a list of NumberSet objects where for each X of the list it holds:
 
-             (i)  X is subset of ConcernedCharacterSet
+             (i)  X is subset of FocusCharacterSet
                    
              (ii) It is related to a different counter action than Y,
                   for each other object Y in the list.
 
            RETURNS: 
 
-                        list:    (character_set, count_action)
+                        map:  CLI -->  (NumberSet, CommandList)
+
+           NOTE: A 'CLI' is UNIQUE also as a state index. That is, it can be 
+                 used a a 'pseudo state' which represents the CommandList
+                 without extra effort.
+
+           where each entry means: "If an input character lies in NumberSet
+           then the counting action given by CommandList has to be executed.
+           The CommandList is distinctly associated with a CLI, a command
+           list index.
         """
-        def prune(X, ConcernedCharacterSet):
-            if ConcernedCharacterSet is None: return X
-            else:                             return X.intersection(ConcernedCharacterSet)
+        def pruned_iteritems(Db, FocusCharacterSet):
+            for value, character_set in Db.iteritems():
+                if FocusCharacterSet is None: pruned = X
+                else:                         pruned = X.intersection(FocusCharacterSet)
+                if pruned.is_empty(): continue
+                yield value, pruned
 
-        result = []
-        for delta, character_set in self.special.iteritems():
-            x = prune(character_set, ConcernedCharacterSet)
-            if x.is_empty(): continue
-            elif ColumnCountPerChunk is None:
-                result.append((x, CommandList(ColumnCountAdd(delta))))
-            else:
-                result.append((x, CommandList()))
+        def on_special(ColumnCountPerChunk, Delta):
+            if ColumnCountPerChunk is None: return ColumnCountAdd(Delta)
+            else:                           return None
 
-        for grid_step_n, character_set in self.grid.iteritems():
-            x = prune(character_set, ConcernedCharacterSet)
-            if x.is_empty(): continue
-            elif ColumnCountPerChunk is None:
-                result.append((x, CommandList(ColumnCountGridAdd(grid_step_n))))
-            else:
-                result.append((x, CommandList(ColumnCountGridAddWithReferenceP(grid_step_n, IteratorName))))
+        def on_grid(ColumnCountPerChunk, GridStepN):
+            if ColumnCountPerChunk is None:   return ColumnCountGridAdd(grid_step_n)
+            else:                             return ColumnCountGridAddWithReferenceP(grid_step_n, IteratorName)
 
-        for delta, character_set in self.newline.iteritems():
-            x = prune(character_set, ConcernedCharacterSet)
-            if x.is_empty(): continue
-            elif ColumnCountPerChunk is None:
-                result.append((x, CommandList(LineCountAdd(delta))))
-            else:
-                result.append((x, CommandList(LineCountAddWithReferenceP(delta, IteratorName))))
+        def on_newline(ColumnCountPerChunk, Delta):
+            if ColumnCountPerChunk is None:   return LineCountAdd(delta)
+            else:                             return LineCountAddWithReferenceP(delta, IteratorName)
+
+        result = {}
+        result.update(
+            (index.get(), CountCmdInfo(character_set, CommandList(on_special(ColumnCountPerChunk, delta))))
+            for delta, character_set in pruned_iteritems(self.special, FocusCharacterSet)
+        )
+        result.update(
+            (index.get(), CountCmdInfo(character_set, CommandList(on_grid(ColumnCountPerChunk, grid_step_n))))
+            for grid_step_n, character_set in pruned_iteritems(self.grid, FocusCharacterSet)
+        )
+        result.update(
+            (index.get(), CountCmdInfo(character_set, CommandList(on_newline(ColumnCountPerChunk, delta))))
+            for delta, character_set in pruned_iteritems(self.newline, FocusCharacterSet)
+        )
 
         return result
 
@@ -91,52 +108,40 @@ class CounterDB:
     def get_map(self, X, Y, Z):
         assert False, "call get_count_command_map"
 
-    def get_count_command_map(self, IteratorName = None, InsideCharacterSet = None):
+    def get_count_command_map(self, CharacterSet = None):
         """Provide a map which associates intervals with line/column counting 
         actions as well as appropriate increments of the input pointer.
 
            map: 
-                interval --> (count line/column, increment input_p)
+                            interval --> CommandList
 
-        The mapping is provided in the form of a transition map, i.e.  a list of
+        The mapping is provided in the form of a list, where the intervals in
+        the list are NOT NECESSARILY ADJACENT!
         sorted pairs of (interval, action).
 
-        ARGUMENTS: 
+        ARGUMENTS:
+                  CharacterSet -- Considered set of characters.
 
-          IteratorName       -- name of the input pointer variable.
+        The intervals of the result list will constitute of the intervals 
+        of the given CharacterSet. If the CharacterSet is None then the
+        whole range of characters is considered.
 
-          InsideCharacterSet -- Set of characters which are subject to counting.
-                                That is, all other characters are not considered
-                                to 'stop the show'.
+        RETURNS:  [0] list( (interval, CommandList) )
+                  [1] ColumnNPerChunk
 
-          ReloadF            -- If 'True' reload may occur during counting. 
-                                Else not.
-
-        RETURNS:
-
-           [0] Counter Map in UNICODE 
-               (not in Setup.buffer_codec_transformation_info)
-
-           [1] Implementation Type to be used 
-               (STATE_MACHINE, STATE_MACHINE_TRIVIAL, PLAIN_MAP).
-
-           [2], [3] Entry and exit action before counting and after counting ends.
-           
-           [4], [5] Before and after reload actions.
-
-        The counter map contains special actions:
-           
-           -- 'E_ActionIDs.ON_EXIT' indicating that as a consequence of this
-              action the counting loop needs to be exited.
-           -- 'E_ActionIDs.ON_GOOD_TRANSITION' indicating that this action
-              must result in staying inside the counting loop.
+        Where the ColumnNPerChunk is not None, if and only if the column number
+        increment can be computed by "(input_p - reference_p) * C". That is
+        all column related characters have the same horizontal size.
 
         ___________________________________________________________________________
         REFERENCE POINTER COUNTING
 
-        Using a reference pointer counting can be optimized. It is applied in
-        case that there is only one single value for column counts.  Consider
-        the figure below:
+        Counting by means of a reference pointer may spare intermediate column
+        number increments. Instead, one only needs to do
+
+                column_n += (input_p - reference_p) * C
+
+        as soon as a 'non-column character' occurs. Consider the figure below:
 
               ---- memory address --->
                                              later
@@ -153,45 +158,22 @@ class CounterDB:
         reference_p'.  The counter implementation profits from this.  It does not
         increment the 'column_n' as long as only 'normal' characters appear.  It
         only adds the delta multiplied with a constant.
-
-        The implementation of this mechanism is implemented by the functions
-        '__special()', '__grid()', and '__newline()'.  It is controlled there by
-        argument 'ColumnCountPerChunk'.  If it is not None, it happens to be the
-        factor 'C' for the addition of 'C * (iterator - reference_p)'.
-
-        RETURN: TransitionMap()
-
-
-        The transition map may contain intervals with empty 'None' targets. This
-        means that there is no action associated with it, due to the fact that
-        they are not covered by 'CharacterSet'.
         ___________________________________________________________________________
         """
-        assert type(ReloadF) == bool
-        assert InsideCharacterSet is None or isinstance(InsideCharacterSet, NumberSet)
+        assert CharacterSet is None or isinstance(CharacterSet, NumberSet)
         LanguageDB = Setup.language_db
 
-        if InsideCharacterSet is not None:
-            inside_set = InsideCharacterSet
-            exit_set   = inside_set.inverse()
-        else:
-            inside_set = None # That is: All!
-            exit_set   = None # That is: Empty!
-
-        column_count_per_chunk = self.get_column_number_per_chunk(inside_set)
-        counter_dictionary     = self.get_counter_dictionary(inside_set, column_count_per_chunk)
+        column_count_per_chunk = self.get_column_number_per_chunk(CharacterSet)
+        counter_dictionary     = self.get_counter_dictionary(CharacterSet, column_count_per_chunk)
 
         cm = TransitionMap()
         for number_set, command_list in counter_dictionary:
-            assert inside_set is None or inside_set.is_superset(number_set)
-            cm.extend((x, command_list) for x in number_set.get_intervals())
-
-        # Gaps are filled with 'None' to indicate that they are outside the CharacterSet
-        cm.fill_gaps(None)
+            assert CharacterSet is None or CharacterSet.is_superset(number_set)
+            cm.extend((interval, command_list) for interval in number_set.get_intervals())
 
         return cm, column_count_per_chunk
 
-    def get_entry_exit_Commands(self, IteratorName, ColumnCountPerChunk):
+    def get_entry_exit_commands(self, IteratorName, ColumnCountPerChunk):
         """RETURNS:
 
         [0], [1]    Commands to be executed [0] upon entry, i.e. when the counting
@@ -206,7 +188,7 @@ class CounterDB:
             on_exit  = ColumnCountReferencePDeltaAdd(IteratorName, ColumnCountPerChunk)
             return on_entry, on_exit
         
-    def get_reload_Commands(self, IteratorName, ColumnCountPerChunk, ReloadF):
+    def get_reload_commands(self, IteratorName, ColumnCountPerChunk, ReloadF):
         """RETURNS: 
         
         [0], [1]    Commands to be executed before and after buffer reload. 

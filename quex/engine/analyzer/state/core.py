@@ -99,12 +99,12 @@ class AnalyzerState(Processor):
         else:                                    ta.command_list = CommandList(InputPDecrement(), InputPDereference())
 
         assert self.index in TheAnalyzer.state_db
-        self.entry.action_db.enter(TransitionID(self.index, reload_state.index, 0), ta)
+        self.entry.enter(TransitionID(self.index, reload_state.index, 0), ta)
         # Need to categorize here, all other transitions have been categorized before
-        self.entry.action_db.categorize(self.index)
+        self.entry.categorize(self.index)
 
         # Prepare the ReloadState for an entry from this state.
-        on_success_door_id = self.entry.action_db.get_door_id(self.index, TheAnalyzer.reload_state.index)
+        on_success_door_id = self.entry.get_door_id(self.index, TheAnalyzer.reload_state.index)
 
         if TheAnalyzer.is_init_state_forward(self.index):
             on_failure_door_id = DoorID.global_terminal_end_of_file()
@@ -159,12 +159,12 @@ class ReloadState(Processor):
         Processor.__init__(self, index, Entry())
 
     def remove_states(self, StateIndexSet):
-        self.entry.action_db.remove_transition_from_states(StateIndexSet)
+        self.entry.remove_transition_from_states(StateIndexSet)
 
     def absorb(self, OtherReloadState):
         # Do not absorb RELOAD_FORWARD into RELOAD_BACKWARD, and vice versa.
         assert self.index == OtherReloadState.index
-        self.entry.action_db.absorb(OtherReloadState.entry.action_db)
+        self.entry.absorb(OtherReloadState.entry)
 
     def add_state(self, StateIndex, OnSuccessDoorId, OnFailureDoorId, BeforeReload=None):
         """Adds a state from where the reload state is entered. When reload is
@@ -175,20 +175,19 @@ class ReloadState(Processor):
                  to trigger the reload for the state given by 'StateIndex'.
         """
         assert BeforeReload is None or isinstance(BeforeReload, CommandList) 
-        ta = TransitionAction()
-        ta.command_list = CommandList(PrepareAfterReload(OnSuccessDoorId, OnFailureDoorId))
+        ta = TransitionAction(CommandList(PrepareAfterReload(OnSuccessDoorId, OnFailureDoorId)))
         if BeforeReload is not None:
             ta.command_list.extend(BeforeReload)
 
         tid = TransitionID(self.index, StateIndex, 0)
-        assert self.entry.action_db.get(tid) is None # Cannot be in there twice!
+        assert self.entry.get(tid) is None # Cannot be in there twice!
 
         # No two transitions into the reload state have the same CommandList!
         # No two transitions can have the same DoorID!
         # => it is safe to assign a new DoorID withouth .categorize()
-        ta.door_id = self.entry.action_db.new_DoorID(self.index)
+        ta.door_id = self.entry.new_DoorID(self.index)
 
-        self.entry.action_db.enter(tid, ta)
+        self.entry.enter(tid, ta)
 
         return ta.door_id
 
@@ -219,4 +218,56 @@ class TerminalState(Processor):
         Processor.__init__(self, state_index.get_terminal_state_index(PatternId), Entry())
         self.pattern_id = PatternId
         self.action     = PatternMatchAction
+
+    def __init__(self, Pattern, UserCode, OnMatchCode, BeginOfLineSupportF, RequireTerminatingZero):
+        self.pattern                     = Pattern
+        self.user_code                   = UserCode
+        self.on_match_code               = OnMatchCode
+        self.begin_of_line_support_f     = BeginOfLineSupportF
+        self.terminating_zero_required_f = RequireTerminatingZero
+        self.default_counter_required_f, \
+        self.lc_count_code               = counter_for_pattern.get(self.pattern, EOF_ActionF)
+
+    def get_code(self):
+        lc_count_code               = "".join(LanguageDB.REPLACE_INDENT(lc_count_code))
+
+        if default_counter_required_f: 
+            Mode.default_character_counter_required_f_set()
+
+        # (*) THE user defined action to be performed in case of a match
+        user_code, rtzp_f = get_code(CodeFragmentList, Mode)
+        require_terminating_zero_preparation_f = require_terminating_zero_preparation_f or rtzp_f
+
+        store_last_character_str = ""
+        if BeginOfLineSupportF:
+            # IDEA (TODO): The character before lexeme start does not have to be
+            # written into a special register. Simply, make sure that
+            # '_lexeme_start_p - 1' is always in the buffer. This may include that
+            # on the first buffer load '\n' needs to be at the beginning of the
+            # buffer before the content is loaded. Not so easy; must be carefully
+            # approached.
+            store_last_character_str = "    %s\n" % LanguageDB.ASSIGN("me->buffer._character_before_lexeme_start", 
+                                                                      LanguageDB.INPUT_P_DEREFERENCE(-1))
+
+        set_terminating_zero_str = ""
+        if rtzp_f:
+            set_terminating_zero_str += "    QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);\n"
+
+        txt  = ""
+        txt += lc_count_code
+        txt += store_last_character_str
+        txt += set_terminating_zero_str
+        txt += on_match_code
+        txt += "    {\n"
+        txt += user_code
+        txt += "\n    }"
+
+class TerminalInterim(Processor):
+   __slots__ = ("target_terminal_index",)
+   def __init__(self, TargetTerminalIndex):
+       self.target_terminal_index = TargetTerminalIndex
+
+   def get_code(self):
+       LanguageDB = Setup.language_db
+       return LanguageDB.GOTO_BY_DOOR_ID(DoorID(self.target_terminal_index, 0))
 

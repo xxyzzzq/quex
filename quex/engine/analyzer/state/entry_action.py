@@ -51,14 +51,14 @@ class TransitionAction(object):
                           'EntryActionDB.categorize()'.
     """
     __slots__ = ("door_id", "_command_list")
-    def __init__(self, CommandListObjectF=True):
+    def __init__(self, InitCommandList=None):
         # NOTE: 'DoorId' is not accepted as argument. Is needs to be assigned
         #       by '.categorize()' in the action_db. Then, transition actions
         #       with the same CommandList-s share the same DoorID.
-        assert type(CommandListObjectF) == bool
-        self.door_id = None # DoorID into door tree from where the command list is executed
-        if CommandListObjectF: self._command_list = CommandList() 
-        else:                  self.command_list = None
+        assert InitCommandList is None or isinstance(InitCommandList, CommandList)
+        self.door_id = None 
+        if InitCommandList is None: self._command_list = CommandList() 
+        else:                       self._command_list = InitCommandList
  
     @property
     def command_list(self): 
@@ -70,9 +70,8 @@ class TransitionAction(object):
         self._command_list = CL
         
     def clone(self):
-        result = TransitionAction(CommandListObjectF=False)
-        result.door_id       = self.door_id  # DoorID-s are immutable
-        result._command_list = self._command_list.clone()
+        result = TransitionAction(self._command_list.clone())
+        result.door_id = self.door_id  # DoorID-s are immutable
         return result
 
     # Make TransitionAction usable for dictionary and set

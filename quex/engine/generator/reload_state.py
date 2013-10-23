@@ -5,7 +5,7 @@ from   quex.blackboard import setup as Setup, \
 def do(TheReloadState):
     LanguageDB = Setup.language_db
 
-    if TheReloadState.entry.action_db.size() == 0:
+    if TheReloadState.entry.size() == 0:
         return []
 
     txt = ["%s\n" % LanguageDB.UNREACHABLE]

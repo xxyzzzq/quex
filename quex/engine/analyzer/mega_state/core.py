@@ -64,7 +64,6 @@ from quex.engine.analyzer.state.core         import AnalyzerState
 from quex.engine.analyzer.mega_state.target  import TargetByStateKey
 from quex.engine.analyzer.state.entry        import Entry
 from quex.engine.analyzer.state.drop_out     import DropOut, \
-                                                    DropOutIndifferent, \
                                                     DropOutBackwardInputPositionDetection
 from quex.engine.analyzer.door_id_address_label import DoorID
 from quex.engine.analyzer.transition_map     import TransitionMap
@@ -81,10 +80,10 @@ class MegaState_Entry(Entry):
     
     Implements a common base class for Entry classes of MegaState-s. Entries of
     MegaState-s are special in a sense that they implement transitions to more
-    than one state. The '.action_db' of an Entry of an AnalyzerState contains
+    than one state. The database of an Entry of an AnalyzerState contains
     only transitions (from_index, to_index) where 'to_index == state_index'. A
     MegaState implements two or more AnalyzerState-s, so the 'to_index' may
-    have more than one value in keys of '.action_db'.
+    have more than one value in keys of the entry's database.
     
     PRELIMINARY: Documentation of class 'Entry'.
 
@@ -109,20 +108,6 @@ class MegaState_Entry(Entry):
     @property
     def transition_reassignment_db(self):
         return self.__transition_reassignment_db
-
-    def absorb(self, Other):
-        assert isinstance(Other, MegaState_Entry)
-        assert self.__transition_reassignment_db is None
-        assert Other.__transition_reassignment_db is None
-        assert False, "Replaced by 'entry.absorb'"
-        self.action_db.absorb(Other.action_db)
-
-        # It is nice to have 'action_db_update' happen in the process of 'finalization'
-        # after all absorbtion has taken place. This makes things much less dynamic and
-        # much more understandable. Thus, assume that 'action_db_update' has never been
-        # called and the 'transition_reassignment_candidate_list' is empty.
-        assert len(self.transition_reassignment_candidate_list) == 0
-        # self.transition_reassignment_candidate_list.extend(Other.transition_reassignment_candidate_list)
 
     def action_db_update(self, From, To, FromOutsideCmd, FromInsideCmd):
         """MegaStates may add 'set-state-key-commands' to the CommandLists of
@@ -151,7 +136,7 @@ class MegaState_Entry(Entry):
         listed in 'transition_reassignment_candidate_list'.
         """
 
-        for transition_id, action in self.action_db.iteritems():
+        for transition_id, action in self.iteritems():
 
             if transition_id.target_state_index != To:
                 # This transition does not concern the state which is meant.
@@ -183,17 +168,17 @@ class MegaState_Entry(Entry):
 
 
         # All CommandList-s which are subject to DoorID reassignment are set to
-        # 'None'. Then 'action_db.categorize()' can determine new DoorID-s.
+        # 'None'. Then 'self.categorize()' can determine new DoorID-s.
         for dummy, transition_id in self.transition_reassignment_candidate_list:
-            self.action_db.get(transition_id).door_id = None
+            self.get(transition_id).door_id = None
         
-        self.action_db.categorize(RelatedMegaStateIndex)
+        self.categorize(RelatedMegaStateIndex)
 
         self.__transition_reassignment_db = {}
         for tm_state_index, transition_id in self.transition_reassignment_candidate_list:
             # tm_state_index = index of the state whose transition map is subject to 
             #                  the replacement.
-            action = self.action_db.get(transition_id)
+            action = self.get(transition_id)
             assert action is not None
             self.__transition_reassignment_db[transition_id] = action.door_id 
 
@@ -376,7 +361,7 @@ class MegaState(AnalyzerState):
         self._finalize_content(TheAnalyzer)                    # --> derived class!
 
     def _finalize_absorb_Entry_DropOut_from_state(self, TheState):
-        self.entry.action_db.absorb(TheState.entry.action_db)
+        self.entry.absorb(TheState.entry)
         self.drop_out.absorb(TheState.index, TheState.drop_out)
 
     def _finalize_transition_map(self):     
@@ -436,14 +421,14 @@ class MegaState(AnalyzerState):
 
     def assert_consistency(self, CompressionType, RemainingStateIndexSet, TheAnalyzer):
         # Check the MegaState's consistency
-        assert self.entry.action_db.check_consistency()
+        assert self.entry.check_consistency()
 
         # Check whether the transition map is ok.
         assert self.verify_transition_map(TheAnalyzer)
 
         # A MegaState shall not change DoorID-s of entry actions,
         # except for transitions inside the MegaState itself.
-        for transition_id, action in self.entry.action_db.iteritems():
+        for transition_id, action in self.entry.iteritems():
             if action.door_id.state_index != self.index: continue
             assert transition_id.target_state_index in self.implemented_state_index_set()
             assert transition_id.source_state_index in self.implemented_state_index_set()

@@ -60,7 +60,7 @@ def setup_AnalyzerStates(StatesDescription):
         analyzer.state_db[state_index] = AnalyzerState.from_State(sm_state, state_index, False, EngineType, set(from_state_list))
 
     for state in analyzer.state_db.itervalues():
-        state.entry.action_db.categorize(state.index)
+        state.entry.categorize(state.index)
     for state in analyzer.state_db.itervalues():
         state.transition_map = state.transition_map.relate_to_door_ids(analyzer, state.index)
 
@@ -117,13 +117,13 @@ def test_combination(StateA, StateB, analyzer, StateA_Name="A", StateB_Name="B",
     print
     candidate = TemplateStateCandidate(StateA, StateB)
     result    = TemplateState(candidate)
-    result.finalize(analyzer) # entry.action_db.categorize(result.index)
+    result.finalize(analyzer) # entry.categorize(result.index)
     # result.transition_map = result.transition_map.relate_to_door_ids(analyzer, result.index)
 
     if DrawF:
-        door_tree_root = entry_door_tree.do(result.index, result.entry.action_db)
+        door_tree_root = entry_door_tree.do(result.index, result.entry)
         print "DoorTree(%s|%s):" % (StateA_Name, StateB_Name)
-        print "    " + door_tree_root.get_string(result.entry.action_db).replace("\n", "\n    ")
+        print "    " + door_tree_root.get_string(result.entry).replace("\n", "\n    ")
     print "Result"
 
     #for state_index in result.implemented_state_index_set():

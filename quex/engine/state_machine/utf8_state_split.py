@@ -327,7 +327,6 @@ def get_trigger_sequence_for_contigous_byte_range_interval(X, L):
     back_sequence  = unicode_to_utf8(X.end - 1)
     # If the interval is contigous it must produce equal length utf8 sequences
 
-    # Let me play with 'list comprehensions' just one time
     return [ Interval(front_sequence[i], back_sequence[i] + 1) for i in range(L) ]
 
 # For byte n > 1, the max byte range is always 0x80-0xBF (including 0xBF)

@@ -479,15 +479,16 @@ class Mode:
         if ssetup_list is None or len(ssetup_list) == 0:
             return
 
-        iterable               = ssetup_list.__iter__()
-        pattern, character_set = iterable.next()
+        iterable                            = ssetup_list.__iter__()
+        pattern_str, pattern, character_set = iterable.next()
         # Multiple skippers from different modes are combined into one pattern.
         # This means, that we cannot say exactly where a 'skip' was defined 
         # if it intersects with another pattern.
         file_name = pattern.file_name
         line_n    = pattern.line_n
-        for pattern, character_set in iterable:
-            character_set.unite_with(character_set)
+        for ipattern_str, ipattern, icharacter_set in iterable:
+            character_set.unite_with(icharacter_set)
+            pattern_str += "|" + ipattern_str
 
         # The column/line number count actions for the characters in the 
         # character_set may differ. Thus, derive a separate set of characters
@@ -509,30 +510,27 @@ class Mode:
 
         # An optional codec transformation is done later. The state machines
         # are entered as pure Unicode state machines.
-        counter_dictionary = self.counter_db.get_counter_dictionary(character_set)
+        terminal = TerminalSkipCharacterSet(character_set, self.counter_db, file_name, line_n)
 
         # It is not necessary to store the count action along with the state
         # machine.  This is done in "action_preparation.do()" for each
         # terminal.
-        sm_list = [ StateMachine.from_character_set(x) for x, action in counter_dictionary ]
+        sm_list = [ 
+            StateMachine.from_character_set(count_cmd_info.trigger_set) 
+            for count_cmd_info in terminal.count_command_map.itervalues() 
+        ]
+        terminal.require_label_SKIP_f = (len(sm_list) != 1)
 
         # Skipper code is generated later, all but one skipper go to a terminal
         # that only counts according to the character which appeared.  The last
         # implements the skipper.
-        def xpap(MHI, ModeName, SM, Action, PatternStr="<skip: ... (check also base modes)>", Comment=None):
+        def xpap(MHI, SM, Action, Comment=None):
             return ((PatternPriority(MHI, SM.get_id()),    
-                     PatternActionInfo(Pattern(SM), Action, PatternStr, ModeName=ModeName, Comment=Comment)))
+                     PatternActionInfo(Pattern(SM), Action, pattern_str, ModeName=self.name, Comment=Comment)))
 
-        goto_skip_action = UserCodeFragment("goto __SKIP;\n", FileName=file_name, LineN=line_n)
-        xpap_list.extend(xpap(MHI, self.name, sm, goto_skip_action) for sm in sm_list[:-1])
-
-        action = GeneratedCode(skip_character_set.do, FileName = file_name, LineN = line_n)
-
-        action.data["character_set"]        = character_set
-        action.data["require_label_SKIP_f"] = len(sm_list) != 1
-
-        xpap_list.append(xpap(MHI, self.name, sm_list[-1], action, 
-                              PatternStr="<skip>", Comment=E_SpecialPatterns.SKIP))
+        interim_terminal = TerminalInterim(terminal.index) # interim terminal goes to terminal
+        xpap_list.extend(xpap(MHI, sm,          interim_terminal) for sm in sm_list[:-1])
+        xpap_list.append(xpap(MHI, sm_list[-1], terminal, Comment=E_SpecialPatterns.SKIP))
         return
 
     def __prepare_skip_range(self, xpap_list, MHI):
