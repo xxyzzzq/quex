@@ -13,23 +13,61 @@ from   quex.blackboard                            import setup as Setup, \
 
 from   operator import attrgetter
 
+class Entry(object):
+    """________________________________________________________________________
 
-class EntryActionDB:
+    An Entry object stores commands to be executed at entry into a state
+    depending on a particular source state; and may be also depending on
+    the particular trigger.
+    
+    BASICS _________________________________________________________________
+
+    To keep track of entry actions, CommandList-s need to 
+    be associated with a TransitionID-s, i.e. pairs of (state_index,
+    from_state_index). This happens in the member '.__db', i.e.
+    
+       .action_db:    TransitionID --> TransitionAction
+
+    where a TransitionID consists of: .from_state_index
+                                      .state_index
+                                      .trigger_id 
+ 
+    and a TransitionAction consists of: .door_id
+                                        .command_list
+                                        
+    where '.door_id'  identifies a specific door  of the  entry into  the state.
+    It is distinctly associated with a list of commands '.command_list'. The 
+    commands of '.command_list' are executed if the state is entered by
+    a transition given with the key's TransitionID. A call to 
+
+                            action_db.categorize()
+
+    ensures that
+                                  1      1
+                        DoorID  <---------> CommandList
+   
+    In words: 
+    
+       -- each TransitionAction *has a* valid door_id. That is, every list of
+          commands is identified with a door_id.
+
+       -- The door_id *distinctly* determines the command list (in the entry). 
+          That is, door_id-s of TransitionAction-s differ if and only if their
+          command lists are different.
+                  
+    Later on in the code generation, a 'door tree' is generated to produce
+    optimized code which profits from common commands in command lists. But,
+    for now, it is important to remember:
+
+              .---------------------------------------------------.
+              |  A DoorID distinctly identifies a CommandList to  |
+              |       be executed the at entry of a state.        |
+              '---------------------------------------------------'
+    """
+
+    __slots__ = ("__db", "__largest_used_door_sub_index")
+
     def __init__(self):
-        """Assume that 'Iterable' provides all TransitionID-s which may ever
-           appear in the action_db. If this is not the case, then a self[tid]
-           may fail somewhere down the lines.
-
-
-           TODO: ____________________________________________________________
-           unassigned --> list of TransitionAction-s which do not have a 
-                          DoorID assigned to it.
-
-           db         --> map: DoorID --> TransitionAction
-
-           The major role plays function 'categorize()'. It makes sure that
-           every TransitionAction has a DoorID assigned to it.
-        """
         self.__db                          = TypedDict(TransitionID, TransitionAction)
         self.__largest_used_door_sub_index = 0  # '0' is used for 'Door 0', i.e. reload entry
 
@@ -259,81 +297,21 @@ class EntryActionDB:
             txt.append("}\n")
         return "".join(txt)
 
-class Entry(object):
-    """________________________________________________________________________
-
-    An Entry object stores commands to be executed at entry into a state
-    depending on a particular source state; and may be also depending on
-    the particular trigger.
-    
-    BASICS _________________________________________________________________
-
-    To keep track of entry actions, CommandList-s need to 
-    be associated with a TransitionID-s, i.e. pairs of (state_index,
-    from_state_index). This happens in the member '.action_db', i.e.
-    
-       .action_db:    TransitionID --> TransitionAction
-
-    where a TransitionID consists of: .from_state_index
-                                      .state_index
-                                      .trigger_id 
- 
-    and a TransitionAction consists of: .door_id
-                                        .command_list
-                                        
-    where '.door_id'  identifies a specific door  of the  entry into  the state.
-    It is distinctly associated with a list of commands '.command_list'. The 
-    commands of '.command_list' are executed if the state is entered by
-    a transition given with the key's TransitionID. A call to 
-
-                            action_db.categorize()
-
-    ensures that
-                                  1      1
-                        DoorID  <---------> CommandList
-   
-    In words: 
-    
-       -- each TransitionAction *has a* valid door_id. That is, every list of
-          commands is identified with a door_id.
-
-       -- The door_id *distinctly* determines the command list (in the entry). 
-          That is, door_id-s of TransitionAction-s differ if and only if their
-          command lists are different.
-                  
-    Later on in the code generation, a 'door tree' is generated to produce
-    optimized code which profits from common commands in command lists. But,
-    for now, it is important to remember:
-
-              .---------------------------------------------------.
-              |  A DoorID distinctly identifies a CommandList to  |
-              |       be executed the at entry of a state.        |
-              '---------------------------------------------------'
-    """
-
-    __slots__ = ("__action_db")
-
-    def __init__(self):
-        self.__action_db = EntryActionDB()
-
     @property
     def action_db(self):
-        return self.__action_db
+        return self.__db
 
     def __hash__(self):
         xor_sum = 0
-        for door in self.__action_db.itervalues():
+        for door in self.__db.itervalues():
             xor_sum ^= hash(door.command_list)
         return xor_sum
 
     def __eq__(self, Other):
         assert False, "not used"
-        assert self.__door_tree_root is not None
-        return self.__door_tree_root.is_equivalent(Other.__door_tree_root)
 
     def is_equal(self, Other):
-        # Maybe, we can delete this ...
-        return self.__eq__(self, Other)
+        assert False, "not used"
 
     def __repr__(self):
         def get_accepters(AccepterList):
@@ -372,7 +350,7 @@ class Entry(object):
             return txt
 
         result = []
-        for transition_id, door in sorted(self.__action_db.iteritems(),key=lambda x: x[0].source_state_index):
+        for transition_id, door in sorted(self.__db.iteritems(),key=lambda x: x[0].source_state_index):
             accept_command_list = []
             store_command_list  = []
             pcok_command_list   = []

@@ -200,7 +200,7 @@ class CharacterPath(object):
         # (TriggerIndex == 0, because there can only be one transition from
         #                     one state to the next on the path).
         prev_step         = self.__step_list[-1]
-        entry_CommandList = PreviousTerminal.entry.action_db.get_command_list(PreviousTerminal.index, 
+        entry_CommandList = PreviousTerminal.entry.get_command_list(PreviousTerminal.index, 
                                                                               prev_step.state_index,
                                                                               TriggerId=0)
         assert entry_CommandList is not None
@@ -233,7 +233,7 @@ class CharacterPath(object):
         # (TriggerIndex == 0, because there can only be one transition from
         #                     one state to the next on the path).
         prev_step    = self.__step_list[-1]
-        command_list = State.entry.action_db.get_command_list(State.index, prev_step.state_index, 
+        command_list = State.entry.get_command_list(State.index, prev_step.state_index, 
                                                               TriggerId=0)
         assert command_list is not None
 
@@ -308,7 +308,7 @@ class CharacterPath(object):
         if self.uniform_entry_CommandList.is_uniform():
             prev_state_index = self.__step_list[0].state_index
             for state in (TheAnalyzer.state_db[s.state_index] for s in self.__step_list[1:-1]):
-                command_list = state.entry.action_db.get_command_list(state.index, prev_state_index, TriggerId=0)
+                command_list = state.entry.get_command_list(state.index, prev_state_index, TriggerId=0)
                 assert command_list == self.uniform_entry_CommandList.content
                 prev_state_index = state.index
 

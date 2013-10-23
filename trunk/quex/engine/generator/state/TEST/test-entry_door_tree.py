@@ -47,15 +47,15 @@ def test(ActionDB):
             tid = TransitionID(state_index, from_state_index, 0)
             if isinstance(element, list):
                 accepter = entry_action.Accepter(element)
-                entry.action_db.get(tid).command_list.accepter = accepter
+                entry.get(tid).command_list.accepter = accepter
             else:
                 storer = entry_action.StoreInputPosition(element.pre_context_id, 
                                                          element.position_register, 
                                                          element.offset)
-                entry.action_db.get(tid).command_list.misc.add(storer)
+                entry.get(tid).command_list.misc.add(storer)
 
-    entry.action_db.categorize(state_index)
-    door_tree_root = entry_door_tree.do(state_index, entry.action_db)
+    entry.categorize(state_index)
+    door_tree_root = entry_door_tree.do(state_index, entry)
     #print "#door_tree_root:", door_tree_root.door_id
     #for c in door_tree_root.child_set:
     #    print "#door_tree_root.child:", c
@@ -65,7 +65,7 @@ def test(ActionDB):
     #    else:
     #        print "#door_tree_root.child.child: <none>"
 
-    print door_tree_root.get_string(entry.action_db)
+    print door_tree_root.get_string(entry)
 
 def get_TransitionAction(TheCommand):
     command_list = CommandList.from_iterable([TheCommand]) 

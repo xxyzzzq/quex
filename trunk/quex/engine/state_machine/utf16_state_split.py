@@ -3,7 +3,7 @@
 ABSTRACT:
 
     !! UTF16 state split is similar to UTF8 state split as shown in file !!
-    !! "uf8_state_split.py". Please, read the documentation thera about  !!
+    !! "uf8_state_split.py". Please, read the documentation there about  !!
     !! the details of the basic idea.                                    !!
 
     Due to the fact that utf16 conversion has only two possible byte sequence
@@ -26,7 +26,6 @@ ABSTRACT:
     the probability that a range runs over multiple such ranges is low, it does
     not make sense to try to combine them. The later Hopcroft Minimization will
     not be overwhelmed by a little extra work.
-
 """
 import os
 import sys

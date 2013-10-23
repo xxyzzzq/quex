@@ -15,12 +15,12 @@ from operator import attrgetter
 def do(TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
     LanguageDB = Setup.language_db
 
-    door_tree_root = entry_door_tree.do(TheState.index, TheState.entry.action_db)
+    door_tree_root = entry_door_tree.do(TheState.index, TheState.entry)
     if not TheAnalyzer.is_init_state_forward(TheState.index):
         pre_txt = []
         if TheState.index != TheAnalyzer.init_state_index:
             pre_txt.append("\n\n    %s\n" % LanguageDB.UNREACHABLE)
-        do_node(pre_txt, TheState.entry.action_db, door_tree_root)
+        do_node(pre_txt, TheState.entry, door_tree_root)
         post_txt = []
     else:
         pre_txt, done_set = do_state_machine_entry(door_tree_root, TheState, TheAnalyzer)
@@ -32,8 +32,8 @@ def do(TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
     return pre_txt, post_txt
 
 def do_core(txt, TheState):
-    door_tree_root = entry_door_tree.do(TheState.index, TheState.entry.action_db)
-    do_node(txt, TheState.entry.action_db, door_tree_root, LastChildF=False)
+    door_tree_root = entry_door_tree.do(TheState.index, TheState.entry)
+    do_node(txt, TheState.entry, door_tree_root, LastChildF=False)
 
 def do_state_machine_entry(door_tree_root, TheState, TheAnalyzer):
     action  = TheAnalyzer.get_action_at_state_machine_entry()
@@ -45,7 +45,7 @@ def do_state_machine_entry(door_tree_root, TheState, TheAnalyzer):
     done_door_id_set = set()
     txt              = []
     while node is not None:
-        code_action(txt, node, TheState.entry.action_db, GotoParentF=False)
+        code_action(txt, node, TheState.entry, GotoParentF=False)
         done_door_id_set.add(node.door_id)
         node = node.parent
     txt.append(IfDoorIdReferencedLabel(DoorID.transition_block(TheState.index)))
@@ -53,7 +53,7 @@ def do_state_machine_entry(door_tree_root, TheState, TheAnalyzer):
 
 def do_post(door_tree_root, TheState, DoneDoorIdSet):
     txt = []
-    do_node(txt, TheState.entry.action_db, door_tree_root, LastChildF=False, DoneDoorIdSet=DoneDoorIdSet)
+    do_node(txt, TheState.entry, door_tree_root, LastChildF=False, DoneDoorIdSet=DoneDoorIdSet)
     # txt.append("    goto %s;\n" % Label.transition_block(TheState.index, GotoedF=True))
     return txt
 

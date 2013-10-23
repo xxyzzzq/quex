@@ -1,6 +1,8 @@
 from   quex.engine.generator.base              import LoopGenerator
 from   quex.engine.analyzer.door_id_address_label import DoorID
 from   quex.engine.analyzer.state.core         import TerminalState
+import quex.engine.analyzer.core                       as     analyzer_generator
+from   quex.engine.input.files.counter_db      import CountCmdInfo
 from   quex.blackboard                         import setup as Setup
 
 def do():
@@ -55,93 +57,148 @@ def do():
                                                                   .---------------.       
                                                                   | End of Stream |       
                                                                   '---------------'                                                                   
+
+    NOTE: If dynamic character size codings, such as UTF8, are used as engine codecs,
+          then the single state may actually be split into a real state machine of
+          states.
     """
-    def __init__(self, CharacterSet, require_label_SKIP_f, analyzer, counter_db):
+    def __init__(self, CharacterSet, CounterDb):
         assert not CharacterSet.is_empty()
         assert isinstance(CharacterSet, NumberSet)
-        self.index          = index.get()
-        self.door_id_entry  = DoorID(self.index, 0)
-        door_id_drop_out    = DoorID.drop_out(self.index)
+        self.analyzer = None # Requires 'prepare_analyzer()'
 
-        self.transition_map = None
-
-        # -- counter_db.get_count_command_map() delivers:
-        #
-        #               map:  interval ---> CLI
-        #
-        # where 'count_command_db[CLI]' is the CommandList which does the required
-        # column/line number counting for the given character interval.
-        # 
         # If 'column_count_per_chunk' is not None, then reference positions may 
-        # be used for counting (i.e. "column += (input_p - reference_p) * C").
-        count_map, count_command_db, \
-        column_count_per_chunk            = Mode.counter_db.get_count_command_map()
-        on_entry, on_exit                 = Mode.counter_db.get_entry_exit_Commands(LanguageDB.INPUT_P,
-                                                                                    column_count_per_chunk)
-        on_before_reload, on_after_reload = Mode.counter_db.get_reload_Commands(LanguageDB.INPUT_P,
-                                                                                column_count_per_chunk)
+        # be used for counting (i.e. "column_n += (input_p - reference_p) * C").
+        # This avoids 'column_n += C' at every single step.
+        column_count_per_chunk = CounterDb.get_column_number_per_chunk(CharacterSet)
 
-        def trid(CLI): 
-            return TransitionID(self.index, self.index, CLI) 
+        # count_command_map:
+        #
+        #               map:  CLI -->  (NumberSet, CommandList)
+        #
+        # where the CommandList does the required column/line number counting 
+        # for the given NumberSet. The tuple (NumberSet, CommandList) is
+        # implemented as CountCmdInfo.
+        self.count_command_map = CounterDb.get_counter_dictionary(CharacterSet, 
+                                                                  column_count_per_chunk, 
+                                                                  LanguageDB.INPUT_P)
+        # on_entry/on_exit: 
+        #
+        # Actions to be performed at entry into the loop and when exiting.
+        # 
+        self.on_entry, \
+        self.on_exit   = CounterDb.get_entry_exit_commands(LanguageDB.INPUT_P,
+                                                           column_count_per_chunk)
+        # on_before_reload/on_after_reload:
+        #
+        # Actions to be performed before and after reload.
+        #
+        self.on_before_reload, \
+        self.on_after_reload   = CounterDb.get_reload_commands(LanguageDB.INPUT_P,
+                                                               column_count_per_chunk)
+
+        # The lexeme start pointer defines the lower border of memory to
+        # be kept when reloading. Setting it to the input pointer allows
+        # for the whole buffer to be reloaded.
+        self.on_before_reload.append(LexemeStartToReferenceP(LanguageDB.INPUT_P))
+
+    def prepare_analyzer(self, GlobalReloadStateForward):
+        """
+        The possibility of a dynamic character size codec forces to transform
+        the single state into a state machine: 
         
+                                        .----.    .---.
+                                .-> ... | 11 |-->-| 1 |  line_n += 1;
+                               +--> ... '----'    '---'   
+                              +---> ... | 21 |-->--'|
+                             +----> ... '----'      |
+                    .------./           | 31 |-->---' 
+                    | init |------> ... '----'                                     
+                    '------'+-----> ...       
+                             '----> ... 
+                                     
+        State '1' represents a counting action.  After the transformation is
+        done, the structure can be transformed into a state machine where the
+        transitions to '1' are bend into transitions to 'init'. It enters the
+        'init' state at a door that inhibits the corresponding counting actions.
+        
+                        .-----------------------------------.
+                        |                       .----.      |
+                  .-(Door)------.       .-> ... | 11 |-->---| 
+                  | line_n += 1 |      +--> ... '----'      |
+                  '-------------'     +---> ... | 21 |-->---|
+                        |            +----> ... '----'      |
+                        |   .------./           | 31 |-->---' 
+                        '-->| init |------> ... '----'                                     
+                            '------'+-----> ...       
+                                     '----> ... 
+        """                                      
+        sm       = self.get_counting_state_machine(self.count_command_map)
+        transformation.do(sm)
+        analyzer = analyzer_generator.do(sm, ReloadState=GlobalReloadStateForward)
+
         # (*) Entries _________________________________________________________
         #
         # This State: Create entries which execute required column/line 
         #             counting actions.
-        for interval, CLI in count_map:
-            ta = TransitionAction(CommandListF=False)
-            ta.command_list = count_command_db[CLI].clone()
-            self.entry.action_db.enter(trid(self.index, self.index, TriggerId=CLI), ta)
+        loop = analyzer.init_state()
+        for cli, count_info for self.count_command_map:
+            assert isinstance(count_info, CountCmdInfo)
+            for from_index in analyzer.to_db[cli]:
+                loop.entry.enter(TransitionID(loop.index, from_index, TriggerId=cli), 
+                                 TransitionAction(count_command_db[cli].clone()))
 
-        # Setting the lexeme start = input pointer makes it possible to load the whole buffer.
-        on_after_reload.append(LexemeStartToReferenceP(LanguageDB.INPUT_P))
-        ta = TransitionAction(CommandListF=False)
-        ta.command_list = on_after_reload
-        self.entry.action_db.enter(TransitionID(self.index, E_StateIndices.RELOAD_FORWARD), ta)
-        self.entry.action_db.categorize()
+                self.bend(analyzer.state_db[from_index], to_index, self.index)
 
-        door_id_on_reload_success = self.entry.action_db.get_door_id(self.index, E_StateIndices.RELOAD_FORWARD)
+        tid_entry        = TransitionID(self.index, E_StateIndices.STATE_MACHINE_BEGIN)
+        tid_after_reload = TransitionID(self.index, E_StateIndices.RELOAD_FORWARD)
+        tid_exit         = TransitionID(self.index, index.get())
+        loop.entry.enter(tid_entry,        TransitionAction(self.on_entry))
+        loop.entry.enter(tid_after_reload, TransitionAction(self.on_after_reload))
+        loop.entry.enter(tid_exit,         TransitionAction(self.on_exit))
+        loop.entry.categorize()
+
+        door_id_on_entry          = loop.entry.get(tid_entry).door_id
+        door_id_on_exit           = loop.entry.get(tid_exit).door_id
+        door_id_on_reload_success = loop.entry.get(tid_after_reload).door_id
         door_id_on_reload_failure = DoorID.global_terminal_end_of_file()
 
         # Reload State: Create an entry for this state upon reload.
-        reload_door_id = analyzer.reload_state.add_state(self.index, 
-                                                         door_id_on_reload_success, 
-                                                         door_id_on_reload_failure,
-                                                         BeforeReload=on_before_reload)
+        door_id_to_reload = analyzer.reload_state.add_state(self.index, 
+                                                            door_id_on_reload_success, 
+                                                            door_id_on_reload_failure,
+                                                            BeforeReload=on_before_reload)
 
         # (*) Transition Map __________________________________________________
         #
-        #     map: interval --> entry where column/lines are counted.
-        #          BLC      --> entry into reload state.
-        #
-        self.transition_map = TransitionMap.from_iterable(count_map, trid)
-        self.transition_map.set_target(Setup.buffer_limit_code, reload_door_id)
+        for state in analyzer.state_db.itervalues():
+            state.transition_map.relate_to_DoorIDs(self.analyzer, state.index)
+            state.transition_map.set_target(Setup.buffer_limit_code, door_id_to_reload)
+            state.transition_map.fill_gaps(door_id_on_exit)
 
-        class PseudoAnalyzer:
-            def __init__(self, StateIndex, State): self.state_db = { StateIndex: State }
+        return analyzer
 
-        self.relate_to_DoorIDs(PseudoAnalyzer(self.index, self), self.index)
         
-        # (*) DropOut _________________________________________________________
-        #
-        self.on_drop_out = on_exit
-
     def get_code(self):
         # Build the skipper _______________________________________________________
         #
-        if RequireSKIPLabel:
-            code.append("__SKIP:\n")
-        code.append(1)
-        LanguageDB.COMMENT(code, "Character Set Skipper: '%s'" % CharacterSet.get_utf8_string()),
-        code.extend([1, "QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);\n"])
-        code(on_entry)
-        code(dial_db.get_label_by_door_id(self.door_id_loop_entry))
-        code(transition_map) # input in CharacterSet => goto door_id_loop_entry
-        #                    # else                  => exit, i.e. drop into below
-        code(dial_db.get_label_by_door_id(exit_door_id))
-        code(on_exit)
-        code(dial_db.get_label_by_door_id(on_reload_success_door_id))
-        code(on_after_reload)
-        code(LanguageDB.GOTO_BY_DOOR_ID(self.door_id_loop_entry))
-        return result
+        analyzer = self.prepare_analyzer()
+        return state_machine_coder.do(analyzer)
 
+    def get_counting_state_machine(self, CommandListDb):
+        sm = StateMachine(InitStateIndex=self.index)
+        for cli, count_info in CommandListDb.iteritems():
+            assert isinstance(count_info, CountCmdInfo)
+            sm.add_transition(self.index, x.trigger_set, cli)
+        return sm
+
+    # Bend 'transition to target_i' to 'transition to door_i'
+    def bend(interval, door_id):
+        if  door_id.state_index in count_action_db:
+            return (interval, DoorID(self.index, door_id.state_index))
+        else:
+            return (interval, door_id)
+
+        for state in self.analyzer.state_db.iteritems():
+            state.transition_map.relate_to_DoorIDs()
+            state.transition_map = [ bend(interval, door_id) for interval, door_id in state.transition_map ]

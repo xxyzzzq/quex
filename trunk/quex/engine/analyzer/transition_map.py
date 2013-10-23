@@ -115,7 +115,7 @@ class TransitionMap(list):
                 ts = TheAnalyzer.reload_state
             else:
                 ts = TheAnalyzer.state_db[Target]
-            door_id = ts.entry.action_db.get_door_id(StateIndex=Target, FromStateIndex=StateIndex)
+            door_id = ts.entry.get_door_id(StateIndex=Target, FromStateIndex=StateIndex)
             assert door_id is not None
             return door_id
         

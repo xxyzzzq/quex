@@ -47,6 +47,7 @@ from   quex.engine.analyzer.commands              import InputPDereference, \
                                                          InputPDecrement,  \
                                                          PreContextOK
 import quex.engine.analyzer.mega_state.analyzer   as     mega_state_analyzer
+from   quex.engine.analyzer.commands              import CommandList
 import quex.engine.analyzer.position_register_map as     position_register_map
 import quex.engine.analyzer.engine_supply_factory as     engine
 from   quex.engine.misc.tree_walker               import TreeWalker
@@ -93,7 +94,7 @@ def __main_analysis(SM, EngineType):
     # Assign DoorID-s to transition actions and relate transitions to DoorID-s.
     # ('.prepare_for_reload()' requires DoorID-s.)
     for state in analyzer.state_db.itervalues():
-        state.entry.action_db.categorize(state.index)
+        state.entry.categorize(state.index)
 
     for state in analyzer.state_db.itervalues():
         if state.transition_map is None: continue
@@ -247,19 +248,18 @@ class Analyzer:
         for source_state_index in self.__from_db[StateIndex]: 
             assert source_state_index != E_StateIndices.NONE
             tid = TransitionID(StateIndex, source_state_index, TriggerId=0)
-            state.entry.action_db.enter(tid, ta.clone())
+            state.entry.enter(tid, ta.clone())
 
         if StateIndex == self.init_state_index:
             tid_at_entry = TransitionID(StateIndex, E_StateIndices.NONE, TriggerId=0)
             if self.engine_type.is_FORWARD():
-                ta = TransitionAction()
-                ta.command_list.append(InputPDereference())
-            state.entry.action_db.enter(tid_at_entry, ta)
+                ta = TransitionAction(CommandList(InputPDereference()))
+            state.entry.enter(tid_at_entry, ta)
 
         return state
                                       
     def get_action_at_state_machine_entry(self):
-        return self.state_db[self.init_state_index].entry.action_db.get_action(self.init_state_index, E_StateIndices.NONE)
+        return self.state_db[self.init_state_index].entry.get_action(self.init_state_index, E_StateIndices.NONE)
 
     def get_depth_db(self):
         """Determine a database which tells about the minimum distance to the initial state.
@@ -317,7 +317,7 @@ class Analyzer:
         if not self.__engine_type.is_FORWARD(): 
             return False
         for entry in imap(lambda x: x.entry, self.__state_db.itervalues()):
-            if entry.action_db.has_command(E_Commands.Accepter): return True
+            if entry.has_command(E_Commands.Accepter): return True
         return False
 
     def configure_drop_out(self, StateIndex):
@@ -474,7 +474,7 @@ class Analyzer:
         # same length, the only precendence criteria is the pattern_id.
         # 
         def add_Accepter(entry, PreContextId, PatternId):
-            entry.action_db.add_Accepter_on_all(PreContextId, PatternId)
+            entry.add_Accepter_on_all(PreContextId, PatternId)
 
         for state_index in self.__require_acceptance_storage_db.iterkeys():
             entry = self.__state_db[state_index].entry
@@ -522,11 +522,11 @@ class Analyzer:
                         continue                    # state--not the state itself. 
                     entry = self.__state_db[target_index].entry
 
-                    entry.action_db.add_StoreInputPosition(StateIndex       = target_index, 
-                                                           FromStateIndex   = state_index, 
-                                                           PreContextID     = pre_context_id, 
-                                                           PositionRegister = pattern_id, 
-                                                           Offset           = 0)
+                    entry.add_StoreInputPosition(StateIndex       = target_index, 
+                                                 FromStateIndex   = state_index, 
+                                                 PreContextID     = pre_context_id, 
+                                                 PositionRegister = pattern_id, 
+                                                 Offset           = 0)
 
 
     def is_init_state_forward(self, StateIndex):

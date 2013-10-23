@@ -9,7 +9,7 @@ def find_core(sm, SelectF=False):
     print
     analyzer = Analyzer(sm, engine.FORWARD)
     for state in analyzer.state_db.itervalues():
-        state.entry.action_db.categorize(state.index)
+        state.entry.categorize(state.index)
     for state in analyzer.state_db.itervalues():
         if state.transition_map is None: continue
         state.transition_map = state.transition_map.relate_to_DoorIDs(analyzer, state.index)

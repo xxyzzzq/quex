@@ -250,7 +250,7 @@ class PathWalkerState(MegaState):
             assert len(door_id_sequence) == len(step_list) - 1 
 
         # A CommandList at a door can at maximum contain 1 path iterator command!
-        for action in self.entry.action_db.itervalues():
+        for action in self.entry.itervalues():
             path_iterator_cmd_n = 0
             for cmd in action.command_list:
                 if cmd.id != E_Commands.PathIteratorSet: continue
@@ -284,7 +284,7 @@ class FinalizedContent(object):
         #    (entries are considered from the second state on path on)
         door_id_sequence = []
         prev_step        = step_list[0]
-        action_db        = PWState.entry.action_db
+        action_db        = PWState.entry
         for step in step_list[1:-1]:
             # (Recall: there is only one transition (from, to) => TriggerId == 0)
             door_id = action_db.get_door_id(step.state_index, prev_step.state_index, TriggerId=0)
@@ -305,7 +305,7 @@ class FinalizedContent(object):
         #! (Ensured by the function '.accept(Path)')
         # assert step.state_index not in PWState.implemented_state_index_set()
 
-        action_db = TheAnalyzer.state_db[step.state_index].entry.action_db
+        action_db = TheAnalyzer.state_db[step.state_index].entry
         door_id   = action_db.get_door_id(step.state_index, prev_step.state_index, TriggerId=0)
 
         door_id_sequence.append(door_id)

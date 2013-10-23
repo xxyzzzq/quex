@@ -302,10 +302,10 @@ class LoopGenerator(Generator):
         column_count_per_chunk = CounterDB.get_count_command_map(IteratorName, CharacterSet, ReloadF)
 
         on_entry, \
-        on_exit  = CounterDB.get_entry_exit_Commands(column_count_per_chunk)
+        on_exit  = CounterDB.get_entry_exit_commands(column_count_per_chunk)
 
         before_reload_action, \
-        after_reload_action   = CounterDB.get_reload_Commands(IteratorName, column_count_per_chunk, ReloadF)
+        after_reload_action   = CounterDB.get_reload_commands(IteratorName, column_count_per_chunk, ReloadF)
 
         if OnExit is None:
             assert not tm.has_action_id(E_ActionIDs.ON_EXIT)

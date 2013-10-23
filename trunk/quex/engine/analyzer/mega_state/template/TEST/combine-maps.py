@@ -25,14 +25,14 @@ def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L], DrawF=Fal
 
     if DrawF:
         print "DoorTree(A):"
-        # StateA.entry.action_db.categorize()
-        door_tree_root = entry_door_tree.do(StateA.index, StateA.entry.action_db)
-        print "    " + door_tree_root.get_string(StateA.entry.action_db).replace("\n", "\n    ")
+        # StateA.entry.categorize()
+        door_tree_root = entry_door_tree.do(StateA.index, StateA.entry)
+        print "    " + door_tree_root.get_string(StateA.entry).replace("\n", "\n    ")
 
-        #StateB.entry.action_db.categorize()
-        door_tree_root = entry_door_tree.do(StateB.index, StateB.entry.action_db)
+        #StateB.entry.categorize()
+        door_tree_root = entry_door_tree.do(StateB.index, StateB.entry)
         print "DoorTree(B):"
-        print "    " + door_tree_root.get_string(StateB.entry.action_db).replace("\n", "\n    ")
+        print "    " + door_tree_root.get_string(StateB.entry).replace("\n", "\n    ")
 
     print "(Straight)---------------------------------------"
     test_combination(StateA, StateB, analyzer, "A", "B", DrawF)

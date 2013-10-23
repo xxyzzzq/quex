@@ -253,7 +253,7 @@ class Door:
         assert False, "Use 'get_string()'"
 
     def get_string(self, ActionDB=None, OnlyFromStateIndexF=False):
-        """ActionDB can be received, for example from the 'entry.action_db' object.
+        """ActionDB can be received, for example from the 'entry' object.
            If it is 'None', then no transition-id information is printed.
         """
         def door_id_to_transition_id_list(DoorId, ActionDB):
