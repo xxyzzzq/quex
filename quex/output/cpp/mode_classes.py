@@ -115,7 +115,7 @@ def  get_implementation_of_mode_functions(mode, Modes):
     on_entry_str  = "#   ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
     on_entry_str += "    QUEX_NAME(%s).has_entry_from(FromMode);\n" % mode.name
     on_entry_str += "#   endif\n"
-    for fragment in mode.get_code_fragment_list("on_entry"):
+    for fragment in mode.incidence_db[E_IncidenceIDs.MODE_ENTRY]):
         on_entry_str += fragment.get_code_string()
         if on_entry_str[-1] == "\n": on_entry_str = on_entry_str[:-1]
 
@@ -123,7 +123,7 @@ def  get_implementation_of_mode_functions(mode, Modes):
     on_exit_str  = "#   ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
     on_exit_str += "    QUEX_NAME(%s).has_exit_to(ToMode);\n" % mode.name
     on_exit_str += "#   endif\n"
-    for fragment in mode.get_code_fragment_list("on_exit"):
+    for fragment in mode.incidence_db[E_IncidenceIDs.MODE_EXIT]):
         on_exit_str += fragment.get_code_string()
 
     # (*) on indentation
@@ -275,8 +275,8 @@ $$INDENTATION-ERROR-PROCEDURE$$
 def get_on_indentation_handler(Mode):
 
     # 'on_dedent' and 'on_n_dedent cannot be defined at the same time.
-    assert not (    Mode.has_code_fragment_list("on_dedent") \
-                and Mode.has_code_fragment_list("on_n_dedent"))
+    assert not (    Mode.incidence_db.has_key(E_IncidenceIDs.DEDENT) \
+                and Mode.incidence_db.has_key(E_IncidenceIDs.N_DEDENT))
 
 
     # A mode that deals only with the default indentation handler relies
@@ -284,24 +284,22 @@ def get_on_indentation_handler(Mode):
     if Mode.default_indentation_handler_sufficient():
         return "    return;"
 
-    if Mode.has_code_fragment_list("on_indent"):
-        on_indent_str, eol_f = action_preparation.get_code(Mode.get_code_fragment_list("on_indent"))
+    if Mode.incidence_db.has_key(E_IncidenceIDs.INDENT):
+        on_indent_str, eol_f = action_preparation.get_code(Mode.incidence_db[E_IncidenceIDs.INDENT]))
     else:
         on_indent_str = "self_send(__QUEX_SETTING_TOKEN_ID_INDENT);"
 
-    if Mode.has_code_fragment_list("on_nodent"):
-        on_nodent_str, eol_f = action_preparation.get_code(Mode.get_code_fragment_list("on_nodent"))
+    if Mode.incidence_db.has_key(E_IncidenceIDs.NODENT):
+        on_nodent_str, eol_f = action_preparation.get_code(Mode.incidence_db[E_IncidenceIDs.NODENT]))
     else:
         on_nodent_str = "self_send(__QUEX_SETTING_TOKEN_ID_NODENT);"
 
-    if Mode.has_code_fragment_list("on_dedent"):
-        assert not Mode.has_code_fragment_list("on_n_dedent")
-        on_dedent_str, eol_f = action_preparation.get_code(Mode.get_code_fragment_list("on_dedent"))
+    if Mode.incidence_db.has_key(E_IncidenceIDs.DEDENT):
+        on_dedent_str, eol_f = action_preparation.get_code(Mode.incidence_db[E_IncidenceIDs.DEDENT]))
         on_n_dedent_str      = ""
 
-    elif Mode.has_code_fragment_list("on_n_dedent"):
-        assert not Mode.has_code_fragment_list("on_dedent")
-        on_n_dedent_str, eol_f = action_preparation.get_code(Mode.get_code_fragment_list("on_n_dedent"))
+    elif Mode.incidence_db.has_key(E_IncidenceIDs.N_DEDENT):
+        on_n_dedent_str, eol_f = action_preparation.get_code(Mode.incidence_db[E_IncidenceIDs.N_DEDENT]))
         on_dedent_str          = ""
 
     else:
@@ -313,13 +311,13 @@ def get_on_indentation_handler(Mode):
         on_n_dedent_str += "    while( start-- != stack->back ) self_send(__QUEX_SETTING_TOKEN_ID_DEDENT);\n"
         on_n_dedent_str += "#endif\n"
 
-    if not Mode.has_code_fragment_list("on_indentation_error"):
+    if not Mode.incidence_db.has_key(E_IncidenceIDs.INDENTATION_ERROR):
         # Default: Blow the program if there is an indentation error.
         on_indentation_error = 'QUEX_ERROR_EXIT("Lexical analyzer mode \'%s\': indentation error detected!\\n"' \
                                % Mode.name + \
                                '                "No \'on_indentation_error\' handler has been specified.\\n");'
     else:
-        on_indentation_error, eol_f = action_preparation.get_code(Mode.get_code_fragment_list("on_indentation_error"))
+        on_indentation_error, eol_f = action_preparation.get_code(Mode.incidence_db[E_IncidenceIDs.INDENTATION_ERROR]))
 
     # Note: 'on_indentation_bad' is applied in code generation for 
     #       indentation counter in 'indentation_counter.py'.

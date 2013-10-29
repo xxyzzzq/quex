@@ -1,5 +1,5 @@
 from quex.engine.state_machine.state_core_info import StateCoreInfo
-from quex.blackboard                           import E_PreContextIDs, E_AcceptanceIDs
+from quex.blackboard                           import E_PreContextIDs, E_IncidenceIDs
 
 class StateOriginList(object):
     __slots__ = ('__list')
@@ -8,8 +8,8 @@ class StateOriginList(object):
         self.__list = []
         if List is not None: self.merge(List)
 
-    def clone(self, PreContextReplacementDB=None, PatternIDReplacementDB=None):
-        return StateOriginList([x.clone(PreContextReplacementDB=PreContextReplacementDB, PatternIDReplacementDB=PatternIDReplacementDB) for x in self.__list])
+    def clone(self, PreContextReplacementDB=None, AcceptanceIDReplacementDB=None):
+        return StateOriginList([x.clone(PreContextReplacementDB=PreContextReplacementDB, AcceptanceIDReplacementDB=AcceptanceIDReplacementDB) for x in self.__list])
 
     def get_list(self):
         return self.__list
@@ -28,8 +28,8 @@ class StateOriginList(object):
         #      We need even non-meaningful origins, to detect whether a state can be 
         #      combined with another during Hopcroft optimization.
             
-        PatternID = Origin.pattern_id()
-        for same in (origin for origin in self.__list if origin.pattern_id() == PatternID):
+        AcceptanceID = Origin.acceptance_id()
+        for same in (origin for origin in self.__list if origin.acceptance_id() == AcceptanceID):
             same.merge(Origin)
             return
         self.__list.append(Origin.clone())
@@ -40,7 +40,7 @@ class StateOriginList(object):
         """
         L = len(self.__list)
         if   L == 0: 
-            new_origin = StateCoreInfo(E_AcceptanceIDs.FAILURE, -1L, AcceptanceF=False)
+            new_origin = StateCoreInfo(E_IncidenceIDs.FAILURE, -1L, AcceptanceF=False)
             self.__list.append(new_origin)
             # NOTE: Here the object is in a state where there is a 'nonsense origin'. It is
             #       expected from the caller to fix this.
@@ -66,14 +66,14 @@ class StateOriginList(object):
                  to a state that is an acceptance state, the 'input_position_store_f'
                  has to be raised for all incoming origins.      
         """
-        assert type(X) == long or X == E_AcceptanceIDs.FAILURE or X.__class__ == StateCoreInfo
+        assert type(X) == long or X == E_IncidenceIDs.FAILURE or X.__class__ == StateCoreInfo
         assert StateIndex is None or type(StateIndex) == long
         assert StoreInputPositionF is not None
             
         if isinstance(X.__class__, StateCoreInfo):
             self.__add(X.clone())
         else:
-            self.__add(StateCoreInfo(PatternID             = X, 
+            self.__add(StateCoreInfo(AcceptanceID             = X, 
                                      StateIndex            = StateIndex, 
                                      AcceptanceF           = AcceptanceF,
                                      PreContextID          = PreContextID,
@@ -104,13 +104,13 @@ class StateOriginList(object):
     def clear(self):
         self.__list = []
 
-    def DELETED_adapt(self, PatternID, StateIndex):
+    def DELETED_adapt(self, AcceptanceID, StateIndex):
         """Adapts all origins so that their original state is 'StateIndex' in state machine
-           'PatternID'. Post- and pre-condition flags remain, and so the store input 
+           'AcceptanceID'. Post- and pre-condition flags remain, and so the store input 
            position flag.
         """
         for origin in self.__list:
-            origin.set_pattern_id(PatternID)
+            origin.set_pattern_id(AcceptanceID)
             origin.state_index = StateIndex 
 
     def delete_meaningless(self):
@@ -143,7 +143,7 @@ class StateOriginList(object):
                     if     origin.pre_context_id() == E_PreContextIDs.NONE \
                        and origin.is_acceptance())
         try:
-            result = min((origin for origin in iterable), key=lambda x: x.pattern_id())
+            result = min((origin for origin in iterable), key=lambda x: x.acceptance_id())
             return result
         except:
             return None
@@ -153,13 +153,13 @@ class StateOriginList(object):
            known at runtime which pre-context is actually fulfilled.
         """
         # Conditional acceptance on a pre-context is simply nonsense.
-        if MaxAcceptanceID == E_AcceptanceIDs.FAILURE:
+        if MaxAcceptanceID == E_IncidenceIDs.FAILURE:
             return (origin for origin in self.__list                  \
                     if origin.pre_context_id() != E_PreContextIDs.NONE)
         else:
             return (origin for origin in self.__list                       \
                     if     origin.pre_context_id() != E_PreContextIDs.NONE \
-                       and origin.pattern_id() < MaxAcceptanceID)
+                       and origin.acceptance_id() < MaxAcceptanceID)
 
     def get_store_iterable(self):
         """Return list of origins which tell something about storing the input
@@ -179,7 +179,7 @@ class StateOriginList(object):
            ... i.e. segmentation faults.
         """
         # NOTE: Acceptance origins sort before non-acceptance origins
-        self.__list.sort(key=lambda x: (not x.is_acceptance(), x.pattern_id()))
+        self.__list.sort(key=lambda x: (not x.is_acceptance(), x.acceptance_id()))
         new_origin_list = []
         unconditional_acceptance_found_f = False
         for origin in self.__list:
@@ -211,8 +211,8 @@ class StateOriginList(object):
             elif origin.input_position_store_f():                 break
             elif origin.input_position_restore_f():               break
         else:
-            # All origins are 'harmless'. Sort by pattern_id for the 'camera'.
-            for origin in sorted(self.__list, key=lambda x: x.pattern_id()):
+            # All origins are 'harmless'. Sort by acceptance_id for the 'camera'.
+            for origin in sorted(self.__list, key=lambda x: x.acceptance_id()):
                 txt += origin.get_string(OriginalStatesF=OriginalStatesF) + ", "
             txt = (txt[:-2] + "\n").replace("L","")     
             return txt

@@ -1,7 +1,7 @@
 from   quex.engine.analyzer.door_id_address_label import Label, \
                                                          DoorID, \
                                                          IfDoorIdReferencedLabel
-from   quex.blackboard                            import E_AcceptanceIDs, E_StateIndices, \
+from   quex.blackboard                            import E_IncidenceIDs, E_StateIndices, \
                                                          E_TransitionN, E_PostContextIDs, E_PreContextIDs, \
                                                          setup as Setup
 
@@ -47,7 +47,7 @@ def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateInd
     # (2.1) Pre-Context Check
     for i, element in enumerate(DropOut.get_acceptance_checker()):
         if     element.pre_context_id == E_PreContextIDs.NONE \
-           and element.acceptance_id  == E_AcceptanceIDs.VOID: 
+           and element.acceptance_id  == E_IncidenceIDs.VOID: 
                break
         txt.append(1)
         LanguageDB.IF_PRE_CONTEXT(txt, i == 0, element.pre_context_id, 

@@ -1,5 +1,5 @@
 from   quex.engine.interval_handling              import Interval
-from   quex.blackboard                            import E_StateIndices, E_ActionIDs
+from   quex.blackboard                            import E_StateIndices, E_IncidenceIDs
 from   quex.engine.tools                          import r_enumerate
 from   quex.engine.analyzer.mega_state.target     import TargetByStateKey
 from   quex.engine.analyzer.door_id_address_label import DoorID
@@ -589,7 +589,7 @@ class TransitionMap(list):
             self[i] = (interval, Replacement)
 
     def replace_action_id(self, ActionID, Action):
-        assert ActionID in E_ActionIDs
+        assert ActionID in E_IncidenceIDs
         assert Action is None or type(Action) == list
 
         for interval, action in self:
@@ -610,13 +610,13 @@ class TransitionMap(list):
             if type(action) != list: continue
             i = len(action) - 1
             while i >= 0:
-                if action[i] in E_ActionIDs:
+                if action[i] in E_IncidenceIDs:
                     del action[i]
                 i -= 1
         return
 
     def insert_after_action_id(self, ActionID, Action):
-        assert ActionID in E_ActionIDs
+        assert ActionID in E_IncidenceIDs
         assert Action is None or type(Action) == list
 
         if Action is None:

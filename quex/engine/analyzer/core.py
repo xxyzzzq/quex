@@ -53,7 +53,7 @@ import quex.engine.analyzer.engine_supply_factory as     engine
 from   quex.engine.misc.tree_walker               import TreeWalker
 from   quex.engine.state_machine.core             import StateMachine
 from   quex.blackboard  import setup as Setup
-from   quex.blackboard  import E_AcceptanceIDs, \
+from   quex.blackboard  import E_IncidenceIDs, \
                                E_TransitionN, \
                                E_PreContextIDs, \
                                E_Commands, \
@@ -219,7 +219,7 @@ class Analyzer:
         cl = ta.command_list
         if self.engine_type.is_BACKWARD_PRE_CONTEXT():
             cl.extend(
-                 PreContextOK(origin.pattern_id()) for origin in OldState.origins() \
+                 PreContextOK(origin.acceptance_id()) for origin in OldState.origins() \
                  if origin.is_acceptance() 
             )
 
@@ -363,10 +363,10 @@ class Analyzer:
             #     Use one trace as prototype. No related state needs to store
             #     acceptance at entry. 
             for x in accept_sequence:
-                result.accept(x.pre_context_id, x.pattern_id)
+                result.accept(x.pre_context_id, x.acceptance_id)
                 # No further checks necessary after unconditional acceptance
                 if     x.pre_context_id == E_PreContextIDs.NONE \
-                   and x.pattern_id     != E_AcceptanceIDs.FAILURE: break
+                   and x.acceptance_id     != E_IncidenceIDs.FAILURE: break
         else:
             # (ii) Non-Uniform Acceptance Patterns
             #
@@ -376,7 +376,7 @@ class Analyzer:
             #     -- The acceptance must be stored in the state where it occurs, 
             #     -- and it must be restored here.
             #
-            result.accept(E_PreContextIDs.NONE, E_AcceptanceIDs.VOID)
+            result.accept(E_PreContextIDs.NONE, E_IncidenceIDs.VOID)
 
             # Dependency: Related states are required to store acceptance at state entry.
             for accepting_state_index in self.__trace_db[StateIndex].accepting_state_index_list():
@@ -387,14 +387,14 @@ class Analyzer:
 
         # (*) Terminal Router
         for x in self.__trace_db[StateIndex].positioning_info():
-            result.route_to_terminal(x.pattern_id, x.transition_n_since_positioning)
+            result.route_to_terminal(x.acceptance_id, x.transition_n_since_positioning)
 
             if x.transition_n_since_positioning != E_TransitionN.VOID: continue
 
             # Request the storage of the position from related states.
             for state_index in x.positioning_state_index_set:
                 self.__require_position_storage_db[state_index].append(
-                        (StateIndex, x.pre_context_id, x.pattern_id))
+                        (StateIndex, x.pre_context_id, x.acceptance_id))
 
             # Later, a function will use the '__require_position_storage_db' to 
             # implement the position storage.
@@ -471,7 +471,7 @@ class Analyzer:
         # since they all come from trailing acceptances, we know that the acceptance of
         # this state preceeds (longest match). Thus, all the acceptances we add here 
         # preceed the already mentioned ones. Since they all trigger on lexemes of the
-        # same length, the only precendence criteria is the pattern_id.
+        # same length, the only precendence criteria is the acceptance_id.
         # 
         def add_Accepter(entry, PreContextId, PatternId):
             entry.add_Accepter_on_all(PreContextId, PatternId)
@@ -481,10 +481,10 @@ class Analyzer:
             # Only the trace content that concerns the current state is filtered out.
             # It should be the same for all traces through 'state_index'
             prototype = self.__trace_db[state_index].get_any_one()
-            for x in sorted(prototype, key=attrgetter("pattern_id", "pre_context_id")):
+            for x in sorted(prototype, key=attrgetter("acceptance_id", "pre_context_id")):
                 if x.accepting_state_index != state_index: 
                     continue
-                add_Accepter(entry, x.pre_context_id, x.pattern_id)
+                add_Accepter(entry, x.pre_context_id, x.acceptance_id)
 
     def acceptance_storage_post_pone_do(self, StateIndex, PatternId):
 
@@ -509,11 +509,11 @@ class Analyzer:
         """
         for state_index, info_list in self.__require_position_storage_db.iteritems():
             target_state_index_list = self.__to_db[state_index]
-            for end_state_index, pre_context_id, pattern_id in info_list:
+            for end_state_index, pre_context_id, acceptance_id in info_list:
                 # state_index      --> state that stores the input position
                 # end_state_index  --> state that stores the input position
                 # pre_context_id   --> pre_context which is concerned
-                # pattern_id       --> pattern which is concerned
+                # acceptance_id       --> pattern which is concerned
                 # Only consider target states which guide to the 'end_state_index'.
                 index_iterable = (i for i in target_state_index_list 
                                     if i in self.__path_element_db[end_state_index])
@@ -525,7 +525,7 @@ class Analyzer:
                     entry.add_StoreInputPosition(StateIndex       = target_index, 
                                                  FromStateIndex   = state_index, 
                                                  PreContextID     = pre_context_id, 
-                                                 PositionRegister = pattern_id, 
+                                                 PositionRegister = acceptance_id, 
                                                  Offset           = 0)
 
 

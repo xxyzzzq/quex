@@ -113,8 +113,8 @@ def parse_section(fh):
             elif blackboard.initial_mode is not None:
                 error_msg("start mode defined more than once!", fh, DontExitF=True)
                 error_msg("previously defined here",
-                          blackboard.initial_mode.filename,
-                          blackboard.initial_mode.line_n)
+                          blackboard.initial_mode.sr.file_name,
+                          blackboard.initial_mode.sr.line_n)
         
             blackboard.initial_mode = UserCodeFragment(mode_name, fh.name, 
                                                        get_current_line_info_number(fh))

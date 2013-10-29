@@ -1,4 +1,6 @@
-from quex.blackboard import E_AcceptanceIDs, E_PreContextIDs
+from quex.blackboard import E_IncidenceIDs, \
+                            E_PreContextIDs, \
+                            E_IncidenceIDs_SubsetAcceptanceIDs
 
 class StateCoreInfo(object): 
     """A StateCoreInfo tells about a state how it should behave in a state
@@ -64,7 +66,7 @@ class StateCoreInfo(object):
                  "__input_position_store_f",
                  "__input_position_restore_f")
 
-    def __init__(self, PatternID, StateIndex, AcceptanceF, 
+    def __init__(self, AcceptanceID, StateIndex, AcceptanceF, 
                  StoreInputPositionF=False, 
                  PreContextID=E_PreContextIDs.NONE,
                  RestoreInputPositionF=False):
@@ -72,15 +74,15 @@ class StateCoreInfo(object):
         assert type(AcceptanceF) == bool
         assert type(StoreInputPositionF) == bool
         assert type(RestoreInputPositionF) == bool
-        assert PatternID    in E_AcceptanceIDs or (isinstance(PatternID, long)    and PatternID >= 0) 
+        assert AcceptanceID    in E_IncidenceIDs_SubsetAcceptanceIDs or (isinstance(AcceptanceID, long)    and AcceptanceID >= 0) 
         assert PreContextID in E_PreContextIDs or (isinstance(PreContextID, long) and PreContextID >= 0), PreContextID
 
         if AcceptanceF: assert not StoreInputPositionF 
         else:           assert PreContextID == E_PreContextIDs.NONE
                
-        # NOT: PatternID != E_AcceptanceIDs.FAILURE => AcceptanceF == False
+        # NOT: AcceptanceID != E_IncidenceIDs.FAILURE => AcceptanceF == False
         #      State core info objects are also used for non-acceptance states of patterns
-        self.__pattern_id = PatternID
+        self.__pattern_id = AcceptanceID
         self.state_index  = StateIndex
 
         self.__acceptance_f             = AcceptanceF 
@@ -88,7 +90,7 @@ class StateCoreInfo(object):
         self.__input_position_restore_f = RestoreInputPositionF
         self.__pre_context_id           = PreContextID  
 
-    def clone(self, StateIndex=None, PreContextReplacementDB=None, PatternIDReplacementDB=None):
+    def clone(self, StateIndex=None, PreContextReplacementDB=None, AcceptanceIDReplacementDB=None):
         if StateIndex is not None: state_index = StateIndex
         else:                      state_index = self.state_index
 
@@ -97,7 +99,7 @@ class StateCoreInfo(object):
             if Value  not in TheEnum and DB is not None: return DB[Value]
             else:                                        return Value
 
-        return StateCoreInfo(produce(PatternIDReplacementDB, self.__pattern_id, E_AcceptanceIDs), 
+        return StateCoreInfo(produce(AcceptanceIDReplacementDB, self.__pattern_id, E_IncidenceIDs_SubsetAcceptanceIDs), 
                              state_index, 
                              self.__acceptance_f,
                              self.__input_position_store_f,
@@ -141,7 +143,7 @@ class StateCoreInfo(object):
         #if Other.__pre_context_id != E_PreContextIDs.NONE:    
         #    self.__pre_context_id  = Other.__pre_context_id 
 
-    def pattern_id(self):
+    def acceptance_id(self):
         return self.__pattern_id
 
     def set_pattern_id(self, Value):
@@ -196,7 +198,7 @@ class StateCoreInfo(object):
         return self.get_string()
 
     def is_meaningful(self):
-        if   self.__pattern_id != E_AcceptanceIDs.FAILURE: return True
+        if   self.__pattern_id != E_IncidenceIDs.FAILURE: return True
         elif self.state_index      != -1L:                 return True
         elif self.__acceptance_f:                          return True
         elif self.__input_position_store_f:                return True
@@ -207,7 +209,7 @@ class StateCoreInfo(object):
         txt = ""
 
         if StateMachineAndStateInfoF:
-            if self.__pattern_id != E_AcceptanceIDs.FAILURE:
+            if self.__pattern_id != E_IncidenceIDs.FAILURE:
                 txt += ", " + repr(self.__pattern_id).replace("L", "")
             if OriginalStatesF and self.state_index != -1L:
                 txt += ", " + repr(self.state_index).replace("L", "")

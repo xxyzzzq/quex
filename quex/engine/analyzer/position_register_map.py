@@ -71,19 +71,19 @@ def do(analyzer):
     else:
         # The 'Dumb' solution (for debugging)
         # Each pattern gets is own position register.
-        result = dict((pattern_id, i) for i, pattern_id in enumerate(cannot_db.iterkeys()))
+        result = dict((acceptance_id, i) for i, acceptance_id in enumerate(cannot_db.iterkeys()))
 
     return result
 
 def get_cannot_db(analyzer):
     """
-    Determine for each position register (identified by pattern_id) the set of 
+    Determine for each position register (identified by acceptance_id) the set of 
     position register. The condition for this is given at the entrance of this file.
 
     RETURNS:   
     
         map:  
-              pattern_id --> list of pattern_ids that it cannot be combined with.
+              acceptance_id --> list of pattern_ids that it cannot be combined with.
     """
     # Database that maps for each state with post context id with which post context id
     # it cannot be combined.
@@ -104,14 +104,14 @@ def get_cannot_db(analyzer):
 
         for i, x in enumerate(entry_list):
             # Ensure, the database has at least one entry.
-            if not db.has_key(x.pattern_id): db[x.pattern_id] = set()
+            if not db.has_key(x.acceptance_id): db[x.acceptance_id] = set()
             for y in entry_list[i+1:]:
                 # If the positioning state differs, and we need to restore here, 
                 # then the position register cannot be shared.
                 if x.positioning_state_index_set == y.positioning_state_index_set: continue
                 # Note, that in particular if x == y, it is left out of consideration
-                db[x.pattern_id].add(y.pattern_id)
-                db[y.pattern_id].add(x.pattern_id)
+                db[x.acceptance_id].add(y.acceptance_id)
+                db[y.acceptance_id].add(x.acceptance_id)
 
     for state_index, paths_info in analyzer.trace_db.iteritems():
         cannot_db_update(cannot_db, paths_info.positioning_info())
@@ -125,9 +125,9 @@ def get_combinable_candidates(cannot_db):
 
     combinable_list = []
     done_set        = set()
-    for pattern_id, cannot_set in cannot_db.iteritems():
+    for acceptance_id, cannot_set in cannot_db.iteritems():
         candidate_list = list(all_post_context_id_list.difference(cannot_set))
-        assert pattern_id in candidate_list
+        assert acceptance_id in candidate_list
 
         # Delete all candidates that cannot be be combined with the remainder
         # Consider those patterns first that have the largest set of 'cannot-s'.
@@ -137,7 +137,7 @@ def get_combinable_candidates(cannot_db):
         while i < size:
             candidate  = candidate_list[i]
             cannot_set = cannot_db[candidate]
-            if      ((candidate == pattern_id) or (cannot_set.isdisjoint(candidate_list))) \
+            if      ((candidate == acceptance_id) or (cannot_set.isdisjoint(candidate_list))) \
                 and (candidate not in done_set):
                 i += 1                # candidate can stay, go to next
             else:
@@ -151,7 +151,7 @@ def get_combinable_candidates(cannot_db):
     return combinable_list
 
 def get_mapping(combinable_list):
-    """Determine the mapping from pattern_id to the register id that can be used
+    """Determine the mapping from acceptance_id to the register id that can be used
        to index into an array.
     """
     result      = {}
@@ -161,8 +161,8 @@ def get_mapping(combinable_list):
         k           = max(enumerate(combinable_list), key=lambda x: len(x[1]))[0]
         combination = combinable_list.pop(k)
 
-        for pattern_id in (x for x in combination if not result.has_key(x)):
-            result[pattern_id] = array_index
+        for acceptance_id in (x for x in combination if not result.has_key(x)):
+            result[acceptance_id] = array_index
 
         # Since: -- The combinations only contain post_context_id's that have not been
         #           mentioned before, and
@@ -185,11 +185,11 @@ def print_this(TheAnalyzer):
         position_info = paths_info.positioning_info()
         print "State %i:" % state_index
         txt = ""
-        for x in sorted(position_info, key=attrgetter("pattern_id")): 
+        for x in sorted(position_info, key=attrgetter("acceptance_id")): 
             if x.transition_n_since_positioning == E_TransitionN.VOID:
                 txt += "    (*) "
             else: 
                 txt += "        "
-            txt += "[%7s]: %s/%s\n" % (x.pattern_id, x.pre_context_id, x.positioning_state_index_set)
+            txt += "[%7s]: %s/%s\n" % (x.acceptance_id, x.pre_context_id, x.positioning_state_index_set)
         print txt
 

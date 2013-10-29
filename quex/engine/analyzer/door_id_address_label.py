@@ -1,6 +1,6 @@
-import quex.engine.state_machine.index         as     index
-from   quex.engine.tools                       import print_callstack, TypedDict, TypedSet
-from   quex.blackboard import E_AcceptanceIDs, E_StateIndices, E_DoorIdIndex
+import quex.engine.state_machine.index  as     index
+from   quex.engine.tools                import print_callstack, TypedDict, TypedSet
+from   quex.blackboard                  import E_IncidenceIDs, E_StateIndices, E_DoorIdIndex
 
 from   collections import namedtuple
 #______________________________________________________________________________
@@ -51,7 +51,7 @@ from   collections import namedtuple
 #______________________________________________________________________________
 class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
     def __new__(self, StateIndex, DoorIndex, PlainF=False):
-        assert isinstance(StateIndex, (int, long)) or StateIndex in E_StateIndices or StateIndex == E_AcceptanceIDs.FAILURE
+        assert isinstance(StateIndex, (int, long)) or StateIndex in E_StateIndices or StateIndex == E_IncidenceIDs.FAILURE
         # 'DoorIndex is None' --> right after the entry commands (targetted after reload).
         assert isinstance(DoorIndex, (int, long))  or DoorIndex is None or DoorIndex in E_DoorIdIndex, "%s" % DoorIndex
 

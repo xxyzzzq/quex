@@ -7,7 +7,7 @@ from   quex.engine.analyzer.state.drop_out        import DropOut, \
                                                          DropOutBackwardInputPositionDetection
 from   quex.engine.analyzer.transition_map        import TransitionMap       
 
-from   quex.blackboard import E_AcceptanceIDs, \
+from   quex.blackboard import E_IncidenceIDs, \
                               E_TransitionN, \
                               E_StateIndices
 from   itertools import chain
@@ -147,7 +147,7 @@ def _drop_out_cost(X, StateIndexN):
     #    acceptance = Const;
     # After:
     #        ...
-    La = len(filter(lambda x: x.acceptance_id != E_AcceptanceIDs.VOID, X.get_acceptance_checker()))
+    La = len(filter(lambda x: x.acceptance_id != E_IncidenceIDs.VOID, X.get_acceptance_checker()))
     assignment_n  = La
     goto_n        = La
     cmp_n         = La

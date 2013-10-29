@@ -5,7 +5,7 @@ import quex.engine.state_machine.index           as     state_machine_index
 from   quex.engine.state_machine.target_map      import TargetMap
 from   quex.engine.state_machine.state_core_info import StateCoreInfo
 from   quex.engine.state_machine.origin_list     import StateOriginList
-from   quex.blackboard                           import E_AcceptanceIDs, \
+from   quex.blackboard                           import E_IncidenceIDs, \
                                                         E_PreContextIDs, \
                                                         E_Border, \
                                                         deprecated
@@ -28,13 +28,13 @@ class State:
     # Objects of this class are to be used in class StateMachine, where a 
     # dictionary maps from a start state index to a State-object.
     ## Little Slower: __slots__ = ('__core', '__origin_list', '__target_map')
-    def __init__(self, AcceptanceF=False, StateMachineID=E_AcceptanceIDs.FAILURE, StateIndex=-1L, 
+    def __init__(self, AcceptanceF=False, StateMachineID=E_IncidenceIDs.FAILURE, StateIndex=-1L, 
                  AltOriginList=None, AltTM=None):
         """Contructor of a State, i.e. a aggregation of transitions.
         """
         if AltOriginList is None:
             self.__origin_list    = StateOriginList([
-                                      StateCoreInfo(PatternID   = StateMachineID, 
+                                      StateCoreInfo(AcceptanceID   = StateMachineID, 
                                                     StateIndex  = StateIndex, 
                                                     AcceptanceF = AcceptanceF)
                                     ])
@@ -66,13 +66,13 @@ class State:
     def __merge(self, Other):
         self.origins().merge(Other.origins().get_list()) 
 
-    def clone(self, ReplacementDictionary=None, StateIndex=None, PreContextReplacementDB=None, PatternIDReplacementDB=None):
+    def clone(self, ReplacementDictionary=None, StateIndex=None, PreContextReplacementDB=None, AcceptanceIDReplacementDB=None):
         """Creates a copy of all transitions, but replaces any state index with the ones 
            determined in the ReplacementDictionary."""
         assert ReplacementDictionary is None or isinstance(ReplacementDictionary, dict)
         assert StateIndex is None            or isinstance(StateIndex, long)
         result = State(AltOriginList = self.__origin_list.clone(PreContextReplacementDB=PreContextReplacementDB,
-                                                                PatternIDReplacementDB=PatternIDReplacementDB),
+                                                                AcceptanceIDReplacementDB=AcceptanceIDReplacementDB),
                        AltTM         = self.__target_map.clone())
 
         # if replacement of indices is desired, than do it
@@ -210,7 +210,7 @@ class StateMachine(object):
         result.add_transition(result.init_state_index, CharacterSet, AcceptanceF=True)
         return result
 
-    def clone(self, ReplacementDB=None, PreContextReplacementDB=None, PatternIDReplacementDB=None):
+    def clone(self, ReplacementDB=None, PreContextReplacementDB=None, AcceptanceIDReplacementDB=None):
         """Clone state machine, i.e. create a new one with the same behavior,
         i.e. transitions, but with new unused state indices. This is used when
         state machines are to be created that combine the behavior of more
@@ -238,8 +238,8 @@ class StateMachine(object):
 
         assert_uniqueness(ReplacementDB)
         assert_uniqueness(PreContextReplacementDB)
-        assert_uniqueness(PatternIDReplacementDB)
-        assert_transitivity(PatternIDReplacementDB)
+        assert_uniqueness(AcceptanceIDReplacementDB)
+        assert_transitivity(AcceptanceIDReplacementDB)
 
         # (*) create the new state machine
         #     (this has to happen first, to get an init_state_index)
@@ -262,7 +262,7 @@ class StateMachine(object):
             result.states[new_state_idx] = \
                     self.states[state_idx].clone(replacement, 
                                                  PreContextReplacementDB=PreContextReplacementDB,
-                                                 PatternIDReplacementDB=PatternIDReplacementDB)
+                                                 AcceptanceIDReplacementDB=AcceptanceIDReplacementDB)
         
         return result
 
@@ -272,7 +272,7 @@ class StateMachine(object):
         
         return self.clone(index_map, 
                           PreContextReplacementDB=pre_context_map, 
-                          PatternIDReplacementDB=pattern_id_map)
+                          AcceptanceIDReplacementDB=pattern_id_map)
 
     def delete_orphaned_states(self):
         """Remove all orphan states.
@@ -978,7 +978,7 @@ class StateMachine(object):
 
         return index_map, inverse_index_map, index_sequence
 
-    def get_pattern_and_pre_context_normalization(self, PreContextID_Offset=None, PatternID_Offset=None):
+    def get_pattern_and_pre_context_normalization(self, PreContextID_Offset=None, AcceptanceID_Offset=None):
         pre_context_id_set = set()
         pattern_id_set     = set()
         def enter(collection, Value, TheEnum):
@@ -988,11 +988,11 @@ class StateMachine(object):
         for state in self.states.itervalues():
             for origin in state.origins():
                 enter(pre_context_id_set, origin.pre_context_id(), E_PreContextIDs)
-                enter(pattern_id_set,     origin.pattern_id(),     E_AcceptanceIDs)
+                enter(pattern_id_set,     origin.acceptance_id(),  E_IncidenceIDs_AcceptanceIDs)
 
         def get_map(id_set, Offset):
             """The 'order' of the IDs must be maintained! In particular, a 
-            PatternID with higher precedence than another, must remain of 
+            AcceptanceID with higher precedence than another, must remain of 
             higher precedence."""
             result = {}
             for x in sorted(id_set):
@@ -1000,11 +1000,11 @@ class StateMachine(object):
             return result
 
         if PreContextID_Offset is None: PreContextID_Offset = 1 # Avoid ID = 0
-        if PatternID_Offset    is None: PatternID_Offset    = 1 # Avoid ID = 0
+        if AcceptanceID_Offset    is None: AcceptanceID_Offset    = 1 # Avoid ID = 0
         assert PreContextID_Offset > 0
-        assert PatternID_Offset    > 0
+        assert AcceptanceID_Offset    > 0
         return get_map(pre_context_id_set, PreContextID_Offset), \
-               get_map(pattern_id_set, PatternID_Offset)
+               get_map(pattern_id_set, AcceptanceID_Offset)
 
     def get_string(self, NormalizeF=False, Option="utf8", OriginalStatesF=True):
         assert Option in ["utf8", "hex"]

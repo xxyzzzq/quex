@@ -137,13 +137,13 @@ def __get_mode_init_call(mode):
     if mode.options["inheritable"] == "only": 
         analyzer_function = "QUEX_NAME(Mode_uncallable_analyzer_function)"
 
-    if len(mode.get_code_fragment_list("on_entry")) == 0:
+    if len(mode.incidence_db[E_IncidenceIDs.MODE_ENTRY]) == 0:
         on_entry = "QUEX_NAME(Mode_on_entry_exit_null_function)"
 
-    if len(mode.get_code_fragment_list("on_exit")) == 0:
+    if len(mode.incidence_db[E_IncidenceIDs.MODE_EXIT]) == 0:
         on_exit = "QUEX_NAME(Mode_on_entry_exit_null_function)"
 
-    if len(mode.get_code_fragment_list("on_indentation")) == 0:
+    if len(mode.incidence_db[E_IncidenceIDs.INDENTATION]) == 0:
         on_indentation = "QUEX_NAME(Mode_on_indentation_null_function)"
 
     txt = blue_print(quex_mode_init_call_str,
@@ -182,14 +182,16 @@ def __get_mode_function_declaration(Modes, FriendF=False):
                                 "QUEX_TYPE_ANALYZER*")
 
         # If one of the following events is specified, then we need an 'on_indentation' handler
-        for event_name in ["on_indentation"]:
-            if not mode.has_code_fragment_list(event_name): continue
+        if mode.incidence_db.has_key(E_IncidenceIDs.INDENTATION): 
             on_indentation_txt = __mode_functions(prolog, "void", ["on_indentation"], 
                                  "QUEX_TYPE_ANALYZER*, QUEX_TYPE_INDENTATION, QUEX_TYPE_CHARACTER*")
 
-        for event_name in ["on_exit", "on_entry"]:
-            if not mode.has_code_fragment_list(event_name): continue
-            txt += __mode_functions(prolog, "void", [event_name], 
+        if mode.incidence_db.has_key(E_IncidenceIDs.MODE_ENTRY): 
+            txt += __mode_functions(prolog, "void", ["on_entry"], 
+                                    "QUEX_TYPE_ANALYZER*, const QUEX_NAME(Mode)*")
+
+        if mode.incidence_db.has_key(E_IncidenceIDs.MODE_EXIT): 
+            txt += __mode_functions(prolog, "void", ["on_exit"], 
                                     "QUEX_TYPE_ANALYZER*, const QUEX_NAME(Mode)*")
 
         txt += "#ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"

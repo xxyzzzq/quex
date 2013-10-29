@@ -46,7 +46,7 @@ class X:
                 for origin in result.states[s_idx].origins():
                     if not origin.is_acceptance(): continue
                     # HERE: As soon as something is wrong --> fire an exception
-                    assert origin.pattern_id() == self.id
+                    assert origin.acceptance_id() == self.id
         print " (OK=%i)" % self.id
 
 def check_negative(SM, ImpossibleIntervals):
