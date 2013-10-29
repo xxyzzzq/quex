@@ -4,7 +4,7 @@ from   quex.engine.misc.file_in import \
                                        get_current_line_info_number, \
                                        error_msg
 from   quex.engine.generator.code_fragment_base import CodeFragment
-from   quex.blackboard import setup as Setup, E_ActionIDs
+from   quex.blackboard import setup as Setup, E_IncidenceIDs, SourceRef
 
 UserCodeFragment_OpenLinePragma = {
 #___________________________________________________________________________________
@@ -35,6 +35,11 @@ UserCodeFragment_OpenLinePragma = {
         ],
    }
 
+class CodeFragmentIterim(CodeFragment):
+    def __init__(self, TheCommandList, SubsequentIncidenceId):
+        self.command_list            = TheCommandList
+        self.subsequent_incidence_id = SubsequentIncidenceId
+
 class UserCodeFragment(CodeFragment):
     def __init__(self, Code, FileName, LineN, LanguageDB=None):
         assert isinstance(Code, (str, unicode))
@@ -42,8 +47,7 @@ class UserCodeFragment(CodeFragment):
         assert isinstance(FileName, (str, unicode))
         assert isinstance(LineN, (int, long, float))
 
-        self.filename = FileName
-        self.line_n   = LineN
+        self.sr = SourceRef(FileName, LineN)
 
         CodeFragment.__init__(self, Code)
 
@@ -57,7 +61,7 @@ class UserCodeFragment(CodeFragment):
         if len(Code.strip()) == 0: return ""
 
         # Even under Windows (tm), the '/' is accepted. Thus do not rely on 'normpath'
-        norm_filename = Setup.get_file_reference(self.filename) 
+        norm_filename = Setup.get_file_reference(self.sr.file_name) 
         txt  = '\n#   line %i "%s"\n' % (self.line_n, norm_filename)
         txt += Code
         if ReturnToSourceF:
@@ -68,7 +72,7 @@ class UserCodeFragment(CodeFragment):
 class GeneratedCode(UserCodeFragment):
     def __init__(self, GeneratorFunction, FileName=-1, LineN=None):
         self.function = GeneratorFunction
-        self.data     = { "indentation_counter_terminal_id": None, }
+        self.data     = { }
         UserCodeFragment.__init__(self, "", FileName, LineN)
 
     def get_code(self, Mode=None):
@@ -79,7 +83,7 @@ class GeneratedCode(UserCodeFragment):
 
 class PatternActionInfo:
     def __init__(self, ThePattern, Action, PatternStr="", IL = None, ModeName="", Comment=""):
-        assert    ThePattern in E_ActionIDs \
+        assert    ThePattern in E_IncidenceIDs \
                or (ThePattern.__class__.__name__ == "Pattern") \
                or (ThePattern is None)
 
@@ -94,12 +98,12 @@ class PatternActionInfo:
         self.comment       = Comment
 
     @property
-    def line_n(self): return self.action().line_n
+    def line_n(self): return self.action().sr.line_n
     @property
-    def file_name(self): return self.action().filename
+    def file_name(self): return self.action().sr.file_name
 
-    def pattern_id(self):
-        if self.__pattern in E_ActionIDs: return self.__pattern 
+    def acceptance_id(self):
+        if self.__pattern in E_IncidenceIDs: return self.__pattern 
         else:                             return self.__pattern.sm.get_id()
     def pattern(self):
         return self.__pattern
@@ -116,31 +120,20 @@ class PatternActionInfo:
                type(Action) in [str, unicode]
         self.__action = Action
 
-    def get_action_location(self):
-        """RETURNS:  FileName, LineN   in case that it can be specified.
-                     -1, None          in case it cannot be specified.
-
-           This corresponds to the required input for 'error_msg'.
-        """
-        if hasattr(self.__action, "filename") and hasattr(self.__action, "line_n"):
-            return self.__action.filename, self.__action.line_n
-        else:
-            return -1, None
-
     def pattern_index(self):
         return self.pattern_state_machine().get_id()
 
     def __repr__(self):         
         txt  = ""
         txt += "self.mode_name      = %s\n" % repr(self.mode_name)
-        if self.pattern() not in E_ActionIDs:
+        if self.pattern() not in E_IncidenceIDs:
             txt += "self.pattern_string = %s\n" % repr(self.pattern_string())
         txt += "self.pattern        = %s\n" % repr(self.pattern()).replace("\n", "\n      ")
         txt += "self.action         = %s\n" % self.action().get_code_string()
         if self.action().__class__ == UserCodeFragment:
-            txt += "self.filename   = %s\n" % repr(self.action().filename) 
-            txt += "self.line_n     = %s\n" % repr(self.action().line_n) 
-        if self.pattern() not in E_ActionIDs:
+            txt += "self.file_name  = %s\n" % repr(self.action().sr.file_name) 
+            txt += "self.line_n     = %s\n" % repr(self.action().sr.line_n) 
+        if self.pattern() not in E_IncidenceIDs:
             txt += "self.pattern_index  = %s\n" % repr(self.pattern().sm.get_id()) 
         return txt
 
@@ -149,13 +142,11 @@ class LocalizedParameter:
         self.name      = Name
         self.__default = Default
         if FH == -1:
-            self.__value   = None
-            self.file_name = ""
-            self.line_n    = -1
+            self.__value = None
+            self.sr      = SourceRef("", -1)
         else:
-            self.__value   = Default
-            self.file_name = FH.name
-            self.line_n    = get_current_line_info_number(FH)
+            self.__value = Default
+            self.sr      = SourceRef.from_FileHandle(FH)
         self.__pattern_string = PatternStr
 
     def set(self, Value, fh):
@@ -180,14 +171,6 @@ class LocalizedParameter:
 
     def pattern_string(self):
         return self.__pattern_string
-
-    def get_action_location(self):
-        """RETURNS:  FileName, LineN   in case that it can be specified.
-                     -1, None          in case it cannot be specified.
-
-           This corresponds to the required input for 'error_msg'.
-        """
-        return self.file_name, self.line_n
 
     @property
     def comment(self):

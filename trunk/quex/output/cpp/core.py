@@ -5,7 +5,7 @@ from   quex.engine.tools                           import all_isinstance
 import quex.output.cpp.action_preparation          as     action_preparation
 import quex.output.cpp.counter                     as     counter
 from   quex.blackboard                             import setup as Setup, \
-                                                          E_ActionIDs
+                                                          E_IncidenceIDs
 
 def do_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
 
@@ -20,6 +20,8 @@ def do_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
     #     'get_code()' happens. During parsing a 'GeneratedCode' object
     #     has been generated. When its 'get_code()' function is called,
     #     the skipper/indentation counter generation function is called.
+    generator = CppGenerator(Mode.pattern_list, Mode.incidence_db, IndentationSupportF, BeginOfLineSupportF)
+
     pattern_action_pair_list = action_preparation.do(Mode, 
                                                      IndentationSupportF, 
                                                      BeginOfLineSupportF)
@@ -30,7 +32,7 @@ def do_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
     # (*) Generate the counter first!
     #     (It may implement a state machine with labels and addresses
     #      which are not relevant for the main analyzer function.)
-    counter_txt = do_counter(Mode)
+    counter_txt = do_counter(Mode, Mode.default_character_counter_required_f())
 
     return counter_txt + core_txt
 
@@ -92,11 +94,11 @@ def do_core(PatternActionPair_List):
 
     return function_body, variable_definitions, generator.on_after_match_f
 
-def do_counter(Mode):
+def do_counter(Mode, DefaultCharacterCounterRequiredF):
     dial_db.clear()
     variable_db.init()
 
-    if not Mode.default_character_counter_required_f():
+    if not DefaultCharacterCounterRequiredF:
         return ""
 
     default_character_counter_function_name,   \

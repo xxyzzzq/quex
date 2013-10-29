@@ -296,7 +296,7 @@ class HopcroftMinization:
                for states of the same set (== same key).
             """
             return tuple(sorted(
-                   [x.pattern_id() for x in ifilter(lambda y: y.is_acceptance(), state.origins())]
+                   [x.acceptance_id() for x in ifilter(lambda y: y.is_acceptance(), state.origins())]
             ))
 
         distinguisher_db = defaultdict(list)
@@ -325,7 +325,7 @@ class HopcroftMinization:
             """
             result = {}
             for x in state.origins():
-                result[x.pattern_id()] = x.input_position_store_f()
+                result[x.acceptance_id()] = x.input_position_store_f()
             return result
 
         state_set_iterable = distinguisher_db.values()
@@ -344,14 +344,14 @@ class HopcroftMinization:
             
             extracted    = set()
             # Extract those buddies from 'state_set', where there is an origin that differs
-            # where there is a difference in 'input_position_store_f' for a given pattern_id.
+            # where there is a difference in 'input_position_store_f' for a given acceptance_id.
             for buddy_state_index, buddy_state in ((i, self.sm.states[i]) for i in remainder):
                 buddy_db = store_info(buddy_state)
                 # Only consider the state machines that they have in common
                 # (Origins from different state machines can be combined arbitrarily)
-                for pattern_id in prototype_pattern_id_set.intersection(buddy_db.keys()):
+                for acceptance_id in prototype_pattern_id_set.intersection(buddy_db.keys()):
                     # Both are storing, or both are not storing, then fine.
-                    if prototype_db[pattern_id] == buddy_db[pattern_id]: continue
+                    if prototype_db[acceptance_id] == buddy_db[acceptance_id]: continue
                     # Otherwise, extract.
                     extracted.add(buddy_state_index)
                     state_set.remove(buddy_state_index)

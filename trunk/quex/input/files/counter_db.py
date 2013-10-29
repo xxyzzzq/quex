@@ -4,7 +4,7 @@ from   quex.engine.generator.base                   import LoopGenerator
 from   quex.engine.analyzer.transition_map          import TransitionMap
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.blackboard import setup as Setup, \
-                              E_ActionIDs
+                              E_IncidenceIDs
 
 from   collections import namedtuple
 

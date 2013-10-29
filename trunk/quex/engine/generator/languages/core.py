@@ -18,7 +18,7 @@ from   quex.engine.analyzer.door_id_address_label import Label, \
                                                         get_plain_strings
 from   quex.blackboard                           import setup as Setup, \
                                                         E_StateIndices,  \
-                                                        E_AcceptanceIDs, \
+                                                        E_IncidenceIDs, \
                                                         E_InputActions,  \
                                                         E_TransitionN,   \
                                                         E_PreContextIDs, \
@@ -174,7 +174,7 @@ class LanguageDB_Cpp(dict):
                 else:
                     txt.append("    %s" % else_str)
                 txt.append("{ last_acceptance = %s; __quex_debug(\"last_acceptance = %s\\n\"); }\n" \
-                           % (self.ACCEPTANCE(element.pattern_id), self.ACCEPTANCE(element.pattern_id)))
+                           % (self.ACCEPTANCE(element.acceptance_id), self.ACCEPTANCE(element.acceptance_id)))
                 else_str = "else "
             return "".join(txt)
 
@@ -332,8 +332,8 @@ class LanguageDB_Cpp(dict):
     def GOTO_BY_DOOR_ID(self, DoorId):
         assert DoorId.__class__.__name__ == "DoorID"
 
-        if     DoorId.door_index == E_DoorIdIndex.ACCEPTANCE \
-           and DoorId.state_index == E_AcceptanceIDs.VOID:
+        if     DoorId.door_index  == E_DoorIdIndex.ACCEPTANCE \
+           and DoorId.state_index == E_IncidenceIDs.VOID:
              return "QUEX_GOTO_TERMINAL(last_acceptance);"
         # Only for normal 'forward analysis' the from state is of interest.
         # Because, only during forward analysis some actions depend on the 
@@ -431,7 +431,7 @@ class LanguageDB_Cpp(dict):
         return "QUEX_NAME(pop_mode)(&self);"
 
     def ACCEPTANCE(self, AcceptanceID):
-        if AcceptanceID == E_AcceptanceIDs.FAILURE: return "((QUEX_TYPE_ACCEPTANCE_ID)-1)"
+        if AcceptanceID == E_IncidenceIDs.FAILURE: return "((QUEX_TYPE_ACCEPTANCE_ID)-1)"
         else:                                       return "%i" % AcceptanceID
 
     def IF(self, LValue, Operator, RValue, FirstF=True):

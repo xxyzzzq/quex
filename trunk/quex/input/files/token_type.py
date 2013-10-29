@@ -515,8 +515,8 @@ def parse_variable_definition(fh, GroupF=False, already_defined_list=[]):
 
 def __validate_definition(TheCodeFragment, NameStr, 
                           AlreadyMentionedList, StandardMembersF):
-    FileName = TheCodeFragment.filename
-    LineN    = TheCodeFragment.line_n
+    FileName = TheCodeFragment.sr.file_name
+    LineN    = TheCodeFragment.sr.line_n
     if StandardMembersF:
         verify_word_in_list(NameStr, TokenType_StandardMemberList, 
                             "Member name '%s' not allowed in token_type section 'standard'." % NameStr, 
@@ -539,7 +539,7 @@ def __validate_definition(TheCodeFragment, NameStr,
         error_msg("Token type member name '%s' defined twice." % NameStr,
                   FileName, LineN, DontExitF=True)
         error_msg("Previously defined here.",
-                  candidate[1].filename, candidate[1].line_n)
+                  candidate[1].sr.file_name, candidate[1].sr.line_n)
 
 _warning_msg = \
 """Section token_type does not contain a 'take_text' section. It would be

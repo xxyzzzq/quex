@@ -25,7 +25,7 @@ from   quex.engine.interval_handling                   import NumberSet, Interva
 from   quex.engine.tools                               import all_isinstance
 from   quex.input.regular_expression.construct         import Pattern
 
-from   quex.blackboard import E_ActionIDs, \
+from   quex.blackboard import E_IncidenceIDs, \
                               E_StateIndices, \
                               E_MapImplementationType, \
                               setup as Setup
@@ -39,18 +39,23 @@ Match_input    = re.compile("\\binput\\b", re.UNICODE)
 Match_iterator = re.compile("\\iterator\\b", re.UNICODE)
 
 class GeneratorBase:
-    def __init__(self, PatternActionPair_List):
-        assert type(PatternActionPair_List) == list
-        for x in PatternActionPair_List:
-            assert    isinstance(x, PatternActionInfo) \
-                   or x.pattern() in E_ActionIDs, repr(x)
+    def __init__(self, PatternList, IncidenceDb, IndentationSupportF, BeginOfLineSupportF):
+        assert isinstance(PatternActionPair_List, list)
+        assert isinstance(IncidenceDb, dict)
+        assert type(IndentationSupportF) == bool
+        assert type(BeginOfLineSupportF) == bool
 
-        # self.state_machine_name = StateMachineName
+        # .sm
+        # .pre_context_sm
+        # .bipd_db
 
         # -- setup of state machine lists and id lists
-        self.__prepare(PatternActionPair_List)
+        self.__prepare_sm_lists(PatternList)
+        self.__prepare_terminals(IncidenceDb)
 
-        # (*) create state (combined) state machines
+        self.on_after_match_f = E_IncidenceIDs.AFTER_MATCH in IncidenceDb
+
+        # (*) create (combined) state machines
         #     -- core state machine
         self.sm = get_combined_state_machine(self.state_machine_list)
 
@@ -61,48 +66,57 @@ class GeneratorBase:
         else:
             self.pre_context_sm = None
 
-    def __prepare(self, PatternActionPair_List):
-        # -- Distinguish between 'real' pattern actions and actions related to 
-        #    events, such as ON_END_OF_STREAM, ON_FAILURE, ...
-        #    Note, that events are not related to a state machine. Patterns are.
-        pattern_list   = [(pap, pap.pattern()) for pap in PatternActionPair_List if pap.pattern() not in E_ActionIDs]
-        action_id_list = [(pap, pap.pattern()) for pap in PatternActionPair_List if pap.pattern() in E_ActionIDs]
+    def __prepare_terminals(self, IncidenceDb):
+        factory = TerminalStateFactory(IncidenceDb, IndentationSupportF, BeginOfLineSupportF)
 
-        # -- action_db: distinguish between event actions (ON_FAILURE, ...) 
-        #               and pattern actions.
-        ## self.action_db = dict((action_id,           pap) for pap, action_id in action_id_list)
-        ## self.action_db.update((pattern.sm.get_id(), pap) for pap, pattern in pattern_list)
-        self.on_after_match_f = E_ActionIDs.ON_AFTER_MATCH in (action_id for pap, action_id in action_id_list)
+        self.terminal_state_db = {}
+        for incidence_id, code_fragment in IncidenceDb:
+            if    incidence_id == E_IncidenceIDs.END_OF_STREAM \
+               or incidence_id == E_IncidenceIDs.FAILURE:
+                continue
 
-        # -- Terminal states:
-        self.terminal_state_db = dict(
-            (pap.pattern_id(), TerminalState(pap.pattern_id(), pap.action())) 
-            for pap in PatternActionPair_List
-        )
+            terminal = factory.do(incidence_id, code_fragment)
+            # The factory returns 'None' if the incidence is not related to a
+            # dedicated terminal state, e.g. 'ON_MATCH', 'NODENT', etc.
+            if terminal is None: continue
+            self.terminal_state_db[incidence_id] = terminal
 
+        self.terminal_state_db[E_IncidenceIDs.END_OF_STREAM] = factory.do_OnEndOfStream()
+        self.terminal_state_db[E_IncidenceIDs.FAILURE]       = factory.do_OnFailure()
+
+
+    def __prepare_sm_lists(self, PatternList):
         # -- Core state machines of patterns
-        self.state_machine_list = [ pattern.sm for pap, pattern in pattern_list ]
+        self.state_machine_list = [ pattern.sm for pap, pattern in PatternList ]
 
         # -- Pre-Contexts
-        self.pre_context_sm_list       = [    pattern.pre_context_sm for pap, pattern in pattern_list \
-                                           if pattern.pre_context_sm is not None ]
-        self.pre_context_sm_id_list    = [    pattern.pre_context_sm.get_id() for pap, pattern in pattern_list \
-                                           if pattern.pre_context_sm is not None ]
-
-        # -- Post-Context-IDs
-        self.post_contexted_sm_id_list = [    pattern.sm.get_id() for pap, pattern in pattern_list \
-                                           if pattern.has_post_context ]
+        self.pre_context_sm_list = [    
+            pattern.pre_context_sm for pap, pattern in PatternList \
+            if pattern.pre_context_sm is not None 
+        ]
 
         # -- Backward input position detection (BIPD)
-        self.bipd_db  = dict( 
+        self.bipd_db = dict( 
             (pattern.sm.get_id(), pattern.bipd_sm)
-            for pap, pattern in pattern_list if pattern.bipd_sm is not None 
+            for pap, pattern in PatternList if pattern.bipd_sm is not None 
         )
 
-        # -- Ids of patterns which require on-the-fly line/column number counting
-        self.pattern_id_list_counting_required = [    pattern.sm.get_id() for pap, pattern in pattern_list \
-                                                   if pattern.count_info() is None or pattern.count_info().counting_required_f() ]
-
+        # -- ID Collections:
+        #    ids of pre-contexts
+        self.pre_context_sm_id_list = [    
+            pattern.pre_context_sm.get_id() for pap, pattern in PatternList \
+            if pattern.pre_context_sm is not None 
+        ]
+        #    ids of post-contexts
+        self.post_contexted_sm_id_list = [    
+            pattern.sm.get_id() for pap, pattern in PatternList \
+            if pattern.has_post_context() 
+        ]
+        #    ids of patterns which require on-the-fly line/column number counting
+        self.pattern_id_list_counting_required = [    
+            pattern.sm.get_id() for pap, pattern in PatternList \
+            if pattern.count_info() is None or pattern.count_info().counting_required_f() 
+        ]
         return
 
 class Generator(GeneratorBase):
@@ -162,13 +176,13 @@ class Generator(GeneratorBase):
         else:
             lexeme_macro_definition_str = LanguageDB.TERMINAL_LEXEME_MACRO_DEFINITIONS()
             reentry_preparation_str     = LanguageDB.REENTRY_PREPARATION(self.pre_context_sm_id_list, 
-                                                                         self.terminal_state_db.get(E_ActionIDs.ON_AFTER_MATCH))
+                                                                         self.terminal_state_db.get(E_IncidenceIDs.ON_AFTER_MATCH))
 
             # Pattern match terminals goto 'Re-entry' by default
-            for pattern_id, terminal_state in self.terminal_state_db.iteritems():
-                if   pattern_id == E_ActionIDs.ON_END_OF_STREAM: continue
-                elif pattern_id == E_ActionIDs.ON_FAILURE:       continue
-                elif pattern_id == E_ActionIDs.ON_AFTER_MATCH:   continue
+            for acceptance_id, terminal_state in self.terminal_state_db.iteritems():
+                if   acceptance_id == E_IncidenceIDs.ON_END_OF_STREAM: continue
+                elif acceptance_id == E_IncidenceIDs.ON_FAILURE:       continue
+                elif acceptance_id == E_IncidenceIDs.ON_AFTER_MATCH:   continue
                 terminal_state.action.get_code().extend(["\n", 1, LanguageDB.GOTO_BY_DOOR_ID(DoorID.global_reentry_preparation())])
 
         terminal_states_txt = LanguageDB.TERMINAL_CODE(self.terminal_state_db) 
@@ -308,9 +322,9 @@ class LoopGenerator(Generator):
         after_reload_action   = CounterDB.get_reload_commands(IteratorName, column_count_per_chunk, ReloadF)
 
         if OnExit is None:
-            assert not tm.has_action_id(E_ActionIDs.ON_EXIT)
-        tm.insert_after_action_id(E_ActionIDs.ON_EXIT,            OnExit)
-        tm.insert_after_action_id(E_ActionIDs.ON_GOOD_TRANSITION, OnContinue)
+            assert not tm.has_action_id(E_IncidenceIDs.ON_EXIT_LOOP)
+        tm.insert_after_action_id(E_IncidenceIDs.ON_EXIT_LOOP,       OnExit)
+        tm.insert_after_action_id(E_IncidenceIDs.ON_GOOD_TRANSITION, OnContinue)
 
         # 'BeforeReloadAction not None' forces a transition to RELOAD_PROCEDURE upon
         # buffer limit code.
@@ -401,10 +415,10 @@ class LoopGenerator(Generator):
             TM.set_target(Setup.buffer_limit_code, DoorID.drop_out(pseudo_state_index))
             BeforeReloadAction.append("%s\n" % LanguageDB.LEXEME_START_SET())
 
-            #TM.replace_action_id(E_ActionIDs.ON_EXIT, 
+            #TM.replace_action_id(E_IncidenceIDs.ON_EXIT_LOOP,
             #                     [1, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
 
-        TM.insert_after_action_id(E_ActionIDs.ON_GOOD_TRANSITION,
+        TM.insert_after_action_id(E_IncidenceIDs.ON_GOOD_TRANSITION,
                                   [2, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
 
         # The range of possible characters may be restricted. It must be ensured,
@@ -449,11 +463,11 @@ class LoopGenerator(Generator):
         # character needs to be reset, its start position must be known. For 
         # this the 'lexeme start pointer' is used.
         if      BeforeReloadAction is not None \
-            and TM.has_action_id(E_ActionIDs.ON_EXIT):
+            and TM.has_action_id(E_IncidenceIDs.ON_EXIT_LOOP,):
             variable_db.require("character_begin_p")
 
             loop_epilog = [1, "%s\n" % LanguageDB.CHARACTER_BEGIN_P_SET()]
-            TM.replace_action_id(E_ActionIDs.ON_EXIT, 
+            TM.replace_action_id(E_IncidenceIDs.ON_EXIT_LOOP, 
                                  [1, "%s\n" % LanguageDB.INPUT_P_TO_CHARACTER_BEGIN_P()])
             BeforeReloadAction.append("%s\n" % LanguageDB.LEXEME_START_TO_CHARACTER_BEGIN_P())
             AfterReloadAction.append("%s\n" % LanguageDB.CHARACTER_BEGIN_P_TO_LEXEME_START_P())
@@ -579,8 +593,8 @@ class LoopGenerator(Generator):
         def add_increment(action, IncrementActionStr, LastF):
             if LastF:
                 action = deepcopy(action) # disconnect from same action on other interval
-                assert E_ActionIDs.ON_GOOD_TRANSITION in action
-                idx = action.index(E_ActionIDs.ON_GOOD_TRANSITION)
+                assert E_IncidenceIDs.ON_GOOD_TRANSITION in action
+                idx = action.index(E_IncidenceIDs.ON_GOOD_TRANSITION)
                 # Delete 'ON_GOOD_TRANSITION' prevents 
                 # 'code_action_map_plain()' from adding '++iterator'.
                 del action[idx]

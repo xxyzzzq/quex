@@ -238,12 +238,12 @@ def __get_bad_character_handler(Mode, IndentationSetup, CounterIdx):
         return ""
 
     txt  = "_BAD_CHARACTER_%i:\n" % CounterIdx
-    if not Mode.has_code_fragment_list("on_indentation_bad"):
+    if not Mode.incidence_db.has_key(E_IncidenceIDs.INDENTATION_BAD):
         txt += 'QUEX_ERROR_EXIT("Lexical analyzer mode \'%s\': bad indentation character detected!\\n"' \
                                 % Mode.name + \
                '                "No \'on_indentation_bad\' handler has been specified.\\n");'
     else:
-        code, eol_f = action_preparation.get_code(Mode.get_code_fragment_list("on_indentation_bad"))
+        code, eol_f = action_preparation.get_code(Mode.incidence_db[E_IncidenceIDs.INDENTATION_BAD])
         txt += "#define BadCharacter ((QUEX_TYPE_CHARACTER)*(me->buffer._input_p))\n"
         txt += code
         txt += "#undef  BadCharacter\n"

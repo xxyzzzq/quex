@@ -4,7 +4,7 @@ from   quex.blackboard import setup as Setup, \
                               E_StateIndices, \
                               E_PreContextIDs, \
                               E_TriggerIDs, \
-                              E_AcceptanceIDs, \
+                              E_IncidenceIDs, \
                               E_DoorIdIndex
 
 from   collections     import namedtuple

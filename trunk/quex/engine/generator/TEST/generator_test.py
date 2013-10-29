@@ -23,7 +23,7 @@ from   quex.engine.analyzer.door_id_address_label  import Label, dial_db
 import quex.input.regular_expression.engine        as     regex
 from   quex.input.files.counter_setup              import LineColumnCounterSetup_Default
 #
-from   quex.blackboard import setup as Setup, E_ActionIDs
+from   quex.blackboard import setup as Setup, E_IncidenceIDs
 
 from   copy import deepcopy
 # Switch: Removal of source and executable file
@@ -287,11 +287,9 @@ def compile(Language, SourceCode, AssertsActionvation_str="", StrangeStream_str=
 def get_mode_object(SM_Name, EventDB={}):
     class Something:
         def __init__(self, EventDB):
-            self.__event_db = EventDB
-        def has_code_fragment_list(self, Name):
-            return self.__event_db.has_key(Name)
+            self.incidence_db = EventDB
         def get_code_fragment_list(self, Name):
-            return self.__event_db[Name]
+            return self.incidence_db[Name]
     mode            = Something(EventDB)
     mode.name       = "%s_UnitTest" % SM_Name
     mode.counter_db = CounterDB(LineColumnCounterSetup_Default())
@@ -410,9 +408,9 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
         pap.pattern().mount_pre_context_sm()
         pap.pattern().cut_character_list(character_list)
 
-    PatternActionPairList.append(PatternActionInfo(E_ActionIDs.ON_FAILURE,       on_failure_action))
-    PatternActionPairList.append(PatternActionInfo(E_ActionIDs.ON_END_OF_STREAM, on_failure_action)) 
-    PatternActionPairList.append(PatternActionInfo(E_ActionIDs.ON_AFTER_MATCH,   ""))
+    PatternActionPairList.append(PatternActionInfo(E_IncidenceIDs.FAILURE,       on_failure_action))
+    PatternActionPairList.append(PatternActionInfo(E_IncidenceIDs.END_OF_STREAM, on_failure_action)) 
+    PatternActionPairList.append(PatternActionInfo(E_IncidenceIDs.AFTER_MATCH,   ""))
 
     code = cpp_generator.do(PatternActionPair_List = PatternActionPairList, 
                             FunctionPrefix         = mode.name,

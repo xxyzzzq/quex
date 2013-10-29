@@ -32,11 +32,7 @@ def do(Data, Mode=None):
     ClosingSequence = Data["closer_sequence"]
     ClosingPattern  = Data["closer_pattern"]
 
-    assert Data.has_key("indentation_counter_terminal_id")
-    
-    indentation_counter_terminal_id = Data["indentation_counter_terminal_id"]
-
-    return get_skipper(ClosingSequence, ClosingPattern, Mode, indentation_counter_terminal_id) 
+    return get_skipper(ClosingSequence, ClosingPattern, Mode) 
 
 def new_skipper(counter_db, ClosingSequence):
     #closing_sequence    = transformation.do_sequence(ClosingSequence)
@@ -316,7 +312,7 @@ def __terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePatte
     print "##DEBUG:\n%s" % "".join(LanguageDB.GET_PLAIN_STRINGS(txt))
     return txt
 
-def get_skipper(EndSequence, CloserPattern, Mode=None, IndentationCounterTerminalID=None, OnSkipRangeOpenStr=""):
+def get_skipper(EndSequence, CloserPattern, Mode=None, OnSkipRangeOpenStr=""):
     assert type(EndSequence) == list
     assert len(EndSequence) >= 1
     assert map(type, EndSequence) == [int] * len(EndSequence)
@@ -359,10 +355,9 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, IndentationCounterTermina
     else:
         # If there is indentation counting involved, then the counter's terminal id must
         # be determined at this place.
-        assert IndentationCounterTerminalID is not None
         # If the ending delimiter is a subset of what the 'newline' pattern triggers 
         # in indentation counting => move on to the indentation counter.
-        goto_after_end_of_skipping_str = LanguageDB.GOTO_TERMINAL(IndentationCounterTerminalID)
+        goto_after_end_of_skipping_str = LanguageDB.GOTO_TERMINAL_BY_INCIDENCE_ID(IncidenceID.INDENTATION_NEWLINE)
 
     if OnSkipRangeOpenStr != "": on_skip_range_open_str = OnSkipRangeOpenStr
     else:                        on_skip_range_open_str = get_on_skip_range_open(Mode, EndSequence)

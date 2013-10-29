@@ -1,4 +1,4 @@
-from quex.blackboard import E_ActionIDs
+from quex.blackboard import E_IncidenceIDs
 
 # special states:
 def clear():
@@ -58,7 +58,7 @@ def get_state_machine_id():
 __map_pattern_id_to_terminal_state_index = {}
 def get_terminal_state_index(PatternId):
     global __map_pattern_id_to_terminal_state_index
-    assert isinstance(PatternId, (int, long)) or PatternId in E_ActionIDs
+    assert isinstance(PatternId, (int, long)) or PatternId in E_IncidenceIDs
 
     index = __map_pattern_id_to_terminal_state_index.get(PatternId)
     if index is None:

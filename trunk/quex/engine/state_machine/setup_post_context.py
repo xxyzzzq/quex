@@ -7,13 +7,13 @@ from   quex.blackboard                                  import E_PreContextIDs, 
 
 
 def do(the_state_machine, post_context_sm, EndOfLinePostContextF, FileName, LineN):
-    pattern_id = the_state_machine.get_id()
+    acceptance_id = the_state_machine.get_id()
     result, bipd_sm = _do(the_state_machine, post_context_sm, EndOfLinePostContextF, FileName, LineN)
 
     # Make sure that the resulting state machine has the same state machine index
     # as 'the_state_machine'. This is important, since otherwise the precedence get
     # confused.
-    result.set_id(pattern_id)
+    result.set_id(acceptance_id)
     return result, bipd_sm
 
 def _do(the_state_machine, post_context_sm, EndOfLinePostContextF, FileName, LineN):

@@ -3,7 +3,7 @@ from   quex.engine.analyzer.state.entry_action    import TransitionID, Transitio
 from   quex.engine.analyzer.door_id_address_label import DoorID
 from   quex.engine.tools                          import TypedDict
 from   quex.blackboard                            import setup as Setup, \
-                                                         E_AcceptanceIDs, \
+                                                         E_IncidenceIDs, \
                                                          E_Commands, \
                                                          E_PostContextIDs, \
                                                          E_PreContextIDs,  \
@@ -144,13 +144,13 @@ class Entry(object):
     def size(self):
         return len(self.__db)
 
-    def add_Accepter_on_all(self, PreContextID, PatternID):
+    def add_Accepter_on_all(self, PreContextID, AcceptanceID):
         """Add an acceptance at the top of each accepter at every door. If there
            is no accepter in a door it is created.
         """
         for ta in self.__db.itervalues():
             # Catch the accepter, if there is already one, if not create one.
-            ta.command_list.access_accepter().content.add(PreContextID, PatternID)
+            ta.command_list.access_accepter().content.add(PreContextID, AcceptanceID)
 
     def add_StoreInputPosition(self, StateIndex, FromStateIndex, PreContextID, PositionRegister, Offset):
         """Add 'store input position' to specific door. See 'StoreInputPosition'

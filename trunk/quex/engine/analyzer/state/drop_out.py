@@ -1,5 +1,5 @@
 from   quex.engine.analyzer.commands import repr_acceptance_id, repr_pre_context_id, repr_positioning
-from   quex.blackboard               import E_PreContextIDs, E_AcceptanceIDs, E_TransitionN
+from   quex.blackboard               import E_PreContextIDs, E_IncidenceIDs, E_TransitionN
 from   itertools                     import ifilter, imap
 
 class DropOut(object):
@@ -45,7 +45,7 @@ class DropOut(object):
         acceptances.
         """
         for element in self.__acceptance_checker:
-            if element.acceptance_id == E_AcceptanceIDs.VOID: return True
+            if element.acceptance_id == E_IncidenceIDs.VOID: return True
         return False
 
     def restore_position_f(self, RegisterIndex):
@@ -72,14 +72,14 @@ class DropOut(object):
     def get_terminal_router(self):
         return self.__terminal_router
 
-    def accept(self, PreContextID, PatternID):
+    def accept(self, PreContextID, AcceptanceID):
         self.__acceptance_checker.append(
-             AcceptanceCheckerElement(PreContextID, PatternID))
+             AcceptanceCheckerElement(PreContextID, AcceptanceID))
         self.__hash = None
 
-    def route_to_terminal(self, PatternID, TransitionNSincePositioning):
+    def route_to_terminal(self, AcceptanceID, TransitionNSincePositioning):
         self.__terminal_router.append(
-             TerminalRouterElement(PatternID, TransitionNSincePositioning))
+             TerminalRouterElement(AcceptanceID, TransitionNSincePositioning))
         self.__hash = None
 
     def __hash__(self):
@@ -192,28 +192,6 @@ class DropOutIndifferent(DropOut):
     def __repr__(self):
         return "    goto CheckTerminated;"
 
-#class DropOutCharacterCounter(DropOut):
-#    def __init__(self, AcceptanceID):
-#        DropOut.__init__(self)
-#
-#        DropOut.set_acceptance_checker(self, [AcceptanceCheckerElement(E_PreContextIDs.NONE, 
-#                                                                       E_AcceptanceIDs.VOID)])
-#        DropOut.set_terminal_router(self, [TerminalRouterElement(AcceptanceID, 
-#                                                                 E_TransitionN.IRRELEVANT)])
-#    def finish(self, PositionRegisterMap):
-#        pass
-#
-#class DropOutBackward(DropOut):
-#    def __init__(self):
-#        DropOut.__init__(self)
-#
-#        DropOut.set_acceptance_checker(self, [AcceptanceCheckerElement(E_PreContextIDs.NONE, 
-#                                                                       E_AcceptanceIDs.VOID)])
-#        DropOut.set_terminal_router(self, [TerminalRouterElement(E_AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK, 
-#                                                                 E_TransitionN.IRRELEVANT)])
-#    def finish(self, PositionRegisterMap):
-#        pass
-
 class DropOutBackwardInputPositionDetection(DropOut):
     __slots__ = ("__reachable_f")
     def __init__(self, AcceptanceF):
@@ -246,8 +224,8 @@ class AcceptanceCheckerElement(object):
             else                         last_acceptance = 11;
 
        by a list such as [(5, 34), (7, 67), (9, 31), (None, 11)]. Note, that
-       the prioritization is not necessarily by pattern_id. This is so, since
-       the whole trace is considered and length precedes pattern_id.
+       the prioritization is not necessarily by acceptance_id. This is so, since
+       the whole trace is considered and length precedes acceptance_id.
     
        The values for .pre_context_id and .acceptance_id are carry the 
        following meaning:
@@ -270,7 +248,7 @@ class AcceptanceCheckerElement(object):
 
     def __init__(self, PreContextID, AcceptanceID):
         assert    isinstance(AcceptanceID, (int, long)) \
-               or AcceptanceID in E_AcceptanceIDs
+               or AcceptanceID in E_IncidenceIDs
         self.pre_context_id = PreContextID
         self.acceptance_id  = AcceptanceID
 
@@ -334,7 +312,7 @@ class TerminalRouterElement(object):
                or TransitionNSincePositioning == E_TransitionN.LEXEME_START_PLUS_ONE \
                or TransitionNSincePositioning == E_TransitionN.IRRELEVANT \
                or TransitionNSincePositioning >= 0
-        assert    AcceptanceID in E_AcceptanceIDs \
+        assert    AcceptanceID in E_IncidenceIDs \
                or AcceptanceID >= 0
 
         self.acceptance_id     = AcceptanceID
@@ -347,7 +325,7 @@ class TerminalRouterElement(object):
                and self.position_register == Other.position_register
 
     def __repr__(self):
-        if self.acceptance_id == E_AcceptanceIDs.FAILURE: assert self.positioning == E_TransitionN.LEXEME_START_PLUS_ONE
+        if self.acceptance_id == E_IncidenceIDs.FAILURE: assert self.positioning == E_TransitionN.LEXEME_START_PLUS_ONE
         else:                                             assert self.positioning != E_TransitionN.LEXEME_START_PLUS_ONE
 
         if self.positioning != 0:

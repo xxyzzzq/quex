@@ -26,8 +26,8 @@ def do(ModeDB):
     entry_handler_active_f = False
     exit_handler_active_f = False
     for mode in ModeDB.values():
-        if len(mode.get_code_fragment_list("on_entry")) != 0: entry_handler_active_f = True
-        if len(mode.get_code_fragment_list("on_exit")) != 0:  exit_handler_active_f = True
+        if len(mode.incidence_db[E_IncidenceIDs.MODE_ENTRY]) != 0: entry_handler_active_f = True
+        if len(mode.incidence_db[E_IncidenceIDs.MODE_EXIT]) != 0:  exit_handler_active_f = True
 
     # Buffer filler converter (0x0 means: no buffer filler converter)
     converter_new_str = "#   define QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW " 

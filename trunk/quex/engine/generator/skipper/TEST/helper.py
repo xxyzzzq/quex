@@ -51,7 +51,6 @@ def create_range_skipper_code(Language, TestStr, CloserSequence, QuexBufferSize=
     data = { 
         "closer_sequence":                 CloserSequence, 
         "closer_pattern":                  Pattern(StateMachine.from_sequence(CloserSequence)),
-        "indentation_counter_terminal_id": None,
     }
     event_db = {
         "on_skip_range_open": [ CodeFragment(end_str) ],
@@ -79,7 +78,6 @@ def create_nested_range_skipper_code(Language, TestStr, OpenerSequence, CloserSe
         "opener_sequence":                 OpenerSequence, 
         "closer_sequence":                 CloserSequence, 
         "closer_pattern":                  Pattern(StateMachine.from_sequence(CloserSequence)),
-        "indentation_counter_terminal_id": None,
     }
     event_db = {
         "on_skip_range_open": [ CodeFragment(end_str) ],

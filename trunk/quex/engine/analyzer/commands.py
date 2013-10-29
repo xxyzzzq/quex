@@ -73,7 +73,7 @@ from   quex.engine.misc.enum import Enum
 from   quex.blackboard       import E_Commands, \
                                     E_PreContextIDs, \
                                     E_TransitionN, \
-                                    E_AcceptanceIDs, \
+                                    E_IncidenceIDs, \
                                     E_PostContextIDs
 
 from   collections import namedtuple
@@ -136,28 +136,28 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
 # 
 # AccepterContentElement: An element in the sorted list of test/accept commands. 
 #     It contains the 'pre_context_id' of the condition to be checked and the 
-#     'pattern_id' to be accepted if the condition is true.
+#     'acceptance_id' to be accepted if the condition is true.
 #______________________________________________________________________________
-AccepterContentElement = namedtuple("AccepterContentElement", ("pre_context_id", "pattern_id"))
+AccepterContentElement = namedtuple("AccepterContentElement", ("pre_context_id", "acceptance_id"))
 class AccepterContent:
     def __init__(self, PathTraceList=None):
         Command.__init__(self)
         if PathTraceList is None: 
             self.__list = []
         else:
-            self.__list = [ AccepterContentElement(x.pre_context_id, x.pattern_id) for x in PathTraceList ]
+            self.__list = [ AccepterContentElement(x.pre_context_id, x.acceptance_id) for x in PathTraceList ]
 
     def clone(self):
         result = AccepterContent()
         result.__list = [ deepcopy(x) for x in self.__list ]
         return result
     
-    def add(self, PreContextID, PatternID):
-        self.__list.append(AccepterContentElement(PreContextID, PatternID))
+    def add(self, PreContextID, AcceptanceID):
+        self.__list.append(AccepterContentElement(PreContextID, AcceptanceID))
 
     def clean_up(self):
         """Ensure that nothing follows and unconditional acceptance."""
-        self.__list.sort(key=attrgetter("pattern_id"))
+        self.__list.sort(key=attrgetter("acceptance_id"))
         for i, x in enumerate(self.__list):
             if x.pre_context_id == E_PreContextIDs.NONE:
                 break
@@ -172,7 +172,7 @@ class AccepterContent:
                 txt.append("%s %s: " % (if_str, repr_pre_context_id(x.pre_context_id)))
             else:
                 if if_str == "else if": txt.append("else: ")
-            txt.append("last_acceptance = %s\n" % repr_acceptance_id(x.pattern_id))
+            txt.append("last_acceptance = %s\n" % repr_acceptance_id(x.acceptance_id))
             if_str = "else if"
         return txt
 
@@ -180,7 +180,7 @@ class AccepterContent:
     def __hash__(self): 
         xor_sum = 0
         for x in self.__list:
-            if isinstance(x.pattern_id, (int, long)): xor_sum ^= x.pattern_id
+            if isinstance(x.acceptance_id, (int, long)): xor_sum ^= x.acceptance_id
         return xor_sum
 
     def __eq__(self, Other):
@@ -188,7 +188,7 @@ class AccepterContent:
         if len(self.__list) != len(Other.__list):       return False
         for x, y in zip(self.__list, Other.__list):
             if   x.pre_context_id != y.pre_context_id:  return False
-            elif x.pattern_id     != y.pattern_id:      return False
+            elif x.acceptance_id     != y.acceptance_id:      return False
         return True
 
     def __iter__(self):
@@ -198,11 +198,11 @@ class AccepterContent:
     def __str__(self):
         def to_string(X, FirstF):
             if X.pre_context_id == E_PreContextIDs.NONE:
-                return "last_acceptance = %s" % repr_acceptance_id(X.pattern_id)
+                return "last_acceptance = %s" % repr_acceptance_id(X.acceptance_id)
             elif FirstF:
-                return "if %s:  last_acceptance = %s" % (repr_pre_context_id(element.pre_context_id), repr_acceptance_id(element.pattern_id))
+                return "if %s:  last_acceptance = %s" % (repr_pre_context_id(element.pre_context_id), repr_acceptance_id(element.acceptance_id))
             else:
-                return "else if %s:  last_acceptance = %s" % (repr_pre_context_id(element.pre_context_id), repr_acceptance_id(element.pattern_id))
+                return "else if %s:  last_acceptance = %s" % (repr_pre_context_id(element.pre_context_id), repr_acceptance_id(element.acceptance_id))
 
         return "".join(["%s\n" % to_string(element, i==0) for i, element in enumerate(self.__list)])
 
@@ -566,8 +566,8 @@ class CommandList(list):
         return "".join("%s\n" % str(cmd) for cmd in self)
 
 def repr_acceptance_id(Value, PatternStrF=True):
-    if   Value == E_AcceptanceIDs.VOID:                       return "last_acceptance"
-    elif Value == E_AcceptanceIDs.FAILURE:                    return "Failure"
+    if   Value == E_IncidenceIDs.VOID:                       return "last_acceptance"
+    elif Value == E_IncidenceIDs.FAILURE:                    return "Failure"
     elif Value >= 0:                                    
         if PatternStrF: return "Pattern%i" % Value
         else:           return "%i" % Value

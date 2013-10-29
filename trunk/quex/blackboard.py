@@ -27,6 +27,7 @@ from quex.engine.generator.code_fragment_base import CodeFragment
 from quex.engine.misc.enum                    import Enum
 from quex.input.setup                         import QuexSetup, SETUP_INFO
 from copy                                     import deepcopy
+from collections                              import namedtuple
 
 #-----------------------------------------------------------------------------------------
 # setup: All information of the user's desired setup.
@@ -49,12 +50,6 @@ E_StateIndices = Enum("DROP_OUT",
 E_PreContextIDs  = Enum("NONE",    
                         "BEGIN_OF_LINE", 
                         "_DEBUG_NAME_PreContextIDs")
-
-E_AcceptanceIDs  = Enum("FAILURE", 
-                        "PRE_CONTEXT_FULFILLED", 
-                        "TERMINAL_BACKWARD_INPUT_POSITION", 
-                        "VOID", 
-                        "_DEBUG_NAME_E_AcceptanceIDs")
 
 E_PostContextIDs = Enum("NONE", 
                         "IRRELEVANT",
@@ -95,14 +90,35 @@ E_SpecialPatterns = Enum("INDENTATION_NEWLINE",
                          "SKIP_NESTED_RANGE", 
                          "_DEBUG_PatternNames")
 
-E_ActionIDs = Enum( # Keep them sorted alphabetically!
-               "ON_AFTER_MATCH",        
-               "ON_END_OF_STREAM", 
-               "ON_EXIT",
-               "ON_FAILURE", 
-               "ON_GOOD_TRANSITION",
-               "ON_MATCH", 
-               "_DEBUG_ActionIDs")
+E_IncidenceIDs = Enum(
+# Incidences encompass 'pattern acceptance events' and any other incidences
+# mentioned below. IncidenceID-s are keys to the standard_incidence_db.
+                "AFTER_MATCH",
+                "BIPD_TERMINATED",
+                "DEDENT",
+                "END_OF_STREAM",
+                "FAILURE",
+                "GENERAL_INDENTATION",
+                "INDENT",
+                "INDENTATION_BAD",
+                "INDENTATION_ERROR",
+                "MATCH",
+                "MODE_ENTRY",
+                "MODE_EXIT",
+                "NODENT",
+                "N_DEDENT",
+                "PRE_CONTEXT_FULFILLED",
+                "SKIP_RANGE_OPEN",
+                "VOID",
+                "EXIT_LOOP",
+                "_DEBUG_Events")
+
+E_IncidenceIDs_SubsetAcceptanceIDs = [
+    E_IncidenceIDs.FAILURE,
+    E_IncidenceIDs.PRE_CONTEXT_FULFILLED, 
+    E_IncidenceIDs.BIPD_TERMINATED, 
+    E_IncidenceIDs.VOID,
+]
 
 E_MapImplementationType = Enum("STATE_MACHINE_TRIVIAL", 
                                "STATE_MACHINE",
@@ -151,6 +167,21 @@ E_Commands = Enum("Accepter",
                   "_DEBUG_Commands")
 
 #-----------------------------------------------------------------------------------------
+# SourceRef: A reference into source code:
+#            file_name = Name of the file where the code is located.
+#            line_n    = Number of line where code is found.
+#-----------------------------------------------------------------------------------------
+class SourceRef(namedtuple("SourceRef_tuple", ("file_name", "line_n"))):
+    def __new__(self, FileName, LineN):
+        assert isinstance(FileName, (str, unicode))
+        assert isinstance(LineN, (int, long))
+        return super(SourceRef, self).__new__(self, FileName, LineN)
+
+    @staticmethod
+    def from_FileHandle(Fh):
+        return SourceRef(Fh.name, get_text_line_n(Fh, Fh.pos))
+
+#-----------------------------------------------------------------------------------------
 # mode_db: storing the mode information into a dictionary:
 #            key  = mode name
 #            item = Mode object
@@ -167,13 +198,14 @@ initial_mode = None
 # mode_option_info_db: Information about properties of mode options.
 #-----------------------------------------------------------------------------------------
 class ModeOptionInfo:
-    """This type is used only in context of a dictionary, the key
-       to the dictionary is the option's name."""
-    def __init__(self, Type, Domain=None, Default=-1):
+    """A ModeOptionInfo is an element of mode_option_info_db."""
+    def __init__(self, Type, Domain=None, Default=-1, UniqueF=False, Name=""):
         # self.name = Option see comment above
         self.type          = Type
         self.domain        = Domain
         self.default_value = Default
+        self.unite_f       = UniqueF
+        self.name          = Name
 
 mode_option_info_db = {
    # -- a mode can be inheritable or not or only inheritable. if a mode
@@ -195,32 +227,35 @@ mode_option_info_db = {
    "skip_range":        ModeOptionInfo("list", Default=[]), # "multiple: RE-character-string RE-character-string
    "skip_nested_range": ModeOptionInfo("list", Default=[]), # "multiple: RE-character-string RE-character-string
    # -- indentation setup information
-   "indentation":       ModeOptionInfo("single", Default=None),
+   "indentation":       ModeOptionInfo("single", Default=None, UniqueF=True, Name="indentation specification"),
    # --line/column counter information
-   "counter":           ModeOptionInfo("single", Default=None),
+   "counter":           ModeOptionInfo("single", Default=None, UniqueF=True, Name="line and column count specification"),
 }
 
 #-----------------------------------------------------------------------------------------
-# event_handler_db: Stores names of event handler functions as keys and their meaning
-#                   as their associated values.
+# standard_incidence_db: Stores names of event handler functions as keys and their meaning
+#                        as their associated values.
 #-----------------------------------------------------------------------------------------
-event_handler_db = {
-    "on_entry":                  "On entry of a mode.",
-    "on_exit":                   "On exit of a mode.", 
-    "on_indent":                 "On opening indentation.",
-    "on_nodent":                 "On same indentation.",
-    "on_dedent":                 "On closing indentation'.",
-    "on_n_dedent":               "On closing indentation'.",
-    "on_indentation_error":      "Closing indentation on non-border.",
-    "on_indentation_bad":        "On bad character in indentation.",
-    "on_indentation":            "General Indentation Handler.",
-    "on_match":                  "On each match (before pattern action).",
-#   TODO        "on_token_stamp":            "On event of token stamping.",
-#   instead of: QUEX_ACTION_TOKEN_STAMP 
-    "on_after_match":            "On each match (after pattern action).",
-    "on_failure":                "In case that no pattern matches.",
-    "on_skip_range_open":        "On missing skip range delimiter.",
-    "on_end_of_stream":          "On end of file/stream.",
+standard_incidence_db = {
+    # key word:                  event id:                         comment:
+    "on_entry":                  (E_IncidenceIDs.MODE_ENTRY,          "On entry of a mode."),
+    "on_exit":                   (E_IncidenceIDs.MODE_EXIT,           "On exit of a mode."),
+    "on_indent":                 (E_IncidenceIDs.INDENT,              "On opening indentation."),
+    "on_nodent":                 (E_IncidenceIDs.NODENT,              "On same indentation."),
+    "on_dedent":                 (E_IncidenceIDs.DEDENT,              "On closing indentation'."),
+    "on_n_dedent":               (E_IncidenceIDs.N_DEDENT,            "On closing indentation'."),
+    "on_indentation_error":      (E_IncidenceIDs.INDENTATION_ERROR,   "Closing indentation on non-border."),
+    "on_indentation_bad":        (E_IncidenceIDs.INDENTATION_BAD,     "On bad character in indentation."),
+    "on_indentation":            (E_IncidenceIDs.GENERAL_INDENTATION, "General Indentation Handler."),
+    "on_match":                  (E_IncidenceIDs.MATCH,               "On each match (before pattern action)."),
+    "on_after_match":            (E_IncidenceIDs.AFTER_MATCH,         "On each match (after pattern action)."),
+    "on_failure":                (E_IncidenceIDs.FAILURE,             "In case that no pattern matches."),
+    "on_skip_range_open":        (E_IncidenceIDs.SKIP_RANGE_OPEN,     "On missing skip range delimiter."),
+    "on_end_of_stream":          (E_IncidenceIDs.END_OF_STREAM,       "On end of file/stream."),
+    # TODO:
+    # "on_token_stamp":          (E_IncidenceIDs.ON_TOKEN_STAMP,  "On event of token stamping."),
+    #                            instead of: QUEX_ACTION_TOKEN_STAMP 
+    # "on_codec_error":          (E_IncidenceIDs.ON_CODEC_ERROR, "On input file does not conform to codec."),
 }
 
 #-----------------------------------------------------------------------------------------
@@ -272,8 +307,7 @@ class PatternShorthand:
 
         self.name               = Name
         self.__state_machine    = StateMachine
-        self.filename           = Filename
-        self.line_n             = LineN
+        self.sr                 = SourceRef(Filename, LineN)
         self.regular_expression = RE
 
     def get_state_machine(self):
@@ -349,16 +383,7 @@ def requires_indentation_count(ModeDB):
        support must be provided.                                         
     """
     for mode in ModeDB.itervalues():
-        if    mode.has_code_fragment_list("on_indent")      \
-           or mode.has_code_fragment_list("on_nodent")      \
-           or mode.has_code_fragment_list("on_indentation") \
-           or mode.has_code_fragment_list("on_dedent"):
-            return True
-
-        if mode.options["indentation"] is not None:
-            assert mode.options["indentation"].__class__.__name__ == "IndentationSetup"
-            return True
-
+        if mode.indentation_count_required(): return True
     return False
 
 def requires_begin_of_line_condition_support(ModeDB):

@@ -81,7 +81,7 @@ def get_on_skip_range_open(Mode, CloserSequence):
     if type(Mode) in [str, unicode]:
         txt += Mode
 
-    elif not Mode.has_code_fragment_list("on_skip_range_open"):
+    elif not Mode.incidence_db.has_key(E_IncidenceIDs.SKIP_RANGE_OPEN):
         txt += 'QUEX_ERROR_EXIT("\\nLexical analyzer mode \'%s\':\\n"\n' % Mode.name + \
                '                "End of file occurred before closing skip range delimiter!\\n"' + \
                '                "The \'on_skip_range_open\' handler has not been specified.");'
@@ -90,7 +90,7 @@ def get_on_skip_range_open(Mode, CloserSequence):
         for letter in CloserSequence:
             closer_string += utf8.unicode_to_pretty_utf8(letter).replace("'", "")
 
-        code, eol_f = action_preparation.get_code(Mode.get_code_fragment_list("on_skip_range_open"))
+        code, eol_f = action_preparation.get_code(Mode.incidence_db[E_IncidenceIDs.SKIP_RANGE_OPEN])
         txt += "#define Closer \"%s\"\n" % closer_string
         txt += code
         txt += "#undef  Closer\n"

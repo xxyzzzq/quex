@@ -750,8 +750,8 @@ def verify_word_in_list(Word, WordList, Comment, FH=-1, LineN=None, ExitF=True, 
         if position_known_f:
             error_msg(Comment, FH, LineN, DontExitF=True)
             error_msg("Did you mean '%s'?" % similar_word,
-                      WordList[similar_index].filename, 
-                      WordList[similar_index].line_n, 
+                      WordList[similar_index].sr.file_name, 
+                      WordList[similar_index].sr.line_n, 
                       DontExitF=not ExitF, 
                       SuppressCode=SuppressCode)
         else:

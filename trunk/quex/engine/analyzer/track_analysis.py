@@ -23,11 +23,11 @@ EXPLANATION:
 Each path is related to a list of 'AcceptCondition' objects. An
 AcceptCondition consists of the following main members:
 
-    .pattern_id              -- Pattern that can be accepted.
+    .acceptance_id              -- Pattern that can be accepted.
     
     .pre_context_id          -- PreContext required for acceptance.
     
-    .accepting_state_index   -- State where the last acceptance of 'pattern_id' 
+    .accepting_state_index   -- State where the last acceptance of 'acceptance_id' 
                                 appeared.
     
     .positioning_state_index -- State where the input position had to be 
@@ -35,7 +35,7 @@ AcceptCondition consists of the following main members:
 
     .transition_n_since_positioning -- ... self explanatory
 
-Different pattern_id-s may be involved in the same state, 
+Different acceptance_id-s may be involved in the same state, 
 
   (i)  because the state may be reached through different paths or 
 
@@ -56,14 +56,14 @@ objects. It can be imagined as a list. The sorting order tells the precedence
 of winners. The first pattern where the pre_context is fulfilled wins.
 
      AcceptSequence: [ 
-          #                   pattern_id   pre_context_id   ...
+          #                   acceptance_id   pre_context_id   ...
           AcceptCondition(34,          2,               ...)
           AcceptCondition(12,          1,               ...)
           AcceptCondition(67,          None,            ...)
      ]
 
-Note, that length has preceedence over pattern_id. For this reason, greater
-pattern_id-s may have precedence of higher once--if it matches a longer
+Note, that length has preceedence over acceptance_id. For this reason, greater
+acceptance_id-s may have precedence of higher once--if it matches a longer
 lexeme.
 
 Since there are potentially mutiple paths to a state, there is a list of
@@ -91,7 +91,7 @@ ________________________________________________________________________________
 ABSOLUTELY NO WARRANTY
 ________________________________________________________________________________
 """
-from   quex.blackboard                     import E_AcceptanceIDs, \
+from   quex.blackboard                     import E_IncidenceIDs, \
                                                   E_PreContextIDs, \
                                                   E_TransitionN
 from   quex.engine.misc.tree_walker        import TreeWalker
@@ -296,7 +296,7 @@ class _Trace(object):
     ___________________________________________________________________________
     """
     __slots__ = ("__acceptance_trace",  # List of _AcceptInfo objects
-                 "__storage_db",        # Map: pattern_id --> _StoreInfo objects
+                 "__storage_db",        # Map: acceptance_id --> _StoreInfo objects
                  "__parent", 
                  "__state_index", 
                  "__equivalence_hash", 
@@ -310,7 +310,7 @@ class _Trace(object):
         else:
             self.__acceptance_trace = [ 
                   _AcceptInfo(PreContextID         = E_PreContextIDs.NONE, 
-                             PatternID            = E_AcceptanceIDs.FAILURE, 
+                             AcceptanceID            = E_IncidenceIDs.FAILURE, 
                              AcceptingStateIndex  = InitStateIndex, 
                              PathSincePositioning = [InitStateIndex], 
                              TransitionNSincePositioning = 0)              
@@ -357,14 +357,14 @@ class _Trace(object):
         #     acceptances and store-input-position events.
         #     Origins must be sorted with the highest priority LAST, so that they will
         #     appear on top of the acceptance trace list.
-        for origin in sorted(State.origins(), key=lambda x: x.pattern_id(), reverse=True):
+        for origin in sorted(State.origins(), key=lambda x: x.acceptance_id(), reverse=True):
             # Acceptance 
             if origin.is_acceptance():
                 result.__acceptance_trace_add_at_front(origin, StateIndex)
 
             # Store Input Position Information
             if origin.input_position_store_f():
-                result.__storage_db[origin.pattern_id()] = _StoreInfo([StateIndex], 0)
+                result.__storage_db[origin.acceptance_id()] = _StoreInfo([StateIndex], 0)
 
         assert len(result.__acceptance_trace) >= 1
         result.__compute_equivalence_hash()
@@ -381,11 +381,11 @@ class _Trace(object):
             del self.__acceptance_trace[:]
 
         # Input Position Store/Restore
-        pattern_id = Origin.pattern_id()
+        acceptance_id = Origin.acceptance_id()
         if Origin.input_position_restore_f():
             # Restorage of Input Position (Post Contexts): refer to the 
             # input position at the time when it was stored.
-            entry                          = self.__storage_db[pattern_id]
+            entry                          = self.__storage_db[acceptance_id]
             path_since_positioning         = entry.path_since_positioning
             transition_n_since_positioning = entry.transition_n_since_positioning
         else:
@@ -396,12 +396,12 @@ class _Trace(object):
 
         # Reoccurring information about an acceptance overwrites previous occurrences.
         for entry_i in (i for i, x in enumerate(self.__acceptance_trace) \
-                        if x.pattern_id == pattern_id):
+                        if x.acceptance_id == acceptance_id):
             del self.__acceptance_trace[entry_i]
-            # From the above rule, it follows that there is only one entry per pattern_id.
+            # From the above rule, it follows that there is only one entry per acceptance_id.
             break
 
-        entry = _AcceptInfo(Origin.pre_context_id(), pattern_id,
+        entry = _AcceptInfo(Origin.pre_context_id(), acceptance_id,
                            AcceptingStateIndex         = StateIndex, 
                            PathSincePositioning        = path_since_positioning, 
                            TransitionNSincePositioning = transition_n_since_positioning) 
@@ -454,18 +454,18 @@ class _Trace(object):
         # New Faster Try: (Must be Double Checked!)
         #        eq = hash(0x5a5a5a5a)
         #        for x in self.__acceptance_trace:
-        #            eq ^= hash(x.pattern_id)
+        #            eq ^= hash(x.acceptance_id)
         #            eq ^= hash(x.accepting_state_index)
         #            eq ^= hash(x.positioning_state_index)
         #            eq ^= hash(x.transition_n_since_positioning)
         #
-        #        for pattern_id, info in sorted(self.__storage_db.iteritems()):
+        #        for acceptance_id, info in sorted(self.__storage_db.iteritems()):
         #            eq ^= hash(x.loop_f)
         #            eq ^= hash(x.transition_n_since_positioning)
         data = []
         for x in self.__acceptance_trace:
-            if isinstance(x.pattern_id, long):                     data.append(x.pattern_id)
-            elif x.pattern_id == E_AcceptanceIDs.FAILURE:          data.append(0x5A5A5A5A)
+            if isinstance(x.acceptance_id, long):                     data.append(x.acceptance_id)
+            elif x.acceptance_id == E_IncidenceIDs.FAILURE:          data.append(0x5A5A5A5A)
             else:                                                  data.append(0xA5A5A5A5)
             if isinstance(x.accepting_state_index, long):          data.append(x.accepting_state_index)
             else:                                                  data.append(0x5B5B5B5B)
@@ -474,7 +474,7 @@ class _Trace(object):
             if isinstance(x.transition_n_since_positioning, long): data.append(x.transition_n_since_positioning)
             else:                                                  data.append(0x5D5D5D5D)
 
-        for pattern_id, info in sorted(self.__storage_db.iteritems()):
+        for acceptance_id, info in sorted(self.__storage_db.iteritems()):
             if info.loop_f:                                             data.append(0x48484848)
             elif isinstance(info.transition_n_since_positioning, long): data.append(info.transition_n_since_positioning)
             else:                                                       data.append(0x4D4D4D4D)
@@ -482,7 +482,7 @@ class _Trace(object):
         self.__equivalence_hash = crc32(str(data))
         # HINT: -- One single acceptance on current state.
         #       -- No restore of position from previous states.
-        #       => Store the pattern_id of the winning pattern.
+        #       => Store the acceptance_id of the winning pattern.
         # 
         # This hint may be used for a SUFFICENT condition to determine 
         # equivalence, IF the state has no subsequent transitions. Because,
@@ -494,7 +494,7 @@ class _Trace(object):
                and x.positioning_state_index == x.accepting_state_index:
                 # From:    transition_n_since_positioning == 0
                 # Follows: x.accepting_state_index == current state index
-                self.__equivalence_hint = x.pattern_id
+                self.__equivalence_hint = x.acceptance_id
             else:
                 self.__equivalence_hint = None
         else:
@@ -515,7 +515,7 @@ class _Trace(object):
         elif self.__storage_db_len       != Other.__storage_db_len:       return False
 
         for x, y in izip(self.__acceptance_trace, Other.__acceptance_trace):
-            if   x.pattern_id                     != y.pattern_id:                     return False
+            if   x.acceptance_id                     != y.acceptance_id:                     return False
             elif x.accepting_state_index          != y.accepting_state_index:          return False
             elif x.positioning_state_index        != y.positioning_state_index:        return False
             elif x.transition_n_since_positioning != y.transition_n_since_positioning: return False
@@ -541,10 +541,10 @@ class _Trace(object):
         if self.__acceptance_trace != Other.__acceptance_trace: return False
         if len(self.__storage_db)  != len(Other.__storage_db):  return False
 
-        for pattern_id, entry in self.__storage_db.iteritems():
-            other_entry = Other.__storage_db.get(pattern_id)
+        for acceptance_id, entry in self.__storage_db.iteritems():
+            other_entry = Other.__storage_db.get(acceptance_id)
             if other_entry is None:                                return False
-            if not entry.is_equal(Other.__storage_db[pattern_id]): return False
+            if not entry.is_equal(Other.__storage_db[acceptance_id]): return False
         
         return True
 
@@ -663,11 +663,11 @@ class _AcceptInfo(_StoreInfo):
     Acceptance of a pattern is something that occurs in case that the 
     state machine can no further proceed on a given input (= philosophy
     of 'longest match'), i.e. on 'drop-out'. '_AcceptInfo' objects tell 
-    about the acceptance of a particular pattern (given by '.pattern_id').
+    about the acceptance of a particular pattern (given by '.acceptance_id').
     
-    .pattern_id              -- Identifies the pattern that is concerned.
+    .acceptance_id              -- Identifies the pattern that is concerned.
                              
-    .pre_context_id          -- if E_PreContextIDs.NONE, then '.pattern_id' is
+    .pre_context_id          -- if E_PreContextIDs.NONE, then '.acceptance_id' is
                                 always accepted. If not, then the pre-context
                                 must be checked before the pattern can be 
                                 accepted.
@@ -684,17 +684,17 @@ class _AcceptInfo(_StoreInfo):
     ___________________________________________________________________________
     """
     __slots__ = ("pre_context_id", 
-                 "pattern_id", 
+                 "acceptance_id", 
                  "accepting_state_index") 
 
-    def __init__(self, PreContextID, PatternID, 
+    def __init__(self, PreContextID, AcceptanceID, 
                  AcceptingStateIndex, PathSincePositioning, 
                  TransitionNSincePositioning): 
         self.pre_context_id        = PreContextID
-        self.pattern_id            = PatternID
+        self.acceptance_id            = AcceptanceID
         self.accepting_state_index = AcceptingStateIndex
 
-        if self.pattern_id == E_AcceptanceIDs.FAILURE:
+        if self.acceptance_id == E_IncidenceIDs.FAILURE:
             transition_n_since_positioning = E_TransitionN.LEXEME_START_PLUS_ONE
         else:
             transition_n_since_positioning = TransitionNSincePositioning
@@ -707,7 +707,7 @@ class _AcceptInfo(_StoreInfo):
         transition_n_since_positioning = self.get_transition_n_since_positioning_update(StateIndex)
         path_since_positioning.append(StateIndex)
         result = _AcceptInfo(self.pre_context_id, 
-                            self.pattern_id, 
+                            self.acceptance_id, 
                             self.accepting_state_index, 
                             path_since_positioning, 
                             transition_n_since_positioning) 
@@ -723,7 +723,7 @@ class _AcceptInfo(_StoreInfo):
 
     def is_equal(self, Other):
         if   self.pre_context_id                 != Other.pre_context_id:                 return False
-        elif self.pattern_id                     != Other.pattern_id:                     return False
+        elif self.acceptance_id                     != Other.acceptance_id:                     return False
         elif self.accepting_state_index          != Other.accepting_state_index:          return False
         elif self.transition_n_since_positioning != Other.transition_n_since_positioning: return False
         elif self.positioning_state_index        != Other.positioning_state_index:        return False
@@ -735,7 +735,7 @@ class _AcceptInfo(_StoreInfo):
     def __repr__(self):
         txt = ["---\n"]
         txt.append("    .pre_context_id                 = %s\n" % repr(self.pre_context_id))
-        txt.append("    .pattern_id                     = %s\n" % repr(self.pattern_id))
+        txt.append("    .acceptance_id                     = %s\n" % repr(self.acceptance_id))
         txt.append("    .transition_n_since_positioning = %s\n" % repr(self.transition_n_since_positioning))
         txt.append("    .accepting_state_index          = %s\n" % repr(self.accepting_state_index))
         txt.append("    .positioning_state_index        = %s\n" % repr(self.positioning_state_index))

@@ -4,8 +4,8 @@ from   quex.engine.analyzer.door_id_address_label import Label, \
                                                          dial_db, \
                                                          IfDoorIdReferencedCode, \
                                                          IfDoorIdReferencedLabel
-from   quex.engine.interval_handling           import NumberSet
-from   quex.blackboard import E_ActionIDs, E_AcceptanceIDs
+from   quex.engine.interval_handling              import NumberSet
+from   quex.blackboard import E_IncidenceIDs
 from   operator import itemgetter
 from   copy     import copy
 #
@@ -365,12 +365,12 @@ def lexeme_macro_definitions(Setup):
     ])
 
 def __terminal_on_pattern_match(Terminal):
-    """ PatternID     -- ID of the winning pattern.
+    """ AcceptanceID     -- ID of the winning pattern.
         Action        -- Action to be performed when pattern wins.
         PatternString -- String that describes the pattern.
     """
     Info      = Terminal.action
-    PatternID = Terminal.pattern_id
+    AcceptanceID = Terminal.acceptance_id
 
     def safe(Letter):
         if Letter in ['\\', '"', '\n', '\t', '\r', '\a', '\v']: return "\\" + Letter
@@ -379,14 +379,14 @@ def __terminal_on_pattern_match(Terminal):
     if hasattr(Info, "action") and hasattr(Info, "pattern"):
         action_code  = Info.action().get_code()
         safe_pattern = "".join(safe(x) for x in Info.pattern_string())
-        name         = "%i:   %s" % (PatternID, safe_pattern)
+        name         = "%i:   %s" % (AcceptanceID, safe_pattern)
     else:
         action_code  = Info.get_code()
         name         = ""
 
     assert type(action_code) == list
 
-    return __terminally(action_code, Label.acceptance(PatternID), name)
+    return __terminally(action_code, Label.acceptance(AcceptanceID), name)
 
 def __terminal_on_end_of_stream(Terminal):
     result = Terminal.action.get_code()
@@ -398,7 +398,7 @@ def __terminal_on_end_of_stream(Terminal):
     return __terminally(result, Label.global_terminal_end_of_file(), Name = "END_OF_STREAM")
 
 def __terminal_on_failure(Terminal):
-    return __terminally(Terminal.action.get_code(), Label.acceptance(E_AcceptanceIDs.FAILURE), 
+    return __terminally(Terminal.action.get_code(), Label.acceptance(E_IncidenceIDs.FAILURE), 
                         Name = "FAILURE")
 
 def __terminally(TerminalCode, TheLabel, Name):
@@ -439,7 +439,7 @@ def __on_after_match_then_return(OnAfterMatchTerminal):
     return return_preparation, on_after_match_str
 
 def reentry_preparation(LanguageDB, PreConditionIDList, OnAfterMatchTerminal):
-    TerminalFailureRef = "QUEX_LABEL(%i)" % dial_db.get_address_by_door_id(DoorID.acceptance(E_AcceptanceIDs.FAILURE))
+    TerminalFailureRef = "QUEX_LABEL(%i)" % dial_db.get_address_by_door_id(DoorID.acceptance(E_IncidenceIDs.FAILURE))
     """Reentry preperation (without returning from the function."""
     # (*) Unset all pre-context flags which may have possibly been set
     if PreConditionIDList is None:
@@ -472,11 +472,11 @@ def terminal_states(TerminalStateDb, SimpleF=False):
     """      
     code = []
 
-    for pattern_id, state in sorted(TerminalStateDb.iteritems(), key=lambda x: x[0]):
-        if   pattern_id == E_ActionIDs.ON_END_OF_STREAM: txt = __terminal_on_end_of_stream(state)
-        elif pattern_id == E_ActionIDs.ON_FAILURE:       txt = __terminal_on_failure(state)
-        elif pattern_id == E_ActionIDs.ON_AFTER_MATCH:   continue
-        else:                                            txt = __terminal_on_pattern_match(state)
+    for acceptance_id, state in sorted(TerminalStateDb.iteritems(), key=lambda x: x[0]):
+        if   acceptance_id == E_IncidenceIDs.END_OF_STREAM: txt = __terminal_on_end_of_stream(state)
+        elif acceptance_id == E_IncidenceIDs.FAILURE:       txt = __terminal_on_failure(state)
+        elif acceptance_id == E_IncidenceIDs.AFTER_MATCH:   continue
+        else:                                               txt = __terminal_on_pattern_match(state)
 
         code.extend(txt)
 
