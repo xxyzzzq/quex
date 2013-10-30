@@ -1,9 +1,10 @@
-from quex.engine.analyzer.state.terminal.core import TerminalState, \
-                                                TerminalMatchState
-                E_IncidenceIDs.SKIP:              TerminalSkipCharacterSet(command_list),
-                E_IncidenceIDs.SKIP_RANGE:        TerminalSkipRange(command_list),
-                E_IncidenceIDs.SKIP_NESTED_RANGE: TerminalSkipNestedRange(command_list),
-                E_IncidenceIDs.INDENTATION:       TerminalIndentationHandler(command_list),
+from quex.engine.analyzer.terminal.core                import TerminalState, \
+                                                              TerminalMatchState
+from quex.engine.analyzer.terminal.skip                import TerminalSkipCharacterSet
+from quex.engine.analyzer.terminal.skip_range          import TerminalSkipRange
+from quex.engine.analyzer.terminal.skip_nested_range   import TerminalSkipNestedRange
+from quex.engine.analyzer.terminal.indentation_handler import TerminalIndentationHandler
+
 from quex.blackboard import E_IncidenceIDs
 
 import re
@@ -12,9 +13,9 @@ Match_Lexeme = re.compile("\\bLexeme\\b", re.UNICODE)
 
 class TerminalStateFactory:
     def __init__(Mode, IndentationSupportF, BeginOfLineSupportF):
-        self.code_dedicated_indentation_handler     = self.get_code_dedicated_indentation_handler(Mode, 
-                                                                                                  IndentationSupportF)
-        self.code_store_last_character              = self.get_code_store_last_character(BeginOfLineSupportF)
+        self.code_dedicated_indentation_handler = self.get_code_dedicated_indentation_handler(Mode, 
+                                                                                              IndentationSupportF)
+        self.code_store_last_character          = self.get_code_store_last_character(BeginOfLineSupportF)
 
         self.code_on_match,          \
         self.rtz_on_match_f          = self.collect_code(Mode.incidence_db[E_IncidenceIDs.MATCH], Mode) 
@@ -23,16 +24,13 @@ class TerminalStateFactory:
         self.on_end_of_stream_action = self.do_OnEndOfStream()
         self.on_failure_action       = self.do_OnFailure()
 
-    def do(self, Incidence, action):
-        if isinstance(incidence_id, (int, long)):
-            terminal = TerminalMatchState(command_list)
-        else:
-            terminal = {
-                E_IncidenceIDs.SKIP:              TerminalSkipCharacterSet(command_list),
-                E_IncidenceIDs.SKIP_RANGE:        TerminalSkipRange(command_list),
-                E_IncidenceIDs.SKIP_NESTED_RANGE: TerminalSkipNestedRange(command_list),
-                E_IncidenceIDs.INDENTATION:       TerminalIndentationHandler(command_list),
-            }[incidence_id]
+    def do(self, IncidenceId, action):
+        if   isinstance(IncidenceId, (int, long)):            return TerminalMatchState(command_list)
+        elif IncidenceId == E_IncidenceIDs.SKIP:              return TerminalSkipCharacterSet(command_list)
+        elif IncidenceId == E_IncidenceIDs.SKIP_RANGE:        return TerminalSkipRange(command_list)
+        elif IncidenceId == E_IncidenceIDs.SKIP_NESTED_RANGE: return TerminalSkipNestedRange(command_list)
+        elif IncidenceId == E_IncidenceIDs.INDENTATION:       return TerminalIndentationHandler(command_list)
+        else:                                                 return None # Treated later (EndOfStream/Failure) or never.
 
     def do_OnEndOfStream(self, IncidenceDb):
         if IncidenceDb.has_key(E_IncidenceIDs.END_OF_STREAM):
