@@ -20,6 +20,7 @@ from   quex.engine.analyzer.transition_map             import TransitionMap
 import quex.engine.analyzer.core                       as     analyzer_generator
 from   quex.engine.analyzer.state.core                 import ReloadState, \
                                                               TerminalState
+from   quex.engine.analyzer.terminal.factory           import TerminalStateFactory
 import quex.engine.analyzer.engine_supply_factory      as     engine_supply_factory
 from   quex.engine.interval_handling                   import NumberSet, Interval
 from   quex.engine.tools                               import all_isinstance
@@ -40,36 +41,43 @@ Match_iterator = re.compile("\\iterator\\b", re.UNICODE)
 
 class GeneratorBase:
     def __init__(self, PatternList, IncidenceDb, IndentationSupportF, BeginOfLineSupportF):
-        assert isinstance(PatternActionPair_List, list)
+        assert isinstance(PatternList, list)
         assert isinstance(IncidenceDb, dict)
         assert type(IndentationSupportF) == bool
         assert type(BeginOfLineSupportF) == bool
 
-        # .sm
-        # .pre_context_sm
-        # .bipd_db
+        # (*) Core SM, Pre-Context SM, ...
+        #     ... and sometimes backward input position SMs.
+        self.sm,               \
+        self.pre_context_sm,   \
+        self.bipd_sm_db        = self.__prepare_main_state_machines(PatternList)
 
+        # (*) Terminal States
+        self.terminal_state_db = self.__prepare_terminals(IncidenceDb, 
+                                                          IndentationSupportF, 
+                                                          BeginOfLineSupportF)
+
+        # (*) Misc
+        self.pre_context_sm_id_list = [ sm.get_id() sm in pre_context_sm_list ]
+        self.on_after_match_f       = E_IncidenceIDs.AFTER_MATCH in IncidenceDb
+
+    def __prepare_main_state_machines(self, PatternList):
         # -- setup of state machine lists and id lists
-        self.__prepare_sm_lists(PatternList)
-        self.__prepare_terminals(IncidenceDb)
+        core_sm_list,        \
+        pre_context_sm_list, \
+        bipd_sm_list         = self.__prepare_sm_lists(PatternList)
 
-        self.on_after_match_f = E_IncidenceIDs.AFTER_MATCH in IncidenceDb
+        # (*) Create (combined) state machines
+        #     Backward input position detection (bipd) remains separate engines.
+        return get_combined_state_machine(core_sm_list),                  \
+               get_combined_state_machine(pre_context_sm_list,            \
+                                          FilterDominatedOriginsF=False), \
+               dict(sm.get_id(), sm) for sm in bipd_sm_list)
 
-        # (*) create (combined) state machines
-        #     -- core state machine
-        self.sm = get_combined_state_machine(self.state_machine_list)
-
-        #     -- pre conditions, combined into a single state machine
-        if len(self.pre_context_sm_list) != 0:
-            self.pre_context_sm = get_combined_state_machine(self.pre_context_sm_list, 
-                                                             FilterDominatedOriginsF=False)
-        else:
-            self.pre_context_sm = None
-
-    def __prepare_terminals(self, IncidenceDb):
+    def __prepare_terminals(self, IncidenceDb, IndentationSupportF, BeginOfLineSupportF):
         factory = TerminalStateFactory(IncidenceDb, IndentationSupportF, BeginOfLineSupportF)
 
-        self.terminal_state_db = {}
+        result = {}
         for incidence_id, code_fragment in IncidenceDb:
             if    incidence_id == E_IncidenceIDs.END_OF_STREAM \
                or incidence_id == E_IncidenceIDs.FAILURE:
@@ -79,50 +87,34 @@ class GeneratorBase:
             # The factory returns 'None' if the incidence is not related to a
             # dedicated terminal state, e.g. 'ON_MATCH', 'NODENT', etc.
             if terminal is None: continue
-            self.terminal_state_db[incidence_id] = terminal
 
-        self.terminal_state_db[E_IncidenceIDs.END_OF_STREAM] = factory.do_OnEndOfStream()
-        self.terminal_state_db[E_IncidenceIDs.FAILURE]       = factory.do_OnFailure()
+            result[incidence_id] = terminal
 
+        result[E_IncidenceIDs.END_OF_STREAM] = factory.do_OnEndOfStream()
+        result[E_IncidenceIDs.FAILURE]       = factory.do_OnFailure()
+
+        return result
 
     def __prepare_sm_lists(self, PatternList):
         # -- Core state machines of patterns
-        self.state_machine_list = [ pattern.sm for pap, pattern in PatternList ]
+        state_machine_list = [ pattern.sm for pap, pattern in PatternList ]
 
         # -- Pre-Contexts
-        self.pre_context_sm_list = [    
+        pre_context_sm_list = [    
             pattern.pre_context_sm for pap, pattern in PatternList \
             if pattern.pre_context_sm is not None 
         ]
 
         # -- Backward input position detection (BIPD)
-        self.bipd_db = dict( 
-            (pattern.sm.get_id(), pattern.bipd_sm)
-            for pap, pattern in PatternList if pattern.bipd_sm is not None 
+        bipd_sm_list = dict( 
+            pattern.bipd_sm for pap, pattern in PatternList \
+            if pattern.bipd_sm is not None 
         )
-
-        # -- ID Collections:
-        #    ids of pre-contexts
-        self.pre_context_sm_id_list = [    
-            pattern.pre_context_sm.get_id() for pap, pattern in PatternList \
-            if pattern.pre_context_sm is not None 
-        ]
-        #    ids of post-contexts
-        self.post_contexted_sm_id_list = [    
-            pattern.sm.get_id() for pap, pattern in PatternList \
-            if pattern.has_post_context() 
-        ]
-        #    ids of patterns which require on-the-fly line/column number counting
-        self.pattern_id_list_counting_required = [    
-            pattern.sm.get_id() for pap, pattern in PatternList \
-            if pattern.count_info() is None or pattern.count_info().counting_required_f() 
-        ]
-        return
+        return state_machine_list, pre_context_sm_list, bipd_sm_list
 
 class Generator(GeneratorBase):
-
-    def __init__(self, PatternActionPair_List):
-        GeneratorBase.__init__(self, PatternActionPair_List)
+    def __init__(self, PatternList, IncidenceDb):
+        GeneratorBase.__init__(self, PatternList, IncidenceDb)
         self.reload_state_forward  = ReloadState(engine_supply_factory.FORWARD)
         self.reload_state_backward = ReloadState(engine_supply_factory.BACKWARD_PRE_CONTEXT) # Important: 'BACKWARD'
 
@@ -275,23 +267,16 @@ class Generator(GeneratorBase):
     @staticmethod
     def code_state_machine(sm, EngineType): 
         assert len(sm.get_orphaned_state_index_list()) == 0
-
         LanguageDB = Setup.language_db
 
         txt = []
         # -- [optional] comment state machine transitions 
         if Setup.comment_state_machine_f:
-            LanguageDB.ML_COMMENT(txt, 
-                                  "BEGIN: STATE MACHINE\n"             + \
-                                  sm.get_string(NormalizeF=False) + \
-                                  "END: STATE MACHINE") 
-            txt.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
+            LanguageDB.COMMENT_STATE_MACHINE(txt, sm)
 
         # -- implement the state machine itself
         analyzer           = analyzer_generator.do(sm, EngineType)
-
         state_machine_code = state_machine_coder.do(analyzer)
-
         LanguageDB.REPLACE_INDENT(state_machine_code)
 
         txt.extend(state_machine_code)
@@ -653,6 +638,9 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
               all successful patterns need to be reported!            
                       
     """   
+    if len(StateMachine_List) == 0:
+        return None
+
     def __check(Place, sm):
         __check_on_orphan_states(Place, sm)
         __check_on_init_state_not_acceptance(Place, sm)

@@ -162,6 +162,13 @@ class LanguageDB_Cpp(dict):
         comment = Comment.replace("/*", "SLASH_STAR").replace("*/", "STAR_SLASH").replace("\n", "\n%s * " % indent_str)
         txt.append("%s/* %s\n%s */" % (indent_str, comment, indent_str))
 
+    def COMMENT_STATE_MACHINE(self, txt, SM):
+        self.ML_COMMENT(txt, 
+                        "BEGIN: STATE MACHINE\n"        + \
+                        SM.get_string(NormalizeF=False) + \
+                        "END: STATE MACHINE") 
+        txt.append("\n")
+
     def COMMAND(self, Cmd):
         if Cmd.id == E_Commands.Accepter:
             else_str = ""
