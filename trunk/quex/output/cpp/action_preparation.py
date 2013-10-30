@@ -29,7 +29,6 @@ import quex.output.cpp.counter_for_pattern         as     counter_for_pattern
 from   quex.engine.analyzer.state.core             import ReloadState, \
                                                           TerminalState
 
-import re
 
 LanguageDB   = None
 def do(Mode, IndentationSupportF, BeginOfLineSupportF):
