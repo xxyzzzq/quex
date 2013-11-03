@@ -257,7 +257,7 @@ def __terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePatte
 
     # Column and line number count for closing delimiter
     run_time_counting_required_f, counter_txt = \
-            counter_for_pattern.get(UnicodeEndSequencePattern, EOF_ActionF=False, ShiftF=False)
+            counter_for_pattern.get(UnicodeEndSequencePattern, ShiftF=False)
     # The Closing Delimiter must be a string. As such it has a pre-determined size.
     assert not run_time_counting_required_f 
 

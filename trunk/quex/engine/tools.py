@@ -1,5 +1,6 @@
 from   quex.blackboard import E_Values
 from   itertools       import izip, islice
+from   collections     import deque
 import sys
 import os
 
@@ -85,34 +86,48 @@ class UniformObject(object):
         """
         return E_Values.VOID != self._content
 
-def _report_failed_assertion(i, txt):
-    for k in range(max(0,i-10),i):
-        print "[%i](before) \"%s\"" % (k, txt[k])
-    print "[%i] Error: '%s'" % (i, txt[i].__class__.__name__)
-    print "[%i] Error: '%s'" % (i, txt[i])
-    for k in range(i+1, min(i+10, len(txt))):
-        print "[%i](after) \"%s\"" % (k, txt[k])
+def _report_failed_assertion(i, thing, last_things, iterable_next_things):
+    L = len(last_things)
+    for k, thing in enumerate(last_things):
+        print "[%i](before) \"%s\"" % (i - L + k, thing)
 
-def all_isinstance(txt, Type):
-    for i, element in enumerate(txt):
-        if isinstance(element, Type): continue
-        _report_failed_assertion(i, txt)
+    print ">> [%i] Error: '%s'" % (i, thing.__class__.__name__)
+    print ">> [%i] Error: '%s'" % (i, thing)
+
+    for k in xrange(10):
+        try:   thing = iterable_next_things.next()
+        except StopIteration: break
+        print "[%i](after) \"%s\"" % (i + k + 1, thing)
+
+def _check_all(Iterable, Condition):
+    if isinstance(Iterable, (int, long, str, unicode)):
+        print "#Iterable is not really an iterable"
+        return False
+
+    last_things = deque()
+    if isinstance(Iterable, (tuple, list)): iterable = Iterable.__iter__()
+    else:                                   iterable = Iterable
+    i = -1
+    while 1 + 1 == 2:
+        i     += 1
+        try:   thing = iterable.next()
+        except StopIteration: break
+
+        if len(last_things) > 10: last_things.popleft()
+        last_things.append(thing)
+        if Condition(thing): continue
+        _report_failed_assertion(i, thing, last_things, iterable)
         return False
     return True
 
-def none_isinstance(txt, Type):
-    for i, element in enumerate(txt):
-        if not isinstance(element, Type): continue
-        _report_failed_assertion(i, txt)
-        return False
-    return True
+def all_isinstance(List, Type):
+    return _check_all(List, lambda element: isinstance(element, Type))
 
-def none_is_None(txt):
-    for i, element in enumerate(txt):
-        if element is not None: continue
-        _report_failed_assertion(i, txt)
-        return False
-    return True
+def none_isinstance(List, Type):
+    return _check_all(List, lambda element: not isinstance(element, Type))
+
+def none_is_None(List):
+    return _check_all(List, lambda element: element is not None)
 
 class TypedSet(set):
     def __init__(self, Cls):

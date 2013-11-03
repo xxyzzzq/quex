@@ -24,7 +24,7 @@ def do(ModeDB):
     for i, info in enumerate(ModeDB.items()):
         name = info[0]
         mode = info[1]
-        if mode.options["inheritable"] == "only": continue
+        if mode.abstract_f(): continue
         mode_id_definition_str += "    QUEX_NAME(ModeID_%s) = %i,\n" % (name, i)
 
     if mode_id_definition_str != "":
@@ -134,7 +134,7 @@ def __get_mode_init_call(mode):
     has_entry_from    = "QUEX_NAME(%s_has_entry_from)"    % mode.name
     has_exit_to       = "QUEX_NAME(%s_has_exit_to)"       % mode.name
 
-    if mode.options["inheritable"] == "only": 
+    if mode.abstract_f(): 
         analyzer_function = "QUEX_NAME(Mode_uncallable_analyzer_function)"
 
     if len(mode.incidence_db[E_IncidenceIDs.MODE_ENTRY]) == 0:
@@ -175,7 +175,7 @@ def __get_mode_function_declaration(Modes, FriendF=False):
     txt = ""
     on_indentation_txt = ""
     for mode in Modes:
-        if mode.options["inheritable"] == "only": continue
+        if mode.abstract_f(): continue
 
         txt += __mode_functions(prolog, "__QUEX_TYPE_ANALYZER_RETURN_VALUE", 
                                 ["analyzer_function"],
@@ -209,16 +209,16 @@ def get_constructor_code(Modes):
 
     txt = ""
     for mode in Modes:
-        if mode.options["inheritable"] == "only": continue
+        if mode.abstract_f(): continue
         txt += "    __quex_assert(QUEX_NAME(ModeID_%s) %s< %i);\n" % \
                (mode.name, " " * (L-len(mode.name)), len(Modes))
 
     for mode in Modes:
-        if mode.options["inheritable"] == "only": continue
+        if mode.abstract_f(): continue
         txt += __get_mode_init_call(mode)
 
     for mode in Modes:
-        if mode.options["inheritable"] == "only": continue
+        if mode.abstract_f(): continue
         txt += "        me->mode_db[QUEX_NAME(ModeID_%s)]%s = &(QUEX_NAME(%s));\n" % \
                (mode.name, " " * (L-len(mode.name)), mode.name)
     return txt
@@ -234,7 +234,7 @@ def get_mode_class_related_code_fragments(Modes):
     """
     members_txt = ""    
     for mode in Modes:
-        if mode.options["inheritable"] == "only": continue
+        if mode.abstract_f(): continue
         members_txt += "        extern QUEX_NAME(Mode)  QUEX_NAME(%s);\n" % mode.name
 
     mode_functions_txt = __get_mode_function_declaration(Modes, FriendF=False)

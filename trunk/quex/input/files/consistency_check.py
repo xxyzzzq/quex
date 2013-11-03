@@ -119,7 +119,7 @@ def __start_mode(implemented_mode_name_list, mode_name_list):
 def __entry_exit_transitions(mode, mode_name_list):
     FileName = mode.sr.file_name
     LineN    = mode.sr.line_n
-    for mode_name in mode.options["exit"]:
+    for mode_name in mode.exit_mode_name_list:
 
         verify_word_in_list(mode_name, mode_name_list,
                             "Mode '%s' allows entry from\nmode '%s' but no such mode exists." % \
@@ -128,12 +128,12 @@ def __entry_exit_transitions(mode, mode_name_list):
         that_mode = blackboard.mode_db[mode_name]
 
         # Other mode allows all entries => don't worry.
-        if len(that_mode.options["entry"]) == 0: continue
+        if len(that_mode.entry_mode_name_list) == 0: continue
 
         # Other mode restricts the entries from other modes
         # => check if this mode or one of the base modes can enter
         for base_mode in mode.get_base_mode_sequence():
-            if base_mode.name in that_mode.options["entry"]: break
+            if base_mode.name in that_mode.entry_mode_name_list: break
         else:
             error_msg("Mode '%s' has an exit to mode '%s' but" % (mode.name, mode_name),
                       FileName, LineN, DontExitF=True, WarningF=False)
@@ -141,7 +141,7 @@ def __entry_exit_transitions(mode, mode_name_list):
                       "or any of its base modes.",
                       that_mode.sr.file_name, that_mode.sr.line_n)
 
-    for mode_name in mode.options["entry"]:
+    for mode_name in mode.entry_mode_name_list:
         # Does that mode exist?
         verify_word_in_list(mode_name, mode_name_list,
                             "Mode '%s' allows entry from\nmode '%s' but no such mode exists." % \
@@ -149,12 +149,12 @@ def __entry_exit_transitions(mode, mode_name_list):
 
         that_mode = blackboard.mode_db[mode_name]
         # Other mode allows all exits => don't worry.
-        if len(that_mode.options["exit"]) == 0: continue
+        if len(that_mode.exit_mode_name_list) == 0: continue
 
         # Other mode restricts the exits to other modes
         # => check if this mode or one of the base modes can be reached
         for base_mode in mode.get_base_mode_sequence():
-            if base_mode.name in that_mode.options["exit"]: break
+            if base_mode.name in that_mode.exit_mode_name_list: break
         else:
             error_msg("Mode '%s' has an entry for mode '%s' but" % (mode.name, mode_name),
                       FileName, LineN, DontExitF=True, WarningF=False)

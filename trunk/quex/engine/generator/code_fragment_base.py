@@ -6,7 +6,16 @@ class CodeFragment:
         if   Code is None:                     self.__code = []
         elif isinstance(Code, (str, unicode)): self.__code = [ Code ]
         elif isinstance(Code, list):           self.__code = Code
-        else:                                  assert False
+        elif isinstance(Code, tuple):          self.__code = list(Code)
+        else:                                  assert False, Code.__class__
+
+    def append_CodeFragment(self, Other):
+        assert isinstance(Other, CodeFragment)
+        self.__code.extend(Other.__code)
+
+    def append_text(self, Text):
+        assert isinstance(Text, (str, unicode))
+        self.__code.append(Text)
 
     def get_code(self, Mode=None):
         """Returns a list of strings and/or integers that are the 'core code'. 

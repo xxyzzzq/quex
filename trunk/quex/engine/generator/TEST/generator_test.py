@@ -10,6 +10,7 @@ from quex.engine.misc.string_handling import blue_print
 from quex.exception                   import RegularExpressionException
 from quex.blackboard                  import PatternShorthand, E_Compression
 #
+from   quex.engine.tools                       import all_isinstance
 from   quex.engine.generator.languages.core    import db
 import quex.engine.generator.state_router      as     state_router_generator
 from   quex.engine.generator.action_info       import PatternActionInfo, CodeFragment
@@ -23,7 +24,7 @@ from   quex.engine.analyzer.door_id_address_label  import Label, dial_db
 import quex.input.regular_expression.engine        as     regex
 from   quex.input.files.counter_setup              import LineColumnCounterSetup_Default
 #
-from   quex.blackboard import setup as Setup, E_IncidenceIDs
+from   quex.blackboard import setup as Setup, E_IncidenceIDs, signal_character_list
 
 from   copy import deepcopy
 # Switch: Removal of source and executable file
@@ -284,19 +285,16 @@ def compile(Language, SourceCode, AssertsActionvation_str="", StrangeStream_str=
 
     return executable_name, filename_tmp
 
-def get_mode_object(SM_Name, EventDB={}):
+def get_mode_object(Name, PatternList, IncidenceDb={}):
     class Something:
-        def __init__(self, EventDB):
-            self.incidence_db = EventDB
-        def get_code_fragment_list(self, Name):
-            return self.incidence_db[Name]
-    mode            = Something(EventDB)
-    mode.name       = "%s_UnitTest" % SM_Name
-    mode.counter_db = CounterDB(LineColumnCounterSetup_Default())
-    mode.options    = {
-        "indentation": None,
-    }
-    return mode
+        def __init__(self):
+            self.name              = "%s_UnitTest" % Name
+            self.incidence_db      = IncidenceDb
+            self.pattern_list      = PatternList
+            self.counter_db        = CounterDB(LineColumnCounterSetup_Default())
+            self.indentation_setup = None
+
+    return Something()
 
 def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=False, ComputedGotoF=False):
     test_str = TestStr.replace("\"", "\\\"")
@@ -353,77 +351,70 @@ def create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFall
 
 def create_state_machine_function(PatternActionPairList, PatternDictionary, 
                                   BufferLimitCode, SecondModeF=False):
-    on_failure_action  = "return false;\n"
-    on_failure_action += "goto %s; /* Avoid unreferenced label. */" % Label.global_reentry_preparation_2(GotoedF=True)
-
+    on_failure_str  = "return false;\n"
+    # on_failure_str += "goto %s; /* Avoid unreferenced label. */" % Label.global_reentry_preparation_2(GotoedF=True)
+    on_failure      = CodeFragment(on_failure_str)
 
     # -- produce some visible output about the setup
     print "(*) Lexical Analyser Patterns:"
     for pair in PatternActionPairList:
         print "%20s --> %s" % (pair[0], pair[1])
 
-    support_begin_of_line_f      = False
-    new_pattern_action_pair_list = []
+    x_pattern_list          = []
+    support_begin_of_line_f = False
     for pattern_str, action_str in PatternActionPairList:
-        pattern = regex.do(pattern_str, PatternDictionary)
-        if pattern.pre_context_trivial_begin_of_line_f:
-            support_begin_of_line_f = True
-        new_pattern_action_pair_list.append((pattern_str, pattern, action_str))
+        pattern                 =  regex.do(pattern_str, PatternDictionary)
+        support_begin_of_line_f |= pattern.pre_context_trivial_begin_of_line_f
+        x_pattern_list.append((pattern, action_str))
+    pattern_list = [x[0] for x in x_pattern_list]
 
     # -- create default action that prints the name and the content of the token
-    store_last_character_str = ""
-    if support_begin_of_line_f:
-        store_last_character_str  = "    %s = %s;\n" % \
-                                    ("me->buffer._character_before_lexeme_start", 
-                                     "*(me->buffer._input_p - 1)")
-    set_terminating_zero_str  = "    QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);\n"
-    try:
-        PatternActionPairList = map(lambda x: 
-                                    PatternActionInfo(x[1], 
-                                        CodeFragment(  store_last_character_str 
-                                                     + set_terminating_zero_str 
-                                                     + action(x[2])),
-                                        PatternStr=x[0]),
-                                    new_pattern_action_pair_list)
-    except RegularExpressionException, x:
-        print "Regular expression parsing:\n" + x.message
-        sys.exit(0)
+    #    store_last_character_str = ""
+    #    if support_begin_of_line_f:
+    #        store_last_character_str  = "    %s = %s;\n" % \
+    #                                    ("me->buffer._character_before_lexeme_start", 
+    #                                     "*(me->buffer._input_p - 1)")
+    #    set_terminating_zero_str  = "    QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);\n"
+    #    prefix = store_last_character_str + set_terminating_zero_str
+
+    incidence_db = dict(
+        (pattern.incidence_id(), CodeFragment(action(action_str)))
+        for pattern, action_str in x_pattern_list
+    )
+    incidence_db[E_IncidenceIDs.FAILURE]       = on_failure
+    incidence_db[E_IncidenceIDs.END_OF_STREAM] = on_failure
 
     print "## (1) code generation"    
-    txt = "#define  __QUEX_OPTION_UNIT_TEST\n"
 
     if not SecondModeF:  sm_name = "Mr"
     else:                sm_name = "Mrs"
 
     Setup.analyzer_class_name = sm_name
 
-    mode = get_mode_object(sm_name)
+    mode = get_mode_object(sm_name, pattern_list, incidence_db)
 
-    character_list = [
-        (Setup.buffer_limit_code, "Buffer Limit Code"),
-        (Setup.path_limit_code,   "Path Limit Code")
-    ]
-    for pap in PatternActionPairList:
-        pap.pattern().mount_post_context_sm()
-        pap.pattern().mount_pre_context_sm()
-        pap.pattern().cut_character_list(character_list)
+    for pattern in pattern_list:
+        pattern.prepare_count_info(CounterDB(LineColumnCounterSetup_Default()), CodecTrafoInfo=None)
+        pattern.mount_post_context_sm()
+        pattern.mount_pre_context_sm()
+        pattern.cut_character_list(signal_character_list(Setup))
 
-    PatternActionPairList.append(PatternActionInfo(E_IncidenceIDs.FAILURE,       on_failure_action))
-    PatternActionPairList.append(PatternActionInfo(E_IncidenceIDs.END_OF_STREAM, on_failure_action)) 
-    PatternActionPairList.append(PatternActionInfo(E_IncidenceIDs.AFTER_MATCH,   ""))
+    code, default_counter_f = cpp_generator.do(mode.name, pattern_list, incidence_db, ModeNameList = [], 
+                                               BeginOfLineSupportF=support_begin_of_line_f, 
+                                               IndentationSupportF=False) 
 
-    code = cpp_generator.do(PatternActionPair_List = PatternActionPairList, 
-                            FunctionPrefix         = mode.name,
-                            ModeNameList           = []) 
+    assert all_isinstance(code, str)
 
-    for i, elm in enumerate(code):
-        if type(elm) != str: 
-            if hasattr(elm, "code"): txt = elm.code()
-            else:                    txt = repr(elm)
-            print "##", elm.__class__.__name__, txt
-            assert False
+    return   "#define  __QUEX_OPTION_UNIT_TEST\n" \
+           + nonsense_default_counter(not SecondModeF) \
+           + "".join(code)
 
-    return txt + "".join(code)
+def nonsense_default_counter(FirstModeF):
+    if FirstModeF:
+        return   "static void\n" \
+               + "__QUEX_COUNT_VOID(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* LexemeBegin, QUEX_TYPE_CHARACTER* LexemeEnd) {}\n" 
+    else:
+        return "" # Definition done before
 
 def action(PatternName): 
     ##txt = 'fprintf(stderr, "%19s  \'%%s\'\\n", Lexeme);\n' % PatternName # DEBUG

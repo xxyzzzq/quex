@@ -55,15 +55,15 @@ def get_state_machine_id():
     __internal_state_machine_id_counter += long(1)
     return __internal_state_machine_id_counter 
 
-__map_pattern_id_to_terminal_state_index = {}
-def get_terminal_state_index(PatternId):
-    global __map_pattern_id_to_terminal_state_index
-    assert isinstance(PatternId, (int, long)) or PatternId in E_IncidenceIDs
+__map_incidence_id_to_state_index = {}
+def map_incidence_id_to_state_index(IncidenceId):
+    global __map_incidence_id_to_state_index
+    assert isinstance(IncidenceId, (int, long)) or IncidenceId in E_IncidenceIDs
 
-    index = __map_pattern_id_to_terminal_state_index.get(PatternId)
+    index = __map_incidence_id_to_state_index.get(IncidenceId)
     if index is None:
         index = get()
-        __map_pattern_id_to_terminal_state_index[PatternId] = index
+        __map_incidence_id_to_state_index[IncidenceId] = index
     return index
     
 

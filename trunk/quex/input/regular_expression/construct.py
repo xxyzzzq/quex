@@ -80,6 +80,9 @@ class Pattern(object):
 
         self.__validate(fh)
     
+    def incidence_id(self):
+        return self.__sm.get_id()
+
     def prepare_count_info(self, LineColumn_CounterDB, CodecTrafoInfo):                
         """Perform line/column counting on the core pattern, i.e. the pattern
         which is not concerned with the post context. The counting happens 

@@ -369,36 +369,32 @@ def __terminal_on_pattern_match(Terminal):
         Action        -- Action to be performed when pattern wins.
         PatternString -- String that describes the pattern.
     """
-    Info      = Terminal.action
-    AcceptanceID = Terminal.acceptance_id
-
     def safe(Letter):
         if Letter in ['\\', '"', '\n', '\t', '\r', '\a', '\v']: return "\\" + Letter
         else:                                                   return Letter 
 
-    if hasattr(Info, "action") and hasattr(Info, "pattern"):
-        action_code  = Info.action().get_code()
-        safe_pattern = "".join(safe(x) for x in Info.pattern_string())
-        name         = "%i:   %s" % (AcceptanceID, safe_pattern)
+    terminal_code  = Terminal.get_code()
+
+    if hasattr(Terminal, "pattern_string"):
+        safe_pattern = "".join(safe(x) for x in Terminal.pattern_string())
+        name         = "%i:   %s" % (Terminal.incidence_id(), safe_pattern)
     else:
-        action_code  = Info.get_code()
         name         = ""
 
-    assert type(action_code) == list
+    assert type(terminal_code) == list
 
-    return __terminally(action_code, Label.acceptance(AcceptanceID), name)
+    return __terminally(terminal_code, Label.incidence(Terminal.incidence_id()), name)
 
 def __terminal_on_end_of_stream(Terminal):
-    result = Terminal.action.get_code()
-    result.append(
+    Terminal.code_fragment.append_text(
         "    /* End of Stream FORCES a return from the lexical analyzer, so that no\n"
         "     * tokens can be filled after the termination token.                    */\n"
         "    RETURN;\n"
     )
-    return __terminally(result, Label.global_terminal_end_of_file(), Name = "END_OF_STREAM")
+    return __terminally(Terminal.get_code(), Label.global_terminal_end_of_file(), Name = "END_OF_STREAM")
 
 def __terminal_on_failure(Terminal):
-    return __terminally(Terminal.action.get_code(), Label.acceptance(E_IncidenceIDs.FAILURE), 
+    return __terminally(Terminal.get_code(), Label.incidence(E_IncidenceIDs.FAILURE), 
                         Name = "FAILURE")
 
 def __terminally(TerminalCode, TheLabel, Name):
@@ -439,7 +435,7 @@ def __on_after_match_then_return(OnAfterMatchTerminal):
     return return_preparation, on_after_match_str
 
 def reentry_preparation(LanguageDB, PreConditionIDList, OnAfterMatchTerminal):
-    TerminalFailureRef = "QUEX_LABEL(%i)" % dial_db.get_address_by_door_id(DoorID.acceptance(E_IncidenceIDs.FAILURE))
+    TerminalFailureRef = "QUEX_LABEL(%i)" % dial_db.get_address_by_door_id(DoorID.incidence(E_IncidenceIDs.FAILURE))
     """Reentry preperation (without returning from the function."""
     # (*) Unset all pre-context flags which may have possibly been set
     if PreConditionIDList is None:

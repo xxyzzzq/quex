@@ -23,7 +23,7 @@ import quex.engine.analyzer.door_id_address_label  as     address
 from   quex.engine.analyzer.door_id_address_label  import dial_db
 import quex.engine.generator.state.transition.core as     transition_block
 from   quex.engine.analyzer.transition_map         import TransitionMap   
-from   quex.blackboard                             import setup as Setup, E_MapImplementationType
+from   quex.blackboard                             import setup as Setup, E_MapImplementationType, E_IncidenceIDs
 
 Setup.language_db = languages.db["C"]              
 LanguageDB        = Setup.language_db
@@ -129,7 +129,7 @@ def get_transition_function(tm, Codec):
     else:
         Setup.buffer_codec_transformation_info = "utf8-state-split"
         tm_txt = LoopGenerator.code_action_state_machine(tm, None, None)
-        tm_txt.append("%s return (int)-1;\n" % Label.acceptance(E_IncidenceIDs.FAILURE))
+        tm_txt.append("%s return (int)-1;\n" % address.Label.incidence(E_IncidenceIDs.FAILURE))
         tm_txt = LanguageDB.GET_PLAIN_STRINGS(tm_txt)
         LoopGenerator.replace_iterator_name(tm_txt, "input_p", E_MapImplementationType.STATE_MACHINE)
 
@@ -161,13 +161,13 @@ def get_transition_function(tm, Codec):
             "int32_t         output        = -1;\n"
 
 
-    reload   = "%s: return (int)-1;\n" % address.get_label("$reload", -1)
-    drop_out = "%s: return (int)-1;\n" % address.get_label("$drop-out", -1)
+    # reload   = "%s: return (int)-1;\n" % address.get_label("$reload", -1)
+    drop_out = "%s: return (int)-1;\n" % address.Label.drop_out(-1)
 
     txt = []
     txt.extend(header)
     txt.extend(tm_txt)
-    txt.append(reload)
+    # txt.append(reload)
     txt.append(drop_out)
     txt.append("\n}\n")
 

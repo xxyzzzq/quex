@@ -54,7 +54,7 @@ def do_set(number_set, TrafoInfo, fh=-1):
                 False transformation failed, number set possibly in inconsistent state!
     """
     assert TrafoInfo is not None
-    assert TrafoInfo.__class__.__name__ == "NumberSet"
+    assert isinstance(number_set, NumberSet)
 
     if isinstance(TrafoInfo, (str, unicode)):
         if TrafoInfo == "utf8-state-split": 

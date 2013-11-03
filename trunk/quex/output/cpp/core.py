@@ -1,63 +1,54 @@
 from   quex.engine.generator.languages.variable_db import variable_db
 from   quex.engine.analyzer.door_id_address_label  import dial_db, IfDoorIdReferencedCode
 from   quex.engine.generator.base                  import Generator as CppGenerator
+from   quex.engine.generator.action_info           import CodeFragment
 from   quex.engine.tools                           import all_isinstance
-import quex.output.cpp.action_preparation          as     action_preparation
+from   quex.input.regular_expression.construct     import Pattern
 import quex.output.cpp.counter                     as     counter
 from   quex.blackboard                             import setup as Setup, \
                                                           E_IncidenceIDs
 
 def do_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
-
-    # (*) Initialize address handling
-    #     (Must happen before call to constructor of Generator, because 
-    #      constructor creates some addresses.)
-    dial_db.clear()
-    variable_db.init()
-
-    # (*) Skippers, Indentation Handlers, etc. are generated in the 
-    #     frame of 'action_preparation'. In there, somewhere, a call to
-    #     'get_code()' happens. During parsing a 'GeneratedCode' object
-    #     has been generated. When its 'get_code()' function is called,
-    #     the skipper/indentation counter generation function is called.
-    generator = CppGenerator(Mode.pattern_list, Mode.incidence_db, IndentationSupportF, BeginOfLineSupportF)
-
-    pattern_action_pair_list = action_preparation.do(Mode, 
-                                                     IndentationSupportF, 
-                                                     BeginOfLineSupportF)
-    core_txt = do(pattern_action_pair_list, 
-                  FunctionPrefix = Mode.name, 
-                  ModeNameList   = ModeNameList)
+    core_txt, \
+    default_character_counter_required_f = do(Mode.name, Mode.pattern_list, Mode.incidence_db, 
+                                              ModeNameList        = ModeNameList, 
+                                              IndentationSupportF = IndentationSupportF,
+                                              BeginOfLineSupportF = BeginOfLineSupportF)
 
     # (*) Generate the counter first!
     #     (It may implement a state machine with labels and addresses
     #      which are not relevant for the main analyzer function.)
-    counter_txt = do_counter(Mode, Mode.default_character_counter_required_f())
+    counter_txt = ""
+    if default_character_counter_required_f:
+        counter_txt = do_default_counter(Mode)
 
     return counter_txt + core_txt
 
-def do(PatternActionPair_List, FunctionPrefix, ModeNameList):
-    function_body,        \
-    variable_definitions, \
-    on_after_match_f      = do_core(PatternActionPair_List)
+def do(ModeName, PatternList, IncidenceDb, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
+    """Produce code for an analyzer function which can detect patterns given in
+    the 'PatternList' and has things to be done mentioned in 'IncidenceDb'. 
 
-    result = CppGenerator.code_function(on_after_match_f, 
-                                        FunctionPrefix, 
-                                        function_body,
-                                        variable_definitions, 
-                                        ModeNameList)
-    return "".join(result)
+    RETURN: [0] -- Code of the function.
 
-def do_core(PatternActionPair_List):
-    """The initialization of addresses and variables is done outside 
-       this function, since other components may influence it for the
-       construction of a mode.
+            [1] -- Flag indicating whether a 'default line/column counter' 
+                   needs to be implemented.
     """
-    generator = CppGenerator(PatternActionPair_List) 
+    assert isinstance(ModeName, (str, unicode))
+    assert all_isinstance(PatternList, Pattern)
+    assert all_isinstance(ModeNameList, (str, unicode))
+    assert all_isinstance(IncidenceDb.itervalues(), CodeFragment)
+    assert isinstance(IndentationSupportF, bool)
+    assert isinstance(BeginOfLineSupportF, bool)
+
+    # (*) Initialize address handling
+    dial_db.clear()     # BEFORE constructor of generator; 
+    variable_db.init()  # because constructor creates some addresses.
+
+    generator = CppGenerator(ModeName, PatternList, IncidenceDb, IndentationSupportF, BeginOfLineSupportF)
 
     # (*) Pre Context State Machine
     #     (If present: All pre-context combined in single backward analyzer.)
-    pre_context          = generator.code_pre_context_state_machine()
+    pre_context = generator.code_pre_context_state_machine()
     # assert all_isinstance(pre_context, (IfDoorIdReferencedCode, int, str, unicode))
         
     # (*) Backward input position detection
@@ -92,14 +83,15 @@ def do_core(PatternActionPair_List):
     function_body.extend(state_router) # route to state by index (only if no computed gotos)
     function_body.extend(reload_procedures)
 
-    return function_body, variable_definitions, generator.on_after_match_f
+    # (*) Make the analyzer function
+    result = generator.code_function(function_body, variable_definitions, 
+                                     ModeNameList)
 
-def do_counter(Mode, DefaultCharacterCounterRequiredF):
+    return result, generator.default_character_counter_required_f
+
+def do_default_counter(Mode):
     dial_db.clear()
     variable_db.init()
-
-    if not DefaultCharacterCounterRequiredF:
-        return ""
 
     default_character_counter_function_name,   \
     default_character_counter_function_code  = \
