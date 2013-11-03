@@ -54,8 +54,8 @@ from   operator    import itemgetter
 # transition from description to real mode.
 #-----------------------------------------------------------------------------------------
 
-PatternRepriorization = namedtuple("PatternRepriorization", ("pattern", "new_pattern_index", "file_name", "line_n", "mode_name"))
-PatternDeletion       = namedtuple("PatternDeletion",       ("pattern", "pattern_index",     "file_name", "line_n", "mode_name"))
+PatternRepriorization = namedtuple("PatternRepriorization", ("pattern", "new_pattern_index", "sr"))
+PatternDeletion       = namedtuple("PatternDeletion",       ("pattern", "pattern_index",     "sr", "mode_name"))
 
 class PatternPriority(object):
     """PatternPriority objects may need re-assignment so they cannot
@@ -70,6 +70,35 @@ class PatternPriority(object):
         return cmp((self.mode_hierarchy_index,  self.pattern_index),
                    (Other.mode_hierarchy_index, Other.pattern_index))
 
+#______________________________________________________________________________
+# ModeDescription:
+#
+# A direct representation of a mode's definition in Quex-source code. A mode
+# definition contains the following elements:
+#
+#    .name -- The name of the mode.
+#
+#    .derived_from_list -- All modes from where this mode is derived, that is
+#                          only the direct super modes.
+#   
+#    .option_db -- A mapping from an option name such as 'skip', 'exit', 
+#                  'inheritable', etc. to an object that defines its settings.
+#
+#    .incidence_by_name_db -- A mapping from an incidence name 'on_failure'
+#                             to a CodeFragment to be executed upon occurence.
+#
+#    .pattern_action_pair_list -- A list of pairs containing patterns and their
+#                                 correspondent CodeFragment to be executed
+#                                 upon match.
+#
+# If the mode is derived from another mode, it may make sense to adapt the 
+# priority of patterns and/or delete pattern from the matching hierarchy.
+#   
+#    .reprioritization_info_list -- Information about re-prioritization of 
+#                                   patterns.
+#
+#    .deletion_info_list -- Information about deletion of patterns.
+#______________________________________________________________________________
 class ModeDescription:
     registry_db = {}  # map:  mode name --> ModeDescription object
 
@@ -79,8 +108,14 @@ class ModeDescription:
         self.name  = Name
         self.sr    = SourceRef(Filename, LineN)
 
-        # (*) Maintain list of base modes 
-        self.base_modes = []
+        # (*) List of modes from which this mode is derived.
+        self.derived_from_list = []
+
+        # (*) Options (set their default value)
+        #
+        # Not only copy the reference, copy the default value object!
+        self.option_db = dict((name, deepcopy(descr.default_value))
+                            for name, descr in mode_option_info_db.iteritems())
 
         # (*) Pattern-Action Pairs:
         #
@@ -92,20 +127,13 @@ class ModeDescription:
         #   
         #     Lists all patterns which have to be reprioritized.
         #
-        self.__repriorization_info_list = []  
-        #                              
-        #
+        self.__reprioritization_info_list = []  
+
         # (*) Deletion Database
         # 
         #     Lists all patterns which have to be deleted. 
         #
         self.__deletion_info_list = [] 
-
-        # (*) Default Options
-        #
-        # Not only copy the reference, copy the default value object!
-        self.options = dict((name, deepcopy(descr.default_value))
-                            for name, descr in mode_option_info_db.iteritems())
 
         # (*) Default Event Handler: Empty
         #
@@ -129,105 +157,116 @@ class ModeDescription:
            by the current pattern index.
         """
         PatternIdx = ThePattern.sm.get_id() 
-        self.__repriorization_info_list.append(PatternRepriorization(ThePattern, PatternIdx, FileName, LineN, self.name))
+        self.__reprioritization_info_list.append(PatternRepriorization(ThePattern, PatternIdx, SourceRef(FileName, LineN), self.name))
 
     def add_match_deletion(self, ThePattern, FileName, LineN):
         """If one of the base modes contains a pattern which is identical to this
            pattern, it has to be deleted.
         """
         PatternIdx = ThePattern.sm.get_id() 
-        self.__deletion_info_list.append(PatternDeletion(ThePattern, PatternIdx, FileName, LineN, self.name))
+        self.__deletion_info_list.append(PatternDeletion(ThePattern, PatternIdx, SourceRef(FileName, LineN), self.name))
 
     def add_option(self, Option, Value):
         """SANITY CHECK:
-                -- which options are concatinated to a list
+                -- which option_db are concatinated to a list
                 -- which ones are replaced
-                -- what are the values of the options
+                -- what are the values of the option_db
         """
         assert mode_option_info_db.has_key(Option)
 
         option_info = mode_option_info_db[Option]
         if option_info.type == "list":
-            self.options.setdefault(Option, []).append(Value)
+            self.option_db.setdefault(Option, []).append(Value)
         else:
             if option_info.domain is not None: assert Value in option_info.domain
-            self.options[Option] = Value
+            self.option_db[Option] = Value
 
     def get_pattern_action_pair_list(self):
         return self.__pattern_action_pair_list
 
-    def get_repriorization_info_list(self):
-        return self.__repriorization_info_list
+    def get_reprioritization_info_list(self):
+        return self.__reprioritization_info_list
 
     def get_deletion_info_list(self):
         return self.__deletion_info_list
 
+#______________________________________________________________________________
+# PPC -- (Priority, Pattern, CodeFragment): 
+#
+# Collects information about a pattern, its priority, and the code fragment
+# to be executed when it triggers. Objects of this class are intermediate
+# they are not visible outside class 'Mode'.
+#______________________________________________________________________________
+class PPC(namedtuple("PPC_tuple", ("priority", "pattern", "code_fragment"))):
+    def __new__(self, ThePatternPriority, ThePattern, TheCodeFragment):
+        return super(PPC, self).__new__(self, ThePatternPriority, ThePattern, TheCodeFragment)
+
+    @staticmethod
+    def from_PatternActionPair(ModeHierarchyIndex, PAP):
+        return PPC(PatternPriority(ModeHierarchyIndex, pap.pattern().sm.get_id()), pap.pattern(), pap.action())
+
+
+#______________________________________________________________________________
+# Mode:
+#
+# A pattern detection mode. It is identified by
+#
+#   .pattern_list -- A list of patterns which can potentially be detected.
+#                    A pattern match is a special kind of an incidence.
+#                    Pattern matches are associated with pattern match
+#                    actions (i.e. CodeFragment-s).
+#
+#   .incidence_db -- A mapping from incidence ids to CodeFragments to be
+#                    executed upon the occurrence of the incidence.
+# 
+#                    NOTE: The incidences mentioned in 'incidence_db' are
+#                    all 'terminals' and NOT things which appear 'by the side'.
+#
+# A Mode is built upon a ModeDescription object. A mode description contains
+# further 'option_db' such as a column-line-count specification and a indentation
+# setup.
+#______________________________________________________________________________
 class Mode:
     def __init__(self, Other):
         """Translate a ModeDescription into a real Mode. Here is the place were 
-           all rules of inheritance mechanisms and pattern precedence are applied.
-
-        -------------------------------------------------------------------------
-           .pattern_list:
-
-           State machines trigger 'terminal events' which are associated with
-           'event id's. A special type of event id is the acceptance id of a 
-           matching pattern.
-        -------------------------------------------------------------------------
-           .incidence_db:     Database linking event ids with CodeFragment-s:
-           
-                                  event id ---> CodeFragment
-
-           If the event id is an acceptance id, then the associated CodeFragment
-           is the pattern match action. But also other events exist, such as 
-           'on end of stream', 'on failure', or 'on after match'.
-
-        -------------------------------------------------------------------------
-           .counter_db:   Information about how to count line and column
-                          numbers
-        -------------------------------------------------------------------------
-           .misc:         Side information about the mode.
+        all rules of inheritance mechanisms and pattern precedence are applied.
         """
         assert isinstance(Other, ModeDescription)
-        class Something:
-            pass
         self.name = Other.name
         self.sr   = Other.sr   # 'SourceRef' -- is immutable
 
-        self.signal_character_list = [
-            (Setup.buffer_limit_code, "Buffer Limit Code"),
-            (Setup.path_limit_code,   "Path Limit Code")
-        ]
-
-        base_mode_sequence = self.misc.__determine_base_mode_sequence(Other, [], [])
-        self.misc.__base_mode_sequence = base_mode_sequence
+        base_mode_sequence  = self.misc.__determine_base_mode_sequence(Other, [], [])
 
         # Collect Options
         options_db          = self.__option_db_construct(base_mode_sequence)
 
         # Determine Line/Column Counter Database
-        self.__counter_db   = self.__counter_db_construct(options_db["counter"])
+        self.__counter_db        = self.__counter_db_construct(options_db["counter"])
+        self.__indentation_setup = options_db["indentation"]
+
+        # Build a 'PPC list' (see class 'PPC' above)
+        ppc_list            = self.__ppc_list_construct(base_mode_sequence, options_db)
+        self.__pattern_list = self.__pattern_list_construct(ppc_list)
 
         # Collect Incidence-Handlers (purposely, no use of term 'event handler')
-        self.__incidence_db = self.__incidence_db_construct(base_mode_sequence)
+        self.__incidence_db = self.__incidence_db_construct(base_mode_sequence, ppc_list)
         
-        # XPAP - extend pattern action pairs, i.e. list which can be sorted
-        #        according to preceedence.
-        xpap_list           = self.__xpap_list_construct(base_mode_sequence, options_db)
-        self.__pattern_list = self.__pattern_list_construct(xpap_list)
-
-
         # Default counter required?
         self.__default_character_counter_required_f = False
 
-        self.__abstract_f = self.__abstract_f_prepare(Other)
+        self.__abstract_f           = self.__abstract_f_prepare(Other)
+        self.__base_mode_sequence   = base_mode_sequence
+        # List of modes that have an entry into this mode
+        self.__entry_mode_name_list = mode.option_db["entry"]
+        # List of modes to which this mode can exit
+        self.__exit_mode_name_list  = mode.option_db["exit"]
 
     def __abstract_f_prepare(self, Other):
         """If the mode has incidences and/or patterns defined it is free to be 
         abstract or not. If neither one is defined, it cannot be implemented and 
         therefore MUST be abstract.
         """
-        result = (Other.options["inheritable"] == "only") # Only to be derived from?
+        result = (Other.option_db["inheritable"] == "only") # Only to be derived from?
         if len(self.incidence_db) != 0 or len(self.pattern_list) != 0:
             return result
         elif result == False:
@@ -235,19 +274,22 @@ class Mode:
                       "<inheritable: only> has been added automatically.", self.sr.file_name, self.sr.line_n,  DontExitF=True)
         return True
 
+    def abstract_f(self):           return self.__abstract_f
+
     @property
-    def counter_db(self): return self.__counter_db
+    def counter_db(self):           return self.__counter_db
+
+    @property
+    def indentation_setup(self):    return self.__indentation_setup
+
+    @property
+    def exit_mode_name_list(self):  return self.__exit_mode_name_list
+
+    @property
+    def entry_mode_name_list(self): return self.__entry_mode_name_list
 
     @property
     def incidence_db(self): return self.__incidence_db
-
-    def incidence_db_has_indentation(self):
-        return    Mode.incidence_db.has_key(E_IncidenceIDs.INDENTATION_ERROR) \
-               or Mode.incidence_db.has_key(E_IncidenceIDs.INDENTATION_BAD)   \
-               or Mode.incidence_db.has_key(E_IncidenceIDs.INDENT)            \
-               or Mode.incidence_db.has_key(E_IncidenceIDs.DEDENT)            \
-               or Mode.incidence_db.has_key(E_IncidenceIDs.N_DEDENT)          \
-               or Mode.incidence_db.has_key(E_IncidenceIDs.NODENT) 
 
     def default_character_counter_required_f(self):
         """If there is one pattern where the character count cannot be
@@ -273,7 +315,7 @@ class Mode:
            counter directly. Thus, it must be known in what terminal it is actually 
            located.
 
-           To be on the safe side: There might be transformation, repriorization,
+           To be on the safe side: There might be transformation, reprioritization,
            or whatsoever. So, we search for an indentation counter here.
 
             RETURNS: None, if no indentation counter is involved.
@@ -285,12 +327,6 @@ class Mode:
                 return pap.pattern().sm.get_id()
         return None
 
-    def default_indentation_handler_sufficient(Mode):
-        """If no user defined indentation handler is defined, then the default 
-        indentation handler is sufficient.
-        """
-        return not self.incidence_db_has_indentation()
-           
     def __determine_base_mode_sequence(self, ModeDescr, InheritancePath, base_mode_sequence):
         """Determine the sequence of base modes. The type of sequencing determines
            also the pattern precedence. The 'deep first' scheme is chosen here. For
@@ -321,7 +357,7 @@ class Mode:
 
             error_msg("circular inheritance detected:\n" + msg, ModeDescr.sr.file_name, ModeDescr.sr.line_n)
 
-        base_mode_name_list_reversed = deepcopy(ModeDescr.base_modes)
+        base_mode_name_list_reversed = deepcopy(ModeDescr.derived_from_list)
         #base_mode_name_list_reversed.reverse()
         for name in base_mode_name_list_reversed:
             # -- does mode exist?
@@ -355,7 +391,7 @@ class Mode:
                         __error_double_definition_of_unique_option(self.name, before, option_descr)
                 if option_descr.type != "list": continue
                 # Need to decouple by means of 'deepcopy'
-                result.setdefault(name, []).extend(deepcopy(mode.options[name]))
+                result.setdefault(name, []).extend(deepcopy(mode.option_db[name]))
         return result
 
     def __counter_db_construct(self, LccSetup):
@@ -363,10 +399,10 @@ class Mode:
             LccSetup = LineColumnCounterSetup_Default()
         return CounterDB(LccSetup)
 
-    def __xpap_list_construct(self, BaseModeSequence, OptionsDb):
-        """(*) Collect Pattern Action Pairs in 'xpap_list'
+    def __ppc_list_construct(self, BaseModeSequence, OptionsDb):
+        """(*) Collect Pattern Action Pairs in 'ppc_list'
         
-        The 'xpap_list' is the list of eXtended Pattern Action Pairs.
+        The 'ppc_list' is the list of eXtended Pattern Action Pairs.
         Each element in the list consist of
         
              [0] -- a PatternPriority, given by 'mode_hierarchy_index'
@@ -379,34 +415,28 @@ class Mode:
         to its priority given by the mode's position in the inheritance
         hierarchy and the pattern index itself.
         """
-        xpap_list = self.__pattern_action_pairs_collect(BaseModeSequence)
+        ppc_list = self.__pattern_action_pairs_collect(BaseModeSequence)
 
         # (*) Collect pattern recognizers and several 'incidence detectors' in 
         #     state machine lists. When the state machines accept this triggers
         #     an incidence which is associated with an entry in the incidence_db.
-        self.__prepare_skip(xpap_list, OptionsDb["skip"], MHI=-4)
-        self.__prepare_skip_range(xpap_list, OptionsDb["skip_range"], MHI=-3)
-        self.__prepare_skip_nested_range(xpap_list, OptionsDb["skip_nested_range"], MHI=-3)
+        self.__prepare_skip(ppc_list, OptionsDb["skip"], MHI=-4)
+        self.__prepare_skip_range(ppc_list, OptionsDb["skip_range"], MHI=-3)
+        self.__prepare_skip_nested_range(ppc_list, OptionsDb["skip_nested_range"], MHI=-3)
 
-        self.__prepare_indentation_counter(xpap_list, OptionsDb["indentation"], MHI=-1)
+        self.__prepare_indentation_counter(ppc_list, OptionsDb["indentation"], MHI=-1)
 
         # (*) Delete and reprioritize
-        self.__perform_deletion(xpap_list, BaseModeSequence) 
-        self.__perform_repriorization(xpap_list, BaseModeSequence) 
+        self.__perform_deletion(ppc_list, BaseModeSequence) 
+        self.__perform_reprioritization(ppc_list, BaseModeSequence) 
 
-        return xpap_list
+        return ppc_list
 
-    def __pattern_list_construct(self, xpap_list):
-        for pattern_priority, pap in sorted(xpap_list, itemgetter(0)):
-            # Reset the pattern index according to its position on the list. 
-            acceptance_id = sm_index.get()                      
-            pap.pattern().sm.set_id(acceptance_id) 
-
-            # Enter the acceptance as an incidence in 'incidence_db':
-            # incidence_id=acceptance_id --> CodeFragment
-            self.__incidence_db[acceptance_id] = pap.action()
-    
-        pattern_list = [ x[1].pattern() for x in xpap_list ]
+    def __pattern_list_construct(self, ppc_list):
+        pattern_list = [ 
+            pattern 
+            for priority, pattern, code_fragment in sorted(ppc_list, key=attrgetter("priority")) 
+        ]
 
         # (*) Try to determine line and column counts -- BEFORE Transformation!
         for pattern in pattern_list:
@@ -423,7 +453,7 @@ class Mode:
 
         # (*) Cut the signalling characters from any pattern or state machine
         for pattern in pattern_list:
-            pattern.cut_character_list(self.signal_character_list)
+            pattern.cut_character_list(blackboard.signal_character_list(Setup))
 
         # (*) Pre-contexts and BIPD can only be mounted, after the transformation.
         for pattern in pattern_list:
@@ -432,9 +462,9 @@ class Mode:
 
         return pattern_list
 
-    def __prepare_skip(self, xpap_list, MHI):
+    def __prepare_skip(self, ppc_list, MHI):
         """MHI = Mode hierarchie index."""
-        ssetup_list = self.options.get("skip")
+        ssetup_list = self.option_db.get("skip")
 
         if ssetup_list is None or len(ssetup_list) == 0:
             return
@@ -469,33 +499,41 @@ class Mode:
 
         # An optional codec transformation is done later. The state machines
         # are entered as pure Unicode state machines.
-        skip_event_id = event_id.get()
-        self.__incidence_db[skip_event_id] = GeneratedCode(character_set, self.counter_db, source_reference)
-
         # It is not necessary to store the count action along with the state
         # machine.  This is done in "action_preparation.do()" for each
         # terminal.
-        for cli, cmd_info in terminal.get_counter_dictionary().iteritems():
-            sm = StateMachine.from_character_set(cmd_info.trigger_set)
-            self.pp_core_sm_list.append((PatternPriority(MIH, cli), sm))
-            self.__incidence_db[cli] = CodeFragmentInterim(cmd_info.command_list, skip_event_i)
+        def get_PPC(MHI, Cli, CmdInfo, TheCodeFragment):
+            priority      = PatternPriority(MHI, Cli)
+            pattern       = Pattern(StateMachine.from_character_set(CmdInfo.trigger_set))
+            ppc_list.append(PPC(priority, pattern, TheCodeFragment)
+
+        iterable = counter_db.get_counter_dictionary(character_set).iteritems()
+
+        main_cli = index.get()
+        data = {
+           "character_set": character_set,
+           "counter_db":    self.counter_db,
+        }
+        main_cli, cmd_info = iterable.next()
+        ppc_list.append(get_PPC(MHI, main_cli, cmd_info, GeneratedCode(data, source_reference)))
+
+        for cli, cmd_info in iterable:
+            ppc_list.append(get_PPC(MHI, cli, cmd_info, CodeFragmentInterim(CmdInfo, main_cli)))
 
         return
 
-    def __prepare_skip_range(self, xpap_list, MHI):
+    def __prepare_skip_range(self, ppc_list, MHI):
         """MHI = Mode hierarchie index."""
-        self.__prepare_skip_range_core(xpap_list, MHI, "skip_range", 
-                                       skip_range.do, E_SpecialPatterns.SKIP_RANGE)
+        self.__prepare_skip_range_core(ppc_list, MHI, OptionsDb.get("skip_range"), 
+                                       skip_range.do, E_IncidenceIDs.SKIP_RANGE)
 
-    def __prepare_skip_nested_range(self, xpap_list, MHI):
+    def __prepare_skip_nested_range(self, ppc_list, MHI):
         """MHI = Mode hierarchie index."""
-        self.__prepare_skip_range_core(xpap_list, MHI, "skip_nested_range", 
-                                       skip_nested_range.do, E_SpecialPatterns.SKIP_NESTED_RANGE)
+        self.__prepare_skip_range_core(ppc_list, MHI, OptionsDb.get("skip_nested_range"), 
+                                       skip_nested_range.do, E_IncidenceIDs.SKIP_NESTED_RANGE)
 
-    def __prepare_skip_range_core(self, xpap_list, MHI, SrSetup, SkipperFunction, Comment):
+    def __prepare_skip_range_core(self, ppc_list, MHI, SrSetup, SkipperFunction, IncidenceId):
         """MHI = Mode hierarchie index."""
-
-        SrSetup = self.options.get(OptionName)
 
         if SrSetup is None or len(SrSetup) == 0:
             return
@@ -504,21 +542,24 @@ class Mode:
             opener_str, opener_pattern, opener_sequence, \
             closer_str, closer_pattern, closer_sequence  = skip_range_info
 
+            data = {
+                "opener_str":      opener_str, 
+                "opener_pattern":  opener_pattern, 
+                "opener_sequence": opener_sequence, 
+                "closer_str":      closer_str, 
+                "closer_pattern":  closer_pattern, 
+                "closer_sequence": closer_sequence    
+            }
+
             # Skipper code is to be generated later
-            action = GeneratedCode(SkipperFunction,
-                                   FileName = opener_pattern.file_name,
-                                   LineN    = opener_pattern.sr.line_n) # get_current_line_info_number(fh))
+            priority      = PatternPriority(MHI, i)
+            pattern       = opener_pattern.clone()
+            pattern.set_incidence_id(IncidenceId)
+            code_fragment = GeneratedCode(data, opener_pattern.sr)
 
-            action.data["opener_sequence"] = opener_sequence
-            action.data["opener_pattern"]  = opener_pattern
-            action.data["closer_sequence"] = closer_sequence
-            action.data["closer_pattern"]  = closer_pattern
+            ppc_list.append(PPC(priority, pattern, code_fragment))
 
-            xpap_list.append((PatternPriority(MHI, i), 
-                              PatternActionInfo(opener_pattern, action, opener_str, 
-                                                ModeName=self.name, Comment=Comment)))
-
-    def __prepare_indentation_counter(self, xpap_list, ISetup, MHI):
+    def __prepare_indentation_counter(self, ppc_list, ISetup, MHI):
         """Prepare indentation counter. An indentation counter is implemented by the 
         following:
 
@@ -549,24 +590,21 @@ class Mode:
 
         # The indentation counter is entered upon the appearance of the unsuppressed
         # newline pattern. 
-        pap_suppressed_newline = None
+        ppc_suppressed_newline = None
         if ISetup.newline_suppressor_state_machine.get() is not None:
             pattern_str =   "(" + ISetup.newline_suppressor_state_machine.pattern_string() + ")" \
                           + "(" + ISetup.newline_state_machine.pattern_string() +            ")"
             sm = sequentialize.do([ISetup.newline_suppressor_state_machine.get(),
                                    ISetup.newline_state_machine.get()])
 
-            # When a suppressed newline is detected, restart the analysis.
-            code = UserCodeFragment("goto %s;" % Label.global_reentry(GotoedF=True), 
-                                    ISetup.newline_suppressor_state_machine.file_name, 
-                                    ISetup.newline_suppressor_state_machine.sr.line_n)
+            priority      = PatternPriority(MHI, 0)
+            pattern       = Pattern(sm, IncidenceId=E_IncidenceIDs.SUPPRESSED_INDENTATION_NEWLINE, 
+                                    PatternStr=pattern_str)
+            code_fragment = UserCodeFragment(LanguageDB.GOTO_BY_DOOR_ID(DoorID.global_reentry(GotoedF=True)), 
+                                             SourceReference=ISetup.newline_suppressor_state_machine.sr) 
 
-            pap_suppressed_newline = PatternActionInfo(Pattern(sm), code, 
-                                                       pattern_str, 
-                                                       ModeName=self.name, 
-                                                       Comment=E_SpecialPatterns.SUPPRESSED_INDENTATION_NEWLINE)
+            ppc_list.append(PPC(priority, pattern, code_fragment))
 
-            xpap_list.append((PatternPriority(MHI, 0), pap_suppressed_newline))
 
         # When there is an empty line, then there shall be no indentation count on it.
         # Here comes the trick: 
@@ -584,21 +622,23 @@ class Mode:
         x4 = sequentialize.do([ISetup.newline_state_machine.get(), x3]) # 'newline ([space]* newline)*'
         sm = beautifier.do(x4)                                          # nfa to dfa; hopcroft optimization
 
-        action      = GeneratedCode(indentation_counter.do, 
-                                    ISetup.newline_state_machine.file_name, 
-                                    ISetup.newline_state_machine.sr.line_n)
-        action.data["indentation_setup"] = ISetup
+        data = { 
+            "indentation_setup": ISetup 
+        }
 
-        pap_newline = PatternActionInfo(Pattern(sm), action, 
-                                        ISetup.newline_state_machine.pattern_string(), 
-                                        ModeName=self.name, 
-                                        Comment=E_SpecialPatterns.INDENTATION_NEWLINE)
+        if ppc_suppressed_newline is not None:
+            ppc_list.append(ppc_suppressed_newline)
 
-        xpap_list.append((PatternPriority(MHI, 1), pap_newline))
+        priority      = PatternPriority(MHI, 1)
+        pattern       = Pattern(sm, IncidenceId=E_IncidenceIDs.INDENTATION_NEWLINE)
+        code_fragment = GeneratedCode(data, ISetup.newline_state_machine.sr)
+
+        ppc_list.append(PPC(priority, pattern, code_fragment))
+
 
         return
 
-    def __incidence_db_construct(self, BaseModeSequence):
+    def __incidence_db_construct(self, BaseModeSequence, PPC_list):
         """Collect event handlers from base mode and the current mode.
            Event handlers of the most 'base' mode come first, then the 
            derived event handlers. 
@@ -606,6 +646,8 @@ class Mode:
            See '__determine_base_mode_sequence(...) for details about the line-up.
         """
         result = {}
+
+        # Special incidences from 'standard_incidence_db'
         for incidence_name, info in standard_incidence_db.itervalues():
             incidence_id, comment = info
             entry = None
@@ -618,6 +660,10 @@ class Mode:
             if entry is not None: 
                 result[incidence_id] = entry
 
+        # Pattern match incidences
+        for priority, pattern, code_fragment in PPC_List:
+            result[pattern.incidence_id()] = code_fragment
+
         return result
 
     def __pattern_action_pairs_collect(self, BaseModeSequence):
@@ -628,14 +674,15 @@ class Mode:
         result = []
         for mode_hierarchy_index, mode_descr in enumerate(BaseModeSequence):
             result.extend(
-                (PatternPriority(mode_hierarchy_index, pap.pattern().sm.get_id()), pap)
-                for pap in mode_descr.get_pattern_action_pair_list())
+                PPC.from_PatternActionPair(mode_hierarchy_index, pap)
+                for pap in mode_descr.get_pattern_action_pair_list()
+            )
         return result
 
-    def __perform_repriorization(self, xpap_list, BaseModeSequence):
-        def repriorize(MHI, Info, xpap_list, ModeName, history):
+    def __perform_reprioritization(self, ppc_list, BaseModeSequence):
+        def repriorize(MHI, Info, ppc_list, ModeName, history):
             done_f = False
-            for xpap in xpap_list:
+            for xpap in ppc_list:
                 if     xpap[0].mode_hierarchy_index <= MHI \
                    and xpap[0].pattern_index        < Info.new_pattern_index \
                    and identity_checker.do(xpap[1].pattern(), Info.pattern):
@@ -654,23 +701,23 @@ class Mode:
 
         history = []
         for mode_hierarchy_index, mode_descr in enumerate(BaseModeSequence):
-            for info in mode_descr.get_repriorization_info_list():
-                repriorize(mode_hierarchy_index, info, xpap_list, self.name, history)
+            for info in mode_descr.get_reprioritization_info_list():
+                repriorize(mode_hierarchy_index, info, ppc_list, self.name, history)
 
-        self.__doc_history_repriorization = history
+        self.__doc_history_reprioritization = history
 
-    def __perform_deletion(self, xpap_list, BaseModeSequence):
-        def delete(MHI, Info, xpap_list, ModeName, history):
+    def __perform_deletion(self, ppc_list, BaseModeSequence):
+        def delete(MHI, Info, ppc_list, ModeName, history):
             done_f = False
-            size   = len(xpap_list)
+            size   = len(ppc_list)
             i      = 0
             while i < size:
-                xpap = xpap_list[i]
+                xpap = ppc_list[i]
                 if     xpap[0].mode_hierarchy_index <= MHI \
                    and xpap[0].pattern_index < Info.pattern_index \
                    and superset_check.do(Info.pattern, xpap[1].pattern()):
                     done_f  = True
-                    del xpap_list[i]
+                    del ppc_list[i]
                     history.append([ModeName, xpap[1].pattern_string(), xpap[1].mode_name])
                     size   -= 1
                 else:
@@ -683,14 +730,14 @@ class Mode:
         history = []
         for mode_hierarchy_index, mode_descr in enumerate(BaseModeSequence):
             for info in mode_descr.get_deletion_info_list():
-                delete(mode_hierarchy_index, info, xpap_list, self.name, history)
+                delete(mode_hierarchy_index, info, ppc_list, self.name, history)
 
         self.__doc_history_deletion = history
 
     def check_consistency(self):
         # (*) Modes that are inherited must allow to be inherited
         for base_mode in self.__base_mode_sequence:
-            if base_mode.options["inheritable"] == "no":
+            if base_mode.option_db["inheritable"] == "no":
                 error_msg("mode '%s' inherits mode '%s' which is not inheritable." % \
                           (self.name, base_mode.name), self.sr.file_name, self.sr.line_n)
 
@@ -798,12 +845,11 @@ class Mode:
     def check_indentation_setup(self):
         # (*) Indentation: Newline Pattern and Newline Suppressor Pattern
         #     shall never trigger on common lexemes.
-        indent_setup = self.options["indentation"]
-        if indent_setup is None: return
+        if self.__indentation_setup is None: return
 
         # The newline pattern shall not have intersections with other patterns!
-        newline_info            = indent_setup.newline_state_machine
-        newline_suppressor_info = indent_setup.newline_suppressor_state_machine
+        newline_info            = self.__indentation_setup.newline_state_machine
+        newline_suppressor_info = self.__indentation_setup.newline_suppressor_state_machine
         assert newline_info is not None
         if newline_suppressor_info.get() is None: return
 
@@ -835,10 +881,10 @@ class Mode:
                        (entry[0], " " * (L - len(self.name)), entry[1], entry[2])
             txt += "\n"
 
-        if len(self.__doc_history_repriorization) != 0:
+        if len(self.__doc_history_reprioritization) != 0:
             txt += "    PRIORITY-MARK ACTIONS:\n"
-            self.__doc_history_repriorization.sort(lambda x, y: cmp(x[4], y[4]))
-            for entry in self.__doc_history_repriorization:
+            self.__doc_history_reprioritization.sort(lambda x, y: cmp(x[4], y[4]))
+            for entry in self.__doc_history_reprioritization:
                 txt += "      %s: %s%s  (from mode %s)  (%i) --> (%i)\n" % \
                        (entry[0], " " * (L - len(self.name)), entry[1], entry[2], entry[3], entry[4])
             txt += "\n"
@@ -878,7 +924,7 @@ def parse(fh):
     # NOTE: constructor does register this mode in the mode_db
     new_mode  = ModeDescription(mode_name, fh.name, get_current_line_info_number(fh))
 
-    # (*) inherited modes / options
+    # (*) inherited modes / option_db
     skip_whitespace(fh)
     dummy = fh.read(1)
     if dummy not in [":", "{"]:
@@ -903,7 +949,7 @@ def finalize():
         # Choose an applicable mode as start mode
         single = None
         for name, mode in blackboard.mode_db.iteritems():
-            if mode.options["inheritable"] == "only": 
+            if mode.abstract_f(): 
                 continue
             elif single is not None:
                 error_msg("No initial mode defined via 'start' while more than one applicable mode exists.\n" + \
@@ -915,7 +961,7 @@ def finalize():
         if single is None:
             blackboard.initial_mode = None
         else:
-            blackboard.initial_mode = UserCodeFragment(single.name, single.sr.file_name, single.sr.line_n)
+            blackboard.initial_mode = UserCodeFragment(single.name, SourceReference=single.sr)
 
     # (*) perform consistency check 
     consistency_check.do(blackboard.mode_db)
@@ -923,7 +969,7 @@ def finalize():
 def __parse_option_list(new_mode, fh):
     position = fh.tell()
     try:  
-        # ':' => inherited modes/options follow
+        # ':' => inherited modes/option_db follow
         skip_whitespace(fh)
 
         __parse_base_mode_list(fh, new_mode)
@@ -936,7 +982,7 @@ def __parse_option_list(new_mode, fh):
         error_eof("mode '%s'." % new_mode.name, fh)
 
 def __parse_base_mode_list(fh, new_mode):
-    new_mode.base_modes = []
+    new_mode.derived_from_list = []
     trailing_comma_f    = False
     while 1 + 1 == 2:
         if   check(fh, "{"): fh.seek(-1, 1); break
@@ -946,24 +992,24 @@ def __parse_base_mode_list(fh, new_mode):
         identifier = read_identifier(fh)
         if identifier == "": break
 
-        new_mode.base_modes.append(identifier)
+        new_mode.derived_from_list.append(identifier)
         trailing_comma_f = False
         if not check(fh, ","): break
         trailing_comma_f = True
 
 
     if trailing_comma_f:
-        error_msg("Trailing ',' after base mode '%s'." % new_mode.base_modes[-1], fh, 
+        error_msg("Trailing ',' after base mode '%s'." % new_mode.derived_from_list[-1], fh, 
                   DontExitF=True, WarningF=True)
         
-    elif len(new_mode.base_modes) != 0:
+    elif len(new_mode.derived_from_list) != 0:
         # This check is a 'service' -- for those who follow the old convention
         pos = fh.tell()
         skip_whitespace(fh)
         dummy_identifier = read_identifier(fh)
         if dummy_identifier != "":
             error_msg("Missing separating ',' between base modes '%s' and '%s'.\n" \
-                      % (new_mode.base_modes[-1], dummy_identifier) + \
+                      % (new_mode.derived_from_list[-1], dummy_identifier) + \
                       "(The comma separator is mandatory since quex 0.53.1)", fh)
         fh.seek(pos)
 

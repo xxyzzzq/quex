@@ -1,4 +1,6 @@
-from quex.engine.analyzer.state.core import Processor
+from   quex.engine.analyzer.state.core  import Processor
+from   quex.engine.analyzer.state.entry import Entry
+import quex.engine.state_machine.index  as index
 
 #__________________________________________________________________________
 #
@@ -21,56 +23,21 @@ from quex.engine.analyzer.state.core import Processor
 # line and column numbers, sets terminating zeroes in strings and resets
 # the input pointer to the position where the next analysis step starts.
 #__________________________________________________________________________
-class TerminalState(Processor):
-    __slots__ = ("action", "acceptance_id")
-    def __init__(self, PatternId, PatternMatchAction):
-        self.acceptance_id = PatternId
-        self.action        = PatternMatchAction
+class TerminalPlainCode(Processor):
+    def __init__(self, IncidenceId, TheCodeFragment):
+        Processor.__init__(self, index.map_incidence_id_to_state_index(IncidenceId), Entry())
+        self.__incidence_id  = IncidenceId
+        self.__code_fragment = TheCodeFragment
 
-class TerminalMatchState(Processor):
-    def __init__(self, Pattern, UserCode, OnMatchCode, BeginOfLineSupportF, RequireTerminatingZero):
-        Processor.__init__(self, state_index.get_terminal_state_index(PatternId), Entry())
-        self.pattern                     = Pattern
-        self.user_code                   = UserCode
-        self.on_match_code               = OnMatchCode
-        self.begin_of_line_support_f     = BeginOfLineSupportF
-        self.terminating_zero_required_f = RequireTerminatingZero
-        self.default_counter_required_f, \
-        self.lc_count_code               = counter_for_pattern.get(self.pattern, EOF_ActionF)
+    def incidence_id(self):
+        return self.__incidence_id
+
+    @property
+    def code_fragment(self):
+        return self.__code_fragment
 
     def get_code(self):
-        lc_count_code = "".join(LanguageDB.REPLACE_INDENT(self.lc_count_code))
-
-        if default_counter_required_f: 
-            Mode.default_character_counter_required_f_set()
-
-        # (*) THE user defined action to be performed in case of a match
-        user_code, rtzp_f = get_code(CodeFragmentList, Mode)
-        require_terminating_zero_preparation_f = require_terminating_zero_preparation_f or rtzp_f
-
-        store_last_character_str = ""
-        if BeginOfLineSupportF:
-            # IDEA (TODO): The character before lexeme start does not have to be
-            # written into a special register. Simply, make sure that
-            # '_lexeme_start_p - 1' is always in the buffer. This may include that
-            # on the first buffer load '\n' needs to be at the beginning of the
-            # buffer before the content is loaded. Not so easy; must be carefully
-            # approached.
-            store_last_character_str = "    %s\n" % LanguageDB.ASSIGN("me->buffer._character_before_lexeme_start", 
-                                                                      LanguageDB.INPUT_P_DEREFERENCE(-1))
-
-        set_terminating_zero_str = ""
-        if rtzp_f:
-            set_terminating_zero_str += "    QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);\n"
-
-        txt  = ""
-        txt += lc_count_code
-        txt += store_last_character_str
-        txt += set_terminating_zero_str
-        txt += on_match_code
-        txt += "    {\n"
-        txt += user_code
-        txt += "\n    }"
+        return self.__code_fragment.get_code()
 
 class TerminalInterim(Processor):
    __slots__ = ("target_terminal_index",)

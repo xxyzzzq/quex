@@ -3,6 +3,7 @@ from   quex.engine.generator.action_info               import PatternActionInfo
 import quex.engine.generator.state_machine_coder       as     state_machine_coder
 import quex.engine.generator.state_router              as     state_router_generator
 from   quex.engine.generator.languages.variable_db     import variable_db
+from   quex.engine.generator.code_fragment_base        import CodeFragment
 from   quex.engine.analyzer.door_id_address_label      import DoorID, \
                                                               IfDoorIdReferencedCode, \
                                                               get_plain_strings, \
@@ -18,67 +19,79 @@ import quex.engine.generator.reload_state              as     reload_state_coder
 import quex.engine.analyzer.engine_supply_factory      as     engine
 from   quex.engine.analyzer.transition_map             import TransitionMap
 import quex.engine.analyzer.core                       as     analyzer_generator
-from   quex.engine.analyzer.state.core                 import ReloadState, \
-                                                              TerminalState
+from   quex.engine.analyzer.state.core                 import ReloadState
 from   quex.engine.analyzer.terminal.factory           import TerminalStateFactory
 import quex.engine.analyzer.engine_supply_factory      as     engine_supply_factory
 from   quex.engine.interval_handling                   import NumberSet, Interval
-from   quex.engine.tools                               import all_isinstance
+from   quex.input.files.counter_db                     import CounterDB
+from   quex.input.files.counter_setup                  import LineColumnCounterSetup_Default
 from   quex.input.regular_expression.construct         import Pattern
 
+from   quex.engine.tools                               import all_isinstance, \
+                                                              none_is_None
 from   quex.blackboard import E_IncidenceIDs, \
                               E_StateIndices, \
                               E_MapImplementationType, \
                               setup as Setup
 
-from   itertools import ifilter
+from   itertools   import ifilter
 import re
-from   copy import copy, deepcopy
+from   copy        import copy, deepcopy
 from   collections import defaultdict
 
 Match_input    = re.compile("\\binput\\b", re.UNICODE)
 Match_iterator = re.compile("\\iterator\\b", re.UNICODE)
 
 class GeneratorBase:
-    def __init__(self, PatternList, IncidenceDb, IndentationSupportF, BeginOfLineSupportF):
+    def __init__(self, ModeName, PatternList, IncidenceDb, IndentationSupportF, BeginOfLineSupportF):
         assert isinstance(PatternList, list)
         assert isinstance(IncidenceDb, dict)
         assert type(IndentationSupportF) == bool
         assert type(BeginOfLineSupportF) == bool
+        # Function '.prepare_count_info()' must have been called before a 
+        # a pattern can be considered here. Note, that '.prepare_count_info()'
+        # must be called before any code transformation.
+        assert none_is_None(pattern.count_info() for pattern in PatternList)
+
+        # (*) Misc
+        self.on_after_match_f = E_IncidenceIDs.AFTER_MATCH in IncidenceDb
+        self.mode_name        = ModeName
 
         # (*) Core SM, Pre-Context SM, ...
         #     ... and sometimes backward input position SMs.
-        self.sm,               \
-        self.pre_context_sm,   \
-        self.bipd_sm_db        = self.__prepare_main_state_machines(PatternList)
+        self.sm,                    \
+        self.pre_context_sm,        \
+        self.bipd_sm_db,            \
+        self.pre_context_sm_id_list = self.__prepare_main_state_machines(PatternList)
 
         # (*) Terminal States
-        self.terminal_state_db = self.__prepare_terminals(IncidenceDb, 
-                                                          IndentationSupportF, 
-                                                          BeginOfLineSupportF)
-
-        # (*) Misc
-        self.pre_context_sm_id_list = [ sm.get_id() sm in pre_context_sm_list ]
-        self.on_after_match_f       = E_IncidenceIDs.AFTER_MATCH in IncidenceDb
+        self.terminal_state_db,                     \
+        self.default_character_counter_required_f = \
+                    self.__prepare_terminals(IncidenceDb, PatternList,
+                                             IndentationSupportF, BeginOfLineSupportF)
 
     def __prepare_main_state_machines(self, PatternList):
         # -- setup of state machine lists and id lists
-        core_sm_list,        \
-        pre_context_sm_list, \
-        bipd_sm_list         = self.__prepare_sm_lists(PatternList)
+        core_sm_list,                 \
+        pre_context_sm_list,          \
+        incidence_id_and_bipd_sm_list = self.__prepare_sm_lists(PatternList)
 
         # (*) Create (combined) state machines
         #     Backward input position detection (bipd) remains separate engines.
         return get_combined_state_machine(core_sm_list),                  \
                get_combined_state_machine(pre_context_sm_list,            \
                                           FilterDominatedOriginsF=False), \
-               dict(sm.get_id(), sm) for sm in bipd_sm_list)
+               dict((incidence_id, sm) for incidence_id, sm in incidence_id_and_bipd_sm_list), \
+               [ sm.get_id() for sm in pre_context_sm_list ]
 
-    def __prepare_terminals(self, IncidenceDb, IndentationSupportF, BeginOfLineSupportF):
-        factory = TerminalStateFactory(IncidenceDb, IndentationSupportF, BeginOfLineSupportF)
+    def __prepare_terminals(self, IncidenceDb, PatternList, 
+                            IndentationSupportF, BeginOfLineSupportF):
+
+        factory = TerminalStateFactory(self.mode_name, IncidenceDb, PatternList, 
+                                       IndentationSupportF, BeginOfLineSupportF)
 
         result = {}
-        for incidence_id, code_fragment in IncidenceDb:
+        for incidence_id, code_fragment in IncidenceDb.iteritems():
             if    incidence_id == E_IncidenceIDs.END_OF_STREAM \
                or incidence_id == E_IncidenceIDs.FAILURE:
                 continue
@@ -93,28 +106,28 @@ class GeneratorBase:
         result[E_IncidenceIDs.END_OF_STREAM] = factory.do_OnEndOfStream()
         result[E_IncidenceIDs.FAILURE]       = factory.do_OnFailure()
 
-        return result
+        return result, factory.default_counter_f
 
     def __prepare_sm_lists(self, PatternList):
         # -- Core state machines of patterns
-        state_machine_list = [ pattern.sm for pap, pattern in PatternList ]
+        state_machine_list = [ pattern.sm for pattern in PatternList ]
 
         # -- Pre-Contexts
         pre_context_sm_list = [    
-            pattern.pre_context_sm for pap, pattern in PatternList \
+            pattern.pre_context_sm for pattern in PatternList \
             if pattern.pre_context_sm is not None 
         ]
 
         # -- Backward input position detection (BIPD)
-        bipd_sm_list = dict( 
-            pattern.bipd_sm for pap, pattern in PatternList \
+        bipd_sm_list = [
+            (pattern.incidence_id(), pattern.bipd_sm) for pattern in PatternList \
             if pattern.bipd_sm is not None 
-        )
+        ]
         return state_machine_list, pre_context_sm_list, bipd_sm_list
 
 class Generator(GeneratorBase):
-    def __init__(self, PatternList, IncidenceDb):
-        GeneratorBase.__init__(self, PatternList, IncidenceDb)
+    def __init__(self, ModeName, PatternList, IncidenceDb, BeginOfLineSupportF, IndentationSupportF):
+        GeneratorBase.__init__(self, ModeName, PatternList, IncidenceDb, BeginOfLineSupportF, IndentationSupportF)
         self.reload_state_forward  = ReloadState(engine_supply_factory.FORWARD)
         self.reload_state_backward = ReloadState(engine_supply_factory.BACKWARD_PRE_CONTEXT) # Important: 'BACKWARD'
 
@@ -127,7 +140,8 @@ class Generator(GeneratorBase):
     def code_pre_context_state_machine(self):
         LanguageDB = Setup.language_db
 
-        if len(self.pre_context_sm_list) == 0: return []
+        if self.pre_context_sm is None: 
+            return []
 
         txt, analyzer = Generator.code_state_machine(self.pre_context_sm, 
                                                      engine.BACKWARD_PRE_CONTEXT) 
@@ -168,14 +182,14 @@ class Generator(GeneratorBase):
         else:
             lexeme_macro_definition_str = LanguageDB.TERMINAL_LEXEME_MACRO_DEFINITIONS()
             reentry_preparation_str     = LanguageDB.REENTRY_PREPARATION(self.pre_context_sm_id_list, 
-                                                                         self.terminal_state_db.get(E_IncidenceIDs.ON_AFTER_MATCH))
+                                                                         self.terminal_state_db.get(E_IncidenceIDs.AFTER_MATCH))
 
             # Pattern match terminals goto 'Re-entry' by default
-            for acceptance_id, terminal_state in self.terminal_state_db.iteritems():
-                if   acceptance_id == E_IncidenceIDs.ON_END_OF_STREAM: continue
-                elif acceptance_id == E_IncidenceIDs.ON_FAILURE:       continue
-                elif acceptance_id == E_IncidenceIDs.ON_AFTER_MATCH:   continue
-                terminal_state.action.get_code().extend(["\n", 1, LanguageDB.GOTO_BY_DOOR_ID(DoorID.global_reentry_preparation())])
+            for incidence_id, terminal_state in self.terminal_state_db.iteritems():
+                if   incidence_id == E_IncidenceIDs.END_OF_STREAM: continue
+                elif incidence_id == E_IncidenceIDs.FAILURE:       continue
+                elif incidence_id == E_IncidenceIDs.AFTER_MATCH:   continue
+                terminal_state.code_fragment.append_text("\n    %s" % LanguageDB.GOTO_BY_DOOR_ID(DoorID.global_reentry_preparation()))
 
         terminal_states_txt = LanguageDB.TERMINAL_CODE(self.terminal_state_db) 
         assert all_isinstance(terminal_states_txt, (str, unicode, IfDoorIdReferencedCode, int))
@@ -189,9 +203,9 @@ class Generator(GeneratorBase):
     def code_backward_input_position_detection(self):
         result = []
         entry_door_id_db = {}
-        for acceptance_id, bipd_sm in self.bipd_db.iteritems():
-            txt, analyzer = Generator.code_state_machine(bipd_sm, engine.Class_BACKWARD_INPUT_POSITION(acceptance_id)) 
-            entry_door_id_db[acceptance_id] = analyzer.get_action_at_state_machine_entry().door_id
+        for incidence_id, bipd_sm in self.bipd_sm_db.iteritems():
+            txt, analyzer = Generator.code_state_machine(bipd_sm, engine.Class_BACKWARD_INPUT_POSITION(incidence_id)) 
+            entry_door_id_db[incidence_id] = analyzer.get_action_at_state_machine_entry().door_id
             result.extend(txt)
             self.reload_state_backward.absorb(analyzer.reload_state)
         return result, entry_door_id_db
@@ -246,17 +260,16 @@ class Generator(GeneratorBase):
         # Following function refers to the global 'variable_db'
         return Setup.language_db.VARIABLE_DEFINITIONS(variable_db)
 
-    @staticmethod
-    def code_function(OnAfterMatchF, FunctionPrefix, FunctionBody, VariableDefs, ModeNameList):
+    def code_function(self, FunctionBody, VariableDefs, ModeNameList):
         LanguageDB = Setup.language_db
-        assert type(OnAfterMatchF) == bool
-        analyzer_function = LanguageDB["$analyzer-func"](FunctionPrefix,
+
+        analyzer_function = LanguageDB["$analyzer-func"](self.mode_name,
                                                          Setup,
                                                          VariableDefs, 
                                                          FunctionBody, 
                                                          ModeNameList) 
 
-        header_txt = LanguageDB.HEADER_DEFINITIONS(OnAfterMatchF) 
+        header_txt = LanguageDB.HEADER_DEFINITIONS(self.on_after_match_f) 
         assert all_isinstance(header_txt, (str, unicode))
 
         analyzer_txt = get_plain_strings(analyzer_function)
@@ -307,9 +320,9 @@ class LoopGenerator(Generator):
         after_reload_action   = CounterDB.get_reload_commands(IteratorName, column_count_per_chunk, ReloadF)
 
         if OnExit is None:
-            assert not tm.has_action_id(E_IncidenceIDs.ON_EXIT_LOOP)
-        tm.insert_after_action_id(E_IncidenceIDs.ON_EXIT_LOOP,       OnExit)
-        tm.insert_after_action_id(E_IncidenceIDs.ON_GOOD_TRANSITION, OnContinue)
+            assert not tm.has_action_id(E_IncidenceIDs.EXIT_LOOP)
+        tm.insert_after_action_id(E_IncidenceIDs.EXIT_LOOP,       OnExit)
+        tm.insert_after_action_id(E_IncidenceIDs.GOOD_TRANSITION, OnContinue)
 
         # 'BeforeReloadAction not None' forces a transition to RELOAD_PROCEDURE upon
         # buffer limit code.
@@ -400,10 +413,10 @@ class LoopGenerator(Generator):
             TM.set_target(Setup.buffer_limit_code, DoorID.drop_out(pseudo_state_index))
             BeforeReloadAction.append("%s\n" % LanguageDB.LEXEME_START_SET())
 
-            #TM.replace_action_id(E_IncidenceIDs.ON_EXIT_LOOP,
+            #TM.replace_action_id(E_IncidenceIDs.EXIT_LOOP,
             #                     [1, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
 
-        TM.insert_after_action_id(E_IncidenceIDs.ON_GOOD_TRANSITION,
+        TM.insert_after_action_id(E_IncidenceIDs.GOOD_TRANSITION,
                                   [2, "%s\n" % LanguageDB.INPUT_P_INCREMENT()])
 
         # The range of possible characters may be restricted. It must be ensured,
@@ -448,11 +461,11 @@ class LoopGenerator(Generator):
         # character needs to be reset, its start position must be known. For 
         # this the 'lexeme start pointer' is used.
         if      BeforeReloadAction is not None \
-            and TM.has_action_id(E_IncidenceIDs.ON_EXIT_LOOP,):
+            and TM.has_action_id(E_IncidenceIDs.EXIT_LOOP,):
             variable_db.require("character_begin_p")
 
             loop_epilog = [1, "%s\n" % LanguageDB.CHARACTER_BEGIN_P_SET()]
-            TM.replace_action_id(E_IncidenceIDs.ON_EXIT_LOOP, 
+            TM.replace_action_id(E_IncidenceIDs.EXIT_LOOP, 
                                  [1, "%s\n" % LanguageDB.INPUT_P_TO_CHARACTER_BEGIN_P()])
             BeforeReloadAction.append("%s\n" % LanguageDB.LEXEME_START_TO_CHARACTER_BEGIN_P())
             AfterReloadAction.append("%s\n" % LanguageDB.CHARACTER_BEGIN_P_TO_LEXEME_START_P())
@@ -462,11 +475,13 @@ class LoopGenerator(Generator):
         # Now, we start with code generation. The signalizing ActionIDs must be deleted.
         TM.delete_action_ids()
 
-        pap_list = get_pattern_action_pair_list_from_map(TM)
-        for pap in pap_list:
-            pap.pattern().transform(Setup.buffer_codec_transformation_info)
+        pattern_list, incidence_db = get_pattern_list_and_incidence_id_from_map(TM)
+        counter_db = CounterDB(LineColumnCounterSetup_Default())
+        for pattern in pattern_list:
+            pattern.prepare_count_info(counter_db, Setup.buffer_codec_transformation_info)
+            pattern.transform(Setup.buffer_codec_transformation_info)
 
-        generator = Generator(pap_list) 
+        generator = Generator("Loop%i" % index.get(), pattern_list, incidence_db, IndentationSupportF=False, BeginOfLineSupportF=False) 
 
         if BeforeReloadAction is None: 
             engine_type = engine.CHARACTER_COUNTER
@@ -482,7 +497,7 @@ class LoopGenerator(Generator):
         terminal_txt, \
         analyzer      = generator.code_state_machine_core(engine_type, SimpleF=True)
 
-        self.reload_state_forward.absorb(analyzer.reload_state)
+        # self.reload_state_forward.absorb(analyzer.reload_state)
 
         reload_txt = []
         if BeforeReloadAction is not None:
@@ -578,9 +593,9 @@ class LoopGenerator(Generator):
         def add_increment(action, IncrementActionStr, LastF):
             if LastF:
                 action = deepcopy(action) # disconnect from same action on other interval
-                assert E_IncidenceIDs.ON_GOOD_TRANSITION in action
-                idx = action.index(E_IncidenceIDs.ON_GOOD_TRANSITION)
-                # Delete 'ON_GOOD_TRANSITION' prevents 
+                assert E_IncidenceIDs.GOOD_TRANSITION in action
+                idx = action.index(E_IncidenceIDs.GOOD_TRANSITION)
+                # Delete 'GOOD_TRANSITION' prevents 
                 # 'code_action_map_plain()' from adding '++iterator'.
                 del action[idx]
                 for x in reversed(IncrementActionStr):
@@ -690,7 +705,7 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
     
     return sm
 
-def get_pattern_action_pair_list_from_map(TM):
+def get_pattern_list_and_incidence_id_from_map(TM):
     """Returns a state machine list which implements the transition map given
     in unicode. It is assumed that the codec is a variable
     character size codec. Each count action is associated with a separate
@@ -707,14 +722,15 @@ def get_pattern_action_pair_list_from_map(TM):
         # Make 'action_list' a tuple so that it is hash-able
         action_code_db[tuple(action_list)].unite_with(character_set)
 
-    pattern_action_pair_list = []
+    pattern_list = []
+    incidence_db = {}
     for action, trigger_set in action_code_db.iteritems():
         # Make 'action' a list again, so that it can be used as CodeFragment
-        action = list(action)
         pattern = Pattern(StateMachine.from_character_set(trigger_set))
-        pattern_action_pair_list.append(PatternActionInfo(pattern, action))
+        pattern_list.append(pattern)
+        incidence_db[pattern.incidence_id()] = CodeFragment(action)
 
-    return pattern_action_pair_list
+    return pattern_list, incidence_db
 
 _increment_actions_for_utf8 = [
      1, "if     ( ((*iterator) & 0x80) == 0 ) { iterator += 1; } /* 1byte character */\n",

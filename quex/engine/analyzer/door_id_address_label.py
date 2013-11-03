@@ -76,7 +76,7 @@ class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
     @staticmethod                        
     def global_state_router():             return DoorID(0L,         E_DoorIdIndex.GLOBAL_STATE_ROUTER)
     @staticmethod                        
-    def acceptance(PatternId):             return DoorID(PatternId,  E_DoorIdIndex.ACCEPTANCE)
+    def incidence(IncidenceId):            return DoorID(index.map_incidence_id_to_state_index(IncidenceId), E_DoorIdIndex.ACCEPTANCE)
     @staticmethod                        
     def state_machine_entry(SM_Id):        return DoorID(SM_Id,      E_DoorIdIndex.STATE_MACHINE_ENTRY)
     @staticmethod                         
@@ -304,7 +304,7 @@ class Label:
     @staticmethod
     def global_terminal_end_of_file(GotoedF=False):  return dial_db.get_label_by_door_id(DoorID.global_terminal_end_of_file(), GotoedF)
     @staticmethod
-    def acceptance(PatternId, GotoedF=False):        return dial_db.get_label_by_door_id(DoorID.acceptance(PatternId), GotoedF)
+    def incidence(IncidenceId, GotoedF=False):        return dial_db.get_label_by_door_id(DoorID.incidence(IncidenceId), GotoedF)
     @staticmethod                        
     def state_machine_entry(SM_Id, GotoedF=False):   return dial_db.get_label_by_door_id(DoorID.state_machine_entry(SM_Id), GotoedF)
     @staticmethod

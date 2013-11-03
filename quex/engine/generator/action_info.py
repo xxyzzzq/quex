@@ -41,13 +41,14 @@ class CodeFragmentIterim(CodeFragment):
         self.subsequent_incidence_id = SubsequentIncidenceId
 
 class UserCodeFragment(CodeFragment):
-    def __init__(self, Code, FileName, LineN, LanguageDB=None):
+    def __init__(self, Code="", FileName=None, LineN=None, LanguageDB=None, SourceReference=None):
         assert isinstance(Code, (str, unicode))
         assert isinstance(LanguageDB, dict) or LanguageDB is None
         assert isinstance(FileName, (str, unicode))
         assert isinstance(LineN, (int, long, float))
 
-        self.sr = SourceRef(FileName, LineN)
+        if SourceReference is not None: self.sr = SourceReference
+        else:                           self.sr = SourceRef(FileName, LineN)
 
         CodeFragment.__init__(self, Code)
 
@@ -70,16 +71,13 @@ class UserCodeFragment(CodeFragment):
         return txt
 
 class GeneratedCode(UserCodeFragment):
-    def __init__(self, GeneratorFunction, FileName=-1, LineN=None):
-        self.function = GeneratorFunction
-        self.data     = { }
-        UserCodeFragment.__init__(self, "", FileName, LineN)
+    def __init__(self, Data, SourceReference):
+        assert isinstance(Data, dict)
+        self.data = Data
+        UserCodeFragment.__init__(self, SourceReference=SourceReference)
 
     def get_code(self, Mode=None):
-        assert Mode is not None
-        result = self.function(self.data, Mode)
-        assert isinstance(result, list) 
-        return result
+        assert False, "Not to be called. TerminalStateFactory shall use '.data' and incidence_id to find TerminalType"
 
 class PatternActionInfo:
     def __init__(self, ThePattern, Action, PatternStr="", IL = None, ModeName="", Comment=""):

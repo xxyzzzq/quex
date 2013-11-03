@@ -17,7 +17,7 @@ def do(Modes):
 
     mode_objects_txt = ""    
     for mode_name, mode in Modes.items():
-        if mode.options["inheritable"] == "only": continue
+        if mode.abstract_f(): continue
         mode_objects_txt += "/* Global */QUEX_NAME(Mode)  QUEX_NAME(%s);\n" % mode_name
 
     txt += "QUEX_NAMESPACE_MAIN_OPEN\n"
@@ -40,7 +40,7 @@ def write_member_functions(Modes):
     txt += "#define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)\n"
     txt += "#define __self_result_token_id    QUEX_NAME_TOKEN(DumpedTokenIdObject)\n"
     for mode in Modes:        
-        if mode.options["inheritable"] == "only": continue
+        if mode.abstract_f(): continue
         txt += get_implementation_of_mode_functions(mode, Modes)
 
     txt += "#undef self\n"
@@ -102,12 +102,15 @@ def  get_implementation_of_mode_functions(mode, Modes):
        where EXAMPLE_MODE is a lexer mode from the given lexer-modes, and
        'quex::lexer' is the lexical analysis class.
     """
-    def __filter_out_inheritable_only(ModeNameList):
+    def __filter_out_abstract_modes(ModeNameList):
+        """Return only those names from ModeNameList where the mode is not
+        abstract. That is, it can be implemented.
+        """
         result = []
         for name in ModeNameList:
             for mode in Modes:
                 if mode.name == name:
-                    if mode.options["inheritable"] != "only": result.append(name)
+                    if not mode.abstract_f(): result.append(name)
                     break
         return result
 
@@ -131,23 +134,23 @@ def  get_implementation_of_mode_functions(mode, Modes):
 
     # (*) has base mode
     if mode.has_base_mode():
-        base_mode_list    = __filter_out_inheritable_only(mode.get_base_mode_name_list())
+        base_mode_list    = __filter_out_abstract_modes(mode.get_base_mode_name_list())
         has_base_mode_str = get_IsOneOfThoseCode(base_mode_list, CheckBaseModeF=True)
     else:
         has_base_mode_str = "    return false;"
         
     # (*) has entry from
     try:
-        entry_list         = __filter_out_inheritable_only(mode.options["entry"])
+        entry_list         = __filter_out_abstract_modes(mode.entry_mode_name_list)
         has_entry_from_str = get_IsOneOfThoseCode(entry_list,
-                                                  __filter_out_inheritable_only(ConsiderDerivedClassesF=True))
+                                                  __filter_out_abstract_modes(ConsiderDerivedClassesF=True))
         # check whether the mode we come from is an allowed mode
     except:
         has_entry_from_str = "    return true; /* default */"        
 
     # (*) has exit to
     try:
-        exit_list       = __filter_out_inheritable_only(mode.options["exit"])
+        exit_list       = __filter_out_abstract_modes(mode.exit_mode_name_list)
         has_exit_to_str = get_IsOneOfThoseCode(exit_list,
                                                ConsiderDerivedClassesF=True)
     except:

@@ -83,41 +83,59 @@ E_Count = Enum("VIRGIN",
 
 E_Commonality = Enum("NONE", "BOTH", "A_IN_B", "B_IN_A")
 
-E_SpecialPatterns = Enum("INDENTATION_NEWLINE", 
-                         "SUPPRESSED_INDENTATION_NEWLINE",
-                         "SKIP", 
-                         "SKIP_RANGE", 
-                         "SKIP_NESTED_RANGE", 
+E_SpecialPatterns = Enum(
                          "_DEBUG_PatternNames")
 
 E_IncidenceIDs = Enum(
 # Incidences encompass 'pattern acceptance events' and any other incidences
 # mentioned below. IncidenceID-s are keys to the standard_incidence_db.
-                "AFTER_MATCH",
-                "BIPD_TERMINATED",
-                "DEDENT",
-                "END_OF_STREAM",
-                "FAILURE",
-                "GENERAL_INDENTATION",
-                "INDENT",
-                "INDENTATION_BAD",
-                "INDENTATION_ERROR",
-                "MATCH",
-                "MODE_ENTRY",
-                "MODE_EXIT",
-                "NODENT",
-                "N_DEDENT",
-                "PRE_CONTEXT_FULFILLED",
-                "SKIP_RANGE_OPEN",
-                "VOID",
-                "EXIT_LOOP",
-                "_DEBUG_Events")
+    "AFTER_MATCH",
+    "BIPD_TERMINATED",
+    "DEDENT",
+    "END_OF_STREAM",
+    "EXIT_LOOP",
+    "FAILURE",
+    "GOOD_TRANSITION",
+    "INDENTATION_HANDLER",
+    "INDENT",
+    "INDENTATION_BAD",
+    "INDENTATION_ERROR",
+    "INDENTATION_NEWLINE", 
+    "MATCH",
+    "MODE_ENTRY",
+    "MODE_EXIT",
+    "NODENT",
+    "N_DEDENT",
+    "PRE_CONTEXT_FULFILLED",
+    "SKIP", 
+    "SKIP_NESTED_RANGE", 
+    "SKIP_RANGE", 
+    "SKIP_RANGE_OPEN",
+    "SUPPRESSED_INDENTATION_NEWLINE",
+    "VOID",
+    "_DEBUG_Events")
 
 E_IncidenceIDs_SubsetAcceptanceIDs = [
     E_IncidenceIDs.FAILURE,
     E_IncidenceIDs.PRE_CONTEXT_FULFILLED, 
     E_IncidenceIDs.BIPD_TERMINATED, 
     E_IncidenceIDs.VOID,
+]
+
+E_IncidenceIDs_Subset_Terminals = [
+    E_IncidenceIDs.BIPD_TERMINATED,
+    E_IncidenceIDs.END_OF_STREAM,
+    E_IncidenceIDs.EXIT_LOOP,
+    E_IncidenceIDs.FAILURE,
+    E_IncidenceIDs.INDENTATION_HANDLER,
+    E_IncidenceIDs.INDENTATION_BAD,
+    E_IncidenceIDs.INDENTATION_ERROR,
+    E_IncidenceIDs.INDENTATION_NEWLINE, 
+    E_IncidenceIDs.SKIP, 
+    E_IncidenceIDs.SKIP_NESTED_RANGE, 
+    E_IncidenceIDs.SKIP_RANGE, 
+    E_IncidenceIDs.SKIP_RANGE_OPEN,
+    E_IncidenceIDs.SUPPRESSED_INDENTATION_NEWLINE,
 ]
 
 E_MapImplementationType = Enum("STATE_MACHINE_TRIVIAL", 
@@ -246,7 +264,7 @@ standard_incidence_db = {
     "on_n_dedent":               (E_IncidenceIDs.N_DEDENT,            "On closing indentation'."),
     "on_indentation_error":      (E_IncidenceIDs.INDENTATION_ERROR,   "Closing indentation on non-border."),
     "on_indentation_bad":        (E_IncidenceIDs.INDENTATION_BAD,     "On bad character in indentation."),
-    "on_indentation":            (E_IncidenceIDs.GENERAL_INDENTATION, "General Indentation Handler."),
+    "on_indentation":            (E_IncidenceIDs.INDENTATION_HANDLER, "General Indentation Handler."),
     "on_match":                  (E_IncidenceIDs.MATCH,               "On each match (before pattern action)."),
     "on_after_match":            (E_IncidenceIDs.AFTER_MATCH,         "On each match (after pattern action)."),
     "on_failure":                (E_IncidenceIDs.FAILURE,             "In case that no pattern matches."),
@@ -324,6 +342,16 @@ class PatternShorthand:
 # shorthand_db: user defined names for regular expressions.
 #-----------------------------------------------------------------------------------------
 shorthand_db = {}
+
+#-----------------------------------------------------------------------------------------
+# signal_character_list: List of characters which carry a specific meaning and shall
+#                        not appear in the input stream.
+#-----------------------------------------------------------------------------------------
+def signal_character_list(TheSetup):
+    return [
+        (TheSetup.buffer_limit_code, "Buffer Limit Code"),
+        (TheSetup.path_limit_code,   "Path Limit Code")
+    ]
 
 #-----------------------------------------------------------------------------------------
 # token_id_db: list of all defined token-ids together with the file position

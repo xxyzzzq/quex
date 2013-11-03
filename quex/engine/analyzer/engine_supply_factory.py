@@ -83,14 +83,14 @@ class Class_BACKWARD_PRE_CONTEXT(Base):
         return DropOutIndifferent()
 
 class Class_BACKWARD_INPUT_POSITION(Base):
-    def __init__(self, AcceptanceIdOnBehalfOfWhichBipdOperates):
-        self.__acceptance_id_of_bipd = AcceptanceIdOnBehalfOfWhichBipdOperates
+    def __init__(self, IncidenceIdOnBehalfOfWhichBipdOperates):
+        self.__incidence_id_of_bipd = IncidenceIdOnBehalfOfWhichBipdOperates
 
     def is_BACKWARD_INPUT_POSITION(self):  
         return True
 
-    def acceptance_id_of_bipd(self):
-        return self.__acceptance_id_of_bipd
+    def incidence_id_of_bipd(self):
+        return self.__incidence_id_of_bipd
 
     def requires_buffer_limit_code_for_reload(self): 
         """When going backwards, this happens only along a lexeme which must

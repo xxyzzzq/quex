@@ -3,9 +3,10 @@
 _______________________________________________________________________________
 """
 from   quex.blackboard import E_Count, \
+                              E_IncidenceIDs, \
                               setup as Setup
 
-def get(ThePattern, EOF_ActionF, ShiftF=True):
+def get(ThePattern, ShiftF=True):
     """Line and column number actions for a pattern.
 
     Generates code to adapt line and column number counters when a pattern
@@ -53,9 +54,10 @@ def get(ThePattern, EOF_ActionF, ShiftF=True):
     ---------------------------------------------------------------------------
     """
     LanguageDB = Setup.language_db
+    assert type(ShiftF) == bool
 
     # (*) Trivial Cases _______________________________________________________
-    if EOF_ActionF:
+    if ThePattern.incidence_id() == E_IncidenceIDs.END_OF_STREAM:
         if ShiftF: return False, ["__QUEX_IF_COUNT_SHIFT_VALUES();\n" ]
         else:      return False, []
 

@@ -116,8 +116,7 @@ def analyzer_functions_get(ModeDB):
 
     # (*) Get list of modes that are actually implemented
     #     (abstract modes only serve as common base)
-    mode_list      = [ mode for mode in ModeDB.itervalues() 
-                       if mode.options["inheritable"] != "only" ]
+    mode_list      = [ mode for mode in ModeDB.itervalues() if not mode.abstract_f() ]
     mode_name_list = [ mode.name for mode in mode_list ] 
 
     for mode in mode_list:        

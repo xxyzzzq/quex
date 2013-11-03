@@ -61,7 +61,7 @@ class TransitionCode:
         self.__drop_out_f = DropOutF
         if isinstance(Code, list): self.__code = Code
         else:                      self.__code = [ Code ]
-        assert all_isinstance(Code, (int, str, unicode))
+        assert all_isinstance(self.__code, (int, str, unicode))
     def code(self):          
         return self.__code
     def drop_out_f(self):    

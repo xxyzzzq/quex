@@ -28,11 +28,11 @@ def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateInd
 
     elif EngineType.is_BACKWARD_INPUT_POSITION():
         if DropOut.reachable_f:
-            acceptance_id = EngineType.acceptance_id_of_bipd()
+            incidence_id = EngineType.incidence_id_of_bipd()
             txt.extend([ 
-                1, '__quex_debug("pattern %i: backward input position detected\\n");\n' % acceptance_id,
+                1, '__quex_debug("pattern %i: backward input position detected\\n");\n' % incidence_id,
                 1, "%s\n\n" % LanguageDB.INPUT_P_INCREMENT(),
-                1, "%s\n" % LanguageDB.GOTO_BY_DOOR_ID(DoorID.acceptance(acceptance_id)) \
+                1, "%s\n" % LanguageDB.GOTO_BY_DOOR_ID(DoorID.incidence(incidence_id)) \
             ])
         return
 
@@ -76,7 +76,7 @@ def position_and_goto(EngineType, X):
     # Position the input pointer and jump to terminal.
     positioning_str   = LanguageDB.POSITIONING(X)
     if len(positioning_str) != 0: positioning_str += "\n"
-    goto_terminal_str = LanguageDB.GOTO_BY_DOOR_ID(DoorID.acceptance(X.acceptance_id))
+    goto_terminal_str = LanguageDB.GOTO_BY_DOOR_ID(DoorID.incidence(X.acceptance_id))
     return [
         0, positioning_str, "\n" if len(positioning_str) != 0 else "",
         0, goto_terminal_str

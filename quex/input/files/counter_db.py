@@ -1,6 +1,5 @@
 from   quex.engine.state_machine.transformation     import homogeneous_chunk_n_per_character
 from   quex.engine.interval_handling                import NumberSet
-from   quex.engine.generator.base                   import LoopGenerator
 from   quex.engine.analyzer.transition_map          import TransitionMap
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.blackboard import setup as Setup, \
