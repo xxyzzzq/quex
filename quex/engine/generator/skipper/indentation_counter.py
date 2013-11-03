@@ -8,11 +8,8 @@ import quex.engine.generator.state.transition.core  as     relate_to_TransitionC
 from   quex.engine.generator.state.transition.code  import TransitionCode
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.analyzer.door_id_address_label   import dial_db, \
-                                                           get_label, \
-                                                           get_address, \
-                                                           address_set_subject_to_routing_add
+                                                           Label
 from   quex.engine.misc.string_handling             import blue_print
-import quex.output.cpp.action_preparation           as     action_preparation
 
 def do(Data, Mode=None):
     """________________________________________________________________________
@@ -55,7 +52,7 @@ def do(Data, Mode=None):
     transition_block_str = __get_transition_block(IndentationSetup, counter_adr)
     end_procedure        = __get_end_procedure(IndentationSetup, Mode)
 
-    address_set_subject_to_routing_add(counter_adr) 
+    dial_db.mark_address_as_routed(counter_adr) 
 
     # The finishing touch
     prolog = blue_print(prolog_txt,
@@ -70,13 +67,12 @@ def do(Data, Mode=None):
     teof_address = dial_db.get_address_by_door_id(DoorID.global_terminal_end_of_file())
     dial_db.mark_address_as_routed(teof_address)
 
-    epilog = blue_print(epilog_txt,
-                      [
-                       ["$$ADDRESS$$",                 counter_adr_str], 
-                       ["$$END_PROCEDURE$$",           "".join(end_procedure)],
-                       ["$$REENTRY$$",                 get_label("$start", U=True)],
-                       ["$$BAD_CHARACTER_HANDLING$$",  __get_bad_character_handler(Mode, IndentationSetup, counter_adr)],
-                      ])
+    epilog = blue_print(epilog_txt, [
+        ["$$ADDRESS$$",                 counter_adr_str], 
+        ["$$END_PROCEDURE$$",           "".join(end_procedure)],
+        ["$$GOTO_REENTRY$$",            LanguageDB.GOTO_BY_DOOR_ID(DoorID.global_reentry())],
+        ["$$BAD_CHARACTER_HANDLING$$",  __get_bad_character_handler(Mode, IndentationSetup, counter_adr)],
+    ])
 
     txt = [prolog]
     txt.extend(transition_block_str)
@@ -115,7 +111,7 @@ epilog_txt = """
      * been eaten by the pattern match.                                            */
 $$END_PROCEDURE$$                           
     /* No need for re-entry preparation. Acceptance flags and modes are untouched. */
-    goto $$REENTRY$$;
+    $$GOTO_REENTRY$$
 
 $$BAD_CHARACTER_HANDLING$$
 """
@@ -243,7 +239,7 @@ def __get_bad_character_handler(Mode, IndentationSetup, CounterIdx):
                                 % Mode.name + \
                '                "No \'on_indentation_bad\' handler has been specified.\\n");'
     else:
-        code, eol_f = action_preparation.get_code(Mode.incidence_db[E_IncidenceIDs.INDENTATION_BAD])
+        code, eol_f = Mode.incidence_db[E_IncidenceIDs.INDENTATION_BAD].get_code_string()
         txt += "#define BadCharacter ((QUEX_TYPE_CHARACTER)*(me->buffer._input_p))\n"
         txt += code
         txt += "#undef  BadCharacter\n"

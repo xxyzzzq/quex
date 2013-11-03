@@ -1,9 +1,9 @@
-from   quex.engine.generator.base              import LoopGenerator
+from   quex.engine.generator.base                 import LoopGenerator
 from   quex.engine.analyzer.door_id_address_label import DoorID
-from   quex.engine.analyzer.state.core         import TerminalState
-import quex.engine.analyzer.core                       as     analyzer_generator
-from   quex.engine.input.files.counter_db      import CountCmdInfo
-from   quex.blackboard                         import setup as Setup
+#from  quex.engine.analyzer.state.core            import TerminalState
+import quex.engine.analyzer.core                  as     analyzer_generator
+from   quex.input.files.counter_db                import CountCmdInfo
+from   quex.blackboard                            import setup as Setup
 
 def do():
     """________________________________________________________________________
@@ -142,7 +142,7 @@ def do():
         # This State: Create entries which execute required column/line 
         #             counting actions.
         loop = analyzer.init_state()
-        for cli, count_info for self.count_command_map:
+        for cli, count_info in self.count_command_map:
             assert isinstance(count_info, CountCmdInfo)
             for from_index in analyzer.to_db[cli]:
                 loop.entry.enter(TransitionID(loop.index, from_index, TriggerId=cli), 

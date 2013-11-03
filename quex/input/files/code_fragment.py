@@ -11,7 +11,7 @@ from   quex.engine.misc.file_in          import EndOfStreamException, \
                                                 verify_word_in_list
 import quex.blackboard                   as     blackboard
 from   quex.output.cpp.token_id_maker    import TokenInfo, cut_token_id_prefix
-from   quex.blackboard                   import setup as Setup
+from   quex.blackboard                   import setup as Setup, SourceRef
 from   quex.input.setup                  import NotificationDB
 from   quex.blackboard                   import QuexSetup
 from   quex.engine.unicode_db.parser     import ucs_property_db
@@ -51,7 +51,7 @@ def __parse_normal(fh, code_fragment_name):
 
     line_n = get_current_line_info_number(fh) + 1
     code   = read_until_closing_bracket(fh, "{", "}")
-    return UserCodeFragment(code, fh.name, line_n, LanguageDB)
+    return UserCodeFragment(code, SourceRef.from_FileHandle(fh))
 
 def __read_token_identifier(fh):
     """Parses a token identifier that may contain a namespace specification.
@@ -88,7 +88,7 @@ def __parse_brief_token_sender(fh, ContinueF):
 
         if len(code) != 0: 
             if ContinueF: code += "QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();\n"
-            return UserCodeFragment(code, fh.name, line_n, LanguageDB)
+            return UserCodeFragment(code, SourceRef.from_FileHandle(fh))
         else:
             return None
 

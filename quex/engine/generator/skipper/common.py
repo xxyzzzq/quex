@@ -1,5 +1,4 @@
 import quex.engine.utf8                   as utf8
-import quex.output.cpp.action_preparation as action_preparation
 from   quex.engine.interval_handling      import NumberSet
 from   quex.engine.misc.file_in           import error_msg
 from   quex.blackboard import setup as Setup
@@ -89,9 +88,8 @@ def get_on_skip_range_open(Mode, CloserSequence):
         for letter in CloserSequence:
             closer_string += utf8.unicode_to_pretty_utf8(letter).replace("'", "")
 
-        code, eol_f = action_preparation.get_code(Mode.incidence_db[E_IncidenceIDs.SKIP_RANGE_OPEN])
-        txt += "#define Closer \"%s\"\n" % closer_string
-        txt += code
+        txt  = "#define Closer \"%s\"\n" % closer_string
+        txt += Mode.incidence_db[E_IncidenceIDs.SKIP_RANGE_OPEN].get_code_string()
         txt += "#undef  Closer\n"
         txt += "RETURN;\n"
 

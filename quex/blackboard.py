@@ -25,6 +25,7 @@
 ################################################################################
 from quex.engine.generator.code_fragment_base import CodeFragment
 from quex.engine.misc.enum                    import Enum
+from quex.engine.misc.file_in                 import get_current_line_info_number
 from quex.input.setup                         import QuexSetup, SETUP_INFO
 from copy                                     import deepcopy
 from collections                              import namedtuple
@@ -197,7 +198,7 @@ class SourceRef(namedtuple("SourceRef_tuple", ("file_name", "line_n"))):
 
     @staticmethod
     def from_FileHandle(Fh):
-        return SourceRef(Fh.name, get_text_line_n(Fh, Fh.pos))
+        return SourceRef(Fh.name, get_current_line_info_number(Fh))
 
 #-----------------------------------------------------------------------------------------
 # mode_db: storing the mode information into a dictionary:
@@ -222,7 +223,7 @@ class ModeOptionInfo:
         self.type          = Type
         self.domain        = Domain
         self.default_value = Default
-        self.unite_f       = UniqueF
+        self.unique_f      = UniqueF
         self.name          = Name
 
 mode_option_info_db = {
@@ -255,25 +256,25 @@ mode_option_info_db = {
 #                        as their associated values.
 #-----------------------------------------------------------------------------------------
 standard_incidence_db = {
-    # key word:                  event id:                         comment:
-    "on_entry":                  (E_IncidenceIDs.MODE_ENTRY,          "On entry of a mode."),
-    "on_exit":                   (E_IncidenceIDs.MODE_EXIT,           "On exit of a mode."),
-    "on_indent":                 (E_IncidenceIDs.INDENT,              "On opening indentation."),
-    "on_nodent":                 (E_IncidenceIDs.NODENT,              "On same indentation."),
-    "on_dedent":                 (E_IncidenceIDs.DEDENT,              "On closing indentation'."),
-    "on_n_dedent":               (E_IncidenceIDs.N_DEDENT,            "On closing indentation'."),
-    "on_indentation_error":      (E_IncidenceIDs.INDENTATION_ERROR,   "Closing indentation on non-border."),
-    "on_indentation_bad":        (E_IncidenceIDs.INDENTATION_BAD,     "On bad character in indentation."),
-    "on_indentation":            (E_IncidenceIDs.INDENTATION_HANDLER, "General Indentation Handler."),
-    "on_match":                  (E_IncidenceIDs.MATCH,               "On each match (before pattern action)."),
-    "on_after_match":            (E_IncidenceIDs.AFTER_MATCH,         "On each match (after pattern action)."),
-    "on_failure":                (E_IncidenceIDs.FAILURE,             "In case that no pattern matches."),
-    "on_skip_range_open":        (E_IncidenceIDs.SKIP_RANGE_OPEN,     "On missing skip range delimiter."),
-    "on_end_of_stream":          (E_IncidenceIDs.END_OF_STREAM,       "On end of file/stream."),
+    # key word:              event id:                            comment:
+    "on_entry":              (E_IncidenceIDs.MODE_ENTRY,          "On entry of a mode."),
+    "on_exit":               (E_IncidenceIDs.MODE_EXIT,           "On exit of a mode."),
+    "on_indent":             (E_IncidenceIDs.INDENT,              "On opening indentation."),
+    "on_nodent":             (E_IncidenceIDs.NODENT,              "On same indentation."),
+    "on_dedent":             (E_IncidenceIDs.DEDENT,              "On closing indentation'."),
+    "on_n_dedent":           (E_IncidenceIDs.N_DEDENT,            "On closing indentation'."),
+    "on_indentation_error":  (E_IncidenceIDs.INDENTATION_ERROR,   "Closing indentation on non-border."),
+    "on_indentation_bad":    (E_IncidenceIDs.INDENTATION_BAD,     "On bad character in indentation."),
+    "on_indentation":        (E_IncidenceIDs.INDENTATION_HANDLER, "General Indentation Handler."),
+    "on_match":              (E_IncidenceIDs.MATCH,               "On each match (before pattern action)."),
+    "on_after_match":        (E_IncidenceIDs.AFTER_MATCH,         "On each match (after pattern action)."),
+    "on_failure":            (E_IncidenceIDs.FAILURE,             "In case that no pattern matches."),
+    "on_skip_range_open":    (E_IncidenceIDs.SKIP_RANGE_OPEN,     "On missing skip range delimiter."),
+    "on_end_of_stream":      (E_IncidenceIDs.END_OF_STREAM,       "On end of file/stream."),
     # TODO:
-    # "on_token_stamp":          (E_IncidenceIDs.ON_TOKEN_STAMP,  "On event of token stamping."),
-    #                            instead of: QUEX_ACTION_TOKEN_STAMP 
-    # "on_codec_error":          (E_IncidenceIDs.ON_CODEC_ERROR, "On input file does not conform to codec."),
+    # "on_token_stamp":      (E_IncidenceIDs.ON_TOKEN_STAMP,  "On event of token stamping."),
+    #                        instead of: QUEX_ACTION_TOKEN_STAMP 
+    # "on_codec_error":      (E_IncidenceIDs.ON_CODEC_ERROR, "On input file does not conform to codec."),
 }
 
 #-----------------------------------------------------------------------------------------
