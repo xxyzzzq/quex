@@ -17,7 +17,7 @@ def do(TxtList, Op):
         sh.name = "<string>"
         mode.parse(sh)
 
-    blackboard.initial_mode = UserCodeFragment("X", "<string>", 0)
+    blackboard.initial_mode = UserCodeFragment("X", SourceRef.from_FileHandle(sh))
     mode.finalize()
 
     for x in sorted(blackboard.mode_db.itervalues(), key=lambda x: x.name):

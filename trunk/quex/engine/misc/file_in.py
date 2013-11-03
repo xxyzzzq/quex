@@ -507,12 +507,14 @@ def get_file_content_or_die(FileName, Mode="rb"):
     return txt
 
 def get_current_line_info_number(fh):
-    position = fh.tell()
+    return get_line_number_at_position(fh, fh.tell())
+
+def get_line_number_at_position(fh, Pos):
     fh.seek(0)
     # When reading 'position' number of characters from '0', then we are
     # at position 'position' at the end of the read. That means, we are where
     # we started.
-    passed_text = fh.read(position)
+    passed_text = fh.read(Pos)
     return passed_text.count("\n")
 
 def clean_up():

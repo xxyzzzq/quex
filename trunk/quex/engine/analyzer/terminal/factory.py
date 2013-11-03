@@ -119,8 +119,8 @@ class TerminalStateFactory:
             3,               "%s\n" % LanguageDB.INPUT_P_INCREMENT(),
             2,         "}\n",
             1,     "}\n",
-            1,     "%s\n"     % prepared_code.get_code_string(), 
-            1,     "goto %s;" % Label.global_reentry_preparation_2(GotoedF=True)
+            1,     "%s\n" % prepared_code.get_code_string(), 
+            1,     "%s\n" % LanguageDB.GOTO_BY_DOOR_ID(DoorID.global_reentry_preparation_2())
         ]
 
         return TerminalPlainCode(E_IncidenceIDs.FAILURE, CodeFragment(txt))
@@ -208,7 +208,6 @@ class TerminalStateFactory:
         # content is loaded. Not so easy; must be carefully approached.
         return "    %s\n" % LanguageDB.ASSIGN("me->buffer._character_before_lexeme_start", 
                                               LanguageDB.INPUT_P_DEREFERENCE(-1))
-
 
 def pretty_code(Code, Base):
     """-- Delete empty lines at the beginning

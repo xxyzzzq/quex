@@ -36,6 +36,7 @@ from   quex.engine.misc.file_in                        import EndOfStreamExcepti
                                                               verify_word_in_list
 import quex.blackboard as blackboard
 from   quex.blackboard import setup as Setup, \
+                              SourceRef, \
                               E_SpecialPatterns, \
                               E_IncidenceIDs, \
                               standard_incidence_db, \
@@ -43,7 +44,7 @@ from   quex.blackboard import setup as Setup, \
 
 from   copy        import deepcopy
 from   collections import namedtuple
-from   operator    import itemgetter
+from   operator    import itemgetter, attrgetter
 
 #-----------------------------------------------------------------------------------------
 # ModeDescription/Mode Objects:
@@ -203,7 +204,7 @@ class PPC(namedtuple("PPC_tuple", ("priority", "pattern", "code_fragment"))):
 
     @staticmethod
     def from_PatternActionPair(ModeHierarchyIndex, PAP):
-        return PPC(PatternPriority(ModeHierarchyIndex, pap.pattern().sm.get_id()), pap.pattern(), pap.action())
+        return PPC(PatternPriority(ModeHierarchyIndex, PAP.pattern().sm.get_id()), PAP.pattern(), PAP.action())
 
 
 #______________________________________________________________________________
@@ -235,14 +236,14 @@ class Mode:
         self.name = Other.name
         self.sr   = Other.sr   # 'SourceRef' -- is immutable
 
-        base_mode_sequence  = self.misc.__determine_base_mode_sequence(Other, [], [])
+        base_mode_sequence  = self.__determine_base_mode_sequence(Other, [], [])
 
         # Collect Options
         options_db          = self.__option_db_construct(base_mode_sequence)
 
         # Determine Line/Column Counter Database
-        self.__counter_db        = self.__counter_db_construct(options_db["counter"])
-        self.__indentation_setup = options_db["indentation"]
+        self.__counter_db        = self.__counter_db_construct(options_db.get("counter"))
+        self.__indentation_setup = options_db.get("indentation")
 
         # Build a 'PPC list' (see class 'PPC' above)
         ppc_list            = self.__ppc_list_construct(base_mode_sequence, options_db)
@@ -257,9 +258,9 @@ class Mode:
         self.__abstract_f           = self.__abstract_f_prepare(Other)
         self.__base_mode_sequence   = base_mode_sequence
         # List of modes that have an entry into this mode
-        self.__entry_mode_name_list = mode.option_db["entry"]
+        self.__entry_mode_name_list = options_db["entry"]
         # List of modes to which this mode can exit
-        self.__exit_mode_name_list  = mode.option_db["exit"]
+        self.__exit_mode_name_list  = options_db["exit"]
 
     def __abstract_f_prepare(self, Other):
         """If the mode has incidences and/or patterns defined it is free to be 
@@ -381,6 +382,7 @@ class Mode:
            (name, None) for name, info in mode_option_info_db.iteritems()
                         if info.unique_f
         )
+        result = {}
         for mode in BaseModeSequence:
             for name, option_descr in mode_option_info_db.items():
                 if name in unique_found_db:
@@ -420,11 +422,11 @@ class Mode:
         # (*) Collect pattern recognizers and several 'incidence detectors' in 
         #     state machine lists. When the state machines accept this triggers
         #     an incidence which is associated with an entry in the incidence_db.
-        self.__prepare_skip(ppc_list, OptionsDb["skip"], MHI=-4)
-        self.__prepare_skip_range(ppc_list, OptionsDb["skip_range"], MHI=-3)
-        self.__prepare_skip_nested_range(ppc_list, OptionsDb["skip_nested_range"], MHI=-3)
+        self.__prepare_skip(ppc_list, OptionsDb.get("skip"), MHI=-4)
+        self.__prepare_skip_range(ppc_list, OptionsDb.get("skip_range"), MHI=-3)
+        self.__prepare_skip_nested_range(ppc_list, OptionsDb.get("skip_nested_range"), MHI=-3)
 
-        self.__prepare_indentation_counter(ppc_list, OptionsDb["indentation"], MHI=-1)
+        self.__prepare_indentation_counter(ppc_list, OptionsDb.get("indentation"), MHI=-1)
 
         # (*) Delete and reprioritize
         self.__perform_deletion(ppc_list, BaseModeSequence) 
@@ -462,14 +464,12 @@ class Mode:
 
         return pattern_list
 
-    def __prepare_skip(self, ppc_list, MHI):
+    def __prepare_skip(self, ppc_list, SkipSetupList, MHI):
         """MHI = Mode hierarchie index."""
-        ssetup_list = self.option_db.get("skip")
-
-        if ssetup_list is None or len(ssetup_list) == 0:
+        if SkipSetupList is None or len(SkipSetupList) == 0:
             return
 
-        iterable                            = ssetup_list.__iter__()
+        iterable                            = SkipSetupList.__iter__()
         pattern_str, pattern, character_set = iterable.next()
         # Multiple skippers from different modes are combined into one pattern.
         # This means, that we cannot say exactly where a 'skip' was defined 
@@ -505,7 +505,7 @@ class Mode:
         def get_PPC(MHI, Cli, CmdInfo, TheCodeFragment):
             priority      = PatternPriority(MHI, Cli)
             pattern       = Pattern(StateMachine.from_character_set(CmdInfo.trigger_set))
-            ppc_list.append(PPC(priority, pattern, TheCodeFragment)
+            ppc_list.append(PPC(priority, pattern, TheCodeFragment))
 
         iterable = counter_db.get_counter_dictionary(character_set).iteritems()
 
@@ -522,14 +522,14 @@ class Mode:
 
         return
 
-    def __prepare_skip_range(self, ppc_list, MHI):
+    def __prepare_skip_range(self, ppc_list, SkipRangeSetupList, MHI):
         """MHI = Mode hierarchie index."""
-        self.__prepare_skip_range_core(ppc_list, MHI, OptionsDb.get("skip_range"), 
+        self.__prepare_skip_range_core(ppc_list, MHI, SkipRangeSetupList,  
                                        skip_range.do, E_IncidenceIDs.SKIP_RANGE)
 
-    def __prepare_skip_nested_range(self, ppc_list, MHI):
+    def __prepare_skip_nested_range(self, ppc_list, SkipNestedRangeSetupList, MHI):
         """MHI = Mode hierarchie index."""
-        self.__prepare_skip_range_core(ppc_list, MHI, OptionsDb.get("skip_nested_range"), 
+        self.__prepare_skip_range_core(ppc_list, MHI, SkipNestedRangeSetupList, 
                                        skip_nested_range.do, E_IncidenceIDs.SKIP_NESTED_RANGE)
 
     def __prepare_skip_range_core(self, ppc_list, MHI, SrSetup, SkipperFunction, IncidenceId):
@@ -638,7 +638,7 @@ class Mode:
 
         return
 
-    def __incidence_db_construct(self, BaseModeSequence, PPC_list):
+    def __incidence_db_construct(self, BaseModeSequence, PPC_List):
         """Collect event handlers from base mode and the current mode.
            Event handlers of the most 'base' mode come first, then the 
            derived event handlers. 
@@ -648,13 +648,13 @@ class Mode:
         result = {}
 
         # Special incidences from 'standard_incidence_db'
-        for incidence_name, info in standard_incidence_db.itervalues():
+        for incidence_name, info in standard_incidence_db.iteritems():
             incidence_id, comment = info
             entry = None
             for mode_descr in BaseModeSequence:
                 fragment = mode_descr.incidence_by_name_db[incidence_name]
                 if fragment is not None and not fragment.is_whitespace():
-                    if entry is None: entry = CodeFragment.clone()
+                    if entry is None: entry = fragment.clone()
                     else:             entry.append_CodeFragment(fragment)
 
             if entry is not None: 
@@ -743,7 +743,7 @@ class Mode:
 
         # (*) Empty modes which are not inheritable only?
         # (*) A mode that is instantiable (to be implemented) needs finally contain matches!
-        if (not self.__abstract_f)  and len(self.pattern_list) == 0:
+        if (not self.__abstract_f)  and len(self.__pattern_list) == 0:
             error_msg("Mode '%s' was defined without the option <inheritable: only>.\n" % self.name + \
                       "However, it contains no matches--only event handlers. Without pattern\n"     + \
                       "matches it cannot act as a pattern detecting state machine, and thus\n"      + \

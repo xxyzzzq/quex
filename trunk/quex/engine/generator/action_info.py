@@ -35,22 +35,19 @@ UserCodeFragment_OpenLinePragma = {
         ],
    }
 
-class CodeFragmentIterim(CodeFragment):
-    def __init__(self, TheCommandList, SubsequentIncidenceId):
-        self.command_list            = TheCommandList
-        self.subsequent_incidence_id = SubsequentIncidenceId
-
 class UserCodeFragment(CodeFragment):
-    def __init__(self, Code="", FileName=None, LineN=None, LanguageDB=None, SourceReference=None):
+    def __init__(self, Code="", SourceReference=None):
         assert isinstance(Code, (str, unicode))
-        assert isinstance(LanguageDB, dict) or LanguageDB is None
-        assert isinstance(FileName, (str, unicode))
-        assert isinstance(LineN, (int, long, float))
-
-        if SourceReference is not None: self.sr = SourceReference
-        else:                           self.sr = SourceRef(FileName, LineN)
+        assert isinstance(SourceReference, SourceRef) or SourceReference is None
 
         CodeFragment.__init__(self, Code)
+        self.sr = SourceReference
+
+    def clone(self):
+        result = UserCodeFragment()
+        result.set_code(CodeFragment.get_code(self))
+        result.sr = self.sr # SourceRef is immutable
+        return result
 
     def get_code(self, Mode=None):
         return  [ self.adorn_with_source_reference(CodeFragment.get_code(self)) ]

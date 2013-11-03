@@ -12,7 +12,8 @@ from   quex.engine.misc.file_in          import EndOfStreamException, \
 from   quex.engine.generator.action_info        import UserCodeFragment
 from   quex.engine.generator.code_fragment_base import CodeFragment, CodeFragment_Empty
 import quex.input.files.code_fragment    as code_fragment
-from   quex.blackboard                   import setup as Setup
+from   quex.blackboard                   import setup as Setup, \
+                                                SourceRef
 from   quex.input.setup                  import E_Files
 
 token_type_code_fragment_db = { 
@@ -511,7 +512,7 @@ def parse_variable_definition(fh, GroupF=False, already_defined_list=[]):
         if i == -1: error_msg("missing ';'", fh)
         type_str = type_str.strip()
 
-        return [ UserCodeFragment(type_str, fh.name, line_n), name_str ]
+        return [ UserCodeFragment(type_str, SourceRef.from_FileHandle(fh)), name_str ]
 
 def __validate_definition(TheCodeFragment, NameStr, 
                           AlreadyMentionedList, StandardMembersF):

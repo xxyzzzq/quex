@@ -1,6 +1,12 @@
-class CodeFragment:
+from copy import deepcopy
+
+class CodeFragment(object):
+    __slots__ = ("__code",)
     def __init__(self, Code=None):
         self.set_code(Code)
+
+    def clone(self):
+        return CodeFragment([deepcopy(x) for x in self.__code])
 
     def set_code(self, Code):
         if   Code is None:                     self.__code = []
