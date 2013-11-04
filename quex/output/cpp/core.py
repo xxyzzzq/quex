@@ -22,7 +22,7 @@ def do_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
     if default_character_counter_required_f:
         counter_txt = do_default_counter(Mode)
 
-    return counter_txt + core_txt
+    return counter_txt + "".join(core_txt)
 
 def do(ModeName, PatternList, IncidenceDb, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
     """Produce code for an analyzer function which can detect patterns given in

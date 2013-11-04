@@ -284,7 +284,7 @@ def get_quick_setters(Descr):
         if len(member_list) == 0: return ""
 
         # sort the members with respect to their occurence in the token_type section
-        member_list.sort(lambda x, y: cmp(x[1].line_n, y[1].line_n))
+        member_list.sort(lambda x, y: cmp(x[1].sr.line_n, y[1].sr.line_n))
         L = len(member_list)
         PresenceAll  = [ 1 ] * L
         if AllOnlyF: presence_map = PresenceAll

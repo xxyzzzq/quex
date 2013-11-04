@@ -6,7 +6,8 @@ from   quex.engine.misc.file_in         import get_file_content_or_die, \
                                                get_include_guard_extension
 from   quex.DEFINITIONS                 import QUEX_PATH, QUEX_VERSION
 import quex.blackboard                  as     blackboard
-from   quex.blackboard                  import setup as Setup
+from   quex.blackboard                  import setup as Setup, \
+                                               E_IncidenceIDs
 
 def do(ModeDB):
     assert blackboard.token_type_definition is not None
@@ -108,20 +109,20 @@ def do_implementation(ModeDB):
     return func_txt
 
 quex_mode_init_call_str = """
-     QUEX_NAME($$MN$$).id   = QUEX_NAME(ModeID_$$MN$$);
-     QUEX_NAME($$MN$$).name = "$$MN$$";
-     QUEX_NAME($$MN$$).analyzer_function = $analyzer_function;
-#    if      defined(QUEX_OPTION_INDENTATION_TRIGGER) \\
-        && ! defined(QUEX_OPTION_INDENTATION_DEFAULT_HANDLER)
-     QUEX_NAME($$MN$$).on_indentation = $on_indentation;
-#    endif
-     QUEX_NAME($$MN$$).on_entry       = $on_entry;
-     QUEX_NAME($$MN$$).on_exit        = $on_exit;
-#    if      defined(QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK)
-     QUEX_NAME($$MN$$).has_base       = $has_base;
-     QUEX_NAME($$MN$$).has_entry_from = $has_entry_from;
-     QUEX_NAME($$MN$$).has_exit_to    = $has_exit_to;
-#    endif
+    QUEX_NAME($$MN$$).id   = QUEX_NAME(ModeID_$$MN$$);
+    QUEX_NAME($$MN$$).name = "$$MN$$";
+    QUEX_NAME($$MN$$).analyzer_function = $analyzer_function;
+#   if      defined(QUEX_OPTION_INDENTATION_TRIGGER) \\
+       && ! defined(QUEX_OPTION_INDENTATION_DEFAULT_HANDLER)
+    QUEX_NAME($$MN$$).on_indentation = $on_indentation;
+#   endif
+    QUEX_NAME($$MN$$).on_entry       = $on_entry;
+    QUEX_NAME($$MN$$).on_exit        = $on_exit;
+#   if      defined(QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK)
+    QUEX_NAME($$MN$$).has_base       = $has_base;
+    QUEX_NAME($$MN$$).has_entry_from = $has_entry_from;
+    QUEX_NAME($$MN$$).has_exit_to    = $has_exit_to;
+#   endif
 """
 
 def __get_mode_init_call(mode):
@@ -137,13 +138,13 @@ def __get_mode_init_call(mode):
     if mode.abstract_f(): 
         analyzer_function = "QUEX_NAME(Mode_uncallable_analyzer_function)"
 
-    if len(mode.incidence_db[E_IncidenceIDs.MODE_ENTRY]) == 0:
+    if not mode.incidence_db.has_key(E_IncidenceIDs.MODE_ENTRY):
         on_entry = "QUEX_NAME(Mode_on_entry_exit_null_function)"
 
-    if len(mode.incidence_db[E_IncidenceIDs.MODE_EXIT]) == 0:
+    if not mode.incidence_db.has_key(E_IncidenceIDs.MODE_EXIT):
         on_exit = "QUEX_NAME(Mode_on_entry_exit_null_function)"
 
-    if len(mode.incidence_db[E_IncidenceIDs.INDENTATION]) == 0:
+    if not mode.incidence_db.has_key(E_IncidenceIDs.INDENTATION_HANDLER):
         on_indentation = "QUEX_NAME(Mode_on_indentation_null_function)"
 
     txt = blue_print(quex_mode_init_call_str,
@@ -182,7 +183,7 @@ def __get_mode_function_declaration(Modes, FriendF=False):
                                 "QUEX_TYPE_ANALYZER*")
 
         # If one of the following events is specified, then we need an 'on_indentation' handler
-        if mode.incidence_db.has_key(E_IncidenceIDs.INDENTATION): 
+        if mode.incidence_db.has_key(E_IncidenceIDs.INDENTATION_HANDLER): 
             on_indentation_txt = __mode_functions(prolog, "void", ["on_indentation"], 
                                  "QUEX_TYPE_ANALYZER*, QUEX_TYPE_INDENTATION, QUEX_TYPE_CHARACTER*")
 

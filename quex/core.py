@@ -121,7 +121,7 @@ def analyzer_functions_get(ModeDB):
 
     for mode in mode_list:        
         # -- some modes only define event handlers that are inherited
-        if len(mode.get_pattern_action_pair_list()) == 0: continue
+        if len(mode.pattern_list) == 0: continue
 
         analyzer_code += cpp_generator.do_mode(mode, mode_name_list, IndentationSupportF, BeginOfLineSupportF)
 
