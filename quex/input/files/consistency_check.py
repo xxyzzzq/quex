@@ -26,9 +26,11 @@ def do(ModeDB):
     if len(ModeDB) == 0:
         error_msg("No single mode defined - bailing out", Prefix="consistency check")
 
-    mode_name_list             = [ sorted(mode.name for mode in ModeDB.itervalues()) ]
+    mode_name_list             = sorted([mode.name for mode in ModeDB.itervalues()]) 
     # Applicable modes can only be determined after possible addition of "inheritable: only"
-    implemented_mode_name_list = [ sorted(mode.name for mode in ModeDB.itervalues() if not mode.abstract_f) ]
+    implemented_mode_name_list = sorted([mode.name for mode in ModeDB.itervalues() if not mode.abstract_f()]) 
+    print "#mnl:", mode_name_list
+    print "#imnl:", implemented_mode_name_list
 
     if len(implemented_mode_name_list) == 0:
         error_msg("There is no mode that can be implemented---all existing modes are 'inheritable only'.\n" + \
