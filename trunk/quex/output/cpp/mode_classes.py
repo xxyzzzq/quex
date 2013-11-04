@@ -1,5 +1,6 @@
 from   quex.engine.misc.string_handling  import blue_print
-from   quex.blackboard                   import setup as Setup
+from   quex.blackboard                   import setup as Setup, \
+                                                E_IncidenceIDs
 
 def do(Modes):
     LexerClassName              = Setup.analyzer_class_name
@@ -142,22 +143,22 @@ def  get_implementation_of_mode_functions(mode, Modes):
         has_base_mode_str = "    return false;"
         
     # (*) has entry from
-    try:
+    if mode.entry_mode_name_list is None:
+        has_entry_from_str = "    return true; /* default */"        
+    else:
+        # check whether the mode we come from is an allowed mode
         entry_list         = __filter_out_abstract_modes(mode.entry_mode_name_list)
         has_entry_from_str = get_IsOneOfThoseCode(entry_list,
-                                                  __filter_out_abstract_modes(ConsiderDerivedClassesF=True))
-        # check whether the mode we come from is an allowed mode
-    except:
-        has_entry_from_str = "    return true; /* default */"        
+                                                  ConsiderDerivedClassesF=True)
 
     # (*) has exit to
-    try:
+    if mode.exit_mode_name_list is None:
+        has_exit_to_str = "    return true; /* default */"
+    else:
+        # By default: one can exit to all modes.
         exit_list       = __filter_out_abstract_modes(mode.exit_mode_name_list)
         has_exit_to_str = get_IsOneOfThoseCode(exit_list,
                                                ConsiderDerivedClassesF=True)
-    except:
-        has_exit_to_str = "    return true; /* default */"
-
     
     txt = blue_print(mode_function_implementation_str,
                      [
@@ -286,7 +287,7 @@ def get_on_indentation_handler(Mode):
 
     # A mode that deals only with the default indentation handler relies
     # on what is defined in '$QUEX_PATH/analayzer/member/on_indentation.i'
-    if Mode.default_indentation_handler_sufficient():
+    if not Mode.incidence_db.dedicated_indentation_handler_required():
         return "    return;"
 
     code_fragment = Mode.incidence_db.get(E_IncidenceIDs.INDENT)

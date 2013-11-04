@@ -357,7 +357,7 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, OnSkipRangeOpenStr=""):
         # be determined at this place.
         # If the ending delimiter is a subset of what the 'newline' pattern triggers 
         # in indentation counting => move on to the indentation counter.
-        goto_after_end_of_skipping_str = LanguageDB.GOTO_TERMINAL_BY_INCIDENCE_ID(IncidenceID.INDENTATION_NEWLINE)
+        goto_after_end_of_skipping_str = LanguageDB.GOTO_TERMINAL_BY_INCIDENCE_ID(IncidenceID.INDENTATION_HANDLER)
 
     if OnSkipRangeOpenStr != "": on_skip_range_open_str = OnSkipRangeOpenStr
     else:                        on_skip_range_open_str = get_on_skip_range_open(Mode, EndSequence)

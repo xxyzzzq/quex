@@ -412,7 +412,7 @@ def requires_indentation_count(ModeDB):
        support must be provided.                                         
     """
     for mode in ModeDB.itervalues():
-        if mode.indentation_count_required(): return True
+        if mode.incidence_db.has_key(E_IncidenceIDs.INDENTATION_HANDLER): return True
     return False
 
 def requires_begin_of_line_condition_support(ModeDB):
@@ -420,9 +420,8 @@ def requires_begin_of_line_condition_support(ModeDB):
        the begin of line condition must be supported. Otherwise not.
     """
     for mode in ModeDB.values():
-        pattern_action_pair_list = mode.get_pattern_action_pair_list()
-        for info in pattern_action_pair_list:
-            if info.pattern().pre_context_trivial_begin_of_line_f:
+        for pattern in mode.pattern_list:
+            if pattern.pre_context_trivial_begin_of_line_f:
                 return True
     return False
 

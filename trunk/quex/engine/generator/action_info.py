@@ -60,7 +60,7 @@ class UserCodeFragment(CodeFragment):
 
         # Even under Windows (tm), the '/' is accepted. Thus do not rely on 'normpath'
         norm_filename = Setup.get_file_reference(self.sr.file_name) 
-        txt  = '\n#   line %i "%s"\n' % (self.line_n, norm_filename)
+        txt  = '\n#   line %i "%s"\n' % (self.sr.line_n, norm_filename)
         txt += Code
         if ReturnToSourceF:
             if txt[-1] != "\n": txt = txt + "\n"

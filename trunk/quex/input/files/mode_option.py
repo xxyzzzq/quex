@@ -9,6 +9,8 @@ from   quex.engine.misc.file_in           import EndOfStreamException
 from   quex.blackboard import mode_option_info_db
 
 def parse(fh, new_mode):
+    source_reference = SourceRef.from_FileHandle(fh)
+
     identifier = read_option_start(fh)
     if identifier is None: return False
 
@@ -42,7 +44,7 @@ def parse(fh, new_mode):
                   "Though, possible for this option are only: %s." % repr(option_info.domain)[1:-1], fh)
 
     # Finally, set the option
-    new_mode.add_option(identifier, value)
+    new_mode.add_option(identifier, value, source_reference)
 
     return True
 

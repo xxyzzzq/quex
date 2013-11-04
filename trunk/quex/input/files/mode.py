@@ -72,6 +72,8 @@ class PatternPriority(object):
         return cmp((self.mode_hierarchy_index,  self.pattern_index),
                    (Other.mode_hierarchy_index, Other.pattern_index))
 
+OptionSetting         = namedtuple("OptionSetting",         ("value", "sr", "mode_name"))
+
 #______________________________________________________________________________
 # ModeDescription:
 #
@@ -168,20 +170,22 @@ class ModeDescription:
         PatternIdx = ThePattern.sm.get_id() 
         self.__deletion_info_list.append(PatternDeletion(ThePattern, PatternIdx, SourceRef(FileName, LineN), self.name))
 
-    def add_option(self, Option, Value):
+    def add_option(self, OptionName, Value, SourceReference):
         """SANITY CHECK:
                 -- which option_db are concatinated to a list
                 -- which ones are replaced
                 -- what are the values of the option_db
         """
-        assert mode_option_info_db.has_key(Option)
+        assert mode_option_info_db.has_key(OptionName)
 
-        option_info = mode_option_info_db[Option]
+        option_setting = OptionSetting(Value, SourceReference, self.name)
+
+        option_info    = mode_option_info_db[OptionName]
         if option_info.type == "list":
-            self.option_db.setdefault(Option, []).append(Value)
+            self.option_db.setdefault(OptionName, []).append(option_setting)
         else:
             if option_info.domain is not None: assert Value in option_info.domain
-            self.option_db[Option] = Value
+            self.option_db[OptionName] = option_setting
 
     def get_pattern_action_pair_list(self):
         return self.__pattern_action_pair_list
@@ -207,6 +211,41 @@ class PPC(namedtuple("PPC_tuple", ("priority", "pattern", "code_fragment"))):
     def from_PatternActionPair(ModeHierarchyIndex, PAP):
         return PPC(PatternPriority(ModeHierarchyIndex, PAP.pattern().sm.get_id()), PAP.pattern(), PAP.action())
 
+
+class IncidenceDB(dict):
+    def __init__(self, BaseModeSequence, PPC_List):
+        """Collect incidence handlers from base mode and the current mode.
+        Event handlers of the most 'base' mode come first, then the 
+        derived event handlers. 
+
+           See '__determine_base_mode_sequence(...) for details about the line-up.
+        """
+        # Special incidences from 'standard_incidence_db'
+        for incidence_name, info in standard_incidence_db.iteritems():
+            incidence_id, comment = info
+            entry = None
+            for mode_descr in BaseModeSequence:
+                code_fragment = mode_descr.incidence_by_name_db[incidence_name]
+                if code_fragment is not None and not code_fragment.is_whitespace():
+                    if entry is None: entry = code_fragment.clone()
+                    else:             entry.append_CodeFragment(code_fragment)
+
+            if entry is not None: 
+                self[incidence_id] = entry
+
+        # Pattern match incidences
+        for priority, pattern, code_fragment in PPC_List:
+            self[pattern.incidence_id()] = code_fragment
+
+        return
+
+    def dedicated_indentation_handler_required(self):
+        return    self.has_key(E_IncidenceIDs.INDENTATION_ERROR) \
+               or self.has_key(E_IncidenceIDs.INDENTATION_BAD)   \
+               or self.has_key(E_IncidenceIDs.INDENT)            \
+               or self.has_key(E_IncidenceIDs.DEDENT)            \
+               or self.has_key(E_IncidenceIDs.N_DEDENT)          \
+               or self.has_key(E_IncidenceIDs.NODENT) 
 
 #______________________________________________________________________________
 # Mode:
@@ -238,6 +277,7 @@ class Mode:
         self.sr   = Other.sr   # 'SourceRef' -- is immutable
 
         base_mode_sequence  = self.__determine_base_mode_sequence(Other, [], [])
+        assert len(base_mode_sequence) >= 1 # At least the mode itself is in there
 
         # Collect Options
         options_db          = self.__option_db_construct(base_mode_sequence)
@@ -251,13 +291,12 @@ class Mode:
         self.__pattern_list = self.__pattern_list_construct(ppc_list)
 
         # Collect Incidence-Handlers (purposely, no use of term 'event handler')
-        self.__incidence_db = self.__incidence_db_construct(base_mode_sequence, ppc_list)
+        self.__incidence_db = IncidenceDB(base_mode_sequence, ppc_list)
         
         # Default counter required?
         self.__default_character_counter_required_f = False
 
         self.__abstract_f           = self.__abstract_f_prepare(Other)
-        print "#abstract_f:", self.__abstract_f
         self.__base_mode_sequence   = base_mode_sequence
         # List of modes that have an entry into this mode
         self.__entry_mode_name_list = options_db["entry"]
@@ -294,41 +333,19 @@ class Mode:
     @property
     def incidence_db(self): return self.__incidence_db
 
-    def default_character_counter_required_f(self):
-        """If there is one pattern where the character count cannot be
-        determined from its structure or the lexeme length, then the default
-        character counter needs to be implemented. This is documented by the
-        flag below."""
-        return self.__default_character_counter_required_f 
-
-    def default_character_counter_required_f_set(self):
-        self.__default_character_counter_required_f = True
+    @property
+    def pattern_list(self): return self.__pattern_list
 
     def has_base_mode(self):
         return len(self.__base_mode_sequence) != 1
 
     def get_base_mode_sequence(self):
+        assert len(self.__base_mode_sequence) >= 1 # At least the mode itself is in there
         return self.__base_mode_sequence
 
     def get_base_mode_name_list(self):
-        return map(lambda mode: mode.name, self.__base_mode_sequence)
-
-    def get_indentation_counter_terminal_index(self):
-        """Under some circumstances a terminal code need to jump to the indentation
-           counter directly. Thus, it must be known in what terminal it is actually 
-           located.
-
-           To be on the safe side: There might be transformation, reprioritization,
-           or whatsoever. So, we search for an indentation counter here.
-
-            RETURNS: None, if no indentation counter is involved.
-                     > 0,  terminal id of the terminal that contains the indentation
-                           counter.
-        """
-        for pap in self.__pattern_action_pair_list:
-            if pap.comment == E_SpecialPatterns.INDENTATION_NEWLINE:
-                return pap.pattern().sm.get_id()
-        return None
+        assert len(self.__base_mode_sequence) >= 1 # At least the mode itself is in there
+        return [ mode.name for mode in self.__base_mode_sequence ]
 
     def __determine_base_mode_sequence(self, ModeDescr, InheritancePath, base_mode_sequence):
         """Determine the sequence of base modes. The type of sequencing determines
@@ -380,22 +397,16 @@ class Mode:
 
     def __option_db_construct(self, BaseModeSequence):
         # BaseModeSequence[-1] = mode itself
-        unique_found_db = dict(
-           (name, None) for name, info in mode_option_info_db.iteritems()
-                        if info.unique_f
-        )
         result = {}
         for mode in BaseModeSequence:
             for name, option_descr in mode_option_info_db.items():
-                if name in unique_found_db:
-                    before = unique_found_db.get(name)
-                    if before is None: 
-                        unique_found_db[name] = option_descr
-                    else:
-                        __error_double_definition_of_unique_option(self.name, before, option_descr)
-                if option_descr.type != "list": continue
-                # Need to decouple by means of 'deepcopy'
-                result.setdefault(name, []).extend(deepcopy(mode.option_db[name]))
+                if option_descr.type == "list": 
+                    # Need to decouple by means of 'deepcopy'
+                    result.setdefault(name, []).extend(deepcopy(mode.option_db[name]))
+                elif name not in result: 
+                    result[name] = mode.option_db[name]
+                else:
+                    _error_double_definition_of_unique_option(self.name, result[name], mode.option_db[name])
         return result
 
     def __counter_db_construct(self, LccSetup):
@@ -639,34 +650,6 @@ class Mode:
 
 
         return
-
-    def __incidence_db_construct(self, BaseModeSequence, PPC_List):
-        """Collect event handlers from base mode and the current mode.
-           Event handlers of the most 'base' mode come first, then the 
-           derived event handlers. 
-
-           See '__determine_base_mode_sequence(...) for details about the line-up.
-        """
-        result = {}
-
-        # Special incidences from 'standard_incidence_db'
-        for incidence_name, info in standard_incidence_db.iteritems():
-            incidence_id, comment = info
-            entry = None
-            for mode_descr in BaseModeSequence:
-                fragment = mode_descr.incidence_by_name_db[incidence_name]
-                if fragment is not None and not fragment.is_whitespace():
-                    if entry is None: entry = fragment.clone()
-                    else:             entry.append_CodeFragment(fragment)
-
-            if entry is not None: 
-                result[incidence_id] = entry
-
-        # Pattern match incidences
-        for priority, pattern, code_fragment in PPC_List:
-            result[pattern.incidence_id()] = code_fragment
-
-        return result
 
     def __pattern_action_pairs_collect(self, BaseModeSequence):
         """Collect patterns of all inherited modes. Patterns are like virtual functions
@@ -1168,7 +1151,8 @@ def __validate_required_token_policy_queue(Name, fh, pos):
               DontExitF=True, SuppressCode=NotificationDB.warning_on_no_token_queue) 
     fh.seek(pos_before)
 
-def __error_double_definition_of_unique_option(ModeName, OptionBefore, OptionNow):
+def _error_double_definition_of_unique_option(ModeName, OptionBefore, OptionNow):
+    print "#DICT:", OptionBefore.__dict__.keys()
     error_msg("Hierarchie of mode '%s' contains more than one specification of\n" % ModeName + \
               "an %s. First one here and second one\n" % OptionBefore.name, \
               OptionNow.fh, DontExitF=True, WarningF=False)

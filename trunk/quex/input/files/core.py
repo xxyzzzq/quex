@@ -35,7 +35,8 @@ import quex.input.files.mode               as mode
 import quex.input.files.token_type         as token_type
 import quex.input.files.code_fragment      as code_fragment
 import quex.input.regular_expression.core  as regular_expression
-from   quex.blackboard                     import setup as Setup
+from   quex.blackboard                     import setup as Setup, \
+                                                  SourceRef
 from   quex.input.setup                    import NotificationDB
 from   quex.engine.generator.action_info   import UserCodeFragment
 

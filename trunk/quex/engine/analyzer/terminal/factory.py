@@ -3,7 +3,7 @@ from   quex.engine.analyzer.terminal.skip                import TerminalSkipChar
 from   quex.engine.analyzer.terminal.skip_range          import TerminalSkipRange
 from   quex.engine.analyzer.terminal.skip_nested_range   import TerminalSkipNestedRange
 from   quex.engine.analyzer.terminal.indentation_handler import TerminalIndentationHandler
-from   quex.engine.analyzer.door_id_address_label        import Label
+from   quex.engine.analyzer.door_id_address_label        import Label, DoorID
 from   quex.engine.generator.action_info                 import CodeFragment
 
 import quex.output.cpp.counter_for_pattern         as     counter_for_pattern
@@ -21,9 +21,9 @@ class TerminalStateFactory:
         self.line_column_count_db, \
         self.default_counter_f     = TerminalStateFactory.__prepare_line_column_count_db(PatternList)
 
-        self.incidence_db          = IncidenceDb
+        self.incidence_db = IncidenceDb
 
-        dedicated_indentation_handler_f = TerminalStateFactory.dedicated_indentation_handler_required(IncidenceDb)
+        dedicated_indentation_handler_f = IncidenceDb.dedicated_indentation_handler_required()
 
         self.code_dedicated_indentation_handler = self.get_code_indentation_handler(ModeName, IndentationSupportF, 
                                                                                     dedicated_indentation_handler_f)
@@ -52,15 +52,6 @@ class TerminalStateFactory:
             result[pattern.incidence_id()] = count_text
 
         return result, default_counter_f
-
-    @staticmethod
-    def dedicated_indentation_handler_required(IncidenceDb):
-        return    IncidenceDb.has_key(E_IncidenceIDs.INDENTATION_ERROR) \
-               or IncidenceDb.has_key(E_IncidenceIDs.INDENTATION_BAD)   \
-               or IncidenceDb.has_key(E_IncidenceIDs.INDENT)            \
-               or IncidenceDb.has_key(E_IncidenceIDs.DEDENT)            \
-               or IncidenceDb.has_key(E_IncidenceIDs.N_DEDENT)          \
-               or IncidenceDb.has_key(E_IncidenceIDs.NODENT) 
 
     def do(self, IncidenceId, TheCodeFragment):
         if   isinstance(IncidenceId, (int, long)):              

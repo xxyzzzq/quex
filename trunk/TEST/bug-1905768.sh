@@ -7,7 +7,7 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i error.qx -o Simple
+quex -i error.qx -o Simple --debug-exception
 cat Simple.cpp | awk ' /analyzer_function/ { print; } '
 
 # cleansening

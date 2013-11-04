@@ -3,7 +3,7 @@ from   quex.engine.misc.file_in         import get_file_content_or_die, \
                                                make_safe_identifier
 
 from   quex.engine.misc.string_handling import blue_print
-from   quex.blackboard  import setup as Setup
+from   quex.blackboard  import setup as Setup, E_IncidenceIDs
 import quex.blackboard  as blackboard
 from   quex.DEFINITIONS import QUEX_PATH, QUEX_VERSION
 import time
@@ -26,8 +26,8 @@ def do(ModeDB):
     entry_handler_active_f = False
     exit_handler_active_f = False
     for mode in ModeDB.values():
-        if len(mode.incidence_db[E_IncidenceIDs.MODE_ENTRY]) != 0: entry_handler_active_f = True
-        if len(mode.incidence_db[E_IncidenceIDs.MODE_EXIT]) != 0:  exit_handler_active_f = True
+        entry_handler_active_f |= mode.incidence_db.has_key(E_IncidenceIDs.MODE_ENTRY)
+        exit_handler_active_f  |= mode.incidence_db.has_key(E_IncidenceIDs.MODE_EXIT)
 
     # Buffer filler converter (0x0 means: no buffer filler converter)
     converter_new_str = "#   define QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW " 
