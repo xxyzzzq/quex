@@ -39,6 +39,7 @@ from   quex.blackboard import setup as Setup, \
                               SourceRef, \
                               E_SpecialPatterns, \
                               E_IncidenceIDs, \
+                              E_IncidenceIDs_Subset_Terminals, \
                               standard_incidence_db, \
                               mode_option_info_db 
 
@@ -256,6 +257,7 @@ class Mode:
         self.__default_character_counter_required_f = False
 
         self.__abstract_f           = self.__abstract_f_prepare(Other)
+        print "#abstract_f:", self.__abstract_f
         self.__base_mode_sequence   = base_mode_sequence
         # List of modes that have an entry into this mode
         self.__entry_mode_name_list = options_db["entry"]
@@ -756,17 +758,15 @@ class Mode:
         self.check_indentation_setup()
 
     def check_special_incidence_outrun(self, ErrorCode):
-        for pap in self.get_pattern_action_pair_list():
-            if pap.comment not in E_SpecialPatterns: continue
-            ReferenceSM = pap.pattern().sm 
+        for pattern in self.__pattern_list:
+            if pattern.incidence_id() not in E_IncidenceIDs_Subset_Terminals: continue
 
-            for other_pap in self.get_pattern_action_pair_list():
-                sm = other_pap.pattern().sm
+            for other_pattern in self.get_pattern_action_pair_list():
                 # No 'commonalities' between self and self shall be checked
-                if ReferenceSM.get_id() >= sm.get_id(): continue
+                if pattern.incidence_id() >= other_pattern.incidence_id(): continue
 
-                if outrun_checker.do(ReferenceSM, sm):
-                    __error_message(other_pap, pap, ExitF=True, 
+                if outrun_checker.do(pattern.sm, other_pattern.sm):
+                    __error_message(other_pattern, pattern, ExitF=True, 
                                     ThisComment  = "has lower priority but",
                                     ThatComment  = "may outrun",
                                     SuppressCode = ErrorCode)
@@ -777,30 +777,28 @@ class Mode:
            be highly confusing.
         """
         global special_pattern_list
-        for pap in self.get_pattern_action_pair_list():
-            if pap.comment not in E_SpecialPatterns: continue
-            ReferenceSM = pap.pattern().sm
+        for pattern in self.__pattern_list:
+            if pattern.incidence_id() not in E_SpecialPatterns: continue
 
-            for other_pap in self.get_pattern_action_pair_list():
-                sm = other_pap.pattern().sm
-                if   ReferenceSM.get_id() <= sm.get_id(): continue
-                elif not superset_check.do(ReferenceSM, sm): continue
+            for other_pattern in self.__pattern_list:
+                if   pattern.incidence_id() <= other_pattern.incidence_id(): continue
+                elif not superset_check.do(pattern.sm, other_pattern.sm): continue
 
-                __error_message(other_pap, pap, ExitF=True, 
+                __error_message(other_pattern, pattern, ExitF=True, 
                                 ThisComment  = "has higher priority and",
                                 ThatComment  = "matches a subset of",
                                 SuppressCode = ErrorCode)
 
     def check_dominated_pattern(self, ErrorCode):
-        for pap in self.get_pattern_action_pair_list():
-            acceptance_id  = pap.pattern().sm.get_id()
+        for pattern in self.__pattern_list:
+            incidence_id  = pattern.incidence_id()
 
-            for other_pap in self.get_pattern_action_pair_list():
-                if other_pap.pattern().sm.get_id() >= acceptance_id: 
+            for other_pattern in self.__pattern_list:
+                if other_pattern.incidence_id() >= incidence_id: 
                     continue
-                if superset_check.do(other_pap.pattern(), pap.pattern()):
-                    file_name, line_n = other_pap.action().sr
-                    __error_message(other_pap, pap, 
+                if superset_check.do(other_pattern, pattern):
+                    file_name, line_n = other_pattern.action().sr
+                    __error_message(other_pattern, pattern, 
                                     ThisComment  = "matches a superset of what is matched by",
                                     EndComment   = "The former has precedence and the latter can never match.",
                                     ExitF        = True, 
@@ -808,19 +806,19 @@ class Mode:
 
     def check_match_same(self, ErrorCode):
         """Special patterns shall never match on some common lexemes."""
-        for pap in self.get_pattern_action_pair_list():
-            if pap.comment not in E_SpecialPatterns: continue
+        for pattern in self.__pattern_list:
+            if pattern.incidence_id() not in E_IncidenceIDs_Subset_Terminals: continue
 
-            A = pap.pattern().sm
-            for other_pap in self.get_pattern_action_pair_list():
+            A = pattern.sm
+            for other_pattern in self.get_pattern_action_pair_list():
 
-                B  = other_pap.pattern().sm
-                if   other_pap.comment not in E_SpecialPatterns: continue
-                elif A.get_id() == B.get_id(): continue
+                B = other_pattern.sm
+                if   other_pap.incidence_id() not in E_SpecialPatterns: continue
+                elif A.incidence_id() == B.incidence_id(): continue
 
                 # A superset of B, or B superset of A => there are common matches.
                 if same_check.do(A, B):
-                    __error_message(other_pap, pap, 
+                    __error_message(other_pattern, pattern, 
                                     ThisComment  = "matches on some common lexemes as",
                                     ThatComment  = "",
                                     ExitF        = True,
@@ -829,18 +827,19 @@ class Mode:
     def check_low_priority_outruns_high_priority_pattern(self):
         """Warn when low priority patterns may outrun high priority patterns.
         """
-        pattern_action_pair_list = self.get_pattern_action_pair_list()
+        pattern_list = copy(self.__pattern_list) # No 'deepcopy' its just about sorting
         # Sort by acceptance_id
-        pattern_action_pair_list.sort(key=lambda x: x.pattern().sm.get_id())
-        for i, pap_i in enumerate(pattern_action_pair_list):
-            sm_high = pap_i.pattern().sm
-            for pap_k in islice(pattern_action_pair_list, i+1, None):
-                # 'pap_k' has a higher id than 'pap_i'. Thus, it has a lower
+        pattern_list.sort(key=lambda pattern: pattern.incidence_id())
+
+        for i, pattern_i in enumerate(pattern):
+            sm_high = pattern_i.sm
+            for pattern_k in islice(pattern_list, i+1, None):
+                # 'pattern_k' has a higher id than 'pattern_i'. Thus, it has a lower
                 # priority. Check for outrun.
-                sm_low = pap_k.pattern().sm
+                sm_low = pattern_k.pattern().sm
                 if outrun_checker.do(sm_high, sm_low):
-                    file_name, line_n = pap_i.action().sr
-                    __error_message(pap_k, pap_i, ExitF=False, ThisComment="may outrun")
+                    file_name, line_n = pattern_i.action().sr
+                    __error_message(pattern_k, pattern_i, ExitF=False, ThisComment="may outrun")
 
     def check_indentation_setup(self):
         # (*) Indentation: Newline Pattern and Newline Suppressor Pattern

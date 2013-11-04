@@ -116,6 +116,7 @@ def parse_section(fh):
                           blackboard.initial_mode.sr.file_name,
                           blackboard.initial_mode.sr.line_n)
         
+             
             blackboard.initial_mode = UserCodeFragment(mode_name, SourceRef.from_FileHandle(fh))
             return
 
