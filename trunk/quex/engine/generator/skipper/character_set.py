@@ -2,7 +2,8 @@ from   quex.engine.generator.base                 import LoopGenerator
 from   quex.engine.analyzer.door_id_address_label import DoorID
 #from  quex.engine.analyzer.state.core            import TerminalState
 import quex.engine.analyzer.core                  as     analyzer_generator
-from   quex.input.files.counter_db                import CountCmdInfo
+from   quex.input.files.counter_db                import CountCmdInfo, \
+                                                         CounterCodeData
 from   quex.blackboard                            import setup as Setup
 
 def do():
@@ -67,6 +68,7 @@ def do():
         assert isinstance(CharacterSet, NumberSet)
         self.analyzer = None # Requires 'prepare_analyzer()'
 
+        self.ccd = CounterCoderData(CounterDb, CharacterSet, LanguageDB.INPUT_P)
         # If 'column_count_per_chunk' is not None, then reference positions may 
         # be used for counting (i.e. "column_n += (input_p - reference_p) * C").
         # This avoids 'column_n += C' at every single step.
@@ -84,7 +86,8 @@ def do():
                                                                   LanguageDB.INPUT_P)
         # on_entry/on_exit: 
         #
-        # Actions to be performed at entry into the loop and when exiting.
+        # Actions to be performed at entry into the counting code fragment and 
+        # when exiting.
         # 
         self.on_entry, \
         self.on_exit   = CounterDb.get_entry_exit_commands(LanguageDB.INPUT_P,
@@ -177,7 +180,6 @@ def do():
             state.transition_map.fill_gaps(door_id_on_exit)
 
         return analyzer
-
         
     def get_code(self):
         # Build the skipper _______________________________________________________

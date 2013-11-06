@@ -311,13 +311,13 @@ class LoopGenerator(Generator):
 
         # Implement the core loop _________________________________________________
         tm,                    \
-        column_count_per_chunk = CounterDB.get_count_command_map(IteratorName, CharacterSet, ReloadF)
+        column_count_per_chunk = CounterDB.get_count_command_map(CharacterSet)
 
-        on_entry, \
-        on_exit  = CounterDB.get_entry_exit_commands(column_count_per_chunk)
+        on_entry,              \
+        on_exit                = CounterDB.get_entry_exit_commands(column_count_per_chunk)
 
-        before_reload_action, \
-        after_reload_action   = CounterDB.get_reload_commands(IteratorName, column_count_per_chunk, ReloadF)
+        before_reload_action,  \
+        after_reload_action    = CounterDB.get_reload_commands(IteratorName, column_count_per_chunk, ReloadF)
 
         if OnExit is None:
             assert not tm.has_action_id(E_IncidenceIDs.EXIT_LOOP)

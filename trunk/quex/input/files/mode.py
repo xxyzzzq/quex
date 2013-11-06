@@ -3,9 +3,9 @@ from   quex.input.setup                                import NotificationDB
 import quex.input.regular_expression.core              as     regular_expression
 from   quex.input.regular_expression.construct         import Pattern           
 import quex.input.files.mode_option                    as     mode_option
+from   quex.input.files.mode_option                    import OptionDB
 import quex.input.files.code_fragment                  as     code_fragment
 from   quex.input.files.counter_db                     import CounterDB
-from   quex.input.files.counter_setup                  import LineColumnCounterSetup_Default
 import quex.input.files.consistency_check              as     consistency_check
 import quex.engine.generator.skipper.indentation_counter as   indentation_counter
 from   quex.engine.analyzer.door_id_address_label      import Label
@@ -40,8 +40,7 @@ from   quex.blackboard import setup as Setup, \
                               E_SpecialPatterns, \
                               E_IncidenceIDs, \
                               E_IncidenceIDs_Subset_Terminals, \
-                              standard_incidence_db, \
-                              mode_option_info_db 
+                              standard_incidence_db
 
 from   copy        import deepcopy
 from   collections import namedtuple
@@ -71,8 +70,6 @@ class PatternPriority(object):
     def __cmp__(self, Other):
         return cmp((self.mode_hierarchy_index,  self.pattern_index),
                    (Other.mode_hierarchy_index, Other.pattern_index))
-
-OptionSetting         = namedtuple("OptionSetting",         ("value", "sr", "mode_name"))
 
 #______________________________________________________________________________
 # ModeDescription:
@@ -104,22 +101,19 @@ OptionSetting         = namedtuple("OptionSetting",         ("value", "sr", "mod
 #    .deletion_info_list -- Information about deletion of patterns.
 #______________________________________________________________________________
 class ModeDescription:
-    registry_db = {}  # map:  mode name --> ModeDescription object
-
     def __init__(self, Name, Filename, LineN):
         # Register ModeDescription at the mode database
-        ModeDescription.registry_db[Name] = self
+        blackboard.mode_description_db[Name] = self
         self.name  = Name
         self.sr    = SourceRef(Filename, LineN)
 
         # (*) List of modes from which this mode is derived.
         self.derived_from_list = []
 
-        # (*) Options (set their default value)
-        #
-        # Not only copy the reference, copy the default value object!
-        self.option_db = dict((name, deepcopy(descr.default_value))
-                            for name, descr in mode_option_info_db.iteritems())
+        # (*) Options 
+        #     (The option's default value is only set, if after collecting
+        #      in the inheritance tree, nothing is set.)
+        self.option_db = OptionDB()
 
         # (*) Pattern-Action Pairs:
         #
@@ -169,23 +163,6 @@ class ModeDescription:
         """
         PatternIdx = ThePattern.sm.get_id() 
         self.__deletion_info_list.append(PatternDeletion(ThePattern, PatternIdx, SourceRef(FileName, LineN), self.name))
-
-    def add_option(self, OptionName, Value, SourceReference):
-        """SANITY CHECK:
-                -- which option_db are concatinated to a list
-                -- which ones are replaced
-                -- what are the values of the option_db
-        """
-        assert mode_option_info_db.has_key(OptionName)
-
-        option_setting = OptionSetting(Value, SourceReference, self.name)
-
-        option_info    = mode_option_info_db[OptionName]
-        if option_info.type == "list":
-            self.option_db.setdefault(OptionName, []).append(option_setting)
-        else:
-            if option_info.domain is not None: assert Value in option_info.domain
-            self.option_db[OptionName] = option_setting
 
     def get_pattern_action_pair_list(self):
         return self.__pattern_action_pair_list
@@ -280,11 +257,11 @@ class Mode:
         assert len(base_mode_sequence) >= 1 # At least the mode itself is in there
 
         # Collect Options
-        options_db          = self.__option_db_construct(base_mode_sequence)
+        options_db = OptionDB.from_BaseModeSequence(base_mode_sequence)
 
         # Determine Line/Column Counter Database
-        self.__counter_db        = self.__counter_db_construct(options_db.get("counter"))
-        self.__indentation_setup = options_db.get("indentation")
+        self.__counter_db        = CounterDB(options_db.value("counter"))
+        self.__indentation_setup = options_db.value("indentation")
 
         # Build a 'PPC list' (see class 'PPC' above)
         ppc_list            = self.__ppc_list_construct(base_mode_sequence, options_db)
@@ -293,28 +270,29 @@ class Mode:
         # Collect Incidence-Handlers (purposely, no use of term 'event handler')
         self.__incidence_db = IncidenceDB(base_mode_sequence, ppc_list)
         
-        # Default counter required?
-        self.__default_character_counter_required_f = False
-
-        self.__abstract_f           = self.__abstract_f_prepare(Other)
+        # (*) Misc
+        self.__abstract_f           = self.__abstract_f_prepare(Other.option_db)
         self.__base_mode_sequence   = base_mode_sequence
-        # List of modes that have an entry into this mode
-        self.__entry_mode_name_list = options_db["entry"]
-        # List of modes to which this mode can exit
-        self.__exit_mode_name_list  = options_db["exit"]
+        self.__entry_mode_name_list = options_db.value("entry") # Those can enter this mode.
+        self.__exit_mode_name_list  = options_db.value("exit")  # This mode can exit to those.
 
-    def __abstract_f_prepare(self, Other):
+    def __abstract_f_prepare(self, OriginalOptionDb):
         """If the mode has incidences and/or patterns defined it is free to be 
         abstract or not. If neither one is defined, it cannot be implemented and 
         therefore MUST be abstract.
         """
-        result = (Other.option_db["inheritable"] == "only") # Only to be derived from?
+        abstract_f = (OriginalOptionDb.value("inheritable") == "only")
+
         if len(self.incidence_db) != 0 or len(self.pattern_list) != 0:
-            return result
-        elif result == False:
+            return abstract_f
+
+        elif abstract_f == False:
             error_msg("Mode without pattern and event handlers needs to be 'inheritable only'.\n" + \
-                      "<inheritable: only> has been added automatically.", self.sr.file_name, self.sr.line_n,  DontExitF=True)
-        return True
+                      "<inheritable: only> has been set automatically.", self.sr.file_name, self.sr.line_n,  
+                      DontExitF=True)
+            abstract_f = True # Change to 'inheritable: only', i.e. abstract_f == True.
+
+        return abstract_f
 
     def abstract_f(self):           return self.__abstract_f
 
@@ -381,38 +359,19 @@ class Mode:
         #base_mode_name_list_reversed.reverse()
         for name in base_mode_name_list_reversed:
             # -- does mode exist?
-            verify_word_in_list(name, ModeDescription.registry_db.keys(),
+            verify_word_in_list(name, blackboard.mode_description_db.keys(),
                                 "Mode '%s' inherits mode '%s' which does not exist." % (ModeDescr.name, name),
                                 ModeDescr.sr.file_name, ModeDescr.sr.line_n)
 
             if name in map(lambda m: m.name, base_mode_sequence): continue
 
             # -- grab the mode description
-            mode_descr = ModeDescription.registry_db[name]
+            mode_descr = blackboard.mode_description_db[name]
             self.__determine_base_mode_sequence(mode_descr, InheritancePath + [ModeDescr.name], base_mode_sequence)
 
         base_mode_sequence.append(ModeDescr)
 
         return base_mode_sequence
-
-    def __option_db_construct(self, BaseModeSequence):
-        # BaseModeSequence[-1] = mode itself
-        result = {}
-        for mode in BaseModeSequence:
-            for name, option_descr in mode_option_info_db.items():
-                if option_descr.type == "list": 
-                    # Need to decouple by means of 'deepcopy'
-                    result.setdefault(name, []).extend(deepcopy(mode.option_db[name]))
-                elif name not in result: 
-                    result[name] = mode.option_db[name]
-                else:
-                    _error_double_definition_of_unique_option(self.name, result[name], mode.option_db[name])
-        return result
-
-    def __counter_db_construct(self, LccSetup):
-        if LccSetup is None:
-            LccSetup = LineColumnCounterSetup_Default()
-        return CounterDB(LccSetup)
 
     def __ppc_list_construct(self, BaseModeSequence, OptionsDb):
         """(*) Collect Pattern Action Pairs in 'ppc_list'
@@ -435,11 +394,11 @@ class Mode:
         # (*) Collect pattern recognizers and several 'incidence detectors' in 
         #     state machine lists. When the state machines accept this triggers
         #     an incidence which is associated with an entry in the incidence_db.
-        self.__prepare_skip(ppc_list, OptionsDb.get("skip"), MHI=-4)
-        self.__prepare_skip_range(ppc_list, OptionsDb.get("skip_range"), MHI=-3)
-        self.__prepare_skip_nested_range(ppc_list, OptionsDb.get("skip_nested_range"), MHI=-3)
+        self.__prepare_skip(ppc_list, OptionsDb.value("skip"), MHI=-4)
+        self.__prepare_skip_range(ppc_list, OptionsDb.value("skip_range"), MHI=-3)
+        self.__prepare_skip_nested_range(ppc_list, OptionsDb.value("skip_nested_range"), MHI=-3)
 
-        self.__prepare_indentation_counter(ppc_list, OptionsDb.get("indentation"), MHI=-1)
+        self.__prepare_indentation_counter(ppc_list, OptionsDb.value("indentation"), MHI=-1)
 
         # (*) Delete and reprioritize
         self.__perform_deletion(ppc_list, BaseModeSequence) 
@@ -722,7 +681,7 @@ class Mode:
     def check_consistency(self):
         # (*) Modes that are inherited must allow to be inherited
         for base_mode in self.__base_mode_sequence:
-            if base_mode.option_db["inheritable"] == "no":
+            if base_mode.option_db.value("inheritable") == "no":
                 error_msg("mode '%s' inherits mode '%s' which is not inheritable." % \
                           (self.name, base_mode.name), self.sr.file_name, self.sr.line_n)
 
@@ -894,7 +853,7 @@ class Mode:
 
 def parse(fh):
     """This function parses a mode description and enters it into the 
-       'ModeDescription.registry_db'. Once all modes are parsed
+       'blackboard.mode_description_db'. Once all modes are parsed
        they can be translated into 'real' modes and are located in
        'blackboard.mode_db'. 
     """
@@ -924,7 +883,7 @@ def finalize():
        be translated into 'real' modes.
     """
     # (*) Translate each mode description int a 'real' mode
-    for name, mode_descr in ModeDescription.registry_db.iteritems():
+    for name, mode_descr in blackboard.mode_description_db.iteritems():
         blackboard.mode_db[name] = Mode(mode_descr)
 
     if blackboard.initial_mode is None:
@@ -1151,9 +1110,3 @@ def __validate_required_token_policy_queue(Name, fh, pos):
               DontExitF=True, SuppressCode=NotificationDB.warning_on_no_token_queue) 
     fh.seek(pos_before)
 
-def _error_double_definition_of_unique_option(ModeName, OptionBefore, OptionNow):
-    print "#DICT:", OptionBefore.__dict__.keys()
-    error_msg("Hierarchie of mode '%s' contains more than one specification of\n" % ModeName + \
-              "an %s. First one here and second one\n" % OptionBefore.name, \
-              OptionNow.fh, DontExitF=True, WarningF=False)
-    error_msg("at this place.", OptionBefore.fh)
