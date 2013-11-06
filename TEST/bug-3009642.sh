@@ -11,11 +11,11 @@ cd $bug/
 echo "Check whether the begin of line support flag is set propperly."
 echo 
 echo "(1) A grammar with a begin of line pre-condition."
-quex -i with-begin-of-line.qx -o Simple
+quex -i with-begin-of-line.qx -o Simple --debug-exception
 grep SUPPORT_BEGIN_OF_LINE Simple-configuration
 
 echo "(2) A grammar without a begin of line pre-condition."
-quex -i without-begin-of-line.qx -o Simple
+quex -i without-begin-of-line.qx -o Simple --debug-exception
 grep SUPPORT_BEGIN_OF_LINE Simple-configuration
 
 rm Simple*

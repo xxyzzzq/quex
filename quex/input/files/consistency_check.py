@@ -120,7 +120,6 @@ def __entry_exit_transitions(mode, mode_name_list):
     FileName = mode.sr.file_name
     LineN    = mode.sr.line_n
     for mode_name in mode.exit_mode_name_list:
-
         verify_word_in_list(mode_name, mode_name_list,
                             "Mode '%s' allows entry from\nmode '%s' but no such mode exists." % \
                             (mode.name, mode_name), FileName, LineN)

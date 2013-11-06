@@ -201,55 +201,28 @@ class SourceRef(namedtuple("SourceRef_tuple", ("file_name", "line_n"))):
         return SourceRef(Fh.name, get_current_line_info_number(Fh))
 
 #-----------------------------------------------------------------------------------------
+# mode_description_db: storing the mode information into a dictionary:
+#            key  = mode name
+#            item = ModeDescription object
+#
+# ModeDescription-s are the direct product of parsing. They are later translated into
+# Mode-s.
+#-----------------------------------------------------------------------------------------
+mode_description_db = {}
+#-----------------------------------------------------------------------------------------
 # mode_db: storing the mode information into a dictionary:
 #            key  = mode name
 #            item = Mode object
+#
+# A Mode is a more 'fermented' container of information about a mode. It is based on
+# a ModeDescription.
 #-----------------------------------------------------------------------------------------
 mode_db = {}
-
 
 #-----------------------------------------------------------------------------------------
 # initial_mode: mode in which the lexcial analyser shall start
 #-----------------------------------------------------------------------------------------
 initial_mode = None
-
-#-----------------------------------------------------------------------------------------
-# mode_option_info_db: Information about properties of mode options.
-#-----------------------------------------------------------------------------------------
-class ModeOptionInfo:
-    """A ModeOptionInfo is an element of mode_option_info_db."""
-    def __init__(self, Type, Domain=None, Default=-1, UniqueF=False, Name=""):
-        # self.name = Option see comment above
-        self.type          = Type
-        self.domain        = Domain
-        self.default_value = Default
-        self.unique_f      = UniqueF
-        self.name          = Name
-
-mode_option_info_db = {
-   # -- a mode can be inheritable or not or only inheritable. if a mode
-   #    is only inheritable it is not printed on its on, only as a base
-   #    mode for another mode. default is 'yes'
-   "inheritable":       ModeOptionInfo("single", ["no", "yes", "only"], Default="yes"),
-   # -- a mode can restrict the possible modes to exit to. this for the
-   #    sake of clarity. if no exit is explicitly mentioned all modes are
-   #    possible. if it is tried to transit to a mode which is not in
-   #    the list of explicitly stated exits, an error occurs.
-   #    entrys work respectively.
-   "exit":              ModeOptionInfo("list", Default=[]),
-   "entry":             ModeOptionInfo("list", Default=[]),
-   # -- a mode can restrict the exits and entrys explicitly mentioned
-   #    then, a derived mode cannot add now exits or entrys
-   "restrict":          ModeOptionInfo("list", ["exit", "entry"], Default=[]),
-   # -- a mode can have 'skippers' that effectivels skip ranges that are out of interest.
-   "skip":              ModeOptionInfo("list", Default=[]), # "multiple: RE-character-set
-   "skip_range":        ModeOptionInfo("list", Default=[]), # "multiple: RE-character-string RE-character-string
-   "skip_nested_range": ModeOptionInfo("list", Default=[]), # "multiple: RE-character-string RE-character-string
-   # -- indentation setup information
-   "indentation":       ModeOptionInfo("single", Default=None, UniqueF=True, Name="indentation specification"),
-   # --line/column counter information
-   "counter":           ModeOptionInfo("single", Default=None, UniqueF=True, Name="line and column count specification"),
-}
 
 #-----------------------------------------------------------------------------------------
 # standard_incidence_db: Stores names of event handler functions as keys and their meaning

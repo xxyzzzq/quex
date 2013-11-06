@@ -1,4 +1,4 @@
 error.qx:4:warning: Mode without pattern and event handlers needs to be 'inheritable only'.
-error.qx:4:warning: <inheritable: only> has been added automatically.
-consistency check: There is no mode that can be applied---all existing modes are 'inheritable only'.
+error.qx:4:warning: <inheritable: only> has been set automatically.
+consistency check: There is no mode that can be implemented---all existing modes are 'inheritable only'.
 consistency check: modes are = 'START'

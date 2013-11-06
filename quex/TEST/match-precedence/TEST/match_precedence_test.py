@@ -11,7 +11,7 @@ import quex.blackboard                   as blackboard
 from   StringIO import StringIO
 
 def do(TxtList, Op):
-    mode.ModeDescription.registry_db.clear()
+    blackboard.mode_description_db.clear()
     for txt in TxtList:
         sh = StringIO(txt)
         sh.name = "<string>"
