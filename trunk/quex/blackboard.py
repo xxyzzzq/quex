@@ -84,14 +84,12 @@ E_Count = Enum("VIRGIN",
 
 E_Commonality = Enum("NONE", "BOTH", "A_IN_B", "B_IN_A")
 
-E_SpecialPatterns = Enum(
-                         "_DEBUG_PatternNames")
-
 E_IncidenceIDs = Enum(
 # Incidences encompass 'pattern acceptance events' and any other incidences
 # mentioned below. IncidenceID-s are keys to the standard_incidence_db.
     "AFTER_MATCH",
     "BIPD_TERMINATED",
+    "CODEC_ERROR",
     "DEDENT",
     "END_OF_STREAM",
     "EXIT_LOOP",
@@ -139,6 +137,14 @@ E_IncidenceIDs_Subset_Terminals = [
     E_IncidenceIDs.SUPPRESSED_INDENTATION_NEWLINE,
 ]
 
+E_IncidenceIDs_Subset_Special = [
+    E_IncidenceIDs.INDENTATION_HANDLER,
+    E_IncidenceIDs.SKIP, 
+    E_IncidenceIDs.SKIP_NESTED_RANGE, 
+    E_IncidenceIDs.SKIP_RANGE, 
+    E_IncidenceIDs.SKIP_RANGE_OPEN,
+]
+
 E_MapImplementationType = Enum("STATE_MACHINE_TRIVIAL", 
                                "STATE_MACHINE",
                                "PLAIN_MAP", 
@@ -156,9 +162,6 @@ E_DoorIdIndex = Enum("DROP_OUT",
                      "BIPD_RETURN", 
                      "GLOBAL_STATE_ROUTER", 
                      "GLOBAL_END_OF_PRE_CONTEXT_CHECK", 
-                     "GLOBAL_TERMINAL_ROUTER", 
-                     "GLOBAL_TERMINAL_END_OF_FILE", 
-                     "GLOBAL_TERMINAL_FAILURE",
                      "GLOBAL_REENTRY",
                      "GLOBAL_REENTRY_PREPARATION",
                      "GLOBAL_REENTRY_PREPARATION_2",
@@ -170,9 +173,11 @@ E_Commands = Enum("Accepter",
                   "ColumnCountGridAddWithReferenceP",
                   "ColumnCountReferencePDeltaAdd",
                   "ColumnCountReferencePSet",
-                  #"GotoDoorId",
+                  "GotoDoorId",
+                  "GotoDoorIdIfInputPLexemeEnd",
                   "InputPDecrement",
                   "InputPDereference",
+                  "InputPToLexemeStartP",
                   "InputPIncrement",
                   "LexemeResetTerminatingZero",
                   "LexemeStartToReferenceP",
@@ -230,6 +235,7 @@ initial_mode = None
 #-----------------------------------------------------------------------------------------
 standard_incidence_db = {
     # key word:              event id:                            comment:
+    "on_codec_error":        (E_IncidenceIDs.CODEC_ERROR,         "On codec error of a mode."),
     "on_entry":              (E_IncidenceIDs.MODE_ENTRY,          "On entry of a mode."),
     "on_exit":               (E_IncidenceIDs.MODE_EXIT,           "On exit of a mode."),
     "on_indent":             (E_IncidenceIDs.INDENT,              "On opening indentation."),

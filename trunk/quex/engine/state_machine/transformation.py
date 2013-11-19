@@ -12,7 +12,7 @@ from   quex.blackboard                                 import setup as Setup
 
 sys.path.append(os.environ["QUEX_PATH"])
 
-def do_state_machine(X, TrafoInfo=None):
+def do_state_machine(X):
     """Transforms a given state machine from 'Unicode Driven' to another
        character encoding type.
     
@@ -27,8 +27,7 @@ def do_state_machine(X, TrafoInfo=None):
     assert isinstance(X, StateMachine)
     assert X.is_DFA_compliant()
 
-    if TrafoInfo is None:
-        TrafoInfo = Setup.buffer_codec_transformation_info
+    TrafoInfo = Setup.buffer_codec_transformation_info
 
     if TrafoInfo is None: 
         return True, X
@@ -39,7 +38,7 @@ def do_state_machine(X, TrafoInfo=None):
         else:                                  assert False
     
     # Pre-condition SM is transformed inside the member function
-    complete_f = X.transform(TrafoInfo)
+    complete_f = X.transform(TrafoInfo) # All uncovered characters => 'DoorID.incidence(E_IncidenceIDs.CODEC_ERROR)'
     return complete_f, __DFA(X)
 
 def __DFA(SM):

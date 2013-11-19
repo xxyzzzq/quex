@@ -37,9 +37,9 @@ from   quex.engine.misc.file_in                        import EndOfStreamExcepti
 import quex.blackboard as blackboard
 from   quex.blackboard import setup as Setup, \
                               SourceRef, \
-                              E_SpecialPatterns, \
                               E_IncidenceIDs, \
                               E_IncidenceIDs_Subset_Terminals, \
+                              E_IncidenceIDs_Subset_Special, \
                               standard_incidence_db
 
 from   copy        import deepcopy
@@ -190,13 +190,16 @@ class PPC(namedtuple("PPC_tuple", ("priority", "pattern", "code_fragment"))):
 
 
 class IncidenceDB(dict):
-    def __init__(self, BaseModeSequence, PPC_List):
+    def __init__(self, BaseModeSequence=None, PPC_List=None):
         """Collect incidence handlers from base mode and the current mode.
         Event handlers of the most 'base' mode come first, then the 
         derived event handlers. 
 
            See '__determine_base_mode_sequence(...) for details about the line-up.
         """
+        if BaseModeSequence is None:
+            return
+
         # Special incidences from 'standard_incidence_db'
         for incidence_name, info in standard_incidence_db.iteritems():
             incidence_id, comment = info
@@ -215,6 +218,13 @@ class IncidenceDB(dict):
             self[pattern.incidence_id()] = code_fragment
 
         return
+
+    @staticmethod
+    def from_iterable(Iterable):
+        result = IncidenceDB()
+        for incidence_id, entry in Iterable:
+            result[incidence_id] = entry
+        return result
 
     def dedicated_indentation_handler_required(self):
         return    self.has_key(E_IncidenceIDs.INDENTATION_ERROR) \
@@ -701,7 +711,7 @@ class Mode:
 
     def check_special_incidence_outrun(self, ErrorCode):
         for pattern in self.__pattern_list:
-            if pattern.incidence_id() not in E_IncidenceIDs_Subset_Terminals: continue
+            if pattern.incidence_id() not in E_IncidenceIDs_Subset_Special: continue
 
             for other_pattern in self.get_pattern_action_pair_list():
                 # No 'commonalities' between self and self shall be checked
@@ -720,11 +730,11 @@ class Mode:
         """
         global special_pattern_list
         for pattern in self.__pattern_list:
-            if pattern.incidence_id() not in E_SpecialPatterns: continue
+            if pattern.incidence_id() not in E_IncidenceIDs_Subset_Special: continue
 
             for other_pattern in self.__pattern_list:
                 if   pattern.incidence_id() <= other_pattern.incidence_id(): continue
-                elif not superset_check.do(pattern.sm, other_pattern.sm): continue
+                elif not superset_check.do(pattern.sm, other_pattern.sm):    continue
 
                 __error_message(other_pattern, pattern, ExitF=True, 
                                 ThisComment  = "has higher priority and",
@@ -755,7 +765,7 @@ class Mode:
             for other_pattern in self.get_pattern_action_pair_list():
 
                 B = other_pattern.sm
-                if   other_pap.incidence_id() not in E_SpecialPatterns: continue
+                if   other_pap.incidence_id() not in E_IncidenceIDs_Subset_Special: continue
                 elif A.incidence_id() == B.incidence_id(): continue
 
                 # A superset of B, or B superset of A => there are common matches.

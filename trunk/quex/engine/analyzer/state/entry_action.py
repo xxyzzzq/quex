@@ -55,7 +55,7 @@ class TransitionAction(object):
         # NOTE: 'DoorId' is not accepted as argument. Is needs to be assigned
         #       by '.categorize()' in the action_db. Then, transition actions
         #       with the same CommandList-s share the same DoorID.
-        assert InitCommandList is None or isinstance(InitCommandList, CommandList)
+        assert InitCommandList is None or isinstance(InitCommandList, CommandList), "%s: %s" % (InitCommandList.__class__, InitCommandList)
         self.door_id = None 
         if InitCommandList is None: self._command_list = CommandList() 
         else:                       self._command_list = InitCommandList

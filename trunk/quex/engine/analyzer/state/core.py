@@ -7,6 +7,7 @@ from   quex.engine.analyzer.door_id_address_label import DoorID
 from   quex.engine.analyzer.commands           import CommandList, PrepareAfterReload, InputPIncrement, InputPDecrement, InputPDereference
 from   quex.engine.analyzer.mega_state.target  import TargetByStateKey_DROP_OUT
 from   quex.blackboard  import setup as Setup, \
+                               E_IncidenceIDs, \
                                E_StateIndices, \
                                E_InputActions
 
@@ -77,7 +78,7 @@ class AnalyzerState(Processor):
 
         return x
 
-    def prepare_for_reload(self, TheAnalyzer):
+    def prepare_for_reload(self, TheAnalyzer, BeforeReloadCmdList=None, AfterReloadCmdList=None):
         """Prepares state for reload:
            (i)   Create entry from 'reload procedure'.
            (ii)  Create in reload state entry from this state, so
@@ -86,6 +87,14 @@ class AnalyzerState(Processor):
                  buffer_limit_code --> reload procedure.
            
         """
+        assert BeforeReloadCmdList is None or isinstance(BeforeReloadCmdList, CommandList)
+        assert AfterReloadCmdList  is None or isinstance(AfterReloadCmdList, CommandList)
+
+        # If the engine type does not require a reload preparation then the call
+        # to this function is a null-operation.
+        if not TheAnalyzer.engine_type.requires_buffer_limit_code_for_reload():
+            return
+
         if self.transition_map is None: # A transition map which is not a transition map
             return                      # cannot trigger any reload.
 
@@ -94,12 +103,13 @@ class AnalyzerState(Processor):
 
         # Prepare the entry into the state from 'After Reload'.
         # => Emtpy transition action, nothing to do.
-        ta = TransitionAction()
-        if TheAnalyzer.engine_type.is_FORWARD(): ta.command_list = CommandList(InputPIncrement(), InputPDereference())
-        else:                                    ta.command_list = CommandList(InputPDecrement(), InputPDereference())
+        if TheAnalyzer.engine_type.is_FORWARD(): after_cl = CommandList(InputPIncrement(), InputPDereference())
+        else:                                    after_cl = CommandList(InputPDecrement(), InputPDereference())
+        if AfterReloadCmdList is not None:
+            after_cl = after_cl.concatinate(AfterReloadCmdList)
 
         assert self.index in TheAnalyzer.state_db
-        self.entry.enter(TransitionID(self.index, reload_state.index, 0), ta)
+        self.entry.enter(self.index, reload_state.index, TransitionAction(after_cl))
         # Need to categorize here, all other transitions have been categorized before
         self.entry.categorize(self.index)
 
@@ -107,12 +117,13 @@ class AnalyzerState(Processor):
         on_success_door_id = self.entry.get_door_id(self.index, TheAnalyzer.reload_state.index)
 
         if TheAnalyzer.is_init_state_forward(self.index):
-            on_failure_door_id = DoorID.global_terminal_end_of_file()
+            on_failure_door_id = DoorID.incidence(E_IncidenceIDs.END_OF_STREAM)
         else:
             on_failure_door_id = DoorID.drop_out(self.index)
         assert on_failure_door_id != on_success_door_id
 
-        reload_door_id = reload_state.add_state(self.index, on_success_door_id, on_failure_door_id)
+        reload_door_id = reload_state.add_state(self.index, on_success_door_id, on_failure_door_id, 
+                                                BeforeReloadCmdList)
 
         # Ensure a transition on 'buffer limit code' to the reload procedure.
         self.transition_map.set_target(Setup.buffer_limit_code, reload_door_id)
@@ -175,19 +186,20 @@ class ReloadState(Processor):
                  to trigger the reload for the state given by 'StateIndex'.
         """
         assert BeforeReload is None or isinstance(BeforeReload, CommandList) 
-        ta = TransitionAction(CommandList(PrepareAfterReload(OnSuccessDoorId, OnFailureDoorId)))
+        # Before reload: prepare after reload, the jump back to the reloading state.
+        before_cl = CommandList(PrepareAfterReload(OnSuccessDoorId, OnFailureDoorId))
         if BeforeReload is not None:
-            ta.command_list.extend(BeforeReload)
-
-        tid = TransitionID(self.index, StateIndex, 0)
-        assert self.entry.get(tid) is None # Cannot be in there twice!
+            # May be, add additional commands
+            before_cl = before_cl.concatinate(BeforeReload)
 
         # No two transitions into the reload state have the same CommandList!
         # No two transitions can have the same DoorID!
         # => it is safe to assign a new DoorID withouth .categorize()
+        ta         = TransitionAction(before_cl)
         ta.door_id = self.entry.new_DoorID(self.index)
 
-        self.entry.enter(tid, ta)
+        assert not self.entry.has_transition(self.index, StateIndex) # Cannot be in there twice!
+        self.entry.enter(self.index, StateIndex, ta)
 
         return ta.door_id
 

@@ -16,6 +16,7 @@ import quex.engine.generator.state_router      as     state_router_generator
 from   quex.engine.generator.action_info       import PatternActionInfo, CodeFragment
 import quex.output.cpp.core                    as     cpp_generator
 from   quex.input.files.counter_db             import CounterDB
+from   quex.input.files.mode                   import IncidenceDB
 
 # import quex.engine.generator.skipper.core          as skipper
 from   quex.engine.generator.languages.variable_db import VariableDB
@@ -377,7 +378,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     #    set_terminating_zero_str  = "    QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);\n"
     #    prefix = store_last_character_str + set_terminating_zero_str
 
-    incidence_db = dict(
+    incidence_db = IncidenceDB.from_iterable(
         (pattern.incidence_id(), CodeFragment(action(action_str)))
         for pattern, action_str in x_pattern_list
     )

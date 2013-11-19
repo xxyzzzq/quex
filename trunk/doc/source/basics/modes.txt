@@ -14,7 +14,7 @@ language.
 The lexical analyser is exactly in one mode at a specific time.
 The mode determines what pattern-action pairs are armed to trigger
 on incoming characters. Additionally, they can provide their
-own event handlers for different events.
+own incidence handlers for different incidences.
 
 The following code segment shows two modes. The first one shows a
 normal 'PROGRAM' mode. The second one is a small mode to detect

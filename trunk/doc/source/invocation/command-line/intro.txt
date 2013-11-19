@@ -278,9 +278,9 @@ following command line options can be used.
 
 .. cmdoption:: --no-warning-on-no-token-queue
 
-        If set, this option disables the warning in case that an event handler 
+        If set, this option disables the warning in case that an incidence handler 
         is specified without having set ``--token-policy queue``. Without a token
-        queue no tokens can be propperly sent from inside event handlers. There
+        queue no tokens can be propperly sent from inside incidence handlers. There
         might be other things the user decides to do without receiving any warning. 
 
 .. cmdoption:: --token-id-offset number
@@ -379,7 +379,7 @@ The following options support the definition of a independently customized token
         not specified, then this object is created along with the analyzer
         automatically. When using a shared token class, then this object must
         have been created along with the token class. Announcing the name of
-        the lexeme null object prevents quex from generating a lexeme null
+        the lexeme null object princidences quex from generating a lexeme null
         inside the engine itself.
 
 
@@ -708,7 +708,7 @@ The following options control the comment which is added to the generated code:
         It means that state 2369 is an acceptance state (flag 'A') and it should store
         the input position ('S'), if no backtrack elimination is applied. It originates
         from pattern '394' which is also an acceptance state and '384'. It transits to
-        state 2400 on the event of a '=' character.
+        state 2400 on the incidence of a '=' character.
 
 .. cmdoption:: --comment-transitions
 

@@ -20,5 +20,5 @@ in any case. Here is a brief summary of the LGPL::
     not, write to  the Free Software Foundation, Inc.,  59 Temple Place,  Suite
     330, Boston,  MA 02111-1307 USA.
 
-If this license prevents you from applying quex, please, contact the author 
+If this license princidences you from applying quex, please, contact the author 
 fschaef@users.sourceforge.net in order to find an appropriate solution.

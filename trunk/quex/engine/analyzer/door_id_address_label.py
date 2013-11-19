@@ -81,8 +81,6 @@ class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
     def state_machine_entry(SM_Id):        return DoorID(SM_Id,      E_DoorIdIndex.STATE_MACHINE_ENTRY)
     @staticmethod                         
     def global_end_of_pre_context_check(): return DoorID(0L,         E_DoorIdIndex.GLOBAL_END_OF_PRE_CONTEXT_CHECK)
-    @staticmethod                        
-    def global_terminal_end_of_file():     return DoorID(0L,         E_DoorIdIndex.GLOBAL_TERMINAL_END_OF_FILE)
     @staticmethod
     def global_reentry():                  return DoorID(0L,         E_DoorIdIndex.GLOBAL_REENTRY)
     @staticmethod
@@ -301,8 +299,6 @@ class Label:
     def transition_block(StateIndex, GotoedF=False): return dial_db.get_label_by_door_id(DoorID.transition_block(StateIndex), GotoedF)
     @staticmethod
     def global_state_router(GotoedF=False):          return dial_db.get_label_by_door_id(DoorID.global_state_router(), GotoedF)
-    @staticmethod
-    def global_terminal_end_of_file(GotoedF=False):  return dial_db.get_label_by_door_id(DoorID.global_terminal_end_of_file(), GotoedF)
     @staticmethod
     def incidence(IncidenceId, GotoedF=False):        return dial_db.get_label_by_door_id(DoorID.incidence(IncidenceId), GotoedF)
     @staticmethod                        

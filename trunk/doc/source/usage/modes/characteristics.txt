@@ -25,10 +25,10 @@ the following constructs:
 
      See <<section ...>>.
 
-  Event Handlers
+  Incidence Handlers
 
-     Event handlers allow one to express reactions to events immediately. Examples
-     for events are *mode entrance*, *mode exit*, and *on indentation*. Event 
+     Incidence handlers allow one to express reactions to incidences immediately. Examples
+     for incidences are *mode entrance*, *mode exit*, and *on indentation*. Incidence 
      handlers appear together with pattern-action pairs in the body of the mode
      definition. They have the form::
 
@@ -38,11 +38,11 @@ the following constructs:
                }
          }
 
-     Note, that the presence of event handlers enforces that patterns that 
-     have the same shape as an event handler need to be defined in quotes.
+     Note, that the presence of incidence handlers enforces that patterns that 
+     have the same shape as an incidence handler need to be defined in quotes.
      A pattern ``else`` can be defined conveniently 'as is', but a pattern
      ``on_indentation`` would have to be defined in quotes, since otherwise
-     it would be considered to be an event hander definition.::
+     it would be considered to be an incidence hander definition.::
 
          mode MINE {
              ...
@@ -51,7 +51,7 @@ the following constructs:
              ...
          }
 
-The following sections elaborate on the concepts of options and event handlers.
+The following sections elaborate on the concepts of options and incidence handlers.
 Pattern-action pairs have been discussed in previous sections.
 
 Options
@@ -68,7 +68,7 @@ The possible options for modes to be specified are the following.
    
    * ``no`` means that no other mode may inherit from this mode. 
    
-   * ``only`` prevents that the lexical analyzer ever enters this mode. Its sole purpose is to be a base mode for other modes. It then acts very much like an *abstract class* in C++ or an *interface* in Java.
+   * ``only`` princidences that the lexical analyzer ever enters this mode. Its sole purpose is to be a base mode for other modes. It then acts very much like an *abstract class* in C++ or an *interface* in Java.
 
 .. data::  <exit: arg0 arg1 ... argN>      
 
@@ -141,11 +141,11 @@ The possible options for modes to be specified are the following.
           ...
       }
 
-   when the ``skip_range`` option is specified, there is an event handler
-   available that can catch the event of a missing delimiter, i.e. if an end of
+   when the ``skip_range`` option is specified, there is an incidence handler
+   available that can catch the incidence of a missing delimiter, i.e. if an end of
    file occurs while the range is not yet closed. The handler's name is
    ``on_skip_range_open`` as described in
-   :ref:`_sec-usage-modes-characteristics-event-handlers`. The ``start-re``
+   :ref:`_sec-usage-modes-characteristics-incidence-handlers`. The ``start-re``
    can be an arbitrary regular expression. The ``end-string`` must be a 
    linear string.
 
@@ -265,27 +265,27 @@ The possible options for modes to be specified are the following.
       is to be developped, e.g.  'C' or 'C++', make sure that this feature is not
       used. Otherwise, the analyzer may produce undesired results.
 
-.. _sec-usage-modes-characteristics-event-handlers:
+.. _sec-usage-modes-characteristics-incidence-handlers:
 
-Event Handlers
+Incidence Handlers
 --------------
 
-This section elaborates on the event handlers which can be provided 
-for a mode. Event handlers are specified like::
+This section elaborates on the incidence handlers which can be provided 
+for a mode. Incidence handlers are specified like::
 
-       event_handler_name { 
-           /* event handler code */
+       incidence_handler_name { 
+           /* incidence handler code */
        }
 
-Some event handlers provide implicit arguments. Those arguments do not appear
-in the event handler definition. The list of event handlers is the following:
+Some incidence handlers provide implicit arguments. Those arguments do not appear
+in the incidence handler definition. The list of incidence handlers is the following:
 
 
 .. data:: on_entry
 
     Implicit Argument: ``FromMode``
 
-    Event handler to be executed on entrance of the mode. This happens as a reaction 
+    Incidence handler to be executed on entrance of the mode. This happens as a reaction 
     to mode transitions. ``FromMode`` is the mode from which the current mode
     is entered.
 
@@ -293,7 +293,7 @@ in the event handler definition. The list of event handlers is the following:
 
     Implicit Argument: ``ToMode``
 
-    Event handler to be executed on exit of the mode. This happens as a reaction 
+    Incidence handler to be executed on exit of the mode. This happens as a reaction 
     to mode transitions. The variable ``ToMode`` contains the mode to which
     the mode is left.
     
@@ -301,7 +301,7 @@ in the event handler definition. The list of event handlers is the following:
 
     Implicit Arguments: ``Lexeme``, ``LexemeL``, ``LexemeBegin``, ``LexemeEnd``
 
-    This event handler is executed on every match that every happens while this
+    This incidence handler is executed on every match that every happens while this
     mode is active. It is executed *before* the pattern-action is executed that is
     related to the matching pattern. The implicit arguments allow access to
     the matched lexeme and correspond to what is passed to pattern-actions.
@@ -341,7 +341,7 @@ in the event handler definition. The list of event handlers is the following:
 
 .. data:: on_failure
 
-   Event handler for the case that a character stream does not match any pattern 
+   Incidence handler for the case that a character stream does not match any pattern 
    in the mode. This is equivalent to the ``<<FAIL>>`` pattern as known in 
    the 'lex' family of lexical analyzer generators.
 
@@ -353,10 +353,10 @@ in the event handler definition. The list of event handlers is the following:
    .. note:: The ``on_match`` and ``on_after_match`` handlers are not executed
              before and after the ``on_failure``. The reason is obvious, because 
              ``on_failure`` is executed because nothing matched. If nothing matched 
-             then there is no event triggering ``on_match`` and ``on_after_match``.
+             then there is no incidence triggering ``on_match`` and ``on_after_match``.
 
    .. note:: Quex does not allow the definition of patterns which accept nothing.
-             Actions, such as mode changes on the event of 'nothing has matched'
+             Actions, such as mode changes on the incidence of 'nothing has matched'
              can be implemented by ``on_failure`` and ``undo()`` as
 
              .. code-block:: cpp
@@ -369,7 +369,7 @@ in the event handler definition. The list of event handlers is the following:
    occurring patterns in a mode. That is it matches the shortest lexeme that
    cannot match any lexeme in the mode. It is ensured, that the input is
    increased at least by one, so that the lexical analyzer is not stalled on
-   the event of match failure.  In general, the non-matching characters are
+   the incidence of match failure.  In general, the non-matching characters are
    overstepped. If the analyzer went too fare, the 'undo' and 'seek' function
    group allows for precise positioning of the next input (see section ''stream
    navigation''). That the philosophy of ``on_failure`` is to catch flaws in 
@@ -434,9 +434,15 @@ in the event handler definition. The list of event handlers is the following:
              self_send1(QUEX_TKN_FAILURE, Lexeme);
          }
 
+.. data:: on_codec_error
+
+   When a converter or a codec engine is used it is conceivable that the input
+   stream contains data which is not a valid code point. To deal with that, the
+   'on_codec_error' handler can be specified.
+
 .. data:: on_end_of_stream
 
-   Event handler for the case that the end of file, or end of stream is reached.
+   Incidence handler for the case that the end of file, or end of stream is reached.
    By means of this handler the termination of lexical analysis, or the return
    to an including file can be handled. This is equivalent to the ``<<EOF>>`` 
    pattern.
@@ -463,11 +469,11 @@ in the event handler definition. The list of event handlers is the following:
           /* Some comment without a closing delimiter
 
 
-   where the closing ``*/`` is not present in the file, then the event
-   handler is called on the event of end of file. The parameter ``Delimiter`` 
+   where the closing ``*/`` is not present in the file, then the incidence
+   handler is called on the incidence of end of file. The parameter ``Delimiter`` 
    contains the string of the missing delimiter. 
       
-There are event handlers which are concerned with indentation detection, in
+There are incidence handlers which are concerned with indentation detection, in
 case that the user wants to build indentation based languages. They are 
 discussed in detail in section :ref:`_sec-advanced-indentation-blocks`. 
 Here, there are listed only to provide in overview.
@@ -479,25 +485,25 @@ Here, there are listed only to provide in overview.
               that it will be removed totally.
 
     The occurence of the first non-whitespace in a line triggers the ``on_indentation``
-    event handler. Note, that it is only executed at the moment where a pattern matches 
-    that eats part (or all) of the concerned part of the stream. This event handler 
+    incidence handler. Note, that it is only executed at the moment where a pattern matches 
+    that eats part (or all) of the concerned part of the stream. This incidence handler 
     facilitates the definition of languages that rely on indentation. ``Indentation``
     provides the number of whitespace since the beginning of the line. Please,
     refer to section :ref:`sec-advanced-indentation-blocks` for further information.
 
 .. data:: on_indent
 
-   If an opening indentation event occurs. 
+   If an opening indentation incidence occurs. 
 
 .. data:: on_dedent
 
-   If an closing indentation event occurs. If a line closes
+   If an closing indentation incidence occurs. If a line closes
    multiple indentation blocks, the handler is called *multiple*
    times.
 
 .. data:: on_n_dedent
 
-   If an closing indentation event occurs. If a line closes
+   If an closing indentation incidence occurs. If a line closes
    multiple indentation blocks, the handler is called only *once*
    with the number of closed domains.
 
@@ -516,6 +522,6 @@ Here, there are listed only to provide in overview.
    In case that a character occured in the indentation which was
    specified by the user as being *bad*.
 
-As it has been mentioned in many places before, event handlers are specified in
+As it has been mentioned in many places before, incidence handlers are specified in
 the same way like pattern-actions. 
 

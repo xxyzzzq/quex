@@ -67,7 +67,7 @@ elif codec == "UTF8":
 elif codec == "UTF16":
     Setup.buffer_codec_transformation_info = "utf16-state-split"
 else:                 
-    Setup.buffer_codec_transformation_info = codec_db.get_codec_transformation_info(codec)
+    Setup.buffer_codec_transformation_info = codec_db.CodecTransformationInfo(codec)
 
 lcc_setup = None
 

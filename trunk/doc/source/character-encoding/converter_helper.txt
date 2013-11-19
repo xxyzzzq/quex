@@ -84,7 +84,7 @@ following code fragment
                                  const DrainT*   DrainEnd);
 
 The converter tries to convert as many characters from source to drain
-as possible; until it eventually reaches ``SourceEnd`` or the drain pointer 
+as possible; until it incidenceually reaches ``SourceEnd`` or the drain pointer 
 reaches ``DrainEnd``. The pointer to pointer arguments are required because
 the pointers need to be adapted. This facilitates a repeated call to the
 converter in case that either source or drain is fragmented. 

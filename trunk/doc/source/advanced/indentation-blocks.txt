@@ -220,11 +220,11 @@ by given. The following list explains the different parameters.
       and inserted into state machine. Here, ``ispace`` is any kind of
       indentation counter mentioned in ``space`` or ``grid``. By means of this
       construction empty lines are eaten silently. Thus, it is avoided that 
-      empty lines cause a DEDENT or NODENT events. 
+      empty lines cause a DEDENT or NODENT incidences. 
 
    .. describe :: suppressor
 
-      The newline event can be suppressed by a subsequent suppressor. When it
+      The newline incidence can be suppressed by a subsequent suppressor. When it
       is suppressed the subsequent line is not going to be subject to
       indentation count. Famous suppressors are the backslash, as in Python, C,
       and Makefiles, or the underline '_' as in some Basic dialects. For example,
@@ -236,7 +236,7 @@ by given. The following list explains the different parameters.
             or db.disconnected(): 
                 ...
 
-      prevents the python interpreter to consider indentation before the 'or'
+      princidences the python interpreter to consider indentation before the 'or'
       which is now grouped into the if-condition.
       
       Many times interpreters are sensitive to whitespace that follows these. 
@@ -266,19 +266,19 @@ make sense to define in the ``token`` section something like::
 
 which ensures that the token id of ``NODENT`` is the same as the id for
 ``STATEMENT_END`` and no special treatment is required. If more then one
-token is to be sent on indentation events, or if some sophisticated 
-customized handling is required the indentation events can be specified,
+token is to be sent on indentation incidences, or if some sophisticated 
+customized handling is required the indentation incidences can be specified,
 as shown in the next section.
 
-Customized Indentation Event Handlers
+Customized Indentation Incidence Handlers
 =====================================
 
-By default, a quex generated engine sends tokens on the event of indentation
-and aborts on the event of a bad character or indentation error. If this
+By default, a quex generated engine sends tokens on the incidence of indentation
+and aborts on the incidence of a bad character or indentation error. If this
 behavior is not enough, the correspondent actions may be customized by
-means of event handlers, as they are:
+means of incidence handlers, as they are:
 
-  * ``on_indent`` on the event that an opening indentation occurs.
+  * ``on_indent`` on the incidence that an opening indentation occurs.
 
     For example in the code fragment
 
@@ -289,7 +289,7 @@ means of event handlers, as they are:
            print "World"
 
     The ``print`` commands are more indented than the ``while`` key word. This indicates
-    that the prints are in a nested block. On the event of the first indented ``print``
+    that the prints are in a nested block. On the incidence of the first indented ``print``
     key word the ``on_indent`` handler is called. The user might want to send an ``INDENT``
     token to indicate the opening of a block. For example:
 
@@ -299,7 +299,7 @@ means of event handlers, as they are:
            self_send(QUEX_TKN_INDENT);
        }
 
-  * ``on_dedent`` and ``on_n_dedent`` on the event that one ore mode 
+  * ``on_dedent`` and ``on_n_dedent`` on the incidence that one ore mode 
     indentation blocks are closed.
 
     Note, that by means of a single line multiple indentation blocks may
@@ -327,7 +327,7 @@ means of event handlers, as they are:
        indentation. Each time the handler is called one ``DEDENT`` token should
        be sent. If there are things to be done only once for whole a de-dentation
        sequence, then the flag ``First`` can be used. It is ``true`` for the
-       first de-dedentation event of a sequence and ``false`` for any other. A
+       first de-dedentation incidence of a sequence and ``false`` for any other. A
        typical usage would be 
 
          .. code-block:: cpp
@@ -362,10 +362,10 @@ means of event handlers, as they are:
          the token queue might be flooded with ``DEDENT`` tokens.
 
 
-  * ``on_nodent`` on the event that the current line has the same indentation
+  * ``on_nodent`` on the incidence that the current line has the same indentation
                   as the previous.
 
-  * ``on_indentation_error`` on the event that a lesser indentation occured 
+  * ``on_indentation_error`` on the incidence that a lesser indentation occured 
                              which does not fit the indentation borders of 
                              previous indentation blocks.
 
@@ -395,7 +395,7 @@ means of event handlers, as they are:
         Number of closed indentation levels.
 
 
-  * ``on_indentation_bad`` on the event that a *bad* indentation character 
+  * ``on_indentation_bad`` on the incidence that a *bad* indentation character 
                            occured. The argument to this handler is
 
      .. describe:: BadCharacter
@@ -482,7 +482,7 @@ problem remains:
 
 .. note:: 
 
-   A design without indentation events, forces the pattern actions to know
+   A design without indentation incidences, forces the pattern actions to know
    about each other.  Otherwise, they might not function propperly together! In
    an environment of many different modes which are additionally related by
    inheritance, it is potentially difficult to guarantee that all pattern
@@ -502,7 +502,7 @@ Caveat
 ------
 
 If a pattern contains more than one newline then only the indentation
-event concerning the last newline is triggered! Imagine a pattern such as
+incidence concerning the last newline is triggered! Imagine a pattern such as
 in the following example::
 
      mode INDENTICUS { 
@@ -516,9 +516,9 @@ then the following pattern would match::
         how are you?
 
 If this matches, then the lines of ``hello`` and ``world`` do not trigger an
-indentation event. So, when dealing with indentation based scoping such strange
+indentation incidence. So, when dealing with indentation based scoping such strange
 things are best avoided.  If the line after the concatinated line does
-not end with a backslash the event handler is automatically active and
+not end with a backslash the incidence handler is automatically active and
 indentation handling is in place. Lets turn this into a warning.
 
 .. warning::
@@ -526,7 +526,7 @@ indentation handling is in place. Lets turn this into a warning.
    Avoid having multiple non-whitespace sub patterns (such as keywords or
    identifiers) concatinated by newline-containing sub-patterns in 
    *one single pattern*. Otherwise only the last transition from whitespace 
-   to non-whitespace inside the pattern triggers an indentation event.
+   to non-whitespace inside the pattern triggers an indentation incidence.
 
 The author of this text hopes that this caveat is only of theoretical interest.
 It is hard to imagine a case where such a construct would actually make sense.

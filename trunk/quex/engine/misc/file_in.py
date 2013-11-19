@@ -522,12 +522,17 @@ def clean_up():
     for file in temporary_files:
         os.system("rm %s" % file)
 
-def open_file_or_die(FileName, Mode="rb", Env=None, CodecCheckF=True):
+def open_safely(FileName, Mode="rb"):
     file_name = FileName.replace("//","/")
     file_name = os.path.normpath(file_name)
     try:
-        fh = open(file_name, Mode)
+        return open(file_name, Mode)
     except:
+        return None
+
+def open_file_or_die(FileName, Mode="rb", Env=None, CodecCheckF=True):
+    fh = open_safely(FileName, Mode)
+    if fh is None:
         if Env is not None:
             error_msg("Is environment variable '%s' set propperly?" % Env, DontExitF=True)
         error_msg("Cannot open file '%s'" % FileName)
@@ -811,6 +816,7 @@ def __check_codec(fh, FileName):
     except:
         error_msg("Quex requires ASCII or UTF8 input character format.\n" \
                   "File '%s' is not ASCII or UTF8 encoded. Or, it contains encoding errors." % FileName)
+
     fh.seek(start_pos)
     return fh
 

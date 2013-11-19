@@ -127,7 +127,7 @@ def do(StateIndex, TransitionActionDB):
         # -- Shared commands must be deleted from childs. They are implemented
         #    in new 'new_door.command_list'.
         for child in new_door.child_set:
-            child.command_list.cut_shared_tail(new_door.command_list)
+            child.command_list = child.command_list.cut(new_door.command_list)
             # Set new door as parent of childs
             child.parent = new_door
          

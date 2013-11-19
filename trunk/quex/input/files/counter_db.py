@@ -1,9 +1,27 @@
+from   quex.engine.state_machine.core               import StateMachine
 from   quex.engine.state_machine.transformation     import homogeneous_chunk_n_per_character
+import quex.engine.state_machine.transformation     as     transformation
+import quex.engine.analyzer.engine_supply_factory   as     engine
+from   quex.engine.analyzer.core                    import Analyzer, \
+                                                           prepare_DoorIDs
+from   quex.engine.analyzer.state.core              import ReloadState, AnalyzerState
+from   quex.engine.analyzer.state.entry_action      import TransitionAction
+import quex.engine.state_machine.index              as     index
 from   quex.engine.interval_handling                import NumberSet
+from   quex.engine.analyzer.state.entry_action      import TransitionID
 from   quex.engine.analyzer.transition_map          import TransitionMap
+from   quex.engine.analyzer.commands                import CommandList, \
+                                                           GotoDoorId, \
+                                                           GotoDoorIdIfInputPLexemeEnd, \
+                                                           ColumnCountAdd, \
+                                                           ColumnCountGridAddWithReferenceP, \
+                                                           LineCountAddWithReferenceP, \
+                                                           ColumnCountReferencePSet, \
+                                                           ColumnCountReferencePDeltaAdd
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.blackboard import setup as Setup, \
-                              E_IncidenceIDs
+                              E_IncidenceIDs, \
+                              E_StateIndices
 
 from   collections import namedtuple
 
@@ -117,10 +135,14 @@ class CounterDB:
         return cm, column_count_per_chunk
 
 class CounterCoderData:
-    def __init__(self, CounterDb, CharacterSet, IteratorName=LanguageDB.INPUT_P):
+    def __init__(self, CounterDb, CharacterSet, AfterExitDoorId=None, IteratorName=None, LexemeF=True):
         assert not CharacterSet.is_empty()
         assert isinstance(CharacterSet, NumberSet)
         assert isinstance(CounterDb, CounterDB)
+        LanguageDB = Setup.language_db
+
+        if IteratorName is None:
+            IteratorName = LanguageDB.INPUT_P()
 
         # If 'column_count_per_chunk' is not None, then reference positions may 
         # be used for counting (i.e. "column_n += (input_p - reference_p) * C").
@@ -138,7 +160,101 @@ class CounterCoderData:
         self.count_command_map = self.__count_command_map_prepare(CounterDb, 
                                                                   CharacterSet) 
 
-    def get_entry_exit_commands(self):
+        self.on_entry, \
+        self.on_exit   = self.__on_entry_on_exit_prepare(AfterExitDoorId)
+
+        self.on_before_reload, \
+        self.on_after_reload   = self.__on_before_after_reload_prepare(LexemeF)
+
+    def get_analyzer(self, GlobalReloadState=None, TargetState=None, CheckLexemeEndF=False):
+        """
+        GlobalReloadState = None --> no Reload
+        TargetState = None       --> loop.
+
+        The possibility of a dynamic character size codec forces to transform
+        the single state into a state machine: 
+        
+                                        .----.    .---.
+                                .-> ... | 11 |-->-| 1 |  line_n += 1;
+                               +--> ... '----'    '---'   
+                              +---> ... | 21 |-->--'|
+                             +----> ... '----'      |
+                    .------./           | 31 |-->---' 
+                    | init |------> ... '----'                                     
+                    '------'+-----> ...       
+                             '----> ... 
+                                     
+        State '1' represents a counting action.  After the transformation is
+        done, the structure can be transformed into a state machine where the
+        transitions to '1' are bend into transitions to 'init'. It enters the
+        'init' state at a door that inhibits the corresponding counting actions.
+        
+                        .-----------------------------------.
+                        |                       .----.      |
+                  .-(Door)------.       .-> ... | 11 |-->---| 
+                  | line_n += 1 |      +--> ... '----'      |
+                  '-------------'     +---> ... | 21 |-->---|
+                        |            +----> ... '----'      |
+                        |   .------./           | 31 |-->---' 
+                        '-->| init |------> ... '----'                                     
+                            '------'+-----> ...       
+                                     '----> ... 
+        """                                      
+        assert GlobalReloadState is None or isinstance(GlobalReloadState, ReloadState)
+        assert TargetState is None       or isinstance(TargetState, AnalyzerState)
+        sm  = self.get_counting_state_machine(self.count_command_map) 
+        transformation.do_state_machine(sm)
+
+        door_id_exit = dial_db.new_DoorID()
+
+        # The 'bending' of CLI-s to the init state must wait until the entry actions
+        # have been determined. Only this way, it is safe to assume that the different
+        # counting actions are implemented at a seperate entry.
+        analyzer = Analyzer(sm, engine.FORWARD, GlobalReloadState=GlobalReloadState)
+        start    = analyzer.init_state()
+        if TargetState is not None: finish = TargetState
+        else:                       finish = start
+
+        start.entry.enter(start.index, E_StateIndices.NONE, TransitionAction(self.on_entry))
+        start.entry.categorize(start.index)   # Determine DoorID-s -- those specified now, won't change later.
+
+        tid_exit = finish.entry.enter(finish.index, index.get(), TransitionAction(self.on_exit))
+
+        if CheckLexemeEndF:
+            check_lexeme_end = CommandList(GotoDoorIdIfInputPLexemeEnd(door_id_exit))
+
+        # Inject the counting commands into the states that represent it
+        for cli, info in self.count_command_map.iteritems():
+            # States entering state 'cli' where command_list is to be performed:
+            for state_index in analyzer.from_db[cli]:
+                if CheckLexemeEndF: command_list = check_lexeme_end.concatinate(info.command_list)
+                else:               command_list = info.command_list
+                finish.entry.enter(finish.index, state_index, TransitionAction(command_list))
+            analyzer.remove_state(cli)
+
+        # Transitions to a 'cli' must become transitions to 'finish'
+        # (The particular door is determiend in 'prepare_DoorIDs()'.
+        for state in analyzer.state_db.itervalues():
+            for cli in self.count_command_map.iterkeys():
+                state.transition_map.replace_target(cli, finish.index)
+                state.transition_map.combine_adjacents()
+
+        # Setup DoorIDs in entries and transition maps
+        prepare_DoorIDs(analyzer)
+
+        # (The following is a null operation, if the analyzer.engine_type does not
+        #  require reload preparation.)
+        for state in analyzer.state_db.itervalues():
+            state.prepare_for_reload(analyzer, self.on_before_reload, self.on_after_reload)
+
+        # (*) Transition Map __________________________________________________
+        #
+        for state in analyzer.state_db.itervalues():
+            state.transition_map.fill_gaps(door_id_exit)
+
+        return analyzer, door_id_exit
+
+    def __on_entry_on_exit_prepare(self, AfterExitDoorId):
         """Actions to be performed at entry into the counting code fragment and 
         when exiting.
 
@@ -149,16 +265,23 @@ class CounterCoderData:
 
             None, None  If there is no need to do anthing upon entry or exit.
         """
-        if ColumnCountPerChunk is None:
-            return None, None
+        if self.column_count_per_chunk is None:
+            if OnExitDoorId is not None: return None, CommandList(GotoDoorId(AfterExitDoorId))
+            else:                        return None, None
+            return on_entry, on_exit
         else:
-            on_entry = ColumnCountReferencePSet(self.iterator_name)
-            on_exit  = ColumnCountReferencePDeltaAdd(self.iterator_name, 
-                                                     self.column_count_per_chunk)
+            on_entry = CommandList(ColumnCountReferencePSet(self.iterator_name))
+
+            on_exit_cmd = ColumnCountReferencePDeltaAdd(self.iterator_name, 
+                                                        self.column_count_per_chunk)
+            if AfterExitDoorId is not None: 
+                on_exit = CommandList(on_exit_cmd, GotoDoorId(AfterExitDoorId))
+            else:
+                on_exit = CommandList(on_exit_always)
             return on_entry, on_exit
         
 
-    def get_before_after_reload_commands(self, ReloadF, LexemeF=True):
+    def __on_before_after_reload_prepare(self, LexemeF):
         """Actions to be performed before and after reload.
 
         RETURNS: 
@@ -170,26 +293,26 @@ class CounterCoderData:
             None, None  If column number counting cannot profit from the a fixed
                         ColumnCountPerChunk (applying "column += (p-reference_p)*c")
 
-        For convienience, to spare the caller an "if ReloadF: ..." this function
-        takes the ReloadF and returns "None, None" if it is false.
-
         The LexemeF tells whether the current lexeme is important, i.e. treated
         by some handler. If not, the how buffer may be reloaded by setting the 
         lexeme start pointer to the input pointer.
         """
-        if ReloadF == False or ColumnCountPerChunk is None:
+        if self.column_count_per_chunk is None:
             return None, None
         else:
             on_before_reload = ColumnCountReferencePDeltaAdd(self.iterator_name, 
                                                              self.column_count_per_chunk)
             on_after_reload  = ColumnCountReferencePSet(self.iterator_name)
 
+        on_before_reload = CommandList(on_before_reload)
+        on_after_reload  = CommandList(on_after_reload)
+
         if not LexemeF:
             # The lexeme start pointer defines the lower border of memory to be 
             # kept when reloading. Setting it to the input pointer allows for 
             # the whole buffer to be reloaded. THIS CAN ONLY BE DONE IF THE 
             # LEXEME IS NOT IMPORTANT!
-            on_before_reload.append(LexemeStartToReferenceP(self.iterator_name))
+            on_before_reload = on_before_reload.concatinate(LexemeStartToReferenceP(self.iterator_name))
 
         return on_before_reload, on_after_reload
 
@@ -216,8 +339,8 @@ class CounterCoderData:
         """
         def pruned_iteritems(Db, CharacterSet):
             for value, character_set in Db.iteritems():
-                if CharacterSet is None: pruned = X
-                else:                    pruned = X.intersection(CharacterSet)
+                if CharacterSet is None: pruned = character_set
+                else:                    pruned = character_set.intersection(CharacterSet)
                 if pruned.is_empty():    continue
                 yield value, pruned
 
@@ -226,20 +349,21 @@ class CounterCoderData:
             else:                                    return None
 
         def on_grid(GridStepN):
-            if self.column_count_per_chunk is None:  return ColumnCountGridAdd(grid_step_n)
-            else:                                    return ColumnCountGridAddWithReferenceP(grid_step_n, 
+            if self.column_count_per_chunk is None:  return ColumnCountGridAdd(GridStepN)
+            else:                                    return ColumnCountGridAddWithReferenceP(GridStepN, 
                                                                                              self.iterator_name)
 
         def on_newline(Delta):
-            if self.column_count_per_chunk is None: return LineCountAdd(delta)
-            else:                                   return LineCountAddWithReferenceP(delta, 
+            if self.column_count_per_chunk is None: return LineCountAdd(Delta)
+            else:                                   return LineCountAddWithReferenceP(Delta, 
                                                                                       self.iterator_name)
 
         result = {}
-        result.update(
-            (index.get(), CountCmdInfo(character_set, CommandList(on_special(delta))))
-            for delta, character_set in pruned_iteritems(CounterDb.special, CharacterSet)
-        )
+        for delta, character_set in pruned_iteritems(CounterDb.special, CharacterSet):
+            cmd = on_special(delta)
+            if cmd is None: continue
+            result[index.get()] = CountCmdInfo(character_set, CommandList(on_special(delta)))
+
         result.update(
             (index.get(), CountCmdInfo(character_set, CommandList(on_grid(grid_step_n))))
             for grid_step_n, character_set in pruned_iteritems(CounterDb.grid, CharacterSet)
@@ -250,4 +374,11 @@ class CounterCoderData:
         )
 
         return result
+
+    def get_counting_state_machine(self, CountCommandMap):
+        sm = StateMachine()
+        for cli, count_info in CountCommandMap.iteritems():
+            assert isinstance(count_info, CountCmdInfo)
+            sm.add_transition(sm.init_state_index, count_info.trigger_set, cli)
+        return sm
 

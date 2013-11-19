@@ -116,7 +116,7 @@ class TransitionMap(list):
             else:
                 ts = TheAnalyzer.state_db[Target]
             door_id = ts.entry.get_door_id(StateIndex=Target, FromStateIndex=StateIndex)
-            assert door_id is not None
+            assert door_id is not None, "No DoorID for { from: %s to: %s }i\nentry: %s" % (StateIndex, Target, [tid for tid, ta in ts.entry.iteritems()])
             return door_id
         
         return self.__class__.from_iterable(self, relate)
@@ -580,15 +580,8 @@ class TransitionMap(list):
                 return True
         return False
 
-    def replace_None_targets(self, Replacement):
-        """Each interval which has 'None' as target will have 'Replacement'
-        as target after call of this function.
-        """
-        for i, info in self:
-            if info[1] is not None: continue
-            self[i] = (interval, Replacement)
-
     def replace_action_id(self, ActionID, Action):
+        assert False, "Not to be used any longer"
         assert ActionID in E_IncidenceIDs
         assert Action is None or type(Action) == list
 
@@ -604,6 +597,11 @@ class TransitionMap(list):
                 action.insert(idx, x)
                 idx += 1
         return
+
+    def replace_target(self, Original, Replacement):
+        for i, info in enumerate(self):
+            if info[1] == Original:
+                self[i] = (info[0], Replacement)
 
     def delete_action_ids(self):
         for interval, action in self:

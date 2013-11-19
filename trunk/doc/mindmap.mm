@@ -20,7 +20,7 @@
 <node CREATED="1234802372142" ID="Freemind_Link_1918811577" MODIFIED="1234849171157" TEXT="Modes">
 <icon BUILTIN="button_ok"/>
 </node>
-<node CREATED="1234802374870" ID="Freemind_Link_739174156" MODIFIED="1234849174325" TEXT="Event Handlers">
+<node CREATED="1234802374870" ID="Freemind_Link_739174156" MODIFIED="1234849174325" TEXT="Incidence Handlers">
 <icon BUILTIN="button_ok"/>
 </node>
 </node>
@@ -77,7 +77,7 @@
 <node CREATED="1234536495429" ID="Freemind_Link_667410840" MODIFIED="1235310779351" TEXT="Transitions">
 <icon BUILTIN="button_ok"/>
 </node>
-<node CREATED="1234536725853" ID="Freemind_Link_1143153944" MODIFIED="1235310743263" TEXT="Events">
+<node CREATED="1234536725853" ID="Freemind_Link_1143153944" MODIFIED="1235310743263" TEXT="Incidences">
 <icon BUILTIN="button_ok"/>
 </node>
 <node CREATED="1234536489062" ID="Freemind_Link_1403963919" MODIFIED="1235383493264" TEXT="Inheritance">

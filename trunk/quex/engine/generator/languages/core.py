@@ -186,50 +186,57 @@ class LanguageDB_Cpp(dict):
             return "".join(txt)
 
         elif Cmd.id == E_Commands.ColumnCountReferencePSet:
+            print "#Cmd.content:", Cmd.content.__class__
             pointer_name = Cmd.content.pointer_name
             offset       = Cmd.content.offset
             if offset != 0:
-                txt.append("__QUEX_IF_COUNT_COLUMNS(reference_p = %s + %i);\n" % (pointer_name, offset))
+                return "__QUEX_IF_COUNT_COLUMNS(reference_p = %s + %i);\n" % (pointer_name, offset) 
             else:
-                txt.append("__QUEX_IF_COUNT_COLUMNS(reference_p = %s);\n" % pointer_name)
+                return "__QUEX_IF_COUNT_COLUMNS(reference_p = %s);\n" % pointer_name 
 
         elif Cmd.id == E_Commands.ColumnCountReferencePDeltaAdd:
             delta_str = "(%s - reference_p)" % Cmd.content.pointer_name         
-            txt.append("__QUEX_IF_COUNT_COLUMNS_ADD((size_t)(%s));\n" \
-                       % self.MULTIPLY_WITH(delta_str, Cmd.content.column_n_per_chunk))
+            return "__QUEX_IF_COUNT_COLUMNS_ADD((size_t)(%s));\n" \
+                   % self.MULTIPLY_WITH(delta_str, Cmd.content.column_n_per_chunk) 
+
+        elif Cmd.id == E_Commands.GotoDoorId:
+            return self.GOTO_BY_DOOR_ID(Cmd.content.door_id)
+
+        elif Cmd.id == E_Commands.GotoDoorIdIfInputPLexemeEnd:
+            return "if( %s == LexemeEnd ) %s;\n" % (self.INPUT_P(), self.GOTO_BY_DOOR_ID(Cmd.content.door_id))
 
         elif Cmd.id == E_Commands.ColumnCountAdd:
-            txt.append("__QUEX_IF_COUNT_COLUMNS_ADD((size_t)%s);\n" % LanguageDB.VALUE_STRING(Cmd.content.value))
+            return "__QUEX_IF_COUNT_COLUMNS_ADD((size_t)%s);\n" % self.VALUE_STRING(Cmd.content.value) 
 
         elif Cmd.id == E_Commands.ColumnCountGridAdd:
-            txt.append(0)
-            txt.extend(LanguageDB.GRID_STEP("self.counter._column_number_at_end", "size_t",
-                                            Cmd.content.value, IfMacro="__QUEX_IF_COUNT_COLUMNS"))
+            return self.GRID_STEP("self.counter._column_number_at_end", "size_t",
+                                  Cmd.content.value, IfMacro="__QUEX_IF_COUNT_COLUMNS") 
 
         elif Cmd.id == E_Commands.ColumnCountGridAddWithReferenceP:
-            txt.append(0)
-            LanguageDB.REFERENCE_P_COLUMN_ADD(txt, IteratorName, ColumnCountPerChunk) 
-            txt.append(0)
-            txt.extend(LanguageDB.GRID_STEP("self.counter._column_number_at_end", "size_t",
-                                            Cmd.content.value, IfMacro="__QUEX_IF_COUNT_COLUMNS"))
-            txt.append(0)
-            LanguageDB.REFERENCE_P_RESET(txt, Cmd.content.pointer_name) 
+            txt = [ 0, self.REFERENCE_P_COLUMN_ADD(txt, IteratorName, ColumnCountPerChunk),
+                    0, self.GRID_STEP("self.counter._column_number_at_end", "size_t",
+                                      Cmd.content.value, IfMacro="__QUEX_IF_COUNT_COLUMNS") ]
+            self.REFERENCE_P_RESET(txt, Cmd.content.pointer_name) 
+            return "".join(txt)
 
         elif Cmd.id == E_Commands.LineCountAdd:
+            txt = []
             if Cmd.content.value != 0:
-                txt.append("__QUEX_IF_COUNT_LINES_ADD((size_t)%s);\n" % LanguageDB.VALUE_STRING(Cmd.content.value))
+                txt.append("__QUEX_IF_COUNT_LINES_ADD((size_t)%s);\n" % self.VALUE_STRING(Cmd.content.value))
                 txt.append(0)
             txt.append("__QUEX_IF_COUNT_COLUMNS_SET((size_t)1);\n")
+            return "".join(txt)
 
         ##elif Cmd.id == E_Commands.GotoDoorId:
         ##    txt.append(self.GOTO_BY_DOOR_ID(Cmd.content.door_id))
 
         elif Cmd.id == E_Commands.LineCountAddWithReferenceP:
+            txt = []
             if Cmd.content.value != 0:
-                txt.append("__QUEX_IF_COUNT_LINES_ADD((size_t)%s);\n" % LanguageDB.VALUE_STRING(Cmd.content.value))
-                txt.append(0)
+                txt.append("__QUEX_IF_COUNT_LINES_ADD((size_t)%s);\n" % self.VALUE_STRING(Cmd.content.value))
             txt.append("__QUEX_IF_COUNT_COLUMNS_SET((size_t)1);\n")
-            LanguageDB.REFERENCE_P_RESET(txt, Cmd.content.pointer_name) 
+            self.REFERENCE_P_RESET(txt, Cmd.content.pointer_name) 
+            return "".join(txt)
 
         elif Cmd.id == E_Commands.StoreInputPosition:
             # Assume that checking for the pre-context is just overhead that 
@@ -284,6 +291,9 @@ class LanguageDB_Cpp(dict):
 
         elif Cmd.id == E_Commands.InputPDereference:
             return "    %s\n" % self.ASSIGN("input", self.INPUT_P_DEREFERENCE())
+
+        elif Cmd.id == E_Commands.InputPToLexemeStartP:
+            return "    %s\n" % self.INPUT_P_TO_LEXEME_START()
 
         elif Cmd.id == E_Commands.InputPIncrement:
             return "    %s\n" % self.INPUT_P_INCREMENT()

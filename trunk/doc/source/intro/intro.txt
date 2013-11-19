@@ -4,7 +4,7 @@ Introduction
 The quex program generates a lexical analyser that scans text and
 identifies patterns. The result of this lexical analysis is a list of 
 *tokens*. A token is a piece of atomic information directly relating to a
-pattern, or an *event*. It consists of a type-identifier, i.e. the 
+pattern, or an *incidence*. It consists of a type-identifier, i.e. the 
 *token type*, and content which is extracted from the text fragment that
 matched the pattern. 
 
@@ -57,14 +57,14 @@ analysers such as lex or flex:
 
   * *Transition control*, i.e. restriction can be made to which mode
     a certain mode can exit or from which mode it can be entered. This 
-    prevents the lexical analyser from accidentally dropping into an unwanted
+    princidences the lexical analyser from accidentally dropping into an unwanted
     lexical analysis mode.
 
- * Mode *transition events*, i.e. event handlers can be defined for
-   the events of exiting or entering from or to a particular mode.    
+ * Mode *transition incidences*, i.e. incidence handlers can be defined for
+   the incidences of exiting or entering from or to a particular mode.    
     
- * Indentation *events*, i.e it is possible to provide an event handler
-   for the event of the first appearing non-whitespace in a line. This event
+ * Indentation *incidences*, i.e it is possible to provide an incidence handler
+   for the incidence of the first appearing non-whitespace in a line. This incidence
    handling happens quasi-paralell to the pattern matching.
   
 * A default general purpose *token* class. Additionally, Quex
@@ -89,8 +89,8 @@ analysers such as lex or flex:
   the analyzer state on return from the included file--without much fuss 
   for the end user.
 
-* *Indentation Events*. As soon as a non-whitespace occurs after a newline
-  a indentation event is fired, that allows convenient means to implement
+* *Indentation Incidences*. As soon as a non-whitespace occurs after a newline
+  a indentation incidence is fired, that allows convenient means to implement
   indentation based languages of the Python-like style.
 
 * *Skippers*. For ranges, that are to be skipped, quex can implement 

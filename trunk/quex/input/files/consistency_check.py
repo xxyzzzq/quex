@@ -1,7 +1,7 @@
 from   quex.engine.misc.file_in                    import error_msg, verify_word_in_list
 from   quex.input.setup                            import NotificationDB
 import quex.blackboard                             as     blackboard
-from   quex.blackboard                             import setup as Setup, E_SpecialPatterns
+from   quex.blackboard                             import setup as Setup, E_IncidenceIDs_Subset_Special
 import quex.engine.state_machine.check.outrun      as     outrun_checker
 import quex.engine.state_machine.check.superset    as     superset_check
 import quex.engine.state_machine.check.same        as     same_check
@@ -38,6 +38,17 @@ def do(ModeDB):
     for mode in ModeDB.values():
         mode.check_consistency()
 
+    # (*) If a conversion or a codec engine is specified, then the 
+    #     'on_codec_error' handler must be specified in every mode.
+    if Setup.buffer_codec != "unicode" or Setup.converter_f:
+        for mode in ModeDB.values():
+            if E_IncidenceIDs.CODEC_ERROR not in mode.incidence_db:
+                error_msg("Missing 'on_codec_error' handler in mode '%s' (or its base modes).\n" % mode.name + \
+                          "This is dangerous while using a codec engine or a converter (iconv, icu, ...).\n" + \
+                          "The feature is not yet supported, but the infrastructure is currently setup for it.",
+                          mode.sr.file_name, mode.sr.line_n, DontExitF=True, WarningF=True, 
+                          SuppressCode=NotificationDB.warning_codec_error_with_non_unicode)
+
     # (*) Start mode specified?
     __start_mode(implemented_mode_name_list, mode_name_list)
 
@@ -71,7 +82,8 @@ def do(ModeDB):
 def __error_message(This, That, ThisComment, ThatComment="", EndComment="", ExitF=True, SuppressCode=None):
     
     def get_name(PAP, AddSpaceF=True):
-        if PAP.comment in E_SpecialPatterns: 
+        print "#PAP:", PAP.__class__
+        if PAP.comment in E_IncidenceIDs_Subset_Special: 
             result = repr(PAP.comment).replace("_", " ").lower()
         elif isinstance(PAP.comment, (str, unicode)):
             result = PAP.comment

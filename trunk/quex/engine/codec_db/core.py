@@ -116,61 +116,107 @@ def __get_distinct_codec_name_for_alias(CodecAlias, FH=-1, LineN=None):
                         "Character encoding '%s' unknown to current version of quex." % CodecAlias,
                         FH, LineN)
 
-def get_codec_transformation_info(Codec=None, FileName=None, FH=-1, LineN=None):
-    """Provides the information about the relation of character codes in a particular 
-       coding to unicode character codes. It is provided in the following form:
+#______________________________________________________________________________
+#
+# CodecTransformationInfo(list):
+#
+# Provides the information about the relation of character codes in a particular 
+# coding to unicode character codes. It is provided in the following form:
+#
+#   # Codec Values                 Unicode Values
+#   [ (Source0_Begin, Source0_End, TargetInterval0_Begin), 
+#     (Source1_Begin, Source1_End, TargetInterval1_Begin),
+#     (Source2_Begin, Source2_End, TargetInterval2_Begin), 
+#     ... 
+#   ]
+#
+# .name           = Name of the codec.
+# .file_name      = Name of file where the codec was taken from.
+# .source_set     = NumberSet of unicode code points which have a representation 
+#                   the given codec.
+# .inv_source_set = inverse of .source_set
+# .drain_set      = NumberSet of available code points in the given codec.
+# .inv_drain_set  = inverse of drain_set
+#
+# NOTE: If the content of the file was not a valid codec transformation info,
+#       then the following holds:
+#
+#       .source_set = .inv_source_set = .drain_set = .inv_drain_set = None
+#______________________________________________________________________________
+class CodecTransformationInfo(list):
+    def __init__(self, Codec=None, FileName=None, ExitOnErrorF=True):
+        assert Codec is not None or FileName is not None
 
-       # Codec Values                 Unicode Values
-       [ (Source0_Begin, Source0_End, TargetInterval0_Begin), 
-         (Source1_Begin, Source1_End, TargetInterval1_Begin),
-         (Source2_Begin, Source2_End, TargetInterval2_Begin), 
-         ... 
-       ]
+        if FileName is not None:
+            file_name = FileName
+        else:
+            distinct_codec = __get_distinct_codec_name_for_alias(Codec)
+            file_name      = __codec_db_path + "/%s.dat" % distinct_codec
 
-       Arguments FH and LineN correspond to the arguments of error_msg.
+        # Read coding into data structure
+        self.source_set = NumberSet()
+        self.drain_set  = NumberSet()
+
+        error_str = None
+        fh        = open_safely(file_name, "rb")
+        if fh is None:
+            error_str = "Could not open codec file '%s'."
+
+        try:
+            while error_str is None:
+                skip_whitespace(fh)
+                source_begin = read_integer(fh)
+                if source_begin is None:
+                    error_str = "Missing integer (source interval begin) in codec file."
+                    continue
+
+                skip_whitespace(fh)
+                source_size = read_integer(fh)
+                if source_size is None:
+                    error_str = "Missing integer (source interval size) in codec file." 
+                    continue
+
+                skip_whitespace(fh)
+                target_begin = read_integer(fh)
+                if target_begin is None:
+                    error_str = "Missing integer (target interval begin) in codec file."
+                    continue
+
+                source_end = source_begin + source_size
+                list.append(self, [source_begin, source_end, target_begin])
+
+                self.source_set.add_interval(Interval(source_begin, source_end))
+                self.drain_set.add_interval(Interval(target_begin, target_begin + source_size))
+
+        except EndOfStreamException:
+            pass
+
+        if error_str is not None:
+            error_msg(error_str, fh, DontExitF=not ExitOnErrorF)
+            self.__set_invalid() # Transformation is not valid.
+            return
+
+        # Determine uncovered ranges.
+        self.inv_source_set = self.source_set.inverse() 
+        self.inv_drain_set  = self.drain_set.inverse() 
+
+    def __set_invalid(self):
+        list.clear(self)                  
+        self.source_set     = None
+        self.drain_set      = None
+        self.inv_source_set = None
+        self.inv_drain_set  = None
+
+def get_supported_unicode_character_set(CodecAlias=None, FileName=None):
+    """RETURNS:
+
+       NumberSet of unicode characters which are represented in codec.
+       None, if an error occurred.
+
+       NOTE: '.source_set' is None in case an error occurred while constructing
+             the CodecTransformationInfo.
     """
-    assert Codec is not None or FileName is not None
-
-    if FileName is not None:
-        file_name = FileName
-    else:
-        distinct_codec = __get_distinct_codec_name_for_alias(Codec)
-        file_name      = __codec_db_path + "/%s.dat" % distinct_codec
-
-    fh = open_file_or_die(file_name, "rb")
-
-    # Read coding into data structure
-    transformation_list = []
-    try:
-        while 1 + 1 == 2:
-            skip_whitespace(fh)
-            source_begin = read_integer(fh)
-            if source_begin is None:
-                error_msg("Missing integer (source interval begin) in codec file.", fh)
-            skip_whitespace(fh)
-            source_size = read_integer(fh)
-            if source_size is None:
-                error_msg("Missing integer (source interval size) in codec file.", fh)
-            skip_whitespace(fh)
-            target_begin = read_integer(fh)
-            if target_begin is None:
-                error_msg("Missing integer (target interval begin) in codec file.", fh)
-
-            source_end = source_begin + source_size
-            transformation_list.append([source_begin, source_end, target_begin])
-    except EndOfStreamException:
-        pass
-
-    return transformation_list
-
-def get_supported_unicode_character_set(CodecAlias=None, FileName=None, FH=-1, LineN=None):
-    assert CodecAlias is not None or FileName is not None
-
-    mapping_list = get_codec_transformation_info(CodecAlias, FileName, FH, LineN)
-    result       = NumberSet()
-    for source_begin, source_end, target_begin in mapping_list:
-        result.add_interval(Interval(source_begin, source_end))
-    return result
+    return CodecTransformationInfo(CodecAlias, FileName, ExitOnErrorF=False).source_set
 
 def __AUX_get_transformation(encoder, CharCode):
     # Returns the encoding for the given character code, 

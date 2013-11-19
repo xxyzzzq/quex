@@ -5,7 +5,7 @@ Multiple Inheritance
 
 Quex allows multiple inheritance, i.e. a mode can inherit more than one base
 mode.  Multiple inheritance is a potential cause of confusion when it comes to
-pattern match resolution or event handler sequence. The resolution sequence
+pattern match resolution or incidence handler sequence. The resolution sequence
 follows the 'depth-first approach'. As an example consider the following 
 mode hierarchie: 
 

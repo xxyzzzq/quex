@@ -346,6 +346,8 @@ def plug_state_sequence_for_trigger_set_sequence(sm, StartStateIdx, EndStateIdx,
     global FullRange
     assert L <= 6
 
+    bad_range = FullRange.inverse()
+
     s_idx = StartStateIdx
     # For the common bytes it is not essential what list is considered, take list no. 0.
     for trigger_set in XList[0][:DIdx]:
@@ -364,7 +366,7 @@ def plug_state_sequence_for_trigger_set_sequence(sm, StartStateIdx, EndStateIdx,
     frs_db = {}
     for trigger_set_seq in XList:
         # How many bytes at the end trigger on 'Min->Max'
-        sbw_idx = EndStateIdx
+        sbw_idx  = EndStateIdx
         last_idx = EndStateIdx
         i = L - 1
         while i > DIdx and i != 0:

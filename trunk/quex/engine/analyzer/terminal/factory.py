@@ -15,11 +15,11 @@ import re
 Match_Lexeme = re.compile("\\bLexeme\\b", re.UNICODE)
 
 class TerminalStateFactory:
-    def __init__(self, ModeName, IncidenceDb, PatternList, 
+    def __init__(self, ModeName, IncidenceDb, CounterDb, CounterDefaultF, 
                  IndentationSupportF, BeginOfLineSupportF):
 
-        self.line_column_count_db, \
-        self.default_counter_f     = TerminalStateFactory.__prepare_line_column_count_db(PatternList)
+        self.line_column_count_db = CounterDb
+        self.default_counter_f    = CounterDefaultF
 
         self.incidence_db = IncidenceDb
 
@@ -35,23 +35,6 @@ class TerminalStateFactory:
         self.rtz_on_after_match_f    = self.collect_code(IncidenceDb.get(E_IncidenceIDs.AFTER_MATCH))
 
         self.mode_name = ModeName
-
-    @staticmethod
-    def __prepare_line_column_count_db(PatternList):
-        LanguageDB = Setup.language_db
-
-        default_counter_f = False
-        result = {}
-        for pattern in PatternList:
-            requires_default_counter_f, \
-            count_text                  = counter_for_pattern.get(pattern)
-            count_text = "".join(LanguageDB.REPLACE_INDENT(count_text))
-
-            default_counter_f |= requires_default_counter_f
-
-            result[pattern.incidence_id()] = count_text
-
-        return result, default_counter_f
 
     def do(self, IncidenceId, TheCodeFragment):
         if   isinstance(IncidenceId, (int, long)):              

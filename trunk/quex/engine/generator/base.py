@@ -22,10 +22,12 @@ import quex.engine.analyzer.core                       as     analyzer_generator
 from   quex.engine.analyzer.state.core                 import ReloadState
 from   quex.engine.analyzer.terminal.factory           import TerminalStateFactory
 import quex.engine.analyzer.engine_supply_factory      as     engine_supply_factory
-from   quex.engine.interval_handling                   import NumberSet, Interval
-from   quex.input.files.counter_db                     import CounterDB
+from   quex.engine.interval_handling                   import NumberSet, Interval, NumberSet_All
+from   quex.input.files.counter_db                     import CounterDB, \
+                                                              CounterCoderData
 from   quex.input.files.counter_setup                  import LineColumnCounterSetup_Default
 from   quex.input.regular_expression.construct         import Pattern
+import quex.output.cpp.counter_for_pattern             as     counter_for_pattern
 
 from   quex.engine.tools                               import all_isinstance, \
                                                               none_is_None
@@ -53,10 +55,6 @@ class GeneratorBase:
         # must be called before any code transformation.
         assert none_is_None(pattern.count_info() for pattern in PatternList)
 
-        # (*) Misc
-        self.on_after_match_f = E_IncidenceIDs.AFTER_MATCH in IncidenceDb
-        self.mode_name        = ModeName
-
         # (*) Core SM, Pre-Context SM, ...
         #     ... and sometimes backward input position SMs.
         self.sm,                    \
@@ -64,11 +62,13 @@ class GeneratorBase:
         self.bipd_sm_db,            \
         self.pre_context_sm_id_list = self.__prepare_main_state_machines(PatternList)
 
+        self.counter_db, \
+        self.default_character_counter_required_f = self.__prepare_line_column_count_db(PatternList)
+
         # (*) Terminal States
-        self.terminal_state_db,                     \
-        self.default_character_counter_required_f = \
-                    self.__prepare_terminals(IncidenceDb, PatternList,
-                                             IndentationSupportF, BeginOfLineSupportF)
+        self.terminal_db = self.__prepare_terminals(ModeName, 
+                                                    IncidenceDb, PatternList,
+                                                    IndentationSupportF, BeginOfLineSupportF)
 
     def __prepare_main_state_machines(self, PatternList):
         # -- setup of state machine lists and id lists
@@ -84,10 +84,27 @@ class GeneratorBase:
                dict((incidence_id, sm) for incidence_id, sm in incidence_id_and_bipd_sm_list), \
                [ sm.get_id() for sm in pre_context_sm_list ]
 
-    def __prepare_terminals(self, IncidenceDb, PatternList, 
+    def __prepare_line_column_count_db(self, PatternList):
+        LanguageDB = Setup.language_db
+
+        default_counter_f = False
+        result = {}
+        for pattern in PatternList:
+            requires_default_counter_f, \
+            count_text                  = counter_for_pattern.get(pattern)
+            count_text = "".join(LanguageDB.REPLACE_INDENT(count_text))
+
+            default_counter_f |= requires_default_counter_f
+
+            result[pattern.incidence_id()] = count_text
+
+        return result, default_counter_f
+
+    def __prepare_terminals(self, ModeName, IncidenceDb, PatternList, 
                             IndentationSupportF, BeginOfLineSupportF):
 
-        factory = TerminalStateFactory(self.mode_name, IncidenceDb, PatternList, 
+        factory = TerminalStateFactory(ModeName, IncidenceDb, 
+                                       self.counter_db, self.default_character_counter_required_f, 
                                        IndentationSupportF, BeginOfLineSupportF)
 
         result = {}
@@ -106,7 +123,7 @@ class GeneratorBase:
         result[E_IncidenceIDs.END_OF_STREAM] = factory.do_OnEndOfStream()
         result[E_IncidenceIDs.FAILURE]       = factory.do_OnFailure()
 
-        return result, factory.default_counter_f
+        return result
 
     def __prepare_sm_lists(self, PatternList):
         # -- Core state machines of patterns
@@ -125,218 +142,233 @@ class GeneratorBase:
         ]
         return state_machine_list, pre_context_sm_list, bipd_sm_list
 
-class Generator(GeneratorBase):
-    def __init__(self, ModeName, PatternList, IncidenceDb, BeginOfLineSupportF, IndentationSupportF):
-        GeneratorBase.__init__(self, ModeName, PatternList, IncidenceDb, BeginOfLineSupportF, IndentationSupportF)
-        self.reload_state_forward  = ReloadState(engine_supply_factory.FORWARD)
-        self.reload_state_backward = ReloadState(engine_supply_factory.BACKWARD_PRE_CONTEXT) # Important: 'BACKWARD'
+# MAIN:      sm --> analyzer
+#            sm_txt --> code_analyzer
+#            terminal_txt --> code_terminals
+#
+# PRE_SM:    pre_sm --> analyzer
+#            pre_sm_txt --> code_analyzer
+#            terminal = begin of core
+#
+# BIPD_SM-s: bipd_sm -> analyzer
+#            bipd_sm_txt -> code_analyzer
+#            termina = terminal for which BIPD operated
+#
+# COUNT_SM:  count_db --> count_sm
+#            analyzer  = get_analyzer
+#            modify analyzer
+#            terminal = exit_door_id
+#
+# SKIPER_SM:
+#
+# RANGE_SKIPPER_SM:
+#
+# NESTER_RANGE_SKIPPER_SM:
+#
+# INDENTATION_DETECTOR_SM:
 
-    def code_reload_procedures(self):
-        txt = []
-        txt.extend(reload_state_coder.do(self.reload_state_forward))
-        txt.extend(reload_state_coder.do(self.reload_state_backward))
-        return txt
+def do_main(SM, BipdEntryDoorIdDb):
+    """Main pattern matching state machine (forward).
+    ---------------------------------------------------------------------------
+    Micro actions are: line/column number counting, position set/reset,
+    last acceptance setting/reset, lexeme start pointer set/reset, setting
+    terminating zero for lexeme/reset, setting last character. 
 
-    def code_pre_context_state_machine(self):
-        LanguageDB = Setup.language_db
+            DropOut     --> FAILURE
+            BLC         --> ReloadStateForward
+            EndOfStream --> END_OF_STREAM
 
-        if self.pre_context_sm is None: 
-            return []
+    Variables (potentially) required:
 
-        txt, analyzer = Generator.code_state_machine(self.pre_context_sm, 
-                                                     engine.BACKWARD_PRE_CONTEXT) 
+            position, PositionRegisterN, last_acceptance, input.
+    """
+    txt, analyzer = do_state_machine(SM, engine.Class_FORWARD(BipdEntryDoorIdDb))
 
-        self.reload_state_backward.absorb(analyzer.reload_state)
+    # Number of different entries in the position register map
+    position_register_n = len(set(analyzer.position_register_map.itervalues()))
+    # Position registers
+    if position_register_n == 0:
+        variable_db.require("position",          Initial = "(void*)0x0", Type = "void*")
+        variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % position_register_n)
+    else:
+        variable_db.require_array("position", ElementN = position_register_n,
+                                  Initial  = "{ " + ("0, " * (position_register_n - 1) + "0") + "}")
+        variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % position_register_n)
 
-        txt.append("\n%s:" % dial_db.get_label_by_door_id(DoorID.global_end_of_pre_context_check()))
-        # -- set the input stream back to the real current position.
-        #    during backward lexing the analyzer went backwards, so it needs to be reset.
-        txt.append("    %s\n" % LanguageDB.INPUT_P_TO_LEXEME_START())
+    if analyzer.last_acceptance_variable_required():
+        variable_db.require("last_acceptance")
 
-        return txt
+    return txt, analyzer.reload_state
 
-    def code_main_state_machine(self, BipdEntryDoorIdDb=None):
-        LanguageDB    = Setup.language_db 
+def do_pre_context(SM, PreContextSmIdList):
+    """Pre-context detecting state machine (backward).
+    ---------------------------------------------------------------------------
+    Micro actions are: pre-context fullfilled_f
 
-        sm_txt,       \
-        terminal_txt, \
-        analyzer      = self.code_state_machine_core(engine.Class_FORWARD(BipdEntryDoorIdDb), False)
+            DropOut     --> Begin of 'main' state machine.
+            BLC         --> ReloadStateBackward
+            EndOfStream --> 'error'
 
-        self.reload_state_forward.absorb(analyzer.reload_state)
+    Variables (potentially) required:
 
-        # Number of different entries in the position register map
-        self.__position_register_n                 = len(set(analyzer.position_register_map.itervalues()))
-        self.__last_acceptance_variable_required_f = analyzer.last_acceptance_variable_required()
+            pre_context_fulfilled_f[N] --> Array of flags for pre-context
+                                           indication.
+    RETURNS: [0] generated code text
+             [1] reload state BACKWARD, to be generated later.
+    """
+    LanguageDB = Setup.language_db
 
-        return sm_txt + terminal_txt 
+    if SM is None: 
+        return [], None
 
-    def code_state_machine_core(self, EngineType, SimpleF):
-        LanguageDB = Setup.language_db
+    txt, analyzer = do_state_machine(SM, engine.BACKWARD_PRE_CONTEXT) 
 
-        sm_txt, analyzer = Generator.code_state_machine(self.sm, EngineType)
-        assert all_isinstance(sm_txt, (str, unicode, IfDoorIdReferencedCode, int))
+    txt.append("\n%s:" % dial_db.get_label_by_door_id(DoorID.global_end_of_pre_context_check()))
+    # -- set the input stream back to the real current position.
+    #    during backward lexing the analyzer went backwards, so it needs to be reset.
+    txt.append("    %s\n" % LanguageDB.INPUT_P_TO_LEXEME_START())
 
-        if SimpleF:
-            lexeme_macro_definition_str = ""
-            reentry_preparation_str     = ""
-        else:
-            lexeme_macro_definition_str = LanguageDB.TERMINAL_LEXEME_MACRO_DEFINITIONS()
-            reentry_preparation_str     = LanguageDB.REENTRY_PREPARATION(self.pre_context_sm_id_list, 
-                                                                         self.terminal_state_db.get(E_IncidenceIDs.AFTER_MATCH))
+    for sm_id in PreContextSmIdList:
+        variable_db.require("pre_context_%i_fulfilled_f", Index = sm_id)
 
-            # Pattern match terminals goto 'Re-entry' by default
-            for incidence_id, terminal_state in self.terminal_state_db.iteritems():
-                if   incidence_id == E_IncidenceIDs.END_OF_STREAM: continue
-                elif incidence_id == E_IncidenceIDs.FAILURE:       continue
-                elif incidence_id == E_IncidenceIDs.AFTER_MATCH:   continue
-                terminal_state.code_fragment.append_text("\n    %s" % LanguageDB.GOTO_BY_DOOR_ID(DoorID.global_reentry_preparation()))
+    return txt, analyzer.reload_state
 
-        terminal_states_txt = LanguageDB.TERMINAL_CODE(self.terminal_state_db) 
-        assert all_isinstance(terminal_states_txt, (str, unicode, IfDoorIdReferencedCode, int))
+def do_backward_input_position_detectors(BipdDb):
+    result = []
+    bipd_entry_door_id_db = {}
+    for incidence_id, bipd_sm in BipdDb.iteritems():
+        txt, analyzer = do_state_machine(bipd_sm, engine.Class_BACKWARD_INPUT_POSITION(incidence_id)) 
+        bipd_entry_door_id_db[incidence_id] = analyzer.get_action_at_state_machine_entry().door_id
+        result.extend(txt)
+    return result, bipd_entry_door_id_db
 
-        terminal_txt = [ lexeme_macro_definition_str ]
-        terminal_txt.extend(terminal_states_txt)
-        terminal_txt.append(reentry_preparation_str)
+def do_reload_procedures(ReloadForwardState, ReloadBackwardState):
+    """Lazy (delayed) code generation of the forward and backward reloaders. 
+    Any state who needs reload may 'register' in a reloader. This registering may 
+    happen after the code generation of forward or backward state machine.
+    """
+    # Variables that tell where to go after reload success and reload failure
+    if Setup.buffer_based_analyzis_f:               
+        return
 
-        return sm_txt, terminal_txt, analyzer
+    txt = []
+    if ReloadForwardState is not None:
+        txt.extend(reload_state_coder.do(ReloadForwardState))
+    if ReloadBackwardState is not None:
+        txt.extend(reload_state_coder.do(ReloadBackwardState))
 
-    def code_backward_input_position_detection(self):
-        result = []
-        entry_door_id_db = {}
-        for incidence_id, bipd_sm in self.bipd_sm_db.iteritems():
-            txt, analyzer = Generator.code_state_machine(bipd_sm, engine.Class_BACKWARD_INPUT_POSITION(incidence_id)) 
-            entry_door_id_db[incidence_id] = analyzer.get_action_at_state_machine_entry().door_id
-            result.extend(txt)
-            self.reload_state_backward.absorb(analyzer.reload_state)
-        return result, entry_door_id_db
+    variable_db.require("target_state_else_index")  # upon reload failure
+    variable_db.require("target_state_index")       # upon reload success
 
-    def state_router(self):
-        routed_address_set = dial_db.routed_address_set()
-        # If there is only one address subject to state routing, then the
-        # state router needs to be implemented.
-        #if len(routed_address_set) == 0:
-        #    return []
+    return txt
 
-        # Add the address of 'terminal_end_of_file()' if it is not there, already.
-        # (It should: assert address_eof in routed_address_set
-        address_eof        = dial_db.get_address_by_door_id(DoorID.global_terminal_end_of_file()) 
-        routed_address_set.add(address_eof)
-        dial_db.mark_label_as_gotoed(dial_db.get_label_by_address(address_eof))
+def do_state_router():
+    routed_address_set = dial_db.routed_address_set()
+    # If there is only one address subject to state routing, then the
+    # state router needs to be implemented.
+    #if len(routed_address_set) == 0:
+    #    return []
 
-        routed_state_info_list = state_router_generator.get_info(routed_address_set)
-        return state_router_generator.do(routed_state_info_list) 
+    # Add the address of 'terminal_end_of_file()' if it is not there, already.
+    # (It should: assert address_eof in routed_address_set
+    address_eof        = dial_db.get_address_by_door_id(DoorID.incidence(E_IncidenceIDs.END_OF_STREAM)) 
+    routed_address_set.add(address_eof)
+    dial_db.mark_label_as_gotoed(dial_db.get_label_by_address(address_eof))
 
-    def variable_definitions(self):
-        LanguageDB = Setup.language_db
+    routed_state_info_list = state_router_generator.get_info(routed_address_set)
+    return state_router_generator.do(routed_state_info_list) 
 
-        # Variable to store the current input
-        variable_db.require("input") 
+def do_variable_definitions():
+    LanguageDB = Setup.language_db
 
-        # Pre-Context Flags 
-        for sm_id in self.pre_context_sm_id_list:
-            variable_db.require("pre_context_%i_fulfilled_f", Index = sm_id)
+    # Target state index
+    variable_db.require("target_state_index", Condition_ComputedGoto=False) 
 
-        # Position registers
-        if self.__position_register_n == 0:
-            variable_db.require("position",          Initial = "(void*)0x0", Type = "void*")
-            variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % self.__position_register_n)
-        else:
-            variable_db.require_array("position", ElementN = self.__position_register_n,
-                                      Initial  = "{ " + ("0, " * (self.__position_register_n - 1) + "0") + "}")
-            variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % self.__position_register_n)
-    
-        # Storage of 'last acceptance'
-        if self.__last_acceptance_variable_required_f:
-            variable_db.require("last_acceptance")
+    # Following function refers to the global 'variable_db'
+    return LanguageDB.VARIABLE_DEFINITIONS(variable_db)
 
-        # Target state index
-        variable_db.require("target_state_index", Condition_ComputedGoto=False) 
+def do_state_machine(sm, EngineType): 
+    assert len(sm.get_orphaned_state_index_list()) == 0
+    LanguageDB = Setup.language_db
 
-        # Variables that tell where to go after reload success and reload failure
-        if not Setup.buffer_based_analyzis_f:               # Reload requires:
-            variable_db.require("target_state_else_index")  # upon reload failure
-            variable_db.require("target_state_index")       # upon reload success
+    txt = []
+    # -- [optional] comment state machine transitions 
+    if Setup.comment_state_machine_f: 
+        LanguageDB.COMMENT_STATE_MACHINE(txt, sm)
 
-        # Following function refers to the global 'variable_db'
-        return Setup.language_db.VARIABLE_DEFINITIONS(variable_db)
+    # -- implement the state machine itself
+    analyzer = analyzer_generator.do(sm, EngineType)
+    return do_analyzer(analyzer), analyzer
 
-    def code_function(self, FunctionBody, VariableDefs, ModeNameList):
-        LanguageDB = Setup.language_db
+def do_analyzer(analyzer): 
+    LanguageDB = Setup.language_db
 
-        analyzer_function = LanguageDB["$analyzer-func"](self.mode_name,
-                                                         Setup,
-                                                         VariableDefs, 
-                                                         FunctionBody, 
-                                                         ModeNameList) 
+    state_machine_code = state_machine_coder.do(analyzer)
+    LanguageDB.REPLACE_INDENT(state_machine_code)
+    # Variable to store the current input
+    variable_db.require("input") 
+    return state_machine_code
 
-        header_txt = LanguageDB.HEADER_DEFINITIONS(self.on_after_match_f) 
-        assert all_isinstance(header_txt, (str, unicode))
+def do_terminals(TerminalDb, SimpleF=False, AfterTerminalDoorId=None):
+    LanguageDB = Setup.language_db
 
-        analyzer_txt = get_plain_strings(analyzer_function)
-        assert all_isinstance(analyzer_txt, (str, unicode))
+    lexeme_macro_definition_str = ""
+    if not SimpleF:
+        lexeme_macro_definition_str = LanguageDB.TERMINAL_LEXEME_MACRO_DEFINITIONS()
 
-        return header_txt + analyzer_txt
+        # Pattern match terminals goto 'Re-entry' by default
+        if AfterTerminalDoorId is None: atdid = DoorID.global_reentry_preparation()
+        else:                           atdid = AfterTerminalDoorId
 
-    @staticmethod
-    def code_state_machine(sm, EngineType): 
-        assert len(sm.get_orphaned_state_index_list()) == 0
-        LanguageDB = Setup.language_db
+        for incidence_id, terminal_state in TerminalDb.iteritems():
+            if   incidence_id == E_IncidenceIDs.END_OF_STREAM: continue
+            elif incidence_id == E_IncidenceIDs.FAILURE:       continue
+            elif incidence_id == E_IncidenceIDs.AFTER_MATCH:   continue
 
-        txt = []
-        # -- [optional] comment state machine transitions 
-        if Setup.comment_state_machine_f:
-            LanguageDB.COMMENT_STATE_MACHINE(txt, sm)
+            terminal_state.code_fragment.append_text("\n    %s" % LanguageDB.GOTO_BY_DOOR_ID(atdid))
 
-        # -- implement the state machine itself
-        analyzer           = analyzer_generator.do(sm, EngineType)
-        state_machine_code = state_machine_coder.do(analyzer)
-        LanguageDB.REPLACE_INDENT(state_machine_code)
+    terminal_states_txt = LanguageDB.TERMINAL_CODE(TerminalDb) 
+    assert all_isinstance(terminal_states_txt, (str, unicode, IfDoorIdReferencedCode, int))
 
-        txt.extend(state_machine_code)
+    txt = [ lexeme_macro_definition_str ]
+    txt.extend(terminal_states_txt)
 
-        return txt, analyzer
+    return txt
 
-class LoopGenerator(Generator):
+def do_reentry_preparation(PreContextSmIdList, TerminalDb):
+    LanguageDB = Setup.language_db
+    return LanguageDB.REENTRY_PREPARATION(PreContextSmIdList, 
+                                          TerminalDb.get(E_IncidenceIDs.AFTER_MATCH))
+
+class LoopGenerator(GeneratorBase):
     @classmethod
-    def do(cls, CounterDB, IteratorName, OnContinue, OnExit, CharacterSet=None, ReloadF=False, 
-           OnBeforeReload=None, OnAfterReload=None):
+    def do(cls, CounterDb, AfterExitDoorId, CharacterSet=None, CheckLexemeEndF=False, ReloadF=False, GlobalReloadState=None):
         """Buffer Limit Code --> Reload
            Skip Character    --> Loop to Skipper State
            Else              --> Exit Loop
         """
-        assert isinstance(OnContinue, list)
-        assert OnExit is None or isinstance(OnExit, list)
-        assert isinstance(ReloadF, bool)
         assert CharacterSet is None or isinstance(CharacterSet, NumberSet)
 
-        # Implement the core loop _________________________________________________
-        tm,                    \
-        column_count_per_chunk = CounterDB.get_count_command_map(CharacterSet)
+        if CharacterSet is None:
+            CharacterSet = NumberSet_All()
 
-        on_entry,              \
-        on_exit                = CounterDB.get_entry_exit_commands(column_count_per_chunk)
+        ccd      = CounterCoderData(CounterDb, CharacterSet, AfterExitDoorId)
+        analyzer = ccd.get_analyzer(GlobalReloadState, CheckLexemeEndF=CheckLexemeEndF)
+        code     = state_machine_coder.do(analyzer)
 
-        before_reload_action,  \
-        after_reload_action    = CounterDB.get_reload_commands(IteratorName, column_count_per_chunk, ReloadF)
+        if ReloadF and not GlobalReloadState:
+            reload_code = Generator.code_reload_procedures(analyzer.reload_state, None)
+            code.extend(reload_code)
+            variable_db.require("position",          Initial = "(void*)0x0", Type = "void*")
+            variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % 0)
 
-        if OnExit is None:
-            assert not tm.has_action_id(E_IncidenceIDs.EXIT_LOOP)
-        tm.insert_after_action_id(E_IncidenceIDs.EXIT_LOOP,       OnExit)
-        tm.insert_after_action_id(E_IncidenceIDs.GOOD_TRANSITION, OnContinue)
-
-        # 'BeforeReloadAction not None' forces a transition to RELOAD_PROCEDURE upon
-        # buffer limit code.
-        implementation_type, \
-        loop_txt             = cls.code_action_map(tm, IteratorName, 
-                                                   before_reload_action, after_reload_action, OnContinue)
-
+        variable_db.require("input") 
         # Upon reload, the reference pointer may have to be added. When the reload is
         # done the reference pointer needs to be reset. 
-        if column_count_per_chunk is not None:
+        if ccd.column_count_per_chunk is not None:
             variable_db.require("reference_p")
 
-        #return implementation_type, entry_action, loop_txt
-        return implementation_type, loop_txt, entry_action, exit_action
+        return code
 
     @classmethod
     def code_action_map(cls, TM, IteratorName, 
@@ -512,7 +544,7 @@ class LoopGenerator(Generator):
         reload_label = dial_db.get_label_by_address(reload_adr) 
         LanguageDB.code_generation_reload_label_set(reload_label)
 
-        address = dial_db.get_address_by_door_id(DoorID.global_terminal_end_of_file())
+        address = dial_db.get_address_by_door_id(DoorID.incidence(E_IncidenceIDs.END_OF_STREAM))
         dial_db.mark_address_as_routed(address)
         LanguageDB.code_generation_on_reload_fail_adr_set(address)
 

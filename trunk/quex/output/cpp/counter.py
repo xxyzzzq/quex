@@ -4,7 +4,10 @@ _______________________________________________________________________________
 """
 from   quex.engine.generator.base                   import LoopGenerator
 from   quex.engine.generator.languages.variable_db  import variable_db
-from   quex.engine.analyzer.door_id_address_label   import Label
+from   quex.engine.analyzer.door_id_address_label   import Label, dial_db
+from   quex.engine.analyzer.commands                import CommandList, \
+                                                           InputPToLexemeStartP, \
+                                                           GotoDoorIdIfInputPLexemeEnd
 
 from   quex.blackboard import setup as Setup, \
                               DefaultCounterFunctionDB, \
@@ -40,84 +43,52 @@ def get(counter_db, Name):
     if function_name is not None:
         return function_name, None # Implementation has been done before.
 
-    implementation_type, \
-    loop_txt,            \
-    entry_action,        \
-    exit_action          = LoopGenerator.do(counter_db, 
-                             IteratorName = "iterator",
-                             OnContinue   = [ 1, "continue;" ],
-                             OnExit       = None,
-                             ReloadF      = False)
-
     function_name  = "QUEX_NAME(%s_counter)" % Name
-    implementation = __frame(function_name, implementation_type, 
-                             loop_txt, entry_action, exit_action)
+
+    return_door_id = dial_db.new_door_id()
+    code = LoopGenerator.do(counter_db, 
+                            AfterExitDoorId = return_door_id,
+                            CheckLexemeEndF = True)
+
+    implementation = __frame(function_name, code, return_door_id) 
 
     DefaultCounterFunctionDB.enter(counter_db, function_name)
 
     return function_name, implementation
 
-def __frame(FunctionName, ImplementationType, LoopTxt, EntryAction, ExitAction):
+def __frame(FunctionName, CodeTxt, ReturnDoorId):
     LanguageDB = Setup.language_db
 
-    prolog  = [  \
+    txt = [  \
           "#ifdef __QUEX_OPTION_COUNTER\n" \
         + "static void\n" \
         + "%s(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* LexemeBegin, QUEX_TYPE_CHARACTER* LexemeEnd)\n" \
           % FunctionName \
         + "{\n" \
         + "#   define self (*me)\n" \
-        + "    QUEX_TYPE_CHARACTER* iterator    = LexemeBegin;\n" 
     ]
 
-    if ImplementationType == E_MapImplementationType.STATE_MACHINE:
-        prolog.append("    QUEX_TYPE_CHARACTER  input       = (QUEX_TYPE_CHARACTER)0;\n")
-        on_failure_action = [     
-            "%s:\n" % Label.global_terminal_failure(), 
-            1, "QUEX_ERROR_EXIT(\"State machine failed.\");\n" 
-        ]
-    else:
-        on_failure_action = []
-
-
-    if variable_db.has_key("reference_p"):
-        prolog.append(
-             "#   if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)\n" 
-           + "    const QUEX_TYPE_CHARACTER* reference_p = LexemeBegin;\n" 
-           + "#   endif\n")
-
-    # There is no 'ExitCharacterSet' in a counter, since a counter works
-    # on a pattern which has already matched. It only ends at the LexemeEnd.
-    # No character can be half-part parsed. Thus, 'character_begin_p' shall
-    # not have been used at this point in time.
-    assert not variable_db.has_key("character_begin_p")
-
-    prolog.extend(EntryAction)
-    prolog.append(
-         "    __QUEX_IF_COUNT_SHIFT_VALUES();\n" \
-       + "\n" \
-       + "    __quex_assert(LexemeBegin <= LexemeEnd);\n" \
-       + "    for(iterator=LexemeBegin; iterator < LexemeEnd; ) {\n")
-    
-    LanguageDB.INDENT(LoopTxt)
-               
-    epilogue = []
-    epilogue.append("\n    }\n")
-    epilogue.append(
-        "    __quex_assert(iterator == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */\n")
-    epilogue.extend(ExitAction)
-    epilogue.append("   return;\n");
-    epilogue.extend(on_failure_action)
-    epilogue.append(
-         "#  undef self\n" 
-       + "}\n"
-       + "#endif /* __QUEX_OPTION_COUNTER */"
+    print "#variable_db.keys:", variable_db
+    # Following function refers to the global 'variable_db'
+    txt.extend(LanguageDB.VARIABLE_DEFINITIONS(variable_db))
+    # if variable_db.has_key("reference_p"):
+    #    txt.append( "#   if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)\n" + "    const QUEX_TYPE_CHARACTER* reference_p = LexemeBegin;\n" + "#   endif\n") 
+    txt.append(
+         "    __QUEX_IF_COUNT_SHIFT_VALUES();\n\n"
+       + "    __quex_assert(LexemeBegin <= LexemeEnd);\n"
+       + "    %s\n" % LanguageDB.INPUT_P_TO_LEXEME_START() \
     )
 
-    # (*) Putting it all together _____________________________________________
-    result = prolog
-    result.extend(LoopTxt)
-    result.extend(epilogue)
+    txt.extend(CodeTxt)
 
-    return "".join(LanguageDB.GET_PLAIN_STRINGS(result))
+    txt.append(
+         "%s:\n" % dial_db.get_label_by_door_id(ReturnDoorId) \
+       + "    __quex_assert(iterator == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */\n" \
+       + "   return;\n" \
+       + "#  undef self\n" \
+       + "}\n" \
+       + "#endif /* __QUEX_OPTION_COUNTER */\n" 
+    )
+
+    return "".join(LanguageDB.GET_PLAIN_STRINGS(txt))
 
