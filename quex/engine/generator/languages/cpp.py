@@ -391,7 +391,7 @@ def __terminal_on_end_of_stream(Terminal):
         "     * tokens can be filled after the termination token.                    */\n"
         "    RETURN;\n"
     )
-    return __terminally(Terminal.get_code(), Label.global_terminal_end_of_file(), Name = "END_OF_STREAM")
+    return __terminally(Terminal.get_code(), Label.incidence(E_IncidenceIDs.END_OF_STREAM), Name = "END_OF_STREAM")
 
 def __terminal_on_failure(Terminal):
     return __terminally(Terminal.get_code(), Label.incidence(E_IncidenceIDs.FAILURE), 

@@ -13,7 +13,7 @@ if "--hwut-info" in sys.argv:
     sys.exit()
 
 def test(CodecName):
-    trafo_info          = codec_db.get_codec_transformation_info(CodecName)
+    trafo_info          = codec_db.CodecTransformationInfo(CodecName)
     code_str, code0_str = codec_converter_helper._do(trafo_info, CodecName)
     fh = open("converter-tester.h", "w")
     fh.write(code_str + "\n" + code0_str)

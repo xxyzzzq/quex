@@ -1,15 +1,25 @@
-Event Handling
-==============
+Incidence Handling
+==================
 
 User activity triggered by the lexical analyser is not restricted to 'on
 pattern match' as it is implemented by pattern-action pairs.  Instead, quex
-allows the definition of event handlers for several events. Those event
-handlers can contain user written code which is executed as soon as the
-particular event arrives. Examples for events are 'on_match' which is triggered
-whenever a pattern matches, 'on_indentation' whenever there is a transition
-from whitespace to non-whitespace after newline, and so on. Event handlers are
-tied to modes, thus they are defined inside modes. An event handler of a mode A
-is only armed as long as the lexical analyser is in that particular mode.
+allows the definition of incidence handlers for several 'incidences'. 
+
+.. note:: The term 'incidence' is chosen deliberately instead of 'event'. 
+   The intend is to emphasize the difference to 'events' in state machines.
+   An incidence is something 'big' that happend during analysis such as 
+   a pattern match or the arrival at end-of-stream. Events in state machines
+   are more 'atomic' in the sense that they trigger state transitions. Since
+   Quex's business is closely related to state machines it had to be avoided
+   to refer to two things with the same name. 
+
+An incidence handlers can contain user written code which is executed as soon
+as the particular incidence arrives. Examples for incidences are 'on_match' which is
+triggered whenever a pattern matches, 'on_indentation' whenever there is a
+transition from whitespace to non-whitespace after newline, and so on. Incidence
+handlers are tied to modes, thus they are defined inside modes. An incidence
+handler of a mode A is only armed as long as the lexical analyser is in that
+particular mode.
 
 The following example shows how entry and exit of a mode may be used to 
 send tokens that have been accumulated during analysis:
@@ -26,7 +36,7 @@ send tokens that have been accumulated during analysis:
         ...
     }
 
-The 'on_indentation' event handler may be used to create Python-like indentation
+The 'on_indentation' incidence handler may be used to create Python-like indentation
 based languages--as shown in the following example:
 
 .. code-block:: cpp
@@ -45,7 +55,7 @@ based languages--as shown in the following example:
         }
 
         {P_BACKSLASHED_NEWLINE} {
-            self.disable_next_indentation_event();
+            self.disable_next_indentation_incidence();
         }
         ...
     }

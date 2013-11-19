@@ -978,6 +978,10 @@ class NumberSet(object):
         return txt
 
 # Range of code points that are covered by Unicode
-UnicodeInterval = Interval(0x0, 0x110000)
+def UnicodeInterval():
+    return Interval(0x0, 0x110000)
+
+def NumberSet_All():
+    return NumberSet(Interval(-sys.maxint, sys.maxint))
 
 

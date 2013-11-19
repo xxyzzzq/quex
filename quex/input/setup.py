@@ -247,17 +247,18 @@ class NotificationDB:
     #            different versions. Otherwise, updates of quex may cause
     #            compatibility issues.
     #
-    # Notification Name:            Notification ID:
-    token_id_ignored_files_report   = 0
-    message_on_extra_options        = 1
-    error_on_dominated_pattern      = 2
-    error_on_special_pattern_same   = 3
-    error_on_special_pattern_outrun = 4
-    error_on_special_pattern_subset = 5
-    warning_on_no_token_queue       = 6
-    warning_usage_of_undefined_token_id_name = 7
-    warning_repeated_token_not_yet_defined   = 8
+    # Notification Name:                             Notification ID:
+    token_id_ignored_files_report                    = 0
+    message_on_extra_options                         = 1
+    error_on_dominated_pattern                       = 2
+    error_on_special_pattern_same                    = 3
+    error_on_special_pattern_outrun                  = 4
+    error_on_special_pattern_subset                  = 5
+    warning_on_no_token_queue                        = 6
+    warning_usage_of_undefined_token_id_name         = 7
+    warning_repeated_token_not_yet_defined           = 8
     warning_token_id_prefix_appears_in_token_id_name = 9
+    warning_codec_error_with_non_unicode             = 10
 
 DEPRECATED = { 
   "XX_input_pattern_file": 

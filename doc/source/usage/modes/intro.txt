@@ -2,7 +2,7 @@ Modes
 ======
 
 A lexical analyzer mode referes to a behavior of the analyzer engine.  More
-precisely, it defines a set of pattern-action pairs and event handlers that are
+precisely, it defines a set of pattern-action pairs and incidence handlers that are
 exclusively active when the analyzer is in a particular mode. The reason for that
 might be syntactical. Imagine a nested mini-language in a 'mother' language that
 has interferences of its patterns with the pattern of the 'mother' language. For example,
@@ -31,7 +31,7 @@ a reduced syntax. Since, not the whole C-language features need to be present
 in those regions it might make sense to have them parsed in something like
 a ``C_PREPROCESSOR`` mode. 
 
-The following sections elaborate on the characteristics of modes, event
+The following sections elaborate on the characteristics of modes, incidence
 handlers in modes, mode inheritance, the features and options to define modes. 
 
 .. toctree:: 

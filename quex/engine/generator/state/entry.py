@@ -5,6 +5,7 @@ from   quex.engine.analyzer.door_id_address_label        import dial_db, \
                                                                 Label
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 import quex.engine.generator.state.entry_door_tree       as     entry_door_tree
+from   quex.engine.tools                                 import none_is_None
 
 from quex.blackboard import setup as Setup, \
                             E_StateIndices, \
@@ -69,6 +70,7 @@ def do_node(txt, ActionDb, Node, LastChildF=False, DoneDoorIdSet=None):
     if DoneDoorIdSet is None or Node.door_id not in DoneDoorIdSet:
         # Careful: "GotoParentF = not LastChildF" because of 'DoneDoorIdSet'
         code_action(txt, Node, ActionDb, GotoParentF=True) 
+        # assert none_is_None(txt)
 
 def code_action(txt, Node, ActionDb, GotoParentF):
     LanguageDB = Setup.language_db

@@ -54,7 +54,7 @@ which are available to access the matched lexeme. In detail they are:
    temporarily zero-terminated for during the pattern action. This happens *only*
    if quex detects the identifier ``Lexeme`` inside the code fragment.
    
-   .. note:: If the lexeme is to be referred to longer outside the action or event 
+   .. note:: If the lexeme is to be referred to longer outside the action or incidence 
              handler, then the length or the end pointer has to be stored along with 
              the lexeme. This is not necessary if the default token class is used 
              because it copies the string into a ``string`` object.
@@ -219,9 +219,9 @@ Analyzis Continuation
 If the token policy ``users_token`` is applied the analyzer returns after each
 sending of a token. When the token policy ``queue`` is used the analyzer
 continues its analyzis until it hits the safety border in the queue. An
-exception to this is the reaction to the end of file event, i.e.
+exception to this is the reaction to the end of file incidence, i.e.
 ``on_end_of_stream`` or ``<<EOF>>``. By default, the analyzer returns. This is
-to prevent sending tokens after the ``TERMINATION`` token.  Without an action
+to princidence sending tokens after the ``TERMINATION`` token.  Without an action
 defined for 'end of stream' or 'failure', the analyzer returns a
 ``TERMINATION`` token, by default.
 
@@ -240,7 +240,7 @@ defined for 'end of stream' or 'failure', the analyzer returns a
    an included file.
 
    The behavior is there to help the user, not to bother him. It is to 
-   prevent subtle errors where the token queue contains tokens beyond the
+   princidence subtle errors where the token queue contains tokens beyond the
    terminating token that signified the end of a file.
 
 

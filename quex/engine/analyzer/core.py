@@ -65,8 +65,13 @@ from   operator         import attrgetter
 
 def do(SM, EngineType=engine.FORWARD):
 
-    analyzer = __main_analysis(SM, EngineType)
+    # Generate Analyzer from StateMachine
+    analyzer = Analyzer(SM, EngineType)
+    # Optimize the Analyzer
+    analyzer = optimizer.do(analyzer)
+
     # AnalyzerState.transition_map:    Interval --> DoorID
+    prepare_DoorIDs(analyzer)
 
     # [Optional] Combination of states into MegaState-s.
     if len(Setup.compression_type_list) != 0:
@@ -79,18 +84,15 @@ def do(SM, EngineType=engine.FORWARD):
     # -- The 'reload state' does certain things dependent on the from what state
     #    it is entered.
     # -- The states have a dedicated entry from after the reload procedure.
+
+    # (The following is a null operation, if the analyzer.engine_type does not
+    #  require reload preparation.)
     for state in analyzer.state_db.itervalues():
-        state.prepare_for_reload(analyzer)
+        state.prepare_for_reload(analyzer) 
 
     return analyzer
 
-def __main_analysis(SM, EngineType):
-    # Generate Analyzer from StateMachine
-    analyzer = Analyzer(SM, EngineType)
-
-    # Optimize the Analyzer
-    analyzer = optimizer.do(analyzer)
-
+def prepare_DoorIDs(analyzer):
     # Assign DoorID-s to transition actions and relate transitions to DoorID-s.
     # ('.prepare_for_reload()' requires DoorID-s.)
     for state in analyzer.state_db.itervalues():
@@ -106,7 +108,10 @@ class Analyzer:
     """A representation of a pattern analyzing StateMachine suitable for
        effective code generation.
     """
-    def __init__(self, SM, EngineType):
+    def __init__(self, SM, EngineType, GlobalReloadState=None):
+        """GlobalReloadState is only to be specified if the analyzer needs
+        to be embedded in another one.
+        """
         assert isinstance(EngineType, engine.Base), EngineType.__class__.__name__
         assert isinstance(SM, StateMachine)
 
@@ -117,8 +122,8 @@ class Analyzer:
 
         # (*) From/To Databases
         #
-        #     from_db:  state_index --> states reachable from state_index
-        #     to_db:    state_index --> states having a path to state_index
+        #     from_db:  state_index --> states from which it is entered.
+        #     to_db:    state_index --> states which it enters
         #
         self.__from_db, self.__to_db = SM.get_from_to_db()
 
@@ -132,11 +137,14 @@ class Analyzer:
             for state_index in self.__trace_db.iterkeys()]
         )
 
-        self.reload_state = ReloadState(EngineType=self.__engine_type)
+        if GlobalReloadState is None:
+            self.reload_state = ReloadState(EngineType=self.__engine_type)
+        else:
+            assert GlobalReloadState.engine_type() == self.__engine_type
+            self.reload_state = GlobalReloadState
 
         self.__mega_state_list          = []
         self.__non_mega_state_index_set = set(state_index for state_index in SM.states.iterkeys())
-
 
         if not EngineType.requires_detailed_track_analysis():
             self.__position_register_map = None
@@ -167,7 +175,7 @@ class Analyzer:
         for mega_state in MegaStateList:
             state_index_set = mega_state.implemented_state_index_set()
             for state_index in state_index_set:
-                del self.__state_db[state_index]
+                self.remove_state(state_index)
 
         self.__mega_state_list          = MegaStateList
         self.__non_mega_state_index_set = set(self.__state_db.iterkeys())
@@ -175,6 +183,11 @@ class Analyzer:
         self.__state_db.update(
            (mega_state.index, mega_state) for mega_state in MegaStateList
         )
+
+    def remove_state(self, StateIndex):
+        if StateIndex in self.__non_mega_state_index_set:
+            self.__non_mega_state_index_set.remove(StateIndex)
+        del self.__state_db[StateIndex]
 
     @property
     def mega_state_list(self):             return self.__mega_state_list
@@ -215,10 +228,9 @@ class Analyzer:
 
         state = AnalyzerState.from_State(OldState, StateIndex, self.engine_type)
 
-        ta = TransitionAction()
-        cl = ta.command_list
+        cmd_list = []
         if self.engine_type.is_BACKWARD_PRE_CONTEXT():
-            cl.extend(
+            cmd_list.extend(
                  PreContextOK(origin.acceptance_id()) for origin in OldState.origins() \
                  if origin.is_acceptance() 
             )
@@ -238,28 +250,31 @@ class Analyzer:
             # 'ForceInputDereferencingF'
             assert StateIndex != self.init_state_index # Empty state machine! --> impossible
 
-            if self.engine_type.is_FORWARD(): cl.append(InputPIncrement())
-            else:                             cl.append(InputPDecrement())
+            if self.engine_type.is_FORWARD(): cmd_list.append(InputPIncrement())
+            else:                             cmd_list.append(InputPDecrement())
         else:
-            if self.engine_type.is_FORWARD(): cl.extend([InputPIncrement(), InputPDereference()])
-            else:                             cl.extend([InputPDecrement(), InputPDereference()])
+            if self.engine_type.is_FORWARD(): cmd_list.extend([InputPIncrement(), InputPDereference()])
+            else:                             cmd_list.extend([InputPDecrement(), InputPDereference()])
+
+        ta = TransitionAction(CommandList.from_iterable(cmd_list))
 
         # NOTE: The 'from reload transition' is implemented by 'prepare_for_reload()'
         for source_state_index in self.__from_db[StateIndex]: 
             assert source_state_index != E_StateIndices.NONE
-            tid = TransitionID(StateIndex, source_state_index, TriggerId=0)
-            state.entry.enter(tid, ta.clone())
+            state.entry.enter(StateIndex, source_state_index, ta.clone())
 
         if StateIndex == self.init_state_index:
-            tid_at_entry = TransitionID(StateIndex, E_StateIndices.NONE, TriggerId=0)
             if self.engine_type.is_FORWARD():
                 ta = TransitionAction(CommandList(InputPDereference()))
-            state.entry.enter(tid_at_entry, ta)
+            state.entry.enter(StateIndex, E_StateIndices.NONE, ta)
 
         return state
                                       
+    def init_state(self):
+        return self.state_db[self.init_state_index]
+
     def get_action_at_state_machine_entry(self):
-        return self.state_db[self.init_state_index].entry.get_action(self.init_state_index, E_StateIndices.NONE)
+        return self.init_state().entry.get_action(self.init_state_index, E_StateIndices.NONE)
 
     def get_depth_db(self):
         """Determine a database which tells about the minimum distance to the initial state.

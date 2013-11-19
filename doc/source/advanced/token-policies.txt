@@ -28,7 +28,7 @@ the user of the lexical analyzer. Token passing in quex can be characterized by
      analyzis results.
 
      The default policy is 'queue' since it is the easiest and safest to handle
-     during analyzis and event handlers.
+     during analyzis and incidence handlers.
 
 The following two sections discuss automatic and user controlled token memory
 management separately. For each memory management type the two token passing
@@ -58,7 +58,7 @@ It has the following advantages:
    * Using a token queue enables the sending of multiple
      tokens as response to a single pattern match. 
       
-   * The events ``on_entry``, ``on_exit``, and ``on_indentation`` 
+   * The incidences ``on_entry``, ``on_exit``, and ``on_indentation`` 
      can be used without much consideration of what happens to the 
      tokens. 
       
@@ -119,14 +119,14 @@ must be stored safely away.
 
 The size of the token queue is constant during run-time. Quex generates the size
 based on the the command line option ``--token-queue-size``. An overflow of the
-queue is prevented since the analyser returns as soon as the queue is full. 
+queue is princidenceed since the analyser returns as soon as the queue is full. 
 
 Then the ``--token-queue-safety-border`` command line flag allows to define a
 safety region. Now, the analyzer returns as soon as the remaining free places
 in the queue are less then the specified number. This ensures that for each
 analyzis step there is a minimum of places in the queue to which it can write
 tokens. In other words, the safety-border corresponds to the maximum number of
-tokens send as reaction to a pattern match, including indentation events and
+tokens send as reaction to a pattern match, including indentation incidences and
 mode transitions.  
 
 For low level interaction with the token queue the following functions are
@@ -183,7 +183,7 @@ The advantages of a token queue are all lost, i.e.
 
    -- No more than one token can be sent per pattern match.
    
-   -- Event handlers better not send any token or it must be sure
+   -- Incidence handlers better not send any token or it must be sure
       that the surrounding patterns do not send token.
 
    -- Only one pattern match can be performed per call to the analyzer
@@ -481,7 +481,7 @@ Token policies enable a fine grain adaption of the lexical analyzer. They
 differ in their efficiency in terms of computation speed and memory
 consumption. Which particular policy is preferable depends on the particular
 application. Token queues are easier to handle since no care has to be 
-taken about tokens being sent from inside event handlers and multiple tokens
+taken about tokens being sent from inside incidence handlers and multiple tokens
 can be sent from inside a single action without much worries. Token queues
 require a little more memory and a little more computation time than 
 single tokens. Token queue can reduce the number of function calls since

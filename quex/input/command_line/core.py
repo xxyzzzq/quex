@@ -124,16 +124,16 @@ def __perform_setup(command_line, argv):
     if setup.buffer_codec in ["utf8", "utf16"]:
         setup.buffer_codec_transformation_info = setup.buffer_codec + "-state-split"
 
-    elif setup.buffer_codec_file != "":
+    elif len(setup.buffer_codec_file) != 0:
         try: 
             setup.buffer_codec = os.path.splitext(os.path.basename(setup.buffer_codec_file))[0]
         except:
             error_msg("cannot interpret string following '--codec-file'")
 
-        setup.buffer_codec_transformation_info = codec_db.get_codec_transformation_info(FileName=setup.buffer_codec_file)
+        setup.buffer_codec_transformation_info = codec_db.CodecTransformationInfo(FileName=setup.buffer_codec_file)
 
     elif setup.buffer_codec != "unicode":
-        setup.buffer_codec_transformation_info = codec_db.get_codec_transformation_info(setup.buffer_codec)
+        setup.buffer_codec_transformation_info = codec_db.CodecTransformationInfo(setup.buffer_codec)
 
     if setup.buffer_codec != "unicode":
         setup.buffer_element_size_irrelevant = True
@@ -195,7 +195,7 @@ def __perform_setup(command_line, argv):
                   DontExitF=True)
 
     setup.converter_f = False
-    if setup.converter_iconv_f or setup.converter_icu_f:
+    if setup.converter_iconv_f or setup.converter_icu_f or len(setup.converter_user_new_func) != 0:
         setup.converter_f = True
 
     # The only case where no converter helper is required is where ASCII 

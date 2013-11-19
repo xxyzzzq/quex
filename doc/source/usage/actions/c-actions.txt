@@ -5,7 +5,7 @@ C/C++ Code Segments
 
 Alternatively to the convenient definition of actions in terms of sending tokens
 and mode transition, more sophisticated behavior can be specified by inserting
-code fragments directly as pattern-actions or event handlers. The syntax for 
+code fragments directly as pattern-actions or incidence handlers. The syntax for 
 such definitions is simply to enclose the code in curly brackets as in the following
 example 
 
@@ -40,7 +40,7 @@ can be accessed via
 
 .. data:: self
 
-   self is a reference to the analyzer inside pattern actions and event handlers.
+   self is a reference to the analyzer inside pattern actions and incidence handlers.
 
 The following send macros are available:
 
@@ -95,7 +95,7 @@ The following send macros are available:
 .. warning::
 
    Relevant for token passing policy *users_token*.  With this token policy no
-   tokens can be sent inside event handlers.
+   tokens can be sent inside incidence handlers.
 
 The actual mechanism of sending consists of three steps:
 
@@ -150,14 +150,14 @@ The current mode of the lexical analyzer can be queried using the functions
 
 .. cfunction:: const int           mode_id() const;
 
-If one wants to avoid the call of exit and enter event handlers, then modes can
+If one wants to avoid the call of exit and enter incidence handlers, then modes can
 also set brutally using the member functions:
 
 .. cfunction:: void set_mode_brutally(const int ModeID);
 
 .. cfunction:: void set_mode_brutally(const QuexMode& Mode);
 
-Using these functions only the current mode is adapted, but no event handlers
+Using these functions only the current mode is adapted, but no incidence handlers
 are called. This also means that mode transition control is turned off.
 Inadmissible transitions triggered with these functions cannot be detected
 during run-time.

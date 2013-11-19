@@ -91,11 +91,13 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
         return super(Command, self).__new__(self, Id, Content, Hash)
 
     def clone(self):         
-        if hasattr(self.content, "clone"): 
+        if self.content is None:
+            content = None
+        elif hasattr(self.content, "clone"): 
             content = self.content.clone()
         else:
-            content = tuple(copy(x) for x in self.content)
-        return Command(self.id, content, self.my_hash, self.cost)
+            content = deepcopy(self.content)
+        return Command(self.id, content, self.my_hash)
 
     def get_pretty_string(self):
         assert False, "Use self.__str__() instead!"
@@ -209,7 +211,7 @@ class AccepterContent:
 E_InputPAccess = Enum("WRITE",     # writes value to 'x'
                       "READ",      # reads value of 'x'
                       "NONE",      # does nothing to 'x'
-                      # --> TODO "BORDER",    # commands cannot be moved before or after this command
+                      "BRANCH",    # commands cannot be moved before or after this command
                       "E_InputAccess_DEBUG")
 
 #______________________________________________________________________________
@@ -244,7 +246,10 @@ class CommandInfo(namedtuple("CommandInfo_tuple", ("cost", "access", "content_ty
 #______________________________________________________________________________
 class CommandFactory:
     db = {
-        E_Commands.Accepter:                         CommandInfo(1, E_InputPAccess.NONE,  AccepterContent),
+        E_Commands.Accepter:                         CommandInfo(1, E_InputPAccess.NONE,   AccepterContent),
+        E_Commands.GotoDoorId:                       CommandInfo(1, E_InputPAccess.BRANCH, ("door_id",)),
+        E_Commands.GotoDoorIdIfInputPLexemeEnd:      CommandInfo(1, E_InputPAccess.BRANCH, ("door_id",)),
+        E_Commands.InputPToLexemeStartP:             CommandInfo(1, E_InputPAccess.WRITE),
         E_Commands.InputPDecrement:                  CommandInfo(1, E_InputPAccess.WRITE),
         E_Commands.InputPDereference:                CommandInfo(1, E_InputPAccess.READ),
         E_Commands.InputPIncrement:                  CommandInfo(1, E_InputPAccess.WRITE),
@@ -262,7 +267,6 @@ class CommandFactory:
         E_Commands.PrepareAfterReload:               CommandInfo(1, E_InputPAccess.NONE,   ("on_success_door_id", "on_failure_door_id")),
         E_Commands.StoreInputPosition:               CommandInfo(1, E_InputPAccess.READ,   ("pre_context_id", "position_register", "offset")),
         E_Commands.TemplateStateKeySet:              CommandInfo(1, E_InputPAccess.NONE,   ("state_key",)),
-        # E_Commands.GotoDoorId:                       CommandInfo(1, E_InputPAccess.BORDER, ("door_id",)),
         # CountColumnN_ReferenceSet
         # CountColumnN_ReferenceAdd
         # CountColumnN_Add
@@ -285,6 +289,7 @@ class CommandFactory:
             elif L == 1: content = content_type(ParameterList[0])
             elif L == 2: content = content_type(ParameterList[0], ParameterList[1])
             elif L == 3: content = content_type(ParameterList[0], ParameterList[1], ParameterList[2])
+
         return Command(Id, content)
 
 def StoreInputPosition(PreContextID, PositionRegister, Offset):
@@ -314,6 +319,9 @@ def InputPDecrement():
 def InputPDereference():
     return CommandFactory.do(E_Commands.InputPDereference)
 
+def InputPToLexemeStartP():
+    return CommandFactory.do(E_Commands.InputPToLexemeStartP)
+
 def LexemeStartToReferenceP():
     return CommandFactory.do(E_Commands.LexemeStartToReferenceP)
 
@@ -332,34 +340,59 @@ def ColumnCountAdd(Value):
 def ColumnCountGridAdd(Value):
     return CommandFactory.do(E_Commands.ColumnCountGridAdd, (GridSize,))
 
-def ColumnCountGridAddWithReferenceP(Value, IteratorName):
-    return CommandFactory.do(E_Commands.ColumnCountGridAddWithReferenceP, (GridSize,))
+def ColumnCountGridAddWithReferenceP(Value, PointerName):
+    return CommandFactory.do(E_Commands.ColumnCountGridAddWithReferenceP, (Value, PointerName,))
 
 def LineCountAdd(Value):
     return CommandFactory.do(E_Commands.LineCountAdd, (Value,))
 
-def LineCountAddWithReferenceP(Value, IteratorName):
-    return CommandFactory.do(E_Commands.LineCountAddWithReferenceP, (Value,))
+def LineCountAddWithReferenceP(Value, PointerName):
+    return CommandFactory.do(E_Commands.LineCountAddWithReferenceP, (Value, PointerName))
 
 def GotoDoorId(DoorId):
     return CommandFactory.do(E_Commands.GotoDoorId, (DoorId,))
+
+def GotoDoorIdIfInputPLexemeEnd(DoorId):
+    return CommandFactory.do(E_Commands.GotoDoorIdIfInputPLexemeEnd, (DoorId,))
 
 def Accepter():
     return CommandFactory.do(E_Commands.Accepter)
 
 class CommandList(list):
-    """CommandList -- a list of commands.
+    """CommandList -- a list of commands -- Intend: 'tuple' => immutable.
     """
     def __init__(self, *CL):
-        list.__init__(self)
-        if len(CL) != 0:
-            self.extend(CL)
+        self.__enter_list(CL)
+
+    def __enter_list(self, CmdList):
+        for cmd in CmdList:
+            assert isinstance(cmd, Command), "%s: %s" % (cmd.__class__, cmd)
+        super(CommandList, self).__init__(CmdList)
 
     @classmethod
     def from_iterable(cls, Iterable):
         result = CommandList()
-        result.extend(Iterable)
+        result.__enter_list(list(Iterable))
         return result
+
+    def concatinate(self, Second):
+        result = CommandList()
+        # As soon as CommandList and Commands are 100% is immutable, 
+        # 'clone' will not be necessary.
+        result.__enter_list([ x.clone() for x in self ] + [ x.clone() for x in Second ])
+        return result
+
+    def cut(self, NoneOfThis):
+        """Delete all commands of SharedTail from this command list.
+        """
+        cmd_list = list(self)
+        i        = len(cmd_list) - 1
+        while i >= 0:
+            if cmd_list[i] in NoneOfThis:
+                del cmd_list[i]
+            i -= 1
+
+        return CommandList.from_iterable(cmd_list)
 
     def clone(self):
         return CommandList.from_iterable(self)
@@ -448,17 +481,8 @@ class CommandList(list):
 
         return CommandList.from_iterable(cmd for cmd, i, k in shared_list) 
 
-    def cut_shared_tail(self, SharedTail):
-        """Delete all commands of SharedTail from this command list.
-        """
-        i = list.__len__(self) - 1
-        while i >= 0:
-            if self[i] in SharedTail:
-                del self[i]
-            i -= 1
-
     def is_empty(self):
-        return list.__len__(self) == 0
+        return super(CommandList, self).__len__() == 0
 
     def cost(self):
         return sum(CommandFactory.db[cmd.id].cost for cmd in self)
@@ -512,6 +536,8 @@ class CommandList(list):
         (2) A position storage does not have to appear twice, leave the first!
             (This may occur due to register set optimization!)
         """
+        for cmd in self:
+            assert isinstance(cmd, Command), "%s" % cmd
 
         # (1) Unconditional rules out conditional
         unconditional_position_register_set = set(
@@ -547,8 +573,6 @@ class CommandList(list):
             i += 1
         return
 
-
-
     def __hash__(self):
         xor_sum = 0
         for cmd in self:
@@ -557,7 +581,7 @@ class CommandList(list):
 
     def __eq__(self, Other):
         if isinstance(Other, CommandList) == False: return False
-        return list.__eq__(self, Other)
+        return super(CommandList, self).__eq__(Other)
 
     def __ne__(self, Other):
         return not self.__eq__(Other)

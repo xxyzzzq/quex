@@ -298,6 +298,9 @@ class TargetMap:
         for number_set in self.__db.values():
             if not number_set.transform(TrafoInfo):
                 complete_f = False
+        # All code points which are not available in the drain's range must
+        # trigger an 'on_codec_error'.
+        self.__db[E_IncidenceIDs.CODEC_ERROR] = TrafoInfo.inv_drain_set.clone()
         return complete_f
             
     def has_one_of_triggers(self, CharacterCodeList):

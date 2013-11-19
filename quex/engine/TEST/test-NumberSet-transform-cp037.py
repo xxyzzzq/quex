@@ -17,7 +17,7 @@ if "--hwut-info" in sys.argv:
 # The codec cp037 is so wonderful, because it shuffles all unicode
 # code points nicely.
 
-trafo_cp037 = codec_db.get_codec_transformation_info("cp037")
+trafo_cp037 = codec_db.CodecTransformationInfo("cp037")
 
 if "1" in sys.argv:
     def test(UC):

@@ -116,7 +116,7 @@ how a keyword pattern is deleted from the list of pattern that are inherited
    }
 
 On the first glance, the ``DELETION`` is an indispensable feature. In the
-above example the identifier pattern would indeed prevent any keyword pattern
+above example the identifier pattern would indeed princidence any keyword pattern
 from matching. Any keyword matches also the identifier, but, since the identifier
 appears in the base mode it has preceedence. The use ``DELETION`` is a
 quick-fix, but a re-design by base mode splitting is the cleaner approach.

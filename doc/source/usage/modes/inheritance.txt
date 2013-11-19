@@ -59,15 +59,15 @@ Pattern-Action Pairs
 
    There are possibilities to influence this behavior to be discussed in <<section>>.
 
-Event Handlers
+Incidence Handlers
 
-   * Event handlers in ``B`` are executed after event handlers of ``A``.
+   * Incidence handlers in ``B`` are executed after incidence handlers of ``A``.
 
-     Note, that event handlers are not expected to perform mode transitions (see 
-     <<section>>) [#f1]_. Also, tokens that are send from inside event handlers
+     Note, that incidence handlers are not expected to perform mode transitions (see 
+     <<section>>) [#f1]_. Also, tokens that are send from inside incidence handlers
      are *implicit* tokens, thus it is expected that those tokens are not
      necessarily tied to concrete lexemes. These assumptions makes the brutal
-     outruling of the base mode over derived mode meaningless. Event handlers
+     outruling of the base mode over derived mode meaningless. Incidence handlers
      of base mode and derived mode may be executed both without an inherent
      source of confusion.
 
@@ -75,7 +75,7 @@ Event Handlers
 Figure :ref:`(this) <fig-mode-inheritance>` shows an example where a mode ``B``
 is derived from  mode ``A``. The mode ``B*`` represents the internal result of
 the result of inheritance: patterns of the base mode *outrule* patterns of the derived mode,
-event handlers of the base mode *preceed* event handlers of the derived mode.
+incidence handlers of the base mode *preceed* incidence handlers of the derived mode.
 
 .. _fig-mode-inheritance:
 
@@ -90,6 +90,6 @@ event handlers of the base mode *preceed* event handlers of the derived mode.
 
 .. rubric:: Footnotes
 
-.. [#f1] An exception is ``on_indentation``. However, this event handler is best placed
+.. [#f1] An exception is ``on_indentation``. However, this incidence handler is best placed
          in a common base mode, so that all modes use the same indentation mechanism.
 

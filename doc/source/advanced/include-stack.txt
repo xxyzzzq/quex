@@ -46,7 +46,7 @@ What happens internally is that the following:
    4. The analyzer switches back to the including file and continues
       the analyzes after the ``#include`` statement.
 
-This simple procedure prevents users from writing the same code multiple times.
+This simple procedure princidences users from writing the same code multiple times.
 Moreover, it supports centralized organization of the code. Scripts or
 configurations that are referred to in many files can be put into a central
 place that is maintained by trustworthy personal ensuring robustness of the
@@ -326,7 +326,7 @@ HOWTO
 
 There are two basic ways to handle the inclusion of files during analyzis.
 First, files can be included from within analyzer actions, i.e. as consequence
-of a pattern match or an event. Second, they can be included from outside when
+of a pattern match or an incidence. Second, they can be included from outside when
 the ``.receive(...)`` function returns some user define ``INCLUDE`` token.  If
 the token policy ``users_token`` is used there is no problem with the second
 solution. Nevertheless, the first solution is more straightforward, causes less
@@ -601,7 +601,7 @@ chapter.  The problem with the remaining token queue, however, can be avoided
 if it is ensured that the ``FILE_NAME`` token comes at the end of a token
 sequence.  This can be done similarly to what was shown in section
 :ref:`sec-include-stack-howto`. The analyzer needs to transit into a dedicated
-mode for reading the file name. On the event of matching the filename, the
+mode for reading the file name. On the incidence of matching the filename, the
 lexical analyzer needs to explicitly ``return``. 
 
 An explicit ``return`` stops the analyzis and the ``.receive(...)`` functions

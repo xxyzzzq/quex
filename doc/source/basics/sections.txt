@@ -21,8 +21,8 @@ in a source file to be treated by quex:
            <option-1> <option-2> ...
       {
            pattern-1  action-1
-           event-1    event-handler-1
-           event-2    event-handler-2
+           incidence-1    incidence-handler-1
+           incidence-2    incidence-handler-2
            pattern-2  action-2
            pattern-3  action-3
       }
@@ -32,7 +32,7 @@ in a source file to be treated by quex:
    modes (see section <<>>). Then options can be specified as a list of html-like
    tags, i.e. bracketed in ``<`` - ``>`` brackets (see section <<>>). An opening curly
    bracket ``{`` opens the region for the definition of pattern-action pairs
-   and event handlers (see section <<>>). Finally, a closing ``}`` terminates the 
+   and incidence handlers (see section <<>>). Finally, a closing ``}`` terminates the 
    definition of a mode.
 
 .. data:: define

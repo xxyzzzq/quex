@@ -125,15 +125,16 @@ class Entry(object):
         if self.__largest_used_door_sub_index < Other.__largest_used_door_sub_index:
             self.__largest_used_door_sub_index = Other.__largest_used_door_sub_index
 
-    def enter(self, TheTransitionID, TheAction):
-        assert isinstance(TheTransitionID, TransitionID)
-        assert isinstance(TheAction,       TransitionAction)
+    def enter(self, ToStateIndex, FromStateIndex, TheAction):
+        assert isinstance(TheAction, TransitionAction)
         #!! It is ABSOLUTELY essential, that the CommandList-s related to actions are
         #!! independent! Each transition must have its OWN CommandList!
         for transition_id, action in self.__db.iteritems():
             assert id(TheAction.command_list) != id(action.command_list) 
 
-        self.__db[TheTransitionID] = TheAction
+        transition_id = TransitionID(ToStateIndex, FromStateIndex, TriggerId=0)
+        self.__db[transition_id] = TheAction
+        return transition_id
 
     def remove_transition_from_states(self, StateIndexSet):
         assert isinstance(StateIndexSet, set)
@@ -150,6 +151,7 @@ class Entry(object):
         """
         for ta in self.__db.itervalues():
             # Catch the accepter, if there is already one, if not create one.
+            print "# ATTENTION: command lists should be immutable!"
             ta.command_list.access_accepter().content.add(PreContextID, AcceptanceID)
 
     def add_StoreInputPosition(self, StateIndex, FromStateIndex, PreContextID, PositionRegister, Offset):
@@ -167,6 +169,12 @@ class Entry(object):
             if command_list[i] == cmd:
                 del command_list[i]
             i -= 1
+
+    def has_transition(self, ToStateIndex, FromStateIndex):
+        for key in self.__db.iterkeys():
+            if key.target_state_index == ToStateIndex and key.source_state_index == FromStateIndex:
+                return True
+        return False
 
     def has_command(self, CmdId):
         assert CmdId in E_Commands

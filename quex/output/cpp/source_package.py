@@ -184,9 +184,10 @@ def do():
         txt += buffer_filler
         if Setup.converter_f:
             txt += buffer_filler_converter
-            if   Setup.converter_icu_f:    txt += buffer_filler_icu
-            elif Setup.converter_iconv_f:  txt += buffer_filler_iconv
-            else:                          assert False
+            if   Setup.converter_icu_f:                   txt += buffer_filler_icu
+            elif Setup.converter_iconv_f:                 txt += buffer_filler_iconv
+            elif len(Setup.converter_user_new_func) != 0: pass
+            else:                                         assert False
         else:
             txt += buffer_filler_plain
 

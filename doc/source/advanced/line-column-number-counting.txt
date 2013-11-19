@@ -263,7 +263,7 @@ explained below:
    It makes sense to use a mode with a ``counter`` definition to multiple
    derived classes as a means to share with them the same counting behavior.
    However, Quex only allows for one ``counter`` definition in a mode
-   hierarchy. The rationale behind this was to prevent the information 
+   hierarchy. The rationale behind this was to princidence the information 
    about the counting behavior being scattered around different modes. 
    Such configurations are prone to be confusing.
 

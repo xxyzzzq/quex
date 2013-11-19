@@ -334,17 +334,17 @@ def __delete_forbidden_ranges(sm, fh):
 
     character_value_limit = Setup.get_character_value_limit()
 
+    unicode_interval = UnicodeInterval()
     for state in sm.states.values():
 
         for target_state_index, trigger_set in state.target_map.get_map().items():
-
             # Make sure, all transitions lie inside the unicode code range 
             interval_list = trigger_set.get_intervals(PromiseToTreatWellF=True)
             assert len(interval_list) != 0
             first = interval_list[0]
             if first.begin == - sys.maxint:
-                if first.end < UnicodeInterval.begin:   range_error_msg(first.end - 1)
-                first.begin = UnicodeInterval.begin
+                if first.end < unicode_interval.begin:   range_error_msg(first.end - 1)
+                first.begin = unicode_interval.begin
                 if first.begin == first.end:            del interval_list[0]
             if len(interval_list) != 0:
                 last  = interval_list[-1]

@@ -284,25 +284,25 @@ code tables consider the standard \cite{Unicode50}. Section
 properties.
 
 Two special rules have to appear isolatedly, out of the context of regular
-expressions. With the following two rules the actions for the event of end of
-file and the failure event can be specified:
+expressions. With the following two rules the actions for the incidence of end of
+file and the failure incidence can be specified:
 
 .. describe:: <<EOF>> 
 
-    the event of an end-of-file (end of data-stream). 
+    the incidence of an end-of-file (end of data-stream). 
 
 .. describe:: <<FAIL>> 
 
-    the event of failure, i.e. no single pattern matched. 
+    the incidence of failure, i.e. no single pattern matched. 
     Note, this rule is of the 'lex' style, but is only available with the 
     quex core engine.
 
 
 This syntax is more 'in recognition' of the traditional `lex` syntax. In fact
-the two event handlers '`on\_failure`' and '`on\_end\_of\_stream`' are
+the two incidence handlers '`on\_failure`' and '`on\_end\_of\_stream`' are
 a one-to-one correspondance to what is mentioned above. Possibly some later
 versions will totally dismiss the lex related engine core, and then also
-these constructs will disappear in favor of the mentioned two event handlers.
+these constructs will disappear in favor of the mentioned two incidence handlers.
 
 *Operations*    
 

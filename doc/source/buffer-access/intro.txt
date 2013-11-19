@@ -443,7 +443,7 @@ setup. The handling of the loop exit is shown below.
     (``WHITESPACE``). Thus, ``WHITESPACE`` will be the last token before the
     TERMINATION token. The reconsideration triggered by the ``TERMINATION`` token
     is only concerned with the last token, i.e. ``WHITESPACE``, but does not go
-    back to the start of ``le``.  Eventually, the token sequence will be:
+    back to the start of ``le``.  Incidenceually, the token sequence will be:
     ``ARTICLE``, ``SPACE``, ``WORLD`` instead of a single token ``NEWSPAPER``
     which matches ``le monde``.
     
@@ -645,7 +645,7 @@ implements an example.
 
                 QUEX_OPTION_TERMINATION_ZERO_DISABLED
 
-   prevents this, but the buffer limit code must still be set at the borders
+   princidences this, but the buffer limit code must still be set at the borders
    or the end of the content.
 
 
