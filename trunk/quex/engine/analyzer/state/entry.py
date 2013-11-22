@@ -12,6 +12,7 @@ from   quex.blackboard                            import setup as Setup, \
                                                          E_TriggerIDs
 
 from   operator import attrgetter
+from   collections import defaultdict
 
 class Entry(object):
     """________________________________________________________________________
@@ -43,7 +44,7 @@ class Entry(object):
                             action_db.categorize()
 
     ensures that
-                                  1      1
+                                  1     1
                         DoorID  <---------> CommandList
    
     In words: 
@@ -65,11 +66,12 @@ class Entry(object):
               '---------------------------------------------------'
     """
 
-    __slots__ = ("__db", "__largest_used_door_sub_index")
+    __slots__ = ("__db", "__largest_used_door_sub_index", "__trigger_id_db")
 
     def __init__(self):
         self.__db                          = TypedDict(TransitionID, TransitionAction)
-        self.__largest_used_door_sub_index = 0  # '0' is used for 'Door 0', i.e. reload entry
+        self.__largest_used_door_sub_index = 0    # '0' is used for 'Door 0', i.e. reload entry
+        self.__trigger_id_db               = {}   # (ToState, FromState) --> max. used trigger_id
 
     def get(self, TheTransitionID):
         return self.__db.get(TheTransitionID)
@@ -116,11 +118,9 @@ class Entry(object):
     def absorb(self, Other):
         """Absorbs all, but the 'reload transitions'.
         """
-        self.__db.update(
-            (transition_id, action)
-            for transition_id, action in Other.__db.iteritems()
-            if not TransitionID.is_from_reload(transition_id)
-        )
+        for tid, action in Other.__db.iteritems():
+            if TransitionID.is_from_reload(tid): continue
+            self.enter(tid.target_state_index, tid.source_state_index, action)
 
         if self.__largest_used_door_sub_index < Other.__largest_used_door_sub_index:
             self.__largest_used_door_sub_index = Other.__largest_used_door_sub_index
@@ -132,9 +132,28 @@ class Entry(object):
         for transition_id, action in self.__db.iteritems():
             assert id(TheAction.command_list) != id(action.command_list) 
 
-        transition_id = TransitionID(ToStateIndex, FromStateIndex, TriggerId=0)
+        transition_id = TransitionID(ToStateIndex, FromStateIndex, 
+                                     TriggerId=self.__get_trigger_id(ToStateIndex, FromStateIndex))
         self.__db[transition_id] = TheAction
         return transition_id
+
+    def enter_before(self, ToStateIndex, FromStateIndex, TheCommandList):
+        transition_id = TransitionID(ToStateIndex, FromStateIndex, TriggerId=0)
+        ta = self.__db.get(transition_id)
+        # A transition_action cannot be changed, once it has a DoorID assigned to it.
+        assert ta.door_id is None
+        ta.command_list = TheCommandList.concatinate(ta.command_list)
+
+    def __get_trigger_id(self, ToStateIndex, FromStateIndex):
+        ft = (ToStateIndex, FromStateIndex)
+        tmp = self.__trigger_id_db.get(ft)
+        # "FromStateIndex == E_StateIndices.NONE" indicates the entry into the
+        # state machine. There cannot be more than one entry into the state 
+        # machine. Thus, it cannot appear twice.
+        assert FromStateIndex != E_StateIndices.NONE or tmp is None
+        if tmp is None: self.__trigger_id_db[ft]  = 0; tmp = 0;
+        else:           self.__trigger_id_db[ft] += 1
+        return tmp
 
     def remove_transition_from_states(self, StateIndexSet):
         assert isinstance(StateIndexSet, set)

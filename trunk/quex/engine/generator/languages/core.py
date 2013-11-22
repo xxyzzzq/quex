@@ -186,7 +186,6 @@ class LanguageDB_Cpp(dict):
             return "".join(txt)
 
         elif Cmd.id == E_Commands.ColumnCountReferencePSet:
-            print "#Cmd.content:", Cmd.content.__class__
             pointer_name = Cmd.content.pointer_name
             offset       = Cmd.content.offset
             if offset != 0:
@@ -213,9 +212,10 @@ class LanguageDB_Cpp(dict):
                                   Cmd.content.value, IfMacro="__QUEX_IF_COUNT_COLUMNS") 
 
         elif Cmd.id == E_Commands.ColumnCountGridAddWithReferenceP:
-            txt = [ 0, self.REFERENCE_P_COLUMN_ADD(txt, IteratorName, ColumnCountPerChunk),
-                    0, self.GRID_STEP("self.counter._column_number_at_end", "size_t",
-                                      Cmd.content.value, IfMacro="__QUEX_IF_COUNT_COLUMNS") ]
+            txt = [] 
+            self.REFERENCE_P_COLUMN_ADD(txt, Cmd.content.pointer_name, Cmd.content.column_n_per_chunk),
+            txt.extend(self.GRID_STEP("self.counter._column_number_at_end", "size_t",
+                                      Cmd.content.grid_size, IfMacro="__QUEX_IF_COUNT_COLUMNS")) 
             self.REFERENCE_P_RESET(txt, Cmd.content.pointer_name) 
             return "".join(txt)
 
@@ -391,9 +391,9 @@ class LanguageDB_Cpp(dict):
         add_str = "%s += %s" % (VariableName, self.MULTIPLY_WITH(grid_with_str, StepN))
 
         if IfMacro is None: 
-            return [ cut_str, ";\n", 0, add_str, ";\n" ]
+            return [ "%s;\n" % cut_str, "%s;\n" % add_str ]
         else:               
-            return [ "%s(%s);\n" % (IfMacro, cut_str), 0, "%s(%s);\n" % (IfMacro, add_str) ]
+            return [ "%s(%s);\n" % (IfMacro, cut_str), "%s(%s);\n" % (IfMacro, add_str) ]
 
     def MULTIPLY_WITH(self, FactorStr, NameOrValue):
         if isinstance(NameOrValue, (str, unicode)):

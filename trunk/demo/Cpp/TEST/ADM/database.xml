@@ -1,16 +1,16 @@
-<test-database execution-time-sec="15.41" date="Sat Oct  5 03:33:13 2013">
+<test-database execution-time-sec="20.58" date="Fri Nov 22 22:34:21 2013">
     <last-used-diff-display-program name=""/>
     <group name="demo/000">
-        <test title="Single Mode Example" time-sum-sec="0.67"> 
-            <application file-name="000.sh" info-request-time="1355705370L" vanished="False"/>
+        <test title="Single Mode Example" time-sum-sec="5.84"> 
+            <application file-name="000.sh" info-request-time="1381662251L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="0.38" crc="-584949883"/>
-               <choice name="DEBUG" result="FAIL" time_sec="0.29" crc="-584949883"/>
+               <choice name="NDEBUG" result="OK" time_sec="3.13" crc="-584949883"/>
+               <choice name="DEBUG" result="OK" time_sec="2.71" crc="-584949883"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/001">
-        <test title="Multiple Modes, Mode Transitions" time-sum-sec="0.63"> 
+        <test title="Multiple Modes, Mode Transitions" time-sum-sec="0.62"> 
             <application file-name="001.sh" info-request-time="1355705370L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="FAIL" time_sec="0.29" crc="1133630677"/>
@@ -28,7 +28,7 @@
         </test>
     </group>
     <group name="demo/003">
-        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="1.36"> 
+        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="1.37"> 
             <application file-name="003.sh" info-request-time="1355705370L" vanished="False"/>
             <choice-list number="5" same_result="True">
                <choice name="BPC=2" result="FAIL" time_sec="0.28" crc="766281751"/>
@@ -96,7 +96,7 @@
         </test>
     </group>
     <group name="demo/008">
-        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="0.97"> 
+        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="0.96"> 
             <application file-name="008.sh" info-request-time="1355705370L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="FAIL" time_sec="0.49" crc="-1669907923"/>

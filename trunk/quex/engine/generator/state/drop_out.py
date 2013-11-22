@@ -36,6 +36,13 @@ def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateInd
             ])
         return
 
+    elif EngineType.is_CHARACTER_COUNTER():
+        txt.extend([
+            1, '__quex_debug("Character counting terminated.\\n");\n',
+            1, "%s\n" % LanguageDB.GOTO_BY_DOOR_ID(DropOut.door_id) \
+        ])
+        return
+
     info = DropOut.trivialize()
     # (1) Trivial Solution
     if info is not None:

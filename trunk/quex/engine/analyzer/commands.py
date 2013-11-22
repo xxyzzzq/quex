@@ -258,10 +258,10 @@ class CommandFactory:
         E_Commands.ColumnCountReferencePSet:         CommandInfo(1, E_InputPAccess.NONE,   ("pointer_name", "offset")),
         E_Commands.ColumnCountReferencePDeltaAdd:    CommandInfo(1, E_InputPAccess.NONE,   ("pointer_name", "column_n_per_chunk")),
         E_Commands.ColumnCountGridAdd:               CommandInfo(1, E_InputPAccess.NONE,   ("grid_size")),
-        E_Commands.ColumnCountGridAddWithReferenceP: CommandInfo(1, E_InputPAccess.NONE,   ("grid_size", "pointer_name")),
+        E_Commands.ColumnCountGridAddWithReferenceP: CommandInfo(1, E_InputPAccess.NONE,   ("grid_size", "pointer_name", "column_n_per_chunk")),
         E_Commands.ColumnCountAdd:                   CommandInfo(1, E_InputPAccess.NONE,   ("value",)),
         E_Commands.LineCountAdd:                     CommandInfo(1, E_InputPAccess.NONE,   ("value",)),
-        E_Commands.LineCountAddWithReferenceP:       CommandInfo(1, E_InputPAccess.NONE,   ("value", "pointer_name")),
+        E_Commands.LineCountAddWithReferenceP:       CommandInfo(1, E_InputPAccess.NONE,   ("value", "pointer_name", "column_n_per_chunk")),
         E_Commands.PathIteratorSet:                  CommandInfo(1, E_InputPAccess.NONE,   ("path_walker_id", "path_id", "offset")),
         E_Commands.PreContextOK:                     CommandInfo(1, E_InputPAccess.NONE,   ("pre_context_id",)),
         E_Commands.PrepareAfterReload:               CommandInfo(1, E_InputPAccess.NONE,   ("on_success_door_id", "on_failure_door_id")),
@@ -340,14 +340,14 @@ def ColumnCountAdd(Value):
 def ColumnCountGridAdd(Value):
     return CommandFactory.do(E_Commands.ColumnCountGridAdd, (GridSize,))
 
-def ColumnCountGridAddWithReferenceP(Value, PointerName):
-    return CommandFactory.do(E_Commands.ColumnCountGridAddWithReferenceP, (Value, PointerName,))
+def ColumnCountGridAddWithReferenceP(Value, PointerName, ColumnNPerChunk):
+    return CommandFactory.do(E_Commands.ColumnCountGridAddWithReferenceP, (Value, PointerName,ColumnNPerChunk))
 
 def LineCountAdd(Value):
     return CommandFactory.do(E_Commands.LineCountAdd, (Value,))
 
-def LineCountAddWithReferenceP(Value, PointerName):
-    return CommandFactory.do(E_Commands.LineCountAddWithReferenceP, (Value, PointerName))
+def LineCountAddWithReferenceP(Value, PointerName, ColumnNPerChunk):
+    return CommandFactory.do(E_Commands.LineCountAddWithReferenceP, (Value, PointerName, ColumnNPerChunk))
 
 def GotoDoorId(DoorId):
     return CommandFactory.do(E_Commands.GotoDoorId, (DoorId,))

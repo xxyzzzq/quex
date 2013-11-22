@@ -52,7 +52,8 @@ class TransitionCodeFactory:
             variable_name = require_scheme_variable(Target.scheme_id, Target.iterable_door_id_scheme(), cls.state, cls.state_db)
             return TransitionCode(LanguageDB.GOTO_BY_VARIABLE("%s[%s]" % (variable_name, cls.state_key_str)))
         else:
-            print "#Target:", Target, Target.__class__
+            print "#Target.class:", Target.__class__
+            print "#Target:", Target
             assert False
 
 class TransitionCode:

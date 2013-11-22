@@ -71,7 +71,8 @@ def do(SM, EngineType=engine.FORWARD):
     analyzer = optimizer.do(analyzer)
 
     # AnalyzerState.transition_map:    Interval --> DoorID
-    prepare_DoorIDs(analyzer)
+    # ('.prepare_for_reload()' requires DoorID-s.
+    analyzer.prepare_DoorIDs()
 
     # [Optional] Combination of states into MegaState-s.
     if len(Setup.compression_type_list) != 0:
@@ -89,18 +90,6 @@ def do(SM, EngineType=engine.FORWARD):
     #  require reload preparation.)
     for state in analyzer.state_db.itervalues():
         state.prepare_for_reload(analyzer) 
-
-    return analyzer
-
-def prepare_DoorIDs(analyzer):
-    # Assign DoorID-s to transition actions and relate transitions to DoorID-s.
-    # ('.prepare_for_reload()' requires DoorID-s.)
-    for state in analyzer.state_db.itervalues():
-        state.entry.categorize(state.index)
-
-    for state in analyzer.state_db.itervalues():
-        if state.transition_map is None: continue
-        state.transition_map = state.transition_map.relate_to_DoorIDs(analyzer, state.index)
 
     return analyzer
 
@@ -269,6 +258,18 @@ class Analyzer:
             state.entry.enter(StateIndex, E_StateIndices.NONE, ta)
 
         return state
+
+    def prepare_DoorIDs(self, door_id_provider=None):
+        """Assign DoorID-s to transition actions and relate transitions to DoorID-s.
+        """
+        for state in self.__state_db.itervalues():
+            state.entry.categorize(state.index)
+
+        for state in self.__state_db.itervalues():
+            if state.transition_map is None: continue
+            state.transition_map = state.transition_map.relate_to_DoorIDs(self, state.index, door_id_provider)
+
+        return 
                                       
     def init_state(self):
         return self.state_db[self.init_state_index]

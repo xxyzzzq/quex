@@ -2,7 +2,7 @@
 (C) 2012-2013 Frank-Rene Schaefer
 _______________________________________________________________________________
 """
-from   quex.engine.generator.base                   import LoopGenerator
+import quex.engine.generator.base                   as     generator
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.analyzer.door_id_address_label   import Label, dial_db
 from   quex.engine.analyzer.commands                import CommandList, \
@@ -46,9 +46,9 @@ def get(counter_db, Name):
     function_name  = "QUEX_NAME(%s_counter)" % Name
 
     return_door_id = dial_db.new_door_id()
-    code = LoopGenerator.do(counter_db, 
-                            AfterExitDoorId = return_door_id,
-                            CheckLexemeEndF = True)
+    code           = generator.do_loop(counter_db, 
+                                       AfterExitDoorId = return_door_id,
+                                       CheckLexemeEndF = True)
 
     implementation = __frame(function_name, code, return_door_id) 
 
@@ -68,15 +68,12 @@ def __frame(FunctionName, CodeTxt, ReturnDoorId):
         + "#   define self (*me)\n" \
     ]
 
-    print "#variable_db.keys:", variable_db
     # Following function refers to the global 'variable_db'
     txt.extend(LanguageDB.VARIABLE_DEFINITIONS(variable_db))
-    # if variable_db.has_key("reference_p"):
-    #    txt.append( "#   if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)\n" + "    const QUEX_TYPE_CHARACTER* reference_p = LexemeBegin;\n" + "#   endif\n") 
     txt.append(
+         "    (void)me; (void)LexemeBegin; (void)LexemeEnd;\n"
          "    __QUEX_IF_COUNT_SHIFT_VALUES();\n\n"
        + "    __quex_assert(LexemeBegin <= LexemeEnd);\n"
-       + "    %s\n" % LanguageDB.INPUT_P_TO_LEXEME_START() \
     )
 
     txt.extend(CodeTxt)
