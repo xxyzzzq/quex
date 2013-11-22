@@ -1,4 +1,4 @@
-<test-database execution-time-sec="204.03" date="Tue Nov 19 20:56:14 2013">
+<test-database execution-time-sec="204.88" date="Fri Nov 22 03:21:46 2013">
     <last-used-diff-display-program name=""/>
     <test title="Mode Changes" time-sum-sec="2.25"> 
         <application file-name="test-mode-changes.py" info-request-time="1382770456L" vanished="False"/>
@@ -215,7 +215,7 @@
                <choice name="ANSI-C-PathTemplate" result="OK" time_sec="0.93" crc="1614045300"/>
             </choice-list>
         </test>
-        <test title="Part I" time-sum-sec="8.35"> 
+        <test title="Part I" time-sum-sec="8.36"> 
             <application file-name="test-pseudo_ambiguous_post_conditions.py" info-request-time="1382770456L" vanished="False"/>
             <choice-list number="10" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.58" crc="1455270"/>
@@ -264,7 +264,7 @@
                <choice name="ANSI-C-PathTemplate" result="OK" time_sec="1.04" crc="-680455951"/>
             </choice-list>
         </test>
-        <test title="Tiny Expressions" time-sum-sec="11.04"> 
+        <test title="Tiny Expressions" time-sum-sec="11.90"> 
             <application file-name="test-simple.py" info-request-time="1382770456L" vanished="False"/>
             <choice-list number="12" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.65" crc="90237132"/>
@@ -272,7 +272,7 @@
                <choice name="ANSI-C-CG" result="OK" time_sec="0.71" crc="90237132"/>
                <choice name="Cpp" result="OK" time_sec="1.00" crc="90237132"/>
                <choice name="Cpp_StrangeStream" result="OK" time_sec="0.96" crc="90237132"/>
-               <choice name="Cpp-Template" result="OK" time_sec="0.99" crc="90237132"/>
+               <choice name="Cpp-Template" result="OK" time_sec="1.85" crc="90237132"/>
                <choice name="Cpp-Template-CG" result="OK" time_sec="1.04" crc="90237132"/>
                <choice name="Cpp-Path" result="OK" time_sec="0.94" crc="90237132"/>
                <choice name="Cpp-PathUniform" result="OK" time_sec="1.03" crc="90237132"/>
@@ -289,7 +289,7 @@
                <choice name="ANSI-C-CG" result="OK" time_sec="0.66" crc="-1792493362"/>
             </choice-list>
         </test>
-        <test title="Begin of Line (BOL), End of Line (EOL)" time-sum-sec="11.42"> 
+        <test title="Begin of Line (BOL), End of Line (EOL)" time-sum-sec="11.41"> 
             <application file-name="test-bol-eol.py" info-request-time="1382770456L" vanished="False"/>
             <choice-list number="12" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="FAIL" time_sec="0.65" crc="-1565444249"/>

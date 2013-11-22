@@ -309,7 +309,7 @@ def do_analyzer(analyzer):
     variable_db.require("input") 
     return state_machine_code
 
-def do_terminals(TerminalDb, SimpleF=False, AfterTerminalDoorId=None):
+def do_terminals(TerminalDb, SimpleF=False):
     LanguageDB = Setup.language_db
 
     lexeme_macro_definition_str = ""
@@ -317,15 +317,14 @@ def do_terminals(TerminalDb, SimpleF=False, AfterTerminalDoorId=None):
         lexeme_macro_definition_str = LanguageDB.TERMINAL_LEXEME_MACRO_DEFINITIONS()
 
         # Pattern match terminals goto 'Re-entry' by default
-        if AfterTerminalDoorId is None: atdid = DoorID.global_reentry_preparation()
-        else:                           atdid = AfterTerminalDoorId
+        goto_reentry_str = "\n    %s" % LanguageDB.GOTO_BY_DOOR_ID(DoorID.global_reentry_preparation())
 
         for incidence_id, terminal_state in TerminalDb.iteritems():
             if   incidence_id == E_IncidenceIDs.END_OF_STREAM: continue
             elif incidence_id == E_IncidenceIDs.FAILURE:       continue
             elif incidence_id == E_IncidenceIDs.AFTER_MATCH:   continue
 
-            terminal_state.code_fragment.append_text("\n    %s" % LanguageDB.GOTO_BY_DOOR_ID(atdid))
+            terminal_state.code_fragment.append_text(goto_reentry_str)
 
     terminal_states_txt = LanguageDB.TERMINAL_CODE(TerminalDb) 
     assert all_isinstance(terminal_states_txt, (str, unicode, IfDoorIdReferencedCode, int))
@@ -340,36 +339,40 @@ def do_reentry_preparation(PreContextSmIdList, TerminalDb):
     return LanguageDB.REENTRY_PREPARATION(PreContextSmIdList, 
                                           TerminalDb.get(E_IncidenceIDs.AFTER_MATCH))
 
+def do_loop(CounterDb, AfterExitDoorId, CharacterSet=None, CheckLexemeEndF=False, ReloadF=False, GlobalReloadState=None):
+    """Buffer Limit Code --> Reload
+       Skip Character    --> Loop to Skipper State
+       Else              --> Exit Loop
+    """
+    assert CharacterSet is None or isinstance(CharacterSet, NumberSet)
+
+    if CharacterSet is None:
+        CharacterSet = NumberSet_All()
+
+    ccd                     = CounterCoderData(CounterDb, CharacterSet, AfterExitDoorId)
+    analyzer, exit_terminal = ccd.get_analyzer(engine.CHARACTER_COUNTER, GlobalReloadState, CheckLexemeEndF=CheckLexemeEndF)
+
+    code                    = state_machine_coder.do(analyzer)
+
+    terminal_db = { exit_terminal.incidence_id(): exit_terminal, }
+
+    code.extend(do_terminals(terminal_db, SimpleF=True))
+
+    if ReloadF and not GlobalReloadState:
+        reload_code = Generator.code_reload_procedures(analyzer.reload_state, None)
+        code.extend(reload_code)
+        variable_db.require("position",          Initial = "(void*)0x0", Type = "void*")
+        variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % 0)
+
+    variable_db.require("input") 
+    # Upon reload, the reference pointer may have to be added. When the reload is
+    # done the reference pointer needs to be reset. 
+    if ccd.column_count_per_chunk is not None:
+        variable_db.require("reference_p")
+
+    return code
+
 class LoopGenerator(GeneratorBase):
-    @classmethod
-    def do(cls, CounterDb, AfterExitDoorId, CharacterSet=None, CheckLexemeEndF=False, ReloadF=False, GlobalReloadState=None):
-        """Buffer Limit Code --> Reload
-           Skip Character    --> Loop to Skipper State
-           Else              --> Exit Loop
-        """
-        assert CharacterSet is None or isinstance(CharacterSet, NumberSet)
-
-        if CharacterSet is None:
-            CharacterSet = NumberSet_All()
-
-        ccd      = CounterCoderData(CounterDb, CharacterSet, AfterExitDoorId)
-        analyzer = ccd.get_analyzer(GlobalReloadState, CheckLexemeEndF=CheckLexemeEndF)
-        code     = state_machine_coder.do(analyzer)
-
-        if ReloadF and not GlobalReloadState:
-            reload_code = Generator.code_reload_procedures(analyzer.reload_state, None)
-            code.extend(reload_code)
-            variable_db.require("position",          Initial = "(void*)0x0", Type = "void*")
-            variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % 0)
-
-        variable_db.require("input") 
-        # Upon reload, the reference pointer may have to be added. When the reload is
-        # done the reference pointer needs to be reset. 
-        if ccd.column_count_per_chunk is not None:
-            variable_db.require("reference_p")
-
-        return code
-
     @classmethod
     def code_action_map(cls, TM, IteratorName, 
                         BeforeReloadAction, AfterReloadAction, OnContinue):

@@ -105,17 +105,29 @@ class TransitionMap(list):
         yield prev_end, sys.maxint, TransitionMapA[-1][1], TransitionMapB[-1][1]
         return
 
-    def relate_to_DoorIDs(self, TheAnalyzer, StateIndex):
+    def relate_to_DoorIDs(self, TheAnalyzer, StateIndex, door_id_provider=None):
         """Creates a transition_map that triggers to DoorIDs instead of target states.
+
+        door_id_provider(Analyzer, ToStateIndex, FromStateIndex) -- optionally provides
+         DoorID for a given transition 'FromStateIndex --> ToStateIndex'. This may be
+         used for 'bending' transitions.
         """
         def relate(Target):
             if Target == E_StateIndices.DROP_OUT:
                 return DoorID.drop_out(StateIndex)
+
+            if door_id_provider is not None:
+                door_id = door_id_provider(TheAnalyzer, ToStateIndex=Target, FromStateIndex=StateIndex)
+                if door_id is not None: 
+                    assert isinstance(door_id, DoorID)
+                    return door_id
+
             if Target == E_StateIndices.RELOAD_FORWARD or Target == E_StateIndices.RELOAD_BACKWARD:
-                ts = TheAnalyzer.reload_state
+                te = TheAnalyzer.reload_state.entry
             else:
-                ts = TheAnalyzer.state_db[Target]
-            door_id = ts.entry.get_door_id(StateIndex=Target, FromStateIndex=StateIndex)
+                te = TheAnalyzer.state_db[Target].entry
+
+            door_id = te.get_door_id(StateIndex=Target, FromStateIndex=StateIndex)
             assert door_id is not None, "No DoorID for { from: %s to: %s }i\nentry: %s" % (StateIndex, Target, [tid for tid, ta in ts.entry.iteritems()])
             return door_id
         

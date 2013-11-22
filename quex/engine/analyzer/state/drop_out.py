@@ -181,6 +181,11 @@ class DropOut(object):
 
         return "".join(txt)
 
+class DropOutGotoDoorId(object):
+    __slots__ = ("door_id",)
+    def __init__(self, DoorId):
+        self.door_id = DoorId
+
 class DropOutIndifferent(DropOut):
     def __init__(self):
         DropOut.__init__(self)
