@@ -283,8 +283,8 @@ class Mode:
         # (*) Misc
         self.__abstract_f           = self.__abstract_f_prepare(Other.option_db)
         self.__base_mode_sequence   = base_mode_sequence
-        self.__entry_mode_name_list = options_db.value("entry") # Those can enter this mode.
-        self.__exit_mode_name_list  = options_db.value("exit")  # This mode can exit to those.
+        self.__entry_mode_name_list = options_db.value_list("entry") # Those can enter this mode.
+        self.__exit_mode_name_list  = options_db.value_list("exit")  # This mode can exit to those.
 
     def __abstract_f_prepare(self, OriginalOptionDb):
         """If the mode has incidences and/or patterns defined it is free to be 
@@ -404,9 +404,9 @@ class Mode:
         # (*) Collect pattern recognizers and several 'incidence detectors' in 
         #     state machine lists. When the state machines accept this triggers
         #     an incidence which is associated with an entry in the incidence_db.
-        self.__prepare_skip(ppc_list, OptionsDb.value("skip"), MHI=-4)
-        self.__prepare_skip_range(ppc_list, OptionsDb.value("skip_range"), MHI=-3)
-        self.__prepare_skip_nested_range(ppc_list, OptionsDb.value("skip_nested_range"), MHI=-3)
+        self.__prepare_skip(ppc_list, OptionsDb.value_list("skip"), MHI=-4)
+        self.__prepare_skip_range(ppc_list, OptionsDb.value_list("skip_range"), MHI=-3)
+        self.__prepare_skip_nested_range(ppc_list, OptionsDb.value_list("skip_nested_range"), MHI=-3)
 
         self.__prepare_indentation_counter(ppc_list, OptionsDb.value("indentation"), MHI=-1)
 

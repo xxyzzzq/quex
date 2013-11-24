@@ -7,10 +7,12 @@ from   quex.engine.misc.file_in           import error_msg, \
                                                  read_identifier, \
                                                  verify_word_in_list
 from   quex.engine.misc.file_in           import EndOfStreamException
+from   quex.engine.tools                  import all_isinstance
 
 from   quex.blackboard                    import SourceRef, mode_description_db
 
 from   collections import namedtuple
+from   copy import deepcopy
 import types
 
 #-----------------------------------------------------------------------------------------
@@ -18,12 +20,38 @@ import types
 #-----------------------------------------------------------------------------------------
 class ModeOptionInfo:
     """A ModeOptionInfo is an element of mode_option_info_db."""
-    def __init__(self, Type, Domain=None, Default=-1, UniqueF=False, Name=""):
+    def __init__(self, MultiDefinitionF, OverwriteF, Domain=None, Default=None, ListF=False):
+        assert type(MultiDefinitionF) == bool
+        assert type(OverwriteF) == bool
+        assert type(ListF) == bool
         # self.name = Option see comment above
-        self.type          = Type
-        self.domain        = Domain
-        self.default_value = Default
-        self.name          = Name
+        self.multiple_definition_f = MultiDefinitionF # Can be defined multiple times?
+        self.overwrite_f           = OverwriteF       # Does next definition overwrite previous?
+        self.domain                = Domain
+        self.__content_list_f      = ListF
+        self.__default_value       = Default
+
+    def single_setting_f(self):
+        """If the option can be defined multiple times and is not overwritten, 
+        then there is only one setting for a given name. Otherwise not."""
+        return (not self.multiple_definition_f) or self.overwrite_f
+
+    def content_is_list(self):
+        return self.__content_list_f
+
+    def default_setting(self, ModeName):
+        if self.__default_value is None:
+            return None
+
+        if isinstance(self.__default_value, types.FunctionType):
+            content = self.__default_value()
+        else:
+            content = self.__default_value
+
+        return OptionSetting(content, SourceRef(), ModeName)
+
+
+OptionSetting = namedtuple("OptionSetting", ("value", "sr", "mode_name"))
 
 def __get_mode_name_list():
     return mode_description_db.keys()
@@ -32,35 +60,45 @@ mode_option_info_db = {
    # -- a mode can be inheritable or not or only inheritable. if a mode
    #    is only inheritable it is not printed on its on, only as a base
    #    mode for another mode. default is 'yes'
-   "inheritable":       ModeOptionInfo("single", ["no", "yes", "only"], Default="yes"),
+   "inheritable":       ModeOptionInfo(False, True, ["no", "yes", "only"], Default="yes"),
    # -- a mode can restrict the possible modes to exit to. this for the
    #    sake of clarity. if no exit is explicitly mentioned all modes are
    #    possible. if it is tried to transit to a mode which is not in
    #    the list of explicitly stated exits, an error occurs.
    #    entrys work respectively.
-   "exit":              ModeOptionInfo("list", Default=__get_mode_name_list),
-   "entry":             ModeOptionInfo("list", Default=__get_mode_name_list),
-   # -- a mode can restrict the exits and entrys explicitly mentioned
-   #    then, a derived mode cannot add now exits or entrys
-   "restrict":          ModeOptionInfo("list", ["exit", "entry"], Default=[]),
-   # -- a mode can have 'skippers' that effectivels skip ranges that are out of interest.
-   "skip":              ModeOptionInfo("list", Default=[]), # "multiple: RE-character-set
-   "skip_range":        ModeOptionInfo("list", Default=[]), # "multiple: RE-character-string RE-character-string
-   "skip_nested_range": ModeOptionInfo("list", Default=[]), # "multiple: RE-character-string RE-character-string
+   "exit":              ModeOptionInfo(True, False, Default=__get_mode_name_list, ListF=True),
+   "entry":             ModeOptionInfo(True, False, Default=__get_mode_name_list, ListF=True),
+   # -- a mode can restrict the exits and entrys explicitly mentioned then, a
+   #    derived mode cannot add new exits or entrys.
+   "restrict":          ModeOptionInfo(True, False, ["exit", "entry"], Default=[], ListF=True),
+   # -- a mode can have 'skippers' that effectively skip ranges that are out 
+   #    of interest.
+   "skip":              ModeOptionInfo(True, False), # "multiple: RE-character-set
+   "skip_range":        ModeOptionInfo(True, False), # "multiple: RE-character-string RE-character-string
+   "skip_nested_range": ModeOptionInfo(True, False), # "multiple: RE-character-string RE-character-string
    # -- indentation setup information
-   "indentation":       ModeOptionInfo("single", Default=None, Name="indentation specification"),
+   "indentation":       ModeOptionInfo(False, False),
    # --line/column counter information
-   "counter":           ModeOptionInfo("single", Default=LineColumnCounterSetup_Default, Name="line and column count specification"),
+   "counter":           ModeOptionInfo(False, False, Default=LineColumnCounterSetup_Default),
 }
 
-OptionSetting = namedtuple("OptionSetting", ("value", "sr", "mode_name"))
-
 class OptionDB(dict):
+    """Database of Mode Options
+    ---------------------------------------------------------------------------
+
+                      option name --> [ OptionSetting ]
+
+    If the 'mode_option_info_db[option_name]' mentions that there can be 
+    no multiple definitions or if the options can be overwritten than the 
+    list of OptionSetting-s must be of length '1' or the list does not exist.
+
+    ---------------------------------------------------------------------------
+    """
     def get(self, Key):         assert False # Not to be used.
     def __getitem__(self, Key): assert False # Not to be used
     def __setitem__(self, Key): assert False # Not to be used
 
-    def enter(self, OptionName, Value, SourceReference, ModeName):
+    def enter(self, Name, Value, SourceReference, ModeName):
         """SANITY CHECK:
                 -- which option_db are concatinated to a list
                 -- which ones are replaced
@@ -69,23 +107,53 @@ class OptionDB(dict):
         global mode_option_info_db
 
         # The 'verify_word_in_list()' call must have ensured that the following holds
-        assert mode_option_info_db.has_key(OptionName)
+        assert mode_option_info_db.has_key(Name)
 
         # Is the option of the appropriate value?
-        option_info = mode_option_info_db[OptionName]
+        info = mode_option_info_db[Name]
 
-        if option_info.domain is not None and Value not in option_info.domain:
-            error_msg("Tried to set value '%s' for option '%s'. " % (Value, OptionName) + \
-                      "Though, possible for this option are only: %s." % repr(option_info.domain)[1:-1], fh)
+        if info.domain is not None and Value not in info.domain:
+            error_msg("Tried to set value '%s' for option '%s'. " % (Value, Name) + \
+                      "Though, possible for this option are only: %s." % repr(info.domain)[1:-1], 
+                      SourceReference)
 
-        option_setting = OptionSetting(Value, SourceReference, ModeName)
-        option_info    = mode_option_info_db[OptionName]
-        if option_info.type == "list":
-            dict.setdefault(self, OptionName, []).append(option_setting)
-        elif OptionName not in self: 
-            dict.__setitem__(self, OptionName, option_setting)
-        else:
-            self.__error_double_definition(OptionName, self[OptionName], option_setting)
+        self.__enter_setting(Name, OptionSetting(Value, SourceReference, ModeName))
+
+    def __enter_setting(self, Name, Setting):
+        """Enters a OptionSetting safely into the OptionDB. It checks whether
+        it is already present.
+        """
+        assert Setting is not None
+        assert isinstance(Setting, OptionSetting)
+
+        info = mode_option_info_db[Name]
+        assert (not info.content_is_list()) or     isinstance(Setting.value, list)
+        assert (    info.content_is_list()) or not isinstance(Setting.value, list)
+
+        if Name not in self:
+            dict.__setitem__(self, Name, [ Setting ])
+            return
+
+        if not info.single_setting_f():                   
+            dict.__getitem__(self, Name).append(Setting)
+        elif info.overwrite_f:
+            dict.__setitem__(self, Name, [ Setting ])
+        else:                                        
+            self.__error_double_definition(Name, Setting)
+
+    def __get_setting(self, Name):
+        """RETURNS: [ OptionSetting ] for a given option's Name.
+
+        This function does additional checks for consistency.
+        """
+        setting = dict.get(self, Name)
+        if setting is None: return None
+        assert isinstance(setting, list) 
+        assert all_isinstance(setting, OptionSetting)
+
+        assert (not mode_option_info_db[Name].single_setting_f()) \
+               or len(setting) == 1
+        return setting
 
     @classmethod
     def from_BaseModeSequence(cls, BaseModeSequence):
@@ -95,39 +163,49 @@ class OptionDB(dict):
         result = cls()
         for mode_descr in BaseModeSequence:
             option_db = mode_descr.option_db
-            for name, option_info in mode_option_info_db.iteritems():
-                option_setting = dict.get(option_db, name)
-                if option_setting is None: 
-                    continue
-                elif option_info.type == "list": 
-                    # Need to decouple by means of 'deepcopy'
-                    dict.setdefault(result, name, []).extend(deepcopy(x) for x in option_setting)
-                elif name not in result: 
-                    dict.__setitem__(result, name, option_setting)
-                else:
-                    result.__error_double_definition(name, result[name], option_setting)
+            for name, info in mode_option_info_db.iteritems():
+                setting = option_db.__get_setting(name)
+                if setting is None: continue
+                assert len(setting) == 1               # The setting of a ModeDescription 
+                result.__enter_setting(name, setting[0]) # option_db MUST be of length 1
 
         # Options which have not been set (or inherited) are set to the default value.
-        for name, option_info in mode_option_info_db.iteritems():
+        for name, info in mode_option_info_db.iteritems():
             if name in result: continue
-            if isinstance(option_info.default_value, types.FunctionType):
-                value = option_info.default_value()
-            else:
-                value = option_info.default_value
-
-            option_setting = OptionSetting(value, SourceRef("<default>", 0), mode_name)
-            dict.__setitem__(result, name, option_setting)
+            if info.default_setting(mode_name) is None: continue
+            result.__enter_setting(name, info.default_setting(mode_name))
 
         return result
 
     def value(self, Name):
-        result = dict.get(self, Name)
-        if result is None: return None
-        return result.value
+        """Only scalar options can be asked about their 'value'."""
+        setting = self.__get_setting(Name)
+        if setting is None: return None
+        assert mode_option_info_db[Name].single_setting_f()
 
-    def __error_double_definition(OptionName, OptionBefore, OptionNow):
+        scalar_value = setting[0].value
+        assert not isinstance(scalar_value, list)
+        return scalar_value
+
+    def value_list(self, Name):
+        setting = self.__get_setting(Name)
+        if setting is None: return None
+
+        info = mode_option_info_db[Name]
+        if info.content_is_list():
+            result = []
+            for x in setting:
+                result.extend(x.value)
+        else:
+            result = [ x.value for x in setting ]
+
+        return result
+
+    def __error_double_definition(Name, OptionNow):
         assert isinstance(OptionNow, OptionSetting)
+        OptionBefore = dict.__getitem__(self, Name)[0]
         assert isinstance(OptionBefore, OptionSetting)
+
         txt = "Option '%s' defined twice in "
         if OptionBefore.mode_name == OptionNow.mode_name:
             txt += "mode '%s'." % OptionNow.mode_name
@@ -164,8 +242,10 @@ def parse(fh, new_mode):
     elif identifier == "counter":
         value = counter_setup.parse(fh, IndentationSetupF=False)
 
+    elif identifier in ("entry", "exit", "restrict"):
+        value = read_option_value(fh, ListF=True) # A 'list' of strings
     else:
-        value = read_option_value(fh)
+        value = read_option_value(fh)             # A single string
 
     # Finally, set the option
     new_mode.option_db.enter(identifier, value, source_reference, new_mode.name)
@@ -229,7 +309,7 @@ def read_option_start(fh):
 
     return identifier
 
-def read_option_value(fh):
+def read_option_value(fh, ListF=False):
 
     position = fh.tell()
 
@@ -240,7 +320,7 @@ def read_option_value(fh):
             letter = fh.read(1)
         except EndOfStreamException:
             fh.seek(position)
-            error_msg("missing closing '>' for mode option.", fh)
+            error_msg("missing closing '>' of mode option.", fh)
 
         if letter == "<": 
             depth += 1
@@ -249,5 +329,7 @@ def read_option_value(fh):
             if depth == 0: break
         value += letter
 
-    return value.strip()
+    if not ListF: return value.strip()
+    else:         return [ x.strip() for x in value.split() ]
+
 

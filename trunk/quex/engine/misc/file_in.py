@@ -640,7 +640,10 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=Tr
         file_name = LineN    
         prefix = "internal assert:" + file_name + ":"   
     else:
-        if type(fh) == str:
+        if fh.__class__.__name__ == "SourceRef":
+            line_n   = fh.line_n
+            Filename = fh.file_name
+        elif type(fh) == str:
             line_n = LineN
             Filename = fh 
         else:

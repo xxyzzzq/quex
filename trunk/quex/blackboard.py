@@ -196,7 +196,7 @@ E_Commands = Enum("Accepter",
 #            line_n    = Number of line where code is found.
 #-----------------------------------------------------------------------------------------
 class SourceRef(namedtuple("SourceRef_tuple", ("file_name", "line_n"))):
-    def __new__(self, FileName, LineN):
+    def __new__(self, FileName="<default>", LineN=0):
         assert isinstance(FileName, (str, unicode))
         assert isinstance(LineN, (int, long))
         return super(SourceRef, self).__new__(self, FileName, LineN)
