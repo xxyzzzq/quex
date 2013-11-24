@@ -87,7 +87,7 @@ The possible options for modes to be specified are the following.
 
 .. data:: <restrict: arg>
 
-   Restricts the entry/exit allowances to the listed modes. Following settings for ``arg``
+   Restricts the entry/exit admissions to the listed modes. Following settings for ``arg``
    are possible:
 
    * ``exit``: No mode derived from one of the modes in the list of an ``entry`` option is allowed automatically. 
@@ -98,7 +98,7 @@ The possible options for modes to be specified are the following.
 
    By means of this option, it is possible to implement optimized skippers for 
    regions of the input stream that are of no interest. Whitespace for example
-   can be skipped by definining a ``skip`` option like::
+   can be skipped by defining a ``skip`` option like::
 
       mode MINE : 
       <skip:  [ \t\n]> {

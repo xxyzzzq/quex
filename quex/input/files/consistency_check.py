@@ -54,6 +54,7 @@ def do(ModeDB):
 
     # (*) Entry/Exit Transitions
     for mode in ModeDB.values():
+        if mode.abstract_f(): continue
         __entry_exit_transitions(mode, mode_name_list)
 
     for mode in ModeDB.values():
