@@ -9,12 +9,12 @@ import quex.engine.state_machine.setup_backward_input_position_detector  as setu
 import quex.engine.state_machine.transformation        as     transformation
 import quex.engine.state_machine.algorithm.beautifier  as beautifier
 #                                                         
-from   quex.blackboard           import setup     as Setup, deprecated
+from   quex.blackboard           import setup     as Setup, deprecated, SourceRef
 from   quex.engine.misc.file_in  import error_msg
 import sys
 
 class Pattern(object):
-    __slots__ = ("file_name", "line_n", 
+    __slots__ = ("__sr", # Source Reference (filename, line_n)
                  "__sm", 
                  "__post_context_f", 
                  "__post_context_sm",
@@ -25,20 +25,13 @@ class Pattern(object):
                  "__count_info", 
                  "__alarm_transformed_f")
     def __init__(self, CoreSM, PreContextSM=None, PostContextSM=None, 
-                 BeginOfLineF=False, EndOfLineF=False, 
-                 fh=-1):
+                 BeginOfLineF=False, EndOfLineF=False, fh=-1):
         assert type(BeginOfLineF) == bool
         assert type(EndOfLineF) == bool
         assert isinstance(CoreSM, StateMachine)
         assert PreContextSM is None or isinstance(CoreSM, StateMachine)
 
-        if fh != -1:
-            try:    self.file_name = fh.name
-            except: self.file_name = "<string>"
-            self.line_n = get_current_line_info_number(fh)
-        else:
-            self.file_name = "<string>"
-            self.line_n    = -1
+        self.__sr = SourceRef.from_FileHandle(fh)
 
         # (*) Setup the whole pattern
         self.__sm                         = CoreSM
@@ -80,6 +73,10 @@ class Pattern(object):
 
         self.__validate(fh)
     
+    @property
+    def sr(self):
+        return self.__sr
+
     def incidence_id(self):
         return self.__sm.get_id()
 
@@ -146,7 +143,7 @@ class Pattern(object):
         self.__bipd_sm_to_be_inverted = setup_post_context.do(self.__sm, 
                                                               self.__post_context_sm, 
                                                               self.__post_context_end_of_line_f, 
-                                                              self.file_name, self.line_n) 
+                                                              self.__sr)
 
         if self.__bipd_sm_to_be_inverted is None: 
             return
@@ -165,7 +162,7 @@ class Pattern(object):
         """
         def my_error(Name, Pattern):
             error_msg("Pattern becomes empty after deleting signal character '%s'." % Name,
-                      Pattern.file_name, Pattern.line_n)
+                      Pattern.sr)
 
         for character, name in CharacterList:
             for sm in [self.__sm, self.__pre_context_sm, self.__post_context_sm]:

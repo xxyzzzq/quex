@@ -68,8 +68,10 @@ class UserCodeFragment(CodeFragment):
         return txt
 
 class GeneratedCode(UserCodeFragment):
-    def __init__(self, Data, SourceReference):
+    def __init__(self, IncidenceId, Data, SourceReference):
         assert isinstance(Data, dict)
+        assert IncidenceId in E_IncidenceIDs
+        assert isinstance(SourceReference, SourceRef)
         self.data = Data
         UserCodeFragment.__init__(self, SourceReference=SourceReference)
 

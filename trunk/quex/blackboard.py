@@ -203,7 +203,14 @@ class SourceRef(namedtuple("SourceRef_tuple", ("file_name", "line_n"))):
 
     @staticmethod
     def from_FileHandle(Fh):
-        return SourceRef(Fh.name, get_current_line_info_number(Fh))
+        if Fh != -1:
+            if not hasattr(Fh, "name"): file_name = "<nameless stream>"
+            else:                       file_name = Fh.name
+            line_n = get_current_line_info_number(Fh)
+        else:
+            file_name = "<command line>"
+            line_n    = -1
+        return SourceRef(file_name, line_n)
 
 #-----------------------------------------------------------------------------------------
 # mode_description_db: storing the mode information into a dictionary:

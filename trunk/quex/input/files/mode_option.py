@@ -98,26 +98,52 @@ class OptionDB(dict):
     def __getitem__(self, Key): assert False # Not to be used
     def __setitem__(self, Key): assert False # Not to be used
 
+    @classmethod
+    def from_BaseModeSequence(cls, BaseModeSequence):
+        # BaseModeSequence[-1] = mode itself
+        mode_name = BaseModeSequence[-1].name
+
+        result = cls()
+        for mode_descr in BaseModeSequence:
+            option_db = mode_descr.option_db
+            for name, info in mode_option_info_db.iteritems():
+                setting = option_db.__get_setting(name)
+                if setting is None: continue
+                assert len(setting) == 1               # The setting of a ModeDescription 
+                result.__enter_setting(name, setting[0]) # option_db MUST be of length 1
+
+        # Options which have not been set (or inherited) are set to the default value.
+        for name, info in mode_option_info_db.iteritems():
+            if name in result: continue
+            if info.default_setting(mode_name) is None: continue
+            result.__enter_setting(name, info.default_setting(mode_name))
+
+        return result
+
     def enter(self, Name, Value, SourceReference, ModeName):
-        """SANITY CHECK:
-                -- which option_db are concatinated to a list
-                -- which ones are replaced
-                -- what are the values of the option_db
+        """Enters a new definition of a mode option as it comes from the parser.
+        At this point, it is assumed that the OptionDB belongs to one single
+        ModeDescription and not to a base-mode accumulated Mode. Thus, one
+        option can only be set once, otherwise an error is notified.
         """
         global mode_option_info_db
-
         # The 'verify_word_in_list()' call must have ensured that the following holds
-        assert mode_option_info_db.has_key(Name)
+        assert Name in mode_option_info_db
 
         # Is the option of the appropriate value?
         info = mode_option_info_db[Name]
-
         if info.domain is not None and Value not in info.domain:
             error_msg("Tried to set value '%s' for option '%s'. " % (Value, Name) + \
                       "Though, possible for this option are only: %s." % repr(info.domain)[1:-1], 
                       SourceReference)
 
-        self.__enter_setting(Name, OptionSetting(Value, SourceReference, ModeName))
+        setting = OptionSetting(Value, SourceReference, ModeName)
+        if Name in self:
+            # Assume that if 'enter' is called, then we are in a ModeDescription
+            # where each option can only be defined once.
+            self.__error_double_definition(Name, setting)
+
+        self.__enter_setting(Name, setting)
 
     def __enter_setting(self, Name, Setting):
         """Enters a OptionSetting safely into the OptionDB. It checks whether
@@ -155,28 +181,6 @@ class OptionDB(dict):
                or len(setting) == 1
         return setting
 
-    @classmethod
-    def from_BaseModeSequence(cls, BaseModeSequence):
-        # BaseModeSequence[-1] = mode itself
-        mode_name = BaseModeSequence[-1].name
-
-        result = cls()
-        for mode_descr in BaseModeSequence:
-            option_db = mode_descr.option_db
-            for name, info in mode_option_info_db.iteritems():
-                setting = option_db.__get_setting(name)
-                if setting is None: continue
-                assert len(setting) == 1               # The setting of a ModeDescription 
-                result.__enter_setting(name, setting[0]) # option_db MUST be of length 1
-
-        # Options which have not been set (or inherited) are set to the default value.
-        for name, info in mode_option_info_db.iteritems():
-            if name in result: continue
-            if info.default_setting(mode_name) is None: continue
-            result.__enter_setting(name, info.default_setting(mode_name))
-
-        return result
-
     def value(self, Name):
         """Only scalar options can be asked about their 'value'."""
         setting = self.__get_setting(Name)
@@ -187,7 +191,17 @@ class OptionDB(dict):
         assert not isinstance(scalar_value, list)
         return scalar_value
 
+    def value_sequence(self, Name):
+        setting = self.__get_setting(Name)
+        if setting is None: return None
+
+        assert not mode_option_info_db[Name].single_setting_f()
+        return [ x.value for x in setting ]
+
     def value_list(self, Name):
+        """The content of a value is a sequence, and the return value of this
+        function is a concantinated list of all listed option setting values.
+        """
         setting = self.__get_setting(Name)
         if setting is None: return None
 
@@ -267,7 +281,7 @@ def __parse_skip_option(fh, new_mode, identifier):
     elif trigger_set.is_empty():
         error_msg("Empty trigger set for skipper." % identifier, fh)
 
-    return pattern, trigger_set
+    return pattern_str, pattern, trigger_set
 
 def __parse_range_skipper_option(fh, identifier, new_mode):
     """A non-nesting skipper can contain a full fledged regular expression as opener,

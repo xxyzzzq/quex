@@ -7,15 +7,17 @@ from   quex.input.files.mode_option                    import OptionDB
 import quex.input.files.code_fragment                  as     code_fragment
 from   quex.input.files.counter_db                     import CounterDB
 import quex.input.files.consistency_check              as     consistency_check
-import quex.engine.generator.skipper.indentation_counter as   indentation_counter
 from   quex.engine.analyzer.door_id_address_label      import Label
-import quex.engine.generator.skipper.character_set     as     skip_character_set
 from   quex.engine.generator.action_info               import CodeFragment, \
                                                               UserCodeFragment, \
                                                               GeneratedCode, \
                                                               PatternActionInfo
-import quex.engine.generator.skipper.range             as     skip_range
-import quex.engine.generator.skipper.nested_range      as     skip_nested_range
+
+from   quex.engine.analyzer.terminal.skip              import TerminalSkip
+import quex.engine.generator.skipper.range               as   skip_range
+import quex.engine.generator.skipper.nested_range        as   skip_nested_range
+import quex.engine.generator.skipper.indentation_counter as   indentation_counter
+
 from   quex.engine.state_machine.core                  import StateMachine
 import quex.engine.state_machine.index                 as     sm_index
 import quex.engine.state_machine.check.identity        as     identity_checker
@@ -234,27 +236,28 @@ class IncidenceDB(dict):
                or self.has_key(E_IncidenceIDs.N_DEDENT)          \
                or self.has_key(E_IncidenceIDs.NODENT) 
 
-#______________________________________________________________________________
-# Mode:
-#
-# A pattern detection mode. It is identified by
-#
-#   .pattern_list -- A list of patterns which can potentially be detected.
-#                    A pattern match is a special kind of an incidence.
-#                    Pattern matches are associated with pattern match
-#                    actions (i.e. CodeFragment-s).
-#
-#   .incidence_db -- A mapping from incidence ids to CodeFragments to be
-#                    executed upon the occurrence of the incidence.
-# 
-#                    NOTE: The incidences mentioned in 'incidence_db' are
-#                    all 'terminals' and NOT things which appear 'by the side'.
-#
-# A Mode is built upon a ModeDescription object. A mode description contains
-# further 'option_db' such as a column-line-count specification and a indentation
-# setup.
-#______________________________________________________________________________
 class Mode:
+    """Finalized 'Mode' as it results from combination of base modes.
+    ____________________________________________________________________________
+
+     A pattern detection mode. It is identified by
+
+       .pattern_list -- A list of patterns which can potentially be detected.
+                        A pattern match is a special kind of an incidence.
+                        Pattern matches are associated with pattern match
+                        actions (i.e. CodeFragment-s).
+
+       .incidence_db -- A mapping from incidence ids to CodeFragments to be
+                        executed upon the occurrence of the incidence.
+     
+                        NOTE: The incidences mentioned in 'incidence_db' are
+                        all 'terminals' and NOT things which appear 'by the side'.
+
+     A Mode is built upon a ModeDescription object. A mode description contains
+     further 'option_db' such as a column-line-count specification and a
+     indentation setup.
+    ____________________________________________________________________________
+    """
     def __init__(self, Other):
         """Translate a ModeDescription into a real Mode. Here is the place were 
         all rules of inheritance mechanisms and pattern precedence are applied.
@@ -267,13 +270,15 @@ class Mode:
         assert len(base_mode_sequence) >= 1 # At least the mode itself is in there
 
         # Collect Options
+        # (A finalized Mode does not contain an option_db anymore).
         options_db = OptionDB.from_BaseModeSequence(base_mode_sequence)
 
         # Determine Line/Column Counter Database
         self.__counter_db        = CounterDB(options_db.value("counter"))
         self.__indentation_setup = options_db.value("indentation")
 
-        # Build a 'PPC list' (see class 'PPC' above)
+        # Build a 'PPC list' -- List of (priority, pattern, code fragment)-s
+        # (see 'class PPC')
         ppc_list            = self.__ppc_list_construct(base_mode_sequence, options_db)
         self.__pattern_list = self.__pattern_list_construct(ppc_list)
 
@@ -384,31 +389,30 @@ class Mode:
         return base_mode_sequence
 
     def __ppc_list_construct(self, BaseModeSequence, OptionsDb):
-        """(*) Collect Pattern Action Pairs in 'ppc_list'
-        
+        """Priority, Pattern, CodeFragment List: 'ppc_list'
+        -----------------------------------------------------------------------
         The 'ppc_list' is the list of eXtended Pattern Action Pairs.
         Each element in the list consist of
         
-             [0] -- a PatternPriority, given by 'mode_hierarchy_index'
-                    and 'pattern_index'. The pattern_index tells about
-                    the position where the pattern was defined.
+            .priority 
+            .pattern
+            .code_fragment
         
-             [1] -- a pattern action pair
-        
-        The pattern priority allows to keep the list sorted according
-        to its priority given by the mode's position in the inheritance
-        hierarchy and the pattern index itself.
-        """
+        The pattern priority allows to keep the list sorted according to its
+        priority given by the mode's position in the inheritance hierarchy and
+        the pattern index itself.
+        -----------------------------------------------------------------------
+        """ 
         ppc_list = self.__pattern_action_pairs_collect(BaseModeSequence)
 
         # (*) Collect pattern recognizers and several 'incidence detectors' in 
         #     state machine lists. When the state machines accept this triggers
         #     an incidence which is associated with an entry in the incidence_db.
-        self.__prepare_skip(ppc_list, OptionsDb.value_list("skip"), MHI=-4)
-        self.__prepare_skip_range(ppc_list, OptionsDb.value_list("skip_range"), MHI=-3)
-        self.__prepare_skip_nested_range(ppc_list, OptionsDb.value_list("skip_nested_range"), MHI=-3)
+        self.__prepare_skip(ppc_list, OptionsDb.value_sequence("skip"), MHI=-4)
+        self.__prepare_skip_range(ppc_list, OptionsDb.value_sequence("skip_range"), MHI=-3)
+        self.__prepare_skip_nested_range(ppc_list, OptionsDb.value_sequence("skip_nested_range"), MHI=-3)
 
-        self.__prepare_indentation_counter(ppc_list, OptionsDb.value("indentation"), MHI=-1)
+        self.__prepare_indentation_counter(ppc_list, OptionsDb.value_sequence("indentation"), MHI=-1)
 
         # (*) Delete and reprioritize
         self.__perform_deletion(ppc_list, BaseModeSequence) 
@@ -489,7 +493,8 @@ class Mode:
             pattern       = Pattern(StateMachine.from_character_set(CmdInfo.trigger_set))
             ppc_list.append(PPC(priority, pattern, TheCodeFragment))
 
-        iterable = counter_db.get_counter_dictionary(character_set).iteritems()
+        iterable = self.counter_db.get_counter_m(character_set).iteritems()
+        ccd      = CounterCoderData(self.counter_db, character_set, AfterExitDoorId)
 
         main_cli = index.get()
         data = {
@@ -497,28 +502,31 @@ class Mode:
            "counter_db":    self.counter_db,
         }
         main_cli, cmd_info = iterable.next()
-        ppc_list.append(get_PPC(MHI, main_cli, cmd_info, GeneratedCode(data, source_reference)))
+        ppc_list.append(get_PPC(MHI, main_cli, cmd_info, TerminalSkip(data, source_reference)))
 
         for cli, cmd_info in iterable:
-            ppc_list.append(get_PPC(MHI, cli, cmd_info, CodeFragmentInterim(CmdInfo, main_cli)))
+            ppc_list.append(get_PPC(MHI, cli, cmd_info, TerminalInterim(CmdInfo, main_cli)))
 
         return
 
     def __prepare_skip_range(self, ppc_list, SkipRangeSetupList, MHI):
         """MHI = Mode hierarchie index."""
         self.__prepare_skip_range_core(ppc_list, MHI, SkipRangeSetupList,  
-                                       skip_range.do, E_IncidenceIDs.SKIP_RANGE)
+                                       TerminalSkipRange)
 
     def __prepare_skip_nested_range(self, ppc_list, SkipNestedRangeSetupList, MHI):
         """MHI = Mode hierarchie index."""
         self.__prepare_skip_range_core(ppc_list, MHI, SkipNestedRangeSetupList, 
-                                       skip_nested_range.do, E_IncidenceIDs.SKIP_NESTED_RANGE)
+                                       TerminalSkipNestedRange)
 
-    def __prepare_skip_range_core(self, ppc_list, MHI, SrSetup, SkipperFunction, IncidenceId):
+    def __prepare_skip_range_core(self, ppc_list, MHI, SrSetup, TerminalClass):
         """MHI = Mode hierarchie index."""
 
         if SrSetup is None or len(SrSetup) == 0:
             return
+
+        assert    TerminalClass == TerminalSkipRange \
+               or TerminalClass == TerminalSkipNestedRange
 
         for i, skip_range_info in enumerate(SrSetup):
             opener_str, opener_pattern, opener_sequence, \
@@ -537,7 +545,7 @@ class Mode:
             priority      = PatternPriority(MHI, i)
             pattern       = opener_pattern.clone()
             pattern.set_incidence_id(IncidenceId)
-            code_fragment = GeneratedCode(data, opener_pattern.sr)
+            code_fragment = TerminalClass(data, opener_pattern.sr)
 
             ppc_list.append(PPC(priority, pattern, code_fragment))
 
