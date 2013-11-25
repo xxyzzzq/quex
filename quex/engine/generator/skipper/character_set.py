@@ -1,12 +1,12 @@
-from   quex.engine.generator.base                 import LoopGenerator
+from   quex.engine.analyzer.state.core            import Processor
+
+import quex.engine.generator.base                 as     generator
 from   quex.engine.analyzer.door_id_address_label import DoorID
-#from  quex.engine.analyzer.state.core            import TerminalState
-import quex.engine.analyzer.core                  as     analyzer_generator
 from   quex.input.files.counter_db                import CountCmdInfo, \
                                                          CounterCoderData
 from   quex.blackboard                            import setup as Setup
 
-def do():
+class TerminalSkip(Processor):
     """________________________________________________________________________
     As long as characters of a given character set appears it iterates: 
 
@@ -66,12 +66,14 @@ def do():
     def __init__(self, CharacterSet, CounterDb):
         assert not CharacterSet.is_empty()
         assert isinstance(CharacterSet, NumberSet)
-        self.ccd = CounterCoderData(CounterDb, CharacterSet, LanguageDB.INPUT_P, LexemeF=False)
+        self.counter_db    = CounterDb
+        self.character_set = CharacterSet
 
         
     def get_code(self):
-        # Build the skipper _______________________________________________________
-        #
-        analyzer = self.prepare_analyzer()
-        return state_machine_coder.do(analyzer)
-
+        generator.do_loop(self.counter_db, 
+                          AfterExitDoorId   = DoorID.reentry_preparation(),
+                          CharacterSet      = self.character_set,
+                          CheckLexemeEndF   = False,
+                          ReloadF           = True,
+                          GlobalReloadState = TheAnalyzer):

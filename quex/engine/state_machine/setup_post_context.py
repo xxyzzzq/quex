@@ -6,9 +6,9 @@ import quex.engine.state_machine.ambiguous_post_context as     ambiguous_post_co
 from   quex.blackboard                                  import E_PreContextIDs, setup as Setup
 
 
-def do(the_state_machine, post_context_sm, EndOfLinePostContextF, FileName, LineN):
+def do(the_state_machine, post_context_sm, EndOfLinePostContextF, SourceReference):
     acceptance_id = the_state_machine.get_id()
-    result, bipd_sm = _do(the_state_machine, post_context_sm, EndOfLinePostContextF, FileName, LineN)
+    result, bipd_sm = _do(the_state_machine, post_context_sm, EndOfLinePostContextF, SourceReference)
 
     # Make sure that the resulting state machine has the same state machine index
     # as 'the_state_machine'. This is important, since otherwise the precedence get
@@ -16,7 +16,7 @@ def do(the_state_machine, post_context_sm, EndOfLinePostContextF, FileName, Line
     result.set_id(acceptance_id)
     return result, bipd_sm
 
-def _do(the_state_machine, post_context_sm, EndOfLinePostContextF, FileName, LineN):
+def _do(the_state_machine, post_context_sm, EndOfLinePostContextF, SourceReference):
     """Appends a post context to the given state machine and changes 
        state infos as required. 
 
@@ -86,7 +86,7 @@ def _do(the_state_machine, post_context_sm, EndOfLinePostContextF, FileName, Lin
     # A post context with an initial state that is acceptance is not really a
     # 'context' since it accepts anything. The state machine remains un-post context.
     if post_context_sm.get_init_state().is_acceptance():
-        error_msg("Post context accepts anything--replaced by no post context.", fh=FileName, LineN=LineN, 
+        error_msg("Post context accepts anything--replaced by no post context.", SourceReference, 
                   DontExitF=True)
         return the_state_machine, None
     
@@ -102,7 +102,7 @@ def _do(the_state_machine, post_context_sm, EndOfLinePostContextF, FileName, Lin
             # -- for post contexts that are forward and backward ambiguous
             #    a philosophical cut is necessary.
             error_msg("Post context requires philosophical cut--handle with care!\n"
-                      "Proposal: Isolate pattern and ensure results are as expected!", fh=FileName, LineN=LineN, 
+                      "Proposal: Isolate pattern and ensure results are as expected!", SourceReference, 
                       DontExitF=True)
             post_context_sm = ambiguous_post_context.philosophical_cut(the_state_machine, post_context_sm)
         

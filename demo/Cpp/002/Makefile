@@ -58,7 +58,7 @@ example%.o: ../example.cpp  Easy%.cpp
 	$(CC) -E $< -o $@ 
 
 EasyLexer EasyLexer.cpp: simple.qx $(QUEX_CORE)
-	quex -i simple.qx --engine EasyLexer
+	quex -i simple.qx --engine EasyLexer --debug-exception
 
 EasyLexer_bad_space EasyLexer_bad_space.cpp: simple.qx $(QUEX_CORE)
 	quex -i simple_bad_space.qx --engine EasyLexer_bad_space  
