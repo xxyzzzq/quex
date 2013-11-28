@@ -2,7 +2,7 @@ from   quex.engine.generator.languages.variable_db import variable_db
 from   quex.engine.analyzer.door_id_address_label  import dial_db, IfDoorIdReferencedCode, get_plain_strings
 from   quex.engine.generator.base                  import GeneratorBase
 import quex.engine.generator.base                  as     generator
-from   quex.engine.generator.action_info           import CodeFragment
+from   quex.engine.generator.code.core             import CodeFragment
 from   quex.engine.tools                           import all_isinstance
 from   quex.input.regular_expression.construct     import Pattern
 import quex.output.cpp.counter                     as     counter

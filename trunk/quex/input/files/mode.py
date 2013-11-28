@@ -3,17 +3,21 @@ from   quex.input.setup                                import NotificationDB
 import quex.input.regular_expression.core              as     regular_expression
 from   quex.input.regular_expression.construct         import Pattern           
 import quex.input.files.mode_option                    as     mode_option
-from   quex.input.files.mode_option                    import OptionDB
+from   quex.input.files.mode_option                    import OptionDB, \
+                                                              SkipRangeData
 import quex.input.files.code_fragment                  as     code_fragment
 from   quex.input.files.counter_db                     import CounterDB
 import quex.input.files.consistency_check              as     consistency_check
 from   quex.engine.analyzer.door_id_address_label      import Label
-from   quex.engine.generator.action_info               import CodeFragment, \
+from   quex.engine.generator.code.core                 import CodeFragment, \
                                                               UserCodeFragment, \
                                                               GeneratedCode, \
                                                               PatternActionInfo
+from   quex.engine.generator.code.skip                 import CodeSkip
+from   quex.engine.generator.code.skip_range           import CodeSkipRange
+from   quex.engine.generator.code.skip_nested_range    import CodeSkipNestedRangegt
+from   quex.engine.generator.code.indentation_counter  import CodeIndentationCounter
 
-from   quex.engine.analyzer.terminal.skip              import TerminalSkip
 import quex.engine.generator.skipper.range               as   skip_range
 import quex.engine.generator.skipper.nested_range        as   skip_nested_range
 import quex.engine.generator.skipper.indentation_counter as   indentation_counter
@@ -213,10 +217,12 @@ class IncidenceDB(dict):
                     else:             entry.append_CodeFragment(code_fragment)
 
             if entry is not None: 
+                isinstance(entry, CodeFragment)
                 self[incidence_id] = entry
 
         # Pattern match incidences
         for priority, pattern, code_fragment in PPC_List:
+            isinstance(code_fragment, CodeFragment)
             self[pattern.incidence_id()] = code_fragment
 
         return
@@ -231,10 +237,10 @@ class IncidenceDB(dict):
     def dedicated_indentation_handler_required(self):
         return    self.has_key(E_IncidenceIDs.INDENTATION_ERROR) \
                or self.has_key(E_IncidenceIDs.INDENTATION_BAD)   \
-               or self.has_key(E_IncidenceIDs.INDENT)            \
-               or self.has_key(E_IncidenceIDs.DEDENT)            \
-               or self.has_key(E_IncidenceIDs.N_DEDENT)          \
-               or self.has_key(E_IncidenceIDs.NODENT) 
+               or self.has_key(E_IncidenceIDs.INDENTATION_INDENT)   \
+               or self.has_key(E_IncidenceIDs.INDENTATION_DEDENT)   \
+               or self.has_key(E_IncidenceIDs.INDENTATION_N_DEDENT) \
+               or self.has_key(E_IncidenceIDs.INDENTATION_NODENT) 
 
 class Mode:
     """Finalized 'Mode' as it results from combination of base modes.
@@ -457,10 +463,10 @@ class Mode:
 
         iterable                            = SkipSetupList.__iter__()
         pattern_str, pattern, character_set = iterable.next()
+        source_reference                    = pattern.sr
         # Multiple skippers from different modes are combined into one pattern.
         # This means, that we cannot say exactly where a 'skip' was defined 
         # if it intersects with another pattern.
-        source_reference = pattern.sr
         for ipattern_str, ipattern, icharacter_set in iterable:
             character_set.unite_with(icharacter_set)
             pattern_str += "|" + ipattern_str
@@ -493,59 +499,47 @@ class Mode:
             pattern       = Pattern(StateMachine.from_character_set(CmdInfo.trigger_set))
             ppc_list.append(PPC(priority, pattern, TheCodeFragment))
 
-        iterable = self.counter_db.get_counter_m(character_set).iteritems()
-        ccd      = CounterCoderData(self.counter_db, character_set, AfterExitDoorId)
+        ccd = CounterCoderData(self.counter_db, character_set, AfterExitDoorId)
+        incidence_id = index.get_state_machine_id()
+        for cli, cmd_info in ccd.count_command_map.iteritems():
+            # Counting actions are added to the terminal automatically.
+            # What remains to do here is only to go to the skipper.
+            ppc_list.append(get_PPC(MHI, cli, cmd_info, CodeGotoTerminal(CmdInfo, incidence_id)))
 
-        main_cli = index.get()
-        data = {
-           "character_set": character_set,
-           "counter_db":    self.counter_db,
+        data = { 
+            "counter_db":    self.counter_db, 
+            "character_set": character_set,
         }
-        main_cli, cmd_info = iterable.next()
-        ppc_list.append(get_PPC(MHI, main_cli, cmd_info, TerminalSkip(data, source_reference)))
-
-        for cli, cmd_info in iterable:
-            ppc_list.append(get_PPC(MHI, cli, cmd_info, TerminalInterim(CmdInfo, main_cli)))
-
-        return
+        ppc_list.append(get_PPC(MHI, main_cli, cmd_info, CodeSkip(data, source_reference)))
 
     def __prepare_skip_range(self, ppc_list, SkipRangeSetupList, MHI):
         """MHI = Mode hierarchie index."""
         self.__prepare_skip_range_core(ppc_list, MHI, SkipRangeSetupList,  
-                                       TerminalSkipRange)
+                                       CodeSkipRange)
 
     def __prepare_skip_nested_range(self, ppc_list, SkipNestedRangeSetupList, MHI):
         """MHI = Mode hierarchie index."""
         self.__prepare_skip_range_core(ppc_list, MHI, SkipNestedRangeSetupList, 
-                                       TerminalSkipNestedRange)
+                                       CodeSkipNestedRange)
 
-    def __prepare_skip_range_core(self, ppc_list, MHI, SrSetup, TerminalClass):
+    def __prepare_skip_range_core(self, ppc_list, MHI, SrSetup, Code_constructor):
         """MHI = Mode hierarchie index."""
 
         if SrSetup is None or len(SrSetup) == 0:
             return
 
-        assert    TerminalClass == TerminalSkipRange \
-               or TerminalClass == TerminalSkipNestedRange
+        assert    Code_constructor == CodeSkipRange \
+               or Code_constructor == CodeSkipNestedRange
 
-        for i, skip_range_info in enumerate(SrSetup):
-            opener_str, opener_pattern, opener_sequence, \
-            closer_str, closer_pattern, closer_sequence  = skip_range_info
-
-            data = {
-                "opener_str":      opener_str, 
-                "opener_pattern":  opener_pattern, 
-                "opener_sequence": opener_sequence, 
-                "closer_str":      closer_str, 
-                "closer_pattern":  closer_pattern, 
-                "closer_sequence": closer_sequence    
-            }
+        for i, data in enumerate(SrSetup):
+            assert isinstance(data, SkipRangeData)
+            data.mode     = self
 
             # Skipper code is to be generated later
             priority      = PatternPriority(MHI, i)
             pattern       = opener_pattern.clone()
             pattern.set_incidence_id(IncidenceId)
-            code_fragment = TerminalClass(data, opener_pattern.sr)
+            code_fragment = Code_constructor(data, opener_pattern.sr)
 
             ppc_list.append(PPC(priority, pattern, code_fragment))
 
@@ -580,6 +574,9 @@ class Mode:
 
         # The indentation counter is entered upon the appearance of the unsuppressed
         # newline pattern. 
+        #
+        #  TODO: newline = newline/\C{newline suppressor}, i.e. a newline is only a
+        #        newline if it is followed by something else than a newline suppressor.
         ppc_suppressed_newline = None
         if ISetup.newline_suppressor_state_machine.get() is not None:
             pattern_str =   "(" + ISetup.newline_suppressor_state_machine.pattern_string() + ")" \
@@ -621,10 +618,9 @@ class Mode:
 
         priority      = PatternPriority(MHI, 1)
         pattern       = Pattern(sm, IncidenceId=E_IncidenceIDs.INDENTATION_NEWLINE)
-        code_fragment = GeneratedCode(data, ISetup.newline_state_machine.sr)
+        code_fragment = CodeIndentationCounter(data, ISetup.newline_state_machine.sr)
 
         ppc_list.append(PPC(priority, pattern, code_fragment))
-
 
         return
 
@@ -800,6 +796,11 @@ class Mode:
                 if outrun_checker.do(sm_high, sm_low):
                     file_name, line_n = pattern_i.action().sr
                     __error_message(pattern_k, pattern_i, ExitF=False, ThisComment="may outrun")
+
+    def match_indentation_counter_newline_pattern(self, Sequence):
+        if self.indentation_setup is None: return False
+
+        return self.indentation_setup.newline_state_machine.get().does_sequence_match(Sequence)
 
     def check_indentation_setup(self):
         # (*) Indentation: Newline Pattern and Newline Suppressor Pattern

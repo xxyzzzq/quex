@@ -7,7 +7,8 @@ from   quex.input.files.counter_db                import CountCmdInfo, \
 from   quex.blackboard                            import setup as Setup
 
 class CodeSkip(CodeFragment):
-    """________________________________________________________________________
+    """Fast implementation of character set skipping machine.
+    ________________________________________________________________________
     As long as characters of a given character set appears it iterates: 
 
                                  input in Set
@@ -63,17 +64,16 @@ class CodeSkip(CodeFragment):
           then the single state may actually be split into a real state machine of
           states.
     """
-    def __init__(self, CharacterSet, CounterDb):
-        assert not CharacterSet.is_empty()
-        assert isinstance(CharacterSet, NumberSet)
-        self.counter_db    = CounterDb
-        self.character_set = CharacterSet
-
+    def __init__(self, Data):
+        self.counter_db    = Data["counter_db"]
+        self.character_set = Data["character_set"]
+        assert not self.character_set.is_empty()
+        assert isinstance(self.character_set, NumberSet)
         
     def get_code(self):
-        generator.do_loop(self.counter_db, 
-                          AfterExitDoorId   = DoorID.reentry_preparation(),
-                          CharacterSet      = self.character_set,
-                          CheckLexemeEndF   = False,
-                          ReloadF           = True,
-                          GlobalReloadState = TheAnalyzer):
+        return generator.do_loop(self.counter_db, 
+                                 AfterExitDoorId   = DoorID.reentry_preparation(),
+                                 CharacterSet      = self.character_set,
+                                 CheckLexemeEndF   = False,
+                                 ReloadF           = True,
+                                 GlobalReloadState = TheAnalyzer):

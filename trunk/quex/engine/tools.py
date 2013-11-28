@@ -129,6 +129,29 @@ def none_isinstance(List, Type):
 def none_is_None(List):
     return _check_all(List, lambda element: element is not None)
 
+def typed(**_parameters_):
+    def check_types(_func_, _parameters_ = _parameters_):
+        def modified(*arg_values, **kw):
+            arg_names = _func_.func_code.co_varnames
+            kw.update(zip(arg_names, arg_values))
+            for name, type_d in _parameters_.iteritems():
+                value = kw[name]
+                if value is None:
+                    assert (type_d is None) or (None is in type_d)
+                elif type(typed_d) == tuple:
+                    assert isinstance(value, type_d), \
+                           "Parameter '%s' not one of '%s'" % (name, [x.__name__ for x in type_d])
+                else:
+                    assert isinstance(value, type_d), \
+                           "Parameter '%s' not of '%s'" % (name, type_d.__name__)
+            return _func_(**kw)
+        return modified
+    return check_types
+
+def error_abstract_member():
+    x = sys._getframe(i).f_code
+    assert False, "Call to '%s'. Implementation in derived class." % x.co_name
+
 class TypedSet(set):
     def __init__(self, Cls):
         self.__element_class = Cls

@@ -13,7 +13,7 @@ from quex.blackboard                  import PatternShorthand, E_Compression
 from   quex.engine.tools                       import all_isinstance
 from   quex.engine.generator.languages.core    import db
 import quex.engine.generator.state_router      as     state_router_generator
-from   quex.engine.generator.action_info       import PatternActionInfo, CodeFragment
+from   quex.engine.generator.code.core         import PatternActionInfo, CodeFragment
 import quex.output.cpp.core                    as     cpp_generator
 from   quex.input.files.counter_db             import CounterDB
 from   quex.input.files.mode                   import IncidenceDB

@@ -38,7 +38,7 @@ import quex.input.regular_expression.core  as regular_expression
 from   quex.blackboard                     import setup as Setup, \
                                                   SourceRef
 from   quex.input.setup                    import NotificationDB
-from   quex.engine.generator.action_info   import UserCodeFragment
+from   quex.engine.generator.code.core     import UserCodeFragment
 
 def do(file_list):
     if len(file_list) == 0 and not Setup.token_class_only_f: 

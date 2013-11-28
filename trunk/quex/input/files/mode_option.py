@@ -15,6 +15,16 @@ from   collections import namedtuple
 from   copy import deepcopy
 import types
 
+class SkipRangeData: 
+    def __init__(self, OpenerStr, OpenerPattern, OpenerSequence,
+                 CloserStr, CloserPattern, CloserSequence):
+        self.opener_str      = OpenerStr
+        self.opener_pattern  = OpenerPattern
+        self.opener_sequence = OpenerSequence
+        self.closer_str      = CloserStr
+        self.closer_pattern  = CloserPattern
+        self.closer_sequence = CloserSequence
+
 #-----------------------------------------------------------------------------------------
 # mode_option_info_db: Information about properties of mode options.
 #-----------------------------------------------------------------------------------------
@@ -303,8 +313,8 @@ def __parse_range_skipper_option(fh, identifier, new_mode):
     elif len(closer_sequence) == 0:
         error_msg("Empty sequence for closing delimiter.", fh)
 
-    return (opener_str, opener_pattern, opener_sequence, \
-            closer_str, closer_pattern, closer_sequence)
+    return SkipRangeData(opener_str, opener_pattern, opener_sequence, \
+                         closer_str, closer_pattern, closer_sequence)
 
 def read_option_start(fh):
     skip_whitespace(fh)

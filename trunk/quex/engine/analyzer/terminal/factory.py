@@ -4,7 +4,7 @@ from   quex.engine.analyzer.terminal.skip_range          import TerminalSkipRang
 from   quex.engine.analyzer.terminal.skip_nested_range   import TerminalSkipNestedRange
 from   quex.engine.analyzer.terminal.indentation_handler import TerminalIndentationHandler
 from   quex.engine.analyzer.door_id_address_label        import Label, DoorID
-from   quex.engine.generator.action_info                 import CodeFragment
+from   quex.engine.generator.code.core                   import CodeFragment
 
 import quex.output.cpp.counter_for_pattern         as     counter_for_pattern
 
@@ -12,7 +12,8 @@ from   quex.blackboard import E_IncidenceIDs, setup as Setup
 
 import re
 
-Match_Lexeme = re.compile("\\bLexeme\\b", re.UNICODE)
+Match_Lexeme                = re.compile("\\bLexeme\\b", re.UNICODE)
+Match_Lexeme_or_LexemeBegin = re.compile("\\bLexeme\\b|\\bLexemeBegin\\b", re.UNICODE)
 
 class TerminalStateFactory:
     def __init__(self, ModeName, IncidenceDb, CounterDb, CounterDefaultF, 
@@ -23,16 +24,17 @@ class TerminalStateFactory:
 
         self.incidence_db = IncidenceDb
 
-        dedicated_indentation_handler_f = IncidenceDb.dedicated_indentation_handler_required()
+        self.txt_indentation_handler_call = self.get_indentation_handler_call(ModeName, IndentationSupportF, 
+                                                                              IncidenceDb)
 
-        self.code_dedicated_indentation_handler = self.get_code_indentation_handler(ModeName, IndentationSupportF, 
-                                                                                    dedicated_indentation_handler_f)
         self.code_store_last_character          = self.get_code_store_last_character(BeginOfLineSupportF)
 
-        self.code_on_match,          \
-        self.rtz_on_match_f          = self.collect_code(IncidenceDb.get(E_IncidenceIDs.MATCH)) 
+        self.code_on_match = IncidenceDb.,          \
+        self.rtz_on_match_f,         \
+        self.lexeme_on_match_f       = self.collect_code(IncidenceDb.get(E_IncidenceIDs.MATCH)) 
         self.code_on_after_match,    \
-        self.rtz_on_after_match_f    = self.collect_code(IncidenceDb.get(E_IncidenceIDs.AFTER_MATCH))
+        self.rtz_on_after_match_f,   \
+        self.lexeme_on_after_match_f = self.collect_code(IncidenceDb.get(E_IncidenceIDs.AFTER_MATCH))
 
         self.mode_name = ModeName
 
@@ -52,18 +54,20 @@ class TerminalStateFactory:
             return None # Treated later (EndOfStream/Failure) or never.
 
     def do_OnEndOfStream(self):
-        code_fragment = CodeFragment(self.code_dedicated_indentation_handler)
+        # No indentation handler => Empty string.
+        code = [ self.txt_indentation_handler_call ]
 
         if self.incidence_db.has_key(E_IncidenceIDs.END_OF_STREAM):
-            code_fragment.append_CodeFragment(self.incidence_db[E_IncidenceIDs.END_OF_STREAM])
+            code.extend(self.incidence_db[E_IncidenceIDs.END_OF_STREAM].get_code())
         else:
             # We cannot make any assumptions about the token class, i.e. whether
             # it can take a lexeme or not. Thus, no passing of lexeme here.
-            txt  = "self_send(__QUEX_SETTING_TOKEN_ID_TERMINATION);\n"
-            txt += "RETURN;\n"
-            code_fragment.append_text(txt)
+            code.append(
+                "self_send(__QUEX_SETTING_TOKEN_ID_TERMINATION);\n"
+                "RETURN;\n"
+            )
 
-        code_fragment = self.prepare_CodeFragment(E_IncidenceIDs.END_OF_STREAM, code_fragment)
+        code_fragment = self.prepare_CodeFragment(E_IncidenceIDs.END_OF_STREAM, code)
 
         return TerminalPlainCode(E_IncidenceIDs.END_OF_STREAM, code_fragment)
 
@@ -110,25 +114,38 @@ class TerminalStateFactory:
         assert isinstance(IncidenceId, (int, long)) or IncidenceId in E_IncidenceIDs
         assert isinstance(TheCodeFragment, CodeFragment) or TheCodeFragment is None
 
-        code_on_match, rtz_on_match_f = self.get_code_on_match(IncidenceId)
-        code_user, rtz_user_f         = self.collect_code(TheCodeFragment)
-        code_line_column_counter      = self.line_column_count_db.get(IncidenceId)
+        if TheCodeFragment.subject_to_match_f():
+            code_on_match = self.get_code_on_match(IncidenceId)
+        else:
+            code_on_match = UserCode_Empty
+
+        code_user                = self.collect_code(TheCodeFragment)
+        code_line_column_counter = self.line_column_count_db.get(IncidenceId)
         if code_line_column_counter is None: code_line_column_counter  = ""
         code_store_last_character     = self.code_store_last_character
 
-        require_terminating_zero_f    = rtz_on_match_f | rtz_user_f | self.rtz_on_after_match_f
+        require_terminating_zero_f    =   self.on_after_match.lexeme_terminating_zero_required_f \
+                                        | code_on_match.lexeme_terminating_zero_required_f \
+                                        | code_user.lexeme_terminating_zero_required_f  
+        require_lexeme_begin_f        =   self.on_after_match.lexeme_begin_required_f \
+                                        | code_on_match.lexeme_begin_required_f \
+                                        | code_user.lexeme_begin_required_f 
 
         code_terminating_zero         = self.get_code_terminating_zero(require_terminating_zero_f)
 
-        return CodeFragment([
+        code = [
             code_line_column_counter,
             code_store_last_character,
             code_terminating_zero,
             code_on_match,
             "{\n",
             code_user,
-            "\n}",
-        ])
+            "\n}"
+        ] 
+
+        return CodeFinalized(code, 
+                             LexemeTerminatingZeroRequiredF = require_terminating_zero_f, 
+                             LexemeBeginRequiredF = require_lexeme_begin_f)
 
     def collect_code(self, TheCodeFragment):
         """RETURNS:  
@@ -150,24 +167,27 @@ class TerminalStateFactory:
         # a terminating zero. Note, that the occurence of 'LexemeBegin' does not
         # ensure the preparation of a terminating zero.
         require_terminating_zero_preparation_f = (Match_Lexeme.search(code_str) is not None) 
+        require_lexeme_begin_f                 = require_terminating_zero_preparation_f \
+                                                 or (Match_LexemeBegin.search(code_str) is not None) 
 
         return pretty_code(code_str, Base=0), \
-               require_terminating_zero_preparation_f
+               require_terminating_zero_preparation_f, \
+               require_lexeme_begin_f
 
     def get_code_on_match(self, IncidenceId):
         if IncidenceId == E_IncidenceIDs.FAILURE: # OnFailure == 'nothing matched'; 
             return "", False                      # => 'on_match_code' is inappropriate.
-        return self.code_on_match, self.rtz_on_match_f
+        return self.code_on_match, self.rtz_on_match_f, self.lexeme_on_match_f
 
     def get_code_terminating_zero(self, RequireTerminatingZeroF):
         if not RequireTerminatingZeroF:
             return ""
         return "    QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);\n"
 
-    def get_code_indentation_handler(self, ModeName, IndentationSupportF, DedicatedIndentationHandlerF):
-        if   not IndentationSupportF:          return ""
-        elif not DedicatedIndentationHandlerF: prefix = ""
-        else:                                  prefix = ModeName + "_" 
+    def get_indentation_handler_call(self, ModeName, IndentationSupportF, IncidenceDb):
+        if   not IndentationSupportF:                              return ""
+        elif IncidenceDb.dedicated_indentation_handler_required(): prefix = ""
+        else:                                                      prefix = ModeName + "_" 
         
         return "    QUEX_NAME(%son_indentation)(me, /*Indentation*/0, LexemeNull);\n" % prefix
 

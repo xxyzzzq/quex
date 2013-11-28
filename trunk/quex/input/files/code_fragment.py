@@ -16,7 +16,7 @@ from   quex.input.setup                  import NotificationDB
 from   quex.blackboard                   import QuexSetup
 from   quex.engine.unicode_db.parser     import ucs_property_db
 from   quex.engine.utf8                  import __read_one_utf8_code_from_stream
-from   quex.engine.generator.action_info import UserCodeFragment 
+from   quex.engine.generator.code.core   import UserCodeFragment 
 import quex.input.regular_expression.snap_backslashed_character as snap_backslashed_character
 
 def parse(fh, CodeFragmentName, 

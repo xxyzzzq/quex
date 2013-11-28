@@ -9,7 +9,7 @@ from   quex.engine.misc.file_in          import EndOfStreamException, \
                                                 read_namespaced_name, \
                                                 check, \
                                                 read_until_letter
-from   quex.engine.generator.action_info        import UserCodeFragment
+from   quex.engine.generator.code.core          import UserCodeFragment
 from   quex.engine.generator.code_fragment_base import CodeFragment, CodeFragment_Empty
 import quex.input.files.code_fragment    as code_fragment
 from   quex.blackboard                   import setup as Setup, \

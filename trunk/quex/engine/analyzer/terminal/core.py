@@ -39,13 +39,3 @@ class TerminalPlainCode(Processor):
     def get_code(self):
         return self.__code_fragment.get_code()
 
-class TerminalInterim(Processor):
-   __slots__ = ("target_terminal_index",)
-   def __init__(self, TargetTerminalIndex):
-       self.target_terminal_index = TargetTerminalIndex
-
-   def get_code(self):
-       LanguageDB = Setup.language_db
-       return LanguageDB.GOTO_BY_DOOR_ID(DoorID(self.target_terminal_index, 0))
-
-

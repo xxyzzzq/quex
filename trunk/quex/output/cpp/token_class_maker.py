@@ -6,7 +6,7 @@ from   quex.engine.misc.file_in           import \
                                                  open_file_or_die
 from   quex.engine.misc.string_handling   import blue_print
 import quex.blackboard                    as     blackboard
-import quex.engine.generator.action_info  as     action_info
+import quex.engine.generator.code.core    as     action_info
 from   quex.blackboard                    import setup as Setup
 
 import re
