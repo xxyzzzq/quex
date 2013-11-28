@@ -3,8 +3,6 @@ from   quex.engine.misc.file_in                 import write_safely_and_close
 from   quex.blackboard                          import setup as Setup
 import quex.output.cpp.source_package           as source_package
 import quex.blackboard                          as blackboard
-
-from   quex.engine.generator.action_info        import UserCodeFragment_straighten_open_line_pragmas
 #
 import quex.input.files.core                    as quex_file_parser
 #
@@ -99,10 +97,10 @@ def do():
         write_safely_and_close(blackboard.token_type_definition.get_file_name(), 
                                class_token_header)
 
-    UserCodeFragment_straighten_open_line_pragmas(Setup.output_header_file, "C")
-    UserCodeFragment_straighten_open_line_pragmas(Setup.output_code_file, "C")
+    LanguageDB.straighten_open_line_pragmas(Setup.output_header_file, "C")
+    LanguageDB.straighten_open_line_pragmas(Setup.output_code_file, "C")
     if not blackboard.token_type_definition.manually_written():
-        UserCodeFragment_straighten_open_line_pragmas(blackboard.token_type_definition.get_file_name(), "C")
+        LanguageDB.straighten_open_line_pragmas(blackboard.token_type_definition.get_file_name(), "C")
 
     if Setup.source_package_directory != "":
         source_package.do()

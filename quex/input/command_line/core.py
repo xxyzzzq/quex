@@ -25,7 +25,7 @@ from   quex.engine.misc.file_in           import error_msg,                \
                                                  open_file_or_die
 import quex.engine.codec_db.core            as codec_db
 from   quex.engine.generator.languages.core import db as quex_core_engine_generator_languages_db
-from   quex.engine.generator.action_info    import CodeFragment
+from   quex.engine.generator.code.core      import CodeFragment
 
 from   quex.DEFINITIONS import QUEX_VERSION
 

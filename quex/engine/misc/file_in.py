@@ -160,7 +160,7 @@ def parse_identifier_assignment(fh):
 
 def read_namespaced_name(FileHandle_or_String, Meaning, AllowEmptyF=False):
     string_f = False
-    if type(FileHandle_or_String) in [str, unicode]:
+    if isinstance(FileHandle_or_String, (str, unicode)):
         fh = StringIO(FileHandle_or_String)
         string_f = True
     else:
@@ -795,7 +795,16 @@ def get_propperly_slash_based_file_name(PathName):
     return path
 
 # 'Bad' byte order marks (we only treat UTF8)
-Bad_BOM_list = [ codecs.BOM_BE, codecs.BOM_LE, codecs.BOM_UTF16, codecs.BOM_UTF16_BE, codecs.BOM_UTF16_LE, codecs.BOM_UTF32, codecs.BOM_UTF32_BE, codecs.BOM_UTF32_LE]
+Bad_BOM_list = [ 
+    codecs.BOM_BE, 
+    codecs.BOM_LE, 
+    codecs.BOM_UTF16, 
+    codecs.BOM_UTF16_BE, 
+    codecs.BOM_UTF16_LE, 
+    codecs.BOM_UTF32, 
+    codecs.BOM_UTF32_BE, 
+    codecs.BOM_UTF32_LE
+]
 def __check_codec(fh, FileName):
     global Bad_BOM_list
 

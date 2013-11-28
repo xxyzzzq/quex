@@ -281,8 +281,8 @@ $$INDENTATION-ERROR-PROCEDURE$$
 def get_on_indentation_handler(Mode):
 
     # 'on_dedent' and 'on_n_dedent cannot be defined at the same time.
-    assert not (    Mode.incidence_db.has_key(E_IncidenceIDs.DEDENT) \
-                and Mode.incidence_db.has_key(E_IncidenceIDs.N_DEDENT))
+    assert not (    Mode.incidence_db.has_key(E_IncidenceIDs.INDENTATION_DEDENT) \
+                and Mode.incidence_db.has_key(E_IncidenceIDs.INDENTATION_N_DEDENT))
 
 
     # A mode that deals only with the default indentation handler relies
@@ -290,24 +290,24 @@ def get_on_indentation_handler(Mode):
     if not Mode.incidence_db.dedicated_indentation_handler_required():
         return "    return;"
 
-    code_fragment = Mode.incidence_db.get(E_IncidenceIDs.INDENT)
+    code_fragment = Mode.incidence_db.get(E_IncidenceIDs.INDENTATION_INDENT)
     if code_fragment is not None:
         on_indent_str   = code_fragment.get_code_string()
     else:
         on_indent_str   = "self_send(__QUEX_SETTING_TOKEN_ID_INDENT);"
 
-    code_fragment = Mode.incidence_db.get(E_IncidenceIDs.NODENT)
+    code_fragment = Mode.incidence_db.get(E_IncidenceIDs.INDENTATION_NODENT)
     if code_fragment is not None:
         on_nodent_str   = code_fragment.get_code_string()
     else:
         on_nodent_str   = "self_send(__QUEX_SETTING_TOKEN_ID_NODENT);"
 
-    code_fragment = Mode.incidence_db.get(E_IncidenceIDs.DEDENT)
+    code_fragment = Mode.incidence_db.get(E_IncidenceIDs.INDENTATION_DEDENT)
     if code_fragment is not None:
         on_dedent_str   = code_fragment.get_code_string()
         on_n_dedent_str = ""
 
-    code_fragment = Mode.incidence_db.get(E_IncidenceIDs.N_DEDENT)
+    code_fragment = Mode.incidence_db.get(E_IncidenceIDs.INDENTATION_N_DEDENT)
     if code_fragment is not None:
         on_n_dedent_str = code_fragment.get_code_string()
         on_dedent_str   = ""

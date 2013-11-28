@@ -5,8 +5,7 @@ sys.path.insert(0, os.getcwd())
 
 import quex.input.files.mode             as mode
 import quex.blackboard                   as blackboard
-from   quex.engine.generator.action_info import UserCodeFragment
-import quex.blackboard                   as blackboard
+from   quex.engine.generator.code.core   import UserCodeFragment
 
 from   StringIO import StringIO
 

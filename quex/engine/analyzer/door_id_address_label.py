@@ -345,7 +345,7 @@ class IfDoorIdReferencedLabel(IfDoorIdReferencedCode):
     def __init__(self, DoorId):
         IfDoorIdReferencedCode.__init__(self, DoorId)
 
-def get_plain_strings(txt_list, RoutingInfoF=True):
+def get_plain_strings(txt_list):
     """-- Replaces unreferenced 'CodeIfLabelReferenced' objects by empty strings.
        -- Replaces integers by indentation, i.e. '1' = 4 spaces.
     """
@@ -363,7 +363,7 @@ def get_plain_strings(txt_list, RoutingInfoF=True):
 
         elif not isinstance(elm, IfDoorIdReferencedCode): 
             # Text is left as it is
-            continue
+            pass
 
         elif dial_db.label_is_gotoed(elm.label): 
             # If an address is referenced, the correspondent code is inserted.

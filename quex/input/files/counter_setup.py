@@ -7,7 +7,7 @@ from quex.engine.misc.file_in import get_current_line_info_number, \
                                      verify_word_in_list, \
                                      read_integer
 
-from   quex.engine.generator.action_info  import LocalizedParameter
+from   quex.engine.generator.code.core    import LocalizedParameter
 from   quex.engine.interval_handling      import NumberSet
 from   quex.engine.state_machine.core     import StateMachine
 import quex.input.regular_expression.core as     regular_expression

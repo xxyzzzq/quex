@@ -132,6 +132,12 @@ class LanguageDB_Cpp(dict):
         if Offset == 0: return "*(me->buffer._input_p)"
         else:           return "QUEX_NAME(Buffer_input_get_offset)(&me->buffer, %i)" % Offset
 
+    def SOURCE_REFERENCE_BEGIN(self, FileName, LineN):
+        norm_filen_ame = Setup.get_file_reference(FileName) 
+        return '\n#   line %i "%s"\n' % (LineN, norm_file_name) 
+    def SOURCE_REFERENCE_END(self):
+        return '<<<<LINE_PRAGMA_WITH_CURRENT_LINE_N_AND_FILE_NAME>>>>'
+
     def NAMESPACE_OPEN(self, NameList):
         txt = ""
         i = -1
@@ -644,6 +650,24 @@ class LanguageDB_Cpp(dict):
         else:
             return cpp_reload_backward_str[0]
 
+    def straighten_open_line_pragmas(self, FileName):
+        norm_filename   = Setup.get_file_reference(FileName)
+        line_pragma_txt = self.SOURCE_REFERENCE_END()
+
+        new_content = []
+        line_n      = 0
+        fh          = open_file_or_die(FileName)
+        while 1 + 1 == 2:
+            line = fh.readline()
+            line_n += 1
+            if not line: 
+                break
+            elif line != line_pragma_txt:
+                new_content.append(line)
+            else:
+                new_content.append(self.SOURCE_REFERENCE_BEGIN(line_n, norm_filename))
+        fh.close()
+        write_safely_and_close(FileName, new_content)
 
 cpp_reload_forward_str = [
 """    __quex_debug3("RELOAD_FORWARD: success->%i; failure->%i", (int)target_state_index, (int)target_state_else_index);

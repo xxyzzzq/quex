@@ -1,7 +1,6 @@
 import quex.engine.state_machine.index             as     sm_index
 import quex.engine.analyzer.engine_supply_factory  as     engine
 from   quex.engine.generator.skipper.common        import line_counter_in_loop, \
-                                                          end_delimiter_is_subset_of_indentation_counter_newline, \
                                                           get_character_sequence, \
                                                           get_on_skip_range_open, \
                                                           line_column_counter_in_loop
@@ -350,7 +349,7 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, OnSkipRangeOpenStr=""):
             txt += "    %s"      % LanguageDB.END_IF()
         delimiter_remainder_test_str = txt
 
-    if not end_delimiter_is_subset_of_indentation_counter_newline(Mode, EndSequence):
+    if not Mode.match_indentation_counter_newline_pattern(EndSequence):
         goto_after_end_of_skipping_str = LanguageDB.GOTO(E_StateIndices.ANALYZER_REENTRY)
     else:
         # If there is indentation counting involved, then the counter's terminal id must
