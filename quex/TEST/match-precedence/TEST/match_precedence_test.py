@@ -22,6 +22,6 @@ def do(TxtList, Op):
     for x in sorted(blackboard.mode_db.itervalues(), key=lambda x: x.name):
         print "Mode: '%s'" % x.name
         pap_list = x.get_pattern_action_pair_list()
-        pap_list.sort(key=lambda x: x.pattern().sm.get_id())
+        pap_list.sort(key=lambda x: x.pattern().incidence_id())
         for i, pap in enumerate(pap_list):
             print "(%i) %s {%s}" % (i, pap.pattern_string(), pap.action().get_pure_code())

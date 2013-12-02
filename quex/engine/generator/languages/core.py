@@ -132,25 +132,18 @@ class LanguageDB_Cpp(dict):
         if Offset == 0: return "*(me->buffer._input_p)"
         else:           return "QUEX_NAME(Buffer_input_get_offset)(&me->buffer, %i)" % Offset
 
-    def SOURCE_REFERENCE_BEGIN(self, FileName, LineN):
-        norm_filen_ame = Setup.get_file_reference(FileName) 
-        return '\n#   line %i "%s"\n' % (LineN, norm_file_name) 
+    def SOURCE_REFERENCE_BEGIN(self, SourceReference):
+        norm_filen_ame = Setup.get_file_reference(SourceReference.file_name) 
+        return '\n#   line %i "%s"\n' % (SourceReference.line_n, norm_file_name) 
+
     def SOURCE_REFERENCE_END(self):
-        return '<<<<LINE_PRAGMA_WITH_CURRENT_LINE_N_AND_FILE_NAME>>>>'
+        return '<<<<LINE_PRAGMA_WITH_CURRENT_LINE_N_AND_FILE_NAME>>>>\n'
 
     def NAMESPACE_OPEN(self, NameList):
-        txt = ""
-        i = -1
-        for name in NameList:
-            i += 1
-            txt += "    " * i + "namespace %s {\n" % name
-        return txt
+        return "".join(("    " * i + "namespace %s {\n" % name) for i, name in enumerate(NameList))
 
     def NAMESPACE_CLOSE(self, NameList):
-        txt = ""
-        for name in NameList:
-            txt += "} /* Closing Namespace '%s' */\n" % name
-        return txt
+        return "".join("} /* Closing Namespace '%s' */\n" % name for name in NameList)
 
     def NAMESPACE_REFERENCE(self, NameList):
         return reduce(lambda x, y: x + "::" + y, [""] + NameList) + "::"

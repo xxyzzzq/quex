@@ -64,183 +64,130 @@ from   operator    import itemgetter, attrgetter
 PatternRepriorization = namedtuple("PatternRepriorization", ("pattern", "new_pattern_index", "sr"))
 PatternDeletion       = namedtuple("PatternDeletion",       ("pattern", "pattern_index",     "sr", "mode_name"))
 
-class PatternPriority(object):
-    """PatternPriority objects may need re-assignment so they cannot
-    be implemented as tuple or named tuple.
-    """
-    __slots__ = ("mode_hierarchy_index", "pattern_index")
-    def __init__(self, MHI, PatternIdx):
-        self.mode_hierarchy_index = MHI
-        self.pattern_index        = PatternIdx
-
-    def __cmp__(self, Other):
-        return cmp((self.mode_hierarchy_index,  self.pattern_index),
-                   (Other.mode_hierarchy_index, Other.pattern_index))
-
-#______________________________________________________________________________
-# ModeDescription:
-#
-# A direct representation of a mode's definition in Quex-source code. A mode
-# definition contains the following elements:
-#
-#    .name -- The name of the mode.
-#
-#    .derived_from_list -- All modes from where this mode is derived, that is
-#                          only the direct super modes.
-#   
-#    .option_db -- A mapping from an option name such as 'skip', 'exit', 
-#                  'inheritable', etc. to an object that defines its settings.
-#
-#    .incidence_by_name_db -- A mapping from an incidence name 'on_failure'
-#                             to a CodeFragment to be executed upon occurence.
-#
-#    .pattern_action_pair_list -- A list of pairs containing patterns and their
-#                                 correspondent CodeFragment to be executed
-#                                 upon match.
-#
-# If the mode is derived from another mode, it may make sense to adapt the 
-# priority of patterns and/or delete pattern from the matching hierarchy.
-#   
-#    .reprioritization_info_list -- Information about re-prioritization of 
-#                                   patterns.
-#
-#    .deletion_info_list -- Information about deletion of patterns.
-#______________________________________________________________________________
 class ModeDescription:
+    """Mode description delivered directly from the parser.
+    ______________________________________________________________________________
+    MAIN MEMBERS:
+
+     (1) .pattern_action_pair_list:   [ (Pattern, CodeUser) ]
+
+     Lists all patterns which are directly defined in this mode (not the ones
+     from the base mode) together with the user code (class CodeUser) to be
+     executed upon the detected match.
+
+     (2) .incidence_db:               incidence_id --> [ CodeFragment ]
+
+     Lists of possible incidences (e.g. 'on_match', 'on_enter', ...) together
+     with the code fragment to be executed upon occurence.
+
+     (3) .option_db:                  option name  --> [ OptionSetting ]
+
+     Maps the name of a mode option to a list of OptionSetting according to 
+     what has been defined in the mode. Those options describe
+
+        -- [optional] The character counter behavior.
+        -- [optional] The indentation handler behavior.
+        -- [optional] The 'skip' character behavior.
+           ...
+
+     That is, they parameterize code generators of 'helpers'. The option_db
+     also contains information about mode transition restriction, inheritance
+     behavior, etc.
+
+     (*) .derived_from_list:   [ string ]
+     
+     Lists all modes from where this mode is derived, that is only the direct 
+     super modes.
+    ______________________________________________________________________________
+    OTHER NON_TRIVIAL MEMBERS:
+
+     If the mode is derived from another mode, it may make sense to adapt the 
+     priority of patterns and/or delete pattern from the matching hierarchy.
+
+     (*) .reprioritization_info_list: [ PatternRepriorization ] 
+       
+     (*) .deletion_info_list:         [ PatternDeletion ] 
+    ______________________________________________________________________________
+    """
+    __slots__ = ("name",
+                 "sr",
+                 "derived_from_list",
+                 "option_db",
+                 "pattern_action_pair_list",
+                 "incidence_db",
+                 "reprioritization_info_list",
+                 "deletion_info_list")
+
     def __init__(self, Name, Filename, LineN):
         # Register ModeDescription at the mode database
         blackboard.mode_description_db[Name] = self
         self.name  = Name
         self.sr    = SourceRef(Filename, LineN)
 
-        # (*) List of modes from which this mode is derived.
-        self.derived_from_list = []
+        self.derived_from_list          = []
 
-        # (*) Options 
-        #     (The option's default value is only set, if after collecting
-        #      in the inheritance tree, nothing is set.)
-        self.option_db = OptionDB()
+        self.pattern_action_pair_list   = []  
+        self.option_db                  = RestrictedDB(standard_mode_option_db) # map: option_name    --> OptionSetting
+        self.incidence_db               = RestrictedDB(standard_incidence_db)   # map: incidence_name --> CodeFragment
 
-        # (*) Pattern-Action Pairs:
-        #
-        #     Set of all pairs: 'pattern' and the 'reaction' upon their detection.
-        #
-        self.__pattern_action_pair_list = []  
-
-        # (*) Repriorization Database
-        #   
-        #     Lists all patterns which have to be reprioritized.
-        #
-        self.__reprioritization_info_list = []  
-
-        # (*) Deletion Database
-        # 
-        #     Lists all patterns which have to be deleted. 
-        #
-        self.__deletion_info_list = [] 
-
-        # (*) Default Event Handler: Empty
-        #
-        self.incidence_by_name_db = dict((incidence_name, CodeFragment()) 
-                                         for incidence_name in standard_incidence_db.iterkeys())
+        self.reprioritization_info_list = []  
+        self.deletion_info_list         = [] 
 
     def add_pattern_action_pair(self, PatternStr, Action, ThePattern, Comment=""):
-        assert     ThePattern.sm.is_DFA_compliant()
-        assert     ThePattern.pre_context_sm is None \
-               or  ThePattern.pre_context_sm.is_DFA_compliant()
-        assert     ThePattern.pre_context_sm is None \
-               or  ThePattern.pre_context_sm.has_orphaned_states() == False
-        assert     ThePattern.sm.has_orphaned_states() == False
+        assert ThePattern.check_consistency()
 
-        self.__pattern_action_pair_list.append(PatternActionInfo(ThePattern, Action, PatternStr, 
-                                               ModeName=self.name, Comment=Comment))
+        Action.mode_name      = self.name
+        Action.comment        = Comment
+        Action.pattern_string = PatternStr
+        self.pattern_action_pair_list.append(PatternActionInfo(ThePattern, Action, PatternStr, 
+                                                               ModeName=self.name, Comment=Comment))
 
     def add_match_priority(self, ThePattern, FileName, LineN):
         """Whenever a pattern in the mode occurs, which is identical to that given
            by 'ThePattern', then the priority is adapted to the pattern index given
            by the current pattern index.
         """
-        PatternIdx = ThePattern.sm.get_id() 
-        self.__reprioritization_info_list.append(PatternRepriorization(ThePattern, PatternIdx, SourceRef(FileName, LineN), self.name))
+        PatternIdx = ThePattern.incidence_id() 
+        self.reprioritization_info_list.append(PatternRepriorization(ThePattern, PatternIdx, SourceRef(FileName, LineN), self.name))
 
     def add_match_deletion(self, ThePattern, FileName, LineN):
         """If one of the base modes contains a pattern which is identical to this
            pattern, it has to be deleted.
         """
-        PatternIdx = ThePattern.sm.get_id() 
-        self.__deletion_info_list.append(PatternDeletion(ThePattern, PatternIdx, SourceRef(FileName, LineN), self.name))
-
-    def get_pattern_action_pair_list(self):
-        return self.__pattern_action_pair_list
-
-    def get_reprioritization_info_list(self):
-        return self.__reprioritization_info_list
-
-    def get_deletion_info_list(self):
-        return self.__deletion_info_list
-
-#______________________________________________________________________________
-# PPC -- (Priority, Pattern, CodeFragment): 
-#
-# Collects information about a pattern, its priority, and the code fragment
-# to be executed when it triggers. Objects of this class are intermediate
-# they are not visible outside class 'Mode'.
-#______________________________________________________________________________
-class PPC(namedtuple("PPC_tuple", ("priority", "pattern", "code_fragment"))):
-    def __new__(self, ThePatternPriority, ThePattern, TheCodeFragment):
-        return super(PPC, self).__new__(self, ThePatternPriority, ThePattern, TheCodeFragment)
-
-    @staticmethod
-    def from_PatternActionPair(ModeHierarchyIndex, PAP):
-        return PPC(PatternPriority(ModeHierarchyIndex, PAP.pattern().sm.get_id()), PAP.pattern(), PAP.action())
-
+        PatternIdx = ThePattern.incidence_id() 
+        self.deletion_info_list.append(PatternDeletion(ThePattern, PatternIdx, SourceRef(FileName, LineN), self.name))
 
 class IncidenceDB(dict):
-    def __init__(self, BaseModeSequence=None, PPC_List=None):
-        """Collect incidence handlers from base mode and the current mode.
-        Event handlers of the most 'base' mode come first, then the 
-        derived event handlers. 
+    """Database of CodeFragments related to 'incidences'.
+    ---------------------------------------------------------------------------
 
-           See '__determine_base_mode_sequence(...) for details about the line-up.
+                      incidence_id --> [ CodeFragment ]
+
+    If the 'mode_option_info_db[option_name]' mentions that there can be 
+    no multiple definitions or if the options can be overwritten than the 
+    list of OptionSetting-s must be of length '1' or the list does not exist.
+
+    ---------------------------------------------------------------------------
+    """
+    def from_BaseModeSequence(self, BaseModeSequence):
+        """Collects the content of the 'incidence_db' member of this mode and
+        its base modes. 
+
+        RETURNS:      map:    incidence_id --> [ CodeFragment ]
         """
-        if BaseModeSequence is None:
-            return
-
         # Special incidences from 'standard_incidence_db'
+        result = {}
         for incidence_name, info in standard_incidence_db.iteritems():
             incidence_id, comment = info
             entry = None
             for mode_descr in BaseModeSequence:
-                code_fragment = mode_descr.incidence_by_name_db[incidence_name]
+                code_fragment = mode_descr.incidence_db[incidence_name]
                 if code_fragment is not None and not code_fragment.is_whitespace():
-                    if entry is None: entry = code_fragment.clone()
-                    else:             entry.append_CodeFragment(code_fragment)
-
-            if entry is not None: 
-                isinstance(entry, CodeFragment)
-                self[incidence_id] = entry
-
-        # Pattern match incidences
-        for priority, pattern, code_fragment in PPC_List:
-            isinstance(code_fragment, CodeFragment)
-            self[pattern.incidence_id()] = code_fragment
-
-        return
-
-    @staticmethod
-    def from_iterable(Iterable):
-        result = IncidenceDB()
-        for incidence_id, entry in Iterable:
+                    new_code_fragment = code_fragment.clone()
+                    if entry is None: entry = [ new_code_fragment ]
+                    else:             entry.append_CodeFragment(new_code_fragment)
             result[incidence_id] = entry
         return result
-
-    def dedicated_indentation_handler_required(self):
-        return    self.has_key(E_IncidenceIDs.INDENTATION_ERROR) \
-               or self.has_key(E_IncidenceIDs.INDENTATION_BAD)   \
-               or self.has_key(E_IncidenceIDs.INDENTATION_INDENT)   \
-               or self.has_key(E_IncidenceIDs.INDENTATION_DEDENT)   \
-               or self.has_key(E_IncidenceIDs.INDENTATION_N_DEDENT) \
-               or self.has_key(E_IncidenceIDs.INDENTATION_NODENT) 
 
 class Mode:
     """Finalized 'Mode' as it results from combination of base modes.
@@ -277,27 +224,29 @@ class Mode:
 
         # Collect Options
         # (A finalized Mode does not contain an option_db anymore).
-        options_db = OptionDB.from_BaseModeSequence(base_mode_sequence)
+        options_db   = OptionDB.from_BaseModeSequence(base_mode_sequence)
+        incidence_db = IncidenceDB.from_BaseModeSequence(base_mode_sequence)
 
         # Determine Line/Column Counter Database
-        self.__counter_db        = CounterDB(options_db.value("counter"))
-        self.__indentation_setup = options_db.value("indentation")
+        counter_db        = CounterDB(options_db.value("counter"))
+        indentation_setup = options_db.value("indentation")
 
-        # Build a 'PPC list' -- List of (priority, pattern, code fragment)-s
-        # (see 'class PPC')
-        ppc_list            = self.__ppc_list_construct(base_mode_sequence, options_db)
-        self.__pattern_list = self.__pattern_list_construct(ppc_list)
+        # Intermediate Step: Priority-Pattern-CodeFragment List (PPC list)
+        #
+        # The list is developed so that patterns can be sorted and code 
+        # fragments are prepared.
+        ppc_list = self.__ppc_list_construct(base_mode_sequence, options_db)
 
-        # Collect Incidence-Handlers (purposely, no use of term 'event handler')
-        self.__incidence_db = IncidenceDB(base_mode_sequence, ppc_list)
+        self.__pattern_list, \
+        self.__terminal_db   = preparation.do(ppc_list, incidence_db, counter_db, indentation_setup)
         
         # (*) Misc
-        self.__abstract_f           = self.__abstract_f_prepare(Other.option_db)
+        self.__abstract_f           = self.__is_abstract(Other.option_db)
         self.__base_mode_sequence   = base_mode_sequence
         self.__entry_mode_name_list = options_db.value_list("entry") # Those can enter this mode.
         self.__exit_mode_name_list  = options_db.value_list("exit")  # This mode can exit to those.
 
-    def __abstract_f_prepare(self, OriginalOptionDb):
+    def __is_abstract(self, OriginalOptionDb):
         """If the mode has incidences and/or patterns defined it is free to be 
         abstract or not. If neither one is defined, it cannot be implemented and 
         therefore MUST be abstract.
@@ -425,36 +374,6 @@ class Mode:
         self.__perform_reprioritization(ppc_list, BaseModeSequence) 
 
         return ppc_list
-
-    def __pattern_list_construct(self, ppc_list):
-        pattern_list = [ 
-            pattern 
-            for priority, pattern, code_fragment in sorted(ppc_list, key=attrgetter("priority")) 
-        ]
-
-        # (*) Try to determine line and column counts -- BEFORE Transformation!
-        for pattern in pattern_list:
-            pattern.prepare_count_info(self.__counter_db, 
-                                       Setup.buffer_codec_transformation_info)
-
-        # (*) Transform anything into the buffer's codec
-        #     Skippers: What is relevant to enter the skippers is transformed.
-        #               Related data (skip character set, ... ) is NOT transformed!
-        for pattern in pattern_list:
-            if not pattern.transform(Setup.buffer_codec_transformation_info):
-                error_msg("Pattern contains elements not found in engine codec '%s'." % Setup.buffer_codec,
-                          pattern.file_name, pattern.sr.line_n, DontExitF=True)
-
-        # (*) Cut the signalling characters from any pattern or state machine
-        for pattern in pattern_list:
-            pattern.cut_character_list(blackboard.signal_character_list(Setup))
-
-        # (*) Pre-contexts and BIPD can only be mounted, after the transformation.
-        for pattern in pattern_list:
-            pattern.mount_post_context_sm()
-            pattern.mount_pre_context_sm()
-
-        return pattern_list
 
     def __prepare_skip(self, ppc_list, SkipSetupList, MHI):
         """MHI = Mode hierarchie index."""
@@ -633,7 +552,7 @@ class Mode:
         for mode_hierarchy_index, mode_descr in enumerate(BaseModeSequence):
             result.extend(
                 PPC.from_PatternActionPair(mode_hierarchy_index, pap)
-                for pap in mode_descr.get_pattern_action_pair_list()
+                for pap in mode_descr.pattern_action_pair_list
             )
         return result
 
@@ -648,7 +567,7 @@ class Mode:
                     history.append([ModeName, 
                                     xpap[1].pattern_string(), 
                                     xpap[1].mode_name,
-                                    xpap[1].pattern().sm.get_id(), 
+                                    xpap[1].pattern().incidence_id(), 
                                     Info.new_pattern_index])
                     xpap[0].mode_hierarchy_index = MHI
                     xpap[0].pattern_index        = Info.new_pattern_index
@@ -853,7 +772,7 @@ class Mode:
             txt += "    PATTERN LIST:\n"
             def my_key(x):
                 if   x.pattern() in E_IncidenceIDs: return (0, str(x.pattern()))
-                elif hasattr(x.pattern(), "sm"):    return (1, x.pattern().sm.get_id())
+                elif hasattr(x.pattern(), "sm"):    return (1, x.pattern().incidence_id())
                 else:                               return (2, x)
 
             self.__pattern_list.sort(key=my_key)
@@ -861,7 +780,7 @@ class Mode:
             for pap in self.__pattern_list:
                 if hasattr(pap.pattern(), "sm"): 
                     txt += "      (%3i) %s: %s%s\n" % \
-                           (pap.pattern().sm.get_id(),
+                           (pap.pattern().incidence_id(),
                             pap.mode_name, " " * (L - len(self.name)), 
                             pap.pattern_string())
                 else:
@@ -1074,7 +993,7 @@ def __parse_event(new_mode, fh, word):
         #    receiver => Do not allow CONTINUE!
         continue_f = False
 
-    new_mode.incidence_by_name_db[word] = \
+    new_mode.incidence_db[word] = \
             code_fragment.parse(fh, "%s::%s event handler" % (new_mode.name, word),
                                 ContinueF=continue_f)
 
@@ -1098,15 +1017,15 @@ def __general_validate(fh, Mode, Name, pos):
         error_msg("the alternative '%s' has already been defined." % B,
                   filename, line_n)
 
-    if Name == "on_dedent" and Mode.incidence_by_name_db.has_key("on_n_dedent"):
+    if Name == "on_dedent" and Mode.incidence_db.has_key("on_n_dedent"):
         fh.seek(pos)
-        code = Mode.incidence_by_name_db["on_n_dedent"]
+        code = Mode.incidence_db["on_n_dedent"]
         if not code.is_whitespace():
             error_dedent_and_ndedent(code, "on_dedent", "on_n_dedent")
                       
-    if Name == "on_n_dedent" and Mode.incidence_by_name_db.has_key("on_dedent"):
+    if Name == "on_n_dedent" and Mode.incidence_db.has_key("on_dedent"):
         fh.seek(pos)
-        code = Mode.incidence_by_name_db["on_dedent"]
+        code = Mode.incidence_db["on_dedent"]
         if not code.is_whitespace():
             error_dedent_and_ndedent(code, "on_n_dedent", "on_dedent")
                       

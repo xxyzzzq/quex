@@ -52,7 +52,7 @@ class PatternActionInfo:
 
     def acceptance_id(self):
         if self.__pattern in E_IncidenceIDs: return self.__pattern 
-        else:                             return self.__pattern.sm.get_id()
+        else:                             return self.__pattern.incidence_id()
     def pattern(self):
         return self.__pattern
 
@@ -82,7 +82,7 @@ class PatternActionInfo:
             txt += "self.file_name  = %s\n" % repr(self.action().sr.file_name) 
             txt += "self.line_n     = %s\n" % repr(self.action().sr.line_n) 
         if self.pattern() not in E_IncidenceIDs:
-            txt += "self.pattern_index  = %s\n" % repr(self.pattern().sm.get_id()) 
+            txt += "self.pattern_index  = %s\n" % repr(self.pattern().incidence_id()) 
         return txt
 
 class LocalizedParameter:
