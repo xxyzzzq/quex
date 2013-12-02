@@ -140,9 +140,9 @@ class CodeUser(CodeUser_Base, CodeFragment_Base):
         code = CodeFragment_Base.get_code(self)
         if len(code) == 0: return []
 
-        result      = [ gt]
+        result      = [ LanguageDB.SOURCE_REFERENCE_BEGIN(self.sr)]
         result.extend(code)
-        result.append(LanguageDB.SOURCE_REFERENCE_END())
+        result.append("\n%s" % LanguageDB.SOURCE_REFERENCE_END())
         return result
 
 class CodeGenerated(CodeFragment_Base):

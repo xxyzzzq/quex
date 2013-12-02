@@ -1,6 +1,7 @@
-from   quex.blackboard import E_Values
-from   itertools       import izip, islice
-from   collections     import deque
+from   quex.blackboard   import E_Values
+
+from   itertools   import izip, islice
+from   collections import deque
 import sys
 import os
 

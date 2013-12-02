@@ -15,6 +15,9 @@ from   collections import namedtuple
 from   copy import deepcopy
 import types
 
+def __get_mode_name_list():
+    return mode_description_db.keys()
+
 class SkipRangeData: 
     def __init__(self, OpenerStr, OpenerPattern, OpenerSequence,
                  CloserStr, CloserPattern, CloserSequence):
@@ -60,11 +63,7 @@ class ModeOptionInfo:
 
         return OptionSetting(content, SourceRef(), ModeName)
 
-
 OptionSetting = namedtuple("OptionSetting", ("value", "sr", "mode_name"))
-
-def __get_mode_name_list():
-    return mode_description_db.keys()
 
 mode_option_info_db = {
    # -- a mode can be inheritable or not or only inheritable. if a mode
@@ -119,7 +118,7 @@ class OptionDB(dict):
             for name, info in mode_option_info_db.iteritems():
                 setting = option_db.__get_setting(name)
                 if setting is None: continue
-                assert len(setting) == 1               # The setting of a ModeDescription 
+                assert len(setting) == 1                 # The setting of a ModeDescription 
                 result.__enter_setting(name, setting[0]) # option_db MUST be of length 1
 
         # Options which have not been set (or inherited) are set to the default value.

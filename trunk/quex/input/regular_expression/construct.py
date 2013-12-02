@@ -215,6 +215,8 @@ class Pattern(object):
             error_msg("Pattern has no acceptance state and can never match.\n" + \
                       "Aborting generation process.", fh)
 
+        self.check_consistency()
+
     def __repr__(self):
         return self.get_string(self)
 
@@ -241,7 +243,11 @@ class Pattern(object):
 
         return msg
 
-    side_info = property(deprecated, deprecated, deprecated, "Member 'side_info' deprecated!")
+    def check_consistency(self):
+        return     ThePattern.sm.is_DFA_compliant() \
+               and (ThePattern.pre_context_sm is None or ThePattern.pre_context_sm.is_DFA_compliant())) 
+               and (ThePattern.pre_context_sm is None or not ThePattern.pre_context_sm.has_orphaned_states())
+               and (not ThePattern.sm.has_orphaned_states())
 
 def do(core_sm, 
        begin_of_line_f=False, pre_context=None, 

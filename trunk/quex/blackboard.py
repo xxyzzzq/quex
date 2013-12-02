@@ -237,33 +237,6 @@ mode_db = {}
 initial_mode = None
 
 #-----------------------------------------------------------------------------------------
-# standard_incidence_db: Stores names of event handler functions as keys and their meaning
-#                        as their associated values.
-#-----------------------------------------------------------------------------------------
-standard_incidence_db = {
-    # key word:              event id:                            comment:
-    "on_codec_error":        (E_IncidenceIDs.CODEC_ERROR,         "On codec error of a mode."),
-    "on_entry":              (E_IncidenceIDs.MODE_ENTRY,          "On entry of a mode."),
-    "on_exit":               (E_IncidenceIDs.MODE_EXIT,           "On exit of a mode."),
-    "on_indent":             (E_IncidenceIDs.INDENTATION_INDENT,  "On opening indentation."),
-    "on_nodent":             (E_IncidenceIDs.INDENTATION_NODENT,  "On same indentation."),
-    "on_dedent":             (E_IncidenceIDs.INDENTATION_DEDENT,  "On closing indentation'."),
-    "on_n_dedent":           (E_IncidenceIDs.INDENTATION_N_DEDENT,"On closing indentation'."),
-    "on_indentation_error":  (E_IncidenceIDs.INDENTATION_ERROR,   "Closing indentation on non-border."),
-    "on_indentation_bad":    (E_IncidenceIDs.INDENTATION_BAD,     "On bad character in indentation."),
-    "on_indentation":        (E_IncidenceIDs.INDENTATION_HANDLER, "General Indentation Handler."),
-    "on_match":              (E_IncidenceIDs.MATCH,               "On each match (before pattern action)."),
-    "on_after_match":        (E_IncidenceIDs.AFTER_MATCH,         "On each match (after pattern action)."),
-    "on_failure":            (E_IncidenceIDs.FAILURE,             "In case that no pattern matches."),
-    "on_skip_range_open":    (E_IncidenceIDs.SKIP_RANGE_OPEN,     "On missing skip range delimiter."),
-    "on_end_of_stream":      (E_IncidenceIDs.END_OF_STREAM,       "On end of file/stream."),
-    # TODO:
-    # "on_token_stamp":      (E_IncidenceIDs.ON_TOKEN_STAMP,  "On event of token stamping."),
-    #                        instead of: QUEX_ACTION_TOKEN_STAMP 
-    # "on_codec_error":      (E_IncidenceIDs.ON_CODEC_ERROR, "On input file does not conform to codec."),
-}
-
-#-----------------------------------------------------------------------------------------
 # header: code fragment that is to be pasted before mode transitions
 #         and pattern action pairs (e.g. '#include<something>'
 #-----------------------------------------------------------------------------------------

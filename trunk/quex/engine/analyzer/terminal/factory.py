@@ -38,21 +38,6 @@ class TerminalStateFactory:
 
         self.mode_name = ModeName
 
-    def do(self, IncidenceId, TheCodeFragment):
-        if   isinstance(IncidenceId, (int, long)):              
-            code_fragment = self.prepare_CodeFragment(IncidenceId, TheCodeFragment)
-            return TerminalPlainCode(IncidenceId, code_fragment)
-        elif IncidenceId == E_IncidenceIDs.SKIP:                
-            return TerminalSkipCharacterSet(code_fragment)
-        elif IncidenceId == E_IncidenceIDs.SKIP_RANGE:          
-            return TerminalSkipRange(code_fragment)
-        elif IncidenceId == E_IncidenceIDs.SKIP_NESTED_RANGE:   
-            return TerminalSkipNestedRange(code_fragment)
-        elif IncidenceId == E_IncidenceIDs.INDENTATION_HANDLER: 
-            return TerminalIndentationHandler(code_fragment)
-        else:                                                   
-            return None # Treated later (EndOfStream/Failure) or never.
-
     def do_OnEndOfStream(self):
         # No indentation handler => Empty string.
         code = [ self.txt_indentation_handler_call ]
