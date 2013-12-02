@@ -18,6 +18,7 @@ from   quex.engine.generator.code.skip_range           import CodeSkipRange
 from   quex.engine.generator.code.skip_nested_range    import CodeSkipNestedRangegt
 from   quex.engine.generator.code.indentation_counter  import CodeIndentationCounter
 
+import quex.engine.generator.skipper.character_set       as   skip_character_set
 import quex.engine.generator.skipper.range               as   skip_range
 import quex.engine.generator.skipper.nested_range        as   skip_nested_range
 import quex.engine.generator.skipper.indentation_counter as   indentation_counter
@@ -51,6 +52,40 @@ from   quex.blackboard import setup as Setup, \
 from   copy        import deepcopy
 from   collections import namedtuple
 from   operator    import itemgetter, attrgetter
+
+class PatternPriority(object):
+    """Description of a pattern's priority.
+    ___________________________________________________________________________
+    PatternPriority-s are possibly adapted according the re-priorization 
+    or other 'mode-related' mechanics. Thus, they cannot be named tuples.
+    ___________________________________________________________________________
+    """
+    __slots__ = ("mode_hierarchy_index", "pattern_index")
+    def __init__(self, MHI, PatternIdx):
+        self.mode_hierarchy_index = MHI
+        self.pattern_index        = PatternIdx
+
+    def __cmp__(self, Other):
+        return cmp((self.mode_hierarchy_index,  self.pattern_index),
+                   (Other.mode_hierarchy_index, Other.pattern_index))
+
+class PPC(namedtuple("PPC_tuple", ("priority", "pattern", "code_fragment"))):
+    """PPC -- (Priority, Pattern, CodeFragment) 
+    ______________________________________________________________________________
+
+    Collects information about a pattern, its priority, and the code fragment
+    to be executed when it triggers. Objects of this class are intermediate
+    they are not visible outside class 'Mode'.
+    ______________________________________________________________________________
+    """
+    @typed(ThePatternPriority=PatternPriority, TheCodeFragment=CodeFragment)
+    def __new__(self, ThePatternPriority, ThePattern, TheCodeFragment):
+        return super(PPC, self).__new__(self, ThePatternPriority, ThePattern, TheCodeFragment)
+
+    @staticmethod
+    def from_PatternActionPair(ModeHierarchyIndex, PAP):
+        return PPC(PatternPriority(ModeHierarchyIndex, PAP.pattern().incidence_id()), PAP.pattern(), PAP.action())
+
 
 #-----------------------------------------------------------------------------------------
 # ModeDescription/Mode Objects:
@@ -189,6 +224,32 @@ class IncidenceDB(dict):
             result[incidence_id] = entry
         return result
 
+class TerminalDB(dict):
+    def __init__(self, IncidenceDb, PPC_List):
+        # Miscellaneous incidences
+        for incidence_id, code_fragment in IncidenceDb:
+            assert incidence_id not in self
+            self[incidence_id] = Terminal(incidence_id, code_fragment.get_code())
+
+        # Pattern match incidences
+        for priority, pattern, code_fragment in PPC_List:
+            incidence_id = pattern.incidence_id()
+            assert incidence_id not in self
+            self[incidence_id] = Terminal(incidence_id, code_fragment.get_code())
+
+        return
+
+    def __get_code(self, IncidenceId, CodeFragment):
+
+    def dedicated_indentation_handler_required(self):
+        return    self.has_key(E_IncidenceIDs.INDENTATION_ERROR) \
+               or self.has_key(E_IncidenceIDs.INDENTATION_BAD)   \
+               or self.has_key(E_IncidenceIDs.INDENTATION_INDENT)   \
+               or self.has_key(E_IncidenceIDs.INDENTATION_DEDENT)   \
+               or self.has_key(E_IncidenceIDs.INDENTATION_N_DEDENT) \
+               or self.has_key(E_IncidenceIDs.INDENTATION_NODENT) 
+
+
 class Mode:
     """Finalized 'Mode' as it results from combination of base modes.
     ____________________________________________________________________________
@@ -235,10 +296,9 @@ class Mode:
         #
         # The list is developed so that patterns can be sorted and code 
         # fragments are prepared.
-        ppc_list = self.__ppc_list_construct(base_mode_sequence, options_db)
-
         self.__pattern_list, \
-        self.__terminal_db   = preparation.do(ppc_list, incidence_db, counter_db, indentation_setup)
+        self.__terminal_db   = self.__ppc_list_construct(base_mode_sequence, options_db)
+
         
         # (*) Misc
         self.__abstract_f           = self.__is_abstract(Other.option_db)
@@ -294,6 +354,36 @@ class Mode:
     def get_base_mode_name_list(self):
         assert len(self.__base_mode_sequence) >= 1 # At least the mode itself is in there
         return [ mode.name for mode in self.__base_mode_sequence ]
+
+    def __pattern_list_construct(self, ppc_list):
+        pattern_list = [ 
+            pattern 
+            for priority, pattern, code_fragment in sorted(ppc_list, key=attrgetter("priority")) 
+        ]
+
+        # (*) Try to determine line and column counts -- BEFORE Transformation!
+        for pattern in pattern_list:
+            pattern.prepare_count_info(CounterDb, 
+                                       Setup.buffer_codec_transformation_info)
+
+        # (*) Transform anything into the buffer's codec
+        #     Skippers: What is relevant to enter the skippers is transformed.
+        #               Related data (skip character set, ... ) is NOT transformed!
+        for pattern in pattern_list:
+            if not pattern.transform(Setup.buffer_codec_transformation_info):
+                error_msg("Pattern contains elements not found in engine codec '%s'." % Setup.buffer_codec,
+                          pattern.file_name, pattern.sr.line_n, DontExitF=True)
+
+        # (*) Cut the signalling characters from any pattern or state machine
+        for pattern in pattern_list:
+            pattern.cut_character_list(blackboard.signal_character_list(Setup))
+
+        # (*) Pre-contexts and BIPD can only be mounted, after the transformation.
+        for pattern in pattern_list:
+            pattern.mount_post_context_sm()
+            pattern.mount_pre_context_sm()
+
+        return pattern_list
 
     def __determine_base_mode_sequence(self, ModeDescr, InheritancePath, base_mode_sequence):
         """Determine the sequence of base modes. The type of sequencing determines
@@ -358,7 +448,9 @@ class Mode:
         the pattern index itself.
         -----------------------------------------------------------------------
         """ 
-        ppc_list = self.__pattern_action_pairs_collect(BaseModeSequence)
+        ppc_list    = self.__pattern_action_pairs_collect(BaseModeSequence)
+        terminal_db = TerminalDB() # In this function 'terminal_db' collects only
+        #                          # non-pattern terminals.
 
         # (*) Collect pattern recognizers and several 'incidence detectors' in 
         #     state machine lists. When the state machines accept this triggers
@@ -373,7 +465,9 @@ class Mode:
         self.__perform_deletion(ppc_list, BaseModeSequence) 
         self.__perform_reprioritization(ppc_list, BaseModeSequence) 
 
-        return ppc_list
+        # (*) Process PPC list and extract the required terminals into TerminalDB.
+        pattern_list, terminal_db = self.__pattern_list_construct(ppc_list, terminal_db)
+        return pattern_list, terminal_db
 
     def __prepare_skip(self, ppc_list, SkipSetupList, MHI):
         """MHI = Mode hierarchie index."""
@@ -418,30 +512,33 @@ class Mode:
             pattern       = Pattern(StateMachine.from_character_set(CmdInfo.trigger_set))
             ppc_list.append(PPC(priority, pattern, TheCodeFragment))
 
-        ccd = CounterCoderData(self.counter_db, character_set, AfterExitDoorId)
+        ccd          = CounterCoderData(self.counter_db, character_set, AfterExitDoorId)
         incidence_id = index.get_state_machine_id()
+        code         = [ LanguageDB.GOTO_BY_DOOR_ID(DoorID.incidence(incidence_id)) ]
         for cli, cmd_info in ccd.count_command_map.iteritems():
             # Counting actions are added to the terminal automatically.
             # What remains to do here is only to go to the skipper.
-            ppc_list.append(get_PPC(MHI, cli, cmd_info, CodeGotoTerminal(CmdInfo, incidence_id)))
+            sub_incidence_id = index.get_state_machine_id()
+            ppc_list.append(get_PPC(MHI, cli, cmd_info, Terminal(sub_incidence_id, code)))
 
         data = { 
             "counter_db":    self.counter_db, 
             "character_set": character_set,
         }
-        ppc_list.append(get_PPC(MHI, main_cli, cmd_info, CodeSkip(data, source_reference)))
+        code = skip_character_set.do(data)
+        ppc_list.append(get_PPC(MHI, main_cli, cmd_info, Terminal(incidence_id, code)))
 
     def __prepare_skip_range(self, ppc_list, SkipRangeSetupList, MHI):
         """MHI = Mode hierarchie index."""
         self.__prepare_skip_range_core(ppc_list, MHI, SkipRangeSetupList,  
-                                       CodeSkipRange)
+                                       skip_range.do)
 
     def __prepare_skip_nested_range(self, ppc_list, SkipNestedRangeSetupList, MHI):
         """MHI = Mode hierarchie index."""
         self.__prepare_skip_range_core(ppc_list, MHI, SkipNestedRangeSetupList, 
-                                       CodeSkipNestedRange)
+                                       skip_nested_range.do)
 
-    def __prepare_skip_range_core(self, ppc_list, MHI, SrSetup, Code_constructor):
+    def __prepare_skip_range_core(self, ppc_list, MHI, SrSetup, CodeGeneratorFunction):
         """MHI = Mode hierarchie index."""
 
         if SrSetup is None or len(SrSetup) == 0:
@@ -452,15 +549,14 @@ class Mode:
 
         for i, data in enumerate(SrSetup):
             assert isinstance(data, SkipRangeData)
-            data.mode     = self
+            data.mode = self
+            code      = CodeGeneratorFunction(data, opener_pattern.sr)
 
-            # Skipper code is to be generated later
-            priority      = PatternPriority(MHI, i)
-            pattern       = opener_pattern.clone()
-            pattern.set_incidence_id(IncidenceId)
-            code_fragment = Code_constructor(data, opener_pattern.sr)
-
-            ppc_list.append(PPC(priority, pattern, code_fragment))
+            priority  = PatternPriority(MHI, i)
+            pattern   = opener_pattern.clone()
+            incidence_id = index.get_state_machine_id()
+            pattern.set_incidence_id(incidence_id)
+            ppc_list.append(PPC(priority, pattern, Terminal(incidence_id, code))
 
     def __prepare_indentation_counter(self, ppc_list, ISetup, MHI):
         """Prepare indentation counter. An indentation counter is implemented by the 
