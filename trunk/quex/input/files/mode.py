@@ -13,10 +13,6 @@ from   quex.engine.generator.code.core                 import CodeFragment, \
                                                               UserCodeFragment, \
                                                               GeneratedCode, \
                                                               PatternActionInfo
-from   quex.engine.generator.code.skip                 import CodeSkip
-from   quex.engine.generator.code.skip_range           import CodeSkipRange
-from   quex.engine.generator.code.skip_nested_range    import CodeSkipNestedRangegt
-from   quex.engine.generator.code.indentation_counter  import CodeIndentationCounter
 
 import quex.engine.generator.skipper.character_set       as   skip_character_set
 import quex.engine.generator.skipper.range               as   skip_range
@@ -222,7 +218,35 @@ class IncidenceDB(dict):
                     if entry is None: entry = [ new_code_fragment ]
                     else:             entry.append_CodeFragment(new_code_fragment)
             result[incidence_id] = entry
+
+        if E_IncidenceIDs.FAILURE not in result:
+            result[E_IncidenceIDs.FAILURE] = CodeFragment(
+                  "QUEX_ERROR_EXIT(\"\\n    Match failure in mode '%s'.\\n\"\n" % self.mode_name
+                + "                \"    No 'on_failure' section provided for this mode.\\n\"\n"
+                + "                \"    Proposal: Define 'on_failure' and analyze 'Lexeme'.\\n\");\n"
+            )
+        if E_IncidenceIDs.END_OF_STREAM not in result:
+            result[E_IncidenceIDs.END_OF_STREAM] = CodeFragment(
+                "self_send(__QUEX_SETTING_TOKEN_ID_TERMINATION);\n"
+                "RETURN;\n"
+            )
+
         return result
+
+    def get_text(self, IncidenceId):
+        code_fragment = self.get(IncidenceId)
+        if code_fragment is None: return ""
+        else:                     return "".join(on_match.get_code())
+
+    def default_indentation_handler(self):
+        return not (   self.has_key(E_IncidenceIDs.INDENTATION_ERROR) \
+                    or self.has_key(E_IncidenceIDs.INDENTATION_BAD)   \
+                    or self.has_key(E_IncidenceIDs.INDENTATION_INDENT)   \
+                    or self.has_key(E_IncidenceIDs.INDENTATION_DEDENT)   \
+                    or self.has_key(E_IncidenceIDs.INDENTATION_N_DEDENT) \
+                    or self.has_key(E_IncidenceIDs.INDENTATION_NODENT))
+
+
 
 class TerminalDB(dict):
     def __init__(self, IncidenceDb, PPC_List):
@@ -240,15 +264,6 @@ class TerminalDB(dict):
         return
 
     def __get_code(self, IncidenceId, CodeFragment):
-
-    def dedicated_indentation_handler_required(self):
-        return    self.has_key(E_IncidenceIDs.INDENTATION_ERROR) \
-               or self.has_key(E_IncidenceIDs.INDENTATION_BAD)   \
-               or self.has_key(E_IncidenceIDs.INDENTATION_INDENT)   \
-               or self.has_key(E_IncidenceIDs.INDENTATION_DEDENT)   \
-               or self.has_key(E_IncidenceIDs.INDENTATION_N_DEDENT) \
-               or self.has_key(E_IncidenceIDs.INDENTATION_NODENT) 
-
 
 class Mode:
     """Finalized 'Mode' as it results from combination of base modes.
@@ -466,8 +481,44 @@ class Mode:
         self.__perform_reprioritization(ppc_list, BaseModeSequence) 
 
         # (*) Process PPC list and extract the required terminals into TerminalDB.
-        pattern_list, terminal_db = self.__pattern_list_construct(ppc_list, terminal_db)
+        pattern_list = self.__pattern_list_construct(ppc_list, terminal_db)
+
+        # (*) Line-/Column Count DB
+        terminal_db  = self.__terminal_db_construct(pattern_list)
+
         return pattern_list, terminal_db
+
+    def __terminal_db_construct(self, PatternList, PPC_List):
+        line_column_count_db = self.__prepare_line_column_count_db(PatternList)
+
+        factory = TerminalFactory(self.name, self.incidence_db, 
+                                  line_column_count_db, 
+                                  IndentationSupportF, BeginOfLineSupportF)
+
+        terminal_db = {}
+        for priority, pattern, code_fragment in PPC_List:
+            terminal = factory.do(terminal_type, code_fragment, 
+                                  Prefix=line_column_count_db[pattern.incidence_id()])
+            terminal_db[pattern.incidence_id()] = terminal
+
+        return terminal_db
+
+    def __prepare_line_column_count_db(self, PatternList):
+        LanguageDB = Setup.language_db
+
+        default_counter_f = False
+        result = {}
+        for pattern in PatternList:
+            requires_default_counter_f, \
+            count_text                  = counter_for_pattern.get(pattern)
+            count_text = "".join(LanguageDB.REPLACE_INDENT(count_text))
+
+            default_counter_f |= requires_default_counter_f
+
+            result[pattern.incidence_id()] = count_text
+
+        return result, default_counter_f
+
 
     def __prepare_skip(self, ppc_list, SkipSetupList, MHI):
         """MHI = Mode hierarchie index."""

@@ -190,6 +190,13 @@ E_Commands = Enum("Accepter",
                   "TemplateStateKeySet",
                   "_DEBUG_Commands")
 
+E_TerminalTypes = Enum("MATCH_PATTERN",
+                       "MATCH_FAILURE",
+                       "END_OF_STREAM",
+                       "END_OF_BIPD",
+                       "PLAIN",
+                       "_DEBUG_TerminalTypes")
+
 #-----------------------------------------------------------------------------------------
 # SourceRef: A reference into source code:
 #            file_name = Name of the file where the code is located.
