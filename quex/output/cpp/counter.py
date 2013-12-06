@@ -39,11 +39,13 @@ def get(counter_db, Name):
                                        by the 'function name'.
     ---------------------------------------------------------------------------
     """
+    LanguageDB = Setup.language_db
+
     function_name = DefaultCounterFunctionDB.get_function_name(counter_db)
     if function_name is not None:
         return function_name, None # Implementation has been done before.
 
-    function_name  = "QUEX_NAME(%s_counter)" % Name
+    function_name  = LanguageDB.DEFAULT_COUNTER_FUNCTION_NAME(Name) 
 
     return_door_id = dial_db.new_door_id()
     code           = generator.do_loop(counter_db, 

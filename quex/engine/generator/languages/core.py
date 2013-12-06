@@ -117,6 +117,7 @@ class LanguageDB_Cpp(dict):
     def LEXEME_START_SET(self, PositionStorage=None):
         if PositionStorage is None: return "me->buffer._lexeme_start_p = me->buffer._input_p;"
         else:                       return "me->buffer._lexeme_start_p = %s;" % PositionStorage
+    def LEXEME_START_P(self):                      return "me->buffer._lexeme_start_p"
     def LEXEME_LENGTH(self):                       return "((size_t)(me->buffer._input_p - me->buffer._lexeme_start_p))"
     def CHARACTER_BEGIN_P_SET(self):               return "character_begin_p = me->buffer._input_p;\n"
     def INPUT_P(self):                             return "me->buffer._input_p"
@@ -131,23 +132,35 @@ class LanguageDB_Cpp(dict):
     def INPUT_P_DEREFERENCE(self, Offset=0): 
         if Offset == 0: return "*(me->buffer._input_p)"
         else:           return "QUEX_NAME(Buffer_input_get_offset)(&me->buffer, %i)" % Offset
+    def LEXEME_TERMINATING_ZERO_SET(self, RequiredF):
+        if not RequireTerminatingZeroF: return ""
+        return "QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);\n"
+    def INDENTATION_HANDLER_CALL(self, IndentationSupportF, DefaultF, ModeName):
+        if   not IndentationSupportF: return ""
+        elif DefaultF:                prefix = ""
+        else:                         prefix = ModeName + "_" 
+        return "    QUEX_NAME(%son_indentation)(me, /*Indentation*/0, LexemeNull);\n" % prefix
+    def STORE_LAST_CHARACTER(self, BeginOfLineSupportF):
+        if not BeginOfLineSupportF: return ""
+        # TODO: The character before lexeme start does not have to be written
+        # into a special register. Simply, make sure that '_lexeme_start_p - 1'
+        # is always in the buffer. This may include that on the first buffer
+        # load '\n' needs to be at the beginning of the buffer before the
+        # content is loaded. Not so easy; must be carefully approached.
+        return "    %s\n" % self.ASSIGN("me->buffer._character_before_lexeme_start", 
+                                        LanguageDB.INPUT_P_DEREFERENCE(-1))
 
     def SOURCE_REFERENCE_BEGIN(self, SourceReference):
         norm_filen_ame = Setup.get_file_reference(SourceReference.file_name) 
         return '\n#   line %i "%s"\n' % (SourceReference.line_n, norm_file_name) 
-
     def SOURCE_REFERENCE_END(self):
         return '<<<<LINE_PRAGMA_WITH_CURRENT_LINE_N_AND_FILE_NAME>>>>\n'
-
     def NAMESPACE_OPEN(self, NameList):
         return "".join(("    " * i + "namespace %s {\n" % name) for i, name in enumerate(NameList))
-
     def NAMESPACE_CLOSE(self, NameList):
         return "".join("} /* Closing Namespace '%s' */\n" % name for name in NameList)
-
     def NAMESPACE_REFERENCE(self, NameList):
         return reduce(lambda x, y: x + "::" + y, [""] + NameList) + "::"
-
     def COMMENT(self, txt, Comment):
         """Eliminated Comment Terminating character sequence from 'Comment'
            and comment it into a single line comment.
@@ -155,7 +168,6 @@ class LanguageDB_Cpp(dict):
         """
         comment = Comment.replace("/*", "SLASH_STAR").replace("*/", "STAR_SLASH")
         txt.append("/* %s */\n" % comment)
-
     def ML_COMMENT(self, txt, Comment, IndentN=4):
         indent_str = " " * IndentN
         comment = Comment.replace("/*", "SLASH_STAR").replace("*/", "STAR_SLASH").replace("\n", "\n%s * " % indent_str)
@@ -167,6 +179,12 @@ class LanguageDB_Cpp(dict):
                         SM.get_string(NormalizeF=False) + \
                         "END: STATE MACHINE") 
         txt.append("\n")
+
+    def DEFAULT_COUNTER_FUNCTION_NAME(self, ModeName):
+        return "QUEX_NAME(%s_counter)" % ModeName
+
+    def DEFAULT_COUNTER_CALL(self):
+        return "__QUEX_COUNT_VOID(&self, LexemeBegin, LexemeEnd);\n"
 
     def COMMAND(self, Cmd):
         if Cmd.id == E_Commands.Accepter:
@@ -456,9 +474,6 @@ class LanguageDB_Cpp(dict):
         if FirstF: return "if( %s ) {\n"        % test
         else:      return "} else if( %s ) {\n" % test
 
-    def END_IF(self, LastF=True):
-        return { True: "}", False: "" }[LastF]
-
     def IF_INPUT(self, Condition, Value, FirstF=True):
         return self.IF("input", Condition, Value, FirstF)
 
@@ -480,6 +495,15 @@ class LanguageDB_Cpp(dict):
         else:                                       txt.extend(Consequence)
         txt.extend(closing)
         return
+
+    def IF_END_OF_FILE(self):
+        return "if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {\n"
+
+    def IF_INPUT_P_EQUAL_LEXEME_START_P(self, FirstF=True):
+        return self.IF(self.INPUT_P(), "==", self.LEXEME_START_P(), FirstF)
+
+    def END_IF(self, LastF=True):
+        return { True: "}", False: "" }[LastF]
 
     def PRE_CONTEXT_CONDITION(self, PreContextID):
         if PreContextID == E_PreContextIDs.BEGIN_OF_LINE: 

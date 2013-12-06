@@ -10,11 +10,12 @@ from   quex.blackboard                             import setup as Setup, \
                                                           E_IncidenceIDs
 
 def do_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
+    pattern_list = [ x.pattern for x in Mode.ppc_list ]
+    terminal_db  = __prepare_terminals(Mode.ppc_list, Mode.special_terminal_list())
+
     core_txt, \
-    default_character_counter_required_f = do(Mode.name, Mode.pattern_list, Mode.incidence_db, 
-                                              ModeNameList        = ModeNameList, 
-                                              IndentationSupportF = IndentationSupportF,
-                                              BeginOfLineSupportF = BeginOfLineSupportF)
+    default_character_counter_required_f = do(pattern_list, terminal_db, 
+                                              Mode.name, ModeNameList = ModeNameList) 
 
     # (*) Generate the counter first!
     #     (It may implement a state machine with labels and addresses
@@ -25,7 +26,51 @@ def do_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
 
     return counter_txt + "".join(core_txt)
 
-def do(ModeName, PatternList, IncidenceDb, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
+@typed(PPC_List=PPC, OtherTerminalCodeDb=list)
+def __prepare_terminals(PPC_List, OtherTerminalCodeDb):
+    """Prepare terminal states for all pattern matches and other terminals,
+    such as 'end of stream' or 'failure'. If code is to be generated in a
+    delayed fashion, then this may happen as a consequence to the call
+    to '.get_code()' to related code fragments.
+
+    RETURNS: 
+                      map: incidence_id --> Terminal
+
+    A terminal consists plainly of an 'incidence_id' and a list of text which
+    represents the code to be executed when it is reached.
+    """
+    mandatory_list = [E_IncidenceIDs.FAILURE, E_IncidenceIDs.END_OF_STREAM]
+
+    result = {}
+    # Every pattern has a terminal for the case that it matches.
+    for priority, pattern, code_fragment in PPC_List:
+        terminal = TerminalFactory.pattern_match_terminal(pattern, code_fragment.get_code())
+        assert terminal.incidence_id() not in result
+        result[terminal.incidence_id()] = terminal
+
+    # OtherTerminals: END_OF_STREAM
+    #                 FAILURE
+    #                 CODEC_ERROR
+    #                 ...
+    for incidence_id in mandatory_list:
+        if incidence_id in OtherTerminalCodeDb: continue
+        OtherTerminalCodeDb[incidence_id] = LanguageDB.DEFAULT_CODE_FRAGMENT(incidence_id)
+
+    for incidence_id, code_fragment in OtherTerminalCodeDb:
+        assert incidence_id not in result
+        if incidence_id == E_IncidenceIDs.FAILURE:
+            terminal = TerminalFactory.failure_terminal(code_fragment.get_code())
+        elif incidence_id == E_IncidenceIDs.END_OF_STREAM:
+            terminal = TerminalFactory.end_of_stream_terminal(code_fragment.get_code())
+        else:
+            terminal = TerminalFactory.plain_code_terminal(code_fragment.get_code())
+        result[incidence_id] = terminal
+
+    return result
+
+
+@typed(PatternList=[Pattern], TerminalDb=dict, ModeName=(str, unicode), ModeNameList=list)
+def do(PatternList, TerminalDb, ModeName, ModeNameList):
     """Produce code for an analyzer function which can detect patterns given in
     the 'PatternList' and has things to be done mentioned in 'IncidenceDb'. 
 
@@ -34,19 +79,14 @@ def do(ModeName, PatternList, IncidenceDb, ModeNameList, IndentationSupportF, Be
             [1] -- Flag indicating whether a 'default line/column counter' 
                    needs to be implemented.
     """
-    assert isinstance(ModeName, (str, unicode))
-    assert all_isinstance(PatternList, Pattern)
-    assert all_isinstance(ModeNameList, (str, unicode))
-    assert all_isinstance(IncidenceDb.itervalues(), CodeFragment)
-    assert isinstance(IndentationSupportF, bool)
-    assert isinstance(BeginOfLineSupportF, bool)
+    assert all_isinstance(TerminalDb.itervalues(), Terminal)
 
     # (*) Initialize address handling
     dial_db.clear()     # BEFORE constructor of generator; 
     variable_db.init()  # because constructor creates some addresses.
 
     # Prepare the combined state machines and terminals 
-    g = GeneratorBase(ModeName, PatternList, IncidenceDb, IndentationSupportF, BeginOfLineSupportF)
+    g = GeneratorBase(PatternList, TerminalDb)
 
     # (*) Pre Context State Machine
     #     (If present: All pre-context combined in single backward analyzer.)
@@ -71,11 +111,11 @@ def do(ModeName, PatternList, IncidenceDb, ModeNameList, IndentationSupportF, Be
     # assert all_isinstance(reload_procedures, (IfDoorIdReferencedCode, int, str, unicode))
 
     # (*) Terminals
-    terminals = generator.do_terminals(g.terminal_db)
+    terminals = generator.do_terminals(TerminalDb)
 
     # (*) Re-entry preparation
     reentry_prerpation = generator.do_reentry_preparation(g.pre_context_sm_id_list,
-                                                          g.terminal_db)
+                                                          TerminalDb)
 
     # (*) State Router
     #     (Something that can goto a state address by an given integer value)

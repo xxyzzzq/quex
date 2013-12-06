@@ -131,6 +131,14 @@ def none_is_None(List):
     return _check_all(List, lambda element: element is not None)
 
 def typed(**_parameters_):
+    """parameter=Type                --> isinstance(parameter, Type)
+       parameter=(Type0, Type1, ...) --> isinstance(parameter, (Type0, Type1, ...))
+       parameter=[Type]              --> (1) isinstance(parameter, list)
+                                         (2) all_isinstance(parameter, Type)
+       parameter=[Type0, Type1]      --> (1) isinstance(parameter, dict)
+                                         (2) all_isinstance(parameter.keys(), Type0)
+                                         (3) all_isinstance(parameter.keys(), Type1)
+    """
     def check_types(_func_, _parameters_ = _parameters_):
         def modified(*arg_values, **kw):
             arg_names = _func_.func_code.co_varnames
@@ -138,10 +146,23 @@ def typed(**_parameters_):
             for name, type_d in _parameters_.iteritems():
                 value = kw[name]
                 if value is None:
-                    assert (type_d is None) or (None is in type_d)
-                elif type(typed_d) == tuple:
+                    assert (type_d is None) or (None in type_d)
+                elif type(type_d) == tuple:
                     assert isinstance(value, type_d), \
                            "Parameter '%s' not one of '%s'" % (name, [x.__name__ for x in type_d])
+                elif type(type_d) == list:
+                    if len(type_d) == 1:
+                        assert isinstance(value, list), \
+                               "Parameter '%s' not one of '%s'" % (name, [x.__name__ for x in type_d])
+                        assert all_isinstance(value, type_d[0]),
+                               "Parameter list '%s' contains element not of of '%s'" % (name, type_d[0].__name__)
+                    elif len(type_d) == 2:
+                        assert isinstance(value, list), \
+                               "Parameter '%s' not one of '%s'" % (name, [x.__name__ for x in type_d])
+                        assert all_isinstance(value.iterkeys(), type_d[0]),
+                               "Parameter list '%s' contains element not of of '%s'" % (name, type_d[0].__name__)
+                        assert all_isinstance(value.itervalues(), type_d[1]),
+                               "Parameter list '%s' contains element not of of '%s'" % (name, type_d[1].__name__)
                 else:
                     assert isinstance(value, type_d), \
                            "Parameter '%s' not of '%s'" % (name, type_d.__name__)

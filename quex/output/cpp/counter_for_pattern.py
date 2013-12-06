@@ -63,7 +63,7 @@ def get(ThePattern, ShiftF=True):
 
     if ThePattern is None:
         # 'on_failure' ... count any appearing character
-        return True, ["__QUEX_COUNT_VOID(&self, LexemeBegin, LexemeEnd);\n"]
+        return True, [ LanguageDB.DEFAULT_COUNTER_CALL() ]
 
     counter = ThePattern.count_info()
 

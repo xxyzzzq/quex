@@ -45,32 +45,18 @@ Match_input    = re.compile("\\binput\\b", re.UNICODE)
 Match_iterator = re.compile("\\iterator\\b", re.UNICODE)
 
 class GeneratorBase:
-    def __init__(self, ModeName, PatternList, IncidenceDb, IndentationSupportF, BeginOfLineSupportF):
+    def __init__(self, PatternList): 
         assert isinstance(PatternList, list)
-        assert isinstance(IncidenceDb, dict)
-        assert type(IndentationSupportF) == bool
-        assert type(BeginOfLineSupportF) == bool
-        # Function '.prepare_count_info()' must have been called before a 
-        # a pattern can be considered here. Note, that '.prepare_count_info()'
-        # must be called before any code transformation.
-        assert none_is_None(pattern.count_info() for pattern in PatternList)
+        assert all_isinstance(PatternList, Pattern)
 
         # (*) Core SM, Pre-Context SM, ...
         #     ... and sometimes backward input position SMs.
         self.sm,                    \
         self.pre_context_sm,        \
         self.bipd_sm_db,            \
-        self.pre_context_sm_id_list = self.__prepare_main_state_machines(PatternList)
+        self.pre_context_sm_id_list = self.__prepare(PatternList)
 
-        self.counter_db, \
-        self.default_character_counter_required_f = self.__prepare_line_column_count_db(PatternList)
-
-        # (*) Terminal States
-        self.terminal_db = self.__prepare_terminals(ModeName, 
-                                                    IncidenceDb, PatternList,
-                                                    IndentationSupportF, BeginOfLineSupportF)
-
-    def __prepare_main_state_machines(self, PatternList):
+    def __prepare(self, PatternList):
         # -- setup of state machine lists and id lists
         core_sm_list,                 \
         pre_context_sm_list,          \
@@ -83,47 +69,6 @@ class GeneratorBase:
                                           FilterDominatedOriginsF=False), \
                dict((incidence_id, sm) for incidence_id, sm in incidence_id_and_bipd_sm_list), \
                [ sm.get_id() for sm in pre_context_sm_list ]
-
-    def __prepare_line_column_count_db(self, PatternList):
-        LanguageDB = Setup.language_db
-
-        default_counter_f = False
-        result = {}
-        for pattern in PatternList:
-            requires_default_counter_f, \
-            count_text                  = counter_for_pattern.get(pattern)
-            count_text = "".join(LanguageDB.REPLACE_INDENT(count_text))
-
-            default_counter_f |= requires_default_counter_f
-
-            result[pattern.incidence_id()] = count_text
-
-        return result, default_counter_f
-
-    def __prepare_terminals(self, ModeName, IncidenceDb, PatternList, 
-                            IndentationSupportF, BeginOfLineSupportF):
-
-        factory = TerminalStateFactory(ModeName, IncidenceDb, 
-                                       self.counter_db, self.default_character_counter_required_f, 
-                                       IndentationSupportF, BeginOfLineSupportF)
-
-        result = {}
-        for incidence_id, code_fragment in IncidenceDb.iteritems():
-            if    incidence_id == E_IncidenceIDs.END_OF_STREAM \
-               or incidence_id == E_IncidenceIDs.FAILURE:
-                continue
-
-            terminal = factory.do(incidence_id, code_fragment)
-            # The factory returns 'None' if the incidence is not related to a
-            # dedicated terminal state, e.g. 'ON_MATCH', 'NODENT', etc.
-            if terminal is None: continue
-
-            result[incidence_id] = terminal
-
-        result[E_IncidenceIDs.END_OF_STREAM] = factory.do_OnEndOfStream()
-        result[E_IncidenceIDs.FAILURE]       = factory.do_OnFailure()
-
-        return result
 
     def __prepare_sm_lists(self, PatternList):
         # -- Core state machines of patterns

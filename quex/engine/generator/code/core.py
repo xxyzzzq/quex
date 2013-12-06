@@ -9,7 +9,7 @@ from   quex.engine.tools import typed
 
 
 class UserCodeFragment(CodeFragment):
-    @typed(Code=(str,unicode), SourceReference=(None, SourceReference))
+    @typed(Code=(str,unicode), SourceReference=(None, SourceRef))
     def __init__(self, Code="", SourceReference=None):
         CodeFragment.__init__(self, Code)
         self.sr = SourceReference
