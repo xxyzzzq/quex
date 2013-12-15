@@ -428,7 +428,7 @@ def __error_on_mandatory_token_id_missing(ModeDB, AssertF=False):
 
     check(AssertF, "TERMINATION")
     check(AssertF, "UNINITIALIZED")
-    if blackboard.requires_indentation_count(ModeDB):
+    if blackboard.required_support_indentation_count():
         check(AssertF, "INDENT")
         check(AssertF, "DEDENT")
         check(AssertF, "NODENT")

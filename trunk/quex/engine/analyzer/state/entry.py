@@ -170,7 +170,6 @@ class Entry(object):
         """
         for ta in self.__db.itervalues():
             # Catch the accepter, if there is already one, if not create one.
-            print "# ATTENTION: command lists should be immutable!"
             ta.command_list.access_accepter().content.add(PreContextID, AcceptanceID)
 
     def add_StoreInputPosition(self, StateIndex, FromStateIndex, PreContextID, PositionRegister, Offset):

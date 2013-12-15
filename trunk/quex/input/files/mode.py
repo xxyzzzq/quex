@@ -9,9 +9,8 @@ import quex.input.files.code_fragment                  as     code_fragment
 from   quex.input.files.counter_db                     import CounterDB
 import quex.input.files.consistency_check              as     consistency_check
 from   quex.engine.analyzer.door_id_address_label      import Label
+from   quex.engine.generator.code.base                 import CodeOnPatternMatch
 from   quex.engine.generator.code.core                 import CodeFragment, \
-                                                              UserCodeFragment, \
-                                                              GeneratedCode, \
                                                               PatternActionInfo
 
 import quex.engine.generator.skipper.character_set       as   skip_character_set
@@ -37,13 +36,14 @@ from   quex.engine.misc.file_in                        import EndOfStreamExcepti
                                                               read_until_whitespace, \
                                                               skip_whitespace, \
                                                               verify_word_in_list
+from   quex.engine.tools import typed
 import quex.blackboard as blackboard
 from   quex.blackboard import setup as Setup, \
                               SourceRef, \
+                              standard_incidence_db, \
                               E_IncidenceIDs, \
                               E_IncidenceIDs_Subset_Terminals, \
-                              E_IncidenceIDs_Subset_Special, \
-                              standard_incidence_db
+                              E_IncidenceIDs_Subset_Special
 
 from   copy        import deepcopy
 from   collections import namedtuple
@@ -158,20 +158,20 @@ class ModeDescription:
         self.derived_from_list          = []
 
         self.pattern_action_pair_list   = []  
-        self.option_db                  = RestrictedDB(standard_mode_option_db) # map: option_name    --> OptionSetting
-        self.incidence_db               = RestrictedDB(standard_incidence_db)   # map: incidence_name --> CodeFragment
+        self.option_db                  = OptionDB(standard_mode_option_db)  # map: option_name    --> OptionSetting
+        self.incidence_db               = IncidenceDB(standard_incidence_db) # map: incidence_name --> CodeFragment
 
         self.reprioritization_info_list = []  
         self.deletion_info_list         = [] 
 
-    def add_pattern_action_pair(self, PatternStr, Action, ThePattern, Comment=""):
+    @typed(ThePattern=Pattern, Action=CodeOnPatternMatch)
+    def add_pattern_action_pair(self, ThePattern, TheAction):
         assert ThePattern.check_consistency()
 
-        Action.mode_name      = self.name
-        Action.comment        = Comment
-        Action.pattern_string = PatternStr
-        self.pattern_action_pair_list.append(PatternActionInfo(ThePattern, Action, PatternStr, 
-                                                               ModeName=self.name, Comment=Comment))
+        if ThePattern.pre_context_trivial_begin_of_line_f:
+            blackboard.required_support_begin_of_line_set()
+
+        self.pattern_action_pair_list.append(PatternActionInfo(ThePattern, TheAction))
 
     def add_match_priority(self, ThePattern, FileName, LineN):
         """Whenever a pattern in the mode occurs, which is identical to that given
@@ -233,6 +233,11 @@ class IncidenceDB(dict):
 
         return result
 
+    def __setitem__(self, Key, Value):
+        if Key == E_IncidenceIDs.INDENTATION_HANDLER:
+            blackboard.required_support_indentation_count_set()
+        dict.__setitem__(self, Key, Value)
+
     def get_text(self, IncidenceId):
         code_fragment = self.get(IncidenceId)
         if code_fragment is None: return ""
@@ -245,25 +250,6 @@ class IncidenceDB(dict):
                     or self.has_key(E_IncidenceIDs.INDENTATION_DEDENT)   \
                     or self.has_key(E_IncidenceIDs.INDENTATION_N_DEDENT) \
                     or self.has_key(E_IncidenceIDs.INDENTATION_NODENT))
-
-
-
-class TerminalDB(dict):
-    def __init__(self, IncidenceDb, PPC_List):
-        # Miscellaneous incidences
-        for incidence_id, code_fragment in IncidenceDb:
-            assert incidence_id not in self
-            self[incidence_id] = Terminal(incidence_id, code_fragment.get_code())
-
-        # Pattern match incidences
-        for priority, pattern, code_fragment in PPC_List:
-            incidence_id = pattern.incidence_id()
-            assert incidence_id not in self
-            self[incidence_id] = Terminal(incidence_id, code_fragment.get_code())
-
-        return
-
-    def __get_code(self, IncidenceId, CodeFragment):
 
 class Mode:
     """Finalized 'Mode' as it results from combination of base modes.
@@ -484,24 +470,56 @@ class Mode:
         pattern_list = self.__pattern_list_construct(ppc_list, terminal_db)
 
         # (*) Line-/Column Count DB
-        terminal_db  = self.__terminal_db_construct(pattern_list)
+        terminal_db, default_counter_f  = self.__prepare_terminals(pattern_list)
 
-        return pattern_list, terminal_db
+        return pattern_list, terminal_db, default_counter_f
 
-    def __terminal_db_construct(self, PatternList, PPC_List):
-        line_column_count_db = self.__prepare_line_column_count_db(PatternList)
+    def __prepare_terminals(ModeName, PPC_List, SpecialTerminalCodeDb):
+        """Prepare terminal states for all pattern matches and other terminals,
+        such as 'end of stream' or 'failure'. If code is to be generated in a
+        delayed fashion, then this may happen as a consequence to the call
+        to '.get_code()' to related code fragments.
 
-        factory = TerminalFactory(self.name, self.incidence_db, 
-                                  line_column_count_db, 
-                                  IndentationSupportF, BeginOfLineSupportF)
+        RETURNS: 
+                          map: incidence_id --> Terminal
 
-        terminal_db = {}
+        A terminal consists plainly of an 'incidence_id' and a list of text which
+        represents the code to be executed when it is reached.
+        """
+        mandatory_list = [E_TerminalType.FAILURE, E_TerminalType.END_OF_STREAM]
+
+        line_column_count_db, \
+        default_counter_f     = self.__prepare_line_column_count_db(PatternList)
+
+        factory = TerminalFactory(Mode.name, Mode.incidence_db, line_column_count_db, 
+                                  IndentationSupportF, blackboard.begin_of_line_f)
+
+        result = {}
+        # Every pattern has a terminal for the case that it matches.
         for priority, pattern, code_fragment in PPC_List:
-            terminal = factory.do(terminal_type, code_fragment, 
-                                  Prefix=line_column_count_db[pattern.incidence_id()])
-            terminal_db[pattern.incidence_id()] = terminal
+            terminal      = factory.do(E_TerminalType.MATCH, code_fragment)
+            assert terminal.incidence_id() not in result
+            result[pattern.incidence_id()] = terminal
 
-        return terminal_db
+        # SpecialTerminals: END_OF_STREAM
+        #                   FAILURE
+        #                   CODEC_ERROR
+        #                   ...
+        for terminal_type in mandatory_list:
+            if terminal_type in SpecialTerminalCodeDb: continue
+            SpecialTerminalCodeDb[terminal_type] = LanguageDB.DEFAULT_CODE_FRAGMENT(terminal_type)
+
+        for terminal_type, code_fragment in SpecialTerminalCodeDb:
+            assert terminal_type not in result
+            incidence_id = index.get()
+            result[incidence_id] = factory.do(incidence_id, code_fragment)
+
+        # The following would always set the 'default_counter_f' since the mentioned
+        # terminal types are mandatory. Instead of setting 'default_counter_f = True'
+        # the reasons are explicitly stated below.
+        default_counter_f |= (E_TerminalType.FAILURE       in SpecialTerminalCodeDb)
+        default_counter_f |= (E_TerminalType.END_OF_STREAM in SpecialTerminalCodeDb)
+        return result, default_counter_f
 
     def __prepare_line_column_count_db(self, PatternList):
         LanguageDB = Setup.language_db
@@ -518,7 +536,6 @@ class Mode:
             result[pattern.incidence_id()] = count_text
 
         return result, default_counter_f
-
 
     def __prepare_skip(self, ppc_list, SkipSetupList, MHI):
         """MHI = Mode hierarchie index."""
@@ -607,7 +624,7 @@ class Mode:
             pattern   = opener_pattern.clone()
             incidence_id = index.get_state_machine_id()
             pattern.set_incidence_id(incidence_id)
-            ppc_list.append(PPC(priority, pattern, Terminal(incidence_id, code))
+            ppc_list.append(PPC(priority, pattern, Terminal(incidence_id, code)))
 
     def __prepare_indentation_counter(self, ppc_list, ISetup, MHI):
         """Prepare indentation counter. An indentation counter is implemented by the 
@@ -1080,9 +1097,11 @@ def __parse_action(new_mode, fh, pattern_str, pattern):
         skip_whitespace(fh)
         position = fh.tell()
             
-        code_obj = code_fragment.parse(fh, "regular expression", ErrorOnFailureF=False) 
+        code = code_fragment.parse(fh, "regular expression", ErrorOnFailureF=False) 
         if code_obj is not None:
-            new_mode.add_pattern_action_pair(pattern_str, code_obj, pattern)
+            code.mode_name      = new_mode.name
+            code.pattern_string = PatternStr
+            new_mode.add_pattern_action_pair(code, pattern)
             return
 
         fh.seek(position)

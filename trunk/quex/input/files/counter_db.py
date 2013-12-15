@@ -4,7 +4,7 @@ import quex.engine.state_machine.transformation     as     transformation
 import quex.engine.state_machine.index              as     index
 import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.state.drop_out          import DropOutGotoDoorId
-from   quex.engine.analyzer.terminal.core           import TerminalPlainCode
+from   quex.engine.analyzer.terminal.core           import Terminal
 from   quex.engine.analyzer.core                    import Analyzer
 from   quex.engine.analyzer.state.core              import ReloadState, AnalyzerState
 from   quex.engine.analyzer.state.entry_action      import TransitionAction
@@ -22,7 +22,6 @@ from   quex.engine.analyzer.commands                import CommandList, \
                                                            ColumnCountReferencePSet, \
                                                            ColumnCountReferencePDeltaAdd
 from   quex.engine.generator.languages.variable_db  import variable_db
-from   quex.engine.generator.code_fragment_base     import CodeFragment
 from   quex.engine.interval_handling                import NumberSet
 from   quex.blackboard import setup as Setup, \
                               E_IncidenceIDs, \
@@ -228,8 +227,8 @@ class CounterCoderData:
 
         exit_incidence_id = index.get_state_machine_id() 
         exit_door_id      = DoorID.incidence(exit_incidence_id)
-        exit_terminal     = TerminalPlainCode(exit_incidence_id, 
-                                              CodeFragment([ LanguageDB.COMMAND(cmd) for cmd in self.on_exit]))
+        exit_terminal     = Terminal(exit_incidence_id, 
+                                     [ LanguageDB.COMMAND(cmd) for cmd in self.on_exit])
 
         if CheckLexemeEndF:
             check_lexeme_end = CommandList(GotoDoorIdIfInputPLexemeEnd(exit_door_id))

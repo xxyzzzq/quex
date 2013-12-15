@@ -9,8 +9,8 @@ from   quex.DEFINITIONS import QUEX_PATH, QUEX_VERSION
 import time
 
 def do(ModeDB):
-    IndentationSupportF = blackboard.requires_indentation_count(ModeDB)
-    BeginOfLineSupportF = blackboard.requires_begin_of_line_condition_support(ModeDB)
+    IndentationSupportF = blackboard.required_support_indentation_count()
+    BeginOfLineSupportF = blackboard.required_support_begin_of_line()
 
     LanguageDB = Setup.language_db
 

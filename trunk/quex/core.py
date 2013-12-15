@@ -106,8 +106,8 @@ def do():
         source_package.do()
 
 def analyzer_functions_get(ModeDB):
-    IndentationSupportF = blackboard.requires_indentation_count(ModeDB)
-    BeginOfLineSupportF = blackboard.requires_begin_of_line_condition_support(ModeDB)
+    IndentationSupportF = blackboard.required_support_indentation_count(ModeDB)
+    BeginOfLineSupportF = blackboard.required_support_begin_of_line()
 
     inheritance_info_str = ""
     analyzer_code        = ""

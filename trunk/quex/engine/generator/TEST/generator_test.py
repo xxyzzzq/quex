@@ -8,7 +8,6 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 #
 from quex.engine.misc.string_handling import blue_print
 from quex.exception                   import RegularExpressionException
-from quex.blackboard                  import PatternShorthand, E_Compression
 #
 from   quex.engine.tools                       import all_isinstance
 from   quex.engine.generator.languages.core    import db
@@ -22,10 +21,15 @@ from   quex.input.files.mode                   import IncidenceDB
 from   quex.engine.generator.languages.variable_db import VariableDB
 import quex.engine.generator.languages.variable_db as     variable_db
 from   quex.engine.analyzer.door_id_address_label  import Label, dial_db
+from   quex.engine.analyzer.terminal.core          import Terminal
+from   quex.engine.analyzer.door_id_address_label  import DoorID
+from   quex.engine.analyzer.terminal.factory       import TerminalFactory
 import quex.input.regular_expression.engine        as     regex
 from   quex.input.files.counter_setup              import LineColumnCounterSetup_Default
 #
-from   quex.blackboard import setup as Setup, E_IncidenceIDs, signal_character_list
+import quex.blackboard as blackboard
+from   quex.blackboard import PatternShorthand, E_Compression
+from   quex.blackboard import setup as Setup, E_IncidenceIDs, signal_character_list, Lng
 
 from   copy import deepcopy
 # Switch: Removal of source and executable file
@@ -286,17 +290,6 @@ def compile(Language, SourceCode, AssertsActionvation_str="", StrangeStream_str=
 
     return executable_name, filename_tmp
 
-def get_mode_object(Name, PatternList, IncidenceDb={}):
-    class Something:
-        def __init__(self):
-            self.name              = "%s_UnitTest" % Name
-            self.incidence_db      = IncidenceDb
-            self.pattern_list      = PatternList
-            self.counter_db        = CounterDB(LineColumnCounterSetup_Default())
-            self.indentation_setup = None
-
-    return Something()
-
 def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=False, ComputedGotoF=False):
     test_str = TestStr.replace("\"", "\\\"")
     test_str = test_str.replace("\n", "\\n\"\n\"")
@@ -352,22 +345,49 @@ def create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFall
 
 def create_state_machine_function(PatternActionPairList, PatternDictionary, 
                                   BufferLimitCode, SecondModeF=False):
-    on_failure_str  = "return false;\n"
-    # on_failure_str += "goto %s; /* Avoid unreferenced label. */" % Label.global_reentry_preparation_2(GotoedF=True)
-    on_failure      = CodeFragment(on_failure_str)
 
-    # -- produce some visible output about the setup
+    # (*) Initialize address handling
+    dial_db.clear()     # BEFORE constructor of generator; 
+    variable_db.variable_db.init()  # because constructor creates some addresses.
+    blackboard.required_support_begin_of_line_set()
+
+    def action(PatternName): 
+        txt = "%s\n" % Lng.STORE_LAST_CHARACTER(blackboard.required_support_begin_of_line())
+        txt += "%s\n" % Lng.LEXEME_TERMINATING_ZERO_SET(True)
+        txt += 'printf("%19s  \'%%s\'\\n", Lexeme); fflush(stdout);\n' % PatternName
+
+        if   "->1" in PatternName: txt += "me->current_analyzer_function = QUEX_NAME(Mr_analyzer_function);\n"
+        elif "->2" in PatternName: txt += "me->current_analyzer_function = QUEX_NAME(Mrs_analyzer_function);\n"
+
+        if "CONTINUE" in PatternName: txt += ""
+        elif "STOP" in PatternName:   txt += "return false;\n"
+        else:                         txt += "return true;\n"
+
+
+        txt += "%s\n" % Lng.GOTO_BY_DOOR_ID(DoorID.global_reentry_preparation())
+        ## print "#", txt
+        return [ txt ]
+    
+    # -- Display Setup: Patterns and the related Actions
     print "(*) Lexical Analyser Patterns:"
     for pair in PatternActionPairList:
         print "%20s --> %s" % (pair[0], pair[1])
 
-    x_pattern_list          = []
+    # -- PatternList/TerminalDb
+    on_failure              = ["return false;\n"]
     support_begin_of_line_f = False
+    pattern_list            = []
+    terminal_db             = {
+        E_IncidenceIDs.FAILURE:       Terminal(E_IncidenceIDs.FAILURE, on_failure, "FAILURE"),
+        E_IncidenceIDs.END_OF_STREAM: Terminal(E_IncidenceIDs.END_OF_STREAM, on_failure, "END_OF_STREAM"),
+    }
     for pattern_str, action_str in PatternActionPairList:
-        pattern                 =  regex.do(pattern_str, PatternDictionary)
+        pattern                  =  regex.do(pattern_str, PatternDictionary)
         support_begin_of_line_f |= pattern.pre_context_trivial_begin_of_line_f
-        x_pattern_list.append((pattern, action_str))
-    pattern_list = [x[0] for x in x_pattern_list]
+        pattern_list.append(pattern)
+        name     = TerminalFactory.name_pattern_match_terminal(pattern.incidence_id(), pattern_str)
+        terminal = Terminal(pattern.incidence_id(), action(action_str), name)
+        terminal_db[pattern.incidence_id()] = terminal
 
     # -- create default action that prints the name and the content of the token
     #    store_last_character_str = ""
@@ -378,13 +398,6 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     #    set_terminating_zero_str  = "    QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);\n"
     #    prefix = store_last_character_str + set_terminating_zero_str
 
-    incidence_db = IncidenceDB.from_iterable(
-        (pattern.incidence_id(), CodeFragment(action(action_str)))
-        for pattern, action_str in x_pattern_list
-    )
-    incidence_db[E_IncidenceIDs.FAILURE]       = on_failure
-    incidence_db[E_IncidenceIDs.END_OF_STREAM] = on_failure
-
     print "## (1) code generation"    
 
     if not SecondModeF:  sm_name = "Mr"
@@ -392,23 +405,22 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
     Setup.analyzer_class_name = sm_name
 
-    mode = get_mode_object(sm_name, pattern_list, incidence_db)
-
     for pattern in pattern_list:
         pattern.prepare_count_info(CounterDB(LineColumnCounterSetup_Default()), CodecTrafoInfo=None)
         pattern.mount_post_context_sm()
         pattern.mount_pre_context_sm()
         pattern.cut_character_list(signal_character_list(Setup))
 
-    code, default_counter_f = cpp_generator.do(mode.name, pattern_list, incidence_db, ModeNameList = [], 
-                                               BeginOfLineSupportF=support_begin_of_line_f, 
-                                               IndentationSupportF=False) 
+    function_body, variable_definitions = cpp_generator.do_core(pattern_list, terminal_db)
+    function_txt                        = cpp_generator.wrap_up(sm_name, function_body, 
+                                                                variable_definitions, 
+                                                                ModeNameList=[])
 
-    assert all_isinstance(code, str)
+    assert all_isinstance(function_txt, str)
 
     return   "#define  __QUEX_OPTION_UNIT_TEST\n" \
            + nonsense_default_counter(not SecondModeF) \
-           + "".join(code)
+           + "".join(function_txt)
 
 def nonsense_default_counter(FirstModeF):
     if FirstModeF:
@@ -417,19 +429,6 @@ def nonsense_default_counter(FirstModeF):
     else:
         return "" # Definition done before
 
-def action(PatternName): 
-    ##txt = 'fprintf(stderr, "%19s  \'%%s\'\\n", Lexeme);\n' % PatternName # DEBUG
-    txt = 'printf("%19s  \'%%s\'\\n", Lexeme); fflush(stdout);\n' % PatternName
-
-    if   "->1" in PatternName: txt += "me->current_analyzer_function = QUEX_NAME(Mr_UnitTest_analyzer_function);\n"
-    elif "->2" in PatternName: txt += "me->current_analyzer_function = QUEX_NAME(Mrs_UnitTest_analyzer_function);\n"
-
-    if "CONTINUE" in PatternName: txt += ""
-    elif "STOP" in PatternName:   txt += "return false;"
-    else:                         txt += "return true;"
-
-    return txt
-    
 test_program_common_declarations = """
 $$__QUEX_OPTION_PLAIN_C$$
 $$QUEX_OPTION_INDENTATION_TRIGGER$$
@@ -472,15 +471,15 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #   endif
 #endif
 
-static           __QUEX_TYPE_ANALYZER_RETURN_VALUE  QUEX_NAME(Mr_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZER*);
-/* NOT static */ __QUEX_TYPE_ANALYZER_RETURN_VALUE  QUEX_NAME(Mrs_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZER*);
+static           __QUEX_TYPE_ANALYZER_RETURN_VALUE  QUEX_NAME(Mr_analyzer_function)(QUEX_TYPE_ANALYZER*);
+/* NOT static */ __QUEX_TYPE_ANALYZER_RETURN_VALUE  QUEX_NAME(Mrs_analyzer_function)(QUEX_TYPE_ANALYZER*);
 /* Do not declare Mrs as 'static' otherwise there might be complaints if it
  * is never defined.                                                          */
 
 static int
 run_test(const char* TestString, const char* Comment, QUEX_TYPE_ANALYZER* lexer)
 {
-    lexer->current_analyzer_function = QUEX_NAME(Mr_UnitTest_analyzer_function);
+    lexer->current_analyzer_function = QUEX_NAME(Mr_analyzer_function);
 
     printf("(*) test string: \\n'%s'%s\\n", TestString, Comment);
     printf("(*) result:\\n");
@@ -535,7 +534,7 @@ test_program_db = {
         QUEX_NAME(construct_basic)(&lexer_state, (void*)0x0,
                                    TestString, MemorySize, TestString + MemorySize - 1, 
                                    0x0, 0, false);
-        lexer_state.current_analyzer_function = QUEX_NAME(Mr_UnitTest_analyzer_function);
+        lexer_state.current_analyzer_function = QUEX_NAME(Mr_analyzer_function);
         QUEX_NAME(Buffer_end_of_file_set)(&lexer_state.buffer, TestString + MemorySize - 1);
         /**/
         return run_test((const char*)(TestString + 1), "$$COMMENT$$", &lexer_state);

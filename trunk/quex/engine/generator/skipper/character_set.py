@@ -72,6 +72,6 @@ def do(Data):
                                CharacterSet      = character_set,
                                CheckLexemeEndF   = False,
                                ReloadF           = True,
-                               GlobalReloadState = TheAnalyzer):
+                               GlobalReloadState = TheAnalyzer)
     assert isinstance(result, list)
     return result
