@@ -8,9 +8,10 @@ import quex.engine.state_machine.setup_pre_context  as setup_pre_context
 import quex.engine.state_machine.setup_backward_input_position_detector  as setup_backward_input_position_detector
 import quex.engine.state_machine.transformation        as     transformation
 import quex.engine.state_machine.algorithm.beautifier  as beautifier
-#                                                         
-from   quex.blackboard           import setup     as Setup, deprecated, SourceRef
 from   quex.engine.misc.file_in  import error_msg
+#                                                         
+from   quex.engine.tools         import typed
+from   quex.blackboard           import setup     as Setup, deprecated, SourceRef
 import sys
 
 class Pattern(object):
@@ -24,12 +25,10 @@ class Pattern(object):
                  "__post_context_end_of_line_f", 
                  "__count_info", 
                  "__alarm_transformed_f")
+    @typed(CoreSM=StateMachine, BeginOfLineF=bool, EndOfLineF=bool)
     def __init__(self, CoreSM, PreContextSM=None, PostContextSM=None, 
                  BeginOfLineF=False, EndOfLineF=False, fh=-1):
-        assert type(BeginOfLineF) == bool
-        assert type(EndOfLineF) == bool
-        assert isinstance(CoreSM, StateMachine)
-        assert PreContextSM is None or isinstance(CoreSM, StateMachine)
+        assert PreContextSM is None or isinstance(PreContextSM, StateMachine)
 
         self.__sr = SourceRef.from_FileHandle(fh)
 
@@ -244,10 +243,10 @@ class Pattern(object):
         return msg
 
     def check_consistency(self):
-        return     ThePattern.sm.is_DFA_compliant() \
-               and (ThePattern.pre_context_sm is None or ThePattern.pre_context_sm.is_DFA_compliant())) 
-               and (ThePattern.pre_context_sm is None or not ThePattern.pre_context_sm.has_orphaned_states())
-               and (not ThePattern.sm.has_orphaned_states())
+        return     self.sm.is_DFA_compliant() \
+               and (self.pre_context_sm is None or self.pre_context_sm.is_DFA_compliant()) \
+               and (self.pre_context_sm is None or not self.pre_context_sm.has_orphaned_states()) \
+               and (not self.sm.has_orphaned_states())
 
 def do(core_sm, 
        begin_of_line_f=False, pre_context=None, 

@@ -16,12 +16,12 @@ from   quex.input.setup                  import NotificationDB
 from   quex.blackboard                   import QuexSetup
 from   quex.engine.unicode_db.parser     import ucs_property_db
 from   quex.engine.utf8                  import __read_one_utf8_code_from_stream
-from   quex.engine.generator.code.core   import UserCodeFragment 
+from   quex.engine.generator.code.base   import CodeUser 
 import quex.input.regular_expression.snap_backslashed_character as snap_backslashed_character
 
 def parse(fh, CodeFragmentName, 
           ErrorOnFailureF=True, AllowBriefTokenSenderF=True, ContinueF=True):
-    """RETURNS: An object of class UserCodeFragment containing
+    """RETURNS: An object of class CodeUser containing
                 line number, filename, and the code fragment.
 
                 None in case of failure.
@@ -51,7 +51,7 @@ def __parse_normal(fh, code_fragment_name):
 
     line_n = get_current_line_info_number(fh) + 1
     code   = read_until_closing_bracket(fh, "{", "}")
-    return UserCodeFragment(code, SourceRef.from_FileHandle(fh))
+    return CodeUser(code, SourceRef.from_FileHandle(fh))
 
 def __read_token_identifier(fh):
     """Parses a token identifier that may contain a namespace specification.
@@ -88,7 +88,7 @@ def __parse_brief_token_sender(fh, ContinueF):
 
         if len(code) != 0: 
             if ContinueF: code += "QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();\n"
-            return UserCodeFragment(code, SourceRef.from_FileHandle(fh))
+            return CodeUser(code, SourceRef.from_FileHandle(fh))
         else:
             return None
 

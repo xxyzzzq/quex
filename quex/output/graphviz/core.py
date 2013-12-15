@@ -1,14 +1,14 @@
 from quex.engine.misc.file_in   import write_safely_and_close
-from quex.engine.generator.base import GeneratorBase
+from quex.engine.generator.base import EngineStateMachineSet
 from quex.blackboard            import setup as Setup
 
-class Generator(GeneratorBase):
+class Generator(EngineStateMachineSet):
     def __init__(self, PatternActionPairList, StateMachineName):
         assert map(lambda elm: elm.__class__.__name__, PatternActionPairList) \
                == [ "PatternActionInfo" ] * len(PatternActionPairList)
 
         self.state_machine_name = StateMachineName
-        GeneratorBase.__init__(self, PatternActionPairList)
+        EngineStateMachineSet.__init__(self, PatternActionPairList)
 
     def do(self, Option="utf8"):
         """Prepare output in the 'dot' language, that graphviz uses."""

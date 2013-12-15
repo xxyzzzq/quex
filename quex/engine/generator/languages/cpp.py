@@ -35,18 +35,18 @@ __header_definitions_txt = """
 """
 
 __return_with_on_after_match = """
-#define RETURN    goto __ON_AFTER_MATCH_THEN_RETURN;
+#define RETURN    do { goto __ON_AFTER_MATCH_THEN_RETURN; } while(0)
 """
-__return_without_on_after_match = """
-#define RETURN    __QUEX_PURE_RETURN;
+__on_after_match_then_return_str = """
+__ON_AFTER_MATCH_THEN_RETURN:
+$$ON_AFTER_MATCH$$
+    __QUEX_PURE_RETURN;
 """
 
-def header_definitions(LanguageDB, OnAfterMatchF):
-    assert type(OnAfterMatchF) == bool
-    global __return_without_on_after_match
+
+def header_definitions(LanguageDB):
     global __return_with_on_after_match
     assert len(__return_with_on_after_match) > 10
-    assert len(__return_without_on_after_match) > 10
 
     #txt += "/MARK/ %i '%s'\n" % (len(__return_with_on_after_match),    map(ord, __return_with_on_after_match))
     #txt += "/MARK/ '%s'\n" % __return_with_on_after_match
@@ -55,8 +55,7 @@ def header_definitions(LanguageDB, OnAfterMatchF):
     txt = [ __header_definitions_txt.replace("$$GOTO_START_PREPARATION$$", 
                                              dial_db.get_label_by_door_id(DoorID.global_reentry_preparation(), GotoedF=True)) ]
 
-    if OnAfterMatchF: txt.append(__return_with_on_after_match)
-    else:             txt.append(__return_without_on_after_match)
+    txt.append(__return_with_on_after_match)
     return txt
 
 def _local_variable_definitions(VariableDB):
@@ -299,14 +298,6 @@ __terminal_state_prolog  = """
 """
 
 __reentry_preparation_str = """
-$$REENTRY_PREPARATION$$:
-    /* (*) Common point for **restarting** lexical analysis.
-     *     at each time when CONTINUE is called at the end of a pattern.     */
-$$ON_AFTER_MATCH$$ 
-
-    /* FAILURE needs not to run through 'on_after_match'. It enters here.    */
-$$REENTRY_PREPARATION_2$$:
-
 #   undef Lexeme
 #   undef LexemeBegin
 #   undef LexemeEnd
@@ -364,58 +355,6 @@ def lexeme_macro_definitions(Setup):
           ["$$LEXEME_NULL_OBJECT$$", lexeme_null_object_name],
     ])
 
-def __terminal_on_pattern_match(Terminal):
-    """ AcceptanceID     -- ID of the winning pattern.
-        Action        -- Action to be performed when pattern wins.
-        PatternString -- String that describes the pattern.
-    """
-    def safe(Letter):
-        if Letter in ['\\', '"', '\n', '\t', '\r', '\a', '\v']: return "\\" + Letter
-        else:                                                   return Letter 
-
-    terminal_code  = Terminal.get_code()
-
-    if hasattr(Terminal, "pattern_string"):
-        safe_pattern = "".join(safe(x) for x in Terminal.pattern_string())
-        name         = "%i:   %s" % (Terminal.incidence_id(), safe_pattern)
-    else:
-        name         = ""
-
-    assert type(terminal_code) == list
-
-    return __terminally(terminal_code, Label.incidence(Terminal.incidence_id()), name)
-
-def __terminal_on_end_of_stream(Terminal):
-    Terminal.code_fragment.append_text(
-        "    /* End of Stream FORCES a return from the lexical analyzer, so that no\n"
-        "     * tokens can be filled after the termination token.                    */\n"
-        "    RETURN;\n"
-    )
-    return __terminally(Terminal.get_code(), Label.incidence(E_IncidenceIDs.END_OF_STREAM), Name = "END_OF_STREAM")
-
-def __terminal_on_failure(Terminal):
-    return __terminally(Terminal.get_code(), Label.incidence(E_IncidenceIDs.FAILURE), 
-                        Name = "FAILURE")
-
-def __terminally(TerminalCode, TheLabel, Name):
-    txt = [
-       "%s: __quex_debug(\"* TERMINAL %s\\n\");\n" % (TheLabel, Name),
-        0 
-    ]
-    txt.extend(TerminalCode)
-    txt.append("\n")
-    return txt
-
-__on_after_match_then_return_str = """
-__ON_AFTER_MATCH_THEN_RETURN:
-$$ON_AFTER_MATCH$$
-#   if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-    return;
-#   else
-    return __self_result_token_id;
-#   endif
-"""
-
 def __on_after_match_then_return(OnAfterMatchTerminal):
     if OnAfterMatchTerminal is None:
         return "", ""
@@ -449,33 +388,46 @@ def reentry_preparation(LanguageDB, PreConditionIDList, OnAfterMatchTerminal):
     on_after_match_then_return_str, \
     OnAfterMatchStr                 = __on_after_match_then_return(OnAfterMatchTerminal)
 
-    txt = on_after_match_then_return_str
-    txt += blue_print(__reentry_preparation_str, [
-          ["$$REENTRY_PREPARATION$$",                    Label.global_reentry_preparation()],
-          ["$$REENTRY_PREPARATION_2$$",                  Label.global_reentry_preparation_2()],
+    txt = [ 
+        on_after_match_then_return_str,
+        "%s:\n" % Label.global_reentry_preparation(),
+        "/* (*) Common point for **restarting** lexical analysis.\n",
+        " *     at each time when CONTINUE is called at the end of a pattern.     */\n",
+        OnAfterMatchStr,
+        "/* FAILURE needs not to run through 'on_after_match'. It enters here.    */\n",
+        IfDoorIdReferencedLabel(DoorID.global_reentry_preparation_2()),
+    ]
+
+
+    txt.append(
+      blue_print(__reentry_preparation_str, [
           ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$",  unset_pre_context_flags_str],
           ["$$GOTO_START$$",                             Label.global_reentry(GotoedF=True)],
-          ["$$ON_AFTER_MATCH$$",                         OnAfterMatchStr],
+          # ["$$ON_AFTER_MATCH$$",                         OnAfterMatchStr],
           ["$$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$", comment_on_post_context_position_init_str],
           ["$$TERMINAL_FAILURE-REF$$",                   TerminalFailureRef],
-    ])
+      ])
+    )
     return txt
 
-def terminal_states(TerminalStateDb, SimpleF=False):
+def __terminally(Terminal):
+    label = Label.incidence(Terminal.incidence_id())
+    txt = [
+       "%s: __quex_debug(\"* TERMINAL %s\\n\");\n" % (label, Terminal.name()),
+        0 
+    ]
+    txt.extend(Terminal.code())
+    txt.append("\n")
+    return txt
+
+def terminal_states(TerminalStateList, SimpleF=False):
     """NOTE: During backward-lexing, for a pre-context, there is not need for terminal
              states, since only the flag 'pre-context fulfilled is raised.
 
     """      
     code = []
-
-    for acceptance_id, state in sorted(TerminalStateDb.iteritems(), key=lambda x: x[0]):
-        if   acceptance_id == E_IncidenceIDs.END_OF_STREAM: txt = __terminal_on_end_of_stream(state)
-        elif acceptance_id == E_IncidenceIDs.FAILURE:       txt = __terminal_on_failure(state)
-        elif acceptance_id == E_IncidenceIDs.AFTER_MATCH:   continue
-        else:                                               txt = __terminal_on_pattern_match(state)
-
-        code.extend(txt)
-
+    for terminal in sorted(TerminalStateList, key=lambda x: x.incidence_id()):
+        code.extend(__terminally(terminal))
     return code
     
 def __frame_of_all(Code, Setup):

@@ -133,7 +133,7 @@ class LanguageDB_Cpp(dict):
         if Offset == 0: return "*(me->buffer._input_p)"
         else:           return "QUEX_NAME(Buffer_input_get_offset)(&me->buffer, %i)" % Offset
     def LEXEME_TERMINATING_ZERO_SET(self, RequiredF):
-        if not RequireTerminatingZeroF: return ""
+        if not RequiredF: return ""
         return "QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);\n"
     def INDENTATION_HANDLER_CALL(self, IndentationSupportF, DefaultF, ModeName):
         if   not IndentationSupportF: return ""
@@ -148,7 +148,7 @@ class LanguageDB_Cpp(dict):
         # load '\n' needs to be at the beginning of the buffer before the
         # content is loaded. Not so easy; must be carefully approached.
         return "    %s\n" % self.ASSIGN("me->buffer._character_before_lexeme_start", 
-                                        LanguageDB.INPUT_P_DEREFERENCE(-1))
+                                        self.INPUT_P_DEREFERENCE(-1))
 
     def SOURCE_REFERENCE_BEGIN(self, SourceReference):
         norm_filen_ame = Setup.get_file_reference(SourceReference.file_name) 
@@ -330,14 +330,14 @@ class LanguageDB_Cpp(dict):
     def TERMINAL_LEXEME_MACRO_DEFINITIONS(self):
         return cpp.lexeme_macro_definitions(Setup)
 
-    def TERMINAL_CODE(self, TerminalStateDb): 
-        return cpp.terminal_states(TerminalStateDb)
+    def TERMINAL_CODE(self, TerminalStateList): 
+        return cpp.terminal_states(TerminalStateList)
 
     def REENTRY_PREPARATION(self, PreConditionIDList, OnAfterMatchTerminal):
         return cpp.reentry_preparation(self, PreConditionIDList, OnAfterMatchTerminal)
 
-    def HEADER_DEFINITIONS(self, OnAfterMatchF):
-        return cpp.header_definitions(self, OnAfterMatchF)
+    def HEADER_DEFINITIONS(self):
+        return cpp.header_definitions(self)
 
     def LABEL_SHARED_ENTRY(self, TemplateIndex, EntryN=None):
         if EntryN is None: return "_%i_shared_entry:\n"    % TemplateIndex

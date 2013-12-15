@@ -1,9 +1,11 @@
-from   quex.blackboard   import E_Values
+from quex.engine.misc.enum  import Enum
 
 from   itertools   import izip, islice
 from   collections import deque
 import sys
 import os
+
+
 
 def r_enumerate(x):
     """Reverse enumeration."""
@@ -31,6 +33,8 @@ def pair_combinations(iterable):
     for i, x in enumerate(other):
         for y in islice(other, i+1, None):
             yield x, y
+
+E_Values = Enum("UNASSIGNED", "VOID", "_DEBUG_E_Values")
 
 class UniformObject(object):
     __slots__ = ("_content", "_equal")
@@ -121,51 +125,103 @@ def _check_all(Iterable, Condition):
         return False
     return True
 
+def _get_value_check_function(Type):
+    """Tries possible operations on 'Type' and returns the operation which
+    works without exception.
+    """
+    try:     
+        if isinstance(4711, Type): pass
+        return lambda value: isinstance(value, Type)
+    except: 
+        if not isinstance(Type, tuple):
+            try: 
+                if 4711 in Type: pass
+                return lambda value: value in Type
+            except:
+                pass
+        else:
+            condition_array = tuple( 
+                _get_value_check_function(alternative_type) 
+                for alternative_type in Type
+            )
+            def is_ok(element):
+                for condition in condition_array:
+                    if condition(element): return True
+                return False
+            return is_ok
+    return None
+
 def all_isinstance(List, Type):
-    return _check_all(List, lambda element: isinstance(element, Type))
+    if Type is None: return True
+    is_ok = _get_value_check_function(Type) # 'Type' is coded in 'is_ok'
+    assert is_ok is not None
+    return _check_all(List, is_ok)
 
 def none_isinstance(List, Type):
-    return _check_all(List, lambda element: not isinstance(element, Type))
+    if Type is None: return True
+    is_ok = _get_value_check_function(Type) # 'Type' is coded in 'is_ok'
+    assert is_ok is not None
+    return _check_all(List, lambda element: not is_ok(element))
 
 def none_is_None(List):
     return _check_all(List, lambda element: element is not None)
 
 def typed(**_parameters_):
-    """parameter=Type                --> isinstance(parameter, Type)
-       parameter=(Type0, Type1, ...) --> isinstance(parameter, (Type0, Type1, ...))
-       parameter=[Type]              --> (1) isinstance(parameter, list)
-                                         (2) all_isinstance(parameter, Type)
-       parameter=[Type0, Type1]      --> (1) isinstance(parameter, dict)
-                                         (2) all_isinstance(parameter.keys(), Type0)
-                                         (3) all_isinstance(parameter.keys(), Type1)
+    """parameter=Type                   --> isinstance(parameter, Type)
+       parameter=(Type0, Type1, ...)    --> isinstance(parameter, (Type0, Type1, ...))
+       parameter=[Type]                 --> (1) isinstance(parameter, list)
+                                            (2) all_isinstance(parameter, Type)
+       parameter=[(Type0, Type1, ...)]  --> (1) isinstance(parameter, list)
+                                            (2) all_isinstance(parameter, (Type0, Type1, ...))
+       parameter={Type0: Type1}         --> (1) isinstance(parameter, dict)
+                                            (2) all_isinstance(parameter.keys(), Type0)
+                                            (3) all_isinstance(parameter.keys(), Type1)
+                                        (Here, Type0 or Type1 may be a tuple (TypeA, TypeB, ...)
+                                         indicating alternative types.)
+       Type == None --> no requirements.
     """
+    def name_type(TypeD):
+        if isinstance(TypeD, tuple):
+            return "[%s]" % "".join("%s, " % name_type(x) for x in TypeD)
+        elif hasattr(TypeD, __name__):
+            return "'%s'" % TypeD.__name__
+        else:
+            return str(TypeD)
+
     def check_types(_func_, _parameters_ = _parameters_):
         def modified(*arg_values, **kw):
             arg_names = _func_.func_code.co_varnames
             kw.update(zip(arg_names, arg_values))
             for name, type_d in _parameters_.iteritems():
+                if name not in kw:  # Default arguments may possibly not appear
+                    continue
                 value = kw[name]
+                if type_d is None:  # No requirements on type_d
+                    continue
                 if value is None:
-                    assert (type_d is None) or (None in type_d)
+                    assert None in type_d
                 elif type(type_d) == tuple:
                     assert isinstance(value, type_d), \
-                           "Parameter '%s' not one of '%s'" % (name, [x.__name__ for x in type_d])
+                           "Parameter '%s' not one of '%s'" % (name, name_type(type_d))
                 elif type(type_d) == list:
-                    if len(type_d) == 1:
-                        assert isinstance(value, list), \
-                               "Parameter '%s' not one of '%s'" % (name, [x.__name__ for x in type_d])
-                        assert all_isinstance(value, type_d[0]),
-                               "Parameter list '%s' contains element not of of '%s'" % (name, type_d[0].__name__)
-                    elif len(type_d) == 2:
-                        assert isinstance(value, list), \
-                               "Parameter '%s' not one of '%s'" % (name, [x.__name__ for x in type_d])
-                        assert all_isinstance(value.iterkeys(), type_d[0]),
-                               "Parameter list '%s' contains element not of of '%s'" % (name, type_d[0].__name__)
-                        assert all_isinstance(value.itervalues(), type_d[1]),
-                               "Parameter list '%s' contains element not of of '%s'" % (name, type_d[1].__name__)
+                    assert len(type_d) == 1
+                    assert isinstance(value, list), \
+                           "Parameter '%s' not a list." % name
+                    value_type = type_d[0]
+                    assert all_isinstance(value, value_type), \
+                           "List '%s' contains element not of of '%s'" % (name, name_type(value_type))
+                elif type(type_d) == dict:
+                    assert len(type_d) == 1
+                    assert isinstance(value, dict), \
+                           "Parameter '%s' not a dictionary." % name
+                    key_type, value_type = type_d.iteritems().next()
+                    assert all_isinstance(value.iterkeys(), key_type), \
+                           "Dictionary '%s' contains key not of of '%s'" % (name, name_type(key_type))
+                    assert all_isinstance(value.itervalues(), value_type), \
+                           "Dictionary '%s' contains value not of of '%s'" % (name, name_type(value_type))
                 else:
                     assert isinstance(value, type_d), \
-                           "Parameter '%s' not of '%s'" % (name, type_d.__name__)
+                           "Parameter '%s' not of '%s'" % (name, name_type(type_d))
             return _func_(**kw)
         return modified
     return check_types

@@ -1,22 +1,21 @@
 # (C) Frank-Rene Schaefer
-from   quex.engine.analyzer.terminal.core                import TerminalPlainCode
-from   quex.engine.analyzer.terminal.skip                import TerminalSkipCharacterSet
-from   quex.engine.analyzer.terminal.skip_range          import TerminalSkipRange
-from   quex.engine.analyzer.terminal.skip_nested_range   import TerminalSkipNestedRange
-from   quex.engine.analyzer.terminal.indentation_handler import TerminalIndentationHandler
-from   quex.engine.analyzer.door_id_address_label        import Label, DoorID
-from   quex.engine.generator.code.core                   import CodeFragment
+from   quex.engine.analyzer.terminal.core          import Terminal
+from   quex.engine.analyzer.door_id_address_label  import Label, DoorID
+from   quex.engine.generator.code.core             import CodeFragment
+from   quex.engine.generator.code.base             import CodeOnPatternMatch
+from   quex.engine.tools                           import typed
 
 import quex.output.cpp.counter_for_pattern         as     counter_for_pattern
 
-from   quex.blackboard import E_IncidenceIDs, setup as Setup
+from   quex.blackboard import E_IncidenceIDs, setup as Setup, Lng, \
+                              E_TerminalType
 
 import re
 
 Match_Lexeme                = re.compile("\\bLexeme\\b", re.UNICODE)
 Match_Lexeme_or_LexemeBegin = re.compile("\\bLexeme\\b|\\bLexemeBegin\\b", re.UNICODE)
 
-class TerminalStateFactory:
+class TerminalFactory:
     """Factory for Terminal-s
     ___________________________________________________________________________
 
@@ -25,48 +24,49 @@ class TerminalStateFactory:
     whole process is initiated in its constructor.
     ___________________________________________________________________________
     """
-    def __init__(self, ModeName, IncidenceDb, CounterDb, 
-                 IndentationSupportF, BeginOfLineSupportF):
+    def __init__(self, ModeName, IncidenceDb, CounterDb): 
         """Sets up the terminal factory, i.e. specifies all members required
         in the process of Terminal construction. 
         """
-        self.txt_indentation_handler_call = LanguageDB.INDENTATION_HANDLER_CALL(
-                                                  IndentationSupportF, 
+        self.line_column_count_db = CounterDb
+
+        self.txt_indentation_handler_call = Lng.INDENTATION_HANDLER_CALL(
+                                                  blackboard.required_support_indentation_count(), 
                                                   not IncidenceDb.default_indentation_handler(),
                                                   ModeName) 
-        self.txt_default_line_column_counter_call = LanguageDB.DEFAULT_COUNTER_CALL(ModeName)
-        self.txt_store_last_character = LanguageDB.STORE_LAST_CHARACTER(BeginOfLineSupportF)
+        self.txt_default_line_column_counter_call = Lng.DEFAULT_COUNTER_CALL(ModeName)
+        self.txt_store_last_character = Lng.STORE_LAST_CHARACTER(blackboard.required_support_begin_of_line())
 
         self.txt_on_match       = IncidenceDb.get_text(E_IncidenceIDs.MATCH)
         self.txt_on_after_match = IncidenceDb.get_text(E_IncidenceIDs.AFTER_MATCH)
 
-    def do(self, TerminalType, IncidenceId, Code, Prefix):
+    def do(self, TerminalType, IncidenceId, Code):
         """Construct a Terminal object based on the given TerminalType and 
         parameterize it with 'IncidenceId' and 'Code'.
         """
         return {
-            E_TerminalTypes.MATCH_PATTERN: self.do_match_pattern,
-            E_TerminalTypes.MATCH_FAILURE: self.do_match_failure,
-            E_TerminalTypes.END_OF_STREAM: self.do_end_of_stream,
-            E_TerminalTypes.PLAIN:         self.do_plain,
+            E_TerminalType.MATCH:         self.do_match_pattern,
+            E_TerminalType.FAILURE:       self.do_match_failure,
+            E_TerminalType.END_OF_STREAM: self.do_end_of_stream,
+            E_TerminalType.PLAIN:         self.do_plain,
         }[TerminalType](IncidenceId, Code)
 
+    @typed(Code=CodeOnPatternMatch)
     def do_match_pattern(self, IncidenceId, Code):
         """A pattern has matched."""
         assert isinstance(IncidenceId, (int, long)) or IncidenceId in E_IncidenceIDs
-        assert isinstance(Code, CodeFragment) or Code is None
 
         code_user                  = pretty_code(Code.get_code())
         txt_line_column_counter    = self.line_column_count_db.get(IncidenceId)
 
-        require_terminating_zero_f =   self.on_match.lexeme_terminating_zero_required_f \
-                                     | Code.lexeme_terminating_zero_required_f  
-                                     | self.on_after_match.lexeme_terminating_zero_required_f \
-        require_lexeme_begin_f     =   self.on_match.lexeme_begin_required_f \
-                                     | Code.lexeme_begin_required_f 
-                                     | self.on_after_match.lexeme_begin_required_f \
+        require_terminating_zero_f =    self.on_match.lexeme_terminating_zero_required_f       \
+                                     or Code.lexeme_terminating_zero_required_f                \
+                                     or self.on_after_match.lexeme_terminating_zero_required_f 
+        require_lexeme_begin_f     =   self.on_match.lexeme_begin_required_f        \
+                                     or Code.lexeme_begin_required_f                \
+                                     or self.on_after_match.lexeme_begin_required_f 
 
-        txt_terminating_zero       = LanguageDB.LEXEME_TERMINATING_ZERO_SET(require_terminating_zero_f)
+        txt_terminating_zero       = Lng.LEXEME_TERMINATING_ZERO_SET(require_terminating_zero_f)
 
         assert code_line_column_counter is not None
         code = [
@@ -76,31 +76,33 @@ class TerminalStateFactory:
             self.txt_on_match,
             "{\n",
             code_user,
-            "\n}"
+            "\n}\n",
+            Lng.GOTO_BY_DOOR_ID(DoorID.global_reentry_preparation())
         ] 
 
-        return Terminal(IncidenceId, code, LexemeBeginRequiredF = require_lexeme_begin_f)
+        name = TerminalFactory.name_pattern_match_terminal(IncidenceId, Code.pattern_string)
+        return Terminal(IncidenceId, code, name, LexemeBeginRequiredF = require_lexeme_begin_f)
 
     def do_match_failure(self, IncidenceId, Code):
         """No pattern in the mode has matched. Line and column numbers are 
         still counted. But, no 'on_match' or 'on_after_match' action is 
         executed.
         """
-        LanguageDB = Setup.language_db
+        
 
         code = self.txt_default_line_column_counter_call
 
-        code.append(LanguageDB.IF_END_OF_FILE())
-        code.append(    LanguageDB.GOTO_BY_DOOR_ID(DoorID.global_reentry_preparation_2())
-        code.append(LanguageDB.IF_INPUT_P_EQUAL_LEXEME_START_P(FirstF=False))
-        code.append(    LanguageDB.INPUT_P_INCREMENT())
-        code.append(LanguageDB.END_IF())
+        code.append(Lng.IF_END_OF_FILE())
+        code.append(    Lng.GOTO_BY_DOOR_ID(DoorID.global_reentry_preparation_2()))
+        code.append(Lng.IF_INPUT_P_EQUAL_LEXEME_START_P(FirstF=False))
+        code.append(    Lng.INPUT_P_INCREMENT())
+        code.append(Lng.END_IF())
     
         code.extend(Code.get_code())
 
-        code.append(LanguageDB.GOTO_BY_DOOR_ID(DoorID.global_reentry_preparation_2())
+        code.append(Lng.GOTO_BY_DOOR_ID(DoorID.global_reentry_preparation_2()))
 
-        return Terminal(IncidenceId, code)
+        return Terminal(IncidenceId, code, "END_OF_STREAM")
 
     def do_end_of_stream(self, IncidenceId, Code):
         """End of Stream: The terminating zero has been reached and no further
@@ -110,12 +112,25 @@ class TerminalStateFactory:
         code = [ self.txt_indentation_handler_call ]
         code.extend(self.txt_default_line_column_counter_call)
         code.extend(Code)
-
-        return Terminal(IncidenceId, code)
+        code.append(
+            "    /* End of Stream FORCES a return from the lexical analyzer, so that no\n"
+            "     * tokens can be filled after the termination token.                    */\n"
+            "    RETURN;\n"
+        )
+        return Terminal(IncidenceId, code, "FAILURE")
 
     def do_plain(self, IncidenceId, Code):
         """Plain source code text as generated by quex."""
-        return Terminal(IncidenceId, Code)
+        return Terminal(IncidenceId, Code, str(IncidenceId))
+
+    @staticmethod
+    def name_pattern_match_terminal(IncidenceId, PatternString):
+        def safe(Letter):
+            if Letter in ['\\', '"', '\n', '\t', '\r', '\a', '\v']: return "\\" + Letter
+            else:                                                   return Letter 
+
+        safe_pattern = "".join(safe(x) for x in PatternString)
+        return "%i: %s" % (IncidenceId, safe_pattern)
 
 def pretty_code(Code, Base):
     """-- Delete empty lines at the beginning

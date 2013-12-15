@@ -7,7 +7,7 @@
    .lexeme_begin_required_f()
    .subject_to_match_f()
 
-   UserCode_Base:
+   CodeUser_Base:
    (Referenced source code of user)
    .get_code() --> possibly annotated code that tells about the source ref.
    .sr         --> the reference into the origin (file name, line number)
@@ -16,18 +16,50 @@
    (Generated code by quex)
 
 CLASS HIERARCHY
-                             CodeFragment
+                              CodeFragment
+                               (abstract)
                               /       \  \__________ 
    unicode   CodeUser_Base   /         \            \
       |         /   \       /       GeneratedCode   CodeFinalized
       |        /     \     /          |      |      (Finalized UserCode)
       |       /       \   /           |      |
    CodeUserPlain    CodeUser      CodeSkip  CodeIndentationHandler ...
-
+                        |
+                        |
+                 CodeOnPatternMatch
 """
-from   quex.engine.tools import error_abstract_member
-from   copy import deepcopy
+from   quex.engine.tools        import error_abstract_member, \
+                                       typed
+from   quex.engine.misc.file_in import get_current_line_info_number
+
+from   collections import namedtuple
+from   copy        import deepcopy
 import re
+
+class SourceRef(namedtuple("SourceRef_tuple", ("file_name", "line_n"))):
+    """A reference into source code:
+    _______________________________________________________________________________
+      
+        file_name = Name of the file where the code is located.
+        line_n    = Number of line where code is found.
+    _______________________________________________________________________________
+    """
+    def __new__(self, FileName="<default>", LineN=0):
+        assert isinstance(FileName, (str, unicode))
+        assert isinstance(LineN, (int, long))
+        return super(SourceRef, self).__new__(self, FileName, LineN)
+
+    @staticmethod
+    def from_FileHandle(Fh):
+        if Fh != -1:
+            if not hasattr(Fh, "name"): file_name = "<nameless stream>"
+            else:                       file_name = Fh.name
+            line_n = get_current_line_info_number(Fh)
+        else:
+            file_name = "<command line>"
+            line_n    = -1
+        return SourceRef(file_name, line_n)
+
 
 class CodeUser_Base:
     """ABSTRACT base class for all pieces of code that have some reference into
@@ -64,7 +96,7 @@ class CodeUserPlain(unicode, CodeUser_Base):
     def is_empty(self):             return unicode.__len__(self) == 0
     def is_whitespace(self):        return len(self.strip()) == 0
 
-class CodeFragment_Base(object):
+class CodeFragment(object):
     """ABSTRACT base class for all kinds of generated code and code which
     potentially contains text formatting instructions. Sole feature:
 
@@ -74,9 +106,7 @@ class CodeFragment_Base(object):
     def __init__(self, Code=None):
         self.set_code(Code)
 
-    def clone(self):
-        return CodeFragment([deepcopy(x) for x in self.__code], self.__require_lexeme_begin_f)
-
+    def clone(self):                              error_abstract_member()
     def lexeme_begin_required_f(self):            error_abstract_member()
     def lexeme_terminating_zero_required_f(self): error_abstract_member()
     def subject_to_match_f(self):                 error_abstract_member()
@@ -88,34 +118,28 @@ class CodeFragment_Base(object):
         elif isinstance(Code, tuple):          self.__code = list(Code)
         else:                                  assert False, Code.__class__
 
-    def append_CodeFragment(self, Other):
-        assert isinstance(Other, CodeFragment)
-        self.__code.extend(Other.__code)
-
-    def append_text(self, Text):
-        assert isinstance(Text, (str, unicode))
-        self.__code.append(Text)
-
-    def get_code(self, Mode=None):
+    def get_code(self):
         """Returns a list of strings and/or integers that are the 'core code'. 
         Integers represent indentation levels.
         """
         return self.__code
 
-class CodeUser(CodeUser_Base, CodeFragment_Base):
+class CodeUser(CodeUser_Base, CodeFragment):
     """User code as it is taken from some input file. It contains:
 
           .get_code() -- list of strings or text formatting instructions
                          (including possibly annotations about its origin)
           .sr         -- the source reference where it was taken from
     """
-    def __init__(self, Code, SourceReference, SubjectToMatchF=True):
+    def __init__(self, Code, SourceReference):
         CodeFragment.__init__(self, Code)
         CodeUser_Base.__init__(self, SourceReference)
-        self.__subject_to_match_f = SubjectToMatchF
+
+    def subject_to_match_f(self):                 
+        return False
 
     def clone(self):
-        return CodeUser(CodeFragment.clone(self), self.sr, self.__subject_to_match_f)
+        return CodeUser(deepcopy(self.get_code()), self.sr)
 
     def __check_code(self, condition):
         for string in self.__code:
@@ -130,14 +154,13 @@ class CodeUser(CodeUser_Base, CodeFragment_Base):
 
     def lexeme_begin_required_f(self):            return self.contains_string(Match_Lexeme) or self.contains_string(Match_LexemeBegin)
     def lexeme_terminating_zero_required_f(self): return self.contains_string(Match_Lexeme) 
-    def subject_to_match_f(self):                 return self.__subject_to_match_f
 
     def get_code(self):
         """Returns a list of strings and/or integers that are the 'core code'. 
         Integers represent indentation levels. Source code is adorned with 
         a source reference.
         """
-        code = CodeFragment_Base.get_code(self)
+        code = CodeFragment.get_code(self)
         if len(code) == 0: return []
 
         result      = [ LanguageDB.SOURCE_REFERENCE_BEGIN(self.sr)]
@@ -145,7 +168,18 @@ class CodeUser(CodeUser_Base, CodeFragment_Base):
         result.append("\n%s" % LanguageDB.SOURCE_REFERENCE_END())
         return result
 
-class CodeGenerated(CodeFragment_Base):
+CodeUser_NULL = CodeUser([], SourceRef())
+
+class CodeOnPatternMatch(CodeUser):
+    def __init__(self, Code, SourceReference, ModeName=None, PatternStr=None):
+        CodeUser.__init__(Code, SourceReference)
+        self.mode_name      = ModeName
+        self.pattern_string = PatternStr
+
+    def subject_to_match_f(self):                 
+        return True
+
+class CodeGenerated(CodeFragment):
     """Abstract Class"""
     def contains_string(self, Re):  return False
     def is_empty(self):             return False
@@ -156,7 +190,7 @@ class CodeGenerated(CodeFragment_Base):
     def subject_to_match_f(self):                 return False
 
 
-class CodeFinalized(CodeFragment_Base):
+class CodeFinalized(CodeFragment):
     """A fragment of finalized code.
     ___________________________________________________________________________
     A CodeFinalized will not be subject to and addition or subtraction of code.
