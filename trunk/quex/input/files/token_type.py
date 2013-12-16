@@ -9,23 +9,26 @@ from   quex.engine.misc.file_in          import EndOfStreamException, \
                                                 read_namespaced_name, \
                                                 check, \
                                                 read_until_letter
-from   quex.engine.generator.code.core          import UserCodeFragment
-from   quex.engine.generator.code_fragment_base import CodeFragment, CodeFragment_Empty
-import quex.input.files.code_fragment    as code_fragment
-from   quex.blackboard                   import setup as Setup, \
-                                                SourceRef
-from   quex.input.setup                  import E_Files
+from   quex.engine.generator.code.base import CodeUserPlain, \
+                                              CodeUser_NULL, \
+                                              SourceRef
+import quex.input.files.code_fragment           as     code_fragment
+from   quex.blackboard                          import setup as Setup, \
+                                                       Match_string, \
+                                                       Match_vector, \
+                                                       Match_map
+from   quex.input.setup                         import E_Files
 
 token_type_code_fragment_db = { 
-        "constructor":    CodeFragment_Empty(), 
-        "destructor":     CodeFragment_Empty(),
+        "constructor":    CodeUser_NULL, 
+        "destructor":     CodeUser_NULL,
         "copy":           None, 
-        "body":           CodeFragment_Empty(),
-        "header":         CodeFragment_Empty(),
-        "footer":         CodeFragment_Empty(),
+        "body":           CodeUser_NULL,
+        "header":         CodeUser_NULL,
+        "footer":         CodeUser_NULL,
         "take_text":      None,
-        "repetition_set": CodeFragment_Empty(),
-        "repetition_get": CodeFragment_Empty(),
+        "repetition_set": CodeUser_NULL,
+        "repetition_get": CodeUser_NULL,
         }
 
 class TokenTypeDescriptorCore:
@@ -45,9 +48,9 @@ class TokenTypeDescriptorCore:
             self.name_space            = Setup.token_class_name_space
             self.open_for_derivation_f      = False
             self.token_contains_token_id_f  = True
-            self.token_id_type         = CodeFragment("size_t")
-            self.column_number_type    = CodeFragment("size_t")
-            self.line_number_type      = CodeFragment("size_t")
+            self.token_id_type         = CodeUserPlain("size_t", SourceRef())
+            self.column_number_type    = CodeUserPlain("size_t", SourceRef())
+            self.line_number_type      = CodeUserPlain("size_t", SourceRef())
 
             self.distinct_db = {}
             self.union_db    = {}
@@ -174,7 +177,7 @@ class TokenTypeDescriptor(TokenTypeDescriptorCore):
 
         # 
         self.__distinct_members_type_name_length_max = \
-               max([0] + map(lambda x: len(x.get_pure_code()), self.distinct_db.values()))
+               max([0] + map(lambda x: len(x.text), self.distinct_db.values()))
         self.__distinct_members_variable_name_length_max = \
                max([0] + map(lambda x: len(x), self.distinct_db.keys()))
         self.__type_name_length_max = \
@@ -266,13 +269,12 @@ def parse(fh):
         error_msg("Missing opening '{' at begin of token_type definition", fh)
 
     already_defined_list = []
-    position = fh.tell()
-    begin_line_n = get_current_line_info_number(fh)
-    result   = True
+    position             = fh.tell()
+    begin_line_n         = get_current_line_info_number(fh)
+    result               = True
     while result == True:
         try: 
-            x = fh.tell()
-            fh.seek(x)
+            # x = fh.tell(); fh.seek(x)
             result = parse_section(fh, descriptor, already_defined_list)
         except EndOfStreamException:
             fh.seek(position)
@@ -284,11 +286,11 @@ def parse(fh):
         error_msg("Missing closing '}' at end of token_type definition.", fh);
 
     result = TokenTypeDescriptor(descriptor, fh.name, begin_line_n)
-    if     len(result.get_member_db()) == 0 \
-       and result.class_name == "Token" \
-       and result.token_id_type.__class__.__name__      == "CodeFragment" \
-       and result.column_number_type.__class__.__name__ == "CodeFragment" \
-       and result.line_number_type.__class__.__name__   == "CodeFragment":
+    if     len(result.get_member_db()) == 0       \
+       and result.class_name == "Token"           \
+       and result.token_id_type.sr.is_void()      \
+       and result.column_number_type.sr.is_void() \
+       and result.line_number_type.sr.is_void():
         error_msg("Section 'token_type' does not define any members, does not\n" + \
                   "modify any standard member types, nor does it define a class\n" + \
                   "different from 'Token'.", fh)
@@ -422,7 +424,8 @@ def parse_variable_definition_list(fh, SectionName, already_defined_list, GroupF
             fh.seek(position)
             error_eof(SectionName, fh)
 
-        if result is None: return db
+        if result is None: 
+            return db
 
         # The type_descriptor can be:
         #  -- a UserCodeFragment with a string of the type
@@ -445,7 +448,7 @@ def parse_variable_definition_list(fh, SectionName, already_defined_list, GroupF
 
                 already_defined_list.append([sub_name, sub_type])
         else:
-            assert type_descriptor.__class__.__name__ == "UserCodeFragment"
+            assert type_descriptor.__class__ == CodeUserPlain
             __validate_definition(type_descriptor, name, already_defined_list, 
                                   StandardMembersF=False)
             already_defined_list.append([name, type_descriptor])
@@ -512,7 +515,7 @@ def parse_variable_definition(fh, GroupF=False, already_defined_list=[]):
         if i == -1: error_msg("missing ';'", fh)
         type_str = type_str.strip()
 
-        return [ UserCodeFragment(type_str, SourceRef.from_FileHandle(fh)), name_str ]
+        return [ CodeUserPlain(type_str, SourceRef.from_FileHandle(fh)), name_str ]
 
 def __validate_definition(TheCodeFragment, NameStr, 
                           AlreadyMentionedList, StandardMembersF):
@@ -524,9 +527,9 @@ def __validate_definition(TheCodeFragment, NameStr,
                             FileName, LineN)
 
         # Standard Members are all numeric types
-        if    TheCodeFragment.contains_string("string") \
-           or TheCodeFragment.contains_string("vector") \
-           or TheCodeFragment.contains_string("map"):
+        if    TheCodeFragment.contains_string(Match_string) \
+           or TheCodeFragment.contains_string(Match_vector) \
+           or TheCodeFragment.contains_string(Match_map):
             type_str = TheCodeFragment.get_pure_code()
             error_msg("Numeric type required.\n" + \
                       "Example: <token_id: uint16_t>, Found: '%s'\n" % type_str, FileName, LineN)

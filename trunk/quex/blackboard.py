@@ -25,6 +25,22 @@ from quex.engine.misc.file_in        import get_current_line_info_number
 from quex.input.setup                import QuexSetup, SETUP_INFO
 from copy                            import deepcopy
 
+import re
+
+#------------------------------------------------------------------------------
+# Define Regular Expressions
+#------------------------------------------------------------------------------
+Match_input                 = re.compile("\\binput\\b", re.UNICODE)
+Match_iterator              = re.compile("\\iterator\\b", re.UNICODE)
+Match_Lexeme                = re.compile("\\bLexeme\\b", re.UNICODE)
+Match_Lexeme_or_LexemeBegin = re.compile("\\bLexeme\\b|\\bLexemeBegin\\b", re.UNICODE)
+Match_goto                  = re.compile("\\bgoto\\b", re.UNICODE)
+Match_QUEX_GOTO_RELOAD      = re.compile("\\bQUEX_GOTO_RELOAD_", re.UNICODE)
+Match_string                = re.compile("\\bstring\\b", re.UNICODE) 
+Match_vector                = re.compile("\\bvector\\b", re.UNICODE) 
+Match_map                   = re.compile("\\bmap\\b", re.UNICODE)
+
+
 #------------------------------------------------------------------------------
 # setup: All information of the user's desired setup.
 #------------------------------------------------------------------------------
